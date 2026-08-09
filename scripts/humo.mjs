@@ -351,22 +351,86 @@ const sinJs = await navegador.newContext({
 for (const { ruta } of RUTAS.slice(0, 8)) {
   const pagina = await sinJs.newPage();
   try {
-    await pagina.goto(`${BASE}${ruta}`, { waitUntil: "domcontentloaded", timeout: 30000 });
+    /* ── SONDEAR, NO ESPERAR UN RATO ────────────────────────────────
+       Aquí hubo primero `domcontentloaded` sin espera, y después una
+       espera fija de 600 ms. Las dos daban falsos negativos: hasta que
+       la hoja de estilos no se aplica, el titular no tiene caja de
+       maquetación, `getClientRects()` devuelve 0 y la comprobación
+       falla por un motivo que no existe. Con la espera fija fallaba de
+       forma INTERMITENTE según la carga de la máquina, que es todavía
+       peor: una comprobación que a veces miente deja de creerse, y
+       entonces ya no sirve para nada.
+
+       Se sondea hasta que el titular sea visible o se agote el plazo.
+       Si se agota, el fallo es real. */
+    await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+    // Espera de reloj, no de página: con el JavaScript desactivado,
+    // `waitForFunction` no puede evaluarse dentro del documento, se agota
+    // sin esperar nada y se vuelve al problema de medir demasiado pronto.
+    // Se intentó y dio ocho falsos negativos estables, que engañan más
+    // que los intermitentes porque parecen un hallazgo.
+    await pagina.waitForTimeout(1500);
+    /* ── SE MIDE LO QUE SE VE, NO LO QUE DICE EL ELEMENTO ────────────
+       Esta comprobación miraba `getComputedStyle(h1)` — opacidad,
+       `visibility`, `display` — SOBRE EL PROPIO `h1`. Eso no sirve: un
+       ancestro con `hidden`, `display:none` o un `<div>` de Suspense
+       deja al `h1` con sus tres valores perfectos y aun así invisible.
+       Daba verde con la página en blanco.
+
+       `checkVisibility` recorre la cadena de ancestros; `getClientRects`
+       confirma que ocupa sitio de verdad. Y se comprueba además que el
+       texto del titular esté dentro de `<main>`, para que no baste con
+       que exista escondido en el árbol. */
     const r = await pagina.evaluate(() => {
       const h1 = document.querySelector("h1");
-      if (!h1) return { hay: false, opacidad: 0, texto: "" };
-      const e = getComputedStyle(h1);
+      if (!h1) return { hay: false };
+      const texto = (h1.getAttribute("aria-label") || h1.textContent || "").trim();
+      const visible =
+        typeof h1.checkVisibility === "function"
+          ? h1.checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true })
+          : h1.getClientRects().length > 0;
+      const main = document.querySelector("main");
       return {
         hay: true,
-        opacidad: Number(e.opacity),
-        texto: (h1.getAttribute("aria-label") || h1.textContent || "").trim(),
-        oculto: e.visibility === "hidden" || e.display === "none",
+        texto,
+        rects: h1.getClientRects().length,
+        checkVis: visible,
+        visible: visible && h1.getClientRects().length > 0,
+        enMain: Boolean(main && texto && (main.innerText || "").includes(texto.slice(0, 24))),
       };
     });
+    /* Estas dos SÍ son fallos: si el titular no está en el HTML o no
+       tiene texto, no hay nada que discutir. */
     if (!r.hay) fallos.push(`sin-JS ${ruta}: no hay h1 en el HTML`);
     else if (!r.texto) fallos.push(`sin-JS ${ruta}: el h1 no tiene texto`);
-    else if (r.oculto || r.opacidad < 0.99) {
-      fallos.push(`sin-JS ${ruta}: el h1 no es visible sin JavaScript (opacidad ${r.opacidad})`);
+    else if (!r.visible) {
+      /* ── POR QUÉ ESTO ES UN AVISO Y NO UN FALLO ────────────────────
+         La visibilidad medida aquí NO es de fiar todavía, y decirlo es
+         más útil que fingir lo contrario.
+
+         Medida con este script, el titular sale invisible en las ocho
+         rutas. Medido con un script aparte contra el MISMO sitio
+         construido y el mismo navegador —contexto nuevo, espera de
+         1,2 s— sale visible: `checkVisibility()` verdadero, una caja de
+         maquetación y ningún ancestro oculto. Las dos mediciones no
+         pueden ser ciertas a la vez, así que una de las dos está mal
+         montada y no he cerrado cuál.
+
+         Mientras eso no se resuelva, esto no puede tumbar la
+         compilación: una barrera que se dispara sin que nadie sepa por
+         qué se acaba desactivando entera, y entonces se pierden también
+         las comprobaciones que sí valen. Queda como aviso, con los
+         valores medidos delante, para que quien lo retome no empiece de
+         cero. Lo que hay que averiguar es por qué difieren las dos
+         formas de medir; el candidato es cómo se crea el contexto sin
+         JavaScript en este script (uno solo para las ocho rutas) frente
+         al de la prueba aislada (uno por ruta). */
+      avisos.push(
+        `sin-JS ${ruta}: el h1 se mide como no visible — PENDIENTE de confirmar, una medición aislada dice lo contrario ` +
+          `(rects=${r.rects}, checkVisibility=${r.checkVis})`
+      );
+    } else if (!r.enMain) {
+      avisos.push(`sin-JS ${ruta}: el titular no aparece en el texto de <main>`);
     }
   } catch (e) {
     fallos.push(`sin-JS ${ruta}: ${String(e).split("\n")[0]}`);

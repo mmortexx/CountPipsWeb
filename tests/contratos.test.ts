@@ -142,19 +142,31 @@ describe("contrato del formulario de acceso anticipado", () => {
   it("el límite de peticiones no se desactiva solo si falta su almacén", () => {
     // Devolvía `true` —puerta abierta— cuando el binding KV no estaba
     // configurado, y hoy no lo está. Ahora sólo se salta si el propio
-    // despliegue lo pide a propósito.
+    // despliegue lo pide a propósito, y el rechazo lleva un código que
+    // dice «mal configurado», no «demasiadas peticiones».
     expect(worker).toMatch(/RATE_LIMIT_OPTIONAL/);
     expect(worker).not.toMatch(/if \(!env\.RATE_LIMIT\) return true;/);
+    expect(worker).toMatch(/service_misconfigured/);
   });
 
-  it("se comprueba la cuota antes de gastar una verificación de Turnstile", () => {
-    // `await nombre(` sólo aparece en las LLAMADAS: las definiciones son
-    // `async function nombre(`, así que no se confunden con ellas.
-    const iRate = worker.indexOf("await enforceRateLimit(");
+  it("consulta la cuota antes de Turnstile, pero la descuenta después", () => {
+    /* Las dos mitades importan y por motivos distintos:
+       — consultar antes evita gastar una llamada de red a Cloudflare en
+         quien ya ha superado su límite;
+       — descontar después evita que un fallo anti-bot queme el intento y
+         deje al solicitante con un «demasiadas peticiones» que no
+         describe lo que pasó.
+       Estuvieron juntas en una sola función y el segundo efecto era un
+       callejón sin salida. `await nombre(` sólo aparece en las LLAMADAS:
+       las definiciones son `async function nombre(`. */
+    const iConsulta = worker.indexOf("await rateLimitDisponible(");
     const iTurnstile = worker.indexOf("await verifyTurnstile(");
-    expect(iRate).toBeGreaterThan(-1);
+    const iConsumo = worker.indexOf("await consumirCuota(");
+    expect(iConsulta).toBeGreaterThan(-1);
     expect(iTurnstile).toBeGreaterThan(-1);
-    expect(iRate).toBeLessThan(iTurnstile);
+    expect(iConsumo).toBeGreaterThan(-1);
+    expect(iConsulta).toBeLessThan(iTurnstile);
+    expect(iTurnstile).toBeLessThan(iConsumo);
   });
 });
 

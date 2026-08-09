@@ -20,6 +20,7 @@ declare global {
         "expired-callback": () => void;
         "error-callback": () => void;
       }) => string;
+      reset: (widget?: string) => void;
     };
   }
 }
@@ -225,6 +226,14 @@ export function BetaApplication() {
     const result = await joinBetaApplication(payload);
 
     if (!result.ok) {
+      /* Los tokens de Turnstile son de un solo uso: tras un envío
+         fallido el que hay en memoria ya no vale, y sin reiniciar el
+         widget el segundo intento fallaba SIEMPRE con el mismo error,
+         pareciendo un problema del servidor que no se arregla nunca.
+         Se reinicia y se olvida el token para que reintentar signifique
+         algo. */
+      window.turnstile?.reset?.();
+      setTurnstileToken("");
       setError(failureCopy(result.reason, es));
       setStatus("error");
       return;

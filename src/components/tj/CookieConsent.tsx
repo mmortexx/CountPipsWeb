@@ -78,12 +78,13 @@ export function CookieConsent() {
   });
   const [visible, setVisible] = useState(false);
 
-  /* Reapertura desde el control de "Preferencias de privacidad" del pie
-     o de /cookies. Sin esto, el aviso no volvía a salir jamás una vez
-     elegido, y la política prometía por escrito que sí: la vía real para
-     cambiar de idea era abrir las herramientas del navegador. Aquí se
-     salta el retardo de scroll/5 s a propósito — el visitante acaba de
-     pedirlo, así que la respuesta es inmediata. */
+  /* Reapertura desde el control «Preferencias de privacidad», que vive en
+     el pie y por tanto sale en las 154 páginas. Sin esto, el aviso no
+     volvía a salir jamás una vez elegido, y la política prometía por
+     escrito que sí: la vía real para cambiar de idea era abrir las
+     herramientas del navegador y vaciar el almacenamiento del sitio.
+     Aquí se salta el retardo de scroll/5 s a propósito — el visitante
+     acaba de pedirlo, así que la respuesta es inmediata. */
   useEffect(() => {
     const reopen = () => {
       setDismissed(false);

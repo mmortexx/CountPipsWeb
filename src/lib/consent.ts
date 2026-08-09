@@ -17,9 +17,12 @@
  * el almacenamiento del sitio.
  *
  * El RGPD exige que retirar el consentimiento sea tan fácil como darlo.
- * Darlo: un clic. Retirarlo: no se podía. `clearConsent()` y el evento
- * de reapertura cierran esa brecha, y como el texto legal ya prometía la
- * función, esto no añade una promesa nueva: cumple la que había.
+ * Darlo: un clic. Retirarlo: no se podía. `reopenConsent()` —conectado al
+ * control «Preferencias de privacidad» del pie, que sale en las 154
+ * páginas— hace que el aviso vuelva a aparecer, y elegir allí «Solo
+ * necesarias» escribe `declined` y corta la medición en el acto. Como el
+ * texto legal ya prometía esa función, esto no añade una promesa nueva:
+ * cumple la que había.
  */
 
 /** Clave de almacenamiento local donde vive la elección. */

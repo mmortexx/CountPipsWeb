@@ -75,20 +75,28 @@
   # añade aquí ese origen y se puede retirar el comodín.
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://eu-assets.i.posthog.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://script.google.com https://challenges.cloudflare.com https://eu.i.posthog.com https://*.workers.dev https://api.countpips.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
-  # ── CACHÉ POR DEFECTO: NO CACHEAR ───────────────────────────────────
-  # Va aquí, en la regla que casa con TODO, y las reglas de abajo la
-  # levantan para lo que sí se puede cachear. El orden importa: en este
-  # fichero, cuando dos reglas casan, gana la última, así que la general
-  # tiene que ir primero.
+  # ── AQUÍ NO VA `Cache-Control`, Y CONVIENE DEJARLO ESCRITO ──────────
+  # La tentación es poner aquí "no cachear" y dejar que las reglas de
+  # abajo lo levanten para lo que sí se puede cachear. NO FUNCIONA ASÍ.
+  # Cloudflare Pages no resuelve los conflictos quedándose con la regla
+  # más específica: una petición que casa con varias hereda las
+  # cabeceras de TODAS, y cuando la misma cabecera aparece dos veces,
+  # UNE los valores con una coma. Un fichero de `/_next/static/` casa
+  # con `/*` y con su propia regla, así que se serviría con
   #
-  # Antes esto era una regla `/*.html` al final del fichero, y NO CASABA
-  # NUNCA. Cloudflare compara el patrón contra la ruta que pide el
-  # navegador, no contra el fichero que acaba sirviendo: con
-  # `trailingSlash: true` las direcciones de este sitio son `/features/`
-  # y `/`, jamás `/features.html`. El HTML se quedaba sin política de
-  # caché y un despliegue podía tardar en verse sin que nada lo
-  # explicara.
-  Cache-Control: public, max-age=0, must-revalidate
+  #   Cache-Control: public, max-age=0, must-revalidate, public,
+  #                  max-age=31536000, immutable
+  #
+  # y el navegador se queda con el PRIMER `max-age` que encuentra: cero.
+  # Es decir, poner la regla general aquí revienta el año de caché de
+  # todo el JavaScript y el CSS con huella, que es la mayor parte del
+  # peso del sitio. Se probó y se retiró.
+  #
+  # El HTML no necesita regla: Cloudflare Pages ya lo sirve con
+  # `public, max-age=0, must-revalidate` por defecto. (La regla
+  # `/*.html` que hubo aquí no casaba nunca —con `trailingSlash: true`
+  # las direcciones son `/features/`, no `/features.html`— así que
+  # tampoco aportaba nada; retirarla no cambió el comportamiento.)
 
 # ── Recursos con huella en el nombre ──────────────────────────────────
 # Next incrusta un hash en el nombre de cada fichero de `_next/static`,

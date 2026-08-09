@@ -207,36 +207,68 @@ async function verifyTurnstile(request, payload, env) {
    descuido" ya no pasa desapercibido: se registra y se rechaza. */
 const RATE_LIMIT_DAILY_MAX = 20;
 
-async function enforceRateLimit(request, env) {
+/* ── CONSULTAR NO ES CONSUMIR ──────────────────────────────────────────
+   Esto era una sola función que miraba la cuota Y la gastaba, y se movió
+   delante de Turnstile para no malgastar una llamada de red en quien ya
+   había superado su límite. El efecto secundario era peor que el
+   problema: toda solicitud que después fallara la verificación anti-bot
+   ya había quemado los 60 segundos de la ventana y una de las 20
+   diarias. Y como el widget de Turnstile no se reinicia solo tras un
+   error, el segundo intento se encontraba «demasiadas peticiones» — un
+   mensaje que señala al sitio equivocado y deja fuera a alguien que sólo
+   tenía el token caducado.
+
+   Se parte en dos: `rateLimitDisponible` sólo LEE (y va delante, que era
+   el objetivo), y `consumirCuota` escribe, después de que la
+   verificación haya pasado. */
+const RATE_LIMIT_DAILY_MAX = 20;
+
+/** Estado de cuota de una IP, sin tocar nada. */
+async function estadoCuota(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const huella = await sha256Hex(ip);
+  const dia = new Date().toISOString().slice(0, 10);
+  return {
+    cortaKey: `beta-application:${huella}`,
+    // La fecha va en la clave, así que el contador se renueva solo al
+    // cambiar el día y no hace falta purgarlo.
+    diaKey: `beta-application-dia:${dia}:${huella}`,
+    segundos: Math.max(10, Math.min(3600, Number(env.RATE_LIMIT_SECONDS) || 60)),
+    tope: Math.max(1, Number(env.RATE_LIMIT_DAILY) || RATE_LIMIT_DAILY_MAX),
+  };
+}
+
+/**
+ * ¿Puede pasar esta IP? Devuelve `"ok"`, `"limitado"` o `"sin-almacen"`.
+ *
+ * El tercero es un fallo de CONFIGURACIÓN, no de uso, y por eso tiene su
+ * propio valor: devolverlo como «demasiadas peticiones» mandaba a quien
+ * depura a mirar el tráfico cuando lo que falta es crear el namespace.
+ */
+async function rateLimitDisponible(request, env) {
   if (!env.RATE_LIMIT) {
-    if (String(env.RATE_LIMIT_OPTIONAL ?? "") === "1") return true;
+    if (String(env.RATE_LIMIT_OPTIONAL ?? "") === "1") return "ok";
     console.error(
       "[beta-api] RATE_LIMIT (KV) no está enlazado: se rechaza la solicitud. " +
         "Crea el namespace y ponlo en wrangler.jsonc, o declara RATE_LIMIT_OPTIONAL=1 si es un entorno local."
     );
-    return false;
+    return "sin-almacen";
   }
-
-  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const huella = await sha256Hex(ip);
-  const seconds = Math.max(10, Math.min(3600, Number(env.RATE_LIMIT_SECONDS) || 60));
-
-  // Ventana corta.
-  const cortaKey = `beta-application:${huella}`;
-  if (await env.RATE_LIMIT.get(cortaKey)) return false;
-
-  // Cuota diaria. La fecha va en la clave, así que el contador se
-  // renueva solo al cambiar el día y no hace falta purgarlo.
-  const dia = new Date().toISOString().slice(0, 10);
-  const diaKey = `beta-application-dia:${dia}:${huella}`;
+  const { cortaKey, diaKey, tope } = await estadoCuota(request, env);
+  if (await env.RATE_LIMIT.get(cortaKey)) return "limitado";
   const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
-  const tope = Math.max(1, Number(env.RATE_LIMIT_DAILY) || RATE_LIMIT_DAILY_MAX);
-  if (usadas >= tope) return false;
+  if (usadas >= tope) return "limitado";
+  return "ok";
+}
 
-  await env.RATE_LIMIT.put(cortaKey, "1", { expirationTtl: seconds });
+/** Descuenta una petición. Se llama sólo cuando ya va a atenderse. */
+async function consumirCuota(request, env) {
+  if (!env.RATE_LIMIT) return;
+  const { cortaKey, diaKey, segundos } = await estadoCuota(request, env);
+  const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
+  await env.RATE_LIMIT.put(cortaKey, "1", { expirationTtl: segundos });
   // 48 h de vida: cubre el día en curso con holgura para cualquier huso.
   await env.RATE_LIMIT.put(diaKey, String(usadas + 1), { expirationTtl: 172800 });
-  return true;
 }
 
 async function createApplication(request, env) {
@@ -254,12 +286,21 @@ async function createApplication(request, env) {
 
   const validation = validateApplication(payload);
   if (validation.error) return errorResponse(validation.error, 422, request, env);
-  // El límite de peticiones va ANTES de Turnstile: verificar el token
-  // cuesta una llamada de red a Cloudflare, y no tiene sentido gastarla
-  // en quien ya ha superado su cuota. Estaba después, así que cada
-  // intento abusivo consumía una verificación completa.
-  if (!(await enforceRateLimit(request, env))) return errorResponse("rate_limited", 429, request, env);
+
+  /* La CONSULTA de cuota va antes de Turnstile —verificar el token
+     cuesta una llamada de red y no tiene sentido gastarla en quien ya ha
+     superado su límite—, pero el DESCUENTO va después, para que un fallo
+     anti-bot no queme el intento. Ver la nota de `rateLimitDisponible`. */
+  const cuota = await rateLimitDisponible(request, env);
+  if (cuota === "sin-almacen") {
+    // Configuración incompleta, no abuso: 503 y un código propio para que
+    // el error apunte al sitio correcto.
+    return errorResponse("service_misconfigured", 503, request, env);
+  }
+  if (cuota === "limitado") return errorResponse("rate_limited", 429, request, env);
+
   if (!(await verifyTurnstile(request, payload, env))) return errorResponse("bot_check_failed", 400, request, env);
+  await consumirCuota(request, env);
 
   const { application } = validation;
   const emailHash = await sha256Hex(application.email);

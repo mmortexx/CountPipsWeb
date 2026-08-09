@@ -9,9 +9,14 @@ export function PostHog() {
   useEffect(() => {
     if (!POSTHOG_KEY) return;
 
+    type PostHogApi = {
+      opt_out_capturing?: () => void;
+      opt_in_capturing?: () => void;
+    };
+    const api = () => (window as Window & { posthog?: PostHogApi }).posthog;
+
     const stop = () => {
-      const posthog = (window as Window & { posthog?: { opt_out_capturing?: () => void } }).posthog;
-      posthog?.opt_out_capturing?.();
+      api()?.opt_out_capturing?.();
     };
 
     const load = () => {
@@ -19,7 +24,19 @@ export function PostHog() {
         stop();
         return;
       }
-      if (window.posthog || document.querySelector("script[data-countpips-posthog]")) return;
+      /* Volver a aceptar en la MISMA sesión tiene que volver a medir.
+         Antes esta guarda salía en cuanto encontraba el script ya
+         cargado, así que la secuencia aceptar → "Solo necesarias" →
+         aceptar de nuevo dejaba la medición apagada hasta recargar la
+         página: el `opt_out_capturing()` de la retirada seguía en pie y
+         nadie lo deshacía. Falla del lado seguro —mide de menos— pero es
+         la misma clase de desajuste entre lo que el visitante elige y lo
+         que el código hace que este módulo viene a cerrar. */
+      if (window.posthog) {
+        api()?.opt_in_capturing?.();
+        return;
+      }
+      if (document.querySelector("script[data-countpips-posthog]")) return;
 
       const script = document.createElement("script");
       script.async = true;
