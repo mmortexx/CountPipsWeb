@@ -146,6 +146,93 @@ const PANTALLAS = [
 
 const fallos = [];
 const avisos = [];
+/** Cada contraste que se ha llegado a medir, para poder auditar la propia
+    comprobación: una que no mide nada también sale en verde. */
+const contrastesMedidos = [];
+
+/**
+ * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
+ *
+ * POR QUÉ SE MIDEN PÍXELES Y NO EL CSS COMPUTADO. La primera versión de
+ * esta comprobación componía el fondo subiendo por los ancestros y
+ * mezclando sus `background-color`. Daba veinticinco fallos, todos falsos:
+ * no entendía `color-mix()` —que el navegador devuelve como
+ * `color(srgb …)`—, ni los fondos declarados en `background-image` (que es
+ * justo cómo está hecho el velo de sección), ni los estilos en línea de la
+ * maqueta de la aplicación. Llegó a informar de 1,04:1 en un texto que se
+ * lee sin esfuerzo.
+ *
+ * Una comprobación que se equivoca en la dirección alarmista se acaba
+ * desactivando, y entonces no protege nada. Así que se hace lo caro y
+ * fiable: se captura la caja del texto, se mete el PNG de vuelta en la
+ * página, se dibuja en un canvas y se leen sus píxeles. El fondo es la
+ * luminancia más frecuente de la caja —la mayoría de los píxeles de una
+ * línea de texto no son letra— y el peor caso, el percentil de la cola
+ * que se acerca al color del texto, que es donde el grabado ensucia.
+ *
+ * Devuelve null si la captura no se puede hacer (elemento fuera de vista).
+ */
+async function mideContraste(pagina, cand) {
+  const { x, y, w, h } = cand.caja;
+  let png;
+  try {
+    png = await pagina.screenshot({
+      clip: {
+        x: Math.max(0, x - 2),
+        y: Math.max(0, y - 2),
+        width: Math.max(4, Math.min(w + 4, 1400)),
+        height: Math.max(4, h + 4),
+      },
+    });
+  } catch {
+    return null;
+  }
+
+  return pagina.evaluate(
+    async ({ b64, color }) => {
+      const img = new Image();
+      img.src = "data:image/png;base64," + b64;
+      await img.decode();
+      const cv = document.createElement("canvas");
+      cv.width = img.width;
+      cv.height = img.height;
+      const g = cv.getContext("2d");
+      g.drawImage(img, 0, 0);
+      const d = g.getImageData(0, 0, cv.width, cv.height).data;
+
+      const lin = (v) => {
+        v /= 255;
+        return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+      };
+      const lum = (r, gg, b) => 0.2126 * lin(r) + 0.7152 * lin(gg) + 0.0722 * lin(b);
+
+      const hist = new Array(256).fill(0);
+      const lums = [];
+      for (let i = 0; i < d.length; i += 4) {
+        const L = lum(d[i], d[i + 1], d[i + 2]);
+        lums.push(L);
+        hist[Math.round(L * 255)]++;
+      }
+      let moda = 0;
+      for (let i = 1; i < 256; i++) if (hist[i] > hist[moda]) moda = i;
+      const Lfondo = moda / 255;
+
+      const n = (color.match(/[\d.]+/g) || []).map(Number);
+      const rgb = color.startsWith("color(") ? n.slice(0, 3).map((v) => v * 255) : n.slice(0, 3);
+      const Ltexto = lum(rgb[0], rgb[1], rgb[2]);
+
+      lums.sort((a, b) => a - b);
+      const pct = (q) => lums[Math.floor((lums.length - 1) * q)];
+      // Si el texto es oscuro, el fondo que peor le va es el más oscuro
+      // del lado claro; y al revés.
+      const Lpeor = Ltexto < Lfondo ? pct(0.35) : pct(0.65);
+
+      const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+      return ratio(Ltexto, Lpeor);
+    },
+    { b64: png.toString("base64"), color: cand.color },
+  );
+}
 
 /* Ruido de terceros y del servidor de desarrollo que no dice nada del
    sitio. Se filtra para que un fallo real no se pierda entre él. */
@@ -287,6 +374,36 @@ for (const pantalla of PANTALLAS) {
             }
             return out;
           })(),
+
+          /* Candidatos para la medición de contraste, que se hace fuera
+             (ver `mideContraste`): los textos MÁS PEQUEÑOS que están
+             sobre el fondo grabado, que son los que se quedan sin margen
+             cuando alguien mueve el velo. Aquí sólo se eligen; medirlos
+             desde el CSS computado no funciona —hay que leer píxeles—, y
+             el porqué está escrito en `mideContraste`. */
+          candidatosContraste: (() => {
+            const out = [];
+            const sobrePapel = (el) =>
+              el.closest("header, footer, .tj-paper, .demo-card, nav, [style*='background']");
+            for (const el of document.querySelectorAll(".text-tertiary, .eyebrow, figcaption, small")) {
+              if (sobrePapel(el)) continue;
+              const r = el.getBoundingClientRect();
+              const cs = getComputedStyle(el);
+              if (r.width < 30 || r.height < 7) continue;
+              if (r.top < 4 || r.bottom > window.innerHeight - 4) continue;
+              if (!(el.textContent || "").trim()) continue;
+              if (cs.visibility === "hidden" || cs.opacity === "0") continue;
+              out.push({
+                caja: { x: r.x, y: r.y, w: r.width, h: r.height },
+                color: cs.color,
+                tam: parseFloat(cs.fontSize),
+                peso: Number(cs.fontWeight) || 400,
+                texto: (el.textContent || "").trim().slice(0, 24),
+              });
+            }
+            // Los dos más pequeños: son el peor caso por definición.
+            return out.sort((a, b) => a.tam - b.tam).slice(0, 2);
+          })(),
         };
       });
 
@@ -305,6 +422,31 @@ for (const pantalla of PANTALLAS) {
         );
       }
       if (!informe.main) avisos.push(`${etiqueta}: sin elemento <main>`);
+
+      /* El contraste sólo se mide en escritorio: la composición de capas
+         es la misma en las cuatro pantallas y leer píxeles cuesta una
+         captura por elemento. */
+      if (pantalla.nombre === "escritorio") {
+        if (informe.candidatosContraste.length === 0) {
+          /* Una comprobación que no encuentra nada que comprobar pasa en
+             verde y no protege nada. Si una ruta deja de tener textos
+             pequeños sobre el fondo, que se sepa. */
+          avisos.push(`${etiqueta}: ningún texto pequeño sobre el fondo que medir`);
+        }
+        for (const c of informe.candidatosContraste) {
+          const cr = await mideContraste(pagina, c);
+          if (cr == null) continue;
+          contrastesMedidos.push(`${ruta} "${c.texto}" ${c.tam}px ${cr.toFixed(2)}:1`);
+          const grande = c.tam >= 18.66 || (c.tam >= 14 && c.peso >= 700);
+          const minimo = grande ? 3 : 4.5;
+          if (cr < minimo) {
+            fallos.push(
+              `${etiqueta}: contraste ${cr.toFixed(2)}:1 en "${c.texto}" (${c.tam}px) — ` +
+              `AA pide ${minimo}:1 sobre el fondo grabado`
+            );
+          }
+        }
+      }
       for (const s of informe.solapesBarra) {
         fallos.push(`${etiqueta}: barra superior — ${s}`);
       }
@@ -448,6 +590,21 @@ if (fallos.length) {
   for (const f of fallos) console.error(`  ✗ ${f}`);
   process.exit(1);
 }
+/* El peor contraste medido, dicho en voz alta. Es la diferencia entre
+   "la comprobación pasó" y "la comprobación miró N sitios y el más justo
+   iba por aquí": lo segundo se puede seguir en el tiempo, lo primero no. */
+if (contrastesMedidos.length) {
+  const peor = contrastesMedidos
+    .map((s) => ({ s, v: parseFloat(s.split(" ").pop()) }))
+    .sort((a, b) => a.v - b.v)[0];
+  console.log(
+    `[humo] contraste — ${contrastesMedidos.length} textos pequeños medidos sobre el fondo grabado; ` +
+      `el más justo: ${peor.s}`
+  );
+} else {
+  console.warn("  aviso  no se midió NINGÚN contraste: la comprobación no está mirando nada");
+}
+
 console.log(
   `[humo] correcto — ${RUTAS.length} rutas × ${PANTALLAS.length} pantallas, más el titular sin JavaScript.`
 );

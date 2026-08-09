@@ -995,20 +995,26 @@
   .gradient-border {
     position: relative;
   }
+  /* El nombre se queda porque lo lleva escrito la tarjeta de Pro en
+     `Pricing.tsx`, pero el borde ya no es un degradado: era una diagonal
+     de 135° que iba del acento al 40 % a transparente y volvía al 20 %,
+     es decir, un marco que se desvanecía por dos de sus cuatro lados. Un
+     marco grabado tiene los cuatro. Se conserva la técnica de máscara
+     —que es recorte, no pintura— para dibujarlo por dentro del radio. */
   .gradient-border::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
     padding: 1px;
-    background: linear-gradient(135deg, rgb(var(--accent-base) / 0.4), transparent 50%, rgb(var(--accent-base) / 0.2));
+    background-color: rgb(var(--accent-base) / 0.4);
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
   }
   :root[data-theme="light"] .gradient-border::before {
-    background: linear-gradient(135deg, rgb(var(--accent-base) / 0.55), transparent 50%, rgb(var(--accent-base) / 0.3));
+    background-color: rgb(var(--accent-base) / 0.55);
   }
 
   /* DEPTH SCALE + BTN-APPLE are defined below as Tailwind v4 `@utility`
@@ -1384,13 +1390,25 @@
 
   .bg-tint { background-color: rgb(var(--tint)); }
 
+  /* ── El realce del titular: TINTA, no degradado ──────────────────
+     Era un `linear-gradient` de 120° recortado contra el texto, con el
+     acento oscureciéndose por el centro y volviendo al final. Es la
+     figura que esta dirección de arte descarta de raíz: densidad hecha
+     con una transición de color en vez de con trazo. Y en una serif de
+     titular a peso 500 el degradado hacía además algo peor que no
+     verse: adelgazaba ópticamente el asta central de cada letra.
+
+     Un grabado señala con tinta plana. El realce pasa a ser el acento
+     a secas, que es lo que ya hacen los filetes, las cifras y el canto
+     de las láminas — una sola manera de decir "esto importa".
+
+     Se conserva el NOMBRE de la clase a propósito: la usan medio
+     centenar de titulares y renombrarla no cambiaría un píxel. Lo que
+     cambia es lo que hace. */
   .text-gradient {
-    background: linear-gradient(120deg, rgb(var(--accent-base)) 0%, rgb(var(--accent-hover)) 50%, rgb(var(--accent-base)) 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+    color: rgb(var(--accent-base));
+    -webkit-text-fill-color: currentColor;
+    background: none;
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -1540,39 +1558,44 @@
 
   /* .page-header-scrim — velo de las cabeceras de subpágina.
      ------------------------------------------------------------------
-     La versión anterior cubría al 76 % en el borde izquierdo y ya
-     estaba en el 30 % a mitad de ancho. Los titulares de estas páginas
-     ("Lo compras una vez. Tuyo para siempre.") ocupan el 85 % del ancho
-     a 1440 px, así que su segunda mitad —justo la palabra en dorado—
-     caía sobre las fibras rojas del iris a plena saturación. El fondo
-     medido bajo una misma línea de texto oscilaba entre 87 y 245 de
-     luminancia: el contraste cambiaba letra a letra.
+     POR QUÉ ESTO SIGUE SIENDO UN DEGRADADO, si la regla del estilo es
+     que no haya ninguno: porque no pinta densidad, protege una lectura.
+     La regla apunta contra el ornamento —halos, auroras, barridos,
+     marcos que se desvanecen, titulares con el color en transición—, y
+     todo eso se ha ido. Un velo que tiene que estar donde hay texto y
+     no estar donde hay dibujo necesita un sitio donde dejar de estar; el
+     corte duro se vería como una costura vertical en mitad de la
+     cabecera. Es el mismo criterio por el que las máscaras se quedan.
 
-     Ahora el velo se mantiene alto hasta el 62 % del ancho, que es
-     donde acaba la columna de texto, y sólo entonces se abre. El iris
-     sigue viéndose entero en el tercio derecho, que es donde la
-     composición lo quiere. En tema claro se cubre más que en oscuro:
-     el texto es oscuro sobre papel, y ahí el iris ilumina en vez de
-     oscurecer, que es el caso que rompe la lectura. */
+     RECALIBRADO. Los valores de antes (88 % hasta media anchura) se
+     eligieron contra el ojo WebGL que había de fondo, cuyas fibras rojas
+     y verdes hacían oscilar la luminancia bajo una misma línea de texto
+     entre 87 y 245. Ese fondo ya no existe: hoy detrás hay lápiz fino a
+     0,62 de opacidad, que no ilumina ni satura. Manteniendo el 88 % se
+     tapaba el grabado en la cabecera de las 150 páginas que la llevan
+     —el mismo error que cometía el velo de sección—, así que el tramo
+     protegido baja al 84 %, que es el valor del sistema (`--velo`) y el
+     que sostiene la cuenta de contraste del texto terciario, y se abre
+     antes para que la lámina entre en la cabecera. */
   .page-header-scrim {
     position: absolute;
     inset: 0;
     pointer-events: none;
     background: linear-gradient(
       90deg,
-      color-mix(in srgb, var(--bg) 88%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 82%, transparent) 45%,
-      color-mix(in srgb, var(--bg) 52%, transparent) 62%,
-      transparent 85%
+      color-mix(in srgb, var(--bg) 84%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 84%, transparent) 45%,
+      color-mix(in srgb, var(--bg) 46%, transparent) 62%,
+      transparent 82%
     );
   }
   :root[data-theme="light"] .page-header-scrim {
     background: linear-gradient(
       90deg,
-      color-mix(in srgb, var(--bg) 94%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 90%, transparent) 45%,
-      color-mix(in srgb, var(--bg) 62%, transparent) 62%,
-      transparent 88%
+      color-mix(in srgb, var(--bg) 88%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 88%, transparent) 45%,
+      color-mix(in srgb, var(--bg) 54%, transparent) 62%,
+      transparent 85%
     );
   }
 
@@ -1646,21 +1669,22 @@
 
   .divider-grad {
     height: 1px;
-    /* Neutral hairline — uses --divider (white-on-dark, black-on-light) at a
-       low 12% opacity so the separator reads as a subtle floating rule
-       rather than a flat line. The gradient fades to transparent at both
-       edges so the hairline floats rather than terminating in a hard edge.
-       Switched from accent-tinted to neutral for a quieter, more
-       professional rhythm across long marketing pages. */
-    background: linear-gradient(90deg, transparent, rgb(var(--divider) / 0.12) 20%, rgb(var(--divider) / 0.12) 80%, transparent);
+    /* Filete neutro, con principio y final. Era un degradado que moría en
+       transparente por los dos extremos para que la línea "flotara"; en un
+       libro un filete separador no flota, empieza donde empieza la mancha y
+       acaba donde acaba, y eso es justo lo que lo hace leer como parte de
+       la retícula y no como un adorno superpuesto. Es la misma convención
+       de las tablas booktabs que manda en el resto del sitio. */
+    background-color: rgb(var(--divider) / 0.12);
   }
 
-  .aurora-bg {
-    background:
-      radial-gradient(60% 50% at 15% 10%, rgb(var(--accent-base) / 0.22), transparent 70%),
-      radial-gradient(55% 45% at 85% 15%, rgb(62 124 177 / 0.16), transparent 70%),
-      radial-gradient(50% 50% at 50% 100%, rgb(125 107 176 / 0.14), transparent 70%);
-  }
+  /* Aquí estaba `.aurora-bg`: tres manchas radiales superpuestas, una
+     de acento y dos de colores que no existen en ninguna paleta de este
+     sitio —un azul #3E7CB1 y un violeta #7D6BB0—. No la usaba ningún
+     componente, así que era el resto de un fondo anterior. Un color
+     ajeno esperando en una utilidad global es de las cosas que vuelven
+     solas: alguien la aplica, y de golpe la web tiene dos tintas que
+     nadie eligió. */
 
   .max-w-page { max-width: 1200px; }
 
@@ -1998,7 +2022,14 @@ textarea:focus-visible,
      variable `--pct` que pone el componente. Antes lo hacía una barra
      aparte colocada encima del control, y se veían dos pistas paralelas
      que el ojo lee como un fallo de montaje. Una sola pista, y el relleno
-     es parte de ella. */
+     es parte de ella.
+
+     ESTO NO ES UN DEGRADADO, aunque la función se llame así: las dos
+     paradas caen en el MISMO punto (`--pct`), así que no hay transición
+     —hay un corte— y lo que se pinta son dos tramos de tinta plana. Es
+     la única forma de rellenar una pista de `input[type=range]` en
+     WebKit sin superponer un segundo elemento. Queda escrito para que la
+     próxima revisión de «cero degradados» no lo cuente entre ellos. */
   background: linear-gradient(
     to right,
     rgb(var(--accent-base)) 0 var(--pct, 0%),
@@ -2186,9 +2217,11 @@ textarea:focus-visible,
   right: 0;
   bottom: -2px;
   height: 1px;
-  background: linear-gradient(90deg,
-    rgb(var(--accent-base) / 0.4) 0%,
-    rgb(var(--accent-base)) 100%);
+  /* El filete era un degradado del acento al 40 % hasta el 100 %. Un
+     subrayado que cambia de densidad a lo largo del renglón no lo hace
+     ninguna imprenta: el trazo entra con el movimiento, que es lo que
+     ya hace el `scaleX`, y su grosor y su tinta son constantes. */
+  background-color: rgb(var(--accent-base));
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.3s var(--ease-suave);
@@ -2399,7 +2432,6 @@ button.icon-btn:hover > svg,
   #mobile-nav-drawer,
   #tj-loader,
   canvas,
-  .aurora-bg,
   .grain,
   .tj-no-print {
     display: none !important;
@@ -2450,9 +2482,7 @@ button.icon-btn:hover > svg,
   .liquid-glass::after,
   .gradient-border::before,
   .link-underline::after,
-  .grain::after,
-  .tj-cta-sheen::after,
-  .tj-spot::after {
+  .grain::after {
     display: none !important;
   }
   /* Decorative accent hairline dividers collapse to plain white so
@@ -2683,6 +2713,15 @@ button.icon-btn:hover > svg,
    relleno y los scrims no existían. Valores 1:1 del <style> del
    HTML de referencia, en dark y light.
    ============================================================ */
+/* NOTA sobre los dos vocabularios de tinta: en la paleta `clasico` —la
+   que el sitio fuerza— `--ink*` se declara DERIVADO de `--txt-*`, porque
+   ahí los valores coincidían exactamente y tener dos copias sólo servía
+   para que un día dejaran de coincidir. Aquí, en las paletas base, no se
+   derivan: estos hex llevan calibraciones propias medidas contra fondos
+   concretos (ver la nota de `--ink-3` justo debajo, buscado por barrido
+   para despejar 4,8:1 dentro de una tarjeta elevada). Igualarlos "por
+   limpieza" tiraría esa medición. Si algún día estas paletas vuelven a
+   usarse, la decisión es rehacer la medición, no copiar el otro token. */
 :root {
   --bg: #0b0c0d;
   --surface: #141618;
@@ -2847,51 +2886,25 @@ button.icon-btn:hover > svg,
   transition: transform 0.9s var(--ease-entrada-salida);
 }
 
-/* Sheen — barrido de luz sobre CTAs oscuros al hacer hover (el HTML lo
-   inyectaba con JS; aquí es CSS puro sobre ::after del propio botón). */
-.tj-cta-sheen {
-  position: relative;
-  overflow: hidden;
-}
-.tj-cta-sheen::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 34%;
-  height: 100%;
-  pointer-events: none;
-  transform: translateX(-160%) skewX(-18deg);
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgb(255 255 255 / 0.6),
-    transparent
-  );
-}
-.tj-cta-sheen:hover::after {
-  animation: tj-sheen 1s var(--ease-suave);
-}
+/* ── Aquí estaban el «sheen» y el «spotlight» ─────────────────────
+   `.tj-cta-sheen`: un barrido de luz blanca al 60 % cruzando el botón
+   al pasar por encima. `.tj-spot`: un foco radial de acento siguiendo
+   al cursor dentro de la tarjeta.
 
-/* Spotlight — gradiente radial que sigue al cursor en tarjetas .tj-spot
-   (DecorFX actualiza --spot-x/y; en reposo queda fuera de la tarjeta).
-   Convive con .liquid-glass::after: aquí solo se define el background,
-   los box-shadow de los bordes torneados se conservan. */
-.tj-spot {
-  position: relative;
-}
-.tj-spot::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(
-    260px circle at var(--spot-x, -999px) var(--spot-y, -999px),
-    rgb(var(--accent-base) / 0.16),
-    transparent 62%
-  );
-}
+   Los dos son el vocabulario que el bloque «Lo que se apaga» de la
+   paleta clásica describe y descarta —«luz que late, barridos
+   especulares, focos que siguen al puntero»— y de hecho ese bloque ya
+   apagaba `.tj-spot::after`. Pero apagar no es lo mismo que quitar:
+
+   NINGÚN componente aplicaba ninguna de las dos clases. Ni una. Y aun
+   así `DecorFX` seguía montado en el layout de las 155 páginas
+   suscribiendo dos escuchas globales de `pointermove`/`pointerout` y
+   un `requestAnimationFrame` por movimiento del ratón, para buscar con
+   `closest(".tj-spot")` un elemento que no existe en ninguna página.
+   Se retira también el componente.
+
+   Lo que sí se queda es el movimiento que ordena la lectura: la
+   revelación por scroll y la secuencia de entrada. */
 
 /* ============================================================
    MATERIAL DE LA VENTANA DE LA DEMO
@@ -3124,14 +3137,23 @@ button.icon-btn:hover > svg,
   --txt-tertiary: 138 144 150; /* #8A9096 — 4,56:1 */
   --divider: 187 194 200;
 
-  /* Vocabulario --bg/--surface/--ink del HTML de referencia. */
+  /* Vocabulario --bg/--surface/--ink del HTML de referencia.
+
+     LA TINTA SE DECLARA UNA VEZ. Aquí había tres hex —#bbc2c8, #9fa5ac,
+     #8a9096— que repetían exactamente los tres tripletes de `--txt-*` de
+     ocho líneas más arriba, en otro formato. Dos vocabularios para la
+     misma escalera: 771 usos leen uno (por las utilidades `.text-*`) y
+     323 leen el otro, y el día que alguien ajuste un contraste sólo va a
+     tocar el que tenga delante. Ahora `--ink*` DERIVA de `--txt-*`, así
+     que no hay dos verdades que puedan separarse; los 323 usos siguen
+     funcionando sin tocar ni uno. */
   --bg: #0c1116;
   --surface: #161c21;
   --surface-2: #1e242a;
   --raised: #22292f;
-  --ink: #bbc2c8;
-  --ink-2: #9fa5ac;
-  --ink-3: #8a9096;
+  --ink: rgb(var(--txt-primary));
+  --ink-2: rgb(var(--txt-secondary));
+  --ink-3: rgb(var(--txt-tertiary));
   --line: rgba(205, 217, 228, 0.10);
   --line-2: rgba(205, 217, 228, 0.19);
 
@@ -3223,9 +3245,12 @@ button.icon-btn:hover > svg,
   --surface: #e2e6e9;
   --surface-2: #cdd2d8;
   --raised: #eef0f3;
-  --ink: #262c31;
-  --ink-2: #393e43;
-  --ink-3: #484d51;
+  /* Deriva de `--txt-*`, igual que en oscuro: los hex que había aquí
+     (#262c31 / #393e43 / #484d51) eran los mismos tres valores de arriba
+     escritos otra vez. Ver la nota en la paleta oscura. */
+  --ink: rgb(var(--txt-primary));
+  --ink-2: rgb(var(--txt-secondary));
+  --ink-3: rgb(var(--txt-tertiary));
   --line: rgba(19, 29, 38, 0.16);
   --line-2: rgba(19, 29, 38, 0.28);
 
@@ -3434,15 +3459,14 @@ button.icon-btn:hover > svg,
    El movimiento con sentido se queda: la revelación por scroll y la
    secuencia de entrada siguen funcionando igual, porque ordenan la
    lectura en vez de decorarla. */
-:root[data-palette="clasico"] .tj-spot::after {
-  display: none;
-}
+/* (`.tj-spot` y `.aurora-bg` ya no hace falta apagarlos aquí: no existen.
+   Lo que se apagaba con `display:none` se ha retirado de raíz, que es lo
+   que corresponde cuando la respuesta a "¿quién lo usa?" es "nadie".) */
 :root[data-palette="clasico"] [style*="tj-sheen"],
 :root[data-palette="clasico"] .tj-sheen {
   display: none;
 }
-:root[data-palette="clasico"] [class*="animate-"][class*="glow"],
-:root[data-palette="clasico"] .aurora-bg {
+:root[data-palette="clasico"] [class*="animate-"][class*="glow"] {
   animation: none;
   opacity: 0.35;
 }
@@ -3746,10 +3770,14 @@ button.icon-btn:hover > svg,
    compromiso: el trazo se ve mucho más donde importa —el hero y los
    aires entre secciones, que no llevan velo— sin comerse el margen de
    contraste del texto pequeño, que sí lo lleva. Las dos cifras van
-   atadas: si se sube una hay que bajar la otra y rehacer la cuenta. */
+   atadas: si se sube una hay que bajar la otra y rehacer la cuenta.
+
+   (Este párrafo decía 84 y la regla de debajo escribía 88, que es una
+   forma tranquila de que la cuenta de contraste deje de describir lo
+   que pinta el navegador. Ahora el valor está en `--velo`, se escribe
+   una sola vez, y es el 84 % para el que está hecha la cuenta.) */
 :root[data-palette="clasico"] .bg-veil,
 :root[data-theme="light"][data-palette="clasico"] .bg-veil {
-  background-color: color-mix(in srgb, var(--bg) 88%, transparent);
   /* ---- El velo deja de ir a sangre ---------------------------------
      Este es EL motivo por el que el atlas no se veía. Cada sección
      pintaba su velo de borde a borde de la ventana, así que el fondo
@@ -3785,12 +3813,17 @@ button.icon-btn:hover > svg,
      las causas de que el scroll no fuera fluido. Repartiendo el trabajo
      entre el relleno (que es gratis) y una máscara simple, el resultado
      visual es el mismo y desaparece el coste. */
+  /* El valor vive en UN sitio: si hay que moverlo, se mueve aquí y se
+     rehace la cuenta de contraste de arriba. Es lo que no ocurrió cuando
+     el bloque «VEIL REBALANCE» del final del fichero declaró otros tres
+     valores sin quitar éste — ver la nota que quedó en su lugar. */
+  --velo: 84%;
   background-color: transparent;
   background-image: linear-gradient(
     to bottom,
     transparent,
-    color-mix(in srgb, var(--bg) 88%, transparent) 96px,
-    color-mix(in srgb, var(--bg) 88%, transparent) calc(100% - 96px),
+    color-mix(in srgb, var(--bg) var(--velo), transparent) 96px,
+    color-mix(in srgb, var(--bg) var(--velo), transparent) calc(100% - 96px),
     transparent
   );
   -webkit-mask-image: linear-gradient(
@@ -3982,9 +4015,14 @@ button.icon-btn:hover > svg,
    fondo se intuye sin competir con el texto.
 
    Se diferencia de .liquid-glass en tres cosas:
-     1. Tinte CÁLIDO (papel) en vez de neutral gris.
-     2. Translucidez real (~72%) — deja ver el fondo animado.
+     1. Tinte propio en vez del neutro de cristal.
+     2. Translucidez del 86 % (oscuro) / 95 % (claro) — deja intuir el
+        atlas del fondo sin difuminarlo: papel, no cristal.
      3. Grano de papel sutil + luz de borde superior.
+
+   (El "tinte CÁLIDO" de este párrafo es de cuando el material era papel
+   hueso. Se retiró al descartar el dorado — ver la nota del acento en
+   :root—: hoy el tinte sale de `--surface`, que es el gris de la chapa.) */
 
    Usar en: navbar, drawer móvil, tarjetas destacadas, banners
    fijos. NO en superficies que necesitan contraste máximo sobre
@@ -4002,24 +4040,33 @@ button.icon-btn:hover > svg,
      Contraste AA medido sobre el papel real: ink sobre surface-2 sigue
      en ≥7:1 en el peor caso (subir 8 puntos el tinte no baja el ratio
      más de 0,4 porque el surface-2 ya era casi opaco). */
-  background-color: color-mix(in srgb, var(--surface) 64%, transparent);
-  /* Blur más suave (14px) + saturate: lo que traspasa el papel queda
-     difuminado, no nítido — así no compite con el texto. brightness
-     sube un pelo para que el papel no se ponga turbio al translucir. */
-  -webkit-backdrop-filter: blur(14px) saturate(135%) brightness(1.04);
-  backdrop-filter: blur(14px) saturate(135%) brightness(1.04);
-  /* Grano de papel MUY sutil — la textura fractal a opacidad baja para
-     que lea como fibra de papel sin tapar la translucidez. La capa de
-     ruido va al 4% (overlay) sobre el tinte, no al 100%. */
+  /* ── UNA sola capa de tinte, y sin cristal ────────────────────────
+     Aquí había lo mismo que en `.bg-veil`: un `background-color` al
+     64 % y ADEMÁS un degradado de 68 % a 58 % en `background-image`,
+     encima. Dos capas translúcidas se multiplican, no se promedian, de
+     modo que la "translucidez real (~72 %)" que anuncia la cabecera de
+     este bloque era en realidad del 88 % arriba y del 85 % abajo. El
+     comentario describía la primera capa; el navegador pintaba las dos.
+
+     Se funden en una, al 86 %, que es lo que se estaba viendo. El
+     grano se queda: es textura de fibra, no densidad fingida con
+     opacidad.
+
+     Y se va el `backdrop-filter`. La decisión «papel, no cristal» ya
+     lo había retirado de `.glass` y de `.liquid-glass` unos cientos de
+     líneas más arriba; `.tj-paper` se quedó fuera de aquella pasada y
+     era, con diferencia, la superficie más visible de las tres — la
+     barra de navegación y el cajón móvil la llevan. Un papel no
+     difumina lo que tiene detrás: lo tapa. Difuminar era además el
+     motivo del `will-change: backdrop-filter` del final del fichero,
+     que reservaba memoria de composición en cada lámina de la página. */
+  background-color: color-mix(in srgb, var(--surface) 86%, transparent);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E"),
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--surface) 68%, transparent) 0%,
-      color-mix(in srgb, var(--surface) 58%, transparent) 100%);
-  background-size: 180px 180px, 100% 100%;
-  background-position: 0 0, 0 0;
-  background-repeat: repeat, no-repeat;
-  background-blend-mode: overlay, normal;
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-blend-mode: overlay;
   /* Luz de borde superior — el reflejo de una lámina de papel
      catch-light bajo una lámpara. Sutil, marca el canto del material. */
   box-shadow:
@@ -4046,12 +4093,13 @@ button.icon-btn:hover > svg,
      filo de contacto a 1 px y una difusa larga— porque una sola sombra
      lee como pegatina. La difusa lleva el tono del gris, no negro puro:
      una sombra sobre chapa gris no es negra, es gris más oscuro. */
-  background-color: color-mix(in srgb, var(--raised) 78%, transparent);
+  /* Misma fusión que en oscuro: color plano 78 % + degradado 84→74 %
+     daban un 96 % arriba y un 94 % abajo. O sea, el papel claro ya era
+     prácticamente opaco y el degradado no aportaba nada que se viera:
+     sólo impedía saber cuál era el valor real. Queda en 95 %. */
+  background-color: color-mix(in srgb, var(--raised) 95%, transparent);
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.35'/%3E%3C/svg%3E"),
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--raised) 84%, transparent) 0%,
-      color-mix(in srgb, var(--surface) 74%, transparent) 100%);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.35'/%3E%3C/svg%3E");
   box-shadow:
     /* canto: luz arriba, contacto abajo */
     inset 0 1px 0 rgb(255 255 255 / 0.85),
@@ -4090,60 +4138,77 @@ button.icon-btn:hover > svg,
     0 1px 2px rgb(19 29 38 / 0.05),
     0 8px 24px -14px rgb(19 29 38 / 0.18);
 }
-/* Halo opcional — un resplandor del acento muy tenue en el borde
-   superior, para tarjetas destacadas. */
+/* ── Distintivo de lámina destacada ────────────────────────────────
+   Era un `radial-gradient` del acento al 8 % cayendo desde el borde
+   superior: un resplandor. En una plancha grabada no hay resplandores
+   —no hay fuente de luz que dibujar— y la densidad se construye con
+   líneas que se pueden contar, no con una nube de color que se
+   desvanece. Además el halo tenía que apoyarse en `border-radius:
+   inherit` y en una capa de composición propia para taparse las
+   costuras, y no se leía a menos de mirarlo aposta.
+
+   Lo sustituye lo que un grabado usa para señalar la lámina que
+   importa: un FILETE de acento en el canto superior, del grosor del
+   canto del sistema. Se ve, se cuenta, y dice lo mismo. */
 .tj-paper-glow::before {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
+  inset: 0 0 auto 0;
+  height: 2px;
   pointer-events: none;
-  background: radial-gradient(120% 60% at 50% 0%,
-    color-mix(in srgb, var(--accent-base, rgb(90 159 212)) 8%, transparent),
-    transparent 55%);
+  background-color: rgb(var(--accent-base) / 0.55);
 }
 
 /* ============================================================
-   VEIL REBALANCE — el atlas se ve más, en todas las secciones
+   AQUÍ ESTABA «VEIL REBALANCE», Y HACÍA LO CONTRARIO DE LO QUE DECÍA
    ============================================================
-   El usuario pidió que los fondos animados se vean "mucho mejor
-   en todos los menús secciones" y "super fluido sin cortes". El
-   velo de sección (.bg-veil) estaba al 88% en claro / 90% oscuro,
-   lo que tapaba casi todo el atlas grabado excepto en las pausas.
-   Se baja a 78% / 82% para que el fondo se intuya a través de
-   cada capítulo, no solo en las láminas. El contraste del texto
-   se preserva: el atlas es lápiz fino a ~0,6 de opacidad, así
-   que bajar el velo un 10% aporta como mucho un 4% de tinta bajo
-   el texto terciario — sigue por encima de 4,5:1 de AA. */
-:root[data-palette="clasico"] .bg-veil,
-:root[data-theme="light"][data-palette="clasico"] .bg-veil {
-  background-color: color-mix(in srgb, var(--bg) 82%, transparent);
-}
-:root[data-theme="light"][data-palette="clasico"] .bg-veil {
-  background-color: color-mix(in srgb, var(--bg) 78%, transparent);
-}
-:root:not([data-theme="light"])[data-palette="clasico"] .bg-veil {
-  background-color: color-mix(in srgb, var(--bg) 84%, transparent);
-}
+   Tres reglas que volvían a declarar `background-color` de `.bg-veil`
+   al 82 %, 78 % y 84 % para que "el fondo se intuya a través de cada
+   capítulo, no solo en las láminas".
+
+   No tocaban el `background-image`. Y el velo de la paleta `clasico`
+   —el bloque de arriba— pone el color EN LA IMAGEN, con
+   `background-color: transparent` escrito a propósito, porque así
+   consigue el desvanecido de 96 px por arriba y por abajo.
+
+   Así que las tres reglas no sustituían el velo: le añadían una
+   SEGUNDA capa por debajo. Y dos capas translúcidas no se promedian,
+   se multiplican:
+
+       imagen 88 %  ·  color 78 %
+       deja pasar = (1 − 0,88) × (1 − 0,78) = 0,12 × 0,22 = 0,026
+
+   El atlas asomaba al 2,6 % en el centro de cada sección, cuando la
+   regla que había debajo lo dejaba al 12 % y el "rebalance" pretendía
+   subirlo al 22 %. Medido en el navegador sobre el HTML construido:
+   `getComputedStyle` devolvía las dos capas vivas a la vez. En las
+   capturas se veía el síntoma sin saber la causa — el grabado se
+   distinguía en los márgenes, donde el degradado ya es transparente y
+   sólo queda el color plano, y desaparecía bajo la mancha de texto.
+
+   Se van las tres. El velo vuelve a ser UNA declaración, en el bloque
+   de la paleta, y su valor sube de 88 % a 84 %: es el que sostiene la
+   cuenta de contraste escrita ahí arriba —"el velo dejando pasar un
+   16 %"— que da 4,53:1 al texto terciario, por encima del 4,5:1 de AA.
+   Bajarlo más es lo que intentaba el rebalance, y es justo lo que esa
+   cuenta no admite: al 78 % el terciario se queda por debajo del
+   mínimo. El atlas pasa de verse al 2,6 % a verse al 16 %: seis veces
+   más, que era el objetivo. */
 
 /* ============================================================
-   FLUIDEZ — aceleración GPU para todos los materiales de cristal
+   FLUIDEZ — capa de composición para lo que de verdad se mueve
    ============================================================
-   Asegura que backdrop-filter y las transformaciones de scroll
-   no jitan: `will-change` solo en los elementos que de verdad se
-   mueven (navbar sticky, materiales con backdrop-filter), y
-   `translate-z(0)` para forzar capa de composición sin promotion
-   excesiva (que consumiría memoria). */
+   `translateZ(0)` promociona el elemento a su propia capa para que el
+   scroll no lo repinte. Iba acompañado de `will-change: backdrop-filter`,
+   que se retira junto con el propio `backdrop-filter` de `.tj-paper`
+   (ver «papel, no cristal»): pedirle al navegador que se prepare para
+   animar una propiedad que el elemento ya no tiene es reservar memoria
+   de composición a cambio de nada. */
 .tj-paper,
 .liquid-glass {
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
-  will-change: backdrop-filter;
 }
-/* Quitar will-change tras 2s sin interacción para liberar memoria
-   en dispositivos modestos — patrón recomendado por web.dev. La
-   regla es estática; el cleanup lo gestiona el navegador cuando el
-   elemento sale del viewport vía content-visibility. */
 
 /* ============================================================
    TJ-PING — pulso "live" para indicadores de estado en tiempo real

@@ -14,7 +14,6 @@ import { SkipLink } from "@/components/tj/SkipLink";
 import { BackgroundFX } from "@/components/tj/BackgroundFX";
 import { IntroSequence } from "@/components/tj/IntroSequence";
 import { SectionReveal } from "@/components/tj/SectionReveal";
-import { DecorFX } from "@/components/tj/DecorFX";
 import { SITE_URL } from "@/lib/site";
 import { SUPPORT_EMAIL } from "@/lib/forms";
 
@@ -376,13 +375,16 @@ export default function RootLayout({
         />
         <Providers>
           <div className="min-h-screen flex flex-col">
-            {/* Capa de efectos del HTML de referencia: fondo fijo con
-                rejilla interactiva, barra de progreso de scroll, intro
-                con loader, reveal por sección y spotlight de tarjetas. */}
+            {/* Capa de efectos: el atlas grabado del fondo, la intro con
+                loader y la revelación por sección.
+
+                Aquí iba también `DecorFX`, el foco que seguía al cursor.
+                Se retira: escuchaba `pointermove` en el documento entero de
+                las 155 páginas para buscar tarjetas con la clase `.tj-spot`,
+                y esa clase no la aplicaba ni un componente del sitio. */}
             <BackgroundFX />
             <IntroSequence />
             <SectionReveal />
-            <DecorFX />
             <SkipLink />
             <GlobalShortcuts />
             {/* La paleta ⌘K y la ayuda de atajos `?` se cargan bajo
