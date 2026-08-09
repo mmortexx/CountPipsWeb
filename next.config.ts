@@ -34,6 +34,16 @@ const nextConfig: NextConfig = {
   ...(BASE_PATH
     ? { basePath: BASE_PATH, assetPrefix: `${BASE_PATH}/` }
     : {}),
+  /* Aquí se probó `experimental.viewTransition`, la bandera que hace que
+     React envuelva cada navegación en `startViewTransition`. No sirve
+     con esta versión: el componente que necesita —
+     `unstable_ViewTransition`— sólo existe en las compilaciones
+     experimentales de React, y la 19.2.3 estable que trae el proyecto
+     no lo exporta ni en los tipos ni en el runtime (comprobado en
+     ambos). La bandera compila, pero no habilita nada.
+
+     La transición la dispara `TransicionPagina.tsx` llamando a la API
+     del navegador directamente, que sí está disponible. */
   env: {
     NEXT_PUBLIC_BASE_PATH: BASE_PATH,
     // Dirección pública del sitio (ver src/lib/site.ts). Se declara aquí

@@ -10,9 +10,9 @@ import { BackToTop } from "@/components/tj/BackToTop";
 import { GlobalShortcuts } from "@/components/tj/GlobalShortcuts";
 import { OverlayHost } from "@/components/tj/OverlayHost";
 import { ScrollToTop } from "@/components/tj/ScrollToTop";
+import { TransicionPagina } from "@/components/tj/TransicionPagina";
 import { SkipLink } from "@/components/tj/SkipLink";
 import { BackgroundFX } from "@/components/tj/BackgroundFX";
-import { LuzViva } from "@/components/tj/LuzViva";
 import { IntroSequence } from "@/components/tj/IntroSequence";
 import { SectionReveal } from "@/components/tj/SectionReveal";
 import { SITE_URL } from "@/lib/site";
@@ -286,10 +286,6 @@ export default function RootLayout({
                 las 155 páginas para buscar tarjetas con la clase `.tj-spot`,
                 y esa clase no la aplicaba ni un componente del sitio. */}
             <BackgroundFX />
-            {/* El único oyente de puntero del sitio: alimenta el foco
-                del fondo y el reflejo de las superficies con realce.
-                Ver el encabezado de LuzViva.tsx. */}
-            <LuzViva />
             <IntroSequence />
             <SectionReveal />
             <SkipLink />
@@ -304,8 +300,24 @@ export default function RootLayout({
                 browser back/forward automatically; this guarantees a
                 "start at the top" feel on forward navigations too. */}
             <ScrollToTop />
+            {/* Anima el paso de una página a otra con la API del
+                navegador. Ver el encabezado de TransicionPagina.tsx —
+                sobre todo la lista de lo que NO intercepta. */}
+            <TransicionPagina />
             <Navbar />
-            <main id="main-content" className="flex-1">
+            {/* `view-transition-name` en el contenido y sólo en él: la
+                barra y el pie son los mismos en las 155 páginas, y
+                hacerlos participar en la transición significaría fundir
+                un elemento consigo mismo — el resultado es un parpadeo
+                de lo que debería quedarse quieto. Lo que se mueve es lo
+                que cambia. Quien dispara la transición es
+                `TransicionPagina`; la coreografía está en
+                `::view-transition-*` (globals.css). */}
+            <main
+              id="main-content"
+              className="flex-1"
+              style={{ viewTransitionName: "pagina" }}
+            >
               {children}
             </main>
             <Footer />

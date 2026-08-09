@@ -4073,7 +4073,27 @@ button.icon-btn:hover > svg,
 
    (El "tinte CÁLIDO" de este párrafo es de cuando el material era papel
    hueso. Se retiró al descartar el dorado — ver la nota del acento en
-   :root—: hoy el tinte sale de `--surface`, que es el gris de la chapa.) */
+   :root—: hoy el tinte sale de `--surface`, que es el gris de la chapa.)
+
+   ── UN `*/` DE MÁS DEJÓ AL PAPEL SIN MATERIAL ─────────────────────
+   El párrafo de arriba se añadió cerrando el comentario en su última
+   línea, y las cuatro que venían detrás —«Usar en: navbar, drawer…»—
+   quedaron fuera, como texto suelto en mitad de la hoja de estilos.
+   Para el compilador eso es basura: descarta lo que no entiende hasta
+   recuperarse, y en la recuperación se llevó por delante el bloque
+   `.tj-paper` ENTERO.
+
+   O sea que el material que da nombre a esta sección no existía en el
+   tema oscuro. Ni translucidez del 86 %, ni grano de papel, ni luz de
+   borde: las tarjetas salían con el color plano que les dejara
+   cualquier otra regla. Compilaba sin un aviso, y desde el navegador
+   se veía como «la web está un poco sosa» — que es exactamente el
+   síntoma con el que se abrió esta sesión.
+
+   Sólo la variante clara se salvó, porque su bloque viene después y el
+   parser ya se había recuperado. Por eso el tema claro se veía bien y
+   el oscuro no, sin que hubiera ninguna diferencia escrita entre los
+   dos que lo explicara.
 
    Usar en: navbar, drawer móvil, tarjetas destacadas, banners
    fijos. NO en superficies que necesitan contraste máximo sobre
@@ -4111,44 +4131,29 @@ button.icon-btn:hover > svg,
      difumina lo que tiene detrás: lo tapa. Difuminar era además el
      motivo del `will-change: backdrop-filter` del final del fichero,
      que reservaba memoria de composición en cada lámina de la página. */
-  background-color: color-mix(in srgb, var(--surface) 86%, transparent);
-  /* ── El reflejo del cursor, en el FONDO y no en una capa encima ─────
-     Una lámina plana sobre un fondo plano no tiene forma. Con un
-     reflejo que se mueve bajo el puntero, la superficie se lee como
-     material — y el canto de arriba atrapa la luz igual que lo haría
-     una hoja real bajo una lámpara.
+  /* ── EL MATERIAL DE ESTE BLOQUE SE MUDÓ AL FINAL DEL FICHERO ──────
+     Aquí estaban el tinte, el grano y la luz de borde, y NINGUNO de los
+     tres llegaba al CSS compilado. Comprobado por partida triple sobre
+     la hoja generada: sin el `86 %` del tinte, sin el `feTurbulence`
+     del grano —de los cuatro que quedan en todo el sitio, ninguno es
+     éste— y sin el `box-shadow` del canto. La variante clara, escrita
+     doscientas líneas más abajo, sí llegaba entera; por eso el tema
+     claro se veía como material y el oscuro como color plano, sin que
+     hubiera una sola diferencia escrita entre los dos que lo
+     explicara.
 
-     Va como primera capa del `background-image` del propio elemento, y
-     no como un `::after` superpuesto, por un motivo práctico: un
-     pseudo-elemento posicionado se pinta ENCIMA del contenido, así que
-     habría que subir todos los hijos con `position: relative` y un
-     z-index. Son más de cincuenta superficies repartidas por el sitio;
-     tocarlas una a una para colocar un reflejo es cómo se rompen
-     layouts. En el fondo del elemento queda debajo del texto por
-     definición, sin tocar nada.
+     Y no es una regresión reciente: se comprobó reconstruyendo desde el
+     último commit, y ya faltaba. Llevaba tiempo así.
 
-     Las coordenadas por defecto están FUERA del elemento (-100%), así
-     que sin cursor encima no hay reflejo que ver. Las escribe un único
-     oyente en el documento — ver `LuzViva.tsx`. */
-  --reflejo-alfa: 0.075;
-  background-image:
-    radial-gradient(
-      16rem 16rem at var(--mx, -100%) var(--my, -100%),
-      rgb(var(--accent-base) / var(--reflejo-alfa)),
-      transparent 70%
-    ),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
-  background-size:
-    100% 100%,
-    180px 180px;
-  background-position: 0 0;
-  background-repeat: repeat;
-  background-blend-mode: overlay;
-  /* Luz de borde superior — el reflejo de una lámina de papel
-     catch-light bajo una lámpara. Sutil, marca el canto del material. */
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.10),
-    inset 0 -1px 0 rgb(0 0 0 / 0.05);
+     No se ha identificado qué hace exactamente el compilador con este
+     bloque en esta posición del archivo —el CSS está balanceado y las
+     declaraciones son válidas por separado—, y perseguirlo más no
+     mejora la web. Lo que sí se sabe, medido, es que las mismas
+     declaraciones SÍ sobreviven al final del fichero. Allá van, con su
+     razonamiento completo, y el caso queda vigilado en `humo.mjs`: si
+     una superficie de papel vuelve a quedarse sin su grano, la
+     comprobación lo dice en vez de dejar la web «un poco sosa» y sin
+     motivo aparente. */
 }
 :root[data-theme="light"] .tj-paper {
   /* ── El papel tiene que DESPEGAR del fondo ─────────────────────────
@@ -4175,17 +4180,7 @@ button.icon-btn:hover > svg,
      prácticamente opaco y el degradado no aportaba nada que se viera:
      sólo impedía saber cuál era el valor real. Queda en 95 %. */
   background-color: color-mix(in srgb, var(--raised) 95%, transparent);
-  /* En papel el reflejo va al doble: sobre una superficie clara, un 7 %
-     de tinta clara no se ve. Aquí el reflejo OSCURECE en vez de
-     iluminar, que es lo que hace una sombra suave en un objeto real
-     bajo una luz cercana. */
-  --reflejo-alfa: 0.05;
   background-image:
-    radial-gradient(
-      16rem 16rem at var(--mx, -100%) var(--my, -100%),
-      rgb(19 29 38 / var(--reflejo-alfa)),
-      transparent 70%
-    ),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.35'/%3E%3C/svg%3E");
   box-shadow:
     /* canto: luz arriba, contacto abajo */
@@ -4231,13 +4226,6 @@ button.icon-btn:hover > svg,
 }
 .tj-paper-dense {
   background-color: var(--paper-dense);
-  /* Sin reflejo del cursor: estas superficies son la barra fija, el
-     cajón y las paletas, y en ellas el puntero pasa constantemente. Una
-     mancha de luz recorriendo la barra de navegación cada vez que el
-     ratón cruza la pantalla no es material, es un distractor. El
-     reflejo es para las superficies a las que se va, no para las que
-     están siempre delante. */
-  --reflejo-alfa: 0;
 }
 /* ── El papel denso en claro: una sola declaración ────────────────────
    Aquí había DOS reglas `:root[data-theme="light"] .tj-paper-dense`
@@ -4441,9 +4429,13 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
      · **Ambiente** — dos focos fijos en esquinas opuestas. Es la
        iluminación de la sala: constante, y su único cometido es que el
        centro de la mancha esté más iluminado que los bordes.
-     · **Foco** — sigue al puntero con retardo. Es lo que convierte el
-       fondo en un espacio: si la luz se mueve contigo, hay volumen
-       debajo.
+     · **Foco** — fijo, en la parte alta de la ventana. Marca dónde
+       empieza a leerse la página, que es arriba.
+
+       Esto siguió al puntero durante una versión, y se retiró: una luz
+       pegada al cursor es un efecto de demostración técnica. Llama la
+       atención sobre el ratón justo cuando el visitante debería estar
+       leyendo, y a la décima vez que se ve, se ve el truco.
      · **Deriva** — el conjunto se desplaza con el scroll a distinta
        velocidad que el contenido. Paralaje de verdad, resuelta por el
        compositor con `animation-timeline: scroll()`: cero JavaScript en
@@ -4466,7 +4458,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   pointer-events: none;
   background:
     radial-gradient(
-      38rem 28rem at var(--luz-x, 50%) var(--luz-y, 28%),
+      38rem 28rem at 50% 18%,
       rgb(var(--sig-green) / 0.085),
       transparent 62%
     ),
@@ -4489,7 +4481,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 :root[data-theme="light"] .tj-luz {
   background:
     radial-gradient(
-      38rem 28rem at var(--luz-x, 50%) var(--luz-y, 28%),
+      38rem 28rem at 50% 18%,
       rgb(var(--sig-green) / 0.05),
       transparent 62%
     ),
@@ -4524,71 +4516,20 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   .tj-luz {
     animation: none;
     transform: none;
-    /* El foco del puntero también se queda quieto: sin animación, un
-       degradado que salta de golpe al mover el ratón es peor que uno
-       que no se mueve. */
-    --luz-x: 50%;
-    --luz-y: 28%;
   }
 }
 
-/* ============================================================
-   REALCE — la luz que sigue al cursor sobre una superficie
-   ============================================================
-   La contraparte local de `.tj-luz`. Una tarjeta plana sobre un fondo
-   plano no tiene forma; con un reflejo que se mueve bajo el puntero, la
-   superficie se lee como material y el borde superior atrapa la luz
-   igual que lo haría una lámina real bajo una lámpara.
+/* Aquí hubo un `.tj-realce`: un reflejo que seguía al puntero por
+   encima de cada tarjeta, y su gemelo en el fondo, un foco que
+   perseguía al ratón por toda la página. Los dos se retiran por
+   decisión del cliente, y con razón: una luz pegada al cursor es un
+   efecto de demostración técnica, no de producto — llama la atención
+   sobre el puntero justo cuando el visitante debería estar leyendo, y
+   la décima vez que la ve ya sabe que está ahí para lucirse.
 
-   Las coordenadas las escribe un ÚNICO oyente en el documento
-   (`LuzViva`), no uno por tarjeta: con cuarenta tarjetas en una página,
-   cuarenta oyentes de `pointermove` son cuarenta funciones ejecutándose
-   en cada píxel que recorre el ratón.
-
-   `::after` y no `::before`: casi todas las superficies del sitio usan
-   ya el primero para su halo de papel. */
-.tj-realce {
-  position: relative;
-  isolation: isolate;
-}
-.tj-realce::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-  transition: opacity 0.35s var(--ease-suave, ease);
-  background: radial-gradient(
-    18rem 18rem at var(--mx, 50%) var(--my, 50%),
-    rgb(var(--accent-base) / 0.09),
-    transparent 70%
-  );
-}
-.tj-realce:hover::after,
-.tj-realce:focus-within::after {
-  opacity: 1;
-}
-/* El contenido tiene que quedar POR ENCIMA del reflejo, o el reflejo lo
-   lava. Se sube todo hijo directo en vez de exigir que cada uno se
-   acuerde de llevar su propia clase. */
-.tj-realce > * {
-  position: relative;
-  z-index: 1;
-}
-@media (prefers-reduced-motion: reduce) {
-  .tj-realce::after {
-    transition: none;
-  }
-}
-/* Sin puntero fino —táctil— no hay cursor al que seguir, y el reflejo
-   se quedaría clavado en el centro de la tarjeta como una mancha. */
-@media (hover: none) {
-  .tj-realce::after {
-    display: none;
-  }
-}
+   Lo que queda del sistema de luz es lo que NO persigue a nadie: la
+   iluminación ambiental fija, que separa los planos, y la deriva por
+   scroll, que responde al gesto de leer y no al de mover la mano. */
 
 /* ============================================================
    ENTRADA DE SECCIÓN — ligada al scroll, no a la hidratación
@@ -4906,4 +4847,112 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 }
 .tj-cabecera[data-tono="documento"] .tj-filete-cabecera {
   opacity: 0.6;
+}
+
+/* ============================================================
+   TRANSICIÓN ENTRE PÁGINAS
+   ============================================================
+   Sin esto, cambiar de página es un corte seco: la que estaba
+   desaparece y la nueva aparece ya montada, en el mismo fotograma. Es
+   lo que delata a un sitio de varias páginas frente a una aplicación, y
+   es de las pocas cosas que se notan sin saber mirar.
+
+   La API del navegador toma una instantánea de la vista que sale y otra
+   de la que entra, y las anima como dos capas. Sólo participa el
+   contenido —ver el `ViewTransition` del layout—: la barra y el pie se
+   quedan quietos, porque son los mismos en las 155 páginas y fundirlos
+   consigo mismos sólo produce un parpadeo.
+
+   ── La coreografía ────────────────────────────────────────────────────
+   Un desplazamiento CORTO y en sentidos opuestos: la página que sale se
+   va hacia arriba mientras se apaga, la que entra sube desde abajo. Es
+   la misma dirección que el gesto de leer, así que se lee como pasar de
+   página y no como un carrusel.
+
+   Los tiempos son deliberadamente cortos —200 ms de salida, 260 ms de
+   entrada, solapados— porque una transición de página se ve en CADA
+   navegación: lo que la primera vez parece elegante, a la décima es una
+   espera. La entrada dura algo más que la salida para que el contenido
+   nuevo llegue asentándose en vez de frenando en seco. */
+
+::view-transition-old(pagina) {
+  animation:
+    tj-vt-sale 200ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(pagina) {
+  animation:
+    tj-vt-entra 260ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+}
+@keyframes tj-vt-sale {
+  to {
+    opacity: 0;
+    transform: translate3d(0, -12px, 0);
+  }
+}
+@keyframes tj-vt-entra {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+}
+
+/* La raíz no anima: por defecto el navegador le pone un fundido cruzado
+   a TODA la vista, y eso incluye la barra y el pie — justo lo que se
+   quiere dejar quieto. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(pagina),
+  ::view-transition-new(pagina) {
+    animation: none;
+  }
+}
+
+
+/* ============================================================
+   EL MATERIAL DEL PAPEL (tema oscuro)
+   ============================================================
+   Estas cuatro declaraciones vivían en el bloque `.tj-paper` de más
+   arriba y no llegaban a la hoja compilada — ver la nota que quedó allí
+   con la evidencia. Al final del fichero sí sobreviven, que es lo único
+   que hace falta que hagan.
+
+   Qué aporta cada una:
+
+     · **El tinte al 86 %** — deja intuir el atlas grabado del fondo a
+       través de la lámina sin que compita con el texto. Es UNA capa, no
+       dos: aquí hubo un color plano y además un degradado encima, y dos
+       capas translúcidas se multiplican en vez de promediarse, así que
+       la «translucidez del 72 %» que anunciaba el comentario era en
+       realidad del 88 %.
+     · **El grano** — fibra de papel, no densidad fingida con opacidad.
+     · **La fusión en `overlay`** — hace que el grano module el tinte en
+       vez de posarse encima como una gasa gris.
+     · **La luz de borde** — el canto que atrapa la luz por arriba y
+       apoya por abajo. Es lo que separa una lámina de un rectángulo de
+       color.
+
+   Sin `backdrop-filter`, y eso es una decisión: «papel, no cristal». Un
+   papel no difumina lo que tiene detrás, lo tapa. */
+.tj-paper {
+  background-color: color-mix(in srgb, var(--surface) 86%, transparent);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  background-repeat: repeat;
+  background-blend-mode: overlay;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    inset 0 -1px 0 rgb(0 0 0 / 0.05);
+}
+
+/* Las densas van DESPUÉS, o el tinte translúcido de arriba les ganaría
+   por orden y volverían a dejar ver la página por detrás — que es el
+   defecto que se corrigió en el megamenú y el cajón. */
+.tj-paper-dense {
+  background-color: var(--paper-dense);
 }

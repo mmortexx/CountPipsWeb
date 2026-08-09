@@ -206,6 +206,10 @@ const idiomasRevisados = [];
 const vueltasArriba = [];
 /** Ídem para el cajón de navegación: dónde acabó y con qué opacidad. */
 const cajonesVistos = [];
+/** Ídem para el material del papel: qué tinte llegó de verdad al
+    elemento. «Pasó» sin decir qué se miró es lo que dejó que este
+    defecto viviera tanto tiempo. */
+const papelesVistos = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -478,6 +482,34 @@ for (const pantalla of PANTALLAS) {
             return out.sort((a, b) => a.tam - b.tam).slice(0, 2);
           })(),
 
+          /* ── ¿EL PAPEL LLEGÓ A LA HOJA COMPILADA? ───────────────────
+             Una declaración CSS que el compilador descarta no avisa: no
+             hay error, no hay traza, y la web simplemente se ve peor sin
+             que nada explique por qué.
+
+             Pasó, y estuvo pasando bastante tiempo: el bloque de
+             `.tj-paper` con el tinte translúcido, el grano de fibra y la
+             luz de borde no llegaba al CSS del tema oscuro. Las
+             superficies salían con un color plano — el aspecto de «esto
+             está un poco soso» que abrió la revisión, sin una sola línea
+             de código que se pudiera señalar. La variante clara sí
+             llegaba, así que ni siquiera había una diferencia escrita
+             entre los dos temas que apuntara al problema.
+
+             Se comprueba en el ESTILO COMPUTADO y no leyendo el CSS
+             generado: lo que importa no es que la regla exista en algún
+             fichero, sino que le llegue al elemento. */
+          papel: (() => {
+            const el = document.querySelector(".tj-paper:not(.tj-paper-dense)");
+            if (!el) return null;
+            const cs = getComputedStyle(el);
+            return {
+              grano: cs.backgroundImage !== "none",
+              tinte: cs.backgroundColor,
+              canto: cs.boxShadow !== "none",
+            };
+          })(),
+
           /* ── EL IDIOMA DE LO QUE SE LEE Y DE LO QUE SE DECLARA ───────
              Dos textos distintos y los dos importan: el que ve la
              persona y el que ve el buscador. El segundo estuvo mal en
@@ -524,6 +556,22 @@ for (const pantalla of PANTALLAS) {
         );
       }
       if (!informe.main) avisos.push(`${etiqueta}: sin elemento <main>`);
+
+      if (pantalla.nombre === "escritorio") {
+        if (!informe.papel) {
+          avisos.push(`${etiqueta}: ninguna superficie de papel que comprobar`);
+        } else {
+          papelesVistos.push(`${ruta} tinte ${informe.papel.tinte}`);
+          if (!informe.papel.grano) {
+            fallos.push(
+              `${etiqueta}: el papel perdió su grano — la declaración no llega al elemento`
+            );
+          }
+          if (!informe.papel.canto) {
+            fallos.push(`${etiqueta}: el papel perdió su luz de borde`);
+          }
+        }
+      }
 
       /* ── EL CAJÓN LATERAL, ABIERTO ─────────────────────────────────
          Todo lo que se comprueba arriba mira la página en reposo, y el
@@ -891,6 +939,12 @@ if (idiomasRevisados.length) {
   );
 } else {
   console.warn("  aviso  ninguna página inglesa revisada: el detector de español no está mirando nada");
+}
+
+if (papelesVistos.length) {
+  console.log(`[humo] papel — grano y canto presentes en ${papelesVistos.length} rutas; ${papelesVistos[0]}`);
+} else {
+  console.warn("  aviso  no se comprobó el material del papel en ninguna ruta");
 }
 
 if (cajonesVistos.length) {
