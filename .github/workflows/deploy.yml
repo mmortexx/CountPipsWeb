@@ -147,6 +147,13 @@ jobs:
       - name: Comprobación de humo en navegador
         run: node scripts/humo.mjs --serve out
 
+      # Que cada sección dibuje un fondo distinto no lo vigila ninguna otra
+      # cosa: `tests/atlas.test.ts` comprueba el guion declarado, y esto
+      # comprueba lo que de verdad acaba en el canvas. Sin este paso, la
+      # comprobación existiría y no protegería nada.
+      - name: Comprobación del fondo por sección
+        run: node scripts/fondos.mjs --serve out
+
       - name: Disable Jekyll + add nojekyll
         # GitHub Pages procesa el contenido con Jekyll por defecto.
         # Jekyll ignora directorios que empiezan por `_`, lo cual
