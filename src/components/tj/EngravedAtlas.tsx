@@ -294,6 +294,28 @@ function graphite(
   ctx.restore();
 }
 
+/**
+ * La familia serif que use el tema en este momento, en el formato que
+ * pide `ctx.font`.
+ *
+ * El canvas no hereda CSS: hay que darle una cadena de fuente completa. Si
+ * esa cadena se escribe a mano, el día que cambie la tipografía del sitio
+ * los rótulos del fondo se quedan en la vieja —o en el respaldo— y nada
+ * avisa, porque no hay compilador ni prueba que mire dentro de un
+ * `ctx.font`. Leerla del mismo token que usa el resto de la página
+ * (`--font-serif`) es lo que mantiene las dos cosas juntas.
+ */
+let serifCache = "";
+function serifDelTema(): string {
+  if (serifCache) return serifCache;
+  const v =
+    typeof getComputedStyle === "function"
+      ? getComputedStyle(document.documentElement).getPropertyValue("--font-serif").trim()
+      : "";
+  serifCache = v || 'Georgia, "Times New Roman", serif';
+  return serifCache;
+}
+
 /** Rótulo grabado: versalitas espaciadas, como en una plancha. */
 function label(
   ctx: Ctx,
@@ -310,7 +332,13 @@ function label(
   const s = text.slice(0, shown);
   ctx.save();
   ctx.globalAlpha *= alpha;
-  ctx.font = `${size}px "Instrument Serif", Georgia, "Times New Roman", serif`;
+  /* La serif del sitio, leída del tema — no escrita a mano.
+     Aquí estaba clavado «Instrument Serif», y al cambiar la serif de los
+     titulares esta cadena se quedó pidiendo una fuente que ya no se
+     carga: los rótulos grabados caían en Georgia mientras los titulares
+     de la página salían en Newsreader. Un `ctx.font` no lo ve ni el
+     compilador ni una prueba de unidad. */
+  ctx.font = `${size}px ${serifDelTema()}`;
   ctx.textAlign = align;
   ctx.textBaseline = "middle";
   /* Letra a letra, con su microdesvío: una cadena de golpe sale

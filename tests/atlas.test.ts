@@ -104,11 +104,28 @@ describe("el atlas del fondo", () => {
        bajo /en. Si el normalizador no los quita, la mitad del sitio se
        queda sin figura sin que nada avise. */
     const equivalentes: Array<[string, string]> = [
+      /* LOS DOS PRIMEROS SON LOS QUE FALLARON DE VERDAD. La versión
+         anterior de esta prueba solo listaba rutas que contenían
+         `/features`, `/traders` o `/glosario`, que era justo lo que el
+         normalizador sabía encontrar: comprobaba lo que no fallaba. La
+         portada inglesa se quedó sin figura y sin sus cuatro láminas, y
+         estas pruebas pasaron en verde. */
+      ["/en", "/"],
+      ["/en/", "/"],
+      ["/en/pricing", "/pricing"],
+      ["/en/beta", "/beta"],
       ["/en/features", "/features"],
-      ["/CountPipsWeb/features/metricas", "/features/metricas"],
       ["/en/traders/manual/", "/traders/manual"],
-      ["/CountPipsWeb/en/glosario/drawdown", "/glosario/drawdown"],
+      ["/en/glosario/drawdown", "/glosario/drawdown"],
+      ["/en/privacidad", "/privacidad"],
     ];
+    /* El subdirectorio de despliegue NO se prueba aquí a propósito:
+       `usePathname()` de Next no incluye el `basePath`, así que una ruta
+       con él delante no llega nunca a esta función. El recorte existe
+       igualmente en `normalizeRoute`, atado al valor real de
+       NEXT_PUBLIC_BASE_PATH, pero probarlo con la variable vacía —como
+       está en local y en las pruebas— comprobaría lo contrario de lo que
+       ocurre en producción. */
     for (const [conPrefijo, limpia] of equivalentes) {
       expect(
         platesForRoute(conPrefijo),

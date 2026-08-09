@@ -3590,8 +3590,14 @@ button.icon-btn:hover > svg,
   background: #0c1116;
   line-height: 0;
 }
+.tj-lamina-ventana {
+  position: relative;
+}
 .tj-lamina-ventana img {
   display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: auto;
 }

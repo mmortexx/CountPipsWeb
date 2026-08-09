@@ -51,13 +51,28 @@ const ALTO_NATIVO = 856;
 const BARRA_TITULO_PX = 46;
 
 /**
+ * Alto de la barra de estado inferior, que también se corta.
+ *
+ * Ahí pone «✓ Compilación de desarrollo». El recorte de arriba quitaba con
+ * mucho cuidado el nombre anterior al renombrado y dejaba abajo, a la
+ * vista en la portada, el distintivo de una compilación de desarrollo. Se
+ * corta por el mismo motivo: es cromo de la ventana, no información del
+ * producto.
+ */
+const BARRA_ESTADO_PX = 22;
+
+/**
  * OJO CON LA UNIDAD: `margin-top` en porcentaje se resuelve contra el ANCHO
  * del contenedor, nunca contra el alto — es así en la especificación, y es
  * el error que hace que un recorte "del 5 %" se coma el doble de lo que
  * parece en una imagen apaisada. Aquí se convierte a porcentaje de ancho
  * multiplicando por la proporción de la imagen.
  */
-const CORTE_PCT_ANCHO = (BARRA_TITULO_PX / ALTO_NATIVO) * (ALTO_NATIVO / ANCHO_NATIVO) * 100;
+const CORTE_PCT_ANCHO = (BARRA_TITULO_PX / ANCHO_NATIVO) * 100;
+
+/** Alto visible tras cortar arriba y abajo, como fracción del ancho. */
+const ALTO_UTIL_PCT_ANCHO =
+  ((ALTO_NATIVO - BARRA_TITULO_PX - BARRA_ESTADO_PX) / ANCHO_NATIVO) * 100;
 
 export type LaminaProducto = {
   /** Nombre del fichero en `public/img/`, sin ruta. */
@@ -88,7 +103,13 @@ export function ProductPlate({
   return (
     <figure className="tj-lamina-producto">
       <div className="tj-lamina-marco">
-        <div className="tj-lamina-ventana">
+        <div
+          className="tj-lamina-ventana"
+          /* El alto se fija para que el corte de abajo tenga por dónde
+             cortar: sin él, el contenedor crece con la imagen y la barra
+             de estado vuelve a verse. */
+          style={{ paddingBottom: `${ALTO_UTIL_PCT_ANCHO}%`, height: 0 }}
+        >
           {/* `img` y no `next/image`: el build es `output: "export"` con
               `images.unoptimized`, así que next/image no optimizaría nada
               y sí añadiría envoltorio. */}
@@ -106,8 +127,13 @@ export function ProductPlate({
       </div>
       <figcaption className="tj-lamina-pie">
         <div aria-hidden className="tj-interlude-rule" />
+        {/* NO lleva número de lámina. Lo llevaba, y la portada acababa con
+            dos «Lámina I»: ésta y la primera figura grabada del atlas, que
+            numera aparte. El rótulo dice de qué serie es —una pantalla del
+            programa, no una figura dibujada—, que además es la distinción
+            que importa aquí: una es la cosa y la otra su ilustración. */}
         <span className="tj-lamina-num">
-          {es ? `Lámina ${roman}` : `Plate ${roman}`}
+          {es ? `Pantalla ${roman}` : `Screen ${roman}`}
         </span>
         <h3 className="tj-lamina-titulo">{es ? tituloEs : tituloEn}</h3>
         <p className="tj-lamina-nota">{es ? notaEs : notaEn}</p>

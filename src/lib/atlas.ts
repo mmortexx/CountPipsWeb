@@ -1,3 +1,5 @@
+import { sinPrefijoEn } from "@/lib/locale";
+
 /**
  * El guion del atlas: qué figura graba cada sección y qué dice su pie.
  *
@@ -335,20 +337,40 @@ const ROMAN = ["I", "II", "III", "IV", "V"];
 export function normalizeRoute(pathname: string): string {
   let p = (pathname || "/").replace(/\/+$/, "");
 
-  /* Fuera el prefijo de idioma y el subdirectorio de despliegue, en ese
-     orden: `/CountPipsWeb/en/glosario/drawdown` tiene que buscarse como
-     `/glosario/drawdown` o el inglés entero se quedaría sin figura. */
-  const anclas = ["/features", "/traders", "/glosario", "/herramientas"];
-  for (const ancla of anclas) {
-    const cut = p.indexOf(ancla);
-    if (cut > 0) {
-      p = p.slice(cut);
-      break;
-    }
-  }
-  if (p && !ATLAS_ROUTES[p] && !p.startsWith("/glosario") && !p.startsWith("/herramientas")) {
-    const last = "/" + p.split("/").filter(Boolean).pop();
-    if (ATLAS_ROUTES[last] || RUTAS_SIN_LAMINA.has(last)) p = last;
+  /* ── PRIMERO el subdirectorio de despliegue, DESPUÉS el idioma ──────
+     En producción el sitio cuelga de `/CountPipsWeb` y el inglés vive bajo
+     `/en`, así que la ruta puede llegar como `/CountPipsWeb/en/pricing`.
+
+     Esto se resolvía buscando una de cuatro "anclas" (`/features`,
+     `/traders`, `/glosario`, `/herramientas`) dentro de la ruta, y ese
+     atajo dejaba fuera todo lo que no las contuviera: `/en` —la portada
+     inglesa entera— se quedaba sin figura y sin sus cuatro láminas.
+
+     Ahora se recorta por delante hasta dar con algo que el atlas conozca,
+     que no depende de qué secciones existan hoy, y el prefijo de idioma
+     se quita con `sinPrefijoEn`, que es la función que ya usa el resto del
+     sitio para lo mismo. */
+  const conocida = (r: string) =>
+    Boolean(ATLAS_ROUTES[r]) ||
+    RUTAS_SIN_LAMINA.has(r) ||
+    r.startsWith("/glosario/") ||
+    r.startsWith("/herramientas/");
+
+  /* El subdirectorio de despliegue se quita por su nombre real, no
+     adivinando: es el mismo valor que usa `asset()` para los ficheros.
+     Adivinarlo —soltando segmentos hasta que algo casara— haría que
+     cualquier ruta desconocida acabara cayendo en la portada, que es el
+     fallo que este módulo venía a arreglar. */
+  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  if (base && (p === base || p.startsWith(`${base}/`))) p = p.slice(base.length) || "/";
+
+  p = sinPrefijoEn(p) || "/";
+
+  if (p !== "/" && !conocida(p)) {
+    /* Última oportunidad: quedarse con el último segmento. Cubre rutas
+       anidadas que sí existen como sección (`/algo/pricing`). */
+    const last = "/" + (p.split("/").filter(Boolean).pop() ?? "");
+    if (conocida(last)) p = last;
   }
   return p || "/";
 }
