@@ -4176,6 +4176,65 @@ button.icon-btn:hover > svg,
     0 1px 2px rgb(19 29 38 / 0.05),
     0 8px 24px -14px rgb(19 29 38 / 0.18);
 }
+/* ============================================================
+   EL SELLO DE «PREVISTO»
+   ============================================================
+   La única forma que tiene este sitio de decir, en dibujo, que algo
+   todavía no existe. El razonamiento está en `SelloPrevisto.tsx`; aquí
+   sólo el trazo.
+
+   El borde es DISCONTINUO porque en dibujo técnico la línea de trazos
+   significa «previsto, no ejecutado» — la misma convención que usa la
+   lámina `blueprint` del acceso anticipado. El guion mide 5 px y el hueco
+   3: por debajo de eso el trazo se lee como una línea continua sucia a
+   tamaños pequeños, y por encima parece un borde roto.
+
+   Sin rotación, sin color de alerta y sin bajar la opacidad de lo que
+   envuelve: lo previsto no está deshabilitado, sólo no ha llegado. */
+.sello-previsto {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: 4px 9px;
+  border: 1px dashed rgb(var(--divider) / 0.34);
+  border-radius: 2px;
+  /* Sin fondo: el marco tiene que dejar ver el papel o el grabado que hay
+     detrás, igual que la línea de trazos de un plano no tapa la hoja. */
+  background: none;
+  color: var(--ink-3);
+  vertical-align: middle;
+}
+.sello-previsto-texto {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.sello-previsto-detalle {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+/* La misma línea de trazos, como marco de un bloque entero: el precio, una
+   tarjeta, una fila de estado. */
+.marco-previsto {
+  border: 1px dashed rgb(var(--divider) / 0.28);
+  border-radius: 2px;
+}
+@media (prefers-contrast: more) {
+  /* Un trazo discontinuo al 34 % puede desaparecer en pantallas con poco
+     contraste o para quien pide más. El SIGNIFICADO va en que sea
+     discontinuo, no en que sea tenue. */
+  .sello-previsto { border-color: rgb(var(--divider) / 0.6); }
+  .marco-previsto { border-color: rgb(var(--divider) / 0.5); }
+}
+
 /* ── Distintivo de lámina destacada ────────────────────────────────
    Era un `radial-gradient` del acento al 8 % cayendo desde el borde
    superior: un resplandor. En una plancha grabada no hay resplandores

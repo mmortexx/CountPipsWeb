@@ -5,6 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { Chip } from "@/components/tj/Chip";
+import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 
 /**
  * Changelog & Roadmap — vertical timeline that shows the product is
@@ -194,18 +195,33 @@ export function Changelog() {
                           >
                             <Chip
                               variant={isPast ? "accent" : isPilot ? "accent" : "neutral"}
-                              className={
-                                isPast
-                                  ? ""
-                                  : "border-dashed border-[rgb(var(--divider)/0.22)] text-tertiary"
-                              }
+                              /* El borde discontinuo se va DE AQUÍ: el sello
+                                 que hay justo al lado ya dice que la entrega
+                                 está prevista, y decirlo dos veces con la
+                                 misma línea de trazos no lo dice más fuerte,
+                                 sólo hace que el número de versión parezca
+                                 él mismo provisional. La versión es firme;
+                                 lo previsto es la fecha. */
+                              className={isPast ? "" : "text-tertiary"}
                             >
                               <span className="t-h4 tnum">{entry.version}</span>
                             </Chip>
+                            {/* El chip ámbar de «Futuro» era el tercer
+                                dialecto del sitio para decir lo mismo, y
+                                encima con color de aviso: una entrega
+                                planificada no es una advertencia. Pasa al
+                                sello, que es la misma pieza que marca el
+                                precio previsto y las filas pendientes del
+                                estado. El acceso anticipado SÍ conserva su
+                                chip: eso no está previsto, está abierto. */}
                             {!isPast && (
-                              <Chip variant="warn">
-                                {isPilot ? (es ? "Acceso anticipado" : "Early access") : es ? "Futuro" : "Future"}
-                              </Chip>
+                              isPilot ? (
+                                <Chip variant="accent">
+                                  {es ? "Acceso anticipado" : "Early access"}
+                                </Chip>
+                              ) : (
+                                <SelloPrevisto es="Previsto" en="Planned" />
+                              )
                             )}
                           </div>
 

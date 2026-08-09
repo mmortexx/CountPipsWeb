@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { MagneticButton } from "@/components/tj/MagneticButton";
+import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 
 type Plan = {
   id: "core" | "pro";
@@ -374,26 +375,35 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         <span className="text-5xl md:text-6xl font-bold text-primary tnum leading-[0.95]">
           {plan.price}
         </span>
-        <span className="ml-2 text-sm text-tertiary whitespace-nowrap">
-          / {es ? "precio previsto" : "planned price"}
-        </span>
       </div>
+
+      {/* El «/ precio previsto» era una nota al pie de la cifra, en gris
+          terciario, del tamaño de un pie de foto: la letra pequeña de lo
+          único que el visitante ha venido a leer. Pasa a ser el sello, que
+          es la misma pieza que marca todo lo demás que aún no existe en
+          este sitio — y que dice también CUÁNDO deja de estar previsto, que
+          es la pregunta que sigue. */}
+      <SelloPrevisto
+        className="mt-3"
+        es="Precio previsto"
+        en="Planned price"
+        detalleEs="se fija con la entrega comercial"
+        detalleEn="set at commercial launch"
+      />
 
       <div className="divider-grad my-6" />
 
-      {/* Premium accent rail — only on the Pro card. A 2 px tall gradient
-          bar pinned to the top inside edge of the card, sitting just above
-          the liquid-glass fill. Reads as a "selected / recommended" rail
-          (think Stripe's highlighted pricing tier) and reinforces the
-          gradient-border + glow without adding visual noise. */}
+      {/* Filete de acento en el canto superior de la tarjeta Pro. Era un
+          degradado de 90° que se desvanecía por los dos extremos y con las
+          esquinas redondeadas del todo (`rounded-full`): dos cosas que esta
+          dirección no hace — la densidad no se construye con transiciones y
+          el canto del sistema es de 2 px. Un filete tiene principio y
+          final, como el de una tabla. */}
       {isPro && (
         <div
           aria-hidden="true"
-          className="absolute top-0 left-6 right-6 h-[2px] rounded-full pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.85) 30%, rgb(var(--accent-hover) / 0.95) 50%, rgb(var(--accent-base) / 0.85) 70%, transparent 100%)",
-          }}
+          className="absolute top-0 left-6 right-6 h-[2px] pointer-events-none"
+          style={{ backgroundColor: "rgb(var(--accent-base) / 0.85)" }}
         />
       )}
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, Circle, Clock3 } from "lucide-react";
+import { Check, Clock3 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 
 export function ProductStatus() {
   const { lang } = useLang();
@@ -9,7 +10,12 @@ export function ProductStatus() {
   const rows = [
     { icon: Check, tone: "text-[rgb(var(--pnl-pos))]", title: es ? "Listo para probar" : "Ready to test", text: es ? "Demo navegable, métricas y diario local." : "Clickable demo, metrics and local journal." },
     { icon: Clock3, tone: "text-[rgb(var(--accent-base))]", title: es ? "Piloto privado" : "Private pilot", text: es ? "Flujos de disciplina, riesgo y prop firm con usuarios invitados." : "Discipline, risk and prop-firm workflows with invited users." },
-    { icon: Circle, tone: "text-tertiary", title: es ? "Apertura comercial" : "Commercial launch", text: es ? "Entrega, licencia, soporte y precios definitivos." : "Delivery, licensing, support and final pricing." },
+    /* La tercera fila llevaba un `Circle` gris, que es un icono que no
+       significa nada — un círculo vacío puede leerse como "pendiente",
+       como "opcional" o como un radio button sin marcar. Lleva el sello,
+       que es la pieza con la que este sitio dice «previsto» en todas
+       partes: aquí, en el precio y en el registro de versiones. */
+    { icon: null, tone: "", title: es ? "Apertura comercial" : "Commercial launch", text: es ? "Entrega, licencia, soporte y precios definitivos." : "Delivery, licensing, support and final pricing." },
   ];
   return (
     <section className="section bg-veil">
@@ -22,7 +28,11 @@ export function ProductStatus() {
           <div className="grid gap-3 sm:grid-cols-3">
             {rows.map(({ icon: Icon, tone, title, text }) => (
               <div key={title} className="border-t border-[rgb(var(--divider)/0.18)] pt-4">
-                <Icon size={17} className={tone} aria-hidden />
+                {Icon ? (
+                  <Icon size={17} className={tone} aria-hidden />
+                ) : (
+                  <SelloPrevisto es="Previsto" en="Planned" />
+                )}
                 <h3 className="mt-3 text-sm font-semibold text-primary">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-secondary">{text}</p>
               </div>

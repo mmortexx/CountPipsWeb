@@ -262,3 +262,35 @@ describe("las láminas del producto", () => {
     expect(regla, "vuelve el recorte por CSS").not.toMatch(/overflow:\s*hidden/);
   });
 });
+
+describe("una sola forma de decir «todavía no»", () => {
+  /* El sitio decía «esto aún no existe» de cinco maneras distintas —un chip
+     ámbar de aviso, un chip con borde discontinuo, un círculo gris vacío, un
+     sufijo en gris terciario junto al precio y una barra de tres columnas—
+     sin que ninguna supiera de las otras. Cinco dialectos para un concepto
+     obligan al visitante a aprenderlos todos, y ninguno se le queda. */
+
+  it("el sello se usa en los tres sitios donde el estado importa", async () => {
+    const usan = ["marketing/Pricing.tsx", "marketing/Changelog.tsx", "beta/BetaStatus.tsx"];
+    for (const rel of usan) {
+      const src = readFileSync(join(RAIZ, "components", rel), "utf8");
+      expect(src, `${rel} ya no usa SelloPrevisto`).toContain("<SelloPrevisto");
+    }
+  });
+
+  it("lo previsto no se anuncia con color de aviso", () => {
+    /* `Chip variant="warn"` es ámbar: el color de "cuidado con esto". Una
+       entrega planificada no es una advertencia, y usarlo aquí gasta el
+       único color de alarma que le queda al sitio para cuando haga falta. */
+    const src = readFileSync(join(RAIZ, "components", "marketing", "Changelog.tsx"), "utf8");
+    expect(soloCodigo(src)).not.toMatch(/variant=["']warn["']/);
+  });
+
+  it("el trazo del sello es discontinuo, que es donde está el significado", () => {
+    const css = cssAplicado();
+    const regla = /\.sello-previsto\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(regla, "el sello ha perdido su línea de trazos").toMatch(/border:[^;]*dashed/);
+    /* Y no atenúa lo que envuelve: lo previsto no está deshabilitado. */
+    expect(regla).not.toMatch(/opacity:\s*0?\.\d/);
+  });
+});
