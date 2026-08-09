@@ -1,6 +1,30 @@
 "use client";
 
-import { EngravedAtlas } from "./EngravedAtlas";
+import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
+import { platesForRoute } from "@/lib/atlas";
+
+/**
+ * EL ATLAS SE CARGA POR RUTA, NO EN LAS 155 PÁGINAS.
+ *
+ * `EngravedAtlas` son ~2.700 líneas de canvas. Importado en línea, entra
+ * en el paquete del layout, y el layout lo sirve TODO el sitio: la
+ * política de privacidad descargaba 1.068 KB de JavaScript para enseñar
+ * un texto legal que, además, desde ahora no lleva figura.
+ *
+ * Con `next/dynamic` y `ssr: false` el atlas queda en su propio trozo y
+ * solo lo pide la página que va a dibujar algo. Las que no —las cuatro
+ * legales, y cualquier ruta sin figura— no lo descargan siquiera.
+ *
+ * `ssr: false` no pierde nada: es un canvas que se pinta en el cliente y
+ * el servidor no puede adelantar ni un trazo. Y el fondo es
+ * `aria-hidden`, así que no hay contenido que un buscador o un lector de
+ * pantalla se queden sin ver.
+ */
+const EngravedAtlas = dynamic(
+  () => import("./EngravedAtlas").then((m) => ({ default: m.EngravedAtlas })),
+  { ssr: false },
+);
 
 /**
  * BackgroundFX — el fondo fijo del sitio.
@@ -21,13 +45,19 @@ import { EngravedAtlas } from "./EngravedAtlas";
  * BackgroundFX.tsx`.
  */
 export function BackgroundFX() {
+  const pathname = usePathname();
+  /* Se pregunta ANTES de montar, no dentro del atlas: si se montara y
+     saliera por dentro, el trozo de JavaScript ya se habría descargado.
+     El ahorro está en no pedirlo. */
+  const llevaFigura = platesForRoute(pathname).length > 0;
+
   return (
     <div
       aria-hidden
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
       style={{ background: "var(--bg)" }}
     >
-      <EngravedAtlas />
+      {llevaFigura && <EngravedAtlas />}
 
       {/* Filetes de margen — la caja de la mancha, continua de arriba
           abajo del documento. Vive aquí y no en cada sección para que no
