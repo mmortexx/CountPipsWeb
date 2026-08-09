@@ -1947,6 +1947,167 @@ function plateSignificance(ctx: Ctx, w: number, h: number, t: number) {
  * podía cumplir: la página enseña la aplicación funcionando, y el fondo
  * la dibuja como se dibujaría un instrumento en un tratado.
  */
+/**
+ * `blueprint` — el despiece de lo que está construido y lo que no.
+ *
+ * Un plano de taller: piezas numeradas dentro de su caja, unas trazadas a
+ * línea llena y otras a línea discontinua. En el dibujo técnico esa es
+ * exactamente la convención de "previsto pero no ejecutado", y aquí
+ * significa lo mismo.
+ *
+ * Va en `/beta`, y es la única figura del atlas que dice algo que el
+ * resto no podía decir: que el producto está a medio hacer y que eso se
+ * declara en vez de disimularse. Una curva de resultados detrás de la
+ * página de acceso anticipado prometía lo contrario.
+ */
+function plateBlueprint(ctx: Ctx, w: number, h: number, t: number) {
+  plateChrome(ctx, w, h, t);
+  const m = Math.min(w, h) * 0.055;
+  const x0 = m + w * 0.08;
+  const y0 = m + h * 0.14;
+  const gw = w - x0 - m - w * 0.06;
+  const gh = h - y0 - m - h * 0.12;
+
+  /* Cinco piezas de tamaños distintos, colocadas a mano: una retícula
+     regular se leería como una tabla, y esto es un despiece. */
+  const piezas: Array<[number, number, number, number, boolean]> = [
+    /* x, y, ancho, alto, ¿ejecutada? — en fracciones de la caja */
+    [0.0, 0.0, 0.44, 0.42, true],
+    [0.48, 0.0, 0.52, 0.24, true],
+    [0.48, 0.28, 0.24, 0.36, true],
+    [0.76, 0.28, 0.24, 0.36, false],
+    [0.0, 0.48, 0.44, 0.34, false],
+  ];
+
+  piezas.forEach(([fx, fy, fw, fh, hecha], i) => {
+    const p = phase(t, 0.06 + i * 0.09, 0.3);
+    if (p <= 0.01) return;
+    const bx = x0 + fx * gw;
+    const by = y0 + fy * gh;
+    const bw = fw * gw;
+    const bh = fh * gh;
+
+    if (hecha) {
+      handRect(ctx, bx, by, bw, bh, p, 0.85, 0.42, i * 31 + 2201, 2);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(bx, by, bw, bh);
+      ctx.clip();
+      hatch(ctx, bx, by, bw, bh, Math.PI / 4, 7.5, 0.4, 0.2, p, i + 2211);
+      ctx.restore();
+    } else {
+      /* Pieza prevista: solo el contorno, y a trazos. Sin trama dentro,
+         porque no hay nada dentro todavía. */
+      const seg: Pt[] = [];
+      const paso = 11;
+      for (let X = bx; X < bx + bw; X += paso) seg.push([X, by], [Math.min(X + 6, bx + bw), by]);
+      for (let Y = by; Y < by + bh; Y += paso) seg.push([bx + bw, Y], [bx + bw, Math.min(Y + 6, by + bh)]);
+      for (let X = bx + bw; X > bx; X -= paso) seg.push([X, by + bh], [Math.max(X - 6, bx), by + bh]);
+      for (let Y = by + bh; Y > by; Y -= paso) seg.push([bx, Y], [bx, Math.max(Y - 6, by)]);
+      for (let k = 0; k + 1 < seg.length; k += 2)
+        engraveLine(ctx, [seg[k], seg[k + 1]], p, 0.62, 0.3, k + i * 37 + 2221);
+    }
+
+    /* Número de pieza, como en una lámina de despiece. */
+    label(ctx, String(i + 1).padStart(2, "0"), bx + 8, by + 20, 10, hecha ? 0.5 : 0.34, p);
+  });
+
+  /* La leyenda que hace legible la convención. Sin ella, el trazo
+     discontinuo es solo un estilo; con ella, es información. */
+  const lp = phase(t, 0.62, 0.3);
+  if (lp > 0.02) {
+    const ly = y0 + gh + 26;
+    engraveLine(ctx, [[x0, ly - 14], [x0 + gw * 0.5, ly - 14]], lp, 0.6, 0.3, 2251);
+    label(ctx, "LÍNEA LLENA · CONSTRUIDO", x0, ly + 2, 9, 0.44, lp);
+    label(ctx, "LÍNEA DE TRAZOS · PREVISTO", x0 + gw * 0.42, ly + 2, 9, 0.34, lp);
+  }
+}
+
+/**
+ * `profile` — el perfil trazado punto a punto.
+ *
+ * Seis ejes que salen de un centro y un polígono que los une: la forma
+ * clásica de dibujar un perfil cuando lo que importa no es cada valor
+ * suelto sino la silueta que forman juntos.
+ *
+ * Va en `/test`, que es exactamente lo que hace esa página — te pregunta
+ * y dibuja tu perfil. Antes compartía figura con la página de disciplina,
+ * y dos secciones que abren con la misma figura se leen como la misma
+ * página aunque digan cosas distintas.
+ */
+function plateProfile(ctx: Ctx, w: number, h: number, t: number) {
+  plateChrome(ctx, w, h, t);
+  const cx = w / 2;
+  const cy = h * 0.52;
+  const R = Math.min(w * 0.3, h * 0.36);
+  const EJES = 6;
+  const ang = (i: number) => -Math.PI / 2 + (i / EJES) * Math.PI * 2;
+
+  /* Las circunferencias de referencia: una de cada tres más marcada, que
+     es la convención de curva índice de la cartografía. Sin ella, una
+     retícula de seis anillos es ruido; con ella, se puede leer un valor. */
+  const anillos = 5;
+  for (let k = 1; k <= anillos; k++) {
+    const p = phase(t, 0.04 + k * 0.02, 0.26);
+    if (p <= 0.01) continue;
+    const r = (R * k) / anillos;
+    const pts: Pt[] = [];
+    for (let i = 0; i <= EJES; i++) pts.push([cx + Math.cos(ang(i)) * r, cy + Math.sin(ang(i)) * r]);
+    const indice = k % 3 === 0 || k === anillos;
+    engraveLine(ctx, pts, p, indice ? 0.85 : 0.45, indice ? 0.3 : 0.16, 2301 + k * 7);
+  }
+
+  /* Los radios. */
+  for (let i = 0; i < EJES; i++) {
+    const p = phase(t, 0.14 + i * 0.02, 0.24);
+    if (p <= 0.01) continue;
+    engraveLine(
+      ctx,
+      [[cx, cy], [cx + Math.cos(ang(i)) * R, cy + Math.sin(ang(i)) * R]],
+      p,
+      0.5,
+      0.2,
+      2331 + i * 5,
+    );
+  }
+
+  /* El perfil: valores deterministas, ni redondos ni perfectos — un
+     perfil regular sería un dibujo, no una medida. */
+  const valores = [0.82, 0.46, 0.68, 0.9, 0.38, 0.62];
+  const vert = (i: number): Pt => [
+    cx + Math.cos(ang(i)) * R * valores[i % EJES],
+    cy + Math.sin(ang(i)) * R * valores[i % EJES],
+  ];
+  const pp = phase(t, 0.3, 0.36);
+  if (pp > 0.01) {
+    const pts: Pt[] = [];
+    for (let i = 0; i <= EJES; i++) pts.push(vert(i));
+    pencil(ctx, pts, pp, 1.25, 0.5, 2361, 2);
+  }
+
+  /* Marca en cada vértice: una cruz fina, no un punto gordo. Un punto
+     grueso tapa el valor que está señalando. */
+  for (let i = 0; i < EJES; i++) {
+    const p = phase(t, 0.42 + i * 0.03, 0.22);
+    if (p <= 0.02) continue;
+    const [vx, vy] = vert(i);
+    engraveLine(ctx, [[vx - 4, vy], [vx + 4, vy]], p, 0.75, 0.42, 2401 + i);
+    engraveLine(ctx, [[vx, vy - 4], [vx, vy + 4]], p, 0.75, 0.42, 2411 + i);
+  }
+
+  /* Rótulo de los ejes, fuera del polígono para no pisarlo. */
+  const ROTULOS = ["RIESGO", "PLAN", "REGISTRO", "REVISIÓN", "TAMAÑO", "PACIENCIA"];
+  const rp = phase(t, 0.6, 0.3);
+  if (rp > 0.02) {
+    for (let i = 0; i < EJES; i++) {
+      const a = ang(i);
+      const rx = cx + Math.cos(a) * (R + 26);
+      const ry = cy + Math.sin(a) * (R + 26);
+      label(ctx, ROTULOS[i], rx - ROTULOS[i].length * 2.6, ry + 3, 9, 0.4, rp);
+    }
+  }
+}
+
 function plateWorkspace(ctx: Ctx, w: number, h: number, t: number) {
   plateChrome(ctx, w, h, t);
   const m = Math.min(w, h) * 0.055;
@@ -2045,6 +2206,8 @@ const PLATE_FN: Record<PlateId, PlateFn> = {
   sessions: plateSessions,
   significance: plateSignificance,
   workspace: plateWorkspace,
+  blueprint: plateBlueprint,
+  profile: plateProfile,
 };
 
 /** Juego de láminas de una ruta, ya resuelto a funciones de dibujo. */
@@ -2065,6 +2228,12 @@ export function EngravedAtlas() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    /* Ruta sin figura —las legales, y cualquiera que nadie haya previsto—.
+       No se monta nada: ni contexto, ni bucle, ni escuchas de scroll. Sin
+       esta salida, `1 / PLATES.length` valdría Infinity y el grabado
+       intentaría dibujar una lámina que no existe. Estas páginas se quedan
+       con el papel y su graduación de margen, que es lo que les toca. */
+    if (PLATES.length === 0) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 

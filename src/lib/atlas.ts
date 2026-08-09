@@ -27,7 +27,9 @@ export type PlateId =
   | "tenure"
   | "sessions"
   | "significance"
-  | "workspace";
+  | "workspace"
+  | "blueprint"
+  | "profile";
 
 export type PlateMeta = {
   titleEs: string;
@@ -154,6 +156,22 @@ export const PLATE_META: Record<PlateId, PlateMeta> = {
     noteEn:
       "Frame, title bar, navigation column and the working area split into panels. Not a screenshot — an engraving does not reproduce a screen — but the plan of how the thing you can try right here is laid out.",
   },
+  blueprint: {
+    titleEs: "Lo construido y lo previsto, en el mismo plano",
+    titleEn: "What is built and what is planned, on one sheet",
+    noteEs:
+      "En dibujo técnico la línea de trazos significa «previsto, no ejecutado», y aquí significa lo mismo: las piezas llenas ya funcionan, las de trazos todavía no. El acceso anticipado sirve para eso — para mirar el despiece antes de que esté entero.",
+    noteEn:
+      "In technical drawing a dashed line means «planned, not built», and it means the same here: the solid parts already work, the dashed ones do not yet. That is what early access is for — to look at the exploded view before it is finished.",
+  },
+  profile: {
+    titleEs: "Seis ejes y la silueta que forman",
+    titleEn: "Six axes and the silhouette they form",
+    noteEs:
+      "Un perfil no se lee eje por eje: se lee por la forma del conjunto. Un lado hundido pesa más que cualquier valor alto del contrario, porque es por donde se rompe una operativa.",
+    noteEn:
+      "A profile is not read axis by axis: it is read by the shape of the whole. One collapsed side matters more than any high value on the other, because that is where a trading process breaks.",
+  },
 };
 
 /**
@@ -190,10 +208,121 @@ export const ATLAS_ROUTES: Record<string, PlateId[]> = {
      libro mayor sale, que ya titula en seguridad y en características. */
   "/about": ["sessions", "rolling"],
   /* Una sola lámina: la página es corta a propósito y el diagnóstico se
-     lleva toda la atención. `rules` es la que corresponde — el test mide
-     exactamente eso, si hay reglas y si se cumplen. */
-  "/test": ["rules"],
+     lleva toda la atención. `profile` es literalmente lo que hace esta
+     página — pregunta y dibuja un perfil. Antes abría con `rules`, la
+     misma figura con la que abre /features/disciplina, y dos secciones
+     que abren igual se leen como la misma página aunque digan cosas
+     distintas. */
+  "/test": ["profile"],
+
+  /* ── Las secciones que antes no tenían guion ────────────────────────
+     Hasta aquí el atlas conocía diez rutas de setenta y cuatro. Todo lo
+     demás —el glosario entero, las herramientas, el acceso anticipado,
+     las dos páginas de traders y las cuatro legales— caía en el `return
+     "/"` del normalizador y enseñaba la curva de resultados de la
+     portada. Detrás de la política de privacidad había un gráfico de
+     ganancias, que no dice nada ahí y encima promete algo.
+
+     Cada una de estas entradas abre con una lámina que NO abre ninguna
+     otra sección: la primera figura es la que pone tema, y si dos
+     secciones abren igual se leen como la misma página. */
+
+  /* El acceso anticipado abre con el despiece: piezas llenas para lo que
+     ya funciona, de trazos para lo previsto. Es la única figura del atlas
+     que declara que el producto está a medio hacer, que es exactamente lo
+     que esta página tiene que decir. `vault` la sigue porque la otra
+     mitad del trato es que los datos siguen siendo tuyos. */
+  "/beta": ["blueprint", "vault"],
+
+  /* El trader manual: sus rachas y sus horas. `streak` abre porque lo que
+     distingue a esta operativa es aguantar la serie, y `sessions` la
+     sigue porque la otra mitad es cuándo se opera. */
+  "/traders/manual": ["streak", "sessions"],
+
+  /* Prop firms: primero los límites que te miden (`gauge`), después las
+     reglas que los traducen (`rules`), y al final la permanencia
+     (`tenure`), que es de lo que va superar una evaluación. */
+  "/traders/prop-firms": ["gauge", "rules", "tenure"],
+
+  /* El glosario es vocabulario de estadística: la distribución abre y la
+     significancia cierra. Los términos SUELTOS no usan esta entrada —
+     cada uno deriva la suya, ver `laminaDerivada`. */
+  "/glosario": ["distribution", "significance"],
+
+  /* Las herramientas trabajan sobre calendario y sobre rejillas de
+     valores. Igual que el glosario, cada herramienta suelta deriva la
+     suya. */
+  "/herramientas": ["calendar", "heatmap"],
 };
+
+/**
+ * Rutas que NO llevan figura, a propósito.
+ *
+ * Una política de privacidad con una curva de resultados detrás no es
+ * sobria: está enseñando ganancias en la página donde se explica el
+ * tratamiento de datos. El fondo de estas páginas se queda en el papel y
+ * su graduación de margen, sin figura — que es exactamente lo que hace un
+ * tratado con sus páginas de créditos.
+ */
+export const RUTAS_SIN_LAMINA = new Set([
+  "/privacidad",
+  "/terminos",
+  "/cookies",
+  "/aviso-legal",
+]);
+
+/**
+ * Secciones cuyos hijos derivan su propia lámina del nombre de la página.
+ *
+ * El glosario tiene 51 términos y las herramientas 7. Escribir a mano una
+ * combinación para cada uno son 58 decisiones que nadie va a mantener, y
+ * dejarlos heredar la del índice es repetir la misma figura 58 veces —
+ * que es el problema que veníamos a resolver.
+ *
+ * La salida es DETERMINISTA: la misma URL da siempre la misma figura, así
+ * que la página es reconocible y la comprobación automática puede
+ * afirmar algo sobre ella. No se usa aleatoriedad, que rompería la
+ * hidratación además de la memoria del visitante.
+ */
+const SECCIONES_DERIVADAS = ["/glosario/", "/herramientas/"];
+
+/** Baraja de figuras para las páginas derivadas, sin las de apertura de sección. */
+const BARAJA_DERIVADA: PlateId[] = [
+  "distribution",
+  "rolling",
+  "heatmap",
+  "streak",
+  "gauge",
+  "significance",
+  "calendar",
+  "sessions",
+  "equity",
+  "ledger",
+  "rules",
+  "tenure",
+];
+
+/** Hash estable de una cadena. No criptográfico: solo reparte. */
+function hashRuta(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return Math.abs(h);
+}
+
+/**
+ * Figura de una página derivada (un término del glosario, una
+ * herramienta). Una sola lámina: son páginas cortas, y dos pausas en una
+ * página corta las dejan sin aire, que es lo único que vienen a dar.
+ */
+function laminaDerivada(ruta: string): PlateId[] | null {
+  if (!SECCIONES_DERIVADAS.some((s) => ruta.startsWith(s) && ruta.length > s.length)) {
+    return null;
+  }
+  return [BARAJA_DERIVADA[hashRuta(ruta) % BARAJA_DERIVADA.length]];
+}
 
 const ROMAN = ["I", "II", "III", "IV", "V"];
 
@@ -205,18 +334,43 @@ const ROMAN = ["I", "II", "III", "IV", "V"];
  */
 export function normalizeRoute(pathname: string): string {
   let p = (pathname || "/").replace(/\/+$/, "");
-  const cut = p.indexOf("/features");
-  if (cut > 0) p = p.slice(cut);
-  else if (p && !ATLAS_ROUTES[p]) {
-    const last = "/" + p.split("/").filter(Boolean).pop();
-    if (ATLAS_ROUTES[last]) p = last;
+
+  /* Fuera el prefijo de idioma y el subdirectorio de despliegue, en ese
+     orden: `/CountPipsWeb/en/glosario/drawdown` tiene que buscarse como
+     `/glosario/drawdown` o el inglés entero se quedaría sin figura. */
+  const anclas = ["/features", "/traders", "/glosario", "/herramientas"];
+  for (const ancla of anclas) {
+    const cut = p.indexOf(ancla);
+    if (cut > 0) {
+      p = p.slice(cut);
+      break;
+    }
   }
-  return ATLAS_ROUTES[p || "/"] ? p || "/" : "/";
+  if (p && !ATLAS_ROUTES[p] && !p.startsWith("/glosario") && !p.startsWith("/herramientas")) {
+    const last = "/" + p.split("/").filter(Boolean).pop();
+    if (ATLAS_ROUTES[last] || RUTAS_SIN_LAMINA.has(last)) p = last;
+  }
+  return p || "/";
 }
 
-/** Ids de lámina de una ruta, en orden de grabado. */
+/**
+ * Ids de lámina de una ruta, en orden de grabado.
+ *
+ * Devuelve un array VACÍO —no las de la portada— cuando la ruta no debe
+ * llevar figura. Antes cualquier ruta desconocida caía en `"/"`, y por eso
+ * el glosario, las herramientas, las legales y el acceso anticipado
+ * enseñaban todos la curva de resultados de la home.
+ */
 export function platesForRoute(pathname: string): PlateId[] {
-  return ATLAS_ROUTES[normalizeRoute(pathname)];
+  const p = normalizeRoute(pathname);
+  if (RUTAS_SIN_LAMINA.has(p)) return [];
+  const propias = ATLAS_ROUTES[p];
+  if (propias) return propias;
+  const derivada = laminaDerivada(p);
+  if (derivada) return derivada;
+  /* Ruta que nadie previó: mejor sin figura que con una prestada que no
+     dice nada de ella. El papel y su graduación siguen ahí. */
+  return [];
 }
 
 /** Pie de figura de la lámina `index` de esta ruta. `null` si no existe. */
