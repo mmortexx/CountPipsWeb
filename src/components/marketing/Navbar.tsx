@@ -546,7 +546,14 @@ export function Navbar() {
           href={href}
           aria-current={active ? "page" : undefined}
           onFocus={() => setHovered(href)}
-          className="relative z-10 block rounded-[2px] px-[15px] py-[9px] text-sm transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+          /* `whitespace-nowrap`: un rótulo de navegación no se parte
+             nunca. Sin esto, «Prop firms» se rompía en dos renglones en
+             cuanto la barra se estrechaba, y una entrada de menú a dos
+             líneas rompe la altura de toda la fila y se lee como un
+             fallo de maqueta. Si algún día no cabe, lo que debe pasar es
+             que la barra pase al menú lateral — no que las palabras se
+             partan. */
+          className="relative z-10 block whitespace-nowrap rounded-[2px] px-3 py-[9px] text-sm transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
           style={{ color: active || hovered === href ? "var(--ink)" : "var(--ink-2)" }}
         >
           {label}
@@ -629,7 +636,31 @@ export function Navbar() {
             No se arregla dándole al botón una alineación propia: la
             celda equivocada seguiría siendo la del centro. Se arregla
             declarando la rejilla que de verdad hay en cada tamaño. */}
-        <div className="mx-auto grid w-full max-w-page grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr]">
+        {/* ── LOS LADOS TOMAN LO SUYO; EL CENTRO, EL RESTO ──────────────
+            La rejilla era `1fr auto 1fr`, buscando que la navegación
+            quedara ópticamente centrada en la página con independencia
+            de lo que midieran la marca y el clúster de utilidades. El
+            problema es que en CSS `1fr` significa `minmax(auto, 1fr)`, y
+            ese mínimo `auto` es el ANCHO DEL CONTENIDO: las laterales se
+            niegan a encogerse, así que cuando la ventana estrecha la que
+            se queda sin sitio es la del centro. Y como va con
+            `justify-self-center`, su contenido desborda por los DOS
+            lados y se monta encima de los vecinos.
+
+            Se veía a 1.267 px: la caja de «CountPips» terminaba en 212 y
+            la de «Producto» empezaba en 199 — trece píxeles por debajo,
+            los dos textos pegados, sin el hueco que sí respetaban los
+            demás enlaces entre sí.
+
+            `auto · minmax(0,1fr) · auto` invierte el reparto: marca y
+            utilidades piden lo que miden, y la navegación se lleva lo
+            que sobra y se centra DENTRO de ese hueco. Deja de estar
+            centrada respecto a la página entera —que era lo que no cabía
+            a la vez que todo lo demás— y pasa a estar centrada respecto
+            al espacio disponible, que es lo que sí se sostiene a
+            cualquier ancho. Ningún elemento pisa a otro y el `gap-4`
+            vuelve a cumplirse en las dos junturas. */}
+        <div className="mx-auto grid w-full max-w-page grid-cols-[minmax(0,1fr)_auto] items-center gap-4 min-[1120px]:grid-cols-[auto_minmax(0,1fr)_auto]">
           {/* ZONA 1 — Marca. min-h-[44px] garantiza el suelo táctil en
               móvil (el glifo + texto solos medían 32 px). */}
           <Link
@@ -649,7 +680,7 @@ export function Navbar() {
 
           {/* ZONA 2 — Navegación centrada: Producto (megamenú) · Demo · Precios */}
           <div
-            className="hidden items-center gap-0.5 justify-self-center md:flex"
+            className="hidden items-center gap-0.5 justify-self-center min-[1120px]:flex"
             onMouseLeave={() => setHovered(null)}
           >
             <div
@@ -882,7 +913,7 @@ export function Navbar() {
               usuario los veía "mal posicionados". Ahora la barra móvil sólo
               lleva logo + hamburguesa, ambos limpios. */}
           <div className="flex flex-none items-center gap-2 justify-self-end">
-            <div className="hidden md:flex md:items-center md:gap-2">
+            <div className="hidden min-[1120px]:flex min-[1120px]:items-center min-[1120px]:gap-2">
             <UtcClock />
             <IconButton
               onClick={toggleTheme}
@@ -969,12 +1000,12 @@ export function Navbar() {
                 <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-            </div>{/* /hidden md:flex — utilidades de escritorio */}
+            </div>{/* /hidden min-[1120px]:flex — utilidades de escritorio */}
 
             <button
               ref={menuButtonRef}
               onClick={() => setMobileOpen((o) => !o)}
-              className="grid h-11 w-11 place-items-center rounded-full text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] md:hidden"
+              className="grid h-11 w-11 place-items-center rounded-full text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
               aria-label={mobileOpen ? (es ? "Cerrar menú" : "Close menu") : (es ? "Abrir menú" : "Open menu")}
               aria-expanded={mobileOpen}
               aria-haspopup="dialog"
@@ -1006,7 +1037,7 @@ export function Navbar() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm backdrop-saturate-150 md:hidden"
+              className="fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm backdrop-saturate-150 min-[1120px]:hidden"
               aria-hidden="true"
             />
             <motion.aside
@@ -1043,7 +1074,7 @@ export function Navbar() {
               // altura completa). Mismo patrón que CookieConsent.tsx
               // (línea 138) usa para el mismo conflicto. Inline style
               // gana a cualquier regla externa sin `!important`.
-              className="tj-paper safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none md:hidden"
+              className="tj-paper safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none min-[1120px]:hidden"
               style={{ position: "fixed" }}
             >
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-[rgb(var(--divider)/0.06)] px-5">
@@ -1472,10 +1503,19 @@ function GlobeIcon() {
 /**
  * UtcClock — "UTC HH:MM:SS" en vivo con punto de sesión verde. Renderiza
  * "--:--:--" en servidor y primer paint; el intervalo arranca en un
- * efecto (cero mismatch de hidratación). Oculto por debajo de `lg`
- * (1024 px): entre 768 y 1023 px el clúster derecho + navegación +
- * marca supera el ancho interno y el botón Comprar quedaba recortado en
- * silencio por el `overflow-x: hidden` del body (ver R21-1e issue #1).
+ * efecto (cero mismatch de hidratación).
+ *
+ * OCULTO POR DEBAJO DE 1280 px. Antes esperaba a 1024, y no bastaba: la
+ * barra completa necesita unos 1.047 px de contenido, así que a 820 px
+ * sus elementos se montaban unos sobre otros — la marca sobre el primer
+ * enlace, el menú sobre el reloj y el reloj sobre el selector de idioma.
+ * Nadie lo había visto porque nadie miraba a ese ancho; ahora lo vigila
+ * `scripts/humo.mjs` comparando caja contra caja en la barra.
+ *
+ * La barra entera pasa al cajón lateral por debajo de 1.120 px, y este
+ * reloj —lo menos esencial que lleva— espera a 1.280 para que en la
+ * franja intermedia quepa lo que sí importa: navegación, idioma y la
+ * llamada a la acción.
  */
 function UtcClock() {
   const [time, setTime] = useState("--:--:--");
@@ -1494,7 +1534,7 @@ function UtcClock() {
   }, []);
   return (
     <span
-      className="mr-0.5 hidden items-center gap-1.5 border-r pr-2 lg:inline-flex"
+      className="mr-0.5 hidden items-center gap-1.5 border-r pr-2 xl:inline-flex"
       style={{ borderColor: "rgb(var(--divider) / 0.13)" }}
     >
       {/* Punto de sesión — sólido, sin el latido `tj-pulse-dot`. Era el

@@ -1607,6 +1607,43 @@
         transparent 52%);
   }
 
+  /* ── EN MÓVIL EL VELO NO PUEDE SER LATERAL ─────────────────────────
+     El degradado de arriba protege la COLUMNA IZQUIERDA, que es donde
+     vive el texto en escritorio, y se vuelve transparente al 52 % del
+     ancho para dejar ver el dibujo del fondo.
+
+     En móvil el hero pasa a estar CENTRADO y el texto ocupa el ancho
+     entero (ver `lg:text-left` en Hero.tsx), así que la mitad derecha de
+     cada línea se quedaba sin ninguna protección. Se veía: la curva de
+     rendimiento del atlas cruzaba por encima de la entradilla —"40+
+     métricas institucionales, un guardián que te frena…"— y partía las
+     palabras en dos.
+
+     Aquí el velo pasa a ser VERTICAL: opaco donde está el texto y
+     abierto arriba y abajo, para que el dibujo siga viéndose por encima
+     del titular y por debajo de la placa de datos. Se protege lo que hay
+     que leer sin tapar lo que hay que ver. */
+  @media (max-width: 1023px) {
+    .hero-side-scrim {
+      background:
+        linear-gradient(180deg,
+          transparent 0%,
+          color-mix(in oklab, var(--bg) 40%, transparent) 14%,
+          color-mix(in oklab, var(--bg) 78%, transparent) 26%,
+          color-mix(in oklab, var(--bg) 78%, transparent) 82%,
+          transparent 100%);
+    }
+    :root[data-theme="light"] .hero-side-scrim {
+      background:
+        linear-gradient(180deg,
+          transparent 0%,
+          color-mix(in oklab, var(--bg) 46%, transparent) 14%,
+          color-mix(in oklab, var(--bg) 84%, transparent) 26%,
+          color-mix(in oklab, var(--bg) 84%, transparent) 82%,
+          transparent 100%);
+    }
+  }
+
   .divider-grad {
     height: 1px;
     /* Neutral hairline — uses --divider (white-on-dark, black-on-light) at a

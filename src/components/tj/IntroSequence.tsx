@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { BRAND_GLYPH_SVG } from "@/components/tj/BrandGlyph";
+import { curva } from "@/lib/motion";
 
 /**
  * IntroSequence — puerto del `_intro()` del HTML de referencia.
@@ -30,6 +31,27 @@ import { BRAND_GLYPH_SVG } from "@/components/tj/BrandGlyph";
  *  - globals.css lleva además un failsafe CSS puro que fuerza la
  *    visibilidad a los 5 s si este componente nunca llegara a montar.
  */
+/* ── EL PRESUPUESTO DE LA INTRO ────────────────────────────────────────
+   La secuencia costaba unos 3 SEGUNDOS hasta que el titular de la
+   portada era legible: 1.450 ms de contador, 220 de pausa, 50 + 110 de
+   escalonado y 1.150 de entrada. Y el titular de la portada es el
+   elemento más grande de la primera pantalla, o sea, lo que el navegador
+   mide como tiempo de carga percibido. Tres segundos de pantalla de
+   espera en una web comercial es justo donde las visitas empiezan a
+   marcharse.
+
+   No se retira la intro: es una decisión de marca deliberada y sólo la
+   ve quien llega por primera vez en la sesión. Se APRIETA — mismo gesto,
+   misma cortina, mismo contador, en algo menos de la mitad de tiempo. El
+   titular queda legible sobre 1,8 s, y `scripts/humo.mjs` vigila ese
+   presupuesto en cada comprobación para que no vuelva a crecer sin que
+   nadie lo note. */
+const LOADER_MS = 850;
+const PAUSA_MS = 120;
+const REVEAL_RETARDO_MS = 50;
+const REVEAL_PASO_MS = 70;
+const REVEAL_MS = 700;
+
 export function IntroSequence() {
   useEffect(() => {
     const root = document.documentElement;
@@ -64,9 +86,11 @@ export function IntroSequence() {
             { opacity: 1, transform: "none", filter: "blur(0px)" },
           ],
           {
-            duration: 1150,
-            delay: 50 + i * 110,
-            easing: "var(--ease-salida)",
+            duration: REVEAL_MS,
+            delay: REVEAL_RETARDO_MS + i * REVEAL_PASO_MS,
+            // `curva()` resuelve el token del CSS: la Web Animations API
+            // no admite `var(...)` aquí (ver src/lib/motion.ts).
+            easing: curva("--ease-salida"),
             // `both`: mantiene el primer keyframe (oculto) durante el
             // delay — sin salto al retirar la clase — y el último al
             // acabar (que coincide con el estado natural del elemento).
@@ -101,7 +125,7 @@ export function IntroSequence() {
     const num = ov.querySelector<HTMLElement>("[data-ln]");
     const bar = ov.querySelector<HTMLElement>("[data-lb]");
     const t0 = performance.now();
-    const dur = 1450;
+    const dur = LOADER_MS;
     let rafId = 0;
     const tick = (t: number) => {
       const p = Math.min(1, (t - t0) / dur);
@@ -118,7 +142,7 @@ export function IntroSequence() {
           window.setTimeout(() => {
             ov.remove();
           }, 950);
-        }, 220);
+        }, PAUSA_MS);
       }
     };
     rafId = requestAnimationFrame(tick);

@@ -1,21 +1,65 @@
 "use client";
 
+import { useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Reveal } from "@/components/tj/Reveal";
 import { ShieldCheck, AlertTriangle, HandMetal, Timer } from "lucide-react";
 
 /**
- * GuardianNew — sección `#guardian` del HTML. Disciplina que actúa:
- * mockup de comprobación previa + 3 features de cómo frena antes del
+ * GuardianNew — sección `#guardian`. Disciplina que actúa: comprobación
+ * previa de una operación + 3 características de cómo frena antes del
  * error.
+ *
+ * ── DOS COSAS QUE ESTABAN MAL ─────────────────────────────────────────
+ *
+ * 1. LOS BOTONES NO HACÍAN NADA. «Ajustar a 2 contratos» y «Anular» eran
+ *    dos `<button>` sin `onClick`, con cursor de mano, elevación al pasar
+ *    por encima y anillo de foco — y dentro del orden de tabulación. Un
+ *    lector de pantalla los anunciaba como botones. Es la peor clase de
+ *    decorado: el que promete una interacción que no existe. Y estaba en
+ *    la sección que vende, precisamente, que el producto ACTÚA.
+ *
+ * 2. LAS CIFRAS NO CUADRABAN. 4 contratos daban «2,4 % de riesgo» con un
+ *    límite del 1 %, y el aviso recomendaba «reduce a 2 contratos». Dos
+ *    contratos son 1,2 %: seguiría fuera del límite. El consejo de un
+ *    producto de control de riesgo no puede fallar una regla de tres.
+ *
+ * Ahora el riesgo se CALCULA a partir del tamaño (0,5 % por contrato) y
+ * el veredicto sale de compararlo con el límite, así que la aritmética no
+ * puede volver a descuadrarse. Y pulsar cambia de verdad el estado: el
+ * tamaño baja, el riesgo baja con él y el aviso pasa de bloqueado a
+ * permitido, que es exactamente lo que la sección promete que hace la
+ * aplicación.
  *
  * `num` — ordinal del eyebrow. Por defecto el de la home ("05"); las
  * páginas internas pasan el suyo para mantener su propia secuencia.
  */
+
+/** Riesgo que aporta cada contrato, en % de la cuenta. */
+const RIESGO_POR_CONTRATO = 0.5;
+/** Límite de riesgo por operación configurado en el ejemplo, en %. */
+const LIMITE_RIESGO = 1;
+const CONTRATOS_INICIALES = 4;
+const CONTRATOS_AJUSTADOS = 2;
+
+type EstadoGuardian = "bloqueado" | "ajustado" | "anulado";
+
 export function GuardianNew({ num = "05" }: { num?: string }) {
   const { lang } = useLang();
   const es = lang === "es";
+
+  const [estado, setEstado] = useState<EstadoGuardian>("bloqueado");
+  // Anotado como `number` a propósito: sin la anotación, TypeScript lo
+  // estrecha al literal `4 | 2` y marca como imposible la rama singular
+  // del plural de abajo. Los dos valores son constantes HOY; el texto no
+  // debe romperse el día que uno de ellos sea 1.
+  const contratos: number = estado === "ajustado" ? CONTRATOS_AJUSTADOS : CONTRATOS_INICIALES;
+  const riesgo = contratos * RIESGO_POR_CONTRATO;
+  const dentroDelLimite = riesgo <= LIMITE_RIESGO;
+  const pct = (n: number) =>
+    `${n.toLocaleString(es ? "es-ES" : "en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}${es ? " %" : "%"}`;
+
   return (
     <section
       id="guardian"
@@ -113,7 +157,9 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               >
                 NQ · LONG
               </span>
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-2)" }}>4 {es ? "contratos" : "contracts"}</span>
+              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-2)" }}>
+                {contratos} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
+              </span>
               <span className="tnum ml-auto" style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>28 {es ? "pts" : "pts"}</span>
             </div>
           </div>
@@ -129,7 +175,19 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             {[
               { ok: true, l: es ? "Setup Apto: ruptura NY" : "Setup valid: NY break" },
               { ok: true, l: es ? "R:R ≥ 1,5" : "R:R ≥ 1.5" },
-              { ok: false, l: es ? "Riesgo 2,4 % — supera tu límite de 1 %" : "Risk 2.4% — over your 1% limit" },
+              {
+                // El texto y el sello salen del cálculo, no de una
+                // constante: el riesgo es el tamaño por el riesgo unitario,
+                // y el veredicto, compararlo con el límite.
+                ok: dentroDelLimite,
+                l: dentroDelLimite
+                  ? es
+                    ? `Riesgo ${pct(riesgo)} — dentro de tu límite de ${pct(LIMITE_RIESGO)}`
+                    : `Risk ${pct(riesgo)} — within your ${pct(LIMITE_RIESGO)} limit`
+                  : es
+                    ? `Riesgo ${pct(riesgo)} — supera tu límite de ${pct(LIMITE_RIESGO)}`
+                    : `Risk ${pct(riesgo)} — over your ${pct(LIMITE_RIESGO)} limit`,
+              },
             ].map((c, i) => (
               <div key={i} className="flex items-start gap-2.5 py-0.5">
                 <span
@@ -175,47 +233,91 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               padding vertical pasa de 14 a 16 px para que la etiqueta
               SUPERIOR "OPERACIÓN BLOQUEADA" + el cuerpo de texto respiren
               sin pegarse a los bordes superior/inferior del box. */}
-          <div
-            className="rounded-[2px] mb-3 relative overflow-hidden"
-            style={{
-              padding: "16px 18px 16px 20px",
-              background: "color-mix(in oklab, rgb(var(--pnl-neg)) 10%, transparent)",
-              border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 28%, transparent)",
-              boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.06)",
-            }}
-          >
-            <span
-              aria-hidden
-              className="absolute left-0 top-0 bottom-0"
-              style={{ width: 3, background: "rgb(var(--pnl-neg))" }}
-            />
-            <div className="flex items-center gap-2 mb-1">
-              <span
-                aria-hidden
-                className="inline-grid place-items-center rounded-full"
+          {(() => {
+            /* El aviso cambia con el estado, y se anuncia. `aria-live`
+               es imprescindible aquí: al pulsar «Ajustar», lo que cambia
+               está en OTRA parte de la tarjeta, así que sin anuncio un
+               lector de pantalla no se entera de que la operación ha
+               pasado de bloqueada a permitida. */
+            const tono = estado === "anulado" ? "neutro" : dentroDelLimite ? "ok" : "mal";
+            const color =
+              tono === "ok"
+                ? "rgb(var(--pnl-pos))"
+                : tono === "mal"
+                  ? "rgb(var(--pnl-neg))"
+                  : "var(--ink-3)";
+            const tinte =
+              tono === "ok"
+                ? "rgb(var(--pnl-pos))"
+                : tono === "mal"
+                  ? "rgb(var(--pnl-neg))"
+                  : "rgb(var(--divider))";
+            const titulo =
+              tono === "neutro"
+                ? es ? "Operación anulada" : "Trade cancelled"
+                : tono === "ok"
+                  ? es ? "Operación permitida" : "Trade allowed"
+                  : es ? "Operación bloqueada" : "Trade blocked";
+            const cuerpo =
+              tono === "neutro"
+                ? es
+                  ? "No se ha registrado nada. El guardián no discute: si la anulas, se anula."
+                  : "Nothing was recorded. The guardian does not argue: cancel it and it is cancelled."
+                : tono === "ok"
+                  ? es
+                    ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite. Puedes abrirla.`
+                    : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit. You can open it.`
+                  : es
+                    ? `Reduce el tamaño a ${CONTRATOS_AJUSTADOS} contratos para dejar el riesgo en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
+                    : `Reduce size to ${CONTRATOS_AJUSTADOS} contracts to bring risk to ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
+            return (
+              <div
+                role="status"
+                aria-live="polite"
+                className="rounded-[2px] mb-3 relative overflow-hidden"
                 style={{
-                  width: 20,
-                  height: 20,
-                  background: "color-mix(in oklab, rgb(var(--pnl-neg)) 18%, transparent)",
-                  color: "rgb(var(--pnl-neg))",
-                  border: "1px solid rgb(var(--pnl-neg) / 0.45)",
+                  padding: "16px 18px 16px 20px",
+                  background: `color-mix(in oklab, ${tinte} 10%, transparent)`,
+                  border: `1px solid color-mix(in oklab, ${tinte} 28%, transparent)`,
+                  boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.06)",
                 }}
               >
-                <AlertTriangle size={12} strokeWidth={2.4} style={{ color: "rgb(var(--pnl-neg))" }} />
-              </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgb(var(--pnl-neg))", fontWeight: 700 }}
-              >
-                {es ? "Operación bloqueada" : "Trade blocked"}
-              </span>
-            </div>
-            <p className="m-0" style={{ fontSize: 12, lineHeight: 1.5, color: "var(--ink-2)" }}>
-              {es
-                ? "Reduce el tamaño a 2 contratos para mantener el riesgo dentro de tu límite."
-                : "Reduce size to 2 contracts to keep risk within your limit."}
-            </p>
-          </div>
+                <span
+                  aria-hidden
+                  className="absolute left-0 top-0 bottom-0"
+                  style={{ width: 3, background: tinte }}
+                />
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    aria-hidden
+                    className="inline-grid place-items-center rounded-full"
+                    style={{
+                      width: 20,
+                      height: 20,
+                      background: `color-mix(in oklab, ${tinte} 18%, transparent)`,
+                      color,
+                      border: `1px solid color-mix(in oklab, ${tinte} 45%, transparent)`,
+                    }}
+                  >
+                    {tono === "ok" ? (
+                      <ShieldCheck size={12} strokeWidth={2.4} style={{ color }} />
+                    ) : (
+                      <AlertTriangle size={12} strokeWidth={2.4} style={{ color }} />
+                    )}
+                  </span>
+                  <span
+                    className="tnum"
+                    style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color, fontWeight: 700 }}
+                  >
+                    {titulo}
+                  </span>
+                </div>
+                <p className="m-0" style={{ fontSize: 12, lineHeight: 1.5, color: "var(--ink-2)" }}>
+                  {cuerpo}
+                </p>
+              </div>
+            );
+          })()}
           {/* R21-3b: action buttons stack vertically on mobile (flex-col sm:flex-row)
               so the longest label "Ajustar a 2 contratos" / "Adjust to 2 contracts"
               (≈147px at 12px/600) fits without overflowing the ≈115px inner half-width
@@ -235,35 +337,63 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               curva var(--ease-suave) del sistema, `hover:-translate-y-0.5`
               y `focus-visible:ring` con acento, alineando el lenguaje de
               interacción con los CTAs del Hero y de FinalCTANew. */}
+          {/* Los botones cambian con el estado y HACEN lo que dicen. */}
           <div className="flex flex-col sm:flex-row gap-2.5">
-            <button
-              className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
-              style={{
-                borderRadius: 4,
-                background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                color: "rgb(var(--accent-base))",
-                border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              {es ? "Ajustar a 2 contratos" : "Adjust to 2 contracts"}
-            </button>
-            <button
-              className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
-              style={{
-                borderRadius: 4,
-                background: "transparent",
-                color: "var(--ink-2)",
-                border: "1px solid rgb(var(--divider) / 0.13)",
-                fontSize: 12,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              {es ? "Anular" : "Cancel"}
-            </button>
+            {estado === "bloqueado" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setEstado("ajustado")}
+                  className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+                  style={{
+                    borderRadius: 4,
+                    background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
+                    color: "rgb(var(--accent-base))",
+                    border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  {es
+                    ? `Ajustar a ${CONTRATOS_AJUSTADOS} contratos`
+                    : `Adjust to ${CONTRATOS_AJUSTADOS} contracts`}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEstado("anulado")}
+                  className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+                  style={{
+                    borderRadius: 4,
+                    background: "transparent",
+                    color: "var(--ink-2)",
+                    border: "1px solid rgb(var(--divider) / 0.13)",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  {es ? "Anular" : "Cancel"}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setEstado("bloqueado")}
+                className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+                style={{
+                  borderRadius: 4,
+                  background: "transparent",
+                  color: "var(--ink-2)",
+                  border: "1px solid rgb(var(--divider) / 0.13)",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                {es ? "Volver al estado inicial" : "Back to the initial state"}
+              </button>
+            )}
           </div>
         </motion.div>
 

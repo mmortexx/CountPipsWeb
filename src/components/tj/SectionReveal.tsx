@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { curva } from "@/lib/motion";
 
 /**
  * SectionReveal — puerto del `_reveal()` del HTML de referencia: cada
@@ -48,7 +49,9 @@ export function SectionReveal() {
               { opacity: 0, transform: "translateY(22px)" },
               { opacity: 1, transform: "none" },
             ],
-            { duration: 650, easing: "var(--ease-suave)" }
+            // `curva()` resuelve el token del CSS: la Web Animations API
+            // no admite `var(...)` aquí (ver src/lib/motion.ts).
+            { duration: 650, easing: curva("--ease-suave") }
           );
         });
       },

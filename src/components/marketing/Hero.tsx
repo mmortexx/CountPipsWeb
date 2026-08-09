@@ -223,10 +223,23 @@ export function Hero() {
               (Hero arriba, FinalCTA abajo) refuerza la lectura de par
               coordinado a lo largo de la página y elimina el salto visual
               de 2 px entre las dos llamadas a la acción principales. */}
-          <div data-seq className="flex flex-col items-center gap-3.5 sm:flex-row sm:items-center sm:justify-center lg:flex-col lg:items-end lg:self-end lg:justify-start">
+          {/* ── LOS DOS BOTONES, DEL MISMO ANCHO ──────────────────────
+              En escritorio se apilaban con `lg:items-end` y ancho
+              natural, así que quedaban alineados por la derecha y
+              desiguales por la izquierda: 238 px el primero y 178 el
+              segundo, con un escalón de 60 px entre ambos. Un par de
+              llamadas a la acción con el canto izquierdo dentado se lee
+              como descuido, no como jerarquía — la jerarquía ya la da
+              que uno vaya relleno y el otro perfilado.
+
+              `grid-cols-[max-content]` hace que la columna mida lo que
+              el más ancho de los dos, y `w-full` estira al otro hasta
+              ahí. Se ajusta solo si mañana cambia el texto o el idioma,
+              que es la razón de no fijar un ancho a mano. */}
+          <div data-seq className="flex flex-col items-center gap-3.5 sm:flex-row sm:items-center sm:justify-center lg:grid lg:grid-cols-[max-content] lg:justify-end lg:self-end">
             <Link
               href="/demo"
-              className="inline-flex h-[52px] min-w-[180px] w-fit items-center justify-center gap-2.5 rounded-[2px] px-7 text-[15px] font-semibold outline-none transition-[background-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="inline-flex h-[52px] min-w-[180px] w-fit lg:w-full items-center justify-center gap-2.5 rounded-[2px] px-7 text-[15px] font-semibold outline-none transition-[background-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{ background: "rgb(var(--accent-base))", color: "rgb(var(--accent-ink))" }}
             >
               {es ? "Ver la demo interactiva" : "See the interactive demo"}
@@ -234,7 +247,7 @@ export function Hero() {
             </Link>
             <Link
               href="/pricing"
-              className="inline-flex h-[52px] min-w-[180px] w-fit items-center justify-center gap-2.5 rounded-[2px] border px-7 text-[15px] font-semibold text-[var(--ink)] outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="inline-flex h-[52px] min-w-[180px] w-fit lg:w-full items-center justify-center gap-2.5 rounded-[2px] border px-7 text-[15px] font-semibold text-[var(--ink)] outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{ borderColor: "rgb(var(--divider) / 0.20)" }}
             >
               <Play size={14} fill="currentColor" aria-hidden />
@@ -272,7 +285,15 @@ export function Hero() {
               etiquetas siguen `uppercase tracking-[0.16em]` (ya estaban);
               los valores ahora `fontWeight: 600` (semibold) para leer la
               jerarquía sin depender solo del tamaño. */}
-          <dl className="m-0 grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-3 lg:mx-0 lg:grid-cols-5" style={{ justifyItems: "center" }}>
+          {/* La rejilla iba `2 · 3 · 5` columnas para CUATRO datos, así
+              que no cuadraba en ninguno de los dos saltos: en tableta
+              dejaba una fila huérfana de uno (3 + 1) y en escritorio una
+              quinta columna vacía. Cuatro elementos piden divisores de
+              cuatro: 2 y 4. La quinta columna venía de cuando había un
+              quinto dato —la versión «1.4.2»—, que se retiró por ser de
+              un producto que aún no se puede descargar; la rejilla se
+              quedó con el hueco. */}
+          <dl className="m-0 grid grid-cols-2 gap-x-8 gap-y-7 sm:grid-cols-4 lg:mx-0" style={{ justifyItems: "center" }}>
             {specs.map((s) => (
               <div key={s.k} className="flex min-w-0 flex-col gap-1.5">
                 <dt

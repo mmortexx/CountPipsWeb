@@ -50,14 +50,18 @@ export function Changelog() {
           stage: "pilot",
         },
         {
-          version: "02",
+          /* Iba numerada 01 · 02 · 02 · 03: el «02» estaba repetido, así
+             que la hoja de ruta se leía con un paso duplicado y otro
+             ausente. React además usa este valor como clave de la lista
+             y avisaba por consola de dos hermanos con la misma. */
+          version: "03",
           title: "Importación ampliada",
           description: "Más formatos de bróker y migración desde otros journals.",
           date: "Más adelante",
           stage: "future",
         },
         {
-          version: "03",
+          version: "04",
           title: "Modo prop firm avanzado",
           description:
             "Reglas de pérdida diaria, drawdown máximo y reset por cuenta.",
@@ -83,14 +87,15 @@ export function Changelog() {
           stage: "pilot",
         },
         {
-          version: "02",
+          // Mismo arreglo de numeración que en la versión española.
+          version: "03",
           title: "Expanded imports",
           description: "More broker formats and migration from other journals.",
           date: "Later",
           stage: "future",
         },
         {
-          version: "03",
+          version: "04",
           title: "Advanced prop firm mode",
           description: "Daily loss rules, max drawdown and account reset.",
           date: "Later",
