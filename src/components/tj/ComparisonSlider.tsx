@@ -271,7 +271,7 @@ export function ComparisonSlider() {
         <Reveal delay={0.1} y={28}>
           <div
             ref={containerRef}
-            className="tj-paper rounded-[2px] overflow-hidden h-[320px] sm:h-[300px] relative select-none mt-10 max-w-3xl mx-auto border border-[rgb(var(--divider)/0.16)] transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="tj-paper rounded-[2px] overflow-hidden h-[320px] sm:h-[300px] relative select-none mt-10 max-w-3xl mx-auto border border-[rgb(var(--divider)/0.16)] transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)]"
             style={{ touchAction: "none" }}
           >
             {/* ─────────── BEFORE (base layer, full width) ─────────── */}
@@ -431,7 +431,7 @@ export function ComparisonSlider() {
               />
               {/* Circular grip — 44px tap target, paper material */}
               <span
-                className="tj-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-11 h-11 rounded-full text-primary border border-[rgb(var(--divider)/0.28)] ring-1 ring-[rgb(var(--accent-base)/0.45)] group-hover/handle:ring-[rgb(var(--accent-base)/0.70)] shadow-[0_8px_24px_-6px_rgb(var(--accent-base)/0.55)] group-hover/handle:shadow-[0_10px_28px_-6px_rgb(var(--accent-base)/0.70)] transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/handle:scale-105"
+                className="tj-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-11 h-11 rounded-full text-primary border border-[rgb(var(--divider)/0.28)] ring-1 ring-[rgb(var(--accent-base)/0.45)] group-hover/handle:ring-[rgb(var(--accent-base)/0.70)] shadow-[0_8px_24px_-6px_rgb(var(--accent-base)/0.55)] group-hover/handle:shadow-[0_10px_28px_-6px_rgb(var(--accent-base)/0.70)] transition-[transform,box-shadow] duration-200 ease-[var(--ease-suave)] group-hover/handle:scale-105"
                 style={{ transform: "translateZ(0) translate(-50%, -50%)" }}
                 aria-hidden="true"
               >

@@ -172,7 +172,7 @@ function FlowColumn({
 }) {
   return (
     <div
-      className="tj-paper relative rounded-[2px] p-5 sm:p-6 transition-[transform,border-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5"
+      className="tj-paper relative rounded-[2px] p-5 sm:p-6 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5"
       style={{ border: `1px solid color-mix(in oklab, ${color} 22%, rgb(var(--divider) / 0.10))` }}
     >
       {/* Column header */}

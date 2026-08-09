@@ -205,7 +205,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                       background:
                         "linear-gradient(90deg, rgb(var(--pnl-neg)) 0%, color-mix(in oklab, rgb(var(--pnl-neg)) 70%, transparent) 100%)",
                       boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.20)",
-                      transition: "width 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+                      transition: "width 0.45s var(--ease-suave)",
                     }}
                   >
                     {/* R24-1c: bright leading-edge cap — a 2px solid pnl-neg

@@ -216,7 +216,7 @@ export function Hero() {
 
               P1 — gap entre CTAs subido de `gap-3` (12 px) a `gap-3.5`
               (14 px): paridad con FinalCTANew. Las transiciones pasan de
-              `transition-colors duration-150` a `transition-[background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]` + `hover:-translate-y-0.5` para que el lift del hover sea el mismo gesto que el de las tarjetas KPI y los bento cards, manteniendo la consistencia del lenguaje de interacción en toda la home. El `min-w-[180px]` asegura que el botón secundario no quede visualmente enano frente al primario en móvil — los dos leen como un par coordinado.
+              `transition-colors duration-150` a `transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)]` + `hover:-translate-y-0.5` para que el lift del hover sea el mismo gesto que el de las tarjetas KPI y los bento cards, manteniendo la consistencia del lenguaje de interacción en toda la home. El `min-w-[180px]` asegura que el botón secundario no quede visualmente enano frente al primario en móvil — los dos leen como un par coordinado.
               P1-r2 — altura `h-[50px]` → `h-[52px]`: paridad exacta con
               FinalCTANew (que ya estaba en 52 px). Unificar la altura del
               CTA primario/secundario entre las dos secciones de compra
@@ -226,7 +226,7 @@ export function Hero() {
           <div data-seq className="flex flex-col items-center gap-3.5 sm:flex-row sm:items-center sm:justify-center lg:flex-col lg:items-end lg:self-end lg:justify-start">
             <Link
               href="/demo"
-              className="inline-flex h-[52px] min-w-[180px] w-fit items-center justify-center gap-2.5 rounded-[2px] px-7 text-[15px] font-semibold outline-none transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="inline-flex h-[52px] min-w-[180px] w-fit items-center justify-center gap-2.5 rounded-[2px] px-7 text-[15px] font-semibold outline-none transition-[background-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{ background: "rgb(var(--accent-base))", color: "rgb(var(--accent-ink))" }}
             >
               {es ? "Ver la demo interactiva" : "See the interactive demo"}
@@ -234,7 +234,7 @@ export function Hero() {
             </Link>
             <Link
               href="/pricing"
-              className="inline-flex h-[52px] min-w-[180px] w-fit items-center justify-center gap-2.5 rounded-[2px] border px-7 text-[15px] font-semibold text-[var(--ink)] outline-none transition-[background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="inline-flex h-[52px] min-w-[180px] w-fit items-center justify-center gap-2.5 rounded-[2px] border px-7 text-[15px] font-semibold text-[var(--ink)] outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{ borderColor: "rgb(var(--divider) / 0.20)" }}
             >
               <Play size={14} fill="currentColor" aria-hidden />

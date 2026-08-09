@@ -399,7 +399,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                   style={{
                     width: `${(answeredCount / QUESTIONS.length) * 100}%`,
                     background: "rgb(var(--accent-base))",
-                    transition: "width 0.22s cubic-bezier(0.22,1,0.36,1)",
+                    transition: "width 0.22s var(--ease-suave)",
                   }}
                 />
               </div>
@@ -643,7 +643,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                         style={{
                           width: `${respondidas ? pct : 0}%`,
                           background: barColor(pct),
-                          transition: "width 0.3s cubic-bezier(0.22,1,0.36,1), background-color 0.3s ease",
+                          transition: "width 0.3s var(--ease-suave), background-color 0.3s ease",
                         }}
                       />
                     </div>

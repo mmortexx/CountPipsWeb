@@ -3,6 +3,29 @@
 import { useLang } from "@/lib/i18n";
 import { motion } from "framer-motion";
 import { Reveal } from "@/components/tj/Reveal";
+import { METRICS } from "@/lib/trading/data";
+import { getRDistribution } from "@/lib/trading/fixtures";
+import { fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
+
+/* ── TODA CIFRA DE ESTA SECCIÓN SALE DEL MOTOR ─────────────────────────
+   Antes estaban escritas a mano, y la tarjeta se contradecía a sí misma
+   en tres sitios a la vez: el histograma dibujaba un 63 % de ganadoras
+   bajo un pie que declaraba 50 %; implicaba +1,16R junto a una ficha que
+   decía +0,32R; y el rótulo anunciaba «60 ops» sobre una muestra de 200.
+   Ninguna de las cuatro fichas coincidía ya con `METRICS`, y la peor
+   desviación no era cosmética: el drawdown máximo se anunciaba como
+   −8,0 % cuando el real es −10,0 %. Una cifra copiada a mano envejece
+   hacia el lado favorable sin que nadie lo decida.
+
+   `METRICS` y `getRDistribution()` se calculan sobre las MISMAS 200
+   operaciones deterministas que alimentan /demo, así que la home y la
+   demo cuentan ahora la misma historia — que era justo la intención
+   declarada en la cabecera de `fixtures.ts`. Nada de esto es aleatorio:
+   la semilla es fija y el resultado, reproducible. */
+const R_BINS = getRDistribution();
+const R_MAX_COUNT = Math.max(1, ...R_BINS.map((b) => b.count));
+/** Cubo con más operaciones: se marca como moda en el gráfico. */
+const R_MODE_INDEX = R_BINS.findIndex((b) => b.count === R_MAX_COUNT);
 
 /**
  * MetricsShowcaseNew — sección `#metrics` del HTML. Dos columnas:
@@ -117,10 +140,18 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               separación la da el relleno interior de cada celda. */}
           <ul className="m-0 p-0 list-none grid grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
             {[
-              { l: "Sharpe", v: "3,34", c: "rgb(var(--pnl-pos))" },
-              { l: "Profit factor", v: "1,56", c: "var(--ink)" },
-              { l: "Expectancy", v: "+0,32R", c: "rgb(var(--pnl-pos))" },
-              { l: "Max DD", v: "−8,0 %", c: "rgb(var(--pnl-neg))" },
+              { l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), c: "rgb(var(--pnl-pos))" },
+              { l: "Profit factor", v: fmtNum(METRICS.profitFactor, lang, 2), c: "var(--ink)" },
+              {
+                l: es ? "Esperanza" : "Expectancy",
+                v: fmtR(METRICS.expectancyR, lang, 2),
+                c: METRICS.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
+              },
+              {
+                l: "Max DD",
+                v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
+                c: "rgb(var(--pnl-neg))",
+              },
             ].map((m) => (
               <li
                 key={m.l}
@@ -205,61 +236,69 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                 border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
               }}
             >
-              {/* El ternario estaba, pero con el mismo texto en las dos
-                  ramas: una traducción que se dejó a medias. Y quedaba en
-                  contradicción con su propio gráfico — el rótulo decía
-                  «60 trades» mientras el globo de cada barra, treinta
-                  líneas más abajo, dice «operaciones». El resto del sitio
-                  usa «ops» en español sin excepción. */}
-              {es ? "60 ops" : "60 trades"}
+              {/* El recuento sale de la propia muestra. Estaba fijo en
+                  «60» sobre un conjunto de 200 operaciones: el rótulo que
+                  dice cuántas se han contado no puede ser el único dato
+                  del gráfico que nadie cuenta. */}
+              {es
+                ? `${METRICS.closedCount} ops`
+                : `${METRICS.closedCount} trades`}
             </span>
           </div>
-          {/* Histograma hardcoded — R20-3b: each bar now exposes a native
-              `title` tooltip with its R-bucket + approx trade count (out of
-              the 60-trades badge), plus a hover lift (translateY -3%) +
-              brightness bump so the histogram reads as interactive rather
-              than decorative. Bars remain aria-hidden (the labels row below
-              carries the semantics for AT).
-              R24-1c: wrapped the bars in a relative container + added a
-              1px baseline divider beneath the bars so the chart reads as
-              having an axis; the MODA label now lives in a small accent-
-              tinted pill so it reads as a stamped marker rather than
-              floating text that visually merges with the chart card’s top. */}
+          {/* ── EL HISTOGRAMA, AHORA CALCULADO ───────────────────────────
+              Las nueve alturas estaban escritas a mano y el color se
+              elegía por el ÍNDICE de la barra: los cuatro primeros cubos
+              en verde y el resto en rojo. Como los cuatro primeros son
+              las PÉRDIDAS, el gráfico insignia de un diario de trading
+              pintaba las pérdidas de verde y las ganancias de rojo.
+
+              Ahora cada cubo trae su propio `losing` desde
+              `getRDistribution()`, así que el color lo decide el signo de
+              la R y no puede volver a invertirse al reordenar la lista.
+              La altura es proporcional al cubo más poblado, no a un total
+              inventado.
+
+              Los cubos vacíos (no hay operaciones entre −0,5R y +0,5R) se
+              dibujan como un muñón de 2 px sobre el eje en vez de
+              desaparecer: un hueco sin marca se lee como fallo de
+              dibujo, y con marca se lee como lo que es — esta operativa
+              o se come el stop entero o deja correr.
+
+              Las barras siguen `aria-hidden`; la fila de rótulos de abajo
+              y el resumen de debajo llevan la semántica para lectores de
+              pantalla. */}
           {/* T2c — envoltorio `min-w-0` para que el histograma no fuerce
-              overflow horizontal en móvil (los 9 bares + 8 gaps ya cabían,
-              pero el `min-w-0` protege contra sub-pixel rounding en 320 px). */}
+              overflow horizontal en móvil (los cubos y sus huecos ya
+              cabían, pero `min-w-0` protege contra sub-pixel rounding en
+              320 px). */}
           <div className="relative min-w-0">
           <div className="flex items-end gap-1.5" style={{ height: 160 }}>
-            {[
-              { h: 14, r: "−3R" },
-              { h: 28, r: "−2R" },
-              { h: 46, r: "−1R" },
-              { h: 62, r: "0R" },
-              { h: 80, r: "+1R" },
-              { h: 68, r: "+2R" },
-              { h: 52, r: "+3R" },
-              { h: 36, r: "+4R" },
-              { h: 20, r: "+5R" },
-            ].map((b, i) => {
-              const count = Math.round((b.h / 406) * 60);
+            {R_BINS.map((b, i) => {
+              const pct = (b.count / R_MAX_COUNT) * 100;
+              const rango = `${fmtR(b.from, lang, 1)} … ${fmtR(b.to, lang, 1)}`;
+              const cuenta = es
+                ? `${b.count} ${b.count === 1 ? "operación" : "operaciones"}`
+                : `${b.count} ${b.count === 1 ? "trade" : "trades"}`;
               return (
                 <div
-                  key={i}
-                  title={`${b.r} · ${es ? `${count} operaciones` : `${count} trades`}`}
-                  className="flex-1 rounded-t relative cursor-default transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[3%]"
+                  key={`${b.from}`}
+                  title={`${rango} · ${cuenta}`}
+                  className="flex-1 rounded-t relative cursor-default transition-transform duration-200 ease-[var(--ease-suave)] hover:-translate-y-[3%]"
                   style={{
-                    height: `${b.h}%`,
+                    // Mínimo de 2 px para que un cubo vacío deje marca en
+                    // el eje en lugar de un agujero.
+                    height: b.count === 0 ? "2px" : `${Math.max(pct, 3)}%`,
                     background:
-                      i === 4
+                      i === R_MODE_INDEX
                         ? "rgb(var(--accent-base))"
-                        : i < 4
-                          ? "color-mix(in oklab, rgb(var(--pnl-pos)) 70%, transparent)"
-                          : "color-mix(in oklab, rgb(var(--pnl-neg)) 60%, transparent)",
-                    opacity: 0.85,
+                        : b.losing
+                          ? "color-mix(in oklab, rgb(var(--pnl-neg)) 60%, transparent)"
+                          : "color-mix(in oklab, rgb(var(--pnl-pos)) 70%, transparent)",
+                    opacity: b.count === 0 ? 0.35 : 0.85,
                   }}
                   aria-hidden
                 >
-                  {i === 4 && (
+                  {i === R_MODE_INDEX && (
                     <span
                       className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px]"
                       style={{
@@ -280,25 +319,48 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
           {/* Baseline axis — 1px hairline beneath the bars. */}
           <div aria-hidden className="h-px w-full" style={{ background: "rgb(var(--divider) / 0.13)" }} />
           </div>
+          {/* Eje: un rótulo por cubo, con su borde izquierdo. Antes eran
+              nueve etiquetas fijas (−3R…+5R) que no describían ningún
+              dato — la muestra real va de −1,5R a +2,5R. */}
           <div className="mt-2 flex items-center justify-between">
-            {["−3R", "−2R", "−1R", "0R", "+1R", "+2R", "+3R", "+4R", "+5R"].map((b) => (
+            {R_BINS.map((b) => (
               <span
-                key={b}
-                className="tnum"
+                key={b.from}
+                className="tnum flex-1 text-center"
                 style={{ fontSize: 9, color: "var(--ink-3)" }}
               >
-                {b}
+                {fmtR(b.from, lang, 1)}
               </span>
             ))}
           </div>
+          {/* Resumen del gráfico para lectores de pantalla: las barras van
+              `aria-hidden`, así que sin esto la tarjeta entera era mudo
+              decorado. Sale del mismo cálculo que dibuja las barras. */}
+          <p className="sr-only">
+            {es
+              ? `Distribución de R-múltiplo de ${METRICS.closedCount} operaciones de muestra: ` +
+                R_BINS.map(
+                  (b) =>
+                    `entre ${fmtR(b.from, lang, 1)} y ${fmtR(b.to, lang, 1)}, ${b.count} ${b.count === 1 ? "operación" : "operaciones"}`
+                ).join("; ") +
+                "."
+              : `R-multiple distribution across ${METRICS.closedCount} sample trades: ` +
+                R_BINS.map(
+                  (b) =>
+                    `between ${fmtR(b.from, lang, 1)} and ${fmtR(b.to, lang, 1)}, ${b.count} ${b.count === 1 ? "trade" : "trades"}`
+                ).join("; ") +
+                "."}
+          </p>
           {/* T2c — `gap-3` → `gap-4` para igualar el ritmo de las tarjetas
-              de ratios; los valores largos (“+0,32R”, “1,59”) ya no se
-              pegan a la etiqueta del vecino. */}
+              de ratios; los valores largos no se pegan a la etiqueta del
+              vecino. Las tres cifras salen del motor: eran «50 %»,
+              «+0,32R» y «1,59» escritas a mano, y sólo la primera se
+              acercaba a la verdad. */}
           <div className="mt-5 grid grid-cols-3 gap-4 pt-4 border-t" style={{ borderColor: "rgb(var(--divider) / 0.06)" }}>
             {[
-              { l: es ? "Ganadoras" : "Winners", v: "50 %" },
-              { l: es ? "R medio" : "Avg R", v: "+0,32R" },
-              { l: es ? "Payoff" : "Payoff", v: "1,59" },
+              { l: es ? "Ganadoras" : "Winners", v: fmtPct(METRICS.winRate, lang, 1) },
+              { l: es ? "R medio" : "Avg R", v: fmtR(METRICS.expectancyR, lang, 2) },
+              { l: es ? "Payoff" : "Payoff", v: fmtNum(METRICS.payoff, lang, 2) },
             ].map((s) => (
               <div key={s.l} className="relative">
                 <div
@@ -315,6 +377,26 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               </div>
             ))}
           </div>
+          {/* Qué son estas cifras. No es letra pequeña defensiva: la
+              sección enseña ratios de una operativa, y quien la lee tiene
+              derecho a saber que salen del conjunto de muestra de la demo
+              y no de una cuenta real. Decirlo una vez, aquí, evita
+              tener que matizarlo en cada número — y es lo que el contrato
+              del proyecto exige distinguir. El Sharpe se declara
+              anualizado porque un Sharpe sin periodo no significa nada. */}
+          <p
+            className="mt-4 pt-3 border-t"
+            style={{
+              borderColor: "rgb(var(--divider) / 0.06)",
+              fontSize: 11,
+              lineHeight: 1.5,
+              color: "var(--ink-3)",
+            }}
+          >
+            {es
+              ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
+              : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualized.`}
+          </p>
         </motion.div>
       </div>
     </section>

@@ -374,8 +374,8 @@ const cookies: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Porque la analítica opcional requiere tu permiso. Si rechazas, la web funciona igual y PostHog no se carga. Para retirar un permiso concedido, borra la preferencia de consentimiento del sitio y vuelve a elegir «Solo necesarias».",
-          en: "Because optional analytics requires your permission. If you decline, the site works the same and PostHog is not loaded. To withdraw a previous choice, clear this site's consent preference and choose “Necessary only”.",
+          es: "Porque la analítica opcional requiere tu permiso. Si rechazas, la web funciona igual y PostHog no se carga. Para cambiar de idea en cualquier momento, pulsa «Preferencias de privacidad» al final de cualquier página: el aviso vuelve a salir y puedes elegir «Solo necesarias». La medición se detiene en ese mismo instante.",
+          en: "Because optional analytics requires your permission. If you decline, the site works the same and PostHog is not loaded. To change your mind at any time, use “Privacy preferences” at the bottom of any page: the notice reappears and you can choose “Necessary only”. Measurement stops that instant.",
         },
       ],
     },
@@ -386,8 +386,8 @@ const cookies: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Desde los ajustes de tu navegador, borrando los datos de sitios web y volviendo a elegir «Solo necesarias» en el aviso. También puedes escribirnos para solicitar la supresión de una solicitud de acceso anticipado.",
-          en: "From your browser settings, clear this site's data and choose “Necessary only” in the notice again. You can also write to us to request deletion of an early-access application.",
+          es: "Pulsa «Preferencias de privacidad» al final de cualquier página y elige «Solo necesarias»: eso retira el permiso y detiene la medición. Para borrar además lo ya guardado en tu equipo, vacía los datos de este sitio desde los ajustes de tu navegador. Y si quieres suprimir una solicitud de acceso anticipado, escríbenos.",
+          en: "Use “Privacy preferences” at the bottom of any page and choose “Necessary only”: that withdraws the permission and stops measurement. To also erase what is already stored on your device, clear this site's data from your browser settings. And to delete an early-access application, write to us.",
         },
       ],
     },

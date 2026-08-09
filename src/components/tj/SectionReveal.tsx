@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 /**
  * SectionReveal — puerto del `_reveal()` del HTML de referencia: cada
  * <section> de nivel superior (excepto el hero #top) entra con un rise
- * de 22 px + fade (0.65 s, cubic-bezier(.22,1,.36,1)) cuando asoma en
+ * de 22 px + fade (0.65 s, var(--ease-suave)) cuando asoma en
  * viewport (threshold 10 %, rootMargin -8 % inferior).
  *
  * La duración y el desplazamiento están afinados al mismo presupuesto
@@ -48,7 +48,7 @@ export function SectionReveal() {
               { opacity: 0, transform: "translateY(22px)" },
               { opacity: 1, transform: "none" },
             ],
-            { duration: 650, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+            { duration: 650, easing: "var(--ease-suave)" }
           );
         });
       },

@@ -337,7 +337,7 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
               {FEATURES.map((f) => (
                 <div
                   key={f.id}
-                  className="tj-paper rounded-[2px] p-4 transition-[border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.25)]"
+                  className="tj-paper rounded-[2px] p-4 transition-[border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.25)]"
                   style={{ border: "1px solid rgb(var(--divider) / 0.12)" }}
                 >
                   <h3 className="m-0 mb-2 text-[13px] font-semibold" style={{ color: "var(--ink)" }}>

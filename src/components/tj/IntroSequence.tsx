@@ -66,7 +66,7 @@ export function IntroSequence() {
           {
             duration: 1150,
             delay: 50 + i * 110,
-            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+            easing: "var(--ease-salida)",
             // `both`: mantiene el primer keyframe (oculto) durante el
             // delay — sin salto al retirar la clase — y el último al
             // acabar (que coincide con el estado natural del elemento).

@@ -211,7 +211,7 @@ export function Wrapped() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.5, delay: (i % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className={`group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[rgb(var(--accent-base)/0.35)] ${span}`}
+                className={`group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.35)] ${span}`}
               >
                 <div className="relative p-6 md:p-7 flex flex-col h-full justify-between gap-4 cq-wrap min-w-0">
                   {/* R24-1c: editorial index (01 — 06) before the eyebrow so

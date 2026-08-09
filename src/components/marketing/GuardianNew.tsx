@@ -232,12 +232,12 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               P1 — `min-h-[44px]` → `min-h-[48px]`: subimos 4 px el umbral táctil
               de los dos botones del mockup para reforzar la lectura "tocable".
               + `transition-[background-color,border-color,transform]` con la
-              curva cubic-bezier(0.22,1,0.36,1) del sistema, `hover:-translate-y-0.5`
+              curva var(--ease-suave) del sistema, `hover:-translate-y-0.5`
               y `focus-visible:ring` con acento, alineando el lenguaje de
               interacción con los CTAs del Hero y de FinalCTANew. */}
           <div className="flex flex-col sm:flex-row gap-2.5">
             <button
-              className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{
                 borderRadius: 4,
                 background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
@@ -251,7 +251,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               {es ? "Ajustar a 2 contratos" : "Adjust to 2 contracts"}
             </button>
             <button
-              className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{
                 borderRadius: 4,
                 background: "transparent",

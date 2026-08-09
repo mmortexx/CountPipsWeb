@@ -117,7 +117,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             color: "rgb(var(--accent-base))",
             background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
             border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
-            transition: "color 0.18s cubic-bezier(0.22,1,0.36,1)",
+            transition: "color 0.18s var(--ease-suave)",
           }}
         >
           {fmtNum(value, Number.isInteger(step) ? 0 : 2)}{suffix}
@@ -286,7 +286,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
                   background: c.sampleAdequate
                     ? "linear-gradient(90deg, color-mix(in oklab, rgb(var(--pnl-pos)) 45%, transparent), rgb(var(--pnl-pos)))"
                     : "linear-gradient(90deg, color-mix(in oklab, rgb(var(--pnl-neg)) 45%, transparent), rgb(var(--pnl-neg)))",
-                  transition: "width 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+                  transition: "width 0.3s var(--ease-suave)",
                 }}
               />
               {/* minSample marker */}
@@ -339,7 +339,7 @@ function normalCdf(x: number): number {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
+      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
       <div className="tnum relative" style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
@@ -347,7 +347,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       </div>
       <div
         className="tnum min-w-0 break-words relative"
-        style={{ fontSize: 18, fontWeight: 700, marginTop: 4, color, transition: "color 0.18s cubic-bezier(0.22,1,0.36,1)" }}
+        style={{ fontSize: 18, fontWeight: 700, marginTop: 4, color, transition: "color 0.18s var(--ease-suave)" }}
       >
         {value}
       </div>

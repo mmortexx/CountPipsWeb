@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { useLang } from "@/lib/i18n";
+import { CONSENT_REOPEN_EVENT, readConsent, writeConsent } from "@/lib/consent";
 
 /**
  * CookieConsent — small, bottom-left bilingual banner.
@@ -64,8 +65,6 @@ import { useLang } from "@/lib/i18n";
  * synchronous setState-in-effect). A `done` latch ensures whichever fires
  * first wins and the loser is a no-op.
  */
-const STORAGE_KEY = "tj-cookie-consent";
-
 export function CookieConsent() {
   const { lang } = useLang();
   const es = lang === "es";
@@ -75,14 +74,24 @@ export function CookieConsent() {
   // (the visible state is driven separately by the scroll/5 s timer below).
   const [dismissed, setDismissed] = useState<boolean>(() => {
     if (typeof window === "undefined") return true;
-    try {
-      const v = window.localStorage.getItem(STORAGE_KEY);
-      return v === "accepted" || v === "declined";
-    } catch {
-      return false;
-    }
+    return readConsent() !== null;
   });
   const [visible, setVisible] = useState(false);
+
+  /* Reapertura desde el control de "Preferencias de privacidad" del pie
+     o de /cookies. Sin esto, el aviso no volvía a salir jamás una vez
+     elegido, y la política prometía por escrito que sí: la vía real para
+     cambiar de idea era abrir las herramientas del navegador. Aquí se
+     salta el retardo de scroll/5 s a propósito — el visitante acaba de
+     pedirlo, así que la respuesta es inmediata. */
+  useEffect(() => {
+    const reopen = () => {
+      setDismissed(false);
+      setVisible(true);
+    };
+    window.addEventListener(CONSENT_REOPEN_EVENT, reopen);
+    return () => window.removeEventListener(CONSENT_REOPEN_EVENT, reopen);
+  }, []);
 
   // Reveal on first scroll OR 5 s after mount — whichever fires first.
   // Rationale: the old 2 s auto-reveal interrupted screen-reader page-load
@@ -120,12 +129,9 @@ export function CookieConsent() {
   function choose(choice: "accepted" | "declined") {
     setVisible(false);
     setDismissed(true);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, choice);
-      window.dispatchEvent(new CustomEvent("tj-consent-change", { detail: choice }));
-    } catch {
-      /* localStorage unavailable — keep in-memory dismissal only. */
-    }
+    // `writeConsent` guarda y avisa; si el almacenamiento está bloqueado,
+    // la elección vale igual para esta sesión (ver src/lib/consent.ts).
+    writeConsent(choice);
   }
 
   return (

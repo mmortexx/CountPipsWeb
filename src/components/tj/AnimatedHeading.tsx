@@ -1,7 +1,3 @@
-"use client";
-
-import { useEffect, useState } from "react";
-
 interface AnimatedHeadingProps {
   text: string;
   className?: string;
@@ -30,18 +26,51 @@ interface AnimatedHeadingProps {
  * the `text-gradient` class — applied to the char's own span so the
  * gradient reliably renders even though each char is `display: inline-block`.
  */
+/* ── TRES COSAS QUE CAMBIARON, Y POR QUÉ ───────────────────────────────
+
+   1. YA NO ES UN COMPONENTE DE CLIENTE. La animación la hacía React:
+      `useState(false)` + `useEffect`, con cada letra renderizada a
+      `opacity: 0` en línea. En una exportación estática eso deja el
+      titular de TODAS las páginas interiores invisible en el HTML
+      servido, y sólo aparece si el JavaScript arranca. Ahora la hace el
+      CSS (`.tj-char`, en globals.css): el estado final es el que está
+      escrito en la hoja, así que el titular se ve aunque no haya
+      JavaScript, y el componente puede renderizarse en servidor.
+
+   2. EL ESCALONADO TIENE TECHO. Eran 30 ms por letra sin límite: un
+      título de 48 caracteres tardaba 200 + 1.440 + 500 ≈ 2,1 s en
+      terminar de escribirse, siendo el elemento más grande de la
+      primera pantalla. Ahora el reparto total no pasa de
+      `STAGGER_TOTAL`: un titular largo escalona más fino en vez de
+      tardar más.
+
+   3. EL RETARDO MULTILÍNEA ESTABA MAL. Usaba `lineIndex * line.length`,
+      la longitud de la línea ACTUAL y no la suma de las anteriores, así
+      que con líneas de distinta longitud la segunda podía empezar antes
+      de que acabara la primera. Ahora se cuenta un índice global. */
+
+/** Techo del reparto: ninguna entrada se alarga más que esto. */
+const STAGGER_TOTAL = 420;
+/** Retardo antes del primer carácter. */
+const INITIAL_DELAY = 80;
+/** Tope por carácter, para que un titular corto no entre de golpe. */
+const CHAR_DELAY_MAX = 26;
+
 export function AnimatedHeading({ text, className = "", style, highlight }: AnimatedHeadingProps) {
-  const [animate, setAnimate] = useState(false);
-  const CHAR_DELAY = 30; // ms per character
-  const INITIAL_DELAY = 200; // ms before animation starts
-  const CHAR_DURATION = 500; // ms per character transition
-
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimate(true), INITIAL_DELAY);
-    return () => clearTimeout(timer);
-  }, []);
-
   const lines = text.split("\n");
+
+  // Cuanto más largo el titular, más fino el escalonado. El total nunca
+  // pasa de STAGGER_TOTAL.
+  const totalChars = Math.max(1, Array.from(text.replace(/\n/g, "")).length);
+  const charDelay = Math.min(CHAR_DELAY_MAX, STAGGER_TOTAL / totalChars);
+
+  // Caracteres acumulados antes de cada línea, para que el escalonado sea
+  // continuo de una línea a la siguiente.
+  const charsBefore: number[] = [];
+  lines.reduce((acc, line) => {
+    charsBefore.push(acc);
+    return acc + Array.from(line).length;
+  }, 0);
 
   // Pre-compute, per line, the [start, end) code-point range of the
   // highlight substring (if it appears in that line). A range of
@@ -101,25 +130,21 @@ export function AnimatedHeading({ text, className = "", style, highlight }: Anim
                           range.start >= 0 &&
                           charIndex >= range.start &&
                           charIndex < range.end;
-                        const delay =
-                          (lineIndex * line.length * CHAR_DELAY) +
-                          (charIndex * CHAR_DELAY);
+                        /* \u00CDndice GLOBAL de car\u00E1cter: se acumulan los de las
+                           l\u00EDneas anteriores, no la longitud de \u00E9sta. */
+                        const globalIndex = charsBefore[lineIndex] + charIndex;
+                        const delay = INITIAL_DELAY + globalIndex * charDelay;
                         return (
                           <span
                             key={ci}
-                            className={inHighlight ? "text-gradient" : undefined}
-                            style={{
-                              display: "inline-block",
-                              opacity: animate ? 1 : 0,
-                              transform: animate
-                                ? "translateX(0)"
-                                : "translateX(-18px)",
-                              transitionProperty: "opacity, transform",
-                              transitionDuration: `${CHAR_DURATION}ms`,
-                              transitionTimingFunction:
-                                "cubic-bezier(0.22, 1, 0.36, 1)",
-                              transitionDelay: `${delay}ms`,
-                            }}
+                            className={
+                              inHighlight ? "tj-char text-gradient" : "tj-char"
+                            }
+                            style={
+                              {
+                                "--tj-char-delay": `${Math.round(delay)}ms`,
+                              } as React.CSSProperties
+                            }
                           >
                             {char}
                           </span>

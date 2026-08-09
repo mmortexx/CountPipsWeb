@@ -114,6 +114,25 @@
      software de consumo. Ver la nota del canto afilado en @theme. */
   --radius: 3px;
 
+  /* ══════════════════════════════════════════════════════════════
+     CURVAS DE MOVIMIENTO
+     ══════════════════════════════════════════════════════════════
+     El sitio tiene UNA curva y la repetía escrita a mano en una
+     veintena de sitios de esta hoja, más otra vez en JavaScript
+     (`providers.tsx`, en el `MotionConfig`). Veinte copias de un valor
+     es un valor que ya no se puede cambiar: para ajustar el tacto del
+     sitio habría que encontrarlas todas y no fallar ninguna, y la que
+     se escape deja media web con un tempo y media con otro.
+
+     `--ease-suave` es la de siempre —un asentamiento rápido que frena
+     largo, la que da la sensación de "pieza que encaja"— y es la que
+     debe usarse por defecto. Las otras dos existían también en la
+     hoja, cada una en un único sitio, y se nombran para que se vea que
+     son excepciones deliberadas y no descuidos. */
+  --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-entrada-salida: cubic-bezier(0.76, 0, 0.24, 1);
+
   /* Accent — AZUL ACERO, el color de marca.
      ────────────────────────────────────────────────────────────────
      DOS COSAS QUE NO HAY QUE DESHACER, cada una porque ya se rompió:
@@ -651,7 +670,7 @@
   @media (hover: none) {
     a:active, button:active, [role="button"]:active {
       transform: scale(0.97);
-      transition: transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 120ms var(--ease-suave);
     }
   }
 
@@ -742,10 +761,23 @@
      so the depth-N hover deepening always eases smoothly. Tailwind
      utilities (`transition-colors`, `transition-all`, `transition-shadow`)
      still override per-element when they need different timing. */
+  /* `transition: all` era la regla, y es una mala idea en una hoja que
+     gobierna TODOS los enlaces y botones del sitio: `all` incluye las
+     propiedades de maquetación (ancho, alto, relleno, posición), así
+     que cualquier cambio de tamaño se animaba también, y animar la
+     maquetación obliga al navegador a recalcular en cada fotograma.
+     Aquí se enumeran las propiedades que de verdad cambian al pasar por
+     encima o al pulsar; ninguna provoca recálculo.
+
+     `.pill` sale de la lista: es una etiqueta, no un control. No tiene
+     estados que transicionar y estaba heredando la cadencia de los
+     botones sin usarla. */
   a,
-  button,
-  .pill {
-    transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  button {
+    transition-property: color, background-color, border-color, box-shadow,
+      opacity, transform, filter, text-decoration-color, outline-color;
+    transition-duration: 0.2s;
+    transition-timing-function: var(--ease-suave);
   }
 
   /* ============================================================
@@ -864,10 +896,10 @@
        here mean a bare `class="glass depth-2"` already animates
        smoothly without per-element opt-in. */
     transition:
-      background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-      border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      background-color 0.3s var(--ease-suave),
+      border-color 0.3s var(--ease-suave),
+      box-shadow 0.3s var(--ease-suave),
+      transform 0.3s var(--ease-suave);
   }
   .glass::before {
     content: "";
@@ -992,15 +1024,41 @@
     color: rgb(var(--txt-tertiary));
   }
 
+  /* ------------------------------------------------------------
+     .pill — la etiqueta pequeña del sistema (estado, credencial,
+     recuento). El nombre viene de cuando era redonda; ya no lo es.
+
+     TENÍA `border-radius: 999px`, y eso chocaba de frente con la
+     doctrina del canto afilado que gobierna el resto del sitio: «una
+     píldora lee app store; un rectángulo lee terminal». La prueba de
+     que el choque era real está en los consumidores — cinco de las
+     trece llamadas escribían `!rounded-[2px]` para pelearse con su
+     propio componente a golpe de `!important`. Cuando media plantilla
+     anula un valor por defecto, el valor por defecto está mal.
+
+     Ahora sigue el radio del sistema, así que los `!important`
+     desaparecen de las llamadas y las trece etiquetas —marketing y
+     demo— comparten canto. Para lo que SÍ tiene que ser redondo (un
+     punto de estado, un contador circular) está `.pill-round`, que es
+     una decisión explícita en vez de un valor heredado.
+
+     Ojo: `--radius-md` vale 2 px en la paleta activa, no los 8 px que
+     declara la escala base de `@theme`. Es lo correcto y está explicado
+     arriba, en la nota del canto afilado. */
   .pill {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.15rem 0.55rem;
-    border-radius: 999px;
+    border-radius: var(--radius-md);
     font-size: 0.72rem;
     font-weight: 600;
     line-height: 1.4;
+  }
+
+  /* La variante deliberadamente redonda. */
+  .pill-round {
+    border-radius: 999px;
   }
 
   /* ------------------------------------------------------------
@@ -1156,11 +1214,11 @@
 .depth-3,
 .depth-4 {
   transition:
-    color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    color 0.3s var(--ease-suave),
+    background-color 0.3s var(--ease-suave),
+    border-color 0.3s var(--ease-suave),
+    box-shadow 0.3s var(--ease-suave),
+    transform 0.3s var(--ease-suave);
 }
 .depth-1:hover {
   box-shadow:
@@ -1976,8 +2034,8 @@ textarea:focus-visible,
      crisp 4px ring at the box edge as a focus affordance. */
   box-shadow:
     0 4px 12px -2px rgb(var(--accent-base) / 0.45);
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.18s var(--ease-suave),
+              box-shadow 0.18s var(--ease-suave);
 }
 .tj-range::-webkit-slider-thumb:hover {
   /* Scale the whole 44px box: the visible 18px disc scales to 20.16px
@@ -2023,8 +2081,8 @@ textarea:focus-visible,
       transparent 11.5px 100%);
   box-shadow:
     0 4px 12px -2px rgb(var(--accent-base) / 0.45);
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.18s var(--ease-suave),
+              box-shadow 0.18s var(--ease-suave);
 }
 .tj-range::-moz-range-thumb:hover {
   transform: scale(1.12);
@@ -2063,7 +2121,7 @@ textarea:focus-visible,
   to   { opacity: 1; transform: translateY(0); }
 }
 .page-enter {
-  animation: page-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: page-enter 0.4s var(--ease-suave);
 }
 @media (prefers-reduced-motion: reduce) {
   .page-enter { animation: none; }
@@ -2096,7 +2154,7 @@ textarea:focus-visible,
     rgb(var(--accent-base)) 100%);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.3s var(--ease-suave);
 }
 .link-underline:hover::after,
 .link-underline:focus-visible::after {
@@ -2161,7 +2219,7 @@ textarea:focus-visible,
 .icon-btn svg,
 a.icon-btn > svg,
 button.icon-btn > svg {
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.2s var(--ease-suave);
   transform-origin: 50% 50%;
 }
 .icon-btn:hover > svg,
@@ -2635,6 +2693,44 @@ button.icon-btn:hover > svg,
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ------------------------------------------------------------
+   .tj-char — la entrada letra a letra del titular de cada
+   subpágina (`AnimatedHeading`).
+
+   ── POR QUÉ ES CSS Y NO ESTADO DE REACT ─────────────────────
+   Lo hacía React: cada letra se renderizaba con `opacity: 0` en
+   línea y un `useEffect` la subía a 1 al montar. En un sitio de
+   EXPORTACIÓN ESTÁTICA eso significa que el HTML servido llevaba
+   el titular de todas las páginas interiores con opacidad cero,
+   y sólo aparecía si el JavaScript arrancaba. Sin JavaScript
+   —bloqueado, fallido, o un rastreador que no lo ejecuta— el
+   titular principal no existía.
+
+   Y aunque arrancara, el titular es casi con seguridad el
+   elemento más grande de la primera pantalla: con 30 ms por
+   letra sin tope, un título de 48 caracteres tardaba unos
+   2,1 s en terminar de dibujarse. Eso es tiempo de carga
+   percibido, autoinfligido y medido por el navegador.
+
+   Con una animación CSS el estado FINAL es el que está escrito
+   en la hoja (opacidad 1): si la animación no llega a
+   ejecutarse, el texto se ve igual. `backwards` en el modo de
+   relleno aplica el estado inicial durante el retardo, para que
+   no haya un parpadeo antes de empezar.
+
+   La regla global de `prefers-reduced-motion` de más arriba ya
+   colapsa duración y retardo a 0,01 ms, así que quien pide menos
+   movimiento ve el titular entero de golpe. */
+@keyframes tj-char-in {
+  from { opacity: 0; transform: translateX(-18px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.tj-char {
+  display: inline-block;
+  animation: tj-char-in 420ms var(--ease-suave) backwards;
+  animation-delay: var(--tj-char-delay, 0ms);
+}
 @keyframes tj-glow {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 0.85; }
@@ -2687,7 +2783,7 @@ button.icon-btn:hover > svg,
   /* Failsafe CSS puro: si el bundle JS nunca monta IntroSequence, esta
      animación fuerza la visibilidad a los 5 s. En el flujo normal la
      clase .tj-preload se retira mucho antes y esto no llega a verse. */
-  animation: tj-preload-release 0.8s cubic-bezier(0.16, 1, 0.3, 1) 5s forwards;
+  animation: tj-preload-release 0.8s var(--ease-salida) 5s forwards;
 }
 @keyframes tj-preload-release {
   to {
@@ -2711,7 +2807,7 @@ button.icon-btn:hover > svg,
 }
 #tj-loader.done {
   transform: translateY(-101%);
-  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+  transition: transform 0.9s var(--ease-entrada-salida);
 }
 
 /* Sheen — barrido de luz sobre CTAs oscuros al hacer hover (el HTML lo
@@ -2737,7 +2833,7 @@ button.icon-btn:hover > svg,
   );
 }
 .tj-cta-sheen:hover::after {
-  animation: tj-sheen 1s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: tj-sheen 1s var(--ease-suave);
 }
 
 /* Spotlight — gradiente radial que sigue al cursor en tarjetas .tj-spot

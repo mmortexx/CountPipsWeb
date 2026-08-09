@@ -517,7 +517,7 @@ export function Navbar() {
   const hoverUnderline = (active: boolean) => (
     <span
       aria-hidden
-      className={`pointer-events-none absolute bottom-[6px] left-[15px] right-[15px] h-px origin-center scale-x-0 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`pointer-events-none absolute bottom-[6px] left-[15px] right-[15px] h-px origin-center scale-x-0 transition-transform duration-200 ease-[var(--ease-suave)] ${
         active ? "" : "group-hover:scale-x-100 group-focus-within:scale-x-100"
       }`}
       style={{ background: "color-mix(in srgb, var(--ink) 22%, transparent)" }}
@@ -611,7 +611,7 @@ export function Navbar() {
             ? "inset 0 1px 0 rgb(var(--divider) / 0.16), 0 14px 40px -16px rgb(0 0 0 / 0.55)"
             : "inset 0 1px 0 rgb(var(--divider) / 0.14), 0 6px 20px -12px rgb(0 0 0 / 0.4)",
           transition:
-            "height 0.34s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1)",
+            "height 0.34s var(--ease-suave), box-shadow 0.3s var(--ease-suave), border-color 0.3s var(--ease-suave)",
         }}
       >
         {/* Rejilla de tres zonas: la navegación queda ópticamente
@@ -699,7 +699,7 @@ export function Navbar() {
                   fill="none"
                   aria-hidden
                   style={{
-                    transition: "transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)",
+                    transition: "transform 0.28s var(--ease-suave)",
                     transform: megaOpen ? "rotate(180deg)" : "rotate(0deg)",
                   }}
                 >
@@ -1380,7 +1380,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
           fill="none"
           aria-hidden
           style={{
-            transition: "transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)",
+            transition: "transform 0.18s var(--ease-suave)",
             transform: open ? "rotate(180deg)" : "rotate(0deg)",
           }}
         >

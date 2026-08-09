@@ -218,7 +218,7 @@ export function Story() {
                     transition={{ delay: i * 0.08 + 0.2, duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
                   />
                   <motion.div
-                    className="group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[rgb(var(--accent-base)/0.30)]"
+                    className="group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span

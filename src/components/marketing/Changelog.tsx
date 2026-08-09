@@ -176,7 +176,7 @@ export function Changelog() {
                       className="h-full"
                     >
                       <motion.div
-                        className={`tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 h-full min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                        className={`tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 h-full min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] ${
                           isPast
                             ? "hover:border-[rgb(var(--accent-base)/0.30)]"
                             : "hover:border-[rgb(var(--divider)/0.25)]"

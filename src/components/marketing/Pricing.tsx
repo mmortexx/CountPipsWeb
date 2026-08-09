@@ -6,7 +6,6 @@ import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { MagneticButton } from "@/components/tj/MagneticButton";
-import { CountUp } from "@/components/tj/CountUp";
 
 type Plan = {
   id: "core" | "pro";
@@ -254,7 +253,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
          El `isolation: isolate` se conserva porque el Pro sigue
          necesitando su propio contexto de apilado para la marca de
          agua. */
-      className={`relative p-6 sm:p-8 h-full flex flex-col transition-[border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`relative p-6 sm:p-8 h-full flex flex-col transition-[border-color] duration-300 ease-[var(--ease-suave)] ${
         isPro
           ? "border-t-2 border-t-[rgb(var(--accent-base))] border-x border-b border-x-[rgb(var(--divider)/0.14)] border-b-[rgb(var(--divider)/0.14)]"
           : "border-t-2 border-t-[rgb(var(--divider)/0.28)] border-x border-b border-x-[rgb(var(--divider)/0.14)] border-b-[rgb(var(--divider)/0.14)] hover:border-t-[rgb(var(--divider)/0.45)]"
@@ -295,36 +294,34 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
               borderColor: "rgb(var(--accent-base))",
             }}
           >
-            {es ? "Más popular" : "Most popular"}
+            {/* ── NO DICE «MÁS POPULAR» ────────────────────────────────
+                Decía «Más popular» en un producto que no se ha vendido
+                una sola vez — tres párrafos por encima de donde la misma
+                página declara que la compra se habilita "con la entrega
+                comercial" y que los precios son "previstos". Popular
+                ¿entre quién? Era el único reclamo del sitio sin nada
+                detrás, y estaba justo en la página donde más caro sale:
+                el visitante que lo pilla deja de creerse también lo que
+                sí es verdad.
+
+                Se sustituye por una distinción que se puede comprobar
+                mirando la propia tabla: Pro es el plan que incluye todo.
+                Cuando existan ventas y uno sea de verdad el más elegido,
+                se podrá decir — y entonces será un dato, no un adorno. */}
+            {es ? "Incluye todo" : "Everything included"}
           </span>
         </div>
       )}
 
-      {/* "PREMIUM" watermark — only on the Pro card. A single rotated,
-          oversized, very-faint accent-colored word that bleeds across
-          the card as a luxury watermark (think premium stationery /
-          security paper). The wrapper clips the bleed to the card's
-          rounded bounds; the inner span sits at z-index:-1 so it
-          paints above the liquid-glass fill but below every text element,
-          divider and CTA. Opacity 0.04 keeps it at the edge of
-          perception — present without competing with the price. */}
-      {isPro && (
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 overflow-hidden pointer-events-none rounded-[2px]"
-        >
-          <span
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-bold tracking-tighter whitespace-nowrap text-primary -rotate-12"
-            style={{
-              fontSize: "8rem",
-              opacity: 0.04,
-              zIndex: -1,
-            }}
-          >
-            PREMIUM
-          </span>
-        </div>
-      )}
+      {/* Aquí había una marca de agua: la palabra "PREMIUM" a 8 rem,
+          rotada −12°, al 4 % de opacidad, cruzando la tarjeta de Pro.
+          Se justificaba como "papelería de lujo", pero es el gesto de
+          plantilla que le quedaba al sitio: decir "premium" es
+          exactamente lo que no hace un producto que lo sea, y el resto
+          de la página lleva meses retirando adornos por ese mismo
+          criterio (el cristal, las cajas, las esquinas redondeadas).
+          Una tarjeta cuyo precio es 249 $ no necesita un sello que
+          anuncie su categoría; la anuncia la tabla de al lado. */}
 
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-xl md:text-2xl font-semibold text-primary tracking-tight min-w-0 break-words">
@@ -366,11 +363,17 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         <span className="text-2xl md:text-3xl font-semibold text-secondary tnum">
           $
         </span>
-        <CountUp
-          to={plan.price}
-          duration={1.6}
-          className="text-5xl md:text-6xl font-bold text-primary tnum leading-[0.95]"
-        />
+        {/* El precio NO se anima. Estaba con `CountUp` subiendo de 0 a
+            149 en 1,6 s, y esta misma tarjeta ya razona treinta líneas
+            más arriba por qué se le quitó el `whileHover`: "el escalado
+            desplazaba el precio medio píxel y lo dejaba borroso… en la
+            cifra que decide la compra". Un cuentakilómetros hace lo
+            mismo pero durante segundo y medio, y además obliga a leer
+            dos veces para saber cuánto cuesta. El argumento valía para
+            el hover y vale igual aquí. */}
+        <span className="text-5xl md:text-6xl font-bold text-primary tnum leading-[0.95]">
+          {plan.price}
+        </span>
         <span className="ml-2 text-sm text-tertiary whitespace-nowrap">
           / {es ? "precio previsto" : "planned price"}
         </span>

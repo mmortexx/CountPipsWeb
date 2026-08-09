@@ -149,7 +149,7 @@ export function ContactSupport() {
                   href={c.href}
                   transition={{ type: "spring", stiffness: 300, damping: 24 }}
                   aria-label={`${title} — ${cta}`}
-                  className="group relative flex flex-col tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-[rgb(var(--accent-base)/0.30)]"
+                  className="group relative flex flex-col tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
                 >
                   {/* Hover accent sweep */}
                   <span
@@ -192,7 +192,7 @@ export function ContactSupport() {
 
                   <div className="mt-auto pt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
                     {cta}
-                    <ArrowRight className="size-4 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1" />
+                    <ArrowRight className="size-4 transition-transform duration-300 ease-[var(--ease-suave)] group-hover:translate-x-1" />
                   </div>
                 </motion.a>
               </Reveal>

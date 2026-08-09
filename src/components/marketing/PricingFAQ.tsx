@@ -179,7 +179,7 @@ export function PricingFAQ() {
                      dibujaba encima del texto de la pregunta abierta. */
                   className="border-b border-l-2 border-l-transparent border-b-[rgb(var(--divider)/0.10)] last:border-b-0 px-4 md:px-5 transition-[border-color,background-color] duration-300 data-[state=closed]:hover:bg-[rgb(var(--divider)/0.03)] data-[state=open]:border-l-[rgb(var(--accent-base))] data-[state=open]:bg-[rgb(var(--divider)/0.04)]"
                 >
-                  <AccordionTrigger className="text-left text-sm font-medium text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:!text-[rgb(var(--accent-base))] [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[cubic-bezier(0.22,1,0.36,1)] data-[state=open]:text-[rgb(var(--accent-base))]">
+                  <AccordionTrigger className="text-left text-sm font-medium text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:!text-[rgb(var(--accent-base))] [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)] data-[state=open]:text-[rgb(var(--accent-base))]">
                     {/* Wrap the question in a min-w-0 span so the flex
                         trigger (shadcn AccordionTrigger uses
                         flex justify-between) can wrap long questions

@@ -159,7 +159,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
             return (
               <div
                 key={s.id}
-                className="tj-paper rounded-[2px] p-4 transition-[border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5"
+                className="tj-paper rounded-[2px] p-4 transition-[border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5"
                 style={{
                   border: `1px solid color-mix(in oklab, ${open ? s.color : "rgb(var(--divider))"} ${open ? "40%" : "14%"}, transparent)`,
                 }}

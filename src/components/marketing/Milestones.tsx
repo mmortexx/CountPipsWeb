@@ -150,7 +150,7 @@ export function Milestones() {
                         a spring y-shift. The shadow + border tokens stay
                         accent-tinted so a past milestone reads as "shipped
                         with energy" and the upcoming one stays muted. */}
-                    <div className="mt-3 tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 transition-[box-shadow,border-color,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-[rgb(var(--accent-base)/0.30)]">
+                    <div className="mt-3 tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 transition-[box-shadow,border-color,transform] duration-300 ease-[var(--ease-suave)] hover:-translate-y-1 hover:border-[rgb(var(--accent-base)/0.30)]">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[10px] uppercase tracking-[0.14em] font-semibold text-primary tnum">
                           {m.date}

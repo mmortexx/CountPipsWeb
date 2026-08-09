@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { GlossaryLauncher } from "@/components/tj/GlossaryLauncher";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
+import { reopenConsent } from "@/lib/consent";
 
 /**
  * Social link definition — icon + accessible label.
@@ -400,10 +401,54 @@ export function Footer() {
                 destino repetido dos veces en el mismo pie no da acceso,
                 da ruido — y el que se retira era justo el inservible. */}
             <span>ES + EN</span>
+            <span aria-hidden className="opacity-40">·</span>
+            {/* ── RETIRAR EL CONSENTIMIENTO ────────────────────────────
+                La política de privacidad instruye a "volver a elegir
+                «Solo necesarias»" para dejar de ser medido. Ese aviso no
+                volvía a salir nunca y no había ningún control en toda la
+                web para provocarlo: la única vía real era abrir las
+                herramientas del navegador y vaciar el almacenamiento del
+                sitio. El RGPD pide que retirarlo sea tan fácil como
+                darlo, y darlo era un clic.
+
+                Va en el pie porque el pie está en las 154 páginas: la
+                puerta de salida no puede estar sólo en la página que
+                habla de cookies. Altura mínima de 44 px como el resto de
+                objetivos táctiles del pie. */}
+            <ConsentPreferencesButton />
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+/**
+ * ConsentPreferencesButton — la puerta de salida de la analítica.
+ *
+ * Vuelve a abrir el aviso de consentimiento para poder cambiar la
+ * elección. No borra nada al pulsarlo: quien lo abre y no toca nada
+ * conserva lo que tenía. La retirada la ejecuta el propio aviso al elegir
+ * "Solo necesarias".
+ *
+ * Se renderiza como texto, no como botón con caja, porque comparte fila
+ * con los metadatos del pie; pero lleva `min-h-[44px]` para cumplir el
+ * objetivo táctil de WCAG 2.5.5 igual que el resto de enlaces del pie, y
+ * subrayado al enfocar con teclado.
+ */
+function ConsentPreferencesButton() {
+  const { lang } = useLang();
+  const es = lang === "es";
+  return (
+    <button
+      type="button"
+      onClick={reopenConsent}
+      className="link-underline-host inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
+    >
+      <span className="link-underline">
+        {es ? "Preferencias de privacidad" : "Privacy preferences"}
+      </span>
+    </button>
   );
 }
 

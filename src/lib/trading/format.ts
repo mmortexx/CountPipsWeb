@@ -46,6 +46,15 @@ export function fmtNum(
   }).format(value);
 }
 
+/** Separador entre la cifra y el signo de porcentaje.
+ *
+ *  En español la ortografía académica exige espacio ("50 %"); en inglés
+ *  la convención es pegarlo ("50%"). Se usa un espacio DURO (U+00A0) para
+ *  que el signo nunca se quede solo al principio de la línea siguiente:
+ *  con un espacio normal, una columna estrecha puede partir "10" y "%"
+ *  en dos renglones, que es peor que no separarlos. */
+const PCT_SEP: Record<Lang, string> = { es: " %", en: "%" };
+
 /** Format a percentage. `value` is a ratio (0.5 = 50 %).
  *
  *  Negative-zero guard: a value like -0.0001 that rounds to "0,0 %"
@@ -56,9 +65,9 @@ export function fmtPct(value: number, lang: Lang = "es", decimals = 1): string {
   const rounded = Number(scaled.toFixed(decimals));
   // Avoid "-0,0 %" / "-0.0%" when the actual magnitude rounds to zero.
   if (Object.is(rounded, 0) || Object.is(rounded, -0)) {
-    return `${fmtNum(0, lang, decimals)}%`;
+    return `${fmtNum(0, lang, decimals)}${PCT_SEP[lang]}`;
   }
-  return `${fmtNum(scaled, lang, decimals)}%`;
+  return `${fmtNum(scaled, lang, decimals)}${PCT_SEP[lang]}`;
 }
 
 /** Format an R-multiple ("+1,50 R" / "−0,80 R" / "+0,00 R").

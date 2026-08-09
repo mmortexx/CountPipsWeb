@@ -194,7 +194,7 @@ export function DemoCapabilities() {
                 // cálido en las 6 tarjetas de capacidades. depth-1 → depth-2
                 // hover, accent top-edge bar, icon chip y hover bg/shadow se
                 // conservan.
-                className="group tj-paper transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] rounded-[2px] p-5 h-full flex flex-col gap-3 border border-[rgb(var(--divider)/0.10)] hover:border-[rgb(var(--accent-base)/0.32)] hover:bg-[rgb(var(--accent-base)/0.04)] hover:shadow-[0_8px_24px_-8px_rgb(var(--accent-base)/0.25)] relative overflow-hidden min-w-0"
+                className="group tj-paper transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] rounded-[2px] p-5 h-full flex flex-col gap-3 border border-[rgb(var(--divider)/0.10)] hover:border-[rgb(var(--accent-base)/0.32)] hover:bg-[rgb(var(--accent-base)/0.04)] hover:shadow-[0_8px_24px_-8px_rgb(var(--accent-base)/0.25)] relative overflow-hidden min-w-0"
               >
                 {/* Accent top-edge bar — mirrors the ExperimentsPage /
                     FiscalPage KPI card pattern, tying each feature card
@@ -211,7 +211,7 @@ export function DemoCapabilities() {
                     (shadow-[inset_0_1px_0...]) reads as a polished material
                     chip, not a flat square. */}
                 <span
-                  className="relative w-9 h-9 rounded-md flex items-center justify-center text-primary transition-[background-color,color,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] bg-[rgb(var(--divider)/0.08)] ring-1 ring-inset ring-[rgb(var(--divider)/0.10)] shadow-[inset_0_1px_0_rgb(255_255_255_/_0.10)] group-hover:bg-[rgb(var(--accent-base)/0.12)] group-hover:ring-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))]"
+                  className="relative w-9 h-9 rounded-md flex items-center justify-center text-primary transition-[background-color,color,box-shadow] duration-300 ease-[var(--ease-suave)] bg-[rgb(var(--divider)/0.08)] ring-1 ring-inset ring-[rgb(var(--divider)/0.10)] shadow-[inset_0_1px_0_rgb(255_255_255_/_0.10)] group-hover:bg-[rgb(var(--accent-base)/0.12)] group-hover:ring-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))]"
                   aria-hidden="true"
                 >
                   {c.icon}

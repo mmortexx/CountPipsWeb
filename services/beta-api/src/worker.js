@@ -186,14 +186,56 @@ async function verifyTurnstile(request, payload, env) {
   }
 }
 
+/* ── LÍMITE DE PETICIONES ──────────────────────────────────────────────
+   Dos ventanas por IP, no una:
+
+     · la CORTA (60 s por defecto) frena el envío repetido;
+     · la DIARIA frena lo que la corta no puede — mil peticiones espaciadas
+       61 segundos son mil peticiones, y con la ventana sola cada una
+       parecía la primera.
+
+   `RATE_LIMIT` es el almacén de claves de Cloudflare. Si no está
+   configurado —y hoy no lo está: `wrangler.jsonc` sigue con el
+   marcador `REPLACE_WITH_KV_NAMESPACE_ID`— esto devolvía `true`, es
+   decir, ABRÍA la puerta del todo y sin dejar rastro. Un control que
+   desaparece en silencio justo cuando falta su dependencia es el que
+   nunca vas a echar en falta hasta que te ha costado dinero.
+
+   Ahora falla CERRADO en producción y sólo se salta cuando el propio
+   despliegue lo declara a propósito (`RATE_LIMIT_OPTIONAL: "1"`, útil en
+   local con `wrangler dev` sin KV). El caso de "no configurado por
+   descuido" ya no pasa desapercibido: se registra y se rechaza. */
+const RATE_LIMIT_DAILY_MAX = 20;
+
 async function enforceRateLimit(request, env) {
-  if (!env.RATE_LIMIT) return true;
+  if (!env.RATE_LIMIT) {
+    if (String(env.RATE_LIMIT_OPTIONAL ?? "") === "1") return true;
+    console.error(
+      "[beta-api] RATE_LIMIT (KV) no está enlazado: se rechaza la solicitud. " +
+        "Crea el namespace y ponlo en wrangler.jsonc, o declara RATE_LIMIT_OPTIONAL=1 si es un entorno local."
+    );
+    return false;
+  }
+
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const key = `beta-application:${await sha256Hex(ip)}`;
-  const existing = await env.RATE_LIMIT.get(key);
-  if (existing) return false;
+  const huella = await sha256Hex(ip);
   const seconds = Math.max(10, Math.min(3600, Number(env.RATE_LIMIT_SECONDS) || 60));
-  await env.RATE_LIMIT.put(key, "1", { expirationTtl: seconds });
+
+  // Ventana corta.
+  const cortaKey = `beta-application:${huella}`;
+  if (await env.RATE_LIMIT.get(cortaKey)) return false;
+
+  // Cuota diaria. La fecha va en la clave, así que el contador se
+  // renueva solo al cambiar el día y no hace falta purgarlo.
+  const dia = new Date().toISOString().slice(0, 10);
+  const diaKey = `beta-application-dia:${dia}:${huella}`;
+  const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
+  const tope = Math.max(1, Number(env.RATE_LIMIT_DAILY) || RATE_LIMIT_DAILY_MAX);
+  if (usadas >= tope) return false;
+
+  await env.RATE_LIMIT.put(cortaKey, "1", { expirationTtl: seconds });
+  // 48 h de vida: cubre el día en curso con holgura para cualquier huso.
+  await env.RATE_LIMIT.put(diaKey, String(usadas + 1), { expirationTtl: 172800 });
   return true;
 }
 
@@ -201,12 +243,23 @@ async function createApplication(request, env) {
   if (!requestHasAllowedOrigin(request, env)) return errorResponse("origin_not_allowed", 403, request, env);
   const payload = await readJson(request);
   if (!payload) return errorResponse("invalid_request", 400, request, env);
-  if (boundedString(payload.honeypot, 120)) return json({ ok: true, duplicate: false }, 200, request, env);
+  // El campo trampa se llama `botcheck` EN TODAS PARTES: lo declara
+  // `src/lib/forms.ts`, lo renderiza `BetaApplication.tsx` con
+  // `id="beta-botcheck"` y lo lee el Apps Script de respaldo
+  // (`docs/waitlist-apps-script.js`). Aquí se leía `payload.honeypot`,
+  // que nadie envía nunca: la comprobación no se disparó jamás. Un
+  // anzuelo que no cuelga de la caña es peor que ninguno, porque figura
+  // en la política de privacidad como una medida que existe.
+  if (boundedString(payload.botcheck, 120)) return json({ ok: true, duplicate: false }, 200, request, env);
 
   const validation = validateApplication(payload);
   if (validation.error) return errorResponse(validation.error, 422, request, env);
-  if (!(await verifyTurnstile(request, payload, env))) return errorResponse("bot_check_failed", 400, request, env);
+  // El límite de peticiones va ANTES de Turnstile: verificar el token
+  // cuesta una llamada de red a Cloudflare, y no tiene sentido gastarla
+  // en quien ya ha superado su cuota. Estaba después, así que cada
+  // intento abusivo consumía una verificación completa.
   if (!(await enforceRateLimit(request, env))) return errorResponse("rate_limited", 429, request, env);
+  if (!(await verifyTurnstile(request, payload, env))) return errorResponse("bot_check_failed", 400, request, env);
 
   const { application } = validation;
   const emailHash = await sha256Hex(application.email);
@@ -302,15 +355,46 @@ async function updateApplication(request, env, id) {
   const payload = await readJson(request, 4096);
   if (!payload) return errorResponse("invalid_request", 400, request, env, { private: true });
   const status = boundedString(payload.status, 20);
-  const cohort = boundedString(payload.cohort, 80);
   if (!APPLICATION_STATUSES.has(status)) return errorResponse("invalid_status", 422, request, env, { private: true });
+
+  /* ── ACTUALIZACIÓN PARCIAL ────────────────────────────────────────────
+     Antes esto escribía `cohort` SIEMPRE, viniera o no en la petición:
+     un `PATCH {"status":"invitado"}` ejecutaba `SET cohort = NULL` y
+     borraba la cohorte asignada sin decir nada. El panel manda los dos
+     campos, así que no se veía; cualquier script de operaciones que
+     tocara sólo el estado destruía el dato.
+
+     Ahora se distingue "no lo mandes" (la clave no viene: no se toca) de
+     "vacíalo" (viene como cadena vacía o null: se pone a NULL). Es la
+     diferencia entre omitir y borrar, y en una tabla de personas
+     invitadas no es una sutileza. */
+  const tocaCohorte = Object.prototype.hasOwnProperty.call(payload, "cohort");
+  const cohort = tocaCohorte ? boundedString(payload.cohort, 80) : null;
+
   const now = new Date().toISOString();
+  const sets = ["status = ?1", "updated_at = ?2"];
+  const binds = [status, now];
+  if (tocaCohorte) {
+    sets.push(`cohort = ?${binds.length + 1}`);
+    binds.push(cohort || null);
+  }
+  binds.push(id);
+
   try {
-    const result = await env.DB.prepare("UPDATE applications SET status = ?1, cohort = ?2, updated_at = ?3 WHERE id = ?4")
-      .bind(status, cohort || null, now, id)
+    const result = await env.DB.prepare(
+      `UPDATE applications SET ${sets.join(", ")} WHERE id = ?${binds.length}`
+    )
+      .bind(...binds)
       .run();
     if (!result.meta?.changes) return errorResponse("not_found", 404, request, env, { private: true });
-    return json({ ok: true, id, status, cohort: cohort || null, updatedAt: now }, 200, request, env, { private: true });
+    const fila = await env.DB.prepare("SELECT cohort FROM applications WHERE id = ?1").bind(id).first();
+    return json(
+      { ok: true, id, status, cohort: fila?.cohort ?? null, updatedAt: now },
+      200,
+      request,
+      env,
+      { private: true }
+    );
   } catch {
     return errorResponse("storage_unavailable", 503, request, env, { private: true });
   }

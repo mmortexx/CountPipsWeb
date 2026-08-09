@@ -27,7 +27,7 @@ interface FadeInProps {
  * no transition. The reduced-motion check runs lazily in the initial state
  * (after hydration) so no `setState` fires synchronously inside the effect.
  */
-const FADE_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+const FADE_EASE = "var(--ease-suave)";
 
 export function FadeIn({
   children,

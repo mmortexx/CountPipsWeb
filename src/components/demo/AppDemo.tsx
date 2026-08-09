@@ -292,7 +292,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           Radio 8 px, el ControlCornerRadius de WinUI. */}
       <div
         ref={demoRootRef}
-        className={`relative mx-auto transition-[transform,border-radius,box-shadow,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`relative mx-auto transition-[transform,border-radius,box-shadow,opacity] duration-500 ease-[var(--ease-suave)] ${
           fullscreen ? "fixed inset-3 z-[100] rounded-lg" : "rounded-lg"
         }`}
       >

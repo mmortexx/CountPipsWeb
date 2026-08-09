@@ -415,3 +415,78 @@ export function getPlaybook() {
 export function getTradeDetail() {
   return buildMarketingFixture().det;
 }
+
+/* ---------- Distribución de R-múltiplo ---------- */
+
+/** Anchura de cada cubo del histograma, en R. */
+const R_BIN = 0.5;
+
+export interface RBin {
+  /** Borde izquierdo, en R (incluido). */
+  from: number;
+  /** Borde derecho, en R (excluido; el último cubo lo tiene abierto). */
+  to: number;
+  /** Operaciones de muestra que caen dentro. */
+  count: number;
+  /** `true` si el cubo entero cae en pérdida. Decide el color de la barra. */
+  losing: boolean;
+}
+
+let rDist: RBin[] | null = null;
+
+/**
+ * Distribución de R-múltiplo de las operaciones de muestra, en cubos de
+ * 0,5R con bordes limpios.
+ *
+ * ── POR QUÉ EXISTE ────────────────────────────────────────────────────
+ * Para que la home no vuelva a dibujar un histograma a mano. El que
+ * había llevaba las nueve alturas escritas una a una, y de ahí salieron
+ * tres contradicciones dentro de la MISMA tarjeta:
+ *
+ *   · pintaba un 63 % de ganadoras bajo un pie que declaraba «50 %»
+ *     (el pie tenía razón: el motor da 50,5 %),
+ *   · implicaba una esperanza de +1,16R junto a una ficha que decía
+ *     +0,32R (y el motor da +0,23R),
+ *   · y coloreaba por el ÍNDICE de la barra en la lista, no por el signo
+ *     de la R, así que las pérdidas salían verdes y las ganancias rojas.
+ *
+ * Saliendo todo de `TRADES`, el gráfico, su pie y los ratios de al lado
+ * no pueden discrepar: son el mismo cálculo. Si un día cambian las
+ * operaciones de muestra, cambian los tres a la vez.
+ *
+ * ── POR QUÉ NO `rHistogram` ───────────────────────────────────────────
+ * El de `data.ts` reparte un rango FIJO (−1,5 a 3,5) entre 9 cubos, así
+ * que sus bordes caen en 0,2 / 0,7 / 1,3…: números que no se pueden
+ * rotular en un eje sin que parezca ruido. Además deja cubos vacíos por
+ * arriba, porque el rango no se ajusta a los datos. Aquí los bordes son
+ * múltiplos de 0,5 y el rango se recorta a lo que hay. Aquel se queda
+ * como está porque lo consume la analítica de la demo.
+ *
+ * ── EL HUECO DEL CENTRO ES REAL ───────────────────────────────────────
+ * No habrá barras entre −0,5R y +0,5R: la operativa de muestra o se come
+ * el stop entero o deja correr. Ese vacío es información sobre el
+ * sistema, no un fallo de dibujo — el consumidor debe representarlo,
+ * no esconderlo.
+ */
+export function getRDistribution(): RBin[] {
+  if (rDist) return rDist;
+  const rs = TRADES.map((t) => t.rMultiple).filter(Number.isFinite);
+  if (!rs.length) {
+    rDist = [];
+    return rDist;
+  }
+  const lo = Math.floor(Math.min(...rs) / R_BIN) * R_BIN;
+  const hi = Math.ceil(Math.max(...rs) / R_BIN) * R_BIN;
+  const n = Math.max(1, Math.round((hi - lo) / R_BIN));
+  const bins: RBin[] = Array.from({ length: n }, (_, i) => {
+    const from = Number((lo + i * R_BIN).toFixed(2));
+    const to = Number((from + R_BIN).toFixed(2));
+    return { from, to, count: 0, losing: to <= 0 };
+  });
+  for (const r of rs) {
+    const idx = Math.max(0, Math.min(n - 1, Math.floor((r - lo) / R_BIN)));
+    bins[idx].count += 1;
+  }
+  rDist = bins;
+  return bins;
+}

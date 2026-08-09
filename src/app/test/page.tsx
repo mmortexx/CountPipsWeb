@@ -61,15 +61,30 @@ const quizSchema = {
   hasPart: QUESTIONS.map((q) => ({
     "@type": "Question",
     text: q.qEs,
-    /* Es autoevaluación, no examen: no hay una respuesta "correcta" que
-       marcar. `Answer` con el texto de la opción menos disciplinada —la
-       primera, ver el comentario en DisciplineScore.tsx sobre el orden—
-       basta para que el marcado sea válido sin fingir un acierto que no
-       existe. */
+    /* ── LA RESPUESTA MARCADA ES LA ÚLTIMA, NO LA PRIMERA ──────────────
+       Aquí iba `q.options[0]`, razonando que al ser una autoevaluación
+       no hay respuesta correcta y que cualquiera valía para dar por
+       válido el marcado. El razonamiento tiene un fallo: en el
+       vocabulario de schema.org `acceptedAnswer` significa exactamente
+       "la respuesta correcta", y las opciones van declaradas de peor a
+       mejor conducta (ver el tipo `Q` en disciplineQuestions.ts). Así
+       que se estaba publicando "No lo calculo" como la respuesta
+       correcta a "¿sabes cuánto dinero pierdes si sale mal?", en un
+       test de disciplina de una web de trading. Si el buscador llegara
+       a mostrarlo, diría justo lo contrario de lo que enseña la página.
+
+       La última opción es la conducta disciplinada, y ésa sí es la
+       respuesta que el producto defiende. Las demás pasan a
+       `suggestedAnswer`, que es donde el vocabulario espera las
+       alternativas: el marcado queda más completo y deja de mentir. */
     acceptedAnswer: {
       "@type": "Answer",
-      text: q.options[0].es,
+      text: q.options[q.options.length - 1].es,
     },
+    suggestedAnswer: q.options.slice(0, -1).map((o) => ({
+      "@type": "Answer",
+      text: o.es,
+    })),
   })),
 };
 

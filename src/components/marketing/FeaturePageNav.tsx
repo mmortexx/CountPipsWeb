@@ -261,7 +261,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                   // marca al apuntarla.
                   // T2h: `min-h-[44px]` en el propio enlace para que toda la
                   //   tarjeta llegue al mínimo táctil aunque el texto sea corto.
-                  className={`group relative tj-paper rounded-[2px] border p-5 block min-h-[44px] transition-[background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
+                  className={`group relative tj-paper rounded-[2px] border p-5 block min-h-[44px] transition-[background-color,border-color] duration-300 ease-[var(--ease-suave)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
                     isActive
                       ? "border-[rgb(var(--accent-base)/0.4)]"
                       : "border-[rgb(var(--divider)/0.13)] hover:border-[rgb(var(--accent-base)/0.28)]"
