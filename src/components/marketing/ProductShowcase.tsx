@@ -15,12 +15,23 @@ import { Link } from "@/components/tj/LocaleLink";
  * nada que la sostenga. Ponerla más abajo la deja fuera del alcance de
  * quien decide en diez segundos, que es la mayoría del tráfico frío.
  *
- * ── Por qué una sola captura y no una galería ─────────────────────────
- * Ya hubo una galería y se retiró (commit 3608d0d). Una sola pantalla
- * completa, a densidad real, demuestra que el programa aguanta trabajo de
- * verdad; una galería de seis recortes parece que se está tapando que hay
- * poco. La segunda lámina vive en /demo, donde el visitante ya ha
- * decidido mirar en serio.
+ * ── Por qué DOS capturas y no una galería ─────────────────────────────
+ * Ya hubo una galería y se retiró (commit 3608d0d): seis recortes
+ * pequeños parecen estar tapando que hay poco. Una pantalla completa a
+ * densidad real demuestra lo contrario.
+ *
+ * Pero una sola tampoco basta, y por un motivo que no es estético: la
+ * primera enseña lo que el programa MUESTRA y la segunda, lo que el
+ * programa COMPRUEBA. Sin la segunda, un visitante que ya ha visto veinte
+ * journals no tiene forma de distinguir éste — todos enseñan una curva y
+ * un calendario. La analítica con sus intervalos de confianza y su tabla
+ * por periodos es la que no tiene ningún otro.
+ *
+ * (Aquí ponía «la segunda lámina vive en /demo». No era cierto: /demo no
+ * monta ninguna lámina de producto, así que `LAMINAS_PRODUCTO.analitica`
+ * llevaba desde el primer día definida y sin que la usara nadie. Una
+ * afirmación en un comentario tiene la misma vida útil que el código que
+ * describe, y ésta ya estaba muerta cuando se escribió.)
  */
 export function ProductShowcase() {
   const { lang } = useLang();
@@ -49,7 +60,14 @@ export function ProductShowcase() {
           </p>
         </header>
 
-        <ProductPlate lamina={LAMINAS_PRODUCTO.resumen} />
+        <ProductPlate lamina={LAMINAS_PRODUCTO.resumen} priority />
+
+        {/* La segunda va perezosa a propósito: está por debajo del pliegue
+            en cualquier pantalla, y adelantarla competiría por el ancho de
+            banda con la primera, que sí decide si el visitante sigue. */}
+        <div className="mt-12">
+          <ProductPlate lamina={LAMINAS_PRODUCTO.analitica} />
+        </div>
 
         <p className="mt-7 text-[13.5px]">
           <Link

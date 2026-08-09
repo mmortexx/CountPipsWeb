@@ -149,6 +149,9 @@ const avisos = [];
 /** Cada contraste que se ha llegado a medir, para poder auditar la propia
     comprobación: una que no mide nada también sale en verde. */
 const contrastesMedidos = [];
+/** Ídem para las láminas del producto: si la ruta con capturas se cae de la
+    lista, la comprobación de legibilidad en móvil pasa a no mirar nada. */
+const laminasVistas = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -375,6 +378,22 @@ for (const pantalla of PANTALLAS) {
             return out;
           })(),
 
+          /* ── LA CAPTURA DEL PRODUCTO, A 390 px ──────────────────────
+             La lámina afirma estar enseñando la densidad real del
+             programa. Durante un tiempo, en móvil enseñaba la pantalla
+             entera reducida al 0,23 de su tamaño: no se leía ni una
+             cifra, y el componente seguía diciendo que demostraba algo.
+
+             Se comprueba lo que el navegador DESCARGA (`currentSrc`),
+             no lo que declara el `srcSet`: un `<picture>` mal escrito
+             tiene buena pinta en el fuente y sirve el fichero
+             equivocado. */
+          laminas: [...document.querySelectorAll(".tj-lamina-ventana img")].map((img) => ({
+            sirve: (img.currentSrc || img.src).split("/").pop(),
+            nativo: img.naturalWidth,
+            mostrado: Math.round(img.getBoundingClientRect().width),
+          })),
+
           /* Candidatos para la medición de contraste, que se hace fuera
              (ver `mideContraste`): los textos MÁS PEQUEÑOS que están
              sobre el fondo grabado, que son los que se quedan sin margen
@@ -422,6 +441,28 @@ for (const pantalla of PANTALLAS) {
         );
       }
       if (!informe.main) avisos.push(`${etiqueta}: sin elemento <main>`);
+
+      for (const l of informe.laminas) {
+        laminasVistas.push(`${etiqueta} ${l.sirve} ${l.mostrado}/${l.nativo}`);
+        if (pantalla.nombre === "movil") {
+          if (!l.sirve.includes("-movil")) {
+            fallos.push(
+              `${etiqueta}: la lámina sirve "${l.sirve}" en móvil, no su recorte dedicado`
+            );
+          }
+        } else if (l.sirve.includes("-movil")) {
+          fallos.push(`${etiqueta}: la lámina sirve el recorte de móvil en ${pantalla.nombre}`);
+        }
+        /* Por debajo de 0,4 la cifra más grande de la captura deja de
+           leerse. Es el umbral por el que existe el recorte. */
+        const escala = l.mostrado / l.nativo;
+        if (escala < 0.4) {
+          fallos.push(
+            `${etiqueta}: la captura "${l.sirve}" se ve al ${(escala * 100).toFixed(0)} % ` +
+            `(${l.mostrado}px de ${l.nativo}px) — a esa escala no se lee`
+          );
+        }
+      }
 
       /* El contraste sólo se mide en escritorio: la composición de capas
          es la misma en las cuatro pantallas y leer píxeles cuesta una
@@ -603,6 +644,16 @@ if (contrastesMedidos.length) {
   );
 } else {
   console.warn("  aviso  no se midió NINGÚN contraste: la comprobación no está mirando nada");
+}
+
+if (laminasVistas.length) {
+  const enMovil = laminasVistas.filter((s) => s.startsWith("movil"));
+  console.log(
+    `[humo] láminas — ${laminasVistas.length} capturas comprobadas ` +
+      `(${enMovil.length} en móvil, sirviendo su recorte dedicado)`
+  );
+} else {
+  console.warn("  aviso  ninguna lámina de producto en las rutas auditadas: nadie vigila su legibilidad");
 }
 
 console.log(

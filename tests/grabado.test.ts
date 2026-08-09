@@ -206,3 +206,59 @@ describe("lo que se retiró por no usarse", () => {
     expect(sitios, "ha vuelto un efecto que nadie aplica").toEqual([]);
   });
 });
+
+describe("las láminas del producto", () => {
+  /* La regla del fichero es que sólo se describe lo que se ha abierto y
+     mirado. Eso una prueba no lo puede comprobar. Lo que SÍ puede es cazar
+     las dos formas en que esa regla se rompe sin querer: una captura que
+     entra en `public/img/` y nadie describe —cuatro de las ocho llevaban
+     así desde el principio, sin que ningún componente las enseñara— y una
+     entrada a medio rellenar. */
+  it("toda captura de public/img tiene su entrada, y al revés", async () => {
+    const { LAMINAS_PRODUCTO } = await import("@/lib/laminas");
+    const dir = join(import.meta.dirname, "..", "public", "img");
+    const enDisco = readdirSync(dir)
+      .filter((f) => /^app-.*\.webp$/.test(f) && !f.includes("-movil"))
+      .sort();
+    const descritas = Object.values(LAMINAS_PRODUCTO).map((l) => l.archivo).sort();
+    expect(descritas, "hay capturas sin describir o entradas sin fichero").toEqual(enDisco);
+  });
+
+  it("cada lámina trae su detalle móvil en disco", async () => {
+    const { LAMINAS_PRODUCTO } = await import("@/lib/laminas");
+    const dir = join(import.meta.dirname, "..", "public", "img");
+    const faltan = Object.values(LAMINAS_PRODUCTO)
+      .map((l) => l.archivo.replace(/\.webp$/, "-movil.webp"))
+      .filter((f) => !readdirSync(dir).includes(f));
+    expect(faltan, "a 390 px estas láminas volverían a ser ilegibles").toEqual([]);
+  });
+
+  it("ninguna entrada se queda a medias", async () => {
+    const { LAMINAS_PRODUCTO } = await import("@/lib/laminas");
+    const campos = [
+      "archivo", "roman", "tituloEs", "tituloEn", "notaEs", "notaEn",
+      "altEs", "altEn", "detalleEs", "detalleEn",
+    ] as const;
+    const huecos: string[] = [];
+    for (const [clave, l] of Object.entries(LAMINAS_PRODUCTO)) {
+      for (const c of campos) {
+        const v = (l as unknown as Record<string, string>)[c];
+        if (!v || !v.trim()) huecos.push(`${clave}.${c}`);
+      }
+      /* Un alt que repite el título no describe la imagen: la nombra. Quien
+         navega con lector de pantalla se queda sin saber qué hay dentro. */
+      if (l.altEs.length < 80) huecos.push(`${clave}.altEs es demasiado corto para describir nada`);
+    }
+    expect(huecos).toEqual([]);
+  });
+
+  it("las capturas ya no llevan el cromo de la ventana recortado por CSS", () => {
+    const css = cssAplicado();
+    /* El recorte vive en el fichero desde `scripts/capturas.py`. Si vuelve
+       el `overflow:hidden` con el margen negativo, vuelve también el
+       problema que no arreglaba: el JSON-LD sirviendo las capturas enteras
+       con el nombre viejo y el sello de desarrollo dentro. */
+    const regla = /\.tj-lamina-ventana\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
+    expect(regla, "vuelve el recorte por CSS").not.toMatch(/overflow:\s*hidden/);
+  });
+});

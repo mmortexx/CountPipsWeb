@@ -135,9 +135,19 @@ const softwareApplicationSchema = {
   description:
     "El diario de trading profesional, nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y datos 100 % locales.",
   inLanguage: ["es", "en"],
-  /* Capturas reales de la aplicación. Estaban en `public/img/` sin que
-     ningún dato estructurado las mencionara: Google las admite en
-     `SoftwareApplication` y son gratis, ya existen. */
+  /* Capturas reales de la aplicación, que Google admite en
+     `SoftwareApplication`.
+
+     Durante un tiempo esto fue el único sitio del proyecto que las
+     enseñaba, y las enseñaba MAL: la página tapaba por CSS la barra de
+     título —con el nombre anterior al renombrado— y la de estado —con el
+     sello «Compilación de desarrollo»—, pero aquí viajaban los ficheros
+     enteros, sin recortar, desde las 155 páginas. Un recorte que sólo
+     existe en la hoja de estilos no protege nada de lo que se sirve.
+
+     Ya no hay recorte que se pueda olvidar: los ficheros de `public/img/`
+     están recortados en disco (`scripts/capturas.py`), así que lo que se
+     declara aquí y lo que se ve en la página son la misma imagen. */
   screenshot: [
     `${SITE_URL}/img/app-resumen.webp`,
     `${SITE_URL}/img/app-curva.webp`,

@@ -20,17 +20,35 @@ import { asset } from "@/lib/asset";
  * —numeración, filete doble, pie que dice qué se está viendo— y así el
  * grabado deja de ser un envoltorio bonito y pasa a enmarcar la prueba.
  *
- * ── EL RECORTE DE LA BARRA DE TÍTULO NO ES ESTÉTICO ───────────────────
- * Las ocho capturas se tomaron ANTES del renombrado y su barra de título
- * dice «Trading Journal», no «CountPips». Publicarlas enteras sería
- * enseñar el producto con el nombre de otro. Se recortan por CSS —no se
- * duplican ficheros retocados, que es deuda que nadie vuelve a mirar—
- * mediante un contenedor con `overflow:hidden` y un desplazamiento
- * negativo proporcional.
+ * ── EL RECORTE YA NO ES COSA DE ESTE COMPONENTE ───────────────────────
+ * Aquí había una maquinaria para tapar por CSS la barra de título —dice
+ * «Trading Journal», el nombre anterior al renombrado— y la de estado
+ * —dice «✓ Compilación de desarrollo»—: un contenedor con `overflow`
+ * oculto, un alto forzado en porcentaje y un `margin-top` negativo con su
+ * conversión de unidades, porque los porcentajes verticales se resuelven
+ * contra el ANCHO.
  *
- * Es además lo que recomienda la práctica actual para capturas de
- * escritorio: recortar ceñido a la función en lugar de repetir el marco
- * de ventana entero, que no aporta información y sí cuesta píxeles.
+ * Funcionaba, y arreglaba exactamente una cosa: la página pintada. El
+ * JSON-LD del layout seguía entregándole a Google los ficheros ENTEROS, con
+ * el nombre viejo y el sello de desarrollo dentro, desde las 155 páginas; y
+ * quien abría la imagen directamente los veía igual. Ahora el recorte vive
+ * en el fichero (`scripts/capturas.py`, con los originales archivados en
+ * `assets/capturas-originales/`), así que no hay nada que tapar en ningún
+ * sitio y este componente se limita a colocar una imagen.
+ *
+ * ── EN MÓVIL NO SE ENSEÑA LA PANTALLA: SE ENSEÑA UN DETALLE ───────────
+ * A 390 px la lámina mide unos 350, y una captura de 1500 se ve al 0,23 de
+ * su tamaño: no se lee ni una cifra. El componente decía estar demostrando
+ * densidad real y en el teléfono no demostraba nada.
+ *
+ * Reducir más no arregla nada y el scroll horizontal es pedirle trabajo al
+ * visitante. Lo que se sirve es un recorte dedicado —una región elegida
+ * mirando cada captura, no una reducción— y el pie dice qué se está
+ * mirando, porque enseñar un trozo sin avisar de que es un trozo es la otra
+ * manera de mentir con una captura.
+ *
+ * Se resuelve con `<picture>`: la elección la hace el navegador antes de
+ * descargar, así que el escritorio nunca pide la versión móvil ni al revés.
  *
  * ── Las cifras se quedan DENTRO de la captura ─────────────────────────
  * A propósito no hay cifras anotadas encima ni al lado. Las de la app y
@@ -40,39 +58,12 @@ import { asset } from "@/lib/asset";
  * titular, se lee como un resultado prometido.
  */
 
-/** Dimensiones nativas de las capturas, en píxeles. */
+/** Dimensiones de las capturas ya recortadas, en píxeles. */
 const ANCHO_NATIVO = 1500;
-const ALTO_NATIVO = 856;
+const ALTO_NATIVO = 788;
 
-/**
- * Alto, en píxeles del original, de la barra de título que hay que cortar.
- * Medido sobre la captura: la barra termina y empieza la fila de menú.
- */
-const BARRA_TITULO_PX = 46;
-
-/**
- * Alto de la barra de estado inferior, que también se corta.
- *
- * Ahí pone «✓ Compilación de desarrollo». El recorte de arriba quitaba con
- * mucho cuidado el nombre anterior al renombrado y dejaba abajo, a la
- * vista en la portada, el distintivo de una compilación de desarrollo. Se
- * corta por el mismo motivo: es cromo de la ventana, no información del
- * producto.
- */
-const BARRA_ESTADO_PX = 22;
-
-/**
- * OJO CON LA UNIDAD: `margin-top` en porcentaje se resuelve contra el ANCHO
- * del contenedor, nunca contra el alto — es así en la especificación, y es
- * el error que hace que un recorte "del 5 %" se coma el doble de lo que
- * parece en una imagen apaisada. Aquí se convierte a porcentaje de ancho
- * multiplicando por la proporción de la imagen.
- */
-const CORTE_PCT_ANCHO = (BARRA_TITULO_PX / ANCHO_NATIVO) * 100;
-
-/** Alto visible tras cortar arriba y abajo, como fracción del ancho. */
-const ALTO_UTIL_PCT_ANCHO =
-  ((ALTO_NATIVO - BARRA_TITULO_PX - BARRA_ESTADO_PX) / ANCHO_NATIVO) * 100;
+/** Por debajo de aquí se sirve el detalle en lugar de la pantalla entera. */
+const CORTE_MOVIL_PX = 767;
 
 export type LaminaProducto = {
   /** Nombre del fichero en `public/img/`, sin ruta. */
@@ -87,6 +78,13 @@ export type LaminaProducto = {
   /** Texto alternativo: describe el CONTENIDO, no el continente. */
   altEs: string;
   altEn: string;
+  /**
+   * Cómo se llama el fragmento que se enseña en pantalla estrecha, para
+   * poder decirlo en el pie: «detalle: el calendario del mes». Sin esto el
+   * visitante de móvil ve un recorte y no sabe que lo es.
+   */
+  detalleEs: string;
+  detalleEn: string;
 };
 
 export function ProductPlate({
@@ -99,30 +97,30 @@ export function ProductPlate({
   const { lang } = useLang();
   const es = lang === "es";
   const { archivo, roman, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
+  const movil = archivo.replace(/\.webp$/, "-movil.webp");
 
   return (
     <figure className="tj-lamina-producto">
       <div className="tj-lamina-marco">
-        <div
-          className="tj-lamina-ventana"
-          /* El alto se fija para que el corte de abajo tenga por dónde
-             cortar: sin él, el contenedor crece con la imagen y la barra
-             de estado vuelve a verse. */
-          style={{ paddingBottom: `${ALTO_UTIL_PCT_ANCHO}%`, height: 0 }}
-        >
+        <div className="tj-lamina-ventana">
           {/* `img` y no `next/image`: el build es `output: "export"` con
               `images.unoptimized`, así que next/image no optimizaría nada
               y sí añadiría envoltorio. */}
-          <img
-            src={asset(`/img/${archivo}`)}
-            alt={es ? altEs : altEn}
-            width={ANCHO_NATIVO}
-            height={ALTO_NATIVO}
-            loading={priority ? "eager" : "lazy"}
-            decoding="async"
-            fetchPriority={priority ? "high" : "auto"}
-            style={{ marginTop: `${-CORTE_PCT_ANCHO}%` }}
-          />
+          <picture>
+            <source
+              media={`(max-width: ${CORTE_MOVIL_PX}px)`}
+              srcSet={asset(`/img/${movil}`)}
+            />
+            <img
+              src={asset(`/img/${archivo}`)}
+              alt={es ? altEs : altEn}
+              width={ANCHO_NATIVO}
+              height={ALTO_NATIVO}
+              loading={priority ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={priority ? "high" : "auto"}
+            />
+          </picture>
         </div>
       </div>
       <figcaption className="tj-lamina-pie">
@@ -137,6 +135,12 @@ export function ProductPlate({
         </span>
         <h3 className="tj-lamina-titulo">{es ? tituloEs : tituloEn}</h3>
         <p className="tj-lamina-nota">{es ? notaEs : notaEn}</p>
+        {/* Sólo se ve donde de verdad se está enseñando el recorte. Va con
+            el mismo interruptor de ancho que el `<picture>` de arriba: si
+            uno cambia y el otro no, el pie miente. */}
+        <p className="tj-lamina-detalle">
+          {es ? `Detalle: ${lamina.detalleEs}.` : `Detail: ${lamina.detalleEn}.`}
+        </p>
       </figcaption>
     </figure>
   );

@@ -3629,21 +3629,20 @@ button.icon-btn:hover > svg,
   background: var(--surface);
 }
 .tj-lamina-ventana {
-  /* El recorte de la barra de título vive aquí: el `img` sube con un
-     margen negativo y este contenedor le corta la cabeza. */
-  overflow: hidden;
+  /* Ya no recorta nada: el recorte de la barra de título y del sello de
+     desarrollo está hecho en el propio fichero (`scripts/capturas.py`), no
+     tapado con `overflow` y un margen negativo. Lo que queda es el filete y
+     el fondo, que es lo que hace que la captura se lea como lámina.
+
+     `line-height: 0` sigue haciendo falta: sin él, la caja de línea del
+     `img` añade unos píxeles de fondo bajo la imagen y el filete inferior
+     se despega. */
   border: 1px solid rgb(var(--divider) / 0.16);
   background: #0c1116;
   line-height: 0;
 }
-.tj-lamina-ventana {
-  position: relative;
-}
 .tj-lamina-ventana img {
   display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: auto;
 }
@@ -3668,6 +3667,23 @@ button.icon-btn:hover > svg,
   line-height: 1.6;
   color: var(--ink-2);
   max-width: 46em;
+}
+/* «Detalle: el calendario del mes.» Sólo aparece donde de verdad se está
+   sirviendo el recorte, y el umbral es EL MISMO que el del `<picture>` de
+   `ProductPlate` (767 px). Si uno se mueve sin el otro, el pie miente: o
+   anuncia un detalle donde se ve la pantalla entera, o calla donde se ve un
+   trozo. */
+.tj-lamina-detalle {
+  display: none;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 767px) {
+  .tj-lamina-detalle {
+    display: block;
+  }
 }
 @media (max-width: 900px) {
   .tj-interlude {
