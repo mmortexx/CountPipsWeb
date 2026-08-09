@@ -12,6 +12,7 @@ import { OverlayHost } from "@/components/tj/OverlayHost";
 import { ScrollToTop } from "@/components/tj/ScrollToTop";
 import { SkipLink } from "@/components/tj/SkipLink";
 import { BackgroundFX } from "@/components/tj/BackgroundFX";
+import { LuzViva } from "@/components/tj/LuzViva";
 import { IntroSequence } from "@/components/tj/IntroSequence";
 import { SectionReveal } from "@/components/tj/SectionReveal";
 import { SITE_URL } from "@/lib/site";
@@ -234,6 +235,32 @@ export default function RootLayout({
             __html: `(function(){try{var p=location.pathname;var b='${BASE_PATH}';if(b&&p.indexOf(b)===0)p=p.slice(b.length)||'/';document.documentElement.lang=(p==='/en'||p.indexOf('/en/')===0)?'en':'es';}catch(e){}})();`,
           }}
         />
+        {/* ── RED DE SEGURIDAD PARA QUIEN NO EJECUTA JAVASCRIPT ──────
+            Los componentes que animan con `framer-motion` y
+            `initial={{ opacity: 0 }}` escriben ese cero como estilo EN
+            LÍNEA en el HTML servido, y sólo lo suben cuando React
+            hidrata. En una exportación estática eso significa que sin
+            JavaScript hay secciones enteras invisibles — no degradadas:
+            invisibles.
+
+            Los de la ruta crítica ya no lo hacen (ver `Reveal.tsx` y
+            `PageHeader.tsx`, que animan con CSS atado al scroll), pero
+            quedan piezas repartidas por el sitio y, sobre todo, no hay
+            nada que impida que mañana entre una nueva. Esto lo cubre de
+            raíz y para siempre: si no hay JavaScript, nada puede quedar
+            en opacidad cero ni desplazado.
+
+            Va dentro de `<noscript>`, así que el navegador ni siquiera
+            lo analiza cuando hay JavaScript: coste cero en el caso
+            normal. Y `!important` aquí es correcto —es la única forma
+            de ganarle a un estilo en línea— y está acotado a un
+            contexto donde, por definición, ninguna animación va a
+            correr. */}
+        <noscript
+          dangerouslySetInnerHTML={{
+            __html: `<style>[style*="opacity:0"],[style*="opacity: 0"]{opacity:1!important;transform:none!important;visibility:visible!important}</style>`,
+          }}
+        />
       </head>
       <body
         className={`${geistMono.variable} ${instrumentSans.variable} ${newsreader.variable} antialiased`}
@@ -259,6 +286,10 @@ export default function RootLayout({
                 las 155 páginas para buscar tarjetas con la clase `.tj-spot`,
                 y esa clase no la aplicaba ni un componente del sitio. */}
             <BackgroundFX />
+            {/* El único oyente de puntero del sitio: alimenta el foco
+                del fondo y el reflejo de las superficies con realce.
+                Ver el encabezado de LuzViva.tsx. */}
+            <LuzViva />
             <IntroSequence />
             <SectionReveal />
             <SkipLink />

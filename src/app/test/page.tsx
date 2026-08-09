@@ -120,6 +120,8 @@ export function TestBody() {
   return (
     <>
       <PageHeader
+        tono="instrumento"
+        folio="[ TEST ]"
         eyebrowEs="Diagnóstico"
         eyebrowEn="Diagnosis"
         titleEs="¿Qué tipo de trader eres?"

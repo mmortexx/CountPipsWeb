@@ -75,6 +75,11 @@ export function GlosarioBody() {
   return (
     <>
       <PageHeader
+        tono="registro"
+        /* El folio de un registro es lo que contiene, y sale de la
+           lista, no de la memoria de quien lo escribió: si mañana entra
+           un término, el margen lo dice solo. */
+        folio={String(TERMINOS.length)}
         eyebrowEs="Referencia"
         eyebrowEn="Reference"
         titleEs="Glosario de trading."

@@ -212,6 +212,7 @@ export function FaqBody() {
   return (
     <>
       <PageHeader
+        tono="registro"
         eyebrowEs="Dudas"
         eyebrowEn="Questions"
         titleEs="Preguntas frecuentes."

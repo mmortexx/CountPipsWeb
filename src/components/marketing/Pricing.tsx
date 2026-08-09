@@ -7,6 +7,7 @@ import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
+import { PRECIO_CORE, PRECIO_PRO, MONEDA } from "@/lib/precios";
 
 type Plan = {
   id: "core" | "pro";
@@ -76,7 +77,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     {
       id: "core",
       name: t("core"),
-      price: 149,
+      price: PRECIO_CORE,
       tagline: es
         ? "El núcleo del journal para construir una operativa medible."
         : "The journal core for building a measurable trading process.",
@@ -86,7 +87,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     {
       id: "pro",
       name: t("pro"),
-      price: 249,
+      price: PRECIO_PRO,
       popular: true,
       tagline: es
         ? "Controles avanzados para exigencia prop y multi-cuenta."
@@ -150,12 +151,12 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
               ? [
                   { k: "Ahora", v: "Demo sin registro" },
                   { k: "Acceso", v: "Piloto privado" },
-                  { k: "Lanzamiento", v: "Core $149 · Pro $249" },
+                  { k: "Lanzamiento", v: `Core ${MONEDA}${PRECIO_CORE} · Pro ${MONEDA}${PRECIO_PRO}` },
                 ]
               : [
                   { k: "Now", v: "No-sign-up demo" },
                   { k: "Access", v: "Private pilot" },
-                  { k: "Launch", v: "Core $149 · Pro $249" },
+                  { k: "Launch", v: `Core ${MONEDA}${PRECIO_CORE} · Pro ${MONEDA}${PRECIO_PRO}` },
                 ]
             ).map((item) => (
               <li key={item.k} className="terms-bar__item">

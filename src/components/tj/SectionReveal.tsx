@@ -5,34 +5,48 @@ import { usePathname } from "next/navigation";
 import { curva } from "@/lib/motion";
 
 /**
- * SectionReveal — puerto del `_reveal()` del HTML de referencia: cada
- * <section> de nivel superior (excepto el hero #top) entra con un rise
- * de 22 px + fade (0.65 s, var(--ease-suave)) cuando asoma en
- * viewport (threshold 10 %, rootMargin -8 % inferior).
+ * SectionReveal — el RESPALDO de la entrada de sección, para los
+ * navegadores sin `animation-timeline: view()`.
  *
- * La duración y el desplazamiento están afinados al mismo presupuesto
- * que Reveal (0.55 s, 16 px): aquí las secciones son más grandes y
- * toleran un poco más de recorrido (22 px) sin verse tropicales, pero
- * la familia de movimiento es la misma en toda la página.
+ * ── Por qué ya no es el mecanismo principal ───────────────────────────
+ * Porque estaba apagando el texto que el visitante ya estaba leyendo.
+ *
+ * La animación va de opacidad 0 a 1 y la disparaba un
+ * IntersectionObserver montado en un efecto: no empieza cuando la
+ * sección aparece, sino cuando React ha hidratado. En `/features` eso
+ * son más de dos segundos, y durante ese rato la cabecera está pintada
+ * y legible. Al arrancar el observador, el primer fotograma la manda a
+ * opacidad 0 y la vuelve a subir. Medido: el titular y su párrafo a
+ * 0,409 de opacidad acumulada, con el contraste caído de 11:1 a 2,5:1.
+ * Lo que se veía no era una entrada elegante; era una página que se
+ * apagaba sola.
+ *
+ * El mecanismo principal es ahora CSS —ver el bloque «ENTRADA DE
+ * SECCIÓN» de globals.css—, donde el progreso de la animación ES la
+ * posición de la sección en la ventana: lo que ya está en pantalla nace
+ * en su estado final, sin nada que esperar.
+ *
+ * ── Las dos reglas que este respaldo respeta ──────────────────────────
+ *  1. No hace nada si el navegador soporta el timeline de scroll. Los
+ *     dos mecanismos a la vez animarían la misma opacidad dos veces.
+ *  2. **No anima lo que ya está en pantalla.** Es la regla que faltaba,
+ *     y la que convertía un adorno en un defecto de legibilidad. Una
+ *     entrada sólo tiene sentido para lo que el visitante todavía no ha
+ *     visto.
  *
  * Implementación con Web Animations API (`el.animate()`) en lugar de
  * estilos inline: WAAPI no toca los atributos del DOM, así que no
  * provoca mismatches de hidratación con las secciones que llegan en
- * diferido vía next/dynamic (React hidrata sus atributos mientras
- * nosotros solo reproducimos una animación por encima). Antes de entrar
- * en viewport la sección está fuera de pantalla, con lo que no necesita
- * pre-ocultarse. El estado "ya animado" vive en un WeakSet, no en
- * data-attributes, por el mismo motivo.
- *
- * Se excluyen secciones anidadas (p. ej. dentro del demo interactivo) y
- * un MutationObserver sobre <main> re-escanea cuando los chunks
- * dynamic() montan secciones nuevas.
+ * diferido vía next/dynamic. El estado "ya animado" vive en un WeakSet
+ * por el mismo motivo.
  */
 export function SectionReveal() {
   const pathname = usePathname();
 
   useEffect(() => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Regla 1: si el CSS puede, el CSS manda.
+    if (CSS.supports("animation-timeline", "view()")) return;
     const main = document.getElementById("main-content");
     if (!main) return;
 
@@ -68,6 +82,11 @@ export function SectionReveal() {
         )
         .forEach((el) => {
           seen.add(el);
+          /* Regla 2: lo que ya asoma en la ventana en el momento de
+             registrarlo no se anima — se da por entrado. Se marca como
+             visto igualmente para que el re-escaneo del MutationObserver
+             no lo reconsidere. */
+          if (el.getBoundingClientRect().top < window.innerHeight) return;
           io.observe(el);
         });
     };

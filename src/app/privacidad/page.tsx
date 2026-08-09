@@ -57,6 +57,7 @@ export function PrivacidadBody() {
   return (
     <>
       <PageHeader
+        tono="documento"
         eyebrowEs="Legal"
         eyebrowEn="Legal"
         titleEs="Política de privacidad."

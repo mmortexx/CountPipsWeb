@@ -1,12 +1,40 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Link } from "@/components/tj/LocaleLink";
 import { Clock } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { AnimatedHeading } from "@/components/tj/AnimatedHeading";
-import { FadeIn } from "@/components/tj/FadeIn";
+
+/**
+ * El registro de una página: qué CLASE de documento es.
+ *
+ * ── Por qué la cabecera necesita saberlo ──────────────────────────────
+ * Porque las nueve páginas interiores usaban exactamente la misma, y no
+ * son la misma clase de cosa. Un capítulo que explica una idea, una
+ * calculadora que se usa, un índice que se consulta, una tarifa que se
+ * compara y un texto legal que se archiva tienen ritmos de lectura
+ * distintos, y una cabecera idéntica en las cinco le dice al visitante
+ * que da igual dónde esté. Da igual dónde esté es exactamente lo que no
+ * se quiere de un sitio de nueve páginas.
+ *
+ * Cada tono cambia tres cosas —el folio del margen, el peso del filete
+ * y la medida del titular— y NO cambia ninguna otra: la retícula, los
+ * colores y la tipografía son los mismos, porque lo que se busca es que
+ * cada página tenga carácter dentro del mismo libro, no que parezca de
+ * otro sitio.
+ */
+export type TonoPagina =
+  /** Desarrolla una idea. Folio romano al margen, titular a plena caja. */
+  | "capitulo"
+  /** Se usa, no se lee. Folio entre corchetes, como una referencia de pieza. */
+  | "instrumento"
+  /** Se consulta por entradas. El folio es el RECUENTO de lo que contiene. */
+  | "registro"
+  /** Se compara. El folio es una cifra tabular, del mismo palo que los precios. */
+  | "tarifa"
+  /** Se archiva. Sin folio y con la medida más estrecha: aquí sobra el ornamento. */
+  | "documento";
 
 interface PageHeaderProps {
   eyebrowEs: string;
@@ -33,27 +61,35 @@ interface PageHeaderProps {
    * Omit on pages where reading time doesn't make sense (e.g. pricing).
    */
   readingTimeMin?: number;
+  /** Qué clase de documento es esta página. Ver `TonoPagina`. */
+  tono?: TonoPagina;
+  /**
+   * El folio: la marca del margen. Su significado depende del tono — un
+   * ordinal romano en un capítulo, una referencia en un instrumento, un
+   * recuento en un registro, una cifra en una tarifa. Se omite en los
+   * documentos, que no llevan.
+   */
+  folio?: string;
 }
 
 /**
- * Reusable page header banner with breadcrumb, animated title, and
- * subtitle. Used by all sub-pages.
+ * La cabecera de todas las páginas interiores.
  *
- * Animation cascade (matches the Hero's entrance, all kicked off after
- * the route transition so the page settles in cleanly):
- *   0ms   — breadcrumb (plain framer-motion fade, kept as-is per spec)
- *   200ms — eyebrow (motion.div fade)
- *   200ms — title (AnimatedHeading char-by-char, 30ms stagger, 500ms
- *           duration per char; INITIAL_DELAY=200ms baked into the
- *           AnimatedHeading component)
- *   400ms — subtitle (FadeIn wrapper, 800ms duration)
+ * ── Aquí vivía la mitad del «h1 invisible sin JavaScript» ─────────────
+ * Las migas, el epígrafe y el subtítulo entraban con `framer-motion` y
+ * `initial={{ opacity: 0 }}`, o sea renderizados a opacidad cero en el
+ * HTML servido y subidos a uno sólo cuando React hidrata. En una
+ * exportación estática eso significa una cabecera en blanco para quien
+ * no ejecute JavaScript —incluidos los rastreadores que no lo hacen— y
+ * un parpadeo para todos los demás.
  *
- * Static accent-glow disc anchored to the top center (no parallax, no
- * market canvas) so the page opens with a single quiet ambient cue,
- * then steps into the four-step cascade using the project signature
- * ease curve. With `prefers-reduced-motion: reduce`, the MotionConfig
- * in providers.tsx reduces the transforms to instant snaps while
- * preserving opacity fades so the content still appears gracefully.
+ * Ahora la entrada es CSS (`data-entra`, ver globals.css): el HTML sale
+ * con el texto a plena tinta y la animación, si el navegador la
+ * soporta, va atada al scroll. El componente sigue siendo de cliente
+ * sólo por `useLang()`.
+ *
+ * El titular ya lo había resuelto `AnimatedHeading` en su día por el
+ * mismo motivo; ver la nota de su encabezado.
  */
 export function PageHeader({
   eyebrowEs,
@@ -67,17 +103,21 @@ export function PageHeader({
   breadcrumbEs,
   breadcrumbEn,
   readingTimeMin,
+  tono = "capitulo",
+  folio,
 }: PageHeaderProps) {
   const { lang } = useLang();
   const es = lang === "es";
 
   return (
-    <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
-      {/* Antes: `bg-black` opaco — tapaba el ojo WebGL global en todas
-          las subpáginas. Ahora el header es transparente y la
-          legibilidad la garantiza un scrim lateral (mismo lenguaje que
-          el hero de la home): el texto vive sobre la zona velada y el
-          iris respira a la derecha. */}
+    <section
+      className="tj-cabecera relative overflow-hidden"
+      data-tono={tono}
+    >
+      {/* Antes: `bg-black` opaco — tapaba el fondo global en todas las
+          subpáginas. Ahora el header es transparente y la legibilidad la
+          garantiza un scrim lateral (mismo lenguaje que el hero de la
+          home): el texto vive sobre la zona velada. */}
       <div aria-hidden className="page-header-scrim" />
       {/* Fade inferior: entrega suave hacia la primera sección velada. */}
       <div
@@ -88,29 +128,28 @@ export function PageHeader({
             "linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg) 52%, transparent))",
         }}
       />
-      {/* Halo de acento retirado (rediseño institucional). Era un disco
-          de 600×300 px difuminado 120 px sobre TODAS las cabeceras de
-          página: una mancha dorada permanente detrás de cada titular.
-          No marcaba nada — solo teñía. La cabecera se sostiene con la
-          jerarquía tipográfica y el grano de abajo. */}
       {/* Section grain — opt-in 3 % fractalNoise overlay so the page
           header reads as the same machined surface as the sections below
-          it (Bento, HowItWorks, Pricing, etc.) rather than a flat black
-          void. Sits under the accent halo so both layers read together. */}
+          it rather than a flat black void. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
 
       <div className="relative z-10 tj-container">
+        {/* El folio. Va en la marginalia, en grande y muy tenue: es la
+            marca que distingue una página de otra de un vistazo, antes
+            incluso de leer el titular. Decorativo por completo — su
+            contenido ya está dicho en el epígrafe y en las migas—, así
+            que se oculta a los lectores de pantalla. */}
+        {folio && tono !== "documento" && (
+          <span aria-hidden className="tj-folio">
+            {folio}
+          </span>
+        )}
+
         {/* Breadcrumb — Home / <current page>. Plain text on the trailing
             crumb (no link) so users can't tap into the page they're already
-            on; the home crumb is the only navigable one. Kept as a plain
-            framer-motion fade-in (no FadeIn wrapper) per the task spec:
-            "Keep the breadcrumb and eyebrow as-is". Uses the design-system
-            tertiary/secondary text tokens (gray-400/gray-300 on dark) so
-            the colors shift correctly when the theme flips to light. */}
-        <motion.nav
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+            on; the home crumb is the only navigable one. */}
+        <nav
+          data-entra="1"
           className="flex items-center gap-2 text-xs text-tertiary mb-6"
           aria-label={es ? "Migas de pan" : "Breadcrumb"}
         >
@@ -128,79 +167,64 @@ export function PageHeader({
           <span className="text-secondary" aria-current="page">
             {es ? breadcrumbEs : breadcrumbEn}
           </span>
-        </motion.nav>
+        </nav>
 
-        {/* Eyebrow — fades in at 200ms. Kept as a motion.div (same pattern
-            as before) so the Eyebrow component itself stays untouched;
-            only the delay is moved from 100ms to 200ms so the eyebrow
-            lines up with the title's char-by-char entrance. */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
+        <div data-entra="2">
           <Eyebrow>{es ? eyebrowEs : eyebrowEn}</Eyebrow>
-        </motion.div>
+        </div>
 
-        {/* Title — character-by-character entrance starting at 200ms
-            (AnimatedHeading's INITIAL_DELAY=200ms), 30ms stagger, 500ms
-            duration per char. The optional `highlight` substring is
-            rendered with the `text-gradient` class to preserve the
-            original "rest + gradient emphasis" design of every page
-            header (features, demo, pricing, about, faq). */}
+        {/* El filete bajo el epígrafe se traza de izquierda a derecha al
+            entrar la cabecera, y su ancho lo fija el tono: es la
+            segunda seña —tras el folio— de qué clase de página es
+            ésta. */}
+        <div className="tj-filete tj-filete-cabecera mt-4" aria-hidden />
+
+        {/* Title — character-by-character entrance resuelta en CSS. La
+            optional `highlight` se renderiza con `text-gradient` para
+            conservar el diseño «resto + énfasis» de cada cabecera. */}
         <AnimatedHeading
           text={es ? titleEs : titleEn}
           highlight={es ? titleHighlightEs : titleHighlightEn}
           className="mt-5 t-h1 text-primary"
         />
 
-        {/* Subtitle — fades in at 400ms per the task spec. Uses the
-            design-system secondary text token (gray-300 on dark) so the
-            lead reads coherently against both the dark backdrop and the
-            grain overlay. T2h: max-w-2xl (672px) → max-w-[44em] (~704px)
-            and leading-relaxed (1.625) → leading-[1.6] per the page-header
-            brief: comfortable measure + 1.6 line-height for the lead
-            paragraph on every subpage. */}
         {/* La medida va en `ch`, no en `em`. Aquí ponía `max-w-[44em]`,
             que suena acotado pero no lo está: `em` mide contra el tamaño
             de letra, y a 20 px da ~880 px, o sea unos 88 caracteres por
             línea. Pasados los ~75 el ojo pierde el renglón al volver al
-            margen izquierdo y hay que releer.
-            `ch` mide en anchos de carácter, que es la unidad en la que
-            de verdad se define una medida de lectura: 62ch son 62
-            caracteres, y lo siguen siendo si mañana cambia el cuerpo. */}
-        <FadeIn delay={400} duration={800}>
-          <p className="mt-5 text-lg md:text-xl text-secondary leading-[1.6] max-w-[62ch]">
-            {es ? subtitleEs : subtitleEn}
-          </p>
-        </FadeIn>
+            margen izquierdo y hay que releer. `ch` mide en anchos de
+            carácter: 62ch son 62 caracteres, y lo siguen siendo si
+            mañana cambia el cuerpo. El tono la estrecha o la ensancha
+            —un documento legal se lee más apretado que un capítulo—
+            desde `--medida`. */}
+        <p
+          data-entra="3"
+          className="mt-5 text-lg md:text-xl text-secondary leading-[1.6]"
+          style={{ maxWidth: "var(--medida, 62ch)" }}
+        >
+          {es ? subtitleEs : subtitleEn}
+        </p>
 
         {/* Reading time meta row — a quiet inline pill that signals the
-            page's depth. Only renders when `readingTimeMin` is provided
-            (feature subpages). Uses a Clock icon + the localized label.
-            Sits below the subtitle with a small top margin so it reads
-            as metadata, not as a third paragraph. */}
+            page's depth. Only renders when `readingTimeMin` is provided. */}
         {readingTimeMin != null && readingTimeMin > 0 && (
-          <FadeIn delay={520} duration={600}>
-            <div className="mt-5 flex items-center gap-2">
-              <span
-                className="inline-flex items-center gap-1.5 rounded-full border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] px-3 py-1 text-xs font-medium text-tertiary"
-                aria-label={es ? `${readingTimeMin} minutos de lectura` : `${readingTimeMin} min read`}
-              >
-                <Clock size={12} className="opacity-70" aria-hidden />
-                <span className="tnum">
-                  {readingTimeMin} {es ? "min de lectura" : "min read"}
-                </span>
+          <div data-entra="4" className="mt-5 flex items-center gap-2">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] px-3 py-1 text-xs font-medium text-tertiary"
+              aria-label={es ? `${readingTimeMin} minutos de lectura` : `${readingTimeMin} min read`}
+            >
+              <Clock size={12} className="opacity-70" aria-hidden />
+              <span className="tnum">
+                {readingTimeMin} {es ? "min de lectura" : "min read"}
               </span>
-            </div>
-          </FadeIn>
+            </span>
+          </div>
         )}
       </div>
 
       {/* Accent gradient divider — a 1px hairline that transitions from
           transparent → accent → transparent. Reads as a "machined edge"
-          that separates the header from the first content section with
-          a quiet brand-colored cue. Theme-aware via --accent-base. */}
+          that separates the header from the first content section. */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 bottom-0 h-px"

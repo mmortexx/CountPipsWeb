@@ -4112,9 +4112,35 @@ button.icon-btn:hover > svg,
      motivo del `will-change: backdrop-filter` del final del fichero,
      que reservaba memoria de composición en cada lámina de la página. */
   background-color: color-mix(in srgb, var(--surface) 86%, transparent);
+  /* ── El reflejo del cursor, en el FONDO y no en una capa encima ─────
+     Una lámina plana sobre un fondo plano no tiene forma. Con un
+     reflejo que se mueve bajo el puntero, la superficie se lee como
+     material — y el canto de arriba atrapa la luz igual que lo haría
+     una hoja real bajo una lámpara.
+
+     Va como primera capa del `background-image` del propio elemento, y
+     no como un `::after` superpuesto, por un motivo práctico: un
+     pseudo-elemento posicionado se pinta ENCIMA del contenido, así que
+     habría que subir todos los hijos con `position: relative` y un
+     z-index. Son más de cincuenta superficies repartidas por el sitio;
+     tocarlas una a una para colocar un reflejo es cómo se rompen
+     layouts. En el fondo del elemento queda debajo del texto por
+     definición, sin tocar nada.
+
+     Las coordenadas por defecto están FUERA del elemento (-100%), así
+     que sin cursor encima no hay reflejo que ver. Las escribe un único
+     oyente en el documento — ver `LuzViva.tsx`. */
+  --reflejo-alfa: 0.075;
   background-image:
+    radial-gradient(
+      16rem 16rem at var(--mx, -100%) var(--my, -100%),
+      rgb(var(--accent-base) / var(--reflejo-alfa)),
+      transparent 70%
+    ),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
+  background-size:
+    100% 100%,
+    180px 180px;
   background-position: 0 0;
   background-repeat: repeat;
   background-blend-mode: overlay;
@@ -4149,7 +4175,17 @@ button.icon-btn:hover > svg,
      prácticamente opaco y el degradado no aportaba nada que se viera:
      sólo impedía saber cuál era el valor real. Queda en 95 %. */
   background-color: color-mix(in srgb, var(--raised) 95%, transparent);
+  /* En papel el reflejo va al doble: sobre una superficie clara, un 7 %
+     de tinta clara no se ve. Aquí el reflejo OSCURECE en vez de
+     iluminar, que es lo que hace una sombra suave en un objeto real
+     bajo una luz cercana. */
+  --reflejo-alfa: 0.05;
   background-image:
+    radial-gradient(
+      16rem 16rem at var(--mx, -100%) var(--my, -100%),
+      rgb(19 29 38 / var(--reflejo-alfa)),
+      transparent 70%
+    ),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.35'/%3E%3C/svg%3E");
   box-shadow:
     /* canto: luz arriba, contacto abajo */
@@ -4195,6 +4231,13 @@ button.icon-btn:hover > svg,
 }
 .tj-paper-dense {
   background-color: var(--paper-dense);
+  /* Sin reflejo del cursor: estas superficies son la barra fija, el
+     cajón y las paletas, y en ellas el puntero pasa constantemente. Una
+     mancha de luz recorriendo la barra de navegación cada vez que el
+     ratón cruza la pantalla no es material, es un distractor. El
+     reflejo es para las superficies a las que se va, no para las que
+     están siempre delante. */
+  --reflejo-alfa: 0;
 }
 /* ── El papel denso en claro: una sola declaración ────────────────────
    Aquí había DOS reglas `:root[data-theme="light"] .tj-paper-dense`
@@ -4380,4 +4423,487 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   opacity: 0 !important;
   pointer-events: none !important;
   transition: opacity 0.18s ease;
+}
+
+/* ============================================================
+   LUZ VIVA — profundidad, foco y deriva
+   ============================================================
+   Por qué existe. El sitio se leía «sencillo» y la causa no era la
+   tipografía ni la retícula: era que el fondo es un negro PLANO. Un
+   plano no tiene distancia, así que todo lo que se pone encima flota a
+   la misma profundidad y la página entera se lee como una hoja de
+   pizarra. Las superficies que se sienten caras no llevan más adornos;
+   llevan luz, y la luz hace tres cosas que aquí no hacía nadie: separa
+   los planos, dirige la mirada y cambia cuando te mueves.
+
+   Tres capas, cada una con su trabajo:
+
+     · **Ambiente** — dos focos fijos en esquinas opuestas. Es la
+       iluminación de la sala: constante, y su único cometido es que el
+       centro de la mancha esté más iluminado que los bordes.
+     · **Foco** — sigue al puntero con retardo. Es lo que convierte el
+       fondo en un espacio: si la luz se mueve contigo, hay volumen
+       debajo.
+     · **Deriva** — el conjunto se desplaza con el scroll a distinta
+       velocidad que el contenido. Paralaje de verdad, resuelta por el
+       compositor con `animation-timeline: scroll()`: cero JavaScript en
+       el hilo principal y cero listeners de scroll.
+
+   El color es el verde de la marca, pero a una intensidad —del 4 % al
+   10 %— en la que nunca compite con una cifra. Esa distinción importa
+   y es deliberada: en este producto el color SIGNIFICA dinero, así que
+   el verde saturado se reserva para los datos y aquí sólo entra como
+   temperatura de la luz, no como tinta.
+
+   Todo se apaga con `prefers-reduced-motion`, salvo el ambiente, que no
+   se mueve y por tanto no molesta a nadie. */
+
+.tj-luz {
+  position: absolute;
+  /* Desbordado a propósito: la deriva mueve la capa y sin margen se
+     verían sus cantos entrar por arriba y por abajo. */
+  inset: -25% -10%;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      38rem 28rem at var(--luz-x, 50%) var(--luz-y, 28%),
+      rgb(var(--sig-green) / 0.085),
+      transparent 62%
+    ),
+    radial-gradient(
+      56rem 40rem at 12% 4%,
+      rgb(var(--accent-base) / 0.055),
+      transparent 58%
+    ),
+    radial-gradient(
+      48rem 36rem at 88% 96%,
+      rgb(var(--sig-green) / 0.045),
+      transparent 56%
+    );
+  will-change: transform;
+}
+
+/* En papel la luz es rebote, no emisión: la misma geometría con la
+   mitad de fuerza y sin el verde del foco, que sobre un fondo claro se
+   leería como una mancha de color en vez de como iluminación. */
+:root[data-theme="light"] .tj-luz {
+  background:
+    radial-gradient(
+      38rem 28rem at var(--luz-x, 50%) var(--luz-y, 28%),
+      rgb(var(--sig-green) / 0.05),
+      transparent 62%
+    ),
+    radial-gradient(
+      56rem 40rem at 12% 4%,
+      rgb(19 29 38 / 0.045),
+      transparent 58%
+    ),
+    radial-gradient(
+      48rem 36rem at 88% 96%,
+      rgb(19 29 38 / 0.03),
+      transparent 56%
+    );
+}
+
+@supports (animation-timeline: scroll()) {
+  .tj-luz {
+    animation: tj-deriva linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes tj-deriva {
+  from {
+    transform: translate3d(0, -3.5%, 0) scale(1.02);
+  }
+  to {
+    transform: translate3d(0, 3.5%, 0) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tj-luz {
+    animation: none;
+    transform: none;
+    /* El foco del puntero también se queda quieto: sin animación, un
+       degradado que salta de golpe al mover el ratón es peor que uno
+       que no se mueve. */
+    --luz-x: 50%;
+    --luz-y: 28%;
+  }
+}
+
+/* ============================================================
+   REALCE — la luz que sigue al cursor sobre una superficie
+   ============================================================
+   La contraparte local de `.tj-luz`. Una tarjeta plana sobre un fondo
+   plano no tiene forma; con un reflejo que se mueve bajo el puntero, la
+   superficie se lee como material y el borde superior atrapa la luz
+   igual que lo haría una lámina real bajo una lámpara.
+
+   Las coordenadas las escribe un ÚNICO oyente en el documento
+   (`LuzViva`), no uno por tarjeta: con cuarenta tarjetas en una página,
+   cuarenta oyentes de `pointermove` son cuarenta funciones ejecutándose
+   en cada píxel que recorre el ratón.
+
+   `::after` y no `::before`: casi todas las superficies del sitio usan
+   ya el primero para su halo de papel. */
+.tj-realce {
+  position: relative;
+  isolation: isolate;
+}
+.tj-realce::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease-suave, ease);
+  background: radial-gradient(
+    18rem 18rem at var(--mx, 50%) var(--my, 50%),
+    rgb(var(--accent-base) / 0.09),
+    transparent 70%
+  );
+}
+.tj-realce:hover::after,
+.tj-realce:focus-within::after {
+  opacity: 1;
+}
+/* El contenido tiene que quedar POR ENCIMA del reflejo, o el reflejo lo
+   lava. Se sube todo hijo directo en vez de exigir que cada uno se
+   acuerde de llevar su propia clase. */
+.tj-realce > * {
+  position: relative;
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-realce::after {
+    transition: none;
+  }
+}
+/* Sin puntero fino —táctil— no hay cursor al que seguir, y el reflejo
+   se quedaría clavado en el centro de la tarjeta como una mancha. */
+@media (hover: none) {
+  .tj-realce::after {
+    display: none;
+  }
+}
+
+/* ============================================================
+   ENTRADA DE SECCIÓN — ligada al scroll, no a la hidratación
+   ============================================================
+   ── El fallo que resuelve ─────────────────────────────────────────────
+   Las secciones entraban con un `element.animate()` que disparaba un
+   IntersectionObserver montado en un efecto de React. Eso significa que
+   la animación no empieza cuando la sección aparece, sino cuando React
+   ha hidratado y el observador ha tenido su primera pasada — en una
+   página con varios trozos en diferido, más de dos segundos después de
+   que el texto ya se esté leyendo.
+
+   Y la animación va de opacidad 0 a 1. O sea: la cabecera se pintaba
+   legible, el visitante empezaba a leerla, y entonces se APAGABA de
+   golpe para volver a encenderse. Medido en `/features`: el titular y
+   su párrafo servidos a 0,409 de opacidad acumulada — de 11:1 de
+   contraste a 2,5:1, por debajo de cualquier mínimo, y el aspecto
+   general de una página a medio cargar que nunca termina.
+
+   ── Por qué el timeline de scroll y no arreglar el observador ─────────
+   Porque el problema de fondo no es el umbral, es la dependencia. Una
+   animación de entrada atada a JavaScript SIEMPRE llega tarde respecto
+   al primer pintado, y cuanto más pesada es la página —que es cuando
+   más se agradecería— más tarde llega.
+
+   `animation-timeline: view()` no se dispara: se MAPEA. El progreso de
+   la animación es la posición de la sección en la ventana, así que una
+   sección que ya está en pantalla en el primer fotograma nace en su
+   estado final. No hay nada que pueda llegar tarde porque no hay nada
+   que esperar, y el trabajo lo hace el compositor: cero JavaScript en
+   el hilo principal, y el movimiento sigue al dedo en un scroll táctil
+   en vez de reproducirse a su ritmo.
+
+   `:not(section section)` deja fuera las secciones anidadas —la demo
+   interactiva tiene las suyas dentro— y `#top` conserva su propia
+   entrada, la del hero.
+
+   El respaldo para quien no lo soporte sigue en `SectionReveal.tsx`. */
+@supports (animation-timeline: view()) {
+  #main-content section:not(#top):not(section section) {
+    animation: tj-entra-seccion linear both;
+    animation-timeline: view(block);
+    /* Empieza en cuanto asoma y termina cuando ha entrado un tercio: el
+       texto está a plena tinta bastante antes de llegar a la altura de
+       lectura. Un rango más largo se lee como una página que tarda en
+       encenderse. */
+    animation-range: entry 0% entry 35%;
+  }
+}
+@keyframes tj-entra-seccion {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Entrada escalonada dentro de la sección ──────────────────────────
+   La sección entera moviéndose en bloque es correcta pero plana: todo
+   llega a la vez, así que no hay orden de lectura. Marcando los hijos
+   con `data-entra` cada uno tiene su propio rango, desplazado unos
+   pocos puntos, y el ojo recorre la sección en el orden en que está
+   escrita — que es la diferencia entre «aparece una sección» y «se va
+   componiendo una página».
+
+   Cinco escalones bastan: más allá, el retardo del último se nota como
+   espera en vez de como ritmo. */
+@supports (animation-timeline: view()) {
+  [data-entra] {
+    animation: tj-entra-pieza linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 40%;
+  }
+  [data-entra="2"] {
+    animation-range: entry 4% entry 46%;
+  }
+  [data-entra="3"] {
+    animation-range: entry 8% entry 52%;
+  }
+  [data-entra="4"] {
+    animation-range: entry 12% entry 58%;
+  }
+  [data-entra="5"] {
+    animation-range: entry 16% entry 64%;
+  }
+}
+@keyframes tj-entra-pieza {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #main-content section,
+  [data-entra] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ============================================================
+   FILETE QUE SE DIBUJA
+   ============================================================
+   Una regla horizontal que aparece de golpe es una línea; una que se
+   traza de izquierda a derecha conforme subes es un gesto, y cuesta lo
+   mismo. Se usa en los separadores de sección y bajo los epígrafes.
+
+   `scaleX` sobre un elemento de 1 px de alto: el compositor lo resuelve
+   sin repintar, a diferencia de animar `width`, que reflowea la línea
+   en cada fotograma. */
+.tj-filete {
+  height: 1px;
+  width: 100%;
+  background: rgb(var(--divider) / 0.22);
+  transform-origin: left center;
+}
+@supports (animation-timeline: view()) {
+  .tj-filete {
+    animation: tj-traza linear both;
+    animation-timeline: view(block);
+    animation-range: entry 10% entry 60%;
+  }
+}
+@keyframes tj-traza {
+  from {
+    transform: scaleX(0);
+    opacity: 0.4;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-filete {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   EL RITMO DE CADA PÁGINA
+   ============================================================
+   Las nueve páginas interiores compartían cabecera exacta: mismo aire
+   arriba, mismo filete, misma medida. Y no son la misma clase de cosa —
+   un capítulo se lee seguido, una calculadora se usa, un índice se
+   consulta, una tarifa se compara y un texto legal se archiva. Una
+   cabecera idéntica en las cinco le dice al visitante que da igual
+   dónde esté.
+
+   Cada tono cambia TRES cosas y ninguna más:
+
+     · **El folio** — la marca grande del margen. Cambia de tipografía y
+       de tamaño, y su significado depende del tono (ordinal, referencia,
+       recuento, cifra).
+     · **El filete** — el ancho y el peso de la línea bajo el epígrafe.
+     · **La medida** — cuántos caracteres por línea admite el subtítulo.
+
+   La retícula, los colores y las familias tipográficas NO cambian. Lo
+   que se busca es que cada página tenga carácter dentro del mismo
+   libro, no que parezca de otro sitio. */
+
+.tj-cabecera {
+  padding-top: 8rem;
+  padding-bottom: 4rem;
+  --medida: 62ch;
+  --filete-ancho: 4rem;
+}
+@media (min-width: 768px) {
+  .tj-cabecera {
+    padding-top: 10rem;
+    padding-bottom: 5rem;
+  }
+}
+
+/* El filete de la cabecera no ocupa todo el ancho: es una marca, no un
+   separador. Su longitud es la seña del tono. */
+.tj-filete-cabecera {
+  width: var(--filete-ancho);
+}
+
+/* ── El folio ─────────────────────────────────────────────────────────
+   Posicionado en la marginalia izquierda, fuera de la mancha, y sólo a
+   partir de 1.280 px: por debajo no hay margen que le sobre a la
+   página, y un folio encima del texto es ruido. */
+.tj-folio {
+  display: none;
+}
+@media (min-width: 1280px) {
+  .tj-folio {
+    display: block;
+    position: absolute;
+    top: 0.5rem;
+    right: 100%;
+    margin-right: 2.5rem;
+    line-height: 0.82;
+    color: rgb(var(--ink-rgb, var(--divider)) / 0.13);
+    user-select: none;
+    white-space: nowrap;
+  }
+  /* Que el folio entre DESPUÉS que el titular: es la marca del margen,
+     no el asunto. Aparece cuando la cabecera ya se está leyendo. */
+  @supports (animation-timeline: view()) {
+    .tj-folio {
+      animation: tj-entra-folio linear both;
+      animation-timeline: view(block);
+      animation-range: entry 10% entry 55%;
+    }
+  }
+}
+@keyframes tj-entra-folio {
+  from {
+    opacity: 0;
+    transform: translate3d(10px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* CAPÍTULO — desarrolla una idea. El folio es un ordinal romano en la
+   serif del display, del tamaño de un titular: la página se abre como
+   se abre un capítulo. */
+.tj-cabecera[data-tono="capitulo"] {
+  --filete-ancho: 4rem;
+  --medida: 62ch;
+}
+.tj-cabecera[data-tono="capitulo"] .tj-folio {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(3rem, 5vw, 5.5rem);
+  letter-spacing: -0.03em;
+}
+
+/* INSTRUMENTO — se usa, no se lee. El folio va monoespaciado y entre
+   corchetes, como la referencia de una pieza en un despiece, y el
+   filete es más largo y más marcado: una herramienta se presenta con
+   su regla al lado. */
+.tj-cabecera[data-tono="instrumento"] {
+  --filete-ancho: 7rem;
+  --medida: 58ch;
+}
+.tj-cabecera[data-tono="instrumento"] .tj-filete-cabecera {
+  height: 2px;
+  background: rgb(var(--accent-base) / 0.3);
+}
+.tj-cabecera[data-tono="instrumento"] .tj-folio {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+  letter-spacing: 0.1em;
+}
+
+/* REGISTRO — se consulta por entradas. El folio es el RECUENTO de lo
+   que hay dentro («51», «7»), en cifras tabulares y grande: lo primero
+   que quiere saber quien llega a un índice es cuánto abarca. El filete
+   se dobla, como el encabezado de una tabla. */
+.tj-cabecera[data-tono="registro"] {
+  --filete-ancho: 5rem;
+  --medida: 60ch;
+}
+.tj-cabecera[data-tono="registro"] .tj-filete-cabecera {
+  height: 3px;
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--divider) / 0.28) 0 1px,
+    transparent 1px 2px,
+    rgb(var(--divider) / 0.28) 2px 3px
+  );
+}
+.tj-cabecera[data-tono="registro"] .tj-folio {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 500;
+}
+
+/* TARIFA — se compara. El folio es una cifra del mismo palo que los
+   precios de la tabla, para que la página entera hable en números
+   desde el margen. */
+.tj-cabecera[data-tono="tarifa"] {
+  --filete-ancho: 3rem;
+  --medida: 56ch;
+}
+.tj-cabecera[data-tono="tarifa"] .tj-folio {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.2rem, 3.4vw, 3.4rem);
+  letter-spacing: -0.02em;
+}
+
+/* DOCUMENTO — se archiva. Sin folio, con menos aire arriba y la medida
+   más estrecha del sitio. Un texto legal no necesita presentación: lo
+   único que se le pide es que se lea sin cansar y que se encuentre el
+   párrafo que se busca. */
+.tj-cabecera[data-tono="documento"] {
+  --filete-ancho: 2rem;
+  --medida: 52ch;
+  padding-top: 6.5rem;
+  padding-bottom: 2.5rem;
+}
+@media (min-width: 768px) {
+  .tj-cabecera[data-tono="documento"] {
+    padding-top: 8rem;
+    padding-bottom: 3rem;
+  }
+}
+.tj-cabecera[data-tono="documento"] .tj-filete-cabecera {
+  opacity: 0.6;
 }

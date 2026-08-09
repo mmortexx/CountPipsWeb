@@ -57,21 +57,17 @@ export function BackgroundFX() {
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
       style={{ background: "var(--bg)" }}
     >
+      {/* La luz va DEBAJO del atlas, no encima: ilumina el grabado, no
+          lo tapa. Puesta por delante lavaba el trazo justo en el centro
+          de la mancha, que es donde el atlas dibuja lo que importa. */}
+      <div className="tj-luz" />
+
       {llevaFigura && <EngravedAtlas />}
 
       {/* Filetes de margen — la caja de la mancha, continua de arriba
           abajo del documento. Vive aquí y no en cada sección para que no
           se corte ni se desalinee al pasar de una a la siguiente. */}
       <div className="tj-margin-rules" />
-
-      {/* Halo superior de tinta */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(125% 85% at 50% -8%, color-mix(in srgb, var(--ink) 4%, transparent), transparent 52%)",
-        }}
-      />
 
       {/* Grano — la fibra del papel */}
       <div

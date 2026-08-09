@@ -120,6 +120,8 @@ export function FeaturesBody() {
   return (
     <>
       <PageHeader
+        tono="capitulo"
+        folio="I"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Todo lo que necesitas para operar con disciplina."

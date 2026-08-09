@@ -87,6 +87,8 @@ export function AboutBody() {
   return (
     <>
       <PageHeader
+        tono="capitulo"
+        folio="II"
         eyebrowEs="Acerca de"
         eyebrowEn="About"
         titleEs="Hecho para el trader manual serio."

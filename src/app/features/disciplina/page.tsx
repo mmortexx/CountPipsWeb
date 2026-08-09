@@ -117,6 +117,8 @@ export function DisciplinaBody() {
   return (
     <>
       <PageHeader
+        tono="capitulo"
+        folio="I·b"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Disciplina que actúa, no que sermonea."

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PRECIO_CORE } from "@/lib/precios";
 import { Pricing } from "@/components/marketing/Pricing";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { PlateInterlude } from "@/components/tj/PlateInterlude";
@@ -181,6 +182,8 @@ export function PricingBody() {
           acento donde está el valor real: que la cifra esté escrita y no
           haya que pedirla. */}
       <PageHeader
+        tono="tarifa"
+        folio={String(PRECIO_CORE)}
         eyebrowEs="Precios"
         eyebrowEn="Pricing"
         titleEs="El precio, por escrito."

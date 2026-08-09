@@ -113,6 +113,8 @@ export function SeguridadBody() {
   return (
     <>
       <PageHeader
+        tono="capitulo"
+        folio="I·c"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Tus datos, 100% en tu máquina."

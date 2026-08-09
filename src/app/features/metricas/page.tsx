@@ -118,6 +118,8 @@ export function MetricasBody() {
   return (
     <>
       <PageHeader
+        tono="capitulo"
+        folio="I·a"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Métricas que separan un edge real de una racha."

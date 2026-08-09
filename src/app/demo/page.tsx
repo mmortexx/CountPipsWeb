@@ -84,6 +84,8 @@ export function DemoBody() {
   return (
     <>
       <PageHeader
+        tono="instrumento"
+        folio="[ DEMO ]"
         eyebrowEs="Demo"
         eyebrowEn="Demo"
         titleEs="La app, en tu navegador."
