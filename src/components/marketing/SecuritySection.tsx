@@ -135,83 +135,112 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
         >
           <div className="relative overflow-x-auto">
             <div className="min-w-[480px]">
-          <div
-            className="grid"
-            style={{
-              gridTemplateColumns: "1.4fr 1.4fr 1.4fr",
-              padding: "12px 18px",
-              borderBottom: "1px solid rgb(var(--divider) / 0.06)",
-              background: "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-            }}
-          >
-            <span
-              className="tnum"
-              style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
-              &nbsp;
-            </span>
-            <span
-              className="tnum border-l-2 border-[rgb(var(--accent-base)/0.30)] pl-2"
-              style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgb(var(--accent-base))", fontWeight: 600 }}
-            >
-              CountPips
-            </span>
-            <span
-              className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
-              {es ? "Diario en la nube" : "Cloud-based journal"}
-            </span>
-          </div>
-          {compare.map((row, i) => (
-            <div
-              key={row.l}
-              className="grid"
-              style={{
-                gridTemplateColumns: "1.4fr 1.4fr 1.4fr",
-                padding: "14px 18px",
-                borderBottom: i < compare.length - 1 ? "1px solid rgb(var(--divider) / 0.06)" : undefined,
-              }}
-            >
-              <span style={{ fontSize: 13, color: "var(--ink-2)" }}>{row.l}</span>
-              <span
-                className="flex items-center gap-2 border-l-2 border-[rgb(var(--accent-base)/0.30)] pl-2"
-                style={{ fontSize: 13, color: "var(--ink)" }}
+          {/* ── UNA TABLA DE VERDAD, NO UNA REJILLA DE `div` ─────────────
+              Esto era una rejilla de `div` con los iconos ✓ y ✕ desnudos:
+              sin texto, sin `aria-label`, sin nada. Un lector de pantalla
+              recorría las cinco filas y no podía distinguir un sí de un
+              no en NINGUNA — leía la etiqueta de la característica y
+              después silencio. Y es la tabla que sostiene el argumento
+              central del producto (tus datos no salen de tu equipo), así
+              que quedarse sin ella no es perder un adorno.
+
+              Ahora es `<table>` con cabeceras de columna y de fila
+              asociadas por `scope`, de modo que al llegar a una celda se
+              anuncia «Copia de seguridad · CountPips · Sí». El veredicto
+              va en un `.sr-only` junto al icono, que pasa a `aria-hidden`
+              por ser lo que es: la representación visual de ese texto. */}
+          <table className="w-full border-collapse text-left">
+            <caption className="sr-only">
+              {es
+                ? "Comparación entre CountPips y un diario de trading en la nube"
+                : "CountPips compared with a cloud-based trading journal"}
+            </caption>
+            <thead>
+              <tr
+                style={{
+                  borderBottom: "1px solid rgb(var(--divider) / 0.06)",
+                  background: "color-mix(in oklab, var(--surface-2) 40%, transparent)",
+                }}
               >
-                {typeof row.tj === "boolean" ? (
-                  row.tj ? (
-                    <span className="inline-flex items-center justify-center rounded-full" style={{ width: 20, height: 20, background: "rgb(var(--pnl-pos) / 0.15)" }}>
-                      <Check size={12} style={{ color: "rgb(var(--pnl-pos))" }} />
+                <th
+                  scope="col"
+                  className="tnum w-[33%]"
+                  style={{ padding: "12px 0 12px 18px", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                >
+                  <span className="sr-only">{es ? "Característica" : "Feature"}</span>
+                </th>
+                <th
+                  scope="col"
+                  className="tnum w-[33%] border-l-2 border-[rgb(var(--accent-base)/0.30)]"
+                  style={{ padding: "12px 8px 12px 10px", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgb(var(--accent-base))", fontWeight: 600 }}
+                >
+                  CountPips
+                </th>
+                <th
+                  scope="col"
+                  className="tnum w-[34%]"
+                  style={{ padding: "12px 18px 12px 0", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                >
+                  {es ? "Diario en la nube" : "Cloud-based journal"}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {compare.map((row, i) => {
+                const borde =
+                  i < compare.length - 1 ? "1px solid rgb(var(--divider) / 0.06)" : undefined;
+                /* El sello: icono decorativo + veredicto en texto para
+                   quien no lo ve. `positivo` no es lo mismo que el valor
+                   de la celda — en la columna de la nube, un `true`
+                   («envía tus datos fuera») es una MALA noticia, y por eso
+                   allí se pinta en rojo. Se pasa explícito para que el
+                   color y la palabra no puedan divergir. */
+                const sello = (valor: boolean, positivo: boolean) => (
+                  <span className="inline-flex items-center gap-2">
+                    <span
+                      aria-hidden
+                      className="inline-flex items-center justify-center rounded-full"
+                      style={{
+                        width: 20,
+                        height: 20,
+                        background: positivo
+                          ? "rgb(var(--pnl-pos) / 0.15)"
+                          : "rgb(var(--pnl-neg) / 0.15)",
+                      }}
+                    >
+                      {valor ? (
+                        <Check size={12} style={{ color: positivo ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
+                      ) : (
+                        <X size={12} style={{ color: positivo ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
+                      )}
                     </span>
-                  ) : (
-                    <span className="inline-flex items-center justify-center rounded-full" style={{ width: 20, height: 20, background: "rgb(var(--pnl-neg) / 0.15)" }}>
-                      <X size={12} style={{ color: "rgb(var(--pnl-neg))" }} />
+                    <span className="sr-only">
+                      {valor ? (es ? "Sí" : "Yes") : es ? "No" : "No"}
                     </span>
-                  )
-                ) : (
-                  row.tj
-                )}
-              </span>
-              <span
-                className="flex items-center gap-2"
-                style={{ fontSize: 13, color: "var(--ink-2)" }}
-              >
-                {typeof row.cloud === "boolean" ? (
-                  row.cloud ? (
-                    <span className="inline-flex items-center justify-center rounded-full" style={{ width: 20, height: 20, background: "rgb(var(--pnl-neg) / 0.15)" }}>
-                      <X size={12} style={{ color: "rgb(var(--pnl-neg))" }} />
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center justify-center rounded-full" style={{ width: 20, height: 20, background: "rgb(var(--pnl-pos) / 0.15)" }}>
-                      <Check size={12} style={{ color: "rgb(var(--pnl-pos))" }} />
-                    </span>
-                  )
-                ) : (
-                  row.cloud
-                )}
-              </span>
-            </div>
-          ))}
+                  </span>
+                );
+                return (
+                  <tr key={row.l} style={{ borderBottom: borde }}>
+                    <th
+                      scope="row"
+                      style={{ padding: "14px 0 14px 18px", fontSize: 13, color: "var(--ink-2)", fontWeight: 400 }}
+                    >
+                      {row.l}
+                    </th>
+                    <td
+                      className="border-l-2 border-[rgb(var(--accent-base)/0.30)]"
+                      style={{ padding: "14px 8px 14px 10px", fontSize: 13, color: "var(--ink)" }}
+                    >
+                      {typeof row.tj === "boolean" ? sello(row.tj, row.tj) : row.tj}
+                    </td>
+                    <td style={{ padding: "14px 18px 14px 0", fontSize: 13, color: "var(--ink-2)" }}>
+                      {typeof row.cloud === "boolean" ? sello(row.cloud, !row.cloud) : row.cloud}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
             </div>
             {/* Mobile-only right-edge gradient fade — signals "swipe for more". */}
             <div

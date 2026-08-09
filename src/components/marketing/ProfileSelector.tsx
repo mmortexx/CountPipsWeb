@@ -14,12 +14,20 @@ export function ProfileSelector() {
   const { lang } = useLang();
   const es = lang === "es";
 
+  /* Los antetítulos van en caja normal y la MAYÚSCULA la pone el CSS
+     (`uppercase` en el `<p>` que los pinta). Estaban escritos en
+     mayúsculas literales — "OPERATIVA MANUAL", "PROP FIRMS" —, y eso
+     cambia el texto real, no su aspecto: algunos lectores de pantalla
+     deletrean letra a letra lo que viene todo en mayúsculas, así que se
+     oía "O-P-E-R-A-T-I-V-A". El resto del sitio ya lo hacía bien (ver
+     `.eyebrow` en globals.css); estas dos eran la excepción. En pantalla
+     no cambia nada. */
   const profiles = [
     {
       id: "manual",
       href: "/traders/manual",
       icon: UserRound,
-      eyebrow: es ? "OPERATIVA MANUAL" : "MANUAL TRADING",
+      eyebrow: es ? "Operativa manual" : "Manual trading",
       title: es ? "Para leer tu proceso con claridad" : "For reading your process clearly",
       body: es
         ? "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo."
@@ -30,7 +38,7 @@ export function ProfileSelector() {
       id: "prop",
       href: "/traders/prop-firms",
       icon: BriefcaseBusiness,
-      eyebrow: es ? "PROP FIRMS" : "PROP FIRMS",
+      eyebrow: "Prop firms",
       title: es ? "Para operar con reglas que importan" : "For operating under rules that matter",
       body: es
         ? "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar."

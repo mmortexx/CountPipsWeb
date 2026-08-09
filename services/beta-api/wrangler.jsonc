@@ -10,7 +10,15 @@
   "vars": {
     "ENVIRONMENT": "production",
     "RATE_LIMIT_SECONDS": "60",
-    "ALLOWED_ORIGINS": "https://mmortexx.github.io,https://countpips.com,https://www.countpips.com,http://localhost:3000"
+    // Cuota diaria por IP, además de la ventana corta de arriba. Sin ella,
+    // mil peticiones espaciadas 61 segundos son mil peticiones.
+    "RATE_LIMIT_DAILY": "20",
+    // `http://localhost:3000` estaba en esta lista, que es la de
+    // PRODUCCIÓN: una página abierta en el equipo de cualquiera podía
+    // escribir en la base de datos real. Para desarrollo local se declara
+    // en `.dev.vars` (que ya está fuera del control de versiones), no
+    // aquí.
+    "ALLOWED_ORIGINS": "https://mmortexx.github.io,https://countpips.com,https://www.countpips.com"
   },
   "d1_databases": [
     {

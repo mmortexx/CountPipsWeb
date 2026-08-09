@@ -66,7 +66,14 @@ const nextConfig: NextConfig = {
   // examples/websocket/, que no compilaba porque le faltaban sus librerías;
   // ese directorio ya no existe, así que la excusa tampoco. Ahora un error
   // de tipos rompe el build y no llega a producción.
-  reactStrictMode: false,
+  /* Estaba en `false`. El modo estricto de React no cambia nada en
+     producción: en desarrollo monta y desmonta cada efecto una vez de
+     más para destapar los que no limpian lo que abren — intervalos,
+     escuchas, animaciones. Este proyecto tiene unos cuantos: el reloj de
+     la barra, la secuencia de intro, el atlas del fondo, los
+     observadores de scroll. Apagarlo era renunciar justo al aviso que
+     aquí hace falta. */
+  reactStrictMode: true,
   ...(IS_DEV ? {} : { trailingSlash: true }),
 };
 

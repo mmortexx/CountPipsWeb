@@ -3,7 +3,7 @@ import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Prop firms",
+  title: "Prop firms — evaluations and funded accounts",
   description: "Visible risk, rules and track record for prop-firm traders.",
   alternates: { canonical: `${SITE_URL}/en/traders/prop-firms/`, languages: hreflangDe("/traders/prop-firms") },
   openGraph: {

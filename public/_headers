@@ -56,11 +56,39 @@
   # enumerar hashes para docenas de scripts que cambian en cada build no
   # es viable sin tooling adicional.
   #
-  # PENDIENTE: si NEXT_PUBLIC_BETA_API_URL llega a apuntar a un dominio
-  # propio del Worker services/beta-api (en vez de caer al Apps Script de
-  # la lista de espera), ese origen debe añadirse a connect-src. No se
-  # fija hoy porque el Worker aún no tiene dominio propio desplegado.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://eu-assets.i.posthog.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://script.google.com https://challenges.cloudflare.com https://eu.i.posthog.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  # EL WORKER DE ACCESO ANTICIPADO, YA CONTEMPLADO.
+  #
+  # Aquí ponía "PENDIENTE: cuando NEXT_PUBLIC_BETA_API_URL apunte al
+  # Worker, ese origen debe añadirse a connect-src". Dejarlo pendiente
+  # era una bomba con la mecha encendida: el día que se configure esa
+  # variable, el formulario de /beta empezaría a fallar EN EL ACTO y con
+  # un error de red genérico — el visitante ve "no hemos podido
+  # conectar", la consola dice que la CSP lo bloqueó, y nada en el
+  # despliegue lo avisa. Y ese día es justo el de estrenar el panel de
+  # solicitudes, cuando menos ganas hay de depurar cabeceras.
+  #
+  # `https://*.workers.dev` cubre la dirección por defecto del Worker
+  # (`countpips-beta-api.<subdominio>.workers.dev`, ver
+  # services/beta-api/wrangler.jsonc). Es un comodín de un solo nivel
+  # bajo un dominio de Cloudflare, no un `*` abierto: sigue prohibiendo
+  # cualquier otro destino. Cuando el Worker tenga dominio propio, se
+  # añade aquí ese origen y se puede retirar el comodín.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://eu-assets.i.posthog.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://script.google.com https://challenges.cloudflare.com https://eu.i.posthog.com https://*.workers.dev https://api.countpips.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+  # ── CACHÉ POR DEFECTO: NO CACHEAR ───────────────────────────────────
+  # Va aquí, en la regla que casa con TODO, y las reglas de abajo la
+  # levantan para lo que sí se puede cachear. El orden importa: en este
+  # fichero, cuando dos reglas casan, gana la última, así que la general
+  # tiene que ir primero.
+  #
+  # Antes esto era una regla `/*.html` al final del fichero, y NO CASABA
+  # NUNCA. Cloudflare compara el patrón contra la ruta que pide el
+  # navegador, no contra el fichero que acaba sirviendo: con
+  # `trailingSlash: true` las direcciones de este sitio son `/features/`
+  # y `/`, jamás `/features.html`. El HTML se quedaba sin política de
+  # caché y un despliegue podía tardar en verse sin que nada lo
+  # explicara.
+  Cache-Control: public, max-age=0, must-revalidate
 
 # ── Recursos con huella en el nombre ──────────────────────────────────
 # Next incrusta un hash en el nombre de cada fichero de `_next/static`,
@@ -95,8 +123,6 @@
 /*twitter-image
   Content-Type: image/png
 
-# ── El HTML no se cachea ──────────────────────────────────────────────
-# Cada página vuelve a pedirse. Es lo que hace que un despliegue se vea
-# al instante en vez de esperar a que caduque la copia del navegador.
-/*.html
-  Cache-Control: public, max-age=0, must-revalidate
+# (La política de caché del HTML vive arriba, dentro del bloque `/*`.
+#  Ver la nota que hay allí sobre por qué la regla `/*.html` que había
+#  aquí no llegaba a aplicarse nunca.)

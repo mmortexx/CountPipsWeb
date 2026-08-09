@@ -87,7 +87,29 @@ export function BetaApplication() {
   const workflowRef = useRef<HTMLSelectElement>(null);
   const goalRef = useRef<HTMLSelectElement>(null);
   const privacyRef = useRef<HTMLInputElement>(null);
+  /* El aviso de error recibe el foco cuando lo que falla no es un campo
+     —hoy sólo el caso de la verificación anti-bot—, para que el mensaje
+     que explica la salida sea lo siguiente que se lee. `tabIndex={-1}`
+     lo hace enfocable por código sin meterlo en el orden de tabulación. */
+  const errorRef = useRef<HTMLParagraphElement>(null);
+  /* Se pide el foco ANTES de que exista el elemento: `setError` sólo
+     programa un repintado, así que en ese instante `errorRef.current`
+     todavía es null. Esta bandera lo aplaza a después del render. */
+  const pedirFocoAviso = useRef(false);
+  /* Lo mismo al terminar: el `<form>` entero se desmonta y lo sustituye
+     el mensaje de éxito, así que el foco —que estaba en el botón de
+     enviar— se cae al principio del documento. Quien navega con teclado
+     o con lector de pantalla se queda sin saber que ha funcionado. */
+  const exitoRef = useRef<HTMLDivElement>(null);
   const turnstileSiteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "").trim();
+
+  useEffect(() => {
+    if (pedirFocoAviso.current && errorRef.current) {
+      pedirFocoAviso.current = false;
+      errorRef.current.focus();
+    }
+    if (status === "success") exitoRef.current?.focus();
+  });
 
   const profileInvalid = submitted && !profile;
   const emailInvalid = submitted && !EMAIL_RE.test(email.trim());
@@ -126,8 +148,41 @@ export function BetaApplication() {
     if (status === "sending" || status === "success") return;
     setSubmitted(true);
 
-    if (!profile || !EMAIL_RE.test(email.trim()) || !experience || !markets.trim() || !workflow || !goal || !privacy || (turnstileSiteKey && !turnstileToken)) {
-      setError(es ? "Completa los campos obligatorios para enviar la solicitud." : "Complete the required fields to send your application.");
+    const faltanCampos =
+      !profile ||
+      !EMAIL_RE.test(email.trim()) ||
+      !experience ||
+      !markets.trim() ||
+      !workflow ||
+      !goal ||
+      !privacy;
+    /* La verificación anti-bot se cuenta aparte de los campos: no es un
+       campo que el visitante pueda rellenar. */
+    const faltaVerificacion = Boolean(turnstileSiteKey) && !turnstileToken;
+
+    if (faltanCampos || faltaVerificacion) {
+      /* ── EL CALLEJÓN SIN SALIDA ────────────────────────────────────
+         Antes había un solo mensaje —«Completa los campos
+         obligatorios»— y una cascada de foco que sólo contemplaba los
+         campos. Si el formulario estaba entero relleno y lo único que
+         faltaba era el token de Turnstile (un bloqueador de anuncios,
+         una red corporativa o una CSP que corte `challenges.
+         cloudflare.com` bastan), el resultado era: mensaje pidiendo
+         rellenar campos ya rellenos, foco que no se mueve a ninguna
+         parte, y ninguna pista de qué hacer. El visitante cualificado
+         que llega hasta el final del formulario se queda fuera sin
+         saber por qué.
+
+         Ahora se distinguen los dos casos y el mensaje dice cuál es. */
+      setError(
+        faltanCampos
+          ? es
+            ? "Completa los campos obligatorios para enviar la solicitud."
+            : "Complete the required fields to send your application."
+          : es
+            ? "Falta la verificación anti-bot. Si no aparece, suele ser un bloqueador de anuncios o una red que filtra challenges.cloudflare.com: desactívalo para esta página y vuelve a intentarlo, o escríbenos y te damos acceso a mano."
+            : "The anti-bot check is missing. If it never appears, an ad blocker or a network filtering challenges.cloudflare.com is the usual cause: allow it for this page and try again, or write to us and we will let you in by hand."
+      );
       setStatus("error");
       const firstInvalidRef = !profile
         ? profileRef
@@ -144,7 +199,10 @@ export function BetaApplication() {
                   : !privacy
                     ? privacyRef
                     : null;
-      firstInvalidRef?.current?.focus();
+      if (firstInvalidRef) firstInvalidRef.current?.focus();
+      // Nada que corregir en los campos: el foco va al aviso, que es
+      // donde está la explicacion y la salida.
+      else pedirFocoAviso.current = true;
       return;
     }
 
@@ -178,7 +236,7 @@ export function BetaApplication() {
 
   if (status === "success") {
     return (
-      <div className="tj-paper tj-paper-glow border border-[rgb(var(--divider)/0.14)] p-7 sm:p-10" role="status">
+      <div ref={exitoRef} tabIndex={-1} className="tj-paper tj-paper-glow border border-[rgb(var(--divider)/0.14)] p-7 sm:p-10 outline-none" role="status">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
           <span className="grid size-14 place-items-center rounded-full bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
             <Check size={26} aria-hidden />
@@ -328,7 +386,7 @@ export function BetaApplication() {
             />
           )}
 
-          {error && <p className="text-sm text-pnl-neg" role="alert">{error}</p>}
+          {error && (<p ref={errorRef} tabIndex={-1} className="text-sm text-pnl-neg outline-none" role="alert">{error}</p>)}
           <button type="submit" disabled={!ready || status === "sending"} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[2px] bg-[rgb(var(--accent-base))] px-5 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] disabled:cursor-not-allowed disabled:opacity-60">
             {status === "sending" ? es ? "Enviando…" : "Sending…" : es ? "Solicitar acceso" : "Request access"}
             {status !== "sending" && <ArrowRight size={15} aria-hidden />}

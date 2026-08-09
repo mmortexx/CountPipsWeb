@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useLang } from "@/lib/i18n";
@@ -60,6 +60,11 @@ export function ContactForm() {
   const [error, setError] = useState<string | null>(null);
   /** Cuando el fallo es nuestro, ofrecemos el buzón de soporte como salida. */
   const [showFallback, setShowFallback] = useState(false);
+  /** Qué campo concreto está mal, para marcarlo sólo a él. */
+  const [invalidos, setInvalidos] = useState({ name: false, email: false, message: false });
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
 
   /**
    * El envío depende por completo de JS: el <form> no tiene `action`, así que
@@ -76,22 +81,46 @@ export function ContactForm() {
     e.preventDefault();
     if (sent || sending) return;
 
+    /* ── QUÉ CAMPO FALLA, Y NO «ALGO FALLA» ────────────────────────────
+       Antes esto sólo componía un texto de aviso y salía. Los tres
+       campos llevaban `aria-invalid={!!error}`, es decir, el MISMO
+       valor: si sólo el correo estaba mal, un lector de pantalla
+       anunciaba también el nombre y el mensaje como erróneos. Y no se
+       movía el foco a ninguna parte, así que quien navega con teclado
+       se quedaba donde estaba, con un aviso arriba que quizá ni veía.
+
+       Es un incumplimiento de WCAG 3.3.1 (identificar el error) en el
+       mismo proyecto donde el formulario de acceso anticipado sí lo
+       cumple — dos criterios distintos para lo mismo. Ahora se marca
+       campo a campo y el foco viaja al primero que falla. */
+    const fallan = {
+      name: !name.trim(),
+      email: !email.trim() || !EMAIL_RE.test(email.trim()),
+      message: !message.trim(),
+    };
     const missing: string[] = [];
-    if (!name.trim()) missing.push(es ? "nombre" : "name");
-    if (!email.trim() || !EMAIL_RE.test(email.trim()))
-      missing.push(es ? "email válido" : "valid email");
-    if (!message.trim()) missing.push(es ? "mensaje" : "message");
+    if (fallan.name) missing.push(es ? "nombre" : "name");
+    if (fallan.email) missing.push(es ? "email válido" : "valid email");
+    if (fallan.message) missing.push(es ? "mensaje" : "message");
 
     if (missing.length) {
       setShowFallback(false);
+      setInvalidos(fallan);
       setError(
         es
           ? `Revisa: ${missing.join(", ")}.`
           : `Please check: ${missing.join(", ")}.`
       );
+      const primero = fallan.name
+        ? nameRef.current
+        : fallan.email
+          ? emailRef.current
+          : messageRef.current;
+      primero?.focus();
       return;
     }
 
+    setInvalidos({ name: false, email: false, message: false });
     setError(null);
     setShowFallback(false);
     setStatus("sending");
@@ -233,13 +262,14 @@ export function ContactForm() {
                       <Field label={es ? "Nombre" : "Name"} htmlFor="cf-name">
                         <input
                           id="cf-name"
+                          ref={nameRef}
                           type="text"
                           autoComplete="name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder={es ? "Tu nombre" : "Your name"}
                           aria-label={es ? "Nombre" : "Name"}
-                          aria-invalid={!!error}
+                          aria-invalid={invalidos.name || undefined}
                           aria-describedby={error ? "cf-error" : undefined}
                           required
                           className="w-full bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.22)] border-b-[rgb(var(--divider)/0.62)] rounded-[2px] h-11 px-3 text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
@@ -248,6 +278,7 @@ export function ContactForm() {
                       <Field label={es ? "Email" : "Email"} htmlFor="cf-email">
                         <input
                           id="cf-email"
+                          ref={emailRef}
                           type="email"
                           inputMode="email"
                           autoComplete="email"
@@ -255,7 +286,7 @@ export function ContactForm() {
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder={es ? "tu@email.com" : "you@email.com"}
                           aria-label={es ? "Email" : "Email"}
-                          aria-invalid={!!error}
+                          aria-invalid={invalidos.email || undefined}
                           aria-describedby={error ? "cf-error" : undefined}
                           required
                           className="w-full bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.22)] border-b-[rgb(var(--divider)/0.62)] rounded-[2px] h-11 px-3 text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
@@ -264,11 +295,12 @@ export function ContactForm() {
                       <Field label={es ? "Mensaje" : "Message"} htmlFor="cf-msg">
                         <textarea
                           id="cf-msg"
+                          ref={messageRef}
                           value={message}
                           onChange={(e) => setMessage(e.target.value)}
                           placeholder={es ? "¿En qué podemos ayudarte?" : "How can we help?"}
                           aria-label={es ? "Mensaje" : "Message"}
-                          aria-invalid={!!error}
+                          aria-invalid={invalidos.message || undefined}
                           aria-describedby={error ? "cf-error" : undefined}
                           required
                           rows={4}

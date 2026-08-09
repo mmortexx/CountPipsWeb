@@ -21,7 +21,10 @@
  * continua.
  */
 import { chromium } from "playwright";
-import { mkdir } from "node:fs/promises";
+import { createServer } from "node:http";
+import { createReadStream } from "node:fs";
+import { mkdir, stat } from "node:fs/promises";
+import { extname, join, normalize } from "node:path";
 
 const args = process.argv.slice(2);
 const arg = (nombre, pordefecto) => {
@@ -29,8 +32,77 @@ const arg = (nombre, pordefecto) => {
   return i >= 0 && args[i + 1] ? args[i + 1] : pordefecto;
 };
 
-const BASE = arg("--base", "http://localhost:3000").replace(/\/$/, "");
+let BASE = arg("--base", "http://localhost:3000").replace(/\/$/, "");
 const SHOTS = arg("--shots", null);
+/** Carpeta estática a servir. Con esto la comprobación no necesita nada
+ *  fuera del proyecto: ni `serve`, ni `wait-on`, ni un servidor aparte. */
+const SERVIR = arg("--serve", null);
+
+const TIPOS = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".webp": "image/webp",
+  ".ico": "image/x-icon",
+  ".woff2": "font/woff2",
+  ".txt": "text/plain; charset=utf-8",
+  ".xml": "application/xml; charset=utf-8",
+};
+
+/**
+ * Servidor estático mínimo para el export.
+ *
+ * Traduce `/features` y `/features/` a `features/index.html`, que es
+ * como Next deja las páginas con `trailingSlash: true`. Sin esa
+ * traducción, todas las rutas darían 404 y la comprobación fallaría por
+ * el motivo equivocado.
+ */
+async function levantarServidor(raiz) {
+  const resolver = async (ruta) => {
+    const limpia = normalize(decodeURIComponent(ruta.split("?")[0])).replace(/^(\.\.[/\\])+/, "");
+    const candidatos = [
+      join(raiz, limpia),
+      join(raiz, limpia, "index.html"),
+      join(raiz, `${limpia}.html`),
+    ];
+    for (const c of candidatos) {
+      try {
+        const s = await stat(c);
+        if (s.isFile()) return c;
+      } catch {
+        /* siguiente candidato */
+      }
+    }
+    return null;
+  };
+
+  const servidor = createServer(async (req, res) => {
+    const fichero = await resolver(req.url || "/");
+    if (!fichero) {
+      res.writeHead(404, { "content-type": "text/plain" });
+      res.end("404");
+      return;
+    }
+    res.writeHead(200, {
+      "content-type": TIPOS[extname(fichero).toLowerCase()] || "application/octet-stream",
+    });
+    createReadStream(fichero).pipe(res);
+  });
+
+  await new Promise((resolver2) => servidor.listen(0, "127.0.0.1", resolver2));
+  const { port } = servidor.address();
+  return { servidor, url: `http://127.0.0.1:${port}` };
+}
+
+let servidorLocal = null;
+if (SERVIR) {
+  servidorLocal = await levantarServidor(SERVIR);
+  BASE = servidorLocal.url;
+  console.log(`[humo] sirviendo ${SERVIR} en ${BASE}`);
+}
 
 /** Rutas que se comprueban, con el idioma que deben declarar. */
 const RUTAS = [
@@ -93,8 +165,22 @@ for (const pantalla of PANTALLAS) {
   for (const { ruta, lang } of RUTAS) {
     const pagina = await contexto.newPage();
     const errores = [];
+    /* Un 404 en consola no dice QUÉ ha faltado, y sin eso el aviso es
+       inútil. Se captura la URL de la respuesta y se recorta a la parte
+       que identifica el recurso. */
+    pagina.on("response", (r) => {
+      if (r.status() === 404) {
+        const u = r.url().replace(BASE, "");
+        if (!RUIDO.test(u)) errores.push(`404 ${u}`);
+      }
+    });
     pagina.on("console", (m) => {
-      if (m.type() === "error" && !RUIDO.test(m.text())) errores.push(m.text());
+      const t = m.text();
+      // El "Failed to load resource" ya lo reporta el manejador de arriba
+      // con la URL concreta; aquí sólo estorbaría duplicado y sin ella.
+      if (m.type() === "error" && !RUIDO.test(t) && !/Failed to load resource/i.test(t)) {
+        errores.push(t);
+      }
     });
     pagina.on("pageerror", (e) => {
       if (!RUIDO.test(String(e))) errores.push(String(e));
@@ -290,6 +376,7 @@ for (const { ruta } of RUTAS.slice(0, 8)) {
 await sinJs.close();
 
 await navegador.close();
+if (servidorLocal) servidorLocal.servidor.close();
 
 for (const a of avisos) console.warn(`  aviso  ${a}`);
 if (fallos.length) {

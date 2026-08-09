@@ -54,6 +54,16 @@ jobs:
       - name: Lint
         run: bun run lint
 
+      # Tercera barrera. El proyecto no tenía NINGUNA prueba, y eso dejó
+      # pasar durante meses cosas que una comprobación de tres líneas caza
+      # al instante: el histograma de la portada con las pérdidas pintadas
+      # de verde y las ganancias de rojo, el campo trampa antibot leyendo
+      # un nombre que ningún cliente envía, y el límite de peticiones
+      # abriéndose solo cuando falta su almacén. Las tres tienen ya su
+      # prueba en `tests/`.
+      - name: Pruebas
+        run: bun run test
+
       - name: Build
         # El script `build` del package.json hace:
         #   next build && cp -R .next/static .next/standalone/.next/ && cp -R public .next/standalone/
@@ -116,6 +126,26 @@ jobs:
           # solicitud si exige Turnstile y no llega turnstileToken.
           #   Settings → Secrets and variables → Actions → TURNSTILE_SITE_KEY
           NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.TURNSTILE_SITE_KEY }}
+
+      # Cuarta barrera, y la única que mira la página PINTADA. Sirve el
+      # export estático y lo recorre con un navegador de verdad en cuatro
+      # anchuras, más una pasada con el JavaScript desactivado. Comprueba
+      # el idioma declarado, que haya un solo titular y que sea visible
+      # dentro de su presupuesto, que nada desborde a lo ancho, que la
+      # consola esté limpia y que ningún elemento de la barra superior se
+      # monte sobre otro.
+      #
+      # Es la que cazó que a 820 px la barra entera se solapaba consigo
+      # misma — un fallo que llevaba ahí desde siempre y que ninguna
+      # comprobación de código puede ver.
+      - name: Instalar navegador de pruebas
+        run: bunx playwright install --with-deps chromium
+
+      # `--serve out` levanta el sitio con un servidor propio de veinte
+      # líneas dentro del propio script, así que este paso no depende de
+      # ningún paquete que no esté ya en el proyecto.
+      - name: Comprobación de humo en navegador
+        run: node scripts/humo.mjs --serve out
 
       - name: Disable Jekyll + add nojekyll
         # GitHub Pages procesa el contenido con Jekyll por defecto.

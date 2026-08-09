@@ -91,3 +91,8 @@ db/custom.db
 
 # fuentes que scripts/generate-og.py descarga y cachea (no se versionan)
 /scripts/.fonts/
+
+# Bitacora historica de trabajo: 2,87 MB, el 92 % del peso de todo lo
+# versionado. Es un registro, no codigo ni documentacion operativa, y
+# cada clon lo arrastraba. Se conserva en disco; deja de viajar.
+worklog.md
