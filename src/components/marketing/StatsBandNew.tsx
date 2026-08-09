@@ -5,7 +5,7 @@ import { Reveal } from "@/components/tj/Reveal";
 
 /**
  * StatsBandNew — la banda de 4 columnas del HTML (40+ métricas /
- * 0 bytes a la nube / 30 días garantía / 29 $ pago único). Sustituye
+ * 0 bytes a la nube / 30 días garantía / 149 $ pago único). Sustituye
  * al antiguo StatsBand en la home.
  *
  * R24-1d — alineada con el vocabulario de tokens del sistema de

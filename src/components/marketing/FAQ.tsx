@@ -61,7 +61,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
     ? [
         {
           q: "¿Cuál es el estado de compra?",
-          a: "La demo es pública y no pide registro ni tarjeta. Core $29 y Pro $49 son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
+          a: "La demo es pública y no pide registro ni tarjeta. Core $149 y Pro $249 son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
         },
         {
           q: "¿Mis datos están seguros?",
@@ -115,7 +115,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
     : [
         {
           q: "What is the purchase status?",
-          a: "The demo is public and requires no sign-up or card. Core is planned at $29 and Pro at $49 until commercial delivery opens.",
+          a: "The demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 until commercial delivery opens.",
         },
         {
           q: "Are my data safe?",

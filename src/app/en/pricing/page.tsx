@@ -40,7 +40,7 @@ const faqSchema = {
       name: "What do the launch prices include?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Core is planned at $29 and Pro at $49. They are launch references until commercial delivery, licensing and support are open.",
+        text: "Core is planned at $149 and Pro at $249. They are launch references until commercial delivery, licensing and support are open.",
       },
     },
     {
@@ -67,14 +67,14 @@ const productSchema = {
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "No-sign-up interactive demo. Planned launch prices: Core $29 · Pro $49.",
+    "No-sign-up interactive demo. Planned launch prices: Core $149 · Pro $249.",
   alternates: {
     canonical: `${SITE_URL}/en/pricing/`,
     languages: hreflangDe("/pricing"),
   },
   openGraph: {
     title: "Pricing — CountPips",
-    description: "No-sign-up interactive demo. Planned launch prices: Core $29 · Pro $49.",
+    description: "No-sign-up interactive demo. Planned launch prices: Core $149 · Pro $249.",
     url: `${SITE_URL}/en/pricing/`,
     type: "website",
     siteName: "CountPips",
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Pricing — CountPips",
-    description: "No-sign-up interactive demo. Core $29 · Pro $49 as planned launch prices.",
+    description: "No-sign-up interactive demo. Core $149 · Pro $249 as planned launch prices.",
   },
 };
 

@@ -65,7 +65,7 @@ export function PricingFAQ() {
         },
         {
           q: "¿Qué incluyen los precios de lanzamiento?",
-          a: "Core está previsto en $29 y Pro en $49. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
+          a: "Core está previsto en $149 y Pro en $249. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
         },
         {
           q: "¿Qué datos no se solicitan?",
@@ -83,7 +83,7 @@ export function PricingFAQ() {
         },
         {
           q: "What do the launch prices include?",
-          a: "Core is planned at $29 and Pro at $49. They are launch references until commercial delivery, licensing and support are open.",
+          a: "Core is planned at $149 and Pro at $249. They are launch references until commercial delivery, licensing and support are open.",
         },
         {
           q: "What data do you not request?",

@@ -77,7 +77,7 @@ const faqSchema = {
       name: "¿Qué incluyen los precios de lanzamiento?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Core está previsto en $29 y Pro en $49. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
+        text: "Core está previsto en $149 y Pro en $249. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
       },
     },
     {
@@ -108,14 +108,14 @@ const productSchema = {
 export const metadata: Metadata = {
   title: "Precios",
   description:
-    "Demo interactiva sin registro. Precios de lanzamiento previstos: Core $29 · Pro $49.",
+    "Demo interactiva sin registro. Precios de lanzamiento previstos: Core $149 · Pro $249.",
   alternates: {
     canonical: `${SITE_URL}/pricing/`,
     languages: hreflangDe("/pricing"),
   },
   openGraph: {
     title: "Precios — CountPips",
-    description: "Demo interactiva sin registro. Precios de lanzamiento previstos: Core $29 · Pro $49.",
+    description: "Demo interactiva sin registro. Precios de lanzamiento previstos: Core $149 · Pro $249.",
     url: `${SITE_URL}/pricing/`,
     type: "website",
     siteName: "CountPips",
@@ -125,7 +125,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Precios — CountPips",
-    description: "Demo interactiva sin registro. Core $29 · Pro $49 como precios de lanzamiento previstos.",
+    description: "Demo interactiva sin registro. Core $149 · Pro $249 como precios de lanzamiento previstos.",
   },
 };
 
@@ -170,8 +170,8 @@ export function PricingBody() {
         titleEn="Compare before you buy."
         titleHighlightEs="antes de comprar."
         titleHighlightEn="before you buy."
-        subtitleEs="Core $29 y Pro $49 son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."
-        subtitleEn="Core $29 and Pro $49 are planned launch prices. Try the demo first; private early access is not a pre-order."
+        subtitleEs="Core $149 y Pro $249 son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."
+        subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
         breadcrumbEs="Precios"
         breadcrumbEn="Pricing"
         readingTimeMin={READING_TIME_MIN}

@@ -54,7 +54,7 @@ const faqSchema = {
       name: "¿Cuál es el estado de compra?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "La demo es pública y no pide registro ni tarjeta. Core $29 y Pro $49 son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
+        text: "La demo es pública y no pide registro ni tarjeta. Core $149 y Pro $249 son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
       },
     },
     {

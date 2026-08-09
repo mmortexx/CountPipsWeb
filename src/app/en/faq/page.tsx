@@ -22,7 +22,7 @@ const faqSchema = {
       name: "What is the purchase status?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "The demo is public and requires no sign-up or card. Core is planned at $29 and Pro at $49 until commercial delivery opens.",
+        text: "The demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 until commercial delivery opens.",
       },
     },
     {

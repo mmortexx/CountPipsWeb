@@ -17,7 +17,7 @@ const ROWS: Row[] = [
   {
     labelEs: "Precio",
     labelEn: "Pricing",
-    cells: ["Core $29 · Pro $49", "Suscripción mensual", "Gratis"],
+    cells: ["Core $149 · Pro $249", "Suscripción mensual", "Gratis"],
   },
   {
     labelEs: "Métricas",

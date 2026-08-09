@@ -76,7 +76,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     {
       id: "core",
       name: t("core"),
-      price: 29,
+      price: 149,
       tagline: es
         ? "El núcleo del journal para construir una operativa medible."
         : "The journal core for building a measurable trading process.",
@@ -86,7 +86,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     {
       id: "pro",
       name: t("pro"),
-      price: 49,
+      price: 249,
       popular: true,
       tagline: es
         ? "Controles avanzados para exigencia prop y multi-cuenta."
@@ -150,12 +150,12 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
               ? [
                   { k: "Ahora", v: "Demo sin registro" },
                   { k: "Acceso", v: "Piloto privado" },
-                  { k: "Lanzamiento", v: "Core $29 · Pro $49" },
+                  { k: "Lanzamiento", v: "Core $149 · Pro $249" },
                 ]
               : [
                   { k: "Now", v: "No-sign-up demo" },
                   { k: "Access", v: "Private pilot" },
-                  { k: "Launch", v: "Core $29 · Pro $49" },
+                  { k: "Launch", v: "Core $149 · Pro $249" },
                 ]
             ).map((item) => (
               <li key={item.k} className="terms-bar__item">
@@ -357,7 +357,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           so it reads as a currency prefix; the bold tabular-num number is
           the visual anchor; the `/ pago único` suffix sits inline to the
           right at the baseline in a small tertiary label. Both cards share
-          the exact same baseline grid so Core $29 and Pro $49 sit on
+          the exact same baseline grid so Core $149 and Pro $249 sit on
           identical vertical lines — pixel-perfect parity. The `$` uses
           text-secondary (not the dimmest text-tertiary token) so the
           currency mark reads as part of the price in both themes rather

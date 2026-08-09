@@ -59,8 +59,8 @@ export function NotFoundClient() {
       href: "/pricing",
       label: es ? "Precios" : "Pricing",
       desc: es
-        ? "Core $29 · Pro $49 como precios de lanzamiento previstos."
-        : "Core $29 · Pro $49 as planned launch prices.",
+        ? "Core $149 · Pro $249 como precios de lanzamiento previstos."
+        : "Core $149 · Pro $249 as planned launch prices.",
     },
   ];
 

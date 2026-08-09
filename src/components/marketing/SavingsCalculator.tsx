@@ -11,7 +11,7 @@ import { Reveal } from "@/components/tj/Reveal";
  * scenario; it does not represent a live offer or purchase flow.
  *
  * El trader ajusta:
- *   · planned reference tier (Core $29 / Pro $49)
+ *   · planned reference tier (Core $149 / Pro $249)
  *   · precio mensual de la alternativa por suscripción
  *   · años de uso
  *
@@ -35,8 +35,8 @@ import { Reveal } from "@/components/tj/Reveal";
 type PlanId = "core" | "pro";
 
 const COUNTPIPS_PLANS: { id: PlanId; label: string; price: number }[] = [
-  { id: "core", label: "CountPips Core", price: 29 },
-  { id: "pro", label: "CountPips Pro", price: 49 },
+  { id: "core", label: "CountPips Core", price: 149 },
+  { id: "pro", label: "CountPips Pro", price: 249 },
 ];
 
 export function SavingsCalculator() {
@@ -69,6 +69,12 @@ export function SavingsCalculator() {
     }
     return { cpPrice, altTotal, savings, savingsPct, breakEvenMonths, curve };
   }, [plan, altMonthly, years]);
+
+  // A precios más altos, el escenario mínimo (años=1, alternativa=5$/mes)
+  // puede dar una diferencia negativa real (la suscripción barata sale más
+  // económica en ese extremo) — matemáticamente correcto, así que el color
+  // sigue el signo en vez de estar fijo en verde.
+  const savingsColor = c.savings >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
 
   const fmtUsd = (n: number) =>
     es
@@ -149,8 +155,8 @@ export function SavingsCalculator() {
             style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", lineHeight: 1.62, color: "var(--ink-2)", maxWidth: "34em" }}
           >
             {es
-              ? "Core $29 y Pro $49 son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial."
-              : "Core $29 and Pro $49 are planned launch references. Compare a monthly cost scenario without treating the result as a commercial promise."}
+              ? "Core $149 y Pro $249 son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial."
+              : "Core $149 and Pro $249 are planned launch references. Compare a monthly cost scenario without treating the result as a commercial promise."}
           </p>
 
           {/* Plan CountPips */}
@@ -292,10 +298,10 @@ export function SavingsCalculator() {
               {es ? "Diferencia ilustrativa" : "Illustrative difference"}
             </div>
             <div className="flex items-baseline gap-3 mt-1">
-              <span className="tnum" style={{ fontSize: 34, fontWeight: 700, color: "rgb(var(--pnl-pos))" }}>
+              <span className="tnum" style={{ fontSize: 34, fontWeight: 700, color: savingsColor }}>
                 {fmtUsd(c.savings)}
               </span>
-              <span className="tnum" style={{ fontSize: 16, fontWeight: 600, color: "rgb(var(--pnl-pos))" }}>
+              <span className="tnum" style={{ fontSize: 16, fontWeight: 600, color: savingsColor }}>
                 {fmtNum(c.savingsPct, 0)} %
               </span>
             </div>
@@ -347,7 +353,7 @@ export function SavingsCalculator() {
           <div className="grid grid-cols-2 gap-3.5 mb-4">
             <Result label={es ? "Referencia CountPips" : "CountPips reference"} value={fmtUsd(c.cpPrice)} color="rgb(var(--accent-base))" />
             <Result label={es ? "Alternativa mensual" : "Monthly alternative"} value={fmtUsd(c.altTotal)} color="rgb(var(--pnl-neg))" />
-            <Result label={es ? "Diferencia ilustrativa" : "Illustrative difference"} value={fmtUsd(c.savings)} color="rgb(var(--pnl-pos))" />
+            <Result label={es ? "Diferencia ilustrativa" : "Illustrative difference"} value={fmtUsd(c.savings)} color={savingsColor} />
             <Result label={es ? "Break-even" : "Break-even"} value={`${c.breakEvenMonths} ${es ? "meses" : "mo"}`} color="var(--ink)" />
           </div>
 
