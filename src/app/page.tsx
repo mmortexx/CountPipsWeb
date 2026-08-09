@@ -5,6 +5,7 @@ import { Hero } from "@/components/marketing/Hero";
 import { ProfileSelector } from "@/components/marketing/ProfileSelector";
 import { SideRail } from "@/components/tj/SideRail";
 import { PlateInterlude } from "@/components/tj/PlateInterlude";
+import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 // PNG (not SVG) — see layout.tsx for the rationale (social platforms
@@ -162,6 +163,11 @@ export function HomeBody() {
       <Hero />
       <ProfileSelector />
       <StatsBandNew />
+
+      {/* La portada enseña el programa ANTES de la primera lámina dibujada:
+          hasta aquí solo ha habido promesa, y quien decide en diez segundos
+          no llega más abajo. */}
+      <ProductShowcase />
 
       <PlateInterlude index={0} />
 

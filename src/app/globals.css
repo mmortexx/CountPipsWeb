@@ -3560,6 +3560,63 @@ button.icon-btn:hover > svg,
   color: var(--ink-2);
   max-width: 44em;
 }
+
+/* ---- La lámina del producto -----------------------------------------
+   La captura real de la aplicación entra por la misma puerta que las
+   figuras dibujadas: numeración, filete doble y pie que dice qué se ve.
+   Reutiliza `.tj-interlude-rule`, así que el remate es literalmente el
+   mismo, no uno parecido.
+
+   EL MARCO ES UN FILETE DOBLE, NO UN CHROME DE VENTANA. Dibujar una
+   barra de título falsa con sus tres botones sería un segundo idioma
+   para presentar una figura, y además redundante: la captura ya trae la
+   suya (recortada, ver ProductPlate.tsx). Dos filetes concéntricos son
+   el remate de una lámina impresa y ya existen en el vocabulario. */
+.tj-lamina-producto {
+  margin: 0;
+  display: grid;
+  gap: 1.1rem;
+}
+.tj-lamina-marco {
+  border: 1px solid rgb(var(--divider) / 0.26);
+  padding: 5px;
+  background: var(--surface);
+}
+.tj-lamina-ventana {
+  /* El recorte de la barra de título vive aquí: el `img` sube con un
+     margen negativo y este contenedor le corta la cabeza. */
+  overflow: hidden;
+  border: 1px solid rgb(var(--divider) / 0.16);
+  background: #0c1116;
+  line-height: 0;
+}
+.tj-lamina-ventana img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.tj-lamina-pie {
+  display: grid;
+  gap: 0.5rem;
+}
+.tj-lamina-num {
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--accent-base));
+}
+.tj-lamina-titulo {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+  line-height: 1.18;
+  color: var(--ink);
+}
+.tj-lamina-nota {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 46em;
+}
 @media (max-width: 900px) {
   .tj-interlude {
     /* En móvil una lámina a 62 vh dejaba ~2.000 px de "página en blanco"
