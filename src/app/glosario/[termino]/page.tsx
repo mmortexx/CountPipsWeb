@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { CATEGORIAS, TERMINOS, terminoPorSlug } from "@/lib/glosario";
+import { CATEGORIAS, TERMINOS, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -32,8 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const familia = CATEGORIAS[t.category].es;
   /* El título lleva «qué es» porque es literalmente como se busca esto:
-     nadie teclea «Drawdown», se teclea «qué es el drawdown». */
-  const titulo = `${t.term}: qué es y por qué importa`;
+     nadie teclea «Drawdown», se teclea «qué es el drawdown». La cola se
+     recorta sola en las voces cuyo nombre trae la expansión dentro —MAE y
+     MFE— para no pasar de los 60 caracteres que muestra el buscador. */
+  const titulo = tituloDeTermino(t.term, "es");
   /* La descripción es la definición recortada. Google corta sobre los 160
      caracteres y prefiere una frase entera a una cortada a media palabra. */
   const desc = t.es.length > 155 ? `${t.es.slice(0, 152).trimEnd()}…` : t.es;

@@ -1390,25 +1390,47 @@
 
   .bg-tint { background-color: rgb(var(--tint)); }
 
-  /* ── El realce del titular: TINTA, no degradado ──────────────────
-     Era un `linear-gradient` de 120° recortado contra el texto, con el
-     acento oscureciéndose por el centro y volviendo al final. Es la
-     figura que esta dirección de arte descarta de raíz: densidad hecha
-     con una transición de color en vez de con trazo. Y en una serif de
-     titular a peso 500 el degradado hacía además algo peor que no
-     verse: adelgazaba ópticamente el asta central de cada letra.
+  /* ── El realce del titular: CURSIVA, porque el color no puede ─────
+     Era un `linear-gradient` de 120° recortado contra el texto. Aparte
+     de ser la figura que esta dirección descarta de raíz —densidad por
+     transición de color en vez de por trazo— y de adelgazar ópticamente
+     el asta de cada letra en una serif a peso 500, tenía un problema
+     mayor: NO REALZABA NADA.
 
-     Un grabado señala con tinta plana. El realce pasa a ser el acento
-     a secas, que es lo que ya hacen los filetes, las cifras y el canto
-     de las láminas — una sola manera de decir "esto importa".
+     Medido en el navegador sobre las dos paletas, el contraste entre la
+     palabra "resaltada" y el resto del titular era de 1,21:1 en claro y
+     1,26:1 en oscuro. Uno es el umbral de "son el mismo color". Y no es
+     un descuido que se pueda arreglar subiendo el acento: la nota de la
+     escalera de tinta dice, con razón, que el acento y el texto van a un
+     paso el uno del otro para que la marca no grite. Con esa decisión
+     —que se queda— el énfasis por color es imposible por construcción.
+     Medio centenar de titulares llevaban un mecanismo de énfasis que no
+     producía énfasis.
+
+     Lo resuelve la CURSIVA, que es como enfatiza una obra impresa desde
+     mucho antes de que hubiera color que gastar en ello. Newsreader
+     trae cursiva de verdad —dibujada, no una oblicua inclinada por el
+     navegador—, y ese es justo el detalle que separa una composición
+     editorial de una imitación. El acento se conserva encima: en oscuro
+     aporta un matiz de plata, y en claro no estorba.
 
      Se conserva el NOMBRE de la clase a propósito: la usan medio
-     centenar de titulares y renombrarla no cambiaría un píxel. Lo que
-     cambia es lo que hace. */
+     centenar de titulares y renombrarla no cambiaría un píxel. */
   .text-gradient {
     color: rgb(var(--accent-base));
     -webkit-text-fill-color: currentColor;
     background: none;
+    font-style: italic;
+    /* La cursiva de una serif ocupa menos y se inclina: sin este respiro
+       la última letra del tramo se pega a la primera del texto recto. */
+    padding-right: 0.04em;
+  }
+  /* En la sans no hay cursiva dibujada, sólo la oblicua sintética que
+     genera el navegador — y ésa sí es el gesto barato que la dirección
+     evita. Ahí el realce se queda en el acento a secas. */
+  .text-gradient:not(:is(h1, h2, h3, h4, .t-h1, .t-h2, .t-h3) *) {
+    font-style: normal;
+    padding-right: 0;
   }
 
   /* ══════════════════════════════════════════════════════════════

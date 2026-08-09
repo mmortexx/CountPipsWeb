@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
-import { SITE_URL, hreflangDe } from "@/lib/site";
+import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Prop firms — evaluations and funded accounts",
@@ -23,5 +23,16 @@ export const metadata: Metadata = {
 };
 
 export default function PropFirmsEnPage() {
-  return <TraderProfileBody profile="prop" />;
+  return (
+    <>
+      {esquemasTrader("en", "prop").map((s, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
+      ))}
+      <TraderProfileBody profile="prop" />
+    </>
+  );
 }

@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function BetaEnPage() {
-  return <BetaPage />;
+  return <BetaPage lang="en" />;
 }

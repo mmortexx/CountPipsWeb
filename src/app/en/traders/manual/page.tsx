@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
-import { SITE_URL, hreflangDe } from "@/lib/site";
+import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Manual trading",
@@ -23,5 +23,16 @@ export const metadata: Metadata = {
 };
 
 export default function ManualTradersEnPage() {
-  return <TraderProfileBody profile="manual" />;
+  return (
+    <>
+      {esquemasTrader("en", "manual").map((s, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
+      ))}
+      <TraderProfileBody profile="manual" />
+    </>
+  );
 }

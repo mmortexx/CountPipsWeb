@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { BetaApplication } from "@/components/beta/BetaApplication";
 import { BetaStatus } from "@/components/beta/BetaStatus";
 import { BetaApplicationNote, BetaDetails } from "@/components/beta/BetaDetails";
-import { SITE_URL, hreflangDe } from "@/lib/site";
+import { SITE_URL, hreflangDe, siteUrl, migasSchema } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Acceso anticipado",
@@ -12,18 +12,44 @@ export const metadata: Metadata = {
   openGraph: { title: "Acceso anticipado — CountPips", description: "Solicita acceso anticipado privado a CountPips.", url: `${SITE_URL}/beta/`, type: "website", siteName: "CountPips", locale: "es_ES", alternateLocale: ["en_US"] },
 };
 
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  name: "Acceso anticipado de CountPips",
-  description: "Solicitud de acceso anticipado privado a CountPips.",
-  url: `${SITE_URL}/beta/`,
-};
+/* El `WebPage` estaba fijo en la versión española y la inglesa reutiliza
+   este mismo componente, así que `/en/beta/` le declaraba a Google el
+   nombre, la descripción y la URL de la página en español. Ahora el
+   esquema se construye por idioma.
 
-export function BetaPage() {
+   Y le acompaña el `BreadcrumbList` que faltaba: esta página SÍ enseña sus
+   migas en la cabecera —«Inicio / Acceso anticipado»—, así que ocultarle
+   esa jerarquía al buscador era enseñar dos cosas distintas al visitante y
+   al rastreador. */
+function esquemasDe(lang: "es" | "en") {
+  const ruta = "/beta/";
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: lang === "es" ? "Acceso anticipado de CountPips" : "CountPips early access",
+      description:
+        lang === "es"
+          ? "Solicitud de acceso anticipado privado a CountPips."
+          : "Request for private early access to CountPips.",
+      url: siteUrl(lang === "es" ? ruta : `/en${ruta}`),
+    },
+    migasSchema(lang, [
+      { nombre: lang === "es" ? "Acceso anticipado" : "Early access", ruta },
+    ]),
+  ];
+}
+
+export function BetaPage({ lang = "es" }: { lang?: "es" | "en" } = {}) {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {esquemasDe(lang).map((s, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
+      ))}
       <PageHeader
         eyebrowEs="Acceso anticipado"
         eyebrowEn="Early access"

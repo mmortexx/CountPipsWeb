@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { CATEGORIAS, TERMINOS, terminoPorSlug } from "@/lib/glosario";
+import { CATEGORIAS, TERMINOS, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!t) return {};
 
   const familia = CATEGORIAS[t.category].en;
-  const titulo = `${t.term}: what it is and why it matters`;
+  const titulo = tituloDeTermino(t.term, "en");
   const desc = t.en.length > 155 ? `${t.en.slice(0, 152).trimEnd()}…` : t.en;
 
   return {

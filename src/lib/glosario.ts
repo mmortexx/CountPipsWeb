@@ -41,6 +41,49 @@ export function terminoPorSlug(slug: string): TerminoGlosario | undefined {
   return TERMINOS.find((t) => t.slug === slug);
 }
 
+/**
+ * El `<title>` de una voz del glosario, sin pasarse de largo.
+ *
+ * ── El problema ───────────────────────────────────────────────────────
+ * El patrón «{término}: qué es y por qué importa — CountPips» cuesta 41
+ * caracteres fijos, así que cualquier término de más de 19 se sale del
+ * ancho que los buscadores muestran (unos 60). De las 155 páginas del
+ * sitio, exactamente cuatro se pasaban, y las cuatro por el mismo motivo:
+ * MAE y MFE llevan su expansión dentro del nombre —«MAE (Maximum Adverse
+ * Excursion)»— y en inglés la cola es aún más larga. El resultado son
+ * títulos de 69 a 76 caracteres que Google corta a mitad de frase, justo
+ * donde está la promesa de la página.
+ *
+ * ── Por qué se calcula y no se escribe a mano ─────────────────────────
+ * Un campo `tituloCorto` en los datos son 51 decisiones que hay que
+ * recordar tomar cada vez que se añade una voz, y nadie las va a tomar.
+ * Esto se ajusta solo y en el orden que menos duele:
+ *
+ *   1. El título entero, si cabe.
+ *   2. Sin la expansión entre paréntesis: la sigla es lo que se teclea al
+ *      buscar, y la expansión ya está en la descripción y en el h1.
+ *   3. Con la cola recortada a «qué es», si aún no cabe.
+ *
+ * El «qué es» se conserva mientras se pueda porque es literalmente como
+ * se busca esto: nadie teclea «Drawdown», se teclea «qué es el drawdown».
+ */
+export const LARGO_MAXIMO_TITULO = 60;
+
+export function tituloDeTermino(term: string, lang: "es" | "en"): string {
+  const marca = " — CountPips";
+  const cola = lang === "es" ? ": qué es y por qué importa" : ": what it is and why it matters";
+  const colaCorta = lang === "es" ? ": qué es" : ": what it is";
+  const cabe = (s: string) => (s + marca).length <= LARGO_MAXIMO_TITULO;
+
+  const completo = term + cola;
+  if (cabe(completo)) return completo;
+
+  const sigla = term.replace(/\s*\([^)]*\)/g, "").trim();
+  if (sigla !== term && cabe(sigla + cola)) return sigla + cola;
+  if (cabe(sigla + colaCorta)) return sigla + colaCorta;
+  return sigla;
+}
+
 /** Nombre visible de cada familia, en los dos idiomas. */
 export const CATEGORIAS: Record<
   GlossaryCategory,

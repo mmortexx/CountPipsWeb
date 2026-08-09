@@ -29,7 +29,18 @@ const PAGES: PageMeta[] = [
   { path: "/features/disciplina", priority: 0.85, changeFrequency: "weekly" },
   { path: "/features/seguridad", priority: 0.85, changeFrequency: "weekly" },
   { path: "/pricing", priority: 0.9, changeFrequency: "monthly" },
-  { path: "/demo", priority: 1.0, changeFrequency: "monthly" },
+  /* ── /demo baja de 1.0 a 0.9 ──────────────────────────────────────
+     La prioridad es RELATIVA dentro del sitio: sirve para decir cuál es
+     la página más importante. Con la portada y la demo empatadas a 1.0
+     no se decía eso, se decía "estas dos son igual de importantes", que
+     es lo mismo que no decir nada — y con `/en/` y `/en/demo/` heredando
+     el valor, el mapa declaraba CUATRO máximos de cuatro.
+
+     La demo es la conversión principal del sitio y merece ir por encima
+     de precios y de características, pero la portada es la puerta: es la
+     que debe salir cuando alguien busca la marca. 0.9 la deja en cabeza
+     del pelotón sin discutirle el primer puesto a la raíz. */
+  { path: "/demo", priority: 0.9, changeFrequency: "monthly" },
   /* El diagnóstico. Prioridad alta pese a no vender nada directamente:
      es la página que más gente comparte y por la que más se entra, porque
      se sale de ella con una cifra propia. */

@@ -88,3 +88,91 @@ export function hreflangDe(path: string): {
   const en = siteUrl(path === "/" ? "/en/" : `/en${path}/`);
   return { es, en, "x-default": es };
 }
+
+/**
+ * El `BreadcrumbList` de una página, a partir de sus escalones.
+ *
+ * ── Por qué existe ────────────────────────────────────────────────────
+ * El objeto se escribía a mano en cada página: veinte copias de la misma
+ * forma con el mismo `"@context"`, el mismo `"@type"` y la misma cuenta de
+ * posiciones. Y donde hay veinte copias escritas a mano hay huecos: `/beta`
+ * emitía sólo un `WebPage` sin migas, y las dos páginas de `/traders` no
+ * emitían NINGÚN dato estructurado — las cuatro llevan migas visibles en su
+ * cabecera, así que le estábamos enseñando al visitante una jerarquía que
+ * al buscador le ocultábamos.
+ *
+ * `escalones` va sin la raíz: se añade sola, con el nombre y la dirección
+ * que corresponden al idioma. Las rutas se dan como el sitio las escribe
+ * (con su barra final) y sin el prefijo `/en`, que lo pone esta función.
+ */
+export function migasSchema(
+  lang: "es" | "en",
+  escalones: { nombre: string; ruta: string }[],
+): Record<string, unknown> {
+  const raiz = lang === "es" ? "/" : "/en/";
+  const conIdioma = (ruta: string) =>
+    siteUrl(lang === "es" ? ruta : `/en${ruta}`);
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: lang === "es" ? "Inicio" : "Home",
+        item: siteUrl(raiz),
+      },
+      ...escalones.map((e, i) => ({
+        "@type": "ListItem",
+        position: i + 2,
+        name: e.nombre,
+        item: conIdioma(e.ruta),
+      })),
+    ],
+  };
+}
+
+/**
+ * Los datos estructurados de las dos páginas de perfil de trader.
+ *
+ * Las cuatro (dos perfiles × dos idiomas) no emitían ninguno: ni `WebPage`
+ * ni migas, aunque las cuatro enseñan «Inicio / Operativa manual» en su
+ * cabecera. Vive aquí y no junto al componente porque `TraderProfilePage`
+ * es de cliente —usa el idioma en vivo— y esto tiene que renderizarse en
+ * el servidor para que el rastreador lo encuentre en el HTML.
+ */
+export function esquemasTrader(
+  lang: "es" | "en",
+  /* El mismo identificador que usa `TraderProfileBody`, no uno paralelo:
+     el segmento de la URL se deriva de él. Dos nombres para el mismo
+     perfil es cómo se acaban desincronizando la página y su esquema. */
+  perfil: "manual" | "prop",
+): Record<string, unknown>[] {
+  const ruta = `/traders/${perfil === "prop" ? "prop-firms" : "manual"}/`;
+  const nombre = {
+    es: { manual: "Operativa manual", prop: "Prop firms" },
+    en: { manual: "Manual trading", prop: "Prop firms" },
+  }[lang][perfil];
+  const descripcion = {
+    es: {
+      manual: "Métricas, playbooks y revisión de operaciones para traders manuales.",
+      prop: "Riesgo visible, reglas y track record para traders de prop firms.",
+    },
+    en: {
+      manual: "Metrics, playbooks and trade review for manual traders.",
+      prop: "Visible risk, rules and track record for prop-firm traders.",
+    },
+  }[lang][perfil];
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: `${nombre} — ${SITE_NAME}`,
+      description: descripcion,
+      url: siteUrl(lang === "es" ? ruta : `/en${ruta}`),
+    },
+    migasSchema(lang, [{ nombre, ruta }]),
+  ];
+}

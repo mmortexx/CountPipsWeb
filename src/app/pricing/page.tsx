@@ -163,13 +163,30 @@ const FinalCTANew = dynamic(
 export function PricingBody() {
   return (
     <>
+      {/* ── EL TITULAR NO PUEDE DECIR «COMPRAR» ───────────────────────
+          Decía «Compara antes de comprar.», con «antes de comprar.»
+          resaltado en acento y a cuerpo de titular: la frase más grande
+          de la página, contradiciendo a las cuatro que hay debajo —la
+          barra de términos, el aviso de precios previstos, el esquema
+          Product SIN Offer y el subtítulo que dice que esto no es una
+          preventa—. Aquí no hay nada que comprar, ni hoy ni con este
+          botón: los dos CTA llevan al piloto privado.
+
+          Un visitante que llega desde la demo y lee «antes de comprar»
+          espera encontrar un carrito. Cuando no lo encuentra, lo que
+          revisa no es esta página: es si lo demás también era mentira.
+
+          «El precio, por escrito» dice lo que la página SÍ hace —enseñar
+          las dos cifras y lo que incluye cada una— y de paso pone el
+          acento donde está el valor real: que la cifra esté escrita y no
+          haya que pedirla. */}
       <PageHeader
         eyebrowEs="Precios"
         eyebrowEn="Pricing"
-        titleEs="Compara antes de comprar."
-        titleEn="Compare before you buy."
-        titleHighlightEs="antes de comprar."
-        titleHighlightEn="before you buy."
+        titleEs="El precio, por escrito."
+        titleEn="The price, in writing."
+        titleHighlightEs="por escrito."
+        titleHighlightEn="in writing."
         subtitleEs="Core $149 y Pro $249 son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."
         subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
         breadcrumbEs="Precios"

@@ -194,3 +194,49 @@ describe("analítica y consentimiento", () => {
     expect(copias).toEqual([]);
   });
 });
+
+/**
+ * El ancho del título en el buscador.
+ *
+ * El patrón «{término}: qué es y por qué importa — CountPips» cuesta 41
+ * caracteres fijos. Con 51 voces en dos idiomas, basta una cuyo nombre
+ * traiga la expansión dentro —«MAE (Maximum Adverse Excursion)»— para que
+ * el título salga de 76 caracteres y Google lo corte a mitad de la
+ * promesa. Eran cuatro de las 155 páginas del sitio, y las únicas cuatro
+ * que se pasaban.
+ *
+ * Esto no lo puede vigilar el humo, que sólo recorre doce rutas y ninguna
+ * del glosario: hay que mirar las 102 páginas generadas, y eso se hace
+ * aquí, sin navegador.
+ */
+describe("los títulos del glosario caben en el buscador", () => {
+  it("ninguna de las 102 páginas pasa de 60 caracteres", async () => {
+    const { TERMINOS, tituloDeTermino, LARGO_MAXIMO_TITULO } = await import("@/lib/glosario");
+    const largos: string[] = [];
+    for (const t of TERMINOS) {
+      for (const lang of ["es", "en"] as const) {
+        const completo = `${tituloDeTermino(t.term, lang)} — CountPips`;
+        if (completo.length > LARGO_MAXIMO_TITULO) {
+          largos.push(`[${lang}] ${completo} (${completo.length})`);
+        }
+      }
+    }
+    expect(largos, "hay títulos que el buscador va a cortar").toEqual([]);
+  });
+
+  it("el título sigue diciendo «qué es», que es como se busca", async () => {
+    const { TERMINOS, tituloDeTermino } = await import("@/lib/glosario");
+    /* El recorte no puede llevarse por delante la intención: si un día el
+       ajuste automático deja los 51 títulos en el término pelado, el
+       buscador deja de encontrarlos por la pregunta que la gente teclea. */
+    const conPregunta = TERMINOS.filter((t) => tituloDeTermino(t.term, "es").includes("qué es"));
+    expect(conPregunta.length / TERMINOS.length).toBeGreaterThan(0.95);
+  });
+
+  it("cuando recorta, conserva la sigla y no la expansión", async () => {
+    const { tituloDeTermino } = await import("@/lib/glosario");
+    const mae = tituloDeTermino("MAE (Maximum Adverse Excursion)", "en");
+    expect(mae.startsWith("MAE")).toBe(true);
+    expect(mae).not.toContain("Maximum Adverse Excursion");
+  });
+});
