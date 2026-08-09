@@ -57,7 +57,11 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
     if (q && q.trim() !== "") setQuery(q);
   }, []);
 
-  const items: QA[] = es
+  /* Las dos listas se construían enteras en CADA render —treinta y tantos
+     objetos con sus cadenas— y como `items` entra en las dependencias del
+     filtro de abajo, el `useMemo` que filtra tampoco memoizaba nada: veía
+     un array nuevo siempre. Con `useMemo` se arma una vez por idioma. */
+  const items: QA[] = React.useMemo(() => es
     ? [
         {
           q: "¿Cuál es el estado de compra?",
@@ -165,7 +169,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           q: "What if I change computers during the pilot?",
           a: "The CountPips team will provide the procedure to move your environment. We will not ask for credentials or financial data to do it.",
         },
-      ];
+      ], [es]);
 
   // Real-time filter on question + answer text (active language).
   const filtered = React.useMemo(() => {

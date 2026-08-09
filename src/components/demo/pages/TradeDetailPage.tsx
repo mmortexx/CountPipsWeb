@@ -470,7 +470,6 @@ export function TradeDetailPage() {
 
   const isWin = trade.netPnl >= 0;
   const isLong = trade.direction === "long";
-  const instrument = INSTRUMENTS.find((i) => i.symbol === trade.instrument);
   const tone = pnlTone(trade.netPnl);
 
   // Risk amount in $ = the 1R dollar amount (already in trade.riskUsd).
@@ -490,16 +489,11 @@ export function TradeDetailPage() {
   const dayPnlBefore = -84.6;
   const isRevengeCandidate = dayPnlBefore < 0;
 
-  // Risk:reward planned fractions (1 : plannedRr).
-  const riskFraction = 1 / (1 + trade.plannedRr);
-  const rewardFraction = trade.plannedRr / (1 + trade.plannedRr);
-
-  const complianceVariant =
-    trade.compliance === "yes"
-      ? "pos"
-      : trade.compliance === "no"
-      ? "neg"
-      : "warn";
+  /* Se van cuatro cálculos que no leía nadie: `instrument` (la búsqueda en
+     el catálogo, sustituida por el símbolo que ya trae la operación), las
+     dos fracciones del riesgo:recompensa —la barra proporcional que las
+     usaba se sustituyó por la cifra de R— y `complianceVariant`, que hoy
+     resuelve el propio `Chip`. */
 
   return (
     <div className="relative p-5 md:p-6 space-y-5">

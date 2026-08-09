@@ -220,8 +220,14 @@ const RATE_LIMIT_DAILY_MAX = 20;
 
    Se parte en dos: `rateLimitDisponible` sólo LEE (y va delante, que era
    el objetivo), y `consumirCuota` escribe, después de que la
-   verificación haya pasado. */
-const RATE_LIMIT_DAILY_MAX = 20;
+   verificación haya pasado.
+
+   (Aquí había una SEGUNDA declaración de `RATE_LIMIT_DAILY_MAX`, idéntica a
+   la de arriba. Dos `const` con el mismo nombre en el mismo módulo no son
+   una redundancia inofensiva: son un SyntaxError, y el worker no llegaba a
+   cargar — `node --check` lo rechaza. El envío del acceso anticipado estaba
+   caído y nada lo decía, porque el lint tenía `no-redeclare` apagado y
+   ninguna prueba carga este fichero.) */
 
 /** Estado de cuota de una IP, sin tocar nada. */
 async function estadoCuota(request, env) {

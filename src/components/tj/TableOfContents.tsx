@@ -67,7 +67,7 @@ export function TableOfContents() {
     const seenIds = new Set<string>();
     headings.forEach((h) => {
       // Find closest element with a real id (not main-content).
-      let target: HTMLElement | null = h.closest("[id]") as HTMLElement | null;
+      const target: HTMLElement | null = h.closest("[id]") as HTMLElement | null;
       let id = target?.id;
       /* Un id existente no basta: tiene que servir de ANCLA. React reparte
          ids propios a algunos contenedores —del estilo `S:1`— y los dos

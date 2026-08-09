@@ -67,13 +67,10 @@ type FilterGroup =
 type SortKey = "symbol" | "duration" | "date" | "pnl" | "r";
 type SortDir = "asc" | "desc";
 
-const SORT_KEYS: { key: SortKey; labelEs: string; labelEn: string; align: "left" | "right" }[] = [
-  { key: "symbol", labelEs: "Instrumento", labelEn: "Instrument", align: "left" },
-  { key: "duration", labelEs: "Duración", labelEn: "Duration", align: "left" },
-  { key: "date", labelEs: "Fecha", labelEn: "Date", align: "left" },
-  { key: "pnl", labelEs: "P&L", labelEn: "P&L", align: "right" },
-  { key: "r", labelEs: "R", labelEn: "R", align: "right" },
-];
+/* `SortKey` sigue vivo (lo usan el estado y `handleSort`); la tabla
+   `SORT_KEYS` con los rótulos y alineaciones de las cinco cabeceras, no:
+   las cabeceras se escriben en el JSX. Tenerla aquí era una segunda fuente
+   de la verdad esperando a discrepar de la primera. */
 
 /* ============================================================
  * R chip — pill background tinted by sign, mirrors the XAML

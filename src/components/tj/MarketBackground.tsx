@@ -51,7 +51,7 @@ export function MarketBackground({
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let W = 0, H = 0;
     let candles: Candle[] = [];
     let candleW = 0;

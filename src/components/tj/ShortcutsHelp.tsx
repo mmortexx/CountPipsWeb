@@ -56,7 +56,10 @@ export function ShortcutsHelp({
       delete document.body.dataset.shortcutsHelpOpen;
       window.removeEventListener("keydown", onEsc, true);
     };
-  }, [open]);
+    /* `setOpen` es la prop `onOpenChange`, no un setter estable de
+       `useState`. `OverlayHost` la memoiza con dependencias vacías, así que
+       incluirla no vuelve a suscribir el listener. */
+  }, [open, setOpen]);
 
   // Focus trap + focus restore (mirrors the Navbar mobile-drawer pattern,
   // Navbar.tsx ~L82-128, and the CommandPalette trap). While the overlay

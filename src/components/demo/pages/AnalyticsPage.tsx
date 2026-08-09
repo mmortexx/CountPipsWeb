@@ -33,44 +33,6 @@ import { useDemo } from "@/components/demo/DemoContext";
  * Small primitives
  * ============================================================ */
 
-type FilterGroup = "direction" | "compliance";
-
-function FilterChip({
-  active,
-  onClick,
-  children,
-  group,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  children: ReactNode;
-  group: FilterGroup;
-  label: string;
-}) {
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      aria-label={label}
-      whileTap={{ scale: 0.96 }}
-      className="relative inline-flex items-center"
-    >
-      {active && (
-        <motion.span
-          layoutId={`analytics-filter-${group}`}
-          className="pointer-events-none absolute inset-0 rounded-full border border-[rgb(var(--divider)/0.2)] bg-[rgb(var(--divider)/0.08)]"
-          transition={{ type: "spring", stiffness: 380, damping: 30 }}
-        />
-      )}
-      <Chip variant={active ? "accent" : "default"} className="relative">
-        {children}
-      </Chip>
-    </motion.button>
-  );
-}
-
 /** Section card — premium card border with eyebrow header. Mirrors
  *  AnalyticsPage.xaml's PremiumCardBorderStyle + EyebrowTextStyle. */
 function SectionCard({
@@ -166,50 +128,10 @@ function KpiStripCell({
   );
 }
 
-/** Tiny inline sparkline shown on KPI tiles. */
-function Sparkline({
-  values,
-  tone,
-}: {
-  values: number[];
-  tone: "pos" | "neg" | "neutral";
-}) {
-  if (values.length < 2) return null;
-  const w = 56;
-  const h = 16;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const span = max - min || 1;
-  const pts = values.map((v, i) => {
-    const x = (i / (values.length - 1)) * w;
-    const y = h - ((v - min) / span) * h;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  });
-  const color =
-    tone === "pos"
-      ? "rgb(var(--pnl-pos))"
-      : tone === "neg"
-      ? "rgb(var(--pnl-neg))"
-      : "rgb(var(--txt-tertiary))";
-  return (
-    <svg
-      width={w}
-      height={h}
-      viewBox={`0 0 ${w} ${h}`}
-      className="opacity-70"
-      aria-hidden="true"
-    >
-      <polyline
-        fill="none"
-        stroke={color}
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        points={pts.join(" ")}
-      />
-    </svg>
-  );
-}
+/* Aquí vivía `Sparkline`, la curva en miniatura de las fichas de KPI, y
+   más arriba `FilterChip`. Ninguno de los dos se monta desde que las
+   fichas pasaron a mostrar sólo la cifra y los filtros a usar `Chip`
+   directamente. Se van con sus tres `useMemo` de datos. */
 
 /* ============================================================
  * Donut: winners vs losers — draw-in arc.
@@ -984,7 +906,7 @@ function SectionBar({
         aria-label={lang === "es" ? "Secciones" : "Sections"}
         className="flex items-center gap-1 overflow-x-auto custom-scroll -mx-1 px-1"
       >
-        {SECTIONS.map((s, i) => {
+        {SECTIONS.map((s) => {
           const isActive = s.id === active;
           return (
             <button
@@ -1120,21 +1042,10 @@ export function AnalyticsPage() {
 
   const filterSig = `${filters.instrument}|${filters.setup}|${filters.direction}|${filters.compliance}`;
 
-  const sparkPnl = useMemo(() => {
-    return [...filteredTrades]
-      .sort((a, b) => a.closedAt.getTime() - b.closedAt.getTime())
-      .slice(-8)
-      .map((tr) => tr.netPnl);
-  }, [filteredTrades]);
-  const sparkR = useMemo(() => {
-    return [...filteredTrades]
-      .sort((a, b) => a.closedAt.getTime() - b.closedAt.getTime())
-      .slice(-8)
-      .map((tr) => tr.rMultiple);
-  }, [filteredTrades]);
-  const sparkEquity = useMemo(() => {
-    return m.equityCurve.slice(-8).map((e) => e.balance);
-  }, [m.equityCurve]);
+  /* Aquí se calculaban `sparkPnl`, `sparkR` y `sparkEquity` para el
+     componente `Sparkline`, que ya no dibuja nadie. Dos de los tres
+     ordenaban una copia del array de operaciones en cada cambio de filtro
+     para tirar el resultado. */
 
   const filterActive =
     filters.instrument !== "all" ||

@@ -18,12 +18,11 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
-const actionTypes = {
-  ADD_TOAST: "ADD_TOAST",
-  UPDATE_TOAST: "UPDATE_TOAST",
-  DISMISS_TOAST: "DISMISS_TOAST",
-  REMOVE_TOAST: "REMOVE_TOAST",
-} as const
+/* Esto era un objeto `as const` del que sólo se leía el TIPO (`typeof
+   actionTypes`). El objeto viajaba al navegador en cada página sin que
+   ninguna línea lo consultara: cuatro cadenas cuyo único trabajo era
+   existir para que TypeScript las mirara. Escrito como tipo hace
+   exactamente lo mismo y no llega al paquete. */
 
 let count = 0
 
@@ -32,7 +31,12 @@ function genId() {
   return count.toString()
 }
 
-type ActionType = typeof actionTypes
+type ActionType = {
+  ADD_TOAST: "ADD_TOAST"
+  UPDATE_TOAST: "UPDATE_TOAST"
+  DISMISS_TOAST: "DISMISS_TOAST"
+  REMOVE_TOAST: "REMOVE_TOAST"
+}
 
 type Action =
   | {

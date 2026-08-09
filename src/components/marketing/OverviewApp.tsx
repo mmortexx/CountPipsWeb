@@ -4,7 +4,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { motion } from "framer-motion";
 import { ShieldCheck, ArrowRight, Play } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { getKpis, getPerf, getCal } from "@/lib/trading/fixtures";
+import { getKpis } from "@/lib/trading/fixtures";
 import { WindowFrame } from "@/components/tj/WindowFrame";
 import { FeatureImage } from "@/components/tj/FeatureImage";
 import { asset } from "@/lib/asset";
@@ -22,8 +22,6 @@ export function OverviewApp() {
   const { lang } = useLang();
   const es = lang === "es";
   const kpis = getKpis();
-  const perf = getPerf();
-  const cal = getCal();
 
   return (
     <section
@@ -446,57 +444,10 @@ export function OverviewApp() {
   );
 }
 
-function Kpi({
-  label,
-  value,
-  color,
-}: {
-  label: string;
-  value: string;
-  color: string;
-  // `border` prop removed R21-3a — dividers are now handled by the
-  // grid container's 1px gap + background bleed-through, which works
-  // cleanly in both the 2-col mobile and 4-col desktop layouts (the
-  // old per-tile borderLeft produced a phantom vertical hairline at
-  // the start of row 2 when the grid dropped to 2 cols on mobile).
-}) {
-  return (
-    <div
-      style={{
-        padding: "10px 12px",
-        background: "color-mix(in oklab, var(--surface-2) 45%, transparent)",
-      }}
-    >
-      <div
-        className="tnum"
-        style={{ fontSize: 8.5, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)" }}
-      >
-        {label}
-      </div>
-      <div
-        className="tnum"
-        style={{ fontSize: 17, fontWeight: 700, marginTop: 4, color }}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
-/**
- * Parsea un string estilo CSS inline a un objeto JS compatible con el
- * `style` prop de React. Solo se usa para los strings generados por
- * `fixtures.ts` (background/borderRadius/aspectRatio/display/etc.).
- */
-function parseInlineStyle(s: string): React.CSSProperties {
-  const out: Record<string, string> = {};
-  for (const decl of s.split(";")) {
-    const [k, v] = decl.split(":");
-    if (!k || !v) continue;
-    const key = k.trim();
-    const val = v.trim();
-    const camel = key.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-    out[camel] = val;
-  }
-  return out as React.CSSProperties;
-}
+/* Aquí quedaban `Kpi` y `parseInlineStyle`, más las llamadas a `getPerf()`
+   y `getCal()` cuyo resultado no leía nadie. Son el sedimento de cuando
+   este componente montaba las cifras a partir de cadenas de CSS generadas
+   en `fixtures.ts`; hoy los KPI se maquetan en el propio JSX y los estilos
+   se escriben como objetos. `parseInlineStyle` además decía en su
+   documentación que "solo se usa para los strings generados por
+   fixtures.ts" — una frase en presente sobre algo que ya no ocurría. */

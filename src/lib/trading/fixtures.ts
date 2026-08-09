@@ -25,7 +25,6 @@
  */
 
 import { fmtMoney, fmtNum, fmtPct } from "./format";
-import type { Lang } from "@/lib/i18n";
 import {
   METRICS,
   TRADES,
@@ -273,7 +272,6 @@ function buildRows() {
     const pnl = win ? between(80, 480) : -between(40, 260);
     const r = pnl / 100;
     const pnlStr = `${pnl >= 0 ? "+" : "−"}${fmtNum(Math.abs(pnl))} $`;
-    const pct = fmtPct(pnl / 10000, "es", 2);
     const cum = 11000 + i * 200 + pnl;
     const cumStr = `${cum >= 0 ? "+" : "−"}${fmtNum(Math.abs(cum))} $`;
     return {

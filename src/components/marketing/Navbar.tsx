@@ -168,6 +168,15 @@ export function Navbar() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKey);
+      /* La regla `exhaustive-deps` avisa de leer `.current` en la limpieza y
+         propone copiarlo a una variable al entrar en el efecto. Aquí eso
+         sería PEOR: lo que se quiere es devolver el foco al botón que hay
+         cuando el cajón se cierra. Si entre medias el botón se ha
+         desmontado —al pasar de móvil a escritorio— `current` vale null y
+         no se enfoca nada, que es lo correcto; con la copia intentaríamos
+         enfocar un nodo que ya no está en el documento y el foco caería al
+         `<body>`, mandando al lector de pantalla al principio de la página. */
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       menuButtonRef.current?.focus();
     };
   }, [mobileOpen]);
@@ -221,13 +230,11 @@ export function Navbar() {
   // Cerrar drawer y megamenú al cambiar de ruta. `hovered` también se
   // limpia: si no, la píldora se quedaba encallada bajo el elemento que
   // acabas de pulsar cuando el puntero ya no está encima.
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setMobileOpen(false);
     setMegaOpen(false);
     setHovered(null);
   }, [pathname]);
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const productItems: {
     href: string;

@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
-import { Reveal } from "@/components/tj/Reveal";
 
 /**
  * SavingsCalculator — illustrative post-beta cost scenario.

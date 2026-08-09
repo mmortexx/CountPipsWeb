@@ -114,8 +114,6 @@ export function DataFlowComparison({ num = "02" }: { num?: string }) {
             pulseKey={pulses}
             pulseId="local"
             travelMs={500}
-            travelPath="straight"
-            es={es}
           />
 
           {/* ─── Cloud ─── */}
@@ -132,8 +130,6 @@ export function DataFlowComparison({ num = "02" }: { num?: string }) {
             pulseKey={pulses}
             pulseId="cloud"
             travelMs={1400}
-            travelPath="multi"
-            es={es}
           />
         </div>
 
@@ -157,8 +153,10 @@ function FlowColumn({
   pulseKey,
   pulseId,
   travelMs,
-  travelPath,
-  es,
+  /* Sin `travelPath` ni `es`: las dos llegaban y ninguna se leía. La
+     distinción recta/ramificada ya la marca el número de `steps` (dos
+     pasos en local, cuatro en la nube — ése ES el argumento del
+     diagrama), y los textos entran ya traducidos desde arriba. */
 }: {
   title: string;
   subtitle: string;
@@ -167,8 +165,6 @@ function FlowColumn({
   pulseKey: number;
   pulseId: string;
   travelMs: number;
-  travelPath: "straight" | "multi";
-  es: boolean;
 }) {
   return (
     <div

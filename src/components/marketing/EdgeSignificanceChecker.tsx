@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
-import { Reveal } from "@/components/tj/Reveal";
 
 /**
  * EdgeSignificanceChecker — ¿tu edge es real o suerte?
@@ -89,8 +88,6 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
     es
       ? new Intl.NumberFormat("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n)
       : new Intl.NumberFormat("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
-
-  const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)} %`;
 
   // Reusable slider — label + accent value pill + ≥44px touch row.
   // Unified across all interactive tools (Risk/Equity/RMultiple/Savings/Edge).

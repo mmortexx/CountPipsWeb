@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import {
@@ -19,7 +19,6 @@ import { fmtNum, fmtPct } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
-import { CountUp } from "@/components/tj/CountUp";
 import { EquityCurve } from "@/components/charts/EquityCurve";
 import { MiniCalendar } from "@/components/charts/MiniCalendar";
 import { AssetMark } from "@/components/demo/AssetMark";
@@ -136,7 +135,6 @@ export function DashboardPage() {
 
   const entryNum = parseFloat(entry) || 0;
   const stopNum = parseFloat(stop) || 0;
-  const exitNum = parseFloat(exitPrice) || 0;
   const targetNum = parseFloat(target) || 0;
   const qtyNum = parseFloat(quantity) || 0;
 

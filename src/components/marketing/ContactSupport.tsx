@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { ComponentType } from "react";
-import { Mail, BookOpen, MessagesSquare, ArrowRight } from "lucide-react";
+import { Mail, BookOpen, ArrowRight } from "lucide-react";
 
 import { useLang } from "@/lib/i18n";
 import { SUPPORT_EMAIL } from "@/lib/forms";

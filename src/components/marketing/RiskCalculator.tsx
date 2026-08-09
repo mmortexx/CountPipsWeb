@@ -95,15 +95,41 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     return { riskPerShare, rewardPerShare, valid, rr, riskUsd, size, profit, profitPct, positionValue, positionPct, direction };
   }, [entry, stop, target, balance, riskPct]);
 
-  const fmtUsd = (n: number) =>
-    es
-      ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)
-      : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+  /* Los formateadores se construían dentro de la función, así que cada
+     cifra de la pantalla creaba su propio `Intl.NumberFormat` —el objeto
+     más caro de esta vista— y se tiraba acto seguido. Además hacían que el
+     `useCallback` de "copiar" se invalidara en cada render, o sea que no
+     memoizaba nada: la lista de dependencias lo decía y nadie lo leía
+     porque la regla que avisa estaba apagada.
 
-  const fmtNum = (n: number, dec = 2) =>
-    es
-      ? new Intl.NumberFormat("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n)
-      : new Intl.NumberFormat("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
+     Ahora se crean una vez por idioma y las dos funciones son estables. */
+  /* `fmtNum` recibe los decimales por argumento, pero esta pantalla sólo
+     pide uno o dos, así que se construyen los tres formateadores de una vez
+     en lugar de cachear bajo demanda: una caché mutable dentro de un hook
+     es justo lo que el compilador de React prohíbe, y para tres objetos no
+     compensa. */
+  const nf = useMemo(() => {
+    const locale = es ? "es-ES" : "en-US";
+    return {
+      usd: new Intl.NumberFormat(locale, {
+        style: "currency", currency: "USD",
+        minimumFractionDigits: 2, maximumFractionDigits: 2,
+      }),
+      dec1: new Intl.NumberFormat(locale, {
+        minimumFractionDigits: 1, maximumFractionDigits: 1,
+      }),
+      dec2: new Intl.NumberFormat(locale, {
+        minimumFractionDigits: 2, maximumFractionDigits: 2,
+      }),
+    };
+  }, [es]);
+
+  const fmtUsd = useCallback((n: number) => nf.usd.format(n), [nf]);
+
+  const fmtNum = useCallback(
+    (n: number, dec = 2) => (dec === 1 ? nf.dec1 : nf.dec2).format(n),
+    [nf],
+  );
 
   // Anchos de las barras Riesgo / Beneficio normalizados.
   const max = Math.max(c.riskUsd, c.profit, 1);

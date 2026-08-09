@@ -14,7 +14,7 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { useLang } from "@/lib/i18n";
-import { useTheme, PALETTES, type PaletteName } from "@/lib/theme";
+import { useTheme } from "@/lib/theme";
 import { asset } from "@/lib/asset";
 import { withLocale } from "@/lib/locale";
 
@@ -118,7 +118,12 @@ export function CommandPalette({
      paleta y el atajo `⌘K` deja de ser una isla. */
   const { toggle: toggleLang, lang } = useLang();
   const es = lang === "es";
-  const { theme, toggleTheme, setPalette, palette: currentPalette } = useTheme();
+  /* Sólo tema. El selector de paletas se retiró de la lista de comandos: el
+     sitio fuerza `clasico` y ofrecer al visitante conmutar a una paleta que
+     la dirección de arte ya descartó es enseñar una puerta que no lleva a
+     ningún sitio. Quedaban `setPalette`, `currentPalette`, `PALETTES`,
+     `PaletteName` y el componente `PaletteSwatch` sin que los leyera nadie. */
+  const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -142,7 +147,12 @@ export function CommandPalette({
     };
     window.addEventListener("keydown", onEsc, true);
     return () => window.removeEventListener("keydown", onEsc, true);
-  }, [open]);
+    /* `setOpen` entra en la lista igual que en los dos hooks de abajo, que
+       ya la traían. Es una prop (`onOpenChange`), no el setter estable de
+       `useState`: si el padre la cambiara, este listener seguiría cerrando
+       con la versión vieja. Hoy `OverlayHost` la memoiza con dependencias
+       vacías, así que no re-suscribe nada. */
+  }, [open, setOpen]);
 
   // Focus trap + focus restore. Mirrors the Navbar mobile-drawer pattern
   // (Navbar.tsx ~L82-128): while the palette is open, Tab / Shift+Tab
@@ -495,16 +505,6 @@ function LangIcon() {
         strokeLinecap="round"
       />
     </svg>
-  );
-}
-
-function PaletteSwatch({ color }: { color: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      className="inline-block w-3 h-3 rounded-full border  shrink-0"
-      style={{ background: color }}
-    />
   );
 }
 
