@@ -3579,12 +3579,37 @@ button.icon-btn:hover > svg,
    borde de la sección siguiente es lo que le dice al lector que la
    página continúa. A pantalla completa exacta, una pausa parece el
    final del documento. */
+/* ── La pausa dura MENOS en las páginas interiores ────────────────────
+   La lámina existe para que el atlas del fondo tenga una pantalla para
+   sí, sin ninguna sección encima. En la portada eso funciona: cuatro
+   pausas entre seis secciones, alternando texto y figura como un
+   tratado ilustrado.
+
+   En una página interior no. `/features` tiene cinco secciones de
+   contenido y TRES láminas, y a 88vh cada una eso son 3.222 px de
+   fondo sin contenido en una página de 8.700: el 37 % del recorrido.
+   Medido, no estimado. El visitante no lee eso como una pausa
+   editorial; lo lee como que la página se ha quedado vacía y sigue
+   bajando a ver si vuelve algo.
+
+   Una pausa se nota igual en dos tercios de pantalla, y ahí ya no hay
+   duda de que sigue habiendo página debajo: se ve el borde de la
+   siguiente sección asomando, que es lo que distingue una pausa de un
+   final. La portada conserva la pausa a pantalla casi completa, porque
+   allí la figura ES el argumento. */
 .tj-interlude {
   position: relative;
-  min-height: 88vh;
+  min-height: 62vh;
   display: flex;
   align-items: flex-end;
   pointer-events: none;
+}
+/* La portada mantiene su ritmo original: allí la figura ES el
+   argumento, y hay seis secciones de texto que la sostienen. Quién es
+   «amplio» lo decide el propio componente a partir de la ruta, que es
+   de donde ya deduce su pie de figura. */
+.tj-interlude-amplio {
+  min-height: 88vh;
 }
 .tj-interlude-caption {
   pointer-events: auto;

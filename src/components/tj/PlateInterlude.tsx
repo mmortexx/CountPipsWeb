@@ -48,9 +48,18 @@ export function PlateInterlude({ index }: { index: number }) {
   if (!meta) return null;
   const { roman, titleEs, titleEn, noteEs, noteEn } = meta;
 
+  /* La pausa dura casi una pantalla en la portada y dos tercios en las
+     demás. No es capricho: `/features` llegó a tener TRES láminas a
+     88vh entre cinco secciones —3.222 px de fondo sin contenido en una
+     página de 8.700, el 37 % del recorrido—, y eso no se lee como una
+     pausa editorial sino como que la página se ha acabado. En la
+     portada la proporción se sostiene porque hay seis secciones de
+     texto entre cuatro láminas. */
+  const esPortada = pathname === "/" || pathname === "/en";
+
   return (
     <section
-      className="tj-interlude"
+      className={`tj-interlude${esPortada ? " tj-interlude-amplio" : ""}`}
       data-plate={index}
       aria-label={es ? `Lámina ${roman}` : `Plate ${roman}`}
     >

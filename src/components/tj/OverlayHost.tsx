@@ -49,25 +49,45 @@ const ShortcutsHelp = dynamic(
 );
 
 /**
- * Precarga en tiempo muerto. `requestIdleCallback` sólo dispara cuando
- * el hilo principal no tiene nada mejor que hacer, así que esto no
- * compite ni con la hidratación ni con el primer scroll. Safari aún no
- * lo implementa: allí cae en un `setTimeout` generoso, que persigue lo
- * mismo (esperar a que lo importante haya terminado) sin la garantía.
+ * Precarga al PRIMER GESTO, no en cuanto el navegador queda ocioso.
+ *
+ * ── Por qué cambió ────────────────────────────────────────────────────
+ * Antes se pedían los dos overlays con `requestIdleCallback`, unos
+ * segundos después de cargar. Suena inocuo —prioridad baja, hilo libre—
+ * pero medido son 74 KB de `cmdk` descargados en TODAS las páginas,
+ * incluidas las cuatro legales, donde el visitante llega a leer un texto
+ * y marcharse. Nadie abre la paleta de comandos en una política de
+ * privacidad.
+ *
+ * El primer gesto —mover el puntero, tocar la pantalla, pulsar una
+ * tecla— separa bien los dos casos: quien va a usar un atajo de teclado
+ * ya ha interactuado con la página mucho antes de pulsarlo, así que
+ * sigue encontrando el panel en caché; y quien entra, lee y cierra no
+ * descarga nada. El coste para el primero es nulo y el ahorro para el
+ * segundo es completo.
+ *
+ * `once: true` en los tres oyentes y una bandera: basta con el primero
+ * que llegue.
  */
-type IdleWindow = Window & {
-  requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
-};
-
 function prefetchOverlays() {
   if (typeof window === "undefined") return;
+  let pedido = false;
   const load = () => {
+    if (pedido) return;
+    pedido = true;
+    quitar();
     import("@/components/tj/CommandPalette");
     import("@/components/tj/ShortcutsHelp");
   };
-  const idle = (window as IdleWindow).requestIdleCallback;
-  if (idle) idle(load, { timeout: 4000 });
-  else window.setTimeout(load, 2500);
+  const opts = { passive: true, once: true } as const;
+  const quitar = () => {
+    window.removeEventListener("pointermove", load);
+    window.removeEventListener("touchstart", load);
+    window.removeEventListener("keydown", load);
+  };
+  window.addEventListener("pointermove", load, opts);
+  window.addEventListener("touchstart", load, opts);
+  window.addEventListener("keydown", load, { once: true });
 }
 
 /* Margen que se le da a la animación de salida antes de arrancar el
