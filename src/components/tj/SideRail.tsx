@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { irASeccion } from "@/lib/scroll";
 
 /**
  * SideRail — raíl lateral fijo (solo home, ≥1100 px) que indexa ÚNICAMENTE
@@ -70,10 +71,11 @@ export function SideRail() {
   }, []);
 
   const go = (id: string) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    /* `irASeccion` en vez de `scrollIntoView`: el raíl salta de la
+       primera ancla a la última de una página larga, y ese recorrido
+       animado enseñaba el contenido entero pasando de largo. Respeta el
+       `scroll-margin-top` igual que hacía `scrollIntoView`. */
+    if (!irASeccion(id)) return;
     history.replaceState(null, "", `#${id}`);
   };
 

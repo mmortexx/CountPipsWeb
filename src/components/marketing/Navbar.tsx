@@ -819,7 +819,14 @@ export function Navbar() {
                     // este es el fix mínimo y estable: ni tocar globals.css
                     // ni añadir `!absolute` (que rompería el patrón si
                     // Tailwind v4 cambiara el modificador).
-                    className="tj-paper tj-paper-glow absolute left-1/2 w-[520px] max-w-[calc(100vw-3rem)] origin-top rounded-[2px] border p-2"
+                    /* `tj-paper-dense` —el papel OPACO— y no `tj-paper` a
+                       secas: este panel se abre sobre los titulares de la
+                       portada, que son de los elementos más grandes y
+                       contrastados del sitio, y a través del papel
+                       corriente se leían enteros por debajo de sus
+                       entradas. Un menú se pone delante de la página; si
+                       la deja ver, las dos compiten por el mismo sitio. */
+                    className="tj-paper tj-paper-dense tj-paper-glow absolute left-1/2 w-[520px] max-w-[calc(100vw-3rem)] origin-top rounded-[2px] border p-2"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
@@ -836,9 +843,14 @@ export function Navbar() {
                       className="absolute left-1/2 -top-[6px] h-[11px] w-[11px] -translate-x-1/2 rotate-45 rounded-[2px] border-l border-t"
                       style={{
                         borderColor: "rgb(var(--divider) / 0.13)",
-                        // Coincido con el 72 % del panel (.tj-paper) para
-                        // que la punta sea continuación visual de la hoja.
-                        background: "color-mix(in srgb, var(--surface) 72%, transparent)",
+                        /* La punta es continuación de la hoja, así que
+                           sigue al panel: opaca. Cuando el panel pasó a
+                           serlo, este 72 % se quedaba como un triángulo
+                           translúcido pegado a un papel que ya no lo era
+                           — el único punto por el que seguía asomando la
+                           página. `--paper-dense` lo resuelven los tokens
+                           por tema, no una segunda copia del color. */
+                        background: "var(--paper-dense)",
                       }}
                     />
                     <div className="relative grid grid-cols-2 gap-1">
@@ -1059,16 +1071,14 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "tween", duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              // T3b — el drawer es ahora una hoja de papel cálido
-              // translúcida que se desliza sobre el contenido: la página
-              // se intuye a través de él (72% surface, blur 10px +
-              // saturate 140%, grano SVG). Reemplaza el `liquid-glass`
-              // previo (cristal frío). `safe-top` y el `border-l` se
-              // conservan; el `backdrop-blur-xl backdrop-saturate-150`
-              // de Tailwind se retira porque `.tj-paper` ya aporta su
-              // propio backdrop-filter (no queremos duplicarlo ni
-              // pelear especificidad). El footer del drawer hereda
-              // `safe-bottom` en su contenedor interno.
+              // El cajón es una hoja de papel cálido que se desliza sobre
+              // el contenido. OPACA (`tj-paper-dense`): se abre encima de
+              // la página entera en la pantalla más estrecha, que es
+              // justo donde menos sitio hay para que dos textos se
+              // disputen los mismos píxeles. Detrás va además el velo
+              // oscuro del backdrop, así que no se pierde la sensación de
+              // capa. `safe-top` y el `border-l` se conservan; el footer
+              // hereda `safe-bottom` en su contenedor interno.
               //
               // P8 — `style={{ position: "fixed" }}` inline. `.tj-paper`
               // en globals.css (línea 3298) declara `position: relative`
@@ -1081,7 +1091,7 @@ export function Navbar() {
               // altura completa). Mismo patrón que CookieConsent.tsx
               // (línea 138) usa para el mismo conflicto. Inline style
               // gana a cualquier regla externa sin `!important`.
-              className="tj-paper safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none min-[1120px]:hidden"
+              className="tj-paper tj-paper-dense safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none min-[1120px]:hidden"
               style={{ position: "fixed" }}
             >
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-[rgb(var(--divider)/0.06)] px-5">

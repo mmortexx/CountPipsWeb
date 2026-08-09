@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { irASeccion } from "@/lib/scroll";
 
 /**
  * TableOfContents — sticky sidebar TOC for feature subpages.
@@ -119,10 +120,10 @@ export function TableOfContents() {
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
-    const el = document.getElementById(id);
-    if (!el) return;
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    /* El índice de una página legal salta entre epígrafes que pueden
+       estar a media docena de pantallas: mismo motivo que en el raíl de
+       la portada. Ver `src/lib/scroll.ts`. */
+    if (!irASeccion(id)) return;
     history.replaceState(null, "", `#${id}`);
   };
 

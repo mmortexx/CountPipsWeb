@@ -8,6 +8,7 @@ import {
   computeMetrics,
   INSTRUMENTS,
   SETUP_NAMES,
+  nombreSetup,
   rHistogram,
   pnlHistogram,
   durationHistogram,
@@ -1027,9 +1028,16 @@ export function AnalyticsPage() {
   const rHist = useMemo(() => rHistogram(filteredTrades), [filteredTrades]);
   const pnlHist = useMemo(() => pnlHistogram(filteredTrades), [filteredTrades]);
   const durHist = useMemo(() => durationHistogram(filteredTrades), [filteredTrades]);
+  /* Se agrupa por la CLAVE del setup y se rotula después: agrupar por el
+     texto traducido haría que el mismo setup contase como dos si alguna
+     vez se cambiase de idioma sin recargar. */
   const setupRanks = useMemo(
-    () => rankByExpectancy(filteredTrades, (tr) => tr.setup),
-    [filteredTrades]
+    () =>
+      rankByExpectancy(filteredTrades, (tr) => tr.setup).map((r) => ({
+        ...r,
+        name: nombreSetup(r.name, lang),
+      })),
+    [filteredTrades, lang]
   );
   const instRanks = useMemo(
     () => rankByExpectancy(filteredTrades, (tr) => tr.instrument),
@@ -1127,7 +1135,7 @@ export function AnalyticsPage() {
             <option value="all">{t("all")}</option>
             {SETUP_NAMES.map((s) => (
               <option key={s} value={s}>
-                {s}
+                {nombreSetup(s, lang)}
               </option>
             ))}
           </FilterSelect>

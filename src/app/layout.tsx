@@ -15,7 +15,6 @@ import { BackgroundFX } from "@/components/tj/BackgroundFX";
 import { IntroSequence } from "@/components/tj/IntroSequence";
 import { SectionReveal } from "@/components/tj/SectionReveal";
 import { SITE_URL } from "@/lib/site";
-import { SUPPORT_EMAIL } from "@/lib/forms";
 
 /** Mismo valor que usa `asset()`; vacío en Cloudflare, `/CountPipsWeb` en
  *  GitHub Pages. Lo necesita el script de `lang` de más abajo. */
@@ -115,132 +114,6 @@ const newsreader = Newsreader({
 // duplicado. Con la imagen generada lo compone Next y sale bien —
 // comprobado en el HTML de las dos compilaciones, no supuesto.
 //
-// `logo.png` es el logotipo de la marca —el cuaderno con las tres velas,
-// el mismo icono que la aplicación de escritorio— rasterizado desde la
-// misma geometría del glifo vectorial. Va en el dato estructurado de
-// Organization, que es de donde Google saca el logotipo del sitio. Se
-// regenera con `python scripts/generate-brand.py`, que produce además el
-// apple-icon y el favicon.ico; si se toca el glifo de `BrandGlyph.tsx`
-// hay que volver a lanzarlo o la marca se parte entre la web y lo que
-// ven el buscador y el sistema operativo.
-const LOGO_URL = `${SITE_URL}/logo.png`;
-
-const softwareApplicationSchema = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "CountPips",
-  applicationCategory: "FinanceApplication",
-  operatingSystem: "Windows",
-  url: SITE_URL,
-  description:
-    "El diario de trading profesional, nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y datos 100 % locales.",
-  inLanguage: ["es", "en"],
-  /* Capturas reales de la aplicación, que Google admite en
-     `SoftwareApplication`.
-
-     Durante un tiempo esto fue el único sitio del proyecto que las
-     enseñaba, y las enseñaba MAL: la página tapaba por CSS la barra de
-     título —con el nombre anterior al renombrado— y la de estado —con el
-     sello «Compilación de desarrollo»—, pero aquí viajaban los ficheros
-     enteros, sin recortar, desde las 155 páginas. Un recorte que sólo
-     existe en la hoja de estilos no protege nada de lo que se sirve.
-
-     Ya no hay recorte que se pueda olvidar: los ficheros de `public/img/`
-     están recortados en disco (`scripts/capturas.py`), así que lo que se
-     declara aquí y lo que se ve en la página son la misma imagen. */
-  screenshot: [
-    `${SITE_URL}/img/app-resumen.webp`,
-    `${SITE_URL}/img/app-curva.webp`,
-    `${SITE_URL}/img/app-operaciones.webp`,
-  ],
-  featureList: [
-    "Métricas institucionales (Sharpe, Profit Factor, Expectancy, R-multiple)",
-    "Curva de equity y drawdown en tiempo real",
-    "Guardián de disciplina: frenos antes de operar fuera de reglas",
-    "Datos 100 % locales, sin nube, sin suscripciones",
-    "Playbooks y plantillas de trading",
-    "Calendario de P&L y heatmap por día/hora",
-    "Diario narrativo con anotaciones por operación",
-    "Multi-cuenta y multi-activo (acciones, futuros, forex, crypto)",
-    "Exportación a CSV/JSON y backups locales",
-  ],
-  // Sin `aggregateRating` a propósito: no hay reseñas reales todavía.
-  // Aquí se emitía 4,8/47 inventado. Las directrices de datos
-  // estructurados de Google exigen que la valoración proceda de usuarios
-  // reales, así que publicarla era arriesgar una acción manual además de
-  // engañar a quien la viera en el buscador. Se vuelve a poner cuando
-  // haya reseñas verificables (G2/Capterra/Trustpilot), tomando el valor
-  // de esa plataforma.
-  publisher: {
-    "@type": "Organization",
-    name: "CountPips",
-    url: SITE_URL,
-  },
-};
-
-/**
- * Organization structured data — gives Google a canonical reference for
- * the publisher behind the site (used for knowledge-panel disambiguation
- * and to anchor the SoftwareApplication publisher field).
- */
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "CountPips",
-  url: SITE_URL,
-  /* `ImageObject` en vez de la dirección suelta: Google prefiere el objeto
-     porque así puede validar las dimensiones sin descargar la imagen. */
-  logo: {
-    "@type": "ImageObject",
-    url: LOGO_URL,
-    width: 512,
-    height: 512,
-  },
-  description:
-    "El diario de trading profesional, nativo de Windows. Explora el producto antes de instalarlo: métricas institucionales, disciplina y datos locales.",
-  foundingDate: "2024",
-  /* Sólo el repositorio, que es el único perfil que existe de verdad. Los
-     iconos de X, YouTube y Discord se retiraron del pie por apuntar a
-     ninguna parte; añadirlos aquí sería el mismo error en otro sitio. */
-  sameAs: ["https://github.com/mmortexx/CountPipsWeb"],
-  /* Faltaba, y es lo que permite que un buscador sepa a dónde escribir.
-     La dirección sale de la misma constante que usan el formulario y las
-     cinco pantallas donde aparece. */
-  contactPoint: {
-    "@type": "ContactPoint",
-    contactType: "customer support",
-    email: SUPPORT_EMAIL,
-    availableLanguage: ["Spanish", "English"],
-  },
-};
-
-/**
- * WebSite — faltaba por completo, y con él la posibilidad de que Google
- * muestre un cuadro de búsqueda del sitio en sus resultados.
- *
- * El buscador que se declara aquí EXISTE y funciona: la FAQ lee el
- * parámetro `q` de la dirección y filtra en vivo — es el mismo mecanismo
- * que usa la página de error 404 para rescatar a quien se pierde. No se
- * anuncia nada que no esté construido.
- */
-const webSiteSchema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "CountPips",
-  alternateName: "CountPips — Diario de trading",
-  url: SITE_URL,
-  inLanguage: "es",
-  publisher: { "@type": "Organization", name: "CountPips", url: SITE_URL },
-  potentialAction: {
-    "@type": "SearchAction",
-    target: {
-      "@type": "EntryPoint",
-      urlTemplate: `${SITE_URL}/faq/?q={search_term_string}`,
-    },
-    "query-input": "required name=search_term_string",
-  },
-};
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -365,24 +238,17 @@ export default function RootLayout({
       <body
         className={`${geistMono.variable} ${instrumentSans.variable} ${newsreader.variable} antialiased`}
       >
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(softwareApplicationSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(organizationSchema),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(webSiteSchema),
-          }}
-        />
+        {/* Aquí iban los tres datos estructurados del SITIO
+            —`SoftwareApplication`, `Organization` y `WebSite`—, y de aquí
+            se van. Este layout es único y raíz: lo que se escriba en él
+            viaja en las 155 páginas, y esos tres objetos estaban
+            redactados en español fijo, así que 76 páginas inglesas le
+            declaraban al buscador una descripción en otro idioma que el
+            de su propio `lang`.
+
+            Viven ahora en `esquemasGlobales()` (src/lib/site.ts) y los
+            emiten sólo las dos portadas, cada una en el suyo. Ver allí el
+            razonamiento completo. */}
         <Providers>
           <div className="min-h-screen flex flex-col">
             {/* Capa de efectos: el atlas grabado del fondo, la intro con

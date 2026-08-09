@@ -6,7 +6,8 @@ import { ProfileSelector } from "@/components/marketing/ProfileSelector";
 import { SideRail } from "@/components/tj/SideRail";
 import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
-import { SITE_URL, hreflangDe } from "@/lib/site";
+import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
+import { SUPPORT_EMAIL } from "@/lib/forms";
 
 // PNG (not SVG) — see layout.tsx for the rationale (social platforms
 // silently fail to render SVG OG images). Absolute URL bypasses the
@@ -191,5 +192,19 @@ export function HomeBody() {
 }
 
 export default function Home() {
-  return <HomeBody />;
+  return (
+    <>
+      {/* Los tres datos estructurados del sitio, en español. Estaban en el
+          layout raíz, que los repetía en las 155 páginas —76 de ellas en
+          inglés— con el texto español fijo. Ver `esquemasGlobales()`. */}
+      {esquemasGlobales("es", { soporte: SUPPORT_EMAIL }).map((s, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
+      ))}
+      <HomeBody />
+    </>
+  );
 }

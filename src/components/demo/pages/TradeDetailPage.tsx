@@ -6,6 +6,7 @@ import { useLang, type Lang } from "@/lib/i18n";
 import {
   TRADES,
   INSTRUMENTS,
+  nombreSetup,
   type Trade,
   type Compliance,
 } from "@/lib/trading/data";
@@ -727,8 +728,12 @@ export function TradeDetailPage() {
               <Detail label={t("fees")}>
                 <Money value={-trade.fees} />
               </Detail>
-              <Detail label={lang === "es" ? "Setup" : "Setup"}>
-                <span className="text-primary">{trade.setup}</span>
+              {/* El rótulo es «Setup» en los dos idiomas —es el término del
+                  oficio—, pero su VALOR no lo era: aquí se pintaba la clave
+                  cruda, y en español eso dejaba «Breakout» en una ficha por
+                  lo demás traducida. */}
+              <Detail label="Setup">
+                <span className="text-primary">{nombreSetup(trade.setup, lang)}</span>
               </Detail>
             </dl>
           </motion.div>

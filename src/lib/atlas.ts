@@ -41,6 +41,78 @@ export type PlateMeta = {
 };
 
 /**
+ * Los rótulos que van GRABADOS DENTRO de la lámina, no en el pie.
+ *
+ * ── El desajuste que arreglan ─────────────────────────────────────────
+ * El pie de cada figura —`PLATE_META`, aquí abajo— lleva desde el primer
+ * día en los dos idiomas, y `PlateInterlude` lo conmuta con `useLang()`.
+ * Los rótulos que el canvas pinta DENTRO del dibujo, no: estaban escritos
+ * a mano en español dentro de `EngravedAtlas.tsx`, en una veintena de
+ * llamadas a `label()`.
+ *
+ * O sea que un visitante de `/en/features` leía un pie en inglés debajo de
+ * una lámina rotulada «TECHO HISTÓRICO» y «OPERACIÓN BLOQUEADA». Es
+ * exactamente la clase de fallo que no rompe nada, no sale en consola y no
+ * lo ve nadie que trabaje en español: el sitio tiene 76 páginas en inglés
+ * y las láminas de todas ellas estaban a medio traducir.
+ *
+ * ── Cómo están escritos ───────────────────────────────────────────────
+ * Como rótulos de plancha, no como frases: cortos, en versalitas y sin
+ * artículos. El inglés no puede ser mucho más largo que el español porque
+ * varios van anclados a un extremo del dibujo y se saldrían de la figura.
+ */
+export type RotuloAtlas = { es: string; en: string };
+
+export const ROTULOS = {
+  techoHistorico: { es: "TECHO HISTÓRICO", en: "ALL-TIME HIGH" },
+  perdida: { es: "PÉRDIDA", en: "LOSS" },
+  ganancia: { es: "GANANCIA", en: "GAIN" },
+  limite: { es: "LÍMITE", en: "LIMIT" },
+  umbral: { es: "UMBRAL", en: "THRESHOLD" },
+  operacionBloqueada: { es: "OPERACIÓN BLOQUEADA", en: "TRADE BLOCKED" },
+  limiteDiario: { es: "LÍMITE DIARIO", en: "DAILY LIMIT" },
+  hoy: { es: "HOY", en: "TODAY" },
+  cohorte: { es: "COHORTE", en: "COHORT" },
+  validacion: { es: "VALIDACIÓN", en: "VALIDATION" },
+  accesoPrivado: { es: "ACCESO PRIVADO", en: "PRIVATE ACCESS" },
+  evidenciaAcumulada: { es: "EVIDENCIA ACUMULADA", en: "EVIDENCE BUILDING" },
+  horaUtc: { es: "HORA UTC", en: "UTC HOUR" },
+  solape: { es: "SOLAPE", en: "OVERLAP" },
+  yaNoEsSuerte: { es: "AQUÍ YA NO ES SUERTE", en: "NO LONGER LUCK" },
+  soloAzar: { es: "LO QUE EL AZAR PRODUCE SOLO", en: "WHAT CHANCE ALONE YIELDS" },
+  lineaLlena: { es: "LÍNEA LLENA · CONSTRUIDO", en: "SOLID LINE · BUILT" },
+  lineaTrazos: { es: "LÍNEA DE TRAZOS · PREVISTO", en: "DASHED LINE · PLANNED" },
+  /* La marca no se traduce, pero pasa por aquí para que el escaneo del
+     fuente que prohíbe literales en `label()` no tenga excepciones. */
+  marca: { es: "COUNTPIPS", en: "COUNTPIPS" },
+} as const satisfies Record<string, RotuloAtlas>;
+
+export type RotuloId = keyof typeof ROTULOS;
+
+/**
+ * Series de rótulos: los ejes del perfil, las iniciales de los días y las
+ * plazas financieras.
+ *
+ * Las iniciales de los días son el caso que se olvida siempre. «L M X J V»
+ * no es una abreviatura que un lector inglés pueda descifrar: la X de
+ * miércoles sólo existe en español.
+ */
+export const SERIES_ROTULOS = {
+  ejesPerfil: {
+    es: ["RIESGO", "PLAN", "REGISTRO", "REVISIÓN", "TAMAÑO", "PACIENCIA"],
+    en: ["RISK", "PLAN", "LOG", "REVIEW", "SIZE", "PATIENCE"],
+  },
+  diasSemana: {
+    es: ["L", "M", "X", "J", "V", "S", "D"],
+    en: ["M", "T", "W", "T", "F", "S", "S"],
+  },
+  plazas: {
+    es: ["ASIA", "LONDRES", "NUEVA YORK"],
+    en: ["ASIA", "LONDON", "NEW YORK"],
+  },
+} as const;
+
+/**
  * El pie de cada figura. No repite lo que ya dice la página: explica qué
  * se está viendo y por qué esa figura importa. Un pie que dijera "curva
  * de resultados" sobraría — eso ya se ve.

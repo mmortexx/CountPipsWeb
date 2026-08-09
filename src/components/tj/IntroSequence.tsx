@@ -117,7 +117,18 @@ export function IntroSequence() {
       BRAND_GLYPH_SVG(30) +
       "</span>" +
       '<div class="font-serif" style="font-size:25px;color:var(--ink);letter-spacing:-.01em">CountPips</div>' +
-      '<div class="tnum" style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)">Hecho para el trader manual serio</div>' +
+      /* El lema iba en español fijo, y esta es la PRIMERA pantalla que
+         ve quien entra por `/en`: antes del hero, antes de la barra,
+         antes de nada. El idioma se lee del `<html>`, que el script del
+         layout ya ha corregido antes del primer pintado —este loader se
+         monta en un efecto, mucho después—, así que no hay carrera. No
+         se usa `useLang()` porque el nodo se construye con `innerHTML`
+         fuera del árbol de React. */
+      `<div class="tnum" style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)">${
+        document.documentElement.lang === "en"
+          ? "Made for the serious manual trader"
+          : "Hecho para el trader manual serio"
+      }</div>` +
       "</div>" +
       '<div data-ln class="tnum" style="position:absolute;right:26px;bottom:10px;font-size:clamp(3rem,9vw,7rem);font-weight:500;line-height:.8;color:color-mix(in srgb,var(--ink) 13%,transparent)">000</div>';
     document.body.appendChild(ov);

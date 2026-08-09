@@ -8,6 +8,7 @@ import {
   METRICS,
   INSTRUMENTS,
   SETUP_NAMES,
+  nombreSetup,
   INITIAL_BALANCE_CONST,
   type Direction,
   type Metrics,
@@ -660,7 +661,7 @@ export function DashboardPage() {
                       >
                         {SETUP_NAMES.map((s) => (
                           <option key={s} value={s}>
-                            {s}
+                            {nombreSetup(s, lang)}
                           </option>
                         ))}
                       </select>
@@ -1081,7 +1082,7 @@ export function DashboardPage() {
                       <DirectionChip direction={tr.direction} t={t} />
                     </div>
                     <div className="hidden md:block text-xs text-tertiary truncate flex-1 min-w-0">
-                      {tr.setup}
+                      {nombreSetup(tr.setup, lang)}
                     </div>
                     <div
                       className={`text-xs tnum font-medium shrink-0 w-12 text-right ${

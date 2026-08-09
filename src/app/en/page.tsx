@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { HomeBody } from "../page";
-import { SITE_URL, hreflangDe } from "@/lib/site";
+import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
+import { SUPPORT_EMAIL } from "@/lib/forms";
 
 /**
  * `/en` — la portada en inglés.
@@ -41,5 +42,19 @@ export const metadata: Metadata = {
 };
 
 export default function HomeEn() {
-  return <HomeBody />;
+  return (
+    <>
+      {/* Mismos tres esquemas que `/`, en inglés. Que existan DOS llamadas
+          —una por portada— y no una sola en el layout es justo el
+          arreglo: un layout no sabe en qué idioma está la ruta. */}
+      {esquemasGlobales("en", { soporte: SUPPORT_EMAIL }).map((s, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
+        />
+      ))}
+      <HomeBody />
+    </>
+  );
 }

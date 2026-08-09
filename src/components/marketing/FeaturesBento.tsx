@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { CalendarDays, BookOpen, LineChart, NotebookPen, Layers } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { getCal } from "@/lib/trading/fixtures";
+import { nombreSetup, type SetupName } from "@/lib/trading/data";
 
 /**
  * FeaturesBento — sección `#features` del HTML. Rejilla bento con 5
@@ -158,13 +159,13 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 className="tnum"
                 style={{ fontSize: 11.5, letterSpacing: "0.06em", color: "var(--ink-2)", textTransform: "capitalize" }}
               >
-                {cal.label}
+                {cal.label[lang]}
               </span>
               <span
                 className="tnum"
                 style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
-                {cal.chip}
+                {cal.chip[lang]}
               </span>
             </div>
             <div
@@ -392,14 +393,23 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               {es ? "Sólo setups que tienen edge" : "Only setups with edge"}
             </h3>
             <div className="mt-4 space-y-2.5">
+              {/* Los cuatro nombres iban en español fijo y se pintaban
+                  igual en `/en/features`. Salen del mismo catálogo que la
+                  demo (`SETUP_NAMES`), así que el visitante inglés lee
+                  «Breakout» aquí y «Breakout» en el diario, y el español
+                  «Ruptura» en los dos sitios. Los porcentajes son los de
+                  la maqueta, no los de `TRADES`: esta tarjeta ilustra la
+                  forma de la vista, no publica un resultado. */}
               {[
-                { n: "Ruptura", w: "62 %", c: "rgb(var(--pnl-pos))" },
-                { n: "Pullback", w: "58 %", c: "rgb(var(--pnl-pos))" },
-                { n: "Reversión", w: "41 %", c: "var(--ink-3)" },
-                { n: "Tendencia", w: "55 %", c: "rgb(var(--pnl-pos))" },
+                { k: "Breakout", w: "62 %", c: "rgb(var(--pnl-pos))" },
+                { k: "Pullback", w: "58 %", c: "rgb(var(--pnl-pos))" },
+                { k: "Reversal", w: "41 %", c: "var(--ink-3)" },
+                { k: "Trend", w: "55 %", c: "rgb(var(--pnl-pos))" },
               ].map((s) => (
-                <div key={s.n} className="flex items-center gap-3">
-                  <span style={{ fontSize: 13, color: "var(--ink)", flex: 1 }}>{s.n}</span>
+                <div key={s.k} className="flex items-center gap-3">
+                  <span style={{ fontSize: 13, color: "var(--ink)", flex: 1 }}>
+                    {nombreSetup(s.k as SetupName, lang)}
+                  </span>
                   <div className="flex-1 h-1 rounded-[2px] overflow-hidden" style={{ background: "rgb(var(--divider) / 0.13)" }}>
                     <div className="h-full rounded-[2px]" style={{ width: s.w, background: s.c }} />
                   </div>

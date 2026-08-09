@@ -2,7 +2,42 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { platesForRoute, type PlateId } from "@/lib/atlas";
+import {
+  platesForRoute,
+  ROTULOS,
+  SERIES_ROTULOS,
+  type PlateId,
+  type RotuloId,
+} from "@/lib/atlas";
+
+/**
+ * ── EL IDIOMA DE LOS RÓTULOS GRABADOS ─────────────────────────────────
+ * El pie de cada lámina lleva desde el principio en los dos idiomas, pero
+ * lo que se pinta DENTRO del dibujo estaba escrito a mano en español. En
+ * `/en` el resultado era un pie en inglés bajo una figura rotulada «TECHO
+ * HISTÓRICO».
+ *
+ * El idioma se guarda en una variable de módulo, no se pasa por las
+ * diecisiete funciones de dibujo: `plateChrome` y las dieciséis `plate*`
+ * reciben ya seis o siete argumentos cada una, y añadirles uno más que sólo
+ * usan para consultar un diccionario ensucia diecisiete firmas para
+ * resolver algo que es de ámbito global — mientras se dibuja un fotograma,
+ * el idioma es uno solo.
+ *
+ * Se fija en cada repintado desde `<html lang>`, que es la fuente que el
+ * `postbuild` deja correcta en las 76 páginas inglesas.
+ */
+let idiomaRotulos: "es" | "en" = "es";
+
+/** El rótulo, en el idioma del documento. */
+function rot(id: RotuloId): string {
+  return ROTULOS[id][idiomaRotulos];
+}
+
+/** Una serie de rótulos (ejes, días, plazas), en el idioma del documento. */
+function serie(id: keyof typeof SERIES_ROTULOS): readonly string[] {
+  return SERIES_ROTULOS[id][idiomaRotulos];
+}
 
 /**
  * EngravedAtlas — el fondo del sitio: un atlas grabado a lápiz.
@@ -821,7 +856,7 @@ function plateEquity(ctx: Ctx, w: number, h: number, t: number) {
 
   label(
     ctx,
-    "TECHO HISTÓRICO",
+    rot("techoHistorico"),
     x1,
     sy(peaks[n - 1]) - 14,
     11,
@@ -846,7 +881,7 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
   const cw = gw / cols;
   const ch = gh / rows;
 
-  const days = ["L", "M", "X", "J", "V", "S", "D"];
+  const days = serie("diasSemana");
   const hp = phase(t, 0.06, 0.2);
   for (let c = 0; c < cols; c++) {
     label(ctx, days[c], x0 + c * cw + cw / 2, y0 - 16, 12, 0.4, hp, "center");
@@ -1028,8 +1063,8 @@ function plateDistribution(ctx: Ctx, w: number, h: number, t: number) {
   }
   pencil(ctx, env, phase(t, 0.5, 0.4), 1.05, 0.4, 301, 2);
 
-  label(ctx, "PÉRDIDA", zx - 16, y0 - 4, 11, 0.28, phase(t, 0.78, 0.2), "right");
-  label(ctx, "GANANCIA", zx + 16, y0 - 4, 11, 0.28, phase(t, 0.82, 0.2));
+  label(ctx, rot("perdida"), zx - 16, y0 - 4, 11, 0.28, phase(t, 0.78, 0.2), "right");
+  label(ctx, rot("ganancia"), zx + 16, y0 - 4, 11, 0.28, phase(t, 0.82, 0.2));
 }
 
 /* =====================================================================
@@ -1108,7 +1143,7 @@ function plateGauge(ctx: Ctx, w: number, h: number, t: number) {
     ctx.restore();
     label(
       ctx,
-      "LÍMITE",
+      rot("limite"),
       cx + Math.cos(A1 - (A1 - A0) * 0.12) * (R + 26),
       cy + Math.sin(A1 - (A1 - A0) * 0.12) * (R + 26),
       11,
@@ -1268,7 +1303,9 @@ function plateHeatmap(ctx: Ctx, w: number, h: number, t: number) {
   /* Ejes: los días abajo, las horas a la izquierda. */
   const lp = phase(t, 0.62, 0.3);
   if (lp > 0.02) {
-    const dias = ["L", "M", "X", "J", "V", "L", "M", "X", "J", "V"];
+    /* Dos semanas laborables seguidas: los cinco primeros, repetidos. */
+    const semana = serie("diasSemana");
+    const dias = [...semana.slice(0, 5), ...semana.slice(0, 5)];
     for (let c = 0; c < cols; c++)
       label(ctx, dias[c], x0 + c * cw + cw / 2, y0 + gh + 15, 8.5, 0.42, lp, "center");
     for (let r = 0; r < rows; r++)
@@ -1354,7 +1391,7 @@ function plateRolling(ctx: Ctx, w: number, h: number, t: number) {
     for (let X = x0; X < x0 + gw; X += 13) dash.push([X, ty], [X + 7, ty]);
     for (let i = 0; i + 1 < dash.length; i += 2)
       engraveLine(ctx, [dash[i], dash[i + 1]], tp, 0.5, 0.3, i + 761);
-    label(ctx, "UMBRAL", x0 + gw, ty - 7, 8, 0.42, tp, "right");
+    label(ctx, rot("umbral"), x0 + gw, ty - 7, 8, 0.42, tp, "right");
   }
 }
 
@@ -1460,7 +1497,7 @@ function plateRules(ctx: Ctx, w: number, h: number, t: number) {
   if (fp > 0.02) {
     const fy = y0 + rows * step - step * 0.35;
     engraveLine(ctx, [[x0, fy], [x0 + gw, fy]], fp, 0.9, 0.4, 831);
-    label(ctx, "OPERACIÓN BLOQUEADA", x0, fy + 20, 9.5, 0.5, fp);
+    label(ctx, rot("operacionBloqueada"), x0, fy + 20, 9.5, 0.5, fp);
   }
 }
 
@@ -1727,7 +1764,7 @@ function plateStreak(ctx: Ctx, w: number, h: number, t: number) {
     for (let X = x0; X < x0 + gw; X += 14) dash.push([X, ly], [X + 8, ly]);
     for (let i = 0; i + 1 < dash.length; i += 2)
       engraveLine(ctx, [dash[i], dash[i + 1]], lp, 0.7, 0.42, i + 1151);
-    label(ctx, "LÍMITE DIARIO", x0 + 4, ly + 17, 9, 0.48, lp);
+    label(ctx, rot("limiteDiario"), x0 + 4, ly + 17, 9, 0.48, lp);
   }
 }
 
@@ -1759,7 +1796,7 @@ function plateTenure(ctx: Ctx, w: number, h: number, t: number) {
     if (p <= 0.01) continue;
     const X = x0 + i * stepX;
     engraveLine(ctx, [[X, yBase], [X, yBase + 6]], p, 0.6, 0.32, i + 1211);
-    label(ctx, i === 0 ? "HOY" : `COHORTE ${i}`, X, yBase + 19, 8.5, 0.42, p, "center");
+    label(ctx, i === 0 ? rot("hoy") : `${rot("cohorte")} ${i}`, X, yBase + 19, 8.5, 0.42, p, "center");
   }
 
   /* LA ESCALERA — la validación. Cada cohorte añade evidencia, no un
@@ -1773,7 +1810,7 @@ function plateTenure(ctx: Ctx, w: number, h: number, t: number) {
   }
   const sp = phase(t, 0.2, 0.34);
   engraveLine(ctx, subPts, sp, 1.35, 0.5, 1221);
-  label(ctx, "VALIDACIÓN", x0 + gw - 6, yTop - 10, 9.5, 0.5, sp, "right");
+  label(ctx, rot("validacion"), x0 + gw - 6, yTop - 10, 9.5, 0.5, sp, "right");
 
   /* LA HORIZONTAL — el acceso anticipado privado: una condición estable
      durante esta fase, sin convertirla en una oferta comercial. */
@@ -1781,7 +1818,7 @@ function plateTenure(ctx: Ctx, w: number, h: number, t: number) {
   const oncePts: Pt[] = [[x0, yBase], [x0, yOnce], [x0 + gw, yOnce]];
   const op = phase(t, 0.42, 0.3);
   engraveLine(ctx, oncePts, op, 1.35, 0.52, 1231);
-  label(ctx, "ACCESO PRIVADO", x0 + 8, yOnce - 11, 9.5, 0.52, op, "left");
+  label(ctx, rot("accesoPrivado"), x0 + 8, yOnce - 11, 9.5, 0.52, op, "left");
 
   /* EL HUECO — lo que separa una cosa de la otra, que es de lo que va la
      página. Se trama por franjas anuales siguiendo la escalera, no como
@@ -1799,7 +1836,7 @@ function plateTenure(ctx: Ctx, w: number, h: number, t: number) {
       hatch(ctx, bx, yNow, stepX, yOnce - yNow, Math.PI / 4, 5.4, 0.38, 0.2, gp, i + 1241);
       ctx.restore();
     }
-    label(ctx, "EVIDENCIA ACUMULADA", x0 + gw * 0.5, yTop + gh * 0.3, 9, 0.44, gp, "center");
+    label(ctx, rot("evidenciaAcumulada"), x0 + gw * 0.5, yTop + gh * 0.3, 9, 0.44, gp, "center");
   }
 }
 
@@ -1837,14 +1874,17 @@ function plateSessions(ctx: Ctx, w: number, h: number, t: number) {
     engraveLine(ctx, [[hx(hh), cy], [hx(hh), cy + 7]], p, 0.6, 0.34, hh + 1311);
     label(ctx, `${String(hh).padStart(2, "0")}`, hx(hh), cy + 21, 8.5, 0.4, p, "center");
   }
-  label(ctx, "HORA UTC", x0, cy + 40, 9, 0.42, ap, "left");
+  label(ctx, rot("horaUtc"), x0, cy + 40, 9, 0.42, ap, "left");
 
   /* Las tres plazas. Cada una es una barra a su propia altura para que
      los solapes se vean por superposición vertical y no por mezcla. */
+  /* Las tres plazas, con su horario UTC y su carril. El nombre sale de la
+     serie traducida: «LONDRES» y «NUEVA YORK» estaban escritos aquí. */
+  const nombresPlaza = serie("plazas");
   const plazas: [string, number, number, number][] = [
-    ["ASIA", 0, 9, -1],
-    ["LONDRES", 7, 16, -2],
-    ["NUEVA YORK", 12, 21, -3],
+    [nombresPlaza[0], 0, 9, -1],
+    [nombresPlaza[1], 7, 16, -2],
+    [nombresPlaza[2], 12, 21, -3],
   ];
   const bh = bandH;
   plazas.forEach(([nombre, ini, fin, nivel], i) => {
@@ -1888,7 +1928,7 @@ function plateSessions(ctx: Ctx, w: number, h: number, t: number) {
       for (const X of [bx, bx + bw])
         engraveLine(ctx, [[X, yTop], [X, cy - 4]], sp, 0.55, 0.3, Math.round(X) + 1361);
     });
-    label(ctx, "SOLAPE", hx(14), yTop - 9, 9, 0.46, sp, "center");
+    label(ctx, rot("solape"), hx(14), yTop - 9, 9, 0.46, sp, "center");
   }
 }
 
@@ -1936,7 +1976,7 @@ function plateSignificance(ctx: Ctx, w: number, h: number, t: number) {
     for (let Y = yBase; Y > yBase - gh * 0.98; Y -= 13) dash.push([xU, Y], [xU, Y - 7]);
     for (let i = 0; i + 1 < dash.length; i += 2)
       engraveLine(ctx, [dash[i], dash[i + 1]], up, 0.7, 0.4, i + 1421);
-    label(ctx, "UMBRAL", xU + 7, yBase - gh * 0.9, 9.5, 0.5, up, "left");
+    label(ctx, rot("umbral"), xU + 7, yBase - gh * 0.9, 9.5, 0.5, up, "left");
   }
 
   /* La cola: lo que ya no cabe en la casualidad. Franjas verticales
@@ -1955,12 +1995,12 @@ function plateSignificance(ctx: Ctx, w: number, h: number, t: number) {
       hatch(ctx, X, yTop, paso * 0.82, yBase - yTop, Math.PI / 4, 3.4, 0.4, 0.26, tp, Math.round(X) + 1431);
       ctx.restore();
     }
-    label(ctx, "AQUÍ YA NO ES SUERTE", x0 + gw, yBase + 22, 9, 0.46, tp, "right");
+    label(ctx, rot("yaNoEsSuerte"), x0 + gw, yBase + 22, 9, 0.46, tp, "right");
   }
 
   /* Y el nombre de lo que ocupa casi todo el ancho, que es lo que se
      suele confundir con una ventaja. */
-  label(ctx, "LO QUE EL AZAR PRODUCE SOLO", cx, yBase + 22, 9, 0.44, cp, "center");
+  label(ctx, rot("soloAzar"), cx, yBase + 22, 9, 0.44, cp, "center");
 }
 
 /**
@@ -2046,8 +2086,8 @@ function plateBlueprint(ctx: Ctx, w: number, h: number, t: number) {
   if (lp > 0.02) {
     const ly = y0 + gh + 26;
     engraveLine(ctx, [[x0, ly - 14], [x0 + gw * 0.5, ly - 14]], lp, 0.6, 0.3, 2251);
-    label(ctx, "LÍNEA LLENA · CONSTRUIDO", x0, ly + 2, 9, 0.44, lp);
-    label(ctx, "LÍNEA DE TRAZOS · PREVISTO", x0 + gw * 0.42, ly + 2, 9, 0.34, lp);
+    label(ctx, rot("lineaLlena"), x0, ly + 2, 9, 0.44, lp);
+    label(ctx, rot("lineaTrazos"), x0 + gw * 0.42, ly + 2, 9, 0.34, lp);
   }
 }
 
@@ -2124,14 +2164,14 @@ function plateProfile(ctx: Ctx, w: number, h: number, t: number) {
   }
 
   /* Rótulo de los ejes, fuera del polígono para no pisarlo. */
-  const ROTULOS = ["RIESGO", "PLAN", "REGISTRO", "REVISIÓN", "TAMAÑO", "PACIENCIA"];
+  const ROTULOS_EJES = serie("ejesPerfil");
   const rp = phase(t, 0.6, 0.3);
   if (rp > 0.02) {
     for (let i = 0; i < EJES; i++) {
       const a = ang(i);
       const rx = cx + Math.cos(a) * (R + 26);
       const ry = cy + Math.sin(a) * (R + 26);
-      label(ctx, ROTULOS[i], rx - ROTULOS[i].length * 2.6, ry + 3, 9, 0.4, rp);
+      label(ctx, ROTULOS_EJES[i], rx - ROTULOS_EJES[i].length * 2.6, ry + 3, 9, 0.4, rp);
     }
   }
 }
@@ -2154,7 +2194,7 @@ function plateWorkspace(ctx: Ctx, w: number, h: number, t: number) {
     if (p <= 0.01) continue;
     rosette(ctx, x0 + bw - 26 - i * 22, y0 + tbh / 2, 1, 1, 5, p);
   }
-  label(ctx, "COUNTPIPS", x0 + 16, y0 + tbh * 0.66, 9.5, 0.46, fp, "left");
+  label(ctx, rot("marca"), x0 + 16, y0 + tbh * 0.66, 9.5, 0.46, fp, "left");
 
   /* La columna de navegación, con sus entradas como renglones. */
   const navW = Math.min(bw * 0.22, 190);
@@ -2528,6 +2568,16 @@ export function EngravedAtlas() {
     };
 
     const draw = (p: number) => {
+      /* El idioma de los rótulos grabados, en cada repintado. Se lee del
+         `<html lang>` y no de `useLang()` a propósito: este dibujo corre
+         fuera del árbol de React —dentro de un `requestAnimationFrame` con
+         lienzos cacheados— y suscribirlo a un contexto obligaría a
+         reconstruir el efecto entero cada vez que cambia cualquier otra
+         cosa del proveedor. El atributo es la misma fuente que corrige el
+         `postbuild` en las 76 páginas inglesas, y está puesto antes del
+         primer fotograma. */
+      idiomaRotulos = document.documentElement.lang === "en" ? "en" : "es";
+
       ctx.clearRect(0, 0, w, h);
       ctx.strokeStyle = ink;
       ctx.fillStyle = ink;

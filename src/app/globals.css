@@ -409,7 +409,20 @@
     border-color: rgb(var(--divider) / 0.1);
   }
   html {
-    scroll-behavior: smooth;
+    /* Aquí estaba `scroll-behavior: smooth`, y de aquí se va.
+
+       Declararlo en `html` significa que TODO salto se anima de
+       principio a fin, incluidos los de ocho o diez pantallas: volver a
+       la cabecera desde el pie se veía como un rebobinado del sitio
+       entero, con cada sección entrando y saliendo por el camino. El
+       navegador no distingue entre un ancla de al lado y una travesía;
+       esa distinción hay que hacerla, y se hace en `src/lib/scroll.ts`
+       —suave lo corto, salto con aterrizaje lo largo—, que es también
+       quien atiende `prefers-reduced-motion`.
+
+       Quitarlo tiene además un efecto de red: cualquier `href="#..."`
+       que no pase por ahí ahora SALTA en vez de recorrer la página, que
+       es el peor caso aceptable. Antes el peor caso era el rebobinado. */
     scroll-padding-top: 5rem;
     -webkit-text-size-adjust: 100%;
   }
@@ -4146,30 +4159,59 @@ button.icon-btn:hover > svg,
     0 1px 2px rgb(19 29 38 / 0.07),
     0 10px 28px -12px rgb(19 29 38 / 0.22);
 }
-/* Variante más densa para superficies que necesitan más opacidad
-   (navbar sobre hero animado, drawers). Sigue siendo translúcida pero
-   prioriza legibilidad del texto sobre el fondo muy ocupado. */
-.tj-paper-dense {
-  background-color: color-mix(in srgb, var(--surface) 74%, transparent);
-}
-/* ── Por qué esta regla existía y por qué estaba anulando el arreglo ──
-   La barra de navegación y el cajón móvil llevan `tj-paper` Y
-   `tj-paper-dense`. Cuando se arregló el papel del tema claro se tocó
-   `.tj-paper` — pero `.tj-paper-dense` viene DESPUÉS con la misma
-   especificidad (0,3,0), así que su `background-color` ganaba y la
-   barra seguía saliendo de `--surface`, que en claro está a 0,04 de
-   luminosidad de `--bg`. Resultado: en oscuro se veía la lámina y en
-   claro la barra se fundía con la página. El arreglo estaba puesto y
-   no llegaba justo a la superficie más visible del sitio.
+/* ── La variante «densa» era la MENOS densa de las dos ────────────────
+   Esta clase existe para las superficies que flotan sobre contenido en
+   movimiento —la barra fija, el cajón lateral, el megamenú, la paleta
+   ⌘K, los globos de los gráficos— y decía en su nombre que aportaba más
+   cuerpo. Estaba al 74 %. `.tj-paper`, la variante corriente, está al
+   86 %: la «densa» dejaba pasar el DOBLE.
 
-   Sale de `--raised` como el resto del papel claro, y sube de opacidad
-   porque esta variante existe precisamente para las superficies que
-   van sobre contenido en movimiento y necesitan más cuerpo. */
+   El 74 % era coherente cuando se escribió, con `.tj-paper` al 64 %.
+   Luego se fusionaron las dos capas de tinte de `.tj-paper` en una sola
+   al 86 % —el valor que ya se estaba viendo, ver el bloque de arriba— y
+   nadie revisó la variante, así que la relación se invirtió en
+   silencio. Se notaba justo donde peor: el panel del megamenú se abre
+   sobre los titulares de la portada, y se leían enteros a través.
+
+   Ahora es OPACA, y ese es su cometido. Un menú desplegable, una barra
+   fija o un globo de dato no son ventanas: se ponen delante de algo y
+   tienen que taparlo, o el texto de arriba y el de abajo compiten por
+   el mismo sitio. El material no se pierde —el grano de fibra, el canto
+   de luz y las sombras del bloque anterior siguen puestos—; lo que se
+   pierde es el contenido ajeno colándose por detrás.
+
+   Las superficies que SÍ deben dejar ver el atlas grabado —tarjetas,
+   láminas, secciones— llevan `.tj-paper` a secas y no cambian. */
+/* El color del papel denso, en UN sitio. La clase lo usa y también lo
+   usa la punta del megamenú, que se pinta con un estilo en línea porque
+   es un rombo girado y no puede llevar el grano de la hoja. Sin token,
+   ese estilo en línea era una segunda copia del valor — y así fue como
+   la punta se quedó al 72 % cuando el panel dejó de estarlo. */
+:root {
+  --paper-dense: var(--surface);
+}
+:root[data-theme="light"] {
+  --paper-dense: var(--raised);
+}
+.tj-paper-dense {
+  background-color: var(--paper-dense);
+}
+/* ── El papel denso en claro: una sola declaración ────────────────────
+   Aquí había DOS reglas `:root[data-theme="light"] .tj-paper-dense`
+   seguidas, y la de más abajo ganaba por orden. Era el mismo defecto
+   que ya se corrigió en `.bg-veil` y en `.tj-paper`: dos sitios donde
+   se decide el mismo valor y sólo uno cuenta.
+
+   La barra de navegación y el cajón móvil llevan `tj-paper` Y
+   `tj-paper-dense`, y en su día `.tj-paper-dense` salía de `--surface`,
+   que en claro está a 0,04 de luminosidad de `--bg`: la barra se fundía
+   con la página. Sale de `--raised`, el escalón más claro, que es de
+   donde sale todo el papel claro.
+
+   El canto inferior marca dónde acaba la lámina. Sin él, una barra
+   clara sobre un fondo claro no tiene borde y parece que el contenido
+   empieza sin más. */
 :root[data-theme="light"] .tj-paper-dense {
-  background-color: color-mix(in srgb, var(--raised) 88%, transparent);
-  /* El canto inferior marca dónde acaba la lámina. Sin él, una barra
-     clara sobre un fondo claro no tiene borde y parece que el contenido
-     empieza sin más. */
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
     inset 0 -1px 0 rgb(19 29 38 / 0.09),

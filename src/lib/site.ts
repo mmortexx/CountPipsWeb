@@ -55,6 +55,23 @@ export const SITE_URL =
 /** Nombre de la marca, tal cual debe aparecer en metadatos y esquemas. */
 export const SITE_NAME = "CountPips";
 
+/**
+ * El logotipo de la marca —el cuaderno con las tres velas, el mismo icono
+ * que la aplicación de escritorio— rasterizado desde la misma geometría
+ * del glifo vectorial. Va en el dato estructurado de `Organization`, que
+ * es de donde Google saca el logotipo del sitio.
+ *
+ * Se regenera con `python scripts/generate-brand.py`, que produce además
+ * el apple-icon y el favicon.ico; si se toca el glifo de `BrandGlyph.tsx`
+ * hay que volver a lanzarlo o la marca se parte entre la web y lo que ven
+ * el buscador y el sistema operativo.
+ *
+ * Absoluta, y no una ruta con barra inicial: una ruta relativa se vuelve
+ * a resolver contra `metadataBase` y el prefijo de GitHub Pages sale
+ * duplicado.
+ */
+export const LOGO_URL = `${SITE_URL}/logo.png`;
+
 /** URL absoluta de una ruta del sitio. Normaliza las barras. */
 export function siteUrl(path = "/"): string {
   return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
@@ -87,6 +104,161 @@ export function hreflangDe(path: string): {
   const es = siteUrl(path === "/" ? "/" : `${path}/`);
   const en = siteUrl(path === "/" ? "/en/" : `/en${path}/`);
   return { es, en, "x-default": es };
+}
+
+/**
+ * Los tres datos estructurados que describen el SITIO —no una página—:
+ * la aplicación, quién la publica y el sitio web en sí.
+ *
+ * ── Por qué ya no viven en el layout ──────────────────────────────────
+ * Estaban escritos en `layout.tsx`, que es único y raíz, así que los tres
+ * viajaban en las 155 páginas del sitio. Dos consecuencias:
+ *
+ *  · **Decían el idioma equivocado.** El texto era español fijo, y 76 de
+ *    esas 155 páginas están en inglés. Un buscador leía «Diario narrativo
+ *    con anotaciones por operación» bajo una página cuyo `lang` es `en`,
+ *    que es exactamente la señal contradictoria que el `hreflang` de este
+ *    mismo módulo existe para evitar.
+ *  · **Pesaban 155 veces.** Son ~2 KB de JSON por página; describir el
+ *    sitio entero una vez por página es repetir la misma declaración en
+ *    cada hoja del libro.
+ *
+ * Ahora los emiten sólo las dos portadas, cada una en su idioma, que es
+ * donde Google espera encontrar `WebSite` y `Organization`.
+ *
+ * `soporte` se pasa desde fuera en vez de importarse: este módulo
+ * describe la identidad del sitio y no debe depender del módulo de
+ * formularios, que arrastra consigo el cliente del formulario de espera.
+ */
+export function esquemasGlobales(
+  lang: "es" | "en",
+  { soporte }: { soporte: string },
+): Record<string, unknown>[] {
+  const es = lang === "es";
+  const inicio = siteUrl(es ? "/" : "/en/");
+
+  const descripcionApp = es
+    ? "El diario de trading profesional, nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y datos 100 % locales."
+    : "The professional trading journal, native to Windows. Explore an interactive demo with institutional metrics, discipline and 100 % local data.";
+
+  const funciones = es
+    ? [
+        "Métricas institucionales (Sharpe, Profit Factor, Expectancy, R-multiple)",
+        "Curva de equity y drawdown en tiempo real",
+        "Guardián de disciplina: frenos antes de operar fuera de reglas",
+        "Datos 100 % locales, sin nube, sin suscripciones",
+        "Playbooks y plantillas de trading",
+        "Calendario de P&L y heatmap por día/hora",
+        "Diario narrativo con anotaciones por operación",
+        "Multi-cuenta y multi-activo (acciones, futuros, forex, crypto)",
+        "Exportación a CSV/JSON y backups locales",
+      ]
+    : [
+        "Institutional metrics (Sharpe, Profit Factor, Expectancy, R-multiple)",
+        "Real-time equity curve and drawdown",
+        "Discipline guardian: brakes before trading outside your rules",
+        "100 % local data, no cloud, no subscriptions",
+        "Playbooks and trading templates",
+        "P&L calendar and day/hour heatmap",
+        "Narrative journal with per-trade annotations",
+        "Multi-account and multi-asset (stocks, futures, forex, crypto)",
+        "CSV/JSON export and local backups",
+      ];
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: SITE_NAME,
+      applicationCategory: "FinanceApplication",
+      operatingSystem: "Windows",
+      url: inicio,
+      description: descripcionApp,
+      inLanguage: ["es", "en"],
+      /* Capturas reales de la aplicación, que Google admite en
+         `SoftwareApplication`.
+
+         Durante un tiempo esto fue el único sitio del proyecto que las
+         enseñaba, y las enseñaba MAL: la página tapaba por CSS la barra
+         de título —con el nombre anterior al renombrado— y la de estado
+         —con el sello «Compilación de desarrollo»—, pero aquí viajaban
+         los ficheros enteros, sin recortar, desde las 155 páginas. Un
+         recorte que sólo existe en la hoja de estilos no protege nada de
+         lo que se sirve.
+
+         Ya no hay recorte que se pueda olvidar: los ficheros de
+         `public/img/` están recortados en disco (`scripts/capturas.py`),
+         así que lo que se declara aquí y lo que se ve en la página son la
+         misma imagen. */
+      screenshot: [
+        `${SITE_URL}/img/app-resumen.webp`,
+        `${SITE_URL}/img/app-curva.webp`,
+        `${SITE_URL}/img/app-operaciones.webp`,
+      ],
+      featureList: funciones,
+      // Sin `aggregateRating` a propósito: no hay reseñas reales todavía.
+      // Aquí se emitía 4,8/47 inventado. Las directrices de datos
+      // estructurados de Google exigen que la valoración proceda de
+      // usuarios reales, así que publicarla era arriesgar una acción
+      // manual además de engañar a quien la viera en el buscador. Se
+      // vuelve a poner cuando haya reseñas verificables (G2/Capterra/
+      // Trustpilot), tomando el valor de esa plataforma.
+      publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      /* `ImageObject` en vez de la dirección suelta: Google prefiere el
+         objeto porque así puede validar las dimensiones sin descargar la
+         imagen. */
+      logo: { "@type": "ImageObject", url: LOGO_URL, width: 512, height: 512 },
+      description: es
+        ? "El diario de trading profesional, nativo de Windows. Explora el producto antes de instalarlo: métricas institucionales, disciplina y datos locales."
+        : "The professional trading journal, native to Windows. Explore the product before installing it: institutional metrics, discipline and local data.",
+      foundingDate: "2024",
+      /* Sólo el repositorio, que es el único perfil que existe de verdad.
+         Los iconos de X, YouTube y Discord se retiraron del pie por
+         apuntar a ninguna parte; añadirlos aquí sería el mismo error en
+         otro sitio. */
+      sameAs: ["https://github.com/mmortexx/CountPipsWeb"],
+      /* Faltaba, y es lo que permite que un buscador sepa a dónde
+         escribir. La dirección sale de la misma constante que usan el
+         formulario y las cinco pantallas donde aparece. */
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: soporte,
+        availableLanguage: ["Spanish", "English"],
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE_NAME,
+      alternateName: es
+        ? `${SITE_NAME} — Diario de trading`
+        : `${SITE_NAME} — Trading journal`,
+      url: inicio,
+      inLanguage: lang,
+      publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      /* El buscador que se declara aquí EXISTE y funciona: la FAQ lee el
+         parámetro `q` de la dirección y filtra en vivo — es el mismo
+         mecanismo que usa la página de error 404 para rescatar a quien se
+         pierde. No se anuncia nada que no esté construido. */
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: siteUrl(
+            es ? "/faq/?q={search_term_string}" : "/en/faq/?q={search_term_string}",
+          ),
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ];
 }
 
 /**

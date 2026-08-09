@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { useLang } from "@/lib/i18n";
+import { irArriba } from "@/lib/scroll";
 
 /**
  * BackToTop — circular floating button with a scroll-progress ring.
@@ -196,10 +197,13 @@ export function BackToTop() {
     };
   }, []);
 
-  const scrollToTop = () => {
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
-  };
+  /* Este botón sólo aparece a partir de 400 px, así que su salto es
+     LARGO por definición — es el caso que peor se veía con el scroll
+     suave del navegador: desde el pie de la portada recorría el sitio
+     entero hacia atrás. `irArriba` salta y anima nada más el último
+     tramo; el `prefers-reduced-motion` que aquí se miraba a mano lo
+     mira ella. */
+  const scrollToTop = () => irArriba();
 
   // Ring dash: the filled portion = progress% of the circumference.
   const dashOffset = RING_CIRCUMFERENCE * (1 - progress / 100);

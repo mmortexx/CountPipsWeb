@@ -118,7 +118,52 @@ const RUTAS = [
   { ruta: "/en/pricing", lang: "en" },
   { ruta: "/en/features", lang: "en" },
   { ruta: "/en/beta", lang: "en" },
+  /* Las tres de abajo entraron con la comprobación de idioma: la lista
+     tenía cuatro rutas inglesas de las diez que existen, y las que
+     faltaban eran justo donde vivía el problema — `/en/demo` enseñaba
+     «Ruptura», «Reversión» y «Tendencia» en la tabla de operaciones, en
+     el diario y en el detalle de cada una. Una comprobación de idioma que
+     no visita la página del idioma no comprueba nada. */
+  { ruta: "/en/demo", lang: "en" },
+  { ruta: "/en/about", lang: "en" },
+  { ruta: "/en/faq", lang: "en" },
 ];
+
+/**
+ * Palabras que sólo pueden estar en una página española.
+ *
+ * ── Por qué palabras función y no un diccionario ──────────────────────
+ * Buscar sustantivos («operación», «ganancia») caza el texto traducido a
+ * medias pero se le escapa el que nunca se tradujo, y encima falla con
+ * los términos que en trading se dicen igual en los dos idiomas. Las
+ * palabras de abajo —artículos, preposiciones, conjunciones— aparecen en
+ * cualquier frase española de más de tres palabras y en ninguna inglesa,
+ * así que detectan la frase entera sin depender de su tema.
+ *
+ * ── Ninguna palabra de dos letras ─────────────────────────────────────
+ * La lista llevaba «el», «la», «un», «es», «su», «tu». Todas se fueron:
+ * la comparación tiene que ser insensible a mayúsculas —hay rótulos con
+ * `text-transform: uppercase`, y ahí es donde apareció el lema del
+ * cargador en español— y en mayúsculas una palabra de dos letras es
+ * indistinguible de una sigla. El pie dice «ES + EN» para anunciar los
+ * dos idiomas, y ese «ES» contaba como la palabra «es» en las diez
+ * páginas inglesas: una marca falsa, permanente y en todas, que es el
+ * tipo de ruido por el que una comprobación acaba apagada.
+ *
+ * Basta UNA para dar el fallo. Ninguna de las que quedan existe en
+ * inglés ni es un símbolo del mercado, así que su presencia no admite
+ * segunda lectura — y exigir dos dejaba pasar frases cortas como
+ * «Hecho para el trader manual serio», que sólo aporta «para».
+ */
+const PALABRAS_ESPANOLAS =
+  /(?:^|[\s"'“”(¡¿—–-])(para|por|sin|más|que|del|con|una|unos|unas|los|las|sus|como|cuando|desde|hasta|pero|también|según|cada|todo|todos|todas|entre|sobre|está|están|este|esta|esto|nuestro|nuestra|qué|cómo|dónde|hecho|hasta|muy|aquí|así)(?=[\s".,;:!?)"'”—–-]|$)/giu;
+
+/** Cuenta cuántas palabras españolas DISTINTAS hay en un texto. */
+function marcasEspanolas(texto) {
+  const vistas = new Set();
+  for (const m of texto.matchAll(PALABRAS_ESPANOLAS)) vistas.add(m[1].toLowerCase());
+  return [...vistas];
+}
 
 /**
  * Milisegundos que puede tardar el titular en ser legible desde que la
@@ -152,6 +197,15 @@ const contrastesMedidos = [];
 /** Ídem para las láminas del producto: si la ruta con capturas se cae de la
     lista, la comprobación de legibilidad en móvil pasa a no mirar nada. */
 const laminasVistas = [];
+/** Ídem para el idioma: cuántos caracteres se han llegado a leer en cada
+    página inglesa. Un `innerText` vacío pasaría la comprobación en verde
+    sin haber mirado una sola palabra. */
+const idiomasRevisados = [];
+/** Ídem para la vuelta a la cabecera: de dónde salió, dónde apareció y
+    dónde acabó. Sin el dato, «pasó» no distingue un salto de un viaje. */
+const vueltasArriba = [];
+/** Ídem para el cajón de navegación: dónde acabó y con qué opacidad. */
+const cajonesVistos = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -423,6 +477,35 @@ for (const pantalla of PANTALLAS) {
             // Los dos más pequeños: son el peor caso por definición.
             return out.sort((a, b) => a.tam - b.tam).slice(0, 2);
           })(),
+
+          /* ── EL IDIOMA DE LO QUE SE LEE Y DE LO QUE SE DECLARA ───────
+             Dos textos distintos y los dos importan: el que ve la
+             persona y el que ve el buscador. El segundo estuvo mal en
+             las 76 páginas inglesas —los tres esquemas del sitio se
+             emitían desde el layout raíz en español— y ninguna
+             comprobación lo miraba, porque el `lang` del documento sí
+             era correcto. Declarar `lang="en"` y describirse en español
+             es peor que no describirse. */
+          textoVisible: (document.body.innerText || "").slice(0, 60000),
+          textoDatos: [...document.querySelectorAll('script[type="application/ld+json"]')]
+            .map((s) => {
+              // Sólo los valores de texto: las claves de schema.org y las
+              // URLs son inglesas por definición y no dicen nada del
+              // idioma de la página.
+              try {
+                const textos = [];
+                const recorrer = (v) => {
+                  if (typeof v === "string") textos.push(v);
+                  else if (Array.isArray(v)) v.forEach(recorrer);
+                  else if (v && typeof v === "object") Object.values(v).forEach(recorrer);
+                };
+                recorrer(JSON.parse(s.textContent || "{}"));
+                return textos.filter((t) => !t.startsWith("http")).join(" · ");
+              } catch {
+                return "";
+              }
+            })
+            .join(" · "),
         };
       });
 
@@ -441,6 +524,151 @@ for (const pantalla of PANTALLAS) {
         );
       }
       if (!informe.main) avisos.push(`${etiqueta}: sin elemento <main>`);
+
+      /* ── EL CAJÓN LATERAL, ABIERTO ─────────────────────────────────
+         Todo lo que se comprueba arriba mira la página en reposo, y el
+         cajón de navegación sólo existe cuando alguien lo abre: ni su
+         posición ni su opacidad ni el texto que tapa entran en ninguna
+         de las otras comprobaciones. Se abre y se mide.
+
+         Lo que se busca es que quepa. Al abrirlo, el cuerpo de la
+         página pasa a `position: fixed` para que no se desplace por
+         detrás —ver el porqué en `Navbar.tsx`—, y ese cambio reordena
+         el ancho contra el que se ancla un elemento fijo. Si el cálculo
+         se desvía, el cajón se sale por la derecha y sus entradas
+         aparecen cortadas a media palabra. */
+      if (ruta === "/" && (pantalla.nombre === "movil" || pantalla.nombre === "tableta")) {
+        const cajon = await pagina.evaluate(async () => {
+          const abrir = [...document.querySelectorAll("button")].find((b) =>
+            /Abrir menú|Open menu/.test(b.getAttribute("aria-label") || "")
+          );
+          if (!abrir) return { abrir: false };
+          abrir.click();
+          // La entrada dura 320 ms; se espera al doble para medir la
+          // posición final y no un fotograma de la animación.
+          await new Promise((r) => setTimeout(r, 700));
+          const panel = document.querySelector(".tj-paper-dense.fixed");
+          if (!panel) return { abrir: true, panel: false };
+          const r = panel.getBoundingClientRect();
+          const cs = getComputedStyle(panel);
+          return {
+            abrir: true,
+            panel: true,
+            izq: Math.round(r.left),
+            der: Math.round(r.right),
+            ventana: window.innerWidth,
+            fondo: cs.backgroundColor,
+          };
+        });
+        if (!cajon.abrir) {
+          fallos.push(`${etiqueta}: no hay botón para abrir el cajón de navegación`);
+        } else if (!cajon.panel) {
+          fallos.push(`${etiqueta}: el cajón no aparece al pulsar su botón`);
+        } else {
+          cajonesVistos.push(
+            `${pantalla.nombre} ${cajon.izq}–${cajon.der} de ${cajon.ventana}px, fondo ${cajon.fondo}`
+          );
+          if (cajon.der > cajon.ventana + 1 || cajon.izq < -1) {
+            fallos.push(
+              `${etiqueta}: el cajón se sale de la pantalla — ocupa de ${cajon.izq} a ${cajon.der} en ${cajon.ventana}px`
+            );
+          }
+          /* Un cajón translúcido deja leer la página por debajo de sus
+             entradas. Se admite hasta un 4 % de paso, que es el alfa
+             que el propio token de superficie ya trae. */
+          const alfa = cajon.fondo.match(/[\d.]+\s*\)$/);
+          const paso = alfa && cajon.fondo.includes("/") ? 1 - parseFloat(alfa[0]) : 0;
+          if (paso > 0.04) {
+            fallos.push(
+              `${etiqueta}: el cajón deja pasar el ${Math.round(paso * 100)} % de lo que hay detrás (${cajon.fondo})`
+            );
+          }
+        }
+        // Se recarga: la página queda con el cuerpo bloqueado y el
+        // resto de comprobaciones de esta pantalla medirían otra cosa.
+        await pagina.reload({ waitUntil: "networkidle" });
+      }
+
+      /* ── LA VUELTA ARRIBA NO PUEDE REBOBINAR LA PÁGINA ─────────────
+         `html` llevaba `scroll-behavior: smooth`, y con él volver a la
+         cabecera desde el pie de la portada animaba las diez pantallas
+         de recorrido: el sitio entero pasando hacia atrás. Aquí se
+         MIDEN las posiciones intermedias, que es lo único que distingue
+         un salto de un rebobinado — el destino es el mismo en los dos
+         casos, así que comprobar dónde acaba no habría cazado nada.
+
+         Sólo en la portada y en escritorio: es la página más larga del
+         sitio y donde el botón aparece antes. */
+      if (ruta === "/" && pantalla.nombre === "escritorio") {
+        const viaje = await pagina.evaluate(async () => {
+          window.scrollTo(0, document.documentElement.scrollHeight);
+          await new Promise((r) => setTimeout(r, 400));
+          const desde = Math.round(window.scrollY);
+          const boton = [...document.querySelectorAll("button")].find(
+            (b) => (b.getAttribute("aria-label") || "") === "Volver arriba"
+          );
+          if (!boton) return { boton: false };
+          const posiciones = [];
+          const anotar = () => posiciones.push(Math.round(window.scrollY));
+          window.addEventListener("scroll", anotar, { passive: true });
+          boton.click();
+          await new Promise((r) => setTimeout(r, 1200));
+          window.removeEventListener("scroll", anotar);
+          return {
+            boton: true,
+            desde,
+            final: Math.round(window.scrollY),
+            /* El primer sitio en el que se ve la página tras pulsar. Si
+               está a diez pantallas del destino, se recorrieron. */
+            primera: posiciones[0] ?? null,
+            fotogramas: posiciones.length,
+            alto: window.innerHeight,
+          };
+        });
+        if (!viaje.boton) {
+          fallos.push(`${etiqueta}: no hay botón de volver arriba que comprobar`);
+        } else {
+          vueltasArriba.push(
+            `desde ${viaje.desde}px → primera parada ${viaje.primera}px → ${viaje.final}px en ${viaje.fotogramas} fotogramas`
+          );
+          if (viaje.final > 4) {
+            fallos.push(
+              `${etiqueta}: volver arriba deja la página en ${viaje.final}px, no en la cabecera`
+            );
+          }
+          // Tres pantallas de margen: el aterrizaje son 220 px, y el
+          // umbral deja sitio a una animación algo más larga sin dar
+          // por bueno un recorrido de verdad.
+          if (viaje.primera !== null && viaje.primera > viaje.alto * 3) {
+            fallos.push(
+              `${etiqueta}: volver arriba recorre la página — primera parada a ${viaje.primera}px de ${viaje.desde}px`
+            );
+          }
+        }
+      }
+
+      /* Una sola pantalla basta: el idioma no depende del ancho, y
+         repetirlo cuatro veces sólo multiplicaría el mismo fallo. */
+      if (lang === "en" && pantalla.nombre === "escritorio") {
+        const enPantalla = marcasEspanolas(informe.textoVisible);
+        const enDatos = marcasEspanolas(informe.textoDatos);
+        idiomasRevisados.push(
+          `${ruta} · ${informe.textoVisible.length} car. de texto, ${informe.textoDatos.length} de datos`
+        );
+        if (!informe.textoVisible.trim()) {
+          fallos.push(`${etiqueta}: sin texto visible que revisar (¿la página no cargó?)`);
+        }
+        if (enPantalla.length >= 1) {
+          fallos.push(
+            `${etiqueta}: texto español en una página inglesa — ${enPantalla.join(", ")}`
+          );
+        }
+        if (enDatos.length >= 1) {
+          fallos.push(
+            `${etiqueta}: los datos estructurados están en español — ${enDatos.join(", ")}`
+          );
+        }
+      }
 
       for (const l of informe.laminas) {
         laminasVistas.push(`${etiqueta} ${l.sirve} ${l.mostrado}/${l.nativo}`);
@@ -654,6 +882,27 @@ if (laminasVistas.length) {
   );
 } else {
   console.warn("  aviso  ninguna lámina de producto en las rutas auditadas: nadie vigila su legibilidad");
+}
+
+if (idiomasRevisados.length) {
+  console.log(
+    `[humo] idioma — ${idiomasRevisados.length} páginas inglesas revisadas palabra a palabra:\n` +
+      idiomasRevisados.map((s) => `         ${s}`).join("\n")
+  );
+} else {
+  console.warn("  aviso  ninguna página inglesa revisada: el detector de español no está mirando nada");
+}
+
+if (cajonesVistos.length) {
+  console.log(`[humo] cajón — ${cajonesVistos.join("; ")}`);
+} else {
+  console.warn("  aviso  el cajón de navegación no se abrió en ninguna pantalla: nadie vigila cómo se ve");
+}
+
+if (vueltasArriba.length) {
+  console.log(`[humo] vuelta arriba — ${vueltasArriba.join("; ")}`);
+} else {
+  console.warn("  aviso  no se comprobó la vuelta a la cabecera en ninguna página");
 }
 
 console.log(

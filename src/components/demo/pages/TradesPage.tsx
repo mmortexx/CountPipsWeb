@@ -8,6 +8,7 @@ import {
   computeMetrics,
   INSTRUMENTS,
   SETUP_NAMES,
+  nombreSetup,
 } from "@/lib/trading/data";
 import {
   customTradeToTrade,
@@ -246,7 +247,7 @@ const TradeRow = memo(function TradeRow({
 
       {/* Col 2 — setup. */}
       <td className="px-3 py-2.5 whitespace-nowrap text-secondary text-sm max-w-[220px] truncate">
-        {trade.setup}
+        {nombreSetup(trade.setup, lang)}
       </td>
 
       {/* Col 3 — session. */}
@@ -651,8 +652,11 @@ export function TradesPage() {
       if (outcome === "be" && tr.netPnl !== 0) return false;
       if (setupSel !== "all" && tr.setup !== setupSel) return false;
       if (q) {
+        /* El buscador mira la clave del setup Y su rótulo visible: quien
+           escribe «Ruptura» busca lo que está leyendo en la tabla, no el
+           identificador interno «Breakout» —y al revés en inglés—. */
         const hay =
-          `${tr.instrument} ${tr.setup} ${tr.entryNote} ${tr.closeNote}`.toLowerCase();
+          `${tr.instrument} ${tr.setup} ${nombreSetup(tr.setup, lang)} ${tr.entryNote} ${tr.closeNote}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
       return true;
@@ -665,6 +669,7 @@ export function TradesPage() {
     filters.compliance,
     outcome,
     setupSel,
+    lang,
   ]);
 
   // Sort the filtered list by the active column.
@@ -1008,9 +1013,9 @@ export function TradesPage() {
                     setVisibleCount(PAGE_SIZE);
                   }}
                   group="setup"
-                  label={s}
+                  label={nombreSetup(s, lang)}
                 >
-                  {s}
+                  {nombreSetup(s, lang)}
                 </FilterChip>
               ))}
             </div>

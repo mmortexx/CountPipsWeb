@@ -1,64 +1,40 @@
 /**
- * Marketing fixtures — datos deterministas que el HTML de referencia
- * (Trading Journal - Home.dc.html) usaba para alimentar sus secciones
- * "Resumen", "Operaciones", "Playbook", "Calendario" y "Curva de
- * rendimiento". Tras portar el diseño a React/Next.js, esos mismos
- * valores se exponen desde aquí como una API estable para que los
- * componentes de marketing (`Hero`, `OverviewApp`, `FeaturesBento`,
- * `MetricsShowcaseNew`, ...) los consuman.
+ * Marketing fixtures — los datos que alimentan las dos piezas de la home
+ * que enseñan números: la tira de KPIs de `OverviewApp` y el calendario
+ * de `FeaturesBento`.
  *
- * R26-2d — Los KPIs y la curva de rendimiento ahora se sincronizan
- * con `METRICS` / `TRADES` de `data.ts` en vez de usar valores
- * hardcodeados. Así el copy de marketing ("P&L +5.732 $", "Sharpe 3,34",
- * "Max DD −8,0 %") y la demo real muestran exactamente los mismos
- * números: el trader que entra a /demo tras leer la home ve la
- * continuación coherente de lo que se le prometió. La semilla
- * determinista (mulberry32 con seed 20260722) se mantiene para todo
- * lo decorativo (filas de tabla, sparklines, etc.).
+ * ── Qué se fue de aquí, y por qué ─────────────────────────────────────
+ * Este módulo nació como el puerto del HTML de referencia y exportaba
+ * nueve funciones: KPIs, curva, calendario, tira de siete métricas, diez
+ * filas de operaciones, cinco fichas de playbook y una operación de
+ * detalle. De esas nueve, SEIS no las leía ningún componente — eran el
+ * sedimento de secciones que el rediseño ya había sustituido por
+ * capturas reales de la aplicación.
  *
- * Implementación:
- * - PRNG `mulberry32` con seed fija (20260722, como en el HTML).
- * - Formatos `es-ES` vía `Intl.NumberFormat` (consistente con el resto
- *   del proyecto que ya usa `src/lib/trading/format.ts`).
- * - Todos los exports son funciones puras: la primera llamada genera,
- *   las siguientes reutilizan el resultado cacheado (idempotente).
+ * Se borran, y no es limpieza cosmética: ahí vivían los literales
+ * «Ruptura», «Reversión», «Tendencia», «P&L total», «Operaciones»,
+ * «peor racha» y «Edge confirmado», en español fijo. El sitio tiene 76
+ * páginas en inglés; cualquiera que hubiera vuelto a enchufar una de
+ * esas funciones habría servido español en `/en` sin enterarse, y no hay
+ * prueba que cace el texto de un módulo que nadie llama.
+ *
+ * ── Lo que queda, y sus dos garantías ─────────────────────────────────
+ * · Los números salen de `METRICS`/`TRADES` (`data.ts`), no escritos a
+ *   mano: el KPI de la home y el panel de `/demo` son el mismo cálculo,
+ *   así que no pueden discrepar.
+ * · El texto que acompaña a los números viaja en los dos idiomas. Nada
+ *   de aquí decide cuál se pinta: eso lo hace el componente, que sí sabe
+ *   en qué idioma está la página.
  */
 
 import { fmtMoney, fmtNum, fmtPct } from "./format";
-import {
-  METRICS,
-  TRADES,
-  dailyPnlForMonth,
-} from "./data";
+import { METRICS, TRADES, dailyPnlForMonth } from "./data";
 
-/* ---------- PRNG determinista ---------- */
-
-function mulberry32(seed: number) {
-  let s = seed >>> 0;
-  return () => {
-    s = (s + 0x6d2b79f5) >>> 0;
-    let t = s;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+/** Un rótulo que la fixture no puede resolver sola: no conoce el idioma. */
+export interface Bilingue {
+  es: string;
+  en: string;
 }
-
-const rng = mulberry32(20260722);
-
-function pick<T>(arr: readonly T[]): T {
-  return arr[Math.floor(rng() * arr.length)] as T;
-}
-
-function between(min: number, max: number): number {
-  return min + rng() * (max - min);
-}
-
-/* ---------- Catálogos del dominio (alineados con el HTML) ---------- */
-
-const INSTRUMENTS = ["ES35", "NQ", "SPX", "EURUSD", "BTC", "DAX", "GOLD", "CL"] as const;
-const SETUPS = ["Ruptura", "Pullback", "Reversión", "Tendencia", "Rango"] as const;
-const SESSIONS = ["London", "NY", "Asia"] as const;
 
 const MONTH_DAYS = 31; // julio 2026
 
@@ -72,18 +48,8 @@ function build() {
   return {
     /** Métricas "live" que el HTML mostraba flotando sobre el hero. */
     kpis: buildKpis(),
-    /** Curva de rendimiento con 150 puntos de balance + área + línea + endpoint. */
-    perf: buildPerf(),
     /** Calendario de julio 2026: 35 celdas (5 semanas × 7) con P&L diario. */
     cal: buildCal(),
-    /** Las 7 KPIs que el HTML mostraba en la sección Resumen (dashboard). */
-    kpiRow: buildKpiRow(),
-    /** 10 filas de la tabla "Operaciones" (sample visible). */
-    rows: buildRows(),
-    /** 5 setups del Playbook. */
-    playbook: buildPlaybook(),
-    /** Una operación de ejemplo para la vista de detalle. */
-    det: buildTradeDetail(),
   };
 }
 
@@ -98,56 +64,6 @@ function buildKpis() {
       deltaColor: "var(--pos)",
     },
   };
-}
-
-function buildPerf() {
-  // Pull the real equity curve from METRICS so the marketing curve's
-  // endpoint matches the demo's `finalBalance` and the shape reflects
-  // the actual trade sequence (not a synthetic noise line).
-  const curve = METRICS.equityCurve;
-  const data: { x: number; y: number }[] = curve.map((p, i) => ({
-    x: curve.length > 1 ? i / (curve.length - 1) : 0,
-    y: p.balance,
-  }));
-  // Renderizamos a viewBox 640x220 con margen lateral de 46px y arriba/abajo 24px.
-  const xMin = 46;
-  const xMax = 632;
-  const yMin = 24;
-  const yMax = 196;
-  const ys = data.map((d) => d.y);
-  const lo = Math.min(...ys);
-  const hi = Math.max(...ys);
-  const proj = (d: { x: number; y: number }) => ({
-    x: xMin + (xMax - xMin) * d.x,
-    y: yMin + (yMax - yMin) * (1 - (d.y - lo) / (hi - lo || 1)),
-  });
-  const projected = data.map(proj);
-  const line = projected
-    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`)
-    .join(" ");
-  const fill = `${line} L${projected[projected.length - 1]!.x.toFixed(1)},${yMax} L${projected[0]!.x.toFixed(1)},${yMax} Z`;
-  // Línea "balance" (dashed, más suave) ligeramente por debajo.
-  const dash = projected
-    .map((p, i) => {
-      const dy = p.y + 6 + Math.sin(p.x / 40) * 4;
-      return `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${dy.toFixed(1)}`;
-    })
-    .join(" ");
-  // Drawdown: área entre la línea y un techo imaginario por encima.
-  const ceiling = projected.map((p) => ({ x: p.x, y: Math.min(p.y - 14, yMin + 4) }));
-  const dd = `${line} ${ceiling
-    .slice()
-    .reverse()
-    .map((p) => `L${p.x.toFixed(1)},${p.y.toFixed(1)}`)
-    .join(" ")} Z`;
-  // Grid lines horizontales (5 niveles) con etiqueta.
-  const grid = [0.0, 0.25, 0.5, 0.75, 1.0].map((p) => {
-    const y = yMin + (yMax - yMin) * p;
-    const val = hi - (hi - lo) * p;
-    return { y, label: fmtNum(val, "es", 0) };
-  });
-  const last = projected[projected.length - 1]!;
-  return { grid, line, fill, dash, dd, endX: last.x, endY: last.y };
 }
 
 function buildCal() {
@@ -200,218 +116,40 @@ function buildCal() {
   let total = 0;
   for (const v of dailyPnl.values()) total += v;
   return {
-    label: "julio 2026",
-    chip: "Mes en curso",
+    /* Los dos rótulos del encabezado viajaban en español fijo y se
+       pintaban tal cual en `/en/features`: «julio 2026 · Mes en curso»
+       bajo un titular inglés. La fixture no puede elegir —se evalúa una
+       sola vez, y el idioma lo decide la ruta—, así que entrega los dos
+       y elige quien pinta. */
+    label: { es: "julio 2026", en: "July 2026" } satisfies Bilingue,
+    chip: { es: "Mes en curso", en: "Current month" } satisfies Bilingue,
     pnl: `${total >= 0 ? "+" : "−"}${fmtNum(Math.abs(total))} $`,
     pnlColor: total >= 0 ? "var(--pos)" : "var(--neg)",
     cells,
   };
 }
 
-function buildKpiRow() {
-  // Sourced from METRICS so the marketing KPI strip stays in lock-step
-  // with the demo's dashboard. The descriptive `d` field is built from
-  // the same numbers (ROI %, W·L count, etc.) instead of being a
-  // hand-typed string that drifts as the underlying data evolves.
-  const wins = METRICS.wins;
-  const losses = METRICS.losses;
-  return [
-    {
-      l: "P&L total",
-      v: fmtMoney(METRICS.netPnl, "es", { sign: true }),
-      c: "var(--pos)",
-      d: `ROI ${fmtPct(METRICS.roiPct, "es", 1)}`,
-    },
-    {
-      l: "Win rate",
-      v: fmtPct(METRICS.winRate, "es", 0),
-      c: "var(--ink)",
-      d: `${wins} W · ${losses} L`,
-    },
-    {
-      l: "Expectancy",
-      v: fmtMoney(METRICS.expectancy, "es", { sign: true }),
-      c: "var(--pos)",
-      d: "por operación",
-    },
-    {
-      l: "Profit factor",
-      v: fmtNum(METRICS.profitFactor, "es", 2),
-      c: "var(--ink)",
-      d: "Gross W / Gross L",
-    },
-    {
-      l: "Sharpe",
-      v: fmtNum(METRICS.sharpe, "es", 2),
-      c: "var(--ink)",
-      d: "anualizado",
-    },
-    {
-      l: "Max DD",
-      v: `−${fmtPct(METRICS.maxDrawdownPct, "es", 1)}`,
-      c: "var(--neg)",
-      d: "peor racha",
-    },
-    {
-      l: "Operaciones",
-      v: String(METRICS.closedCount),
-      c: "var(--ink)",
-      d: "cerradas",
-    },
-  ];
-}
-
-function buildRows() {
-  // 10 filas de operaciones recientes, alineadas con el HTML.
-  return Array.from({ length: 10 }, (_, i) => {
-    const dir = rng() > 0.5 ? "Long" : "Short";
-    const inst = pick(INSTRUMENTS);
-    const setup = pick(SETUPS);
-    const ses = pick(SESSIONS);
-    const win = rng() > 0.5;
-    const pnl = win ? between(80, 480) : -between(40, 260);
-    const r = pnl / 100;
-    const pnlStr = `${pnl >= 0 ? "+" : "−"}${fmtNum(Math.abs(pnl))} $`;
-    const cum = 11000 + i * 200 + pnl;
-    const cumStr = `${cum >= 0 ? "+" : "−"}${fmtNum(Math.abs(cum))} $`;
-    return {
-      dir,
-      dc: dir === "Long" ? "var(--pos)" : "var(--neg)",
-      inst,
-      dot: inst === "BTC" || inst === "NQ" ? "var(--accent-base)" : "var(--ink-2)",
-      setup,
-      ses,
-      es: "95,0",
-      dur: `${Math.floor(between(2, 240))} min`,
-      date: `2026-07-${String(MONTH_DAYS - i).padStart(2, "0")}`,
-      pnl,
-      pnlStr,
-      pc: pnl >= 0 ? "var(--pos)" : "var(--neg)",
-      r,
-      rStr: `${r >= 0 ? "+" : ""}${r.toFixed(2)}R`,
-      rc: pnl >= 0 ? "var(--pos)" : "var(--neg)",
-      cum: cum,
-      cumStr,
-      cc: cum >= 10000 ? "var(--pos)" : "var(--neg)",
-      open: () => {},
-      det: { id: `trade-${i}` },
-    };
-  });
-}
-
-function buildPlaybook() {
-  const names = ["Ruptura", "Pullback", "Reversión", "Tendencia", "Rango"];
-  const colors = ["var(--accent-base)", "var(--pos)", "var(--neg)", "var(--ink-2)", "var(--warn)"];
-  return names.map((name, i) => {
-    const n = 12 + i * 3;
-    const win = 0.42 + (i * 0.05);
-    const exp = win > 0.5 ? 38.4 : -12.6;
-    const expC = exp >= 0 ? "var(--pos)" : "var(--neg)";
-    const wrStr = `${Math.round(win * 100)} %`;
-    const pnl = exp * n;
-    const pnlStr = `${pnl >= 0 ? "+" : "−"}${fmtNum(Math.abs(pnl))} $`;
-    const pnlC = pnl >= 0 ? "var(--pos)" : "var(--neg)";
-    const ses = SESSIONS[i % SESSIONS.length] ?? "London";
-    const sesPnl = `${pnl >= 0 ? "+" : "−"}${fmtNum(Math.abs(pnl) / 2)} $`;
-    // sparkline SVG path determinista
-    const sparkPoints = Array.from({ length: 12 }, (_, k) => {
-      const x = (k / 11) * 100;
-      const y = 30 - rng() * 25 + (k / 11) * 5;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(" ");
-    const spark = `M${sparkPoints.split(" ").join(" L")}`;
-    const verdict = win > 0.5 ? "Edge confirmado" : "A revisar";
-    const vc = win > 0.5 ? "var(--pos)" : "var(--warn)";
-    return {
-      name,
-      color: colors[i] ?? "var(--accent-base)",
-      spark,
-      n,
-      exp,
-      expStr: `${exp >= 0 ? "+" : "−"}${fmtNum(Math.abs(exp))} $`,
-      expC,
-      win: wrStr,
-      pnl: pnlStr,
-      pnlC,
-      verdict,
-      vc,
-      ses,
-      sesPnl,
-      cum: `+${fmtNum(pnl * 1.5)} $`,
-      rbar: Math.round(win * 100),
-      rtxt: `${Math.round(win * 100)} % a favor`,
-      g: 7 + i,
-      l: 5 - i % 2,
-      gw: `${win.toFixed(2)} : 1`,
-    };
-  });
-}
-
-function buildTradeDetail() {
-  return {
-    inst: "NQ",
-    dir: "Long",
-    dc: "var(--pos)",
-    date: "2026-07-22",
-    idx: "trade-42",
-    pnl: `+${fmtNum(312.4)} $`,
-    pc: "var(--pos)",
-    r: "+1.56R",
-    rc: "var(--pos)",
-    risk: `${fmtNum(200)} $`,
-    riskPct: "2.00 %",
-    rr: "1,60 : 1",
-    entry: "18.450,25",
-    exit: "18.462,00",
-    qty: "4 contratos",
-    gross: `+${fmtNum(350)} $`,
-    gc: "var(--pos)",
-    fees: `−${fmtNum(37.6)} $`,
-    setup: "Ruptura · NY",
-    maeR: "−0,40R",
-    mfeR: "+1,80R",
-    maeWidth: 40,
-    mfeWidth: 95,
-    stop: "18.420,00",
-    obj: "18.500,00",
-    maeAbs: `−${fmtNum(80)} $`,
-    mfeAbs: `+${fmtNum(360)} $`,
-    since: "desde la apertura NY",
-  };
-}
-
 /* ---------- API pública ---------- */
 
 /**
- * Devuelve el bundle de fixtures de marketing. Idempotente: la primera
- * llamada genera, las siguientes devuelven la misma referencia.
+ * El bundle de fixtures. Idempotente: la primera llamada genera, las
+ * siguientes devuelven la misma referencia.
+ *
+ * Interno a propósito. Cuando era público, cada `getX()` de abajo tenía
+ * además una puerta trasera por la que se colaba el bundle entero, y con
+ * él las secciones que ya nadie pintaba.
  */
-export function buildMarketingFixture() {
+function buildMarketingFixture() {
   if (!cache) cache = build();
   return cache;
 }
 
-/** Acceso tipado por sección (azúcar sobre `buildMarketingFixture`). */
+/** Acceso tipado por sección (azúcar sobre el bundle). */
 export function getKpis() {
   return buildMarketingFixture().kpis;
 }
-export function getPerf() {
-  return buildMarketingFixture().perf;
-}
 export function getCal() {
   return buildMarketingFixture().cal;
-}
-export function getKpiRow() {
-  return buildMarketingFixture().kpiRow;
-}
-export function getRows() {
-  return buildMarketingFixture().rows;
-}
-export function getPlaybook() {
-  return buildMarketingFixture().playbook;
-}
-export function getTradeDetail() {
-  return buildMarketingFixture().det;
 }
 
 /* ---------- Distribución de R-múltiplo ---------- */
