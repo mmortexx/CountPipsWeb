@@ -53,8 +53,8 @@
      el body), con Geist Sans como fallback si la webfont aún no ha
      cargado. Instrument Serif queda disponible como `font-serif` para
      titulares editoriales. */
-  --font-sans: var(--font-sans), var(--font-geist-sans), "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
-  --font-serif: var(--font-serif), "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-sans), "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --font-serif: var(--font-serif), Georgia, "Times New Roman", serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -415,7 +415,7 @@
   }
   body {
     color: rgb(var(--txt-primary));
-    font-family: var(--font-sans), var(--font-geist-sans), "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--font-sans), "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
     /* Institutional fintech font features (después del rediseño):
        - `tnum` 1  → tabular figures so every numeric column lines up
          digit-for-digit (financial tables, KPI tiles, equity curves).
@@ -3256,10 +3256,9 @@ button.icon-btn:hover > svg,
 
 /* ---- Tipografía: el display pasa a serif -----------------------------
    Aquí está el "clásico y moderno a la vez". Los titulares se ponen en
-   Instrument Serif en caja normal; el cuerpo, las etiquetas y las
-   cifras siguen en Instrument Sans. Ni la web entera en serif (que
-   sería disfraz de época) ni solo un cambio de color (que no sería un
-   estilo).
+   serif en caja normal; el cuerpo, las etiquetas y las cifras siguen en
+   Instrument Sans. Ni la web entera en serif (que sería disfraz de época)
+   ni solo un cambio de color (que no sería un estilo).
 
    POR QUÉ `!important`: los titulares del sitio traen `font-weight`,
    `letter-spacing` y `text-transform` en atributos `style` inline desde
@@ -3270,17 +3269,24 @@ button.icon-btn:hover > svg,
    propiedades tipográficas: no se toca ni color ni tamaño, que son los
    que llevan el contraste y la retícula ya verificados.
 
-   Instrument Serif solo existe en peso 400. Pedirle 600 obligaría al
-   navegador a fingir la negrita engordando el trazo (synthetic bold), y
-   una serif de contraste alto engordada así se emborrona. De ahí el 400
-   fijo, compensado con un poco de tamaño óptico vía letter-spacing. */
+   EL PESO YA NO ESTÁ CLAVADO EN 400. Esto lo escribió la limitación de
+   Instrument Serif, que solo existe en peso 400: pedirle 600 obligaba al
+   navegador a fingir la negrita engordando el trazo, y una serif así se
+   emborrona. Newsreader es variable de 200 a 800 con negrita real, así que
+   el titular pasa a 500 — el peso medio que usan las publicaciones
+   financieras institucionales, ni la fragilidad del 400 a tamaño de cartel
+   ni el peso de anuncio del 600. La jerarquía se compone ahora con la
+   familia, no contra ella. */
 :root[data-palette="clasico"] h1,
 :root[data-palette="clasico"] h2,
 :root[data-palette="clasico"] h3 {
-  font-family: var(--font-serif), "Newsreader", Georgia, "Times New Roman", serif !important;
-  font-weight: 400 !important;
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif !important;
+  font-weight: 500 !important;
   text-transform: none !important;
   letter-spacing: -0.012em !important;
+  /* Cifras tabulares también en los titulares: un titular que lleva una
+     cifra no puede componerla con anchos distintos que la tabla de al lado. */
+  font-variant-numeric: tabular-nums;
 }
 
 /* El display grande respira distinto que un h3: se cierra el interlineado
@@ -3297,7 +3303,7 @@ button.icon-btn:hover > svg,
 :root[data-palette="clasico"] .tnum,
 :root[data-palette="clasico"] .eyebrow,
 :root[data-palette="clasico"] .kbd {
-  font-family: var(--font-sans), var(--font-geist-sans), system-ui, sans-serif !important;
+  font-family: var(--font-sans), system-ui, sans-serif !important;
 }
 
 /* Antetítulos en versalitas anchas — la marca de sección de un libro.

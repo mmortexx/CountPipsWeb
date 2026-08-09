@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Instrument_Sans, Instrument_Serif } from "next/font/google";
+import { Geist_Mono, Instrument_Sans, Newsreader } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
@@ -44,20 +44,14 @@ export const viewport: Viewport = {
   themeColor: "#0c1116",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-/* Tras el rediseño, Instrument Sans reemplaza Inter como sans por defecto
-   (--font-sans) e Instrument Serif se añade como serif (--font-serif)
-   para los titulares "hero" del HTML. Las features Inter (ss01/cv11) se
-   eliminan en globals.css al ser Inter-specific. */
+/* Instrument Sans es la sans del sitio (--font-sans): texto, rótulos y
+   etiquetas. Geist Sans se retiró: solo actuaba de respaldo de esta, y una
+   familia cargada que nadie compone es peso de descarga sin contrapartida. */
 const instrumentSans = Instrument_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
@@ -65,10 +59,37 @@ const instrumentSans = Instrument_Sans({
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
+/* ─────────────────────────────────────────────────────────────────────────
+   LA SERIF DE TITULARES: NEWSREADER, NO INSTRUMENT SERIF
+
+   Se cambia por dos motivos independientes, y cualquiera de los dos basta.
+
+   1. INSTRUMENT SERIF SE VOLVIÓ UNA FIRMA RECONOCIBLE. La crítica de diseño
+      de 2025-2026 la nombra, junto con Space Grotesk y Geist, como una de
+      las caras que delatan una web hecha en masa: es la serif que traen por
+      defecto los generadores y las plantillas. El registro editorial no es
+      el problema — lo son las referencias del sector (Financial Times, iA,
+      Linear) usan serif y aguantan el escrutinio porque su tipografía no la
+      puede descargar cualquiera en treinta segundos. Newsreader no arrastra
+      esa asociación.
+
+   2. INSTRUMENT SERIF SOLO EXISTE EN PESO 400. Eso obligaba a pedirle
+      negritas falsas al navegador o a renunciar a jerarquía dentro del
+      titular. Newsreader es variable de 200 a 800, con cursiva real y eje
+      óptico, así que la jerarquía se compone con la familia en lugar de
+      pelearse con ella.
+
+   Es además una serif de contraste MODERADO, no una didona: los trazos
+   finos de una serif de contraste alto desaparecen por debajo de 18 px y en
+   pantallas sin densidad doble. Aquí la serif tiene que sostener cifras,
+   no solo titulares.
+
+   La lista de respaldo de globals.css ya nombraba Newsreader antes que
+   Georgia, así que la intención estaba escrita; esto la hace efectiva. */
+const newsreader = Newsreader({
   variable: "--font-serif",
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["300", "400", "500", "600"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -333,7 +354,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${instrumentSans.variable} ${instrumentSerif.variable} antialiased`}
+        className={`${geistMono.variable} ${instrumentSans.variable} ${newsreader.variable} antialiased`}
       >
         <script
           type="application/ld+json"
