@@ -816,6 +816,109 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
+      /* ── TEXTO QUE SE SALE POR EL CANTO ──────────────────────────────
+         El fallo que motivó esto: en la demo, la tira «Riesgo de esta
+         operación» usaba `grid-cols-[1fr_1px_1fr_1px_1fr]`. Un `1fr`
+         pelado es `minmax(auto,1fr)`, así que la columna NO encoge por
+         debajo de su contenido: con «520,00 US$» dentro, la tira medía
+         262px en un hueco de 224 y el «5,20 %» quedaba cortado por el
+         canto de la tarjeta, que tiene `overflow:hidden`. Nada fallaba
+         —ni consola, ni tests, ni el ancho del documento, porque el
+         recorte se come el desbordamiento— y sólo se veía mirando la
+         página en un teléfono.
+
+         Se busca justo esa forma: un elemento CON TEXTO que sobresale
+         del rectángulo del ancestro más cercano que recorta.
+
+         Por qué sólo en móvil: es donde el ancho aprieta y donde una
+         rejilla que no encoge revienta. En escritorio sobra sitio y
+         estas mismas rejillas caben.
+
+         Acotado para que no mienta: sólo hojas de texto (si un hijo
+         también tiene texto, el desbordamiento se le imputa al hijo y no
+         se cuenta dos veces), nada marcado `aria-hidden` —lo decorativo
+         se sale a propósito—, nada dentro de un contenedor que se pueda
+         desplazar en horizontal a propósito, y un margen de 2px para el
+         redondeo subpíxel. */
+      if (pantalla.nombre === "movil") {
+        const cortados = await pagina.evaluate(() => {
+          const salida = [];
+          const recorta = (e) => {
+            const s = getComputedStyle(e);
+            return s.overflowX === "hidden" || s.overflowX === "clip";
+          };
+          const desplazable = (e) => {
+            const s = getComputedStyle(e);
+            return s.overflowX === "auto" || s.overflowX === "scroll";
+          };
+          for (const el of document.querySelectorAll("main *")) {
+            const txt = (el.textContent || "").trim();
+            if (!txt) continue;
+            if (el.closest('[aria-hidden="true"]')) continue;
+            // Sólo la hoja: si algún hijo tiene texto, ya se mirará él.
+            if ([...el.children].some((c) => (c.textContent || "").trim())) continue;
+            const r = el.getBoundingClientRect();
+            if (r.width === 0 || r.height === 0) continue;
+            /* ── SÓLO SE DESCARTA LO QUE NO ESTÁ MAQUETADO ──────────────
+               Aquí hay una distinción que costó una prueba contra el fallo.
+
+               El primer intento descartaba todo lo que `checkVisibility`
+               diera por invisible, con las tres banderas puestas. Eso quitó
+               los seis falsos positivos de /about —secciones con
+               `content-visibility:auto` que el navegador ni siquiera
+               maqueta, así que su geometría no significa nada— pero de paso
+               DESACTIVÓ la comprobación entera en /demo: las filas de la
+               tabla entran con `opacity:0` y sólo suben a 1 cuando el
+               scroller interno las revela, así que el fallo real de la
+               tabla dejó de detectarse. Se comprobó revirtiendo el arreglo
+               a propósito: la comprobación decía «correcto».
+
+               La diferencia que importa no es «se ve ahora», es «está
+               maquetado»: un elemento a opacidad 0 por una animación de
+               entrada SÍ se va a ver, y su caja ya es la definitiva; uno
+               saltado por `content-visibility` no está renderizado y su
+               caja es una estimación del navegador. Por eso sólo se pasa la
+               bandera `contentVisibilityAuto` y NO las de opacidad y
+               visibilidad. */
+            if (
+              typeof el.checkVisibility === "function" &&
+              !el.checkVisibility({ contentVisibilityAuto: true })
+            ) {
+              continue;
+            }
+            let p = el.parentElement;
+            let caja = null;
+            while (p && p !== document.body) {
+              // Una tira desplazable a mano no es un fallo: ahí el
+              // contenido SE PUEDE alcanzar. El fallo es lo recortado.
+              if (desplazable(p)) { caja = null; break; }
+              if (recorta(p)) { caja = p; break; }
+              p = p.parentElement;
+            }
+            if (!caja) continue;
+            const cr = caja.getBoundingClientRect();
+            /* El texto sólo para lectores de pantalla (`.sr-only`) vive a
+               propósito dentro de una caja de 1×1 px con `overflow:hidden`:
+               ahí el contenido SIEMPRE sobresale, y está bien que lo haga.
+               Se descarta por la geometría y no por el nombre de la clase,
+               que puede cambiar. Encontrado al probar esto: daba «"informada."
+               se sale 246px» en /pricing, que era el titular del lector de
+               pantalla haciendo exactamente su trabajo. */
+            if (cr.width <= 1 || cr.height <= 1) continue;
+            const fuera = Math.round(Math.max(r.right - cr.right, cr.left - r.left));
+            if (fuera > 2) {
+              salida.push({ txt: txt.replace(/\s+/g, " ").slice(0, 28), fuera });
+            }
+          }
+          return salida;
+        });
+        for (const c of cortados) {
+          fallos.push(
+            `${etiqueta}: "${c.txt}" se sale ${c.fuera}px del canto de un contenedor que recorta`
+          );
+        }
+      }
+
       /* El contraste sólo se mide en escritorio: la composición de capas
          es la misma en las cuatro pantallas y leer píxeles cuesta una
          captura por elemento. */
@@ -925,13 +1028,31 @@ for (const { ruta } of RUTAS.slice(0, 8)) {
           ? h1.checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true })
           : h1.getClientRects().length > 0;
       const main = document.querySelector("main");
+      /* ── SE COMPARA TEXTO RENDERIZADO CONTRA TEXTO RENDERIZADO ──────
+         `textContent` e `innerText` no producen la misma cadena para el
+         mismo elemento: un `<br>` no aporta nada al primero y vale un
+         salto de línea en el segundo. El titular de la portada
+         —«Opera como una<br/>mesa institucional.»— salía como
+         "…unamesa…" por un lado y "…una\nmesa…" por el otro, así que la
+         comparación no podía coincidir NUNCA. Eso dejó un aviso
+         permanente que no señalaba nada de la página, y un aviso que
+         siempre está encendido deja de leerse.
+
+         Ahora los dos lados se obtienen por la misma vía (`innerText`) y
+         se les colapsa la secuencia de espacios. Lo que la comprobación
+         sigue detectando es lo que importaba: que el texto del titular
+         esté DENTRO de `<main>` y no escondido en otra rama del árbol.
+         Se comprueba contra el fallo moviendo el h1 fuera de `<main>`. */
+      const norm = (s) => (s || "").replace(/\s+/g, " ").trim();
+      const textoRender = norm(h1.innerText || h1.textContent);
+      const textoMain = norm(main && main.innerText);
       return {
         hay: true,
         texto,
         rects: h1.getClientRects().length,
         checkVis: visible,
         visible: visible && h1.getClientRects().length > 0,
-        enMain: Boolean(main && texto && (main.innerText || "").includes(texto.slice(0, 24))),
+        enMain: Boolean(main && textoRender && textoMain.includes(textoRender.slice(0, 24))),
       };
     });
     /* Estas dos SÍ son fallos: si el titular no está en el HTML o no
