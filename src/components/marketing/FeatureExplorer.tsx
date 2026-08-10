@@ -141,8 +141,8 @@ const FEATURES: Feature[] = [
     id: "native",
     titleEs: "Nativa de Windows",
     titleEn: "Native Windows app",
-    descEs: "WinUI 3, no Electron. Arranca en menos de 1 s, usa 80 MB de RAM. Siente que pertenece al sistema.",
-    descEn: "WinUI 3, not Electron. Starts in under 1 s, uses 80 MB RAM. Feels native to the system.",
+    descEs: "WinUI 3, no Electron. Arranca en menos de 1 s y ronda los 200 MB de RAM con la sesión abierta. Siente que pertenece al sistema.",
+    descEn: "WinUI 3, not Electron. Starts in under 1 s and sits around 200 MB of RAM with the session open. Feels native to the system.",
     tags: ["speed", "local"],
   },
 ];
