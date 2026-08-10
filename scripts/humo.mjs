@@ -60,9 +60,29 @@ const TIPOS = {
  * traducción, todas las rutas darían 404 y la comprobación fallaría por
  * el motivo equivocado.
  */
+/* ── EL PREFIJO DE GITHUB PAGES ──────────────────────────────────────
+   El sitio no se publica en la raíz de un dominio sino en
+   `usuario.github.io/CountPipsWeb/`, así que el flujo de Actions
+   construye con `NEXT_PUBLIC_BASE_PATH=/CountPipsWeb` y el HTML sale
+   pidiendo `/CountPipsWeb/_next/...`. Este servidor servía la carpeta en
+   la raíz, de modo que en CI TODAS esas peticiones daban 404: sin hoja
+   de estilos la barra se monta sobre sí misma, el contenido desborda a
+   lo ancho y el cajón no abre. Cuarenta y tantos fallos que no eran de
+   la página sino de cómo se la estaba sirviendo — y la comprobación que
+   existe para no desplegar roto era justo la que impedía desplegar.
+
+   Se neutraliza el prefijo: si la petición empieza por él, se atiende
+   igual. En local `NEXT_PUBLIC_BASE_PATH` no está definido y esto no
+   hace nada, así que las dos formas de ejecutarlo coinciden. */
+const PREFIJO = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "");
+
 async function levantarServidor(raiz) {
   const resolver = async (ruta) => {
-    const limpia = normalize(decodeURIComponent(ruta.split("?")[0])).replace(/^(\.\.[/\\])+/, "");
+    let pedida = decodeURIComponent(ruta.split("?")[0]);
+    if (PREFIJO && (pedida === PREFIJO || pedida.startsWith(`${PREFIJO}/`))) {
+      pedida = pedida.slice(PREFIJO.length) || "/";
+    }
+    const limpia = normalize(pedida).replace(/^(\.\.[/\\])+/, "");
     const candidatos = [
       join(raiz, limpia),
       join(raiz, limpia, "index.html"),

@@ -27,6 +27,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # PREFIJO DE RUTAS — declarado a nivel de JOB, no del paso de build.
+    #
+    # Estaba sólo en el `env:` del paso «Build», y ahí nació un fallo que
+    # dejó el despliegue en rojo sin que nada estuviera mal en la página:
+    # el sitio se compilaba pidiendo `/CountPipsWeb/_next/...` —porque
+    # Pages lo publica en una subcarpeta— pero los pasos que lo recorren
+    # con un navegador no veían la variable, servían la carpeta en la raíz
+    # y recibían un 404 por cada hoja de estilos, cada script y cada
+    # tipografía. Resultado: 163 fallos que describían una página sin
+    # estilos —la barra montada sobre sí misma, contenido desbordando a lo
+    # ancho, el cajón sin abrir— y ninguno era real. La comprobación que
+    # existe para no publicar roto era justo lo que impedía publicar.
+    #
+    # A nivel de job lo heredan todos los pasos, así que el sitio se
+    # construye y se comprueba con el MISMO prefijo. Y sigue estando
+    # escrito una sola vez.
+    env:
+      # El nombre NO se escribe a mano: sale del propio repositorio.
+      # Estaba fijo como "/JournalTradingWeb" y al renombrar el repo a
+      # CountPipsWeb la web publicada siguió pidiendo sus estilos y sus
+      # scripts a la ruta vieja — respondía 200 y se veía sin una sola
+      # hoja de estilo. Derivándolo, un renombrado futuro no puede
+      # volver a romperlo.
+      NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -78,19 +102,12 @@ jobs:
           # Este sitio se publica en dos destinos: el dominio propio, en la
           # RAÍZ (Cloudflare Pages), y esta copia, que cuelga de un
           # subdirectorio con el nombre del repositorio. El prefijo se
-          # declara AQUÍ y en ningún sitio más: `next.config.ts` no lo
-          # lleva escrito, así que sin esta línea el sitio se compila para
-          # la raíz — que es lo que necesitan el dominio propio y el
-          # desarrollo local. Si se apaga esta publicación, se borran estas
-          # dos variables y no hay que tocar la configuración.
+          # declara en el `env:` del JOB (arriba) y en ningún sitio más:
+          # `next.config.ts` no lo lleva escrito, así que sin él el sitio
+          # se compila para la raíz — que es lo que necesitan el dominio
+          # propio y el desarrollo local. Si se apaga esta publicación, se
+          # borra aquella línea y no hay que tocar la configuración.
           #
-          # El nombre NO se escribe a mano: sale del propio repositorio.
-          # Estaba fijo como "/JournalTradingWeb" y al renombrar el repo a
-          # CountPipsWeb la web publicada siguió pidiendo sus estilos y sus
-          # scripts a la ruta vieja — respondía 200 y se veía sin una sola
-          # hoja de estilo. Derivándolo, un renombrado futuro no puede
-          # volver a romperlo.
-          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
           # Y la dirección pública de ESTA copia, por el mismo motivo: si
           # se queda apuntando a un nombre viejo, el canónico y la tarjeta
           # social señalan a una dirección que ya no existe.

@@ -95,8 +95,18 @@ async function levantar(raiz) {
     }
     return null;
   };
+  /* Mismo motivo que en `humo.mjs`: en Actions el sitio se construye con
+     `NEXT_PUBLIC_BASE_PATH=/CountPipsWeb` porque Pages lo publica en una
+     subcarpeta, y entonces el HTML pide `/CountPipsWeb/_next/...`. Si el
+     servidor no neutraliza ese prefijo, todo da 404 y la comprobación
+     mide una página sin estilos. En local la variable no existe y esto no
+     hace nada. */
+  const PREFIJO = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "");
   const server = createServer(async (req, res) => {
-    const pedido = decodeURIComponent(new URL(req.url, "http://x").pathname);
+    let pedido = decodeURIComponent(new URL(req.url, "http://x").pathname);
+    if (PREFIJO && (pedido === PREFIJO || pedido.startsWith(`${PREFIJO}/`))) {
+      pedido = pedido.slice(PREFIJO.length) || "/";
+    }
     const destino = await resolver(join(raiz, normalize(pedido).replace(/^(\.\.[/\\])+/, "")));
     if (!destino) return void res.writeHead(404).end("no encontrado");
     res.writeHead(200, {
