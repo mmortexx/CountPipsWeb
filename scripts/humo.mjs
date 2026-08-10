@@ -213,6 +213,9 @@ const papelesVistos = [];
 /** Ídem para la opacidad al final del scroll: cuántas rutas se llegaron
     a mirar. Cero rutas miradas también sale en verde. */
 const opacidadesFinales = [];
+/** Ídem para la llamada a la acción de la portada: dónde acaba respecto
+    al pliegue, en cada una de las cuatro pantallas. */
+const pliegues = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -559,6 +562,36 @@ for (const pantalla of PANTALLAS) {
         );
       }
       if (!informe.main) avisos.push(`${etiqueta}: sin elemento <main>`);
+
+      /* ── LA LLAMADA A LA ACCIÓN, DENTRO DE LA PRIMERA PANTALLA ─────
+         El hero alineaba su contenido abajo para dejar sitio a la
+         figura, y en un portátil corriente eso empujaba el botón
+         principal justo al borde: medido a 900 px de alto, el botón
+         acababa a 810. Quien no baja, no lo ve.
+
+         No basta con mirarlo en una pantalla: el hero mide una ventana
+         completa, así que el problema aparece y desaparece según la
+         altura. Se comprueba en las cuatro. */
+      if (ruta === "/") {
+        const pliegue = await pagina.evaluate(() => {
+          const cta = [...document.querySelectorAll("main a")].find((a) =>
+            /demo/i.test(a.getAttribute("href") || "")
+          );
+          if (!cta) return null;
+          const r = cta.getBoundingClientRect();
+          return { fin: Math.round(r.bottom), alto: window.innerHeight };
+        });
+        if (!pliegue) {
+          fallos.push(`${etiqueta}: la portada no tiene una llamada a la acción que medir`);
+        } else {
+          pliegues.push(`${pantalla.nombre} ${pliegue.fin}/${pliegue.alto}`);
+          if (pliegue.fin > pliegue.alto - 8) {
+            fallos.push(
+              `${etiqueta}: la llamada a la acción acaba en ${pliegue.fin}px y la pantalla mide ${pliegue.alto}px — queda en el pliegue o por debajo`
+            );
+          }
+        }
+      }
 
       if (pantalla.nombre === "escritorio") {
         if (!informe.papel) {
@@ -982,6 +1015,12 @@ if (idiomasRevisados.length) {
   );
 } else {
   console.warn("  aviso  ninguna página inglesa revisada: el detector de español no está mirando nada");
+}
+
+if (pliegues.length) {
+  console.log(`[humo] pliegue — la llamada a la acción acaba en ${pliegues.join("; ")}`);
+} else {
+  console.warn("  aviso  no se comprobó dónde cae la llamada a la acción de la portada");
 }
 
 if (opacidadesFinales.length) {

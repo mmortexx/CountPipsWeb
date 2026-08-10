@@ -68,7 +68,21 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative flex min-h-screen items-end overflow-hidden border-b"
+      /* ── El contenido va CENTRADO con sesgo bajo, no pegado abajo ────
+         Estaba en `items-end`, y la intención era buena: dejar la mitad
+         de arriba para que se viera la curva del atlas. El precio no lo
+         era. Medido a 1.220 px de alto, el titular arrancaba a 694 px y
+         el borde inferior del botón principal caía en 988; en un
+         portátil corriente de 900 px eso deja la llamada a la acción
+         justo en el pliegue, y en uno de 800 por debajo.
+
+         `items-center` con `pt-[8vh]` conserva lo que se buscaba —el
+         contenido sigue por debajo del centro óptico, así que la figura
+         respira arriba— y sube el bloque lo suficiente para que el
+         botón quede holgado dentro de la primera pantalla en cualquier
+         portátil. El sesgo es proporcional a la altura, no fijo: en una
+         pantalla alta la figura gana más aire, que es donde sobra. */
+      className="relative flex min-h-screen items-center overflow-hidden border-b pt-[8vh]"
       style={{ borderColor: "rgb(var(--divider) / 0.10)" }}
     >
       {/* Scrim lateral de legibilidad sobre la columna de texto. */}
