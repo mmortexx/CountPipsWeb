@@ -82,6 +82,19 @@ export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  /* El cajón no existe hasta que alguien lo abre por primera vez, y a
+     partir de ahí se queda montado para siempre.
+
+     Las dos mitades importan. Si se montara desde el principio, sus
+     ~24 KB de menú viajarían en el HTML de las 155 páginas: medido,
+     3,7 MB de más en el sitio entero para un panel que la mayoría de
+     visitantes no abre nunca. Y si se desmontara al cerrarlo, no habría
+     animación de salida — y ésta se ve, porque son 300 px deslizándose
+     en la pantalla donde más se usa.
+
+     Montar en la primera apertura y no soltar da las dos cosas: cero
+     peso hasta que hace falta, y salida animada desde el primer cierre. */
+  const [cajonMontado, setCajonMontado] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
   /** Elemento de navegación bajo el puntero/foco — mueve la píldora. */
   const [hovered, setHovered] = useState<string | null>(null);
@@ -1016,7 +1029,20 @@ export function Navbar() {
 
             <button
               ref={menuButtonRef}
-              onClick={() => setMobileOpen((o) => !o)}
+              onClick={() => {
+                /* Montar y abrir en el mismo gesto. React aplica los dos
+                   estados en el mismo render, así que el cajón nace ya
+                   con `data-visible` puesto y no habría transición: el
+                   `requestAnimationFrame` separa el montaje de la
+                   apertura en dos fotogramas, que es lo que necesita el
+                   navegador para interpolar entre los dos estados. */
+                if (!cajonMontado) {
+                  setCajonMontado(true);
+                  requestAnimationFrame(() => setMobileOpen(true));
+                  return;
+                }
+                setMobileOpen((o) => !o);
+              }}
               className="grid h-11 w-11 place-items-center rounded-full text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
               aria-label={mobileOpen ? (es ? "Cerrar menú" : "Close menu") : (es ? "Abrir menú" : "Open menu")}
               aria-expanded={mobileOpen}
@@ -1055,6 +1081,7 @@ export function Navbar() {
           La maquinaria de accesibilidad (bloqueo de scroll, trampa de
           foco, cierre con Escape) queda intacta. */}
       <>
+        {cajonMontado && (
           <>
             <div
               onClick={() => setMobileOpen(false)}
@@ -1299,6 +1326,7 @@ export function Navbar() {
               </div>
             </aside>
           </>
+        )}
       </>
     </header>
     </>
