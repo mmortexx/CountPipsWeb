@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PRICING_FAQ_ES, jsonLdFaq } from "@/lib/faq";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PRECIO_CORE } from "@/lib/precios";
@@ -53,44 +54,10 @@ const breadcrumbSchema = {
  * mismatches. The 4 Q&A texts below are the ES version verbatim from
  * PricingFAQ.tsx.
  */
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "¿Qué recibo al solicitar acceso anticipado?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Revisamos cada solicitud por perfil y fase del producto. Si encaja con el piloto privado, recibirás una invitación con los siguientes pasos. No mostramos una posición en cola.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿La demo tiene algún coste?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. La demo es pública, funciona con datos de muestra y no pide tarjeta, registro ni instalación.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Qué incluyen los precios de lanzamiento?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Core está previsto en $149 y Pro en $249. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Qué datos no se solicitan?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Sólo preguntamos lo necesario para seleccionar el piloto y entender tu contexto de journal.",
-      },
-    },
-  ],
-};
+/* Generado desde la misma lista que pinta el acordeon, para que no se
+   pueda publicar a los buscadores una respuesta que la pagina no da.
+   Ver src/lib/faq.ts. */
+const faqSchema = jsonLdFaq(PRICING_FAQ_ES);
 
 /**
  * Product structured data describes the product without an Offer. The prices

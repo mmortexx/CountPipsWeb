@@ -310,3 +310,100 @@ describe("el precio es el mismo en todas partes", () => {
     expect(PRECIO_PRO).toBeGreaterThan(PRECIO_CORE);
   });
 });
+
+describe("lo que se le dice al buscador es lo que dice la página", () => {
+  /**
+   * El fallo que trajo estas pruebas: las trece preguntas frecuentes
+   * estaban escritas dos veces —una en el acordeón que se ve, otra a mano
+   * en el `FAQPage` de datos estructurados— y habían divergido. A «¿Qué
+   * métodos de pago aceptáis?» la página respondía lo cierto (la compra
+   * se abrirá más adelante, el acceso anticipado no es una preventa)
+   * mientras el marcado le declaraba a Google «Tarjeta de crédito/débito
+   * y PayPal. Emitimos factura con IVA si procede.».
+   *
+   * Es la peor forma del fallo: mirando la página no se ve, porque la
+   * afirmación falsa sólo existe en el canal que la publica en los
+   * resultados de búsqueda. Doce de las trece respuestas declaradas no
+   * existían en la página.
+   */
+  const PAGINAS_FAQ = [
+    "src/app/faq/page.tsx",
+    "src/app/en/faq/page.tsx",
+    "src/app/pricing/page.tsx",
+    "src/app/en/pricing/page.tsx",
+  ];
+
+  it("ninguna respuesta del buscador se escribe a mano en la página", () => {
+    /* `acceptedAnswer` a mano en estos cuatro ficheros es exactamente la
+       forma que tenía el fallo: una segunda copia que nadie compara con
+       la primera. Deben construirlo con `jsonLdFaq()` a partir de la
+       misma lista que pinta el acordeón. */
+    const aMano = PAGINAS_FAQ.filter((rel) =>
+      leerCodigo(rel).includes("acceptedAnswer"),
+    );
+    expect(aMano, "vuelven a declarar respuestas por su cuenta").toEqual([]);
+
+    for (const rel of PAGINAS_FAQ) {
+      expect(leerCodigo(rel), `${rel} no genera su FAQPage`).toContain(
+        "jsonLdFaq(",
+      );
+    }
+  });
+
+  it("las preguntas que se publican son las que se pintan", async () => {
+    /* Comprobar que el generador existe no basta: podría llamarse con una
+       lista distinta. Se exige que cada página cite la MISMA constante que
+       importa el componente del acordeón. */
+    const acordeon = leerCodigo("src/components/marketing/FAQ.tsx");
+    const acordeonPrecios = leerCodigo(
+      "src/components/marketing/PricingFAQ.tsx",
+    );
+    const pares: [string, string, string][] = [
+      ["src/app/faq/page.tsx", "FAQ_ES", acordeon],
+      ["src/app/en/faq/page.tsx", "FAQ_EN", acordeon],
+      ["src/app/pricing/page.tsx", "PRICING_FAQ_ES", acordeonPrecios],
+      ["src/app/en/pricing/page.tsx", "PRICING_FAQ_EN", acordeonPrecios],
+    ];
+    for (const [rel, constante, componente] of pares) {
+      expect(leerCodigo(rel), `${rel} publica otra lista`).toContain(
+        `jsonLdFaq(${constante})`,
+      );
+      expect(componente, `el acordeón ya no pinta ${constante}`).toContain(
+        constante,
+      );
+    }
+  });
+
+  it("no se anuncia una forma de pago que no existe", async () => {
+    /* El invariante del producto: /demo es pública sin registro, el acceso
+       anticipado es privado por invitación y 149/249 son precios
+       PREVISTOS — no hay compra posible ni pasarela integrada. Nombrar una
+       marca de pago concreta en el código sólo puede significar dos cosas:
+       o se ha integrado de verdad (y entonces esta prueba obliga a
+       revisar a conciencia lo que promete la web), o se está prometiendo
+       algo que no se puede cumplir, que es lo que pasó. */
+    const MARCAS = /\b(paypal|stripe|braintree|checkout\.com)\b/i;
+    const fuentes: string[] = [];
+    const recorrer = (dir: string) => {
+      for (const entrada of readdirSync(join(RAIZ, dir))) {
+        const rel = `${dir}/${entrada}`;
+        if (statSync(join(RAIZ, rel)).isDirectory()) recorrer(rel);
+        else if (/\.(ts|tsx)$/.test(entrada)) fuentes.push(rel);
+      }
+    };
+    recorrer("src");
+
+    const nombran: string[] = [];
+    for (const rel of fuentes) {
+      sinComentarios(leer(rel))
+        .split("\n")
+        .forEach((linea, i) => {
+          const m = linea.match(MARCAS);
+          if (m) nombran.push(`${rel}:${i + 1} → ${m[0]}`);
+        });
+    }
+    expect(nombran, "pasarelas de pago nombradas sin que exista compra").toEqual(
+      [],
+    );
+  });
+});

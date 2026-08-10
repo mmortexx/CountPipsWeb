@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { FAQ_ES, jsonLdFaq } from "@/lib/faq";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FAQ } from "@/components/marketing/FAQ";
@@ -45,116 +46,12 @@ const breadcrumbSchema = {
  * actually visible to the user, and emitting it on every page can trigger
  * a manual-action penalty.
  */
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "¿Cuál es el estado de compra?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "La demo es pública y no pide registro ni tarjeta. Core $149 y Pro $249 son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Mis datos están seguros?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Tus datos viven en un único archivo .sqlite dentro de tu equipo. Nunca se suben a ningún servidor: no hay servidor. Puedes cifrar la carpeta con BitLocker/VeraCrypt para una capa extra de seguridad.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Puedo exportar mis datos?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Sí. Puedes exportar todo tu journal a CSV (para Excel o Google Sheets), PDF (informes listos para compartir) y JSON (backup completo y reimportable). Tus datos son tuyos: puedes llevártelos cuando quieras, sin API que cerrar ni servidor que apagar.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Funciona en Mac o Linux?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "CountPips es una app nativa de Windows (WinUI 3). En Mac o Linux puedes ejecutarla a través de una máquina virtual con Windows o Parallels. Estamos explorando activamente una versión local-first para Mac y Linux: si quieres entrar en el acceso anticipado, escríbenos.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Puedo importar de otro journal?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Sí. Aceptamos importación desde CSV (formato flexible con mapeo de columnas) y un importador dedicado para journals populares. Si tu journal actual exporta a CSV, lo tienes en tu CountPips en menos de 5 minutos.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Cómo se selecciona el acceso anticipado?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Revisamos las solicitudes por perfil y fase del producto, no por orden de llegada. Si encaja con el piloto privado, escribiremos con los pasos de invitación.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Qué está listo y qué se está validando?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "La demo, el journal, las métricas y los recorridos de riesgo están listos para explorar. El piloto privado valida la instalación y el flujo con usuarios reales; la página de estado explica lo que todavía no prometemos.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Qué métodos de pago aceptáis?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Tarjeta de crédito/débito y PayPal. Emitimos factura con IVA si procede.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Puedo ver el producto antes de solicitar acceso?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Sí. Puedes explorar la demo en vivo con datos deterministas, sin registro y sin descargar nada. La aplicación instalada se entrega sólo a participantes del piloto privado invitados.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Cuál es la diferencia entre Core y Pro?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Core incluye el journal completo, 40+ métricas, 2 cuentas de trading, gestión de riesgo, disciplina e informes PDF básicos. Pro desbloquea además: cuentas ilimitadas, modo prop firm, simulador Monte Carlo, informe de track record, risk of ruin, informes PDF avanzados y el importador de rivales que migra tu journal anterior en 5 minutos.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Cómo funcionará la privacidad de mis datos?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "La aplicación está diseñada local-first: las operaciones viven en tu equipo y la web no pide credenciales, capital, extractos ni datos financieros. El piloto privado valida el flujo sin exponer esos datos.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Podré usarlo en varios ordenadores?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "La política de dispositivos se concretará antes de la venta. Durante el piloto privado recibirás instrucciones de instalación sólo si eres invitado.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Qué ocurre si cambio de ordenador durante el piloto?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "El equipo de CountPips te indicará el procedimiento para mover tu entorno. No pediremos credenciales ni datos financieros para hacerlo.",
-      },
-    },
-  ],
-};
+/* El dato estructurado sale de la MISMA lista que pinta el acordeon,
+   no de una copia a mano. Aqui habia trece respuestas escritas aparte
+   que ya no coincidian con la pagina: a la pregunta por los metodos de
+   pago se le declaraba a Google tarjeta y PayPal cuando no hay compra
+   posible. Ver src/lib/faq.ts. */
+const faqSchema = jsonLdFaq(FAQ_ES);
 
 export const metadata: Metadata = {
   title: "FAQ",

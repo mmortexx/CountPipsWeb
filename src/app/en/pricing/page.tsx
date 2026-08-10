@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PRICING_FAQ_EN, jsonLdFaq } from "@/lib/faq";
 import { PricingBody } from "../../pricing/page";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -15,44 +16,10 @@ const breadcrumbSchema = {
    `PricingFAQ.tsx` — están copiadas de ahí, no traducidas de nuevo, por
    el mismo motivo que avisa el fichero español: Google penaliza cuando
    el dato estructurado no coincide con lo que se ve en pantalla. */
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "What do I receive when I request early access?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "We review every request by profile and product phase. If it fits the private pilot, you receive an invitation with next steps. We do not show a queue position.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Does the demo cost anything?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. The demo is public, uses sample data and requires no card, sign-up or installation.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What do the launch prices include?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Core is planned at $149 and Pro at $249. They are launch references until commercial delivery, licensing and support are open.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What data do you not request?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "We never ask for credentials, capital, statements or financial data. We only ask what is needed to select the pilot and understand your journaling context.",
-      },
-    },
-  ],
-};
+/* Generado desde la misma lista que pinta el acordeon, para que no se
+   pueda publicar a los buscadores una respuesta que la pagina no da.
+   Ver src/lib/faq.ts. */
+const faqSchema = jsonLdFaq(PRICING_FAQ_EN);
 
 const productSchema = {
   "@context": "https://schema.org",

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
+import { PRICING_FAQ_ES, PRICING_FAQ_EN, type QA } from "@/lib/faq";
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
@@ -46,50 +47,14 @@ import {
  *    FinalCTA.
  */
 
-type QA = { q: string; a: string };
-
 export function PricingFAQ() {
   const { lang } = useLang();
   const es = lang === "es";
   const reduce = useReducedMotion();
 
-  const items: QA[] = es
-    ? [
-        {
-          q: "¿Qué recibo al solicitar acceso anticipado?",
-          a: "Revisamos cada solicitud por perfil y fase del producto. Si encaja con el piloto privado, recibirás una invitación con los siguientes pasos. No mostramos una posición en cola.",
-        },
-        {
-          q: "¿La demo tiene algún coste?",
-          a: "No. La demo es pública, funciona con datos de muestra y no pide tarjeta, registro ni instalación.",
-        },
-        {
-          q: "¿Qué incluyen los precios de lanzamiento?",
-          a: "Core está previsto en $149 y Pro en $249. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
-        },
-        {
-          q: "¿Qué datos no se solicitan?",
-          a: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Sólo preguntamos lo necesario para seleccionar el piloto y entender tu contexto de journal.",
-        },
-      ]
-    : [
-        {
-          q: "What do I receive when I request early access?",
-          a: "We review every request by profile and product phase. If it fits the private pilot, you receive an invitation with next steps. We do not show a queue position.",
-        },
-        {
-          q: "Does the demo cost anything?",
-          a: "No. The demo is public, uses sample data, and requires no card, sign-up or installation.",
-        },
-        {
-          q: "What do the launch prices include?",
-          a: "Core is planned at $149 and Pro at $249. They are launch references until commercial delivery, licensing and support are open.",
-        },
-        {
-          q: "What data do you not request?",
-          a: "We never ask for credentials, capital, statements or financial data. We only ask what is needed to select the pilot and understand your journaling context.",
-        },
-      ];
+  /* Las cuatro preguntas viven en `src/lib/faq.ts`, compartidas con el
+     dato estructurado de la pagina, para que no puedan divergir. */
+  const items: QA[] = es ? PRICING_FAQ_ES : PRICING_FAQ_EN;
 
   /* Reassurance signals describe the current commercial path honestly. */
   const pills = [
