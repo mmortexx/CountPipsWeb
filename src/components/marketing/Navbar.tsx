@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
 import { useLang, type Lang } from "@/lib/i18n";
 import { sinPrefijoEn } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
@@ -746,13 +745,15 @@ export function Navbar() {
               </button>
               {productActive && activeBar}
 
-              {/* Panel del megamenú. AnimatePresence en lugar de
-                  conmutar `visibility`: así el panel se desmonta de
-                  verdad y no queda en el árbol de accesibilidad estando
-                  cerrado. */}
-              <AnimatePresence>
-                {megaOpen && (
-                  <motion.div
+              {/* El panel se monta y se desmonta de verdad, en vez de
+                  conmutar `visibility`: así no queda en el árbol de
+                  accesibilidad estando cerrado. La entrada la anima el
+                  CSS (`.tj-cae`); la salida no se anima, y es
+                  deliberado — un menú se cierra en cuanto eliges, y
+                  coreografiar su marcha no compensaba arrastrar una
+                  biblioteca de animación a las 155 páginas del sitio. */}
+              {megaOpen && (
+                  <div
                     role="menu"
                     aria-labelledby="navbar-producto-trigger"
                     /* Navegación con flechas. Un menú abierto tiene que
@@ -788,12 +789,6 @@ export function Navbar() {
                           actual <= 0 ? opciones.length - 1 : actual - 1;
                       opciones[siguiente]?.focus();
                     }}
-                    /* Apertura corta y plana: sin muelle ni escala. Un
-                       menú de herramientas aparece, no rebota. */
-                    initial={{ opacity: 0, y: -4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -4 }}
-                    transition={{ duration: 0.13, ease: [0.22, 1, 0.36, 1] }}
                     // T3b — el panel flota como una hoja de papel cálido
                     // translúcida (72% surface, blur 10px, grano SVG) con
                     // un halo champagne muy tenue en el borde superior
@@ -826,7 +821,7 @@ export function Navbar() {
                        corriente se leían enteros por debajo de sus
                        entradas. Un menú se pone delante de la página; si
                        la deja ver, las dos compiten por el mismo sitio. */
-                    className="tj-paper tj-paper-dense tj-paper-glow absolute left-1/2 w-[520px] max-w-[calc(100vw-3rem)] origin-top rounded-[2px] border p-2"
+                    className="tj-cae tj-paper tj-paper-dense tj-paper-glow absolute left-1/2 w-[520px] max-w-[calc(100vw-3rem)] origin-top rounded-[2px] border p-2"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
@@ -912,9 +907,8 @@ export function Navbar() {
                         </div>
                       ))}
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  </div>
+              )}
             </div>
 
             {navLink("/demo", "Demo")}
@@ -944,19 +938,18 @@ export function Navbar() {
                   barra que debe leerse como instrumental. `mode="wait"`
                   evita que se solapen; `initial={false}` evita el
                   destello al montar. */}
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span
-                  key={theme}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.12 }}
-                  className="grid place-items-center"
-                  style={{ width: 15, height: 15 }}
-                >
-                  {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-                </motion.span>
-              </AnimatePresence>
+              {/* `key={theme}` hace que React reemplace el nodo al
+                  cambiar de tema, y el nodo nuevo entra con su propia
+                  animación CSS. Es lo mismo que hacía `AnimatePresence`
+                  con `mode="wait"`, sin biblioteca: en un cruce de
+                  120 ms sólo se percibe la aparición. */}
+              <span
+                key={theme}
+                className="tj-cruza grid place-items-center"
+                style={{ width: 15, height: 15 }}
+              >
+                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+              </span>
             </IconButton>
 
             {/* Aquí vivió un conmutador de estilo (Terminal / Clásico).
@@ -1045,32 +1038,39 @@ export function Navbar() {
             es una barra de navegación, no un indicador. */}
       </nav>
 
-      {/* Drawer móvil — maquinaria a11y intacta. */}
-      <AnimatePresence>
-        {mobileOpen && (
+      {/* ── Cajón móvil ────────────────────────────────────────────────
+          Éste SÍ se queda montado con la visibilidad conmutada, al
+          revés que el megamenú y el desplegable de idioma. El motivo es
+          que aquí la salida se ve: el cajón ocupa 300 px de ancho y se
+          desliza; si desapareciera de golpe al cerrarlo, el gesto se
+          rompería en la mitad más visible del sitio, que es el móvil.
+
+          Estar montado y oculto tiene un precio de accesibilidad —un
+          diálogo permanente en el árbol— y se paga con `inert`, que lo
+          saca por completo mientras está cerrado: ni foco, ni lectura,
+          ni clics. Es más limpio que el `tabIndex={-1}` de antes, que
+          sólo cubría el propio contenedor y dejaba enfocables los
+          enlaces de dentro.
+
+          La maquinaria de accesibilidad (bloqueo de scroll, trampa de
+          foco, cierre con Escape) queda intacta. */}
+      <>
           <>
-            <motion.div
-              key="mobile-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            <div
               onClick={() => setMobileOpen(false)}
-              className="fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm backdrop-saturate-150 min-[1120px]:hidden"
+              data-visible={mobileOpen ? "true" : "false"}
+              className="tj-velo fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm backdrop-saturate-150 min-[1120px]:hidden"
               aria-hidden="true"
             />
-            <motion.aside
-              key="mobile-drawer"
+            <aside
               ref={drawerRef}
               id="mobile-nav-drawer"
               role="dialog"
               aria-modal="true"
               aria-label={es ? "Menú de navegación" : "Navigation menu"}
               tabIndex={-1}
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              data-visible={mobileOpen ? "true" : "false"}
+              inert={!mobileOpen}
               // El cajón es una hoja de papel cálido que se desliza sobre
               // el contenido. OPACA (`tj-paper-dense`): se abre encima de
               // la página entera en la pantalla más estrecha, que es
@@ -1091,7 +1091,7 @@ export function Navbar() {
               // altura completa). Mismo patrón que CookieConsent.tsx
               // (línea 138) usa para el mismo conflicto. Inline style
               // gana a cualquier regla externa sin `!important`.
-              className="tj-paper tj-paper-dense safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none min-[1120px]:hidden"
+              className="tj-cajon tj-paper tj-paper-dense safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none min-[1120px]:hidden"
               style={{ position: "fixed" }}
             >
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-[rgb(var(--divider)/0.06)] px-5">
@@ -1229,19 +1229,13 @@ export function Navbar() {
                     data-theme-toggle
                     className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[2px] border bg-transparent px-2.5 text-[11px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   >
-                    <AnimatePresence mode="wait" initial={false}>
-                      <motion.span
-                        key={theme}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.12 }}
-                        className="grid place-items-center"
-                        style={{ width: 15, height: 15 }}
-                      >
-                        {theme === "dark" ? <SunIcon /> : <MoonIcon />}
-                      </motion.span>
-                    </AnimatePresence>
+                    <span
+                      key={theme}
+                      className="tj-cruza grid place-items-center"
+                      style={{ width: 15, height: 15 }}
+                    >
+                      {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+                    </span>
                     <span>{theme === "dark" ? (es ? "Claro" : "Light") : (es ? "Oscuro" : "Dark")}</span>
                   </button>
                 </div>
@@ -1303,10 +1297,9 @@ export function Navbar() {
                   </div>
                 </div>
               </div>
-            </motion.aside>
+            </aside>
           </>
-        )}
-      </AnimatePresence>
+      </>
     </header>
     </>
   );
@@ -1436,17 +1429,16 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
         </svg>
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
+      {/* Sin animación de salida: un desplegable de dos entradas se
+          cierra en cuanto eliges, y coreografiar su marcha no aporta
+          nada que compense meter una biblioteca de animación en las 155
+          páginas del sitio. La entrada sí se anima (`.tj-cae`). */}
+      {open && (
+          <div
             ref={popRef}
             role="listbox"
             aria-label={es ? "Idiomas" : "Languages"}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.13, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute right-0 z-50 min-w-[168px] rounded-[2px] border p-1"
+            className="tj-cae absolute right-0 z-50 min-w-[168px] rounded-[2px] border p-1"
             style={{
               top: "calc(100% + 8px)",
               borderColor: "rgb(var(--divider) / 0.14)",
@@ -1501,9 +1493,8 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
                 </button>
               );
             })}
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+      )}
     </div>
   );
 }

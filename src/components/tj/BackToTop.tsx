@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { irArriba } from "@/lib/scroll";
 
@@ -40,12 +39,11 @@ import { irArriba } from "@/lib/scroll";
  *   down, reaching 100% at the bottom of the page. The ring is
  *   `rgb(var(--accent-base))` so it reads as a quiet brand-colored
  *   progress cue layered on top of the liquid-glass button.
- * - Smooth-scrolls to top on click via `window.scrollTo({ behavior:
- *   "smooth" })`. Respects `prefers-reduced-motion` — falls back to
- *   instant scroll so users with vestibular sensitivities don't get the
- *   animated scroll.
- * - Hover: lifts (-2 px) and gains an accent-tinted glow. Disabled under
- *   reduced-motion (via `MotionConfig reducedMotion="user"`).
+ * - Al pulsarlo sube a la cabecera con `irArriba()` (src/lib/scroll.ts):
+ *   salta hasta un palmo del destino y anima sólo ese tramo, en vez de
+ *   recorrer las diez pantallas que puede haber de por medio.
+ * - Al pasar por encima se levanta 2 px y gana un halo del acento. Todo
+ *   en CSS (`.tj-subir`), y anulado bajo `prefers-reduced-motion`.
  * - rAF-throttled scroll listener for smooth ring updates without jank.
  *   A resize listener is also attached so the cookie-avoidance lift
  *   recomputes when the banner reflows (e.g. orientation change).
@@ -53,15 +51,21 @@ import { irArriba } from "@/lib/scroll";
  * POSITION — `right-[calc(env(safe-area-inset-right)+1.5rem)]` and the
  * equivalent for `bottom`. Adds the iOS notch / home-indicator inset on
  * top of the 1.5 rem (24 px) base offset, so the button clears the home
- * indicator in landscape on iPhones with notches. The outer container
- * holds the `fixed` anchor and the `transform` shift; the inner
- * motion.button holds the framer-motion animations. Splitting them avoids
- * a framer-motion + `position: fixed` interaction where AnimatePresence
- * reassigns `position: relative` during exit transitions and the button
- * briefly jumps into document flow (see the historical comment in git
- * history). `pointer-events-none` on the container prevents its 44 px
- * footprint from intercepting clicks when the button is hidden; the
- * button re-enables them with `pointer-events-auto`.
+ * indicator in landscape on iPhones with notches. El contenedor exterior
+ * lleva el anclaje `fixed` y el levantamiento; el botón, su propia
+ * entrada. Van separados porque son dos transformaciones sobre el mismo
+ * eje y, en un solo elemento, la última escrita pisa a la anterior.
+ * `pointer-events-none` en el contenedor evita que sus 44 px intercepten
+ * clics cuando el botón está oculto; el botón los reactiva con
+ * `pointer-events-auto`.
+ *
+ * ── Sin framer-motion ─────────────────────────────────────────────────
+ * Este componente usaba `AnimatePresence`, `motion.button` y
+ * `MotionConfig`, y con ellos arrastraba la biblioteca entera al paquete
+ * común de las 155 páginas. Ahora el botón está SIEMPRE montado y su
+ * visibilidad es un atributo (`.tj-emerge`, en globals.css): entrar y
+ * salir es una transición CSS que resuelve el compositor. Un botón de
+ * 44 px en el árbol no cuesta nada; la biblioteca costaba 344 KB.
  *
  * State strategy: `visible` uses a lazy initializer so a back/forward
  * navigation that restores scroll > 400 px shows the button immediately
@@ -214,36 +218,33 @@ export function BackToTop() {
   const totalLift = Math.max(shifted ? SHIFT_LIFT_PX : 0, cookieLift);
 
   return (
-    <MotionConfig reducedMotion="user">
-      {/* Anchor + shift container. framer-motion touches only the inner
-          motion.button; the outer div holds `fixed` + the lift transform.
-          `transition-transform` makes the lift smooth on scroll-into-
-          footer and on cookie-banner mount/unmount; `pointer-events-none`
-          lets clicks fall through to the page when the button isn't
-          rendered. */}
+    <>
+      {/* Anclaje y desplazamiento. El contenedor exterior lleva el
+          `fixed` y el levantamiento; el botón, su propia entrada. Van
+          separados porque son dos transformaciones distintas sobre el
+          mismo eje: mezclarlas en un elemento hace que la última escrita
+          pise a la anterior. */}
       <div
         className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform duration-200 ease-out motion-reduce:transition-none"
         style={{ transform: `translateY(-${totalLift}px)` }}
       >
-        <AnimatePresence>
-          {visible && (
-            <motion.button
-              type="button"
-              onClick={scrollToTop}
-              aria-label={es ? "Volver arriba" : "Back to top"}
-              className="pointer-events-auto relative w-11 h-11 rounded-full tj-paper tj-paper-dense flex items-center justify-center text-primary transition-[box-shadow] duration-200 hover:shadow-[0_8px_28px_rgb(var(--accent-base)/0.40)]"
-              initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              /* El realce al pasar por encima se hace con framer-motion, no
-                 con `hover:-translate-y-0.5` de Tailwind: motion escribe
-                 `transform` en el estilo en línea para animar la escala, así
-                 que la clase de Tailwind quedaba pisada y el botón nunca
-                 llegaba a levantarse. */
-              whileHover={{ y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
+        {/* Montado siempre y visible por atributo, en vez de montado y
+            desmontado por `AnimatePresence`. Un botón de 44 px en el
+            árbol no cuesta nada; la biblioteca que lo animaba costaba
+            344 KB en las 155 páginas del sitio. `.tj-emerge` está en
+            globals.css.
+
+            `tabIndex={-1}` mientras está oculto: a opacidad cero seguía
+            siendo alcanzable con el tabulador, y quien navega con
+            teclado se paraba en un botón invisible. */}
+        <button
+          type="button"
+          onClick={scrollToTop}
+          aria-label={es ? "Volver arriba" : "Back to top"}
+          data-visible={visible ? "true" : "false"}
+          tabIndex={visible ? 0 : -1}
+          className="tj-emerge tj-subir pointer-events-auto relative w-11 h-11 rounded-full tj-paper tj-paper-dense flex items-center justify-center text-primary hover:shadow-[0_8px_28px_rgb(var(--accent-base)/0.40)]"
+        >
               {/* Scroll-progress ring — SVG circle with a dash that fills
                   clockwise as the user scrolls. Rotated -90deg so 0% starts
                   at 12 o'clock. Sits behind the arrow. */}
@@ -299,10 +300,8 @@ export function BackToTop() {
               >
                 <path d="M9 14V4M4 8l5-5 5 5" />
               </svg>
-            </motion.button>
-          )}
-        </AnimatePresence>
+        </button>
       </div>
-    </MotionConfig>
+    </>
   );
 }

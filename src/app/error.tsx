@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -49,62 +48,48 @@ export default function Error({
       />
 
       <div className="relative z-[2] text-center max-w-xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[12px] text-secondary mb-7"
+        <div
+          className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[12px] text-secondary mb-7"
         >
           <span className="relative flex w-1.5 h-1.5">
             <span className="absolute inline-flex w-full h-full rounded-full bg-pnl-neg opacity-60 animate-ping" />
             <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-pnl-neg" />
           </span>
           {es ? "Error en tiempo de ejecución" : "Runtime error"}
-        </motion.div>
+        </div>
 
-        <motion.h1
+        <h1
           id="error-heading"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-3xl md:text-4xl font-semibold tracking-tight text-primary text-balance"
+          style={{ animationDelay: "0.1s" }}
+          className="tj-alza text-3xl md:text-4xl font-semibold tracking-tight text-primary text-balance"
         >
           {es ? "Algo salió mal" : "Something went wrong"}
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-4 text-base md:text-lg text-secondary leading-relaxed"
+        <p
+          style={{ animationDelay: "0.2s" }}
+          className="tj-alza mt-4 text-base md:text-lg text-secondary leading-relaxed"
         >
           {es
             ? "Se produjo un error inesperado. Puedes intentar de nuevo o volver al inicio."
             : "An unexpected error occurred. You can try again or head back home."}
-        </motion.p>
+        </p>
 
         {/* Discrete digest for support / debugging */}
         {error?.digest ? (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-3 text-[11px] uppercase tracking-[0.15em] text-tertiary tnum"
+          <p
+            style={{ animationDelay: "0.3s" }}
+            className="tj-alza mt-3 text-[11px] uppercase tracking-[0.15em] text-tertiary tnum"
           >
             {es ? "Referencia" : "Reference"}: {error.digest}
-          </motion.p>
+          </p>
         ) : null}
 
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="mt-9 flex flex-wrap items-center justify-center gap-3"
+        <div
+          style={{ animationDelay: "0.35s" }}
+          className="tj-alza mt-9 flex flex-wrap items-center justify-center gap-3"
         >
-          <motion.div
-            whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-            className="inline-flex"
-          >
+          <div className="tj-pulsa inline-flex">
             <button
               type="button"
               onClick={reset}
@@ -128,19 +113,16 @@ export default function Error({
               </svg>
               {es ? "Reintentar" : "Try again"}
             </button>
-          </motion.div>
-          <motion.div
-            whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-            className="inline-flex"
-          >
+          </div>
+          <div className="tj-pulsa inline-flex">
             <Link
               href="/"
               className="tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.20)] text-primary px-8 py-3 rounded-[2px] font-medium hover:bg-[rgb(var(--accent-base))] hover:text-[rgb(var(--accent-ink))] transition-[background-color,color,transform] hover:-translate-y-0.5"
             >
               {es ? "Volver al inicio" : "Back to home"}
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

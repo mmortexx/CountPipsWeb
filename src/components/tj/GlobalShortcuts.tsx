@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
@@ -179,16 +178,16 @@ export function GlobalShortcuts() {
   }, [toggleTheme, toggleLang, router, lang]);
 
   return (
-    <AnimatePresence>
-      {showHint && (
-        <motion.div
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
-          initial={{ opacity: 0, y: 8, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 8, scale: 0.9 }}
-          transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          aria-hidden="true"
-        >
+    /* Montado siempre, visible por atributo. La pista es un nodo
+       diminuto y así la entrada y la salida son una transición CSS en
+       vez de una biblioteca de animación en el paquete de las 155
+       páginas — ver `.tj-emerge` en globals.css. */
+    <div
+      className="tj-emerge fixed bottom-6 left-1/2 z-50 pointer-events-none"
+      style={{ translate: "-50% 0" }}
+      data-visible={showHint ? "true" : "false"}
+      aria-hidden="true"
+    >
           <div className="tj-paper tj-paper-dense rounded-full pl-3 pr-3.5 py-1.5 flex items-center gap-2 border border-[rgb(var(--divider)/0.15)] shadow-lg">
             {/* Label — tells the user what the prefix does */}
             <span className="text-[10px] uppercase tracking-[0.12em] text-tertiary font-semibold hidden sm:inline">
@@ -206,9 +205,7 @@ export function GlobalShortcuts() {
             <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-dashed border-[rgb(var(--accent-base)/0.5)] text-[11px] font-mono text-[rgb(var(--accent-base))] tnum animate-pulse">
               ?
             </span>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    </div>
   );
 }

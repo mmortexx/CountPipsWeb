@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { CONSENT_REOPEN_EVENT, readConsent, writeConsent } from "@/lib/consent";
 
@@ -136,15 +135,31 @@ export function CookieConsent() {
   }
 
   return (
-    <MotionConfig reducedMotion="user">
-      <AnimatePresence>
-        {visible && !dismissed && (
-          <motion.div
-            role="dialog"
-            aria-live="polite"
-            aria-label={es ? "Consentimiento de cookies" : "Cookie consent"}
-            data-cookie-consent="visible"
-            style={{ position: "fixed" }}
+    <>
+      {/* El aviso sólo entra en el árbol cuando de verdad hay que
+          enseñarlo. A diferencia del botón de volver arriba —que se
+          queda montado y oculto—, aquí sí se monta y se desmonta: es un
+          diálogo con `role="dialog"`, y un diálogo permanentemente
+          presente en el árbol lo anuncian algunos lectores de pantalla
+          aunque esté invisible.
+
+          El precio es que no hay animación de SALIDA, que es justo para
+          lo que existía `AnimatePresence`. Se acepta a cambio de sacar
+          la biblioteca del paquete de las 155 páginas: la salida ocurre
+          después de que el visitante ya ha decidido y ha pulsado, que
+          es el momento en el que menos importa cómo se va.
+
+          `data-cookie-consent="visible"` sólo existe mientras el aviso
+          está en pantalla, y eso importa: `BackToTop` busca ese
+          selector para apartarse del banner. Con el nodo siempre
+          montado, el botón se habría quedado levantado para siempre. */}
+      {visible && !dismissed && (
+        <div
+          role="dialog"
+          aria-live="polite"
+          aria-label={es ? "Consentimiento de cookies" : "Cookie consent"}
+          data-cookie-consent="visible"
+          style={{ position: "fixed" }}
             // ── Estructura mobile-first ──────────────────────────────────
             // En móvil (<768px): bottom sheet a SANGRE — w-full, left-0,
             // bottom-0, esquinas redondeadas solo arriba. Es el patrón
@@ -159,11 +174,7 @@ export function CookieConsent() {
             //
             // z-50 sobre BackToTop (z-40). safe-bottom para el home
             // indicator de iOS en el sheet móvil.
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="tj-paper tj-paper-dense z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[12px] border-t border-[rgb(var(--divider)/0.14)] p-4 shadow-2xl md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[2px] md:border md:border-[rgb(var(--divider)/0.13)] md:p-5"
+            className="tj-entra-abajo tj-paper tj-paper-dense z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[12px] border-t border-[rgb(var(--divider)/0.14)] p-4 shadow-2xl md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[2px] md:border md:border-[rgb(var(--divider)/0.13)] md:p-5"
           >
             <div className="flex items-start gap-2.5 md:gap-3">
               <CookieIcon />
@@ -212,10 +223,9 @@ export function CookieConsent() {
                 {es ? "Aceptar analítica" : "Accept analytics"}
               </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </MotionConfig>
+        </div>
+      )}
+    </>
   );
 }
 

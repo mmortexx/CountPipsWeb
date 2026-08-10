@@ -4981,3 +4981,253 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 .tj-paper-dense {
   background-color: var(--paper-dense);
 }
+
+/* ============================================================
+   EMERGER — aparecer y desaparecer sin biblioteca
+   ============================================================
+   Lo que hacía `AnimatePresence` en las piezas flotantes del layout: el
+   botón de volver arriba, el aviso de cookies y la pista del atajo `g`.
+
+   ── Por qué se sustituye ──────────────────────────────────────────────
+   No por gusto. `framer-motion` ocupa unos 344 KB en dos trozos del
+   paquete común, y entraba en las 155 páginas porque lo usaban seis
+   componentes del LAYOUT — que es el que se sirve en todas. Una política
+   de privacidad descargaba una biblioteca de animación entera para
+   enseñar un botón redondo.
+
+   ── Por qué esto basta ────────────────────────────────────────────────
+   `AnimatePresence` existe para resolver un problema concreto: animar la
+   SALIDA de un elemento que React va a desmontar. Aquí ese problema no
+   se da, porque estas tres piezas no necesitan desmontarse — son un
+   botón, un aviso y una pista, y dejarlas en el árbol con la opacidad a
+   cero cuesta tres nodos.
+
+   Con el elemento siempre montado, entrar y salir es una transición CSS
+   corriente: la anima el compositor, no hay JavaScript en el camino y no
+   hay biblioteca que descargar.
+
+   `visibility` va en la transición junto a la opacidad —con su retardo
+   al ocultar, para que espere a que termine el fundido— porque un
+   elemento a opacidad cero SIGUE siendo enfocable con el tabulador. Sin
+   eso, el lector de pantalla de alguien que navega con teclado se para
+   en un botón que nadie ve. */
+.tj-emerge {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px) scale(0.94);
+  transition:
+    opacity 0.18s var(--ease-suave, ease),
+    transform 0.18s var(--ease-suave, ease),
+    visibility 0s linear 0.18s;
+}
+.tj-emerge[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.22s var(--ease-suave, ease),
+    transform 0.22s var(--ease-suave, ease),
+    visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-emerge,
+  .tj-emerge[data-visible="true"] {
+    transition:
+      opacity 0.12s linear,
+      visibility 0s;
+    transform: none;
+  }
+}
+
+/* El realce al pasar por encima de un botón flotante. Iba en
+   `whileHover` de framer-motion porque la biblioteca escribe `transform`
+   en el estilo en línea para animar su escala, y eso pisaba cualquier
+   `hover:-translate-y-*` de Tailwind. Sin la biblioteca, el conflicto no
+   existe y basta una regla. */
+.tj-subir:hover {
+  transform: translateY(-2px);
+}
+.tj-subir:active {
+  transform: scale(0.95);
+}
+.tj-emerge.tj-subir {
+  transition:
+    opacity 0.18s var(--ease-suave, ease),
+    transform 0.18s var(--ease-suave, ease),
+    box-shadow 0.2s var(--ease-suave, ease),
+    visibility 0s linear 0.18s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-subir:hover,
+  .tj-subir:active {
+    transform: none;
+  }
+}
+
+/* La entrada del aviso de cookies: sube desde abajo una sola vez, al
+   montarse. Sustituye a un `initial/animate` de framer-motion — una
+   animación de entrada no necesita biblioteca, sólo un `@keyframes`. */
+.tj-entra-abajo {
+  animation: tj-sube-aviso 0.28s var(--ease-suave, ease) both;
+}
+@keyframes tj-sube-aviso {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-entra-abajo {
+    animation: none;
+  }
+}
+
+/* Cruce corto de icono al cambiar de estado (sol ↔ luna). Con
+   `key={estado}` React reemplaza el nodo y el nuevo entra con esto. En
+   120 ms sólo se percibe la aparición, así que no hace falta coreografiar
+   también la salida — que es lo único que aportaba `AnimatePresence`. */
+.tj-cruza {
+  animation: tj-aparece 0.12s linear both;
+}
+@keyframes tj-aparece {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-cruza {
+    animation: none;
+  }
+}
+
+/* Entrada de un desplegable anclado a su disparador: cae 4 px desde
+   arriba. Corta y plana — un menú de herramientas aparece, no rebota. */
+.tj-cae {
+  animation: tj-cae-corto 0.13s var(--ease-suave, ease) both;
+}
+@keyframes tj-cae-corto {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-cae {
+    animation: none;
+  }
+}
+
+/* ── El cajón móvil y su velo ─────────────────────────────────────────
+   Los dos se quedan montados y conmutan visibilidad, al revés que el
+   megamenú: aquí la salida SÍ se ve —el cajón mide 300 px y se
+   desliza—, y desaparecer de golpe rompería el gesto en la pantalla
+   donde más se usa.
+
+   `visibility` entra en la transición con su retardo al cerrar, para
+   que espere a que el panel termine de salir. Sin eso, el cajón se
+   corta a mitad de camino. */
+.tj-cajon {
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.32s var(--ease-suave, ease),
+    visibility 0s linear 0.32s;
+}
+.tj-cajon[data-visible="true"] {
+  transform: none;
+  visibility: visible;
+  transition:
+    transform 0.32s var(--ease-suave, ease),
+    visibility 0s;
+}
+.tj-velo {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.25s var(--ease-suave, ease),
+    visibility 0s linear 0.25s;
+}
+.tj-velo[data-visible="true"] {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.25s var(--ease-suave, ease),
+    visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-cajon,
+  .tj-cajon[data-visible="true"],
+  .tj-velo,
+  .tj-velo[data-visible="true"] {
+    transition:
+      opacity 0.1s linear,
+      visibility 0s;
+    transform: none;
+  }
+}
+
+/* ── Entrada en cascada sin biblioteca ────────────────────────────────
+   Para pantallas que se montan de una vez y no dependen del scroll: la
+   página de error y la de 404. El escalonado es un `animation-delay` en
+   línea, que es exactamente lo que hacía el `delay` de framer-motion,
+   sin traerse la biblioteca a un boundary que Next empaqueta con TODAS
+   las páginas del sitio. */
+.tj-alza {
+  animation: tj-alza-entrada 0.6s var(--ease-suave, ease) both;
+}
+@keyframes tj-alza-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* El hundido al pulsar, que iba en `whileTap`. */
+.tj-pulsa:active {
+  transform: scale(0.97);
+  transition: transform 0.1s var(--ease-suave, ease);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-alza {
+    animation: none;
+  }
+  .tj-pulsa:active {
+    transform: none;
+  }
+}
+
+/* El realce de un botón o enlace destacado: sube dos píxeles al pasar
+   por encima y se hunde al pulsar. Sustituye a la «atracción magnética»
+   que hacía que el elemento persiguiera al cursor — ver el encabezado de
+   `MagneticButton.tsx` para los dos motivos por los que se retiró. */
+.tj-realza {
+  transition: transform 0.2s var(--ease-suave, ease);
+}
+.tj-realza:hover {
+  transform: translateY(-2px);
+}
+.tj-realza:active {
+  transform: translateY(0) scale(0.98);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-realza,
+  .tj-realza:hover,
+  .tj-realza:active {
+    transition: none;
+    transform: none;
+  }
+}

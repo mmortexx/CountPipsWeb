@@ -1,11 +1,10 @@
-"use client";
-
-import { motion, useReducedMotion, useMotionValue, useSpring } from "framer-motion";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface MagneticButtonProps {
   children: ReactNode;
   className?: string;
+  /** Se acepta por compatibilidad con las cuatro llamadas que existen.
+   *  Ya no hace nada: no hay atracción que graduar. */
   strength?: number;
   onClick?: () => void;
   href?: string;
@@ -20,31 +19,43 @@ interface MagneticButtonProps {
 }
 
 /**
- * Button/link that subtly attracts toward the cursor — a premium micro-interaction.
+ * Un botón o enlace con un realce sobrio al pasar por encima.
  *
- * The magnetic pull is driven by `useMotionValue` + `useSpring` so the element
- * eases back to its origin on `mouseleave` instead of snapping. Anchor mode
- * (`href`) forwards `target` / `rel` / `aria-label` for external links.
+ * ── Lo que era y por qué se fue ───────────────────────────────────────
+ * Se llamaba «magnético» porque el elemento se desplazaba hacia el
+ * cursor: `useMotionValue` + `useSpring` de framer-motion, con un tope
+ * de 6 px y un muelle para volver al origen. Un efecto de escaparate.
  *
- * Tuning (P5 polish):
- *  - Max translate is clamped to 6 px regardless of `strength` or cursor
- *    distance — the spec asks for 4-6 px ("subtle > spectacular"); without
- *    the clamp, a wide CTA can hit 30+ px of drift when the cursor is far
- *    from the centre, which reads as a juvenile wiggle rather than a
- *    magnetic nudge.
- *  - The pull is disabled on touch pointers (no hover) and under
- *    `prefers-reduced-motion: reduce`. On mobile the element is a plain
- *    button/anchor with zero transform overhead.
- *  - `will-change: transform` is set only while the pointer is inside the
- *    element, so the compositor layer is promoted on demand and released
- *    on leave — no permanent layer for an interaction that fires briefly.
+ * Se retira por dos motivos independientes, y cualquiera de los dos
+ * bastaría:
+ *
+ *  1. **Lo rechazó el cliente**, y con razón: un elemento que persigue
+ *     al ratón llama la atención sobre el puntero justo cuando el
+ *     visitante debería estar leyendo lo que pone el botón. Es la misma
+ *     decisión que retiró el foco de luz que seguía al cursor.
+ *
+ *  2. **Costaba 344 KB en las 155 páginas del sitio.** Éste era el
+ *     único punto por el que `framer-motion` seguía entrando en el
+ *     paquete común: el pie lo importa, el pie está en el layout, y el
+ *     layout se sirve en todas partes. Se encontró recorriendo el grafo
+ *     de importaciones desde `layout.tsx` — cinco componentes del layout
+ *     ya se habían convertido a CSS sin que el peso bajara ni un
+ *     kilobyte, porque bastaba con que quedase uno.
+ *
+ * ── Lo que hace ahora ─────────────────────────────────────────────────
+ * Un `<a>` o un `<button>`, con el realce en CSS (`.tj-realza`): sube
+ * dos píxeles al pasar por encima y se hunde un poco al pulsar. Sobrio,
+ * de una sola línea, y sin biblioteca.
+ *
+ * Se conserva el nombre y la firma para no tocar sus cuatro llamadas —
+ * renombrarlo sería un cambio mecánico sin ninguna ganancia—, y
+ * `touchAction: manipulation` se queda: quita el retardo de 300 ms del
+ * doble toque, que es lo único de aquel «premium» que se notaba de
+ * verdad, y se nota en móvil, donde nunca hubo atracción magnética.
  */
-const MAX_TRANSLATE = 6; // px — clamps the magnetic drift to a premium nudge
-
 export function MagneticButton({
   children,
   className = "",
-  strength = 0.3,
   onClick,
   href,
   target,
@@ -52,103 +63,22 @@ export function MagneticButton({
   ariaLabel,
   type = "button",
 }: MagneticButtonProps) {
-  const ref = useRef<HTMLElement | null>(null);
-  const reduce = useReducedMotion();
-  // Hover capability: only devices that actually deliver a fine pointer
-  // (mouse/trackpad) get the magnetic pull. Touch screens report
-  // `(hover: none)` and skip the entire motion layer.
-  const [canHover, setCanHover] = useState(false);
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mq = matchMedia("(hover: hover) and (pointer: fine)");
-    const update = () => setCanHover(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
-
-  const enabled = !reduce && canHover;
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 320, damping: 22, mass: 0.4 });
-  const sy = useSpring(y, { stiffness: 320, damping: 22, mass: 0.4 });
-  const [active, setActive] = useState(false);
-
-  function onMove(e: React.MouseEvent) {
-    if (!enabled) return;
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    let dx = (e.clientX - cx) * strength;
-    let dy = (e.clientY - cy) * strength;
-    // Clamp to a premium nudge — see MAX_TRANSLATE comment above.
-    const dl = Math.hypot(dx, dy);
-    if (dl > MAX_TRANSLATE) {
-      const k = MAX_TRANSLATE / dl;
-      dx *= k;
-      dy *= k;
-    }
-    x.set(dx);
-    y.set(dy);
-  }
-  function onEnter() {
-    if (!enabled) return;
-    setActive(true);
-  }
-  function onLeave() {
-    setActive(false);
-    x.set(0);
-    y.set(0);
-  }
-
-  // When disabled, keep the motion values at 0 — the spring never fires and
-  // the element stays at its origin. We still render the motion.* element so
-  // the DOM shape is stable across breakpoints / motion preferences.
-  //
-  // `touchAction: "manipulation"` is set unconditionally (even on touch where
-  // the magnetic pull is disabled) because the element is still a tappable
-  // button/anchor: removing the 300ms double-tap-zoom delay makes every tap
-  // feel instant on mobile, which is the same premium goal as the magnetic
-  // pull on desktop. Panning and pinching still work — only double-tap-zoom
-  // is suppressed — so the page scrolls normally when a swipe starts on the
-  // button.
-  const style = (enabled ? { x: sx, y: sy } : { x: 0, y: 0 }) as unknown as React.CSSProperties;
-  const willChange = active ? "transform" : undefined;
-
-  const handlers = enabled
-    ? { onMouseMove: onMove, onMouseEnter: onEnter, onMouseLeave: onLeave }
-    : {};
+  const comun = {
+    "aria-label": ariaLabel,
+    className: `tj-realza ${className}`,
+    style: { touchAction: "manipulation" as const },
+  };
 
   if (href) {
     return (
-      <motion.a
-        ref={ref as React.RefObject<HTMLAnchorElement>}
-        href={href}
-        target={target}
-        rel={rel}
-        aria-label={ariaLabel}
-        style={{ ...style, willChange, touchAction: "manipulation" }}
-        className={className}
-        {...handlers}
-      >
+      <a href={href} target={target} rel={rel} {...comun}>
         {children}
-      </motion.a>
+      </a>
     );
   }
   return (
-    <motion.button
-      ref={ref as React.RefObject<HTMLButtonElement>}
-      type={type}
-      onClick={onClick}
-      aria-label={ariaLabel}
-      style={{ ...style, willChange, touchAction: "manipulation" }}
-      className={className}
-      {...handlers}
-    >
+    <button type={type} onClick={onClick} {...comun}>
       {children}
-    </motion.button>
+    </button>
   );
 }

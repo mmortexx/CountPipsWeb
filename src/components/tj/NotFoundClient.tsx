@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
@@ -99,49 +98,40 @@ export function NotFoundClient() {
       />
 
       <div className="relative z-[2] text-center max-w-xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="font-semibold tracking-[-0.04em] leading-[0.9] text-gradient tnum"
+        <div
+          className="tj-alza font-semibold tracking-[-0.04em] leading-[0.9] text-gradient tnum"
           style={{ fontSize: "clamp(6rem, 18vw, 12rem)" }}
         >
           404
-        </motion.div>
+        </div>
 
-        <motion.h1
+        <h1
+          style={{ animationDelay: "0.15s" }}
           id="not-found-heading"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-6 text-2xl md:text-3xl font-semibold tracking-tight text-primary text-balance"
+          className="tj-alza mt-6 text-2xl md:text-3xl font-semibold tracking-tight text-primary text-balance"
         >
           {es
             ? "Esta página se detuvo como un mal stop loss."
             : "This page stopped out like a bad stop loss."}
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="mt-4 text-base md:text-lg text-secondary leading-relaxed"
+        <p
+          style={{ animationDelay: "0.25s" }}
+          className="tj-alza mt-4 text-base md:text-lg text-secondary leading-relaxed"
         >
           {es
             ? "La URL que buscas no existe, se ha movido o nunca estuvo en tu watchlist."
             : "The URL you're after doesn't exist, has moved, or was never on your watchlist."}
-        </motion.p>
+        </p>
 
         {/* Inline search suggestion — pre-fills the FAQ search on submit.
             The border-[rgb(var(--divider)/0.13)] border brightens to the accent on hover/focus,
             matching the keyboard-first pattern the rest of the site uses
             (the command palette opens on `/`). */}
-        <motion.form
+        <form
+          style={{ animationDelay: "0.32s" }}
           onSubmit={onSubmitSearch}
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.32 }}
-          className="mt-7 mx-auto max-w-md"
+          className="tj-alza mt-7 mx-auto max-w-md"
           role="search"
           aria-label={es ? "Buscar en la web" : "Search the site"}
         >
@@ -162,9 +152,8 @@ export function NotFoundClient() {
               aria-label={es ? "Buscar" : "Search"}
               className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-11 pl-10 pr-24 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
             />
-            <motion.div
-              whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-              className="absolute right-1.5 top-1/2 -translate-y-1/2"
+            <div
+              className="tj-alza absolute right-1.5 top-1/2 -translate-y-1/2"
             >
               <button
                 type="submit"
@@ -172,25 +161,21 @@ export function NotFoundClient() {
               >
                 {es ? "Buscar" : "Search"}
               </button>
-            </motion.div>
+            </div>
           </div>
-        </motion.form>
+        </form>
 
         {/* Quick-link tiles — Features, Demo, Pricing.
             Each tile uses the tj-paper utility so it sits cohesively with
             the rest of the site's surfaces. */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3"
+        <div
+          style={{ animationDelay: "0.4s" }}
+          className="tj-alza mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3"
         >
           {tiles.map((tile) => (
-            <motion.div
+            <div
               key={tile.href}
-              whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 24 } }}
-              whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-              className="h-full"
+              className="tj-alza h-full"
             >
               <Link
                 href={tile.href}
@@ -219,19 +204,16 @@ export function NotFoundClient() {
                   {tile.desc}
                 </p>
               </Link>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.48 }}
-          className="mt-9"
+        <div
+          style={{ animationDelay: "0.48s" }}
+          className="tj-alza mt-9"
         >
-          <motion.div
-            whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-            className="inline-flex"
+          <div
+            className="tj-alza inline-flex"
           >
             <Link
               href="/"
@@ -255,8 +237,8 @@ export function NotFoundClient() {
                 />
               </svg>
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );
