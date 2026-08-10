@@ -68,11 +68,20 @@ export function GlobalShortcuts() {
   // re-rendering the whole component tree. Only flips true/false on
   // prefix arm/expire, not on every keystroke.
   const [showHint, setShowHint] = useState(false);
+  /* La pista no entra en el árbol hasta que alguien pulsa `g` por
+     primera vez, y desde entonces se queda. Es el mismo patrón que el
+     cajón de navegación y por el mismo motivo: lo que se monta en el
+     layout viaja en el HTML de las 155 páginas, y esto lo ve quien usa
+     atajos de teclado — una minoría que, además, ya ha interactuado. */
+  const [pistaMontada, setPistaMontada] = useState(false);
 
   useEffect(() => {
     const armPrefix = () => {
       gPrefixActive.current = true;
-      setShowHint(true);
+      /* Montar y mostrar en fotogramas distintos: en el mismo render la
+         pista nacería ya visible y no habría transición que interpolar. */
+      setPistaMontada(true);
+      requestAnimationFrame(() => setShowHint(true));
       if (gPrefixTimer.current) window.clearTimeout(gPrefixTimer.current);
       gPrefixTimer.current = window.setTimeout(() => {
         gPrefixActive.current = false;
@@ -182,6 +191,7 @@ export function GlobalShortcuts() {
        diminuto y así la entrada y la salida son una transición CSS en
        vez de una biblioteca de animación en el paquete de las 155
        páginas — ver `.tj-emerge` en globals.css. */
+    pistaMontada ? (
     <div
       className="tj-emerge fixed bottom-6 left-1/2 z-50 pointer-events-none"
       style={{ translate: "-50% 0" }}
@@ -207,5 +217,6 @@ export function GlobalShortcuts() {
             </span>
       </div>
     </div>
+    ) : null
   );
 }

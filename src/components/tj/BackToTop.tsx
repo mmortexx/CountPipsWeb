@@ -105,6 +105,14 @@ export function BackToTop() {
   const [visible, setVisible] = useState<boolean>(() =>
     typeof window !== "undefined" ? window.scrollY > SHOW_AFTER : false
   );
+  /* El botón no entra en el árbol hasta que el visitante baja lo
+     suficiente para que tenga sentido, y entonces se queda. Montado
+     desde el principio, su anillo de progreso en SVG viajaba en el HTML
+     de las 155 páginas para alguien que a lo mejor no baja nunca —
+     mismo patrón, y mismo motivo, que el cajón de navegación. */
+  const [montado, setMontado] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.scrollY > SHOW_AFTER : false
+  );
   const [progress, setProgress] = useState(0);
   const [shifted, setShifted] = useState(false);
   const [cookieLift, setCookieLift] = useState(0);
@@ -123,7 +131,9 @@ export function BackToTop() {
          de en cada fotograma— y el anillo se dibuja idéntico. */
       const pct = scrollable > 0 ? Math.min(100, Math.max(0, (scrollTop / scrollable) * 100)) : 0;
       setProgress(Math.round(pct));
-      setVisible(scrollTop > SHOW_AFTER);
+      const debeVerse = scrollTop > SHOW_AFTER;
+      if (debeVerse) setMontado(true);
+      setVisible(debeVerse);
       // Lift the button when within SHIFT_THRESHOLD px of the bottom so it
       // never overlaps the footer bottom-bar cluster. `scrollable - scrollTop`
       // is the remaining scrollable distance (px) — when it drops below the
@@ -216,6 +226,8 @@ export function BackToTop() {
   // binding wins; if neither applies, lift = 0 and the button sits at its
   // natural position (env + 1.5 rem from the bottom).
   const totalLift = Math.max(shifted ? SHIFT_LIFT_PX : 0, cookieLift);
+
+  if (!montado) return null;
 
   return (
     <>
