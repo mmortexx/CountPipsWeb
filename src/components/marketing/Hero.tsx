@@ -152,15 +152,22 @@ export function Hero() {
             WebkitFontSmoothing: "antialiased",
           }}
         >
+          {/* El espacio explícito antes del `<br />` no es cosmético: sin
+              él, `textContent` del titular concatena "una" y "mesa" en
+              "unamesa" —el salto de línea no aporta separación a la
+              cadena, sólo a lo que se pinta—, y eso es lo que leen los
+              extractores de texto plano: buscadores, previsualizaciones
+              de enlace y cualquier herramienta que quite las etiquetas.
+              El `{" "}` sobrevive al colapso de espacios de JSX. */}
           {es ? (
             <>
-              Opera como una
+              Opera como una{" "}
               <br />
               mesa <span style={{ color: "rgb(var(--accent-base))" }}>institucional.</span>
             </>
           ) : (
             <>
-              Trade like an
+              Trade like an{" "}
               <br />
               institutional <span style={{ color: "rgb(var(--accent-base))" }}>desk.</span>
             </>
