@@ -317,7 +317,13 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
               id="demo-tabpanel"
               aria-label={t(panelLabelKey)}
               tabIndex={0}
-              className="relative h-[480px] sm:h-[560px] md:h-[640px] overflow-y-auto custom-scroll focus:outline-none"
+              /* Alto del panel: 560 en móvil (era 480) / 640 en md+. Los 80px
+                 que se ganan en el teléfono son los que meten el formulario
+                 dentro de la primera vista en vez de dejarlo bajo el corte.
+                 Si se toca este valor hay que tocarlo TAMBIÉN en el esqueleto
+                 sin hidratar (AppDemoClient) y en la altura reservada del
+                 contenedor, o la página da un salto al hidratar. */
+              className="relative h-[560px] md:h-[640px] overflow-y-auto custom-scroll focus:outline-none"
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >

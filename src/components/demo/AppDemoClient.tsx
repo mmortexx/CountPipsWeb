@@ -45,12 +45,18 @@ const AppDemo = dynamic(
  * intentional (the user sees the dashboard's silhouette form, then it
  * fills in) rather than empty.
  *
- * Reserved height matches the live demo exactly per breakpoint:
- *   WindowChrome h-9 (36px) + tab strip h-11 (44px) + panel h-[480px]
- *   (mobile) / h-[560px] (sm+) / h-[640px] (md+) + status bar h-7 (28px)
- *   = 588px mobile, 668px sm+, 748px md+. Using responsive classes (not
- *   an inline fixed height) avoids CLS at each breakpoint when the real
- *   demo hydrates with its own `h-[480px] sm:h-[560px] md:h-[640px]` panel.
+ * Reserved height matches the live demo exactly per breakpoint. La cuenta,
+ * con los valores que están HOY en el código (el comentario anterior daba
+ * 588/668/748 con un chrome de h-9 y una tira de h-11 que ya no son los que
+ * se pintan, así que cuadraba sobre el papel y no sobre la página):
+ *   WindowChrome h-11 (44px) móvil / h-10 (40px) sm+
+ *   + tira de pestañas h-[46px]
+ *   + panel h-[560px] (móvil y sm) / h-[640px] (md+)
+ *   + barra de estado h-7 (28px)
+ *   = 678px móvil, 674px sm, 754px md+. Con clases por breakpoint (no una
+ *   altura fija en línea) no hay salto de maquetación al hidratar, porque
+ *   el demo real monta su propio panel `h-[560px] md:h-[640px]`.
+ *   LAS TRES ALTURAS VAN JUNTAS: si cambia el panel, cambia esta reserva.
  *
  * The outer container uses the EXACT same two-layer material + shadow
  * classes as the live demo window — outer wrapper carries
@@ -66,7 +72,7 @@ const AppDemo = dynamic(
 function DemoSkeleton() {
   return (
     <div
-      className="rounded-xl overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[0_4px_10px_rgb(0_0_0/0.26),0_18px_40px_rgb(0_0_0/0.3),0_0_28px_rgb(var(--accent-base)/0.1),0_24px_80px_-12px_rgb(0_0_0/0.6)] h-[598px] sm:h-[674px] md:h-[754px]"
+      className="rounded-xl overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[0_4px_10px_rgb(0_0_0/0.26),0_18px_40px_rgb(0_0_0/0.3),0_0_28px_rgb(var(--accent-base)/0.1),0_24px_80px_-12px_rgb(0_0_0/0.6)] h-[678px] sm:h-[674px] md:h-[754px]"
       aria-hidden="true"
     >
       <div className="tj-paper tj-paper-dense rounded-[2px] overflow-hidden h-full flex flex-col">
@@ -137,7 +143,7 @@ function DemoSkeleton() {
             (panel inherits its background from the liquid-glass wrapper)
             so the swap from greyed-out skeleton to the real interactive
             dashboard is visually seamless. ---- */}
-        <div className="relative overflow-hidden h-[480px] sm:h-[560px] md:h-[640px] p-5 md:p-6 space-y-4">
+        <div className="relative overflow-hidden h-[560px] md:h-[640px] p-5 md:p-6 space-y-4">
           {/* KPI row — 4 cards. */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (

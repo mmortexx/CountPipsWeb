@@ -312,9 +312,20 @@ export function DashboardPage() {
                   handleRegister();
                 }}
               >
+              {/* `min-w-0` en las dos columnas, y no es cosmético: un hijo de
+                  grid trae `min-width:auto`, o sea que NO puede encogerse por
+                  debajo del ancho mínimo de su contenido. Medido en 390×844:
+                  la columna del formulario se plantaba en 262px dentro de una
+                  celda de 223 y la tarjeta —que tiene `overflow:hidden`— le
+                  cortaba 39px por la derecha. Es decir, en el teléfono los
+                  campos de la columna derecha de cada par («Salida»,
+                  «Objetivo») salían seccionados por el canto. No lo delataba
+                  nada: el recorte se come el desbordamiento, así que ni la
+                  consola, ni los tests, ni el ancho del documento se
+                  enteraban. Lo vigila ahora `humo.mjs`. */}
               <div className="grid md:grid-cols-2 gap-6">
                 {/* ============ LEFT COLUMN: image + risk footer ============ */}
-                <div className="flex flex-col">
+                <div className="flex flex-col min-w-0">
                   {/* Screenshot dropzone — 380px FIXED height (matches the
                       WinUI RowDefinition Height="380"). Independent of the
                       form column's height: never resizes when fields
@@ -326,8 +337,19 @@ export function DashboardPage() {
                     aria-label={t("dropScreens")}
                     // Responsive height: 380px fixed was the WinUI RowDefinition,
                     // but on a 316px mobile card it filled the entire viewport.
-                    // 260px mobile → 320px sm → 380px md+ (desktop parity).
-                    className="w-full border border-dashed border-[rgb(var(--divider)/0.15)] rounded-md flex flex-col items-center justify-center gap-2 text-tertiary hover:text-secondary hover:border-[rgb(var(--divider)/0.3)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors group h-[260px] sm:h-[320px] md:h-[380px]"
+                    // 320px sm → 380px md+ (desktop parity).
+                    //
+                    // En móvil ya no son 260px sino 104. Medido en 390×844: con
+                    // 260px, el primer control del formulario —el toggle
+                    // Long/Short— empezaba en el píxel 606 de un panel de 480,
+                    // o sea FUERA de la vista. Lo único que veía quien abre la
+                    // demo en el teléfono era un rectángulo punteado para
+                    // arrastrar un archivo, que es justo lo que un teléfono no
+                    // puede hacer. La demo prometía «la app en tu navegador» y
+                    // enseñaba una zona de soltar vacía. Compacta sigue
+                    // comunicando que el flujo admite capturas, sin robarle la
+                    // pantalla a lo que de verdad hay que ver.
+                    className="w-full border border-dashed border-[rgb(var(--divider)/0.15)] rounded-md flex flex-col items-center justify-center gap-2 text-tertiary hover:text-secondary hover:border-[rgb(var(--divider)/0.3)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors group h-[104px] sm:h-[320px] md:h-[380px]"
                   >
                     <svg
                       width="32"
@@ -348,7 +370,12 @@ export function DashboardPage() {
                     <span className="text-sm font-medium text-secondary text-center px-6">
                       {t("dropScreens")}
                     </span>
-                    <span className="text-[11px] text-tertiary text-center px-6">
+                    {/* La pista de Ctrl+V sólo donde ese atajo existe. En un
+                        teléfono no hay ni Ctrl ni arrastrar un fichero: dejarla
+                        ahí era prometer una interacción imposible en el propio
+                        dispositivo desde el que se lee, y esta página presume
+                        de no simular lo que no hay. */}
+                    <span className="hidden sm:block text-[11px] text-tertiary text-center px-6">
                       {es
                         ? "Pega con Ctrl+V o arrastra una imagen del gráfico"
                         : "Paste with Ctrl+V or drag a chart image"}
@@ -363,7 +390,16 @@ export function DashboardPage() {
                     <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-3">
                       {es ? "Riesgo de esta operación" : "Trade risk"}
                     </div>
-                    <div className="grid grid-cols-[1fr_1px_1fr_1px_1fr] gap-x-4 items-stretch">
+                    {/* `minmax(0,1fr)` y no `1fr`: un `1fr` pelado equivale a
+                        `minmax(auto,1fr)`, así que la columna NO puede
+                        encoger por debajo de su contenido. Con «520,00 US$»
+                        dentro, la primera celda se plantaba en 96px, la tira
+                        entera medía 262 en un hueco de 224 y el «5,20 %» se
+                        salía por el canto de la tarjeta —que recorta— en
+                        390px de ancho. Medido en 390×844. El gap también baja
+                        a 8px en móvil: cuatro huecos de 16 se comían 64 de
+                        los 224 disponibles. */}
+                    <div className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)_1px_minmax(0,1fr)] gap-x-2 sm:gap-x-4 items-stretch">
                       {/* Risk $ */}
                       <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-md transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                         <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
@@ -423,7 +459,7 @@ export function DashboardPage() {
                 </div>
 
                 {/* ============ RIGHT COLUMN: trade data form ============ */}
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 min-w-0">
                   {/* Long/Short toggle — 2-col grid with semantic P&L dots.
                       Sliding pill animates between Long (green) and Short
                       (red) via shared layoutId. */}
@@ -1065,7 +1101,21 @@ export function DashboardPage() {
                       duration: 0.3,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="group w-full flex items-center gap-3 py-2.5 hover:bg-[rgb(var(--divider)/0.05)] -mx-2 px-2 rounded-md transition-colors text-left"
+                    /* `flex-wrap` en móvil, y no por gusto. Las cinco celdas
+                       llevan `shrink-0`, así que NINGUNA puede ceder: a 390px
+                       sumaban 319 en una fila de 207 útiles y la cifra de
+                       resultado acababa en el píxel 384 con la tarjeta
+                       cortando en 315. O sea que en el teléfono el P&L —el
+                       dato por el que se mira una lista de operaciones— salía
+                       seccionado o directamente invisible.
+                       Envolver es lo único que no obliga a tirar información:
+                       truncar el instrumento devolvía el "XAU/U…" que ya se
+                       corrigió a propósito (ver el ancho de 100px de abajo), y
+                       esconder la dirección o la R es perder un dato. Así la
+                       fila pasa a dos líneas en móvil (47 → 79px): arriba
+                       instrumento y dirección, abajo R y resultado a la
+                       derecha. En sm+ vuelve a ser una sola línea. */
+                    className="group w-full flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-2.5 hover:bg-[rgb(var(--divider)/0.05)] -mx-2 px-2 rounded-md transition-colors text-left"
                   >
                     {/* 80px se quedaba corto: "BTC/USDT" mide 79px de texto
                         él solo, y a eso hay que sumarle el icono + el hueco
@@ -1095,7 +1145,11 @@ export function DashboardPage() {
                     >
                       {fmtNum(tr.rMultiple, lang, 2)}R
                     </div>
-                    <div className="shrink-0 w-20 sm:w-24 text-right">
+                    {/* `ml-auto` sólo en móvil: es lo que manda el resultado al
+                        canto derecho de la segunda línea cuando la fila
+                        envuelve. En sm+ la fila es una sola línea y el hueco
+                        ya lo reparte la columna del setup con `flex-1`. */}
+                    <div className="shrink-0 w-20 sm:w-24 text-right ml-auto sm:ml-0">
                       <Money
                         value={tr.netPnl}
                         sign
