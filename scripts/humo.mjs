@@ -210,6 +210,9 @@ const cajonesVistos = [];
     elemento. «Pasó» sin decir qué se miró es lo que dejó que este
     defecto viviera tanto tiempo. */
 const papelesVistos = [];
+/** Ídem para la opacidad al final del scroll: cuántas rutas se llegaron
+    a mirar. Cero rutas miradas también sale en verde. */
+const opacidadesFinales = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -570,6 +573,46 @@ for (const pantalla of PANTALLAS) {
           if (!informe.papel.canto) {
             fallos.push(`${etiqueta}: el papel perdió su luz de borde`);
           }
+        }
+      }
+
+      /* ── NADA SE QUEDA A MEDIO ENCENDER AL FINAL DEL SCROLL ────────
+         Las entradas de sección son ahora CSS atado a la posición del
+         elemento en la ventana (`animation-timeline: view()`), y eso
+         trae un riesgo propio que el mecanismo anterior no tenía: el
+         progreso de la animación no se «completa», se MAPEA. Un
+         elemento que nunca llegue al final de su rango —porque está
+         tan abajo que el documento se acaba antes— se quedaría en un
+         fotograma intermedio de forma PERMANENTE: a media opacidad y
+         unos píxeles desplazado, sin que nada lo devuelva a su sitio.
+
+         Es exactamente el mismo defecto que se acaba de corregir
+         —contenido servido a media tinta— por un camino distinto, así
+         que se comprueba en vez de suponerse: se baja al final del
+         documento y se exige que todo lo visible esté a plena
+         opacidad. */
+      if (pantalla.nombre === "escritorio") {
+        const tenues = await pagina.evaluate(async () => {
+          window.scrollTo(0, document.documentElement.scrollHeight);
+          // Dos fotogramas y un respiro: el timeline se resuelve en el
+          // compositor y el estilo computado tarda en reflejarlo.
+          await new Promise((r) => setTimeout(r, 700));
+          const out = [];
+          for (const el of document.querySelectorAll("[data-entra], #main-content section")) {
+            const op = parseFloat(getComputedStyle(el).opacity);
+            const b = el.getBoundingClientRect();
+            if (op < 0.99 && b.height > 0 && b.top < window.innerHeight && b.bottom > 0) {
+              out.push(`${el.tagName} ${op.toFixed(2)} "${(el.textContent || "").trim().slice(0, 30)}"`);
+            }
+          }
+          window.scrollTo(0, 0);
+          return out;
+        });
+        opacidadesFinales.push(`${ruta}: ${tenues.length} elemento(s) a media tinta`);
+        if (tenues.length) {
+          fallos.push(
+            `${etiqueta}: al final del documento queda contenido a media opacidad — ${tenues.slice(0, 3).join("; ")}`
+          );
         }
       }
 
@@ -939,6 +982,14 @@ if (idiomasRevisados.length) {
   );
 } else {
   console.warn("  aviso  ninguna página inglesa revisada: el detector de español no está mirando nada");
+}
+
+if (opacidadesFinales.length) {
+  console.log(
+    `[humo] tinta — ${opacidadesFinales.length} rutas revisadas al final del documento, todas a plena opacidad`
+  );
+} else {
+  console.warn("  aviso  no se comprobó la opacidad al final del scroll en ninguna ruta");
 }
 
 if (papelesVistos.length) {

@@ -240,3 +240,73 @@ describe("los títulos del glosario caben en el buscador", () => {
     expect(mae).not.toContain("Maximum Adverse Excursion");
   });
 });
+
+describe("el precio es el mismo en todas partes", () => {
+  /**
+   * ── Por qué esta prueba y no interpolar la cifra en cada texto ────────
+   * Las dos cifras aparecen en trece archivos, y en la mayoría van
+   * DENTRO de una frase: «Core $149 y Pro $249 son precios de
+   * lanzamiento previstos», la respuesta de una FAQ, la descripción de
+   * una calculadora, un metadato para el buscador. Sustituirlas por
+   * `${PRECIO_CORE}` deja los textos ilegibles en el código y, con
+   * ellos, la revisión de copy — que es humana y se hace leyendo.
+   *
+   * El riesgo, en cambio, es real y es el peor de su clase: el precio es
+   * el número más comprobable del sitio, porque cualquiera puede abrir
+   * dos páginas y compararlas. Trece copias es la clase de cosa que se
+   * desincroniza el día que se retoca una y se olvidan doce.
+   *
+   * Así que el texto se queda como está y lo que se ata es la
+   * COHERENCIA: cualquier cifra de tres dígitos precedida de `$` en el
+   * código fuente tiene que ser uno de los dos precios declarados. Si
+   * mañana Core pasa a 179 y alguien cambia sólo `precios.ts`, las doce
+   * frases que sigan diciendo 149 hacen fallar esto con su ruta y su
+   * línea delante.
+   */
+  it("no hay ninguna cifra en dólares que no sea un precio declarado", async () => {
+    const { PRECIO_CORE, PRECIO_PRO } = await import("@/lib/precios");
+    const permitidos = new Set([String(PRECIO_CORE), String(PRECIO_PRO)]);
+
+    /* Se recorren los mismos archivos que compila el sitio. Los `.ts` de
+       datos entran igual que los componentes: `herramientas.ts` y
+       `legal/documentos.ts` también citan el precio. */
+    const fuentes: string[] = [];
+    const recorrer = (dir: string) => {
+      for (const entrada of readdirSync(join(RAIZ, dir))) {
+        const rel = `${dir}/${entrada}`;
+        if (statSync(join(RAIZ, rel)).isDirectory()) recorrer(rel);
+        else if (/\.(ts|tsx)$/.test(entrada)) fuentes.push(rel);
+      }
+    };
+    recorrer("src");
+
+    const sueltas: string[] = [];
+    for (const rel of fuentes) {
+      if (rel.endsWith("/precios.ts")) continue;
+      // Sin comentarios: las notas explican de dónde VENÍA un precio, y
+      // una prueba que confunde la nota con el dato obliga a borrar la
+      // explicación para ponerse en verde.
+      const lineas = sinComentarios(leer(rel)).split("\n");
+      lineas.forEach((linea, i) => {
+        for (const m of linea.matchAll(/\$(\d{3})\b/g)) {
+          if (!permitidos.has(m[1])) sueltas.push(`${rel}:${i + 1} → $${m[1]}`);
+        }
+      });
+    }
+    expect(
+      sueltas,
+      `cifras en dólares que no son ${PRECIO_CORE} ni ${PRECIO_PRO}`,
+    ).toEqual([]);
+  });
+
+  it("las dos cifras siguen apareciendo en la tabla de precios", async () => {
+    /* La comprobación de arriba pasa sola si un día NADIE menciona un
+       precio: cero cifras sueltas es cero fallos. Esto exige que la
+       página que existe para decir el precio siga diciéndolo. */
+    const { PRECIO_CORE, PRECIO_PRO } = await import("@/lib/precios");
+    const tabla = leerCodigo("src/components/marketing/Pricing.tsx");
+    expect(tabla).toContain("PRECIO_CORE");
+    expect(tabla).toContain("PRECIO_PRO");
+    expect(PRECIO_PRO).toBeGreaterThan(PRECIO_CORE);
+  });
+});
