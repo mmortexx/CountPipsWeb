@@ -146,13 +146,32 @@ export default async function Image() {
           </div>
         </div>
 
-        {/* Pie — 3 KPIs + precio */}
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
+        {/* Pie — dos cifras reales y una curva. Lo que había aquí delataba la
+            plantilla por dos sitios:
+
+            · El tercer «KPI» era una flecha «↗» con el rótulo «Demo
+              interactiva». Satori no tiene esa flecha en la tipografía del
+              sistema y la resolvía por el camino del EMOJI, así que en la
+              tarjeta salía un cuadrado azul brillante — el único color
+              saturado de una pieza por lo demás en pizarra, y justo el
+              detalle que se ve primero. Y además no era una métrica: junto a
+              «40+» y «100 %» ocupaba el sitio de un dato con un adorno.
+
+            · Y había un BOTÓN. Una vista previa de enlace es una imagen: no
+              se puede pulsar. Dibujar un botón dentro promete una acción que
+              no existe, que es la definición de adorno que engaña.
+
+            En su lugar, la mitad derecha —que estaba vacía— la ocupa una
+            curva de resultado hecha con barras. Es lo único que se entiende
+            sin leer una palabra a tamaño de miniatura, dice «trading» al
+            instante, y se dibuja con `div`s: nada de SVG, que en Satori no
+            falla feo sino que aborta la compilación entera (ver la nota del
+            logotipo). */}
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 48 }}>
           <div style={{ display: "flex", gap: 56 }}>
             {[
               { v: "40+", l: "Métricas" },
-              { v: "100%", l: "Local" },
-              { v: "↗", l: "Demo interactiva" },
+              { v: "100 %", l: "En tu equipo" },
             ].map((k) => (
               <div key={k.l} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <div style={{ fontSize: 38, fontWeight: 700, color: "#CDD9E4", lineHeight: 1 }}>{k.v}</div>
@@ -160,20 +179,32 @@ export default async function Image() {
               </div>
             ))}
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "14px 22px",
-              borderRadius: 3,
-              background: "#CDD9E4",
-              color: "#0c1116",
-              fontSize: 18,
-              fontWeight: 700,
-            }}
-          >
-            Ver la demo interactiva
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 14 }}>
+            {/* Serie fija, escrita a mano: una curva que sube con sus
+                retrocesos. No se genera al azar — la tarjeta tiene que salir
+                idéntica en cada compilación. */}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 5, height: 96 }}>
+              {[18, 22, 16, 27, 31, 26, 34, 30, 41, 47, 43, 52, 48, 58, 63, 57, 66, 72, 68, 79, 85, 80, 88, 96].map(
+                (alto, i, todos) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      width: 7,
+                      height: alto,
+                      background: "#CDD9E4",
+                      // Se aclara hacia la derecha: el ojo lee la dirección
+                      // antes que las alturas.
+                      opacity: 0.22 + (i / (todos.length - 1)) * 0.68,
+                    }}
+                  />
+                ),
+              )}
+            </div>
+            <div style={{ fontSize: 12, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8a9096", fontWeight: 600 }}>
+              Demo interactiva · sin registro
+            </div>
           </div>
         </div>
 
