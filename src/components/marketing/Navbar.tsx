@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { usePathname } from "next/navigation";
 import { useLang, type Lang } from "@/lib/i18n";
@@ -106,6 +106,8 @@ export function Navbar() {
 
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const megaButtonRef = useRef<HTMLButtonElement>(null);
+  /** El disparador y su panel: lo que cuenta como «dentro» del menú. */
+  const megaWrapRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -119,12 +121,49 @@ export function Navbar() {
   // que el panel se cierre al cruzar el hueco entre botón y panel.
   const megaEnter = () => {
     if (megaCloseTimer.current) window.clearTimeout(megaCloseTimer.current);
+    punteroEnMega.current = true;
     setMegaOpen(true);
   };
   const megaLeave = () => {
     if (megaCloseTimer.current) window.clearTimeout(megaCloseTimer.current);
+    punteroEnMega.current = false;
     megaCloseTimer.current = window.setTimeout(() => setMegaOpen(false), 140);
   };
+
+  /* ── EL CLIC EN «PRODUCTO» CERRABA EL MENÚ QUE EL RATÓN ACABABA DE ABRIR
+     El disparador se abría al pasar por encima y el clic ALTERNABA el
+     estado. Con un ratón esas dos cosas ocurren siempre seguidas: mueves
+     el cursor hasta «Producto» —el panel se abre—, haces clic porque
+     tiene una punta de flecha y parece un desplegable, y el clic lo
+     cierra. Y no se vuelve a abrir mientras no saques el cursor y
+     vuelvas a entrar, porque el hover ya no dispara nada estando quieto.
+     Comprobado en el sitio compilado: abrir por hover, pulsar, panel
+     fuera.
+
+     Quien usa el ratón no puede llegar al menú de Producto haciendo lo
+     más natural del mundo, que es pulsarlo.
+
+     La regla pasa a depender de cómo se activó:
+       · Con el puntero encima, el clic sólo puede ABRIR. Cerrar es
+         apartarse o pulsar Escape, que es lo que ya hace cualquiera con
+         un menú que se abre al pasar por encima.
+       · Con el teclado (`detail === 0`: ni ratón ni dedo) sigue
+         alternando, que ahí sí es el gesto correcto — no hay hover que
+         lo haya abierto antes.
+
+     Y como en táctil no hay «apartarse», se añade el cierre al tocar
+     fuera. Sin él, este cambio dejaría el panel clavado en una tableta
+     ancha: el menú existe por encima de 1.120 px y las hay. */
+  const punteroEnMega = useRef(false);
+  const megaClick = (e: ReactMouseEvent<HTMLButtonElement>) => {
+    if (e.detail === 0) {
+      setMegaOpen((o) => !o);
+      return;
+    }
+    if (punteroEnMega.current) setMegaOpen(true);
+    else setMegaOpen((o) => !o);
+  };
+
   useEffect(() => {
     if (!megaOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -135,8 +174,21 @@ export function Navbar() {
         megaButtonRef.current?.focus();
       }
     };
+    /* `pointerdown` y no `click`: si se esperara al clic, el elemento que
+       hay debajo ya habría recibido el suyo con el panel todavía
+       abierto. En captura, para que llegue aunque algo más lo detenga. */
+    const onFuera = (e: PointerEvent) => {
+      const destino = e.target as Node | null;
+      if (!destino) return;
+      if (megaWrapRef.current?.contains(destino)) return;
+      setMegaOpen(false);
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("pointerdown", onFuera, true);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("pointerdown", onFuera, true);
+    };
   }, [megaOpen]);
 
   // Focus trap del drawer móvil (maquinaria a11y intacta).
@@ -707,6 +759,7 @@ export function Navbar() {
             onMouseLeave={() => setHovered(null)}
           >
             <div
+              ref={megaWrapRef}
               className="group relative"
               onMouseEnter={() => {
                 setHovered("product");
@@ -726,13 +779,11 @@ export function Navbar() {
                    `click` no llega hasta que sueltas, y ese retardo se
                    nota. Este menú no es de esos — se abre solo al pasar
                    el ratón por encima (`megaEnter`), así que cuando el
-                   dedo baja ya está abierto. Adelantar el disparo a la
-                   pulsación no lo hacía más rápido: lo CERRABA, porque
-                   el hover ya lo había abierto y la pulsación alternaba
-                   el estado. Se probó y se revirtió.
-                   El clic sigue haciendo falta para teclado y para
-                   táctil, donde no hay hover que valga. */
-                onClick={() => setMegaOpen((o) => !o)}
+                   dedo baja ya está abierto.
+                   Y por eso el clic tampoco puede alternar el estado a
+                   secas: cerraba el panel que el hover acababa de abrir.
+                   El porqué completo, en `megaClick`. */
+                onClick={megaClick}
                 onFocus={() => setHovered("product")}
                 aria-expanded={megaOpen}
                 aria-haspopup="menu"

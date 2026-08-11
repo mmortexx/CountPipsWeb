@@ -257,6 +257,9 @@ const velosVistos = [];
 /** Ídem para las entradas atadas al scroll: cuántas llegan a entrar de
     verdad sobre el total. Cero también sale en verde si nadie mira. */
 const entradasVistas = [];
+/** Ídem para el menú de «Producto»: qué hace al pasar el ratón y qué
+    hace al pulsarlo con el ratón ya encima. */
+const menusVistos = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -849,6 +852,89 @@ for (const pantalla of PANTALLAS) {
         // Se recarga: la página queda con el cuerpo bloqueado y el
         // resto de comprobaciones de esta pantalla medirían otra cosa.
         await pagina.reload({ waitUntil: "networkidle" });
+      }
+
+      /* ── EL MENÚ DE «PRODUCTO», CON UN RATÓN DE VERDAD ─────────────
+         El disparador se abre al pasar el ratón por encima Y responde al
+         clic. Con esas dos cosas juntas hay una secuencia que ocurre
+         SIEMPRE con un ratón —acercar el cursor y pulsar— y que estuvo
+         rota: el hover abría el panel, el clic alternaba el estado, y el
+         resultado de pulsar «Producto» era que el menú desaparecía. Y no
+         volvía mientras el cursor siguiera encima, porque estando quieto
+         el hover ya no dispara nada.
+
+         Esto NO se puede comprobar con `elemento.click()`: un clic
+         sintético no mueve el puntero, así que no hay hover previo y la
+         secuencia que falla no llega a producirse. Por eso aquí se usa
+         el ratón real de Playwright —`mouse.move` y luego `mouse.click`—
+         que es lo mismo que hace una mano.
+
+         Se comprueban las tres formas de llegar al menú:
+           · ratón encima          → abre
+           · ratón encima + clic   → SIGUE abierto  (el fallo)
+           · sólo teclado (Enter)  → abre
+
+         Comprobado contra el defecto devolviendo el `onClick` a
+         `setMegaOpen((o) => !o)`: la segunda salta. */
+      if (ruta === "/" && pantalla.nombre === "escritorio") {
+        const disparador = await pagina.$("#navbar-producto-trigger");
+        if (!disparador) {
+          fallos.push(`${etiqueta}: no existe el disparador del menú de Producto`);
+        } else {
+          const abierto = () =>
+            pagina.evaluate(
+              () =>
+                !!document.querySelector('[aria-labelledby="navbar-producto-trigger"]')
+            );
+          const caja = await disparador.boundingBox();
+          const cx = caja.x + caja.width / 2;
+          const cy = caja.y + caja.height / 2;
+
+          // 1) El ratón se acerca. Se sale antes, para que el movimiento
+          //    sea una ENTRADA de verdad y no un puntero ya quieto encima.
+          await pagina.mouse.move(cx, cy + 240);
+          await pagina.mouse.move(cx, cy);
+          await pagina.waitForTimeout(320);
+          const trasHover = await abierto();
+          if (!trasHover) {
+            fallos.push(
+              `${etiqueta}: el menú de Producto no se abre al pasar el ratón por encima`
+            );
+          }
+
+          // 2) Y ahora se pulsa, con el puntero donde ya estaba.
+          await pagina.mouse.click(cx, cy);
+          await pagina.waitForTimeout(320);
+          const trasClic = await abierto();
+          if (!trasClic) {
+            fallos.push(
+              `${etiqueta}: pulsar «Producto» CIERRA el menú que el propio ratón ` +
+                `acababa de abrir — con el cursor encima ya no se puede volver a abrir`
+            );
+          }
+          menusVistos.push(`hover ${trasHover ? "abre" : "NO abre"} · clic ${trasClic ? "mantiene" : "CIERRA"}`);
+
+          // 3) Y por teclado, donde no hay hover que valga: ahí el clic
+          //    sí tiene que alternar, porque es el único gesto que hay.
+          await pagina.mouse.move(cx, cy + 240);
+          await pagina.keyboard.press("Escape");
+          await pagina.waitForTimeout(240);
+          await pagina.evaluate(() =>
+            document.getElementById("navbar-producto-trigger").focus()
+          );
+          await pagina.keyboard.press("Enter");
+          await pagina.waitForTimeout(320);
+          if (!(await abierto())) {
+            fallos.push(
+              `${etiqueta}: el menú de Producto no se abre con el teclado (Enter sobre el disparador)`
+            );
+          }
+          await pagina.keyboard.press("Escape");
+          await pagina.waitForTimeout(240);
+          if (await abierto()) {
+            fallos.push(`${etiqueta}: el menú de Producto no se cierra con Escape`);
+          }
+        }
       }
 
       /* ── LA VUELTA ARRIBA NO PUEDE REBOBINAR LA PÁGINA ─────────────
@@ -1538,6 +1624,12 @@ if (entradasVistas.length) {
   console.log(`[humo] entradas — piezas que llegan a encenderse al asomar: ${entradasVistas.join("; ")}`);
 } else {
   console.warn("  aviso  no se comprobó si las entradas atadas al scroll llegan a animarse");
+}
+
+if (menusVistos.length) {
+  console.log(`[humo] menú Producto — ${menusVistos.join("; ")}`);
+} else {
+  console.warn("  aviso  no se comprobó el menú de Producto con el ratón");
 }
 
 console.log(
