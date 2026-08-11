@@ -68,7 +68,11 @@ export function ProfileSelector() {
                 key={profile.id}
                 href={profile.href}
                 onClick={() => trackEvent("profile_selected", { profile: profile.id })}
-                className="group tj-paper relative min-h-[250px] overflow-hidden border border-[rgb(var(--divider)/0.15)] p-6 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.45)] hover:bg-[rgb(var(--accent-base)/0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] sm:p-8"
+                /* `tj-hoja`: el mismo doble filete y el mismo apoyo que la
+                   lámina de una captura. Antes era un filete al 15 % sobre
+                   una sección con velo — el contorno de una tarjeta, no una
+                   tarjeta. */
+                className="group tj-paper tj-hoja relative min-h-[250px] overflow-hidden p-6 transition-[border-color,box-shadow,background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[rgb(var(--accent-base)/0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] sm:p-8"
               >
                 <div className="flex items-start justify-between gap-4">
                   <span className="grid size-11 place-items-center border border-[rgb(var(--accent-base)/0.28)] bg-[rgb(var(--accent-base)/0.08)] text-[rgb(var(--accent-base))]">

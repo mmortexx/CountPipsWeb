@@ -108,7 +108,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             // T3c — swap a `.tj-paper`: papel translúcido cálido en vez de
             // glass frío. Border, rounded, hover lift, padding y minHeight
             // intactos. El sweep de acento del top-edge se conserva.
-            className="tj-realce tj-paper group lg:col-span-7 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+            className="tj-realce tj-paper tj-hoja tj-hoja--pliego group lg:col-span-7 min-w-0 relative overflow-hidden p-6 sm:p-7"
             style={{
               minHeight: 360,
             }}
@@ -234,7 +234,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           {/* Rendimiento por hora (span 5) */}
           <div
             data-entra="2"
-            className="tj-realce tj-paper group lg:col-span-5 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+            className="tj-realce tj-paper tj-hoja group lg:col-span-5 min-w-0 relative overflow-hidden p-6 sm:p-7"
             style={{
               minHeight: 360,
             }}
@@ -357,7 +357,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           {/* Playbooks (span 4) */}
           <div
             data-entra="2"
-            className="tj-realce tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+            className="tj-realce tj-paper tj-hoja group lg:col-span-4 min-w-0 relative overflow-hidden p-6 sm:p-7"
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -414,7 +414,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           {/* Diario narrativo (span 4) */}
           <div
             data-entra="3"
-            className="tj-realce tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+            className="tj-realce tj-paper tj-hoja group lg:col-span-4 min-w-0 relative overflow-hidden p-6 sm:p-7"
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -462,7 +462,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           {/* Multi-cuenta multi-activo (span 4) */}
           <div
             data-entra="4"
-            className="tj-realce tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+            className="tj-realce tj-paper tj-hoja group lg:col-span-4 min-w-0 relative overflow-hidden p-6 sm:p-7"
           >
             <div className="flex items-center gap-2 mb-2">
               <span

@@ -5813,3 +5813,151 @@ svg [data-entra="sello"] {
     transform: none;
   }
 }
+
+/* ============================================================
+   LA HOJA — la superficie con rango
+   ============================================================
+   ── El síntoma ────────────────────────────────────────────────────────
+   «Los recuadros son muy básicos». Lo eran, y no por falta de trabajo:
+   cada tarjeta del sitio llevaba `rounded-[2px]` y un filete al 13 % de
+   `--divider` sobre una sección con `bg-veil`. Un filete a esa opacidad
+   contra un fondo casi del mismo color no dibuja una tarjeta: dibuja el
+   contorno de una tarjeta. Todo el peso visual quedaba en el texto, y
+   una rejilla de seis contornos iguales se lee como un boceto.
+
+   ── De dónde sale el material ─────────────────────────────────────────
+   No hace falta inventar un lenguaje: el sitio ya tiene uno, y muy
+   bueno, en `.tj-lamina-marco` — la lámina que enmarca las capturas del
+   programa. Es un DOBLE FILETE con aire entre los dos trazos, que es
+   como se rematan las láminas de un atlas impreso. Aquí eso pasa de ser
+   el marco de las figuras a ser el material de todas las superficies:
+   una web sobre un programa que se presenta como atlas debería tener un
+   solo material, no uno para las figuras y otro para las tarjetas.
+
+   ── Los tres rangos, y qué significa cada uno ─────────────────────────
+   El rango NO es decoración: dice qué mirar primero.
+
+    · `.tj-hoja`           — la hoja corriente. Doble filete y apoyo:
+                             una sombra corta y baja, la de un papel
+                             posado, no el halo difuso de una tarjeta
+                             de interfaz.
+    · `.tj-hoja--pliego`   — la protagonista de su rejilla. El filete
+                             exterior se cierra, la sombra se alarga y
+                             aparecen las ESCUADRAS DE REGISTRO en las
+                             cuatro esquinas: las marcas que lleva un
+                             pliego para alinear las tintas en la
+                             prensa. Es la firma de esta página, y por
+                             eso hay UNA por rejilla. Si se repiten,
+                             dejan de señalar.
+    · `.tj-hoja--nota`     — la hoja menor: sin filete interior, sin
+                             sombra. Para lo que acompaña.
+
+   ── Por qué la sombra es corta y no difusa ────────────────────────────
+   Una sombra grande y suave es el gesto por defecto de cualquier
+   interfaz de los últimos diez años, y aquí además mentiría: el papel
+   de esta web está POSADO sobre el pliego del fondo, no flotando sobre
+   él. Un desplazamiento pequeño con poco desenfoque es lo que proyecta
+   una hoja sobre otra. En tema claro sube algo de opacidad porque una
+   sombra negra al 30 % sobre papel casi blanco no se ve.
+   ============================================================ */
+.tj-hoja {
+  position: relative;
+  border: 1px solid rgb(var(--divider) / 0.26);
+  box-shadow:
+    /* la luz del canto, que ya traía `.tj-paper` y aquí se conserva
+       porque este bloque va después y le ganaría por orden */
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 1px 0 rgb(var(--divider) / 0.06),
+    0 10px 22px -18px rgb(0 0 0 / 0.55);
+}
+:root[data-theme="light"] .tj-hoja {
+  border-color: rgb(var(--divider) / 0.18);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 1px 0 rgb(var(--divider) / 0.05),
+    0 12px 26px -20px rgb(0 0 0 / 0.35);
+}
+/* El filete interior. `inset: 5px` es la misma distancia que separa los
+   dos trazos en `.tj-lamina-marco`: si uno cambia sin el otro, la web
+   pasa a tener dos dobles filetes distintos y se nota. */
+.tj-hoja::after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgb(var(--divider) / 0.10);
+  pointer-events: none;
+}
+:root[data-theme="light"] .tj-hoja::after {
+  border-color: rgb(var(--divider) / 0.07);
+}
+
+.tj-hoja--pliego {
+  border-color: rgb(var(--divider) / 0.4);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 1px 0 rgb(var(--divider) / 0.08),
+    0 22px 44px -28px rgb(0 0 0 / 0.7);
+}
+:root[data-theme="light"] .tj-hoja--pliego {
+  border-color: rgb(var(--divider) / 0.28);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.7),
+    0 1px 0 rgb(var(--divider) / 0.06),
+    0 24px 48px -30px rgb(0 0 0 / 0.42);
+}
+/* Las escuadras de registro: cuatro ángulos de 12 px en las esquinas,
+   dibujados con cuatro degradados en una sola capa. Van en `::after`
+   —el mismo que en la hoja corriente lleva el filete interior— porque
+   una lámina no lleva las dos cosas: el pliego se identifica por sus
+   marcas, no por un segundo trazo. */
+.tj-hoja--pliego::after {
+  inset: 9px;
+  border: 0;
+  --escuadra: rgb(var(--accent-base) / 0.55);
+  background-image:
+    linear-gradient(to right, var(--escuadra) 12px, transparent 12px),
+    linear-gradient(to bottom, var(--escuadra) 12px, transparent 12px),
+    linear-gradient(to left, var(--escuadra) 12px, transparent 12px),
+    linear-gradient(to bottom, var(--escuadra) 12px, transparent 12px),
+    linear-gradient(to right, var(--escuadra) 12px, transparent 12px),
+    linear-gradient(to top, var(--escuadra) 12px, transparent 12px),
+    linear-gradient(to left, var(--escuadra) 12px, transparent 12px),
+    linear-gradient(to top, var(--escuadra) 12px, transparent 12px);
+  background-size:
+    12px 1px, 1px 12px,
+    12px 1px, 1px 12px,
+    12px 1px, 1px 12px,
+    12px 1px, 1px 12px;
+  background-position:
+    left top, left top,
+    right top, right top,
+    left bottom, left bottom,
+    right bottom, right bottom;
+  background-repeat: no-repeat;
+}
+:root[data-theme="light"] .tj-hoja--pliego::after {
+  --escuadra: rgb(var(--divider) / 0.55);
+}
+
+.tj-hoja--nota {
+  box-shadow: none;
+}
+.tj-hoja--nota::after {
+  content: none;
+}
+
+/* El canto se cierra al pasar por encima: el filete exterior sube de
+   tinta y la sombra se alarga un punto. Nada de color nuevo — la
+   tarjeta no cambia de estado, sólo se levanta. */
+.tj-hoja:hover {
+  border-color: rgb(var(--divider) / 0.42);
+}
+:root[data-theme="light"] .tj-hoja:hover {
+  border-color: rgb(var(--divider) / 0.3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-hoja,
+  .tj-hoja:hover {
+    transition: none;
+  }
+}
