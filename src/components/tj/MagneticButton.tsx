@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Link } from "@/components/tj/LocaleLink";
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -69,7 +70,37 @@ export function MagneticButton({
     style: { touchAction: "manipulation" as const },
   };
 
+  /* ── UNA RUTA DEL SITIO NO PUEDE SALIR POR UN `<a>` CRUDO ────────────
+     Esto pintaba siempre un ancla suelta, y a un ancla suelta el `href`
+     le llega tal cual. Con el sitio publicado en un subdirectorio
+     —`usuario.github.io/CountPipsWeb/`— eso significa que `href="/beta"`
+     apunta a la RAÍZ DEL DOMINIO y da 404.
+
+     No es teoría: era el botón «Solicitar acceso anticipado» de los dos
+     planes de la página de precios, en español y en inglés. El último
+     clic del embudo, el que pulsa quien ya ha decidido, llevaba a una
+     página que no existe. Y no se ve en local, porque en local el
+     prefijo es la cadena vacía y `/beta` es la ruta correcta.
+
+     Encima faltaba el idioma: desde `/en/pricing/` ese mismo botón
+     llevaba a la página española.
+
+     Las dos cosas las resuelve el `Link` de la casa, que añade el idioma
+     y deja que Next ponga el prefijo. Los enlaces EXTERNOS —los cinco
+     iconos del pie— siguen saliendo por un ancla: ahí `href` es una
+     dirección completa y no hay nada que prefijar.
+
+     La regla la vigila `tests/prefijo-despliegue.test.ts` sobre el HTML
+     ya compilado, para toda la familia y no sólo para este componente. */
   if (href) {
+    const interno = href.startsWith("/") && !href.startsWith("//");
+    if (interno) {
+      return (
+        <Link href={href} {...comun}>
+          {children}
+        </Link>
+      );
+    }
     return (
       <a href={href} target={target} rel={rel} {...comun}>
         {children}
