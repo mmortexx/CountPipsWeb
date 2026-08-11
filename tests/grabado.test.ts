@@ -217,20 +217,34 @@ describe("las láminas del producto", () => {
   it("toda captura de public/img tiene su entrada, y al revés", async () => {
     const { LAMINAS_PRODUCTO } = await import("@/lib/laminas");
     const dir = join(import.meta.dirname, "..", "public", "img");
+    /* Cada lámina son CUATRO ficheros: pantalla y detalle, en tema claro y
+       en tema oscuro. El catálogo nombra sólo el de escritorio claro y los
+       otros tres se derivan de él, así que aquí se comparan quitando los
+       sufijos — si no, las variantes oscuras contarían como capturas
+       huérfanas. */
     const enDisco = readdirSync(dir)
-      .filter((f) => /^app-.*\.webp$/.test(f) && !f.includes("-movil"))
+      .filter((f) => /^app-.*\.webp$/.test(f) && !f.includes("-movil") && !f.includes("-oscuro"))
       .sort();
     const descritas = Object.values(LAMINAS_PRODUCTO).map((l) => l.archivo).sort();
     expect(descritas, "hay capturas sin describir o entradas sin fichero").toEqual(enDisco);
   });
 
-  it("cada lámina trae su detalle móvil en disco", async () => {
+  it("cada lámina trae sus cuatro ficheros: los dos temas y sus dos detalles", async () => {
     const { LAMINAS_PRODUCTO } = await import("@/lib/laminas");
     const dir = join(import.meta.dirname, "..", "public", "img");
+    const presentes = new Set(readdirSync(dir));
     const faltan = Object.values(LAMINAS_PRODUCTO)
-      .map((l) => l.archivo.replace(/\.webp$/, "-movil.webp"))
-      .filter((f) => !readdirSync(dir).includes(f));
-    expect(faltan, "a 390 px estas láminas volverían a ser ilegibles").toEqual([]);
+      .flatMap((l) =>
+        ["-movil", "-oscuro", "-oscuro-movil"].map((s) =>
+          l.archivo.replace(/\.webp$/, `${s}.webp`),
+        ),
+      )
+      .filter((f) => !presentes.has(f));
+    expect(
+      faltan,
+      "sin estos ficheros la página vuelve a enseñar la captura clara en " +
+        "modo oscuro, o la pantalla entera a 390 px",
+    ).toEqual([]);
   });
 
   it("ninguna entrada se queda a medias", async () => {

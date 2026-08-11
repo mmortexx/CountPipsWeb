@@ -192,8 +192,8 @@ export function esquemasGlobales(
          misma imagen. */
       screenshot: [
         `${SITE_URL}/img/app-resumen.webp`,
-        `${SITE_URL}/img/app-curva.webp`,
         `${SITE_URL}/img/app-operaciones.webp`,
+        `${SITE_URL}/img/app-analitica.webp`,
       ],
       featureList: funciones,
       // Sin `aggregateRating` a propósito: no hay reseñas reales todavía.

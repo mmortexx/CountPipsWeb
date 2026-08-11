@@ -102,17 +102,23 @@ export function BackToTop() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  const [visible, setVisible] = useState<boolean>(() =>
-    typeof window !== "undefined" ? window.scrollY > SHOW_AFTER : false
-  );
+  /* LOS DOS ARRANCAN EN `false`, SIN MIRAR `window`.
+     Aquí ponía `typeof window !== "undefined" ? window.scrollY > SHOW_AFTER
+     : false`, y ese inicializador NO se ejecuta sólo «en el cliente»: se
+     ejecuta durante la hidratación. Al recargar con la página ya desplazada
+     —o al volver con la posición restaurada, que es lo normal— el servidor
+     había mandado el árbol sin botón y el cliente lo montaba con botón:
+     «Hydration failed because the server rendered HTML didn't match». React
+     tira ese subárbol y lo rehace.
+     El efecto de abajo llama a `update()` nada más montar, así que el botón
+     aparece igual de rápido; lo que ya no hace es contradecir al HTML. */
+  const [visible, setVisible] = useState(false);
   /* El botón no entra en el árbol hasta que el visitante baja lo
      suficiente para que tenga sentido, y entonces se queda. Montado
      desde el principio, su anillo de progreso en SVG viajaba en el HTML
      de las 155 páginas para alguien que a lo mejor no baja nunca —
      mismo patrón, y mismo motivo, que el cajón de navegación. */
-  const [montado, setMontado] = useState<boolean>(() =>
-    typeof window !== "undefined" ? window.scrollY > SHOW_AFTER : false
-  );
+  const [montado, setMontado] = useState(false);
   const [progress, setProgress] = useState(0);
   const [shifted, setShifted] = useState(false);
   const [cookieLift, setCookieLift] = useState(0);

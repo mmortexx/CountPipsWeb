@@ -68,28 +68,45 @@ describe("las capturas de la app y el marco que las enseña", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("todas comparten exactamente la misma proporción", () => {
-    /* El marco es UNO y su proporción por defecto también: si dos
-       capturas midieran distinto, una de las dos saldría con franjas
-       haga lo que haga `WindowFrame`. */
-    const medidas = ESCRITORIO.map((n) => ({ n, ...medirWebp(join(DIR, n)) }));
-    const primera = medidas[0];
-    for (const m of medidas) {
+  it("cada lámina declara las medidas que de verdad tiene su fichero", () => {
+    /* `ProductPlate` pone esas dos cifras en el `width`/`height` del `img`.
+       Si mienten, el navegador reserva un hueco de un tamaño y luego pinta
+       otro: la página da un salto al cargar la imagen, y nada avisa. */
+    for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {
+      const { w, h } = medirWebp(join(DIR, lamina.archivo));
       expect(
-        `${m.w}x${m.h}`,
-        `${m.n} mide ${m.w}×${m.h} y ${primera.n} mide ${primera.w}×${primera.h}. ` +
-          `Las capturas se preparan todas con el mismo recorte en ` +
-          `\`scripts/capturas.py\`; si una difiere, o se coló a mano o el ` +
-          `guion se ejecutó a medias.`,
-      ).toBe(`${primera.w}x${primera.h}`);
+        `${lamina.ancho}x${lamina.alto}`,
+        `«${clave}» declara ${lamina.ancho}×${lamina.alto} y ` +
+          `${lamina.archivo} mide ${w}×${h}. Las medidas salen de ` +
+          `\`scripts/capturas.py\`: si el recorte ha cambiado, hay que ` +
+          `actualizar la entrada en \`laminas.ts\`.`,
+      ).toBe(`${w}x${h}`);
     }
   });
 
-  it("la proporción del marco es la de los ficheros, no la del original", () => {
-    const { w, h } = medirWebp(join(DIR, ESCRITORIO[0]));
+  it("las dos variantes de tema de una lámina miden lo mismo", () => {
+    /* Se intercambian en el sitio con un único `width`/`height` declarado.
+       Si la oscura fuera más alta, cambiar de tema movería la página. */
+    for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {
+      const claro = medirWebp(join(DIR, lamina.archivo));
+      const oscuro = medirWebp(join(DIR, lamina.archivo.replace(/\.webp$/, "-oscuro.webp")));
+      expect(
+        `${oscuro.w}x${oscuro.h}`,
+        `«${clave}»: la captura clara mide ${claro.w}×${claro.h} y la oscura ` +
+          `${oscuro.w}×${oscuro.h}. Las dos tienen que capturarse con la ` +
+          `misma ventana.`,
+      ).toBe(`${claro.w}x${claro.h}`);
+    }
+  });
+
+  it("la proporción del marco es la de la captura que envuelve, no la del original", () => {
+    /* `WindowFrame` sólo envuelve una captura en el sitio: la del resumen,
+       en la portada (`OverviewApp`). Las láminas del atlas no pasan por ese
+       marco y llevan sus propias medidas. */
+    const { w, h } = medirWebp(join(DIR, LAMINAS_PRODUCTO.resumen.archivo));
     expect(
       ASPECTO_CAPTURA,
-      `Las capturas servidas miden ${w}×${h} y \`WindowFrame\` declara ` +
+      `La captura servida mide ${w}×${h} y \`WindowFrame\` declara ` +
         `${ASPECTO_CAPTURA}. Con esa diferencia la imagen sale con franjas ` +
         `arriba y abajo dentro del marco. Si el recorte de ` +
         `\`scripts/capturas.py\` ha cambiado a propósito, actualiza ` +
@@ -104,8 +121,10 @@ describe("las capturas de la app y el marco que las enseña", () => {
          lo deriva del nombre del de escritorio. Un derivado que no exista
          no da error en ninguna parte — el navegador se queda con la
          imagen de escritorio o con nada, según el `srcSet`. */
-      const movil = lamina.archivo.replace(/\.webp$/, "-movil.webp");
-      for (const nombre of [lamina.archivo, movil]) {
+      const derivados = ["-movil", "-oscuro", "-oscuro-movil"].map((s) =>
+        lamina.archivo.replace(/\.webp$/, `${s}.webp`),
+      );
+      for (const nombre of [lamina.archivo, ...derivados]) {
         expect(
           presentes.has(nombre),
           `«${clave}» necesita public/img/${nombre} y no está. Se genera con ` +

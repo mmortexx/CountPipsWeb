@@ -58,9 +58,20 @@ import { asset } from "@/lib/asset";
  * titular, se lee como un resultado prometido.
  */
 
-/** Dimensiones de las capturas ya recortadas, en píxeles. */
-const ANCHO_NATIVO = 1500;
-const ALTO_NATIVO = 788;
+/**
+ * Las capturas NO miden todas lo mismo, y por eso las medidas viajan en cada
+ * lámina en vez de estar aquí como dos constantes. El playbook enseña cinco
+ * fichas de setup: en la ventana con la que se capturó el resto, las dos de
+ * abajo salían cortadas por la mitad, así que esa pantalla está capturada en
+ * una ventana más alta. Declarar un alto único obligaba a elegir entre una
+ * lámina con franjas o una lámina con las fichas serradas.
+ *
+ * Lo que sí se exige —y lo comprueba `tests/capturas.test.ts` leyendo la
+ * cabecera de los ficheros— es que los cuatro ficheros de UNA lámina (los
+ * dos temas × pantalla y detalle) encajen con lo que declara: si no, el
+ * navegador reserva un hueco de un tamaño y luego pinta otro, y la página
+ * pega un salto al cargar.
+ */
 
 /** Por debajo de aquí se sirve el detalle en lugar de la pantalla entera. */
 const CORTE_MOVIL_PX = 767;
@@ -68,8 +79,19 @@ const CORTE_MOVIL_PX = 767;
 export type LaminaProducto = {
   /** Nombre del fichero en `public/img/`, sin ruta. */
   archivo: string;
+  /** Medidas reales de esa captura ya recortada, en píxeles. */
+  ancho: number;
+  alto: number;
   /** Numeración de la lámina, en romanos, como el resto del atlas. */
   roman: string;
+  /**
+   * El nombre corto de la pantalla —el mismo que lleva en la barra de
+   * navegación del programa—, para la galería de `/features`. El título de
+   * la lámina no sirve ahí: es una frase, y una pestaña necesita una
+   * palabra.
+   */
+  pestanaEs: string;
+  pestanaEn: string;
   tituloEs: string;
   tituloEn: string;
   /** Qué se está viendo y por qué importa. Una frase. */
@@ -96,8 +118,13 @@ export function ProductPlate({
 }) {
   const { lang } = useLang();
   const es = lang === "es";
-  const { archivo, roman, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
-  const movil = archivo.replace(/\.webp$/, "-movil.webp");
+  const { archivo, ancho, alto, roman, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
+  const alt = es ? altEs : altEn;
+
+  /* Los cuatro ficheros de cada lámina: pantalla y detalle, en los dos
+     temas. Los nombres los fija `scripts/capturas.py` y los comprueba
+     `tests/capturas.test.ts`; aquí sólo se derivan. */
+  const variante = (sufijo: string) => archivo.replace(/\.webp$/, `${sufijo}.webp`);
 
   return (
     <figure className="tj-lamina-producto">
@@ -105,22 +132,40 @@ export function ProductPlate({
         <div className="tj-lamina-ventana">
           {/* `img` y no `next/image`: el build es `output: "export"` con
               `images.unoptimized`, así que next/image no optimizaría nada
-              y sí añadiría envoltorio. */}
-          <picture>
-            <source
-              media={`(max-width: ${CORTE_MOVIL_PX}px)`}
-              srcSet={asset(`/img/${movil}`)}
-            />
-            <img
-              src={asset(`/img/${archivo}`)}
-              alt={es ? altEs : altEn}
-              width={ANCHO_NATIVO}
-              height={ALTO_NATIVO}
-              loading={priority ? "eager" : "lazy"}
-              decoding="async"
-              fetchPriority={priority ? "high" : "auto"}
-            />
-          </picture>
+              y sí añadiría envoltorio.
+
+              DOS CAPTURAS, UNA POR TEMA. La página enseñaba la captura
+              CLARA también en modo oscuro: una lámina blanca de 1576 px
+              en mitad de una página casi negra, que además contradecía lo
+              que la propia app hace cuando la abres de noche. No se puede
+              resolver con `<picture>` y `prefers-color-scheme` porque el
+              tema de este sitio no lo decide el sistema, lo decide
+              `data-theme` en el `:root` (hay interruptor propio). Así que
+              van las dos y el CSS enseña la que toca — con `lazy` en la
+              que no se ve, que es lo que evita que el navegador se baje
+              las dos. */}
+          {(
+            [
+              { clase: "tj-captura--oscura", sufijo: "-oscuro", movil: "-oscuro-movil" },
+              { clase: "tj-captura--clara", sufijo: "", movil: "-movil" },
+            ] as const
+          ).map(({ clase, sufijo, movil }) => (
+            <picture key={clase} className={clase}>
+              <source
+                media={`(max-width: ${CORTE_MOVIL_PX}px)`}
+                srcSet={asset(`/img/${variante(movil)}`)}
+              />
+              <img
+                src={asset(`/img/${variante(sufijo)}`)}
+                alt={alt}
+                width={ancho}
+                height={alto}
+                loading={priority ? "eager" : "lazy"}
+                decoding="async"
+                fetchPriority={priority ? "high" : "auto"}
+              />
+            </picture>
+          ))}
         </div>
       </div>
       <figcaption className="tj-lamina-pie">

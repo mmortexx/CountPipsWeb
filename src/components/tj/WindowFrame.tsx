@@ -26,12 +26,17 @@ import { asset } from "@/lib/asset";
  * `bodyClassName` para otros usos (p. ej. un marco con contenido que no
  * es una captura).
  *
- * ── POR QUÉ ES 1500×788 Y NO 1500×856 ─────────────────────────────────
- * 856 es el alto del ORIGINAL, y aquí ponía eso —y el comentario juraba
- * que era «la resolución real de las capturas»—. Dejó de serlo cuando
- * `scripts/capturas.py` empezó a recortar el cromo de ventana en el
- * fichero: la barra de título con el nombre viejo (46 px) y la de estado
- * con el sello de desarrollo (22 px). 856 − 46 − 22 = 788.
+ * ── POR QUÉ ES 1576×836 Y NO EL ALTO DEL ORIGINAL ─────────────────────
+ * Aquí llegó a ponerse el alto del ORIGINAL, con un comentario que juraba
+ * que era «la resolución real de las capturas». Deja de serlo en cuanto
+ * `scripts/capturas.py` recorta el cromo de ventana en el fichero. Hoy los
+ * originales miden 1576 × 884 y el guion les quita los 48 px de barra de
+ * título —abajo ya no hay nada que quitar—: 884 − 48 = 836.
+ *
+ * Esta constante vale para la captura que envuelve este marco en la
+ * portada (`app-resumen`). Las láminas del atlas NO pasan por aquí y
+ * llevan sus propias medidas, porque el playbook está capturado en una
+ * ventana más alta para que quepan sus cinco fichas.
  *
  * El resultado era una imagen con 68 px de franja repartidos arriba y
  * abajo dentro de un marco que dice enseñar la app «entera y nítida», y
@@ -58,7 +63,7 @@ import { asset } from "@/lib/asset";
  * cambiar el recorte, la prueba se pone roja en vez de aparecer una
  * franja en la página que sólo se ve mirándola.
  */
-export const ASPECTO_CAPTURA = "aspect-[1500/788]";
+export const ASPECTO_CAPTURA = "aspect-[1576/836]";
 
 interface WindowFrameProps {
   caption?: string;

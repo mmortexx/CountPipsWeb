@@ -3676,13 +3676,42 @@ button.icon-btn:hover > svg,
      `img` añade unos píxeles de fondo bajo la imagen y el filete inferior
      se despega. */
   border: 1px solid rgb(var(--divider) / 0.16);
-  background: #0c1116;
+  /* `var(--surface)` y no un `#0c1116` fijo: desde que hay captura clara y
+     captura oscura, un fondo negro clavado se veía como un filete negro
+     alrededor de una lámina blanca en el tema claro. */
+  background: var(--surface);
   line-height: 0;
 }
 .tj-lamina-ventana img {
   display: block;
   width: 100%;
   height: auto;
+}
+/* LA CAPTURA SIGUE AL TEMA DE LA PÁGINA.
+   Aquí se enseñaba siempre la captura clara: en modo oscuro, una lámina
+   blanca de 1576 px en mitad de una página casi negra — y encima
+   contradiciendo a la propia aplicación, que tiene su interruptor de tema.
+   `ProductPlate` monta las dos y esto decide cuál se ve.
+
+   El tema de este sitio NO lo decide `prefers-color-scheme` sino
+   `data-theme` en el `:root` (hay interruptor propio), así que esto no se
+   puede resolver con un `<source media>` dentro del `<picture>`.
+
+   El oscuro es el estado por defecto del sitio —`:root` sin `data-theme`
+   ya es oscuro—, así que la regla base esconde la clara y sólo el tema
+   claro invierte el par.
+
+   Los selectores son globales a propósito: el mismo par se usa en la
+   lámina del atlas (`ProductPlate`) y dentro del marco de ventana de la
+   portada (`OverviewApp`), y son dos maquetaciones distintas. */
+.tj-captura--clara {
+  display: none;
+}
+:root[data-theme="light"] .tj-captura--clara {
+  display: block;
+}
+:root[data-theme="light"] .tj-captura--oscura {
+  display: none;
 }
 .tj-lamina-pie {
   display: grid;

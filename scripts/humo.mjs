@@ -433,6 +433,36 @@ for (const pantalla of PANTALLAS) {
         );
       }
 
+      /* LAS LÁMINAS SE MIDEN CUANDO HAN CARGADO, NO ANTES.
+         `currentSrc` está vacío mientras la imagen no se ha descargado, y
+         la comprobación de más abajo caía entonces en `src` —el fichero de
+         escritorio— y denunciaba que en móvil se sirve la pantalla entera.
+         Era mentira: la lámina de `/features` es perezosa y todavía no
+         había pedido nada. Aquí se la trae al viewport y se espera a que
+         complete; si no carga en 3 s, se sigue y el informe dirá lo que
+         haya, que para eso es un guardián y no un adorno. */
+      await pagina
+        .evaluate(async () => {
+          const imgs = Array.from(document.querySelectorAll(".tj-lamina-ventana img")).filter(
+            (i) => i.getBoundingClientRect().width > 0
+          );
+          for (const i of imgs) i.loading = "eager";
+          await Promise.race([
+            Promise.all(
+              imgs.map((i) =>
+                i.complete && i.naturalWidth > 0
+                  ? null
+                  : new Promise((r) => {
+                      i.addEventListener("load", r, { once: true });
+                      i.addEventListener("error", r, { once: true });
+                    })
+              )
+            ),
+            new Promise((r) => setTimeout(r, 3000)),
+          ]);
+        })
+        .catch(() => {});
+
       const informe = await pagina.evaluate(() => {
         const h1s = Array.from(document.querySelectorAll("h1"));
         const primero = h1s[0];
@@ -540,11 +570,21 @@ for (const pantalla of PANTALLAS) {
              no lo que declara el `srcSet`: un `<picture>` mal escrito
              tiene buena pinta en el fuente y sirve el fichero
              equivocado. */
-          laminas: [...document.querySelectorAll(".tj-lamina-ventana img")].map((img) => ({
-            sirve: (img.currentSrc || img.src).split("/").pop(),
-            nativo: img.naturalWidth,
-            mostrado: Math.round(img.getBoundingClientRect().width),
-          })),
+          laminas: [...document.querySelectorAll(".tj-lamina-ventana img")]
+            /* Cada lámina monta DOS capturas —tema claro y tema oscuro— y
+               el CSS esconde la que no toca. La escondida ni se descarga
+               (ancho 0, `currentSrc` vacío), así que medirla daba «se ve al
+               0 %» en cada página: se mide la que el visitante ve. */
+            .filter((img) => img.getBoundingClientRect().width > 0)
+            .map((img) => ({
+              /* `currentSrc` y NO `|| src`: el `src` es el fichero de
+                 escritorio siempre, así que ese respaldo convertía «no ha
+                 cargado todavía» en «sirve el fichero equivocado». Si está
+                 vacío, que lo diga con esas palabras. */
+              sirve: (img.currentSrc || "").split("/").pop() || "(sin descargar)",
+              nativo: img.naturalWidth,
+              mostrado: Math.round(img.getBoundingClientRect().width),
+            })),
 
           /* Candidatos para la medición de contraste, que se hace fuera
              (ver `mideContraste`): los textos MÁS PEQUEÑOS que están

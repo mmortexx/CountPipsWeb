@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Ticker } from "@/components/marketing/Ticker";
 import { Hero } from "@/components/marketing/Hero";
 import { ProfileSelector } from "@/components/marketing/ProfileSelector";
-import { SideRail } from "@/components/tj/SideRail";
 import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
@@ -146,14 +145,19 @@ const FinalCTANew = dynamic(
  * Precios → /pricing · Demo a página completa → /demo · FAQ → /faq ·
  * Acerca de → /about.
  *
- * El SideRail ahora es un índice LOCAL de la home con sólo 2 anclas
- * (01 Inicio #top, 02 Vistazo #overview) — no un índice del sitio. Las
- * 9 rutas reales ya viven en el megamenú del Navbar, en el Footer, en
- * el CommandPalette (⌘K) y en los atajos `g`+letra de GlobalShortcuts;
- * duplicarlas en el raíl era justo lo que generaba "secciones que no
- * hay en ese menú". La sección HomeDemo sigue siendo alcanzable con
- * scroll, pero no la indexamos para evitar la colisión "Demo" (ancla
- * de la home) vs "/demo" (ruta independiente).
+ * ── AQUÍ HABÍA UN RAÍL LATERAL, Y YA NO ───────────────────────────────
+ * Cuatro puntos con su etiqueta, fijos contra el borde izquierdo, que
+ * indexaban cuatro tramos de esta misma página. No se quita por ahorrar
+ * código: se quita porque era la única pieza del sitio que vivía fuera de
+ * la mancha, sin superficie que la sostuviera —tipografía de 10,5 px
+ * flotando sobre el papel—, y eso la delataba como un añadido en cuanto
+ * la mirabas al lado de cualquier otra cosa de la página.
+ *
+ * Lo que hacía no se pierde: las nueve rutas reales viven en el megamenú
+ * de la barra, en el pie, en el buscador (⌘K) y en los atajos `g`+letra;
+ * y para volver arriba está el botón que ya existe abajo a la derecha.
+ * Un índice de cuatro anclas para una página que se recorre con scroll no
+ * añadía un camino nuevo, sólo un elemento más que mirar.
  */
 /**
  * Exportada con nombre, no sólo como default: `app/en/page.tsx` la
@@ -165,8 +169,6 @@ const FinalCTANew = dynamic(
 export function HomeBody() {
   return (
     <>
-      {/* Raíl lateral 01–02 — índice local de la home (solo ≥1100px) */}
-      <SideRail />
       <Hero />
       <ProfileSelector />
       <StatsBandNew />

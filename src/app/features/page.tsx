@@ -113,6 +113,9 @@ const FeaturesBento = dynamic(
 const FeatureExplorer = dynamic(
   () => import("@/components/marketing/FeatureExplorer").then((m) => m.FeatureExplorer)
 );
+const GaleriaPantallas = dynamic(
+  () => import("@/components/marketing/GaleriaPantallas").then((m) => m.GaleriaPantallas)
+);
 const HowItWorks = dynamic(
   () => import("@/components/marketing/HowItWorks").then((m) => m.HowItWorks)
 );
@@ -150,6 +153,12 @@ export function FeaturesBody() {
           /features/metricas, /features/disciplina, /features/seguridad. */}
       <FeaturesBento num="01" />
       <FeatureExplorer num="02" />
+
+      {/* La galería que esta página lleva prometiendo desde su primer
+          `articleSchema` y no existía. Va aquí, después del explorador:
+          el visitante acaba de marcar lo que le importa y de leer una
+          lista de nombres, y lo siguiente que necesita es ver la cosa. */}
+      <GaleriaPantallas num="03" />
 
       <PlateInterlude index={0} />
       <HowItWorks />

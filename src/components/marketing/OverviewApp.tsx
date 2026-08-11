@@ -413,16 +413,27 @@ export function OverviewApp() {
                 animation (different transform axis + slower 300ms ease). */}
             <div className="relative z-[2] transition-transform duration-300 ease-out hover:-translate-y-1" style={{ willChange: "transform" }}>
               <WindowFrame caption="CountPips — Resumen">
-                <FeatureImage
-                  src={asset("/img/app-resumen.webp")}
-                  alt={es
-                    ? "Pantalla de Resumen de CountPips: curva de rendimiento, KPIs y calendario P&L"
-                    : "CountPips Overview screen: performance curve, KPIs and P&L calendar"}
-                  fit="contain"
-                  className="absolute inset-0 h-full w-full"
-                  overlay={0}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+                {/* Las dos capturas de la misma pantalla, una por tema. La
+                    clase la resuelve `globals.css` contra `data-theme` del
+                    `:root`. Antes se servía siempre la clara: en modo
+                    oscuro, el marco enseñaba una pantalla blanca de una
+                    aplicación que también tiene modo oscuro. */}
+                {([
+                  { clase: "tj-captura--oscura", archivo: "app-resumen-oscuro.webp" },
+                  { clase: "tj-captura--clara", archivo: "app-resumen.webp" },
+                ] as const).map(({ clase, archivo }) => (
+                  <FeatureImage
+                    key={clase}
+                    src={asset(`/img/${archivo}`)}
+                    alt={es
+                      ? "Pantalla de Resumen de CountPips: curva de rendimiento, KPIs y calendario P&L"
+                      : "CountPips Overview screen: performance curve, KPIs and P&L calendar"}
+                    fit="contain"
+                    className={`${clase} absolute inset-0 h-full w-full`}
+                    overlay={0}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                ))}
               </WindowFrame>
               <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 sm:gap-1.5">
                 <span className="tnum" style={{ fontSize: 10, color: "var(--ink-3)" }}>
