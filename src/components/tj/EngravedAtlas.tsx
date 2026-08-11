@@ -2544,6 +2544,15 @@ export function EngravedAtlas() {
     let introStart = 0;
     /* La primera lámina, en unidades de progreso global. */
     const span0 = 1 / PLATES.length;
+    /* Hasta dónde llega el grabado de bienvenida dentro de la lámina I.
+       Lo usan DOS sitios —el bucle, para saber a dónde ir; y el mapa de
+       anclas, para que el scroll arranque exactamente ahí— y por eso es
+       una constante y no un número escrito dos veces. Cuando lo estaba,
+       el mapa decía «progreso 0 en scroll 0» mientras la bienvenida ya
+       había dibujado la figura, así que las tres primeras pantallas de
+       scroll no movían el dibujo: el scroll pedía menos de lo que ya
+       había y `Math.max` se quedaba con lo que había. */
+    const INTRO_HASTA = 0.78;
 
     const readInk = () => {
       const antes = ink;
@@ -2798,7 +2807,9 @@ export function EngravedAtlas() {
         (a, b) => Number(a.getAttribute("data-plate")) - Number(b.getAttribute("data-plate"))
       );
       const span = 1 / PLATES.length;
-      const list: [number, number][] = [[0, 0]];
+      /* El primer ancla arranca donde termina la bienvenida, no en cero:
+         ver `INTRO_HASTA`. */
+      const list: [number, number][] = [[0, INTRO_HASTA * span]];
       nodes.forEach((el, i) => {
         const r = el.getBoundingClientRect();
         /* Scroll al que esta pausa queda centrada en la ventana. */
@@ -2949,14 +2960,42 @@ export function EngravedAtlas() {
         target = scrollProgress();
       }
 
-      /* Grabado inicial: la lámina I se dibuja sola hasta media altura
-         durante los primeros segundos. Sin esto, quien abre la página
-         encuentra el fondo en blanco —el trazo solo existiría al hacer
-         scroll— y no llega a enterarse de que el atlas está ahí.
-         A partir de ese punto manda el scroll, y el `max` hace que
-         desplazarse nunca dé marcha atrás al dibujo. */
-      const introT = clamp01((now - introStart) / 3400);
-      const goal = Math.max(target, easeOut(introT) * 0.5 * span0);
+      /* Grabado inicial: la lámina I se dibuja SOLA, entera, en la primera
+         pantalla. Sin esto, quien abre la página encuentra el fondo en
+         blanco —el trazo solo existiría al hacer scroll— y no llega a
+         enterarse de que el atlas está ahí. A partir de ese punto manda el
+         scroll, y el `max` hace que desplazarse nunca dé marcha atrás al
+         dibujo.
+
+         ── POR QUÉ ENTERA Y NO A MEDIAS ──────────────────────────────
+         Esto llevaba a `0.5 * span0`: media lámina. Media figura no se
+         lee como una figura — se lee como un fondo con algo suelto, y el
+         síntoma era exactamente ese: «el gráfico no se ve en la primera
+         sección, hay que hacer mucho scroll para que empiece».
+
+         Media lámina además dejaba fuera justo lo que la identifica: la
+         curva se corta a medio recorrido y el marco, la cartela y la
+         graduación viven en el último tramo del revelado. Ahora llega a
+         0,97 —el mismo valor con el que una pausa da una lámina por
+         terminada— en cinco segundos: lo bastante lento para que se vea
+         DIBUJAR, que es el efecto que justifica todo este componente, y
+         lo bastante rápido para estar completa antes de que nadie haya
+         terminado de leer el titular.
+
+         ── Y POR QUÉ NO HASTA EL FINAL DEL TRAMO ─────────────────────
+         Porque `Math.max` no compara la intro con el scroll: le gana. La
+         primera pausa está a unas tres pantallas, y hasta ella el
+         progreso que pide el scroll es MENOR que el que dejó la intro,
+         así que el dibujo se quedaba clavado durante todo ese tramo. El
+         visitante hacía scroll y el fondo no se movía — la otra mitad
+         del mismo síntoma.
+
+         Con 0,78 la lámina llega a la primera pantalla con su curva y su
+         marco ya trazados, y aún le queda un quinto de revelado que el
+         scroll se encarga de completar justo cuando la pausa I entra en
+         pantalla. La intro presenta la figura; el scroll la termina. */
+      const introT = clamp01((now - introStart) / 5000);
+      const goal = Math.max(target, easeOut(introT) * INTRO_HASTA * span0);
 
       const next = shown + (goal - shown) * (1 - Math.exp((-dt * 6) / 1000));
 
@@ -2990,7 +3029,9 @@ export function EngravedAtlas() {
     target = scrollProgress();
 
     if (reduce) {
-      shown = Math.max(target, span0 * 0.5);
+      /* Sin movimiento, el mismo destino que el grabado de bienvenida.
+         Quien pide menos animación ve la figura, no media figura. */
+      shown = Math.max(target, span0 * INTRO_HASTA);
       ready = true;
       draw(shown);
     } else {
