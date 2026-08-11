@@ -20,11 +20,26 @@ import { asset } from "@/lib/asset";
  *    sombra suave. `rounded-xl` + `overflow-hidden`.
  *
  * El componente NO impone aspect ratio fijo: el cuerpo se adapta al
- * aspect natural de la captura. El default `aspect-[1500/856]` coincide
- * EXACTAMENTE con la resolution real de las capturas (1500×856, ratio
- * 1.7523) para que la imagen llene el cuerpo del frame edge-to-edge
- * SIN barras de letterbox. Sobreescribible con `bodyClassName` para
- * otros usos (p.ej. un frame con contenido non-screenshot).
+ * aspect natural de la captura. El valor por defecto tiene que coincidir
+ * EXACTAMENTE con el de las capturas servidas para que la imagen llene el
+ * cuerpo del marco de borde a borde, sin franjas. Sobreescribible con
+ * `bodyClassName` para otros usos (p. ej. un marco con contenido que no
+ * es una captura).
+ *
+ * ── POR QUÉ ES 1500×788 Y NO 1500×856 ─────────────────────────────────
+ * 856 es el alto del ORIGINAL, y aquí ponía eso —y el comentario juraba
+ * que era «la resolución real de las capturas»—. Dejó de serlo cuando
+ * `scripts/capturas.py` empezó a recortar el cromo de ventana en el
+ * fichero: la barra de título con el nombre viejo (46 px) y la de estado
+ * con el sello de desarrollo (22 px). 856 − 46 − 22 = 788.
+ *
+ * El resultado era una imagen con 68 px de franja repartidos arriba y
+ * abajo dentro de un marco que dice enseñar la app «entera y nítida», y
+ * que además desalineaba el marco con la columna de texto de al lado en
+ * `OverviewApp`. Un comentario que afirma un número deja de ser
+ * documentación en cuanto el número cambia en otro fichero: por eso ahora
+ * lo mide `tests/capturas.test.ts` leyendo la cabecera de los propios
+ * ficheros servidos, y no hay que fiarse de esta frase.
  *
  * Props:
  *  - `caption`: texto mono centrado en la barra de título (p.ej. "Resumen
@@ -35,6 +50,16 @@ import { asset } from "@/lib/asset";
  *  - `className`: clases extra para el contenedor exterior.
  *  - `live`: muestra un punto verde "EN VIVO" a la derecha de la barra.
  */
+/**
+ * La proporción de las capturas servidas en `public/img/app-*.webp`.
+ *
+ * Se exporta para que `tests/capturas.test.ts` la compare contra la
+ * cabecera real de los ficheros: si `scripts/capturas.py` vuelve a
+ * cambiar el recorte, la prueba se pone roja en vez de aparecer una
+ * franja en la página que sólo se ve mirándola.
+ */
+export const ASPECTO_CAPTURA = "aspect-[1500/788]";
+
 interface WindowFrameProps {
   caption?: string;
   children: ReactNode;
@@ -156,11 +181,10 @@ export function WindowFrame({
           </span>
         </span>
       </div>
-      {/* Body — the screenshot lives here, whole and crisp. Default
-          aspect-[1500/856] matches the screenshots' actual resolution
-          (1500×856) so object-contain fills edge-to-edge with zero
-          letterbox bars. */}
-      <div className={`relative w-full ${bodyClassName || "aspect-[1500/856]"}`}>
+      {/* El cuerpo: aquí vive la captura, entera y nítida. La proporción
+          por defecto es la de los ficheros servidos —`ASPECTO_CAPTURA`—,
+          para que `object-contain` la ajuste sin dejar franjas. */}
+      <div className={`relative w-full ${bodyClassName || ASPECTO_CAPTURA}`}>
         {children}
       </div>
     </div>
