@@ -981,6 +981,54 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
+      /* ── LA BARRA SUPERIOR NO CAMBIA DE ALTURA AL DESPLAZAR ────────
+         Se condensaba de 68 a 56 px en cuanto se bajaban diez píxeles.
+         Eso mueve doce píxeles hacia arriba la marca, la navegación y
+         el CTA justo cuando el ojo va a por un enlace, y descuadra el
+         destino de los anclajes: `scroll-padding-top` es una constante
+         y el obstáculo que esquiva medía dos cosas distintas según el
+         momento.
+
+         Se mide la altura REAL de la barra en tres posiciones, porque
+         la constante puede quedarse escrita en el código y aun así
+         llegar rota a pantalla — una transición, un `@media` o una
+         clase que gane por especificidad valen para deshacerlo.
+
+         En los dos anchos, no sólo en escritorio: la barra móvil tiene
+         su propia rejilla y su propio cajón. */
+      if (pantalla.nombre === "escritorio" || pantalla.nombre === "movil") {
+        const alturas = await pagina.evaluate(async () => {
+          const barra = document.querySelector("[data-navbar-root] nav");
+          if (!barra) return null;
+          const mide = async (y) => {
+            window.scrollTo(0, y);
+            // Más que de sobra para los 340 ms que duraba la transición
+            // de altura: si algo aún interpola, aquí ya ha terminado.
+            await new Promise((r) => setTimeout(r, 600));
+            return Math.round(barra.getBoundingClientRect().height);
+          };
+          const arriba = await mide(0);
+          const justoDespues = await mide(40);
+          const abajo = await mide(document.documentElement.scrollHeight);
+          window.scrollTo(0, 0);
+          await new Promise((r) => setTimeout(r, 400));
+          return { arriba, justoDespues, abajo };
+        });
+
+        if (!alturas) {
+          fallos.push(`${etiqueta}: no se encuentra la barra superior`);
+        } else {
+          const { arriba, justoDespues, abajo } = alturas;
+          if (arriba !== justoDespues || arriba !== abajo) {
+            fallos.push(
+              `${etiqueta}: la barra superior cambia de altura al desplazar ` +
+                `(${arriba} px arriba · ${justoDespues} px tras 40 px de scroll · ` +
+                `${abajo} px al final) — tiene que medir lo mismo siempre`
+            );
+          }
+        }
+      }
+
       /* ── LA VUELTA ARRIBA NO PUEDE REBOBINAR LA PÁGINA ─────────────
          `html` llevaba `scroll-behavior: smooth`, y con él volver a la
          cabecera desde el pie de la portada animaba las diez pantallas

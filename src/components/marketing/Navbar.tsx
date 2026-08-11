@@ -17,10 +17,10 @@ import { useAtajoPaleta } from "@/hooks/use-tecla-mando";
  * (papel cálido translúcido: 72%/86% surface, blur 10px + saturate
  * 140%, grano de papel SVG, catch-light inset). Reemplaza al cristal
  * acrílico frío anterior. El megamenú añade `.tj-paper-glow` para un
- * halo champagne tenue en el borde superior. La condensación al hacer
- * scroll se conserva (68→56 px, sombra de profundidad), pero la barra
- * ya no pasa a opaca al desplazar: el papel sigue dejando intuir el
- * atlas animado del hero, que es justo lo que pide el producto.
+ * halo champagne tenue en el borde superior. Al hacer scroll la barra
+ * gana sombra, pero NO cambia de altura (ver `ALTURA_BARRA`) ni pasa a
+ * opaca: el papel sigue dejando intuir el atlas animado del hero, que
+ * es justo lo que pide el producto.
  *
  * R28 — reescritura de la barra. Los tres problemas estructurales que
  * arrastraba la versión anterior y que esta corrige:
@@ -57,10 +57,10 @@ import { useAtajoPaleta } from "@/hooks/use-tecla-mando";
  *     de `rounded-full`, CTA sin sheen ni sombra de color, megamenú sin
  *     muelle ni escalonado, y el cambio de tema sin voltereta.
  *
- * Además: la barra condensa 68 → 56 px al hacer scroll (el material
- * gana opacidad y sombra a la vez), y una hairline de acento en el
- * borde inferior traza el progreso de lectura de la página — coherente
- * con un producto que va de medir.
+ * Además: al hacer scroll la barra gana sombra y filo —nunca altura,
+ * ver `ALTURA_BARRA`—, y una hairline de acento en el borde inferior
+ * traza el progreso de lectura de la página — coherente con un producto
+ * que va de medir.
  *
  * El material se diseñó para leerse sobre el ojo WebGL del fondo en
  * AMBOS temas: en oscuro `--surface` (#141618) aporta el scrim; en
@@ -77,6 +77,27 @@ import { useAtajoPaleta } from "@/hooks/use-tecla-mando";
  * cliente, y solo tickea dentro de un efecto: la hidratación nunca ve
  * horas distintas (cero mismatch).
  */
+/* ── LA BARRA MIDE LO MISMO SIEMPRE ────────────────────────────────────
+   68 px, con scroll y sin él. Antes se condensaba a 56 al bajar diez
+   píxeles, y esa condensación no es gratis:
+
+     · MUEVE LA MAQUETA MIENTRAS SE LEE. La barra es `fixed`, así que no
+       empuja al contenido, pero sí desplaza doce píxeles hacia arriba
+       todo lo que ella misma contiene —marca, navegación, CTA— justo en
+       el instante en que el ojo va a por un enlace. En un marco que no
+       es contenido, ese movimiento no informa de nada.
+     · DESCUADRA EL DESTINO DE LOS ANCLAJES. `scroll-padding-top` es una
+       constante (5rem) y las secciones traen su `scroll-mt-*` fijo,
+       pero el obstáculo que esas holguras esquivan medía 68 o 56 según
+       el momento. Con una altura fija, la holgura declarada vuelve a
+       corresponderse con el obstáculo real.
+
+   Se conserva lo que SÍ cambia al desplazar y no mueve un píxel: la
+   sombra y el filo ganan profundidad, que es la señal de «hay
+   contenido pasando por debajo». La altura es el marco; la sombra, la
+   relación con lo que hay detrás. Lo vigila `tests/barra-fija.test.ts`. */
+const ALTURA_BARRA = 68;
+
 export function Navbar() {
   const { t, lang } = useLang();
   const es = lang === "es";
@@ -678,22 +699,21 @@ export function Navbar() {
         // a 86% (82% en claro) para que el texto del navbar siga siendo
         // legible AA sobre el hero animado sin renunciar a la fibra de
         // papel. Se retira el `background`/`backdropFilter` inline
-        // previo: ahora manda el material. La condensación al hacer
-        // scroll se conserva en altura (68→56 px) y sombra de
-        // profundidad, pero la barra ya no pasa a opaca al desplazar —
-        // el atlas sigue intuyéndose a través del papel, incluso
-        // scrolled. `will-change: backdrop-filter` y `translateZ(0)`
-        // vienen heredados de `.tj-paper` (globals.css), así que el
-        // cambio de altura no jita.
+        // previo: ahora manda el material. Al desplazar sólo cambian la
+        // sombra y el filo —la altura es fija, ver `ALTURA_BARRA`— y la
+        // barra tampoco pasa a opaca: el atlas sigue intuyéndose a
+        // través del papel. `will-change: backdrop-filter` y
+        // `translateZ(0)` vienen heredados de `.tj-paper`
+        // (globals.css).
         className="tj-paper tj-paper-dense relative flex w-full items-center border-b px-5 md:px-8"
         style={{
-          height: scrolled ? 56 : 68,
+          height: ALTURA_BARRA,
           borderColor: "rgb(var(--divider) / 0.1)",
           boxShadow: scrolled
             ? "inset 0 1px 0 rgb(var(--divider) / 0.16), 0 14px 40px -16px rgb(0 0 0 / 0.55)"
             : "inset 0 1px 0 rgb(var(--divider) / 0.14), 0 6px 20px -12px rgb(0 0 0 / 0.4)",
           transition:
-            "height 0.34s var(--ease-suave), box-shadow 0.3s var(--ease-suave), border-color 0.3s var(--ease-suave)",
+            "box-shadow 0.3s var(--ease-suave), border-color 0.3s var(--ease-suave)",
         }}
       >
         {/* Rejilla de tres zonas: la navegación queda ópticamente
