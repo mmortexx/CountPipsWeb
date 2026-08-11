@@ -343,11 +343,11 @@ export function BetaApplication() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-medium text-primary">
-              {es ? "Cómo llevas el journal hoy" : "How you journal today"}
+              {es ? "Cómo llevas hoy tu diario" : "How you journal today"}
               <select ref={workflowRef} className={`${inputClass} ${fieldBorderClass(workflowInvalid)}`} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
                 <option value="spreadsheet">{es ? "Excel / Sheets" : "Excel / Sheets"}</option>
-                <option value="journal">{es ? "Otro journal" : "Another journal"}</option>
+                <option value="journal">{es ? "Otro diario" : "Another journal"}</option>
                 <option value="notes">{es ? "Notas sueltas" : "Loose notes"}</option>
                 <option value="nothing">{es ? "Todavía no" : "Not yet"}</option>
               </select>

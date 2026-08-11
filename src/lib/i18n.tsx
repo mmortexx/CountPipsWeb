@@ -324,8 +324,13 @@ export const STR = {
 
   // ---- Features (marketing) ----
   featuresEyebrow: { es: "Por qué es distinto", en: "Why it's different" },
+  /* «journal» en la versión española: el sitio llama DIARIO a esto mismo
+     en su propia descripción («el diario de trading profesional») y en el
+     menú de la demo (`journalTitle`). Dos nombres para el producto en la
+     misma página no es bilingüismo, es descuido. En inglés se queda
+     «journal», que es su nombre allí. */
   featuresTitle: {
-    es: "No es otro journal con las mismas 30 métricas.",
+    es: "No es otro diario con las mismas 30 métricas.",
     en: "Not another journal with the same 30 metrics.",
   },
   featuresLead: {

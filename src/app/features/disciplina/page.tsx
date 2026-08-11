@@ -136,8 +136,8 @@ export function DisciplinaBody() {
         titleEn="Discipline that acts, not lectures."
         titleHighlightEs="actúa."
         titleHighlightEn="acts."
-        subtitleEs="El Guardián no te dice qué hacer. Te bloquea cuando rompes tus propias reglas: tamaños que exceden tu riesgo, drawdowns diarios, operaciones fuera de plan. Cada override queda registrado con motivo y resultado."
-        subtitleEn="The Guardian doesn't tell you what to do. It blocks you when you break your own rules: sizes over your risk, daily drawdowns, off-plan trades. Every override is logged with reason and outcome."
+        subtitleEs="El Guardián no te dice qué hacer. Te bloquea cuando rompes tus propias reglas: tamaños que exceden tu riesgo, drawdowns diarios, operaciones fuera de plan. Cada excepción queda registrada con su motivo y su resultado."
+        subtitleEn="The Guardian doesn't tell you what to do. It blocks you when you break your own rules: sizes over your risk, daily drawdowns, off-plan trades. Every exception is logged with its reason and its outcome."
         breadcrumbEs="Características · Disciplina"
         breadcrumbEn="Features · Discipline"
         readingTimeMin={READING_TIME_MIN}

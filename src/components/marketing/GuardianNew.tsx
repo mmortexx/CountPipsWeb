@@ -471,7 +471,11 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             {[
               { i: ShieldCheck, t: es ? "Frena antes del error" : "Brakes before the error", d: es ? "Bloquea tamaños que excedan tu riesgo máximo por operación." : "Blocks sizes that exceed your max per-trade risk." },
               { i: HandMetal, t: es ? "Te obliga a respetar el plan" : "Forces you to respect the plan", d: es ? "Límites de drawdown diario y total configurables." : "Daily and total drawdown limits configurable." },
-              { i: Timer, t: es ? "Audita tus excepciones" : "Audits your exceptions", d: es ? "Cada override queda registrado con motivo y resultado." : "Every override is logged with reason and outcome." },
+              /* Decía «Cada override queda registrado» justo debajo de un
+                 titular que a eso mismo ya lo llama EXCEPCIÓN: dos
+                 nombres para la misma cosa dentro del mismo renglón, y
+                 uno en inglés en mitad de una frase en español. */
+              { i: Timer, t: es ? "Audita tus excepciones" : "Audits your exceptions", d: es ? "Cada excepción queda registrada con su motivo y su resultado." : "Every exception is logged with its reason and its outcome." },
             ].map((f) => {
               const Icon = f.i;
               return (

@@ -179,7 +179,7 @@ export const SEGUIR_LEYENDO: Record<
 > = {
   basics: {
     href: "/features",
-    es: "Todo lo que el journal registra de cada operación",
+    es: "Todo lo que el diario registra de cada operación",
     en: "Everything the journal records about each trade",
   },
   risk: {

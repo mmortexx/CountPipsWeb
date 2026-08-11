@@ -98,7 +98,7 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "La solicitud de acceso anticipado pide sólo el contexto necesario para seleccionar un piloto: email, perfil, experiencia, mercados, método actual de journal, objetivo y comentario opcional. El formulario de contacto pide nombre, email y mensaje.",
+          es: "La solicitud de acceso anticipado pide sólo el contexto necesario para seleccionar un piloto: email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo y comentario opcional. El formulario de contacto pide nombre, email y mensaje.",
           en: "The early-access application asks only for the context needed to select a pilot: email, profile, experience, markets, current journaling method, goal and optional note. The contact form asks for name, email and message.",
         },
         {

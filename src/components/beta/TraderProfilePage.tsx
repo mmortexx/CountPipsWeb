@@ -39,7 +39,11 @@ const DATA = {
     cards: [
       { icon: ShieldCheck, titleEs: "Riesgo que se ve", titleEn: "Visible risk", textEs: "Revisa drawdown, rachas y exposición antes de que una operación te saque del plan.", textEn: "Review drawdown, streaks and exposure before one trade takes you outside the plan." },
       { icon: BarChart3, titleEs: "Track record limpio", titleEn: "Clean track record", textEs: "Separa el resultado de una sesión de la calidad de las decisiones que la construyeron.", textEn: "Separate a session's result from the quality of the decisions that built it." },
-      { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el journal para detectar incumplimientos recurrentes y preparar la siguiente cohorte.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
+      /* «cohorte» era además una palabra que ningún trader de prop firm
+         usa para hablar de lo suyo: lo que prepara es la siguiente
+         EVALUACIÓN, que es lo que dice —y siempre dijo— la versión
+         inglesa de esta misma tarjeta. */
+      { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
     ],
     ctaEs: "Ver la demo para prop firms",
     ctaEn: "See the prop-firm demo",

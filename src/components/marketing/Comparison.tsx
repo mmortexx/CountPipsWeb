@@ -62,7 +62,9 @@ export function Comparison() {
 
   const cols = [
     { key: "tj", label: es ? "CountPips" : "CountPips", sub: es ? "Esta app" : "This app", highlight: true },
-    { key: "cloud", label: es ? "Journals en la nube" : "Cloud journals", sub: es ? "Suscripción" : "Subscription", highlight: false },
+    // «Diarios» y no «Journals»: es el mismo objeto que la columna de al
+    // lado, y esa se llama por su nombre español en todo el sitio.
+    { key: "cloud", label: es ? "Diarios en la nube" : "Cloud journals", sub: es ? "Suscripción" : "Subscription", highlight: false },
     { key: "excel", label: es ? "Excel / Sheets" : "Excel / Sheets", sub: es ? "Gratis" : "Free", highlight: false },
   ];
 
@@ -291,7 +293,7 @@ export function Comparison() {
         <Reveal delay={0.12} className="mt-6">
           <p className="text-xs text-tertiary text-center max-w-2xl mx-auto">
             {es
-              ? "Comparamos con la media de journals web populares y con Excel/Sheets sin plantillas avanzadas. Cada caso es distinto; este es el nuestro."
+              ? "Comparamos con la media de los diarios web más conocidos y con Excel/Sheets sin plantillas avanzadas. Cada caso es distinto; este es el nuestro."
               : "We compare against the average of popular web journals and against Excel/Sheets without advanced templates. Each case is different; this is ours."}
           </p>
         </Reveal>
@@ -303,11 +305,11 @@ export function Comparison() {
 function CellRenderer({
   cell,
   highlight,
-  es,
+  es,
 }: {
   cell: Cell;
   highlight: boolean;
-  es: boolean;
+  es: boolean;
 }) {
   if (cell === "yes") {
     return (

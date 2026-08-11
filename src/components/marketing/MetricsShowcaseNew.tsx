@@ -13,8 +13,9 @@ import { fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
    decía +0,32R; y el rótulo anunciaba «60 ops» sobre una muestra de 200.
    Ninguna de las cuatro fichas coincidía ya con `METRICS`, y la peor
    desviación no era cosmética: el drawdown máximo se anunciaba como
-   −8,0 % cuando el real es −10,0 %. Una cifra copiada a mano envejece
-   hacia el lado favorable sin que nadie lo decida.
+   −8,0 % cuando el real era dos puntos peor. Una cifra copiada a mano
+   envejece hacia el lado favorable sin que nadie lo decida — por eso
+   este comentario tampoco repite el valor de hoy: lo pinta `METRICS`.
 
    `METRICS` y `getRDistribution()` se calculan sobre las MISMAS 200
    operaciones deterministas que alimentan /demo, así que la home y la

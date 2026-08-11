@@ -92,7 +92,7 @@ export function BeforeAfter() {
                 </svg>
               </span>
               <span className="t-label text-pnl-neg">
-                {es ? "Antes del journal" : "Before the journal"}
+                {es ? "Antes del diario" : "Before the journal"}
               </span>
             </div>
             {/* ── La tarjeta «antes», apagada sin bajar la opacidad ──────

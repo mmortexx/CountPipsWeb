@@ -56,7 +56,7 @@ export function Changelog() {
              y avisaba por consola de dos hermanos con la misma. */
           version: "03",
           title: "Importación ampliada",
-          description: "Más formatos de bróker y migración desde otros journals.",
+          description: "Más formatos de bróker y migración desde otros diarios.",
           date: "Más adelante",
           stage: "future",
         },
