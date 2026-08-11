@@ -28,3 +28,26 @@ export function asset(path: string): string {
   // Absolute path starting with "/" — splice base in front.
   return `${BASE}${path}`;
 }
+
+/**
+ * Lo contrario de `asset()`: quita el prefijo del sitio de una ruta que ya
+ * lo lleva.
+ *
+ * Existe por la asimetría INVERSA a la de arriba, y es la que rompió la
+ * navegación entera del sitio publicado. `location.pathname` y el `.href`
+ * resuelto de un `<a>` SÍ incluyen el basePath; en cambio `router.push()`
+ * y `usePathname()` de Next trabajan SIN él y lo añaden ellos. Pasarle al
+ * router una ruta que ya lo lleva publica
+ * `/CountPipsWeb/CountPipsWeb/demo` y cae en el 404 — que es exactamente
+ * lo que hacía el interceptor de clics de `TransicionPagina`, enganchado
+ * en captura sobre todo el documento: no fallaba un menú, fallaban TODOS.
+ *
+ * Se compara contra `${BASE}/` y no con `startsWith(BASE)` a secas para
+ * que una ruta futura del tipo `/CountPipsWebFoo` no pierda un trozo.
+ */
+export function rutaDeRouter(pathname: string): string {
+  if (!BASE) return pathname;
+  if (pathname === BASE) return "/";
+  if (pathname.startsWith(`${BASE}/`)) return pathname.slice(BASE.length);
+  return pathname;
+}

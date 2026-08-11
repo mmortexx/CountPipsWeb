@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { rutaDeRouter } from "@/lib/asset";
 
 /**
  * TransicionPagina — el paso de una página a otra, animado.
@@ -104,7 +105,18 @@ export function TransicionPagina() {
 
       e.preventDefault();
 
-      const ruta = destino.pathname + destino.search + destino.hash;
+      /* SIN `rutaDeRouter` aquí, este interceptor rompía la navegación
+         ENTERA del sitio publicado, que es justo lo que el comentario de
+         arriba se compromete a no hacer.
+
+         `destino.pathname` sale de resolver el `.href` del enlace contra
+         la barra de direcciones, así que en GitHub Pages vale
+         `/CountPipsWeb/demo/` — CON el prefijo. Pero `router.push()` lo
+         añade por su cuenta, así que se publicaba
+         `/CountPipsWeb/CountPipsWeb/demo` y caía en el 404. En local no se
+         veía porque ahí el prefijo es vacío y quitarlo no cambia nada:
+         solo fallaba lo que estaba publicado. */
+      const ruta = rutaDeRouter(destino.pathname) + destino.search + destino.hash;
       doc.startViewTransition(
         () =>
           new Promise<void>((resolver) => {
