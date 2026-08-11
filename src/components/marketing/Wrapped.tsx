@@ -240,7 +240,7 @@ export function Wrapped() {
         <Reveal delay={0.1} className="mt-8">
           <p className="text-xs text-tertiary text-center">
             {es
-              ? "Datos de muestra deterministas — en tu journal saldrían los tuyos."
+              ? "Datos de muestra deterministas — en tu diario saldrían los tuyos."
               : "Deterministic sample data — your journal would show your own."}
           </p>
         </Reveal>

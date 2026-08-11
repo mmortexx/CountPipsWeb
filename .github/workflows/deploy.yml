@@ -161,12 +161,18 @@ jobs:
       # es la única condición en la que esas comprobaciones significan
       # algo: en local se compila sin prefijo y no hay nada que exigir.
       #
-      # Es lo que caza que una ruta interna se escriba desde la raíz del
-      # dominio —el botón «Solicitar acceso anticipado» de la página de
-      # precios daba 404 en producción por eso— o que el prefijo aparezca
-      # dos veces, que es lo que dejó el sitio entero sin navegar el 11/08.
-      - name: Comprobar el prefijo sobre el HTML compilado
-        run: bunx vitest run tests/prefijo-despliegue.test.ts
+      # Son dos:
+      #  · El prefijo. Caza que una ruta interna se escriba desde la raíz
+      #    del dominio —el botón «Solicitar acceso anticipado» de la
+      #    página de precios daba 404 en producción por eso— o que
+      #    aparezca dos veces, que es lo que dejó el sitio entero sin
+      #    navegar el 11/08.
+      #  · El vocabulario. El sitio se llamaba «diario» y «journal» en la
+      #    misma página; se mira el HTML español y no el código porque en
+      #    el código la rama inglesa de un ternario es indistinguible de
+      #    la española salvo por el orden.
+      - name: Comprobar el HTML compilado (prefijo y vocabulario)
+        run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
 
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium

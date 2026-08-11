@@ -33,15 +33,15 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Puedo exportar mis datos?",
-    a: "Sí. Puedes exportar todo tu journal a CSV (para Excel o Google Sheets), PDF (informes listos para compartir) y JSON (backup completo y reimportable). Tus datos son tuyos: puedes llevártelos cuando quieras, sin API que cerrar ni servidor que apagar.",
+    a: "Sí. Puedes exportar todo tu diario a CSV (para Excel o Google Sheets), PDF (informes listos para compartir) y JSON (backup completo y reimportable). Tus datos son tuyos: puedes llevártelos cuando quieras, sin API que cerrar ni servidor que apagar.",
   },
   {
     q: "¿Funciona en Mac o Linux?",
     a: "CountPips es una app nativa de Windows (WinUI 3). En Mac o Linux puedes ejecutarla a través de una máquina virtual con Windows o Parallels. Estamos explorando activamente una versión local-first para Mac y Linux: si quieres entrar en el acceso anticipado, escríbenos.",
   },
   {
-    q: "¿Puedo importar de otro journal?",
-    a: "Sí. Aceptamos importación desde CSV (formato flexible con mapeo de columnas) y un importador dedicado para journals populares. Si tu journal actual exporta a CSV, lo tienes en tu CountPips en menos de 5 minutos.",
+    q: "¿Puedo importar de otro diario?",
+    a: "Sí. Aceptamos importación desde CSV (formato flexible con mapeo de columnas) y un importador dedicado para los diarios más conocidos. Si el tuyo exporta a CSV, lo tienes en tu CountPips en menos de 5 minutos.",
   },
   {
     q: "¿Cómo se selecciona el acceso anticipado?",
@@ -49,7 +49,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué está listo y qué se está validando?",
-    a: "La demo, el journal, las métricas y los recorridos de riesgo están listos para explorar. El piloto privado valida la instalación y el flujo con usuarios reales; la página de estado explica lo que todavía no prometemos.",
+    a: "La demo, el diario, las métricas y los recorridos de riesgo están listos para explorar. El piloto privado valida la instalación y el flujo con usuarios reales; la página de estado explica lo que todavía no prometemos.",
   },
   {
     q: "¿Qué métodos de pago aceptáis?",
@@ -61,7 +61,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
-    a: "Core incluye el journal completo, 40+ métricas, 2 cuentas de trading, gestión de riesgo, disciplina e informes PDF básicos. Pro desbloquea además: cuentas ilimitadas, modo prop firm, simulador Monte Carlo, informe de track record, risk of ruin, informes PDF avanzados y el importador de rivales que migra tu journal anterior en 5 minutos.",
+    a: "Core incluye el diario completo, 40+ métricas, 2 cuentas de trading, gestión de riesgo, disciplina e informes PDF básicos. Pro desbloquea además: cuentas ilimitadas, modo prop firm, simulador Monte Carlo, informe de track record, risk of ruin, informes PDF avanzados y el importador de rivales que migra tu diario anterior en 5 minutos.",
   },
   {
     q: "¿Cómo funcionará la privacidad de mis datos?",

@@ -30,7 +30,9 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
 
   const coreFeatures = es
     ? [
-        "Journal completo + 40+ métricas",
+        // «Diario» y no «Journal»: es el nombre que el producto se da a sí
+        // mismo en el resto del sitio. Ver el commit del vocabulario.
+        "Diario completo + 40+ métricas",
         "Calendario y curva de equity",
         "Gestión de riesgo",
         "Psicología y disciplina",
@@ -78,7 +80,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
       name: t("core"),
       price: PRECIO_CORE,
       tagline: es
-        ? "El núcleo del journal para construir una operativa medible."
+        ? "El núcleo del diario para construir una operativa medible."
         : "The journal core for building a measurable trading process.",
       features: coreFeatures,
       cta: es ? "Solicitar acceso anticipado" : "Request early access",

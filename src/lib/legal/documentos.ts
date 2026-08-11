@@ -109,7 +109,7 @@ const privacidad: DocumentoLegal = {
             {
               es: [
                 "Solicitud de acceso anticipado",
-                "Email, perfil, experiencia, mercados, método de journal, objetivo, comentario opcional, idioma y origen/UTM",
+                "Email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo, comentario opcional, idioma y origen/UTM",
                 "El endpoint de admisión, con acceso restringido",
               ],
               en: [
