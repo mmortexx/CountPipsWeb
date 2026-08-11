@@ -124,10 +124,15 @@ export function GaleriaPantallas({ num = "03" }: { num?: string }) {
         </div>
 
         <div role="tabpanel" id={`${idBase}-panel`} aria-labelledby={`${idBase}-tab-${activa}`}>
-          {/* `key` fuerza a React a reemplazar la lámina en vez de
-              reutilizarla: sin él, el `<img>` conserva la imagen anterior
-              mientras descarga la nueva y la pestaña parece no responder. */}
-          <ProductPlate key={activa} lamina={lamina} />
+          {/* `key` hace DOS cosas, y las dos hacen falta. Fuerza a React a
+              reemplazar la lámina en vez de reutilizarla —sin él, el `<img>`
+              conserva la imagen anterior mientras descarga la nueva y la
+              pestaña parece no responder— y, al remontar el nodo, reinicia
+              la animación de `tj-lamina-cambia`, que es lo que convierte el
+              cambio en un gesto en vez de un corte. */}
+          <div key={activa} className="tj-lamina-cambia">
+            <ProductPlate lamina={lamina} />
+          </div>
         </div>
       </div>
     </section>

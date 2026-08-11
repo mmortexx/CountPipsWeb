@@ -127,7 +127,17 @@ export function ProductPlate({
   const variante = (sufijo: string) => archivo.replace(/\.webp$/, `${sufijo}.webp`);
 
   return (
-    <figure className="tj-lamina-producto">
+    /* ── LA LÁMINA TAMBIÉN ENTRA ──────────────────────────────────────
+       Todo lo que la rodea —la etiqueta, el titular, la entradilla, el
+       pie— entra al asomar, y la captura, que es el asunto entero de la
+       sección, aparecía de golpe ya puesta. En una página donde hasta un
+       filete se traza, la pieza principal era la única sin gesto.
+
+       Va con `data-entra`, el mismo mecanismo que el resto (una línea de
+       tiempo de scroll, cero JavaScript), y con el escalón 2 para que
+       llegue justo después de su cabecera y no a la vez: primero se lee
+       de qué va, y entonces aparece. */
+    <figure className="tj-lamina-producto" data-entra="2">
       <div className="tj-lamina-marco">
         <div className="tj-lamina-ventana">
           {/* `img` y no `next/image`: el build es `output: "export"` con

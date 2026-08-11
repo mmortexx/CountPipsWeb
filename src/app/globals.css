@@ -5147,6 +5147,32 @@ svg [data-entra="sello"] {
    El tope de 720 ms evita que una cita larga se eternice: a partir de
    la palabra 16 el retardo deja de crecer, igual que antes hacía el
    tope de 24 puntos. */
+/* ── EL CAMBIO DE LÁMINA EN LA GALERÍA ────────────────────────────────
+   Pulsar una pestaña reemplazaba la captura de golpe. En un sitio donde
+   una figura se graba trazo a trazo y hasta un filete se dibuja, la
+   interacción principal de la galería era la única sin gesto.
+
+   Va por RELOJ y no por scroll, por el mismo motivo que la cita: cuando
+   alguien cambia de pestaña la galería ya está en pantalla, así que una
+   línea de tiempo de scroll nacería consumida y no se vería nada.
+
+   Corto —220 ms— y sin desplazamiento lateral: la lámina no viene de
+   ningún sitio, se revela. Un deslizamiento sugeriría que hay un carrete
+   y que las pestañas tienen orden espacial, y no lo tienen. */
+.tj-lamina-cambia {
+  animation: tj-lamina-revela 220ms var(--ease-suave, ease) both;
+}
+@keyframes tj-lamina-revela {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 [data-entra="palabra"] {
   display: inline-block;
   animation: tj-entra-pieza 420ms var(--ease-suave) both;
