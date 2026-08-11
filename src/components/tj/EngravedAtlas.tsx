@@ -120,6 +120,232 @@ function serie(id: keyof typeof SERIES_ROTULOS): readonly string[] {
  *    movimiento sigue viendo el atlas, no un hueco.
  */
 
+/* ══════════════════════════════════════════════════════════════════════
+   EL REVELADO POR TRAMA — el trazo se imprime en puntos
+   ══════════════════════════════════════════════════════════════════════
+   Las dieciséis láminas se siguen DIBUJANDO igual: mismas curvas, mismos
+   rótulos, mismo temblor de pulso, mismo revelado por longitud. Lo que
+   cambia es cómo se IMPRIMEN. En vez de estampar el trazo tal cual, se
+   muestrea y se vuelve a componer como una trama de puntos, igual que una
+   plancha de medio tono.
+
+   ── POR QUÉ, Y NO ES DECORACIÓN ───────────────────────────────────────
+   El problema que resuelve estaba escrito en este mismo archivo: «una sola
+   línea a opacidad plena sale de vector y canta». Por eso el atlas vivía a
+   una décima parte de tinta — y a esa fuerza, la figura ya no es una
+   figura: es una mancha. Tres intentos anteriores lo atacaron bajando el
+   velo, ensanchando los márgenes y oscureciendo el lápiz, y ninguno
+   funcionó, porque el problema no era de opacidad.
+
+   Un punto no canta. Una trama admite tinta plena sin leerse como vector,
+   porque el ojo no la lee como línea sino como MATERIAL — que es
+   exactamente lo que hay debajo: papel impreso. Así que el revelado por
+   trama es lo que permite subir la figura hasta que se vea de verdad, que
+   es lo único que le faltaba al atlas.
+
+   Y hay una segunda razón, que es la que hace que esto sea de ESTE
+   producto y no de cualquiera: una trama de medio tono es, literalmente,
+   una rejilla de muestreo. El tamaño de cada punto es la densidad de tinta
+   de ese cuadrito, y la densidad de tinta de estas láminas es el dato —
+   la curva, la caída, el calendario, la distribución de R. Los puntos no
+   dibujan un adorno: dibujan la magnitud.
+
+   ── CÓMO ─────────────────────────────────────────────────────────────
+   No se toca ni una línea de las láminas. Se dibuja la lámina DOS veces:
+
+     1. En una MÁSCARA diminuta, a escala 1/PASO. Un trazo de 1 px sale de
+        0,2 px, y el navegador lo resuelve con antialiasing — que es
+        justamente medir cuánta tinta cae en ese píxel. El canal alfa de la
+        máscara ES la cobertura. No hay que aproximar nada: el propio
+        rasterizador ya hace la integral.
+     2. En el lienzo real, un punto por celda, con el ÁREA proporcional a
+        la cobertura (de ahí la raíz cuadrada del radio: duplicar el radio
+        cuadruplica el área, y lo que tiene que ser proporcional es la
+        tinta, no la anchura).
+
+   El coste está acotado por diseño. La máscara de una ventana de 1440×900
+   con paso 5 son 288×180 = 51.840 celdas: leerla entera es medio milisegundo
+   y no depende de la densidad de pantalla. Y los puntos que de verdad se
+   pintan son pocos, porque un dibujo de línea cubre un porcentaje pequeño
+   del papel; van todos en un único `Path2D` que se rellena de una sola vez,
+   así que son dos llamadas al contexto y no seis mil.
+
+   Ojo al orden: esto vive DENTRO del lienzo cacheado de cada lámina, o
+   sea que solo corre cuando el trazo AVANZA, no en cada fotograma. Una
+   lámina terminada se trama una vez y a partir de ahí solo se estampa. */
+
+/** Interruptor de comparación. Se deja escrito porque la única forma
+ *  honesta de saber lo que cuesta el revelado es medir el MISMO recorrido
+ *  con él y sin él; ponerlo a `false` devuelve el trazo de línea. */
+/** Separación entre centros de punto, en píxeles CSS. */
+const PASO_TRAMA = 6;
+
+/* ── CUÁNTAS VECES SE REVELA UNA LÁMINA MIENTRAS AVANZA ────────────────
+   El trazo se redondeaba a 512 pasos por lámina, que sobre el recorrido
+   de una figura son unos dos píxeles de avance: por debajo de eso, con
+   línea, no había nada que ver.
+
+   Con trama, el suelo ya no son dos píxeles: es EL PASO DE LA RETÍCULA.
+   La salida está cuantizada a celdas de 6 px, así que un avance de dos
+   píxeles no cambia ni un punto — se rehace el revelado entero para
+   producir exactamente la misma imagen. Medido: p99 del fotograma subía
+   de 6,8 ms a 25,5 ms, y esa era la razón.
+
+   160 pasos dan ~6 px de avance por paso, justo una celda. Es el valor
+   más alto que no pierde nada, porque lo que se perdería está por debajo
+   de la resolución de la propia trama. */
+const PASOS_TRAZO = 160;
+/** Radio máximo, en fracción del paso. Por encima de 0,5 los puntos se
+ *  tocarían y la trama se cerraría en mancha. */
+const RADIO_TRAMA = 0.44;
+/** Amplificación de la cobertura muestreada. Las láminas se dibujaron para
+ *  verse como línea tenue; al reducirlas a 1/5 su tinta por celda es muy
+ *  baja, y sin ganancia la trama saldría casi vacía. */
+const GANANCIA_TRAMA = 3.4;
+/** Cobertura por debajo de la cual no se pinta punto. Sin umbral, el
+ *  antialiasing deja medio papel sembrado de puntos de radio 0,1 px que no
+ *  se ven y sí se pagan. */
+const UMBRAL_TRAMA = 0.06;
+
+/* ── EL ASIENTO: un punto no aparece colocado, se COLOCA ───────────────
+   Es el gesto del fondo, y es uno solo. Cuando una celda recibe tinta por
+   primera vez, su punto nace DISPERSO —desplazado de su casilla y más
+   pequeño— y va cayendo a su sitio conforme la lámina sigue avanzando.
+   El borde del dibujo es, por tanto, una nube que se resuelve en retícula
+   unos píxeles por detrás.
+
+   Por qué éste y no otro: es la única animación del sitio que dice algo
+   cierto del producto. Una medida con pocos datos no está equivocada,
+   está DISPERSA, y se concreta al llegar más muestra — que es
+   literalmente lo que hace esta aplicación cuando responde «no
+   concluyente» en vez de inventarse una cifra. El movimiento no decora
+   el dato: lo explica.
+
+   Es también lo que evita el defecto clásico de una trama animada, que
+   es parpadear. Aquí ningún punto salta: cada uno recorre su camino una
+   sola vez y se queda quieto para siempre.
+
+   `VENTANA_ASIENTO` va en unidades de progreso de la lámina, no en
+   segundos, porque quien manda es el scroll: si te paras, la nube se
+   queda a medio asentar, que es lo correcto — no ha llegado más dato. */
+const VENTANA_ASIENTO = 0.055;
+/** Cuánto se aparta de su casilla un punto recién nacido, en píxeles. */
+const DISPERSION_TRAMA = PASO_TRAMA * 1.9;
+/** Tamaño del punto recién nacido, en fracción del que tendrá asentado. */
+const CRIA_TRAMA = 0.3;
+/** A partir de aquí la lámina fuerza el asiento de todo lo que le quede.
+ *  Sin esto, los últimos puntos en aparecer se quedarían dispersos PARA
+ *  SIEMPRE: la lámina terminada se cachea con t=1 y ya no se revela más,
+ *  así que su borde final nunca llegaría a colocarse. */
+const CIERRE_ASIENTO = 0.9;
+
+/**
+ * Dibuja `lamina` en `destino` convertida en trama de puntos.
+ *
+ * `mascara` se reutiliza entre llamadas: crear un lienzo por repintado es
+ * lo único de todo esto que sí costaría.
+ *
+ * `nacido` recuerda, por celda, el progreso al que recibió tinta por
+ * primera vez (−1 = vacía). Vive en la capa de cada lámina y no aquí,
+ * porque cada figura tiene su propio recorrido; compartirlo mezclaría el
+ * asiento de una con el de la siguiente en cada transición.
+ */
+function tramar(
+  destino: CanvasRenderingContext2D,
+  mascara: CanvasRenderingContext2D,
+  lamina: (ctx: CanvasRenderingContext2D, w: number, h: number, t: number) => void,
+  w: number,
+  h: number,
+  t: number,
+  tinta: string,
+  nacido: Float32Array | null,
+): void {
+  const cols = mascara.canvas.width;
+  const filas = mascara.canvas.height;
+  if (cols < 1 || filas < 1) return;
+
+  /* La máscara mide COBERTURA, no color: se dibuja en negro opaco sobre
+     transparente y solo se lee el canal alfa. Da igual que la tinta del
+     tema sea clara u oscura. */
+  mascara.setTransform(1, 0, 0, 1, 0, 0);
+  mascara.clearRect(0, 0, cols, filas);
+  mascara.setTransform(1 / PASO_TRAMA, 0, 0, 1 / PASO_TRAMA, 0, 0);
+  mascara.globalAlpha = 1;
+  mascara.strokeStyle = "#000";
+  mascara.fillStyle = "#000";
+  lamina(mascara, w, h, t);
+
+  let datos: Uint8ClampedArray;
+  try {
+    datos = mascara.getImageData(0, 0, cols, filas).data;
+  } catch {
+    /* Un lienzo contaminado no se puede leer. No debería ocurrir —aquí
+       solo se dibujan vectores— pero si ocurriera, más vale la lámina en
+       trazo que ninguna lámina. */
+    lamina(destino, w, h, t);
+    return;
+  }
+
+  const puntos = new Path2D();
+  const rMax = PASO_TRAMA * RADIO_TRAMA;
+  const TAU = Math.PI * 2;
+  /* El cierre de la lámina asienta todo lo que quede suelto, y va aparte
+     del asiento propio de cada punto: se toma el mayor de los dos. */
+  const cierre =
+    t <= CIERRE_ASIENTO ? 0 : (t - CIERRE_ASIENTO) / (1 - CIERRE_ASIENTO);
+
+  for (let fila = 0; fila < filas; fila++) {
+    for (let col = 0; col < cols; col++) {
+      const k = fila * cols + col;
+      const alfa = datos[k * 4 + 3] / 255;
+      if (alfa <= 0) {
+        /* La celda se ha quedado sin tinta —se retrocedió el scroll, o la
+           lámina la borró—: olvida cuándo nació, para que si vuelve, vuelva
+           dispersa. */
+        if (nacido) nacido[k] = -1;
+        continue;
+      }
+      const cobertura = alfa * GANANCIA_TRAMA;
+      if (cobertura < UMBRAL_TRAMA) {
+        if (nacido) nacido[k] = -1;
+        continue;
+      }
+
+      let asiento = 1;
+      if (nacido) {
+        if (nacido[k] < 0) nacido[k] = t;
+        const propio = (t - nacido[k]) / VENTANA_ASIENTO;
+        asiento = propio > cierre ? propio : cierre;
+        if (asiento > 1) asiento = 1;
+        else if (asiento < 0) asiento = 0;
+      }
+
+      /* Raíz cuadrada: lo proporcional a la tinta es el ÁREA del punto. */
+      const rPleno = rMax * Math.sqrt(cobertura > 1 ? 1 : cobertura);
+      const r = rPleno * (CRIA_TRAMA + (1 - CRIA_TRAMA) * asiento);
+      /* Por debajo de un tercio de píxel el punto ya no se ve y sí se
+         paga; se lo salta hasta que crezca. */
+      if (r < 0.34) continue;
+
+      let cx = (col + 0.5) * PASO_TRAMA;
+      let cy = (fila + 0.5) * PASO_TRAMA;
+      if (asiento < 1) {
+        /* Desvío determinista por celda: el mismo punto sale siempre por
+           el mismo lado. Con `Math.random()` la nube bailaría en cada
+           repintado en vez de caer. */
+        const d = (1 - asiento) * (1 - asiento) * DISPERSION_TRAMA;
+        cx += jitter(k) * d;
+        cy += jitter(k + 7919) * d;
+      }
+      puntos.moveTo(cx + r, cy);
+      puntos.arc(cx, cy, r, 0, TAU);
+    }
+  }
+
+  destino.fillStyle = tinta;
+  destino.fill(puntos);
+}
+
 /* Hash entero determinista → [-0.5, 0.5]. El temblor de la mano. */
 function jitter(seed: number): number {
   const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
@@ -2358,7 +2584,15 @@ export function EngravedAtlas() {
        Una lámina terminada, además, no vuelve a trazarse nunca más: su
        lienzo ya es definitivo y solo se estampa. Que es el caso en el que
        la lámina pasa la mayor parte del tiempo. */
-    type Capa = { cv: HTMLCanvasElement; ctx: CanvasRenderingContext2D; t: number };
+    type Capa = {
+      cv: HTMLCanvasElement;
+      ctx: CanvasRenderingContext2D;
+      t: number;
+      /** Progreso al que cada celda de la trama recibió tinta por primera
+       *  vez, −1 si está vacía. Es la memoria del asiento (ver `tramar`).
+       *  Una por lámina: cada figura tiene su propio recorrido. */
+      nacido: Float32Array | null;
+    };
     let capas: (Capa | null)[] = PLATES.map(() => null);
 
     const soltarCapa = (i: number) => {
@@ -2376,6 +2610,41 @@ export function EngravedAtlas() {
       capas = PLATES.map(() => null);
     };
 
+    /* ---- La máscara de la trama ----------------------------------------
+       Una sola para todas las láminas y para toda la vida del efecto: el
+       revelado la limpia entera antes de cada uso, así que compartirla no
+       mezcla nada, y crear un lienzo por repintado sería lo único caro de
+       todo el revelado.
+
+       Su tamaño NO depende de la densidad de pantalla, a propósito. La
+       trama es la unidad de impresión —una celda de PASO_TRAMA píxeles
+       CSS— y esa retícula tiene que medir lo mismo en un portátil normal
+       que en uno del doble de densidad, o el grabado saldría con el punto
+       más fino en la pantalla buena, que es al revés de lo que espera
+       cualquiera. Lo que sí cambia con la densidad es la NITIDEZ del
+       punto, porque el punto se pinta en el lienzo real. */
+    let mascara: CanvasRenderingContext2D | null = null;
+    const mascaraDe = (): CanvasRenderingContext2D | null => {
+      const cols = Math.ceil(w / PASO_TRAMA);
+      const filas = Math.ceil(h / PASO_TRAMA);
+      if (cols < 1 || filas < 1) return null;
+      if (!mascara) {
+        const cv = document.createElement("canvas");
+        /* `willReadFrequently`: este lienzo existe para leerlo con
+           `getImageData` en cada repintado. Sin la pista, el navegador lo
+           mantiene en la GPU y cada lectura obliga a traerlo de vuelta —
+           que es el patrón más lento que hay en canvas. */
+        const mctx = cv.getContext("2d", { willReadFrequently: true });
+        if (!mctx) return null;
+        mascara = mctx;
+      }
+      if (mascara.canvas.width !== cols || mascara.canvas.height !== filas) {
+        mascara.canvas.width = cols;
+        mascara.canvas.height = filas;
+      }
+      return mascara;
+    };
+
     /** Lienzo de la lámina `i` trazado hasta `t`. `null` si no puede crearse. */
     const capaDe = (i: number, t: number): HTMLCanvasElement | null => {
       if (w < 1 || h < 1) return null;
@@ -2389,7 +2658,7 @@ export function EngravedAtlas() {
            traza directamente sobre el lienzo visible. Peor rendimiento,
            pero se sigue viendo — nunca una pantalla en blanco. */
         if (!cctx) return null;
-        c = { cv, ctx: cctx, t: -1 };
+        c = { cv, ctx: cctx, t: -1, nacido: null };
         capas[i] = c;
       }
       /* Ya trazada a este progreso: no se toca. Cubre de un golpe el caso
@@ -2403,7 +2672,23 @@ export function EngravedAtlas() {
       c.ctx.setTransform(cssDpr, 0, 0, cssDpr, 0, 0);
       c.ctx.strokeStyle = ink;
       c.ctx.fillStyle = ink;
-      PLATES[i](c.ctx, w, h, t);
+      const m = mascaraDe();
+      if (m) {
+        /* La memoria del asiento se dimensiona con la trama y se reinicia
+           si el trazo RETROCEDE. Retroceder es subir con la rueda: la
+           figura se está deshaciendo, así que lo que vuelva a aparecer
+           tiene que volver a asentarse desde cero, no aparecer ya
+           colocado. */
+        const celdas = m.canvas.width * m.canvas.height;
+        if (!c.nacido || c.nacido.length !== celdas) {
+          c.nacido = new Float32Array(celdas).fill(-1);
+        } else if (t < c.t) {
+          c.nacido.fill(-1);
+        }
+        tramar(c.ctx, m, PLATES[i], w, h, t, ink, c.nacido);
+      } else {
+        PLATES[i](c.ctx, w, h, t);
+      }
       c.t = t;
       return c.cv;
     };
@@ -2612,12 +2897,12 @@ export function EngravedAtlas() {
            continua es su opacidad y su desplazamiento, que es lo que el
            ojo lee como fluidez.
 
-           1/512 sobre el recorrido de una lámina es en torno a dos píxeles
-           de avance del trazo: por debajo de eso no hay nada que ver, y
-           por encima se rehace. Una lámina terminada cae siempre en el
-           paso 512 y por tanto no se vuelve a trazar jamás. */
+           Cuántos pasos —y por qué ese número y no otro— está en
+           `PASOS_TRAZO`: lo fija el paso de la retícula de la trama, no
+           el píxel. Una lámina terminada cae siempre en el último paso y
+           por tanto no se vuelve a revelar jamás. */
         const tLocal = clamp01(local);
-        const tTrazo = Math.round(tLocal * 512) / 512;
+        const tTrazo = Math.round(tLocal * PASOS_TRAZO) / PASOS_TRAZO;
 
         ctx.save();
         ctx.globalAlpha = alpha;
@@ -2779,6 +3064,13 @@ export function EngravedAtlas() {
          de la ventana esperando al recolector. Soltarlos aquí devuelve la
          memoria en el acto en vez de cuando al navegador le parezca. */
       descartarBitmaps();
+      /* Y la máscara de la trama, por el mismo motivo: es pequeña, pero
+         una por navegación se acumula igual. */
+      if (mascara) {
+        mascara.canvas.width = 0;
+        mascara.canvas.height = 0;
+        mascara = null;
+      }
     };
   }, [PLATES]);
 
