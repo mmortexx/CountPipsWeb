@@ -4512,11 +4512,19 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
        compositor con `animation-timeline: scroll()`: cero JavaScript en
        el hilo principal y cero listeners de scroll.
 
-   El color es el verde de la marca, pero a una intensidad —del 4 % al
-   10 %— en la que nunca compite con una cifra. Esa distinción importa
-   y es deliberada: en este producto el color SIGNIFICA dinero, así que
-   el verde saturado se reserva para los datos y aquí sólo entra como
-   temperatura de la luz, no como tinta.
+   ── LA LUZ NO LLEVA COLOR ─────────────────────────────────────────
+   Aquí los dos focos principales iban teñidos con el verde de la marca
+   «como temperatura de la luz, no como tinta». En la práctica sí se
+   leía como tinta: una mancha verde difusa en la parte alta de la
+   página, visible sobre todo en el tema oscuro, donde el fondo casi
+   negro la dejaba destacar. Y contradecía la propia regla que el
+   párrafo defendía — en este producto el verde SIGNIFICA dinero, así
+   que gastarlo en iluminación ambiental es gastar el único color que
+   tiene significado en algo que no significa nada.
+
+   La luz se queda, porque lo que separaba los planos era la luz y no
+   el color; lo que se va es el tinte. Los tres focos van ahora en el
+   neutro de la paleta, entre el 3 % y el 6 %.
 
    Todo se apaga con `prefers-reduced-motion`, salvo el ambiente, que no
    se mueve y por tanto no molesta a nadie. */
@@ -4530,7 +4538,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   background:
     radial-gradient(
       38rem 28rem at 50% 18%,
-      rgb(var(--sig-green) / 0.085),
+      rgb(var(--accent-base) / 0.06),
       transparent 62%
     ),
     radial-gradient(
@@ -4540,20 +4548,19 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     ),
     radial-gradient(
       48rem 36rem at 88% 96%,
-      rgb(var(--sig-green) / 0.045),
+      rgb(var(--accent-base) / 0.035),
       transparent 56%
     );
   will-change: transform;
 }
 
 /* En papel la luz es rebote, no emisión: la misma geometría con la
-   mitad de fuerza y sin el verde del foco, que sobre un fondo claro se
-   leería como una mancha de color en vez de como iluminación. */
+   mitad de fuerza. */
 :root[data-theme="light"] .tj-luz {
   background:
     radial-gradient(
       38rem 28rem at 50% 18%,
-      rgb(var(--sig-green) / 0.05),
+      rgb(19 29 38 / 0.04),
       transparent 62%
     ),
     radial-gradient(
