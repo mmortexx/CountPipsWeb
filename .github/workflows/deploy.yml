@@ -155,6 +155,19 @@ jobs:
       # Es la que cazó que a 820 px la barra entera se solapaba consigo
       # misma — un fallo que llevaba ahí desde siempre y que ninguna
       # comprobación de código puede ver.
+      # Las pruebas del paso «Pruebas» corren ANTES del build, así que las
+      # que miran el HTML ya compilado se saltan solas allí — no existe
+      # `out/` todavía. Aquí sí existe, y con el prefijo real puesto, que
+      # es la única condición en la que esas comprobaciones significan
+      # algo: en local se compila sin prefijo y no hay nada que exigir.
+      #
+      # Es lo que caza que una ruta interna se escriba desde la raíz del
+      # dominio —el botón «Solicitar acceso anticipado» de la página de
+      # precios daba 404 en producción por eso— o que el prefijo aparezca
+      # dos veces, que es lo que dejó el sitio entero sin navegar el 11/08.
+      - name: Comprobar el prefijo sobre el HTML compilado
+        run: bunx vitest run tests/prefijo-despliegue.test.ts
+
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium
 

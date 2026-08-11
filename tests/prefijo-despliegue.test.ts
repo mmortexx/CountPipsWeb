@@ -137,25 +137,34 @@ function htmlsDelExport(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
+/* El export se compila con el prefijo real en integración continua y sin
+   él en local. Se lee del propio HTML en vez de suponerlo: si la
+   compilación no llevaba prefijo, no hay nada que exigir.
+
+   TODO ESTO SE CALCULA DENTRO DE CADA PRUEBA, no en el cuerpo del
+   `describe`. `describe.skipIf` marca las pruebas como saltadas pero
+   EJECUTA igualmente el cuerpo para recolectarlas, así que leer `out/`
+   ahí revienta la suite entera en cualquier máquina que aún no haya
+   compilado — que en integración continua es siempre, porque las pruebas
+   van antes que el build. Costó un despliegue en rojo. */
+function leerExport() {
+  const paginas = htmlsDelExport(SALIDA);
+  const indice = readFileSync(join(SALIDA, "index.html"), "utf8");
+  const m = indice.match(/href="(\/[^/"]+)\/_next\//);
+  return { paginas, prefijo: m ? m[1] : "" };
+}
+
 describe.skipIf(!existsSync(SALIDA))(
   "el HTML publicado: ninguna ruta interna se queda sin prefijo",
   () => {
-    /* El export se compila con el prefijo real en integración continua y
-       sin él en local. Se lee del propio HTML en vez de suponerlo: si la
-       compilación no llevaba prefijo, no hay nada que exigir y estas
-       comprobaciones se saltan solas. */
-    const paginas = htmlsDelExport(SALIDA);
-    const indice = readFileSync(join(SALIDA, "index.html"), "utf8");
-    const m = indice.match(/href="(\/[^/"]+)\/_next\//);
-    const PREFIJO_REAL = m ? m[1] : "";
-
     it("hay páginas que revisar", () => {
-      expect(paginas.length, "El export está vacío").toBeGreaterThan(50);
+      expect(leerExport().paginas.length, "El export está vacío").toBeGreaterThan(50);
     });
 
-    it.skipIf(!PREFIJO_REAL)(
-      "todo href y todo src interno arranca por el prefijo",
-      () => {
+    it("todo href y todo src interno arranca por el prefijo", (ctx) => {
+        const { paginas, prefijo: PREFIJO_REAL } = leerExport();
+        // Sin prefijo —compilación local— no hay nada que exigir.
+        if (!PREFIJO_REAL) return ctx.skip();
         const fallos: string[] = [];
         for (const ruta of paginas) {
           const html = readFileSync(ruta, "utf8");
@@ -179,7 +188,9 @@ describe.skipIf(!existsSync(SALIDA))(
       },
     );
 
-    it.skipIf(!PREFIJO_REAL)("y ninguna lo lleva dos veces", () => {
+    it("y ninguna lo lleva dos veces", (ctx) => {
+      const { paginas, prefijo: PREFIJO_REAL } = leerExport();
+      if (!PREFIJO_REAL) return ctx.skip();
       const fallos: string[] = [];
       for (const ruta of paginas) {
         const html = readFileSync(ruta, "utf8");
