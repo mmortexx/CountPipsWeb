@@ -19,7 +19,8 @@ export const Histogram = memo(function Histogram({
   className = "",
   formatX = (x) => String(x),
 }: HistogramProps) {
-  const { lang } = useLang();
+  const { lang } = useLang();
+
   const maxCount = useMemo(() => Math.max(...data.map((d) => d.count), 1), [data]);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -73,7 +74,7 @@ export const Histogram = memo(function Histogram({
                   opacity: hovered && hovered.i === i ? 1 : 0.9,
                 }}
               />
-              <div className="text-[9px] text-tertiary mt-1 tnum truncate w-full text-center">
+              <div className="text-[9.5px] text-tertiary mt-1 tnum truncate w-full text-center">
                 {formatX(d.x)}
               </div>
             </div>

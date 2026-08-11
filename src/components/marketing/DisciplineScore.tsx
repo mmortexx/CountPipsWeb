@@ -425,7 +425,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                       </span>
                       <span
                         className="tnum"
-                        style={{ fontSize: 9, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                        style={{ fontSize: 9.5, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
                       >
                         {dim ? (es ? dim.es : dim.en) : ""}
                       </span>

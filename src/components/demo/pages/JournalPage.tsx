@@ -576,7 +576,7 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
                 }`}
               />
               <div
-                className={`absolute left-1/2 -translate-x-1/2 text-[9px] tnum whitespace-nowrap ${
+                className={`absolute left-1/2 -translate-x-1/2 text-[9.5px] tnum whitespace-nowrap ${
                   isPos
                     ? "bottom-[calc(50%+6px)]"
                     : "top-[calc(50%+6px)]"
@@ -874,7 +874,7 @@ function CrossCell({
       </div>
       <div className="flex items-stretch gap-4">
         <div className="space-y-0.5">
-          <div className="text-[9px] uppercase tracking-wider text-tertiary">
+          <div className="text-[9.5px] uppercase tracking-wider text-tertiary">
             {lowLabel}
           </div>
           <Money
@@ -885,7 +885,7 @@ function CrossCell({
           />
         </div>
         <div className="space-y-0.5">
-          <div className="text-[9px] uppercase tracking-wider text-tertiary">
+          <div className="text-[9.5px] uppercase tracking-wider text-tertiary">
             {highLabel}
           </div>
           <Money
@@ -1696,7 +1696,7 @@ export function JournalPage() {
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
                       <div className="flex flex-col items-center justify-center w-11 h-11 rounded-md bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] shrink-0">
-                        <div className="text-[9px] uppercase tracking-[0.14em] text-tertiary leading-none">
+                        <div className="text-[9.5px] uppercase tracking-[0.14em] text-tertiary leading-none">
                           {/* En UTC, como el resto de fechas de la
                               muestra (ver `format.ts`): sin fijarlo, el
                               taco de calendario y la fecha que lleva al

@@ -298,7 +298,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Curva de capital" : "Equity curve"} · {years} {es ? "años" : "yrs"}
               </span>
-              <span className="tnum" style={{ fontSize: 9, color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 9.5, color: "var(--ink-3)" }}>
                 {fmtUsd(startBalance)} → <span style={{ color: "rgb(var(--accent-base))", fontWeight: 700 }}>{fmtUsd(c.finalBalance)}</span>
               </span>
             </div>

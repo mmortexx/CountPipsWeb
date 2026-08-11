@@ -299,7 +299,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                     <span
                       className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px]"
                       style={{
-                        fontSize: 9,
+                        fontSize: 9.5,
                         letterSpacing: "0.1em",
                         color: "rgb(var(--accent-base))",
                         background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
@@ -324,7 +324,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               <span
                 key={b.from}
                 className="tnum flex-1 text-center"
-                style={{ fontSize: 9, color: "var(--ink-3)" }}
+                style={{ fontSize: 9.5, color: "var(--ink-3)" }}
               >
                 {fmtR(b.from, lang, 1)}
               </span>

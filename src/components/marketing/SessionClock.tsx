@@ -253,7 +253,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                     la peor combinación posible. Que la sesión está abierta ya
                     lo dicen el relleno y el filete; el nombre sólo tiene que
                     leerse. */}
-                <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold uppercase tracking-[0.08em]" style={{ color: states?.find((x) => x.id === s.id)?.open ? "var(--ink)" : "var(--ink-2)" }}>
+                <span className="absolute inset-0 flex items-center justify-center text-[9.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: states?.find((x) => x.id === s.id)?.open ? "var(--ink)" : "var(--ink-2)" }}>
                   {es ? s.nameEs : s.nameEn}
                 </span>
               </div>
@@ -275,7 +275,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
             {["00", "06", "12", "18", "24"].map((h) => (
               <span
                 key={h}
-                className="tnum absolute text-[9px]"
+                className="tnum absolute text-[9.5px]"
                 style={{ left: `${hourPct(parseInt(h))}%`, transform: "translateX(-50%)", color: "var(--ink-3)" }}
               >
                 {h}:00

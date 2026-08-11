@@ -5127,30 +5127,37 @@ svg [data-entra="sello"] {
 
 /* ── LA CITA, PALABRA A PALABRA ───────────────────────────────────────
    La cita de la sección «Por qué existe esto» se escribe sola: cada
-   palabra entra un poco después que la anterior. Iba con las variantes
-   de framer-motion y su `staggerChildren: 0.035`.
+   palabra entra un poco después que la anterior.
 
-   El escalonado no se puede hacer con `animation-delay` —en una línea
-   de tiempo de scroll el retardo no existe, porque no hay tiempo que
-   retrasar— así que se desplaza el RANGO de cada palabra: 1,5 puntos
-   por posición, que el componente pasa en `--i`.
+   ── POR QUÉ VA POR TIEMPO Y NO POR SCROLL ─────────────────────────
+   Iba con `animation-timeline: view()` y un rango desplazado por
+   palabra —`entry calc(min(var(--i) * 1.5, 24) * 1%)`—, con veinte
+   líneas explicando por qué el escalonado se hacía así y no con
+   `animation-delay`. La maquinaria estaba bien y no se veía NUNCA:
+   medido, la cita cae dentro de la primera pantalla tanto a 390×844
+   como a 1440×900, así que su rango de entrada ya está consumido en el
+   fotograma cero y las dieciséis palabras nacen escritas.
 
-   Los cinco escalones de `data-entra` no valen aquí: son dieciséis
-   palabras, y repetir el ciclo cada cinco haría que la cuarta entrase
-   antes que la tercera. `calc()` dentro de `animation-range` sí
-   funciona — comprobado en el navegador antes de escribir esto: con
-   `--i:8` el estilo computado sale `entry 12% entry 47%`.
+   Una línea de tiempo de scroll no sirve para algo que ya está en
+   pantalla cuando la página carga. Aquí SÍ hay tiempo que retrasar,
+   porque el gesto ocurre al llegar y no al bajar, así que el escalonado
+   vuelve a ser lo que siempre debió ser: un `animation-delay` por
+   posición, que además es más barato y no depende de `@supports`.
 
-   El tope de 24 puntos evita que una cita larga tarde el doble: a
-   partir de la palabra 16 el desplazamiento deja de crecer. */
-@supports (animation-timeline: view()) {
-  [data-entra="palabra"] {
-    display: inline-block;
-    animation: tj-entra-pieza linear both;
-    animation-timeline: view(block);
-    animation-range: entry calc(min(var(--i, 0) * 1.5, 24) * 1%) entry
-      calc((35 + min(var(--i, 0) * 1.5, 24)) * 1%);
-  }
+   El tope de 720 ms evita que una cita larga se eternice: a partir de
+   la palabra 16 el retardo deja de crecer, igual que antes hacía el
+   tope de 24 puntos. */
+[data-entra="palabra"] {
+  display: inline-block;
+  animation: tj-entra-pieza 420ms var(--ease-suave) both;
+  animation-delay: calc(min(var(--i, 0) * 45, 720) * 1ms);
+  /* Explícito, y NO por gusto: la regla general de `[data-entra]` de más
+     arriba pone `animation-timeline: view(block)`, y una línea de tiempo
+     de scroll ignora la duración y el retardo —los toma de la posición,
+     no del reloj—. Sin esta línea, el estilo computado seguía saliendo
+     `duration: auto / timeline: view()` y la cita seguía naciendo
+     escrita, que es justo lo que se venía a arreglar. */
+  animation-timeline: auto;
 }
 
 /* ── EL ESCALÓN, TAMBIÉN PARA LISTAS LARGAS ───────────────────────────

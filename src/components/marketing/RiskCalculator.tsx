@@ -158,7 +158,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     <label className="block min-w-0">
       <span
         className="tnum block"
-        style={{ fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)", marginBottom: 4 }}
+        style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)", marginBottom: 4 }}
       >
         {label}
       </span>
@@ -490,7 +490,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.05)" }}
           >
             <div>
-              <div className="tnum" style={{ fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Valor posición" : "Position value"}
               </div>
               <div className="tnum" style={{ fontSize: 14, fontWeight: 600, marginTop: 2, color: "var(--ink)" }}>
@@ -498,7 +498,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
             <div>
-              <div className="tnum" style={{ fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "% del balance" : "% of balance"}
               </div>
               <div
@@ -528,7 +528,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </span>
               <span
                 className="tnum"
-                style={{ fontSize: 9, letterSpacing: "0.16em", color: "rgb(var(--accent-base))", fontWeight: 700 }}
+                style={{ fontSize: 9.5, letterSpacing: "0.16em", color: "rgb(var(--accent-base))", fontWeight: 700 }}
               >
                 {fmtNum(c.rr, 2)} : 1 {es ? "R:R" : "R:R"}
               </span>

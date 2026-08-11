@@ -82,7 +82,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                   <div
                     data-entra="sello"
                     key={c}
-                    className="tj-realce h-8 rounded-sm flex items-center justify-center text-[9px] font-semibold tnum cursor-default relative overflow-hidden group"
+                    className="tj-realce h-8 rounded-sm flex items-center justify-center text-[9.5px] font-semibold tnum cursor-default relative overflow-hidden group"
                     style={{ backgroundColor: bg }}
                     onMouseEnter={(e) => {
                       const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -120,7 +120,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
       {/* Hour labels */}
       <div className="flex gap-1 mt-1 ml-7">
         {HOUR_LABELS.map((h) => (
-          <div key={h} className="flex-1 text-[9px] text-tertiary text-center">{h}</div>
+          <div key={h} className="flex-1 text-[9.5px] text-tertiary text-center">{h}</div>
         ))}
       </div>
 

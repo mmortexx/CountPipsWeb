@@ -238,7 +238,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 aria-hidden
                 className="tnum inline-flex items-center justify-center"
                 style={{
-                  fontSize: 9,
+                  fontSize: 9.5,
                   fontWeight: 700,
                   letterSpacing: "0.14em",
                   color: "rgb(var(--pnl-neg))",

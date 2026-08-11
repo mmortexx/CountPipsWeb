@@ -336,7 +336,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Abanico de caminos" : "Path fan"} · {trades} {es ? "ops" : "trades"}
               </span>
-              <div className="flex items-center gap-3 tnum" style={{ fontSize: 9, color: "var(--ink-3)" }}>
+              <div className="flex items-center gap-3 tnum" style={{ fontSize: 9.5, color: "var(--ink-3)" }}>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-1.5 rounded-[1px]" style={{ background: "rgb(var(--accent-base) / 0.18)" }} /> P10–P90</span>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-[2px]" style={{ background: "rgb(var(--accent-base))" }} /> {es ? "Media" : "Mean"}</span>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-[1.5px] border-t border-dashed" style={{ borderColor: "var(--ink-2)" }} /> P50</span>
@@ -382,7 +382,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.05)" }}
           >
             <div>
-              <div className="tnum" style={{ fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Prob. de ruina" : "Prob. of ruin"}
               </div>
               <div
@@ -393,7 +393,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               </div>
             </div>
             <div>
-              <div className="tnum" style={{ fontSize: 9, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Prob. doblar cuenta" : "Prob. to double"}
               </div>
               <div

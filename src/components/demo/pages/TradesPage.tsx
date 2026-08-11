@@ -137,7 +137,7 @@ function SortHeader({
         initial={{ opacity: 0, scale: 0.6, rotate: active && dir === "asc" ? -90 : 0 }}
         animate={{ opacity: 1, scale: 1, rotate: 0 }}
         transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-        className={`text-[9px] leading-none transition-colors ${
+        className={`text-[9.5px] leading-none transition-colors ${
           active ? "text-primary" : "text-tertiary/50 group-hover/sort:text-secondary"
         }`}
         aria-hidden="true"
@@ -236,7 +236,7 @@ const TradeRow = memo(function TradeRow({
           </span>
           {isCustom && (
             <span
-              className="text-[9px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-sm px-1 py-px"
+              className="text-[9.5px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-sm px-1 py-px"
               title={t("customTradeBadge")}
             >
               {t("customTradeBadge")}

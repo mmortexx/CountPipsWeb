@@ -469,7 +469,7 @@ function RankingCard({
                     <span className="text-xs font-medium text-primary truncate">
                       {r.name}
                     </span>
-                    <Chip variant="neutral" className="text-[9px] py-0 px-1.5 tnum">
+                    <Chip variant="neutral" className="text-[9.5px] py-0 px-1.5 tnum">
                       {fmtInt(r.count, lang)}
                     </Chip>
                   </div>
@@ -924,7 +924,7 @@ function SectionBar({
             >
               <span className="flex items-center gap-1.5">
                 {lang === "es" ? s.labelEs : s.labelEn}
-                <span className="text-[9px] text-tertiary tnum">
+                <span className="text-[9.5px] text-tertiary tnum">
                   · {s.count}
                 </span>
               </span>

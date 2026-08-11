@@ -91,7 +91,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
 
       <div className="grid grid-cols-7 gap-1 mb-1">
         {WEEKDAY_HEADERS_ES.map((d) => (
-          <div key={d} className="text-[9px] text-tertiary text-center font-medium">{d}</div>
+          <div key={d} className="text-[9.5px] text-tertiary text-center font-medium">{d}</div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-1">
@@ -136,7 +136,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
                    clase deja el color del token en oscuro y pasa a texto
                    primario en claro, donde el signo lo sigue dando el fondo
                    de la celda (y el + / − escrito). */
-                <span className="text-[8px] leading-none cal-day-pnl" data-neg={!pos}>
+                <span className="text-[9.5px] leading-none cal-day-pnl" data-neg={!pos}>
                   {pos ? "+" : "−"}{Math.abs(pnl) >= 1000 ? `${(Math.abs(pnl) / 1000).toFixed(1)}k` : Math.round(Math.abs(pnl))}
                 </span>
               )}

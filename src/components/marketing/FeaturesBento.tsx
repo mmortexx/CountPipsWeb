@@ -165,7 +165,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             </div>
             <div
               className="mt-2.5 grid grid-cols-7 gap-1.5 tnum"
-              style={{ fontSize: 9, letterSpacing: "0.06em", color: "var(--ink-3)" }}
+              style={{ fontSize: 9.5, letterSpacing: "0.06em", color: "var(--ink-3)" }}
               aria-hidden
             >
               {(es
@@ -194,8 +194,8 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                         empujaba por debajo del mínimo en tema oscuro. La
                         jerarquía entre día e importe la llevan el cuerpo y el
                         peso, que es donde no cuesta contraste. */}
-                    <span className="tnum" style={{ fontSize: 8, color: "var(--ink)" }}>{c.day}</span>
-                    <span className="tnum" style={{ fontSize: 8.5, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
+                    <span className="tnum" style={{ fontSize: 9.5, color: "var(--ink)" }}>{c.day}</span>
+                    <span className="tnum" style={{ fontSize: 9.5, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
                   </div>
                 );
               })}
@@ -307,7 +307,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 gráfico, no un gráfico. */}
             <div
               className="mt-2 flex items-center justify-between tnum"
-              style={{ fontSize: 9, letterSpacing: "0.08em", color: "var(--ink-3)" }}
+              style={{ fontSize: 9.5, letterSpacing: "0.08em", color: "var(--ink-3)" }}
               aria-hidden
             >
               {["00", "06", "12", "18", "23"].map((h) => (
