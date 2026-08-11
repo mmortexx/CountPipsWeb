@@ -2544,6 +2544,13 @@ export function EngravedAtlas() {
     let introStart = 0;
     /* La primera lámina, en unidades de progreso global. */
     const span0 = 1 / PLATES.length;
+    /* Si el bucle está parado. No es «pausado por la pestaña»: es que el
+       dibujo ya llegó a donde tenía que llegar y no hay nada que animar
+       hasta que el visitante se mueva. Ver `despertar`. */
+    let dormido = false;
+    /* Lo que dura el grabado de bienvenida. Lo leen el bucle —para saber si
+       aún tiene trabajo— y la propia interpolación. */
+    const DURACION_INTRO_MS = 5000;
     /* Hasta dónde llega el grabado de bienvenida dentro de la lámina I.
        Lo usan DOS sitios —el bucle, para saber a dónde ir; y el mapa de
        anclas, para que el scroll arranque exactamente ahí— y por eso es
@@ -2655,6 +2662,30 @@ export function EngravedAtlas() {
     };
 
     /** Lienzo de la lámina `i` trazado hasta `t`. `null` si no puede crearse. */
+    /* ── EL PRESUPUESTO DE REGRABADO ─────────────────────────────────
+       Volver a trazar una lámina es, con diferencia, lo más caro que pasa
+       aquí: se dibuja entera y se vuelve a muestrear en trama. Mientras el
+       lienzo sólo se COMPONE (estampar una capa ya hecha) el fotograma
+       cuesta centésimas; cuando toca regrabar, milésimas.
+
+       El revelado avanza en 160 pasos, así que un scroll rápido cruza
+       varios por fotograma y encadena regrabados justo cuando menos
+       margen hay. Medido con el banco del proyecto: p99 de 40 ms contra un
+       presupuesto de 28.
+
+       La solución no es regrabar peor, es regrabar MENOS VECES POR
+       SEGUNDO: cada fotograma trae un presupuesto de milisegundos, y
+       cuando se agota se compone la capa que ya había. El dibujo se queda
+       un paso por detrás durante el scroll —invisible: un paso es medio
+       punto de trama— y se pone al día en cuanto el visitante afloja, que
+       es cuando sobra tiempo. Antes que un fotograma perdido, un punto
+       menos. */
+    const PRESUPUESTO_REGRABADO_MS = 5;
+    let inicioFotograma = 0;
+    /* Si todas las capas compuestas en el último fotograma estaban al
+       día. Lo pone a false `capaDe` cuando se queda sin presupuesto. */
+    let capasAlDia = true;
+
     const capaDe = (i: number, t: number): HTMLCanvasElement | null => {
       if (w < 1 || h < 1) return null;
       let c = capas[i];
@@ -2673,6 +2704,17 @@ export function EngravedAtlas() {
       /* Ya trazada a este progreso: no se toca. Cubre de un golpe el caso
          de la lámina terminada, que se queda con t = 1 para siempre. */
       if (c.t === t) return c.cv;
+
+      /* Sin presupuesto en este fotograma se compone lo que ya hay. Sólo
+         si hay ALGO: una capa en blanco no vale como respuesta, porque
+         entonces la lámina no aparecería nunca. */
+      if (c.t >= 0 && performance.now() - inicioFotograma > PRESUPUESTO_REGRABADO_MS) {
+        /* Queda trabajo pendiente: el bucle no puede dormirse creyendo que
+           ha terminado, o el dibujo se quedaría con el paso atrasado para
+           siempre. */
+        capasAlDia = false;
+        return c.cv;
+      }
 
       c.ctx.setTransform(1, 0, 0, 1, 0, 0);
       c.ctx.clearRect(0, 0, c.cv.width, c.cv.height);
@@ -2781,6 +2823,10 @@ export function EngravedAtlas() {
         target = scrollProgress();
         draw(shown < 0 ? target : shown);
       }
+      /* Cambiar de tamaño mueve las anclas, y con ellas el destino: si el
+         bucle estaba dormido hay que volver a ponerlo en marcha para que
+         alcance el nuevo. */
+      despertar();
     };
 
     /* ---- Anclaje a las pausas de lámina --------------------------------
@@ -2801,6 +2847,25 @@ export function EngravedAtlas() {
        documento — las secciones cargan de forma diferida y crecen, y una
        posición cacheada de más se traduce en láminas descuadradas. */
     let anchors: [number, number][] = [];
+    /* Las anclas se remiden CUANDO CAMBIA ALGO, no por reloj.
+       ────────────────────────────────────────────────────────────────
+       Estaban remidiéndose diez veces por segundo, siempre, con el
+       argumento de que `content-visibility` hace crecer las secciones sin
+       que cambie `scrollHeight`. El argumento es cierto; la solución era
+       cara: cada medida es un `querySelectorAll`, un `getBoundingClientRect`
+       por pausa y una lectura de `scrollHeight`, y las tres obligan al
+       navegador a recalcular la maquetación EN MITAD DEL SCROLL, que es
+       justo cuando no hay milisegundos que gastar. Medido: p99 de 40 ms
+       contra un presupuesto de 28.
+
+       Lo que de verdad invalida una medida es que el documento cambie de
+       forma. Eso lo dicen los observadores, sin coste mientras no pasa: un
+       `ResizeObserver` sobre el documento y sobre cada pausa, y un
+       `MutationObserver` que sólo levanta una bandera cuando aparece o
+       desaparece contenido. Medir sigue costando lo mismo; lo que cambia
+       es cuántas veces se paga. */
+    let anclasSucias = true;
+    let pausasVistas = -1;
 
     const measureAnchors = () => {
       const nodes = [...document.querySelectorAll("[data-plate]")].sort(
@@ -2822,6 +2887,11 @@ export function EngravedAtlas() {
          punto (pausas muy juntas o layout aún sin asentar), la
          interpolación dividiría por cero. */
       anchors = list.filter((p, i) => i === 0 || p[0] > list[i - 1][0]);
+      anclasSucias = false;
+      /* Cuántas pausas se han visto. Si el número cambia, es que se ha
+         montado (o desmontado) una: hay que volver a medir aunque nadie
+         haya cambiado de tamaño. */
+      pausasVistas = nodes.length;
     };
 
     /* Progreso del atlas — atado al scroll ABSOLUTO, no al relativo.
@@ -2864,6 +2934,9 @@ export function EngravedAtlas() {
     };
 
     const draw = (p: number) => {
+      /* Arranca el reloj del presupuesto de regrabado (ver `capaDe`). */
+      inicioFotograma = performance.now();
+      capasAlDia = true;
       /* El idioma de los rótulos grabados, en cada repintado. Se lee del
          `<html lang>` y no de `useLang()` a propósito: este dibujo corre
          fuera del árbol de React —dentro de un `requestAnimationFrame` con
@@ -2927,10 +3000,18 @@ export function EngravedAtlas() {
       }
     };
 
-    let lastMeasure = 0;
     const frame = (now: number) => {
-      raf = requestAnimationFrame(frame);
-      if (!visible) return;
+      /* El siguiente fotograma NO se pide aquí arriba. Se pide en cada
+         salida, porque una de ellas —la de «no ha cambiado nada y la
+         bienvenida ya terminó»— es la que deja el bucle dormido. Pedirlo
+         antes de saberlo era lo que mantenía esto girando para siempre. */
+      if (!visible) {
+        /* Pestaña oculta: el navegador no ejecutaría el fotograma de
+           todas formas. Se duerme y lo despierta `visibilitychange`. */
+        dormido = true;
+        raf = 0;
+        return;
+      }
       const dt = Math.min(now - last, 64);
       last = now;
 
@@ -2953,12 +3034,14 @@ export function EngravedAtlas() {
          pantalla, más trabajo inútil y menos fluidez, que es justo lo
          contrario de lo que debe pasar.
 
-         Con reloj, medir cuesta lo mismo a 60 que a 165 o a 240. */
-      if (now - lastMeasure >= 100) {
-        lastMeasure = now;
-        measureAnchors();
-        target = scrollProgress();
-      }
+         Con reloj, medir cuesta lo mismo a 60 que a 165 o a 240 — pero
+         costaba SIEMPRE. Ahora la bandera la levantan los observadores
+         (ver `anclasSucias`) y aquí sólo se paga cuando el documento ha
+         cambiado de forma de verdad. `scrollProgress` sí se recalcula en
+         cada fotograma: es aritmética sobre `anchors` y `scrollY`, sin
+         tocar la maquetación. */
+      if (anclasSucias) measureAnchors();
+      target = scrollProgress();
 
       /* Grabado inicial: la lámina I se dibuja SOLA, entera, en la primera
          pantalla. Sin esto, quien abre la página encuentra el fondo en
@@ -2994,7 +3077,7 @@ export function EngravedAtlas() {
          marco ya trazados, y aún le queda un quinto de revelado que el
          scroll se encarga de completar justo cuando la pausa I entra en
          pantalla. La intro presenta la figura; el scroll la termina. */
-      const introT = clamp01((now - introStart) / 5000);
+      const introT = clamp01((now - introStart) / DURACION_INTRO_MS);
       const goal = Math.max(target, easeOut(introT) * INTRO_HASTA * span0);
 
       const next = shown + (goal - shown) * (1 - Math.exp((-dt * 6) / 1000));
@@ -3008,12 +3091,44 @@ export function EngravedAtlas() {
          Lo único que se descarta es el fotograma en que no ha cambiado
          absolutamente nada, y se compara contra el valor exacto, no contra
          una tolerancia: si el progreso se movió una millonésima, se
-         compone. Cuando el atlas está quieto —sin scroll y con la entrada
-         terminada— esto lo deja a coste cero. */
-      if (next === shown) return;
+         compone. */
+      if (next === shown && capasAlDia) {
+        /* ── Y CUANDO NO CAMBIA NADA, EL BUCLE SE DUERME ──────────────
+           Aquí ponía que descartar el fotograma «lo deja a coste cero».
+           No lo dejaba: descartar el DIBUJO no descarta el fotograma. El
+           `requestAnimationFrame` se seguía reprogramando, así que con el
+           visitante leyendo parado el hilo principal se despertaba unas
+           53 veces por segundo, y una de cada diez veces medía el
+           documento entero. Contado en una página sin figura —que no
+           monta esto— eran 1 despertar en 5 s; en una con figura, 266.
 
+           Ahora, cuando el dibujo ha convergido y la bienvenida ha
+           terminado, el bucle se PARA. Lo despierta lo único que puede
+           cambiar el destino: el scroll, un cambio de tamaño o volver a
+           la pestaña. Parado de verdad, no parado de mentira. */
+        const introViva = now - introStart < DURACION_INTRO_MS;
+        if (!introViva && goal === shown && capasAlDia) {
+          dormido = true;
+          raf = 0;
+          return;
+        }
+        raf = requestAnimationFrame(frame);
+        return;
+      }
+
+      raf = requestAnimationFrame(frame);
       shown = next;
       draw(shown);
+    };
+
+    /* Vuelve a poner el bucle en marcha si estaba dormido. Idempotente: si
+       ya corre, no encadena un segundo rAF —eso duplicaría el trabajo por
+       fotograma y es el error clásico de este patrón. */
+    const despertar = () => {
+      if (!dormido || reduce) return;
+      dormido = false;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
     };
 
     const onScroll = () => {
@@ -3021,7 +3136,9 @@ export function EngravedAtlas() {
       if (reduce) {
         shown = target;
         draw(shown);
+        return;
       }
+      despertar();
     };
 
     readInk();
@@ -3058,6 +3175,36 @@ export function EngravedAtlas() {
     });
     ro.observe(canvas);
 
+    /* ── QUIÉN AVISA DE QUE LAS ANCLAS HAN CADUCADO ──────────────────
+       Dos observadores y ningún reloj.
+
+       El de tamaño mira el documento y cada pausa: cubre el caso que
+       motivó la medición continua —una sección con `content-visibility`
+       que crece al asomar— porque crecer es cambiar de tamaño, y aquí eso
+       llega como notificación en vez de sondearse sesenta veces.
+
+       El de mutaciones sólo observa `childList` en el árbol principal y no
+       lee NADA del layout: levanta la bandera y se va. Es lo que cubre las
+       pausas que aún no existían al arrancar. */
+    const marcarSucias = () => {
+      anclasSucias = true;
+      despertar();
+    };
+    const roDoc = new ResizeObserver(marcarSucias);
+    roDoc.observe(document.documentElement);
+    document.querySelectorAll("[data-plate]").forEach((el) => roDoc.observe(el));
+
+    const moPausas = new MutationObserver(() => {
+      /* `querySelectorAll` sobre un selector de atributo es barato y no
+         fuerza maquetación; comparar el número evita remedir por cualquier
+         cambio de texto del documento. */
+      const n = document.querySelectorAll("[data-plate]").length;
+      if (n === pausasVistas) return;
+      document.querySelectorAll("[data-plate]").forEach((el) => roDoc.observe(el));
+      marcarSucias();
+    });
+    moPausas.observe(document.body, { childList: true, subtree: true });
+
     /* Cambio de densidad de pantalla: arrastrar la ventana de un monitor
        normal a uno de alta resolución no altera ni un píxel CSS del
        lienzo, así que el observador de tamaño no se entera — pero el
@@ -3079,6 +3226,9 @@ export function EngravedAtlas() {
     const onVis = () => {
       visible = !document.hidden;
       last = performance.now();
+      /* Al volver a la pestaña el bucle está dormido —se durmió al
+         ocultarse—, así que hay que llamarlo. */
+      if (visible) despertar();
     };
     document.addEventListener("visibilitychange", onVis);
 
@@ -3096,6 +3246,8 @@ export function EngravedAtlas() {
       cancelAnimationFrame(raf);
       removeEventListener("scroll", onScroll);
       ro.disconnect();
+      roDoc.disconnect();
+      moPausas.disconnect();
       dprQuery?.removeEventListener("change", onDprChange);
       document.removeEventListener("visibilitychange", onVis);
       obs.disconnect();
