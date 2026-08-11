@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Instrument_Sans, Newsreader } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
@@ -43,18 +43,48 @@ export const viewport: Viewport = {
   themeColor: "#0c1116",
 };
 
-const geistMono = Geist_Mono({
+/* ─────────────────────────────────────────────────────────────────────────
+   LAS TRES FAMILIAS VIVEN EN EL REPOSITORIO, NO EN GOOGLE
+
+   Las tres se pedían con `next/font/google`, y eso no es "una etiqueta a un
+   CDN" —Next descarga el binario DURANTE LA COMPILACIÓN y lo sirve desde el
+   propio dominio—, pero deja la compilación colgando de que fonts.gstatic
+   conteste. Ya tumbó un despliegue con un 404 suyo: el sitio no se puede
+   publicar porque un tercero tuvo un mal minuto, y el fallo no depende de
+   nada que esté en este repositorio.
+
+   Ahora los cuatro `.woff2` están versionados en `src/app/fonts/` y se
+   cargan con `next/font/local`. Compilar deja de necesitar red.
+
+   Se descargó el SUBCONJUNTO `latin` de cada una —el mismo que declaraba
+   `subsets: ["latin"]`—, así que el juego de caracteres es idéntico al que
+   había: cubre los acentos y la eñe del español y las comillas tipográficas.
+   Total: 324 KB de fuentes en el árbol.
+
+   Y son las variables, no las estáticas. Instrument Sans se pedía en tres
+   pesos sueltos (400/500/600 = tres ficheros); su fichero variable pesa
+   29 KB y da todo el rango 400-700 continuo. Newsreader igual, con su eje
+   óptico intacto: la redonda y la cursiva son dos ficheros porque una
+   cursiva de verdad es un dibujo distinto, no una inclinación.
+
+   `adjustFontFallback` sigue activo por defecto: Next calcula métricas de
+   respaldo (`size-adjust`, `ascent-override`…) para que el salto de la
+   fuente de sistema a la webfont no mueva la maqueta. Sin él, `display:
+   "swap"` provoca justo el reflow que se venía evitando. */
+const geistMono = localFont({
+  src: "./fonts/GeistMono.woff2",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  weight: "100 900",
+  display: "swap",
 });
 
 /* Instrument Sans es la sans del sitio (--font-sans): texto, rótulos y
    etiquetas. Geist Sans se retiró: solo actuaba de respaldo de esta, y una
    familia cargada que nadie compone es peso de descarga sin contrapartida. */
-const instrumentSans = Instrument_Sans({
+const instrumentSans = localFont({
+  src: "./fonts/InstrumentSans.woff2",
   variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: "400 700",
   display: "swap",
 });
 
@@ -85,11 +115,16 @@ const instrumentSans = Instrument_Sans({
 
    La lista de respaldo de globals.css ya nombraba Newsreader antes que
    Georgia, así que la intención estaba escrita; esto la hace efectiva. */
-const newsreader = Newsreader({
+const newsreader = localFont({
+  src: [
+    { path: "./fonts/Newsreader.woff2", weight: "200 800", style: "normal" },
+    {
+      path: "./fonts/Newsreader-Italic.woff2",
+      weight: "200 800",
+      style: "italic",
+    },
+  ],
   variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
