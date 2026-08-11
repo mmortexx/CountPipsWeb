@@ -98,10 +98,10 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
             return (
               <div
                 key={c.t}
-                // T3c — swap a `.tj-paper`: papel translúcido cálido. El icon
-                // chip + título + descripción conservan su jerarquía; el
-                // atlas se filtra por los bordes.
-                className="tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6"
+                // El papel translúcido conserva el filtrado del atlas por los
+                // bordes; `tj-hoja` le pone encima el doble filete y el apoyo
+                // del resto de superficies del sitio.
+                className="tj-paper tj-hoja p-6 sm:p-7"
               >
                 <span
                   className="w-10 h-10 rounded-lg bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
@@ -131,7 +131,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
           // 5 filas de texto pequeño + cabecera; el 86 % de opacidad
           // mantiene AA en los textos `--ink-2`/`--ink-3` y deja que el
           // atlas se filtre por los bordes sin competir con la tabla.
-          className="tj-paper-dense relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)]"
+          className="tj-paper-dense tj-hoja tj-hoja--sangre relative overflow-hidden"
         >
           <div className="relative overflow-x-auto">
             <div className="min-w-[480px]">

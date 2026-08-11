@@ -5953,6 +5953,15 @@ svg [data-entra="sello"] {
   content: none;
 }
 
+/* A SANGRE — para lo que se imprime hasta el canto.
+   Una tabla o una captura ocupan la hoja entera, y ahí el filete interior
+   no remata: cruza el contenido. Se queda el filete exterior y el apoyo,
+   que son los que hacen que la hoja exista; se va el de dentro, que sólo
+   tiene sentido cuando hay margen que rematar. */
+.tj-hoja--sangre::after {
+  content: none;
+}
+
 /* El canto se cierra al pasar por encima: el filete exterior sube de
    tinta y la sombra se alarga un punto. Nada de color nuevo — la
    tarjeta no cambia de estado, sólo se levanta. */
