@@ -661,35 +661,20 @@ export function Navbar() {
 
   const productActive = rutaActual.startsWith("/features");
 
+  /* Aquí, dentro del JSX, vivía un <style> con alcance de componente que
+     neutralizaba las transiciones del navbar bajo prefers-reduced-motion.
+     Se ha retirado por dos motivos, y los dos estaban escritos en su
+     propio comentario:
+
+       - Se justificaba diciendo que framer-motion respetaría la
+         preferencia para sus propias transiciones. Este componente ya no
+         usa framer-motion.
+       - Y lo que hacía ya lo hace globals.css con su selector universal y
+         su !important, para el sitio entero: era un subconjunto exacto,
+         veinte líneas repetidas que había que acordarse de mantener a la
+         vez que el original. */
   return (
     <>
-      {/* Estilo con alcance de componente — dos ajustes que no tienen
-          equivalente directo en utilidades de Tailwind y que por tanto
-          viven aquí en vez de en className:
-
-          1. `prefers-reduced-motion` — framer-motion respetará la
-             preferencia del usuario para sus propias transiciones
-             (AnimtePresence / motion.aside / motion.div), pero las
-             transiciones declaradas en className (hover underline,
-             color shifts, scale del chevron del drawer) no la
-             esuchan automáticamente. Este bloque las neutraliza.
-
-          2. Hover underline de los enlaces top-level — se declara con
-             `scale-x` en className, pero la altura y la posición
-             exactas (1 px, alineada al baseline visual del enlace)
-             merecen estar en CSS por legibilidad. */}
-      <style>{`
-        @media (prefers-reduced-motion: reduce) {
-          [data-navbar-root] *,
-          [data-navbar-root] *::before,
-          [data-navbar-root] *::after {
-            transition-duration: 0.01ms !important;
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            scroll-behavior: auto !important;
-          }
-        }
-      `}</style>
       <header data-navbar-root className="fixed inset-x-0 top-0 z-50">
       <nav
         aria-label={es ? "Principal" : "Main"}

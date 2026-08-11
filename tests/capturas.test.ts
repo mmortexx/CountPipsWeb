@@ -1,28 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { ASPECTO_CAPTURA } from "@/components/tj/WindowFrame";
 import { LAMINAS_PRODUCTO, ORDEN_LAMINAS } from "@/lib/laminas";
 
 /**
  * EL MARCO DE VENTANA TIENE QUE MEDIR LO QUE MIDE LA CAPTURA.
  *
  * ── El fallo que cierra ───────────────────────────────────────────────
- * `WindowFrame` fijaba `aspect-[1500/856]` y su comentario afirmaba que
- * ése era «el tamaño real de las capturas». Lo fue: 856 es el alto del
- * ORIGINAL. Dejó de serlo cuando `scripts/capturas.py` empezó a recortar
- * el cromo de ventana dentro del propio fichero —la barra de título con
- * el nombre anterior al renombrado y la de estado con el sello de
- * compilación de desarrollo—, y las capturas servidas pasaron a 788 px
- * de alto.
+ * Un componente fijaba la proporción de la captura a mano y su comentario
+ * afirmaba que era «el tamaño real». Lo fue, hasta que
+ * `scripts/capturas.py` cambió el recorte dentro del propio fichero: la
+ * imagen salía con franjas vacías dentro de un marco cuya razón de existir
+ * era que se leyera entera. Nada falla, nada avisa, y sólo se ve mirando
+ * la página con atención.
  *
- * Resultado: 68 px de franja vacía repartidos arriba y abajo, dentro de
- * un marco cuya razón de existir es que la app se lea «entera y nítida».
- * Nada falla, nada avisa, y sólo se ve mirando la página con atención.
- *
- * Un comentario que afirma un número deja de ser documentación en cuanto
- * el número lo decide otro fichero. Así que esto no lee comentarios: lee
- * la cabecera binaria de los WEBP servidos.
+ * Un número afirmado en un comentario deja de ser documentación en cuanto
+ * lo decide otro fichero. Así que esto no lee comentarios ni componentes:
+ * lee la cabecera binaria de los WEBP servidos y la compara con lo que
+ * declara el catálogo.
  *
  * ── Y de paso, el catálogo ────────────────────────────────────────────
  * `laminas.ts` cataloga las capturas con su texto alternativo. Un fichero
@@ -97,21 +92,6 @@ describe("las capturas de la app y el marco que las enseña", () => {
           `misma ventana.`,
       ).toBe(`${claro.w}x${claro.h}`);
     }
-  });
-
-  it("la proporción del marco es la de la captura que envuelve, no la del original", () => {
-    /* `WindowFrame` sólo envuelve una captura en el sitio: la del resumen,
-       en la portada (`OverviewApp`). Las láminas del atlas no pasan por ese
-       marco y llevan sus propias medidas. */
-    const { w, h } = medirWebp(join(DIR, LAMINAS_PRODUCTO.resumen.archivo));
-    expect(
-      ASPECTO_CAPTURA,
-      `La captura servida mide ${w}×${h} y \`WindowFrame\` declara ` +
-        `${ASPECTO_CAPTURA}. Con esa diferencia la imagen sale con franjas ` +
-        `arriba y abajo dentro del marco. Si el recorte de ` +
-        `\`scripts/capturas.py\` ha cambiado a propósito, actualiza ` +
-        `\`ASPECTO_CAPTURA\` en \`WindowFrame.tsx\`.`,
-    ).toBe(`aspect-[${w}/${h}]`);
   });
 
   it("cada lámina del catálogo apunta a ficheros que existen, y también su recorte móvil", () => {

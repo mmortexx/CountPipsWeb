@@ -70,9 +70,3 @@ export function Reveal({ children, className = "", delay = 0 }: RevealProps) {
   );
 }
 
-/* Los dos valores de la familia de movimiento siguen exportados: hay
-   componentes que animan por su cuenta (la barra, el cajón, los globos
-   de los gráficos) y deben moverse con la misma curva y la misma
-   duración que las entradas, o la página parece hecha por dos manos. */
-export const REVEAL_EASE = [0.22, 1, 0.36, 1] as const;
-export const REVEAL_DURATION = 0.55;

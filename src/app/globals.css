@@ -1860,8 +1860,8 @@ html {
      - delay → 0.01ms  cancels any startup delay so the end state
        applies immediately (e.g. IntroSequence's 5s failsafe delay,
        staggered ScrollReveal children).
-     - iteration-count → 1  stops infinite loops (tj-pulse-dot,
-       tj-glow, tj-float, tj-scroll-bead, tj-sheen) after a single
+     - iteration-count → 1  detiene los bucles infinitos que queden
+       (hoy sólo `tj-float`) tras una sola
        tick — combined with the 0.01ms duration the loop body is
        invisible.
      - scroll-behavior → auto  cancels the html { scroll-behavior:
@@ -2819,11 +2819,6 @@ button.icon-btn:hover > svg,
    animaciones para quien pide menos movimiento.
    ============================================================ */
 
-@keyframes tj-rise {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* ------------------------------------------------------------
    .tj-char — la entrada letra a letra del titular de cada
    subpágina (`AnimatedHeading`).
@@ -2861,47 +2856,10 @@ button.icon-btn:hover > svg,
   animation: tj-char-in 420ms var(--ease-suave) backwards;
   animation-delay: var(--tj-char-delay, 0ms);
 }
-@keyframes tj-glow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.85; }
-}
 @keyframes tj-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
-@keyframes tj-sheen {
-  0% { transform: translateX(-160%) skewX(-18deg); }
-  55%, 100% { transform: translateX(340%) skewX(-18deg); }
-}
-
-/* R24-1b — Scroll indicator traveling bead. Sweeps top→bottom of the
-   30-px rail on a 2.2 s loop, ease-in-out so it slows at the ends
-   (reads as a bead falling then settling). The 0→24-px range covers
-   the bead's 6-px height inside the 30-px track without clipping. */
-@keyframes tj-scroll-bead {
-  0%   { transform: translateY(0); opacity: 0; }
-  18%  { opacity: 1; }
-  82%  { opacity: 1; }
-  100% { transform: translateY(24px); opacity: 0; }
-}
-
-/* R24-1b — pronounced "live" pulse for session / market-open dots
-   (UtcClock in the Navbar). tj-glow's 0.5→0.85 opacity swing is too
-   subtle for a status indicator that needs to read as "alive" at a
-   glance; this one swings 0.4→1.0 with a box-shadow bloom so the dot
-   visibly beats. Used only on small status dots, never on large
-   decorative glows. */
-@keyframes tj-pulse-dot {
-  0%, 100% {
-    opacity: 0.4;
-    box-shadow: 0 0 4px currentColor;
-  }
-  50% {
-    opacity: 1;
-    box-shadow: 0 0 10px currentColor, 0 0 16px currentColor;
-  }
-}
-
 /* Intro — estado pre-hidratación: el script inline del <head> añade
    `.tj-preload` al <html> en la primera visita de la sesión, así los
    elementos [data-seq] del hero arrancan ocultos sin flash y el
@@ -3516,10 +3474,6 @@ button.icon-btn:hover > svg,
 /* (`.tj-spot` y `.aurora-bg` ya no hace falta apagarlos aquí: no existen.
    Lo que se apagaba con `display:none` se ha retirado de raíz, que es lo
    que corresponde cuando la respuesta a "¿quién lo usa?" es "nadie".) */
-:root[data-palette="clasico"] [style*="tj-sheen"],
-:root[data-palette="clasico"] .tj-sheen {
-  display: none;
-}
 :root[data-palette="clasico"] [class*="animate-"][class*="glow"] {
   animation: none;
   opacity: 0.35;
@@ -5663,9 +5617,11 @@ svg [data-entra="sello"] {
 .tj-realce:hover {
   transform: translateY(-3px);
 }
-.tj-pulsa:active {
-  transform: scale(0.98);
-}
+/* Aquí había un `.tj-pulsa:active { transform: scale(0.98) }` que no
+   llegaba nunca a la pantalla: más abajo el mismo selector se vuelve a
+   declarar con 0,97 y su propia transición, y en igualdad de
+   especificidad gana el último. Dos verdades para el mismo gesto, y la
+   que se leía primero era la falsa. */
 /* Para los controles pequeños —iconos de 24 px, botones de fila— donde
    un 2 % de reducción no se percibe. */
 .tj-pulsa-fuerte:active {
