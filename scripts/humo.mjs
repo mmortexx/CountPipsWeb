@@ -147,6 +147,18 @@ const RUTAS = [
   { ruta: "/en/demo", lang: "en" },
   { ruta: "/en/about", lang: "en" },
   { ruta: "/en/faq", lang: "en" },
+  /* ── UNA DE CADA FAMILIA GENERADA ────────────────────────────────
+     Las de arriba son las páginas escritas a mano. El build exporta
+     154, y las 139 restantes salen de cuatro plantillas —glosario,
+     herramientas, traders y las legales—, así que un defecto en una
+     plantilla afecta a decenas de páginas a la vez y ninguna de las
+     rutas de arriba lo vería. Se añade una muestra de cada: no cubre
+     las 154, pero sí cubre las cuatro FORMAS que existen, que es lo que
+     de verdad se puede romper de golpe. */
+  { ruta: "/glosario/drawdown", lang: "es" },
+  { ruta: "/herramientas/monte-carlo", lang: "es" },
+  { ruta: "/traders/prop-firms", lang: "es" },
+  { ruta: "/privacidad", lang: "es" },
 ];
 
 /**
@@ -236,6 +248,15 @@ const opacidadesFinales = [];
 /** Ídem para la llamada a la acción de la portada: dónde acaba respecto
     al pliegue, en cada una de las cuatro pantallas. */
 const pliegues = [];
+/** Ídem para el contenido servido dentro de bloques ocultos sin
+    JavaScript: cuántos caracteres había y sobre cuántos del documento. */
+const ocultosVistos = [];
+/** Ídem para el velo del fondo sin JavaScript: cuántos elementos
+    decorativos conservaron su opacidad y cuántos ceros se rescataron. */
+const velosVistos = [];
+/** Ídem para las entradas atadas al scroll: cuántas llegan a entrar de
+    verdad sobre el total. Cero también sale en verde si nadie mira. */
+const entradasVistas = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -524,17 +545,13 @@ for (const pantalla of PANTALLAS) {
 
              Se comprueba en el ESTILO COMPUTADO y no leyendo el CSS
              generado: lo que importa no es que la regla exista en algún
-             fichero, sino que le llegue al elemento. */
-          papel: (() => {
-            const el = document.querySelector(".tj-paper:not(.tj-paper-dense)");
-            if (!el) return null;
-            const cs = getComputedStyle(el);
-            return {
-              grano: cs.backgroundImage !== "none",
-              tinte: cs.backgroundColor,
-              canto: cs.boxShadow !== "none",
-            };
-          })(),
+             fichero, sino que le llegue al elemento.
+
+             La medición vive FUERA de este informe (ver «el papel, en los
+             dos temas» más abajo): aquí sólo se miraba el tema con el que
+             arranca el documento —`data-theme="light"`—, y el defecto que
+             se acaba de describir estaba en el OSCURO. El guardián que
+             vigilaba el fallo no visitaba el tema donde ocurrió. */
 
           /* ── EL IDIOMA DE LO QUE SE LEE Y DE LO QUE SE DECLARA ───────
              Dos textos distintos y los dos importan: el que ve la
@@ -613,18 +630,67 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
+      /* ── EL PAPEL, EN LOS DOS TEMAS ────────────────────────────────
+         El defecto original —`.tj-paper` sin grano ni luz de borde— sólo
+         existía en el tema OSCURO, y este guardián medía el documento tal
+         y como arranca, que es `data-theme="light"`. Es decir: vigilaba
+         el único tema donde el fallo no estaba, y habría seguido en verde
+         si alguien lo reintroducía.
+
+         Se fuerzan los dos temas sobre el mismo documento —es lo mismo
+         que hace el conmutador del sitio: `data-theme` más la clase
+         `dark`— y se mide en cada uno. Comprobado contra el fallo
+         borrando a mano el `background-image` del bloque oscuro en
+         `globals.css`: con esta versión salta en «oscuro» y con la
+         anterior seguía diciendo «correcto». */
       if (pantalla.nombre === "escritorio") {
-        if (!informe.papel) {
-          avisos.push(`${etiqueta}: ninguna superficie de papel que comprobar`);
-        } else {
-          papelesVistos.push(`${ruta} tinte ${informe.papel.tinte}`);
-          if (!informe.papel.grano) {
+        const papeles = await pagina.evaluate(async () => {
+          const raiz = document.documentElement;
+          const original = raiz.dataset.theme;
+          const salida = {};
+          for (const tema of ["light", "dark"]) {
+            raiz.dataset.theme = tema;
+            raiz.classList.toggle("dark", tema === "dark");
+            // Un fotograma: el estilo computado no refleja el cambio de
+            // atributo hasta que el navegador recalcula.
+            await new Promise((r) => requestAnimationFrame(() => r()));
+            const el = document.querySelector(".tj-paper:not(.tj-paper-dense)");
+            salida[tema] = el
+              ? {
+                  grano: getComputedStyle(el).backgroundImage !== "none",
+                  tinte: getComputedStyle(el).backgroundColor,
+                  canto: getComputedStyle(el).boxShadow !== "none",
+                }
+              : null;
+          }
+          /* Se restaura el estado EXACTO, incluida la ausencia del
+             atributo. `dataset.theme = undefined` escribe la cadena
+             "undefined", y con `data-theme="undefined"` no casa ni el
+             bloque claro ni el oscuro: todas las comprobaciones
+             posteriores de esta misma iteración —tinta al final del
+             scroll, cajón, vuelta arriba, contraste sobre captura—
+             medirían un tema que no existe. Hoy no puede pasar porque el
+             layout fija `data-theme="light"` en el servidor, pero está a
+             un atributo de distancia y el fallo sería mudo. */
+          if (original === undefined) delete raiz.dataset.theme;
+          else raiz.dataset.theme = original;
+          raiz.classList.toggle("dark", original === "dark");
+          return salida;
+        });
+        for (const tema of ["light", "dark"]) {
+          const p = papeles[tema];
+          if (!p) {
+            avisos.push(`${etiqueta} (${tema}): ninguna superficie de papel que comprobar`);
+            continue;
+          }
+          papelesVistos.push(`${ruta} ${tema} tinte ${p.tinte}`);
+          if (!p.grano) {
             fallos.push(
-              `${etiqueta}: el papel perdió su grano — la declaración no llega al elemento`
+              `${etiqueta} (tema ${tema}): el papel perdió su grano — la declaración no llega al elemento`
             );
           }
-          if (!informe.papel.canto) {
-            fallos.push(`${etiqueta}: el papel perdió su luz de borde`);
+          if (!p.canto) {
+            fallos.push(`${etiqueta} (tema ${tema}): el papel perdió su luz de borde`);
           }
         }
       }
@@ -665,6 +731,58 @@ for (const pantalla of PANTALLAS) {
         if (tenues.length) {
           fallos.push(
             `${etiqueta}: al final del documento queda contenido a media opacidad — ${tenues.slice(0, 3).join("; ")}`
+          );
+        }
+      }
+
+      /* ── LAS ENTRADAS TIENEN QUE ENTRAR ───────────────────────────
+         Las piezas marcadas con `data-entra` se encienden conforme
+         asoman, con `animation-timeline: view()`. Ese mecanismo falla en
+         SILENCIO: si la línea de tiempo queda inactiva, la animación no
+         aplica nada y el elemento se queda en su estado base, que es
+         «visible». La página se ve bien y el gesto simplemente no está.
+
+         Pasó, y en masa: `view()` ancla su línea de tiempo al contenedor
+         de desplazamiento más cercano, y `overflow: hidden` crea uno.
+         Con las secciones en `overflow-hidden`, recorriendo la página
+         entera no llegaba a verse a media tinta NI UNA pieza en
+         /features (0 de 33) ni en /pricing (0 de 94). Con `overflow:
+         clip`, 21 y 62.
+
+         Se recorre la página en saltos de un tercio de ventana y se
+         cuenta cuántas piezas distintas se han visto entrando alguna
+         vez. El umbral es el 25 %, no el 100 %: las secciones con
+         `content-visibility: auto` no actualizan las animaciones de su
+         contenido mientras el navegador lo salta, y eso es correcto —lo
+         que se vigila es que el mecanismo esté vivo, no que ninguna
+         pieza se lo pierda.
+
+         Comprobado contra el fallo devolviendo `overflow-hidden` a las
+         secciones: cae a 0 y salta. */
+      if (pantalla.nombre === "escritorio" && ruta === "/features") {
+        const entradas = await pagina.evaluate(async () => {
+          const esperar = () => new Promise((r) => setTimeout(r, 200));
+          const todos = [...document.querySelectorAll("[data-entra]")];
+          const vistos = new Set();
+          const alto = document.documentElement.scrollHeight;
+          for (let y = 0; y < alto; y += Math.round(window.innerHeight / 3)) {
+            window.scrollTo(0, y);
+            await esperar();
+            for (const el of todos) {
+              if (Number(getComputedStyle(el).opacity) < 0.98) vistos.add(el);
+            }
+          }
+          window.scrollTo(0, 0);
+          return { total: todos.length, animaron: vistos.size };
+        });
+        entradasVistas.push(`${ruta}: ${entradas.animaron}/${entradas.total}`);
+        if (entradas.total === 0) {
+          fallos.push(`${etiqueta}: ninguna pieza con \`data-entra\` que comprobar`);
+        } else if (entradas.animaron < entradas.total * 0.25) {
+          fallos.push(
+            `${etiqueta}: sólo ${entradas.animaron} de ${entradas.total} piezas con ` +
+              `\`data-entra\` llegan a entrar — la línea de tiempo está inactiva ` +
+              `(la causa conocida es una sección con \`overflow-hidden\` en vez de \`overflow-clip\`)`
           );
         }
       }
@@ -999,14 +1117,27 @@ for (const pantalla of PANTALLAS) {
   await contexto.close();
 }
 
-/* ── El titular, sin JavaScript ──────────────────────────────────────
+/* ── Sin JavaScript ──────────────────────────────────────────────────
    La comprobación que motivó todo esto. Se repite sólo en escritorio:
-   el problema no dependía del tamaño de la ventana. */
+   el problema no dependía del tamaño de la ventana.
+
+   RECORRE LA LISTA COMPLETA, NO LAS OCHO PRIMERAS. Llevaba
+   `RUTAS.slice(0, 8)`, y ese corte dejaba fuera las siete inglesas por
+   un motivo que no estaba escrito en ninguna parte. Las páginas
+   inglesas se componen con los mismos componentes, así que cualquier
+   defecto de esta familia aparece en ellas igual; simplemente nadie
+   miraba.
+
+   Lo que esto NO es: una revisión de las 154 páginas que exporta el
+   build. Son 19 rutas — las escritas a mano más una muestra de cada
+   plantilla generada. Decirlo importa: un `loading` reintroducido en un
+   componente que sólo aparezca en, digamos, `/glosario/gap` seguiría
+   sin verse aquí. */
 const sinJs = await navegador.newContext({
   javaScriptEnabled: false,
   viewport: { width: 1440, height: 900 },
 });
-for (const { ruta } of RUTAS.slice(0, 8)) {
+for (const { ruta } of RUTAS) {
   const pagina = await sinJs.newPage();
   try {
     /* ── SONDEAR, NO ESPERAR UN RATO ────────────────────────────────
@@ -1108,6 +1239,173 @@ for (const { ruta } of RUTAS.slice(0, 8)) {
     } else if (!r.enMain) {
       avisos.push(`sin-JS ${ruta}: el titular no aparece en el texto de <main>`);
     }
+
+    /* ── NADA DE CONTENIDO DENTRO DE UN BLOQUE OCULTO ────────────────
+       Un `loading` en `next/dynamic` abre un límite de Suspense, y React
+       resuelve un límite durante el prerenderizado escribiendo el hueco
+       en su sitio y el contenido REAL al final del <body>, dentro de un
+       `<div hidden>` que un script devuelve a su lugar al hidratar. Sin
+       JavaScript ese script no corre y el contenido no existe para el
+       visitante — ni para un buscador que no ejecute la página.
+
+       Medido en el HTML compilado antes del arreglo: la portada servía
+       37.921 de sus 118.707 caracteres de MARCADO en bloques ocultos (el
+       32 %) y /features 61.865 de 128.953 (el 48 %), repartidos por 18
+       páginas.
+
+       SE MIDE MARCADO Y NO TEXTO, y la diferencia importa. La primera
+       versión contaba `textContent`, que para esas mismas páginas daba
+       2.627 caracteres en «/» y 2.445 en «/en» — dos órdenes de magnitud
+       por debajo del daño real, porque una sección escondida se lleva
+       consigo su estructura entera. Con el umbral en 40 caracteres de
+       texto, `/demo` ya tenía una sección de 47: estaba a siete
+       caracteres de escaparse. `innerHTML` mide lo mismo que el
+       comentario de arriba usa para justificar el cambio.
+
+       El umbral es 200 caracteres de marcado. No es cero porque React
+       deja un `<div hidden>` VACÍO por cada `ssr:false` —el atlas del
+       fondo—, y ése no esconde nada.
+
+       LA POBLACIÓN NO PUEDE QUEDAR VACÍA. Si el marcador cambia y
+       `[hidden]` deja de encontrar nada, esto informaría «0» para siempre
+       y seguiría en verde sin mirar. Por eso se exige encontrar al menos
+       un `[hidden]`: React emite uno por cada `ssr:false`, y el atlas del
+       fondo está en las quince rutas.
+
+       Comprobado contra el fallo devolviendo los seis
+       `{ loading: () => sectionFallback }` a `src/app/page.tsx`. */
+    const ocultos = await pagina.evaluate(() => {
+      const todos = [...document.querySelectorAll("[hidden]")];
+      const bloques = todos
+        .map((el) => ({
+          car: el.innerHTML.length,
+          muestra: (el.textContent || "").replace(/\s+/g, " ").trim().slice(0, 40),
+        }))
+        .filter((b) => b.car > 0);
+      return {
+        censo: todos.length,
+        total: bloques.reduce((n, b) => n + b.car, 0),
+        bloques: bloques.length,
+        muestra: bloques[0] ? bloques[0].muestra : "",
+        documento: document.body.innerHTML.length,
+      };
+    });
+    ocultosVistos.push(`${ruta}: ${ocultos.total}/${ocultos.documento} car. de ${ocultos.censo}`);
+    if (ocultos.censo === 0) {
+      fallos.push(
+        `sin-JS ${ruta}: ningún elemento [hidden] en la página — React emite uno por cada ` +
+          `\`ssr:false\` y aquí debería haberlo, así que este guardián no está mirando nada`
+      );
+    }
+    if (ocultos.total > 200) {
+      fallos.push(
+        `sin-JS ${ruta}: ${ocultos.total} caracteres de marcado (el ${Math.round(
+          (ocultos.total / Math.max(1, ocultos.documento)) * 100
+        )} % de la página) se sirven dentro de ${ocultos.bloques} bloque(s) oculto(s) que sólo ` +
+          `el JavaScript sabe abrir — «${ocultos.muestra}…»`
+      );
+    }
+
+    /* ── LA RED DE SEGURIDAD NO PUEDE ESTROPEAR LA PÁGINA ────────────
+       El `<noscript>` del layout sube a opacidad plena todo lo que lleve
+       `opacity:0` en línea, para que ninguna animación de entrada deje
+       una sección invisible sin JavaScript. Pero `[style*="opacity:0"]`
+       es una comparación de SUBCADENA: también casaba con `opacity:0.045`
+       —el grano del papel— y con `opacity:0.34` —la viñeta—, y los subía
+       a tinta plena por encima del texto.
+
+       Aquí se miden las dos caras a la vez, y las dos hacen falta:
+
+         · lo DECIMAL tiene que conservar su valor (si no, el remedio es
+           peor que la enfermedad);
+         · el CERO EXACTO tiene que acabar en 1 (si no, la red de
+           seguridad ya no existe y nadie se entera).
+
+       Sin la segunda mitad, «arreglar» el selector rompiéndolo del todo
+       —por ejemplo dejando de emitir el <noscript>— pasaría en verde.
+       Comprobado contra el fallo en las dos direcciones: con el selector
+       antiguo salta la primera; borrando el bloque <noscript> entero,
+       la segunda. */
+    const velo = await pagina.evaluate(() => {
+      const pisados = [];
+      let decimales = 0;
+      for (const el of document.querySelectorAll('[style*="opacity:0."],[style*="opacity: 0."]')) {
+        const m = /opacity:\s*(0\.\d+)/.exec(el.getAttribute("style") || "");
+        if (!m) continue;
+        decimales++;
+        const declarada = parseFloat(m[1]);
+        const computada = parseFloat(getComputedStyle(el).opacity);
+        if (Math.abs(computada - declarada) > 0.001) {
+          pisados.push(`${el.tagName}.${el.className.toString().slice(0, 20)} ${declarada}→${computada}`);
+        }
+      }
+      /* ── LA SONDA ────────────────────────────────────────────────
+         Al retirar framer-motion de las páginas, los `opacity:0` en
+         línea desaparecieron: la red de seguridad dejó de tener casos
+         reales que rescatar y esta mitad del guardián pasó a medir cero
+         elementos, es decir, a no poder fallar nunca.
+
+         Eso no significa que la red sobre. Sigue ahí para el día en que
+         alguien vuelva a escribir una entrada con opacidad cero en
+         línea, y ese día tiene que funcionar. Así que en vez de esperar
+         a que aparezca un caso, se fabrica uno: se inserta un elemento
+         con `opacity:0` en línea y se comprueba que la regla del
+         <noscript> lo sube a tinta plena.
+
+         Comprobado contra el fallo vaciando el bloque <noscript>: la
+         sonda sale a 0 y salta. */
+      const sonda = document.createElement("div");
+      sonda.setAttribute("style", "opacity:0");
+      sonda.textContent = "sonda";
+      document.body.appendChild(sonda);
+      const sondaOpacidad = parseFloat(getComputedStyle(sonda).opacity);
+      sonda.remove();
+
+      const ceros = [];
+      let cerosTotal = 0;
+      for (const el of document.querySelectorAll('[style*="opacity:0"],[style*="opacity: 0"]')) {
+        if (!/opacity:\s*0\s*(?:;|$)/.test(el.getAttribute("style") || "")) continue;
+        cerosTotal++;
+        const cs = getComputedStyle(el);
+        /* LAS TRES DECLARACIONES, NO SÓLO LA OPACIDAD. La regla del
+           <noscript> rescata `opacity`, `transform` y `visibility`, y
+           antes esto sólo miraba la primera: quitar el `transform:none`
+           dejaba las secciones desplazadas sin JavaScript y nada se
+           ponía rojo. Una animación de entrada típica combina las tres,
+           así que vigilar una de tres no protege de dos tercios. */
+        const roto = [];
+        if (parseFloat(cs.opacity) < 0.99) roto.push(`opacidad ${cs.opacity}`);
+        if (cs.transform !== "none") roto.push(`transform ${cs.transform.slice(0, 24)}`);
+        if (cs.visibility === "hidden") roto.push("visibility:hidden");
+        if (roto.length) {
+          ceros.push(`${el.tagName}.${el.className.toString().slice(0, 16)} (${roto.join(", ")})`);
+        }
+      }
+      return { pisados, decimales, ceros, cerosTotal, sondaOpacidad };
+    });
+    velosVistos.push(
+      `${ruta}: ${velo.decimales} velo(s) intacto(s), ${velo.cerosTotal} cero(s) real(es), ` +
+        `sonda ${velo.sondaOpacidad}`
+    );
+    if (velo.sondaOpacidad < 0.99) {
+      fallos.push(
+        `sin-JS ${ruta}: la red de seguridad del <noscript> no rescata un elemento con ` +
+          `opacity:0 en línea (la sonda se queda en ${velo.sondaOpacidad}) — cualquier animación ` +
+          `de entrada que se escriba mañana dejará su sección invisible`
+      );
+    }
+    if (velo.pisados.length) {
+      fallos.push(
+        `sin-JS ${ruta}: el parche del <noscript> sube a tinta plena ${velo.pisados.length} elemento(s) ` +
+          `decorativos que debían quedarse en su velo — ${velo.pisados.slice(0, 3).join("; ")}`
+      );
+    }
+    if (velo.ceros.length) {
+      fallos.push(
+        `sin-JS ${ruta}: ${velo.ceros.length} elemento(s) con opacity:0 en línea siguen invisibles — ` +
+          `la red de seguridad del <noscript> no los alcanza (${velo.ceros.slice(0, 3).join("; ")})`
+      );
+    }
   } catch (e) {
     fallos.push(`sin-JS ${ruta}: ${String(e).split("\n")[0]}`);
   }
@@ -1173,7 +1471,16 @@ if (opacidadesFinales.length) {
 }
 
 if (papelesVistos.length) {
-  console.log(`[humo] papel — grano y canto presentes en ${papelesVistos.length} rutas; ${papelesVistos[0]}`);
+  /* Dos entradas por ruta —una por tema—, así que el número de entradas
+     NO es el número de rutas. El rótulo decía «30 rutas» cuando eran 15
+     en dos temas: un dato inflado al doble en el sitio donde se va a
+     mirar si la comprobación cubre lo que dice cubrir. */
+  const claros = papelesVistos.filter((s) => s.includes(" light ")).length;
+  const oscuros = papelesVistos.filter((s) => s.includes(" dark ")).length;
+  console.log(
+    `[humo] papel — grano y canto presentes en ${claros} rutas en tema claro y ` +
+      `${oscuros} en oscuro; ${papelesVistos[0]}`
+  );
 } else {
   console.warn("  aviso  no se comprobó el material del papel en ninguna ruta");
 }
@@ -1190,6 +1497,50 @@ if (vueltasArriba.length) {
   console.warn("  aviso  no se comprobó la vuelta a la cabecera en ninguna página");
 }
 
+if (ocultosVistos.length) {
+  const peor = ocultosVistos
+    .map((s) => ({ s, v: parseInt(s.split(": ")[1], 10) }))
+    .sort((a, b) => b.v - a.v)[0];
+  console.log(
+    `[humo] bloques ocultos — ${ocultosVistos.length} rutas revisadas sin JavaScript; ` +
+      `la que más esconde: ${peor.s}`
+  );
+} else {
+  console.warn("  aviso  nadie comprobó si hay contenido dentro de bloques ocultos sin JavaScript");
+}
+
+if (velosVistos.length) {
+  /* `?.[1] ?? 0` y no `.exec(s)[1]`: el resumen corre DESPUÉS de que
+     todas las comprobaciones hayan pasado, así que un `TypeError` aquí
+     por un cambio de formato en la cadena se leería como si la
+     comprobación hubiera fallado. Un resumen no puede tumbar la
+     compilación. */
+  const cuenta = (re) => velosVistos.reduce((n, s) => n + Number(re.exec(s)?.[1] ?? 0), 0);
+  const velos = cuenta(/(\d+) velo/);
+  const ceros = cuenta(/(\d+) cero/);
+  const sondas = velosVistos.filter((s) => /sonda 1$/.test(s)).length;
+  console.log(
+    `[humo] velo — sin JavaScript, ${velos} elementos decorativos conservaron su opacidad ` +
+      `en ${velosVistos.length} rutas; la red de seguridad del <noscript> rescató ` +
+      `${ceros} caso(s) real(es) y respondió a la sonda en ${sondas} de ${velosVistos.length}`
+  );
+  if (velos === 0) {
+    console.warn(
+      "  aviso  no se midió NINGÚN elemento decorativo con opacidad decimal: en esa " +
+        "dirección la comprobación no puede fallar, y por tanto no protege"
+    );
+  }
+} else {
+  console.warn("  aviso  no se comprobó el velo del fondo sin JavaScript en ninguna ruta");
+}
+
+if (entradasVistas.length) {
+  console.log(`[humo] entradas — piezas que llegan a encenderse al asomar: ${entradasVistas.join("; ")}`);
+} else {
+  console.warn("  aviso  no se comprobó si las entradas atadas al scroll llegan a animarse");
+}
+
 console.log(
-  `[humo] correcto — ${RUTAS.length} rutas × ${PANTALLAS.length} pantallas, más el titular sin JavaScript.`
+  `[humo] correcto — ${RUTAS.length} rutas × ${PANTALLAS.length} pantallas, ` +
+    `más las ${RUTAS.length} sin JavaScript.`
 );
