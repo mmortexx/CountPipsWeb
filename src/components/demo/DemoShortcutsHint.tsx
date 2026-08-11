@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { useDemo } from "./DemoContext";
+import { useTeclaMando } from "@/hooks/use-tecla-mando";
 
 /* ------------------------------------------------------------------ */
 /* DemoShortcutsHint — in-demo keyboard shortcuts overlay             */
@@ -51,6 +52,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   const { lang } = useLang();
   const { page } = useDemo();
   const es = lang === "es";
+  const mando = useTeclaMando();
 
   // While open: mark body so the AppDemo `?` interceptor + GlobalShortcuts
   // can skip their own keys, and capture Escape on the way down so any
@@ -97,7 +99,9 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
     {
       keys: (
         <>
-          <Kbd>⌘</Kbd>
+          {/* La tecla del teclado que tiene delante quien lee, no la de
+              un Mac por defecto. Ver `useTeclaMando`. */}
+          <Kbd>{mando}</Kbd>
           <Kbd>K</Kbd>
         </>
       ),

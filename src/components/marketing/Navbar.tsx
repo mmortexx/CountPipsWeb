@@ -8,6 +8,7 @@ import { sinPrefijoEn } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { ANIO_PUBLICACION } from "@/lib/publicacion";
+import { useAtajoPaleta } from "@/hooks/use-tecla-mando";
 
 /**
  * Navbar — barra edge-to-edge con material de papel translúcido (e-reader).
@@ -80,6 +81,8 @@ export function Navbar() {
   const { t, lang } = useLang();
   const es = lang === "es";
   const { theme, toggleTheme } = useTheme();
+  // «Ctrl+K» o «⌘K» según el teclado de quien mira. Ver `useAtajoPaleta`.
+  const atajo = useAtajoPaleta();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -995,16 +998,20 @@ export function Navbar() {
                   }),
                 );
               }}
-              aria-label={es ? "Buscar o navegar (⌘K)" : "Search or navigate (⌘K)"}
-              title={es ? "Buscar o navegar (⌘K)" : "Search or navigate (⌘K)"}
+              aria-label={
+                es ? `Buscar o navegar (${atajo})` : `Search or navigate (${atajo})`
+              }
+              title={es ? `Buscar o navegar (${atajo})` : `Search or navigate (${atajo})`}
               className="hidden h-9 cursor-pointer items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.14)] bg-transparent px-2.5 text-[var(--ink-3)] outline-none transition-colors duration-150 hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink-2)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] md:inline-flex"
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.3" />
                 <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
+              {/* «Ctrl+K» en Windows y «⌘K» en un Mac: la tecla que de
+                  verdad tiene delante quien lee. Ver `useTeclaMando`. */}
               <span className="hidden text-[11px] font-medium tracking-wide lg:inline">
-                ⌘K
+                {atajo}
               </span>
             </button>
 

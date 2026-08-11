@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useLang } from "@/lib/i18n";
 import { usePresencia } from "@/hooks/use-presencia";
+import { useTeclaMando } from "@/hooks/use-tecla-mando";
 
 /**
  * ShortcutsHelp — keyboard shortcuts overlay.
@@ -35,6 +36,7 @@ export function ShortcutsHelp({
 }) {
   const { lang } = useLang();
   const es = lang === "es";
+  const mando = useTeclaMando();
   const setOpen = onOpenChange;
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -124,11 +126,16 @@ export function ShortcutsHelp({
     {
       keys: (
         <>
-          <Kbd>⌘/Ctrl</Kbd>
+          {/* La tecla real de este teclado, no «⌘/Ctrl» para los dos: la
+              ayuda de atajos es justo donde peor sienta hacer elegir al
+              lector. Ver `useTeclaMando`. */}
+          <Kbd>{mando}</Kbd>
           <Kbd>K</Kbd>
         </>
       ),
-      label: es ? "Abrir command palette" : "Open command palette",
+      // «Abrir command palette» mezclaba los dos idiomas en la versión
+      // española; el resto del sitio la llama «paleta de comandos».
+      label: es ? "Abrir la paleta de comandos" : "Open the command palette",
     },
     {
       keys: <Kbd>?</Kbd>,

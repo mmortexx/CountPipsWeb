@@ -16,6 +16,7 @@ import {
 import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
+import { useTeclaMando } from "@/hooks/use-tecla-mando";
 import { fmtNum, fmtPct } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -97,6 +98,8 @@ export function DashboardPage() {
   const { toast } = useToast();
   const { goDetail, setPage } = useDemo();
   const es = lang === "es";
+  // La tecla de mando de ESTE teclado. Ver `useTeclaMando`.
+  const mando = useTeclaMando();
 
   // ----- equity-curve timeframe -----
   const [tfSel, setTfSel] = useState<Timeframe>("6M");
@@ -802,7 +805,7 @@ export function DashboardPage() {
                     type="submit"
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-                    title={es ? "Ctrl+Enter" : "Ctrl+Enter"}
+                    title={`${mando}+Enter`}
                     className="group h-11 min-w-[200px] px-4 rounded-md bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
                   >
                     <svg
@@ -819,13 +822,17 @@ export function DashboardPage() {
                       <path d="M3 8h10M8 3v10" />
                     </svg>
                     {t("registerTrade")}
-                    {/* Keyboard hint — visible ⌘↵ chip on hover, mirrors the
-                        real app's accelerator-key badge on primary CTAs. */}
+                    {/* El distintivo de tecla rápida, igual que en la app
+                        real. Decía `⌘↵` mientras el `title` del MISMO
+                        botón decía «Ctrl+Enter»: dos teclas distintas
+                        para la misma acción, y ninguna de las dos elegida
+                        por el teclado de quien mira. Ver
+                        `useTeclaMando`. */}
                     <kbd
                       className="hidden sm:inline-flex items-center gap-0.5 h-5 px-1.5 rounded-[2px] bg-[rgb(var(--accent-ink)/0.12)] text-[10px] font-semibold text-[rgb(var(--accent-ink)/0.75)] tabular-nums group-hover:bg-[rgb(var(--accent-ink)/0.18)] transition-colors"
                       aria-hidden="true"
                     >
-                      <span>⌘</span>
+                      <span>{mando}</span>
                       <span>↵</span>
                     </kbd>
                   </motion.button>
