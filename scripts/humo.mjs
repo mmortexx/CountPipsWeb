@@ -260,6 +260,8 @@ const entradasVistas = [];
 /** Ídem para el menú de «Producto»: qué hace al pasar el ratón y qué
     hace al pulsarlo con el ratón ya encima. */
 const menusVistos = [];
+/** Ídem para la holgura de la barra superior: cuánto pide y cuánto hay. */
+const presupuestosBarra = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -456,6 +458,48 @@ for (const pantalla of PANTALLAS) {
              de desbordamiento del documento, porque nada se sale de la
              página — los elementos se pisan entre ellos y ya está.
              Aquí se compara caja contra caja. */
+          /* ── EL PRESUPUESTO DE LA BARRA ────────────────────────────
+             El solape de abajo sólo salta cuando dos cajas YA se pisan, y
+             con 1 px de tolerancia. Eso deja pasar el estado previo, que
+             es el que de verdad avisa: la barra pedía 1.100 px de
+             contenido dentro de un tope de 1.080, la zona central se
+             salía diez píxeles por cada lado y la marca quedaba a SEIS
+             del primer enlace teniendo un canal declarado de dieciséis.
+             Seis es positivo, así que la comprobación decía «correcto»
+             mientras el margen era cero. Bastó con que una etiqueta
+             creciera veintidós píxeles para que se volviera negativo — y
+             entonces saltaron diecinueve rutas de golpe, que es cómo se
+             entera uno de un problema que llevaba ahí desde antes.
+
+             Aquí se mide lo que las tres zonas PIDEN contra lo que la
+             rejilla les DA. Es la magnitud que gobierna el solape, así
+             que se pone roja antes, con un número que dice cuánto falta,
+             y no cuando ya se ve. */
+          presupuestoBarra: (() => {
+            const rejilla = document.querySelector("header .grid");
+            if (!rejilla || rejilla.children.length < 3) return null;
+            const zonas = [...rejilla.children];
+            // Se mide el ancho NATURAL de cada zona, no el que la rejilla
+            // le concedió: lo segundo nunca delata que no cabía.
+            const natural = (el) => {
+              const c = el.cloneNode(true);
+              c.style.cssText =
+                "position:absolute;left:-9999px;top:0;width:max-content;visibility:hidden";
+              document.body.appendChild(c);
+              const w = c.getBoundingClientRect().width;
+              c.remove();
+              return w;
+            };
+            const visibles = zonas.filter((z) => z.getBoundingClientRect().width > 0);
+            if (visibles.length < 3) return null; // barra plegada al cajón
+            const cs = getComputedStyle(rejilla);
+            const canal = parseFloat(cs.columnGap) || 0;
+            const pide =
+              visibles.reduce((s, z) => s + natural(z), 0) + canal * (visibles.length - 1);
+            const hay = rejilla.getBoundingClientRect().width;
+            return { pide: Math.round(pide), hay: Math.round(hay), canal };
+          })(),
+
           solapesBarra: (() => {
             const cabecera = document.querySelector("header");
             if (!cabecera) return [];
@@ -1170,6 +1214,23 @@ for (const pantalla of PANTALLAS) {
       for (const s of informe.solapesBarra) {
         fallos.push(`${etiqueta}: barra superior — ${s}`);
       }
+      /* La holgura mínima es un canal entero. Menos que eso significa que
+         la zona central ya se ha salido de su columna y está comiéndose
+         el aire de sus vecinas: el solape es cuestión de que una fuente
+         renderice unos píxeles más ancha, que es exactamente lo que pasó
+         entre esta máquina y la de integración continua. */
+      if (informe.presupuestoBarra) {
+        const { pide, hay, canal } = informe.presupuestoBarra;
+        presupuestosBarra.push(`${pantalla.nombre} pide ${pide} de ${hay}`);
+        if (pide > hay - canal) {
+          fallos.push(
+            `${etiqueta}: la barra superior pide ${pide}px de contenido y la rejilla ` +
+              `le da ${hay}px — ${pide > hay ? `se pasa por ${pide - hay}px` : `sólo le sobran ${hay - pide}px`}, ` +
+              `por debajo del canal de ${canal}px. La zona central se sale de su columna y ` +
+              `queda a un pelo de montarse sobre la marca`
+          );
+        }
+      }
       if (errores.length) {
         fallos.push(`${etiqueta}: ${errores.length} error(es) de consola — ${errores[0]}`);
       }
@@ -1630,6 +1691,14 @@ if (menusVistos.length) {
   console.log(`[humo] menú Producto — ${menusVistos.join("; ")}`);
 } else {
   console.warn("  aviso  no se comprobó el menú de Producto con el ratón");
+}
+
+if (presupuestosBarra.length) {
+  console.log(
+    `[humo] barra — contenido frente a rejilla: ${[...new Set(presupuestosBarra)].join("; ")}`
+  );
+} else {
+  console.warn("  aviso  no se midió la holgura de la barra superior");
 }
 
 console.log(

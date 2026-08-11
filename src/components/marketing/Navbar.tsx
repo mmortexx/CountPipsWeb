@@ -735,7 +735,30 @@ export function Navbar() {
             al espacio disponible, que es lo que sí se sostiene a
             cualquier ancho. Ningún elemento pisa a otro y el `gap-4`
             vuelve a cumplirse en las dos junturas. */}
-        <div className="mx-auto grid w-full max-w-page grid-cols-[minmax(0,1fr)_auto] items-center gap-4 min-[1120px]:grid-cols-[auto_minmax(0,1fr)_auto]">
+        {/* ── LA BARRA PEDÍA 1.100 px DENTRO DE 1.080 ───────────────────
+            Medido a 1.440: marca 137 + navegación 489 + utilidades 442 +
+            dos canales de 16 = 1.100 px de contenido dentro de un tope de
+            1.080. Veinte de más, todos los días, en TODOS los anchos por
+            encima de 1.280 — el tope es fijo, así que ensanchar la
+            ventana no daba ni un píxel.
+
+            Con esa cuenta, la zona central —que va centrada— se salía
+            diez píxeles por cada lado y dejaba la marca a SEIS del primer
+            enlace, cuando el canal declarado son dieciséis. Nadie lo
+            había visto porque seis sigue siendo positivo: los dos textos
+            no llegaban a tocarse. Bastó con que la etiqueta del atajo
+            pasara de «⌘K» a «Ctrl+K» —veintidós píxeles más, y son los
+            correctos en un teclado de Windows— para que el saldo se
+            volviera negativo y la comprobación de humo cazara el solape
+            en las diecinueve rutas de escritorio.
+
+            El arreglo no es raspar píxeles del contenido: es que 1.080 es
+            la MANCHA DE LECTURA y esta barra no es texto que se lee, es
+            el marco de la página. Se le da su propio tope de 1.180, que
+            deja 80 px de holgura real y sigue muy dentro de los 1.376
+            disponibles a 1.440. Por debajo de 1.180 no cambia nada,
+            porque manda el ancho de la ventana. */}
+        <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 min-[1120px]:grid-cols-[auto_minmax(0,1fr)_auto]">
           {/* ZONA 1 — Marca. min-h-[44px] garantiza el suelo táctil en
               móvil (el glifo + texto solos medían 32 px). */}
           <Link
