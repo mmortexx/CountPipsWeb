@@ -45,12 +45,27 @@ import { curva } from "@/lib/motion";
    misma cortina, mismo contador, en algo menos de la mitad de tiempo. El
    titular queda legible sobre 1,8 s, y `scripts/humo.mjs` vigila ese
    presupuesto en cada comprobación para que no vuelva a crecer sin que
-   nadie lo note. */
-const LOADER_MS = 850;
-const PAUSA_MS = 120;
-const REVEAL_RETARDO_MS = 50;
-const REVEAL_PASO_MS = 70;
-const REVEAL_MS = 700;
+   nadie lo note.
+
+   ── Y SE VOLVIÓ A APRETAR, PORQUE 1,8 s ERAN CON LA CPU SUELTA ──────
+   Ese 1,8 s se midió en un portátil de desarrollo. Con el freno a ×4 —un
+   móvil de gama media, que es con lo que llega la mitad del tráfico— el
+   titular tardaba 2.579 ms en ser legible, por encima del presupuesto de
+   2.500 que `humo.mjs` da por bueno midiendo sin freno.
+
+   Y no era culpa del rendimiento: era la coreografía. 850 de cortina más
+   120 de pausa más 700 de fundido son 1,7 s de reloj que ninguna máquina
+   puede acortar. Se recortan los cuatro tiempos manteniendo el gesto
+   entero —cortina, contador, escalonado y fundido siguen ahí—, porque lo
+   que hace elegante a una entrada es la curva, no cuánto dura.
+
+   Lo vigila `scripts/arranque.mjs`, que mide esto CON el freno puesto:
+   sin freno, cualquier cifra pasa y no se entera nadie. */
+const LOADER_MS = 600;
+const PAUSA_MS = 80;
+const REVEAL_RETARDO_MS = 40;
+const REVEAL_PASO_MS = 55;
+const REVEAL_MS = 520;
 
 export function IntroSequence() {
   useEffect(() => {
@@ -82,8 +97,15 @@ export function IntroSequence() {
       seq.forEach((el, i) => {
         el.animate(
           [
-            { opacity: 0, transform: "translateY(30px)", filter: "blur(7px)" },
-            { opacity: 1, transform: "none", filter: "blur(0px)" },
+            /* Sin `filter: blur()`. El desenfoque no se compone: obliga
+               a rasterizar el elemento entero en CADA fotograma, y aquí lo
+               llevaban los siete `[data-seq]` —incluido el h1, que es el
+               elemento más grande de la primera pantalla— durante la
+               hidratación, que es el peor momento del arranque. El gesto
+               que se lee es la subida con el fundido; el desenfoque sólo
+               se notaba en la factura. */
+            { opacity: 0, transform: "translateY(30px)" },
+            { opacity: 1, transform: "none" },
           ],
           {
             duration: REVEAL_MS,
@@ -109,7 +131,13 @@ export function IntroSequence() {
     const ov = document.createElement("div");
     ov.id = "tj-loader";
     ov.innerHTML =
-      '<div style="position:absolute;left:0;right:0;bottom:0;height:2px;background:rgb(var(--divider) / 0.06)"><div data-lb style="height:100%;width:0;background:linear-gradient(90deg,rgb(var(--accent-base)),rgb(var(--accent-hover)));"></div></div>' +
+      /* La barra va al 100 % de ancho y se escala. Antes se le escribía
+         `width` en cada fotograma durante 850 ms —justo mientras React
+         hidrata—, y cambiar el ancho obliga a rehacer la maquetación;
+         `transform` lo resuelve el compositor sin tocar el documento.
+         `transform-origin: left` para que crezca desde la izquierda y no
+         desde el centro. */
+      '<div style="position:absolute;left:0;right:0;bottom:0;height:2px;background:rgb(var(--divider) / 0.06)"><div data-lb style="height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,rgb(var(--accent-base)),rgb(var(--accent-hover)));"></div></div>' +
       '<div style="display:flex;flex-direction:column;align-items:center;gap:15px">' +
       '<span style="width:46px;height:46px;border-radius:12px;background:color-mix(in srgb,var(--surface) 66%,transparent);border:1px solid rgb(var(--divider) / 0.13);display:grid;place-items:center">' +
       /* 30 px en una placa de 46: el logotipo es un icono macizo, no la
@@ -143,7 +171,7 @@ export function IntroSequence() {
       const e = 1 - Math.pow(1 - p, 3);
       const v = Math.round(e * 100);
       if (num) num.textContent = ("00" + v).slice(-3);
-      if (bar) bar.style.width = (e * 100).toFixed(1) + "%";
+      if (bar) bar.style.transform = `scaleX(${e.toFixed(4)})`;
       if (p < 1) {
         rafId = requestAnimationFrame(tick);
       } else {
