@@ -2813,6 +2813,12 @@ export function EngravedAtlas() {
          captura. Entre 1,5× y 2× no hay diferencia apreciable en un trazo
          de medio píxel al treinta por ciento de opacidad, y sí la hay —del
          44 % de área— en lo que cuesta pintarlo. */
+      /* Probado bajarlo a 1,25 buscando fotogramas: dos corridas del
+         banco de fluidez con cada valor, y la diferencia se quedó
+         dentro del ruido de la medida (p99 de 30-41 ms en los dos
+         casos). El coste de regrabar una lámina está en TRAZAR las
+         curvas, no en cuántos píxeles ocupan, así que bajar la
+         resolución sólo habría quitado nitidez a cambio de nada. */
       const dpr = Math.min(devicePixelRatio || 1, 1.5);
       const changed = applySize(r.width, r.height, dpr);
       measureAnchors();

@@ -14,11 +14,19 @@ export function Providers({ children }: { children: ReactNode }) {
 
        Los dos siguen vigentes, resueltos donde corresponde. La curva
        vive en `--ease-suave` (globals.css), que es de donde ya la leían
-       las animaciones CSS. Y el respeto por la preferencia del
-       visitante lo aplica cada bloque `@media (prefers-reduced-motion:
-       reduce)` de la hoja de estilos, que además llega a sitios donde
-       `MotionConfig` no llegaba nunca: el fondo grabado, las entradas
-       de sección y las transiciones entre páginas. */
+       las animaciones CSS —y desde que es el defecto de las transiciones
+       de Tailwind, de donde la lee todo lo demás—. Y el respeto por la
+       preferencia del visitante lo aplica cada bloque `@media
+       (prefers-reduced-motion: reduce)` de la hoja de estilos, que
+       además llega a sitios donde `MotionConfig` no llegaba nunca: el
+       fondo grabado, las entradas de sección y las transiciones entre
+       páginas.
+
+       CON UNA EXCEPCIÓN, y esta frase estuvo mintiendo hasta que se
+       midió: lo que anima framer-motion NO lo toca ningún `@media`,
+       porque lo anima en JavaScript. Eso vive sólo dentro de la demo, y
+       por eso el `MotionConfig` está ahora en `AppDemo.tsx` — donde
+       cuesta lo que ya costaba y no en las 155 páginas. */
     <ThemeProvider>
       <LanguageProvider>
         {children}

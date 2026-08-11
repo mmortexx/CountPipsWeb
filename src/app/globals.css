@@ -133,6 +133,25 @@
   --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-entrada-salida: cubic-bezier(0.76, 0, 0.24, 1);
 
+  /* ══════════════════════════════════════════════════════════════
+     Y LA CURVA DEL PROYECTO PASA A SER LA DE TODO
+     ══════════════════════════════════════════════════════════════
+     `Reveal.tsx` afirma que todo el sitio «debe moverse con la misma
+     curva… o la página parece hecha por dos manos». Medido en /pricing
+     contando la curva computada de cada elemento con transición viva:
+     67 elementos con `cubic-bezier(0.4, 0, 0.2, 1)` —el defecto de
+     Tailwind— contra 20 con `--ease-suave`. Las dos manos eran 67 y 20.
+
+     La causa no es descuido: son 119 usos de `duration-200` /
+     `duration-300` sin `ease-[var(--ease-suave)]` al lado, contra 33 que
+     sí lo llevan. Y la regla base `a, button { transition-timing-function }`
+     pierde contra cualquier utilidad de Tailwind.
+
+     Se arregla donde nace: cambiando el DEFECTO. Así `duration-200` a
+     secas ya sale con la curva del proyecto y no hay que acordarse de
+     escribirla 119 veces — que es exactamente lo que no pasó. */
+  --default-transition-timing-function: var(--ease-suave);
+
   /* Accent — AZUL ACERO, el color de marca.
      ────────────────────────────────────────────────────────────────
      DOS COSAS QUE NO HAY QUE DESHACER, cada una porque ya se rompió:

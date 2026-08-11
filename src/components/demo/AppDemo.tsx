@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { DemoProvider, useDemo, type DemoPage } from "./DemoContext";
 import { WindowChrome } from "./WindowChrome";
@@ -25,11 +25,31 @@ import { JournalPage } from "./pages/JournalPage";
  */
 export function AppDemo({ hideHeader = false }: { hideHeader?: boolean } = {}) {
   return (
-    <DemoProvider>
-      {/* La bandera tiene que BAJAR hasta AppDemoInner: la cabecera se
-          pinta ahí dentro, no en este envoltorio. */}
-      <AppDemoInner hideHeader={hideHeader} />
-    </DemoProvider>
+    /* ── EL ÚNICO SITIO DEL SITIO QUE NO RESPETABA LA PREFERENCIA ────
+       `providers.tsx` retiró el `MotionConfig` global —con razón: metía
+       framer-motion en el paquete de las 155 páginas— y dejó escrito que
+       el respeto por `prefers-reduced-motion` «lo aplica cada bloque
+       @media de la hoja de estilos». Eso es cierto para todo lo que se
+       anima en CSS, y falso para framer-motion, que anima en JavaScript
+       y cuyo defecto es `reducedMotion: "never"`.
+
+       Medido en /demo cambiando de página con la preferencia activa: los
+       mismos 7 elementos recorriendo los mismos estados intermedios que
+       sin ella. De los ocho ficheros que aún usan la biblioteca, sólo uno
+       comprobaba nada.
+
+       El ajuste vuelve, pero AQUÍ y no en el layout: framer-motion sólo
+       vive dentro de la demo, así que esto no le cuesta un byte a
+       ninguna otra página. `"user"` es lo que hay que poner: apaga el
+       movimiento a quien lo ha pedido en su sistema y lo deja intacto
+       para el resto. */
+    <MotionConfig reducedMotion="user">
+      <DemoProvider>
+        {/* La bandera tiene que BAJAR hasta AppDemoInner: la cabecera se
+            pinta ahí dentro, no en este envoltorio. */}
+        <AppDemoInner hideHeader={hideHeader} />
+      </DemoProvider>
+    </MotionConfig>
   );
 }
 
