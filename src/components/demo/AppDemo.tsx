@@ -296,8 +296,17 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           fullscreen ? "fixed inset-3 z-[100] rounded-lg" : "rounded-lg"
         }`}
       >
-        <div className="rounded-lg overflow-hidden border border-[rgb(var(--divider)/0.10)] shadow-[0_2px_8px_rgb(0_0_0/0.28),0_18px_50px_-12px_rgb(0_0_0/0.55)]">
-        <div className="demo-window rounded-lg overflow-hidden">
+        {/* ── `overflow-clip` Y NO `overflow-hidden` ──────────────────
+            Las dos recortan igual. La diferencia es que `hidden` crea un
+            contenedor de desplazamiento, y `animation-timeline: view()`
+            ancla su línea de tiempo al contenedor más cercano: como esta
+            ventana no se desplaza nunca, el progreso se quedaba clavado
+            en cero y CUARENTA piezas de la demo —«P&L total», «El parte
+            de hoy», la fila de métricas entera— se quedaban a opacidad 0
+            para siempre. No es que no entraran con gracia: es que no se
+            veían. Medido en el navegador antes y después. */}
+        <div className="rounded-lg overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[0_2px_8px_rgb(0_0_0/0.28),0_18px_50px_-12px_rgb(0_0_0/0.55)]">
+        <div className="demo-window rounded-lg overflow-clip">
           <WindowChrome />
           <TopNav />
 

@@ -258,7 +258,7 @@ export function ComparisonSlider() {
             /* `--tj-cmp` se declara aquí y la heredan las dos capas que
                dependen de ella. La clase de bienvenida se retira en cuanto
                el visitante toca el tirador: ver `startDrag`. */
-            className={`tj-paper rounded-[2px] overflow-hidden h-[320px] sm:h-[300px] relative select-none mt-10 max-w-3xl mx-auto border border-[rgb(var(--divider)/0.16)] transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] ${
+            className={`tj-paper rounded-[2px] overflow-clip h-[320px] sm:h-[300px] relative select-none mt-10 max-w-3xl mx-auto border border-[rgb(var(--divider)/0.16)] transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] ${
               saludando ? "tj-cmp-saluda" : ""
             }`}
             style={{ touchAction: "none", "--tj-cmp": 50 } as React.CSSProperties}

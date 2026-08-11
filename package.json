@@ -8,6 +8,7 @@
     "build": "next build && node scripts/postbuild.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "fluidez": "node scripts/fluidez.mjs --serve out",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -874,6 +874,99 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
+      /* ── NINGUNA ENTRADA ENJAULADA ─────────────────────────────────
+         La comprobación de arriba cuenta cuántas piezas se encienden, y
+         un porcentaje es ciego a la erosión: con el 25 % de umbral,
+         `/features` estuvo dando 24 de 36 —ocho piezas muertas— y pasando
+         en verde. Ocho más en `/features/seguridad` y dieciocho en
+         `/features/disciplina`, todas por lo mismo.
+
+         La causa es siempre la misma y es ESTRUCTURAL, así que se
+         comprueba como tal en vez de calibrar un número: `view()` ancla
+         su línea de tiempo al contenedor de desplazamiento más cercano,
+         y `overflow: hidden` crea uno. Una pieza dentro de un `div` con
+         `overflow-hidden` que no se desplaza nunca se queda clavada en su
+         estado final, sin error, sin aviso y sin que se note al mirar la
+         página — sólo se nota que «no entra».
+
+         `overflow: clip` recorta exactamente igual y no crea contenedor.
+         Por eso la regla no es «no recortes», es «recorta con clip».
+
+         ── LO QUE NO CUENTA COMO JAULA, Y POR QUÉ ────────────────────
+         La regla en crudo —cualquier ancestro con `overflow` distinto de
+         `visible`— tiene dos falsos positivos, los dos comprobados en el
+         navegador antes de descartarlos:
+
+          · Un `<svg>`. Su `overflow: hidden` es el valor por defecto del
+            elemento, no una decisión de nadie. Medido en `/pricing`
+            llevando los sellos al centro: `ViewTimeline` activa y
+            progreso 1,00. Funcionan.
+          · Un contenedor que SÍ se desplaza —un carrusel, una tabla con
+            scroll horizontal—. Ahí la línea de tiempo se ancla a algo
+            que de verdad se mueve, que es justo lo que hace falta.
+
+         Lo que rompe es la combinación exacta: recorta Y no se desplaza
+         nunca. Entonces el progreso se queda clavado y la pieza no entra
+         jamás. Eso es lo que se busca aquí. */
+      const enjauladas = await pagina.evaluate(async () => {
+        /* Antes de juzgar si una pieza está apagada, se le da la
+           oportunidad de encenderse: un barrido de la página como el que
+           haría cualquiera al leerla. Sin esto, lo que se mide es «aún no
+           ha asomado», que no es lo mismo que «no se enciende nunca» — y
+           en `/demo` daba cuatro falsos positivos. */
+        const alto = document.documentElement.scrollHeight;
+        for (let y = 0; y < alto; y += Math.round(window.innerHeight * 0.75)) {
+          window.scrollTo(0, y);
+          await new Promise((r) => setTimeout(r, 120));
+        }
+        window.scrollTo(0, 0);
+        await new Promise((r) => setTimeout(r, 250));
+
+        const jaulaDe = (pieza) => {
+          let el = pieza.parentElement;
+          while (el && el !== document.body) {
+            if (!(el instanceof SVGElement)) {
+              const o = getComputedStyle(el).overflow;
+              const recorta = o !== "visible" && o !== "clip";
+              const seDesplaza =
+                el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1;
+              if (recorta && !seDesplaza) return el;
+            }
+            el = el.parentElement;
+          }
+          return null;
+        };
+        const presas = [...document.querySelectorAll("[data-entra]")]
+          .map((p) => [p, jaulaDe(p)])
+          .filter(([, jaula]) => jaula);
+        const nombre = ([p, jaula]) =>
+          `${p.tagName.toLowerCase()}[data-entra="${p.getAttribute("data-entra")}"] dentro de ` +
+          `${jaula.tagName.toLowerCase()}.${(jaula.className || "").toString().split(/\s+/).filter(Boolean).slice(0, 3).join(".")}`;
+        /* Enjaulada y APAGADA es un agujero en la página: el visitante no
+           ve ese contenido y nada avisa. Enjaulada y encendida sólo se
+           pierde el gesto de entrada — molesto, no grave, y por eso va
+           como aviso y no tumba el guardián. */
+        const apagadas = presas.filter(([p]) => Number(getComputedStyle(p).opacity) < 0.98);
+        return {
+          apagadas: apagadas.map(nombre).slice(0, 4),
+          sinGesto: presas.length - apagadas.length,
+          ejemploSinGesto: presas.length > apagadas.length ? nombre(presas.find(([p]) => Number(getComputedStyle(p).opacity) >= 0.98)) : null,
+        };
+      });
+      if (enjauladas.apagadas.length) {
+        fallos.push(
+          `${etiqueta}: ${enjauladas.apagadas.length} pieza(s) con \`data-entra\` se quedan ` +
+            `INVISIBLES: viven dentro de un contenedor que recorta y no se desplaza, así que ` +
+            `su entrada no llega a ejecutarse. Cambia ese \`overflow-hidden\` por ` +
+            `\`overflow-clip\` — ${enjauladas.apagadas[0]}`
+        );
+      } else if (enjauladas.sinGesto > 0) {
+        avisos.push(
+          `${etiqueta}: ${enjauladas.sinGesto} pieza(s) se ven pero no llegan a entrar ` +
+            `(contenedor que recorta sin desplazarse) — ${enjauladas.ejemploSinGesto}`
+        );
+      }
+
       /* ── EL CAJÓN LATERAL, ABIERTO ─────────────────────────────────
          Todo lo que se comprueba arriba mira la página en reposo, y el
          cajón de navegación sólo existe cuando alguien lo abre: ni su

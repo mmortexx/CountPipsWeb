@@ -113,7 +113,7 @@ export function MoreFeatures() {
             punto de ruptura tenga que deshacer lo que hizo el anterior.
             Ese encadenado de reglas es justo lo que se rompe callado
             cuando alguien cambia el número de columnas. */}
-        <div className="mt-10 overflow-hidden border-t border-[rgb(var(--divider)/0.14)]">
+        <div className="mt-10 overflow-clip border-t border-[rgb(var(--divider)/0.14)]">
           <div className="-ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f) => (
               <article

@@ -75,7 +75,7 @@ export function Integrations() {
             el trazo de la primera columna se sale del contenedor y se
             recorta, sin encadenar reglas `nth-child` por cada punto de
             ruptura. */}
-        <div className="mt-10 overflow-hidden border-t border-[rgb(var(--divider)/0.14)]">
+        <div className="mt-10 overflow-clip border-t border-[rgb(var(--divider)/0.14)]">
           <div className="-ml-px grid grid-cols-2 lg:grid-cols-5">
           {BROKERS.map((b) => (
             <div

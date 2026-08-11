@@ -114,7 +114,7 @@ export function BeforeAfter() {
                 dinero y nada más lo usa. */}
             <div
               data-entra
-              className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-hidden border border-pnl-neg/30"
+              className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-clip border border-pnl-neg/30"
             >
               {/* Soft red wash */}
               <div
@@ -198,7 +198,7 @@ export function BeforeAfter() {
                 sostiene precisamente en que estén al mismo nivel. */}
             <div
               data-entra="4"
-              className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-hidden border border-[rgb(var(--accent-base)/0.28)]"
+              className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-clip border border-[rgb(var(--accent-base)/0.28)]"
             >
               {/* Accent wash */}
               <div

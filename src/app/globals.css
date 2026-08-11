@@ -4723,6 +4723,26 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   [data-entra="5"] {
     animation-range: entry 16% entry 64%;
   }
+
+  /* ── DENTRO DE LA DEMO NO HAY ENTRADA QUE VALGA ──────────────────
+     La demo es una aplicación dibujada dentro de una ventana, y su
+     contenido vive en un panel con scroll PROPIO (`overflow-y-auto`,
+     560/640 px de alto). `view()` ancla la línea de tiempo al
+     desplazamiento más cercano, o sea a ese panel: las piezas de dentro
+     sólo entrarían si alguien desplazara el panel, no la página.
+
+     Nadie lo desplaza al pasar, así que CUARENTA piezas se quedaban a
+     opacidad cero de forma permanente — «P&L total», «El parte de hoy»,
+     la fila de métricas entera. No es que entraran mal: es que no se
+     veían, y una demo cuyo contenido no se ve no demuestra nada.
+
+     Aquí la entrada por scroll no sólo falla: sobra. Lo que se enseña es
+     una aplicación en uso, y una aplicación en uso tiene sus datos a la
+     vista desde el primer momento. */
+  .demo-window [data-entra] {
+    animation-name: none;
+    opacity: 1;
+  }
 }
 @keyframes tj-entra-pieza {
   from {

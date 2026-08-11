@@ -936,7 +936,26 @@ export function Navbar() {
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
-                      x: "-50%",
+                      /* ── EL PANEL ESTABA 260 px A LA DERECHA ──────────
+                         Aquí ponía `x: "-50%"`. `x` es una prop de
+                         framer-motion, no una propiedad CSS, y este
+                         componente dejó de usar framer-motion hace tiempo:
+                         React lo escribía tal cual en el atributo `style` y
+                         el navegador lo tiraba. Con `left: 50%` sin nada
+                         que lo compensara, el panel de 520 px empezaba
+                         donde debía estar su centro — medido: el borde
+                         izquierdo caía justo sobre el centro de «Producto»,
+                         y la punta, que se centra respecto al panel,
+                         señalaba a «Acceso».
+
+                         Se centra con `translate`, la propiedad
+                         independiente, y NO con `transform`: la entrada
+                         `.tj-cae` anima `transform` y termina en
+                         `transform: none` con relleno `both`, así que un
+                         `translateX(-50%)` puesto ahí lo borraría el
+                         último fotograma de la animación. Las dos
+                         propiedades se componen sin pisarse. */
+                      translate: "-50% 0",
                       borderColor: "rgb(var(--divider) / 0.13)",
                       boxShadow:
                         "0 1px 2px rgb(0 0 0 / 0.5), 0 44px 84px -30px rgb(0 0 0 / 0.78)",
