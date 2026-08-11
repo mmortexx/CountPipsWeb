@@ -111,7 +111,7 @@ export function PageHeader({
 
   return (
     <section
-      className="tj-cabecera relative overflow-hidden"
+      className="tj-cabecera relative overflow-clip"
       data-tono={tono}
     >
       {/* Antes: `bg-black` opaco — tapaba el fondo global en todas las

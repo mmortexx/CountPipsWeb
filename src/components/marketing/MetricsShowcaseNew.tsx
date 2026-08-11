@@ -1,7 +1,6 @@
 "use client";
 
 import { useLang } from "@/lib/i18n";
-import { motion } from "framer-motion";
 import { Reveal } from "@/components/tj/Reveal";
 import { METRICS } from "@/lib/trading/data";
 import { getRDistribution } from "@/lib/trading/fixtures";
@@ -203,11 +202,8 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
         </div>
 
         {/* Distribución de R */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <div
+          data-entra
           // T3c — distribución R-múltiplo swap a `.tj-paper`: misma tarjeta
           // de histograma, ahora sobre papel translúcido cálido. El border
           // + padding originales se conservan; el `box-shadow` inset se
@@ -397,7 +393,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
               : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualized.`}
           </p>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

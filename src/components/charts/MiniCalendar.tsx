@@ -1,7 +1,6 @@
 "use client";
 
 import { memo, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import type { Trade } from "@/lib/trading/data";
 import { dailyPnlForMonth } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
@@ -18,8 +17,7 @@ const MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July
 
 /** P&L calendar for the most recent active month. */
 export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" }: MiniCalendarProps) {
-  const { lang } = useLang();
-  const reduce = useReducedMotion();
+  const { lang } = useLang();
   const [offset, setOffset] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   // Hovered day: day-of-month + anchor point (px, relative to container).
@@ -54,11 +52,10 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
   const monthPnl = Array.from(dailyPnl.values()).reduce((s, v) => s + v, 0);
 
   return (
-    <motion.div
-      className={`relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 md:p-5 ${className}`}
+    <div
+      data-entra
+      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 md:p-5 ${className}`}
       ref={containerRef}
-      whileHover={reduce ? undefined : { scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 300, damping: 26 }}
       style={{ transformOrigin: "center" }}
     >
       <div className="flex items-center justify-between mb-3">
@@ -104,14 +101,10 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
               ? `rgb(var(--pnl-pos) / calc(0.08 + ${intensity} * var(--cal-tint-max, 0.5)))`
               : `rgb(var(--pnl-neg) / calc(0.08 + ${intensity} * var(--cal-tint-max, 0.5)))`;
           return (
-            <motion.div
+            <div
+              data-entra="sello"
               key={i}
-              initial={reduce ? undefined : { opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.006, duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              whileHover={reduce ? undefined : { scale: 1.06 }}
-              className="aspect-square rounded-sm flex flex-col items-center justify-center text-[10px] tnum cursor-default relative group"
+              className="tj-realce aspect-square rounded-sm flex flex-col items-center justify-center text-[10px] tnum cursor-default relative group"
               style={{ backgroundColor: bg, border: pnl !== undefined ? "1px solid rgb(var(--divider) / 0.06)" : "1px solid transparent" }}
               onMouseEnter={(e) => {
                 const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -141,7 +134,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
                   {pos ? "+" : "−"}{Math.abs(pnl) >= 1000 ? `${(Math.abs(pnl) / 1000).toFixed(1)}k` : Math.round(Math.abs(pnl))}
                 </span>
               )}
-            </motion.div>
+            </div>
           );
         })}
       </div>
@@ -174,6 +167,6 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 });

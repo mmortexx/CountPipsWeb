@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -24,8 +23,6 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
  *   dos se levanta al pasar el ratón — no son botones, y levantar sólo
  *   una desnivelaba la comparación.
  */
-const EASE = [0.22, 1, 0.36, 1] as const;
-
 export function BeforeAfter() {
   const { lang } = useLang();
   const es = lang === "es";
@@ -63,7 +60,7 @@ export function BeforeAfter() {
       ];
 
   return (
-    <section className="section bg-veil relative overflow-hidden">
+    <section className="section bg-veil relative overflow-clip">
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="centrada"
@@ -115,11 +112,8 @@ export function BeforeAfter() {
                 es el rojo de resultado, y desaturar precisamente eso va
                 en contra de la regla de la página — el color significa
                 dinero y nada más lo usa. */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.7, ease: EASE }}
+            <div
+              data-entra
               className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-hidden border border-pnl-neg/30"
             >
               {/* Soft red wash */}
@@ -133,12 +127,9 @@ export function BeforeAfter() {
               />
               <ul className="relative p-6 md:p-7 space-y-4">
                 {before.map((line, i) => (
-                  <motion.li
+                  <li
+                    data-entra="ciclo"
                     key={i}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-30px" }}
-                    transition={{ delay: 0.15 + i * 0.08, duration: 0.5, ease: EASE }}
                     className="flex items-start gap-3"
                   >
                     {/* R20-3b: ✗ icon container — added ring-1 ring-pnl-neg/35
@@ -154,10 +145,10 @@ export function BeforeAfter() {
                         el «apagado» de esta columna, en vez de en la
                         opacidad del contenedor. 4,53:1 sobre la chapa. */}
                     <span className="text-[14px] text-tertiary">{line}</span>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           </Reveal>
 
           {/* ───────── DIVIDER — arrow → (desktop) / ↓ (mobile) ───────── */}
@@ -168,11 +159,8 @@ export function BeforeAfter() {
             <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary font-semibold whitespace-nowrap">
               {es ? "La transformación" : "The transformation"}
             </span>
-            <motion.span
-              initial={{ scale: 0.6, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 240, damping: 18 }}
+            <span
+              data-entra="sello"
               className="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-[rgb(var(--divider)/0.08)] text-primary ring-1 ring-[rgb(var(--divider)/0.25)]"
               aria-hidden="true"
             >
@@ -184,7 +172,7 @@ export function BeforeAfter() {
               <svg className="relative hidden lg:block" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-            </motion.span>
+            </span>
           </Reveal>
 
           {/* ───────── AFTER — vibrant, accent glow, ✓, slightly larger ───────── */}
@@ -208,11 +196,8 @@ export function BeforeAfter() {
                 tarjetas no se pulsan ni llevan a ningún sitio, y levantar
                 sólo una de las dos rompía además la comparación, que se
                 sostiene precisamente en que estén al mismo nivel. */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.7, delay: 0.2, ease: EASE }}
+            <div
+              data-entra="4"
               className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-hidden border border-[rgb(var(--accent-base)/0.28)]"
             >
               {/* Accent wash */}
@@ -235,12 +220,9 @@ export function BeforeAfter() {
               />
               <ul className="relative p-7 md:p-8 space-y-4">
                 {after.map((line, i) => (
-                  <motion.li
+                  <li
+                    data-entra="ciclo"
                     key={i}
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-30px" }}
-                    transition={{ delay: 0.25 + i * 0.08, duration: 0.5, ease: EASE }}
                     className="flex items-start gap-3"
                   >
                     {/* R20-3b: ✓ icon container — ring-1 ring-pnl-pos/40 for
@@ -252,10 +234,10 @@ export function BeforeAfter() {
                       </svg>
                     </span>
                     <span className="text-[14px] text-primary font-medium">{line}</span>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           </Reveal>
         </div>
 

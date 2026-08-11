@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -100,7 +99,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   return (
     <section
       id="pricing"
-      className="section cv-auto bg-veil relative overflow-hidden scroll-mt-24"
+      className="section cv-auto bg-veil relative overflow-clip scroll-mt-24"
     >
       {/* Opt-in 3% fractalNoise grain — matches HeroVideo / Bento so the
           conversion section reads as a premium printed surface. */}
@@ -231,7 +230,8 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   const isPro = plan.popular;
 
   return (
-    <motion.div
+    <div
+      data-entra
       /* Sin `whileHover`. Los planes se levantaban y escalaban al pasar
          el ratón: eso es lo que hace una tarjeta que se puede coger, y
          una columna de una tabla de tarifas no se coge. Además el
@@ -244,13 +244,11 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
          de acento. Ese es el patrón del SaaS de consumo, y es lo que
          hacía que la página que MÁS tiene que transmitir seriedad
          pareciera la de una aplicación de suscripción cualquiera.
-
          Cómo publica sus tarifas una institución: en columnas, con
          filetes. El plan recomendado no se ilumina — se marca con un
          filete superior más grueso, que es una señal y no un adorno.
          La caja compite con lo que contiene; aquí lo que tiene que
          mandar es el precio y lo que incluye.
-
          Se retira también la elevación: una columna de tabla no flota.
          El `isolation: isolate` se conserva porque el Pro sigue
          necesitando su propio contexto de apilado para la marca de
@@ -409,7 +407,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
       )}
 
       <ul className="space-y-3.5 flex-1">
-        {plan.features.map((f, i) => (
+        {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-3 text-sm">
             {/* Pro feature checks get an accent-tinted circular badge —
                 a 20×20 rounded-full fill + inset accent ring around the
@@ -425,7 +423,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
               }`}
               aria-hidden="true"
             >
-              <CheckIcon delay={0.3 + i * 0.06} />
+              <CheckIcon />
             </span>
             <span className="text-secondary leading-[1.6] min-w-0 break-words">{f}</span>
           </li>
@@ -443,9 +441,9 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           breakpoint instead of stretching as a full-width bar (the user
           complaint) — `mx-auto` via the flex justify-center parent centers
           it under the price column. */}
-      <motion.div
-        whileTap={{ scale: 0.98, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-        className="mt-8 flex justify-center"
+      <div
+        data-entra
+        className="tj-pulsa mt-8 flex justify-center"
       >
         {/* Este botón apuntaba a `href="#"` mientras no hubiera pasarela de
             pago. La intención era correcta —no se puede cobrar todavía—,
@@ -494,45 +492,38 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
             />
           </svg>
         </MagneticButton>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
-function CheckIcon({ delay = 0 }: { delay?: number }) {
+/* El disco se estampa y la marca se DIBUJA encima, en ese orden. Antes
+   eran un `motion.circle` con `scale` y un `motion.path` con
+   `pathLength`; ahora son `data-entra="sello"` y `data-entra="trazo"`,
+   con el mismo desfase entre los dos (el trazo arranca un poco después,
+   cuando ya hay disco sobre el que dibujar).
+
+   El `pathLength="1"` no es decorativo: normaliza el recorrido del
+   trazo a la unidad para que `stroke-dasharray: 1` valga sin medir la
+   longitud real. Ver `tj-dibuja` en globals.css.
+
+   Ya no recibe `delay`: el escalonado por columna lo daba el retardo que
+   le pasaba la fila, y ahora lo da la posición del icono en la ventana,
+   que es la misma información sin tener que propagarla. */
+function CheckIcon() {
   return (
-    <motion.svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      initial="hidden"
-      whileInView="shown"
-      viewport={{ once: true, margin: "-20px" }}
-    >
-      <motion.circle
-        cx="8"
-        cy="8"
-        r="7"
-        fill="currentColor"
-        initial={{ opacity: 0, scale: 0.4 }}
-        whileInView={{ opacity: 0.12, scale: 1 }}
-        viewport={{ once: true, margin: "-20px" }}
-        transition={{ delay, duration: 0.4, ease: "backOut" }}
-        style={{ transformOrigin: "center" }}
-      />
-      <motion.path
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle data-entra="sello" cx="8" cy="8" r="7" fill="currentColor" />
+      <path
+        data-entra="trazo"
+        pathLength="1"
         d="m5 8 2 2 4-4"
         stroke="currentColor"
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        whileInView={{ pathLength: 1, opacity: 1 }}
-        viewport={{ once: true, margin: "-20px" }}
-        transition={{ delay: delay + 0.15, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       />
-    </motion.svg>
+    </svg>
   );
 }
 

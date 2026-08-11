@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -239,25 +238,29 @@ function PulseDot({ pulseKey, pulseId, delay, color }: { pulseKey: number; pulse
   // Only render the dot when there's been at least one pulse AND the key matches
   // The dot animates in (scale 0→1→0) at the calculated delay after the button press
   if (pulseKey === 0) return null;
+  /* La `key` cambia con cada pulsación, así que React sustituye el
+     elemento por uno nuevo y la animación CSS vuelve a empezar desde el
+     primer fotograma. Es lo mismo que conseguía `AnimatePresence`
+     —reiniciar el pulso en cada disparo— sin necesitar la biblioteca:
+     aquí no hay salida que animar, el punto se apaga solo al final de su
+     propio recorrido de opacidad.
+
+     El retardo viene en milisegundos y se pasa como estilo en línea
+     porque es distinto para cada nodo de la cadena: es el que escalona
+     el viaje del punto de un nodo al siguiente. */
   return (
-    <AnimatePresence>
-      <motion.span
-        key={`${pulseId}-${pulseKey}`}
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: [0, 1.3, 1, 0], opacity: [0, 1, 1, 0] }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5, delay: delay / 1000, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-none absolute top-1/2 left-1/2 rounded-full"
-        style={{
-          width: 10,
-          height: 10,
-          background: color,
-          transform: "translate(-50%, -50%)",
-          boxShadow: `0 0 12px ${color}`,
-        }}
-        aria-hidden="true"
-      />
-    </AnimatePresence>
+    <span
+      key={`${pulseId}-${pulseKey}`}
+      className="tj-pulso pointer-events-none absolute top-1/2 left-1/2 rounded-full"
+      style={{
+        width: 10,
+        height: 10,
+        background: color,
+        boxShadow: `0 0 12px ${color}`,
+        animationDelay: `${delay}ms`,
+      }}
+      aria-hidden="true"
+    />
   );
 }
 

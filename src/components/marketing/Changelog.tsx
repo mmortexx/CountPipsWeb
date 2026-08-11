@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
@@ -105,7 +104,7 @@ export function Changelog() {
       ];
 
   return (
-    <section id="changelog" className="section cv-auto bg-veil relative overflow-hidden scroll-mt-24">
+    <section id="changelog" className="section cv-auto bg-veil relative overflow-clip scroll-mt-24">
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
 
@@ -154,8 +153,6 @@ export function Changelog() {
               const isPast = entry.stage === "delivered";
               const isPilot = entry.stage === "pilot";
               const isLeft = i % 2 === 0; // even → left side on desktop
-              // Slide-in direction: left card slides from left, right card from right
-              const slideX = isLeft ? -48 : 48;
 
               return (
                 <div
@@ -170,18 +167,16 @@ export function Changelog() {
                       isLeft ? "md:pr-12 md:text-right" : "md:pl-12"
                     }`}
                   >
-                    <motion.div
-                      initial={{ opacity: 0, x: slideX }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true, margin: "-80px" }}
-                      transition={{
-                        duration: 0.7,
-                        ease: [0.22, 1, 0.36, 1],
-                        delay: 0.05,
-                      }}
+                    {/* La entrada va en el envoltorio y NO también en la
+                        tarjeta: el de dentro era un `motion.div` sin props
+                        de animación, y dos entradas anidadas multiplican
+                        sus opacidades — la tarjeta empezaría a 0 × 0 y
+                        llegaría tarde a su propio sitio. */}
+                    <div
+                      data-entra={isLeft ? "izq" : "der"}
                       className="h-full"
                     >
-                      <motion.div
+                      <div
                         className={`tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 h-full min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] ${
                           isPast
                             ? "hover:border-[rgb(var(--accent-base)/0.30)]"
@@ -256,21 +251,14 @@ export function Changelog() {
                             />
                             {entry.date}
                           </div>
-                        </motion.div>
-                    </motion.div>
+                        </div>
+                    </div>
                   </div>
 
                   {/* Node dot — pops in on view. Past: solid accent dot.
                       Future: hollow ring signals "in progress". */}
-                  <motion.div
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{
-                      duration: 0.5,
-                      ease: [0.34, 1.56, 0.64, 1],
-                      delay: 0.12,
-                    }}
+                  <div
+                    data-entra="sello"
                     className="absolute left-4 md:left-1/2 top-6 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10"
                     aria-hidden
                   >
@@ -279,7 +267,7 @@ export function Changelog() {
                     ) : (
                       <span className="relative block w-3.5 h-3.5 rounded-full border-2 border-[rgb(var(--pnl-warn)/0.85)] bg-background" />
                     )}
-                  </motion.div>
+                  </div>
 
                   {/* Spacer for the other half on desktop */}
                   <div className="hidden md:block md:w-1/2" aria-hidden />

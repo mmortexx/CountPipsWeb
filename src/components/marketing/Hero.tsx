@@ -82,7 +82,7 @@ export function Hero() {
          botón quede holgado dentro de la primera pantalla en cualquier
          portátil. El sesgo es proporcional a la altura, no fijo: en una
          pantalla alta la figura gana más aire, que es donde sobra. */
-      className="relative flex min-h-screen items-center overflow-hidden border-b pt-[8vh]"
+      className="relative flex min-h-screen items-center overflow-clip border-b pt-[8vh]"
       style={{ borderColor: "rgb(var(--divider) / 0.10)" }}
     >
       {/* Scrim lateral de legibilidad sobre la columna de texto. */}

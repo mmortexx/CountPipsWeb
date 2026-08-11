@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import { usePresencia } from "@/hooks/use-presencia";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Command,
   CommandEmpty,
@@ -46,7 +46,7 @@ const PREFERS_REDUCED_MOTION =
  * ── Componente CONTROLADO, y por qué ──────────────────────────────────
  * La paleta ya no guarda su propio `open` ni escucha ⌘K: las dos cosas
  * viven ahora en `OverlayHost`. El motivo es de peso: este componente
- * arrastra `cmdk` y el árbol entero de `framer-motion`, y estaba montado
+ * arrastra `cmdk` —ya no `framer-motion`, retirada— y estaba montado
  * en el layout, es decir, en TODAS las páginas del sitio. Todo visitante
  * descargaba y ejecutaba la paleta aunque no llegara a pulsar ⌘K nunca.
  *
@@ -127,6 +127,9 @@ export function CommandPalette({
   const pathname = usePathname();
 
   const panelRef = useRef<HTMLDivElement>(null);
+  /* Mantiene el panel en el árbol los 180 ms de su despedida. Sustituye
+     a `AnimatePresence`; ver el comentario del bloque de más abajo. */
+  const { montado, saliendo } = usePresencia(open, 180);
 
   /* ---------------- Keyboard listeners ---------------- */
 
@@ -251,26 +254,26 @@ export function CommandPalette({
     "data-[selected=true]:bg-[rgb(var(--divider)/0.05)] data-[selected=true]:text-primary";
 
   return (
-    <AnimatePresence>
-      {open && (
-        /* La `key` NO es opcional: `AnimatePresence` identifica por clave
-           qué hijo entra y cuál sale. Sin ella no llega a registrar que
-           este bloque existía, así que al pasar `open` a false nunca
-           ejecuta la salida y el panel se queda clavado en pantalla —
-           con ⌘K, con Escape y con el clic en el velo. Además, mientras
-           el panel siga en el DOM, `GlobalShortcuts` cree que hay un
-           overlay abierto y desactiva `?`, `t`, `l` y la navegación con
-           `g`: un fallo se llevaba por delante todos los atajos. */
-        <motion.div
-          key="command-palette"
+    <>
+      {montado && (
+        /* AQUÍ HABÍA UN `AnimatePresence` Y SU AVISO SOBRE LA `key`.
+           El aviso decía —con razón— que sin `key` el panel se quedaba
+           clavado en pantalla al cerrarlo, y que mientras siguiera en el
+           árbol `GlobalShortcuts` creía que había un overlay abierto y
+           desactivaba `?`, `t`, `l` y la navegación con `g`: un fallo de
+           la animación se llevaba por delante todos los atajos.
+
+           Esa trampa ya no existe, porque el desmontaje no depende de
+           que una biblioteca lo identifique bien: `usePresencia` mantiene
+           el panel exactamente 180 ms y lo quita. Lo que sí sigue
+           importando es que el plazo del hook y la duración de las clases
+           `tj-*-sale` sean el mismo — si el hook desmontara antes, la
+           despedida se cortaría a media animación. */
+        <div
           className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[15vh]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="command-palette-title"
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Visible (sr-only) heading — anchors the dialog's accessible name
               to a real DOM node so screen readers can navigate to it as a
@@ -281,25 +284,21 @@ export function CommandPalette({
           </h2>
 
           {/* Backdrop — subtle blur + fade-in */}
-          <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          <div
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150 ${
+              saliendo ? "tj-velo-sale" : "tj-velo-entra"
+            }`}
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
 
           {/* Panel — liquid-glass card, springy fade+scale+lift entrance */}
-          <motion.div
+          <div
             ref={panelRef}
             tabIndex={-1}
-            className="relative w-full max-w-xl tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden"
-            initial={{ opacity: 0, scale: 0.97, y: -8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -4 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className={`relative w-full max-w-xl tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
+              saliendo ? "tj-panel-sale" : "tj-panel-entra"
+            }`}
           >
             <Command className="bg-transparent" loop>
               <CommandInput
@@ -437,10 +436,10 @@ export function CommandPalette({
                 <span>{es ? "cerrar" : "close"}</span>
               </span>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }
 

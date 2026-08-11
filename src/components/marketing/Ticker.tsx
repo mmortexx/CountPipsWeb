@@ -1,16 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import {
-  motion,
-  useAnimationFrame,
-  useMotionValue,
-  useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
-  useVelocity,
-} from "framer-motion";
+import { useEffect, useRef } from "react";
 
 /**
  * Ticker — infinite horizontal marquee band showing instrument symbols
@@ -59,7 +49,15 @@ const TICKER_ITEMS: TickerItem[] = [
 
 function Row() {
   return (
-    <div className="flex items-center shrink-0 gap-8 sm:gap-12" aria-hidden="true">
+    /* El relleno a la derecha es la costura del bucle, y tiene que medir
+       lo mismo que el hueco entre símbolos para que no se note. Ver el
+       comentario de `.tj-cinta` en globals.css: si esa separación se
+       pusiera con `gap` en la pista, el desplazamiento del 50 % dejaría
+       medio hueco de menos en cada vuelta. */
+    <div
+      className="flex items-center shrink-0 gap-8 sm:gap-12 pe-8 sm:pe-12"
+      aria-hidden="true"
+    >
       {/* T2c — `fontSize` 12.5 → 13.5 px (≥13 legible a escala móvil);
           `gap` entre símbolos 7/11 → 8/12 para que cada ticker respire. */}
       {TICKER_ITEMS.map((it) => {
@@ -81,85 +79,95 @@ function Row() {
   );
 }
 
+/** Multiplicador máximo de velocidad cuando se hace scroll a fondo. */
+const FACTOR_MAX = 2.4;
+/** Velocidad de scroll (px/s) a la que se alcanza ese máximo. */
+const VELOCIDAD_TOPE = 4000;
+
 export function Ticker() {
-  const reduce = useReducedMotion();
-  // T2c — pausa al hover. El usuario puede detener la cinta para leer un
-  // símbolo concreto sin que el scroll se lo lleve. Estado local simple:
-  // cuando `hovered` es true el callback de `useAnimationFrame` no avanza
-  // `x`, pero la pista sigue montada (no se desmonta/repinta) así que al
-  // salir el cursor la animación retoma en el mismo punto sin salto.
-  const [hovered, setHovered] = useState(false);
+  const pistaRef = useRef<HTMLDivElement>(null);
 
-  // Scroll-velocity responsive speed: |velocity| 0..4000 → multiplier 1..2.4.
-  // Wrapped in useSpring so the speed multiplier eases in/out smoothly
-  // instead of snapping frame-to-frame as the raw scroll velocity
-  // fluctuates — eliminates the micro-stutter the ticker used to show
-  // when the user scrolled aggressively and then stopped.
-  const { scrollY } = useScroll();
-  const scrollVelocity = useVelocity(scrollY);
-  const rawSpeedFactor = useTransform(scrollVelocity, (v) => {
-    const abs = Math.min(Math.abs(v), 4000);
-    return 1 + (abs / 4000) * 1.4;
-  });
-  const speedFactor = useSpring(rawSpeedFactor, {
-    stiffness: 120,
-    damping: 24,
-    mass: 0.4,
-  });
+  /* ── LA CINTA CORRE SOLA; ESTO SÓLO LA ACELERA ────────────────────
+     El desplazamiento es una animación CSS (`.tj-cinta`), así que se
+     mueve sin JavaScript y sin ocupar el hilo principal. Lo único que
+     queda aquí es el detalle que no se puede declarar: que la cinta se
+     acelere mientras el visitante hace scroll.
 
-  const trackRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
+     SE MODULA `playbackRate` Y NO `animation-duration`. Cambiar la
+     duración a mitad de animación conserva el TIEMPO transcurrido pero
+     no el progreso —el progreso es tiempo partido por duración—, así
+     que cada ajuste daría un salto de fase visible. `playbackRate` de la
+     API de animaciones del navegador cambia la velocidad conservando el
+     punto exacto en el que va, que es justo lo que hace falta.
 
-  /* El ancho de media pista se MIDE APARTE, no dentro del bucle.
-     Leer `scrollWidth` obliga al navegador a recalcular el diseño de la
-     página en ese mismo instante, y estaba dentro del callback de cada
-     fotograma: a 165 Hz son 165 recálculos de diseño por segundo para
-     obtener un número que sólo cambia cuando cambia el contenido o el
-     ancho de la ventana. Era el freno más caro de la cinta, y no se veía
-     porque el síntoma no aparece aquí sino en la fluidez de TODO lo demás
-     —el diseño es global—, que es justo lo que se estaba notando.
+     Antes esto eran cinco hooks de framer-motion (`useScroll`,
+     `useVelocity`, `useTransform`, `useSpring`, `useAnimationFrame`) más
+     un `ResizeObserver` para medir la pista, y era lo único por lo que
+     la portada descargaba la biblioteca: 36 KB comprimidos para
+     acelerar una cinta.
 
-     Ahora se mide una vez y cuando el observador avisa de que la pista ha
-     cambiado de tamaño: al cargar las fuentes, al cambiar de idioma o al
-     redimensionar. Dentro del bucle sólo se lee una variable. */
-  const halfRef = useRef(0);
+     El suavizado es una media exponencial: sin ella, la velocidad
+     instantánea del scroll fluctúa fotograma a fotograma y la cinta
+     tiembla — que es exactamente el motivo por el que la versión
+     anterior envolvía el factor en un muelle. */
   useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    const medir = () => {
-      halfRef.current = el.scrollWidth / 2;
-    };
-    medir();
-    const ro = new ResizeObserver(medir);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+    const pista = pistaRef.current;
+    if (!pista) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  useAnimationFrame((_, delta) => {
-    if (reduce || hovered) return;
-    const half = halfRef.current;
-    if (!half) return;
-    // Clamp delta to a single frame's worth (16-32ms) so the first
-    // animation frame — which can report a delta of 100ms+ if the tab
-    // was backgrounded or the RAF callback was deferred — doesn't
-    // catapult the track forward and break the seamless loop.
-    const dt = Math.min(delta, 32);
-    // Base loop: full track (two rows) in 50s → half in 50s.
-    // 50s for the half-loop reads as slow + dignified (was 38s — a touch
-    // too brisk for an institutional ticker tape).
-    const basePxPerMs = half / 50 / 1000;
-    const speed = basePxPerMs * speedFactor.get();
-    let next = x.get() - speed * dt;
-    if (next <= -half) next += half;
-    x.set(next);
-  });
+    let ultimaY = window.scrollY;
+    let ultimoT = performance.now();
+    let factor = 1;
+    let objetivo = 1;
+    let pendiente = 0;
+    let vivo = true;
+
+    const paso = () => {
+      if (!vivo) return;
+      const ahora = performance.now();
+      const dt = Math.max(1, ahora - ultimoT);
+      ultimoT = ahora;
+
+      const y = window.scrollY;
+      const velocidad = (Math.abs(y - ultimaY) / dt) * 1000;
+      ultimaY = y;
+      objetivo = 1 + (Math.min(velocidad, VELOCIDAD_TOPE) / VELOCIDAD_TOPE) * (FACTOR_MAX - 1);
+
+      // Media exponencial: se acerca al objetivo un 12 % por fotograma.
+      factor += (objetivo - factor) * 0.12;
+      for (const a of pista.getAnimations()) a.playbackRate = factor;
+
+      // Se para cuando la cinta ya va a velocidad de crucero: seguir
+      // llamando a `requestAnimationFrame` con la página quieta es
+      // trabajo por hora en lugar de por resultado.
+      if (Math.abs(factor - 1) < 0.005 && objetivo === 1) {
+        factor = 1;
+        for (const a of pista.getAnimations()) a.playbackRate = 1;
+        pendiente = 0;
+        return;
+      }
+      pendiente = requestAnimationFrame(paso);
+    };
+
+    const alDesplazar = () => {
+      ultimaY = window.scrollY;
+      if (!pendiente) {
+        ultimoT = performance.now();
+        pendiente = requestAnimationFrame(paso);
+      }
+    };
+    window.addEventListener("scroll", alDesplazar, { passive: true });
+    return () => {
+      vivo = false;
+      window.removeEventListener("scroll", alDesplazar);
+      if (pendiente) cancelAnimationFrame(pendiente);
+    };
+  }, []);
 
   return (
     <div
       role="marquee"
       aria-label="Market ticker"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       /* T2c — `py-3` (12 px) → `py-4` (16 px): la cinta tenía solo 12 px
          de respiro vertical y el VLM la leía como banda pegada al borde.
          16 px la separa visualmente de las secciones vecinas sin
@@ -174,7 +182,7 @@ export function Ticker() {
          `.liquid-glass.glass-band`, así que cambiar la clase apagaría de
          paso la luz del canto superior, que es lo que separa la banda del
          contenido. Mismo caso que el pie. */
-      className="relative border-y border-[rgb(var(--divider)/0.14)] py-4 liquid-glass glass-band overflow-hidden select-none"
+      className="tj-cinta-caja relative border-y border-[rgb(var(--divider)/0.14)] py-4 liquid-glass glass-band overflow-hidden select-none"
     >
       {/* Left edge gradient fade — R27-1b: switched from hardcoded
           `rgba(0, 0, 0, ...)` to `color-mix(in srgb, var(--bg) ...,
@@ -206,20 +214,19 @@ export function Ticker() {
         }}
       />
 
-      {/* Scrolling track — duplicated <Row /> gives the seamless loop point
-          (the animation resets every `half = scrollWidth / 2` pixels).
-          `willChange: transform` is a GPU-compositing hint that keeps the
-          marquee on its own compositor layer — without it some browsers
-          (notably Safari on macOS) re-rasterize the track each frame as
-          the x value changes, which shows up as a faint sub-pixel jitter
-          on the tabular figures. No behavior change, pure perf hint. */}
-      {/* T2c — `gap-8 sm:gap-12` (igual al `gap` interno de `<Row />`) para
-          que la costura entre Row 1 y Row 2 sea idéntica a la separación
-          entre símbolos: el loop se lee continuo, sin escalón visual. */}
-      <motion.div ref={trackRef} className="flex w-max gap-8 sm:gap-12" style={{ x, willChange: "transform" }}>
+      {/* La pista lleva dos filas idénticas: al desplazarse la mitad
+          exacta del recorrido, el fotograma final es indistinguible del
+          inicial y el bucle no se ve. La separación entre las dos no va
+          aquí con `gap` sino como relleno de cada fila — el porqué está
+          en `<Row />` y en `.tj-cinta` (globals.css).
+
+          `will-change: transform` lo declara la clase: sin él, algunos
+          navegadores vuelven a rasterizar la pista en cada fotograma y
+          las cifras tabulares tiemblan por debajo del píxel. */}
+      <div ref={pistaRef} className="tj-cinta flex w-max">
         <Row />
         <Row />
-      </motion.div>
+      </div>
     </div>
   );
 }

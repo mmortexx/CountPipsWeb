@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { CalendarDays, BookOpen, LineChart, NotebookPen, Layers } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { getCal } from "@/lib/trading/fixtures";
@@ -31,7 +30,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
       // bento card titles. `bg-veil` (82 % bg in light / 74 % in
       // dark) occludes the eye while the top-left halo + the bento
       // cards' own `liquid-glass` surfaces still paint on top.
-      className="section relative overflow-hidden bg-veil"
+      className="section relative overflow-clip bg-veil"
     >
       <div
         aria-hidden
@@ -94,10 +93,8 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
           {/* Calendario grande (span 7) */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+          <div
+            data-entra
             // R25-1e — snappy hover lift (separate transition from the
             // entrance so hover doesn't feel laggy). All 5 bento cards
             // share this treatment for a coordinated hover rhythm.
@@ -108,12 +105,10 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             // T2h — card padding now responsive: 20px on mobile (p-5),
             // 24px from sm. Original was flat `padding: 24` which felt
             // tight against the edge on 320–390px viewports.
-            whileHover={{ y: -3, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
-            transition={{ duration: 0.5 }}
             // T3c — swap a `.tj-paper`: papel translúcido cálido en vez de
             // glass frío. Border, rounded, hover lift, padding y minHeight
             // intactos. El sweep de acento del top-edge se conserva.
-            className="tj-paper group lg:col-span-7 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+            className="tj-realce tj-paper group lg:col-span-7 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
             style={{
               minHeight: 360,
             }}
@@ -234,16 +229,12 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Rendimiento por hora (span 5) */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -3, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-            className="tj-paper group lg:col-span-5 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+          <div
+            data-entra="2"
+            className="tj-realce tj-paper group lg:col-span-5 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
             style={{
               minHeight: 360,
             }}
@@ -361,16 +352,12 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 ))}
               </ul>
             </div>
-          </motion.div>
+          </div>
 
           {/* Playbooks (span 4) */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -3, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+          <div
+            data-entra="2"
+            className="tj-realce tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -422,16 +409,12 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Diario narrativo (span 4) */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -3, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+          <div
+            data-entra="3"
+            className="tj-realce tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -474,16 +457,12 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 <span>{es ? "Nota post-trade" : "Post-trade note"}</span>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Multi-cuenta multi-activo (span 4) */}
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -3, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] } }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
+          <div
+            data-entra="4"
+            className="tj-realce tj-paper group lg:col-span-4 min-w-0 relative overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] transition-colors duration-300 hover:border-[rgb(var(--accent-base)/0.35)] p-5 sm:p-6"
           >
             <div className="flex items-center gap-2 mb-2">
               <span
@@ -529,7 +508,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 </span>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>

@@ -1,7 +1,6 @@
 "use client";
 
 import { memo, useMemo, useState, type CSSProperties } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import type { Metrics } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
 
@@ -21,8 +20,7 @@ export const EquityCurve = memo(function EquityCurve({
   showDrawdown = true,
   className = "",
 }: EquityCurveProps) {
-  const { lang } = useLang();
-  const reduce = useReducedMotion();
+  const { lang } = useLang();
   const { equityCurve, drawdownCeiling } = metrics;
   // Hover state: data index + pointer X (px) + rendered width & height (px)
   // for clamping the tooltip and converting viewBox Y → pixel Y. Both mouse
@@ -129,10 +127,9 @@ export const EquityCurve = memo(function EquityCurve({
   const drawdown = hoverPoint ? hoverPoint.ceiling - hoverPoint.balance : 0;
 
   return (
-    <motion.div
-      className={`relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
-      whileHover={reduce ? undefined : { scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 300, damping: 26 }}
+    <div
+      data-entra
+      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       style={{ transformOrigin: "center" }}
     >
       <svg
@@ -215,25 +212,19 @@ export const EquityCurve = memo(function EquityCurve({
         )}
 
         {/* Area + line */}
-        <motion.path
+        <path
+          data-entra="5"
           d={areaPath}
           fill="url(#eq-area)"
-          initial={reduce ? undefined : { opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 1, delay: 0.3 }}
         />
-        <motion.path
+        <path
+          data-entra
           d={linePath}
           fill="none"
           stroke="url(#eq-line)"
           strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-          initial={reduce ? undefined : { pathLength: 0 }}
-          whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={reduce ? { duration: 0 } : { duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
         />
 
         {/* Hover crosshair + pulsing marker */}
@@ -316,6 +307,6 @@ export const EquityCurve = memo(function EquityCurve({
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 });

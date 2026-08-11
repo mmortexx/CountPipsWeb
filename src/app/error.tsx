@@ -27,7 +27,7 @@ export default function Error({
   return (
     <section
       aria-labelledby="error-heading"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden px-5 py-20"
+      className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
       {/* Soft acrylic depth orb */}
       <div

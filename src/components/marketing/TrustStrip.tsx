@@ -1,7 +1,6 @@
 "use client";
 
 import { Fragment } from "react";
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -59,29 +58,27 @@ export function TrustStrip() {
       // `bg-veil` (82 % bg in light / 74 % in dark) occludes the eye
       // while the top accent gradient hairline still paints on top
       // for the precision-machined top edge.
-      className="section-tight relative overflow-hidden bg-veil"
+      className="section-tight relative overflow-clip bg-veil"
     >
       {/* Accent gradient line that sweeps across the strip on view */}
-      <motion.div
+      <div
         aria-hidden="true"
+        data-entra="traza"
         className="absolute left-0 right-0 top-0 h-px pointer-events-none"
         style={{
+          /* El 0,9 de opacidad final que declaraba el `whileInView` vive
+             ahora en el propio color. La animación de la traza va de 0 a
+             1, así que sin esto el filete acabaría un 10 % más encendido
+             de lo que estaba. */
           background:
-            "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base)) 50%, transparent 100%)",
+            "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.9) 50%, transparent 100%)",
           transformOrigin: "left center",
         }}
-        initial={{ scaleX: 0, opacity: 0 }}
-        whileInView={{ scaleX: 1, opacity: 0.9 }}
-        viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
       />
 
       <div className="relative z-10 tj-container">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        <div
+          data-entra
           // R21-3a — tighter horizontal gap on mobile (gap-x-5 vs gap-x-8)
           // so pairs of trust items fit on each wrapped row instead of
           // every item ending up alone on its own line at 375px. The
@@ -96,17 +93,14 @@ export function TrustStrip() {
         >
           {items.map((item, i) => (
             <Fragment key={item.label}>
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.15 + i * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="flex items-center gap-2"
-              >
+              {/* Sin escalón individual, y es deliberado: `ciclo` reparte
+                  el retardo por `nth-child`, y aquí los hermanos alternan
+                  señal y punto separador, así que las cinco señales caen
+                  en las posiciones 1, 3, 5, 7 y 9 — les tocarían los
+                  escalones 1, 3, 5, 2 y 4, es decir, desordenados. La
+                  tira es una sola línea de cinco piezas cortas: entra
+                  como bloque con su contenedor, que es lo que se lee. */}
+              <div className="flex items-center gap-2">
                 <span
                   className="text-primary shrink-0 inline-flex"
                   aria-hidden="true"
@@ -114,7 +108,7 @@ export function TrustStrip() {
                   {item.icon}
                 </span>
                 <span className="t-caption text-secondary whitespace-nowrap tnum">{item.label}</span>
-              </motion.div>
+              </div>
               {i < items.length - 1 && (
                 <span
                   aria-hidden="true"
@@ -123,7 +117,7 @@ export function TrustStrip() {
               )}
             </Fragment>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

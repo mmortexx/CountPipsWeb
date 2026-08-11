@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useLang } from "@/lib/i18n";
+import { usePresencia } from "@/hooks/use-presencia";
 
 /**
  * ShortcutsHelp — keyboard shortcuts overlay.
  *
  * Opens via the `tj:open-shortcuts-help` window CustomEvent (dispatched by
  * `GlobalShortcuts` when `?` is pressed, or by the Navbar `?` button). Closes
- * on Escape, backdrop click, or the X button. Framer Motion handles a soft
- * scale + fade entrance/exit. Copy is bilingual ES/EN via `useLang()`.
+ * on Escape, backdrop click, or the X button. Entrada y salida son un soft
+ * scale + fade entrance/exit con CSS (ver `.tj-panel-*` en globals.css).
+ * Copy is bilingual ES/EN via `useLang()`.
  *
  * While open, sets `body[data-shortcuts-help-open="true"]` so other global
  * listeners (GlobalShortcuts) can suppress their own keys.
@@ -37,6 +38,8 @@ export function ShortcutsHelp({
   const setOpen = onOpenChange;
 
   const panelRef = useRef<HTMLDivElement>(null);
+  /* Mantiene la ventana en el árbol los 180 ms de su despedida. */
+  const { montado, saliendo } = usePresencia(open, 180);
 
   // While open: mark body so GlobalShortcuts can skip T/L, and capture Escape
   // on the way down (capture phase) so cmdk's or any other Escape handlers
@@ -235,42 +238,34 @@ export function ShortcutsHelp({
   ];
 
   return (
-    <AnimatePresence>
-      {open && (
-        /* `key` obligatoria — mismo motivo que en `CommandPalette`: sin
-           ella `AnimatePresence` no registra este bloque y la ventana no
-           se cierra nunca. */
-        <motion.div
-          key="shortcuts-help"
+    <>
+      {montado && (
+        /* Mismo cambio que en `CommandPalette`: el desmontaje diferido lo
+           lleva `usePresencia` y las dos capas se despiden con las clases
+           `tj-velo-sale` / `tj-panel-sale`. El plazo del hook y la
+           duración de esas clases tienen que seguir coincidiendo. */
+        <div
           className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[15vh]"
           role="dialog"
           aria-modal="true"
           aria-label={es ? "Atajos de teclado" : "Keyboard shortcuts"}
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Backdrop — subtle blur + fade-in */}
-          <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          <div
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150 ${
+              saliendo ? "tj-velo-sale" : "tj-velo-entra"
+            }`}
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
 
           {/* Panel — liquid-glass card, springy fade + scale + lift entrance */}
-          <motion.div
+          <div
             ref={panelRef}
             tabIndex={-1}
-            className="relative w-full max-w-md tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden"
-            initial={{ opacity: 0, scale: 0.96, y: -8 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -4 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className={`relative w-full max-w-md tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
+              saliendo ? "tj-panel-sale" : "tj-panel-entra"
+            }`}
           >
             {/* Header */}
             <div className="flex items-center justify-between gap-3 px-4 py-3 border-b ">
@@ -335,10 +330,10 @@ export function ShortcutsHelp({
                 {es ? "Pulsa ? cuando quieras" : "Press ? anytime"}
               </span>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </>
   );
 }
 

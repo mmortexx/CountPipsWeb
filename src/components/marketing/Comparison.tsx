@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -68,7 +67,7 @@ export function Comparison() {
   ];
 
   return (
-    <section className="section cv-auto relative overflow-hidden bg-veil">
+    <section className="section cv-auto relative overflow-clip bg-veil">
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="partida"
@@ -219,12 +218,9 @@ export function Comparison() {
                 <tbody>
                   {ROWS.map((row, i) => (
                     /* R24-1d: `group` + bumped hover opacity (/0.05 → /0.07) on the tr so the lit row reads more deliberately; the row-label th picks up a 3px accent left inset rail on hover via `group-hover` for a "selected row" affordance that ties to the permanent accent rail on the TJ column. */
-                    <motion.tr
+                    <tr
+                      data-entra="ciclo"
                       key={row.labelEs}
-                      initial={{ opacity: 0, y: 8 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-30px" }}
-                      transition={{ duration: 0.45, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
                       /* La última fila conserva su filete: antes lo
                          descolgaba con `last:border-b-0` porque el canto
                          de la caja ya cerraba la tabla por abajo, y sin
@@ -253,10 +249,10 @@ export function Comparison() {
                             j === 0 ? "bg-[rgb(var(--divider)/0.06)] shadow-[inset_3px_0_0_0_rgb(var(--accent-base))]" : ""
                           }`}
                         >
-                          <CellRenderer cell={cell} highlight={j === 0} es={es} delay={i * 0.05} />
+                          <CellRenderer cell={cell} highlight={j === 0} es={es} />
                         </td>
                       ))}
-                    </motion.tr>
+                    </tr>
                   ))}
                 </tbody>
               </table>
@@ -307,26 +303,21 @@ export function Comparison() {
 function CellRenderer({
   cell,
   highlight,
-  es,
-  delay = 0,
+  es,
 }: {
   cell: Cell;
   highlight: boolean;
-  es: boolean;
-  delay?: number;
+  es: boolean;
 }) {
   if (cell === "yes") {
     return (
       <span className="inline-flex items-center gap-2">
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          viewport={{ once: true, margin: "-20px" }}
-          transition={{ delay, type: "spring", stiffness: 320, damping: 16 }}
+        <span
+          data-entra="sello"
           className="inline-flex"
         >
           <CheckIcon />
-        </motion.span>
+        </span>
         <span className="text-[13px] font-medium text-pnl-pos">{es ? "Sí" : "Yes"}</span>
       </span>
     );
@@ -335,15 +326,12 @@ function CellRenderer({
     // "Yes" + a Pro pill — used for Pro-only features (Monte Carlo, track record report).
     return (
       <span className="inline-flex items-center gap-1.5 flex-wrap">
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          viewport={{ once: true, margin: "-20px" }}
-          transition={{ delay, type: "spring", stiffness: 320, damping: 16 }}
+        <span
+          data-entra="sello"
           className="inline-flex"
         >
           <CheckIcon />
-        </motion.span>
+        </span>
         <span className="text-[13px] font-medium text-pnl-pos">{es ? "Sí" : "Yes"}</span>
         <span className="pill !rounded-[2px] bg-[rgb(var(--divider)/0.05)] text-primary border border-[rgb(var(--divider)/0.20)] !px-1.5 !py-0 !text-[10px] uppercase tracking-[0.1em]">
           Pro
@@ -354,15 +342,12 @@ function CellRenderer({
   if (cell === "no") {
     return (
       <span className="inline-flex items-center gap-2">
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          viewport={{ once: true, margin: "-20px" }}
-          transition={{ delay, type: "spring", stiffness: 320, damping: 16 }}
+        <span
+          data-entra="sello"
           className="inline-flex"
         >
           <CrossIcon />
-        </motion.span>
+        </span>
         <span className="text-[13px] text-tertiary">{es ? "No" : "No"}</span>
       </span>
     );
@@ -370,15 +355,12 @@ function CellRenderer({
   if (cell === "partial") {
     return (
       <span className="inline-flex items-center gap-2">
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
-          viewport={{ once: true, margin: "-20px" }}
-          transition={{ delay, type: "spring", stiffness: 320, damping: 16 }}
+        <span
+          data-entra="sello"
           className="inline-flex"
         >
           <PartialIcon />
-        </motion.span>
+        </span>
         <span className="text-[13px] text-pnl-warn">{es ? "Parcial" : "Partial"}</span>
       </span>
     );

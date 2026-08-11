@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useLang } from "@/lib/i18n";
-import { motion } from "framer-motion";
 import { Reveal } from "@/components/tj/Reveal";
 import { ShieldCheck, AlertTriangle, HandMetal, Timer } from "lucide-react";
 
@@ -63,7 +62,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
   return (
     <section
       id="guardian"
-      className="section bg-veil relative overflow-hidden border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className="section bg-veil relative overflow-clip border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
     >
       {/* P1 — contenedor unificado a `tj-container`: hereda los gutters
           fluidos (clamp(1.25rem, 4vw, 2.25rem)) y el page-w (1080px) de
@@ -81,11 +80,8 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             P1 — envoltorio `motion.div` con `whileInView` para que la
             tarjeta entre en escena con el mismo gesto de soft-settle que
             el resto de la home, en vez de aparecer estática. */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        <div
+          data-entra
           // T3c — swap a `.tj-paper-dense`: contenido denso (fila de trade,
           // checklist de 3, aviso de bloqueo, 2 CTAs) necesita más opacidad
           // que el papel 72 % estándar para mantener WCAG AA. Sigue siendo
@@ -395,7 +391,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               </button>
             )}
           </div>
-        </motion.div>
+        </div>
 
         {/* Columna derecha: copy + 3 features
             P1 — envoltorios Reveal con stagger (0, 0.06, 0.12, 0.18) para

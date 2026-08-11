@@ -1,7 +1,6 @@
 "use client";
 
 import { memo, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 
 interface HistogramProps {
@@ -20,8 +19,7 @@ export const Histogram = memo(function Histogram({
   className = "",
   formatX = (x) => String(x),
 }: HistogramProps) {
-  const { lang } = useLang();
-  const reduce = useReducedMotion();
+  const { lang } = useLang();
   const maxCount = useMemo(() => Math.max(...data.map((d) => d.count), 1), [data]);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,15 +27,14 @@ export const Histogram = memo(function Histogram({
   const [hovered, setHovered] = useState<{ i: number; x: number; y: number } | null>(null);
 
   return (
-    <motion.div
-      className={`relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
+    <div
+      data-entra
+      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       ref={containerRef}
       role="img"
       aria-label={lang === "es"
         ? `Histograma con ${data.length} categorías`
         : `Histogram with ${data.length} categories`}
-      whileHover={reduce ? undefined : { scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 300, damping: 26 }}
       style={{ transformOrigin: "center" }}
     >
       <div className="flex items-end gap-1" style={{ height }}>
@@ -66,11 +63,8 @@ export const Histogram = memo(function Histogram({
               }}
               onMouseLeave={() => setHovered(null)}
             >
-              <motion.div
-                initial={reduce ? undefined : { scaleY: 0 }}
-                whileInView={{ scaleY: 1 }}
-                viewport={{ once: true }}
-                transition={reduce ? { duration: 0 } : { delay: i * 0.04, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              <div
+                data-entra="ciclo"
                 className="w-full rounded-t-sm relative transition-opacity"
                 style={{
                   height: Math.max(2, h),
@@ -105,6 +99,6 @@ export const Histogram = memo(function Histogram({
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 });

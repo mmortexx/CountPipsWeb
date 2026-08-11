@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -72,7 +71,7 @@ export function Values() {
   const es = lang === "es";
 
   return (
-    <section id="values" className="section bg-veil relative overflow-hidden scroll-mt-24">
+    <section id="values" className="section bg-veil relative overflow-clip scroll-mt-24">
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
 
@@ -124,7 +123,12 @@ export function Values() {
         <div className="mt-10 grid md:grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
           {VALUES.map((v, i) => (
             <Reveal key={v.num} delay={0.1 + i * 0.08} className="h-full">
-              <motion.article
+              {/* Sin `data-entra`: la entrada ya la pone el `Reveal` de
+                  arriba con su propio retardo escalonado. Este elemento
+                  era un `motion.article` SIN props de animación —sólo un
+                  envoltorio— y darle una entrada propia lo haría aparecer
+                  dos veces. */}
+              <article
                 /* Sin salto al pasar por encima: una entrada de
                    declaración no se levanta. La única respuesta al
                    puntero es que el filo de acento del lateral se
@@ -181,7 +185,7 @@ export function Values() {
                 <p className="relative mt-2.5 text-sm text-secondary leading-[1.65] max-w-[42em]">
                   {es ? v.descEs : v.descEn}
                 </p>
-              </motion.article>
+              </article>
             </Reveal>
           ))}
         </div>

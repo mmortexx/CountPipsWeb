@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
 
 interface FeatureImageProps {
   src: string;
@@ -58,33 +57,27 @@ export function FeatureImage({
   surfaceBg,
 }: FeatureImageProps) {
   const isContain = fit === "contain";
-  const reduce = useReducedMotion();
-  // Under reduced-motion, render at the final state with no transition —
-  // the global MotionConfig already suppresses transforms, but the scale
-  // zoom-out on cover mode and the y-lift on contain mode would still
-  // animate opacity / position. Short-circuit the variants entirely.
-  const initial = reduce
-    ? { opacity: 1, y: 0, scale: 1 }
-    : isContain
-    ? { opacity: 0, y: 6 }
-    : { opacity: 0, scale: 1.05 };
-  const whileInView = reduce
-    ? { opacity: 1, y: 0, scale: 1 }
-    : isContain
-    ? { opacity: 1, y: 0 }
-    : { opacity: 1, scale: 1 };
+  /* LA ENTRADA YA NO NECESITA NI BIBLIOTECA NI HOOK.
+     Aquí había un `motion.div` con `initial`/`whileInView` y tres
+     variantes calculadas en JavaScript, más un `useReducedMotion()` para
+     anularlas. Todo eso lo hace ahora una regla:
+
+       · `data-entra="lamina"` — el zoom de salida de 1,05 a 1 del modo
+         `cover`, que es el gesto cinematográfico que tenía;
+       · `data-entra` a secas — el modo `contain`, que NO lleva zoom por
+         el motivo escrito abajo: un 5 % de escala sobre una captura
+         apaisada le recorta el canto durante la entrada;
+       · el retardo, traducido a uno de los cinco escalones.
+
+     Y el respeto a «reducir movimiento» ya no se calcula: el bloque
+     `@media (prefers-reduced-motion: reduce)` de globals.css anula
+     TODOS los `[data-entra]` de golpe, así que no puede quedarse una
+     variante sin cubrir — que es justo lo que este hook tenía que
+     vigilar a mano. */
+  const escalon = delay <= 0.02 ? "" : delay < 0.13 ? "2" : delay < 0.2 ? "3" : delay < 0.28 ? "4" : "5";
   return (
-    <motion.div
-      // Reveal animation — tuned per fit mode. Cover mode keeps the
-      // cinematic scale-1.05→1.0 zoom-out (art/stock art). Contain mode
-      // drops the scale entirely (a 5% zoom on a letterboxed screenshot
-      // visibly clips the screenshot's edge during the reveal) and uses a
-      // pure opacity + 6px lift, so the WHOLE screenshot is visible at
-      // every frame and the reveal reads as a gentle settle, not a crop.
-      initial={initial}
-      whileInView={whileInView}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={reduce ? { duration: 0 } : { duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
+    <div
+      data-entra={isContain ? escalon : "lamina"}
       className={`overflow-hidden rounded-[2px] ${className}`}
       style={
         isContain
@@ -148,6 +141,6 @@ export function FeatureImage({
           aria-hidden="true"
         />
       )}
-    </motion.div>
+    </div>
   );
 }

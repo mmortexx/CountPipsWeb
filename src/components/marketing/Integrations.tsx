@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -40,7 +39,7 @@ export function Integrations() {
   const es = lang === "es";
 
   return (
-    <section className="section bg-veil relative overflow-hidden">
+    <section className="section bg-veil relative overflow-clip">
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
       <div className="relative tj-container">
@@ -78,17 +77,10 @@ export function Integrations() {
             ruptura. */}
         <div className="mt-10 overflow-hidden border-t border-[rgb(var(--divider)/0.14)]">
           <div className="-ml-px grid grid-cols-2 lg:grid-cols-5">
-          {BROKERS.map((b, i) => (
-            <motion.div
+          {BROKERS.map((b) => (
+            <div
+              data-entra="ciclo"
               key={b.name}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{
-                duration: 0.5,
-                delay: (i % 5) * 0.08,
-                ease: [0.22, 1, 0.36, 1],
-              }}
               className="group relative p-4 min-w-0 flex flex-col gap-3 border-b border-l border-[rgb(var(--divider)/0.14)]"
             >
               {/* Row: monogram mark (left) + CSV chip (right). */}
@@ -112,7 +104,7 @@ export function Integrations() {
                     as the card's "active" element on hover. */}
                 <p className="t-h4 text-secondary transition-colors duration-300 group-hover:text-primary">{b.name}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
           </div>
         </div>

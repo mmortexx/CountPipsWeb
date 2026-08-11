@@ -2,7 +2,6 @@
 
 import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
 import { AppDemoClient } from "@/components/demo/AppDemoClient";
 import { useLang } from "@/lib/i18n";
 
@@ -42,7 +41,7 @@ export function HomeDemo() {
       // a theme-aware text-shadow halo in the area where the eye's
       // corona could still bleed through the veil at the section's
       // top (the soft accent halo at top:0 sits over the heading).
-      className="section relative overflow-hidden bg-veil border-b border-[rgb(var(--divider)/0.06)] scroll-mt-16"
+      className="section relative overflow-clip bg-veil border-b border-[rgb(var(--divider)/0.06)] scroll-mt-16"
     >
       {/* Top accent hairline — a soft gradient rule that eases the eye
           into the demo section. Mirrors the closing hairline at the
@@ -186,11 +185,8 @@ export function HomeDemo() {
               now feels continuous instead of abrupt. The reveal fires
               only once and is safe to layer on top of AppDemoClient
               (the motion wraps the CTA row only, not the demo). */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        <div
+          data-entra
           className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-5"
         >
           <Link
@@ -210,7 +206,7 @@ export function HomeDemo() {
               ? "Sin descargar nada · 100 % en tu navegador"
               : "No download · 100 % in your browser"}
           </span>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

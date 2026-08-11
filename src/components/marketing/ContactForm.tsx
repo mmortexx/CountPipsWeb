@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -20,9 +19,10 @@ import { useHydrated } from "@/hooks/use-hydrated";
  *    lands in the support inbox. The success state is only shown once the
  *    endpoint confirms delivery — a failed send shows the reason plus a
  *    mailto fallback, never a fake checkmark.
- *  - On success: AnimatePresence cross-fades the form out and an animated
- *    SVG checkmark (circle + path drawn via pathLength) in, with the
- *    confirmation copy fading up underneath.
+ *  - On success: la confirmación entra por partes — el disco se estampa,
+ *    la marca de verificación se dibuja encima y el texto sube detrás,
+ *    con animaciones CSS y sin biblioteca. Ver el comentario largo junto
+ *    al bloque, que explica qué se conservó y qué se dejó ir.
  *
  * Estilo: lámina de papel a canto vivo, entradas como en el resto de la
  * web (relleno `rgb(var(--divider)/0.05)` + filete `rgb(var(--divider)/0.10)`,
@@ -154,7 +154,7 @@ export function ContactForm() {
       /* `bg-veil` — esta sección se quedó fuera de la pasada de velos:
          el eyebrow, el titular y el subtítulo caían sobre el punto más
          brillante del iris y el subtítulo resultaba casi ilegible. */
-      className="section-tight relative overflow-hidden bg-veil scroll-mt-24"
+      className="section-tight relative overflow-clip bg-veil scroll-mt-24"
     >
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
@@ -196,65 +196,71 @@ export function ContactForm() {
               {/* min-height keeps layout stable when the form swaps to the
                   success state, so the card doesn't collapse on submit. */}
               <div className="min-h-[360px] flex flex-col justify-center">
-                <AnimatePresence mode="wait" initial={false}>
-                  {sent ? (
-                    <motion.div
-                      key="sent"
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.96 }}
-                      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                      className="flex flex-col items-center gap-4 py-8 text-center"
-                    >
-                      <motion.svg
+                {/* AQUÍ HABÍA UN `AnimatePresence`, Y LO QUE HACÍA SE
+                    CONSERVA MENOS UNA COSA.
+                    Se conserva la coreografía de la confirmación: el
+                    disco se estampa, la marca se dibuja encima y el
+                    texto sube detrás, con los mismos retardos (0 / 0,25
+                    / 0,55 s). Se conserva porque son animaciones de
+                    ENTRADA, y una entrada no necesita biblioteca: basta
+                    con que la clase esté puesta cuando el elemento se
+                    monta.
+
+                    Lo que se pierde es el fundido de SALIDA del
+                    formulario, de 0,25 s. Eso sí necesita mantener vivo
+                    en el árbol un elemento que React ya ha quitado, que
+                    es exactamente el problema que `AnimatePresence`
+                    existe para resolver — y la única razón por la que
+                    esta página descargaba framer-motion entera (36 KB
+                    comprimidos). Cambiar un cuarto de segundo de
+                    desvanecido, en un formulario que se envía una vez,
+                    por 36 KB en cada visita a /faq es un cambio que se
+                    hace sin pensarlo mucho. */}
+                {sent ? (
+                    <div className="tj-sube-ya flex flex-col items-center gap-4 py-8 text-center">
+                      <svg
                         width="64"
                         height="64"
                         viewBox="0 0 64 64"
                         fill="none"
                         aria-hidden="true"
                       >
-                        <motion.circle
+                        {/* `pathLength="1"` normaliza el recorrido del
+                            trazo a la unidad para que `stroke-dasharray:
+                            1` funcione sin medir su longitud real en
+                            píxeles. Ver `tj-dibuja` en globals.css. */}
+                        <circle
+                          className="tj-estampa-ya"
                           cx="32"
                           cy="32"
                           r="28"
                           stroke="rgb(var(--pnl-pos))"
                           strokeWidth="2"
                           fill="rgb(var(--pnl-pos) / 0.10)"
-                          initial={{ pathLength: 0, opacity: 0 }}
-                          animate={{ pathLength: 1, opacity: 1 }}
-                          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                         />
-                        <motion.path
+                        <path
+                          className="tj-dibuja-ya"
+                          pathLength="1"
                           d="M20 33.5l8 8 16-18"
                           stroke="rgb(var(--pnl-pos))"
                           strokeWidth="3"
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           fill="none"
-                          initial={{ pathLength: 0 }}
-                          animate={{ pathLength: 1 }}
-                          transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
                         />
-                      </motion.svg>
-                      <motion.p
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.55 }}
-                        className="text-base font-medium text-primary"
+                      </svg>
+                      <p
+                        className="tj-sube-ya-tarde text-base font-medium text-primary"
                         aria-live="polite"
                         role="status"
                       >
                         {es
                           ? "✓ Mensaje enviado. Te responderemos en 24h."
                           : "✓ Message sent. We'll reply in 24h."}
-                      </motion.p>
-                    </motion.div>
+                      </p>
+                    </div>
                   ) : (
-                    <motion.form
-                      key="form"
-                      initial={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.25 }}
+                    <form
                       onSubmit={onSubmit}
                       noValidate
                       className="flex flex-col gap-4"
@@ -326,15 +332,10 @@ export function ContactForm() {
                         </label>
                       </div>
 
-                      <AnimatePresence>
-                        {error && (
-                          <motion.div
+                      {error && (
+                          <div
                             id="cf-error"
-                            initial={{ opacity: 0, y: -4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -4 }}
-                            transition={{ duration: 0.2 }}
-                            className="text-xs text-pnl-neg"
+                            className="tj-sube-ya text-xs text-pnl-neg"
                             role="alert"
                           >
                             {error}
@@ -349,15 +350,13 @@ export function ContactForm() {
                                 </a>
                               </>
                             )}
-                          </motion.div>
+                          </div>
                         )}
-                      </AnimatePresence>
 
-                      <motion.button
+                      <button
                         type="submit"
                         disabled={sending || !ready}
                         aria-busy={sending}
-                        whileTap={sending || !ready ? undefined : { scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
                         /* T2g — `min-h-[44px]` guarantees the ≥44 px touch target
                            regardless of label line-height; the previous `py-2.5`
                            alone produced a 40 px button on mobile (real touch-target
@@ -375,16 +374,15 @@ export function ContactForm() {
                         {sending
                           ? es ? "Enviando…" : "Sending…"
                           : es ? "Enviar" : "Send"}
-                      </motion.button>
+                      </button>
 
                       <p className="text-[11px] text-tertiary text-center">
                         {es
                           ? "No compartimos tu email. Solo te respondemos."
                           : "We never share your email. We only reply to you."}
                       </p>
-                    </motion.form>
+                    </form>
                   )}
-                </AnimatePresence>
               </div>
             </div>
           </Reveal>

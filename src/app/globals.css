@@ -4100,7 +4100,7 @@ button.icon-btn:hover > svg,
    hueso. Se retiró al descartar el dorado — ver la nota del acento en
    :root—: hoy el tinte sale de `--surface`, que es el gris de la chapa.)
 
-   ── UN `*/` DE MÁS DEJÓ AL PAPEL SIN MATERIAL ─────────────────────
+   ── UN CIERRE DE COMENTARIO DE MÁS DEJÓ AL PAPEL SIN MATERIAL ─────
    El párrafo de arriba se añadió cerrando el comentario en su última
    línea, y las cuatro que venían detrás —«Usar en: navbar, drawer…»—
    quedaron fuera, como texto suelto en mitad de la hoja de estilos.
@@ -4119,6 +4119,23 @@ button.icon-btn:hover > svg,
    parser ya se había recuperado. Por eso el tema claro se veía bien y
    el oscuro no, sin que hubiera ninguna diferencia escrita entre los
    dos que lo explicara.
+
+   Y VOLVIÓ A PASAR AQUÍ MISMO. El titular de este párrafo decía «UN
+   `[cierre de comentario]` DE MÁS», con la secuencia escrita tal cual
+   entre acentos graves. Los acentos graves no significan nada para un
+   analizador de CSS: la secuencia cerró ESTE comentario en su propia
+   línea y dejó las veinte siguientes —incluidas las que explican qué
+   no hay que hacer— sueltas en la hoja. `bun run dev` fallaba con
+   «Parsing CSS source code failed / Invalid empty selector», y
+   `bun run build` pasaba en verde, que es la peor combinación posible:
+   el fallo sólo aparecía trabajando, nunca al publicar.
+
+   Por eso la secuencia ya no se escribe en ninguna parte de este
+   fichero, ni citada. Lo vigila `tests/css.test.ts`. */
+
+/* ============================================================
+   (continúa TJPAPER)
+   ============================================================
 
    Usar en: navbar, drawer móvil, tarjetas destacadas, banners
    fijos. NO en superficies que necesitan contraste máximo sobre
@@ -4625,6 +4642,33 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 
    Cinco escalones bastan: más allá, el retardo del último se nota como
    espera en vez de como ritmo. */
+/* ── LAS SECCIONES RECORTAN CON `clip`, NO CON `hidden` ───────────────
+   Esto no es una preferencia de estilo: es la condición para que nada de
+   lo de aquí abajo funcione.
+
+   `view()` ancla su línea de tiempo al CONTENEDOR DE DESPLAZAMIENTO más
+   cercano, y `overflow: hidden` crea uno —aunque nadie pueda
+   desplazarlo—. Con las secciones en `overflow-hidden`, la línea de
+   tiempo de cada pieza colgaba de una caja que no se mueve nunca: la
+   animación quedaba inactiva y el elemento se quedaba en su estado base.
+   No se veía como un fallo porque el estado base es «visible»; el
+   contenido salía bien y simplemente no entraba.
+
+   Medido recorriendo la página entera de arriba abajo y contando
+   cuántas piezas llegaban a verse a media tinta en algún momento:
+   /features 0 de 33, /pricing 0 de 94, la portada 5 de 27. Con
+   `overflow: clip` —que recorta igual pero NO crea contenedor de
+   desplazamiento—: 21 de 33, 62 de 94 y 27 de 27.
+
+   Las secciones del sitio llevan por eso `overflow-clip` en su clase.
+   Si alguien escribe una nueva con `overflow-hidden`, sus entradas
+   dejarán de animarse en silencio.
+
+   La otra causa de silencio es `content-visibility: auto` (la clase
+   `cv-auto`): mientras el navegador salta el contenido, tampoco
+   actualiza sus animaciones. Ahí no hay nada que arreglar —el ahorro de
+   maquetación compensa— y el resultado sigue siendo correcto: la pieza
+   aparece a plena tinta en vez de entrar. */
 @supports (animation-timeline: view()) {
   [data-entra] {
     animation: tj-entra-pieza linear both;
@@ -4652,6 +4696,460 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ── EL SELLO: LO QUE NO SUBE, APARECE ────────────────────────────────
+   Los checks de la tabla comparativa, las insignias y los distintivos no
+   se deslizan hacia arriba como un párrafo: se estampan. Iban en
+   framer-motion con un muelle (`type:"spring", stiffness:320,
+   damping:16`) sobre `scale`, y ése era el único motivo por el que
+   `Comparison.tsx` —cuatro checks— arrastraba la biblioteca entera.
+
+   El rebote del muelle se reproduce con una curva de salida que se pasa
+   de largo y vuelve: `cubic-bezier(.34,1.56,.64,1)` es el equivalente
+   estándar de un muelle poco amortiguado, y a esta escala (de 0,6 a 1 en
+   un elemento de ~18 px) la diferencia con el muelle real no se ve.
+
+   Va con `animation-timeline: view()` como el resto: el sello se estampa
+   cuando la fila entra en pantalla, no al cargar la página. */
+@supports (animation-timeline: view()) {
+  [data-entra="sello"] {
+    animation: tj-estampa cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 30%;
+  }
+}
+@keyframes tj-estampa {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── LA ENTRADA LATERAL DE LA HOJA DE RUTA ────────────────────────────
+   Las tarjetas del changelog entran desde su lado: las de la columna
+   izquierda desde la izquierda y las de la derecha desde la derecha, de
+   modo que el eje vertical del tiempo queda en medio y las fichas se
+   acercan a él. Iba en framer-motion con `initial={{x: ±48}}`.
+
+   Sólo desde 768 px: por debajo la línea del tiempo se va al margen
+   izquierdo y las tarjetas se apilan en una sola columna, así que un
+   desplazamiento lateral no tendría a qué acercarse — y en un ancho de
+   390 px, 48 px de recorrido horizontal son el 12 % de la pantalla. */
+@supports (animation-timeline: view()) {
+  @media (min-width: 768px) {
+    [data-entra="izq"],
+    [data-entra="der"] {
+      animation: tj-entra-izq linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% entry 45%;
+    }
+    [data-entra="der"] {
+      animation-name: tj-entra-der;
+    }
+  }
+}
+@keyframes tj-entra-izq {
+  from {
+    opacity: 0;
+    transform: translate3d(-48px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tj-entra-der {
+  from {
+    opacity: 0;
+    transform: translate3d(48px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Por debajo de 768 px las dos se comportan como una pieza normal: la
+   entrada sigue existiendo, pero sube en vez de deslizarse. */
+@supports (animation-timeline: view()) {
+  @media (max-width: 767.98px) {
+    [data-entra="izq"],
+    [data-entra="der"] {
+      animation: tj-entra-pieza linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+/* ── LA TRAZA: UN FILETE QUE SE DIBUJA, PERO CON SU PROPIO ASPECTO ────
+   `.tj-filete` de más abajo trae altura, color y origen; estos filetes
+   ya tienen los suyos —un degradado de acento que se apaga en los dos
+   extremos— y sólo les falta el gesto. `data-entra="traza"` anima el
+   `scaleX` y no toca nada más.
+
+   El `transform-origin` NO se declara aquí a propósito: cada filete
+   decide desde qué lado se traza en su propio `style`. */
+@supports (animation-timeline: view()) {
+  [data-entra="traza"] {
+    animation: tj-traza-limpia linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 50%;
+  }
+}
+@keyframes tj-traza-limpia {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+/* ── LA LÁMINA: SE ACERCA, NO SUBE ────────────────────────────────────
+   Las capturas de producto entraban con un zoom de salida (de 1,05 a 1)
+   en vez de con el desplazamiento vertical del texto: una imagen que
+   sube se lee como un bloque más de página, y una que se asienta se lee
+   como una lámina que se posa. Se conserva el gesto.
+
+   Sólo para el encuadre `cover`. En `contain` el zoom recorta el canto
+   de la captura durante la entrada, así que ésas usan el escalón normal
+   — la razón está escrita en `FeatureImage.tsx` y se respeta. */
+@supports (animation-timeline: view()) {
+  [data-entra="lamina"] {
+    animation: tj-posa linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 55%;
+  }
+}
+@keyframes tj-posa {
+  from {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── EL TRAZO QUE SE DIBUJA ───────────────────────────────────────────
+   La marca de verificación de la tabla de precios no aparecía: se
+   DIBUJABA, de un extremo al otro. Iba con el `pathLength` de
+   framer-motion, que es su forma de animar el recorrido de un trazo
+   SVG; en CSS es la técnica clásica del guion y su desfase.
+
+   El `pathLength="1"` del propio `<path>` normaliza el recorrido a la
+   unidad, así que `stroke-dasharray: 1` es «un guion tan largo como
+   todo el trazo» sin tener que medir la longitud real en píxeles — que
+   es lo que obliga a hacerlo con JavaScript cuando el path cambia.
+
+   `stroke-dashoffset` es una de las pocas propiedades SVG que el
+   compositor no acelera, pero aquí el trazo mide 16 px: no hay
+   repintado que ahorrar. */
+@supports (animation-timeline: view()) {
+  [data-entra="trazo"] {
+    stroke-dasharray: 1;
+    animation: tj-dibuja linear both;
+    animation-timeline: view(block);
+    animation-range: entry 4% entry 45%;
+  }
+}
+@keyframes tj-dibuja {
+  from {
+    opacity: 0;
+    stroke-dashoffset: 1;
+  }
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* En SVG, `transform` se resuelve por defecto contra la caja de la
+   vista y no contra el propio elemento, así que un `scale(0.6)` lo
+   MUEVE además de encogerlo. `fill-box` lo ancla a su propia caja, que
+   es lo que hace framer-motion por dentro y por lo que allí no hacía
+   falta decirlo. */
+svg [data-entra="sello"] {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* ── EL COMPARADOR «ANTES / DESPUÉS» ──────────────────────────────────
+   Una sola cifra manda en este componente: dónde está el tirador, de 0 a
+   100. De ella salen el recorte del panel «después» y la posición del
+   propio tirador. Iba en un `useMotionValue` de framer-motion con dos
+   `useTransform` colgando.
+
+   Ahora es una propiedad personalizada, y eso vale por tres cosas:
+
+     · las dos derivadas se calculan en CSS con `calc()`, sin pasar por
+       React ni provocar renders durante el arrastre;
+     · el `@property` de abajo la DECLARA como número, y una propiedad
+       declarada se puede animar — sin él, el navegador la trata como
+       texto opaco y la animación de bienvenida saltaría de 50 a 12 sin
+       recorrido;
+     · el arrastre sólo escribe la variable, así que el tirador sigue al
+       dedo sin animación de por medio.
+
+   La bienvenida (50 → 12 → 50) enseña hacia la IZQUIERDA porque ése es
+   el lado que descubre el «después»: el gesto tiene que enseñar lo que
+   se gana. */
+@property --tj-cmp {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 50;
+}
+.tj-cmp-saluda {
+  animation: tj-cmp-bienvenida 1.55s var(--ease-suave, ease) both;
+}
+@keyframes tj-cmp-bienvenida {
+  0% { --tj-cmp: 50; }
+  32% { --tj-cmp: 12; }
+  55% { --tj-cmp: 12; }
+  100% { --tj-cmp: 50; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-cmp-saluda {
+    animation: none;
+  }
+}
+
+/* ── EL PULSO QUE RECORRE LA CADENA DE DATOS ──────────────────────────
+   En la comparación «tus datos en tu equipo / tus datos en su nube», un
+   punto de luz viaja por los nodos al pulsar el botón. Era un
+   `animate={{ scale: [0, 1.3, 1, 0] }}` de framer-motion: una secuencia
+   de cuatro valores, que en CSS son cuatro paradas de un `@keyframes`.
+
+   El `translate(-50%, -50%)` va DENTRO de cada fotograma y no en el
+   `style` del elemento: `transform` es una sola propiedad, así que un
+   `scale` animado sustituiría al centrado y el punto saltaría a la
+   esquina inferior derecha de su nodo. */
+.tj-pulso {
+  animation: tj-pulso-viaja 0.5s var(--ease-suave, ease) both;
+}
+@keyframes tj-pulso-viaja {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  30% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+  70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-pulso {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ── LOS OVERLAYS: ENTRAN Y SE DESPIDEN ───────────────────────────────
+   La paleta de comandos (⌘K) y la ayuda de atajos (?) se abren sobre la
+   página: un velo que oscurece y un panel que sube un poco y se acerca.
+   Iban en `AnimatePresence`, y su única función de verdad era mantener
+   el panel en el árbol los 180 ms que dura la despedida — eso lo hace
+   ahora `usePresencia` (src/hooks/use-presencia.ts).
+
+   Dos capas y dos duraciones distintas, como estaban: el velo tarda
+   180 ms y el panel 200 ms al entrar, para que la superficie llegue un
+   pelo después que el fondo y no se lea como una sola pieza plana.
+
+   Las clases de salida invierten los mismos fotogramas en vez de usar
+   `animation-direction: reverse`, que reproduciría también la curva al
+   revés — una entrada suave se despediría con un tirón al final. */
+.tj-velo-entra {
+  animation: tj-velo-in 0.18s var(--ease-suave, ease) both;
+}
+.tj-velo-sale {
+  animation: tj-velo-out 0.18s var(--ease-suave, ease) both;
+}
+.tj-panel-entra {
+  animation: tj-panel-in 0.2s var(--ease-suave, ease) both;
+}
+.tj-panel-sale {
+  animation: tj-panel-out 0.16s var(--ease-suave, ease) both;
+}
+@keyframes tj-velo-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes tj-velo-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes tj-panel-in {
+  from { opacity: 0; transform: translate3d(0, -8px, 0) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes tj-panel-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translate3d(0, -8px, 0) scale(0.98); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-velo-entra,
+  .tj-velo-sale,
+  .tj-panel-entra,
+  .tj-panel-sale {
+    animation: none;
+  }
+  /* Sin animación, la salida tiene que dejar el panel invisible durante
+     los 180 ms que `usePresencia` lo mantiene montado: si no, se
+     quedaría a la vista un instante después de cerrarlo, que es lo
+     contrario de lo que pide quien reduce el movimiento. */
+  .tj-velo-sale,
+  .tj-panel-sale {
+    opacity: 0;
+  }
+}
+
+/* ── LA CINTA DE COTIZACIONES ─────────────────────────────────────────
+   El desplazamiento infinito lo llevaba un bucle de `requestAnimation
+   Frame` de framer-motion que escribía la posición fotograma a
+   fotograma en el hilo principal, y que además medía la pista con un
+   `ResizeObserver` para saber dónde reiniciar.
+
+   Aquí no hace falta ninguna de las dos cosas. Las dos filas son
+   idénticas, así que desplazar exactamente la mitad del recorrido
+   devuelve la cinta a un fotograma indistinguible del inicial: el
+   bucle no se ve porque no hay nada que ver. Y como la animación es
+   declarativa, el compositor la lleva sin tocar el hilo principal, y la
+   cinta se mueve aunque no haya JavaScript.
+
+   EL -50 % EXIGE QUE LA COSTURA MIDA LO MISMO QUE EL HUECO ENTRE
+   SÍMBOLOS. Por eso la separación entre las dos filas NO se pone con
+   `gap` en la pista: un `gap` sólo aparece ENTRE las dos filas, así que
+   el recorrido total sería `2·fila + hueco` y su mitad, `fila +
+   hueco/2` — medio hueco de menos en cada vuelta, que se ve como un
+   tirón. Cada fila lleva su propio relleno a la derecha, de modo que
+   las dos mitades son exactamente iguales.
+
+   La pausa al pasar por encima ya no necesita estado de React: la deja
+   quieta el navegador. */
+.tj-cinta {
+  animation: tj-cinta-corre 50s linear infinite;
+  will-change: transform;
+}
+.tj-cinta-caja:hover .tj-cinta {
+  animation-play-state: paused;
+}
+@keyframes tj-cinta-corre {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-cinta {
+    animation: none;
+  }
+}
+
+/* ── LAS MISMAS ENTRADAS, PERO AL MONTARSE ────────────────────────────
+   Todo lo de arriba se mapea con la posición en la ventana, y eso vale
+   para lo que YA está en la página cuando se carga. No vale para lo que
+   aparece por una acción: la confirmación de un formulario enviado nace
+   en el centro de la pantalla, con su rango de `view()` ya consumido, y
+   se vería aparecer de golpe y a medio camino.
+
+   Estas tres reproducen la misma coreografía con una línea de tiempo
+   normal: se disparan al montarse el elemento, que es exactamente
+   cuando el visitante acaba de pulsar «enviar». Los retardos son los
+   que tenía la versión con framer-motion (0 / 0,25 / 0,55 s), así que
+   el disco se estampa, la marca se dibuja encima y el texto sube
+   después.
+
+   `both` en el modo de relleno: sin él, el elemento parpadea a su
+   estado final durante el retardo antes de empezar. */
+.tj-estampa-ya {
+  animation: tj-estampa 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.tj-dibuja-ya {
+  stroke-dasharray: 1;
+  animation: tj-dibuja 0.5s var(--ease-suave, ease) 0.25s both;
+}
+.tj-sube-ya {
+  animation: tj-entra-pieza 0.4s var(--ease-suave, ease) both;
+}
+.tj-sube-ya-tarde {
+  animation: tj-entra-pieza 0.4s var(--ease-suave, ease) 0.55s both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-estampa-ya,
+  .tj-dibuja-ya,
+  .tj-sube-ya,
+  .tj-sube-ya-tarde {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ── LA CITA, PALABRA A PALABRA ───────────────────────────────────────
+   La cita de la sección «Por qué existe esto» se escribe sola: cada
+   palabra entra un poco después que la anterior. Iba con las variantes
+   de framer-motion y su `staggerChildren: 0.035`.
+
+   El escalonado no se puede hacer con `animation-delay` —en una línea
+   de tiempo de scroll el retardo no existe, porque no hay tiempo que
+   retrasar— así que se desplaza el RANGO de cada palabra: 1,5 puntos
+   por posición, que el componente pasa en `--i`.
+
+   Los cinco escalones de `data-entra` no valen aquí: son dieciséis
+   palabras, y repetir el ciclo cada cinco haría que la cuarta entrase
+   antes que la tercera. `calc()` dentro de `animation-range` sí
+   funciona — comprobado en el navegador antes de escribir esto: con
+   `--i:8` el estilo computado sale `entry 12% entry 47%`.
+
+   El tope de 24 puntos evita que una cita larga tarde el doble: a
+   partir de la palabra 16 el desplazamiento deja de crecer. */
+@supports (animation-timeline: view()) {
+  [data-entra="palabra"] {
+    display: inline-block;
+    animation: tj-entra-pieza linear both;
+    animation-timeline: view(block);
+    animation-range: entry calc(min(var(--i, 0) * 1.5, 24) * 1%) entry
+      calc((35 + min(var(--i, 0) * 1.5, 24)) * 1%);
+  }
+}
+
+/* ── EL ESCALÓN, TAMBIÉN PARA LISTAS LARGAS ───────────────────────────
+   Los cinco escalones de arriba se escribían a mano en el JSX. Una
+   lista generada con `.map()` —doce filas de una tabla, nueve tarjetas—
+   no puede numerarlos uno a uno, y en framer-motion se resolvía con
+   `delay: i * 0.08`.
+
+   `data-entra="ciclo"` reparte el escalón por la POSICIÓN del hermano,
+   sin que el componente tenga que contar: los cinco primeros van
+   escalonados y a partir del sexto se repite el ciclo. Repetir es
+   deliberado — más allá del quinto retardo, el escalón se percibe como
+   espera, y una tabla de veinte filas con retardo creciente tardaría
+   1,6 s en acabar de encenderse. */
+@supports (animation-timeline: view()) {
+  [data-entra="ciclo"] {
+    animation: tj-entra-pieza linear both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 40%;
+  }
+  [data-entra="ciclo"]:nth-child(5n + 2) {
+    animation-range: entry 4% entry 46%;
+  }
+  [data-entra="ciclo"]:nth-child(5n + 3) {
+    animation-range: entry 8% entry 52%;
+  }
+  [data-entra="ciclo"]:nth-child(5n + 4) {
+    animation-range: entry 12% entry 58%;
+  }
+  [data-entra="ciclo"]:nth-child(5n + 5) {
+    animation-range: entry 16% entry 64%;
   }
 }
 
@@ -5049,6 +5547,61 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 }
 .tj-subir:active {
   transform: scale(0.95);
+}
+
+/* ── LA MISMA IDEA, PARA LAS TARJETAS Y LOS BOTONES ───────────────────
+   El realce de arriba se escribió para un botón flotante. El resto del
+   sitio tenía el mismo gesto repartido en `whileHover={{ y: -3 }}` y
+   `whileTap={{ scale: 0.98 }}` de framer-motion, uno por componente,
+   con su muelle propio — y ésa era la única razón por la que la página
+   de características y la de precios descargaban la biblioteca.
+
+   Aquí van los dos gestos que existen de verdad en el sitio, con la
+   misma curva que el resto de las transiciones. Se aplican con
+   `transition` explícita porque un `transform` sin transición salta:
+   el componente ya declara sus propias transiciones de color y borde,
+   así que `transform` se añade a esa lista en vez de pisarla.
+
+   `will-change` NO se declara: son elementos grandes (tarjetas de
+   sección) y promover cada uno a su propia capa cuesta memoria de vídeo
+   sin ganar nada — el navegador ya promociona durante el hover.
+
+   ── POR QUÉ LA LISTA LARGA Y NO `transition: transform 0.3s` ──────────
+   Estas tarjetas llevan además `transition-colors` de Tailwind para que
+   su borde se encienda al pasar por encima. `transition` es una
+   propiedad ABREVIADA: declararla aquí reinicia `transition-property`
+   entera, así que la versión corta apagaba el encendido del borde —
+   ganaba el transform y se perdía el color, sin que nada lo dijera.
+
+   Con `transition-property` en formato largo y la lista completa, las
+   dos cosas conviven pase lo que pase con el orden de la cascada. Es
+   la misma lista que genera `transition-colors`, más `transform` y
+   `box-shadow`. Comprobado en el navegador leyendo el estilo computado
+   de una tarjeta del bento. */
+.tj-realce {
+  transition-property:
+    transform, box-shadow, color, background-color, border-color,
+    text-decoration-color, fill, stroke, opacity;
+  transition-duration: 0.3s;
+  transition-timing-function: var(--ease-suave, ease);
+}
+.tj-realce:hover {
+  transform: translateY(-3px);
+}
+.tj-pulsa:active {
+  transform: scale(0.98);
+}
+/* Para los controles pequeños —iconos de 24 px, botones de fila— donde
+   un 2 % de reducción no se percibe. */
+.tj-pulsa-fuerte:active {
+  transform: scale(0.92);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-realce:hover,
+  .tj-pulsa:active,
+  .tj-pulsa-fuerte:active {
+    transform: none;
+  }
 }
 .tj-emerge.tj-subir {
   transition:

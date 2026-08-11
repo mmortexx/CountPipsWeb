@@ -1,7 +1,6 @@
 "use client";
 
 import { memo, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
 import type { Trade } from "@/lib/trading/data";
 import { heatmap, WEEKDAYS_SHORT } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
@@ -15,8 +14,7 @@ const HOUR_LABELS = ["00–04", "04–08", "08–12", "12–16", "16–20", "20�
 
 /** Day × hour P&L heatmap. Green = positive, red = negative, intensity by magnitude. */
 export const Heatmap = memo(function Heatmap({ trades, className = "" }: HeatmapProps) {
-  const { lang } = useLang();
-  const reduce = useReducedMotion();
+  const { lang } = useLang();
   const grid = useMemo(() => heatmap(trades), [trades]);
 
   // Trade counts per cell — matches the heatmap bucketing (Mon–Fri, 4-hour columns).
@@ -43,15 +41,14 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
   const [hovered, setHovered] = useState<{ r: number; c: number; x: number; y: number } | null>(null);
 
   return (
-    <motion.div
-      className={`relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
+    <div
+      data-entra
+      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       ref={containerRef}
       role="img"
       aria-label={lang === "es"
         ? "Mapa de calor de rentabilidad por día de la semana y franja horaria"
         : "Heatmap of profitability by weekday and time band"}
-      whileHover={reduce ? undefined : { scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 300, damping: 26 }}
       style={{ transformOrigin: "center" }}
     >
       <div className="flex gap-1.5">
@@ -79,14 +76,10 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                   ? `rgb(var(--pnl-pos) / ${0.12 + intensity * 0.18})`
                   : `rgb(var(--pnl-neg) / ${0.12 + intensity * 0.18})`;
                 return (
-                  <motion.div
+                  <div
+                    data-entra="sello"
                     key={c}
-                    initial={reduce ? undefined : { opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: (r * 6 + c) * 0.012, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    whileHover={reduce ? undefined : { scale: 1.12 }}
-                    className="h-8 rounded-sm flex items-center justify-center text-[9px] font-semibold tnum cursor-default relative overflow-hidden group"
+                    className="tj-realce h-8 rounded-sm flex items-center justify-center text-[9px] font-semibold tnum cursor-default relative overflow-hidden group"
                     style={{ backgroundColor: bg }}
                     onMouseEnter={(e) => {
                       const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -114,7 +107,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                         {v >= 0 ? "+" : "−"}{Math.abs(v) >= 1000 ? `${(Math.abs(v) / 1000).toFixed(1)}k` : Math.round(Math.abs(v))}
                       </span>
                     )}
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -155,6 +148,6 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 });

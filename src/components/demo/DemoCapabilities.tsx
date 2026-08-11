@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 
@@ -187,14 +186,13 @@ export function DemoCapabilities() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {capabilities.map((c, i) => (
             <Reveal key={i} delay={i * 0.06}>
-              <motion.div
-                whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 24 } }}
-                transition={{ type: "spring", stiffness: 300, damping: 24 }}
+              <div
+                data-entra
                 // T3c — swap `liquid-glass` por `.tj-paper`: papel translúcido
                 // cálido en las 6 tarjetas de capacidades. depth-1 → depth-2
                 // hover, accent top-edge bar, icon chip y hover bg/shadow se
                 // conservan.
-                className="group tj-paper transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] rounded-[2px] p-5 h-full flex flex-col gap-3 border border-[rgb(var(--divider)/0.10)] hover:border-[rgb(var(--accent-base)/0.32)] hover:bg-[rgb(var(--accent-base)/0.04)] hover:shadow-[0_8px_24px_-8px_rgb(var(--accent-base)/0.25)] relative overflow-hidden min-w-0"
+                className="tj-realce group tj-paper transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] rounded-[2px] p-5 h-full flex flex-col gap-3 border border-[rgb(var(--divider)/0.10)] hover:border-[rgb(var(--accent-base)/0.32)] hover:bg-[rgb(var(--accent-base)/0.04)] hover:shadow-[0_8px_24px_-8px_rgb(var(--accent-base)/0.25)] relative overflow-hidden min-w-0"
               >
                 {/* Accent top-edge bar — mirrors the ExperimentsPage /
                     FiscalPage KPI card pattern, tying each feature card
@@ -224,7 +222,7 @@ export function DemoCapabilities() {
                     {es ? c.descEs : c.descEn}
                   </p>
                 </div>
-              </motion.div>
+              </div>
             </Reveal>
           ))}
         </div>

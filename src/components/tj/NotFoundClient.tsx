@@ -77,7 +77,7 @@ export function NotFoundClient() {
   return (
     <section
       aria-labelledby="not-found-heading"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden px-5 py-20"
+      className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
       {/* Subtle scrolling candlestick backdrop */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">

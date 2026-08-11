@@ -62,7 +62,7 @@ export function StatsBandNew() {
       // big number. `bg-veil` (82 % bg in light / 74 % in dark)
       // occludes the eye; the `border-b` bottom hairline is
       // preserved for the section's lower edge.
-      className="section-tight border-b border-[rgb(var(--divider)/0.10)] relative overflow-hidden bg-veil"
+      className="section-tight border-b border-[rgb(var(--divider)/0.10)] relative overflow-clip bg-veil"
     >
       {/* T2c — `tj-container` hereda los gutters fluidos (clamp(1.25rem,
           4vw, 2.25rem)) definidos por T2a en globals.css, sustituyendo al

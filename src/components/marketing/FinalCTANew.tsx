@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@/components/tj/LocaleLink";
-import { motion } from "framer-motion";
 import { ArrowRight, Check, Play } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
@@ -10,6 +9,26 @@ import { useLang } from "@/lib/i18n";
  * complejidad y porque el sitio es dark por defecto — el vídeo
  * añadiría una dependencia externa más). El halo verde + el patrón
  * del HTML se conservan.
+ *
+ * ── ESTE FICHERO ERA EL QUE LE COBRABA FRAMER-MOTION A MEDIO SITIO ────
+ * Llevaba cuatro `<motion.*>` con el patrón de siempre:
+ * `initial={{opacity:0,y:16}} whileInView={{opacity:1,y:0}}` con
+ * retardos de 0, 0,10, 0,18 y 0,30 s.
+ *
+ * El cierre aparece en TODAS las páginas de plantilla —las de glosario,
+ * las de herramientas, las de perfil de trader—, y como `framer-motion`
+ * viaja en un trozo compartido, esas páginas descargaban la biblioteca
+ * entera (36 KB comprimidos) para animar cuatro entradas. Medido: una
+ * página de glosario pedía 242 KB brotli y una legal, que no la lleva,
+ * 205 KB.
+ *
+ * Los cuatro `data-entra` de abajo hacen lo mismo con el mecanismo que
+ * ya usa el resto del sitio (`animation-timeline: view()`, ver
+ * globals.css): los escalones 1-4 reproducen el mismo orden de lectura
+ * que los retardos originales. Y son mejores en dos cosas concretas: el
+ * progreso lo lleva el compositor —así que el movimiento sigue al dedo
+ * en un scroll táctil en vez de reproducirse a su ritmo— y no dependen
+ * de que arranque JavaScript, así que el texto se lee igual sin él.
  */
 export function FinalCTANew() {
   const { lang } = useLang();
@@ -31,7 +50,7 @@ export function FinalCTANew() {
       // theme-aware halo in the area where the bright inner halo
       // (22 % accent at 50 % 50 %) sits directly behind "Empieza a
       // medir.".
-      className="section relative overflow-hidden bg-veil border-t border-[rgb(var(--divider)/0.06)]"
+      className="section relative overflow-clip bg-veil border-t border-[rgb(var(--divider)/0.06)]"
     >
       {/* Halo "núcleo + corona" retirado (rediseño institucional). Eran
           DOS discos de acento difuminados y superpuestos detrás del
@@ -47,11 +66,8 @@ export function FinalCTANew() {
         }}
       />
       <div className="tj-legible-text relative max-w-[820px] mx-auto px-[clamp(1.25rem,4vw,2.25rem)] text-center">
-        <motion.h2
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+        <h2
+          data-entra
           className="font-serif m-0"
           style={{
             fontSize: "clamp(2.4rem, 5.5vw, 4.5rem)",
@@ -73,12 +89,9 @@ export function FinalCTANew() {
               <span style={{ color: "rgb(var(--accent-base))" }}>See how it is measured.</span>
             </>
           )}
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+        </h2>
+        <p
+          data-entra="2"
           className="mt-6 mx-auto"
           style={{
             fontSize: "clamp(1.05rem, 1.4vw, 1.2rem)",
@@ -90,12 +103,9 @@ export function FinalCTANew() {
           {es
             ? "40+ métricas, guardián de disciplina y tus datos en tu máquina. Explora la demo con datos de muestra y decide con criterio."
             : "40+ metrics, a discipline guardian, and your data on your machine. Explore the sample-data demo and decide with clarity."}
-        </motion.p>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.18 }}
+        </p>
+        <div
+          data-entra="3"
           // T2d — `gap-3.5` (14px) entre CTAs (era `gap-3` 12px) para
           // que el par primary/secondary respire cuando envuelven en
           // móvil estrecho. Sutil pero consistente con el gap-3.5 del
@@ -134,12 +144,9 @@ export function FinalCTANew() {
             <Play size={15} fill="currentColor" aria-hidden />
             {es ? "Ver precios" : "See pricing"}
           </Link>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+        </div>
+        <div
+          data-entra="4"
           // T2d — `gap-y-2.5` (10px) entre garantías cuando envuelven
           // (era `gap-y-2` 8px). En 320px las 4 garantías caen a 2
           // líneas; 10px de gap vertical las separa sin abrir un hueco
@@ -161,7 +168,7 @@ export function FinalCTANew() {
               {g}
             </span>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

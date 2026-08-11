@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import { PRICING_FAQ_ES, PRICING_FAQ_EN, type QA } from "@/lib/faq";
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -49,8 +48,7 @@ import {
 
 export function PricingFAQ() {
   const { lang } = useLang();
-  const es = lang === "es";
-  const reduce = useReducedMotion();
+  const es = lang === "es";
 
   /* Las cuatro preguntas viven en `src/lib/faq.ts`, compartidas con el
      dato estructurado de la pagina, para que no puedan divergir. */
@@ -67,7 +65,7 @@ export function PricingFAQ() {
     <section
       id="pricing-faq"
       aria-label={es ? "Preguntas frecuentes sobre precios" : "Pricing FAQ"}
-      className="section-tight bg-veil relative overflow-hidden scroll-mt-24"
+      className="section-tight bg-veil relative overflow-clip scroll-mt-24"
     >
       {/* Opt-in 3% fractalNoise grain — matches HeroVideo / Bento /
           Pricing so the FAQ reads as a continuation of the same premium
@@ -104,22 +102,15 @@ export function PricingFAQ() {
               Centered so they read as a single horizontal credential
               strip directly under the lead. */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            {pills.map((label, i) => (
-              <motion.span
+            {pills.map((label) => (
+              <span
+                data-entra="ciclo"
                 key={label}
-                initial={{ opacity: 0, y: 8 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{
-                  duration: 0.5,
-                  delay: 0.18 + i * 0.08,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
                 className="pill !rounded-[2px] bg-[rgb(var(--divider)/0.05)] text-secondary border border-[rgb(var(--divider)/0.10)] tnum"
               >
                 <span className="size-1.5 rounded-full bg-[rgb(var(--accent-base))]" aria-hidden="true" />
                 {label}
-              </motion.span>
+              </span>
             ))}
           </div>
         </Reveal>
@@ -161,11 +152,8 @@ export function PricingFAQ() {
           </div>
 
           {/* Inline CTA to the full FAQ page. */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: "-30px" }}
-            transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          <p
+            data-entra="4"
             className="mt-5 text-center text-sm text-tertiary"
           >
             {es ? "¿Más dudas?" : "More questions?"}{" "}
@@ -179,21 +167,24 @@ export function PricingFAQ() {
               <span>{es ? "Ver FAQ completa" : "See full FAQ"}</span>
               <span className="transition-transform duration-200 group-hover/link:translate-x-0.5" aria-hidden="true">→</span>
             </a>
-          </motion.p>
+          </p>
         </Reveal>
 
-        {/* Subtle accent line under the section — respects reduced motion. */}
-        <motion.div
+        {/* Filete de acento bajo la sección. «Respeta reducir
+            movimiento» ya no hace falta decirlo aquí: la regla
+            `@media (prefers-reduced-motion: reduce)` de globals.css
+            desactiva todos los `[data-entra]`, así que la excepción ya
+            no puede quedarse desincronizada con la animación —que es lo
+            que pasaba cuando ambas se escribían por separado. */}
+        <div
           aria-hidden="true"
+          data-entra="traza"
           className="mt-12 h-px max-w-md mx-auto"
           style={{
             background:
               "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.4) 50%, transparent 100%)",
+            transformOrigin: "left center",
           }}
-          initial={{ scaleX: 0, opacity: 0 }}
-          whileInView={{ scaleX: 1, opacity: reduce ? 0.6 : 1 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
         />
       </div>
     </section>

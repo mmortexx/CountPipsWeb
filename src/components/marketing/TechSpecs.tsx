@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Lock } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
@@ -88,7 +87,7 @@ export function TechSpecs() {
   ];
 
   return (
-    <section className="section bg-veil relative overflow-hidden">
+    <section className="section bg-veil relative overflow-clip">
       <div className="relative tj-container">
         {/* Header */}
         {/* `partida` y no `apilada`: en /features/seguridad esta sección e
@@ -129,17 +128,10 @@ export function TechSpecs() {
             que cierra la retícula por abajo. */}
         <Reveal delay={0.1} y={28} className="mt-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
-            {rows.map((r, i) => (
-              <motion.dl
+            {rows.map((r) => (
+              <dl
+                data-entra="ciclo"
                 key={r.labelEn}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{
-                  duration: 0.5,
-                  delay: (i % 2) * 0.06 + Math.floor(i / 2) * 0.04,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
                 /* El filete vertical sólo en la segunda columna y sólo
                    cuando hay dos: en móvil la retícula es una sola
                    columna y una raya a la izquierda no separaría nada. */
@@ -154,7 +146,7 @@ export function TechSpecs() {
                 <dd className="text-primary text-sm font-medium leading-snug tnum tracking-[-0.005em]">
                   {es ? r.valueEs : r.valueEn}
                 </dd>
-              </motion.dl>
+              </dl>
             ))}
           </div>
         </Reveal>

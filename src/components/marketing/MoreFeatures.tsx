@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import type { ReactNode } from "react";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -70,7 +69,7 @@ export function MoreFeatures() {
   ];
 
   return (
-    <section className="section bg-veil relative overflow-hidden">
+    <section className="section bg-veil relative overflow-clip">
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
       <div className="relative tj-container">
@@ -116,17 +115,10 @@ export function MoreFeatures() {
             cuando alguien cambia el número de columnas. */}
         <div className="mt-10 overflow-hidden border-t border-[rgb(var(--divider)/0.14)]">
           <div className="-ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f, i) => (
-              <motion.article
+            {features.map((f) => (
+              <article
+                data-entra="ciclo"
                 key={f.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{
-                  duration: 0.5,
-                  delay: Math.min(i * 0.06, 0.3),
-                  ease: [0.22, 1, 0.36, 1],
-                }}
                 className="group min-w-0 p-5 border-b border-l border-[rgb(var(--divider)/0.14)]"
               >
                 {/* Icon */}
@@ -138,7 +130,7 @@ export function MoreFeatures() {
                 <h3 className="t-h4 text-primary">{f.title}</h3>
                 {/* T2h: leading-relaxed (1.625) → leading-[1.6] per spec. */}
                 <p className="mt-1.5 text-[13px] text-secondary leading-[1.6]">{f.desc}</p>
-              </motion.article>
+              </article>
             ))}
           </div>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
@@ -157,7 +156,7 @@ export function Wrapped() {
   ];
 
   return (
-    <section className="section cv-auto relative overflow-hidden bg-veil">
+    <section className="section cv-auto relative overflow-clip bg-veil">
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
 
@@ -205,12 +204,9 @@ export function Wrapped() {
                 ? "rgb(var(--pnl-warn))"
                 : "rgb(var(--accent-base))";
             return (
-              <motion.article
+              <article
+                data-entra="ciclo"
                 key={c.key}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: (i % 3) * 0.08, ease: [0.22, 1, 0.36, 1] }}
                 className={`group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.35)] ${span}`}
               >
                 <div className="relative p-6 md:p-7 flex flex-col h-full justify-between gap-4 cq-wrap min-w-0">
@@ -236,7 +232,7 @@ export function Wrapped() {
 
                   <p className="text-[13px] text-tertiary leading-relaxed">{c.sub}</p>
                 </div>
-              </motion.article>
+              </article>
             );
           })}
         </div>

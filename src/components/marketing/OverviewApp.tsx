@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@/components/tj/LocaleLink";
-import { motion } from "framer-motion";
 import { ShieldCheck, ArrowRight, Play } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { getKpis } from "@/lib/trading/fixtures";
@@ -38,7 +37,7 @@ export function OverviewApp() {
       // halo (applied on the inner wrapper below) so any residual
       // brightening from the section's own accent halo (right-side
       // radial at top:-160) doesn't wash out the text.
-      className="section relative overflow-hidden bg-veil scroll-mt-24"
+      className="section relative overflow-clip bg-veil scroll-mt-24"
     >
       {/* Halo derecho superior */}
       <div
@@ -150,11 +149,8 @@ export function OverviewApp() {
               own opaque surface) — the class is scoped to the left
               column only. */}
           <div className="tj-legible-text">
-            <motion.h2
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+            <h2
+              data-entra
               className="font-serif m-0"
               style={{
                 // R21-3a — mobile min dropped 2.4rem -> 2rem so the
@@ -221,7 +217,7 @@ export function OverviewApp() {
                   <span style={{ color: "var(--ink-3)" }}>.</span>
                 </>
               )}
-            </motion.h2>
+            </h2>
             <p
               className="mt-7 mb-0 break-words"
               style={{

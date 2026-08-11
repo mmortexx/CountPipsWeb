@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { ComponentType } from "react";
 import { Mail, BookOpen, ArrowRight } from "lucide-react";
 
@@ -98,7 +97,7 @@ export function ContactSupport() {
       // the grain overlay still paints on top. The cards themselves
       // (`tj-paper border border-[rgb(var(--divider)/0.13)]`) have their own opaque surface and
       // are unaffected.
-      className="section-tight relative overflow-hidden bg-veil scroll-mt-24"
+      className="section-tight relative overflow-clip bg-veil scroll-mt-24"
     >
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
@@ -145,9 +144,15 @@ export function ContactSupport() {
             const cta = es ? c.ctaEs : c.ctaEn;
             return (
               <Reveal key={c.titleEn} delay={0.12 + i * 0.06} y={20}>
-                <motion.a
+                {/* Era un `motion.a` con un `transition` de muelle y
+                    NINGUNA propiedad que animar: `transition` describe
+                    cómo se llega a un `animate` o un `whileHover` que
+                    aquí no existían, así que no hacía nada — y por él
+                    esta página descargaba framer-motion entera. El
+                    realce al pasar por encima lo pone el `hover:` de la
+                    clase, como en el resto de las tarjetas. */}
+                <a
                   href={c.href}
-                  transition={{ type: "spring", stiffness: 300, damping: 24 }}
                   aria-label={`${title} — ${cta}`}
                   className="group relative flex flex-col tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
                 >
@@ -194,7 +199,7 @@ export function ContactSupport() {
                     {cta}
                     <ArrowRight className="size-4 transition-transform duration-300 ease-[var(--ease-suave)] group-hover:translate-x-1" />
                   </div>
-                </motion.a>
+                </a>
               </Reveal>
             );
           })}

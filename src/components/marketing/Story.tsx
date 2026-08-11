@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -93,12 +92,19 @@ export function Story() {
   const quoteWords = quote.split(" ");
 
   return (
-    <section id="story" className="section bg-veil relative scroll-mt-24 overflow-hidden">
+    <section id="story" className="section bg-veil relative scroll-mt-24 overflow-clip">
       {/* Section grain — opt-in 3 % fractalNoise overlay. */}
       <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
       <div className="relative z-10 tj-container grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-20 items-start">
         {/* LEFT — editorial pull quote (sticky + subtle parallax) */}
-        <motion.div className="lg:sticky lg:top-24" >
+        {/* Sin `data-entra`, y no por casualidad: esta columna es
+            `sticky`, y una entrada atada a `view()` mide la posición del
+            elemento en la ventana para calcular su progreso — mientras
+            que un `sticky` cambia esa posición al desplazarse. Las dos
+            cosas juntas se realimentan. Además era un `motion.div` sin
+            props de animación: no había nada que conservar. Sus tres
+            bloques ya entran con sus `Reveal`. */}
+        <div className="lg:sticky lg:top-24" >
           <Reveal>
             <Eyebrow>{es ? "Por qué existe esto" : "Why this exists"}</Eyebrow>
             <h2
@@ -126,33 +132,22 @@ export function Story() {
               >
                 &ldquo;
               </span>
-              <motion.p
-                className="t-h3 text-primary leading-snug"
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-40px" }}
-                variants={{
-                  hidden: {},
-                  visible: { transition: { staggerChildren: 0.035, delayChildren: 0.05 } },
-                }}
-              >
+              {/* La cita se escribe sola, palabra a palabra. Era un
+                  `staggerChildren: 0.035` de framer-motion; ahora cada
+                  palabra lleva su posición en `--i` y la hoja desplaza su
+                  rango de entrada 1,5 puntos por posición. Ver
+                  `[data-entra="palabra"]` en globals.css. */}
+              <p className="t-h3 text-primary leading-snug">
                 {quoteWords.map((w, i) => (
-                  <motion.span
+                  <span
                     key={i}
-                    className="inline-block"
-                    variants={{
-                      hidden: { opacity: 0, y: 8 },
-                      visible: {
-                        opacity: 1,
-                        y: 0,
-                        transition: { duration: 0.42, ease: [0.22, 1, 0.36, 1] },
-                      },
-                    }}
+                    data-entra="palabra"
+                    style={{ "--i": i } as React.CSSProperties}
                   >
                     {w}&nbsp;
-                  </motion.span>
+                  </span>
                 ))}
-              </motion.p>
+              </p>
               <footer className="mt-4 text-sm text-tertiary">
                 — {es ? "filosofía de la app" : "the app's philosophy"}
               </footer>
@@ -171,7 +166,7 @@ export function Story() {
                 : "Every trading app we tried was either a glorified spreadsheet, or a monthly subscription that lost your data if you stopped paying. None of them showed what YOUR behavior cost you in money. So we built one that does — and that lives on your computer."}
             </p>
           </Reveal>
-        </motion.div>
+        </div>
 
         {/* RIGHT — timeline */}
         <div className="relative">
@@ -190,17 +185,9 @@ export function Story() {
               <Reveal key={i} delay={i * 0.08}>
                 <div className="relative pl-9">
                   {/* Dot — pops in (scale 0→1, spring). Color reflects the trader's arc (red → green). */}
-                  <motion.span
+                  <span
+                    data-entra="sello"
                     className={`absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full ring-4 ring-[rgb(var(--tint))] ${toneDot[p.tone]}`}
-                    initial={{ scale: 0, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{
-                      delay: i * 0.08 + 0.15,
-                      type: "spring",
-                      stiffness: 340,
-                      damping: 16,
-                    }}
                     aria-hidden="true"
                   />
                   {/* Dot pulse halo — un único "aliento" al entrar en
@@ -209,15 +196,13 @@ export function Story() {
                       retiró (movimiento decorativo gratuito); ahora las
                       cinco fases comparten el mismo pulso de entrada, una
                       sola vez. */}
-                  <motion.span
+                  <span
+                    data-entra="sello"
                     aria-hidden="true"
                     className={`absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full ${toneDot[p.tone]} pointer-events-none`}
-                    initial={{ scale: 0.6, opacity: 0.30 }}
-                    whileInView={{ scale: 2.1, opacity: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{ delay: i * 0.08 + 0.2, duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
                   />
-                  <motion.div
+                  <div
+                    data-entra
                     className="group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -243,7 +228,7 @@ export function Story() {
                       {p.title}
                     </h3>
                     <p className="mt-2 text-sm text-secondary leading-[1.6]">{p.desc}</p>
-                  </motion.div>
+                  </div>
                 </div>
               </Reveal>
             ))}
