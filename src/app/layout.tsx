@@ -246,19 +246,52 @@ export default function RootLayout({
             Los de la ruta crítica ya no lo hacen (ver `Reveal.tsx` y
             `PageHeader.tsx`, que animan con CSS atado al scroll), pero
             quedan piezas repartidas por el sitio y, sobre todo, no hay
-            nada que impida que mañana entre una nueva. Esto lo cubre de
-            raíz y para siempre: si no hay JavaScript, nada puede quedar
-            en opacidad cero ni desplazado.
+            nada que impida que mañana entre una nueva. Sin JavaScript,
+            esta regla rescata hoy 243 elementos repartidos por las
+            rutas auditadas — 43 filas de tabla en /pricing y 23
+            tarjetas en /features, medidas quitándola a propósito.
+
+            LO QUE NO CUBRE, dicho para que nadie se confíe: sólo el
+            valor CERO EXACTO. Un `initial={{ opacity: 0.02 }}` es
+            invisible en la práctica y esta regla lo deja pasar, porque
+            no hay forma de distinguir en un selector de atributo un
+            velo deliberado de una animación que empieza casi apagada.
+            Si aparece uno, el sitio para escribirlo es una entrada CSS
+            (`.tj-emerge` y compañía en globals.css), no un estilo en
+            línea.
 
             Va dentro de `<noscript>`, así que el navegador ni siquiera
             lo analiza cuando hay JavaScript: coste cero en el caso
             normal. Y `!important` aquí es correcto —es la única forma
             de ganarle a un estilo en línea— y está acotado a un
             contexto donde, por definición, ninguna animación va a
-            correr. */}
+            correr.
+
+            EL `:not(...)` NO ES ADORNO. `[style*="opacity:0"]` es una
+            comparación de subcadena, así que también casaba con
+            `opacity:0.045` —el grano del papel de `BackgroundFX`— y con
+            `opacity:0.34` —su viñeta—, y las subía a opacidad PLENA. Sin
+            JavaScript, 361 elementos del sitio pasaban de un velo de
+            material a una plancha de ruido opaca encima del texto: la
+            red de seguridad estropeaba la página que venía a salvar.
+
+            `:not([style*="opacity:0."])` descarta cualquier valor con
+            decimales y deja pasar sólo el cero exacto, que es lo que
+            escriben hoy todas las animaciones de entrada del sitio —
+            comprobado extrayendo los atributos `style` de las 154
+            páginas exportadas: las únicas opacidades en línea que
+            existen son `0`, `1` y siete decimales, y ninguna las
+            mezcla en el mismo atributo.
+
+            El caso teórico que se le escaparía —un `style` con un
+            `opacity:0` exacto Y alguna otra subcadena `opacity:0.`,
+            como un `fill-opacity:0.5` al lado— no queda desprotegido:
+            `scripts/humo.mjs` mide, sin JavaScript, que todo `opacity:0`
+            en línea acabe a plena tinta. Si algún día uno se escapa,
+            salta ahí. */}
         <noscript
           dangerouslySetInnerHTML={{
-            __html: `<style>[style*="opacity:0"],[style*="opacity: 0"]{opacity:1!important;transform:none!important;visibility:visible!important}</style>`,
+            __html: `<style>[style*="opacity:0"]:not([style*="opacity:0."]),[style*="opacity: 0"]:not([style*="opacity: 0."]){opacity:1!important;transform:none!important;visibility:visible!important}</style>`,
           }}
         />
       </head>
