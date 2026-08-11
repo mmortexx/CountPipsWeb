@@ -90,24 +90,36 @@ export const metadata: Metadata = {
   },
 };
 
-const sectionFallback = (
-  <div className="section" aria-hidden="true" style={{ minHeight: 360 }} />
-);
+// LAS SECCIONES PESADAS SIGUEN EN SU PROPIO TROZO DE JAVASCRIPT, PERO YA
+// NO LLEVAN `loading`.
+//
+// Un `loading` en `next/dynamic` abre un límite de Suspense, y React
+// resuelve un límite de Suspense durante el prerenderizado escribiendo el
+// hueco en su sitio y el contenido REAL al final del <body>, dentro de un
+// <div hidden> que sólo un script sabe devolver a su lugar. Sin
+// JavaScript ese script no corre: medido en el HTML compilado, la portada
+// servía 37.921 de sus 118.707 caracteres —el 32 %— dentro de bloques
+// ocultos, y /features 61.865 de 128.953, el 48 %.
+//
+// Sin `loading` no hay límite, el contenido se escribe donde va y el
+// reparto en trozos se conserva intacto: medido tras el cambio, la
+// portada pide los mismos 17 scripts y los mismos 948 KB. El salto de
+// maquetación que el hueco venía a evitar tampoco ocurre — no hay hueco,
+// porque la sección ya viene escrita.
+//
+// Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
+
 const MetricsShowcaseNew = dynamic(
-  () => import("@/components/marketing/MetricsShowcaseNew").then((m) => m.MetricsShowcaseNew),
-  { loading: () => sectionFallback }
+  () => import("@/components/marketing/MetricsShowcaseNew").then((m) => m.MetricsShowcaseNew)
 );
 const RiskCalculator = dynamic(
-  () => import("@/components/marketing/RiskCalculator").then((m) => m.RiskCalculator),
-  { loading: () => sectionFallback }
+  () => import("@/components/marketing/RiskCalculator").then((m) => m.RiskCalculator)
 );
 const EquityProjector = dynamic(
-  () => import("@/components/marketing/EquityProjector").then((m) => m.EquityProjector),
-  { loading: () => sectionFallback }
+  () => import("@/components/marketing/EquityProjector").then((m) => m.EquityProjector)
 );
 const Wrapped = dynamic(
-  () => import("@/components/marketing/Wrapped").then((m) => m.Wrapped),
-  { loading: () => sectionFallback }
+  () => import("@/components/marketing/Wrapped").then((m) => m.Wrapped)
 );
 
 /** Exportado con nombre para que `app/en/features/metricas/page.tsx` lo
