@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { irArriba } from "@/lib/scroll";
+import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
 
 /**
  * BackToTop — circular floating button with a scroll-progress ring.
@@ -191,29 +192,25 @@ export function BackToTop() {
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
-    // CookieConsent mounts/unmounts its banner via AnimatePresence in
-    // response to its own internal state (scroll/5 s reveal, Accept/
-    // Decline click). Those transitions don't fire a window scroll/resize
-    // event, so BackToTop's lift wouldn't otherwise know to recompute.
-    // A MutationObserver on document.body catches the banner's mount and
-    // unmount and triggers update() — closing the race where the user
-    // scrolls to the bottom BEFORE the banner mounts (BackToTop's scroll
-    // handler ran first, found no banner, lifted only for the footer;
-    // the banner then mounted over the button). The observer also catches
-    // the banner's exit so the button drops back to its natural position
-    // once the banner is dismissed.
-    const observer = new MutationObserver(() => {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    /* El aviso de cookies aparece por su cuenta —al primer scroll o a los
+       5 s— y desaparece al elegir, y ninguno de esos momentos dispara un
+       scroll ni un resize. Este botón tiene que enterarse para apartarse y
+       no quedar debajo.
+
+       Aquí eso se resolvía con un `MutationObserver` sobre `document.body`
+       con `subtree: true`, o sea vigilando el documento ENTERO en las 155
+       páginas del sitio: cualquier cambio del DOM —cualquiera— programaba
+       una comprobación que lee el alto del documento, busca un selector y
+       mide un rectángulo. Medido en una página sin figura: 245 lecturas de
+       `scrollHeight` y 243 rectángulos en cinco segundos de scroll.
+
+       Ahora el aviso avisa. Un evento, cero vigilancia. */
+    window.addEventListener(CONSENT_VISIBILITY_EVENT, onResize);
     update();
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
-      observer.disconnect();
+      window.removeEventListener(CONSENT_VISIBILITY_EVENT, onResize);
     };
   }, []);
 

@@ -34,6 +34,21 @@ export const CONSENT_CHANGE_EVENT = "tj-consent-change";
 /** Se emite para pedirle al aviso que vuelva a aparecer. */
 export const CONSENT_REOPEN_EVENT = "tj-consent-reopen";
 
+/**
+ * El aviso ha aparecido o se ha ido de la pantalla.
+ *
+ * Lo emite `CookieConsent` cada vez que cambia su visibilidad, y hoy lo
+ * escucha el botón de volver arriba, que tiene que apartarse para no
+ * quedar debajo. Antes se enteraba con un `MutationObserver` sobre
+ * `document.body` con `subtree: true` —en las 155 páginas del sitio—
+ * porque no había forma de saberlo: cualquier cambio del DOM, viniera de
+ * donde viniera, disparaba una comprobación que leía el alto del
+ * documento y medía rectángulos.
+ *
+ * Con un evento, el que sabe avisa y nadie vigila.
+ */
+export const CONSENT_VISIBILITY_EVENT = "tj-consent-visibility";
+
 export type Consent = "accepted" | "declined" | null;
 
 /** Lee la elección guardada. `null` = todavía no ha elegido. */

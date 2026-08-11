@@ -68,11 +68,24 @@ export function ScrollToTop() {
      * navegador. `scrollMarginTop` se lee del propio elemento, así que
      * cada sección sigue decidiendo cuánto aire deja bajo la barra fija.
      */
+    /* El margen de la sección se lee UNA vez y se recuerda. Esto corre en
+       cada fotograma durante dos segundos y medio, justo encima de la
+       hidratación, y `getComputedStyle` es de las llamadas que obligan al
+       navegador a resolver el estilo en ese instante. El valor no cambia
+       entre fotogramas: es una regla CSS de la sección, no algo que se
+       mueva con el scroll. */
+    let margenCache: number | null = null;
+    let margenDe: string | null = null;
+
     const align = () => {
       if (cancelled) return;
       const el = document.getElementById(hash);
       if (!el) return;
-      const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+      if (margenCache === null || margenDe !== hash) {
+        margenCache = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+        margenDe = hash;
+      }
+      const margin = margenCache;
       const target = Math.max(
         0,
         Math.round(el.getBoundingClientRect().top + window.scrollY - margin)

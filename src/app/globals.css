@@ -4410,19 +4410,22 @@ button.icon-btn:hover > svg,
    más, que era el objetivo. */
 
 /* ============================================================
-   FLUIDEZ — capa de composición para lo que de verdad se mueve
+   FLUIDEZ — y por qué aquí ya no hay nada
    ============================================================
-   `translateZ(0)` promociona el elemento a su propia capa para que el
-   scroll no lo repinte. Iba acompañado de `will-change: backdrop-filter`,
-   que se retira junto con el propio `backdrop-filter` de `.tj-paper`
-   (ver «papel, no cristal»): pedirle al navegador que se prepare para
-   animar una propiedad que el elemento ya no tiene es reservar memoria
-   de composición a cambio de nada. */
-.tj-paper,
-.liquid-glass {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-}
+   Había un `translateZ(0)` sobre `.tj-paper` y `.liquid-glass` para
+   promocionarlas a su propia capa de composición. Venía acompañando a un
+   `will-change: backdrop-filter`, que se retiró al retirar el propio
+   `backdrop-filter` de `.tj-paper` (ver «papel, no cristal»): el motivo
+   se fue y la promoción se quedó.
+
+   Sin `backdrop-filter` y sin nada que animar, promocionar una superficie
+   estática no la hace más fluida: sólo reserva memoria de GPU. Y no son
+   dos elementos — son 53 en el glosario y 22 en características, contados
+   sobre el HTML construido, en todas las páginas y para siempre.
+
+   Medido antes de quitarlo: el tiempo de fotograma no cambia. O sea que
+   lo único que hacía era gastar memoria en el móvil, que es justo donde
+   menos hay. */
 
 /* ============================================================
    TJ-PING — pulso "live" para indicadores de estado en tiempo real

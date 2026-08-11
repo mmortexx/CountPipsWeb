@@ -1664,6 +1664,17 @@ function GlobeIcon() {
 function UtcClock() {
   const [time, setTime] = useState("--:--:--");
   useEffect(() => {
+    /* ── EL RELOJ NO CORRE DONDE NO SE VE ────────────────────────────
+       Este elemento está oculto por debajo de 1280 px (`xl:inline-flex`),
+       que es la mayoría del tráfico. El intervalo corría igual: un render
+       de React por segundo, en las 155 páginas, para actualizar un texto
+       que nadie tiene delante — y en el móvil, además, gastando batería.
+
+       La misma media query que decide si se ve decide ahora si corre. Y
+       se para al ocultar la pestaña, porque un reloj que nadie mira no
+       necesita ir al día: al volver, la primera cosa que hace es ponerse
+       en hora. */
+    const anchoXl = window.matchMedia("(min-width: 1280px)");
     const fmt = new Intl.DateTimeFormat("es-ES", {
       hour: "2-digit",
       minute: "2-digit",
@@ -1671,10 +1682,26 @@ function UtcClock() {
       hour12: false,
       timeZone: "UTC",
     });
+    let id = 0;
     const tick = () => setTime(fmt.format(new Date()));
-    tick();
-    const id = window.setInterval(tick, 1000);
-    return () => window.clearInterval(id);
+    const parar = () => {
+      if (id) window.clearInterval(id);
+      id = 0;
+    };
+    const arrancar = () => {
+      parar();
+      if (!anchoXl.matches || document.hidden) return;
+      tick();
+      id = window.setInterval(tick, 1000);
+    };
+    arrancar();
+    anchoXl.addEventListener("change", arrancar);
+    document.addEventListener("visibilitychange", arrancar);
+    return () => {
+      parar();
+      anchoXl.removeEventListener("change", arrancar);
+      document.removeEventListener("visibilitychange", arrancar);
+    };
   }, []);
   return (
     <span

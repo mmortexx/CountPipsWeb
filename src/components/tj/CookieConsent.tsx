@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
-import { CONSENT_REOPEN_EVENT, readConsent, writeConsent } from "@/lib/consent";
+import {
+  CONSENT_REOPEN_EVENT,
+  CONSENT_VISIBILITY_EVENT,
+  readConsent,
+  writeConsent,
+} from "@/lib/consent";
 
 /**
  * CookieConsent — small, bottom-left bilingual banner.
@@ -121,6 +126,22 @@ export function CookieConsent() {
       window.removeEventListener("scroll", onScroll);
     };
   }, [dismissed]);
+
+  /* Avisa de que el aviso ha entrado o salido de la pantalla. Lo escucha
+     el botón de volver arriba para apartarse; ver `CONSENT_VISIBILITY_EVENT`.
+     Va en un efecto y no dentro de `choose` para cubrir TODAS las formas de
+     aparecer y desaparecer: la revelación por scroll, la de los 5 s, la
+     reapertura desde el pie y el desmontaje al cambiar de página. */
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent(CONSENT_VISIBILITY_EVENT, { detail: { visible } })
+    );
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent(CONSENT_VISIBILITY_EVENT, { detail: { visible: false } })
+      );
+    };
+  }, [visible]);
 
   /** Persist the user's choice and hide the banner. Both branches functionally
    *  do the same thing today (no non-essential cookies are loaded), but the

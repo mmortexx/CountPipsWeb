@@ -182,7 +182,20 @@ export function Ticker() {
          `.liquid-glass.glass-band`, así que cambiar la clase apagaría de
          paso la luz del canto superior, que es lo que separa la banda del
          contenido. Mismo caso que el pie. */
-      className="tj-cinta-caja relative border-y border-[rgb(var(--divider)/0.14)] py-4 liquid-glass glass-band overflow-hidden select-none"
+      /* ── LA CINTA NO CORRE CUANDO NO SE VE ────────────────────────
+         Es un bucle infinito de 50 s: sin esto sigue desplazándose
+         aunque esté diez pantallas más arriba, manteniendo despierta la
+         GPU de un portátil con la batería puesta para animar algo que
+         nadie mira.
+
+         Se resuelve sin una línea de JavaScript ni un observador, porque
+         el navegador ya sabe hacerlo: con `content-visibility: auto`, el
+         contenido que queda fuera de pantalla se salta, y saltarlo
+         incluye NO actualizar sus animaciones. Es el mismo mecanismo que
+         ya usan las secciones del sitio (`cv-auto` en globals.css); aquí
+         además se le da el alto medido de la banda —54 px— para que el
+         documento no dé un salto al entrar y salir. */
+      className="tj-cinta-caja relative border-y border-[rgb(var(--divider)/0.14)] py-4 liquid-glass glass-band overflow-hidden select-none [content-visibility:auto] [contain-intrinsic-size:auto_54px]"
     >
       {/* Left edge gradient fade — R27-1b: switched from hardcoded
           `rgba(0, 0, 0, ...)` to `color-mix(in srgb, var(--bg) ...,
