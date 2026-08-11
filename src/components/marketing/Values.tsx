@@ -1,67 +1,97 @@
 "use client";
 
 import { useLang } from "@/lib/i18n";
+import { Link } from "@/components/tj/LocaleLink";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 
 /**
- * Values — the four product principles. Local always · Interactive demo ·
- * Discipline > metrics · Made by traders. A 2×2 grid of liquid-glass cards with a
- * number, title, and description; subtle accent edge + lift on hover.
+ * Values — los cuatro principios del producto: local siempre, demo
+ * honesta, disciplina por encima de métricas, y hecho por alguien que
+ * opera. Retícula 2×2 de filetes —no de tarjetas— con su marca, su
+ * afirmación, y el sitio donde el visitante puede ir a comprobarla.
  *
- * Motion: cards reveal with staggered y, the accent rule grows on hover,
- * the number ghost-tracks the accent color on hover.
+ * Movimiento: las cuatro entran escalonadas y el filete de acento del
+ * lateral crece al pasar por encima. Nada se levanta: una declaración de
+ * principios no es un objeto que se coge.
  */
 
+/* ── FUERA EL «01 / 04» ────────────────────────────────────────────────
+   Cada asiento llevaba un contador. Un contador dice «ésta es la primera
+   de cuatro», que es exactamente lo que el lector ya está viendo: cuatro
+   bloques, uno detrás de otro. No añade nada, y encima insinúa un ORDEN
+   —primero esto, luego aquello— que aquí no existe: son cuatro ideas
+   independientes, no cuatro pasos.
+
+   Lo que sí falta en su lugar es lo que promete el pie de la sección:
+   «No son eslóganes. Son decisiones de producto.» Una decisión de
+   producto se puede ir a ver. Así que el rótulo pasa a ser DÓNDE SE
+   COMPRUEBA cada principio, con su enlace: cuatro afirmaciones y cuatro
+   sitios donde el visitante puede ir a contrastarlas.
+
+   Con eso el rótulo deja de decorar —codifica algo que el lector no
+   podía deducir— y la sección deja de ser un callejón sin salida: era la
+   penúltima de la portada y no llevaba a ninguna parte. */
 interface Value {
-  num: string;
   titleEs: string;
   titleEn: string;
   descEs: string;
   descEn: string;
+  /** Dónde se puede ir a comprobar este principio. */
+  href: string;
+  pruebaEs: string;
+  pruebaEn: string;
   /** Small SVG mark per card — keeps the grid visually rhythmic. */
   icon: React.ReactNode;
 }
 
 const VALUES: Value[] = [
   {
-    num: "01",
     titleEs: "Local siempre",
     titleEn: "Local always",
     descEs:
       "Tus operaciones son tuyas. Punto. No salen de tu equipo; la analítica de esta web sólo se activa con tu consentimiento.",
     descEn:
       "Your trading data is yours. Period. It stays on your machine; this site's analytics only activates with your consent.",
+    href: "/features/seguridad",
+    pruebaEs: "Qué se guarda y dónde",
+    pruebaEn: "What is stored, and where",
     icon: <LockIcon />,
   },
   {
-    num: "02",
     titleEs: "Demo honesta, sin atajos",
     titleEn: "An honest demo, no shortcuts",
     descEs:
       "Datos de muestra, sin tarjeta ni instalación. El piloto privado valida el producto con usuarios reales antes de abrir la venta.",
     descEn:
       "Sample data, no card and no installation. The private pilot validates the product with real users before opening sales.",
+    href: "/demo",
+    pruebaEs: "Recorrer la demo entera",
+    pruebaEn: "Walk the whole demo",
     icon: <CoinIcon />,
   },
   {
-    num: "03",
     titleEs: "Disciplina > métricas",
     titleEn: "Discipline > metrics",
     descEs:
-      "Las métricas sin disciplina son ruido. El journal te frena antes de la tontería.",
+      "Las métricas sin disciplina son ruido. El diario te frena antes de la tontería.",
     descEn:
       "Metrics without discipline are noise. The journal stops you before the dumb trade.",
+    href: "/features/disciplina",
+    pruebaEs: "Cómo frena el Guardián",
+    pruebaEn: "How the Guardian brakes",
     icon: <ShieldIcon />,
   },
   {
-    num: "04",
     titleEs: "Hecho por traders, para traders",
     titleEn: "Made by traders, for traders",
     descEs:
       "No es un SaaS de Silicon Valley. Es una app de escritorio hecha por alguien que opera.",
     descEn:
       "Not a Silicon Valley SaaS. A desktop app made by someone who trades.",
+    href: "/about",
+    pruebaEs: "Quién hay detrás",
+    pruebaEn: "Who is behind it",
     icon: <CompassIcon />,
   },
 ];
@@ -122,7 +152,7 @@ export function Values() {
             relleno interior. */}
         <div className="mt-10 grid md:grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
           {VALUES.map((v, i) => (
-            <Reveal key={v.num} delay={0.1 + i * 0.08} className="h-full">
+            <Reveal key={v.href} delay={0.1 + i * 0.08} className="h-full">
               {/* Sin `data-entra`: la entrada ya la pone el `Reveal` de
                   arriba con su propio retardo escalonado. Este elemento
                   era un `motion.article` SIN props de animación —sólo un
@@ -163,12 +193,6 @@ export function Values() {
                     >
                       {v.icon}
                     </span>
-                    <span className="text-xs uppercase tracking-[0.14em] font-semibold text-tertiary tnum transition-colors duration-300 group-hover:text-secondary">
-                      {/* Number split: current in secondary, total in tertiary
-                          — same editorial treatment as Story's phase index. */}
-                      <span className="text-secondary">{v.num}</span>
-                      {" / 04"}
-                    </span>
                   </div>
                 </div>
 
@@ -185,6 +209,18 @@ export function Values() {
                 <p className="relative mt-2.5 text-sm text-secondary leading-[1.65] max-w-[42em]">
                   {es ? v.descEs : v.descEn}
                 </p>
+
+                {/* Dónde se comprueba. Va DESPUÉS de la afirmación, no
+                    antes: primero se dice, luego se ofrece ir a mirar.
+                    El subrayado se declara para ratón Y teclado, y el
+                    filete crece con el mismo gesto que el del lateral. */}
+                <Link
+                  href={v.href}
+                  className="relative mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-[rgb(var(--accent-base))] underline decoration-[rgb(var(--accent-base)/0.35)] decoration-1 underline-offset-4 outline-none transition-colors duration-200 hover:decoration-[rgb(var(--accent-base))] focus-visible:rounded-[2px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+                >
+                  {es ? v.pruebaEs : v.pruebaEn}
+                  <span aria-hidden="true">→</span>
+                </Link>
               </article>
             </Reveal>
           ))}
