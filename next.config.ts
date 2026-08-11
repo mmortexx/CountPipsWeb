@@ -1,4 +1,40 @@
+import { execFileSync } from "node:child_process";
 import type { NextConfig } from "next";
+
+/* ── EL AÑO DEL AVISO DE COPYRIGHT ─────────────────────────────────────
+   Lo escribían el pie y el cajón de navegación con `new Date()
+   .getFullYear()`, o sea con el reloj de quien mira. Eso tiene dos
+   consecuencias, las dos malas y las dos invisibles hasta el 1 de enero:
+
+     · El HTML se compila una vez y se sirve congelado. En cuanto cambia
+       el año, el servidor dice 2026 y el navegador 2027 sobre el mismo
+       nodo de texto: desajuste de hidratación, `Minified React error
+       #418` en consola, en todas las páginas del sitio, hasta que alguien
+       vuelva a publicar.
+     · Y un aviso de copyright no declara en qué año estamos: declara
+       cuándo se publicó la obra por última vez. El reloj del visitante no
+       sabe eso.
+
+   Se resuelve en el único sitio donde se puede: aquí, convirtiéndolo en
+   un literal del paquete. Sale de la fecha del último commit —el mismo
+   criterio y el mismo motivo que `src/lib/fechas.ts`, que no se puede
+   importar desde un componente de cliente porque lee `node:child_process`
+   y arrastraría medio Node al navegador—. Dos compilaciones del mismo
+   código dan el mismo año. */
+function anioDePublicacion(): string {
+  try {
+    const iso = execFileSync("git", ["log", "-1", "--format=%cI"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 5_000,
+    }).trim();
+    const d = new Date(iso);
+    if (!Number.isNaN(d.getTime())) return String(d.getUTCFullYear());
+  } catch {
+    /* Sin git —un tarball descargado, por ejemplo— se compila igual. */
+  }
+  return String(new Date().getUTCFullYear());
+}
 
 /* ── DÓNDE CUELGA EL SITIO ─────────────────────────────────────────────
    El mismo código se publica en dos destinos que no sirven las páginas
@@ -46,6 +82,9 @@ const nextConfig: NextConfig = {
      del navegador directamente, que sí está disponible. */
   env: {
     NEXT_PUBLIC_BASE_PATH: BASE_PATH,
+    // Ver `anioDePublicacion()` arriba: el año del aviso de copyright,
+    // fijado en la compilación y no leído del reloj del visitante.
+    NEXT_PUBLIC_ANIO_PUBLICACION: anioDePublicacion(),
     // Dirección pública del sitio (ver src/lib/site.ts). Se declara aquí
     // por el mismo motivo que las de abajo: sin declararla, la expresión
     // `process.env.X` sobrevive al empaquetado y revienta en el navegador.

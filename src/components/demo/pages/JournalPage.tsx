@@ -1697,15 +1697,19 @@ export function JournalPage() {
                     <div className="flex items-start gap-3 min-w-0 flex-1">
                       <div className="flex flex-col items-center justify-center w-11 h-11 rounded-md bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] shrink-0">
                         <div className="text-[9px] uppercase tracking-[0.14em] text-tertiary leading-none">
+                          {/* En UTC, como el resto de fechas de la
+                              muestra (ver `format.ts`): sin fijarlo, el
+                              taco de calendario y la fecha que lleva al
+                              lado podían decir días distintos. */}
                           {entry.date
                             .toLocaleDateString(
                               lang === "es" ? "es-ES" : "en-US",
-                              { month: "short" }
+                              { month: "short", timeZone: "UTC" }
                             )
                             .replace(".", "")}
                         </div>
                         <div className="text-lg font-bold tnum text-primary leading-none mt-0.5">
-                          {entry.date.getDate()}
+                          {entry.date.getUTCDate()}
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">

@@ -7,6 +7,7 @@ import { useLang, type Lang } from "@/lib/i18n";
 import { sinPrefijoEn } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
+import { ANIO_PUBLICACION } from "@/lib/publicacion";
 
 /**
  * Navbar — barra edge-to-edge con material de papel translúcido (e-reader).
@@ -1319,7 +1320,9 @@ export function Navbar() {
                       className="tnum text-[10.5px]"
                       style={{ color: "var(--ink-3)" }}
                     >
-                      © {new Date().getFullYear()} {t("appName")}. {t("rights")}
+                      {/* El año lo fija la compilación, no el reloj del
+                          visitante: ver `@/lib/publicacion`. */}
+                      © {ANIO_PUBLICACION} {t("appName")}. {t("rights")}
                     </span>
                   </div>
                 </div>

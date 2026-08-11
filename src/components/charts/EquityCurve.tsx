@@ -20,7 +20,7 @@ export const EquityCurve = memo(function EquityCurve({
   showDrawdown = true,
   className = "",
 }: EquityCurveProps) {
-  const { lang } = useLang();
+  const { lang } = useLang();
   const { equityCurve, drawdownCeiling } = metrics;
   // Hover state: data index + pointer X (px) + rendered width & height (px)
   // for clamping the tooltip and converting viewBox Y → pixel Y. Both mouse
@@ -286,7 +286,16 @@ export const EquityCurve = memo(function EquityCurve({
           }}
         >
           <div className="text-tertiary text-[10px]">
-            {hoverPoint.date.toLocaleDateString(locale, { day: "2-digit", month: "short", year: "numeric" })}
+            {/* `timeZone: "UTC"` — la operación está fechada en UTC (ver
+                la cabecera de `data.ts`). Sin fijarlo, quien mira desde
+                América vería en el globo un día y en la etiqueta el
+                anterior, para el mismo punto de la curva. */}
+            {hoverPoint.date.toLocaleDateString(locale, {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              timeZone: "UTC",
+            })}
           </div>
           <div className="font-semibold tnum text-primary text-[13px] mt-0.5">
             ${hoverPoint.balance.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}

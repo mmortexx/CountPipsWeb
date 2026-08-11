@@ -110,11 +110,27 @@ export function fmtDuration(minutes: number, _lang: Lang = "es"): string {
   return rh ? `${d}d ${rh}h` : `${d}d`;
 }
 
+/* ── LAS TRES FECHAS DE UNA OPERACIÓN SE ESCRIBEN EN UTC ──────────────
+   Los únicos `Date` que pasan por aquí son la apertura y el cierre de una
+   operación de la muestra, y esos están fechados en UTC a propósito (ver
+   la cabecera de `data.ts`): la hora de un cierre no es «las nueve donde
+   tú estés», es la apertura de Londres.
+
+   Sin `timeZone`, `Intl` los pintaba en el huso de quien mira, de modo
+   que una operación etiquetada como sesión de Londres salía a las 17:00
+   en Tokio, y la misma operación cambiaba de DÍA —y por tanto de fila en
+   el calendario y en la tabla— según desde dónde se abriera la página.
+   Encima el HTML lo compila un servidor en UTC, así que el texto servido
+   y el pintado tampoco coincidían.
+
+   La barra de la app enseña un reloj UTC junto a estas cifras; ahora las
+   dos cosas dicen la hora en la misma escala. */
 export function fmtDate(date: Date, lang: Lang = "es"): string {
   return new Intl.DateTimeFormat(LOCALE[lang], {
     day: "2-digit",
     month: "short",
     year: "numeric",
+    timeZone: "UTC",
   }).format(date);
 }
 
@@ -124,6 +140,7 @@ export function fmtDateTime(date: Date, lang: Lang = "es"): string {
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "UTC",
   }).format(date);
 }
 
@@ -131,6 +148,7 @@ export function fmtTime(date: Date, lang: Lang = "es"): string {
   return new Intl.DateTimeFormat(LOCALE[lang], {
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "UTC",
   }).format(date);
 }
 

@@ -114,7 +114,10 @@ export function customTradeToTrade(c: CustomTrade): Trade {
     instrument: c.instrument,
     setup: c.setup,
     direction: c.direction,
-    session: sessionForHour(closedAt.getHours()),
+    // En UTC: las ventanas de sesión de `sessionForHour` son horarios de
+    // mercado (Londres, Nueva York, Asia), no la hora del reloj de quien
+    // mira la página. Ver la cabecera de `data.ts`.
+    session: sessionForHour(closedAt.getUTCHours()),
     entry: c.entry,
     exit: c.exit,
     qty: c.qty,

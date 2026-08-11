@@ -17,7 +17,7 @@ const MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July
 
 /** P&L calendar for the most recent active month. */
 export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" }: MiniCalendarProps) {
-  const { lang } = useLang();
+  const { lang } = useLang();
   const [offset, setOffset] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   // Hovered day: day-of-month + anchor point (px, relative to container).
@@ -28,17 +28,23 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
     if (!trades.length) return { year: 2026, month: 6, days: 30, dailyPnl: new Map(), maxAbs: 1 };
     const sorted = [...trades].sort((a, b) => b.closedAt.getTime() - a.closedAt.getTime());
     const latest = sorted[0].closedAt;
-    const targetMonth = new Date(latest.getFullYear(), latest.getMonth() + offset, 1);
-    const y = targetMonth.getFullYear();
-    const mo = targetMonth.getMonth();
-    const d = new Date(y, mo + 1, 0).getDate();
+    /* Todo el calendario se calcula en UTC, que es el huso en el que
+       `data.ts` fecha las operaciones. Mezclarlo con la hora local movía
+       el mes de arranque —y con él la rejilla entera— según desde dónde
+       se mirara la página. */
+    const targetMonth = new Date(
+      Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth() + offset, 1)
+    );
+    const y = targetMonth.getUTCFullYear();
+    const mo = targetMonth.getUTCMonth();
+    const d = new Date(Date.UTC(y, mo + 1, 0)).getUTCDate();
     const dp = dailyPnlForMonth(trades, y, mo);
     let ma = 0;
     dp.forEach((v) => { ma = Math.max(ma, Math.abs(v)); });
     return { year: y, month: mo, days: d, dailyPnl: dp, maxAbs: ma || 1 };
   }, [trades, offset]);
 
-  const firstWeekday = new Date(year, month, 1).getDay(); // 0 Sun .. 6 Sat
+  const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay(); // 0 Dom .. 6 Sáb
   // Convert Sunday=0 to Monday=0 based
   const leadingBlanks = (firstWeekday + 6) % 7;
   const monthName = lang === "es" ? MONTHS_ES[month] : MONTHS_EN[month];

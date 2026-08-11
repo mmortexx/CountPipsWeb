@@ -1242,7 +1242,10 @@ function TodayBriefing() {
   const sameWeekdayCount = useMemo(() => {
     if (!weekday) return 0;
     const target = new Date().getDay();
-    return TRADES.filter((tr) => tr.closedAt.getDay() === target).length;
+    /* La operación se fecha en UTC (ver la cabecera de `data.ts`); el
+       «hoy» del visitante es su día local, que es lo que él llama hoy.
+       Cada lado se lee en su propio huso a propósito. */
+    return TRADES.filter((tr) => tr.closedAt.getUTCDay() === target).length;
   }, [weekday]);
 
   const streak = METRICS.currentStreak;

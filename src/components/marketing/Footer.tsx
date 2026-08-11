@@ -7,6 +7,7 @@ import { GlossaryLauncher } from "@/components/tj/GlossaryLauncher";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { reopenConsent } from "@/lib/consent";
+import { ANIO_PUBLICACION } from "@/lib/publicacion";
 
 /**
  * Social link definition — icon + accessible label.
@@ -90,7 +91,9 @@ const SOCIAL_LINKS: SocialLink[] = [
 export function Footer() {
   const { t, lang } = useLang();
   const es = lang === "es";
-  const year = new Date().getFullYear();
+  // El año de publicación, fijado al compilar. Nunca `new Date()`: el
+  // porqué está en `next.config.ts`, junto a `anioDePublicacion()`.
+  const year = ANIO_PUBLICACION;
 
   type FooterLink = {
     label: string;

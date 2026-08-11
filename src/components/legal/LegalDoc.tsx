@@ -33,9 +33,15 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
   const { lang } = useLang();
   const es = lang === "es";
 
+  /* `timeZone: "UTC"` no es un detalle: `LEGAL_ACTUALIZADO` es una fecha
+     sin hora, y el navegador la interpreta como medianoche UTC. Sin
+     fijarlo, cualquier visitante al oeste de Greenwich —toda América—
+     leía el día ANTERIOR en la fecha de un documento legal. Y como el
+     servidor que compila sí está en UTC, el texto servido y el pintado no
+     coincidían: un desajuste de hidratación además de una fecha falsa. */
   const fecha = new Date(LEGAL_ACTUALIZADO).toLocaleDateString(
     es ? "es-ES" : "en-GB",
-    { year: "numeric", month: "long", day: "numeric" },
+    { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" },
   );
 
   return (

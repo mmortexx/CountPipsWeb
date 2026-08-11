@@ -9,6 +9,27 @@
  *
  * DETERMINISM: `mulberry32` with fixed seed (20260716). Same trades,
  * same metrics, same chart on every load — no Math.random() anywhere.
+ *
+ * ── Y DETERMINISTA TAMBIÉN ENTRE ZONAS HORARIAS ───────────────────────
+ * Ese «no hay azar» era cierto y aun así no bastaba. Las horas de cierre
+ * se fijaban con `setHours`, que trabaja en la HORA LOCAL de quien
+ * ejecuta el código, y se leían después con `getDay`/`getHours`/
+ * `getMonth`, que también. El sitio se compila en un servidor en UTC y se
+ * mira desde el navegador del visitante: dos husos distintos, dos
+ * conjuntos de operaciones distintos, los mismos 200 números de partida.
+ *
+ * Lo que llegaba a pantalla era un desajuste de hidratación en la portada
+ * publicada —`Minified React error #418`, dos veces— con la peor caída
+ * anunciada como −10,6 % en el HTML servido y −10,0 % un instante
+ * después. Y no se veía en local: quien compila y quien mira están en el
+ * mismo huso, así que la única forma de reproducirlo era abrir el sitio
+ * ya publicado.
+ *
+ * Todo lo que toca el calendario va en UTC, al escribir y al leer. La
+ * hora de una operación de demo no significa «las nueve donde tú estés»:
+ * significa la apertura de Londres, que es una hora concreta del reloj
+ * mundial. Lo fija `tests/husos.test.ts`, que recalcula el conjunto
+ * entero bajo tres husos y exige el mismo resultado.
  */
 
 export interface Instrument {
@@ -224,7 +245,7 @@ function buildTrades(): Trade[] {
 
     // Close timestamps aligned to the session's real UTC window:
     //   London 08:00–11:00, NY 14:00–17:00, Asia 23:00–03:00 (Tokyo open).
-    // Asia hour is computed modulo 24 to avoid `setHours(24+)` rolling
+    // Asia hour is computed modulo 24 to avoid `setUTCHours(24+)` rolling
     // the date into the next day.
     const hourBase =
       session === "London"
@@ -233,7 +254,12 @@ function buildTrades(): Trade[] {
         ? 14 + Math.floor(rnd() * 3)
         : (23 + Math.floor(rnd() * 4)) % 24;
     const closedAt = new Date(now.getTime() - rnd() * 180 * dayMs);
-    closedAt.setHours(hourBase, Math.floor(rnd() * 60), 0, 0);
+    /* UTC, no local: la ventana de sesión que este bloque acaba de
+       calcular ya está en UTC —«Londres 08:00–11:00» es UTC—, así que
+       escribirla con `setHours` la reinterpretaba como hora local y
+       desplazaba la operación tantas horas como huso tuviera la máquina.
+       Ver la cabecera del fichero. */
+    closedAt.setUTCHours(hourBase, Math.floor(rnd() * 60), 0, 0);
     const durationMin =
       session === "Asia"
         ? 60 + Math.floor(rnd() * 240)
@@ -512,10 +538,10 @@ export function heatmap(trades: Trade[]): number[][] {
   const hourBuckets = [0, 4, 8, 12, 16, 20];
   const grid = Array.from({ length: 5 }, () => Array(hourBuckets.length).fill(0));
   for (const t of trades) {
-    const d = t.closedAt.getDay();
+    const d = t.closedAt.getUTCDay();
     if (d === 0 || d === 6) continue;
     const row = d - 1;
-    const h = t.closedAt.getHours();
+    const h = t.closedAt.getUTCHours();
     const col = Math.min(5, Math.floor(h / 4));
     grid[row][col] += t.netPnl;
   }
@@ -527,7 +553,9 @@ export function weekdayBreakdown(trades: Trade[]): { day: string; pnl: number }[
   return days.map((day, i) => ({
     day,
     pnl: trades
-      .filter((t) => (t.closedAt.getDay() === 0 ? 6 : t.closedAt.getDay() - 1) === i)
+      .filter(
+        (t) => (t.closedAt.getUTCDay() === 0 ? 6 : t.closedAt.getUTCDay() - 1) === i
+      )
       .reduce((s, t) => s + t.netPnl, 0),
   }));
 }
@@ -536,7 +564,7 @@ export function monthlyBreakdown(trades: Trade[]): { month: string; pnl: number 
   const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
   const byMonth = new Map<number, number>();
   for (const t of trades) {
-    const m = t.closedAt.getMonth();
+    const m = t.closedAt.getUTCMonth();
     byMonth.set(m, (byMonth.get(m) || 0) + t.netPnl);
   }
   const present = [...byMonth.keys()].sort((a, b) => a - b);
@@ -583,10 +611,10 @@ export function dailyPnlForMonth(
   const m = new Map<string, number>();
   for (const t of trades) {
     if (
-      t.closedAt.getFullYear() === year &&
-      t.closedAt.getMonth() === month
+      t.closedAt.getUTCFullYear() === year &&
+      t.closedAt.getUTCMonth() === month
     ) {
-      const key = `${t.closedAt.getDate()}`;
+      const key = `${t.closedAt.getUTCDate()}`;
       m.set(key, (m.get(key) || 0) + t.netPnl);
     }
   }

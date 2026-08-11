@@ -14,17 +14,20 @@ const HOUR_LABELS = ["00–04", "04–08", "08–12", "12–16", "16–20", "20�
 
 /** Day × hour P&L heatmap. Green = positive, red = negative, intensity by magnitude. */
 export const Heatmap = memo(function Heatmap({ trades, className = "" }: HeatmapProps) {
-  const { lang } = useLang();
+  const { lang } = useLang();
   const grid = useMemo(() => heatmap(trades), [trades]);
 
   // Trade counts per cell — matches the heatmap bucketing (Mon–Fri, 4-hour columns).
   const countGrid = useMemo(() => {
     const out = Array.from({ length: 5 }, () => Array(6).fill(0));
     for (const t of trades) {
-      const d = t.closedAt.getDay();
+      /* En UTC, igual que `heatmap()`: si las dos rejillas se contaran en
+         husos distintos, el número de operaciones de una celda no sería
+         el de la cifra que esa misma celda enseña. */
+      const d = t.closedAt.getUTCDay();
       if (d === 0 || d === 6) continue;
       const row = d - 1;
-      const col = Math.min(5, Math.floor(t.closedAt.getHours() / 4));
+      const col = Math.min(5, Math.floor(t.closedAt.getUTCHours() / 4));
       out[row][col] += 1;
     }
     return out;
