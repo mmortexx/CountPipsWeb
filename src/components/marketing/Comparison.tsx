@@ -4,24 +4,47 @@ import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 
-type Cell = "yes" | "no" | "partial" | string;
+/* ── LAS CELDAS DE TEXTO TAMBIÉN TIENEN IDIOMA ──────────────────────
+   `labelEs`/`labelEn` traducían la etiqueta de cada fila, y las celdas
+   eran un único array de cadenas. Resultado: la tabla de /en/pricing
+   —la única del sitio donde un visitante anglófono compara precios—
+   servía ocho celdas en español bajo encabezados en inglés: «Local · tu
+   equipo», «Servidor ajeno», «Suscripción mensual», «40+
+   institucionales», «Manual / fórmulas».
+
+   Los símbolos (`yes`/`no`/`partial`) no necesitan idioma: los traduce
+   `CellRenderer`. Sólo lo necesita el texto libre. */
+type Texto = { es: string; en: string };
+type Cell = "yes" | "yes-pro" | "no" | "partial" | Texto;
 type Row = { labelEs: string; labelEn: string; cells: [Cell, Cell, Cell] };
 
 const ROWS: Row[] = [
   {
     labelEs: "Privacidad",
     labelEn: "Privacy",
-    cells: [/* TJ */ "Local · tu equipo", /* cloud */ "Servidor ajeno", /* excel */ "Local · tu equipo"],
+    cells: [
+      /* TJ */ { es: "Local · tu equipo", en: "Local · your machine" },
+      /* cloud */ { es: "Servidor ajeno", en: "Someone else's server" },
+      /* excel */ { es: "Local · tu equipo", en: "Local · your machine" },
+    ],
   },
   {
     labelEs: "Precio",
     labelEn: "Pricing",
-    cells: ["Core $149 · Pro $249", "Suscripción mensual", "Gratis"],
+    cells: [
+      { es: "Core $149 · Pro $249", en: "Core $149 · Pro $249" },
+      { es: "Suscripción mensual", en: "Monthly subscription" },
+      { es: "Gratis", en: "Free" },
+    ],
   },
   {
     labelEs: "Métricas",
     labelEn: "Metrics",
-    cells: ["40+ institucionales", "10–20 básicas", "Manual / fórmulas"],
+    cells: [
+      { es: "40+ institucionales", en: "40+ institutional" },
+      { es: "10–20 básicas", en: "10–20 basic" },
+      { es: "Manual / fórmulas", en: "Manual / formulas" },
+    ],
   },
   {
     labelEs: "Disciplina",
@@ -367,9 +390,11 @@ function CellRenderer({
       </span>
     );
   }
-  // Free-form string
+  // Texto libre, en el idioma de la página.
   return (
-    <span className={`text-[13px] tnum ${highlight ? "text-primary font-medium" : "text-secondary"}`}>{cell}</span>
+    <span className={`text-[13px] tnum ${highlight ? "text-primary font-medium" : "text-secondary"}`}>
+      {es ? cell.es : cell.en}
+    </span>
   );
 }
 

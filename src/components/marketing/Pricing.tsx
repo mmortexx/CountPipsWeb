@@ -56,7 +56,10 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     ? [
         "Todo lo de Core",
         "Cuentas ilimitadas",
-        "Prop Firm Mode",
+        /* «Modo prop firm», como lo llama la tabla comparativa de esta
+           MISMA página. Estaba en inglés en la lista y en castellano en la
+           tabla, a dos scrolls de distancia. */
+        "Modo prop firm",
         "Informes PDF avanzados",
         "Simulador Monte Carlo",
         "Risk of ruin",

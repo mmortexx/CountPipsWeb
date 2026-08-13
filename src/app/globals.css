@@ -4452,6 +4452,36 @@ button.icon-btn:hover > svg,
    bg-black/60, pero al ser translúcido se seguían viendo difuminados
    y el VLM los leía como "superpuestos compitiendo". Ahora desaparecen
    del todo mientras el drawer está abierto. */
+/* ── EL FOCO NO PUEDE QUEDAR DEBAJO DEL AVISO ─────────────────────────
+   WCAG 2.2 añadió un criterio para esto —2.4.11, «el foco no queda
+   oculto»— y aquí se incumplía en móvil. `scroll-padding-top: 5rem`
+   existe desde hace tiempo para que la barra fija no tape lo que se
+   enfoca, y funciona; abajo no había nada, así que el navegador llevaba
+   el elemento enfocado al borde inferior de la ventana… justo debajo de
+   la hoja de cookies, que a 390 px ocupa unos 150 px a sangre.
+
+   Medido tabulando parada a parada: en `/demo` a 390 px, NUEVE paradas
+   quedaban tapadas del todo —entre ellas los botones Long y Short, los
+   dos selectores y el área de nota—. Alguien que navega con teclado
+   escribía en un campo que no veía. Descartando el aviso, las nueve
+   volvían a verse: la causa era ésta y sólo ésta.
+
+   El reparto va atado al atributo que el propio aviso publica mientras
+   está en pantalla, así que cuando se descarta el hueco desaparece solo
+   y no queda un margen fantasma. */
+/* En `:root` y no en `body`: el contenedor de desplazamiento del
+   documento es el elemento raíz, y es el suyo el `scroll-padding` que el
+   navegador consulta. Puesto en `body` no habría hecho absolutamente
+   nada — que es peor que no ponerlo, porque parece hecho. */
+:root:has([data-cookie-consent="visible"]) {
+  scroll-padding-bottom: 11rem;
+}
+@media (min-width: 640px) {
+  :root:has([data-cookie-consent="visible"]) {
+    scroll-padding-bottom: 8rem;
+  }
+}
+
 body[data-drawer-open="true"] [data-cookie-consent="visible"],
 body[data-drawer-open="true"] [aria-label="Volver arriba"],
 body[data-drawer-open="true"] [aria-label="Back to top"] {

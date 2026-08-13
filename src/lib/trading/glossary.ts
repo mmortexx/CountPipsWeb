@@ -81,7 +81,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Volatility",
-    es: "Magnitud de las variaciones de precio de un activo durante un periodo. Alta volatilidad implica rangos amplios y más riesgo por operación; baja volatilidad, movimientos más contenido y operaciones menores.",
+    es: "Magnitud de las variaciones de precio de un activo durante un periodo. Alta volatilidad implica rangos amplios y más riesgo por operación; baja volatilidad, movimientos más contenidos y operaciones menores.",
     en: "The magnitude of an asset's price fluctuations over a period. High volatility means wide ranges and more risk per trade; low volatility means smaller moves and smaller trades.",
     category: "basics",
   },

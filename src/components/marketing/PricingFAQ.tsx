@@ -48,7 +48,8 @@ import {
 
 export function PricingFAQ() {
   const { lang } = useLang();
-  const es = lang === "es";
+  const es = lang === "es";
+
 
   /* Las cuatro preguntas viven en `src/lib/faq.ts`, compartidas con el
      dato estructurado de la pagina, para que no puedan divergir. */
@@ -158,7 +159,11 @@ export function PricingFAQ() {
           >
             {es ? "¿Más dudas?" : "More questions?"}{" "}
             <a
-              href={asset(withLocale("/faq", lang))}
+              /* Con barra final. Sin ella, GitHub Pages responde 301 hacia
+                 `/faq/` y el visitante paga un salto de más — son los
+                 dos únicos enlaces del sitio que lo hacían, y salen de
+                 la página que más importa vender. */
+              href={asset(withLocale("/faq/", lang))}
               /* `-my-2 py-2` amplía la zona que se puede tocar sin
                  desplazar la línea: medía 20 px de alto y es la salida
                  hacia la FAQ desde la página que más importa vender. */

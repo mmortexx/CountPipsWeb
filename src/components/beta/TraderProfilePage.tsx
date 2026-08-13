@@ -24,8 +24,13 @@ const DATA = {
       { icon: BookOpenCheck, titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con un edge.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
       { icon: Target, titleEs: "Revisión sin excusas", titleEn: "No-excuse review", textEs: "Anota el plan, la gestión y el cierre para ver dónde se rompe tu proceso.", textEn: "Capture plan, management and exit so you can see where your process breaks." },
     ],
-    ctaEs: "Ver la demo para operativa manual",
-    ctaEn: "See the manual-trading demo",
+    /* El rótulo decía «Ver la demo» y el botón abre el formulario de
+       solicitud de acceso — lo dice el titular que tiene justo encima.
+       Y no existe una demo «para operativa manual»: la demo es una sola.
+       Se cambia el rótulo y no el destino, porque el destino es el
+       correcto para esta sección. */
+    ctaEs: "Solicitar acceso anticipado",
+    ctaEn: "Request early access",
   },
   prop: {
     eyebrowEs: "Para prop firms",
@@ -45,8 +50,9 @@ const DATA = {
          inglesa de esta misma tarjeta. */
       { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
     ],
-    ctaEs: "Ver la demo para prop firms",
-    ctaEn: "See the prop-firm demo",
+    /* Mismo caso que arriba. */
+    ctaEs: "Solicitar acceso anticipado",
+    ctaEn: "Request early access",
   },
 } as const;
 

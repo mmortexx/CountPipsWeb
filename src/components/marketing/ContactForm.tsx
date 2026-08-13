@@ -48,6 +48,12 @@ function failureCopy(reason: SubmitFailure, es: boolean): string {
   }
 }
 
+/* Aquí ponía «Te respondemos en menos de 24 h» y «Te responderemos en
+   24h». Es un compromiso de servicio que este proyecto YA había decidido
+   retirar —está escrito en `ContactSupport.tsx`, la tarjeta que vive en
+   la misma sección de la misma página— porque no hay nadie detrás que
+   pueda cumplirlo hoy. La decisión se aplicó a un componente y se olvidó
+   el de al lado, así que la página prometía las dos cosas a la vez. */
 export function ContactForm() {
   const { lang } = useLang();
   const es = lang === "es";
@@ -183,8 +189,8 @@ export function ContactForm() {
           <Reveal delay={0.1}>
             <p className="mt-3 text-center text-secondary text-sm leading-relaxed">
               {es
-                ? "Cuéntanos qué necesitas. Te respondemos en menos de 24 h."
-                : "Tell us what you need. We reply in under 24 hours."}
+                ? "Cuéntanos qué necesitas. Contesta quien lo desarrolla."
+                : "Tell us what you need. The person who builds it replies."}
             </p>
           </Reveal>
 
@@ -255,8 +261,8 @@ export function ContactForm() {
                         role="status"
                       >
                         {es
-                          ? "✓ Mensaje enviado. Te responderemos en 24h."
-                          : "✓ Message sent. We'll reply in 24h."}
+                          ? "✓ Mensaje enviado. Te contestamos en cuanto lo veamos."
+                          : "✓ Message sent. We'll reply as soon as we see it."}
                       </p>
                     </div>
                   ) : (

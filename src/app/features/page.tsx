@@ -5,7 +5,7 @@ import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-import { ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
+import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
 // Estimated reading time (features bento + gallery + how it works + more
 // features). ~620 words across four sections at 220 wpm = ~3 min.
@@ -46,7 +46,7 @@ const articleSchema = {
   // datePublished/dateModified use the frozen build date — same value
   // as sitemap.ts LAST_MODIFIED. Google's Article rich-result spec
   // REQUIRES datePublished (ISO 8601) and recommends dateModified.
-  datePublished: "2025-01-01",
+  datePublished: PUBLICACION_ISO,
   /* La de modificación sale del último commit, no clavada. Con las dos
      iguales y congeladas, la página declaraba no haberse tocado desde
      hace año y medio — y la frescura pesa en el posicionamiento. */

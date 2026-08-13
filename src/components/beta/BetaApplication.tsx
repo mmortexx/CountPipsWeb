@@ -372,7 +372,7 @@ export function BetaApplication() {
           </label>
 
           <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
-            <label htmlFor="beta-botcheck">Do not fill<input id="beta-botcheck" tabIndex={-1} autoComplete="off" value={botcheck} onChange={(e) => setBotcheck(e.target.value)} /></label>
+            <label htmlFor="beta-botcheck">{es ? "No rellenar" : "Do not fill"}<input id="beta-botcheck" tabIndex={-1} autoComplete="off" value={botcheck} onChange={(e) => setBotcheck(e.target.value)} /></label>
           </div>
 
           <div>

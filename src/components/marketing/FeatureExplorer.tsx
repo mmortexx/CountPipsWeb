@@ -77,8 +77,8 @@ const FEATURES: Feature[] = [
     id: "playbook",
     titleEs: "Playbooks con stats en vivo",
     titleEn: "Playbooks with live stats",
-    descEs: "Documenta cada setup y mide su expectancy real. Sabes qué funciona y qué no, por configuración.",
-    descEn: "Document each setup and measure its real expectancy. Know what works, per configuration.",
+    descEs: "Documenta cada setup y mide su expectancy real. Sabes qué setup funciona y cuál no, con su muestra al lado.",
+    descEn: "Document each setup and measure its real expectancy. Know which setup works and which does not, with its sample beside it.",
     tags: ["metrics", "discipline"],
   },
   {

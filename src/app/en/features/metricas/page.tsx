@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { MetricasBody } from "../../../features/metricas/page";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-import { ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
+import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
 const READING_TIME_MIN = 3;
 
@@ -27,7 +27,7 @@ const articleSchema = {
   publisher: { "@type": "Organization", name: "CountPips" },
   inLanguage: "en",
   timeRequired: `PT${READING_TIME_MIN}M`,
-  datePublished: "2025-01-01",
+  datePublished: PUBLICACION_ISO,
   dateModified: ULTIMA_ACTUALIZACION_ISO,
   image: `${SITE_URL}/opengraph-image`,
   about: [

@@ -108,7 +108,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                     className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
                   >
                     <span className="link-underline">
-                      {es ? "Ver las siete" : "See all seven"}
+                      {es ? "Ver las siete herramientas" : "See all seven tools"}
                     </span>
                   </Link>
                 </p>

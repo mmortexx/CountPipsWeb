@@ -239,8 +239,12 @@ export const PLATE_META: Record<PlateId, PlateMeta> = {
       "In technical drawing a dashed line means «planned, not built», and it means the same here: the solid parts already work, the dashed ones do not yet. That is what early access is for — to look at the exploded view before it is finished.",
   },
   profile: {
-    titleEs: "Seis ejes y la silueta que forman",
-    titleEn: "Six axes and the silhouette they form",
+    /* CINCO, contados en `disciplineQuestions.ts`: riesgo, plan, registro,
+       temple y constancia. La página lo dice tres veces —«tu perfil en cinco
+       ejes», «quince preguntas sobre cinco ejes», y el marcador lista
+       cinco— y esta lámina, al final de esa misma página, decía seis. */
+    titleEs: "Cinco ejes y la silueta que forman",
+    titleEn: "Five axes and the silhouette they form",
     noteEs:
       "Un perfil no se lee eje por eje: se lee por la forma del conjunto. Un lado hundido pesa más que cualquier valor alto del contrario, porque es por donde se rompe una operativa.",
     noteEn:

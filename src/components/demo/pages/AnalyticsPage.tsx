@@ -307,9 +307,14 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
           <div key={r.day} className="flex items-center gap-3">
             <div className="w-8 text-[11px] text-tertiary tnum">{r.day}</div>
             <div className="flex-1 h-5 bg-[rgb(var(--divider)/0.03)] rounded-sm overflow-hidden relative">
+              {/* `scaleX` y no `width`: animar el ancho obliga al navegador
+                  a rehacer la maquetación en cada fotograma; escalar lo
+                  resuelve el compositor. La barra se pinta ya a su tamaño
+                  final y se revela desde la izquierda con
+                  `transform-origin`, que es el mismo gesto a la vista. */}
               <motion.div
-                initial={{ width: 0 }}
-                whileInView={{ width: `${pct}%` }}
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
                 transition={{
                   delay: i * 0.05,
@@ -318,6 +323,8 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
                 }}
                 className="h-full rounded-sm"
                 style={{
+                  width: `${pct}%`,
+                  transformOrigin: "left",
                   backgroundColor: pos
                     ? "rgb(var(--pnl-pos) / 0.7)"
                     : "rgb(var(--pnl-neg) / 0.7)",
@@ -487,9 +494,11 @@ function RankingCard({
                   </div>
                 </div>
                 <div className="h-2 bg-[rgb(var(--divider)/0.03)] rounded-sm overflow-hidden ml-5">
+                  {/* Mismo motivo que la barra de arriba: `scaleX`, no
+                      `width`. */}
                   <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: `${pct}%` }}
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
                     viewport={{ once: true }}
                     transition={{
                       delay: i * 0.06,
@@ -498,6 +507,8 @@ function RankingCard({
                     }}
                     className="h-full rounded-sm"
                     style={{
+                      width: `${pct}%`,
+                      transformOrigin: "left",
                       backgroundColor: pos
                         ? "rgb(var(--pnl-pos) / 0.7)"
                         : "rgb(var(--pnl-neg) / 0.7)",

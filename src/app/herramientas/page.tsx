@@ -82,15 +82,19 @@ export function HerramientasBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio={`[ ${HERRAMIENTAS.length} ]`}
+        /* Las tarjetas que hay en la página: las seis calculadoras MÁS el
+           test de disciplina. El folio decía 6 y la entradilla, tres
+           líneas más abajo, decía «Siete» — dos cifras a un centímetro
+           que cualquiera comprueba contando. */
+        folio={`[ ${HERRAMIENTAS.length + 1} ]`}
         eyebrowEs="Gratis"
         eyebrowEn="Free"
         titleEs="Herramientas que hacen la cuenta por ti."
         titleEn="Tools that do the maths for you."
         titleHighlightEs="la cuenta por ti."
         titleHighlightEn="the maths for you."
-        subtitleEs="Siete calculadoras que funcionan enteras en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo."
-        subtitleEn="Seven calculators that run entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine."
+        subtitleEs="Seis calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo."
+        subtitleEn="Six calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine."
         breadcrumbEs="Herramientas"
         breadcrumbEn="Tools"
       />

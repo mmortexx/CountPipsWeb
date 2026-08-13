@@ -126,9 +126,12 @@ export function Footer() {
            pulsar «Glosario» es ir al glosario. */
         { label: es ? "Glosario" : "Glossary", href: "/glosario" },
         { label: es ? "Herramientas" : "Tools", href: "/herramientas" },
-        // "Blog" entry removed in R20-2b — no blog exists yet (re-add when
-        // /blog lands). "Documentación" aliases /faq (FAQ serves as docs).
-        { label: es ? "Documentación" : "Docs", href: "/faq" },
+        /* Se llama por su nombre: al otro lado hay trece preguntas
+           frecuentes, no documentación de producto. El rótulo decía
+           «Documentación» y estaba en la misma columna que Glosario y
+           Herramientas, que sí son lo que dicen. Cuando exista la
+           documentación de verdad, tendrá su propio destino. */
+        { label: es ? "Preguntas frecuentes" : "FAQ", href: "/faq" },
       ],
     },
     {

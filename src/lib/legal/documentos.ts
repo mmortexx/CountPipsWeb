@@ -86,8 +86,13 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: `El responsable del tratamiento es el titular de ${TITULAR.nombreComercial}. Los datos identificativos completos figuran en el aviso legal.`,
-          en: `The data controller is the owner of ${TITULAR.nombreComercial}. Full identifying details are set out in the legal notice.`,
+          /* NO se remite al aviso legal «donde figuran los datos completos»:
+             allí los tres campos —nombre fiscal, NIF y domicilio— están
+             vacíos a propósito hasta que exista la entrega comercial (ver
+             `titular.ts`). Mandar al lector a buscar un dato que no está es
+             peor que decirle que todavía no está. */
+          es: `El responsable del tratamiento es el titular de ${TITULAR.nombreComercial}. Los datos identificativos completos se publicarán en el aviso legal cuando se abra la entrega comercial; mientras tanto, el contacto es el buzón de soporte.`,
+          en: `The data controller is the owner of ${TITULAR.nombreComercial}. Full identifying details will be published in the legal notice when commercial delivery opens; until then, the contact is the support mailbox.`,
         },
       ],
     },
@@ -218,8 +223,8 @@ const privacidad: DocumentoLegal = {
         },
         {
           tipo: "parrafo",
-          es: "Ambos pueden tratar la información en servidores situados fuera del Espacio Económico Europeo, amparándose en los mecanismos de transferencia que prevé la normativa. El sitio se aloja en Cloudflare y en GitHub, que como cualquier alojamiento procesan las peticiones necesarias para servir las páginas.",
-          en: "Both may process the information on servers located outside the European Economic Area, relying on the transfer mechanisms the regulation provides. The site is hosted on Cloudflare and GitHub which, like any host, process the requests needed to serve the pages.",
+          es: "Cualquiera de ellos puede tratar la información en servidores situados fuera del Espacio Económico Europeo, amparándose en los mecanismos de transferencia que prevé la normativa. El sitio se aloja en Cloudflare y en GitHub, que como cualquier alojamiento procesan las peticiones necesarias para servir las páginas.",
+          en: "Any of them may process the information on servers located outside the European Economic Area, relying on the transfer mechanisms the regulation provides. The site is hosted on Cloudflare and GitHub which, like any host, process the requests needed to serve the pages.",
         },
       ],
     },
@@ -310,8 +315,8 @@ const cookies: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Las preferencias de idioma, tema y consentimiento se guardan localmente. Si aceptas analítica, PostHog puede guardar identificadores técnicos para medir el uso agregado; puedes retirar ese permiso desde el aviso de cookies o borrando el almacenamiento del sitio.",
-          en: "Language, theme and consent preferences are stored locally. If you accept analytics, PostHog may store technical identifiers for aggregate measurement; you can withdraw permission from the cookie notice or by clearing this site's storage.",
+          es: "Las preferencias de tema y consentimiento se guardan localmente; el idioma no, porque sale de la dirección de la página (/en para el inglés). Si aceptas analítica, PostHog puede guardar identificadores técnicos para medir el uso agregado; puedes retirar ese permiso desde el aviso de cookies o borrando el almacenamiento del sitio.",
+          en: "Theme and consent preferences are stored locally; the language is not, because it comes from the page address (/en for English). If you accept analytics, PostHog may store technical identifiers for aggregate measurement; you can withdraw permission from the cookie notice or by clearing this site's storage.",
         },
         {
           tipo: "parrafo",

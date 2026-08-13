@@ -6,7 +6,7 @@ import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-import { ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
+import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
 // Estimated reading time for this page's body content (metrics showcase
 // + risk calculator + wrapped). Computed from the section copy density —
@@ -44,7 +44,7 @@ const articleSchema = {
   // REQUIRES datePublished (ISO 8601) and recommends dateModified;
   // without datePublished the Article schema earns no rich result.
   // See worklog Task R20-1d (E2) + R20-2d.
-  datePublished: "2025-01-01",
+  datePublished: PUBLICACION_ISO,
   /* La de modificación sale del último commit, no clavada. Con las dos
      iguales y congeladas, la página declaraba no haberse tocado desde
      hace año y medio — y la frescura pesa en el posicionamiento. */

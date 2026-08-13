@@ -181,7 +181,7 @@ export function SavingsCalculator() {
           {/* Alternativa suscripción */}
           <div className="mb-5">
             <div className="tnum mb-2" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-              {es ? "Alternative por suscripción ($/mes)" : "Subscription alternative ($/mo)"}
+              {es ? "Alternativa por suscripción ($/mes)" : "Subscription alternative ($/mo)"}
             </div>
             <div className="flex flex-wrap gap-2 mb-3">
               {altPresets.map((a) => (

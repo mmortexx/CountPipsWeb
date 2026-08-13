@@ -64,6 +64,23 @@ export const ULTIMA_ACTUALIZACION: Date = leerFechaDeGit() ?? new Date(RESPALDO)
 export const ULTIMA_ACTUALIZACION_ISO: string = ULTIMA_ACTUALIZACION.toISOString().slice(0, 10);
 
 /**
+ * Cuándo se publicó esto por primera vez.
+ *
+ * Las ocho páginas de `/features/*` declaraban `datePublished:
+ * "2025-01-01"`, escrito a mano. No es una fecha: es un relleno con
+ * forma de dato, y encima anterior a la existencia del repositorio.
+ * Google la lee como la fecha real de publicación del artículo.
+ *
+ * Ésta es la del primer commit —2026-07-20—, que es la única fecha de
+ * publicación que existe de verdad. Va como constante y no leída de git
+ * en cada compilación porque el primer commit no cambia nunca; si algún
+ * día se reescribe la historia, este número deja de ser cierto y hay que
+ * tocarlo a mano, que es exactamente lo que debe pasar con un dato que
+ * afirma algo sobre el pasado.
+ */
+export const PUBLICACION_ISO = "2026-07-20";
+
+/**
  * Hasta cuándo se anuncia válido el precio, en los datos estructurados de
  * la oferta.
  *
