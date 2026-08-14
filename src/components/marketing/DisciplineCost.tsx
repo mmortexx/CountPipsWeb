@@ -393,6 +393,35 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
               </div>
             </div>
 
+            {/* Plan de Recuperación con el Guardián */}
+            {totalLeakMonthly > 0 && (
+              <div className="mt-4 p-3.5 rounded-[2px] border border-[rgb(var(--accent-base)/0.25)] bg-[rgb(var(--accent-base)/0.04)]">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span className="text-xs font-semibold text-[rgb(var(--accent-base))] uppercase tracking-wider">
+                    {es ? "Plan de Recuperación con Guardián" : "Guardian Recovery Plan"}
+                  </span>
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))]">
+                    {es ? "ROI Inmediato" : "Immediate ROI"}
+                  </span>
+                </div>
+                <p className="text-xs text-secondary leading-relaxed mb-3">
+                  {es
+                    ? `Frenando el 60% de tus operaciones fuera de plan recuperas +${fmtMoney(totalLeakMonthly * 0.6, lang)} al mes. La licencia Core ($149) se amortiza sola en ${Math.max(1, Math.round(149 / ((totalLeakMonthly * 0.6) / 30)))} días de operativa.`
+                    : `Stopping 60% of your off-plan trades recovers +${fmtMoney(totalLeakMonthly * 0.6, lang)} each month. The Core license ($149) pays for itself in ${Math.max(1, Math.round(149 / ((totalLeakMonthly * 0.6) / 30)))} trading days.`}
+                </p>
+                <div className="grid grid-cols-2 gap-2 text-center font-mono">
+                  <div className="p-2 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
+                    <span className="text-[10px] text-tertiary uppercase block">{es ? "Ahorro al 50%" : "50% Savings"}</span>
+                    <span className="text-xs font-bold text-[rgb(var(--pnl-pos))]">+{fmtMoney(totalLeakMonthly * 0.5, lang)}/mes</span>
+                  </div>
+                  <div className="p-2 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
+                    <span className="text-[10px] text-tertiary uppercase block">{es ? "Ahorro al 80%" : "80% Savings"}</span>
+                    <span className="text-xs font-bold text-[rgb(var(--pnl-pos))]">+{fmtMoney(totalLeakMonthly * 0.8, lang)}/mes</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Acción: Copiar resumen */}
             <div className="mt-5 pt-3 border-t border-[rgb(var(--divider)/0.06)] flex items-center justify-between">
               <button
