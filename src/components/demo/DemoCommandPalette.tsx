@@ -57,7 +57,7 @@ interface Command {
 export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const { lang, toggle: toggleLang } = useLang();
   const { theme, toggleTheme, palette, setPalette } = useTheme();
-  const { setPage, goDetail } = useDemo();
+  const { setPage, goDetail, setFilters, clearFilters } = useDemo();
   const es = lang === "es";
 
   const [query, setQuery] = useState("");
@@ -66,12 +66,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   /* ---- "Open" markers (cmdk-root + body dataset) ---- */
-  // The `cmdk-root` attribute is what GlobalShortcuts + AppDemo's F-key
-  // handler already check for — setting it on our modal root makes those
-  // existing checks suppress their keys while the palette is open, without
-  // needing to edit those listeners. The body dataset is the same pattern
-  // ShortcutsHelp uses (`shortcutsHelpOpen`) — gives the AppDemo `?`
-  // interceptor a way to skip while the palette is open.
   useEffect(() => {
     if (!open) return;
     const root = rootRef.current;
@@ -83,12 +77,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     };
   }, [open]);
 
-  /* ---- Reset query + active index when `open` transitions to true.
-     Uses the React "adjust state during render" pattern (vs. setState in
-     an effect) so the lint rule `react-hooks/set-state-in-effect` doesn't
-     fire AND there's no cascading render — React re-runs the render with
-     the adjusted state before committing, so the user never sees a stale
-     query from the previous open. */
   const [prevOpen, setPrevOpen] = useState(open);
   if (open !== prevOpen) {
     setPrevOpen(open);
@@ -98,16 +86,12 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     }
   }
 
-  /* ---- Focus input on open (side effect — OK in an effect). ---- */
   useEffect(() => {
     if (!open) return;
-    // Focus on next frame so AnimatePresence has mounted the input.
     const id = requestAnimationFrame(() => inputRef.current?.focus());
     return () => cancelAnimationFrame(id);
   }, [open]);
 
-  /* ---- Palette cycle order — el sitio tiene un solo estilo, así que
-     el comando de ciclo queda como no-op elegante. ---- */
   const paletteOrder: PaletteName[] = useMemo(() => ["clasico"], []);
 
   /* ---- Command list ---- */
@@ -137,9 +121,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
         labelEn: "Go to Trade detail",
         section: "nav",
         icon: <DetailIcon />,
-        // Open the first sample trade's detail — without this, navigating
-        // to "detail" would land on the empty state (DemoContext's
-        // `setPage("detail")` clears selectedTradeId).
         run: () => goDetail(TRADES[0].id),
       },
       {
@@ -159,6 +140,64 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
         section: "nav",
         icon: <JournalIcon />,
         run: () => setPage("journal"),
+      },
+    ];
+
+    const filters: Command[] = [
+      {
+        id: "filter-offplan",
+        labelEs: "Filtrar: Operaciones fuera de plan",
+        labelEn: "Filter: Off-plan trades",
+        section: "actions",
+        icon: <FilterIcon />,
+        run: () => {
+          setFilters({ compliance: "no" });
+          setPage("trades");
+        },
+      },
+      {
+        id: "filter-compliant",
+        labelEs: "Filtrar: Operaciones en plan (100% disciplina)",
+        labelEn: "Filter: In-plan trades (100% disciplined)",
+        section: "actions",
+        icon: <FilterIcon />,
+        run: () => {
+          setFilters({ compliance: "yes" });
+          setPage("trades");
+        },
+      },
+      {
+        id: "filter-nq",
+        labelEs: "Filtrar: NQ (E-mini Nasdaq-100)",
+        labelEn: "Filter: NQ (E-mini Nasdaq-100)",
+        section: "actions",
+        icon: <FilterIcon />,
+        run: () => {
+          setFilters({ instrument: "NQ" });
+          setPage("trades");
+        },
+      },
+      {
+        id: "filter-es",
+        labelEs: "Filtrar: ES (E-mini S&P 500)",
+        labelEn: "Filter: ES (E-mini S&P 500)",
+        section: "actions",
+        icon: <FilterIcon />,
+        run: () => {
+          setFilters({ instrument: "ES" });
+          setPage("trades");
+        },
+      },
+      {
+        id: "clear-filters",
+        labelEs: "Limpiar todos los filtros",
+        labelEn: "Clear all filters",
+        section: "actions",
+        icon: <ResetIcon />,
+        run: () => {
+          clearFilters();
+          setPage("trades");
+        },
       },
     ];
 
@@ -203,8 +242,8 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
       },
     ];
 
-    return [...nav, ...actions];
-  }, [setPage, goDetail, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme]);
+    return [...nav, ...filters, ...actions];
+  }, [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme]);
 
   /* ---- Filter ---- */
   const filtered = useMemo(() => {
@@ -473,6 +512,9 @@ function PaletteIcon() {
 }
 function ResetIcon() {
   return svgBase(<path d="M13.5 8a5.5 5.5 0 11-1.7-3.95M13.5 2v3h-3" />);
+}
+function FilterIcon() {
+  return svgBase(<path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />);
 }
 function SearchIcon() {
   return (

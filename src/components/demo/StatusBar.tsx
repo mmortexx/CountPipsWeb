@@ -91,15 +91,15 @@ export function StatusBar() {
         </span>
       </span>
 
-      {/* CENTRO — nota de guardado. En la app va justo detrás del estado
-          de disciplina, no centrada en la ventana (XAML L359-362); aquí
-          se sigue el mismo orden de lectura. Sin icono: la app no lo
-          lleva. */}
-      <span className="hidden sm:inline truncate ml-3">{t("autoSaved")}</span>
+      {/* CENTRO — nota de guardado y telemetría de motor */}
+      <div className="hidden sm:flex items-center gap-3 truncate ml-3">
+        <span>{t("autoSaved")}</span>
+        <span className="text-[10px] opacity-60 font-mono hidden md:inline">· SQLite WAL &lt; 0.2ms</span>
+      </div>
 
       {/* DERECHA — versión, en texto terciario y cifras tabulares, igual
           que el VersionText de la app. */}
-      <span className="tnum tabular-nums ml-auto shrink-0">v2.4.1</span>
+      <span className="tnum tabular-nums ml-auto shrink-0 font-mono">v2.4.1</span>
     </div>
   );
 }
