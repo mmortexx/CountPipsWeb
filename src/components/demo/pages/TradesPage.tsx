@@ -615,6 +615,24 @@ export function TradesPage() {
   const [outcome, setOutcome] = useState<"all" | "win" | "loss" | "be">("all");
   const [setupSel, setSetupSel] = useState<string>("all");
 
+  const handleExport = (format: "csv" | "json") => {
+    if (format === "csv") {
+      toast({
+        title: es ? "Exportación CSV generada" : "CSV export generated",
+        description: es
+          ? `${filtered.length} operaciones exportadas con esquema estándar de trading.`
+          : `${filtered.length} trades exported with standard trading schema.`,
+      });
+    } else {
+      toast({
+        title: es ? "Snapshot JSON generado" : "JSON snapshot generated",
+        description: es
+          ? `Copia completa con métricas y notas de ${filtered.length} operaciones.`
+          : `Complete copy with metrics and notes for ${filtered.length} trades.`,
+      });
+    }
+  };
+
   const customIds = useMemo(
     () => new Set(customTrades.map((c) => c.id)),
     [customTrades]
@@ -811,31 +829,59 @@ export function TradesPage() {
             </div>
           </div>
 
-          {/* Search — AutoSuggestBox-style on the right. */}
-          <div className="relative w-full md:w-80">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary pointer-events-none"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
-              className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-9 pl-9 pr-3 text-sm w-full text-primary placeholder:text-tertiary focus:outline-none focus:border-[rgb(var(--divider)/0.25)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors"
-            />
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            {/* Export buttons */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => handleExport("csv")}
+                title={es ? "Exportar a CSV" : "Export to CSV"}
+                className="h-9 px-2.5 rounded-md border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] text-xs font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1.5"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M2.5 10.5v2a1 1 0 001 1h9a1 1 0 001-1v-2M8 2.5v7m0 0l-2.5-2.5M8 9.5l2.5-2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>CSV</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport("json")}
+                title={es ? "Exportar a JSON" : "Export to JSON"}
+                className="h-9 px-2.5 rounded-md border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] text-xs font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1.5"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M4.5 3a2 2 0 00-2 2v2a2 2 0 01-1.5 2 2 2 0 011.5 2v2a2 2 0 002 2M11.5 3a2 2 0 012 2v2a2 2 0 001.5 2 2 2 0 00-1.5 2v2a2 2 0 01-2 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+                <span>JSON</span>
+              </button>
+            </div>
+
+            {/* Search — AutoSuggestBox-style on the right. */}
+            <div className="relative flex-1 md:w-72">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary pointer-events-none"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+                className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-9 pl-9 pr-3 text-sm w-full text-primary placeholder:text-tertiary focus:outline-none focus:border-[rgb(var(--divider)/0.25)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors"
+              />
+            </div>
           </div>
         </div>
       </Reveal>

@@ -93,8 +93,8 @@ export function HerramientasBody() {
         titleEn="Tools that do the maths for you."
         titleHighlightEs="la cuenta por ti."
         titleHighlightEn="the maths for you."
-        subtitleEs="Seis calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo."
-        subtitleEn="Six calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine."
+        subtitleEs="Siete calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo."
+        subtitleEn="Seven calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine."
         breadcrumbEs="Herramientas"
         breadcrumbEn="Tools"
       />

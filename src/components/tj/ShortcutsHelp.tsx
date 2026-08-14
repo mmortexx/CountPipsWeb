@@ -242,6 +242,60 @@ export function ShortcutsHelp({
       ),
       label: es ? "Ir a FAQ" : "Go to FAQ",
     },
+    {
+      keys: (
+        <>
+          <Kbd>g</Kbd>
+          <Kbd>t</Kbd>
+        </>
+      ),
+      label: es ? "Ir a Test de disciplina" : "Go to Discipline test",
+    },
+    {
+      keys: (
+        <>
+          <Kbd>g</Kbd>
+          <Kbd>c</Kbd>
+        </>
+      ),
+      label: es ? "Ir a Herramientas" : "Go to Tools",
+    },
+    {
+      keys: (
+        <>
+          <Kbd>g</Kbd>
+          <Kbd>o</Kbd>
+        </>
+      ),
+      label: es ? "Ir a Glosario" : "Go to Glossary",
+    },
+    {
+      keys: (
+        <>
+          <Kbd>g</Kbd>
+          <Kbd>b</Kbd>
+        </>
+      ),
+      label: es ? "Ir a Acceso anticipado (Beta)" : "Go to Early access (Beta)",
+    },
+    {
+      keys: (
+        <>
+          <Kbd>g</Kbd>
+          <Kbd>u</Kbd>
+        </>
+      ),
+      label: es ? "Ir a Operativa manual" : "Go to Manual trading",
+    },
+    {
+      keys: (
+        <>
+          <Kbd>g</Kbd>
+          <Kbd>r</Kbd>
+        </>
+      ),
+      label: es ? "Ir a Prop firms" : "Go to Prop firms",
+    },
   ];
 
   return (

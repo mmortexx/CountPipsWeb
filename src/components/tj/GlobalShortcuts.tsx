@@ -55,6 +55,12 @@ const G_NAV_MAP: Record<string, string> = {
   e: "/demo",
   a: "/about",
   q: "/faq",
+  t: "/test",
+  c: "/herramientas",
+  o: "/glosario",
+  b: "/beta",
+  u: "/traders/manual",
+  r: "/traders/prop-firms",
 };
 
 export function GlobalShortcuts() {

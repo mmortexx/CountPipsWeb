@@ -119,19 +119,8 @@ export function Footer() {
       title: es ? "Recursos" : "Resources",
       links: [
         { label: "FAQ", href: "/faq" },
-        /* El glosario ya NO abre la ventana emergente desde aquí: tiene
-           sección propia con 51 páginas. La ventana sigue existiendo para
-           consultar un término sin salir de la página que estás leyendo,
-           que es otro caso de uso; desde el pie, lo que se espera al
-           pulsar «Glosario» es ir al glosario. */
         { label: es ? "Glosario" : "Glossary", href: "/glosario" },
         { label: es ? "Herramientas" : "Tools", href: "/herramientas" },
-        /* Se llama por su nombre: al otro lado hay trece preguntas
-           frecuentes, no documentación de producto. El rótulo decía
-           «Documentación» y estaba en la misma columna que Glosario y
-           Herramientas, que sí son lo que dicen. Cuando exista la
-           documentación de verdad, tendrá su propio destino. */
-        { label: es ? "Preguntas frecuentes" : "FAQ", href: "/faq" },
       ],
     },
     {
@@ -304,7 +293,7 @@ export function Footer() {
                   lands on the link. */}
               <ul>
                 {col.links.map((l) => (
-                  <li key={l.label}>
+                  <li key={`${col.title}-${l.href}-${l.label}`}>
                     {l.glossary ? (
                       /* El glosario se carga al pulsarlo, no al pintar el
                          pie — que sale en las nueve rutas. Ver el

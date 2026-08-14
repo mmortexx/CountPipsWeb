@@ -26,7 +26,8 @@ export type Herramienta = {
     | "EdgeSignificanceChecker"
     | "EquityProjector"
     | "SavingsCalculator"
-    | "SessionClock";
+    | "SessionClock"
+    | "DisciplineCost";
   tituloEs: string;
   tituloEn: string;
   /** Titular de la cabecera. Corto: se anima carácter a carácter. */
@@ -124,6 +125,26 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Proyecta tu curva de capital a varios años a partir de tu esperanza matemática por operación y de cuántas haces al mes.",
     descripcionEn:
       "Project your equity curve over several years from your expectancy per trade and how many trades you take per month.",
+  },
+  {
+    slug: "coste-de-indisciplina",
+    componente: "DisciplineCost",
+    tituloEs: "Calculadora de coste de indisciplina",
+    tituloEn: "Cost of indiscipline calculator",
+    h1Es: "La factura de tus errores.",
+    h1En: "The invoice for your mistakes.",
+    resaltaEs: "tus errores.",
+    resaltaEn: "your mistakes.",
+    subtituloEs:
+      "¿Cuánto dinero dejas en la mesa cuando rompes tus reglas? Calcula la brecha exacta entre tu operativa en plan y fuera de plan, y descubre tu fuga de capital anual.",
+    subtituloEn:
+      "How much money do you leave on the table when breaking your rules? Work out the exact gap between your in-plan and off-plan trades, and discover your annual capital leak.",
+    resumenEs: "La brecha real de dinero entre operar en plan o romper tus reglas.",
+    resumenEn: "The real cash gap between trading your plan or breaking your rules.",
+    descripcionEs:
+      "Calcula la factura exacta de tus errores operativos y la diferencia de expectancy entre tus operaciones disciplinadas y fuera de plan.",
+    descripcionEn:
+      "Calculate the exact invoice of your operational mistakes and the expectancy gap between disciplined and off-plan trades.",
   },
   {
     slug: "reloj-de-sesiones",

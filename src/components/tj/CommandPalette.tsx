@@ -30,30 +30,10 @@ const PREFERS_REDUCED_MOTION =
 /**
  * CommandPalette — Cmd+K / Ctrl+K quick-navigation palette.
  *
- * Multi-page aware: navigates between the 6 site routes (/, /features,
- * /demo, /pricing, /about, /faq) using full-page navigation
- * (`window.location.href = asset("/path")`) — appropriate for the static
- * GitHub Pages export. When the target is the current page, it falls back
- * to a smooth in-page scroll instead of a reload.
- *
- * Also covers theme/palette/language toggles and the "Buy Pro" CTA. All copy
- * is bilingual ES/EN derived once from `navigator.language` (defaulting to
- * ES) — separate from the app-wide `useLang()` so the palette works
- * regardless of the active site language.
- *
- * Keyboard: ↑/↓ navigate (loop), ↵ select, ⎋ close, ⌘K/⌃K toggle.
- *
- * ── Componente CONTROLADO, y por qué ──────────────────────────────────
- * La paleta ya no guarda su propio `open` ni escucha ⌘K: las dos cosas
- * viven ahora en `OverlayHost`. El motivo es de peso: este componente
- * arrastra `cmdk` —ya no `framer-motion`, retirada— y estaba montado
- * en el layout, es decir, en TODAS las páginas del sitio. Todo visitante
- * descargaba y ejecutaba la paleta aunque no llegara a pulsar ⌘K nunca.
- *
- * Con el estado fuera, `OverlayHost` puede escuchar el atajo con un
- * listener de tres líneas y traerse este módulo con `import()` solo
- * cuando de verdad se abre. El coste desaparece del arranque de todas
- * las páginas y se paga una vez, y solo quien usa el atajo lo paga.
+ * Multi-page aware: navigates between all site routes (/, /features,
+ * /demo, /traders, /herramientas, /pricing, /about, /faq, etc.).
+ * When the target is the current page, it falls back to a smooth in-page
+ * scroll instead of a reload.
  */
 
 /* ------------------------------------------------------------------ */
@@ -64,30 +44,37 @@ type Page = {
   path: string;
   es: string;
   en: string;
+  keywords?: string;
+  category?: "main" | "tools" | "profiles";
 };
 
 /**
- * The site routes. Includes the 3 feature subpages (metricas, disciplina,
- * seguridad) so the command palette offers full keyboard navigation to
- * every content page — complements the 'g' + letter shortcuts.
+ * The site routes. Includes feature subpages, trader profiles, and all
+ * specialized tools so the command palette offers complete keyboard navigation.
  */
 const PAGES: Page[] = [
-  { path: "/", es: "Inicio", en: "Home" },
-  { path: "/features", es: "Características", en: "Features" },
-  { path: "/features/metricas", es: "Métricas", en: "Metrics" },
-  { path: "/features/disciplina", es: "Disciplina", en: "Discipline" },
-  { path: "/features/seguridad", es: "Seguridad", en: "Security" },
-  { path: "/demo", es: "Demo", en: "Demo" },
-  /* Faltaban tres destinos que sí existen. El test lleva tiempo con
-     dirección propia y nunca llegó aquí; las herramientas y el glosario
-     son de hoy. Un buscador de navegación que no conoce media web
-     enseña a no usarlo. */
-  { path: "/test", es: "Test de disciplina", en: "Discipline test" },
-  { path: "/herramientas", es: "Herramientas", en: "Tools" },
-  { path: "/glosario", es: "Glosario", en: "Glossary" },
-  { path: "/pricing", es: "Precios", en: "Pricing" },
-  { path: "/about", es: "Acerca de", en: "About" },
-  { path: "/faq", es: "FAQ", en: "FAQ" },
+  { path: "/", es: "Inicio", en: "Home", keywords: "portada landing", category: "main" },
+  { path: "/features", es: "Características", en: "Features", keywords: "producto vision general bento", category: "main" },
+  { path: "/features/metricas", es: "Métricas institucionales", en: "Institutional metrics", keywords: "sharpe sortino profit factor expectancy sqn ratios", category: "main" },
+  { path: "/features/disciplina", es: "Disciplina y Guardián", en: "Discipline & Guardian", keywords: "guardian reglas drawdown overtrading tilt", category: "main" },
+  { path: "/features/seguridad", es: "Seguridad y Local-first", en: "Security & Local-first", keywords: "sqlite cifrado privacidad sin nube local", category: "main" },
+  { path: "/demo", es: "Demo interactiva", en: "Interactive demo", keywords: "app diario operaciones trades dashboard journal analytics", category: "main" },
+  { path: "/traders/manual", es: "Operativa manual", en: "Manual trading", keywords: "discrecional setups playbooks price action", category: "profiles" },
+  { path: "/traders/prop-firms", es: "Prop firms y cuentas fondeadas", en: "Prop firms & funded accounts", keywords: "evaluaciones drawdown consistencia funding", category: "profiles" },
+  { path: "/test", es: "Test de disciplina", en: "Discipline test", keywords: "diagnostico evaluacion quiz autoevaluacion", category: "tools" },
+  { path: "/herramientas", es: "Herramientas de trading", en: "Trading tools", keywords: "calculadoras utilidades gratis", category: "tools" },
+  { path: "/herramientas/calculadora-de-riesgo", es: "Calculadora de tamaño de posición", en: "Position size calculator", keywords: "riesgo stop loss lotes contratos apalancamiento", category: "tools" },
+  { path: "/herramientas/significancia-estadistica", es: "¿Ventaja real o buena racha?", en: "Edge significance checker", keywords: "estadistica p-value suerte muestra aciertos", category: "tools" },
+  { path: "/herramientas/monte-carlo", es: "Simulador de Monte Carlo", en: "Monte Carlo simulator", keywords: "simulacion r-multiplo abanico rachas ruina", category: "tools" },
+  { path: "/herramientas/proyector-de-capital", es: "Proyector de capital", en: "Equity projector", keywords: "interes compuesto curva crecimiento proyeccion", category: "tools" },
+  { path: "/herramientas/coste-de-indisciplina", es: "Calculadora de coste de indisciplina", en: "Cost of indiscipline calculator", keywords: "factura errores fomo gap fuga capital", category: "tools" },
+  { path: "/herramientas/reloj-de-sesiones", es: "Reloj de sesiones de mercado", en: "Market session clock", keywords: "horarios londres nueva york asia solapes forex", category: "tools" },
+  { path: "/herramientas/ahorro-vs-suscripcion", es: "Escenario de ahorro vs suscripción", en: "Savings vs subscription scenario", keywords: "precio coste retorno roi comparativa", category: "tools" },
+  { path: "/glosario", es: "Glosario de trading", en: "Trading glossary", keywords: "terminos definiciones vocabulario conceptos", category: "main" },
+  { path: "/pricing", es: "Precios y licencias", en: "Pricing & licenses", keywords: "core pro coste pago unico", category: "main" },
+  { path: "/about", es: "Acerca de y Manifiesto", en: "About & Manifesto", keywords: "historia principios tecnologia changelog", category: "main" },
+  { path: "/faq", es: "Preguntas frecuentes (FAQ)", en: "FAQ", keywords: "preguntas soporte contacto ayuda dudas", category: "main" },
+  { path: "/beta", es: "Solicitud de acceso anticipado", en: "Early access application", keywords: "invitacion registro piloto privado", category: "profiles" },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -102,43 +89,16 @@ export function CommandPalette({
   onOpenChange: (open: boolean) => void;
 }) {
   const setOpen = onOpenChange;
-  // Bilingual ES/EN based on browser language; default ES.
-  /* El idioma de la paleta es el del SITIO, no el del navegador.
-     ────────────────────────────────────────────────────────────────
-     Antes se derivaba una sola vez de `navigator.language`, con el
-     argumento de que así "funciona independientemente del idioma activo
-     del sitio". El argumento está del revés: si el visitante ha elegido
-     español en el selector, el panel de comandos tiene que hablarle en
-     español. Con un navegador en inglés, la web entera salía en español
-     y el panel en inglés — dos idiomas en la misma pantalla, y el que
-     mandaba era el que el visitante NO había elegido.
-
-     Ahora sale de `useLang()`, la misma fuente que el resto del sitio,
-     así que cambiar el idioma en la barra también cambia el de la
-     paleta y el atajo `⌘K` deja de ser una isla. */
   const { toggle: toggleLang, lang } = useLang();
   const es = lang === "es";
-  /* Sólo tema. El selector de paletas se retiró de la lista de comandos: el
-     sitio fuerza `clasico` y ofrecer al visitante conmutar a una paleta que
-     la dirección de arte ya descartó es enseñar una puerta que no lleva a
-     ningún sitio. Quedaban `setPalette`, `currentPalette`, `PALETTES`,
-     `PaletteName` y el componente `PaletteSwatch` sin que los leyera nadie. */
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
 
   const panelRef = useRef<HTMLDivElement>(null);
-  /* Mantiene el panel en el árbol los 180 ms de su despedida. Sustituye
-     a `AnimatePresence`; ver el comentario del bloque de más abajo. */
   const { montado, saliendo } = usePresencia(open, 180);
 
   /* ---------------- Keyboard listeners ---------------- */
 
-  // El atajo ⌘K/⌃K vive en `OverlayHost`: es quien puede escucharlo sin
-  // haber descargado antes este módulo. Aquí solo queda el comportamiento
-  // de la paleta ya abierta.
-
-  // Escape-to-close while open. Capture phase so we beat cmdk's internal
-  // Escape handler (which only clears the search query).
   useEffect(() => {
     if (!open) return;
     const onEsc = (e: KeyboardEvent) => {
@@ -150,19 +110,8 @@ export function CommandPalette({
     };
     window.addEventListener("keydown", onEsc, true);
     return () => window.removeEventListener("keydown", onEsc, true);
-    /* `setOpen` entra en la lista igual que en los dos hooks de abajo, que
-       ya la traían. Es una prop (`onOpenChange`), no el setter estable de
-       `useState`: si el padre la cambiara, este listener seguiría cerrando
-       con la versión vieja. Hoy `OverlayHost` la memoiza con dependencias
-       vacías, así que no re-suscribe nada. */
   }, [open, setOpen]);
 
-  // Focus trap + focus restore. Mirrors the Navbar mobile-drawer pattern
-  // (Navbar.tsx ~L82-128): while the palette is open, Tab / Shift+Tab
-  // cycle within the panel (cmdk handles its own ↑/↓ arrow nav, but Tab
-  // could otherwise escape to the underlying page). On close, focus is
-  // returned to whatever element was focused before the palette opened —
-  // typically the Cmd+K trigger — so keyboard users keep their place.
   useEffect(() => {
     if (!open) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
@@ -202,22 +151,10 @@ export function CommandPalette({
 
   /* ---------------- Navigation helpers ---------------- */
 
-  /**
-   * Navigate to a page. Same-page target → smooth scroll to top instead
-   * of a full reload. Cross-page target → `window.location.href =
-   * asset(path)` which is the correct primitive for Next.js `output:
-   * "export"` on GitHub Pages (full page load).
-   */
   const navigate = useCallback(
     (path: string) => {
       setOpen(false);
-      // `withLocale` ANTES de comparar, no sólo antes de navegar: en
-      // inglés, `pathname` es `/en/pricing` pero `path` en `PAGES` sigue
-      // siendo `/pricing` a secas. Comparar sin prefijar habría dado
-      // "páginas distintas" estando en la misma, y el resultado habría
-      // sido una recarga completa en vez de un scroll suave.
       const destino = withLocale(path, lang);
-      // Same page? Smooth scroll to top — no reload.
       if (pathname === destino) {
         requestAnimationFrame(() => {
           window.scrollTo({
@@ -227,20 +164,11 @@ export function CommandPalette({
         });
         return;
       }
-      // Cross-page — full navigation.
       window.location.href = asset(destino);
     },
-    /* `setOpen` es ahora una PROP (`onOpenChange`), no el setter estable
-       de un `useState`, así que tiene que ir en las dependencias. Sin
-       ella estas dos funciones se quedarían con la versión del primer
-       render y cerrarían un panel que ya no es el que está en pantalla:
-       hoy funcionaría de milagro —porque el anfitrión pasa siempre la
-       misma referencia— y dejaría de hacerlo en cuanto alguien montara
-       la paleta desde otro sitio. */
     [pathname, setOpen, lang]
   );
 
-  // Run a side-effecting action then close the palette.
   const run = useCallback(
     (fn: () => void) => {
       fn();
@@ -249,41 +177,23 @@ export function CommandPalette({
     [setOpen]
   );
 
-  // Override cmdk's default selected-state styling with our accent.
   const itemClass =
     "data-[selected=true]:bg-[rgb(var(--divider)/0.05)] data-[selected=true]:text-primary";
 
   return (
     <>
       {montado && (
-        /* AQUÍ HABÍA UN `AnimatePresence` Y SU AVISO SOBRE LA `key`.
-           El aviso decía —con razón— que sin `key` el panel se quedaba
-           clavado en pantalla al cerrarlo, y que mientras siguiera en el
-           árbol `GlobalShortcuts` creía que había un overlay abierto y
-           desactivaba `?`, `t`, `l` y la navegación con `g`: un fallo de
-           la animación se llevaba por delante todos los atajos.
-
-           Esa trampa ya no existe, porque el desmontaje no depende de
-           que una biblioteca lo identifique bien: `usePresencia` mantiene
-           el panel exactamente 180 ms y lo quita. Lo que sí sigue
-           importando es que el plazo del hook y la duración de las clases
-           `tj-*-sale` sean el mismo — si el hook desmontara antes, la
-           despedida se cortaría a media animación. */
         <div
           className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[15vh]"
           role="dialog"
           aria-modal="true"
           aria-labelledby="command-palette-title"
         >
-          {/* Visible (sr-only) heading — anchors the dialog's accessible name
-              to a real DOM node so screen readers can navigate to it as a
-              heading landmark. The visible UI label is the input placeholder;
-              this heading is the accessible name. */}
           <h2 id="command-palette-title" className="sr-only">
             {es ? "Paleta de comandos" : "Command palette"}
           </h2>
 
-          {/* Backdrop — subtle blur + fade-in */}
+          {/* Backdrop */}
           <div
             className={`absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150 ${
               saliendo ? "tj-velo-sale" : "tj-velo-entra"
@@ -292,7 +202,7 @@ export function CommandPalette({
             aria-hidden="true"
           />
 
-          {/* Panel — liquid-glass card, springy fade+scale+lift entrance */}
+          {/* Panel */}
           <div
             ref={panelRef}
             tabIndex={-1}
@@ -304,34 +214,80 @@ export function CommandPalette({
               <CommandInput
                 placeholder={
                   es
-                    ? "Escribe un comando o búsqueda…"
-                    : "Type a command or search…"
+                    ? "Escribe un comando, herramienta o página…"
+                    : "Type a command, tool or page…"
                 }
                 aria-label={es ? "Buscar comandos" : "Search commands"}
                 autoComplete="off"
                 spellCheck={false}
               />
-              <CommandList className="max-h-[min(60vh,360px)] custom-scroll">
+              <CommandList className="max-h-[min(60vh,380px)] custom-scroll">
                 <CommandEmpty>
                   {es ? "Sin resultados." : "No results found."}
                 </CommandEmpty>
 
-                {/* Navigation — all 6 site routes */}
-                <CommandGroup heading={es ? "Navegación" : "Navigation"}>
-                  {PAGES.map((p) => {
-                    const label = es
-                      ? `Ir a ${p.es}`
-                      : `Go to ${p.en}`;
+                {/* Navegación Principal */}
+                <CommandGroup heading={es ? "Navegación principal" : "Main navigation"}>
+                  {PAGES.filter((p) => p.category === "main").map((p) => {
+                    const label = es ? `Ir a ${p.es}` : `Go to ${p.en}`;
                     return (
                       <CommandItem
                         key={p.path}
                         className={itemClass}
-                        value={`${label} ${p.es} ${p.en} ${p.path} ${
-                          es ? "ir a página" : "go to page"
+                        value={`${label} ${p.es} ${p.en} ${p.path} ${p.keywords ?? ""} ${
+                          es ? "ir a pagina" : "go to page"
                         }`}
                         onSelect={() => navigate(p.path)}
                       >
                         <NavIcon />
+                        <span className="text-primary">{label}</span>
+                        <CommandShortcut className="tnum text-tertiary">
+                          {p.path}
+                        </CommandShortcut>
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+
+                <CommandSeparator />
+
+                {/* Herramientas de trading */}
+                <CommandGroup heading={es ? "Calculadoras y herramientas" : "Calculators & tools"}>
+                  {PAGES.filter((p) => p.category === "tools").map((p) => {
+                    const label = es ? p.es : p.en;
+                    return (
+                      <CommandItem
+                        key={p.path}
+                        className={itemClass}
+                        value={`${label} ${p.es} ${p.en} ${p.path} ${p.keywords ?? ""} ${
+                          es ? "calculadora herramienta utilidad" : "calculator tool utility"
+                        }`}
+                        onSelect={() => navigate(p.path)}
+                      >
+                        <ToolIcon />
+                        <span className="text-primary">{label}</span>
+                        <CommandShortcut className="tnum text-tertiary">
+                          {p.path.replace("/herramientas/", "")}
+                        </CommandShortcut>
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+
+                <CommandSeparator />
+
+                {/* Perfiles y acceso */}
+                <CommandGroup heading={es ? "Perfiles y acceso" : "Profiles & access"}>
+                  {PAGES.filter((p) => p.category === "profiles").map((p) => {
+                    const label = es ? p.es : p.en;
+                    return (
+                      <CommandItem
+                        key={p.path}
+                        className={itemClass}
+                        value={`${label} ${p.es} ${p.en} ${p.path} ${p.keywords ?? ""}`}
+                        onSelect={() => navigate(p.path)}
+                      >
+                        <ProfileIcon />
                         <span className="text-primary">{label}</span>
                         <CommandShortcut className="tnum text-tertiary">
                           {p.path}
@@ -386,40 +342,12 @@ export function CommandPalette({
                     </CommandShortcut>
                   </CommandItem>
                 </CommandGroup>
-
-                {/* Aquí vivía un grupo "Estilo" para elegir entre dos
-                    estilos visuales. Retirado al quedar uno solo: un
-                    grupo con una única opción que ya está activa no es
-                    una elección, es ruido en el buscador. */}
-
-                <CommandSeparator />
-
-                {/* Action */}
-                <CommandGroup heading={es ? "Acción" : "Action"}>
-                  <CommandItem
-                    className={itemClass}
-                    value={
-                      es
-                        ? "solicitar acceso anticipado countpips"
-                        : "request countpips early access"
-                    }
-                    onSelect={() => navigate("/beta")}
-                  >
-                    <NavIcon />
-                    <span className="text-primary">
-                      {es ? "Solicitar acceso anticipado" : "Request early access"}
-                    </span>
-                    <CommandShortcut className="tnum text-tertiary">
-                      /beta
-                    </CommandShortcut>
-                  </CommandItem>
-                </CommandGroup>
               </CommandList>
             </Command>
 
             {/* Footer keyboard hint */}
             <div
-              className="flex items-center justify-between gap-2 px-3 py-2 border-t  text-[11px] text-tertiary"
+              className="flex items-center justify-between gap-2 px-3 py-2 border-t text-[11px] text-tertiary"
               aria-hidden="true"
             >
               <span className="flex items-center gap-1.5">
@@ -443,20 +371,20 @@ export function CommandPalette({
   );
 }
 
-/* ---------- Small inline icons (currentColor, no indigo/blue) ---------- */
+/* ---------- Small inline icons (currentColor) ---------- */
 
 function NavIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="14"
+      height="14"
       viewBox="0 0 16 16"
       fill="none"
-      className="text-tertiary shrink-0"
       aria-hidden="true"
+      className="mr-2 text-tertiary"
     >
       <path
-        d="M3 8h9M8.5 4.5l3.5 3.5-3.5 3.5"
+        d="M3 8h10M8 3l5 5-5 5"
         stroke="currentColor"
         strokeWidth="1.4"
         strokeLinecap="round"
@@ -466,18 +394,18 @@ function NavIcon() {
   );
 }
 
-function ThemeIcon() {
+function ToolIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="14"
+      height="14"
       viewBox="0 0 16 16"
       fill="none"
-      className="text-tertiary shrink-0"
       aria-hidden="true"
+      className="mr-2 text-[rgb(var(--accent-base))]"
     >
       <path
-        d="M13 9.5A5 5 0 0 1 6.5 3 5 5 0 1 0 13 9.5z"
+        d="M10.4 2.3a3.4 3.4 0 0 0-4 4.4L2.6 10.5a1.3 1.3 0 0 0 1.8 1.8l3.8-3.8a3.4 3.4 0 0 0 4.4-4l-2 2-1.6-1.6 2-1.6Z"
         stroke="currentColor"
         strokeWidth="1.3"
         strokeLinejoin="round"
@@ -486,22 +414,58 @@ function ThemeIcon() {
   );
 }
 
+function ProfileIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      className="mr-2 text-tertiary"
+    >
+      <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.3" />
+      <path d="M2.5 13.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ThemeIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden="true"
+      className="mr-2 text-tertiary"
+    >
+      <circle cx="8" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d="M8 1.5v1.5M8 13v1.5M1.5 8h1.5M13 8h1.5M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function LangIcon() {
   return (
     <svg
-      width="16"
-      height="16"
+      width="14"
+      height="14"
       viewBox="0 0 16 16"
       fill="none"
-      className="text-tertiary shrink-0"
       aria-hidden="true"
+      className="mr-2 text-tertiary"
     >
-      <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
+      <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.4" />
       <path
-        d="M2.5 8h11M8 2.2c1.8 2 1.8 9.6 0 11.6M8 2.2c-1.8 2-1.8 9.6 0 11.6"
+        d="M2.5 8h11M8 2a9 9 0 013 6 9 9 0 01-3 6 9 9 0 01-3-6 9 9 0 013-6z"
         stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinecap="round"
+        strokeWidth="1.4"
       />
     </svg>
   );
@@ -509,35 +473,16 @@ function LangIcon() {
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded border  bg-[rgb(var(--divider)/0.03)] text-[10px] font-mono text-secondary tnum">
+    <kbd className="inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.06)] text-[10px] font-mono text-tertiary">
       {children}
     </kbd>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Focus-trap helper (mirrors Navbar.tsx getFocusables)               */
-/* ------------------------------------------------------------------ */
-
-const FOCUSABLE_SELECTOR = [
-  "a[href]",
-  "button:not([disabled])",
-  'input:not([disabled]):not([type="hidden"])',
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  '[tabindex]:not([tabindex="-1"])',
-  "audio[controls]",
-  "video[controls]",
-  "details > summary:first-of-type",
-].join(",");
-
-function getFocusables(container: HTMLElement): HTMLElement[] {
-  return Array.from(
-    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-  ).filter((el) => {
-    const rects = el.getClientRects();
-    if (rects.length === 0) return false;
-    const { width, height } = rects[0];
-    return width > 0 && height > 0;
-  });
+function getFocusables(el: HTMLElement): HTMLElement[] {
+  const sel =
+    'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  return Array.from(el.querySelectorAll<HTMLElement>(sel)).filter(
+    (n) => n.offsetParent !== null
+  );
 }

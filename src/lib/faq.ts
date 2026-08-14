@@ -152,7 +152,7 @@ export const PRICING_FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué datos no se solicitan?",
-    a: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Sólo preguntamos lo necesario para seleccionar el piloto y entender tu contexto de journal.",
+    a: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Sólo preguntamos lo necesario para seleccionar el piloto y entender tu contexto de diario.",
   },
 ];
 

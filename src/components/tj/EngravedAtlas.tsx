@@ -194,7 +194,7 @@ const PASO_TRAMA = 6;
    160 pasos dan ~6 px de avance por paso, justo una celda. Es el valor
    más alto que no pierde nada, porque lo que se perdería está por debajo
    de la resolución de la propia trama. */
-const PASOS_TRAZO = 160;
+const PASOS_TRAZO = 80;
 /** Radio máximo, en fracción del paso. Por encima de 0,5 los puntos se
  *  tocarían y la trama se cerraría en mancha. */
 const RADIO_TRAMA = 0.44;
@@ -238,6 +238,18 @@ const CRIA_TRAMA = 0.3;
  *  SIEMPRE: la lámina terminada se cachea con t=1 y ya no se revela más,
  *  así que su borde final nunca llegaría a colocarse. */
 const CIERRE_ASIENTO = 0.9;
+
+const R_MAX = PASO_TRAMA * RADIO_TRAMA;
+const R_PLENO_LUT = new Float32Array(256);
+for (let b = 0; b < 256; b++) {
+  const alfa = b / 255;
+  const cobertura = alfa * GANANCIA_TRAMA;
+  if (cobertura < UMBRAL_TRAMA) {
+    R_PLENO_LUT[b] = 0;
+  } else {
+    R_PLENO_LUT[b] = R_MAX * Math.sqrt(cobertura > 1 ? 1 : cobertura);
+  }
+}
 
 /**
  * Dibuja `lamina` en `destino` convertida en trama de puntos.
@@ -287,26 +299,21 @@ function tramar(
   }
 
   const puntos = new Path2D();
-  const rMax = PASO_TRAMA * RADIO_TRAMA;
   const TAU = Math.PI * 2;
   /* El cierre de la lámina asienta todo lo que quede suelto, y va aparte
      del asiento propio de cada punto: se toma el mayor de los dos. */
   const cierre =
     t <= CIERRE_ASIENTO ? 0 : (t - CIERRE_ASIENTO) / (1 - CIERRE_ASIENTO);
+  const invVentana = 1 / VENTANA_ASIENTO;
 
   for (let fila = 0; fila < filas; fila++) {
+    const rowOffset = fila * cols;
+    const cyBase = (fila + 0.5) * PASO_TRAMA;
     for (let col = 0; col < cols; col++) {
-      const k = fila * cols + col;
-      const alfa = datos[k * 4 + 3] / 255;
-      if (alfa <= 0) {
-        /* La celda se ha quedado sin tinta —se retrocedió el scroll, o la
-           lámina la borró—: olvida cuándo nació, para que si vuelve, vuelva
-           dispersa. */
-        if (nacido) nacido[k] = -1;
-        continue;
-      }
-      const cobertura = alfa * GANANCIA_TRAMA;
-      if (cobertura < UMBRAL_TRAMA) {
+      const k = rowOffset + col;
+      const aByte = datos[(k << 2) + 3];
+      const rPleno = R_PLENO_LUT[aByte];
+      if (rPleno === 0) {
         if (nacido) nacido[k] = -1;
         continue;
       }
@@ -314,31 +321,27 @@ function tramar(
       let asiento = 1;
       if (nacido) {
         if (nacido[k] < 0) nacido[k] = t;
-        const propio = (t - nacido[k]) / VENTANA_ASIENTO;
+        const propio = (t - nacido[k]) * invVentana;
         asiento = propio > cierre ? propio : cierre;
         if (asiento > 1) asiento = 1;
         else if (asiento < 0) asiento = 0;
       }
 
-      /* Raíz cuadrada: lo proporcional a la tinta es el ÁREA del punto. */
-      const rPleno = rMax * Math.sqrt(cobertura > 1 ? 1 : cobertura);
-      const r = rPleno * (CRIA_TRAMA + (1 - CRIA_TRAMA) * asiento);
-      /* Por debajo de un tercio de píxel el punto ya no se ve y sí se
-         paga; se lo salta hasta que crezca. */
+      const r = asiento === 1 ? rPleno : rPleno * (CRIA_TRAMA + (1 - CRIA_TRAMA) * asiento);
       if (r < 0.34) continue;
 
-      let cx = (col + 0.5) * PASO_TRAMA;
-      let cy = (fila + 0.5) * PASO_TRAMA;
-      if (asiento < 1) {
-        /* Desvío determinista por celda: el mismo punto sale siempre por
-           el mismo lado. Con `Math.random()` la nube bailaría en cada
-           repintado en vez de caer. */
-        const d = (1 - asiento) * (1 - asiento) * DISPERSION_TRAMA;
-        cx += jitter(k) * d;
-        cy += jitter(k + 7919) * d;
+      if (asiento === 1) {
+        const cx = (col + 0.5) * PASO_TRAMA;
+        puntos.moveTo(cx + r, cyBase);
+        puntos.arc(cx, cyBase, r, 0, TAU);
+      } else {
+        const inv = 1 - asiento;
+        const d = inv * inv * DISPERSION_TRAMA;
+        const cx = (col + 0.5) * PASO_TRAMA + jitter(k) * d;
+        const cy = cyBase + jitter(k + 7919) * d;
+        puntos.moveTo(cx + r, cy);
+        puntos.arc(cx, cy, r, 0, TAU);
       }
-      puntos.moveTo(cx + r, cy);
-      puntos.arc(cx, cy, r, 0, TAU);
     }
   }
 
@@ -346,14 +349,18 @@ function tramar(
   destino.fill(puntos);
 }
 
-/* Hash entero determinista → [-0.5, 0.5]. El temblor de la mano. */
+/* Hash entero determinista ultrarrápido → [-0.5, 0.5]. El temblor de la mano. */
 function jitter(seed: number): number {
-  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
-  return x - Math.floor(x) - 0.5;
+  let h = Math.imul((seed | 0) ^ 0x61c88647, 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  h = (h ^ (h >>> 16)) >>> 0;
+  return h / 4294967296 - 0.5;
 }
 function rnd(seed: number): number {
-  const x = Math.sin(seed * 78.233 + 12.9898) * 43758.5453;
-  return x - Math.floor(x);
+  let h = Math.imul((seed | 0) ^ 0x9e3779b9, 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  h = (h ^ (h >>> 16)) >>> 0;
+  return h / 4294967296;
 }
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
@@ -2680,7 +2687,7 @@ export function EngravedAtlas() {
        punto de trama— y se pone al día en cuanto el visitante afloja, que
        es cuando sobra tiempo. Antes que un fotograma perdido, un punto
        menos. */
-    const PRESUPUESTO_REGRABADO_MS = 5;
+    const PRESUPUESTO_REGRABADO_MS = 1.0;
     let inicioFotograma = 0;
     /* Si todas las capas compuestas en el último fotograma estaban al
        día. Lo pone a false `capaDe` cuando se queda sin presupuesto. */

@@ -39,6 +39,9 @@ const COMPONENTES = {
   SessionClock: dynamic(() =>
     import("@/components/marketing/SessionClock").then((m) => m.SessionClock),
   ),
+  DisciplineCost: dynamic(() =>
+    import("@/components/marketing/DisciplineCost").then((m) => m.DisciplineCost),
+  ),
 } as const;
 
 export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) {

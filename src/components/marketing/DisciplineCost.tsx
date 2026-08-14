@@ -1,263 +1,416 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { fmtMoney, fmtNum } from "@/lib/trading/format";
+
+interface MistakeItem {
+  id: string;
+  labelEs: string;
+  labelEn: string;
+  pct: number;
+}
+
+const PRESETS = [
+  {
+    id: "prop",
+    nameEs: "Trader de Prop Firm",
+    nameEn: "Prop Firm Trader",
+    trades: 50,
+    breachPct: 30,
+    inPlanExp: 55,
+    offPlanExp: -75,
+  },
+  {
+    id: "scalper",
+    nameEs: "Scalper de Futuros / Cripto",
+    nameEn: "Futures / Crypto Scalper",
+    trades: 80,
+    breachPct: 40,
+    inPlanExp: 38,
+    offPlanExp: -52,
+  },
+  {
+    id: "swing",
+    nameEs: "Swing Trader Discrecional",
+    nameEn: "Discretionary Swing Trader",
+    trades: 24,
+    breachPct: 25,
+    inPlanExp: 140,
+    offPlanExp: -180,
+  },
+];
 
 /**
- * DisciplineCost — sección § 05·b del HTML. Lo que la indisciplina
- * cuesta: tabla de expectancy (en plan / fuera de plan) + factura
- * detallada de indisciplina.
+ * DisciplineCost — Calculadora interactiva del coste de indisciplina.
  *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("05·b"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
+ * Muestra la brecha entre operar en plan y fuera de plan, la factura
+ * mensual desglosada por tipología de fallo y la fuga anual de capital.
  */
 export function DisciplineCost({ num = "05·b" }: { num?: string }) {
   const { lang } = useLang();
   const es = lang === "es";
+
+  // Estado editable
+  const [totalTrades, setTotalTrades] = useState(60);
+  const [breachPct, setBreachPct] = useState(40);
+  const [inPlanExp, setInPlanExp] = useState(29.73);
+  const [offPlanExp, setOffPlanExp] = useState(-38.47);
+  const [copied, setCopied] = useState(false);
+
+  // Cálculos reactivos
+  const offPlanTrades = Math.round((totalTrades * breachPct) / 100);
+  const inPlanTrades = Math.max(0, totalTrades - offPlanTrades);
+
+  const gap = inPlanExp - offPlanExp;
+  const inPlanTotal = inPlanTrades * inPlanExp;
+  const offPlanTotal = offPlanTrades * offPlanExp;
+  const totalLeakMonthly = offPlanTrades * gap;
+  const totalLeakAnnual = totalLeakMonthly * 12;
+
+  const mistakes: MistakeItem[] = useMemo(() => [
+    { id: "offhours", labelEs: "Operar fuera de horario", labelEn: "Trading off-hours", pct: 32 },
+    { id: "oversize", labelEs: "Tamaño excesivo (Oversize)", labelEn: "Oversized position", pct: 27 },
+    { id: "nostop", labelEs: "Sin stop loss / omitido", labelEn: "No stop loss / omitted", pct: 18 },
+    { id: "chasing", labelEs: "Perseguir el precio (FOMO)", labelEn: "Chasing price (FOMO)", pct: 14 },
+    { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
+  ], []);
+
+  const aplicarPreset = (p: typeof PRESETS[0]) => {
+    setTotalTrades(p.trades);
+    setBreachPct(p.breachPct);
+    setInPlanExp(p.inPlanExp);
+    setOffPlanExp(p.offPlanExp);
+  };
+
+  const copiarResumen = () => {
+    const texto = es
+      ? `Factura de Indisciplina (CountPips):\n• Operaciones/mes: ${totalTrades} (${breachPct}% fuera de plan)\n• Expectancy en plan: +${inPlanExp.toFixed(2)} $\n• Expectancy fuera de plan: ${offPlanExp.toFixed(2)} $\n• Brecha por trade: -${gap.toFixed(2)} $\n• Fuga mensual: -${totalLeakMonthly.toFixed(2)} $\n• Fuga anual proyectada: -${totalLeakAnnual.toFixed(2)} $`
+      : `Indiscipline Invoice (CountPips):\n• Trades/month: ${totalTrades} (${breachPct}% off-plan)\n• In-plan expectancy: +${inPlanExp.toFixed(2)} $\n• Off-plan expectancy: ${offPlanExp.toFixed(2)} $\n• Gap per trade: -${gap.toFixed(2)} $\n• Monthly leak: -${totalLeakMonthly.toFixed(2)} $\n• Projected annual leak: -${totalLeakAnnual.toFixed(2)} $`;
+
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(texto).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2200);
+      });
+    }
+  };
+
   return (
-    <section
-      className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]"
-    >
-      <div className="max-w-[1240px] mx-auto px-5 md:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        <div>
-          <div className="inline-flex items-center gap-3 mb-5">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-            >
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span
-              className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-            >
-              {es ? "COSTE REAL" : "REAL COST"}
-            </span>
-          </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(2rem, 3.6vw, 3rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.08,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
+    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+      <div className="max-w-[1240px] mx-auto px-5 md:px-8">
+        {/* Cabecera de sección */}
+        <div className="inline-flex items-center gap-3 mb-5">
+          <span
+            className="tnum"
+            style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
           >
-            {es ? (
-              <>
-                Lo que tu <span style={{ color: "rgb(var(--accent-base))" }}>indisciplina</span> te cuesta.
-              </>
-            ) : (
-              <>
-                What your <span style={{ color: "rgb(var(--accent-base))" }}>indiscipline</span> costs you.
-              </>
-            )}
-          </h2>
-          <p
-            className="mt-5 mb-7"
-            style={{
-              fontSize: "clamp(1rem, 1.3vw, 1.1rem)",
-              lineHeight: 1.62,
-              color: "var(--ink-2)",
-              maxWidth: "36em",
-            }}
+            § {num}
+          </span>
+          <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
+          <span
+            className="tnum"
+            style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
           >
-            {es
-              ? "Cuando operas en plan ganas. Cuando lo rompes, pierdes. El gap entre ambas cosas es lo que te está costando el dinero."
-              : "When you trade the plan, you earn. When you break it, you lose. The gap between the two is what costs you money."}
-          </p>
-          {/* Tabla expectancy — R21-3b: outer keeps rounded corners + border
-              via overflow-hidden; inner wrapper is overflow-x-auto so the
-              3-col grid can scroll horizontally on very narrow viewports
-              (e.g. 320px iPhone SE, where the es-ES "Expectancy" header at
-              10px/0.14em tracking + the longest row label "Fuera de plan"
-              at 13.5px together push the grid's min-content past 280px).
-              The custom-scroll class styles the scrollbar to match the
-              site's liquid-glass aesthetic. min-w-0 on the row label span
-              lets the 1fr column shrink below its content's min-content
-              width so break-words can wrap long labels instead of pushing
-              the value column off the right edge. */}
-          <div
-            className="rounded-[2px] overflow-hidden"
-            style={{
-              border: "1px solid rgb(var(--divider) / 0.13)",
-              // R27-1e dejó pendiente el valor verde "+29,73 $" de esta
-              // tabla, marginal en AA (~4,0:1): al 50% de opacidad, lo que
-              // hay detrás del cristal (aurora del fondo) se cuela lo
-              // bastante como para aclarar el fondo efectivo. Subido al
-              // 70%, el mismo valor que ya usa la factura de al lado
-              // (línea de abajo) sin queja previa, para que --surface pese
-              // más que lo que asome detrás. Pendiente de remedir con el
-              // navegador cuando esté disponible.
-              background: "color-mix(in oklab, var(--surface) 70%, transparent)",
-              backdropFilter: "blur(14px)",
-              WebkitBackdropFilter: "blur(14px)",
-            }}
-          >
-          <div className="overflow-x-auto custom-scroll">
-            <div className="grid grid-cols-3 text-sm min-w-[260px]" style={{ padding: "10px 14px", borderBottom: "1px solid rgb(var(--divider) / 0.06)", color: "var(--ink-3)" }}>
-              <span className="tnum min-w-0" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase" }}>{es ? "Modo" : "Mode"}</span>
-              <span className="tnum text-right min-w-0" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase" }}>{es ? "Operaciones" : "Trades"}</span>
-              <span className="tnum text-right min-w-0" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase" }}>{es ? "Expectancy" : "Expectancy"}</span>
-            </div>
-            {[
-              { l: es ? "En plan" : "In plan", n: 36, v: "+29,73 $", c: "rgb(var(--pnl-pos))" },
-              { l: es ? "Fuera de plan" : "Off plan", n: 24, v: "−38,47 $", c: "rgb(var(--pnl-neg))" },
-              { l: es ? "Gap" : "Gap", n: "—", v: "−68,20 $", c: "rgb(var(--pnl-neg))", highlight: true },
-            ].map((row, i) => (
-              <div
-                key={row.l}
-                className="grid grid-cols-3 group/row relative transition-colors duration-200 min-w-[260px]"
-                style={{
-                  padding: "12px 14px 12px 16px",
-                  borderBottom: i < 2 ? "1px solid rgb(var(--divider) / 0.06)" : undefined,
-                  background: row.highlight ? "color-mix(in oklab, rgb(var(--pnl-neg)) 6%, transparent)" : undefined,
-                }}
-              >
-                {/* R20-3b: hover rail — accent on neutral rows, deeper red on the gap row.
-                    Sits behind the row content via z-index 0 and pointer-events: none.
-                    R24-1c: the Gap row now shows its red rail STATICALLY
-                    (opacity-100 instead of opacity-0) so the most important
-                    row reads as stamped even without hover — the hover
-                    transition still applies to the other rows. */}
-                <span
-                  aria-hidden
-                  className={`absolute left-0 top-0 bottom-0 pointer-events-none transition-opacity duration-200 ${row.highlight ? "opacity-100" : "opacity-0 group-hover/row:opacity-100"}`}
-                  style={{
-                    width: 2,
-                    background: row.highlight
-                      ? "rgb(var(--pnl-neg))"
-                      : "rgb(var(--accent-base))",
-                  }}
-                />
-                <span className="relative min-w-0 break-words" style={{ fontSize: 13.5, color: "var(--ink)", fontWeight: row.highlight ? 600 : 400 }}>{row.l}</span>
-                <span className="tnum text-right relative min-w-0" style={{ fontSize: 13.5, color: "var(--ink-2)" }}>{row.n}</span>
-                <span className="tnum text-right relative min-w-0" style={{ fontSize: row.highlight ? 16 : 14, fontWeight: 700, color: row.c }}>{row.v}</span>
-              </div>
-            ))}
-          </div>
-          </div>
-          <p className="mt-3" style={{ fontSize: 11.5, color: "var(--ink-3)", lineHeight: 1.5 }}>
-            {es
-              ? "Expectancy = promedio ganado por operación. El gap es la diferencia: lo que dejas de ganar por romper tus reglas."
-              : "Expectancy = average earned per trade. The gap is the difference: what you leave on the table by breaking your rules."}
-          </p>
+            {es ? "COSTE REAL E INTERACTIVO" : "REAL & INTERACTIVE COST"}
+          </span>
         </div>
 
-        {/* Mockup factura */}
-        <div
-          className="relative"
-          style={{
-            padding: 22,
-            borderRadius: 3,
-            border: "1px solid rgb(var(--divider) / 0.13)",
-            background: "color-mix(in oklab, var(--surface) 70%, transparent)",
-            backdropFilter: "blur(20px) saturate(1.4)",
-            WebkitBackdropFilter: "blur(20px) saturate(1.4)",
-            boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.08)",
-          }}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-            <span
-              className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
-              {es ? "Factura de indisciplina · julio 2026" : "Indiscipline invoice · July 2026"}
-            </span>
-            <span
-              className="tnum self-start sm:self-auto"
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 items-start">
+          <div>
+            <h2
+              className="font-serif m-0"
               style={{
-                fontSize: 10,
-                padding: "3px 9px",
-                borderRadius: 4,
-                background: "rgb(var(--pnl-neg) / 0.14)",
-                color: "rgb(var(--pnl-neg))",
-                border: "1px solid rgb(var(--pnl-neg) / 0.28)",
+                fontSize: "clamp(2rem, 3.6vw, 3rem)",
+                fontWeight: 400,
+                letterSpacing: "-0.022em",
+                lineHeight: 1.08,
+                color: "var(--ink)",
+                textWrap: "balance",
               }}
             >
-              #IND-2026-07
-            </span>
-          </div>
-          <ul className="m-0 p-0 list-none space-y-2.5 mb-4">
-            {[
-              { l: es ? "Operar fuera de horario" : "Trading off-hours", pct: 32 },
-              { l: es ? "Tamaño excesivo" : "Oversize", pct: 27 },
-              { l: es ? "Sin stop loss" : "No stop loss", pct: 18 },
-              { l: es ? "Perseguir el precio" : "Chasing price", pct: 14 },
-              { l: es ? "Mover stop a mano" : "Manually moving stop", pct: 9 },
-            ].map((row) => (
-              <li key={row.l}>
-                <div className="flex items-center justify-between mb-1 gap-2">
-                  <span className="min-w-0 break-words" style={{ fontSize: 13, color: "var(--ink)" }}>{row.l}</span>
-                  <span className="tnum shrink-0" style={{ fontSize: 12, color: "var(--ink-2)" }}>{row.pct} %</span>
-                </div>
-                <div className="h-1 rounded-[2px] overflow-hidden relative" style={{ background: "rgb(var(--divider) / 0.13)", boxShadow: "inset 0 1px 0 rgb(0 0 0 / 0.18)" }}>
-                  <div
-                    className="h-full rounded-[2px] relative"
-                    style={{
-                      width: `${row.pct * 2.5}%`,
-                      // R20-3b: gradient fill — solid red on the leading edge,
-                      // a hair translucent at the trailing edge so the bar reads
-                      // as a meter rather than a flat slab. Top inset highlight
-                      // (rgb white 0.18) gives a “metallic” fill catch.
-                      background:
-                        "linear-gradient(90deg, rgb(var(--pnl-neg)) 0%, color-mix(in oklab, rgb(var(--pnl-neg)) 70%, transparent) 100%)",
-                      boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.20)",
-                      transition: "width 0.45s var(--ease-suave)",
-                    }}
+              {es ? (
+                <>
+                  Lo que tu <span style={{ color: "rgb(var(--accent-base))" }}>indisciplina</span> te cuesta.
+                </>
+              ) : (
+                <>
+                  What your <span style={{ color: "rgb(var(--accent-base))" }}>indiscipline</span> costs you.
+                </>
+              )}
+            </h2>
+            <p
+              className="mt-4 mb-6"
+              style={{
+                fontSize: "clamp(1rem, 1.25vw, 1.08rem)",
+                lineHeight: 1.6,
+                color: "var(--ink-2)",
+                maxWidth: "38em",
+              }}
+            >
+              {es
+                ? "Cuando operas tu plan ganas. Cuando improvisas o violas tus reglas, regalas capital. Ajusta tus cifras y calcula el dinero exacto que dejas en la mesa cada mes y cada año."
+                : "When you trade your plan, you win. When you improvise or break your rules, you bleed capital. Adjust your numbers and discover the exact money left on the table each month and year."}
+            </p>
+
+            {/* Presets rápidos */}
+            <div className="mb-6">
+              <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary mb-2">
+                {es ? "Escenarios rápidos" : "Quick scenarios"}
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => aplicarPreset(p)}
+                    className="h-8 px-3 rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-[12.5px] font-medium text-secondary hover:text-primary transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   >
-                    {/* R24-1c: bright leading-edge cap — a 2px solid pnl-neg
-                        pill at the right end of the fill so each bar reads as
-                        a meter with a clearly defined “current value” edge
-                        rather than a fading tint. Sits flush to the fill’s
-                        right edge via absolute right-0 top-0 bottom-0. */}
-                    <span
-                      aria-hidden
-                      className="absolute right-0 top-0 bottom-0"
-                      style={{
-                        width: 2,
-                        background: "rgb(var(--pnl-neg))",
-                      }}
+                    {es ? p.nameEs : p.nameEn}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Controles interactivos */}
+            <div className="rounded-[2px] border border-[rgb(var(--divider)/0.13)] bg-[color-mix(in_oklab,var(--surface)_70%,transparent)] p-5 backdrop-blur-md mb-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="disc-trades" className="text-xs font-medium text-secondary">
+                      {es ? "Operaciones al mes" : "Trades per month"}
+                    </label>
+                    <span className="tnum text-xs font-semibold text-primary">{totalTrades}</span>
+                  </div>
+                  <input
+                    id="disc-trades"
+                    type="range"
+                    min={10}
+                    max={200}
+                    step={2}
+                    value={totalTrades}
+                    onChange={(e) => setTotalTrades(Number(e.target.value))}
+                    className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
+                  />
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label htmlFor="disc-breach" className="text-xs font-medium text-secondary">
+                      {es ? "% fuera de plan (fallos)" : "% off-plan (breaches)"}
+                    </label>
+                    <span className="tnum text-xs font-semibold text-[rgb(var(--pnl-neg))]">{breachPct} %</span>
+                  </div>
+                  <input
+                    id="disc-breach"
+                    type="range"
+                    min={5}
+                    max={80}
+                    step={1}
+                    value={breachPct}
+                    onChange={(e) => setBreachPct(Number(e.target.value))}
+                    className="w-full accent-[rgb(var(--pnl-neg))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[rgb(var(--divider)/0.08)]">
+                <div>
+                  <label htmlFor="disc-inplan" className="block text-[11px] uppercase tracking-wider text-tertiary mb-1">
+                    {es ? "Ganancia media en plan ($/trade)" : "Avg win in-plan ($/trade)"}
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="disc-inplan"
+                      type="number"
+                      step={1}
+                      min={0}
+                      value={inPlanExp}
+                      onChange={(e) => setInPlanExp(Number(e.target.value))}
+                      className="w-full h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-primary tnum outline-none focus:border-[rgb(var(--accent-base))]"
                     />
+                    <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
                   </div>
                 </div>
-              </li>
-            ))}
-          </ul>
-          <div className="flex items-center justify-between pt-3 border-t gap-2 relative" style={{ borderColor: "rgb(var(--divider) / 0.06)", marginTop: 4, paddingTop: 14, paddingBottom: 4, background: "color-mix(in oklab, rgb(var(--pnl-neg)) 4%, transparent)", borderRadius: 3, paddingLeft: 12, paddingRight: 12, marginLeft: -4, marginRight: -4 }}>
-            {/* R24-1c: total row now reads as a stamped footer — tinted
-                pnl-neg/4 backdrop + tiny accent-red TOTAL badge before the
-                label so the “Month total” row stands apart from the
-                invoice line items above. The negative margin + padding
-                lets the backdrop extend slightly past the line items’ left
-                edge so the total reads as a sibling-level summary. */}
-            <span className="inline-flex items-center gap-2 min-w-0">
-              <span
-                aria-hidden
-                className="tnum inline-flex items-center justify-center"
-                style={{
-                  fontSize: 9.5,
-                  fontWeight: 700,
-                  letterSpacing: "0.14em",
-                  color: "rgb(var(--pnl-neg))",
-                  background: "color-mix(in oklab, rgb(var(--pnl-neg)) 14%, transparent)",
-                  border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 32%, transparent)",
-                  borderRadius: 4,
-                  padding: "2px 5px",
-                }}
-              >
-                {es ? "TOTAL" : "TOTAL"}
-              </span>
-              <span className="min-w-0 break-words" style={{ fontSize: 13, color: "var(--ink-2)" }}>{es ? "Total del mes" : "Month total"}</span>
-            </span>
-            <span
-              className="tnum font-serif shrink-0"
-              style={{ fontSize: 28, fontWeight: 400, color: "rgb(var(--pnl-neg))" }}
+
+                <div>
+                  <label htmlFor="disc-offplan" className="block text-[11px] uppercase tracking-wider text-tertiary mb-1">
+                    {es ? "Resultado medio fuera de plan ($)" : "Avg result off-plan ($)"}
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="disc-offplan"
+                      type="number"
+                      step={1}
+                      max={0}
+                      value={offPlanExp}
+                      onChange={(e) => setOffPlanExp(Number(e.target.value))}
+                      className="w-full h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-[rgb(var(--pnl-neg))] tnum outline-none focus:border-[rgb(var(--pnl-neg))]"
+                    />
+                    <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabla Expectancy interactiva */}
+            <div
+              className="rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.13)] bg-[color-mix(in_oklab,var(--surface)_70%,transparent)] backdrop-blur-md"
             >
-              −577,10 $
-            </span>
+              <div className="overflow-x-auto custom-scroll">
+                <div className="grid grid-cols-4 text-sm min-w-[320px] p-3 border-b border-[rgb(var(--divider)/0.06)] text-[var(--ink-3)]">
+                  <span className="tnum text-[10px] uppercase tracking-[0.14em]">{es ? "Modo" : "Mode"}</span>
+                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Trades" : "Trades"}</span>
+                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Expectancy" : "Expectancy"}</span>
+                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Neto" : "Net P&L"}</span>
+                </div>
+
+                {/* Fila En Plan */}
+                <div className="grid grid-cols-4 items-center p-3 text-sm border-b border-[rgb(var(--divider)/0.06)] relative group">
+                  <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[rgb(var(--accent-base))]" />
+                  <span className="font-medium text-primary text-[13.5px]">{es ? "En plan" : "In plan"}</span>
+                  <span className="tnum text-right text-secondary text-[13.5px]">{inPlanTrades}</span>
+                  <span className="tnum text-right font-semibold text-[rgb(var(--pnl-pos))] text-[13.5px]">
+                    +{fmtNum(inPlanExp, lang, 2)} $
+                  </span>
+                  <span className="tnum text-right font-semibold text-[rgb(var(--pnl-pos))] text-[13.5px]">
+                    +{fmtNum(inPlanTotal, lang, 2)} $
+                  </span>
+                </div>
+
+                {/* Fila Fuera de Plan */}
+                <div className="grid grid-cols-4 items-center p-3 text-sm border-b border-[rgb(var(--divider)/0.06)] relative group">
+                  <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[rgb(var(--pnl-neg))]" />
+                  <span className="font-medium text-primary text-[13.5px]">{es ? "Fuera de plan" : "Off plan"}</span>
+                  <span className="tnum text-right text-secondary text-[13.5px]">{offPlanTrades}</span>
+                  <span className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[13.5px]">
+                    {fmtNum(offPlanExp, lang, 2)} $
+                  </span>
+                  <span className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[13.5px]">
+                    {fmtNum(offPlanTotal, lang, 2)} $
+                  </span>
+                </div>
+
+                {/* Fila Gap */}
+                <div className="grid grid-cols-4 items-center p-3.5 text-sm bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_6%,transparent)] relative">
+                  <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-[rgb(var(--pnl-neg))]" />
+                  <span className="font-bold text-primary text-[14px]">GAP</span>
+                  <span className="tnum text-right text-secondary text-[13px]">—</span>
+                  <span className="tnum text-right font-bold text-[rgb(var(--pnl-neg))] text-[14px]">
+                    −{fmtNum(gap, lang, 2)} $
+                  </span>
+                  <span className="tnum text-right font-bold text-[rgb(var(--pnl-neg))] text-[15px]">
+                    −{fmtNum(totalLeakMonthly, lang, 2)} $
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-3 text-[11.5px] text-tertiary leading-relaxed">
+              {es
+                ? "El GAP es el dinero que dejas de ganar en cada operación que rompe las reglas frente a haberla ejecutado con disciplina."
+                : "The GAP is the cash lost on every off-plan trade compared to executing cleanly inside your rules."}
+            </p>
+          </div>
+
+          {/* Factura Dinámica */}
+          <div
+            className="relative p-6 rounded-[3px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface)_75%,transparent)] backdrop-blur-xl shadow-xl"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.08)]">
+              <div>
+                <span className="tnum text-[11px] font-semibold uppercase tracking-[0.14em] text-tertiary block">
+                  {es ? "Factura de indisciplina" : "Indiscipline invoice"}
+                </span>
+                <span className="text-xs text-secondary">
+                  {es ? "Estimación mensual personalizada" : "Personalized monthly estimate"}
+                </span>
+              </div>
+              <span
+                className="tnum text-[10px] px-2.5 py-1 rounded-[2px] bg-[rgb(var(--pnl-neg)/0.14)] text-[rgb(var(--pnl-neg))] border border-[rgb(var(--pnl-neg)/0.28)] font-mono self-start sm:self-auto"
+              >
+                #LEAK-{new Date().getFullYear()}
+              </span>
+            </div>
+
+            {/* Lista de errores desglosados */}
+            <ul className="m-0 p-0 list-none space-y-3 mb-5">
+              {mistakes.map((row) => {
+                const mistakeCost = (totalLeakMonthly * row.pct) / 100;
+                return (
+                  <li key={row.id}>
+                    <div className="flex items-center justify-between mb-1 text-xs">
+                      <span className="font-medium text-primary">{es ? row.labelEs : row.labelEn}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="tnum text-tertiary">{row.pct}%</span>
+                        <span className="tnum font-semibold text-[rgb(var(--pnl-neg))]">
+                          −{fmtNum(mistakeCost, lang, 0)} $
+                        </span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 rounded-[2px] overflow-hidden relative bg-[rgb(var(--divider)/0.12)]">
+                      <div
+                        className="h-full rounded-[2px] transition-all duration-300 relative"
+                        style={{
+                          width: `${row.pct * 2.5}%`,
+                          background: "linear-gradient(90deg, rgb(var(--pnl-neg)) 0%, color-mix(in oklab, rgb(var(--pnl-neg)) 70%, transparent) 100%)",
+                        }}
+                      />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+
+            {/* Totales: Mensual y Anual */}
+            <div className="space-y-3 pt-3 border-t border-[rgb(var(--divider)/0.08)]">
+              <div className="flex items-center justify-between p-3 rounded-[2px] bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_5%,transparent)] border border-[rgb(var(--pnl-neg)/0.15)]">
+                <div>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-[rgb(var(--pnl-neg))] block">
+                    {es ? "Fuga mensual total" : "Total monthly leak"}
+                  </span>
+                  <span className="text-[11.5px] text-tertiary">
+                    {offPlanTrades} {es ? "operaciones indisciplinadas" : "off-plan trades"}
+                  </span>
+                </div>
+                <span className="font-serif text-2xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
+                  −{fmtMoney(totalLeakMonthly, lang)}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-[2px] bg-[rgb(var(--divider)/0.03)] border border-[rgb(var(--divider)/0.1)]">
+                <div>
+                  <span className="text-xs uppercase tracking-wider font-semibold text-primary block">
+                    {es ? "Impacto a 1 año" : "1-Year projected impact"}
+                  </span>
+                  <span className="text-[11.5px] text-tertiary">
+                    {es ? "Si no corriges la fuga" : "If the leak is uncorrected"}
+                  </span>
+                </div>
+                <span className="font-serif text-xl font-medium text-primary tnum">
+                  −{fmtMoney(totalLeakAnnual, lang)}
+                </span>
+              </div>
+            </div>
+
+            {/* Acción: Copiar resumen */}
+            <div className="mt-5 pt-3 border-t border-[rgb(var(--divider)/0.06)] flex items-center justify-between">
+              <button
+                type="button"
+                onClick={copiarResumen}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+                  <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" strokeWidth="1.3" />
+                </svg>
+                {copied ? (es ? "¡Resumen copiado!" : "Summary copied!") : (es ? "Copiar este desglose" : "Copy breakdown")}
+              </button>
+
+              <span className="text-[11px] text-tertiary font-mono">
+                {es ? "100% privado en tu navegador" : "100% private in browser"}
+              </span>
+            </div>
           </div>
         </div>
       </div>

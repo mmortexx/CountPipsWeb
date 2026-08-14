@@ -86,7 +86,6 @@ export function SessionClock({ num = "02" }: { num?: string }) {
     if (utcHour === null) return [];
     const active = SESSIONS.filter((s) => utcHour >= s.startUtc && utcHour < s.endUtc);
     if (active.length < 2) return [];
-    // Construye pares
     const pairs: { a: Session; b: Session; label: string }[] = [];
     for (let i = 0; i < active.length; i++) {
       for (let j = i + 1; j < active.length; j++) {
@@ -98,6 +97,23 @@ export function SessionClock({ num = "02" }: { num?: string }) {
       }
     }
     return pairs;
+  }, [utcHour]);
+
+  // Próxima sesión en abrir
+  const nextSession = useMemo(() => {
+    if (utcHour === null) return null;
+    const closed = SESSIONS.filter((s) => !(utcHour >= s.startUtc && utcHour < s.endUtc));
+    if (closed.length === 0) return null;
+
+    let closest: { session: Session; hoursUntil: number } | null = null;
+    for (const s of closed) {
+      let diff = s.startUtc - utcHour;
+      if (diff < 0) diff += 24;
+      if (!closest || diff < closest.hoursUntil) {
+        closest = { session: s, hoursUntil: diff };
+      }
+    }
+    return closest;
   }, [utcHour]);
 
   const openCount = states?.filter((s) => s.open).length ?? 0;
@@ -205,15 +221,22 @@ export function SessionClock({ num = "02" }: { num?: string }) {
           className="tj-paper tj-paper-glow rounded-[2px] p-5 mb-4"
           style={{ border: "1px solid rgb(var(--divider) / 0.13)" }}
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
             <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
               {es ? "Banda 24h (UTC)" : "24h band (UTC)"}
             </span>
-            {openCount > 0 && (
-              <span className="tnum text-[11px]" style={{ color: "var(--ink-2)" }}>
-                {openCount} {es ? "abierta(s)" : "open"}
-              </span>
-            )}
+            <div className="flex items-center gap-3">
+              {nextSession && (
+                <span className="tnum text-[11px] px-2 py-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.1)] text-tertiary">
+                  {es ? "Próxima apertura" : "Next open"}: <span className="font-semibold text-primary">{es ? nextSession.session.nameEs : nextSession.session.nameEn}</span> {es ? "en" : "in"} {fmtHour(nextSession.hoursUntil)}h
+                </span>
+              )}
+              {openCount > 0 && (
+                <span className="tnum text-[11px] font-medium text-secondary">
+                  {openCount} {es ? "abierta(s)" : "open"}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Track */}

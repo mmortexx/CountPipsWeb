@@ -403,14 +403,21 @@ function TagPill({
 
 export function TradeDetailPage() {
   const { t, lang } = useLang();
-  const { selectedTradeId, goBack } = useDemo();
+  const { selectedTradeId, goBack, goDetail } = useDemo();
   const customTrades = useCustomTrades();
+  const allTrades = useMemo(() => {
+    const custom = customTrades.map(customTradeToTrade);
+    return [...custom, ...TRADES];
+  }, [customTrades]);
   const trade = useMemo(() => {
     const sample = TRADES.find((x) => x.id === selectedTradeId);
     if (sample) return sample;
     const custom = customTrades.find((c) => c.id === selectedTradeId);
     return custom ? customTradeToTrade(custom) : undefined;
   }, [selectedTradeId, customTrades]);
+  const currentIndex = allTrades.findIndex((x) => x.id === selectedTradeId);
+  const prevTrade = currentIndex > 0 ? allTrades[currentIndex - 1] : undefined;
+  const nextTrade = currentIndex >= 0 && currentIndex < allTrades.length - 1 ? allTrades[currentIndex + 1] : undefined;
   const [review, setReview] = useState<Compliance>(
     trade?.compliance ?? "yes"
   );
@@ -549,8 +556,10 @@ export function TradeDetailPage() {
           </span>
           <button
             type="button"
-            aria-label={t("back")}
-            className="w-8 h-8 rounded-md border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center"
+            onClick={() => prevTrade && goDetail(prevTrade.id)}
+            disabled={!prevTrade}
+            aria-label={lang === "es" ? "Operación anterior" : "Previous trade"}
+            className="w-8 h-8 rounded-md border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
           >
             <svg
               width="14"
@@ -568,8 +577,10 @@ export function TradeDetailPage() {
           </button>
           <button
             type="button"
-            aria-label={t("back")}
-            className="w-8 h-8 rounded-md border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center"
+            onClick={() => nextTrade && goDetail(nextTrade.id)}
+            disabled={!nextTrade}
+            aria-label={lang === "es" ? "Operación siguiente" : "Next trade"}
+            className="w-8 h-8 rounded-md border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
           >
             <svg
               width="14"

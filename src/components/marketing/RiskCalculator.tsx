@@ -4,56 +4,37 @@ import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 
 /**
- * RiskCalculator — calculadora de tamaño de posición REAL e interactiva.
+ * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
  *
- * Antes era una demo de valores fijos (entry 100 / stop 95 / target 115).
- * Ahora el trader introduce SU operación: balance, riesgo %, entrada,
- * stop y objetivo. Se calcula en vivo: riesgo $, tamaño (unidades),
- * beneficio, R:R, valor de la posición y % del balance comprometido.
- *
- * ── Cómo se calcula ───────────────────────────────────────────────────
- *   riskPerShare   = |entry − stop|     (vale para largo y corto)
- *   rewardPerShare = |target − entry|
- *   rr             = rewardPerShare / riskPerShare
- *   riskUsd        = balance · riskPct / 100
- *   size           = riskUsd / riskPerShare
- *   profit         = size · rewardPerShare
- *   positionValue  = size · entry
- *   positionPct    = positionValue / balance · 100
- *
- * Usar valores absolutos para risk/reward per share permite que la
- * misma calculadora sirva para largos (stop < entry) y cortos
- * (stop > entry) sin un conmutador de dirección.
- *
- * ── Validación ────────────────────────────────────────────────────────
- * Si riskPerShare ≤ 0 (entry == stop) o rewardPerShare ≤ 0 (target ==
- * entry), no se puede calcular el tamaño: se muestra un aviso inline en
- * vez de NaN/Infinity. Los campos siguen siendo editables.
- *
- * ── Material ──────────────────────────────────────────────────────────
- * La tarjeta usa `.tj-paper` (papel translúcido cálido) + `.tj-paper-glow`
- * (halo champagne) para cohesión con el resto del sitio. Los chips de
- * plantilla/balance mantienen ≥44 px de touch target.
- *
- * ── Copiar plan ───────────────────────────────────────────────────────
- * Un botón "Copiar plan" lleva al portapapeles un resumen de texto plano
- * con todos los parámetros y resultados — listo para pegar en el diario
- * de CountPips. Refuerza el mensaje "mide antes de operar".
- *
- * `num` — ordinal del eyebrow (las páginas internas pasan el suyo).
+ * Admite:
+ *  - Acciones / Cripto (unidades o monedas)
+ *  - Forex (Lotes estándar, mini y micro)
+ *  - Futuros (Contratos con multiplicador por punto como ES, NQ, MES, MNQ, GC, CL)
  */
-/* Extremos del riesgo por operación y las marcas que se rotulan bajo la
-   pista. Viven fuera del componente porque los usan tres cosas —el
-   control, el relleno de la pista y los rótulos— y tenían que ser el
-   mismo número en las tres: cuando el rango estaba escrito a mano en cada
-   sitio, bastaba tocar uno para que la bolita dejara de coincidir con su
-   etiqueta, que es justo lo que pasaba. */
+
 const RISK_MIN = 0.25;
 const RISK_MAX = 3;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
-/** Posición de un valor de riesgo dentro de la pista, en % del recorrido. */
 const riskAt = (v: number) => ((v - RISK_MIN) / (RISK_MAX - RISK_MIN)) * 100;
+
+type AssetMode = "equities" | "forex" | "futures";
+
+interface FuturesContract {
+  id: string;
+  name: string;
+  mult: number;
+  tickSize: number;
+}
+
+const FUTURES_CONTRACTS: FuturesContract[] = [
+  { id: "es", name: "E-mini S&P 500 (ES) · 50 $/pt", mult: 50, tickSize: 0.25 },
+  { id: "nq", name: "E-mini Nasdaq (NQ) · 20 $/pt", mult: 20, tickSize: 0.25 },
+  { id: "mes", name: "Micro E-mini S&P (MES) · 5 $/pt", mult: 5, tickSize: 0.25 },
+  { id: "mnq", name: "Micro Nasdaq (MNQ) · 2 $/pt", mult: 2, tickSize: 0.25 },
+  { id: "gc", name: "Gold / Oro (GC) · 100 $/pt", mult: 100, tickSize: 0.1 },
+  { id: "cl", name: "Crude Oil (CL) · 1.000 $/pt", mult: 1000, tickSize: 0.01 },
+];
 
 export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const { lang } = useLang();
@@ -65,12 +46,15 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     { label: es ? "Agresivo" : "Aggressive", pct: 2.0 },
   ];
   const balances = [
-    { label: "5k $", v: 5000 },
     { label: "10k $", v: 10000 },
     { label: "25k $", v: 25000 },
+    { label: "50k $", v: 50000 },
+    { label: "100k $", v: 100000 },
   ];
 
   // ── Estado editable: la operación del usuario ─────────────────────
+  const [assetMode, setAssetMode] = useState<AssetMode>("equities");
+  const [futuresContractId, setFuturesContractId] = useState("es");
   const [riskPct, setRiskPct] = useState(1.0);
   const [balance, setBalance] = useState(10000);
   const [entry, setEntry] = useState(100);
@@ -78,36 +62,67 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const [target, setTarget] = useState(115);
   const [copied, setCopied] = useState(false);
 
-  // ── Cálculo en vivo (abs-value → largo y corto) ───────────────────
+  const selectedFutures = useMemo(
+    () => FUTURES_CONTRACTS.find((f) => f.id === futuresContractId) ?? FUTURES_CONTRACTS[0],
+    [futuresContractId]
+  );
+
+  // ── Cálculo en vivo adaptado al activo ───────────────────────────
   const c = useMemo(() => {
     const riskPerShare = Math.abs(entry - stop);
     const rewardPerShare = Math.abs(target - entry);
     const valid = riskPerShare > 0 && rewardPerShare > 0 && entry > 0;
     const rr = valid ? rewardPerShare / riskPerShare : 0;
     const riskUsd = (balance * riskPct) / 100;
-    const size = valid ? riskUsd / riskPerShare : 0;
-    const profit = valid ? size * rewardPerShare : 0;
+
+    let size = 0;
+    let sizeLabel = "u";
+    let positionValue = 0;
+
+    if (valid) {
+      if (assetMode === "equities") {
+        size = riskUsd / riskPerShare;
+        sizeLabel = es ? "acciones / u" : "shares / u";
+        positionValue = size * entry;
+      } else if (assetMode === "forex") {
+        // En forex, 1 lote estándar = 100,000 unidades. 1 pip en pares USD = $10 / lote
+        // stopDist en puntos o pips:
+        const units = riskUsd / riskPerShare;
+        const lots = units / 100000;
+        size = lots;
+        sizeLabel = es ? "lotes" : "lots";
+        positionValue = units * entry;
+      } else {
+        // Futuros
+        const pointRisk = riskPerShare * selectedFutures.mult;
+        const contracts = pointRisk > 0 ? riskUsd / pointRisk : 0;
+        size = contracts;
+        sizeLabel = es ? "contratos" : "contracts";
+        positionValue = contracts * entry * selectedFutures.mult;
+      }
+    }
+
+    const profit = valid ? (assetMode === "futures" ? size * rewardPerShare * selectedFutures.mult : (assetMode === "forex" ? (size * 100000) * rewardPerShare : size * rewardPerShare)) : 0;
     const profitPct = (profit / balance) * 100;
-    const positionValue = valid ? size * entry : 0;
     const positionPct = (positionValue / balance) * 100;
-    // ¿Es corto? stop > entry → Long/Short hint.
     const direction = entry > 0 && stop > entry ? "short" : "long";
-    return { riskPerShare, rewardPerShare, valid, rr, riskUsd, size, profit, profitPct, positionValue, positionPct, direction };
-  }, [entry, stop, target, balance, riskPct]);
 
-  /* Los formateadores se construían dentro de la función, así que cada
-     cifra de la pantalla creaba su propio `Intl.NumberFormat` —el objeto
-     más caro de esta vista— y se tiraba acto seguido. Además hacían que el
-     `useCallback` de "copiar" se invalidara en cada render, o sea que no
-     memoizaba nada: la lista de dependencias lo decía y nadie lo leía
-     porque la regla que avisa estaba apagada.
+    return {
+      riskPerShare,
+      rewardPerShare,
+      valid,
+      rr,
+      riskUsd,
+      size,
+      sizeLabel,
+      profit,
+      profitPct,
+      positionValue,
+      positionPct,
+      direction,
+    };
+  }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, es]);
 
-     Ahora se crean una vez por idioma y las dos funciones son estables. */
-  /* `fmtNum` recibe los decimales por argumento, pero esta pantalla sólo
-     pide uno o dos, así que se construyen los tres formateadores de una vez
-     en lugar de cachear bajo demanda: una caché mutable dentro de un hook
-     es justo lo que el compilador de React prohíbe, y para tres objetos no
-     compensa. */
   const nf = useMemo(() => {
     const locale = es ? "es-ES" : "en-US";
     return {
@@ -131,7 +146,6 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     [nf],
   );
 
-  // Anchos de las barras Riesgo / Beneficio normalizados.
   const max = Math.max(c.riskUsd, c.profit, 1);
   const riskW = (c.riskUsd / max) * 100;
   const profitW = (c.profit / max) * 100;
@@ -139,8 +153,8 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const chipStyle = (active: boolean): React.CSSProperties => ({
     fontSize: 12,
     lineHeight: 1.2,
-    minHeight: 44,
-    padding: "12px 18px",
+    minHeight: 40,
+    padding: "10px 16px",
     borderRadius: 4,
     cursor: "pointer",
     transition: "background 0.2s, color 0.2s, border-color 0.2s",
@@ -153,7 +167,6 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       : "1px solid rgb(var(--divider) / 0.13)",
   });
 
-  // ── Input numérico reutilizable (≥44 px, tnum, label) ─────────────
   const numInput = (label: string, value: number, onChange: (n: number) => void, ariaLabel: string) => (
     <label className="block min-w-0">
       <span
@@ -186,12 +199,12 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     </label>
   );
 
-  // ── Copiar plan al portapapeles ───────────────────────────────────
   const copyPlan = useCallback(async () => {
     if (!c.valid) return;
     const lines = [
       es ? "Plan de operación — CountPips" : "Trade plan — CountPips",
       "─".repeat(28),
+      `${es ? "Activo" : "Asset"}: ${assetMode.toUpperCase()}`,
       `${es ? "Balance" : "Balance"}: ${fmtUsd(balance)}`,
       `${es ? "Riesgo" : "Risk"}: ${fmtNum(riskPct)} % (${fmtUsd(c.riskUsd)})`,
       `${es ? "Entrada" : "Entry"}: ${fmtNum(entry)}`,
@@ -199,25 +212,23 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       `${es ? "Objetivo" : "Target"}: ${fmtNum(target)}`,
       `${es ? "Dirección" : "Direction"}: ${c.direction === "short" ? (es ? "Corto" : "Short") : (es ? "Largo" : "Long")}`,
       "─".repeat(28),
-      `${es ? "Tamaño" : "Size"}: ${fmtNum(c.size, 2)} u`,
+      `${es ? "Tamaño" : "Size"}: ${fmtNum(c.size, 2)} ${c.sizeLabel}`,
       `${es ? "R:R" : "R:R"}: ${fmtNum(c.rr, 2)} : 1`,
-      `${es ? "Beneficio" : "Profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)} %)`,
-      `${es ? "Valor posición" : "Position value"}: ${fmtUsd(c.positionValue)} (${fmtNum(c.positionPct, 1)} % ${es ? "del balance" : "of balance"})`,
+      `${es ? "Beneficio estimado" : "Estimated profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)} %)`,
+      `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.positionValue)}`,
     ];
     try {
       await navigator.clipboard.writeText(lines.join("\n"));
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch {
-      // clipboard no disponible — aviso silencioso
+      // clipboard fallback
     }
-  }, [c, balance, riskPct, entry, stop, target, es, fmtUsd, fmtNum]);
+  }, [c, balance, riskPct, entry, stop, target, assetMode, es, fmtUsd, fmtNum]);
 
   return (
-    <section
-      className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]"
-    >
-      <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+      <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
             <span
@@ -231,9 +242,10 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               className="tnum"
               style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
             >
-              {es ? "CALCULADORA" : "CALCULATOR"}
+              {es ? "CALCULADORA DE RIESGO" : "RISK CALCULATOR"}
             </span>
           </div>
+
           <h2
             className="font-serif m-0"
             style={{
@@ -255,6 +267,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </>
             )}
           </h2>
+
           <p
             className="mt-5 mb-7"
             style={{
@@ -265,9 +278,61 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             }}
           >
             {es
-              ? "Introduce tu balance y tu operación. Te decimos cuántas unidades, cuánto arriesgas y dónde poner el stop. Vale para largos y cortos."
-              : "Enter your balance and your trade. We tell you how many units, how much you risk, and where to place your stop. Works for longs and shorts."}
+              ? "Introduce tu capital y la distancia a tu stop. Calculamos el tamaño exacto en unidades, lotes o contratos según el mercado que operes."
+              : "Enter your balance and stop distance. We work out the exact sizing in units, lots or contracts tailored to your market."}
           </p>
+
+          {/* Selector de clase de activo */}
+          <div className="mb-5">
+            <div
+              className="tnum mb-2"
+              style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+            >
+              {es ? "Mercado / Instrumento" : "Market / Instrument"}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { id: "equities" as const, labelEs: "Acciones / Cripto", labelEn: "Stocks / Crypto" },
+                { id: "forex" as const, labelEs: "Forex (Lotes)", labelEn: "Forex (Lots)" },
+                { id: "futures" as const, labelEs: "Futuros (Contratos)", labelEn: "Futures (Contracts)" },
+              ].map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setAssetMode(m.id)}
+                  style={chipStyle(assetMode === m.id)}
+                >
+                  {es ? m.labelEs : m.labelEn}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Subselector para futuros */}
+          {assetMode === "futures" && (
+            <div className="mb-5 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <span className="block text-[10px] uppercase tracking-wider text-tertiary mb-2">
+                {es ? "Contrato de futuros" : "Futures contract"}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {FUTURES_CONTRACTS.map((fc) => (
+                  <button
+                    key={fc.id}
+                    type="button"
+                    onClick={() => setFuturesContractId(fc.id)}
+                    className={`h-7 px-2.5 rounded-[2px] text-xs font-mono transition-all ${
+                      futuresContractId === fc.id
+                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
+                        : "bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary"
+                    }`}
+                  >
+                    {fc.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Chips de plantilla */}
           <div className="mb-4">
             <div
@@ -283,20 +348,20 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   onClick={() => setRiskPct(p.pct)}
                   style={chipStyle(riskPct === p.pct)}
                   aria-pressed={riskPct === p.pct}
-                  aria-label={es ? `Plantilla ${p.label}, ${fmtNum(p.pct)} por ciento de riesgo` : `${p.label} preset, ${fmtNum(p.pct)} percent risk`}
                 >
                   {p.label} · {fmtNum(p.pct)} %
                 </button>
               ))}
             </div>
           </div>
+
           {/* Chips de balance */}
           <div>
             <div
               className="tnum mb-2"
               style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
-              {es ? "Balance" : "Balance"}
+              {es ? "Balance de cuenta" : "Account balance"}
             </div>
             <div className="flex flex-wrap gap-2">
               {balances.map((b) => (
@@ -305,7 +370,6 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   onClick={() => setBalance(b.v)}
                   style={chipStyle(balance === b.v)}
                   aria-pressed={balance === b.v}
-                  aria-label={es ? `Balance ${b.label}` : `Balance ${b.label}`}
                 >
                   {b.label}
                 </button>
@@ -314,14 +378,9 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
           </div>
         </div>
 
-        {/* Tarjeta calculadora — papel translúcido cálido */}
+        {/* Tarjeta calculadora */}
         <div
-          className="tj-paper tj-paper-glow relative"
-          style={{
-            padding: 24,
-            borderRadius: 3,
-            border: "1px solid rgb(var(--divider) / 0.13)",
-          }}
+          className="tj-paper tj-paper-glow relative p-6 rounded-[3px] border border-[rgb(var(--divider)/0.13)]"
         >
           {/* Slider de riesgo */}
           <div className="mb-5">
@@ -347,11 +406,6 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 {fmtNum(riskPct)} %
               </span>
             </div>
-            {/* Una sola pista: la del propio control. La barra de progreso
-                que había aquí encima era un elemento aparte, así que se
-                veían dos líneas paralelas y la de arriba no respondía al
-                arrastre. Ahora el tramo recorrido se pinta dentro de la
-                pista real a partir de `--pct`. */}
             <input
               type="range"
               min={RISK_MIN}
@@ -359,73 +413,19 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               step={0.05}
               value={riskPct}
               onChange={(e) => setRiskPct(parseFloat(e.target.value))}
-              className="tj-range w-full"
-              style={
-                {
-                  accentColor: "rgb(var(--accent-base))",
-                  height: 44,
-                  "--pct": `${riskAt(riskPct)}%`,
-                } as React.CSSProperties
-              }
-              aria-label={es ? "Riesgo por operación en porcentaje" : "Risk per trade percentage"}
-              aria-valuemin={RISK_MIN}
-              aria-valuemax={RISK_MAX}
-              aria-valuenow={riskPct}
-              aria-valuetext={`${fmtNum(riskPct)} %`}
+              aria-label={es ? "Porcentaje de riesgo por operación" : "Risk percentage per trade"}
+              className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-2 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
             />
-            {/* Las marcas van DONDE CAEN, no repartidas a partes iguales.
-                Estaban en una fila con separación uniforme, así que 1,00 %
-                aparecía en mitad de la pista cuando su sitio real está en
-                el 27 % del recorrido: la bolita nunca coincidía con su
-                propia etiqueta y el control parecía descalibrado.
-
-                El 0,25 se alinea por la izquierda y el 3,00 por la derecha
-                para que ninguno se salga de la caja; los de en medio van
-                centrados sobre su posición. */}
-            <div className="relative mt-1 h-3">
-              {RISK_MARKS.map((v, i) => {
-                const pct = riskAt(v);
-                const extremoIzq = i === 0;
-                const extremoDer = i === RISK_MARKS.length - 1;
-                return (
-                  <span
-                    key={v}
-                    className="tnum absolute top-0"
-                    style={{
-                      left: `${pct}%`,
-                      transform: extremoIzq
-                        ? "none"
-                        : extremoDer
-                          ? "translateX(-100%)"
-                          : "translateX(-50%)",
-                      fontSize: 9.5,
-                      color: "var(--ink-3)",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {fmtNum(v)} %
-                  </span>
-                );
-              })}
+            <div className="flex justify-between mt-1 text-[9.5px] text-tertiary font-mono">
+              {RISK_MARKS.map((m) => (
+                <span key={m}>{m}%</span>
+              ))}
             </div>
           </div>
 
-          {/* Entrada / Stop / Target — EDITABLES.
-
-              DOS columnas en móvil y tres desde `sm`. Con tres columnas en
-              un teléfono cada campo se quedaba en 83 px, de los que 57 son
-              útiles: entra el valor de ejemplo (100) y poco más. Medido con
-              la tipografía real, NO entraba ningún precio de verdad —
-              1.08450 pide 60 px, 2345.75 pide 58, 18450.25 pide 67.
-
-              Es decir, la calculadora funcionaba mientras nadie la usara: se
-              rompía justo al hacer lo que el propio texto pide, que es meter
-              tu operación. Y no lo delata nada, porque los valores de
-              ejemplo caben. Con dos columnas quedan ~130 px útiles y entra
-              cualquier precio con holgura. El reparto 2+1 ya es el que
-              tienen los chips de plantilla de aquí arriba. */}
+          {/* Entrada / Stop / Target */}
           <div
-            className="grid grid-cols-2 gap-2 p-3 rounded-[2px] mb-4 sm:grid-cols-3"
+            className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 p-3.5 rounded-[2px] mb-4"
             style={{
               background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
               border: "1px solid rgb(var(--divider) / 0.06)",
@@ -453,62 +453,56 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             </div>
           ) : (
             <div
-              className="mb-4 flex items-center gap-2 text-[11px] tnum"
-              style={{ color: "var(--ink-3)", letterSpacing: "0.06em" }}
+              className="mb-4 flex items-center gap-2 text-[11px] tnum text-secondary"
             >
               <span
                 aria-hidden
-                className="inline-flex items-center justify-center rounded-full"
+                className="inline-flex items-center justify-center rounded-full w-4 h-4 font-bold text-[10px]"
                 style={{
-                  width: 16, height: 16,
                   background: c.direction === "short"
                     ? "color-mix(in oklab, rgb(var(--pnl-neg)) 16%, transparent)"
                     : "color-mix(in oklab, rgb(var(--pnl-pos)) 16%, transparent)",
                   color: c.direction === "short" ? "rgb(var(--pnl-neg))" : "rgb(var(--pnl-pos))",
-                  fontSize: 10, fontWeight: 700,
                 }}
               >
                 {c.direction === "short" ? "↓" : "↑"}
               </span>
-              {c.direction === "short"
-                ? (es ? "Operación en corto detectada" : "Short trade detected")
-                : (es ? "Operación en largo detectada" : "Long trade detected")}
+              <span>
+                {c.direction === "short"
+                  ? (es ? "Operación en corto detectada" : "Short trade detected")
+                  : (es ? "Operación en largo detectada" : "Long trade detected")}
+              </span>
             </div>
           )}
 
           {/* Resultados */}
-          <div className="grid grid-cols-2 gap-3.5 mb-5">
+          <div className="grid grid-cols-2 gap-3 mb-5">
             <Result label={es ? "Riesgo $" : "Risk $"} value={fmtUsd(c.riskUsd)} color="rgb(var(--pnl-neg))" />
-            <Result label={es ? "Beneficio" : "Profit"} value={fmtUsd(c.profit)} color="rgb(var(--pnl-pos))" />
-            <Result label={es ? "Tamaño" : "Size"} value={`${fmtNum(c.size, 2)} u`} color="var(--ink)" />
+            <Result label={es ? "Beneficio estimado" : "Profit"} value={fmtUsd(c.profit)} color="rgb(var(--pnl-pos))" />
+            <Result label={es ? "Tamaño de posición" : "Position Size"} value={`${fmtNum(c.size, assetMode === "forex" ? 2 : (assetMode === "futures" ? 1 : 2))} ${c.sizeLabel}`} color="var(--ink)" />
             <Result label="R:R" value={`${fmtNum(c.rr, 2)} : 1`} color="rgb(var(--accent-base))" />
           </div>
 
           {/* Stats adicionales: valor posición + % balance */}
           <div
-            className="grid grid-cols-2 gap-2 mb-5 rounded-[2px] p-3"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.05)" }}
+            className="grid grid-cols-2 gap-2 mb-5 rounded-[2px] p-3 border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]"
           >
             <div>
-              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Valor posición" : "Position value"}
+              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
+                {es ? "Valor nocional" : "Notional value"}
               </div>
-              <div className="tnum" style={{ fontSize: 14, fontWeight: 600, marginTop: 2, color: "var(--ink)" }}>
+              <div className="tnum text-sm font-semibold mt-0.5 text-primary">
                 {fmtUsd(c.positionValue)}
               </div>
             </div>
             <div>
-              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
                 {es ? "% del balance" : "% of balance"}
               </div>
               <div
-                className="tnum"
+                className="tnum text-sm font-semibold mt-0.5"
                 style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  marginTop: 2,
-                  // >50% del balance en una sola posición es agresivo → aviso visual
-                  color: c.positionPct > 50 ? "rgb(var(--pnl-neg))" : "var(--ink)",
+                  color: c.positionPct > 100 && assetMode === "equities" ? "rgb(var(--pnl-neg))" : "var(--ink)",
                 }}
               >
                 {fmtNum(c.positionPct, 1)} %
@@ -518,81 +512,53 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Barra Riesgo ↔ Beneficio */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <span
-                className="tnum inline-flex items-center gap-1.5"
-                style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
-                <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: "rgb(var(--pnl-neg))" }} />
+            <div className="flex items-center justify-between mb-2 text-xs">
+              <span className="tnum inline-flex items-center gap-1.5 text-tertiary">
+                <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--pnl-neg))]" />
                 {es ? "Riesgo" : "Risk"}
               </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 9.5, letterSpacing: "0.16em", color: "rgb(var(--accent-base))", fontWeight: 700 }}
-              >
-                {fmtNum(c.rr, 2)} : 1 {es ? "R:R" : "R:R"}
+              <span className="tnum font-bold text-[rgb(var(--accent-base))]">
+                {fmtNum(c.rr, 2)} : 1 R:R
               </span>
-              <span
-                className="tnum inline-flex items-center gap-1.5"
-                style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
+              <span className="tnum inline-flex items-center gap-1.5 text-tertiary">
                 {es ? "Beneficio" : "Profit"}
-                <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: "rgb(var(--pnl-pos))" }} />
+                <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--pnl-pos))]" />
               </span>
             </div>
-            <div
-              className="relative h-2 rounded-[2px] overflow-hidden"
-              style={{ background: "rgb(var(--divider) / 0.13)" }}
-            >
+            <div className="relative h-2 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
               <div
-                className="absolute left-0 top-0 h-full"
-                style={{ width: `${riskW}%`, background: "rgb(var(--pnl-neg))" }}
+                className="absolute left-0 top-0 h-full bg-[rgb(var(--pnl-neg))]"
+                style={{ width: `${riskW}%` }}
               />
               <div
-                className="absolute right-0 top-0 h-full"
-                style={{ width: `${profitW}%`, background: "rgb(var(--pnl-pos))" }}
+                className="absolute right-0 top-0 h-full bg-[rgb(var(--pnl-pos))]"
+                style={{ width: `${profitW}%` }}
               />
               <span
                 aria-hidden
-                className="absolute top-0 bottom-0"
-                style={{
-                  left: "50%",
-                  width: 1,
-                  transform: "translateX(-50%)",
-                  background: "linear-gradient(180deg, transparent, rgb(var(--divider) / 0.45) 50%, transparent)",
-                }}
+                className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px bg-white/40"
               />
             </div>
-            <div className="mt-2 flex items-center justify-between tnum" style={{ fontSize: 11, color: "var(--ink-2)" }}>
+            <div className="mt-2 flex items-center justify-between tnum text-[11px] text-secondary">
               <span>{fmtUsd(c.riskUsd)}</span>
-              <span style={{ color: "var(--ink-3)" }}>{fmtNum(c.profitPct, 1)} % {es ? "del balance" : "of balance"}</span>
+              <span className="text-tertiary">{fmtNum(c.profitPct, 1)}% {es ? "del balance" : "of balance"}</span>
               <span>{fmtUsd(c.profit)}</span>
             </div>
           </div>
 
-          {/* Copiar plan — refuerzo "mide antes de operar" */}
+          {/* Copiar plan */}
           <button
             type="button"
             onClick={copyPlan}
             disabled={!c.valid}
-            aria-label={es ? "Copiar plan de operación al portapapeles" : "Copy trade plan to clipboard"}
-            className="mt-5 w-full sm:w-fit inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] text-[13px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{
-              background: copied
-                ? "color-mix(in oklab, rgb(var(--pnl-pos)) 16%, transparent)"
-                : "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-              color: copied ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))",
-              border: copied
-                ? "1px solid color-mix(in oklab, rgb(var(--pnl-pos)) 40%, transparent)"
-                : "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
-            }}
+            className="mt-5 w-full sm:w-fit inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] text-[13px] font-semibold transition-colors duration-150 border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.2)] disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
           >
             {copied ? (
               <>
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                {es ? "Plan copiado" : "Plan copied"}
+                <span>{es ? "Plan copiado al portapapeles" : "Plan copied to clipboard"}</span>
               </>
             ) : (
               <>
@@ -600,7 +566,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   <rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
                   <path d="M3 11V3.5A1.5 1.5 0 014.5 2H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                 </svg>
-                {es ? "Copiar plan" : "Copy plan"}
+                <span>{es ? "Copiar plan de operación" : "Copy trade plan"}</span>
               </>
             )}
           </button>
@@ -613,20 +579,16 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
-      style={{
-        background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
-      }}
+      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.08)] px-4 py-3.5 transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]"
     >
       <div
-        className="tnum relative"
-        style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+        className="tnum text-[10px] uppercase tracking-[0.12em] text-tertiary"
       >
         {label}
       </div>
       <div
-        className="tnum min-w-0 break-words relative"
-        style={{ fontSize: 19, fontWeight: 700, marginTop: 4, color, transition: "color 0.18s var(--ease-suave)" }}
+        className="tnum min-w-0 break-words font-bold text-lg mt-1"
+        style={{ color }}
       >
         {value}
       </div>

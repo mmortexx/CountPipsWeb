@@ -1,11 +1,13 @@
 "use client";
 
-import { ArrowRight, BarChart3, BookOpenCheck, ShieldCheck, Target } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, BarChart3, BookOpenCheck, ShieldCheck, Target, CheckCircle2, AlertTriangle, Layers } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Link } from "@/components/tj/LocaleLink";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { useLang } from "@/lib/i18n";
+import { fmtMoney } from "@/lib/trading/format";
 
 export type TraderProfile = "manual" | "prop";
 
@@ -24,11 +26,6 @@ const DATA = {
       { icon: BookOpenCheck, titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con un edge.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
       { icon: Target, titleEs: "Revisión sin excusas", titleEn: "No-excuse review", textEs: "Anota el plan, la gestión y el cierre para ver dónde se rompe tu proceso.", textEn: "Capture plan, management and exit so you can see where your process breaks." },
     ],
-    /* El rótulo decía «Ver la demo» y el botón abre el formulario de
-       solicitud de acceso — lo dice el titular que tiene justo encima.
-       Y no existe una demo «para operativa manual»: la demo es una sola.
-       Se cambia el rótulo y no el destino, porque el destino es el
-       correcto para esta sección. */
     ctaEs: "Solicitar acceso anticipado",
     ctaEn: "Request early access",
   },
@@ -44,22 +41,30 @@ const DATA = {
     cards: [
       { icon: ShieldCheck, titleEs: "Riesgo que se ve", titleEn: "Visible risk", textEs: "Revisa drawdown, rachas y exposición antes de que una operación te saque del plan.", textEn: "Review drawdown, streaks and exposure before one trade takes you outside the plan." },
       { icon: BarChart3, titleEs: "Track record limpio", titleEn: "Clean track record", textEs: "Separa el resultado de una sesión de la calidad de las decisiones que la construyeron.", textEn: "Separate a session's result from the quality of the decisions that built it." },
-      /* «cohorte» era además una palabra que ningún trader de prop firm
-         usa para hablar de lo suyo: lo que prepara es la siguiente
-         EVALUACIÓN, que es lo que dice —y siempre dijo— la versión
-         inglesa de esta misma tarjeta. */
       { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
     ],
-    /* Mismo caso que arriba. */
     ctaEs: "Solicitar acceso anticipado",
     ctaEn: "Request early access",
   },
 } as const;
 
+const PROP_BALANCES = [25000, 50000, 100000, 200000];
+
 export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const { lang } = useLang();
   const es = lang === "es";
   const data = DATA[profile];
+
+  // Estado interactivo para la sección interactiva específica
+  const [propBalance, setPropBalance] = useState(100000);
+  const [manualSetup, setManualSetup] = useState<"breakout" | "sweep" | "reversion">("breakout");
+
+  // Cálculos de reglas de prop firm
+  const dailyLossLimit = propBalance * 0.05;
+  const maxTrailingLoss = propBalance * 0.10;
+  const profitTarget = propBalance * 0.08;
+  const maxSafeRiskPerTrade = propBalance * 0.0075; // 0.75% por trade
+
   return (
     <>
       <PageHeader
@@ -94,6 +99,175 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
           </div>
         </div>
       </section>
+
+      {/* SECCIÓN INTERACTIVA ESPECÍFICA POR PERFIL */}
+      {profile === "prop" ? (
+        <section className="section border-y border-[rgb(var(--divider)/0.08)]">
+          <div className="tj-container">
+            <div className="max-w-3xl mb-8">
+              <p className="eyebrow">{es ? "Reglas de evaluación" : "Evaluation rules"}</p>
+              <h2 className="mt-3 text-2xl md:text-3xl font-semibold text-primary">
+                {es ? "El Guardián calibrado para tu cuenta de fondeo." : "The Guardian calibrated for your funded account."}
+              </h2>
+              <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
+                {es
+                  ? "Las firmas de fondeo expulsan por exceder la pérdida diaria o el drawdown máximo. Selecciona tu tamaño de cuenta y comprueba los límites que CountPips audita antes de cada ejecución."
+                  : "Prop firms fail challenges due to daily loss or max drawdown breaches. Select your account size and see the exact parameters CountPips monitors before every execution."}
+              </p>
+            </div>
+
+            {/* Selector de balance de prop firm */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {PROP_BALANCES.map((bal) => (
+                <button
+                  key={bal}
+                  type="button"
+                  onClick={() => setPropBalance(bal)}
+                  className={`h-9 px-4 rounded-[2px] text-xs font-semibold tnum transition-all ${
+                    propBalance === bal
+                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
+                      : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
+                  }`}
+                >
+                  ${(bal / 1000).toFixed(0)}k
+                </button>
+              ))}
+            </div>
+
+            {/* Matriz de parámetros de prop firm */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
+                  <span>{es ? "Límite pérdida diaria (5%)" : "Daily loss limit (5%)"}</span>
+                  <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
+                </div>
+                <div className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-neg))] tnum">
+                  −{fmtMoney(dailyLossLimit, lang)}
+                </div>
+                <p className="text-xs text-tertiary mt-2 leading-relaxed">
+                  {es ? "El Guardián bloquea nuevas entradas al alcanzar el 80% de este umbral." : "Guardian locks further entries when reaching 80% of this ceiling."}
+                </p>
+              </div>
+
+              <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
+                  <span>{es ? "Max Drawdown (10%)" : "Max Drawdown (10%)"}</span>
+                  <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
+                </div>
+                <div className="text-2xl font-serif font-semibold text-primary tnum">
+                  −{fmtMoney(maxTrailingLoss, lang)}
+                </div>
+                <p className="text-xs text-tertiary mt-2 leading-relaxed">
+                  {es ? "Cálculo en tiempo real desde el pico de balance más alto registrado." : "Real-time calculation anchored from the highest balance peak."}
+                </p>
+              </div>
+
+              <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
+                  <span>{es ? "Objetivo Fase 1 (8%)" : "Phase 1 Target (8%)"}</span>
+                  <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
+                </div>
+                <div className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-pos))] tnum">
+                  +{fmtMoney(profitTarget, lang)}
+                </div>
+                <p className="text-xs text-tertiary mt-2 leading-relaxed">
+                  {es ? "Seguimiento de progreso sin presión de sobreoperar." : "Progress tracking without the urge to overtrade."}
+                </p>
+              </div>
+
+              <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
+                  <span>{es ? "Riesgo sugerido (0.75%)" : "Suggested risk (0.75%)"}</span>
+                  <Target size={14} className="text-[rgb(var(--accent-base))]" />
+                </div>
+                <div className="text-2xl font-serif font-semibold text-primary tnum">
+                  {fmtMoney(maxSafeRiskPerTrade, lang)}
+                </div>
+                <p className="text-xs text-tertiary mt-2 leading-relaxed">
+                  {es ? "Te da 6 errores consecutivos de colchón antes del límite diario." : "Allows 6 consecutive losses buffer before daily limit."}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="section border-y border-[rgb(var(--divider)/0.08)]">
+          <div className="tj-container">
+            <div className="max-w-3xl mb-8">
+              <p className="eyebrow">{es ? "Playbooks en vivo" : "Live playbooks"}</p>
+              <h2 className="mt-3 text-2xl md:text-3xl font-semibold text-primary">
+                {es ? "Separa tus patrones ganadores de tus impulsos." : "Separate your winning patterns from your impulses."}
+              </h2>
+              <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
+                {es
+                  ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. Compara la muestra real de tus principales setups."
+                  : "A manual trader does not fail due to technical charts, but from inconsistent execution. Compare the real sample of your key setups."}
+              </p>
+            </div>
+
+            {/* Selector de setup manual */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {[
+                { id: "breakout" as const, labelEs: "Ruptura de Rango (Breakout)", labelEn: "Range Breakout" },
+                { id: "sweep" as const, labelEs: "Barrido de Liquidez (Sweep)", labelEn: "Liquidity Sweep" },
+                { id: "reversion" as const, labelEs: "Reversión a la Media (Mean Reversion)", labelEn: "Mean Reversion" },
+              ].map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => setManualSetup(s.id)}
+                  className={`h-9 px-4 rounded-[2px] text-xs font-semibold transition-all ${
+                    manualSetup === s.id
+                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
+                      : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
+                  }`}
+                >
+                  {es ? s.labelEs : s.labelEn}
+                </button>
+              ))}
+            </div>
+
+            {/* Tarjeta de métricas del setup */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
+                <span className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-pos))] tnum">
+                  {manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+1.12 R" : "+0.42 R"}
+                </span>
+                <span className="text-xs text-secondary block mt-2">
+                  {manualSetup === "breakout"
+                    ? (es ? "42 operaciones registradas" : "42 recorded trades")
+                    : manualSetup === "sweep"
+                    ? (es ? "31 operaciones registradas" : "31 recorded trades")
+                    : (es ? "19 operaciones registradas" : "19 recorded trades")}
+                </span>
+              </div>
+
+              <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
+                <span className="text-2xl font-serif font-semibold text-primary tnum">
+                  {manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R"}
+                </span>
+                <span className="text-xs text-secondary block mt-2">
+                  {es ? "Ventaja estadísticamente significativa" : "Statistically significant edge"}
+                </span>
+              </div>
+
+              <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
+                <span className="text-2xl font-serif font-semibold text-primary tnum">
+                  {manualSetup === "breakout" ? "92%" : manualSetup === "sweep" ? "86%" : "74%"}
+                </span>
+                <span className="text-xs text-[rgb(var(--pnl-neg))] block mt-2">
+                  {manualSetup === "reversion"
+                    ? (es ? "Fuga de capital detectada en salidas prematuras" : "Capital leak detected on early exits")
+                    : (es ? "Proceso consistente y repetible" : "Consistent, repeatable process")}
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="section">
         <div className="tj-container">

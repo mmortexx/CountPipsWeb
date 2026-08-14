@@ -46,6 +46,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   const [glossaryOpen, setGlossaryOpen] = React.useState(false);
 
   const [query, setQuery] = React.useState("");
+  const [activeCategory, setActiveCategory] = React.useState<"all" | "security" | "access" | "product">("all");
 
   // Pre-fill the search from `?q=` (e.g. the 404 page's search box) on mount.
   // SSR-safe: guarded against `window` being undefined during server render.
@@ -56,27 +57,37 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
     if (q && q.trim() !== "") setQuery(q);
   }, []);
 
-  /* Las trece preguntas viven en `src/lib/faq.ts`, no aquí. Estaban
-     escritas dos veces —una en este acordeón y otra a mano en el dato
-     estructurado que lee el buscador— y habían divergido: a «¿Qué
-     métodos de pago aceptáis?» la página respondía lo cierto y el
-     JSON-LD anunciaba tarjeta y PayPal. Con una sola fuente eso no
-     puede repetirse. */
   const items: QA[] = es ? FAQ_ES : FAQ_EN;
 
-  // Real-time filter on question + answer text (active language).
+  // Real-time filter on question + answer text + category (active language).
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (q === "") return items;
-    return items.filter(
-      (it) =>
-        it.q.toLowerCase().includes(q) || it.a.toLowerCase().includes(q)
-    );
-  }, [items, query]);
+    return items.filter((it, idx) => {
+      // Category classification
+      if (activeCategory === "security") {
+        if (![1, 2, 10, 12].includes(idx)) return false;
+      } else if (activeCategory === "access") {
+        if (![0, 5, 6, 7, 8].includes(idx)) return false;
+      } else if (activeCategory === "product") {
+        if (![3, 4, 9, 11].includes(idx)) return false;
+      }
 
-  // While searching, force a fresh `key` so the first match opens by default
-  // and stale accordion state from the unfiltered list doesn't persist.
-  const hasQuery = query.trim() !== "";
+      if (q === "") return true;
+      return (
+        it.q.toLowerCase().includes(q) || it.a.toLowerCase().includes(q)
+      );
+    });
+  }, [items, query, activeCategory]);
+
+  const categories = [
+    { id: "all" as const, labelEs: "Todas las preguntas", labelEn: "All questions" },
+    { id: "security" as const, labelEs: "Seguridad y Datos", labelEn: "Security & Data" },
+    { id: "access" as const, labelEs: "Licencia y Acceso", labelEn: "License & Access" },
+    { id: "product" as const, labelEs: "Producto y Funciones", labelEn: "Product & Features" },
+  ];
+
+  // While searching or filtering, force a fresh `key` so the first match opens by default
+  const hasQuery = query.trim() !== "" || activeCategory !== "all";
   const noResults = filtered.length === 0;
 
   return (
@@ -143,6 +154,23 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               aria-label={es ? "Buscar en las preguntas frecuentes" : "Search frequently asked questions"}
               className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[2px] h-11 pl-10 pr-3 text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
             />
+            {/* Category Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
+              {categories.map((cat) => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`h-7 px-3 rounded-[2px] text-xs font-medium transition-all ${
+                    activeCategory === cat.id
+                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
+                      : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
+                  }`}
+                >
+                  {es ? cat.labelEs : cat.labelEn}
+                </button>
+              ))}
+            </div>
           </div>
         </Reveal>
 

@@ -28,19 +28,28 @@ export function GlosarioIndice() {
   const { lang } = useLang();
   const es = lang === "es";
   const [q, setQ] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const norm = (s: string) =>
     s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
 
   const filtrados = useMemo(() => {
     const t = norm(q.trim());
-    if (!t) return null;
-    return TERMINOS.filter(
+    if (!t && activeCategory === "all") return null;
+
+    let base = TERMINOS;
+    if (activeCategory !== "all") {
+      base = base.filter((x) => x.category === activeCategory);
+    }
+
+    if (!t) return base;
+
+    return base.filter(
       (x) =>
         norm(x.term).includes(t) ||
         norm(es ? x.es : x.en).includes(t),
     );
-  }, [q, es]);
+  }, [q, activeCategory, es]);
 
   return (
     <section className="section-tight">
@@ -67,6 +76,38 @@ export function GlosarioIndice() {
                 background: "rgb(var(--divider) / 0.04)",
               }}
             />
+            {/* Category Pills */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
+              <button
+                type="button"
+                onClick={() => setActiveCategory("all")}
+                className={`h-7 px-3 rounded-[2px] text-xs font-medium transition-all ${
+                  activeCategory === "all"
+                    ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
+                    : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
+                }`}
+              >
+                {es ? "Todas las familias" : "All families"}
+              </button>
+              {ORDEN_CATEGORIAS.map((cat) => {
+                const meta = CATEGORIAS[cat];
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setActiveCategory(cat)}
+                    className={`h-7 px-3 rounded-[2px] text-xs font-medium transition-all ${
+                      activeCategory === cat
+                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
+                        : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
+                    }`}
+                  >
+                    {es ? meta.es : meta.en}
+                  </button>
+                );
+              })}
+            </div>
+
             <p className="mt-2.5 text-center text-[13px] text-tertiary">
               {filtrados
                 ? `${filtrados.length} ${
