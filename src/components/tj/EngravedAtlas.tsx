@@ -194,7 +194,7 @@ const PASO_TRAMA = 6;
    160 pasos dan ~6 px de avance por paso, justo una celda. Es el valor
    más alto que no pierde nada, porque lo que se perdería está por debajo
    de la resolución de la propia trama. */
-const PASOS_TRAZO = 80;
+const PASOS_TRAZO = 48;
 /** Radio máximo, en fracción del paso. Por encima de 0,5 los puntos se
  *  tocarían y la trama se cerraría en mancha. */
 const RADIO_TRAMA = 0.44;
@@ -312,6 +312,10 @@ function tramar(
     for (let col = 0; col < cols; col++) {
       const k = rowOffset + col;
       const aByte = datos[(k << 2) + 3];
+      if (aByte === 0) {
+        if (nacido) nacido[k] = -1;
+        continue;
+      }
       const rPleno = R_PLENO_LUT[aByte];
       if (rPleno === 0) {
         if (nacido) nacido[k] = -1;
@@ -332,15 +336,13 @@ function tramar(
 
       if (asiento === 1) {
         const cx = (col + 0.5) * PASO_TRAMA;
-        puntos.moveTo(cx + r, cyBase);
-        puntos.arc(cx, cyBase, r, 0, TAU);
+        puntos.rect(cx - r, cyBase - r, r * 2, r * 2);
       } else {
         const inv = 1 - asiento;
         const d = inv * inv * DISPERSION_TRAMA;
         const cx = (col + 0.5) * PASO_TRAMA + jitter(k) * d;
         const cy = cyBase + jitter(k + 7919) * d;
-        puntos.moveTo(cx + r, cy);
-        puntos.arc(cx, cy, r, 0, TAU);
+        puntos.rect(cx - r, cy - r, r * 2, r * 2);
       }
     }
   }
@@ -555,8 +557,7 @@ function graphite(
     const px = x + rnd(i * 3 + seed) * w;
     const py = y + rnd(i * 3 + seed + 101) * h;
     const r = 0.28 + rnd(i + seed + 55) * 0.5;
-    ctx.moveTo(px + r, py);
-    ctx.arc(px, py, r, 0, Math.PI * 2);
+    ctx.rect(px - r, py - r, r * 2, r * 2);
   }
   ctx.fill();
   ctx.restore();
@@ -2712,13 +2713,12 @@ export function EngravedAtlas() {
          de la lámina terminada, que se queda con t = 1 para siempre. */
       if (c.t === t) return c.cv;
 
-      /* Sin presupuesto en este fotograma se compone lo que ya hay. Sólo
-         si hay ALGO: una capa en blanco no vale como respuesta, porque
-         entonces la lámina no aparecería nunca. */
-      if (c.t >= 0 && performance.now() - inicioFotograma > PRESUPUESTO_REGRABADO_MS) {
-        /* Queda trabajo pendiente: el bucle no puede dormirse creyendo que
-           ha terminado, o el dibujo se quedaría con el paso atrasado para
-           siempre. */
+      const elapsed = performance.now() - inicioFotograma;
+      if (c.t >= 0 && elapsed > PRESUPUESTO_REGRABADO_MS) {
+        capasAlDia = false;
+        return c.cv;
+      }
+      if (c.t < 0 && elapsed > 6.0) {
         capasAlDia = false;
         return c.cv;
       }
@@ -2879,6 +2879,7 @@ export function EngravedAtlas() {
        es cuántas veces se paga. */
     let anclasSucias = true;
     let pausasVistas = -1;
+    let lastAnchorMeasure = 0;
 
     const measureAnchors = () => {
       const nodes = [...document.querySelectorAll("[data-plate]")].sort(
@@ -3053,7 +3054,10 @@ export function EngravedAtlas() {
          cambiado de forma de verdad. `scrollProgress` sí se recalcula en
          cada fotograma: es aritmética sobre `anchors` y `scrollY`, sin
          tocar la maquetación. */
-      if (anclasSucias) measureAnchors();
+      if (anclasSucias && (now - lastAnchorMeasure > 200 || anchors.length === 0)) {
+        measureAnchors();
+        lastAnchorMeasure = now;
+      }
       target = scrollProgress();
 
       /* Grabado inicial: la lámina I se dibuja SOLA, entera, en la primera
