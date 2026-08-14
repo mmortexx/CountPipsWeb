@@ -61,6 +61,8 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const [stop, setStop] = useState(95);
   const [target, setTarget] = useState(115);
   const [copied, setCopied] = useState(false);
+  const [showKelly, setShowKelly] = useState(false);
+  const [kellyWinRate, setKellyWinRate] = useState(55); // %
 
   const selectedFutures = useMemo(
     () => FUTURES_CONTRACTS.find((f) => f.id === futuresContractId) ?? FUTURES_CONTRACTS[0],
@@ -75,6 +77,14 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     const rr = valid ? rewardPerShare / riskPerShare : 0;
     const riskUsd = (balance * riskPct) / 100;
 
+    // Criterio de Kelly: f* = (p*b - q) / b
+    const p = kellyWinRate / 100;
+    const q = 1 - p;
+    const b = rr > 0 ? rr : 1;
+    const fullKellyPct = b > 0 ? Math.max(0, ((p * b - q) / b) * 100) : 0;
+    const halfKellyPct = Math.max(0.25, Math.min(3.0, fullKellyPct / 2));
+    const quarterKellyPct = Math.max(0.25, Math.min(3.0, fullKellyPct / 4));
+
     let size = 0;
     let sizeLabel = "u";
     let positionValue = 0;
@@ -85,15 +95,12 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
         sizeLabel = es ? "acciones / u" : "shares / u";
         positionValue = size * entry;
       } else if (assetMode === "forex") {
-        // En forex, 1 lote estándar = 100,000 unidades. 1 pip en pares USD = $10 / lote
-        // stopDist en puntos o pips:
         const units = riskUsd / riskPerShare;
         const lots = units / 100000;
         size = lots;
         sizeLabel = es ? "lotes" : "lots";
         positionValue = units * entry;
       } else {
-        // Futuros
         const pointRisk = riskPerShare * selectedFutures.mult;
         const contracts = pointRisk > 0 ? riskUsd / pointRisk : 0;
         size = contracts;
@@ -120,8 +127,11 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       positionValue,
       positionPct,
       direction,
+      fullKellyPct,
+      halfKellyPct,
+      quarterKellyPct,
     };
-  }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, es]);
+  }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, kellyWinRate, es]);
 
   const nf = useMemo(() => {
     const locale = es ? "es-ES" : "en-US";
@@ -434,6 +444,64 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             {numInput(es ? "Entrada" : "Entry", entry, setEntry, es ? "Precio de entrada" : "Entry price")}
             {numInput(es ? "Stop" : "Stop", stop, setStop, es ? "Precio de stop loss" : "Stop loss price")}
             {numInput(es ? "Objetivo" : "Target", target, setTarget, es ? "Precio objetivo take profit" : "Take profit target price")}
+          </div>
+
+          {/* Criterio de Kelly (Medio Kelly institucional) */}
+          <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.02)]">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setShowKelly((v) => !v)}
+                className="text-[11px] font-mono uppercase tracking-wider text-secondary hover:text-primary flex items-center gap-1.5 transition-colors"
+              >
+                <span>{showKelly ? "▼" : "▶"}</span>
+                <span>{es ? "Criterio de Kelly (Dimensionamiento)" : "Kelly Criterion Sizing Engine"}</span>
+              </button>
+              <span className="text-[10px] font-mono text-tertiary">
+                {es ? "Medio Kelly: " : "Half-Kelly: "}
+                <strong className="text-primary font-bold">{fmtNum(c.halfKellyPct)}%</strong>
+              </span>
+            </div>
+
+            {showKelly && (
+              <div className="mt-3 pt-3 border-t border-[rgb(var(--divider)/0.08)] space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-tertiary">{es ? "Win Rate histórico estimado:" : "Estimated historical Win Rate:"}</span>
+                  <span className="font-mono font-bold text-primary">{kellyWinRate}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={35}
+                  max={75}
+                  step={1}
+                  value={kellyWinRate}
+                  onChange={(e) => setKellyWinRate(parseInt(e.target.value, 10))}
+                  aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
+                  className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
+                />
+                <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono">
+                  <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.08)]">
+                    <div className="text-tertiary">{es ? "Kelly Puro" : "Full Kelly"}</div>
+                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}%</div>
+                  </div>
+                  <div className="p-1.5 rounded bg-[rgb(var(--accent-base)/0.1)] border border-[rgb(var(--accent-base)/0.3)]">
+                    <div className="text-[rgb(var(--accent-base))] font-semibold">{es ? "Medio Kelly" : "Half Kelly"}</div>
+                    <div className="font-bold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}%</div>
+                  </div>
+                  <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.08)]">
+                    <div className="text-tertiary">{es ? "Cuarto Kelly" : "Quarter Kelly"}</div>
+                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}%</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
+                  className="w-full py-1.5 text-[11px] font-mono font-semibold rounded bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.25)] transition-colors cursor-pointer"
+                >
+                  {es ? `Aplicar sugerencia Medio Kelly (${fmtNum(c.halfKellyPct)}% riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Aviso de validación + dirección */}
