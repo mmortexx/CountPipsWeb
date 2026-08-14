@@ -275,13 +275,43 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               : "300 simulations of your next trades. Each path is different: the band shows the likely range (P10–P90). The same edge can multiply your account or ruin you — it depends on order. Discipline is what lets you survive long enough to collect it."}
           </p>
 
+          {/* Archetype Presets */}
+          <div className="mb-6">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-tertiary block mb-2">
+              {es ? "Arquetipos de trading predefinidos:" : "Pre-calibrated trading archetypes:"}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: es ? "Evaluación Prop (0.75% Riesgo)" : "Prop Challenge (0.75% Risk)", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
+                { label: es ? "Seguimiento de Tendencia" : "Trend Following", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
+                { label: es ? "Scalping de Reversión" : "Mean Reversion Scalp", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
+                { label: es ? "Sobre-apalancamiento (Peligro)" : "Over-leveraged (Danger)", wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
+              ].map((preset) => (
+                <button
+                  key={preset.label}
+                  type="button"
+                  onClick={() => {
+                    setWinRate(preset.wr);
+                    setAvgWinR(preset.winR);
+                    setAvgLossR(preset.lossR);
+                    setRiskPct(preset.risk);
+                    setSeed((s) => s + 1);
+                  }}
+                  className="px-2.5 py-1 text-xs font-mono rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--accent-base)/0.4)] transition-colors"
+                >
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {slider(es ? "Balance inicial" : "Starting balance", startBalance, 1000, 100000, 500, setStartBalance, " $", es ? "Balance inicial" : "Starting balance")}
             {slider(es ? "Operaciones" : "Trades", trades, 20, 300, 10, setTrades, "", es ? "Número de operaciones a simular" : "Number of trades to simulate")}
             {slider(es ? "Win rate" : "Win rate", winRate, 30, 75, 1, setWinRate, " %", es ? "Porcentaje de aciertos" : "Win rate")}
             {slider(es ? "Ganancia media" : "Avg win (R)", avgWinR, 0.5, 5, 0.1, setAvgWinR, " R", es ? "Ganancia media en R" : "Average win in R")}
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
-            {slider(es ? "Riesgo/op." : "Risk/trade", riskPct, 0.25, 3, 0.05, setRiskPct, " %", es ? "Riesgo por operación" : "Risk per trade")}
+            {slider(es ? "Riesgo/op." : "Risk/trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, " %", es ? "Riesgo por operación" : "Risk per trade")}
           </div>
 
           <button

@@ -29,6 +29,7 @@ import { CountUp } from "@/components/tj/CountUp";
 import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
+import { TradeCompareModal } from "@/components/demo/TradeCompareModal";
 
 /* ============================================================
  * Tablas estáticas — la clase de activo ya no se codifica por color (ver
@@ -511,19 +512,18 @@ function BulkActionBar({
   onClear,
   onTagAdd,
   onTagRemove,
+  onCompare,
   lang,
 }: {
   count: number;
   onClear: () => void;
   onTagAdd: (tag: string) => void;
   onTagRemove: (tag: string) => void;
+  onCompare?: () => void;
   lang: "es" | "en";
 }) {
   const [tag, setTag] = useState("");
   return (
-    // The accent left-edge bar (3px wide, full height) signals that the
-    // bar is a contextual action strip — mirrors the WinUI accent bar on
-    // command bars.
     <div className="relative border-y border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--accent-base)/0.04)] px-5 py-2.5">
       <div
         aria-hidden
@@ -536,6 +536,17 @@ function BulkActionBar({
         <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary hidden sm:inline">
           {lang === "es" ? "seleccionadas" : "selected"}
         </span>
+
+        {/* Compare 2 trades action button */}
+        {count === 2 && onCompare && (
+          <button
+            type="button"
+            onClick={onCompare}
+            className="flex items-center gap-1.5 h-7 px-3 rounded-[2px] border border-[rgb(var(--accent-base)/0.4)] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-mono text-xs font-bold hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-sm"
+          >
+            <span>{lang === "es" ? "Comparar 2 operaciones" : "Compare 2 trades"}</span>
+          </button>
+        )}
 
         <span className="hidden md:inline-block w-px h-4 bg-[rgb(var(--divider)/0.1)] mx-1" aria-hidden="true" />
 
@@ -614,6 +625,17 @@ export function TradesPage() {
   // los comparte ninguna otra página.
   const [outcome, setOutcome] = useState<"all" | "win" | "loss" | "be">("all");
   const [setupSel, setSetupSel] = useState<string>("all");
+  const [comparingPair, setComparingPair] = useState<[(typeof TRADES)[number], (typeof TRADES)[number]] | null>(null);
+
+  const handleCompare = () => {
+    if (selectedIds.size !== 2) return;
+    const ids = Array.from(selectedIds);
+    const tA = allTrades.find((t) => t.id === ids[0]);
+    const tB = allTrades.find((t) => t.id === ids[1]);
+    if (tA && tB) {
+      setComparingPair([tA, tB]);
+    }
+  };
 
   const handleExport = (format: "csv" | "json") => {
     if (format === "csv") {
@@ -1372,6 +1394,7 @@ export function TradesPage() {
                 onClear={clearSelection}
                 onTagAdd={handleTagAdd}
                 onTagRemove={handleTagRemove}
+                onCompare={handleCompare}
                 lang={lang}
               />
             </motion.div>
@@ -1396,6 +1419,15 @@ export function TradesPage() {
           </div>
         )}
       </div>
+
+      {/* Trade Comparison Modal */}
+      {comparingPair && (
+        <TradeCompareModal
+          tradeA={comparingPair[0]}
+          tradeB={comparingPair[1]}
+          onClose={() => setComparingPair(null)}
+        />
+      )}
     </div>
   );
 }

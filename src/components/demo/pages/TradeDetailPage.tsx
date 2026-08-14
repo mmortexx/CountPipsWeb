@@ -24,6 +24,7 @@ import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
 import { CountUp } from "@/components/tj/CountUp";
 import { MagneticButton } from "@/components/tj/MagneticButton";
+import { TradeCandleChart } from "@/components/charts/TradeCandleChart";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -695,13 +696,16 @@ export function TradeDetailPage() {
         </div>
       </motion.section>
 
-      {/* ===== 2-COLUMN GRID: left (5fr) | right (4fr) =====
-          Left: execution + anatomy + day-context + plan + context + dates.
-          Right: screenshots + tags + review.
-          `min-w-0` on both columns prevents the inner Anatomy grid's
-          fixed-width columns (3.5rem + 1fr + ...) from blowing the
-          column past its track on mobile (was forcing the panel's
-          scrollWidth to ~448px inside a 317px panel). */}
+      {/* ===== INTERACTIVE CANDLESTICK REPLAY CHART ===== */}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
+      >
+        <TradeCandleChart trade={trade} decimals={decimals} />
+      </motion.section>
+
+      {/* ===== 2-COLUMN GRID: left (5fr) | right (4fr) ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-[5fr_4fr] gap-5">
         {/* ===== LEFT COLUMN ===== */}
         <div className="flex flex-col gap-5 min-w-0">
