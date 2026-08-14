@@ -388,24 +388,32 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                   la maqueta, no los de `TRADES`: esta tarjeta ilustra la
                   forma de la vista, no publica un resultado. */}
               {[
-                { k: "Breakout", w: "62 %", c: "rgb(var(--pnl-pos))" },
-                { k: "Pullback", w: "58 %", c: "rgb(var(--pnl-pos))" },
-                { k: "Reversal", w: "41 %", c: "var(--ink-3)" },
-                { k: "Trend", w: "55 %", c: "rgb(var(--pnl-pos))" },
+                { k: "Breakout", w: "62 %", exp: "+1.8R", n: "58 ops", c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
+                { k: "Pullback", w: "58 %", exp: "+1.4R", n: "42 ops", c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
+                { k: "Reversal", w: "41 %", exp: "−0.3R", n: "30 ops", c: "rgb(var(--pnl-neg))", badge: es ? "Sin ventaja" : "No edge" },
+                { k: "Trend", w: "55 %", exp: "+2.1R", n: "70 ops", c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
               ].map((s) => (
-                <div key={s.k} className="flex items-center gap-3">
-                  <span style={{ fontSize: 13, color: "var(--ink)", flex: 1 }}>
-                    {nombreSetup(s.k as SetupName, lang)}
-                  </span>
-                  <div className="flex-1 h-1 rounded-[2px] overflow-hidden" style={{ background: "rgb(var(--divider) / 0.13)" }}>
-                    <div className="h-full rounded-[2px]" style={{ width: s.w, background: s.c }} />
+                <div key={s.k} className="p-2 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)] hover:border-[rgb(var(--accent-base)/0.3)] transition-colors">
+                  <div className="flex items-center justify-between text-xs mb-1.5">
+                    <span className="font-medium text-primary">
+                      {nombreSetup(s.k as SetupName, lang)}
+                    </span>
+                    <div className="flex items-center gap-2 font-mono text-[10px]">
+                      <span className="text-tertiary">{s.n}</span>
+                      <span style={{ color: s.c, fontWeight: 700 }}>{s.exp}</span>
+                    </div>
                   </div>
-                  <span
-                    className="tnum"
-                    style={{ fontSize: 12, fontWeight: 600, color: "var(--ink)", minWidth: 42, textAlign: "right" }}
-                  >
-                    {s.w}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-1.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
+                      <div className="h-full rounded-[2px]" style={{ width: s.w, background: s.c }} />
+                    </div>
+                    <span
+                      className="tnum font-mono text-xs font-semibold"
+                      style={{ color: s.c, minWidth: 38, textAlign: "right" }}
+                    >
+                      {s.w}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
