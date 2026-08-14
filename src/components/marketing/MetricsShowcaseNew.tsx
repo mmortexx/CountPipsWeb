@@ -140,61 +140,50 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               separación la da el relleno interior de cada celda. */}
           <ul className="m-0 p-0 list-none grid grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
             {[
-              { l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), c: "rgb(var(--pnl-pos))" },
-              { l: "Profit factor", v: fmtNum(METRICS.profitFactor, lang, 2), c: "var(--ink)" },
+              { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), c: "rgb(var(--pnl-pos))", formula: "S = (μ - Rf) / σ", descEs: "Retorno ajustado a la volatilidad total.", descEn: "Return adjusted to total volatility." },
+              { id: "profitFactor", l: "Profit factor", v: fmtNum(METRICS.profitFactor, lang, 2), c: "var(--ink)", formula: "PF = ∑Ganancias / ∑Pérdidas", descEs: "Ganancia bruta / Pérdida bruta.", descEn: "Gross profit / Gross loss ratio." },
               {
+                id: "expectancy",
                 l: es ? "Esperanza" : "Expectancy",
                 v: fmtR(METRICS.expectancyR, lang, 2),
                 c: METRICS.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
+                formula: "E(R) = (WR × W̄) - ((1-WR) × L̄)",
+                descEs: "Beneficio matemático medio por operación.",
+                descEn: "Mathematical mean edge per trade in R.",
               },
               {
+                id: "maxDd",
                 l: "Max DD",
                 v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
                 c: "rgb(var(--pnl-neg))",
+                formula: "DD = (Peak - Trough) / Peak",
+                descEs: "Máxima caída desde el punto más alto.",
+                descEn: "Maximum decline from equity peak.",
               },
             ].map((m) => (
               <li
                 key={m.l}
-                // R20-3b: lifted the metric tiles from a flat surface to a
-                // depth-1 hover with an accent-tinted inner ring on hover,
-                // so the four KPIs read as tappable stat cards rather than
-                // inert table cells. Border + bg kept identical to before so
-                // the rest-state visual is unchanged.
-                // R24-1c: added a tiny color-coded 3×3 dot before each label
-                // so the metric direction reads at a glance (pos / neg /
-                // accent / ink) without needing to parse the value first.
-                /* La celda: filete arriba y filete a la izquierda salvo
-                   en la primera columna, que ya tiene el margen. Así los
-                   trazos forman una cuadrícula y no cuatro marcos
-                   sueltos. El único movimiento al pasar por encima es
-                   que el filete superior se marca — en un cuadro de
-                   cifras, levantar la celda sería tratar un dato como
-                   un botón. */
                 className="group/metric relative min-w-0 border-b border-[rgb(var(--divider)/0.14)] py-4 pr-5 [&:nth-child(even)]:pl-5 [&:nth-child(even)]:border-l [&:nth-child(even)]:border-l-[rgb(var(--divider)/0.14)] transition-colors duration-200"
               >
-                {/* Etiqueta arriba, en versalita: es el encabezado de la
-                    cifra, no su compañera. Apilar en vez de enfrentar
-                    label y valor es lo que convierte una tarjeta en una
-                    entrada de tabla. */}
-                <span
-                  className="block text-[10px] uppercase"
-                  style={{ letterSpacing: "0.14em", color: "var(--ink-3)" }}
-                >
-                  {m.l}
-                </span>
-                {/* La cifra manda: cuerpo grande, cifras tabulares y el
-                    color semántico. `tnum` para que las cuatro alineen
-                    sus dígitos en columna — sin eso, un cuadro de datos
-                    baila.
-                    Se mantiene en ≥19px y peso 700 porque a ese tamaño
-                    el verde y el rojo de P&L cuentan como texto grande
-                    para WCAG y les basta 3:1; por debajo tendrían que
-                    despejar 4,5:1 y no lo hacen. */}
+                <div className="flex items-center justify-between">
+                  <span
+                    className="block text-[10px] uppercase"
+                    style={{ letterSpacing: "0.14em", color: "var(--ink-3)" }}
+                  >
+                    {m.l}
+                  </span>
+                  <span className="text-[9px] font-mono text-tertiary">
+                    {m.formula}
+                  </span>
+                </div>
                 <span
                   className="tnum mt-1.5 block text-[22px] sm:text-[26px]"
                   style={{ fontWeight: 600, color: m.c, letterSpacing: "-0.02em", lineHeight: 1.1 }}
                 >
                   {m.v}
+                </span>
+                <span className="text-[11px] text-tertiary mt-1 block">
+                  {es ? m.descEs : m.descEn}
                 </span>
               </li>
             ))}

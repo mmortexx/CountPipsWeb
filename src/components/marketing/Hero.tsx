@@ -3,6 +3,7 @@
 import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight, Play } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { HeroCockpit } from "@/components/marketing/HeroCockpit";
 
 /**
  * Hero — sección `#top`.
@@ -319,11 +320,6 @@ export function Hero() {
               <div key={s.k} className="flex min-w-0 flex-col gap-1.5">
                 <dt
                   className="tnum uppercase"
-                  /* 10,5 y no 9,5. Esto no es la etiqueta de un eje dentro de
-                     una figura: es la ficha técnica del producto en la primera
-                     pantalla —plataforma, datos, recorrido, idiomas—, texto que
-                     el visitante lee para decidir. El suelo de las figuras no
-                     vale para lo que hay que leer. */
                   style={{ fontSize: 10.5, letterSpacing: "0.16em", color: "var(--ink-3)" }}
                 >
                   {s.k}
@@ -338,6 +334,9 @@ export function Hero() {
             ))}
           </dl>
         </div>
+
+        {/* Live Institutional Cockpit */}
+        <HeroCockpit />
       </div>
 
       {/* El indicador "Scroll" se retiró: quedaba centrado en el borde
