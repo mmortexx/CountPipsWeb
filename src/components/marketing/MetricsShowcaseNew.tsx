@@ -172,7 +172,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                   >
                     {m.l}
                   </span>
-                  <span className="text-[9px] font-mono text-tertiary">
+                  <span className="text-[10px] font-mono text-tertiary">
                     {m.formula}
                   </span>
                 </div>

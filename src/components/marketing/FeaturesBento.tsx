@@ -508,7 +508,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                   </div>
                   <div className="text-right">
                     <div className="text-[rgb(var(--pnl-pos))] font-bold text-[11px]">{acc.pnl}</div>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold">
                       {acc.status}
                     </span>
                   </div>

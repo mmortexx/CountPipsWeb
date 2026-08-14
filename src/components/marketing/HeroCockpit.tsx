@@ -164,10 +164,10 @@ export function HeroCockpit() {
                     <span className="text-[11px] text-secondary font-mono">{p.time}</span>
                     <span className="font-bold text-primary">{p.symbol}</span>
                     <span
-                      className={`text-[9.5px] px-1.5 py-0.2 rounded font-semibold ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded font-bold tracking-wide ${
                         p.side === "BUY"
-                          ? "bg-[rgb(var(--pnl-pos)/0.15)] text-[rgb(var(--pnl-pos))]"
-                          : "bg-[rgb(var(--pnl-neg)/0.15)] text-[rgb(var(--pnl-neg))]"
+                          ? "bg-[rgb(var(--pnl-pos)/0.08)] text-[rgb(var(--pnl-pos))]"
+                          : "bg-[rgb(var(--pnl-neg)/0.08)] text-[rgb(var(--pnl-neg))]"
                       }`}
                     >
                       {p.side}
