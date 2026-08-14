@@ -14,6 +14,7 @@ interface Candle {
   close: number;
   volume: number;
   ma: number;
+  vwap: number;
 }
 
 interface TradeCandleChartProps {
@@ -35,8 +36,10 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
   const [timeframe, setTimeframe] = useState<"1m" | "5m" | "15m">("5m");
   const [isPlaying, setIsPlaying] = useState(false);
-  const [replayIdx, setReplayIdx] = useState<number>(30);
+  const [replayIdx, setReplayIdx] = useState<number>(35);
   const [hoveredCandle, setHoveredCandle] = useState<Candle | null>(null);
+  const [showSma, setShowSma] = useState(true);
+  const [showVwap, setShowVwap] = useState(true);
 
   // Generate deterministic realistic candlestick path tailored to this exact trade
   const candles = useMemo(() => {
@@ -52,6 +55,8 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
     let current = isLong ? base * 0.996 : base * 1.004;
     const maWindow: number[] = [];
+    let cumVol = 0;
+    let cumVolPrice = 0;
 
     for (let i = 0; i < totalBars; i++) {
       let targetPrice = current;
@@ -87,10 +92,15 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
       if (maWindow.length > 7) maWindow.shift();
       const ma = maWindow.reduce((a, b) => a + b, 0) / maWindow.length;
 
+      const typicalPrice = (h + l + c) / 3;
+      cumVol += vol;
+      cumVolPrice += typicalPrice * vol;
+      const vwap = cumVol > 0 ? cumVolPrice / cumVol : c;
+
       const date = new Date(trade.openedAt.getTime() + (i - entryIdx) * (timeframe === "1m" ? 60000 : timeframe === "5m" ? 300000 : 900000));
       const time = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 
-      list.push({ time, open: o, high: h, low: l, close: c, volume: vol, ma });
+      list.push({ time, open: o, high: h, low: l, close: c, volume: vol, ma, vwap });
       current = c;
     }
 
@@ -132,6 +142,24 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
+  // Volume Profile (8 horizontal volume distribution zones)
+  const volumeProfile = useMemo(() => {
+    const buckets = 8;
+    const counts = new Array(buckets).fill(0);
+    const step = priceRange / buckets || 1;
+    for (const c of visibleCandles) {
+      const idx = Math.min(buckets - 1, Math.max(0, Math.floor((c.close - minPrice) / step)));
+      counts[idx] += c.volume;
+    }
+    const maxV = Math.max(...counts, 1);
+    return counts.map((v, idx) => ({
+      y: padT + (1 - (idx + 1) / buckets) * chartH,
+      h: Math.max(2, chartH / buckets - 2),
+      w: (v / maxV) * 40,
+      isPoc: v === maxV,
+    }));
+  }, [visibleCandles, priceRange, minPrice, chartH, padT]);
+
   const getY = (price: number) => padT + (1 - (price - minPrice) / priceRange) * chartH;
   const getX = (i: number) => padL + (i / (candles.length - 1)) * chartW;
 
@@ -143,7 +171,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
     <div className="demo-card p-4 sm:p-5 overflow-hidden">
       {/* Chart Header Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.1)]">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="font-bold text-sm text-primary font-mono">{trade.instrument}</span>
             <span className="text-xs text-tertiary font-mono">· {trade.direction.toUpperCase()}</span>
@@ -168,6 +196,32 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                 {tf}
               </button>
             ))}
+          </div>
+
+          {/* Indicators toggles */}
+          <div className="flex items-center gap-1 text-[10.5px] font-mono">
+            <button
+              type="button"
+              onClick={() => setShowSma(!showSma)}
+              className={`px-2 py-0.5 rounded-[2px] border transition-colors ${
+                showSma
+                  ? "border-[rgb(var(--accent-base)/0.4)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold"
+                  : "border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary"
+              }`}
+            >
+              SMA(7)
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowVwap(!showVwap)}
+              className={`px-2 py-0.5 rounded-[2px] border transition-colors ${
+                showVwap
+                  ? "border-[rgb(var(--pnl-pos)/0.4)] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))] font-semibold"
+                  : "border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary"
+              }`}
+            >
+              VWAP
+            </button>
           </div>
         </div>
 
@@ -212,6 +266,20 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.02" />
             </linearGradient>
           </defs>
+
+          {/* Volume Profile (POC / Value Area bars on right margin) */}
+          {volumeProfile.map((vp, i) => (
+            <rect
+              key={`vp-${i}`}
+              x={W - padR - vp.w}
+              y={vp.y}
+              width={vp.w}
+              height={vp.h}
+              fill={vp.isPoc ? "rgb(var(--accent-base))" : "rgb(var(--divider))"}
+              fillOpacity={vp.isPoc ? 0.25 : 0.08}
+              rx="1"
+            />
+          ))}
 
           {/* Grid lines */}
           {[0.2, 0.4, 0.6, 0.8].map((ratio) => {
@@ -271,14 +339,28 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             );
           })}
 
-          {/* Moving Average Curve */}
-          <path
-            d={visibleCandles.map((c, i) => `${i === 0 ? "M" : "L"} ${getX(i)} ${getY(c.ma)}`).join(" ")}
-            fill="none"
-            stroke="rgb(var(--accent-base))"
-            strokeWidth="1.2"
-            opacity="0.65"
-          />
+          {/* Moving Average Curve (SMA 7) */}
+          {showSma && (
+            <path
+              d={visibleCandles.map((c, i) => `${i === 0 ? "M" : "L"} ${getX(i)} ${getY(c.ma)}`).join(" ")}
+              fill="none"
+              stroke="rgb(var(--accent-base))"
+              strokeWidth="1.2"
+              opacity="0.65"
+            />
+          )}
+
+          {/* VWAP Curve */}
+          {showVwap && (
+            <path
+              d={visibleCandles.map((c, i) => `${i === 0 ? "M" : "L"} ${getX(i)} ${getY(c.vwap)}`).join(" ")}
+              fill="none"
+              stroke="rgb(var(--pnl-pos))"
+              strokeWidth="1.2"
+              strokeDasharray="3 2"
+              opacity="0.75"
+            />
+          )}
 
           {/* Candlesticks */}
           {visibleCandles.map((c, i) => {

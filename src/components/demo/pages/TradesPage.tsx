@@ -908,6 +908,122 @@ export function TradesPage() {
         </div>
       </Reveal>
 
+      {/* Quick Filter Presets Bar */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
+        <span className="text-[10px] uppercase tracking-wider text-tertiary mr-1 shrink-0">
+          {es ? "Vistas rápidas:" : "Quick views:"}
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            clearFilters();
+            setOutcome("all");
+            setSetupSel("all");
+          }}
+          className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
+            filters.instrument === "all" && filters.direction === "all" && filters.compliance === "all" && outcome === "all" && setupSel === "all"
+              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold border-transparent"
+              : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+          }`}
+        >
+          {es ? "Todas" : "All"} ({allTrades.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            clearFilters();
+            setOutcome("win");
+          }}
+          className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
+            outcome === "win"
+              ? "bg-[rgb(var(--pnl-pos))] text-black font-bold border-transparent"
+              : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+          }`}
+        >
+          {es ? "Ganadoras" : "Winners"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            clearFilters();
+            setOutcome("loss");
+          }}
+          className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
+            outcome === "loss"
+              ? "bg-[rgb(var(--pnl-neg))] text-white font-bold border-transparent"
+              : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+          }`}
+        >
+          {es ? "Pérdidas" : "Losses"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            clearFilters();
+            setFilters({ compliance: "no" });
+            setOutcome("all");
+          }}
+          className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
+            filters.compliance === "no"
+              ? "bg-[rgb(var(--pnl-neg))] text-white font-bold border-transparent"
+              : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+          }`}
+        >
+          {es ? "Fuera de Plan (Fallo)" : "Off-plan (Mistake)"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            clearFilters();
+            setFilters({ compliance: "yes" });
+            setOutcome("all");
+          }}
+          className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
+            filters.compliance === "yes"
+              ? "bg-[rgb(var(--pnl-pos))] text-black font-bold border-transparent"
+              : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+          }`}
+        >
+          {es ? "100% en Plan" : "100% In-plan"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            clearFilters();
+            setFilters({ instrument: "NQ" });
+            setOutcome("all");
+          }}
+          className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
+            filters.instrument === "NQ"
+              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold border-transparent"
+              : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+          }`}
+        >
+          NQ Futuros
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            clearFilters();
+            setFilters({ instrument: "ES" });
+            setOutcome("all");
+          }}
+          className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
+            filters.instrument === "ES"
+              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold border-transparent"
+              : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+          }`}
+        >
+          ES Futuros
+        </button>
+      </div>
+
       {/* ===== Filter chips — TWO ROWS, caption-prefixed groups
            (mirrors TradesPage.xaml lines 42-226). Loose on canvas,
            no enclosing card. ===== */}
