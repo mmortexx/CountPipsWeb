@@ -484,28 +484,27 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             >
               {es ? "Una cuenta o diez, en la misma vista" : "One account or ten, in the same view"}
             </h3>
-            <div className="mt-4 flex flex-wrap gap-1.5">
+            <div className="mt-4 space-y-2 text-xs font-mono">
               {[
-                es ? "Acciones" : "Stocks",
-                es ? "Futuros" : "Futures",
-                "Forex",
-                "Crypto",
-                "+ Prop firm",
-              ].map((tag) => (
-                <span
-                  key={tag}
-                  className="tnum"
-                  style={{
-                    fontSize: 11.5,
-                    padding: "5px 11px",
-                    borderRadius: 4,
-                    border: "1px solid rgb(var(--divider) / 0.13)",
-                    color: "var(--ink-2)",
-                    background: "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-                  }}
+                { name: "Apex 150k (#1)", balance: "154.820 $", pnl: "+1.420 $", status: "FUNDED", pnlPos: true },
+                { name: "Topstep 50k (#2)", balance: "51.240 $", pnl: "+650 $", status: "PASSED", pnlPos: true },
+                { name: "IBKR Futures Core", balance: "84.190 $", pnl: "+2.100 $", status: "MASTER", pnlPos: true },
+              ].map((acc) => (
+                <div
+                  key={acc.name}
+                  className="flex items-center justify-between p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)]"
                 >
-                  {tag}
-                </span>
+                  <div>
+                    <div className="text-primary font-semibold text-[11px]">{acc.name}</div>
+                    <div className="text-tertiary text-[10px]">{acc.balance}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[rgb(var(--pnl-pos))] font-bold text-[11px]">{acc.pnl}</div>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold">
+                      {acc.status}
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
