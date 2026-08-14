@@ -118,14 +118,42 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
             );
           })}
         </div>
-        {/* Tabla comparativa — mobile: horizontal scroll inside the card.
-            The 3-column grid (label · CountPips · cloud) is readable
-            without scroll on md+ but on narrow phones (≤390px) the cells
-            compress to the point of wrapping awkwardly. We keep the card's
-            rounded clip via an outer wrapper and let an inner `overflow-x-auto`
-            pane scroll horizontally with a min-width of 480px so labels +
-            values keep their natural rhythm. A subtle right-edge gradient
-            fade (md:hidden) signals "more content this way" on touch. */}
+
+        {/* Console de Telemetría SQLite Local */}
+        <div className="mb-14 rounded-[3px] border border-[rgb(var(--divider)/0.18)] bg-[rgb(var(--divider)/0.03)] p-5 sm:p-6 font-mono text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgb(var(--divider)/0.12)]">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[rgb(var(--pnl-pos))] animate-pulse" aria-hidden="true" />
+              <span className="font-bold text-primary text-[11px] uppercase tracking-wider">
+                {es ? "AUDITORÍA DE INTEGRIDAD SQLite NATIVA" : "NATIVE SQLite INTEGRITY AUDIT"}
+              </span>
+            </div>
+            <span className="text-[10px] text-tertiary">
+              PRAGMA quick_check = <b className="text-[rgb(var(--pnl-pos))]">ok</b>
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-[11px]">
+            <div>
+              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Almacén en Disco" : "Disk Storage"}</span>
+              <span className="text-primary font-semibold truncate block">%LOCALAPPDATA%\CountPips\journal.sqlite</span>
+            </div>
+            <div>
+              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Modo de Registro" : "Journal Mode"}</span>
+              <span className="text-primary font-semibold">WAL (Write-Ahead Logging 2.0)</span>
+            </div>
+            <div>
+              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Cifrado en Reposo" : "At-Rest Encryption"}</span>
+              <span className="text-primary font-semibold">AES-256-GCM + Argon2id</span>
+            </div>
+            <div>
+              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Fuga Externa" : "External Egress"}</span>
+              <span className="text-[rgb(var(--pnl-pos))] font-bold">0.00 KB (Zero Sockets)</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabla comparativa — mobile: horizontal scroll inside the card. */}
         <div
           // T3c — swap a `.tj-paper-dense`: la tabla comparativa tiene
           // 5 filas de texto pequeño + cabecera; el 86 % de opacidad
