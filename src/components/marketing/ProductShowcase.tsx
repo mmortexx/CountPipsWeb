@@ -1,41 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { ProductPlate } from "@/components/tj/ProductPlate";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 import { Link } from "@/components/tj/LocaleLink";
 
-/**
- * ProductShowcase — la sección donde la portada, por fin, enseña el producto.
- *
- * ── El sitio que ocupa ────────────────────────────────────────────────
- * Va justo después de la banda de cifras y antes de la primera lámina
- * dibujada. Es el punto exacto en que el visitante acaba de leer una
- * promesa («opera como una mesa institucional») y todavía no ha visto
- * nada que la sostenga. Ponerla más abajo la deja fuera del alcance de
- * quien decide en diez segundos, que es la mayoría del tráfico frío.
- *
- * ── Por qué DOS capturas y no una galería ─────────────────────────────
- * Ya hubo una galería y se retiró (commit 3608d0d): seis recortes
- * pequeños parecen estar tapando que hay poco. Una pantalla completa a
- * densidad real demuestra lo contrario.
- *
- * Pero una sola tampoco basta, y por un motivo que no es estético: la
- * primera enseña lo que el programa MUESTRA y la segunda, lo que el
- * programa COMPRUEBA. Sin la segunda, un visitante que ya ha visto veinte
- * journals no tiene forma de distinguir éste — todos enseñan una curva y
- * un calendario. La analítica con sus intervalos de confianza y su tabla
- * por periodos es la que no tiene ningún otro.
- *
- * (Aquí ponía «la segunda lámina vive en /demo». No era cierto: /demo no
- * monta ninguna lámina de producto, así que `LAMINAS_PRODUCTO.analitica`
- * llevaba desde el primer día definida y sin que la usara nadie. Una
- * afirmación en un comentario tiene la misma vida útil que el código que
- * describe, y ésta ya estaba muerta cuando se escribió.)
- */
+const PLATES_LIST = [
+  { key: "resumen", num: "I", labelEs: "Resumen", labelEn: "Overview" },
+  { key: "registro", num: "II", labelEs: "Registro", labelEn: "Logging" },
+  { key: "guardian", num: "III", labelEs: "Guardián", labelEn: "Guardian" },
+  { key: "operaciones", num: "IV", labelEs: "Operaciones", labelEn: "Trades" },
+  { key: "analitica", num: "V", labelEs: "Analítica", labelEn: "Analytics" },
+  { key: "playbooks", num: "VI", labelEs: "Playbooks", labelEn: "Playbooks" },
+  { key: "diario", num: "VII", labelEs: "Diario", labelEn: "Journal" },
+];
+
 export function ProductShowcase() {
   const { lang } = useLang();
   const es = lang === "es";
+  const [selectedKey, setSelectedKey] = useState<string>("resumen");
+
+  const currentLamina = LAMINAS_PRODUCTO[selectedKey] ?? LAMINAS_PRODUCTO.resumen;
 
   return (
     <section
@@ -60,13 +46,31 @@ export function ProductShowcase() {
           </p>
         </header>
 
-        <ProductPlate lamina={LAMINAS_PRODUCTO.resumen} priority />
+        {/* Selector interactivo de láminas */}
+        <div className="flex flex-wrap items-center gap-1.5 mb-6 overflow-x-auto pb-2 no-scrollbar">
+          {PLATES_LIST.map((p) => {
+            const active = selectedKey === p.key;
+            return (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => setSelectedKey(p.key)}
+                className={`h-8 px-3 rounded-[2px] text-xs font-mono transition-all flex items-center gap-1.5 ${
+                  active
+                    ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
+                    : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
+                }`}
+              >
+                <span className="opacity-70">{p.num}.</span>
+                <span>{es ? p.labelEs : p.labelEn}</span>
+              </button>
+            );
+          })}
+        </div>
 
-        {/* La segunda va perezosa a propósito: está por debajo del pliegue
-            en cualquier pantalla, y adelantarla competiría por el ancho de
-            banda con la primera, que sí decide si el visitante sigue. */}
-        <div className="mt-12">
-          <ProductPlate lamina={LAMINAS_PRODUCTO.analitica} />
+        {/* Lámina activa */}
+        <div key={selectedKey} className="transition-opacity duration-200">
+          <ProductPlate lamina={currentLamina} priority />
         </div>
 
         <p className="mt-7 text-[13.5px]">

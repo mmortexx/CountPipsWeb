@@ -257,6 +257,17 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             </p>
           </div>
 
+          {/* Gaussian Bell Curve Distribution Chart */}
+          <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.02)]">
+            <div className="flex items-center justify-between text-[10px] font-mono text-tertiary uppercase tracking-wider mb-1">
+              <span>{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
+              <span>
+                {es ? "Región crítica: |z| ≥ 1.96" : "Critical zone: |z| ≥ 1.96"}
+              </span>
+            </div>
+            <GaussianBellCurve z={c.z} isSignificant={c.significant} />
+          </div>
+
           {/* Stats grid */}
           <div className="grid grid-cols-2 gap-3.5 mb-4">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
@@ -348,6 +359,70 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       >
         {value}
       </div>
+    </div>
+  );
+}
+
+function GaussianBellCurve({ z, isSignificant }: { z: number; isSignificant: boolean }) {
+  const W = 320;
+  const H = 70;
+  const padX = 12;
+  const padY = 6;
+  const plotW = W - padX * 2;
+  const plotH = H - padY * 2;
+
+  // Generate normal curve points from x = -3.5 to +3.5
+  const points: { x: number; y: number; val: number }[] = [];
+  const steps = 60;
+  for (let i = 0; i <= steps; i++) {
+    const val = -3.5 + (i / steps) * 7.0;
+    const pdf = (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * val * val);
+    const px = padX + (i / steps) * plotW;
+    const py = H - padY - (pdf / 0.42) * plotH;
+    points.push({ x: px, y: py, val });
+  }
+
+  const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
+
+  // Clamped z position
+  const clampedZ = Math.max(-3.4, Math.min(3.4, z));
+  const zX = padX + ((clampedZ - (-3.5)) / 7.0) * plotW;
+  const critLeftX = padX + ((-1.96 - (-3.5)) / 7.0) * plotW;
+  const critRightX = padX + ((1.96 - (-3.5)) / 7.0) * plotW;
+
+  return (
+    <div className="relative w-full h-[70px]">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full" preserveAspectRatio="none">
+        {/* Critical rejection zones shading */}
+        <rect x={padX} y={padY} width={critLeftX - padX} height={plotH} fill="rgb(var(--pnl-neg))" fillOpacity="0.1" />
+        <rect x={critRightX} y={padY} width={W - padX - critRightX} height={plotH} fill="rgb(var(--pnl-pos))" fillOpacity="0.15" />
+
+        {/* Critical threshold lines (z = +/- 1.96) */}
+        <line x1={critLeftX} y1={padY} x2={critLeftX} y2={H - padY} stroke="rgb(var(--divider)/0.2)" strokeDasharray="2 2" />
+        <line x1={critRightX} y1={padY} x2={critRightX} y2={H - padY} stroke="rgb(var(--divider)/0.2)" strokeDasharray="2 2" />
+
+        {/* Center baseline */}
+        <line x1={padX} y1={H - padY} x2={W - padX} y2={H - padY} stroke="rgb(var(--divider)/0.25)" />
+
+        {/* Gaussian curve line */}
+        <path d={pathD} fill="none" stroke="var(--ink-3)" strokeWidth="1.5" />
+
+        {/* User's observed z-score marker */}
+        <line
+          x1={zX}
+          y1={padY}
+          x2={zX}
+          y2={H - padY}
+          stroke={isSignificant ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"}
+          strokeWidth="2"
+        />
+        <circle
+          cx={zX}
+          cy={padY + 4}
+          r="3"
+          fill={isSignificant ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"}
+        />
+      </svg>
     </div>
   );
 }
