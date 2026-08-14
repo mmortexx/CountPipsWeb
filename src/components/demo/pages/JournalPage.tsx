@@ -102,8 +102,8 @@ function buildMistakeBreakdown(trades: Trade[]): MistakeRow[] {
   return Object.entries(cats)
     .map(([key, v]) => ({
       key,
-      es: MISTAKE_LABELS[key].es,
-      en: MISTAKE_LABELS[key].en,
+      es: MISTAKE_LABELS[key]?.es ?? key,
+      en: MISTAKE_LABELS[key]?.en ?? key,
       count: v.count,
       cost: v.cost,
     }))

@@ -5,7 +5,7 @@ import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
-import { joinBetaApplication, type BetaApplicationData, type SubmitFailure } from "@/lib/forms";
+import { joinBetaApplication, SUPPORT_EMAIL, type BetaApplicationData, type SubmitFailure } from "@/lib/forms";
 import { trackEvent } from "@/lib/analytics";
 
 type Profile = "manual" | "prop";
@@ -57,8 +57,8 @@ function failureCopy(reason: SubmitFailure, es: boolean) {
       : "We couldn't connect. Check your connection and try again.";
   }
   return es
-    ? "La solicitud no se ha podido guardar. Escríbenos a soporte@tradingjournal.app."
-    : "The application could not be saved. Email soporte@tradingjournal.app.";
+    ? `La solicitud no se ha podido guardar. Escríbenos a ${SUPPORT_EMAIL}.`
+    : `The application could not be saved. Email ${SUPPORT_EMAIL}.`;
 }
 
 export function BetaApplication() {
