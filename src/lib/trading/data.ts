@@ -386,30 +386,29 @@ export function computeMetrics(trades: Trade[]): Metrics {
   const downside = Math.sqrt(
     rets
       .filter((r) => r < 0)
-      .reduce((s, r) => s + (r - mean) ** 2, 0) /
+      .reduce((s, r) => s + r ** 2, 0) /
       (rets.length || 1)
   );
 
   // Annualize per-trade Sharpe / Sortino by sqrt(trades_per_year) so the
   // demo's AnalyticsPage values match the marketing copy ("Sharpe 3,34")
   // and the conventional definition a trader expects. trades_per_year is
-  // derived from the actual sample span (n trades over `spanDays`),
-  // assuming 252 trading days / year (the heatmap already filters out
-  // weekends so this is consistent with the rest of the demo).
+  // derived from the actual sample calendar span (n trades over `spanDays`),
+  // assuming 365.25 calendar days / year.
   const spanMs =
     n > 1
       ? sorted[n - 1].closedAt.getTime() - sorted[0].closedAt.getTime()
       : 1;
   const spanDays = Math.max(1, spanMs / 86_400_000);
-  const tradesPerYear = (n * 252) / spanDays;
+  const tradesPerYear = (n * 365.25) / spanDays;
   const annFactor = Math.sqrt(tradesPerYear);
   const sharpe = sd ? (mean / sd) * annFactor : 0;
   const sortino = downside ? (mean / downside) * annFactor : 0;
 
   // Calmar = CAGR / |Max DD %| (standard definition, both unitless).
-  // CAGR computed from the actual span in years. Falls back to 0 if
+  // CAGR computed from the actual span in years (spanDays / 365.25). Falls back to 0 if
   // there's no drawdown or the balance never moved.
-  const years = spanDays / 252;
+  const years = spanDays / 365.25;
   const cagr =
     years > 0 && bal > 0 && INITIAL_BALANCE > 0
       ? Math.pow(bal / INITIAL_BALANCE, 1 / years) - 1

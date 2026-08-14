@@ -12,6 +12,7 @@ interface MiniCalendarProps {
 }
 
 const WEEKDAY_HEADERS_ES = ["L", "M", "X", "J", "V", "S", "D"];
+const WEEKDAY_HEADERS_EN = ["M", "T", "W", "T", "F", "S", "S"];
 const MONTHS_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 const MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -48,6 +49,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
   // Convert Sunday=0 to Monday=0 based
   const leadingBlanks = (firstWeekday + 6) % 7;
   const monthName = lang === "es" ? MONTHS_ES[month] : MONTHS_EN[month];
+  const weekdayHeaders = lang === "es" ? WEEKDAY_HEADERS_ES : WEEKDAY_HEADERS_EN;
 
   const cells: (number | null)[] = [
     ...Array(leadingBlanks).fill(null),
@@ -74,14 +76,14 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
         <div className="flex gap-1">
           <button
             onClick={() => setOffset((o) => o - 1)}
-            className="w-7 h-7 rounded-md flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+            className="w-11 h-11 sm:w-7 sm:h-7 rounded-md flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
             aria-label={lang === "es" ? "Mes anterior" : "Previous month"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
           <button
             onClick={() => setOffset((o) => o + 1)}
-            className="w-7 h-7 rounded-md flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+            className="w-11 h-11 sm:w-7 sm:h-7 rounded-md flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
             aria-label={lang === "es" ? "Mes siguiente" : "Next month"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -90,8 +92,8 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-1">
-        {WEEKDAY_HEADERS_ES.map((d) => (
-          <div key={d} className="text-[9.5px] text-tertiary text-center font-medium">{d}</div>
+        {weekdayHeaders.map((d, idx) => (
+          <div key={`${d}-${idx}`} className="text-[9.5px] text-tertiary text-center font-medium">{d}</div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-1">

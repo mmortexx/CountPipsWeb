@@ -82,8 +82,8 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     const q = 1 - p;
     const b = rr > 0 ? rr : 1;
     const fullKellyPct = b > 0 ? Math.max(0, ((p * b - q) / b) * 100) : 0;
-    const halfKellyPct = Math.max(0.25, Math.min(3.0, fullKellyPct / 2));
-    const quarterKellyPct = Math.max(0.25, Math.min(3.0, fullKellyPct / 4));
+    const halfKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 2)) : 0;
+    const quarterKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 4)) : 0;
 
     let size = 0;
     let sizeLabel = "u";
@@ -495,10 +495,13 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
-                  className="w-full py-1.5 text-[11px] font-mono font-semibold rounded bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.25)] transition-colors cursor-pointer"
+                  disabled={c.halfKellyPct <= 0}
+                  onClick={() => c.halfKellyPct > 0 && setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
+                  className="w-full py-1.5 text-[11px] font-mono font-semibold rounded bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.25)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {es ? `Aplicar sugerencia Medio Kelly (${fmtNum(c.halfKellyPct)}% riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`}
+                  {c.halfKellyPct <= 0
+                    ? (es ? "Sin ventaja (Kelly = 0% · No operar)" : "No edge (Kelly = 0% · Do not trade)")
+                    : (es ? `Aplicar sugerencia Medio Kelly (${fmtNum(c.halfKellyPct)}% riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`)}
                 </button>
               </div>
             )}

@@ -784,6 +784,20 @@ function computeEdge(trades: Trade[]) {
   );
   const profitFactor = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 99 : 0;
 
+  let profitFactorCi = "—";
+  if (grossLoss > 0 && grossWin > 0 && n >= 5) {
+    const meanX = grossWin / n;
+    const meanY = grossLoss / n;
+    const varX = trades.reduce((s, t) => s + (Math.max(0, t.netPnl) - meanX) ** 2, 0) / (n - 1);
+    const varY = trades.reduce((s, t) => s + (Math.max(0, -t.netPnl) - meanY) ** 2, 0) / (n - 1);
+    const covXY = trades.reduce((s, t) => s + (Math.max(0, t.netPnl) - meanX) * (Math.max(0, -t.netPnl) - meanY), 0) / (n - 1);
+    const varLogPf = (varX / (meanX * meanX) + varY / (meanY * meanY) - (2 * covXY) / (meanX * meanY)) / n;
+    const seLogPf = Math.sqrt(Math.max(0, varLogPf));
+    const loPf = Math.max(0, profitFactor * Math.exp(-1.96 * seLogPf));
+    const hiPf = profitFactor * Math.exp(1.96 * seLogPf);
+    profitFactorCi = `[${loPf.toFixed(2)}, ${hiPf.toFixed(2)}]`;
+  }
+
   let verdict: string;
   let verdictTone: "pos" | "warn" | "neutral";
   let hint: string;
@@ -817,7 +831,7 @@ function computeEdge(trades: Trade[]) {
     expectancyR: meanR,
     expectancyRCi: `[${loR.toFixed(2)}, ${hiR.toFixed(2)}]`,
     profitFactor,
-    profitFactorCi: `[${(profitFactor - 1.96 * seR).toFixed(2)}, ${(profitFactor + 1.96 * seR).toFixed(2)}]`,
+    profitFactorCi,
     tradesNeeded,
   };
 }
