@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { ANIO_PUBLICACION } from "@/lib/publicacion";
 import { fmtMoney, fmtNum } from "@/lib/trading/format";
 
 interface MistakeItem {
@@ -329,7 +330,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
               <span
                 className="tnum text-[10px] px-2.5 py-1 rounded-[2px] bg-[rgb(var(--pnl-neg)/0.14)] text-[rgb(var(--pnl-neg))] border border-[rgb(var(--pnl-neg)/0.28)] font-mono self-start sm:self-auto"
               >
-                #LEAK-{new Date().getFullYear()}
+                #LEAK-{ANIO_PUBLICACION}
               </span>
             </div>
 

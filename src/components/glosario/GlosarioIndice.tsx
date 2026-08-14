@@ -70,7 +70,7 @@ export function GlosarioIndice() {
                   ? "Busca por nombre o por lo que significa…"
                   : "Search by name or by what it means…"
               }
-              className="h-12 w-full rounded-[2px] border px-4 text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary"
+              className="h-12 w-full rounded-[2px] border px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary"
               style={{
                 borderColor: "rgb(var(--divider) / 0.16)",
                 background: "rgb(var(--divider) / 0.04)",
@@ -81,7 +81,7 @@ export function GlosarioIndice() {
               <button
                 type="button"
                 onClick={() => setActiveCategory("all")}
-                className={`h-7 px-3 rounded-[2px] text-xs font-medium transition-all ${
+                className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                   activeCategory === "all"
                     ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                     : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -96,7 +96,7 @@ export function GlosarioIndice() {
                     key={cat}
                     type="button"
                     onClick={() => setActiveCategory(cat)}
-                    className={`h-7 px-3 rounded-[2px] text-xs font-medium transition-all ${
+                    className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                       activeCategory === cat
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                         : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"

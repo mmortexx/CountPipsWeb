@@ -161,7 +161,7 @@ export function HeroCockpit() {
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="text-[10px] text-tertiary">{p.time}</span>
+                    <span className="text-[11px] text-secondary font-mono">{p.time}</span>
                     <span className="font-bold text-primary">{p.symbol}</span>
                     <span
                       className={`text-[9.5px] px-1.5 py-0.2 rounded font-semibold ${
@@ -176,7 +176,7 @@ export function HeroCockpit() {
 
                   <div className="hidden sm:flex items-center gap-3 text-secondary">
                     <span>{p.price}</span>
-                    <span className="text-[10px] text-tertiary">({p.size})</span>
+                    <span className="text-[11px] text-secondary">({p.size})</span>
                   </div>
 
                   <div className="flex items-center gap-2">

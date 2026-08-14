@@ -15,8 +15,14 @@
  * la tecla dejara de abrir nada y sin ningún error que lo delatara.
  */
 export const OPEN_SHORTCUTS_HELP = "tj:open-shortcuts-help";
+export const OPEN_GLOSSARY = "tj:open-glossary";
 
 /** Pide abrir la ayuda de atajos. La escucha `OverlayHost`. */
 export function openShortcutsHelp() {
   window.dispatchEvent(new CustomEvent(OPEN_SHORTCUTS_HELP));
+}
+
+/** Pide abrir el glosario modal. La escucha `OverlayHost`. */
+export function openGlossary() {
+  window.dispatchEvent(new CustomEvent(OPEN_GLOSSARY));
 }

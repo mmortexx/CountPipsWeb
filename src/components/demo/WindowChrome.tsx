@@ -280,7 +280,7 @@ export function WindowChrome() {
           onClick={() => {
             if (fullscreen) setFullscreen(false);
           }}
-          className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[#C42B1C] hover:text-white transition-colors duration-150"
+          className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--pnl-neg))] hover:text-white transition-colors duration-150"
         >
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             <line x1="0.5" y1="0.5" x2="9.5" y2="9.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />

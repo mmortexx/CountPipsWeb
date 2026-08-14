@@ -98,7 +98,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
       const vwap = cumVol > 0 ? cumVolPrice / cumVol : c;
 
       const date = new Date(trade.openedAt.getTime() + (i - entryIdx) * (timeframe === "1m" ? 60000 : timeframe === "5m" ? 300000 : 900000));
-      const time = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+      const time = `${String(date.getUTCHours()).padStart(2, "0")}:${String(date.getUTCMinutes()).padStart(2, "0")}`;
 
       list.push({ time, open: o, high: h, low: l, close: c, volume: vol, ma, vwap });
       current = c;
@@ -133,10 +133,10 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
   const maxVol = Math.max(...candles.map((c) => c.volume), 1);
 
-  const W = 620;
-  const H = 280;
+  const W = 640;
+  const H = 300;
   const padL = 10;
-  const padR = 65;
+  const padR = 60;
   const padT = 20;
   const padB = 40;
   const chartW = W - padL - padR;
@@ -187,7 +187,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                   setTimeframe(tf);
                   setReplayIdx(candles.length);
                 }}
-                className={`px-2 py-0.5 text-[10px] font-mono uppercase rounded-[1px] transition-colors ${
+                className={`min-h-[44px] sm:min-h-0 min-w-[44px] sm:min-w-0 px-2 sm:px-2 py-2 sm:py-0.5 text-xs sm:text-[10px] font-mono uppercase rounded-[1px] inline-flex items-center justify-center transition-colors ${
                   timeframe === tf
                     ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold"
                     : "text-tertiary hover:text-primary"
@@ -203,7 +203,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             <button
               type="button"
               onClick={() => setShowSma(!showSma)}
-              className={`px-2 py-0.5 rounded-[2px] border transition-colors ${
+              className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[2px] border inline-flex items-center justify-center transition-colors ${
                 showSma
                   ? "border-[rgb(var(--accent-base)/0.4)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold"
                   : "border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary"
@@ -214,7 +214,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             <button
               type="button"
               onClick={() => setShowVwap(!showVwap)}
-              className={`px-2 py-0.5 rounded-[2px] border transition-colors ${
+              className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[2px] border inline-flex items-center justify-center transition-colors ${
                 showVwap
                   ? "border-[rgb(var(--pnl-pos)/0.4)] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))] font-semibold"
                   : "border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary"
@@ -233,7 +233,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               if (replayIdx >= candles.length) setReplayIdx(8);
               setIsPlaying(!isPlaying);
             }}
-            className="flex items-center gap-1.5 h-7 px-2.5 rounded-[2px] border border-[rgb(var(--accent-base)/0.3)] bg-[rgb(var(--accent-base)/0.1)] text-[rgb(var(--accent-base))] text-xs font-mono font-medium hover:bg-[rgb(var(--accent-base)/0.2)] transition-colors"
+            className="flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-7 px-3 sm:px-2.5 rounded-[2px] border border-[rgb(var(--accent-base)/0.3)] bg-[rgb(var(--accent-base)/0.1)] text-[rgb(var(--accent-base))] text-xs font-mono font-medium hover:bg-[rgb(var(--accent-base)/0.2)] transition-colors"
           >
             {isPlaying ? <Pause size={12} /> : <Play size={12} />}
             <span>{isPlaying ? (es ? "Pausar" : "Pause") : (es ? "Replay" : "Replay")}</span>
@@ -246,7 +246,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               setReplayIdx(candles.length);
             }}
             aria-label={es ? "Restablecer gráfico completo" : "Reset full chart"}
-            className="h-7 w-7 rounded-[2px] border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary inline-flex items-center justify-center transition-colors"
+            className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 h-10 sm:h-7 w-10 sm:w-7 rounded-[2px] border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary inline-flex items-center justify-center transition-colors"
           >
             <RotateCcw size={12} />
           </button>

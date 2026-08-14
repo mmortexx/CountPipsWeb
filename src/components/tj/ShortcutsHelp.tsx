@@ -138,6 +138,15 @@ export function ShortcutsHelp({
       label: es ? "Abrir la paleta de comandos" : "Open the command palette",
     },
     {
+      keys: (
+        <>
+          <Kbd>{mando}</Kbd>
+          <Kbd>G</Kbd>
+        </>
+      ),
+      label: es ? "Abrir el glosario" : "Open the glossary",
+    },
+    {
       keys: <Kbd>?</Kbd>,
       label: es ? "Mostrar esta ayuda" : "Show this help",
     },

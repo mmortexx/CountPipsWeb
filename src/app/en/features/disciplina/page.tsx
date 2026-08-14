@@ -42,7 +42,7 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: { absolute: "Discipline — CountPips" },
   description:
-    "The Guardian stops the mistake before it happens: it blocks sizes over your risk, forces you to respect the plan, and audits every exception. Indiscipline measured in money.",
+    "The Guardian stops mistakes before they happen: blocking excessive sizes, enforcing trade plans, and auditing exceptions. Indiscipline measured in money.",
   alternates: {
     canonical: `${SITE_URL}/en/features/disciplina/`,
     languages: hreflangDe("/features/disciplina"),

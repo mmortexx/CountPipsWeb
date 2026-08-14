@@ -69,14 +69,18 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     }
     const finalBalance = curve[curve.length - 1];
 
-    const cagr = yearlyFactor >= 0 ? Math.pow(finalBalance / startBalance, 1 / years) - 1 : -1;
+    const cagr =
+      startBalance > 0 && finalBalance > 0 && years > 0
+        ? Math.pow(finalBalance / startBalance, 1 / years) - 1
+        : -1;
 
     // Estimated max drawdown via expected max losing streak (99% conf):
     // maxConsecLosses = ln(1−0.99) / ln(lossRate)
     const maxConsecLosses = lr > 0 && lr < 1 ? Math.log(0.01) / Math.log(lr) : 0;
     const estMaxDDpct = maxConsecLosses * avgLossR * (riskPct / 100) * 100; // in %
 
-    const totalReturnPct = (finalBalance / startBalance - 1) * 100;
+    const totalReturnPct =
+      startBalance > 0 ? (finalBalance / startBalance - 1) * 100 : -100;
     const expectancyPerTradeUsd = expectancyPerTradeR * (riskPct / 100) * startBalance;
     const yearlyUsd = expectancyPerTradeUsd * tradesPerYear;
 

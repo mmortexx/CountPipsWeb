@@ -53,8 +53,12 @@ const Ctx = createContext<ThemeCtx | null>(null);
    define la marca, no en su variante nocturna. */
 function readSavedTheme(): Theme {
   if (typeof window === "undefined") return "light";
-  const saved = localStorage.getItem("tj-theme");
-  return saved === "dark" || saved === "light" ? saved : "light";
+  try {
+    const saved = localStorage.getItem("tj-theme");
+    return saved === "dark" || saved === "light" ? saved : "light";
+  } catch {
+    return "light";
+  }
 }
 function readSavedPalette(): PaletteName {
   // Estilo único. Se sigue escribiendo en el DOM y en localStorage para
@@ -86,14 +90,22 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.dataset.theme = theme;
-    localStorage.setItem("tj-theme", theme);
+    try {
+      localStorage.setItem("tj-theme", theme);
+    } catch {
+      // Storage unavailable or quota exceeded
+    }
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.dataset.palette = palette;
-    localStorage.setItem("tj-palette", palette);
+    try {
+      localStorage.setItem("tj-palette", palette);
+    } catch {
+      // Storage unavailable or quota exceeded
+    }
   }, [palette, mounted]);
 
   const value = useMemo<ThemeCtx>(

@@ -163,7 +163,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const chipStyle = (active: boolean): React.CSSProperties => ({
     fontSize: 12,
     lineHeight: 1.2,
-    minHeight: 40,
+    minHeight: 44,
     padding: "10px 16px",
     borderRadius: 4,
     cursor: "pointer",
