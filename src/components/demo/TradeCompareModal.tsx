@@ -2,10 +2,10 @@
 
 import { useLang } from "@/lib/i18n";
 import { type Trade, nombreSetup } from "@/lib/trading/data";
-import { fmtPrice, fmtNum, fmtDuration, fmtDateTime, pnlTone } from "@/lib/trading/format";
+import { fmtPrice, fmtDuration, fmtDateTime } from "@/lib/trading/format";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
-import { X, ArrowRight, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
+import { X } from "lucide-react";
 
 interface TradeCompareModalProps {
   tradeA: Trade;
@@ -16,9 +16,6 @@ interface TradeCompareModalProps {
 export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModalProps) {
   const { lang } = useLang();
   const es = lang === "es";
-
-  const isWinA = tradeA.netPnl >= 0;
-  const isWinB = tradeB.netPnl >= 0;
 
   return (
     <div

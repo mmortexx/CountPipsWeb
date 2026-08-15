@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, BarChart3, BookOpenCheck, ShieldCheck, Target, CheckCircle2, AlertTriangle, Layers } from "lucide-react";
+import { ArrowRight, BarChart3, BookOpenCheck, ShieldCheck, Target, CheckCircle2, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Link } from "@/components/tj/LocaleLink";

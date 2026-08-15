@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
 import { type Trade } from "@/lib/trading/data";
-import { fmtPrice, fmtNum } from "@/lib/trading/format";
-import { Play, Pause, RotateCcw, Crosshair } from "lucide-react";
+import { fmtPrice } from "@/lib/trading/format";
+import { Play, Pause, RotateCcw } from "lucide-react";
 
 interface Candle {
   time: string;

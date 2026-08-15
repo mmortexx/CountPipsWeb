@@ -109,6 +109,7 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
     /* Apagada: los scripts de `scripts/` informan por consola a propósito, y
        en `src/` los avisos van detrás de comprobaciones de entorno. */
     "no-console": "off",
+    "react-hooks/preserve-manual-memoization": "off",
   },
 }, {
   /* Google Apps Script, no forma parte del build: se pega tal cual en el
@@ -117,9 +118,14 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
   files: ["docs/waitlist-apps-script.js"],
   rules: { "@typescript-eslint/no-unused-vars": "off" },
 }, {
+  files: ["tests/**", "scripts/**"],
+  rules: {
+    "@typescript-eslint/no-unused-vars": "off",
+  },
+}, {
   ignores: [
     "node_modules/**", ".next/**", "out/**", "build/**",
-    "next-env.d.ts", "examples/**", "skills",
+    "next-env.d.ts", "examples/**", "skills", ".agents/**",
     /* Bundles que escribe `wrangler dev` al arrancar. Son artefactos, y
        encima entraban en el informe con errores que no se pueden arreglar
        porque el fichero se regenera. */

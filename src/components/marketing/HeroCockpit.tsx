@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
-import { ShieldCheck, AlertOctagon, Terminal, Activity, Database, CheckCircle2, Lock } from "lucide-react";
+import { ShieldCheck, AlertOctagon, Activity, Database, CheckCircle2 } from "lucide-react";
 
 interface TapePrint {
   id: string;
@@ -29,7 +29,7 @@ export function HeroCockpit() {
   const [activeTab, setActiveTab] = useState<"tape" | "guardian" | "engine">("tape");
   const [prints, setPrints] = useState<TapePrint[]>(INITIAL_PRINTS);
   const [guardianTriggered, setGuardianTriggered] = useState(false);
-  const [simulatedCount, setSimulatedCount] = useState(0);
+  const [_simulatedCount, setSimulatedCount] = useState(0);
 
   // Streaming simulated institutional executions
   useEffect(() => {

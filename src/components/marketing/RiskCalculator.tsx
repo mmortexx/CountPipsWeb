@@ -16,8 +16,6 @@ const RISK_MIN = 0.25;
 const RISK_MAX = 3;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
-const riskAt = (v: number) => ((v - RISK_MIN) / (RISK_MAX - RISK_MIN)) * 100;
-
 type AssetMode = "equities" | "forex" | "futures";
 
 interface FuturesContract {

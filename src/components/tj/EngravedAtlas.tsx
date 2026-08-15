@@ -299,7 +299,6 @@ function tramar(
   }
 
   const puntos = new Path2D();
-  const TAU = Math.PI * 2;
   /* El cierre de la lámina asienta todo lo que quede suelto, y va aparte
      del asiento propio de cada punto: se toma el mayor de los dos. */
   const cierre =
