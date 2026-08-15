@@ -2,32 +2,14 @@
 
 import { useState, useMemo, useCallback, useRef } from "react";
 import { useLang } from "@/lib/i18n";
+import { Copy, Check, Table, LineChart } from "lucide-react";
 
 /**
- * EquityProjector — Proyector de Curva de Capital y Terminal de Simulación Institucional.
+ * EquityProjector — Proyector de Curva de Capital y Terminal Cuantitativo.
  *
- * Combina un modelo determinista de interés compuesto con análisis de varianza
- * (cono de confianza analítico p10-p90), gestión de aportaciones periódicas,
- * presets de perfiles de trading, desglose año a año y control táctil y de cursor.
- *
- * ── Modelo Cuantitativo ──────────────────────────────────────────────────
- *   netExpectancyR     = (winRate · avgWinR) − ((1 - winRate) · avgLossR) − frictionR
- *   profitFactor       = (winRate · avgWinR) / ((1 - winRate) · avgLossR)
- *   growthPerTrade     = netExpectancyR · (riskPct / 100)
- *
- *   En modo compuesto:
- *     balance(t+1)     = balance(t) · (1 + growthPerTrade)^(tradesPerMonth) + monthlyDeposit
- *   En modo lineal (retiro periódico):
- *     pnlMonth         = startBalance · growthPerTrade · tradesPerMonth
- *
- *   Drawdown estimado (99% confianza):
- *     maxConsecLosses  ≈ ln(0.01) / ln(1 - winRate)
- *     estMaxDD%        = maxConsecLosses · avgLossR · riskPct
- *
- *   Cono de Varianza (Intervalo de confianza ~80%, z = 1.282):
- *     varPerTradeR     = wr·(winR - ExpR)² + (1-wr)·(-lossR - ExpR)²
- *     stdPerTradeR     = sqrt(varPerTradeR)
- *     stdMonthlyGrowth = stdPerTradeR · (riskPct/100) · sqrt(tradesPerMonth)
+ * Modelo estocástico determinista con cono de varianza analítico (p10–p90),
+ * cálculo institucional de expectancy neta, profit factor, drawdown al 99%
+ * de confianza y desglose financiero año a año.
  */
 
 type PresetKey = "propfirm" | "daytrader" | "swing" | "scalper" | "custom";
@@ -38,8 +20,6 @@ interface PresetConfig {
   id: PresetKey;
   labelEs: string;
   labelEn: string;
-  tagEs: string;
-  tagEn: string;
   winRate: number;
   avgWinR: number;
   avgLossR: number;
@@ -52,9 +32,7 @@ const PRESETS: PresetConfig[] = [
   {
     id: "propfirm",
     labelEs: "Cuentas Fondeadas",
-    labelEn: "Prop Firm / Funded",
-    tagEs: "Riesgo Estricto",
-    tagEn: "Strict Risk",
+    labelEn: "Prop Firm",
     winRate: 56,
     avgWinR: 1.5,
     avgLossR: 1.0,
@@ -66,8 +44,6 @@ const PRESETS: PresetConfig[] = [
     id: "daytrader",
     labelEs: "Day Trading",
     labelEn: "Day Trading",
-    tagEs: "Alta Convicción",
-    tagEn: "High Conviction",
     winRate: 52,
     avgWinR: 2.0,
     avgLossR: 1.0,
@@ -79,8 +55,6 @@ const PRESETS: PresetConfig[] = [
     id: "swing",
     labelEs: "Swing Trading",
     labelEn: "Swing Trading",
-    tagEs: "Alto R:R",
-    tagEn: "High R:R",
     winRate: 42,
     avgWinR: 3.2,
     avgLossR: 1.0,
@@ -92,8 +66,6 @@ const PRESETS: PresetConfig[] = [
     id: "scalper",
     labelEs: "Scalping",
     labelEn: "Scalping",
-    tagEs: "Alta Frecuencia",
-    tagEn: "High Frequency",
     winRate: 64,
     avgWinR: 1.1,
     avgLossR: 1.0,
@@ -103,7 +75,15 @@ const PRESETS: PresetConfig[] = [
   },
 ];
 
-const CAPITAL_CHIPS = [5000, 10000, 25000, 50000, 100000, 250000];
+const CAPITAL_CHIPS = [
+  { v: 5000, label: "$5k" },
+  { v: 10000, label: "$10k" },
+  { v: 25000, label: "$25k" },
+  { v: 50000, label: "$50k" },
+  { v: 100000, label: "$100k" },
+  { v: 250000, label: "$250k" },
+];
+
 const HORIZON_CHIPS = [1, 2, 3, 5, 10];
 
 export function EquityProjector({ num = "03" }: { num?: string }) {
@@ -121,7 +101,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
   const [years, setYears] = useState(5);
   const [reinvestMode, setReinvestMode] = useState<ReinvestMode>("compound");
   const [monthlyContribution, setMonthlyContribution] = useState(0); // USD / mes
-  const [frictionR, setFrictionR] = useState(0.02); // R por operación
+  const [frictionR, setFrictionR] = useState(0.02); // R por trade
   const [viewTab, setViewTab] = useState<ViewTab>("chart");
   const [showConfidenceCone, setShowConfidenceCone] = useState(true);
   const [hoverMonthIndex, setHoverMonthIndex] = useState<number | null>(null);
@@ -129,7 +109,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
   const chartRef = useRef<SVGSVGElement | null>(null);
 
-  // Aplicar preset
+  // Aplicar Preset
   const applyPreset = useCallback((presetId: PresetKey) => {
     setSelectedPreset(presetId);
     const p = PRESETS.find((item) => item.id === presetId);
@@ -143,7 +123,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     }
   }, []);
 
-  const onManualParamChange = () => {
+  const onManualChange = () => {
     if (selectedPreset !== "custom") {
       setSelectedPreset("custom");
     }
@@ -154,12 +134,12 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     const wr = winRate / 100;
     const lr = 1 - wr;
 
-    // Expectancy bruta y neta (tras fricción de comisiones/slippage)
+    // Expectancy bruta y neta (deduciendo comisiones / slippage)
     const grossExpectancyR = wr * avgWinR - lr * avgLossR;
     const netExpectancyR = grossExpectancyR - frictionR;
     const hasEdge = netExpectancyR > 0;
 
-    // Profit factor: Ganancia bruta total esperada / Pérdida bruta total esperada
+    // Profit factor
     const grossWinTotal = wr * avgWinR;
     const grossLossTotal = lr * avgLossR;
     const profitFactor = grossLossTotal > 0 ? grossWinTotal / grossLossTotal : 0;
@@ -195,7 +175,6 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     let currentBalance = startBalance;
     let totalDeposited = startBalance;
 
-    // Punto inicial (mes 0)
     monthlyPoints.push({
       month: 0,
       year: 0,
@@ -207,7 +186,6 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
       netProfit: 0,
     });
 
-    // Simulación mes a mes
     const z80 = 1.282; // 80% confianza bilateral (p10 a p90)
     const monthlyGrowthFactor = Math.pow(1 + Math.max(-0.99, growthPerTrade), tradesPerMonth);
 
@@ -215,17 +193,15 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
       if (reinvestMode === "compound") {
         currentBalance = Math.max(0, currentBalance * monthlyGrowthFactor + monthlyContribution);
       } else {
-        // En modo lineal, la ganancia se calcula siempre sobre el capital base
         const monthlyProfit = startBalance * growthPerTrade * tradesPerMonth;
         currentBalance = Math.max(0, currentBalance + monthlyProfit + monthlyContribution);
       }
 
       totalDeposited += monthlyContribution;
 
-      // Estimación del cono de varianza
+      // Estimación analítica del cono de dispersión
       const cumulativeTrades = Math.round(m * tradesPerMonth);
-      const stdCumulativeReturn = (stdPerTradeR * (riskPct / 100) * Math.sqrt(cumulativeTrades));
-      
+      const stdCumulativeReturn = stdPerTradeR * (riskPct / 100) * Math.sqrt(cumulativeTrades);
       const expectedLogGrowth = cumulativeTrades * Math.log(Math.max(0.001, 1 + growthPerTrade));
       const upperFactor = Math.exp(expectedLogGrowth + z80 * stdCumulativeReturn);
       const lowerFactor = Math.exp(Math.max(-5, expectedLogGrowth - z80 * stdCumulativeReturn));
@@ -249,25 +225,25 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     const finalNetProfit = finalBalance - totalDeposited;
     const totalReturnPct = totalDeposited > 0 ? (finalNetProfit / totalDeposited) * 100 : 0;
 
-    // CAGR (Tasa de crecimiento anual compuesto) sobre el capital inicial
+    // CAGR (Tasa de crecimiento anual compuesto)
     const cagr =
       startBalance > 0 && finalBalance > 0 && years > 0
         ? Math.pow(finalBalance / startBalance, 1 / years) - 1
         : -1;
 
-    // Drawdown estimado (99% confianza)
+    // Drawdown estimado al 99% de confianza
     const maxConsecLosses = lr > 0 && lr < 1 ? Math.log(0.01) / Math.log(lr) : 0;
     const estMaxDDpct = maxConsecLosses * avgLossR * (riskPct / 100) * 100;
 
-    // Tiempo para duplicar capital (fórmula logarítmica exacta)
+    // Tiempo para duplicar capital
     let monthsToDouble: number | null = null;
     if (hasEdge && growthPerTrade > 0) {
       const tradesToDouble = Math.log(2) / Math.log(1 + growthPerTrade);
       monthsToDouble = tradesPerMonth > 0 ? tradesToDouble / tradesPerMonth : null;
     }
 
-    // Expectancy en dólares sobre el balance inicial
-    const expectancyUsdInitial = (netExpectancyR * (riskPct / 100)) * startBalance;
+    // Expectancy en dólares iniciales
+    const expectancyUsdInitial = netExpectancyR * (riskPct / 100) * startBalance;
     const yearlyUsdInitial = expectancyUsdInitial * tradesPerYear;
 
     // Desglose por años para la tabla
@@ -343,10 +319,10 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     (n: number, compact = false) => {
       const locale = es ? "es-ES" : "en-US";
       if (compact && Math.abs(n) >= 1_000_000) {
-        return `${(n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}M $`;
+        return `$${(n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}M`;
       }
-      if (compact && Math.abs(n) >= 100_000) {
-        return `${(n / 1_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}k $`;
+      if (compact && Math.abs(n) >= 10_000) {
+        return `$${(n / 1_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}k`;
       }
       return new Intl.NumberFormat(locale, {
         style: "currency",
@@ -373,12 +349,12 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     [fmtNum],
   );
 
-  // ── Renderizado del Gráfico SVG Interactivo ──────────────────────
+  // ── Renderizado del Gráfico SVG ──────────────────────────────────
   const svgW = 600;
   const svgH = 220;
-  const padLeft = 14;
-  const padRight = 14;
-  const padTop = 18;
+  const padLeft = 56;
+  const padRight = 16;
+  const padTop = 16;
   const padBottom = 26;
 
   const chartData = useMemo(() => {
@@ -429,13 +405,13 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
         " Z";
     }
 
-    // Ticks horizontales (milestones)
-    const gridYValues = [0.25, 0.5, 0.75, 1.0].map((pct) => {
+    // 3 Ticks limpios en el eje Y a la izquierda con separación vertical amplia
+    const gridYValues = [0.25, 0.6, 0.95].map((pct) => {
       const val = minVal + range * pct;
       return { val, y: getY(val) };
     });
 
-    // Ticks verticales por cada año
+    // Ticks en el eje X por cada año
     const gridXYears = Array.from({ length: years + 1 }, (_, i) => ({
       year: i,
       x: getX(i * 12),
@@ -450,17 +426,21 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
       conePath,
       gridYValues,
       gridXYears,
-      getX,
-      getY,
     };
   }, [c.monthlyPoints, showConfidenceCone, startBalance, years]);
 
-  // Manejo de interacción de cursor / toque sobre el SVG
+  // Manejo de interacción de cursor / toque
   const handleSvgMove = (clientX: number) => {
     if (!chartRef.current) return;
     const rect = chartRef.current.getBoundingClientRect();
     const relativeX = clientX - rect.left;
-    const pct = Math.max(0, Math.min(1, (relativeX - (padLeft / svgW) * rect.width) / ((svgW - padLeft - padRight) / svgW * rect.width)));
+    const pct = Math.max(
+      0,
+      Math.min(
+        1,
+        (relativeX - (padLeft / svgW) * rect.width) / (((svgW - padLeft - padRight) / svgW) * rect.width),
+      ),
+    );
     const targetMonth = Math.round(pct * (c.monthlyPoints.length - 1));
     setHoverMonthIndex(Math.max(0, Math.min(c.monthlyPoints.length - 1, targetMonth)));
   };
@@ -470,32 +450,32 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
   const activeCoord =
     hoverMonthIndex !== null ? chartData.medianCoords[hoverMonthIndex] : chartData.medianCoords[chartData.medianCoords.length - 1];
 
-  // Copiar resumen institucional al portapapeles
+  // Copiar resumen al portapapeles
   const copySummary = useCallback(async () => {
     const lines = [
       es ? "PROYECCIÓN DE CURVA DE CAPITAL — CountPips" : "EQUITY CURVE PROJECTION — CountPips",
       "═".repeat(36),
       `${es ? "Perfil" : "Profile"}: ${selectedPreset.toUpperCase()}`,
       `${es ? "Balance Inicial" : "Starting Balance"}: ${fmtUsd(startBalance)}`,
-      `${es ? "Aporte Mensual" : "Monthly Contribution"}: ${fmtUsd(monthlyContribution)} / ${es ? "mes" : "mo"}`,
-      `${es ? "Horizonte Temporal" : "Time Horizon"}: ${years} ${es ? "años" : "years"} (${tradesPerYear * years} ${es ? "trades totales" : "total trades"})`,
-      `${es ? "Modo Reinversión" : "Compounding Mode"}: ${reinvestMode === "compound" ? (es ? "Compuesto Dinámico" : "Dynamic Compounding") : (es ? "Retiro Fijo" : "Fixed Withdrawal")}`,
+      `${es ? "Aporte Mensual" : "Monthly Deposit"}: ${fmtUsd(monthlyContribution)} / ${es ? "mes" : "mo"}`,
+      `${es ? "Horizonte Temporal" : "Time Horizon"}: ${years} ${es ? "años" : "years"} (${tradesPerYear * years} ops)`,
+      `${es ? "Modelo Reinversión" : "Compounding Mode"}: ${reinvestMode === "compound" ? (es ? "Interés Compuesto" : "Compounding") : (es ? "Retiro Fijo" : "Fixed")}`,
       "─".repeat(36),
-      `${es ? "Métricas de Edge" : "Edge Statistics"}:`,
+      `${es ? "Métricas de Edge" : "Edge Stats"}:`,
       `  • Win Rate: ${fmtNum(winRate, 1)} %`,
-      `  • Ganancia / Pérdida R: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
+      `  • Ratio Ganancia / Pérdida: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
       `  • Expectancy Neta: ${c.netExpectancyR >= 0 ? "+" : ""}${fmtNum(c.netExpectancyR, 3)} R`,
       `  • Profit Factor: ${fmtNum(c.profitFactor, 2)}`,
-      `  • Riesgo por Operación: ${fmtNum(riskPct, 2)} %`,
+      `  • Riesgo / Op: ${fmtNum(riskPct, 2)} %`,
       "─".repeat(36),
       `${es ? "Resultados Proyectados" : "Projected Results"}:`,
       `  • ${es ? "Balance Final" : "Final Balance"}: ${fmtUsd(c.finalBalance)}`,
       `  • ${es ? "Beneficio Neto" : "Net Profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
       `  • CAGR: ${fmtPct(c.cagr * 100, 1)}`,
-      `  • ${es ? "Max Drawdown Estimado (99%)" : "Estimated Max DD (99%)"}: ${fmtPct(c.estMaxDDpct, 1)}`,
+      `  • ${es ? "Max DD Estimado (99%)" : "Est. Max DD (99%)"}: ${fmtPct(c.estMaxDDpct, 1)}`,
       `  • ${es ? "Tiempo para Duplicar" : "Time to Double"}: ${c.monthsToDouble ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : "N/A"}`,
       "═".repeat(36),
-      es ? "Generado en https://countpips.com/herramientas/proyector-de-capital" : "Generated at https://countpips.com/herramientas/proyector-de-capital",
+      "https://countpips.com/herramientas/proyector-de-capital",
     ];
 
     try {
@@ -523,7 +503,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     fmtPct,
   ]);
 
-  // Reusable parametric slider with exact number display & touch-target enforcement
+  // Control deslizador estilizado y accesible
   const sliderControl = (
     label: string,
     value: number,
@@ -534,27 +514,21 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     suffix: string,
     badgeHint?: string,
   ) => (
-    <div className="group/param">
-      <div className="flex items-center justify-between mb-1.5">
-        <div className="flex items-center gap-2">
+    <div className="space-y-1">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5">
           <span
-            className="tnum"
-            style={{
-              fontSize: 10,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "var(--ink-3)",
-              fontWeight: 600,
-            }}
+            className="tnum text-[10.5px] font-medium tracking-wide uppercase"
+            style={{ color: "var(--ink-2)" }}
           >
             {label}
           </span>
           {badgeHint && (
             <span
-              className="text-[9px] px-1.5 py-0.5 rounded-[2px]"
+              className="text-[9px] px-1.5 py-0.2 rounded-[2px]"
               style={{
                 background: "color-mix(in oklab, var(--surface-2) 80%, transparent)",
-                color: "var(--ink-2)",
+                color: "var(--ink-3)",
                 border: "1px solid rgb(var(--divider) / 0.10)",
               }}
             >
@@ -562,21 +536,16 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-1.5">
-          <span
-            className="tnum font-mono inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
-            style={{
-              fontSize: 12.5,
-              fontWeight: 700,
-              color: "rgb(var(--accent-base))",
-              background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-              border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
-            }}
-          >
-            {fmtNum(value, Number.isInteger(step) ? 0 : 2)}
-            <span className="opacity-75 ml-0.5 text-[11px] font-normal">{suffix}</span>
-          </span>
-        </div>
+        <span
+          className="tnum font-mono text-[11.5px] font-bold px-1.5 py-0.2 rounded-[2px]"
+          style={{
+            color: "rgb(var(--accent-base))",
+            background: "color-mix(in oklab, rgb(var(--accent-base)) 10%, transparent)",
+          }}
+        >
+          {fmtNum(value, Number.isInteger(step) ? 0 : 2)}
+          <span className="opacity-75 ml-0.5 text-[10px] font-normal">{suffix}</span>
+        </span>
       </div>
       <input
         type="range"
@@ -585,7 +554,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
         step={step}
         value={value}
         onChange={(e) => {
-          onManualParamChange();
+          onManualChange();
           onChange(parseFloat(e.target.value));
         }}
         className="tj-range w-full"
@@ -607,24 +576,18 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
   return (
     <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)] relative overflow-hidden">
       <div className="tj-container">
-        {/* Header institucional */}
-        <div className="max-w-3xl mb-10">
-          <div className="inline-flex items-center gap-3 mb-4">
+        {/* Cabecera Editorial */}
+        <div className="max-w-3xl mb-6">
+          <div className="inline-flex items-center gap-3 mb-2.5">
             <span
-              className="tnum"
-              style={{
-                fontSize: 11.5,
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                color: "rgb(var(--accent-base))",
-              }}
+              className="tnum text-[11.5px] font-semibold tracking-wider text-[rgb(var(--accent-base))]"
             >
               § {num}
             </span>
             <span aria-hidden style={{ width: 20, height: 1, background: "rgb(var(--divider) / 0.18)" }} />
             <span
-              className="tnum uppercase"
-              style={{ fontSize: 10.5, letterSpacing: "0.22em", color: "var(--ink-3)", fontWeight: 600 }}
+              className="tnum uppercase text-[10.5px] tracking-[0.2em] font-semibold"
+              style={{ color: "var(--ink-3)" }}
             >
               {es ? "PROYECTOR CUANTITATIVO DE CAPITAL" : "QUANTITATIVE EQUITY PROJECTOR"}
             </span>
@@ -653,34 +616,37 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
           </h2>
 
           <p
-            className="mt-4 mb-0"
+            className="mt-3 mb-0"
             style={{
-              fontSize: "clamp(0.95rem, 1.25vw, 1.08rem)",
-              lineHeight: 1.6,
+              fontSize: "clamp(0.92rem, 1.2vw, 1.05rem)",
+              lineHeight: 1.55,
               color: "var(--ink-2)",
               maxWidth: "42em",
             }}
           >
             {es
-              ? "Simula la evolución matemática de tu capital considerando frecuencia operativa, fricción de comisiones, reinversión compuesta o retiro de flujos, y el cono de varianza estadística."
-              : "Simulate the mathematical evolution of your equity factoring in trade frequency, fee friction, compound reinvestment or payouts, and statistical variance bounds."}
+              ? "Simula la evolución matemática de tu capital considerando frecuencia operativa, fricción de comisiones, reinversión compuesta o retiros de flujos, y el cono de dispersión estadística."
+              : "Simulate equity evolution factoring in trade frequency, fee friction, compounding or cash withdrawals, and statistical variance cones."}
           </p>
         </div>
 
         {/* Barra de Perfiles / Presets */}
-        <div className="mb-8 p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] backdrop-blur-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div
+          className="mb-6 p-2.5 sm:p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)]"
+          style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))]" />
+              <span className="w-2 h-2 rounded-full bg-[rgb(var(--accent-base))]" />
               <span
-                className="tnum text-[10px] uppercase font-semibold tracking-wider"
+                className="tnum text-[10px] sm:text-[10.5px] uppercase font-semibold tracking-wider"
                 style={{ color: "var(--ink-3)" }}
               >
-                {es ? "Perfiles de Trading Preconfigurados:" : "Preset Trading Profiles:"}
+                {es ? "Estrategia / Perfil:" : "Strategy Profile:"}
               </span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 sm:pb-0">
               {PRESETS.map((p) => {
                 const active = selectedPreset === p.id;
                 return (
@@ -688,29 +654,19 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     key={p.id}
                     type="button"
                     onClick={() => applyPreset(p.id)}
-                    className="group relative px-3 py-1.5 rounded-[2px] text-xs font-mono transition-all duration-150 flex items-center gap-1.5 cursor-pointer"
+                    className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-[2px] text-[11px] sm:text-xs font-mono transition-all cursor-pointer whitespace-nowrap"
                     style={{
                       background: active
                         ? "rgb(var(--accent-base))"
-                        : "color-mix(in oklab, var(--surface-2) 65%, transparent)",
+                        : "color-mix(in oklab, var(--surface-2) 70%, transparent)",
                       color: active ? "rgb(var(--accent-ink))" : "var(--ink-2)",
                       border: active
                         ? "1px solid rgb(var(--accent-base))"
                         : "1px solid rgb(var(--divider) / 0.12)",
-                      fontWeight: active ? 600 : 500,
+                      fontWeight: active ? 700 : 500,
                     }}
                   >
-                    <span>{es ? p.labelEs : p.labelEn}</span>
-                    <span
-                      className="text-[9px] px-1 py-0.2 rounded-sm opacity-80"
-                      style={{
-                        background: active
-                          ? "rgba(0,0,0,0.18)"
-                          : "color-mix(in oklab, var(--surface-2) 90%, transparent)",
-                      }}
-                    >
-                      {es ? p.tagEs : p.tagEn}
-                    </span>
+                    {es ? p.labelEs : p.labelEn}
                   </button>
                 );
               })}
@@ -718,18 +674,18 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               <button
                 type="button"
                 onClick={() => setSelectedPreset("custom")}
-                className="px-2.5 py-1.5 rounded-[2px] text-xs font-mono transition-all duration-150 cursor-pointer"
+                className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-[2px] text-[11px] sm:text-xs font-mono transition-all cursor-pointer whitespace-nowrap"
                 style={{
                   background:
                     selectedPreset === "custom"
                       ? "rgb(var(--accent-base))"
-                      : "color-mix(in oklab, var(--surface-2) 30%, transparent)",
+                      : "transparent",
                   color: selectedPreset === "custom" ? "rgb(var(--accent-ink))" : "var(--ink-3)",
                   border:
                     selectedPreset === "custom"
                       ? "1px solid rgb(var(--accent-base))"
-                      : "1px dashed rgb(var(--divider) / 0.18)",
-                  fontWeight: selectedPreset === "custom" ? 600 : 400,
+                      : "1px dashed rgb(var(--divider) / 0.20)",
+                  fontWeight: selectedPreset === "custom" ? 700 : 400,
                 }}
               >
                 {es ? "Manual" : "Custom"}
@@ -738,365 +694,342 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
           </div>
         </div>
 
-        {/* Cuadrícula Principal: Entradas Paramétricas vs Cockpit de Resultados */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Cuadrícula Principal: Entradas vs Cockpit */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           
           {/* ══════════ COLUMNA IZQUIERDA: PARÁMETROS (5 cols) ══════════ */}
-          <div className="lg:col-span-5 space-y-5">
-            
-            {/* Bloque 1: Capital, Flujos & Frecuencia */}
+          <div className="lg:col-span-5 flex flex-col">
             <div
-              className="tj-paper p-5 rounded-[3px] border border-[rgb(var(--divider)/0.12)] space-y-4"
-              style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
+              className="tj-paper p-4 sm:p-5 rounded-[3px] border border-[rgb(var(--divider)/0.12)] space-y-4 flex-1"
+              style={{ background: "color-mix(in oklab, var(--surface-2) 45%, transparent)" }}
             >
-              <div className="flex items-center justify-between pb-2 border-b border-[rgb(var(--divider)/0.08)]">
-                <span className="tnum text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))]">
-                  01 · {es ? "CAPITAL Y FRECUENCIA" : "CAPITAL & FREQUENCY"}
-                </span>
-                <span className="text-[11px] font-mono text-[var(--ink-3)]">
-                  {fmtUsd(startBalance)}
-                </span>
-              </div>
-
-              {/* Chips de Capital Rápido */}
-              <div>
-                <span className="tnum block text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] mb-1.5 font-medium">
-                  {es ? "Capital Inicial Rápido:" : "Quick Starting Capital:"}
-                </span>
-                <div className="grid grid-cols-3 sm:grid-cols-6 gap-1">
-                  {CAPITAL_CHIPS.map((amt) => {
-                    const active = startBalance === amt;
-                    return (
-                      <button
-                        key={amt}
-                        type="button"
-                        onClick={() => {
-                          onManualParamChange();
-                          setStartBalance(amt);
-                        }}
-                        className="py-1 px-1 rounded-[2px] text-[11px] font-mono text-center transition-all cursor-pointer"
-                        style={{
-                          background: active
-                            ? "color-mix(in oklab, rgb(var(--accent-base)) 15%, transparent)"
-                            : "transparent",
-                          color: active ? "rgb(var(--accent-base))" : "var(--ink-2)",
-                          border: active
-                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 45%, transparent)"
-                            : "1px solid rgb(var(--divider) / 0.12)",
-                          fontWeight: active ? 700 : 400,
-                        }}
-                      >
-                        {fmtUsd(amt, true)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {sliderControl(
-                es ? "Balance inicial exacto" : "Exact starting balance",
-                startBalance,
-                1000,
-                250000,
-                1000,
-                setStartBalance,
-                " $",
-              )}
-
-              {sliderControl(
-                es ? "Operaciones por año" : "Trades per year",
-                tradesPerYear,
-                12,
-                600,
-                4,
-                setTradesPerYear,
-                es ? " ops" : " trades",
-                `≈ ${(tradesPerYear / 12).toFixed(1)} ${es ? "ops/mes" : "trades/mo"}`
-              )}
-
-              {/* Aporte mensual optativo */}
-              <div className="pt-2 border-t border-[rgb(var(--divider)/0.06)]">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="tnum text-[10px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
-                    {es ? "Aporte / Depósito mensual" : "Monthly deposit / cashflow"}
+              {/* Sección 1: Capital */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between pb-1.5 border-b border-[rgb(var(--divider)/0.08)]">
+                  <span className="tnum text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))]">
+                    01 · {es ? "CAPITAL Y FRECUENCIA" : "CAPITAL & FREQUENCY"}
                   </span>
-                  <span className="text-[11px] font-mono text-[rgb(var(--accent-base))] font-semibold">
-                    +{fmtUsd(monthlyContribution)} / {es ? "mes" : "mo"}
+                  <span className="text-[11px] font-mono text-[var(--ink-3)] font-medium">
+                    {fmtUsd(startBalance)}
                   </span>
                 </div>
-                <div className="grid grid-cols-4 gap-1">
-                  {[0, 250, 500, 1000].map((amt) => {
-                    const active = monthlyContribution === amt;
-                    return (
-                      <button
-                        key={amt}
-                        type="button"
-                        onClick={() => {
-                          onManualParamChange();
-                          setMonthlyContribution(amt);
-                        }}
-                        className="py-1 text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer"
-                        style={{
-                          background: active
-                            ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                            : "transparent",
-                          color: active ? "rgb(var(--accent-base))" : "var(--ink-3)",
-                          border: active
-                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 40%, transparent)"
-                            : "1px solid rgb(var(--divider) / 0.10)",
-                          fontWeight: active ? 600 : 400,
-                        }}
-                      >
-                        {amt === 0 ? (es ? "Sin aporte" : "None") : `+${amt}$`}
-                      </button>
-                    );
-                  })}
+
+                {/* Chips de Capital Inicial */}
+                <div>
+                  <div className="grid grid-cols-6 gap-1">
+                    {CAPITAL_CHIPS.map((chip) => {
+                      const active = startBalance === chip.v;
+                      return (
+                        <button
+                          key={chip.v}
+                          type="button"
+                          onClick={() => {
+                            onManualChange();
+                            setStartBalance(chip.v);
+                          }}
+                          className="py-1 text-center text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer"
+                          style={{
+                            background: active
+                              ? "rgb(var(--accent-base))"
+                              : "color-mix(in oklab, var(--surface-2) 70%, transparent)",
+                            color: active ? "rgb(var(--accent-ink))" : "var(--ink-2)",
+                            border: active
+                              ? "1px solid rgb(var(--accent-base))"
+                              : "1px solid rgb(var(--divider) / 0.12)",
+                            fontWeight: active ? 700 : 500,
+                          }}
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Bloque 2: Edge Estadístico */}
-            <div
-              className="tj-paper p-5 rounded-[3px] border border-[rgb(var(--divider)/0.12)] space-y-4"
-              style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
-            >
-              <div className="flex items-center justify-between pb-2 border-b border-[rgb(var(--divider)/0.08)]">
-                <span className="tnum text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))]">
-                  02 · {es ? "EDGE Y ESTADÍSTICA DE OPERATIVA" : "EDGE & TRADE STATISTICS"}
-                </span>
-                <span
-                  className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-[2px]"
-                  style={{
-                    color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                    background: c.hasEdge
-                      ? "color-mix(in oklab, rgb(var(--pnl-pos)) 12%, transparent)"
-                      : "color-mix(in oklab, rgb(var(--pnl-neg)) 12%, transparent)",
-                  }}
-                >
-                  PF: {fmtNum(c.profitFactor, 2)}
-                </span>
-              </div>
-
-              {sliderControl(
-                es ? "Win Rate (Aciertos)" : "Win Rate",
-                winRate,
-                25,
-                80,
-                1,
-                setWinRate,
-                " %",
-                winRate >= 50 ? (es ? "Edge Favorable" : "Positive WR") : (es ? "Requiere Alto R:R" : "Requires High R:R")
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {sliderControl(
-                  es ? "Ganancia Media" : "Avg Win (R)",
-                  avgWinR,
-                  0.5,
-                  6.0,
-                  0.1,
-                  setAvgWinR,
-                  " R"
+                  es ? "Balance inicial exacto" : "Exact start balance",
+                  startBalance,
+                  1000,
+                  250000,
+                  1000,
+                  setStartBalance,
+                  " $",
                 )}
+
                 {sliderControl(
-                  es ? "Pérdida Media" : "Avg Loss (R)",
-                  avgLossR,
-                  0.25,
+                  es ? "Operaciones por año" : "Trades per year",
+                  tradesPerYear,
+                  12,
+                  600,
+                  4,
+                  setTradesPerYear,
+                  es ? " ops" : " trades",
+                  `≈ ${(tradesPerYear / 12).toFixed(1)} ${es ? "ops/mes" : "trades/mo"}`
+                )}
+
+                {/* Aporte mensual */}
+                <div className="pt-1.5 border-t border-[rgb(var(--divider)/0.06)]">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                      {es ? "Aporte mensual" : "Monthly deposit"}
+                    </span>
+                    <span className="text-[10.5px] font-mono text-[rgb(var(--accent-base))] font-semibold">
+                      +{fmtUsd(monthlyContribution)} / {es ? "mes" : "mo"}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1">
+                    {[0, 250, 500, 1000].map((amt) => {
+                      const active = monthlyContribution === amt;
+                      return (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => {
+                            onManualChange();
+                            setMonthlyContribution(amt);
+                          }}
+                          className="py-0.5 text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer text-center"
+                          style={{
+                            background: active
+                              ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
+                              : "transparent",
+                            color: active ? "rgb(var(--accent-base))" : "var(--ink-3)",
+                            border: active
+                              ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 40%, transparent)"
+                              : "1px solid rgb(var(--divider) / 0.10)",
+                            fontWeight: active ? 700 : 400,
+                          }}
+                        >
+                          {amt === 0 ? (es ? "Sin aporte" : "None") : `+$${amt}`}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Sección 2: Edge */}
+              <div className="space-y-3 pt-3 border-t border-[rgb(var(--divider)/0.10)]">
+                <div className="flex items-center justify-between pb-1.5 border-b border-[rgb(var(--divider)/0.08)]">
+                  <span className="tnum text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))]">
+                    02 · {es ? "EDGE Y ESTADÍSTICA DE OPERATIVA" : "EDGE & TRADE STATISTICS"}
+                  </span>
+                  <span
+                    className="text-[9.5px] font-mono font-bold px-1.5 py-0.2 rounded-[2px]"
+                    style={{
+                      color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
+                      background: c.hasEdge
+                        ? "color-mix(in oklab, rgb(var(--pnl-pos)) 12%, transparent)"
+                        : "color-mix(in oklab, rgb(var(--pnl-neg)) 12%, transparent)",
+                    }}
+                  >
+                    PF: {fmtNum(c.profitFactor, 2)}
+                  </span>
+                </div>
+
+                {sliderControl(
+                  es ? "Win Rate (Aciertos)" : "Win Rate",
+                  winRate,
+                  25,
+                  80,
+                  1,
+                  setWinRate,
+                  " %",
+                  winRate >= 50 ? (es ? "Edge Favorable" : "Positive WR") : (es ? "Requiere Alto R:R" : "Requires High R:R")
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {sliderControl(
+                    es ? "Ganancia Media" : "Avg Win (R)",
+                    avgWinR,
+                    0.5,
+                    6.0,
+                    0.1,
+                    setAvgWinR,
+                    " R"
+                  )}
+                  {sliderControl(
+                    es ? "Pérdida Media" : "Avg Loss (R)",
+                    avgLossR,
+                    0.25,
+                    3.0,
+                    0.05,
+                    setAvgLossR,
+                    " R"
+                  )}
+                </div>
+
+                {/* Fricción */}
+                <div className="pt-1.5 border-t border-[rgb(var(--divider)/0.06)] flex items-center justify-between">
+                  <span className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                    {es ? "Fricción (Comisiones / Slip)" : "Friction (Fees / Slip)"}
+                  </span>
+                  <div className="flex gap-1">
+                    {[0.0, 0.02, 0.04, 0.06].map((f) => {
+                      const active = frictionR === f;
+                      return (
+                        <button
+                          key={f}
+                          type="button"
+                          onClick={() => {
+                            onManualChange();
+                            setFrictionR(f);
+                          }}
+                          className="px-1.5 py-0.5 text-[10px] font-mono rounded-[2px] transition-all cursor-pointer"
+                          style={{
+                            background: active
+                              ? "color-mix(in oklab, rgb(var(--accent-base)) 15%, transparent)"
+                              : "transparent",
+                            color: active ? "rgb(var(--accent-base))" : "var(--ink-3)",
+                            border: active
+                              ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 40%, transparent)"
+                              : "1px solid rgb(var(--divider) / 0.10)",
+                          }}
+                        >
+                          {f === 0 ? "0R" : `${f}R`}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Sección 3: Riesgo y Horizonte */}
+              <div className="space-y-3 pt-3 border-t border-[rgb(var(--divider)/0.10)]">
+                <div className="flex items-center justify-between pb-1.5 border-b border-[rgb(var(--divider)/0.08)]">
+                  <span className="tnum text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))]">
+                    03 · {es ? "GESTIÓN DE RIESGO Y HORIZONTE" : "RISK & HORIZON"}
+                  </span>
+                  <span className="text-[10px] font-mono text-[var(--ink-3)]">
+                    {years} {es ? "Años" : "Years"}
+                  </span>
+                </div>
+
+                {sliderControl(
+                  es ? "Riesgo por Operación" : "Risk per Trade",
+                  riskPct,
+                  0.1,
                   3.0,
                   0.05,
-                  setAvgLossR,
-                  " R"
+                  setRiskPct,
+                  " %",
+                  `Kelly 1/2: ${fmtNum(c.halfKellyPct, 1)}%`
                 )}
-              </div>
 
-              {/* Fricción por comisiones y slippage */}
-              <div className="pt-2 border-t border-[rgb(var(--divider)/0.06)] flex items-center justify-between">
+                {/* Horizonte */}
                 <div>
-                  <span className="tnum block text-[10px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
-                    {es ? "Fricción (Comisiones + Slippage)" : "Friction (Fees + Slippage)"}
-                  </span>
-                  <span className="text-[10px] text-[var(--ink-3)] opacity-80">
-                    {es ? "Deducción directa de la expectancy" : "Direct expectancy drag"}
-                  </span>
+                  <div className="grid grid-cols-5 gap-1">
+                    {HORIZON_CHIPS.map((y) => {
+                      const active = years === y;
+                      return (
+                        <button
+                          key={y}
+                          type="button"
+                          onClick={() => {
+                            onManualChange();
+                            setYears(y);
+                          }}
+                          className="py-1 text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer text-center"
+                          style={{
+                            background: active
+                              ? "rgb(var(--accent-base))"
+                              : "color-mix(in oklab, var(--surface-2) 70%, transparent)",
+                            color: active ? "rgb(var(--accent-ink))" : "var(--ink-2)",
+                            border: active
+                              ? "1px solid rgb(var(--accent-base))"
+                              : "1px solid rgb(var(--divider) / 0.12)",
+                            fontWeight: active ? 700 : 500,
+                          }}
+                        >
+                          {y} {es ? (y === 1 ? "año" : "años") : (y === 1 ? "yr" : "yrs")}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="flex gap-1">
-                  {[0.0, 0.02, 0.04, 0.06].map((f) => {
-                    const active = frictionR === f;
-                    return (
-                      <button
-                        key={f}
-                        type="button"
-                        onClick={() => {
-                          onManualParamChange();
-                          setFrictionR(f);
-                        }}
-                        className="px-2 py-1 text-[10px] font-mono rounded-[2px] transition-all cursor-pointer"
-                        style={{
-                          background: active
-                            ? "color-mix(in oklab, rgb(var(--accent-base)) 15%, transparent)"
+
+                {/* Modelo de Reinversión */}
+                <div className="pt-1.5 border-t border-[rgb(var(--divider)/0.06)]">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setReinvestMode("compound")}
+                      className="p-2 text-left rounded-[2px] transition-all cursor-pointer"
+                      style={{
+                        background:
+                          reinvestMode === "compound"
+                            ? "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)"
                             : "transparent",
-                          color: active ? "rgb(var(--accent-base))" : "var(--ink-3)",
-                          border: active
-                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 40%, transparent)"
+                        border:
+                          reinvestMode === "compound"
+                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)"
                             : "1px solid rgb(var(--divider) / 0.10)",
-                        }}
-                      >
-                        {f === 0 ? "0R" : `${f}R`}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Bloque 3: Gestión de Riesgo y Horizonte */}
-            <div
-              className="tj-paper p-5 rounded-[3px] border border-[rgb(var(--divider)/0.12)] space-y-4"
-              style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
-            >
-              <div className="flex items-center justify-between pb-2 border-b border-[rgb(var(--divider)/0.08)]">
-                <span className="tnum text-[10px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))]">
-                  03 · {es ? "GESTIÓN DE RIESGO Y HORIZONTE" : "RISK & HORIZON"}
-                </span>
-                <span className="text-[10.5px] font-mono text-[var(--ink-3)]">
-                  {years} {es ? "Años de proyección" : "Years projection"}
-                </span>
-              </div>
-
-              {sliderControl(
-                es ? "Riesgo por Operación" : "Risk per Trade",
-                riskPct,
-                0.1,
-                3.0,
-                0.05,
-                setRiskPct,
-                " %",
-                `Kelly 1/2: ${fmtNum(c.halfKellyPct, 1)}%`
-              )}
-
-              {/* Selector de Horizonte en Años */}
-              <div>
-                <span className="tnum block text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] mb-1.5 font-medium">
-                  {es ? "Horizonte Temporal:" : "Time Horizon:"}
-                </span>
-                <div className="grid grid-cols-5 gap-1">
-                  {HORIZON_CHIPS.map((y) => {
-                    const active = years === y;
-                    return (
-                      <button
-                        key={y}
-                        type="button"
-                        onClick={() => {
-                          onManualParamChange();
-                          setYears(y);
-                        }}
-                        className="py-1 text-[11px] font-mono rounded-[2px] transition-all cursor-pointer"
+                      }}
+                    >
+                      <div
+                        className="text-[11px] font-mono font-semibold"
                         style={{
-                          background: active
-                            ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                            : "transparent",
-                          color: active ? "rgb(var(--accent-base))" : "var(--ink-2)",
-                          border: active
-                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 40%, transparent)"
-                            : "1px solid rgb(var(--divider) / 0.12)",
-                          fontWeight: active ? 700 : 400,
+                          color: reinvestMode === "compound" ? "rgb(var(--accent-base))" : "var(--ink)",
                         }}
                       >
-                        {y} {es ? (y === 1 ? "año" : "años") : (y === 1 ? "yr" : "yrs")}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                        {es ? "Interés Compuesto" : "Compounding"}
+                      </div>
+                      <div className="text-[9px] text-[var(--ink-3)] leading-tight mt-0.5">
+                        {es ? "Escala con el capital" : "Scales with equity"}
+                      </div>
+                    </button>
 
-              {/* Selector de Modo de Reinversión */}
-              <div className="pt-2 border-t border-[rgb(var(--divider)/0.06)]">
-                <span className="tnum block text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] mb-1.5 font-medium">
-                  {es ? "Modelo de Reinversión:" : "Reinvestment Model:"}
-                </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setReinvestMode("compound")}
-                    className="p-2 text-left rounded-[2px] transition-all cursor-pointer"
-                    style={{
-                      background:
-                        reinvestMode === "compound"
-                          ? "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)"
-                          : "transparent",
-                      border:
-                        reinvestMode === "compound"
-                          ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)"
-                          : "1px solid rgb(var(--divider) / 0.10)",
-                    }}
-                  >
-                    <div
-                      className="text-[11px] font-mono font-semibold"
+                    <button
+                      type="button"
+                      onClick={() => setReinvestMode("linear")}
+                      className="p-2 text-left rounded-[2px] transition-all cursor-pointer"
                       style={{
-                        color: reinvestMode === "compound" ? "rgb(var(--accent-base))" : "var(--ink)",
+                        background:
+                          reinvestMode === "linear"
+                            ? "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)"
+                            : "transparent",
+                        border:
+                          reinvestMode === "linear"
+                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)"
+                            : "1px solid rgb(var(--divider) / 0.10)",
                       }}
                     >
-                      {es ? "Interés Compuesto" : "Compounding"}
-                    </div>
-                    <div className="text-[9.5px] text-[var(--ink-3)] leading-tight mt-0.5">
-                      {es ? "El tamaño escala con el balance" : "Size scales with equity"}
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setReinvestMode("linear")}
-                    className="p-2 text-left rounded-[2px] transition-all cursor-pointer"
-                    style={{
-                      background:
-                        reinvestMode === "linear"
-                          ? "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)"
-                          : "transparent",
-                      border:
-                        reinvestMode === "linear"
-                          ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)"
-                          : "1px solid rgb(var(--divider) / 0.10)",
-                    }}
-                  >
-                    <div
-                      className="text-[11px] font-mono font-semibold"
-                      style={{
-                        color: reinvestMode === "linear" ? "rgb(var(--accent-base))" : "var(--ink)",
-                      }}
-                    >
-                      {es ? "Retiro de PnL / Fijo" : "Fixed / Withdrawal"}
-                    </div>
-                    <div className="text-[9.5px] text-[var(--ink-3)] leading-tight mt-0.5">
-                      {es ? "Riesgo fijo en base inicial" : "Fixed risk on starting cap"}
-                    </div>
-                  </button>
+                      <div
+                        className="text-[11px] font-mono font-semibold"
+                        style={{
+                          color: reinvestMode === "linear" ? "rgb(var(--accent-base))" : "var(--ink)",
+                        }}
+                      >
+                        {es ? "Retiro de PnL / Fijo" : "Fixed / Withdrawal"}
+                      </div>
+                      <div className="text-[9px] text-[var(--ink-3)] leading-tight mt-0.5">
+                        {es ? "Riesgo fijo en base" : "Fixed on starting"}
+                      </div>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-
           </div>
 
           {/* ══════════ COLUMNA DERECHA: TERMINAL CUANTITATIVO (7 cols) ══════════ */}
-          <div className="lg:col-span-7 space-y-5">
-            
-            {/* Tarjeta Principal del Terminal */}
+          <div className="lg:col-span-7 flex flex-col">
             <div
-              className="tj-paper tj-paper-glow p-6 rounded-[3px] border border-[rgb(var(--divider)/0.14)] relative overflow-hidden"
+              className="tj-paper tj-paper-glow p-4 sm:p-5 rounded-[3px] border border-[rgb(var(--divider)/0.14)] space-y-4 flex-1 flex flex-col justify-between"
               style={{
-                background:
-                  "radial-gradient(ellipse at top right, color-mix(in oklab, rgb(var(--accent-base)) 4%, transparent), transparent 70%), color-mix(in oklab, var(--surface-2) 65%, transparent)",
+                background: "color-mix(in oklab, var(--surface-2) 55%, transparent)",
               }}
             >
-              {/* Encabezado del Terminal: Expectancy & Live Status */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[rgb(var(--divider)/0.10)]">
-                <div>
-                  <div className="tnum flex items-center gap-2" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 600 }}>
+              {/* Encabezado: Expectancy & Live Status */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-[rgb(var(--divider)/0.10)]">
+                <div className="min-w-0">
+                  <div className="tnum flex items-center gap-2 text-[10px] tracking-wider uppercase font-semibold text-[var(--ink-3)]">
                     <span>{es ? "EXPECTANCY NETA POR OPERACIÓN" : "NET EXPECTANCY PER TRADE"}</span>
                     <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))] animate-pulse" />
                   </div>
-                  <div className="flex items-baseline gap-3 mt-1">
+                  <div className="flex items-baseline gap-2 mt-1">
                     <span
-                      className="tnum font-mono text-3xl sm:text-4xl font-bold tracking-tight"
+                      className="tnum font-mono text-2xl sm:text-3xl font-bold tracking-tight whitespace-nowrap"
                       style={{
                         color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                       }}
@@ -1104,16 +1037,16 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       {c.netExpectancyR >= 0 ? "+" : ""}
                       {fmtNum(c.netExpectancyR, 3)} R
                     </span>
-                    <span className="tnum font-mono text-sm" style={{ color: "var(--ink-2)" }}>
+                    <span className="tnum font-mono text-xs whitespace-nowrap" style={{ color: "var(--ink-2)" }}>
                       ≈ {fmtUsd(c.expectancyUsdInitial)} / {es ? "op." : "trade"}
                     </span>
                   </div>
                 </div>
 
                 {/* Badge de Convicción */}
-                <div className="text-right sm:text-right">
+                <div className="text-left sm:text-right">
                   <div
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-[2px] text-xs font-mono font-semibold"
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[2px] text-[10.5px] font-mono font-semibold"
                     style={{
                       background: c.hasEdge
                         ? "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)"
@@ -1124,17 +1057,19 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         : "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 35%, transparent)",
                     }}
                   >
-                    <span className="w-2 h-2 rounded-full" style={{ background: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
-                    {c.hasEdge
-                      ? es
-                        ? "EDGE POSITIVO · MODELO SOSTENIBLE"
-                        : "POSITIVE EDGE · SUSTAINABLE"
-                      : es
-                      ? "EXPECTANCY NEGATIVA · SIN VENTAJA"
-                      : "NEGATIVE EXPECTANCY · NO EDGE"}
+                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
+                    <span>
+                      {c.hasEdge
+                        ? es
+                          ? "EDGE POSITIVO · SOSTENIBLE"
+                          : "POSITIVE EDGE · SUSTAINABLE"
+                        : es
+                        ? "EXPECTANCY NEGATIVA"
+                        : "NEGATIVE EXPECTANCY"}
+                    </span>
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-1">
-                    {es ? "Generación teórica anual:" : "Theoretical yearly generation:"}{" "}
+                  <div className="text-[9.5px] text-[var(--ink-3)] font-mono mt-0.5">
+                    {es ? "Generación teórica anual:" : "Yearly theoretical:"}{" "}
                     <span className="text-[var(--ink)] font-semibold">{fmtUsd(c.yearlyUsdInitial)}</span>
                   </div>
                 </div>
@@ -1143,7 +1078,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               {/* Alerta si no hay edge */}
               {!c.hasEdge && (
                 <div
-                  className="mt-4 p-3 rounded-[2px] text-xs font-mono leading-relaxed"
+                  className="p-2.5 rounded-[2px] text-xs font-mono leading-relaxed"
                   style={{
                     background: "color-mix(in oklab, rgb(var(--pnl-neg)) 12%, transparent)",
                     border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 35%, transparent)",
@@ -1153,39 +1088,39 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 >
                   ⚠{" "}
                   {es
-                    ? "Tu esperanza matemática neta es negativa: el interés compuesto y la frecuencia de operaciones jugarán en tu contra. Ajusta tu ratio R o win rate antes de apalancar."
-                    : "Your net mathematical expectancy is negative: compounding and trade volume will amplify losses. Adjust your R ratio or win rate before scaling."}
+                    ? "Tu esperanza matemática neta es negativa: el interés compuesto jugará en tu contra. Ajusta tu ratio R o win rate antes de apalancar."
+                    : "Your net expectancy is negative: compounding works against you. Adjust R ratio or win rate before scaling."}
                 </div>
               )}
 
-              {/* Selector de Pestaña: Gráfico Interactivo vs Tabla Año a Año */}
-              <div className="flex items-center justify-between mt-5 mb-3">
-                <div className="flex items-center gap-1.5 p-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)]">
+              {/* Selector de Pestaña */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+                <div className="flex items-center gap-1 p-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)]">
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}
-                    className="px-3 py-1 rounded-[2px] text-xs font-mono transition-all cursor-pointer"
+                    className="px-2.5 py-1 rounded-[2px] text-[11px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "chart" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "chart" ? "var(--ink)" : "var(--ink-3)",
                       fontWeight: viewTab === "chart" ? 600 : 400,
-                      boxShadow: viewTab === "chart" ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
                     }}
                   >
-                    📈 {es ? "Curva y Varianza" : "Curve & Variance"}
+                    <LineChart className="w-3.5 h-3.5" />
+                    <span>{es ? "Curva y Varianza" : "Curve & Variance"}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setViewTab("table")}
-                    className="px-3 py-1 rounded-[2px] text-xs font-mono transition-all cursor-pointer"
+                    className="px-2.5 py-1 rounded-[2px] text-[11px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "table" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "table" ? "var(--ink)" : "var(--ink-3)",
                       fontWeight: viewTab === "table" ? 600 : 400,
-                      boxShadow: viewTab === "table" ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
                     }}
                   >
-                    📋 {es ? "Matriz Año a Año" : "Yearly Matrix"}
+                    <Table className="w-3.5 h-3.5" />
+                    <span>{es ? "Matriz Anual" : "Yearly Matrix"}</span>
                   </button>
                 </div>
 
@@ -1193,7 +1128,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   <button
                     type="button"
                     onClick={() => setShowConfidenceCone(!showConfidenceCone)}
-                    className="text-[10.5px] font-mono px-2.5 py-1 rounded-[2px] transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="text-[10.5px] font-mono px-2 py-0.5 rounded-[2px] transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: showConfidenceCone
                         ? "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)"
@@ -1203,45 +1138,45 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     }}
                   >
                     <span
-                      className="w-2 h-2 rounded-sm"
+                      className="w-2 h-2 rounded-[1px]"
                       style={{
                         background: showConfidenceCone ? "rgb(var(--accent-base))" : "transparent",
                         border: "1px solid rgb(var(--accent-base))",
                       }}
                     />
-                    {es ? "Cono 80% Varianza" : "80% Variance Cone"}
+                    <span>{es ? "Cono 80% Varianza" : "80% Variance Cone"}</span>
                   </button>
                 )}
               </div>
 
-              {/* VISTA 1: Gráfico Interactivo de Alta Resolución */}
+              {/* VISTA 1: Gráfico Interactivo */}
               {viewTab === "chart" && (
-                <div className="relative">
+                <div className="space-y-1.5">
                   {/* Tooltip Dinámico Scrubber */}
                   <div
-                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 mb-2 rounded-[2px] border border-[rgb(var(--divider)/0.12)] font-mono text-xs"
+                    className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-[2px] border border-[rgb(var(--divider)/0.12)] font-mono text-xs"
                     style={{ background: "color-mix(in oklab, var(--surface-2) 75%, transparent)" }}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-[var(--ink-3)] uppercase tracking-wider text-[10px]">
-                        {es ? "Hito Inspeccionado:" : "Inspected Milestone:"}
+                    <div className="flex items-center gap-2">
+                      <span className="text-[var(--ink-3)] uppercase tracking-wider text-[9px]">
+                        {es ? "Hito:" : "Milestone:"}
                       </span>
-                      <span className="font-bold text-[rgb(var(--accent-base))]">
+                      <span className="font-bold text-[rgb(var(--accent-base))] text-[11.5px]">
                         {activePoint.year === 0
                           ? es
-                            ? "Inicio (Mes 0)"
-                            : "Start (Month 0)"
-                          : `${es ? "Año" : "Year"} ${activePoint.year} (${activePoint.month} ${es ? "meses" : "mo"} · ${activePoint.trades} trades)`}
+                            ? "Inicio"
+                            : "Start"
+                          : `${es ? "Año" : "Year"} ${activePoint.year} (${activePoint.trades} trades)`}
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 text-[11.5px]">
                       <div>
-                        <span className="text-[var(--ink-3)] text-[10px] mr-1">{es ? "Capital:" : "Equity:"}</span>
+                        <span className="text-[var(--ink-3)] text-[9.5px] mr-1">{es ? "Capital:" : "Equity:"}</span>
                         <span className="font-bold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
                       </div>
                       <div>
-                        <span className="text-[var(--ink-3)] text-[10px] mr-1">{es ? "PnL Neto:" : "Net PnL:"}</span>
+                        <span className="text-[var(--ink-3)] text-[9.5px] mr-1">PnL:</span>
                         <span
                           className="font-bold"
                           style={{
@@ -1256,7 +1191,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     </div>
                   </div>
 
-                  {/* SVG Chart con Rejilla y Crosshair */}
+                  {/* SVG Chart */}
                   <div
                     className="relative cursor-crosshair touch-none select-none rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.10)]"
                     style={{ background: "color-mix(in oklab, var(--surface-2) 30%, transparent)" }}
@@ -1274,20 +1209,20 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       viewBox={`0 0 ${svgW} ${svgH}`}
                       className="w-full"
                       style={{ height: "auto", display: "block" }}
-                      aria-label={es ? "Gráfico interactivo de proyección de capital" : "Interactive equity projection chart"}
+                      aria-label={es ? "Gráfico interactivo de proyección" : "Interactive projection chart"}
                     >
                       <defs>
                         <linearGradient id="eq-area-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.30" />
+                          <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.28" />
                           <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.01" />
                         </linearGradient>
                         <linearGradient id="eq-cone-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.12" />
-                          <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.04" />
+                          <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.10" />
+                          <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.03" />
                         </linearGradient>
                       </defs>
 
-                      {/* Rejilla de Fondo Horizontal */}
+                      {/* Rejilla Horizontal con Labels a la Izquierda */}
                       {chartData.gridYValues.map((gy, idx) => (
                         <g key={idx}>
                           <line
@@ -1300,8 +1235,8 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                             strokeWidth="0.8"
                           />
                           <text
-                            x={svgW - padRight}
-                            y={gy.y - 4}
+                            x={padLeft - 6}
+                            y={gy.y + 3}
                             textAnchor="end"
                             fill="var(--ink-3)"
                             fontSize="8.5"
@@ -1332,14 +1267,14 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                             fill="var(--ink-3)"
                             fontSize="9"
                             fontFamily="monospace"
-                            className="tnum font-medium"
+                            className="tnum"
                           >
-                            {gx.year === 0 ? (es ? "Inicio" : "Start") : `${es ? "A" : "Y"}${gx.year}`}
+                            {gx.year === 0 ? (es ? "Inicio" : "Start") : `A${gx.year}`}
                           </text>
                         </g>
                       ))}
 
-                      {/* Cono de Confianza / Varianza */}
+                      {/* Cono de Confianza */}
                       {showConfidenceCone && chartData.conePath && (
                         <path
                           d={chartData.conePath}
@@ -1350,7 +1285,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         />
                       )}
 
-                      {/* Relleno de Área & Línea de Curva Principal */}
+                      {/* Relleno & Curva Principal */}
                       <path d={chartData.areaPath} fill="url(#eq-area-grad)" />
                       <path
                         d={chartData.medianPath}
@@ -1371,7 +1306,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         strokeWidth="1"
                       />
 
-                      {/* Crosshair Interactivo */}
+                      {/* Crosshair */}
                       {activeCoord && (
                         <g>
                           <line
@@ -1386,19 +1321,10 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                           <circle
                             cx={activeCoord.x}
                             cy={activeCoord.y}
-                            r="5"
+                            r="4.5"
                             fill="rgb(var(--accent-base))"
                             stroke="var(--surface-2)"
                             strokeWidth="2"
-                          />
-                          <circle
-                            cx={activeCoord.x}
-                            cy={activeCoord.y}
-                            r="9"
-                            fill="none"
-                            stroke="rgb(var(--accent-base))"
-                            strokeOpacity="0.4"
-                            strokeWidth="1.5"
                           />
                         </g>
                       )}
@@ -1407,20 +1333,20 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
               )}
 
-              {/* VISTA 2: Matriz Año a Año (Desglose Institucional) */}
+              {/* VISTA 2: Matriz Anual */}
               {viewTab === "table" && (
                 <div className="overflow-x-auto rounded-[2px] border border-[rgb(var(--divider)/0.10)]">
                   <table className="w-full text-left font-mono text-xs">
                     <thead>
                       <tr
-                        className="border-b border-[rgb(var(--divider)/0.12)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]"
+                        className="border-b border-[rgb(var(--divider)/0.12)] text-[9.5px] uppercase tracking-wider text-[var(--ink-3)]"
                         style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
                       >
-                        <th className="py-2.5 px-3">{es ? "Año" : "Year"}</th>
-                        <th className="py-2.5 px-3 text-right">{es ? "Balance Inicial" : "Start Bal"}</th>
-                        <th className="py-2.5 px-3 text-right">{es ? "PnL Anual" : "Year PnL"}</th>
-                        <th className="py-2.5 px-3 text-right">{es ? "Retorno %" : "Return %"}</th>
-                        <th className="py-2.5 px-3 text-right">{es ? "Balance Final" : "End Bal"}</th>
+                        <th className="py-1.5 px-2.5">{es ? "Año" : "Year"}</th>
+                        <th className="py-1.5 px-2.5 text-right">{es ? "Balance Inicial" : "Start Bal"}</th>
+                        <th className="py-1.5 px-2.5 text-right">{es ? "PnL Anual" : "Year PnL"}</th>
+                        <th className="py-1.5 px-2.5 text-right">{es ? "Retorno %" : "Return %"}</th>
+                        <th className="py-1.5 px-2.5 text-right">{es ? "Balance Final" : "End Bal"}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[rgb(var(--divider)/0.06)]">
@@ -1429,14 +1355,14 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                           key={row.year}
                           className="hover:bg-[rgb(var(--divider)/0.04)] transition-colors"
                         >
-                          <td className="py-2.5 px-3 font-semibold text-[rgb(var(--accent-base))]">
+                          <td className="py-1.5 px-2.5 font-semibold text-[rgb(var(--accent-base))]">
                             {es ? "Año" : "Year"} {row.year}
                           </td>
-                          <td className="py-2.5 px-3 text-right text-[var(--ink-2)]">
+                          <td className="py-1.5 px-2.5 text-right text-[var(--ink-2)]">
                             {fmtUsd(row.startBal)}
                           </td>
                           <td
-                            className="py-2.5 px-3 text-right font-medium"
+                            className="py-1.5 px-2.5 text-right font-medium"
                             style={{
                               color: row.yearProfit >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                             }}
@@ -1445,7 +1371,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                             {fmtUsd(row.yearProfit)}
                           </td>
                           <td
-                            className="py-2.5 px-3 text-right font-medium"
+                            className="py-1.5 px-2.5 text-right font-medium"
                             style={{
                               color:
                                 row.yearReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
@@ -1453,7 +1379,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                           >
                             {fmtPct(row.yearReturnPct, 1)}
                           </td>
-                          <td className="py-2.5 px-3 text-right font-bold text-[var(--ink)]">
+                          <td className="py-1.5 px-2.5 text-right font-bold text-[var(--ink)]">
                             {fmtUsd(row.endBal)}
                           </td>
                         </tr>
@@ -1463,54 +1389,50 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
               )}
 
-              {/* Matriz de KPIs Institucionales (6 Bloques de Alta Densidad) */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-5">
-                
-                {/* KPI 1: Balance Final */}
+              {/* Matriz de KPIs (6 Bloques) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <div
-                  className="p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)] transition-all hover:border-[rgb(var(--accent-base)/0.40)]"
+                  className="p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)]"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
                 >
-                  <div className="tnum text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
-                    {es ? "Balance Final Proyectado" : "Final Projected Balance"}
+                  <div className="tnum text-[9px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                    {es ? "Balance Proyectado" : "Projected Balance"}
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[rgb(var(--accent-base))]">
+                  <div className="tnum text-base sm:text-lg font-mono font-bold mt-0.5 text-[rgb(var(--accent-base))]">
                     {fmtUsd(c.finalBalance)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
-                    {startBalance > 0 ? `${(c.finalBalance / startBalance).toFixed(1)}x capital base` : ""}
+                  <div className="text-[9.5px] text-[var(--ink-3)] font-mono mt-0.2">
+                    {startBalance > 0 ? `${(c.finalBalance / startBalance).toFixed(1)}x capital` : ""}
                   </div>
                 </div>
 
-                {/* KPI 2: CAGR */}
                 <div
-                  className="p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)] transition-all hover:border-[rgb(var(--accent-base)/0.40)]"
+                  className="p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)]"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
                 >
-                  <div className="tnum text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                  <div className="tnum text-[9px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     CAGR ({es ? "Tasa Anual" : "Annual Rate"})
                   </div>
                   <div
-                    className="tnum text-lg sm:text-xl font-mono font-bold mt-1"
+                    className="tnum text-base sm:text-lg font-mono font-bold mt-0.5"
                     style={{ color: c.cagr >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
                     {fmtPct(c.cagr * 100, 1)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
-                    {es ? "Crecimiento geométrico" : "Geometric compound rate"}
+                  <div className="text-[9.5px] text-[var(--ink-3)] font-mono mt-0.2">
+                    {es ? "Crecimiento geométrico" : "Geometric compound"}
                   </div>
                 </div>
 
-                {/* KPI 3: Retorno Total % */}
                 <div
-                  className="p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)] transition-all hover:border-[rgb(var(--accent-base)/0.40)]"
+                  className="p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)]"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
                 >
-                  <div className="tnum text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                  <div className="tnum text-[9px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Retorno Total / PnL" : "Total Return / PnL"}
                   </div>
                   <div
-                    className="tnum text-lg sm:text-xl font-mono font-bold mt-1"
+                    className="tnum text-base sm:text-lg font-mono font-bold mt-0.5"
                     style={{
                       color: c.totalReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                     }}
@@ -1518,94 +1440,88 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     {c.totalReturnPct >= 0 ? "+" : ""}
                     {fmtPct(c.totalReturnPct, 0)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[9.5px] text-[var(--ink-3)] font-mono mt-0.2">
                     {c.finalNetProfit >= 0 ? "+" : ""}
                     {fmtUsd(c.finalNetProfit, true)} net
                   </div>
                 </div>
 
-                {/* KPI 4: Max Drawdown 99% */}
                 <div
-                  className="p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)] transition-all hover:border-[rgb(var(--accent-base)/0.40)]"
+                  className="p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)]"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
                 >
-                  <div className="tnum text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                  <div className="tnum text-[9px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Max DD Est. (99% Conf.)" : "Est. Max DD (99% Conf.)"}
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[rgb(var(--pnl-neg))]">
+                  <div className="tnum text-base sm:text-lg font-mono font-bold mt-0.5 text-[rgb(var(--pnl-neg))]">
                     -{fmtPct(c.estMaxDDpct, 1)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[9.5px] text-[var(--ink-3)] font-mono mt-0.2">
                     {es ? `Racha peor: ~${c.maxConsecLosses} pérdidas` : `Streak: ~${c.maxConsecLosses} losses`}
                   </div>
                 </div>
 
-                {/* KPI 5: Tiempo para Duplicar */}
                 <div
-                  className="p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)] transition-all hover:border-[rgb(var(--accent-base)/0.40)]"
+                  className="p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)]"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
                 >
-                  <div className="tnum text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                  <div className="tnum text-[9px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Tiempo para Duplicar" : "Time to Double (2x)"}
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[var(--ink)]">
+                  <div className="tnum text-base sm:text-lg font-mono font-bold mt-0.5 text-[var(--ink)]">
                     {c.monthsToDouble !== null
                       ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "mo"}`
                       : "—"}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[9.5px] text-[var(--ink-3)] font-mono mt-0.2">
                     {c.monthsToDouble !== null
-                      ? `≈ ${(c.monthsToDouble / 12).toFixed(1)} ${es ? "años" : "years"}`
-                      : es ? "Sin crecimiento positivo" : "No positive growth"}
+                      ? `≈ ${(c.monthsToDouble / 12).toFixed(1)} ${es ? "años" : "yrs"}`
+                      : es ? "Sin crecimiento" : "No growth"}
                   </div>
                 </div>
 
-                {/* KPI 6: Profit Factor & Half Kelly */}
                 <div
-                  className="p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)] transition-all hover:border-[rgb(var(--accent-base)/0.40)]"
+                  className="p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.10)]"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
                 >
-                  <div className="tnum text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                  <div className="tnum text-[9px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     Profit Factor / Kelly
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[var(--ink)]">
+                  <div className="tnum text-base sm:text-lg font-mono font-bold mt-0.5 text-[var(--ink)]">
                     {fmtNum(c.profitFactor, 2)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[9.5px] text-[var(--ink-3)] font-mono mt-0.2">
                     {es ? `Sugerido: ${fmtNum(c.halfKellyPct, 1)}% riesgo` : `Rec: ${fmtNum(c.halfKellyPct, 1)}% risk`}
                   </div>
                 </div>
-
               </div>
 
-              {/* Barra de Acciones: Copiar Resumen */}
-              <div className="mt-5 pt-4 border-t border-[rgb(var(--divider)/0.10)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-mono text-[var(--ink-3)]">
-                    {es ? "Modelo estocástico determinista con cono de varianza." : "Deterministic stochastic model with variance cone."}
-                  </span>
-                </div>
+              {/* Botón de Copiar Resumen */}
+              <div className="pt-2.5 border-t border-[rgb(var(--divider)/0.10)] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <span className="text-[10px] font-mono text-[var(--ink-3)]">
+                  {es ? "Modelo cuantitativo con cono de varianza." : "Quantitative model with variance cone."}
+                </span>
 
                 <button
                   type="button"
                   onClick={copySummary}
-                  className="px-4 py-2 rounded-[2px] text-xs font-mono font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  className="px-3 py-1.5 rounded-[2px] text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   style={{
                     background: copied
                       ? "rgb(var(--pnl-pos))"
-                      : "color-mix(in oklab, rgb(var(--accent-base)) 15%, transparent)",
+                      : "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
                     color: copied ? "#000" : "rgb(var(--accent-base))",
                     border: copied
                       ? "1px solid rgb(var(--pnl-pos))"
-                      : "1px solid color-mix(in oklab, rgb(var(--accent-base)) 40%, transparent)",
+                      : "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
                   }}
                 >
-                  <span>{copied ? "✓" : "📋"}</span>
+                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>
                     {copied
                       ? es
-                        ? "¡Resumen Copiado al Portapapeles!"
-                        : "Summary Copied to Clipboard!"
+                        ? "¡Copiado al Portapapeles!"
+                        : "Copied to Clipboard!"
                       : es
                       ? "Copiar Resumen de Proyección"
                       : "Copy Projection Summary"}
@@ -1613,27 +1529,23 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </button>
               </div>
 
-              {/* Disclaimer Institucional */}
+              {/* Disclaimer */}
               <div
-                className="mt-4 p-3 rounded-[2px]"
+                className="p-2 rounded-[2px]"
                 style={{
                   background: "color-mix(in oklab, var(--surface-2) 30%, transparent)",
                   border: "1px solid rgb(var(--divider) / 0.08)",
                 }}
               >
-                <p className="tnum m-0 text-[10.5px] leading-relaxed text-[var(--ink-3)]">
+                <p className="tnum m-0 text-[9.5px] leading-relaxed text-[var(--ink-3)]">
                   {es
-                    ? "Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante y distribución estacionaria. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al 99 % de confianza estadística. No constituye asesoramiento financiero ni garantía de rendimiento."
-                    : "Statistical rigor notice: This projection assumes stationary distributions and constant expectancy. Real market regimes fluctuate and drawdown clusters can be larger. Estimated max drawdown reflects consecutive losing streaks at 99% statistical confidence. Does not constitute financial advice or profit guarantees."}
+                    ? "Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al 99 % de confianza estadística."
+                    : "Statistical note: This projection assumes constant mathematical expectancy. In live trading, regimes shift and drawdowns may be larger. Estimated max drawdown models streaks at 99% confidence."}
                 </p>
               </div>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
     </section>
   );
