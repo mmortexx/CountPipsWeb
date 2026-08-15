@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { useLang } from "@/lib/i18n";
-import { ProductPlate } from "@/components/tj/ProductPlate";
-import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 import { Link } from "@/components/tj/LocaleLink";
 import { asset } from "@/lib/asset";
-import { Monitor, Layout, ArrowRight, BarChart3, Calendar, ListFilter } from "lucide-react";
+import { ArrowRight, BarChart3, Calendar, ListFilter, Layout, Monitor } from "lucide-react";
 
 interface StudioSetup {
   id: "analitica" | "resumen" | "operaciones" | "playbook";
@@ -82,26 +80,12 @@ const STUDIO_SETUPS: StudioSetup[] = [
   },
 ];
 
-const PLATES_LIST = [
-  { key: "resumen", num: "I", labelEs: "Resumen", labelEn: "Overview" },
-  { key: "registro", num: "II", labelEs: "Registro", labelEn: "Logging" },
-  { key: "guardian", num: "III", labelEs: "Guardián", labelEn: "Guardian" },
-  { key: "operaciones", num: "IV", labelEs: "Operaciones", labelEn: "Trades" },
-  { key: "analitica", num: "V", labelEs: "Analítica", labelEn: "Analytics" },
-  { key: "playbooks", num: "VI", labelEs: "Playbooks", labelEn: "Playbooks" },
-  { key: "diario", num: "VII", labelEs: "Diario", labelEn: "Journal" },
-];
-
 export function ProductShowcase() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  const [mode, setMode] = useState<"studio" | "software">("studio");
   const [activeStudioIndex, setActiveStudioIndex] = useState(0);
-  const [selectedPlateKey, setSelectedPlateKey] = useState<string>("resumen");
-
   const currentStudio = STUDIO_SETUPS[activeStudioIndex];
-  const currentLamina = LAMINAS_PRODUCTO[selectedPlateKey] ?? LAMINAS_PRODUCTO.resumen;
 
   return (
     <section
@@ -112,186 +96,121 @@ export function ProductShowcase() {
       <div className="mx-auto w-[var(--page-w)]">
         
         {/* Cabecera de Sección */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-          <div className="max-w-[54ch]">
-            <p className="t-label mb-3 text-tertiary">
-              {es ? "§ 02 — El entorno y el programa" : "§ 02 — The environment & software"}
-            </p>
-            <h2 id="producto-titulo" className="t-h2 mb-3">
-              {es ? "Esto es lo que abres cada mañana." : "This is what you open every morning."}
-            </h2>
-            <p className="t-body text-secondary mb-0">
-              {es
-                ? "Una estación de trabajo construida para la calma operativa, el rigor estadístico y la consistencia en cuentas propias y de fondeo."
-                : "A workstation engineered for trading discipline, statistical rigor, and consistency across personal and funded accounts."}
-            </p>
-          </div>
-
-          {/* Conmutador de Modo: Estudio Real vs Capturas UI */}
-          <div className="inline-flex p-1 rounded-[3px] bg-[rgb(var(--divider)/0.08)] border border-[rgb(var(--divider)/0.12)] self-start md:self-auto">
-            <button
-              type="button"
-              onClick={() => setMode("studio")}
-              className={`px-3 py-1.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
-                mode === "studio"
-                  ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
-                  : "text-secondary hover:text-primary"
-              }`}
-            >
-              <Monitor size={13} />
-              <span>{es ? "Entorno Real (Estudio)" : "Real Workspace (Studio)"}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setMode("software")}
-              className={`px-3 py-1.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer ${
-                mode === "software"
-                  ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
-                  : "text-secondary hover:text-primary"
-              }`}
-            >
-              <Layout size={13} />
-              <span>{es ? "Capturas de Software" : "Software UI"}</span>
-            </button>
-          </div>
+        <div className="max-w-[56ch] mb-8">
+          <p className="t-label mb-3 text-tertiary">
+            {es ? "§ 02 — El entorno de operativa" : "§ 02 — The trading workspace"}
+          </p>
+          <h2 id="producto-titulo" className="t-h2 mb-3">
+            {es ? "Esto es lo que abres cada mañana." : "This is what you open every morning."}
+          </h2>
+          <p className="t-body text-secondary mb-0">
+            {es
+              ? "Una estación de trabajo construida para la calma operativa, el rigor estadístico y la consistencia en cuentas propias y de fondeo."
+              : "A workstation engineered for trading discipline, statistical rigor, and consistency across personal and funded accounts."}
+          </p>
         </div>
 
-        {/* ══════════ MODO 1: FOTOGRAFÍAS DE ESTUDIO / WORKSPACE REAL ══════════ */}
-        {mode === "studio" && (
-          <div className="space-y-4">
-            {/* Barra de Pestañas de Estudio */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {STUDIO_SETUPS.map((setup, idx) => {
-                const active = activeStudioIndex === idx;
-                const Icon = setup.icon;
-                return (
-                  <button
-                    key={setup.id}
-                    type="button"
-                    onClick={() => setActiveStudioIndex(idx)}
-                    className={`h-9 px-3.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-                      active
-                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
-                        : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--surface-2)/0.5)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
-                    }`}
-                  >
-                    <Icon size={13} className={active ? "opacity-100" : "opacity-70"} />
-                    <span className="opacity-60">{setup.num}.</span>
-                    <span>{es ? setup.labelEs : setup.labelEn}</span>
-                  </button>
-                );
-              })}
-            </div>
+        {/* ══════════ FOTOGRAFÍAS DE ESTUDIO / WORKSPACE REAL ══════════ */}
+        <div className="space-y-4">
+          {/* Barra de Pestañas de Estudio */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {STUDIO_SETUPS.map((setup, idx) => {
+              const active = activeStudioIndex === idx;
+              const Icon = setup.icon;
+              return (
+                <button
+                  key={setup.id}
+                  type="button"
+                  onClick={() => setActiveStudioIndex(idx)}
+                  className={`h-9 px-3.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                    active
+                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
+                      : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--surface-2)/0.5)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
+                  }`}
+                >
+                  <Icon size={13} className={active ? "opacity-100" : "opacity-70"} />
+                  <span className="opacity-60">{setup.num}.</span>
+                  <span>{es ? setup.labelEs : setup.labelEn}</span>
+                </button>
+              );
+            })}
+          </div>
 
-            {/* Vitrina Fotográfica en Alta Definición */}
-            <div
-              className="relative rounded-[4px] border overflow-hidden shadow-2xl backdrop-blur-md"
-              style={{
-                borderColor: "rgb(var(--divider) / 0.18)",
-                background: "color-mix(in oklab, var(--surface-1) 85%, transparent)",
-                boxShadow: "0 25px 60px -15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
-              }}
-            >
-              {/* Imagen de Estudio con Carga Optimizada */}
-              <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-black/40">
-                <img
-                  src={asset(currentStudio.img)}
-                  alt={es ? currentStudio.titleEs : currentStudio.titleEn}
-                  className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-[1.01]"
-                  loading="eager"
-                />
+          {/* Vitrina Fotográfica en Alta Definición */}
+          <div
+            className="relative rounded-[4px] border overflow-hidden shadow-xl"
+            style={{
+              borderColor: "rgb(var(--divider) / 0.18)",
+              background: "var(--surface-1)",
+              boxShadow: "0 20px 45px -15px rgba(0,0,0,0.22)",
+            }}
+          >
+            {/* Imagen de Estudio con Carga Optimizada */}
+            <div className="relative aspect-[16/10] sm:aspect-[16/9] w-full overflow-hidden bg-black/40">
+              <img
+                src={asset(currentStudio.img)}
+                alt={es ? currentStudio.titleEs : currentStudio.titleEn}
+                className="w-full h-full object-cover object-center transition-transform duration-700 hover:scale-[1.01]"
+                loading="eager"
+              />
 
-                {/* Overlay sutil de iluminación en desktop */}
-                <div className="hidden md:block absolute inset-0 pointer-events-none bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+              {/* Overlay sutil de iluminación en desktop */}
+              <div className="hidden md:block absolute inset-0 pointer-events-none bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
 
-                {/* Ficha Descriptiva HUD en desktop (superpuesta abajo) */}
-                <div className="hidden md:block absolute bottom-0 inset-x-0 p-6 sm:p-7 text-white">
-                  <div className="max-w-3xl">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] text-[10.5px] font-mono font-bold">
-                        {currentStudio.num} · {es ? "SETUP EN PRODUCCIÓN" : "LIVE SETUP"}
-                      </span>
-                      {(es ? currentStudio.badgesEs : currentStudio.badgesEn).map((b, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-0.5 rounded-[2px] bg-black/60 backdrop-blur-md border border-white/15 text-[10.5px] font-mono text-white/90"
-                        >
-                          {b}
-                        </span>
-                      ))}
-                    </div>
-
-                    <h3 className="font-serif text-xl sm:text-2xl font-normal text-white m-0 tracking-tight">
-                      {es ? currentStudio.titleEs : currentStudio.titleEn}
-                    </h3>
-
-                    <p className="mt-1.5 mb-0 text-xs sm:text-sm text-white/80 leading-relaxed font-sans max-w-2xl">
-                      {es ? currentStudio.descEs : currentStudio.descEn}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Ficha Descriptiva en Móvil (debajo de la foto para máxima legibilidad) */}
-              <div className="block md:hidden p-4 border-t border-[rgb(var(--divider)/0.12)] bg-[var(--surface-2)]">
-                <div className="flex flex-wrap items-center gap-1.5 mb-2">
-                  <span className="px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] text-[10px] font-mono font-bold">
-                    {currentStudio.num} · {es ? "SETUP EN PRODUCCIÓN" : "LIVE SETUP"}
-                  </span>
-                  {(es ? currentStudio.badgesEs : currentStudio.badgesEn).slice(0, 2).map((b, i) => (
-                    <span
-                      key={i}
-                      className="px-1.5 py-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] border border-[rgb(var(--divider)/0.12)] text-[10px] font-mono text-[var(--ink-2)]"
-                    >
-                      {b}
+              {/* Ficha Descriptiva HUD en desktop */}
+              <div className="hidden md:block absolute bottom-0 inset-x-0 p-6 sm:p-7 text-white">
+                <div className="max-w-3xl">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className="px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] text-[10.5px] font-mono font-bold">
+                      {currentStudio.num} · {es ? "SETUP EN PRODUCCIÓN" : "LIVE SETUP"}
                     </span>
-                  ))}
+                    {(es ? currentStudio.badgesEs : currentStudio.badgesEn).map((b, i) => (
+                      <span
+                        key={i}
+                        className="px-2 py-0.5 rounded-[2px] bg-black/60 backdrop-blur-md border border-white/15 text-[10.5px] font-mono text-white/90"
+                      >
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+
+                  <h3 className="font-serif text-xl sm:text-2xl font-normal text-white m-0 tracking-tight">
+                    {es ? currentStudio.titleEs : currentStudio.titleEn}
+                  </h3>
+
+                  <p className="mt-1.5 mb-0 text-xs sm:text-sm text-white/80 leading-relaxed font-sans max-w-2xl">
+                    {es ? currentStudio.descEs : currentStudio.descEn}
+                  </p>
                 </div>
-
-                <h3 className="font-serif text-lg font-normal text-primary m-0 tracking-tight">
-                  {es ? currentStudio.titleEs : currentStudio.titleEn}
-                </h3>
-
-                <p className="mt-1 mb-0 text-xs text-secondary leading-relaxed font-sans">
-                  {es ? currentStudio.descEs : currentStudio.descEn}
-                </p>
               </div>
             </div>
-          </div>
-        )}
 
-        {/* ══════════ MODO 2: CAPTURAS DE SOFTWARE DIRECTAS ══════════ */}
-        {mode === "software" && (
-          <div className="space-y-6">
-            {/* Selector interactivo de láminas */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {PLATES_LIST.map((p) => {
-                const active = selectedPlateKey === p.key;
-                return (
-                  <button
-                    key={p.key}
-                    type="button"
-                    onClick={() => setSelectedPlateKey(p.key)}
-                    className={`h-8 px-3 rounded-[2px] text-xs font-mono transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
-                      active
-                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
-                        : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--surface-2)/0.5)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
-                    }`}
+            {/* Ficha Descriptiva en Móvil */}
+            <div className="block md:hidden p-4 border-t border-[rgb(var(--divider)/0.12)] bg-[var(--surface-2)]">
+              <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                <span className="px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] text-[10px] font-mono font-bold">
+                  {currentStudio.num} · {es ? "SETUP EN PRODUCCIÓN" : "LIVE SETUP"}
+                </span>
+                {(es ? currentStudio.badgesEs : currentStudio.badgesEn).slice(0, 2).map((b, i) => (
+                  <span
+                    key={i}
+                    className="px-1.5 py-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] border border-[rgb(var(--divider)/0.12)] text-[10px] font-mono text-[var(--ink-2)]"
                   >
-                    <span className="opacity-70">{p.num}.</span>
-                    <span>{es ? p.labelEs : p.labelEn}</span>
-                  </button>
-                );
-              })}
-            </div>
+                    {b}
+                  </span>
+                ))}
+              </div>
 
-            {/* Lámina activa */}
-            <div key={selectedPlateKey} className="transition-opacity duration-200">
-              <ProductPlate lamina={currentLamina} priority />
+              <h3 className="font-serif text-lg font-normal text-primary m-0 tracking-tight">
+                {es ? currentStudio.titleEs : currentStudio.titleEn}
+              </h3>
+
+              <p className="mt-1 mb-0 text-xs text-secondary leading-relaxed font-sans">
+                {es ? currentStudio.descEs : currentStudio.descEn}
+              </p>
             </div>
           </div>
-        )}
+        </div>
 
         {/* Enlace a la Demo */}
         <div className="mt-8 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-[rgb(var(--divider)/0.08)]">

@@ -643,11 +643,11 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
         {/* ══════════ COCKPIT INSTITUCIONAL ENCLOSURE ══════════ */}
         <div
-          className="w-full rounded-[4px] border overflow-hidden shadow-2xl backdrop-blur-xl"
+          className="w-full rounded-[4px] border overflow-hidden shadow-xl"
           style={{
-            borderColor: "rgb(var(--divider) / 0.20)",
-            background: "color-mix(in oklab, var(--surface-1) 85%, transparent)",
-            boxShadow: "0 20px 50px -10px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
+            borderColor: "rgb(var(--divider) / 0.18)",
+            background: "var(--surface-1)",
+            boxShadow: "0 15px 35px -10px rgba(0,0,0,0.12)",
           }}
         >
           {/* Barra Superior del Terminal (Titlebar) */}
@@ -658,14 +658,20 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               background: "color-mix(in oklab, var(--surface-2) 80%, transparent)",
             }}
           >
-            <div className="flex items-center gap-3">
-              <div className="flex gap-1.5" aria-hidden="true">
-                <span className="h-2.5 w-2.5 rounded-full bg-[rgb(var(--pnl-neg)/0.7)]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[rgb(var(--sig-amber)/0.7)]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[rgb(var(--pnl-pos)/0.7)]" />
-              </div>
-              <span className="text-[11px] font-mono tracking-wider font-semibold text-[var(--ink-2)]">
-                COUNTPIPS_QUANT · {es ? "MOTOR DE CAPITAL ESTOCÁSTICO" : "STOCHASTIC CAPITAL ENGINE"}
+            <div className="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                className="px-1.5 py-0.5 rounded-[2px] text-[9.5px] font-mono font-bold"
+                style={{
+                  background: "color-mix(in oklab, rgb(var(--accent-base)) 15%, transparent)",
+                  color: "rgb(var(--accent-base))",
+                  border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
+                }}
+              >
+                WINUI3
+              </span>
+              <span className="text-[11px] font-mono tracking-wider font-semibold text-[var(--ink)]">
+                COUNTPIPS · {es ? "MOTOR CUANTITATIVO DE CAPITAL" : "QUANTITATIVE CAPITAL ENGINE"}
               </span>
             </div>
 
@@ -722,6 +728,19 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               >
                 {es ? "Manual" : "Custom"}
               </button>
+
+              {/* Controles de Ventana Nativos Windows 11 */}
+              <div className="hidden sm:flex items-center gap-2.5 pl-2.5 border-l border-[rgb(var(--divider)/0.18)] text-[var(--ink-3)]" aria-hidden="true">
+                <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor" className="opacity-70">
+                  <rect width="10" height="1" />
+                </svg>
+                <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.1" className="opacity-70">
+                  <rect x="0.5" y="0.5" width="9" height="9" />
+                </svg>
+                <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.3" className="opacity-70">
+                  <path d="M1 1L9 9M9 1L1 9" />
+                </svg>
+              </div>
             </div>
           </div>
 

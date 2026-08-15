@@ -3,7 +3,6 @@
 import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight, Play } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { HeroCockpit } from "@/components/marketing/HeroCockpit";
 
 /**
  * Hero — sección `#top`.
@@ -334,9 +333,6 @@ export function Hero() {
             ))}
           </dl>
         </div>
-
-        {/* Live Institutional Cockpit */}
-        <HeroCockpit />
       </div>
 
       {/* El indicador "Scroll" se retiró: quedaba centrado en el borde
