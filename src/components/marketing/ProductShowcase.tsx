@@ -113,16 +113,47 @@ export function ProductShowcase() {
         {/* ══════════ FOTOGRAFÍAS DE ESTUDIO / WORKSPACE REAL ══════════ */}
         <div className="space-y-4">
           {/* Barra de Pestañas de Estudio */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div
+            role="tablist"
+            aria-label={es ? "Entornos de trading en producción" : "Live trading workspaces"}
+            className="flex items-center gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {STUDIO_SETUPS.map((setup, idx) => {
               const active = activeStudioIndex === idx;
               const Icon = setup.icon;
               return (
                 <button
                   key={setup.id}
+                  id={`studio-tab-${setup.id}`}
+                  role="tab"
+                  aria-selected={active}
+                  aria-controls="studio-panel"
+                  tabIndex={active ? 0 : -1}
                   type="button"
                   onClick={() => setActiveStudioIndex(idx)}
-                  className={`h-9 px-3.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
+                  onKeyDown={(e) => {
+                    if (e.key === "ArrowRight") {
+                      e.preventDefault();
+                      const next = (idx + 1) % STUDIO_SETUPS.length;
+                      setActiveStudioIndex(next);
+                      document.getElementById(`studio-tab-${STUDIO_SETUPS[next].id}`)?.focus();
+                    } else if (e.key === "ArrowLeft") {
+                      e.preventDefault();
+                      const prev = (idx - 1 + STUDIO_SETUPS.length) % STUDIO_SETUPS.length;
+                      setActiveStudioIndex(prev);
+                      document.getElementById(`studio-tab-${STUDIO_SETUPS[prev].id}`)?.focus();
+                    } else if (e.key === "Home") {
+                      e.preventDefault();
+                      setActiveStudioIndex(0);
+                      document.getElementById(`studio-tab-${STUDIO_SETUPS[0].id}`)?.focus();
+                    } else if (e.key === "End") {
+                      e.preventDefault();
+                      const last = STUDIO_SETUPS.length - 1;
+                      setActiveStudioIndex(last);
+                      document.getElementById(`studio-tab-${STUDIO_SETUPS[last].id}`)?.focus();
+                    }
+                  }}
+                  className={`h-9 px-3.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base))] ${
                     active
                       ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
                       : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--surface-2)/0.5)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
@@ -138,6 +169,9 @@ export function ProductShowcase() {
 
           {/* Vitrina Fotográfica en Alta Definición */}
           <div
+            id="studio-panel"
+            role="tabpanel"
+            aria-labelledby={`studio-tab-${currentStudio.id}`}
             className="relative rounded-[4px] border overflow-hidden shadow-xl"
             style={{
               borderColor: "rgb(var(--divider) / 0.18)",

@@ -160,6 +160,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                 <button
                   key={cat.id}
                   type="button"
+                  aria-pressed={activeCategory === cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                     activeCategory === cat.id

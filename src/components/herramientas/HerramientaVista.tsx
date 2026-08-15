@@ -55,6 +55,34 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
     <>
       <Componente num="01" />
 
+      {/* Cinta de Acceso Rápido entre las 7 Herramientas */}
+      <section className="border-t border-[rgb(var(--divider)/0.10)] bg-veil py-4">
+        <div className="tj-container">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
+            <span className="text-[11px] font-mono text-tertiary uppercase tracking-wider whitespace-nowrap pr-2">
+              {es ? "Herramientas:" : "Tools:"}
+            </span>
+            {HERRAMIENTAS.map((h, i) => {
+              const active = h.slug === herramienta.slug;
+              return (
+                <Link
+                  key={h.slug}
+                  href={`/herramientas/${h.slug}`}
+                  className={`h-8 px-3 rounded-[2px] text-[11.5px] font-mono transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                    active
+                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold"
+                      : "border border-[rgb(var(--divider)/0.15)] bg-[var(--surface-1)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
+                  }`}
+                >
+                  <span className="opacity-60">{String(i + 1).padStart(2, "0")}.</span>
+                  <span>{es ? h.tituloEs : h.tituloEn}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* Aviso obligado en una web de trading: estas calculadoras devuelven
           lo que se deduce de los números que introduce el visitante, y
           nada más. Sin esta línea, una herramienta que dice «arriesga

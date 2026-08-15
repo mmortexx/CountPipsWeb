@@ -1092,6 +1092,7 @@ export function Navbar() {
                   new KeyboardEvent("keydown", {
                     key: "k",
                     metaKey: true,
+                    ctrlKey: true,
                     bubbles: true,
                   }),
                 );

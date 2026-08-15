@@ -80,6 +80,7 @@ export function GlosarioIndice() {
             <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
               <button
                 type="button"
+                aria-pressed={activeCategory === "all"}
                 onClick={() => setActiveCategory("all")}
                 className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                   activeCategory === "all"
@@ -95,6 +96,7 @@ export function GlosarioIndice() {
                   <button
                     key={cat}
                     type="button"
+                    aria-pressed={activeCategory === cat}
                     onClick={() => setActiveCategory(cat)}
                     className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                       activeCategory === cat

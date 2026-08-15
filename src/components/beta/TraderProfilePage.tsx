@@ -122,6 +122,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <button
                   key={bal}
                   type="button"
+                  aria-pressed={propBalance === bal}
                   onClick={() => setPropBalance(bal)}
                   className={`h-9 px-4 rounded-[2px] text-xs font-semibold tnum transition-all ${
                     propBalance === bal
@@ -215,6 +216,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <button
                   key={s.id}
                   type="button"
+                  aria-pressed={manualSetup === s.id}
                   onClick={() => setManualSetup(s.id)}
                   className={`h-9 px-4 rounded-[2px] text-xs font-semibold transition-all ${
                     manualSetup === s.id
