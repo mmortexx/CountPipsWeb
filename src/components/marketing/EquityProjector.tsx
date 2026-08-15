@@ -683,6 +683,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   <button
                     key={p.id}
                     type="button"
+                    aria-pressed={active}
                     onClick={() => applyPreset(p.id)}
                     className="px-2.5 py-1 rounded-[2px] text-[11px] font-mono transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
                     style={{
@@ -711,6 +712,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
               <button
                 type="button"
+                aria-pressed={selectedPreset === "custom"}
                 onClick={() => setSelectedPreset("custom")}
                 className="px-2.5 py-1 rounded-[2px] text-[11px] font-mono transition-all cursor-pointer whitespace-nowrap"
                 style={{

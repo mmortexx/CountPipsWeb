@@ -167,6 +167,7 @@ export function SavingsCalculator() {
               {COUNTPIPS_PLANS.map((p) => (
                 <button
                   key={p.id}
+                  type="button"
                   onClick={() => setPlan(p.id)}
                   style={chipStyle(plan === p.id)}
                   aria-pressed={plan === p.id}
@@ -187,6 +188,7 @@ export function SavingsCalculator() {
               {altPresets.map((a) => (
                 <button
                   key={a.label}
+                  type="button"
                   onClick={() => setAltMonthly(a.v)}
                   style={chipStyle(altMonthly === a.v)}
                   aria-pressed={altMonthly === a.v}

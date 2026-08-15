@@ -58,6 +58,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
   const [inPlanExp, setInPlanExp] = useState(29.73);
   const [offPlanExp, setOffPlanExp] = useState(-38.47);
   const [copied, setCopied] = useState(false);
+  const [activePreset, setActivePreset] = useState<string>("custom");
 
   // Cálculos reactivos
   const offPlanTrades = Math.round((totalTrades * breachPct) / 100);
@@ -78,6 +79,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
   ], []);
 
   const aplicarPreset = (p: typeof PRESETS[0]) => {
+    setActivePreset(p.id);
     setTotalTrades(p.trades);
     setBreachPct(p.breachPct);
     setInPlanExp(p.inPlanExp);
@@ -160,16 +162,24 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 {es ? "Escenarios rápidos" : "Quick scenarios"}
               </span>
               <div className="flex flex-wrap gap-2">
-                {PRESETS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => aplicarPreset(p)}
-                    className="h-8 px-3 rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-[12.5px] font-medium text-secondary hover:text-primary transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-                  >
-                    {es ? p.nameEs : p.nameEn}
-                  </button>
-                ))}
+                {PRESETS.map((p) => {
+                  const active = activePreset === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() => aplicarPreset(p)}
+                      className={`h-8 px-3 rounded-[2px] text-[12.5px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                        active
+                          ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold shadow-sm"
+                          : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-secondary hover:text-primary"
+                      }`}
+                    >
+                      {es ? p.nameEs : p.nameEn}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
