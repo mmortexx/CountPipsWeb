@@ -535,7 +535,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
           </span>
           {badgeHint && (
             <span
-              className="text-[9px] font-mono px-1.5 py-0.2 rounded-[2px]"
+              className="text-[9.5px] font-mono px-1.5 py-0.2 rounded-[2px]"
               style={{
                 background: "color-mix(in oklab, var(--surface-2) 80%, transparent)",
                 color: "var(--ink-3)",
@@ -698,7 +698,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   >
                     <span>{es ? p.labelEs : p.labelEn}</span>
                     <span
-                      className="text-[9px] opacity-75 font-normal px-1 rounded-[1px]"
+                      className="text-[9.5px] opacity-75 font-normal px-1 rounded-[1px]"
                       style={{
                         background: active ? "rgba(0,0,0,0.15)" : "rgb(var(--divider) / 0.10)",
                       }}
