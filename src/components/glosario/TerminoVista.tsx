@@ -7,6 +7,7 @@ import {
   CATEGORIAS,
   HERRAMIENTA_DE,
   SEGUIR_LEYENDO,
+  FORMULAS_GLOSARIO,
   relacionados,
   vecinos,
   type TerminoGlosario,
@@ -55,11 +56,6 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
               <span className="text-tertiary">
                 {es ? "Familia:" : "Family:"}
               </span>
-              {/* `min-h-[44px]` y no el `py-1` de una etiqueta decorativa:
-                  esto es un enlace que lleva a su familia en el índice.
-                  Y no se libra por ser texto en línea —que eximiría a un
-                  enlace dentro de un párrafo— porque su contenedor es
-                  flex, y eso convierte al hijo en un bloque propio. */}
               <Link
                 href={`/glosario#${termino.category}`}
                 className="inline-flex min-h-[44px] items-center rounded-[2px] border px-3 font-medium transition-colors"
@@ -76,6 +72,24 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
               </span>
             </div>
           </Reveal>
+
+          {/* Fórmula Matemática Cuantitativa (si existe para el término) */}
+          {FORMULAS_GLOSARIO[termino.slug] && (
+            <Reveal delay={0.08}>
+              <div className="mt-7 p-4 rounded-[2px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]">
+                <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2 font-mono">
+                  <span>{es ? "Fórmula Cuantitativa" : "Quantitative Formula"}</span>
+                  <span className="text-[rgb(var(--accent-base))] font-semibold">LaTeX</span>
+                </div>
+                <div className="py-2 text-base md:text-lg font-mono font-bold text-primary tracking-wide text-center bg-[rgb(var(--divider)/0.03)] rounded border border-[rgb(var(--divider)/0.08)] mb-2">
+                  {FORMULAS_GLOSARIO[termino.slug].formula}
+                </div>
+                <p className="text-xs text-tertiary leading-relaxed m-0">
+                  <strong className="text-secondary">{es ? "Variables:" : "Variables:"}</strong> {es ? FORMULAS_GLOSARIO[termino.slug].variablesEs : FORMULAS_GLOSARIO[termino.slug].variablesEn}
+                </p>
+              </div>
+            </Reveal>
+          )}
 
           {/* La herramienta que lo calcula, si existe */}
           {herramienta && (

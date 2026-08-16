@@ -132,6 +132,9 @@
   --ease-suave: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-entrada-salida: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-menu-in: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-menu-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-drawer: cubic-bezier(0.16, 1, 0.3, 1);
 
   /* ══════════════════════════════════════════════════════════════
      Y LA CURVA DEL PROYECTO PASA A SER LA DE TODO
@@ -706,18 +709,42 @@
     }
   }
 
-  /* 3 · EL SCROLL QUE ARRASTRA LA PÁGINA DE DETRÁS.
-     Al llegar al final de un menú, un panel o una tabla con scroll
-     propio, el gesto SIGUE y se lleva la página entera. Es el defecto
-     que hace que un desplegable largo se sienta roto. Se corta la
-     cadena en todo lo que tenga scroll propio. */
-  [class*="overflow-y-auto"],
-  [class*="overflow-auto"],
-  [class*="overflow-x-auto"],
+  /* 3 · EL SCROLL QUE ARRASTRA LA PÁGINA DE DETRÁS — SOLO EN CAPAS
+     FLOTANTES.
+
+     La regla cubría antes «todo lo que tuviera scroll propio» con
+     `overscroll-behavior: contain`, y eso contenía DEMASIADO: en
+     Chromium una caja con `overflow-x-auto` —la tabla comparativa de
+     /pricing— recibe la rueda vertical, no puede desplazarse en ese
+     eje, y como «contiene», el gesto MUERE ahí. Medido: 0 px de página
+     por cada 600 px de rueda sobre la tabla; para seguir bajando había
+     que sacar el cursor de la caja. El visitante lo describe exactamente
+     así: el scroll se queda atrapado en los recuadros.
+
+     La distinción correcta no es «¿tiene scroll propio?» sino «¿es una
+     capa FLOTANTE sobre la página, o un panel INCORPORADO a ella?»:
+
+     · FLOTANTES (diálogos, menús, el cajón móvil, las paletas): aquí
+       sí se corta la cadena — que el gesto siga al fondo movería una
+       página que está velada detrás de una capa modal. Todos ellos
+       llevan `dialog`/`role="dialog"`/`role="menu"`, así que esos tres
+       selectores bastan; el cajón y las dos paletas incluidos.
+     · INCORPORADOS (tablas con scroll horizontal, paneles de la demo,
+       listas de la página): el scroll de la página es el principal; al
+       llegar al límite del panel, el gesto SE ENCADENA y sigue
+       bajando la página. Es el comportamiento por omisión, así que no
+       se declara nada — dejar de declarar ES el arreglo.
+
+     Lo único que se conserva de la contención en paneles es el eje X
+     de las cajas horizontales: que el final de una tabla no arrastre
+     nada en un eje en el que la página, de todas formas, no se mueve. */
   dialog,
   [role="dialog"],
   [role="menu"] {
     overscroll-behavior: contain;
+  }
+  [class*="overflow-x-auto"] {
+    overscroll-behavior-x: contain;
   }
 
   html {
@@ -5026,16 +5053,22 @@ svg [data-entra="sello"] {
    `animation-direction: reverse`, que reproduciría también la curva al
    revés — una entrada suave se despediría con un tirón al final. */
 .tj-velo-entra {
-  animation: tj-velo-in 0.18s var(--ease-suave, ease) both;
+  animation: tj-velo-in 0.18s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  will-change: opacity;
 }
 .tj-velo-sale {
-  animation: tj-velo-out 0.18s var(--ease-suave, ease) both;
+  animation: tj-velo-out 0.16s var(--ease-menu-out, cubic-bezier(0.2, 0, 0, 1)) both;
+  will-change: opacity;
 }
 .tj-panel-entra {
-  animation: tj-panel-in 0.2s var(--ease-suave, ease) both;
+  animation: tj-panel-in 0.18s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 .tj-panel-sale {
-  animation: tj-panel-out 0.16s var(--ease-suave, ease) both;
+  animation: tj-panel-out 0.14s var(--ease-menu-out, cubic-bezier(0.2, 0, 0, 1)) both;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 @keyframes tj-velo-in {
   from { opacity: 0; }
@@ -5046,12 +5079,12 @@ svg [data-entra="sello"] {
   to { opacity: 0; }
 }
 @keyframes tj-panel-in {
-  from { opacity: 0; transform: translate3d(0, -8px, 0) scale(0.98); }
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; transform: translate3d(0, -6px, 0) scale(0.985); }
+  to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
 }
 @keyframes tj-panel-out {
-  from { opacity: 1; transform: none; }
-  to { opacity: 0; transform: translate3d(0, -8px, 0) scale(0.98); }
+  from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+  to { opacity: 0; transform: translate3d(0, -4px, 0) scale(0.985); }
 }
 @media (prefers-reduced-motion: reduce) {
   .tj-velo-entra,
@@ -5757,19 +5790,22 @@ svg [data-entra="sello"] {
   }
 }
 
-/* Entrada de un desplegable anclado a su disparador: cae 4 px desde
-   arriba. Corta y plana — un menú de herramientas aparece, no rebota. */
+/* Entrada de un desplegable anclado a su disparador: micro-elevación institucional
+   y desvanecimiento acelerado por hardware (GPU 165Hz/120Hz/60Hz). */
 .tj-cae {
-  animation: tj-cae-corto 0.13s var(--ease-suave, ease) both;
+  animation: tj-menu-dropdown-in 0.16s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  will-change: transform, opacity;
+  transform-origin: top center;
+  backface-visibility: hidden;
 }
-@keyframes tj-cae-corto {
+@keyframes tj-menu-dropdown-in {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translate3d(0, -6px, 0) scale(0.985);
   }
   to {
     opacity: 1;
-    transform: none;
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -5779,40 +5815,41 @@ svg [data-entra="sello"] {
 }
 
 /* ── El cajón móvil y su velo ─────────────────────────────────────────
-   Los dos se quedan montados y conmutan visibilidad, al revés que el
-   megamenú: aquí la salida SÍ se ve —el cajón mide 300 px y se
-   desliza—, y desaparecer de golpe rompería el gesto en la pantalla
-   donde más se usa.
-
-   `visibility` entra en la transición con su retardo al cerrar, para
-   que espere a que el panel termine de salir. Sin eso, el cajón se
-   corta a mitad de camino. */
+   Deslizamiento lateral ultra-fluido acelerado por hardware.
+   El cajón y el velo transicionan con la curva institucional Fluent 2
+   sin generar layout thrashing ni competir con el canvas del fondo. */
 .tj-cajon {
-  transform: translateX(100%);
+  transform: translate3d(100%, 0, 0);
   visibility: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
+  contain: layout paint;
   transition:
-    transform 0.32s var(--ease-suave, ease),
-    visibility 0s linear 0.32s;
+    transform 0.28s var(--ease-drawer, cubic-bezier(0.16, 1, 0.3, 1)),
+    visibility 0s linear 0.28s;
 }
 .tj-cajon[data-visible="true"] {
-  transform: none;
+  transform: translate3d(0, 0, 0);
   visibility: visible;
   transition:
-    transform 0.32s var(--ease-suave, ease),
+    transform 0.28s var(--ease-drawer, cubic-bezier(0.16, 1, 0.3, 1)),
     visibility 0s;
 }
 .tj-velo {
   opacity: 0;
   visibility: hidden;
+  will-change: opacity;
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
   transition:
-    opacity 0.25s var(--ease-suave, ease),
-    visibility 0s linear 0.25s;
+    opacity 0.22s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)),
+    visibility 0s linear 0.22s;
 }
 .tj-velo[data-visible="true"] {
   opacity: 1;
   visibility: visible;
   transition:
-    opacity 0.25s var(--ease-suave, ease),
+    opacity 0.22s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)),
     visibility 0s;
 }
 @media (prefers-reduced-motion: reduce) {

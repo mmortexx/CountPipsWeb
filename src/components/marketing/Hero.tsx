@@ -3,6 +3,7 @@
 import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight, Play } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { HeroMicroCalcs } from "@/components/marketing/HeroMicroCalcs";
 
 /**
  * Hero — sección `#top`.
@@ -276,6 +277,12 @@ export function Hero() {
             </Link>
           </div>
         </div>
+
+        {/* Micro-calculadoras del hero: esperanza matemática y recuperación
+            de drawdown, con controles reales. Ver HeroMicroCalcs.tsx —
+            nacieron estáticas con un rótulo que prometía interactividad
+            que no existía; ahora calculan de verdad, en local. */}
+        <HeroMicroCalcs />
 
         {/* ---- Placa de especificaciones ----
             Sustituye a la fila de distintivos con puntos de acento. Cada

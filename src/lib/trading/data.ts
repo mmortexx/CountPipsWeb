@@ -53,6 +53,37 @@ export const INSTRUMENTS: Instrument[] = [
 ];
 
 /**
+ * Multiplicadores oficiales de contrato y tamaño de lote institucional.
+ * CME/NYMEX Futures (ES $50, NQ $20, MES $5, MNQ $2, RTY $50, GC $100, CL $1000, GER40 25€),
+ * Forex estándar (100.000 unidades) y spot/crypto (1:1).
+ */
+export const INSTRUMENT_MULTIPLIERS: Record<string, number> = {
+  "BTC/USDT": 1,
+  "ETH/USDT": 1,
+  "EURUSD": 100_000,
+  "XAU/USD": 100,
+  "AAPL": 1,
+  "ES": 50,
+  "NQ": 20,
+  "MES": 5,
+  "MNQ": 2,
+  "RTY": 50,
+  "GC": 100,
+  "CL": 1000,
+  "GER40": 25,
+};
+
+/** Obtiene el multiplicador financiero para un símbolo o clase de activo dada. */
+export function getInstrumentMultiplier(symbol: string, assetClass?: string): number {
+  if (INSTRUMENT_MULTIPLIERS[symbol] !== undefined) {
+    return INSTRUMENT_MULTIPLIERS[symbol];
+  }
+  if (assetClass === "forex") return 100_000;
+  if (assetClass === "futures") return 50;
+  return 1;
+}
+
+/**
  * Los cinco setups del catálogo, por su CLAVE — no por su rótulo.
  *
  * ── Por qué la clave está en inglés ───────────────────────────────────
@@ -322,6 +353,7 @@ export interface Metrics {
   sharpe: number;
   sortino: number;
   calmar: number;
+  omega: number;
   recoveryFactor: number;
   maxWinStreak: number;
   maxLossStreak: number;
@@ -468,6 +500,7 @@ export function computeMetrics(trades: Trade[]): Metrics {
     sharpe,
     sortino,
     calmar,
+    omega: grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 100 : 0,
     recoveryFactor,
     maxWinStreak: maxWin,
     maxLossStreak: maxLoss,
@@ -482,6 +515,129 @@ export function computeMetrics(trades: Trade[]): Metrics {
     roiPct: (bal - INITIAL_BALANCE) / INITIAL_BALANCE,
   };
 }
+
+/**
+ * Calcula la ganancia requerida para recuperar una caída (drawdown) dada.
+ * Fórmula: R_req = dd / (1 - dd)
+ * Ejemplos: 10% -> 11.11%, 20% -> 25%, 50% -> 100%
+ */
+export function drawdownRecoveryRequired(ddPct: number): number {
+  if (ddPct <= 0) return 0;
+  if (ddPct >= 100 || (ddPct >= 1 && ddPct < 2 && ddPct === 1)) return Infinity;
+  // Si se pasa como número porcentual (ej. 10 para 10%)
+  if (ddPct > 1) {
+    const d = ddPct / 100;
+    if (d >= 1) return Infinity;
+    return (d / (1 - d)) * 100;
+  }
+  // Si se pasa como fracción (0.10)
+  return ddPct / (1 - ddPct);
+}
+
+export interface RunsTestResult {
+  n: number;
+  wins: number;
+  losses: number;
+  runs: number;
+  expectedRuns: number;
+  varianceRuns: number;
+  standardDeviation: number;
+  zScore: number;
+  pValue: number;
+  isClustered: boolean;
+  isAlternating: boolean;
+  isRandom: boolean;
+}
+
+/**
+ * Wald-Wolfowitz Runs Test para independencia estadística de secuencias de trades.
+ * Evalúa si las rachas de ganancias y pérdidas son consistentes con un paseo aleatorio (H0: i.i.d.)
+ * o si existe clustering/persistencia temporal (z < -1.96, p < 0.05) o alternancia excesiva (z > 1.96, p < 0.05).
+ */
+export function computeRunsTest(trades: Trade[]): RunsTestResult {
+  const binarySequence: number[] = [];
+  let wins = 0;
+  let losses = 0;
+
+  for (const t of trades) {
+    if (t.netPnl > 0) {
+      binarySequence.push(1);
+      wins++;
+    } else if (t.netPnl < 0) {
+      binarySequence.push(-1);
+      losses++;
+    }
+  }
+
+  const n = wins + losses;
+  if (n < 2 || wins === 0 || losses === 0) {
+    return {
+      n,
+      wins,
+      losses,
+      runs: binarySequence.length > 0 ? 1 : 0,
+      expectedRuns: 0,
+      varianceRuns: 0,
+      standardDeviation: 0,
+      zScore: 0,
+      pValue: 1,
+      isClustered: false,
+      isAlternating: false,
+      isRandom: true,
+    };
+  }
+
+  let runs = 1;
+  for (let i = 1; i < binarySequence.length; i++) {
+    if (binarySequence[i] !== binarySequence[i - 1]) {
+      runs++;
+    }
+  }
+
+  const expectedRuns = (2 * wins * losses) / n + 1;
+  const numerator = 2 * wins * losses * (2 * wins * losses - n);
+  const denominator = n * n * (n - 1);
+  const varianceRuns = denominator > 0 ? Math.max(0, numerator / denominator) : 0;
+  const standardDeviation = Math.sqrt(varianceRuns);
+
+  let zScore = 0;
+  let pValue = 1;
+
+  if (standardDeviation > 0) {
+    zScore = (runs - expectedRuns) / standardDeviation;
+    const absZ = Math.abs(zScore);
+    const zNorm = absZ / Math.SQRT2;
+    const t = 1 / (1 + 0.3275911 * zNorm);
+    const erf =
+      1 -
+      ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
+        t *
+        Math.exp(-zNorm * zNorm);
+    const phi = 0.5 * (1 + erf);
+    pValue = Math.max(0, Math.min(1, 2 * (1 - phi)));
+  }
+
+  const isClustered = zScore < -1.96 && pValue < 0.05;
+  const isAlternating = zScore > 1.96 && pValue < 0.05;
+  const isRandom = !isClustered && !isAlternating;
+
+  return {
+    n,
+    wins,
+    losses,
+    runs,
+    expectedRuns: +expectedRuns.toFixed(4),
+    varianceRuns: +varianceRuns.toFixed(4),
+    standardDeviation: +standardDeviation.toFixed(4),
+    zScore: +zScore.toFixed(4),
+    pValue: +pValue.toFixed(4),
+    isClustered,
+    isAlternating,
+    isRandom,
+  };
+}
+
+export const runsTest = computeRunsTest;
 
 export const METRICS = computeMetrics(TRADES);
 export const INITIAL_BALANCE_CONST = INITIAL_BALANCE;

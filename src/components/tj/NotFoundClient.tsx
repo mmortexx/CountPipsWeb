@@ -1,13 +1,21 @@
 "use client";
 
+import dynamicImport from "next/dynamic";
 import { useState } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
-import { MarketBackground } from "@/components/tj/MarketBackground";
-import { ParticleField } from "@/components/tj/ParticleField";
+
+/* El grabado de la 404 comparte módulo con `EngravedAtlas` (sus
+   primitivas de trazo), y ese trozo no debe entrar en el paquete que
+   sirven las páginas que sí existen: se trae bajo demanda, como hace
+   `BackgroundFX` con el propio atlas. */
+const Grabado404 = dynamicImport(
+  () => import("./Grabado404").then((m) => ({ default: m.Grabado404 })),
+  { ssr: false },
+);
 
 /**
  * Custom 404 — full-screen premium error page.
@@ -19,10 +27,12 @@ import { ParticleField } from "@/components/tj/ParticleField";
  * portada— y una directiva `"use client"` en ese fichero lo habría
  * impedido.
  *
- * Premium motion layer:
- *  - Subtle scrolling candlestick backdrop (MarketBackground @ 0.06).
- *  - Particle constellation overlay (@ 0.2).
- *  - Ambient accent orb for depth.
+ * Fondo: `Grabado404` — una lámina del atlas que se graba sola al
+ * cargar («el folio que no está»: un registro cuyos renglones se cortan
+ * y una lente que amplía el hueco). Sustituye a las velas desplazándose
+ * y a la constelación de puntos con las que esta página dibujaba su
+ * fondo: los dos clichés animados del sector, y el único rincón del
+ * sitio que aún hablaba ese idioma en vez del papel entintado.
  *
  * Copy:
  *  - Trading-themed headline: "stopped out like a bad stop loss".
@@ -79,13 +89,10 @@ export function NotFoundClient() {
       aria-labelledby="not-found-heading"
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
-      {/* Subtle scrolling candlestick backdrop */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <MarketBackground density={60} speed={1.2} opacity={0.06} showEquityLine={false} />
-      </div>
-      {/* Constellation overlay */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <ParticleField count={36} opacity={0.2} linkDistance={130} />
+      {/* La lámina grabada — se dibuja sola al cargar, como el arranque
+          del atlas, y su bucle se para al converger. */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <Grabado404 />
       </div>
       {/* Ambient accent orb for depth */}
       <div
@@ -150,14 +157,18 @@ export function NotFoundClient() {
                   : "Search a feature, metric or question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-11 pl-10 pr-24 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
+              /* `rounded-[2px]` y `h-12`: el radio de control del sitio —
+                 aquí convivían `rounded-md` y `rounded-[5px]` — y el alto
+                 que deja al botón interior sus 44 px de objetivo táctil
+                 con su propio aire (era `h-11` con un botón de 32 px). */
+              className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
             />
             <div
               className="tj-alza absolute right-1.5 top-1/2 -translate-y-1/2"
             >
               <button
                 type="submit"
-                className="h-8 px-3 rounded-[5px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] text-xs font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
+                className="inline-flex h-11 items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-4 text-xs font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
               >
                 {es ? "Buscar" : "Search"}
               </button>
@@ -179,7 +190,7 @@ export function NotFoundClient() {
             >
               <Link
                 href={tile.href}
-                className="group tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 text-left transition-colors hover:border-[rgb(var(--divider)/0.25)] block h-full"
+                className="group tj-paper block h-full rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 text-left transition-colors hover:border-[rgb(var(--divider)/0.25)]"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-primary">
@@ -217,7 +228,11 @@ export function NotFoundClient() {
           >
             <Link
               href="/"
-              className="bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 py-2 rounded-[2px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-[background-color,box-shadow] hover:shadow-[0_12px_32px_-8px_rgb(var(--accent-base)/0.7)]"
+              /* `group` + `inline-flex` + `min-h-[44px]`: la flecha llevaba
+                 `group-hover` sin padre `group` — nunca se movía —, y con
+                 `py-2` el enlace medía ~36 px, bajo el objetivo táctil de
+                 44 px que rige el resto de controles del sitio. */
+              className="group inline-flex min-h-[44px] items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-[background-color,box-shadow] hover:bg-[rgb(var(--accent-hover))] hover:shadow-[0_12px_32px_-8px_rgb(var(--accent-base)/0.7)]"
             >
               {es ? "Volver al inicio" : "Back to home"}
               <svg

@@ -61,12 +61,22 @@ export function SavingsCalculator() {
     // Break-even: cuántos meses hasta que la suscripción supere el pago único
     const breakEvenMonths = cpPrice > 0 && altMonthly > 0 ? Math.ceil(cpPrice / altMonthly) : 0;
 
+    // Proyección de ahorro con Interés Compuesto reinvertido al 8% anual (rendimiento indexado SP500)
+    // Aporte mensual de altMonthly durante years * 12 meses
+    const monthlyRate = 0.08 / 12;
+    const totalMonths = years * 12;
+    let compoundInvested = 0;
+    for (let m = 1; m <= totalMonths; m++) {
+      compoundInvested = (compoundInvested + altMonthly) * (1 + monthlyRate);
+    }
+    const compoundAdvantage = Math.max(0, compoundInvested - cpPrice);
+
     // Curva año a año: suscripción acumulada vs línea plana CountPips
     const curve: { year: number; sub: number; cp: number }[] = [];
     for (let y = 0; y <= years; y++) {
       curve.push({ year: y, sub: altMonthly * 12 * y, cp: cpPrice });
     }
-    return { cpPrice, altTotal, savings, savingsPct, breakEvenMonths, curve };
+    return { cpPrice, altTotal, savings, savingsPct, breakEvenMonths, compoundInvested, compoundAdvantage, curve };
   }, [plan, altMonthly, years]);
 
   // A precios más altos, el escenario mínimo (años=1, alternativa=5$/mes)
@@ -353,20 +363,27 @@ export function SavingsCalculator() {
           {/* Result tiles */}
           <div className="grid grid-cols-2 gap-3.5 mb-4">
             <Result label={es ? "Referencia CountPips" : "CountPips reference"} value={fmtUsd(c.cpPrice)} color="rgb(var(--accent-base))" />
-            <Result label={es ? "Alternativa mensual" : "Monthly alternative"} value={fmtUsd(c.altTotal)} color="rgb(var(--pnl-neg))" />
-            <Result label={es ? "Diferencia ilustrativa" : "Illustrative difference"} value={fmtUsd(c.savings)} color={savingsColor} />
-            <Result label={es ? "Break-even" : "Break-even"} value={`${c.breakEvenMonths} ${es ? "meses" : "mo"}`} color="var(--ink)" />
+            <Result label={es ? "Alternativa acumulada" : "Cumulative alternative"} value={fmtUsd(c.altTotal)} color="rgb(var(--pnl-neg))" />
+            <Result label={es ? "Ahorro directo" : "Direct savings"} value={fmtUsd(c.savings)} color={savingsColor} />
+            <Result label={es ? "Reinvertido al 8% anual" : "Compounded at 8% p.a."} value={fmtUsd(c.compoundAdvantage)} color="rgb(var(--pnl-pos))" />
           </div>
 
           {/* Break-even note */}
           <div
-            className="rounded-[2px] px-3 py-2.5"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.06)" }}
+            className="rounded-[2px] px-3.5 py-3 border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)]"
           >
-            <p className="tnum m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="font-semibold text-primary">
+                {es ? "Amortización de Licencia:" : "License Payback:"}
+              </span>
+              <span className="font-mono font-bold text-[rgb(var(--accent-base))]">
+                {c.breakEvenMonths} {c.breakEvenMonths === 1 ? (es ? "mes" : "month") : (es ? "meses" : "months")}
+              </span>
+            </div>
+            <p className="tnum m-0 text-[11.5px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
               {es
-                ? `En ${c.breakEvenMonths} ${c.breakEvenMonths === 1 ? "mes" : "meses"} la alternativa mensual supera esta referencia de precio.`
-                : `In ${c.breakEvenMonths} ${c.breakEvenMonths === 1 ? "month" : "months"} the monthly alternative exceeds this price reference.`}
+                ? `En solo ${c.breakEvenMonths} meses el coste de la alternativa SaaS supera el pago único perpetuo. A ${years} años, reinvertir el dinero ahorrado al 8% genera ${fmtUsd(c.compoundAdvantage)} netos adicionales.`
+                : `In just ${c.breakEvenMonths} months the SaaS alternative exceeds the one-time perpetual license. Over ${years} years, reinvesting saved fees at 8% yields +${fmtUsd(c.compoundAdvantage)} in net capital.`}
             </p>
           </div>
         </div>

@@ -153,7 +153,8 @@ export function IntroSequence() {
          se usa `useLang()` porque el nodo se construye con `innerHTML`
          fuera del árbol de React. */
       `<div class="tnum" style="font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)">${
-        document.documentElement.lang === "en"
+        (typeof document !== "undefined" && document.documentElement.lang === "en") ||
+        (typeof window !== "undefined" && (window.location.pathname === "/en" || window.location.pathname.startsWith("/en/")))
           ? "Made for the serious manual trader"
           : "Hecho para el trader manual serio"
       }</div>` +

@@ -921,64 +921,33 @@ export function Navbar() {
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
-                      /* ── EL PANEL ESTABA 260 px A LA DERECHA ──────────
-                         Aquí ponía `x: "-50%"`. `x` es una prop de
-                         framer-motion, no una propiedad CSS, y este
-                         componente dejó de usar framer-motion hace tiempo:
-                         React lo escribía tal cual en el atributo `style` y
-                         el navegador lo tiraba. Con `left: 50%` sin nada
-                         que lo compensara, el panel de 520 px empezaba
-                         donde debía estar su centro — medido: el borde
-                         izquierdo caía justo sobre el centro de «Producto»,
-                         y la punta, que se centra respecto al panel,
-                         señalaba a «Acceso».
-
-                         Se centra con `translate`, la propiedad
-                         independiente, y NO con `transform`: la entrada
-                         `.tj-cae` anima `transform` y termina en
-                         `transform: none` con relleno `both`, así que un
-                         `translateX(-50%)` puesto ahí lo borraría el
-                         último fotograma de la animación. Las dos
-                         propiedades se componen sin pisarse. */
                       translate: "-50% 0",
-                      borderColor: "rgb(var(--divider) / 0.13)",
+                      borderColor: "rgb(var(--divider) / 0.14)",
                       boxShadow:
-                        "0 1px 2px rgb(0 0 0 / 0.5), 0 44px 84px -30px rgb(0 0 0 / 0.78)",
+                        "0 1px 2px rgb(0 0 0 / 0.5), 0 20px 48px -15px rgb(0 0 0 / 0.65)",
+                      contain: "layout paint",
+                      willChange: "transform, opacity",
                     }}
                   >
-                    {/* Punta que ancla el panel a su disparador — sin
-                        ella el menú parecía flotar suelto bajo la barra. */}
+                    {/* Punta que ancla el panel a su disparador */}
                     <span
                       aria-hidden
                       className="absolute left-1/2 -top-[6px] h-[11px] w-[11px] -translate-x-1/2 rotate-45 rounded-[2px] border-l border-t"
                       style={{
-                        borderColor: "rgb(var(--divider) / 0.13)",
-                        /* La punta es continuación de la hoja, así que
-                           sigue al panel: opaca. Cuando el panel pasó a
-                           serlo, este 72 % se quedaba como un triángulo
-                           translúcido pegado a un papel que ya no lo era
-                           — el único punto por el que seguía asomando la
-                           página. `--paper-dense` lo resuelven los tokens
-                           por tema, no una segunda copia del color. */
+                        borderColor: "rgb(var(--divider) / 0.14)",
                         background: "var(--paper-dense)",
                       }}
                     />
                     <div className="relative grid grid-cols-2 gap-1">
-                      {/* Sin escalonado de entrada: las cuatro entradas
-                          aparecen a la vez. El escalonado hacía esperar
-                          al usuario a que el menú "terminara". */}
                       {productItems.map((item) => (
                         <div key={item.href}>
                           <Link
                             href={item.href}
                             role="menuitem"
                             onClick={() => setMegaOpen(false)}
-                            className="group flex gap-[11px] rounded-[2px] px-3 py-[11px] outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                            className="group flex gap-[11px] rounded-[2px] px-3 py-[11px] outline-none transition-[background-color,transform] duration-150 ease-[var(--ease-menu-in)] hover:translate-x-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                             style={{ color: "var(--ink)" }}
                             onMouseEnter={() => {
-                              // Prefetch optimista: inyecta un
-                              // <link rel="prefetch"> para que la ruta ya
-                              // esté en caché cuando se pulse. Idempotente.
                               const id = "prefetch-" + item.href.replace(/[^a-z0-9]/gi, "-");
                               if (!document.getElementById(id)) {
                                 const link = document.createElement("link");
@@ -991,7 +960,7 @@ export function Navbar() {
                             }}
                           >
                             <span
-                              className="grid flex-none place-items-center rounded-[2px]"
+                              className="grid flex-none place-items-center rounded-[2px] transition-transform duration-150 ease-[var(--ease-menu-in)] group-hover:scale-105"
                               style={{
                                 width: 30,
                                 height: 30,
@@ -1276,7 +1245,7 @@ export function Navbar() {
                       href={l.href}
                       onClick={() => setMobileOpen(false)}
                       aria-current={active ? "page" : undefined}
-                      className={`group relative flex min-h-[48px] items-center gap-3 rounded-[2px] py-2.5 pr-3 pl-3 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                      className={`group relative flex min-h-[48px] items-center gap-3 rounded-[2px] py-2.5 pr-3 pl-3 text-sm outline-none transition-[background-color,transform,color] duration-150 ease-[var(--ease-menu-in)] hover:translate-x-1 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                         active
                           ? "bg-[rgb(var(--divider)/0.06)] font-medium text-[var(--ink)]"
                           : "text-[var(--ink-2)] hover:bg-[rgb(var(--divider)/0.04)] hover:text-[var(--ink)]"

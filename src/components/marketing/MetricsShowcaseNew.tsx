@@ -140,11 +140,13 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               separación la da el relleno interior de cada celda. */}
           <ul className="m-0 p-0 list-none grid grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
             {[
-              { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), c: "rgb(var(--pnl-pos))", formula: "S = (μ - Rf) / σ", descEs: "Retorno ajustado a la volatilidad total.", descEn: "Return adjusted to total volatility." },
-              { id: "profitFactor", l: "Profit factor", v: fmtNum(METRICS.profitFactor, lang, 2), c: "var(--ink)", formula: "PF = ∑Ganancias / ∑Pérdidas", descEs: "Ganancia bruta / Pérdida bruta.", descEn: "Gross profit / Gross loss ratio." },
+              { id: "sharpe", l: "Sharpe Ratio", v: fmtNum(METRICS.sharpe, lang, 2), c: "rgb(var(--pnl-pos))", formula: "S = (μ - Rf) / σ", descEs: "Retorno ajustado a la volatilidad total.", descEn: "Return adjusted to total volatility." },
+              { id: "sortino", l: "Sortino Ratio", v: fmtNum(METRICS.sortino, lang, 2), c: "rgb(var(--pnl-pos))", formula: "So = (μ - Rf) / σ_d", descEs: "Penaliza únicamente la volatilidad bajista.", descEn: "Penalizes only downside deviation." },
+              { id: "omega", l: "Ratio Omega", v: fmtNum(METRICS.omega, lang, 2), c: "var(--ink)", formula: "Ω = ∫[L,+∞] (1-F) / ∫[-∞,L] F", descEs: "Pondera toda la distribución de colas.", descEn: "Weights entire distribution tail risk." },
+              { id: "calmar", l: "Ratio Calmar", v: fmtNum(METRICS.calmar, lang, 2), c: "var(--ink)", formula: "Ca = CAGR / MaxDD", descEs: "Rendimiento anualizado vs peor drawdown.", descEn: "Annual return vs maximum drawdown." },
               {
                 id: "expectancy",
-                l: es ? "Esperanza" : "Expectancy",
+                l: es ? "Esperanza E(R)" : "Expectancy E(R)",
                 v: fmtR(METRICS.expectancyR, lang, 2),
                 c: METRICS.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                 formula: "E(R) = (WR × W̄) - ((1-WR) × L̄)",
@@ -153,16 +155,16 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               },
               {
                 id: "maxDd",
-                l: "Max DD",
+                l: "Max Drawdown",
                 v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
                 c: "rgb(var(--pnl-neg))",
                 formula: "DD = (Peak - Trough) / Peak",
-                descEs: "Máxima caída desde el punto más alto.",
-                descEn: "Maximum decline from equity peak.",
+                descEs: "Máxima caída pico a valle registrada.",
+                descEn: "Peak-to-trough historical drawdown.",
               },
             ].map((m) => (
               <li
-                key={m.l}
+                key={m.id}
                 className="group/metric relative min-w-0 border-b border-[rgb(var(--divider)/0.14)] py-4 pr-5 [&:nth-child(even)]:pl-5 [&:nth-child(even)]:border-l [&:nth-child(even)]:border-l-[rgb(var(--divider)/0.14)] transition-colors duration-200"
               >
                 <div className="flex items-center justify-between">

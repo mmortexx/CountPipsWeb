@@ -48,6 +48,12 @@ const DATA = {
   },
 } as const;
 
+const PROP_FIRMS = [
+  { id: "ftmo" as const, name: "FTMO", typeEs: "Drawdown estático", typeEn: "Static Drawdown", dailyPct: 5, maxDDPct: 10, phase1Pct: 8, phase2Pct: 5, trailingType: "static" },
+  { id: "topstep" as const, name: "Topstep", typeEs: "Trailing EOD", typeEn: "Trailing EOD", dailyPct: 4.5, maxDDPct: 6, phase1Pct: 6, phase2Pct: 0, trailingType: "eod" },
+  { id: "fundingpips" as const, name: "FundingPips", typeEs: "Trailing relativo", typeEn: "Relative Trailing", dailyPct: 5, maxDDPct: 10, phase1Pct: 8, phase2Pct: 5, trailingType: "relative" },
+];
+
 const PROP_BALANCES = [25000, 50000, 100000, 200000];
 
 export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
@@ -55,15 +61,28 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const es = lang === "es";
   const data = DATA[profile];
 
-  // Estado interactivo para la sección interactiva específica
+  // Estado interactivo para prop firm
+  const [selectedFirm, setSelectedFirm] = useState<"ftmo" | "topstep" | "fundingpips">("ftmo");
   const [propBalance, setPropBalance] = useState(100000);
+  const [currentEquity, setCurrentEquity] = useState(103500); // Simulando beneficio acumulado
   const [manualSetup, setManualSetup] = useState<"breakout" | "sweep" | "reversion">("breakout");
 
+  const firm = PROP_FIRMS.find((f) => f.id === selectedFirm) || PROP_FIRMS[0];
+
   // Cálculos de reglas de prop firm
-  const dailyLossLimit = propBalance * 0.05;
-  const maxTrailingLoss = propBalance * 0.10;
-  const profitTarget = propBalance * 0.08;
+  const dailyLossLimit = propBalance * (firm.dailyPct / 100);
+  const maxTrailingLoss = propBalance * (firm.maxDDPct / 100);
+  const phase1Target = propBalance * (firm.phase1Pct / 100);
+  const phase2Target = firm.phase2Pct > 0 ? propBalance * (firm.phase2Pct / 100) : 0;
   const maxSafeRiskPerTrade = propBalance * 0.0075; // 0.75% por trade
+
+  // Umbral de liquidación dinámico
+  const peakEquity = Math.max(propBalance, currentEquity);
+  const liquidationThreshold = firm.trailingType === "static"
+    ? propBalance - maxTrailingLoss
+    : peakEquity - maxTrailingLoss;
+  const distanceToLiquidation = Math.max(0, currentEquity - liquidationThreshold);
+  const distancePct = (distanceToLiquidation / maxTrailingLoss) * 100;
 
   return (
     <>
@@ -105,41 +124,92 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         <section className="section border-y border-[rgb(var(--divider)/0.08)]">
           <div className="tj-container">
             <div className="max-w-3xl mb-8">
-              <p className="eyebrow">{es ? "Reglas de evaluación" : "Evaluation rules"}</p>
+              <p className="eyebrow">{es ? "Reglas de evaluación y fondeo" : "Evaluation & funding rules"}</p>
               <h2 className="mt-3 text-2xl md:text-3xl font-semibold text-primary">
-                {es ? "El Guardián calibrado para tu cuenta de fondeo." : "The Guardian calibrated for your funded account."}
+                {es ? "El Guardián calibrado para tu firma y cuenta." : "The Guardian calibrated for your firm and account."}
               </h2>
               <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
                 {es
-                  ? "Las firmas de fondeo expulsan por exceder la pérdida diaria o el drawdown máximo. Selecciona tu tamaño de cuenta y comprueba los límites que CountPips audita antes de cada ejecución."
-                  : "Prop firms fail challenges due to daily loss or max drawdown breaches. Select your account size and see the exact parameters CountPips monitors before every execution."}
+                  ? "Selecciona tu firma de fondeo y tamaño de cuenta. CountPips monitoriza la pérdida diaria, el trailing drawdown y las fases de evaluación en tiempo real."
+                  : "Select your prop firm and account size. CountPips tracks daily loss, trailing drawdown, and evaluation phase targets in real time."}
               </p>
             </div>
 
-            {/* Selector de balance de prop firm */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {PROP_BALANCES.map((bal) => (
-                <button
-                  key={bal}
-                  type="button"
-                  aria-pressed={propBalance === bal}
-                  onClick={() => setPropBalance(bal)}
-                  className={`h-9 px-4 rounded-[2px] text-xs font-semibold tnum transition-all ${
-                    propBalance === bal
-                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
-                      : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
-                  }`}
-                >
-                  ${(bal / 1000).toFixed(0)}k
-                </button>
-              ))}
+            {/* Selectores: Firma y Balance */}
+            <div className="flex flex-wrap items-center gap-4 mb-6">
+              <div className="flex items-center gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+                {PROP_FIRMS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setSelectedFirm(f.id)}
+                    className={`h-8 px-3 rounded-[2px] text-xs font-semibold transition-all ${
+                      selectedFirm === f.id
+                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
+                        : "text-secondary hover:text-primary"
+                    }`}
+                  >
+                    {f.name} ({es ? f.typeEs : f.typeEn})
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+                {PROP_BALANCES.map((bal) => (
+                  <button
+                    key={bal}
+                    type="button"
+                    onClick={() => {
+                      setPropBalance(bal);
+                      setCurrentEquity(bal * 1.035);
+                    }}
+                    className={`h-8 px-3 rounded-[2px] text-xs font-semibold tnum transition-all ${
+                      propBalance === bal
+                        ? "bg-primary text-[var(--surface)]"
+                        : "text-secondary hover:text-primary"
+                    }`}
+                  >
+                    ${(bal / 1000).toFixed(0)}k
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
+            <div className="p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
+              <div className="flex items-center justify-between text-xs mb-2">
+                <span className="font-semibold text-primary">
+                  {es ? "Distancia al umbral de liquidación:" : "Distance to liquidation threshold:"}
+                </span>
+                <span className="font-mono font-bold text-[rgb(var(--accent-base))]">
+                  +{fmtMoney(distanceToLiquidation, lang)} ({distancePct.toFixed(1)}% {es ? "del colchón disponible" : "buffer left"})
+                </span>
+              </div>
+              <div className="relative h-2.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
+                <div
+                  className="h-full rounded-[2px] transition-all duration-300"
+                  style={{
+                    width: `${Math.min(100, Math.max(0, distancePct))}%`,
+                    background: distancePct > 50
+                      ? "rgb(var(--pnl-pos))"
+                      : distancePct > 25
+                      ? "rgb(var(--sig-amber))"
+                      : "rgb(var(--pnl-neg))",
+                  }}
+                />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-[11px] font-mono text-tertiary">
+                <span>{es ? "Liquidación:" : "Liquidation:"} {fmtMoney(liquidationThreshold, lang)}</span>
+                <span>{es ? "Equity actual:" : "Current Equity:"} {fmtMoney(currentEquity, lang)}</span>
+                <span>{es ? "Pico máximo:" : "High-Water Mark:"} {fmtMoney(peakEquity, lang)}</span>
+              </div>
             </div>
 
             {/* Matriz de parámetros de prop firm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                 <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
-                  <span>{es ? "Límite pérdida diaria (5%)" : "Daily loss limit (5%)"}</span>
+                  <span>{es ? `Límite diario (${firm.dailyPct}%)` : `Daily limit (${firm.dailyPct}%)`}</span>
                   <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
                 </div>
                 <div className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-neg))] tnum">
@@ -152,40 +222,42 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                 <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
-                  <span>{es ? "Max Drawdown (10%)" : "Max Drawdown (10%)"}</span>
+                  <span>{es ? `Max Drawdown (${firm.maxDDPct}%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
                 <div className="text-2xl font-serif font-semibold text-primary tnum">
                   −{fmtMoney(maxTrailingLoss, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Cálculo en tiempo real desde el pico de balance más alto registrado." : "Real-time calculation anchored from the highest balance peak."}
+                  {firm.trailingType === "static"
+                    ? (es ? "Drawdown estático respecto al balance de inicio." : "Static drawdown anchored to initial balance.")
+                    : (es ? "Trailing ajustado dinámicamente al pico de balance." : "Trailing dynamically tracking balance peak.")}
                 </p>
               </div>
 
               <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                 <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
-                  <span>{es ? "Objetivo Fase 1 (8%)" : "Phase 1 Target (8%)"}</span>
+                  <span>{es ? `Fase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
                   <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
                 </div>
                 <div className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-pos))] tnum">
-                  +{fmtMoney(profitTarget, lang)}
+                  +{fmtMoney(phase1Target, lang)} {firm.phase2Pct > 0 && <span className="text-sm font-normal text-secondary">/ +{fmtMoney(phase2Target, lang)}</span>}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Seguimiento de progreso sin presión de sobreoperar." : "Progress tracking without the urge to overtrade."}
+                  {es ? "Objetivos de rentabilidad auditados con control estricto de riesgo." : "Profit targets tracked with disciplined position sizing."}
                 </p>
               </div>
 
               <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                 <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2">
-                  <span>{es ? "Riesgo sugerido (0.75%)" : "Suggested risk (0.75%)"}</span>
+                  <span>{es ? "Riesgo seguro (0.75%)" : "Safe risk (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
                 <div className="text-2xl font-serif font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Te da 6 errores consecutivos de colchón antes del límite diario." : "Allows 6 consecutive losses buffer before daily limit."}
+                  {es ? "Otorga 6 pérdidas consecutivas de colchón antes de rozar el límite diario." : "Allows 6 consecutive losses buffer before daily limit."}
                 </p>
               </div>
             </div>

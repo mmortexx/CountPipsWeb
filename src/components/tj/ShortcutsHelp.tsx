@@ -322,17 +322,18 @@ export function ShortcutsHelp({
         >
           {/* Backdrop — subtle blur + fade-in */}
           <div
-            className={`absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150 ${
+            className={`absolute inset-0 bg-black/50 backdrop-blur-md backdrop-saturate-150 ${
               saliendo ? "tj-velo-sale" : "tj-velo-entra"
             }`}
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
 
-          {/* Panel — liquid-glass card, springy fade + scale + lift entrance */}
+          {/* Panel — institutional mica card with GPU acceleration */}
           <div
             ref={panelRef}
             tabIndex={-1}
+            style={{ contain: "layout paint", willChange: "transform, opacity" }}
             className={`relative w-full max-w-md tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
               saliendo ? "tj-panel-sale" : "tj-panel-entra"
             }`}

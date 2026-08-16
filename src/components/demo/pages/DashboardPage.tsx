@@ -10,6 +10,7 @@ import {
   SETUP_NAMES,
   nombreSetup,
   INITIAL_BALANCE_CONST,
+  getInstrumentMultiplier,
   type Direction,
   type Metrics,
 } from "@/lib/trading/data";
@@ -25,10 +26,6 @@ import { EquityCurve } from "@/components/charts/EquityCurve";
 import { MiniCalendar } from "@/components/charts/MiniCalendar";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
-
-// ES futures contract multiplier ($50 per point per contract) — kept for
-// the demo's P&L computation parity with demoStore.ts.
-const FUTURES_MULTIPLIER = 50;
 
 // Equity-curve timeframe selector — filters the chart to the last N days
 // of trades so the user can zoom into 1M / 3M / 6M windows. The sample
@@ -158,17 +155,12 @@ export function DashboardPage() {
     // (matches the real app's "Risk $" footer cell, which is derived
     // from entry/stop/cantidad — not a separate sizing input).
     if (stopDist > 0 && qtyNum > 0) {
-      const multiplier =
-        inst.assetClass === "forex"
-          ? 100_000
-          : inst.assetClass === "futures"
-          ? FUTURES_MULTIPLIER
-          : 1;
+      const multiplier = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
       return stopDist * qtyNum * multiplier;
     }
     // Fallback: 1% of the initial balance (the demo's default posture).
     return INITIAL_BALANCE_CONST * 0.01;
-  }, [stopDist, qtyNum, inst.assetClass]);
+  }, [stopDist, qtyNum, instrumentSymbol, inst.assetClass]);
 
   const riskPct = INITIAL_BALANCE_CONST > 0 ? riskUsdLive / INITIAL_BALANCE_CONST : 0;
 
@@ -205,12 +197,7 @@ export function DashboardPage() {
     const rMultiple = stopDistLocal > 0 ? +(priceDiff / stopDistLocal).toFixed(2) : 0;
 
     // Position-value multiplier per asset class — matches demoStore.ts.
-    const multiplier =
-      inst.assetClass === "forex"
-        ? 100_000
-        : inst.assetClass === "futures"
-        ? FUTURES_MULTIPLIER
-        : 1;
+    const multiplier = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
     const safeQty = Number.isFinite(qtyN) && qtyN > 0 ? qtyN : 1;
     const netPnl = +(priceDiff * safeQty * multiplier).toFixed(2);
 
@@ -622,12 +609,7 @@ export function DashboardPage() {
                           if (stopDist > 0) {
                             // 1 % de la cuenta entre la distancia al stop:
                             // el tamaño que arriesga exactamente ese 1 %.
-                            const mult =
-                              inst.assetClass === "forex"
-                                ? 100_000
-                                : inst.assetClass === "futures"
-                                  ? FUTURES_MULTIPLIER
-                                  : 1;
+                            const mult = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
                             const q =
                               (INITIAL_BALANCE_CONST * 0.01) / (stopDist * mult);
                             setQuantity(q < 1 ? q.toFixed(3) : q.toFixed(2));

@@ -178,7 +178,7 @@ export function CommandPalette({
   );
 
   const itemClass =
-    "data-[selected=true]:bg-[rgb(var(--divider)/0.05)] data-[selected=true]:text-primary";
+    "data-[selected=true]:bg-[rgb(var(--divider)/0.08)] data-[selected=true]:text-primary transition-[background-color,transform] duration-100 ease-[var(--ease-menu-in)]";
 
   return (
     <>
@@ -195,7 +195,7 @@ export function CommandPalette({
 
           {/* Backdrop */}
           <div
-            className={`absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150 ${
+            className={`absolute inset-0 bg-black/50 backdrop-blur-md backdrop-saturate-150 ${
               saliendo ? "tj-velo-sale" : "tj-velo-entra"
             }`}
             onClick={() => setOpen(false)}
@@ -206,6 +206,7 @@ export function CommandPalette({
           <div
             ref={panelRef}
             tabIndex={-1}
+            style={{ contain: "layout paint", willChange: "transform, opacity" }}
             className={`relative w-full max-w-xl tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
               saliendo ? "tj-panel-sale" : "tj-panel-entra"
             }`}

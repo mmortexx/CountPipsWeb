@@ -25,14 +25,17 @@ interface FuturesContract {
   tickSize: number;
 }
 
-const FUTURES_CONTRACTS: FuturesContract[] = [
+export const FUTURES_CONTRACTS: FuturesContract[] = [
   { id: "es", name: "E-mini S&P 500 (ES) · 50 $/pt", mult: 50, tickSize: 0.25 },
   { id: "nq", name: "E-mini Nasdaq (NQ) · 20 $/pt", mult: 20, tickSize: 0.25 },
   { id: "mes", name: "Micro E-mini S&P (MES) · 5 $/pt", mult: 5, tickSize: 0.25 },
   { id: "mnq", name: "Micro Nasdaq (MNQ) · 2 $/pt", mult: 2, tickSize: 0.25 },
+  { id: "rty", name: "E-mini Russell 2000 (RTY) · 50 $/pt", mult: 50, tickSize: 0.1 },
   { id: "gc", name: "Gold / Oro (GC) · 100 $/pt", mult: 100, tickSize: 0.1 },
   { id: "cl", name: "Crude Oil (CL) · 1.000 $/pt", mult: 1000, tickSize: 0.01 },
 ];
+
+type ForexLotType = "standard" | "mini" | "micro";
 
 export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const { lang } = useLang();
@@ -53,11 +56,13 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   // ── Estado editable: la operación del usuario ─────────────────────
   const [assetMode, setAssetMode] = useState<AssetMode>("equities");
   const [futuresContractId, setFuturesContractId] = useState("es");
+  const [forexLotType, setForexLotType] = useState<ForexLotType>("standard");
   const [riskPct, setRiskPct] = useState(1.0);
   const [balance, setBalance] = useState(10000);
   const [entry, setEntry] = useState(100);
   const [stop, setStop] = useState(95);
   const [target, setTarget] = useState(115);
+  const [includeFriction, setIncludeFriction] = useState(true);
   const [copied, setCopied] = useState(false);
   const [showKelly, setShowKelly] = useState(false);
   const [kellyWinRate, setKellyWinRate] = useState(55); // %
@@ -66,6 +71,12 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     () => FUTURES_CONTRACTS.find((f) => f.id === futuresContractId) ?? FUTURES_CONTRACTS[0],
     [futuresContractId]
   );
+
+  const lotMultiplier = useMemo(() => {
+    if (forexLotType === "micro") return 1000;
+    if (forexLotType === "mini") return 10000;
+    return 100000;
+  }, [forexLotType]);
 
   // ── Cálculo en vivo adaptado al activo ───────────────────────────
   const c = useMemo(() => {
@@ -86,29 +97,51 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     let size = 0;
     let sizeLabel = "u";
     let positionValue = 0;
+    let pipValue = 0;
 
     if (valid) {
       if (assetMode === "equities") {
         size = riskUsd / riskPerShare;
         sizeLabel = es ? "acciones / u" : "shares / u";
         positionValue = size * entry;
+        pipValue = size * 0.01;
       } else if (assetMode === "forex") {
         const units = riskUsd / riskPerShare;
-        const lots = units / 100000;
+        const lots = units / lotMultiplier;
         size = lots;
-        sizeLabel = es ? "lotes" : "lots";
+        sizeLabel =
+          forexLotType === "micro"
+            ? (es ? "micro lotes (1k)" : "micro lots (1k)")
+            : forexLotType === "mini"
+              ? (es ? "mini lotes (10k)" : "mini lots (10k)")
+              : (es ? "lotes estándar (100k)" : "standard lots (100k)");
         positionValue = units * entry;
+        pipValue = (units * 0.0001); // Para pares EUR/USD base 0.0001
       } else {
         const pointRisk = riskPerShare * selectedFutures.mult;
         const contracts = pointRisk > 0 ? riskUsd / pointRisk : 0;
         size = contracts;
         sizeLabel = es ? "contratos" : "contracts";
         positionValue = contracts * entry * selectedFutures.mult;
+        pipValue = contracts * selectedFutures.tickSize * selectedFutures.mult;
       }
     }
 
-    const profit = valid ? (assetMode === "futures" ? size * rewardPerShare * selectedFutures.mult : (assetMode === "forex" ? (size * 100000) * rewardPerShare : size * rewardPerShare)) : 0;
-    const profitPct = (profit / balance) * 100;
+    // Fricción de ejecución estimada (comisiones ida y vuelta + 1 tick slippage)
+    const commissionPerUnit = assetMode === "futures" ? 4.5 : (assetMode === "forex" ? (lotMultiplier / 100000) * 5.0 : 0.005);
+    const estimatedFriction = valid && includeFriction ? size * commissionPerUnit : 0;
+
+    const grossProfit = valid
+      ? (assetMode === "futures"
+          ? size * rewardPerShare * selectedFutures.mult
+          : assetMode === "forex"
+            ? (size * lotMultiplier) * rewardPerShare
+            : size * rewardPerShare)
+      : 0;
+
+    const netProfit = Math.max(0, grossProfit - estimatedFriction);
+    const totalRiskUsd = riskUsd + estimatedFriction;
+    const profitPct = (netProfit / balance) * 100;
     const positionPct = (positionValue / balance) * 100;
     const direction = entry > 0 && stop > entry ? "short" : "long";
 
@@ -118,18 +151,22 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       valid,
       rr,
       riskUsd,
+      totalRiskUsd,
+      estimatedFriction,
       size,
       sizeLabel,
-      profit,
+      profit: netProfit,
+      grossProfit,
       profitPct,
       positionValue,
       positionPct,
+      pipValue,
       direction,
       fullKellyPct,
       halfKellyPct,
       quarterKellyPct,
     };
-  }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, kellyWinRate, es]);
+  }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, lotMultiplier, includeFriction, kellyWinRate, es]);
 
   const nf = useMemo(() => {
     const locale = es ? "es-ES" : "en-US";
@@ -158,17 +195,58 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const riskW = (c.riskUsd / max) * 100;
   const profitW = (c.profit / max) * 100;
 
-  const chipStyle = (active: boolean): React.CSSProperties => ({
+  const handleAssetChange = useCallback((mode: AssetMode) => {
+    setAssetMode(mode);
+    if (mode === "futures") {
+      setEntry(5800);
+      setStop(5780);
+      setTarget(5840);
+    } else if (mode === "forex") {
+      setEntry(1.0850);
+      setStop(1.0820);
+      setTarget(1.0910);
+    } else {
+      setEntry(100);
+      setStop(95);
+      setTarget(115);
+    }
+  }, []);
+
+  const handleFuturesChange = useCallback((id: string) => {
+    setFuturesContractId(id);
+    if (id === "es" || id === "mes") {
+      setEntry(5800);
+      setStop(5780);
+      setTarget(5840);
+    } else if (id === "nq" || id === "mnq") {
+      setEntry(20500);
+      setStop(20400);
+      setTarget(20700);
+    } else if (id === "rty") {
+      setEntry(2200);
+      setStop(2185);
+      setTarget(2230);
+    } else if (id === "gc") {
+      setEntry(2650);
+      setStop(2635);
+      setTarget(2680);
+    } else if (id === "cl") {
+      setEntry(75.00);
+      setStop(74.20);
+      setTarget(76.60);
+    }
+  }, []);
+
+  const chipStyle = (active: boolean) => ({
+    padding: "6px 14px",
     fontSize: 12,
-    lineHeight: 1.2,
-    minHeight: 44,
-    padding: "10px 16px",
-    borderRadius: 4,
+    fontWeight: active ? 600 : 400,
+    borderRadius: 2,
     cursor: "pointer",
-    transition: "background 0.2s, color 0.2s, border-color 0.2s",
+    transition: "all 0.15s ease",
     background: active
       ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-      : "transparent",
+      : "color-mix(in oklab, var(--surface-2) 60%, transparent)",
     color: active ? "rgb(var(--accent-base))" : "var(--ink-2)",
     border: active
       ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)"
@@ -214,15 +292,18 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       "─".repeat(28),
       `${es ? "Activo" : "Asset"}: ${assetMode.toUpperCase()}`,
       `${es ? "Balance" : "Balance"}: ${fmtUsd(balance)}`,
-      `${es ? "Riesgo" : "Risk"}: ${fmtNum(riskPct)} % (${fmtUsd(c.riskUsd)})`,
+      `${es ? "Riesgo nominal" : "Nominal risk"}: ${fmtNum(riskPct)} % (${fmtUsd(c.riskUsd)})`,
+      `${es ? "Fricción estimada" : "Estimated friction"}: -${fmtUsd(c.estimatedFriction)}`,
+      `${es ? "Riesgo total" : "Total risk"}: ${fmtUsd(c.totalRiskUsd)}`,
       `${es ? "Entrada" : "Entry"}: ${fmtNum(entry)}`,
       `${es ? "Stop" : "Stop"}: ${fmtNum(stop)}`,
       `${es ? "Objetivo" : "Target"}: ${fmtNum(target)}`,
       `${es ? "Dirección" : "Direction"}: ${c.direction === "short" ? (es ? "Corto" : "Short") : (es ? "Largo" : "Long")}`,
       "─".repeat(28),
       `${es ? "Tamaño" : "Size"}: ${fmtNum(c.size, 2)} ${c.sizeLabel}`,
+      `${es ? "Valor pip/punto" : "Pip/Point value"}: ${fmtUsd(c.pipValue)}`,
       `${es ? "R:R" : "R:R"}: ${fmtNum(c.rr, 2)} : 1`,
-      `${es ? "Beneficio estimado" : "Estimated profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)} %)`,
+      `${es ? "Beneficio neto estimado" : "Estimated net profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)} %)`,
       `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.positionValue)}`,
     ];
     try {
@@ -307,7 +388,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 <button
                   key={m.id}
                   type="button"
-                  onClick={() => setAssetMode(m.id)}
+                  onClick={() => handleAssetChange(m.id)}
                   style={chipStyle(assetMode === m.id)}
                 >
                   {es ? m.labelEs : m.labelEn}
@@ -327,7 +408,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   <button
                     key={fc.id}
                     type="button"
-                    onClick={() => setFuturesContractId(fc.id)}
+                    onClick={() => handleFuturesChange(fc.id)}
                     className={`h-7 px-2.5 rounded-[2px] text-xs font-mono transition-all ${
                       futuresContractId === fc.id
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
@@ -340,6 +421,58 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
           )}
+
+          {/* Subselector para Forex */}
+          {assetMode === "forex" && (
+            <div className="mb-5 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <span className="block text-[10px] uppercase tracking-wider text-tertiary mb-2">
+                {es ? "Tipo de lote Forex" : "Forex lot sizing"}
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { id: "standard" as const, labelEs: "Estándar (100k)", labelEn: "Standard (100k)" },
+                  { id: "mini" as const, labelEs: "Mini (10k)", labelEn: "Mini (10k)" },
+                  { id: "micro" as const, labelEs: "Micro (1k)", labelEn: "Micro (1k)" },
+                ].map((lot) => (
+                  <button
+                    key={lot.id}
+                    type="button"
+                    onClick={() => setForexLotType(lot.id)}
+                    className={`h-7 px-2.5 rounded-[2px] text-xs font-mono transition-all ${
+                      forexLotType === lot.id
+                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
+                        : "bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary"
+                    }`}
+                  >
+                    {es ? lot.labelEs : lot.labelEn}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Control de Fricción de Ejecución */}
+          <div className="mb-5 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] flex items-center justify-between">
+            <div>
+              <span className="block text-xs font-medium text-primary">
+                {es ? "Deducir fricción de ejecución" : "Deduct execution friction"}
+              </span>
+              <span className="block text-[11px] text-tertiary">
+                {es ? "Comisiones estimadas + 1 tick de slippage" : "Estimated commissions + 1 tick slippage"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIncludeFriction((v) => !v)}
+              className={`min-h-[32px] px-3 rounded-[2px] text-xs font-mono font-semibold transition-colors ${
+                includeFriction
+                  ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
+                  : "bg-[rgb(var(--divider)/0.08)] text-tertiary hover:text-primary"
+              }`}
+            >
+              {includeFriction ? (es ? "ACTIVADO" : "ON") : (es ? "DESACTIVADO" : "OFF")}
+            </button>
+          </div>
 
           {/* Chips de plantilla */}
           <div className="mb-4">
@@ -545,11 +678,13 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
           )}
 
           {/* Resultados */}
-          <div className="grid grid-cols-2 gap-3 mb-5">
-            <Result label={es ? "Riesgo $" : "Risk $"} value={fmtUsd(c.riskUsd)} color="rgb(var(--pnl-neg))" />
-            <Result label={es ? "Beneficio estimado" : "Profit"} value={fmtUsd(c.profit)} color="rgb(var(--pnl-pos))" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+            <Result label={es ? "Riesgo total $" : "Total Risk $"} value={fmtUsd(c.totalRiskUsd)} color="rgb(var(--pnl-neg))" />
+            <Result label={es ? "Beneficio neto" : "Net Profit"} value={fmtUsd(c.profit)} color="rgb(var(--pnl-pos))" />
             <Result label={es ? "Tamaño de posición" : "Position Size"} value={`${fmtNum(c.size, assetMode === "forex" ? 2 : (assetMode === "futures" ? 1 : 2))} ${c.sizeLabel}`} color="var(--ink)" />
             <Result label="R:R" value={`${fmtNum(c.rr, 2)} : 1`} color="rgb(var(--accent-base))" />
+            <Result label={es ? "Valor del pip / punto" : "Pip / Point Value"} value={fmtUsd(c.pipValue)} color="var(--ink)" />
+            <Result label={es ? "Fricción estimada" : "Est. Friction"} value={`-${fmtUsd(c.estimatedFriction)}`} color="var(--ink-2)" />
           </div>
 
           {/* Stats adicionales: valor posición + % balance */}

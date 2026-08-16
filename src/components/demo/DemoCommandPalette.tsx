@@ -310,23 +310,24 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Backdrop — subtle blur + fade-in. Click anywhere to close. */}
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm backdrop-saturate-150"
+            className="absolute inset-0 bg-black/50 backdrop-blur-md backdrop-saturate-150"
             onClick={onClose}
             aria-hidden="true"
           />
 
-          {/* Panel — liquid-glass depth-4, springy fade + scale + lift. */}
+          {/* Panel — fluent acrylic depth-4 with hardware acceleration */}
           <motion.div
             ref={rootRef}
+            style={{ contain: "layout paint", willChange: "transform, opacity" }}
             className="relative w-full max-w-lg tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden"
-            initial={{ opacity: 0, scale: 0.97, y: -8 }}
+            initial={{ opacity: 0, scale: 0.985, y: -6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -4 }}
-            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            exit={{ opacity: 0, scale: 0.985, y: -4 }}
+            transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* Search input row — h-12 (48 px) para que el input tenga un
                 área de toque cómoda en móvil (≥44 px) y el kbd de Esc no

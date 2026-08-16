@@ -389,18 +389,27 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between p-3 rounded-[2px] bg-[rgb(var(--divider)/0.03)] border border-[rgb(var(--divider)/0.1)]">
-                <div>
-                  <span className="text-xs uppercase tracking-wider font-semibold text-primary block">
-                    {es ? "Impacto a 1 año" : "1-Year projected impact"}
-                  </span>
-                  <span className="text-[11.5px] text-tertiary">
-                    {es ? "Si no corriges la fuga" : "If the leak is uncorrected"}
-                  </span>
-                </div>
-                <span className="font-serif text-xl font-medium text-primary tnum">
-                  −{fmtMoney(totalLeakAnnual, lang)}
+              {/* Proyecciones compuestas 1, 3, 5 años */}
+              <div className="p-3 rounded-[2px] bg-[rgb(var(--divider)/0.03)] border border-[rgb(var(--divider)/0.1)]">
+                <span className="text-xs uppercase tracking-wider font-semibold text-primary block mb-2">
+                  {es ? "Capital fugado acumulado (reinversión al 8% anual)" : "Cumulative leaked capital (8% p.a. reinvestment)"}
                 </span>
+                <div className="grid grid-cols-3 gap-2 text-center font-mono">
+                  {([1, 3, 5] as const).map((yr) => {
+                    const months = yr * 12;
+                    const rMonthly = 0.08 / 12;
+                    let fv = 0;
+                    for (let m = 1; m <= months; m++) {
+                      fv = (fv + totalLeakMonthly) * (1 + rMonthly);
+                    }
+                    return (
+                      <div key={yr} className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
+                        <span className="block text-[10px] text-tertiary">{yr} {yr === 1 ? (es ? "año" : "year") : (es ? "años" : "years")}</span>
+                        <span className="text-xs font-bold text-[rgb(var(--pnl-neg))]">−{fmtMoney(fv, lang)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 

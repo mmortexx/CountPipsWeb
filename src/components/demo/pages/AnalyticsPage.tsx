@@ -852,16 +852,16 @@ function normCdf(z: number): number {
  * Advanced metrics — SQN, Ulcer index, CAGR. Local computations
  * (the demo Metrics object doesn't expose them).
  * ============================================================ */
-function computeAdvanced(trades: Trade[]) {
+function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: number }) {
   const n = trades.length;
-  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0 };
+  if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: 0, omega: 1 };
 
   // SQN = sqrt(n) * mean(R) / std(R).
   const rs = trades.map((t) => t.rMultiple);
   const meanR = rs.reduce((s, v) => s + v, 0) / n;
   const varR = rs.reduce((s, v) => s + (v - meanR) ** 2, 0) / (n - 1);
   const stdR = Math.sqrt(varR);
-  const sqn = stdR > 0 ? Math.sqrt(n) * meanR / stdR : 0;
+  const sqn = stdR > 0 ? (Math.sqrt(n) * meanR) / stdR : 0;
 
   // Ulcer index over the equity curve.
   const chrono = [...trades].sort(
@@ -891,7 +891,23 @@ function computeAdvanced(trades: Trade[]) {
       ? (Math.pow(final / 10_000, 1 / yearsSpan) - 1) * 100
       : 0;
 
-  return { sqn, ulcer, cagr };
+  // Fractional Kelly criterion (Half Kelly)
+  const p = mStats?.winRate ?? (trades.filter((t) => t.netPnl > 0).length / n);
+  const wins = trades.filter((t) => t.netPnl > 0);
+  const losses = trades.filter((t) => t.netPnl < 0);
+  const avgW = wins.length > 0 ? wins.reduce((s, t) => s + t.netPnl, 0) / wins.length : 1;
+  const avgL = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.netPnl, 0) / losses.length) : 1;
+  const b = mStats?.payoff ?? (avgL > 0 ? avgW / avgL : 1);
+  const q = 1 - p;
+  const fullKelly = b > 0 ? (p * b - q) / b : 0;
+  const halfKelly = Math.max(0, fullKelly / 2) * 100;
+
+  // Omega ratio: sum(gains) / sum(|losses|)
+  const grossWin = trades.filter((t) => t.netPnl > 0).reduce((s, t) => s + t.netPnl, 0);
+  const grossLoss = Math.abs(trades.filter((t) => t.netPnl < 0).reduce((s, t) => s + t.netPnl, 0));
+  const omega = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 9.99 : 1;
+
+  return { sqn, ulcer, cagr, halfKelly, omega };
 }
 
 const dayMs = 86_400_000;
@@ -1071,7 +1087,7 @@ export function AnalyticsPage() {
   const periodRows = useMemo(() => buildPeriodRows(filteredTrades), [filteredTrades]);
   const equityQ = useMemo(() => computeEquityQuality(filteredTrades), [filteredTrades]);
   const edge = useMemo(() => computeEdge(filteredTrades), [filteredTrades]);
-  const adv = useMemo(() => computeAdvanced(filteredTrades), [filteredTrades]);
+  const adv = useMemo(() => computeAdvanced(filteredTrades, m), [filteredTrades, m]);
 
   const filterSig = `${filters.instrument}|${filters.setup}|${filters.direction}|${filters.compliance}`;
 
@@ -1437,6 +1453,22 @@ export function AnalyticsPage() {
                   </span>
                 </RatioCell>
                 <RatioCell
+                  label="Omega (Ω)"
+                  hint={desc("Ratio Omega: ganancias / pérdidas totales", "Omega ratio: total gains / losses")}
+                >
+                  <span className={adv.omega >= 1.2 ? "text-pnl-pos" : "text-pnl-warn"}>
+                    {fmtNum(adv.omega, lang, 2)}
+                  </span>
+                </RatioCell>
+                <RatioCell
+                  label="Half Kelly"
+                  hint={desc("Criterio de Kelly al 50 % (riesgo óptimo)", "Half Kelly sizing (optimal fraction)")}
+                >
+                  <span className={adv.halfKelly > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
+                    {fmtNum(adv.halfKelly, lang, 1)}%
+                  </span>
+                </RatioCell>
+                <RatioCell
                   label={t("recoveryFactor")}
                   hint={desc("P&L neto / max DD", "Net P&L / max DD")}
                 >
@@ -1444,9 +1476,10 @@ export function AnalyticsPage() {
                     {fmtNum(m.recoveryFactor, lang, 2)}
                   </span>
                 </RatioCell>
+
                 <RatioCell
                   label="SQN"
-                  hint={desc("System Quality Number", "System Quality Number")}
+                  hint={desc("System Quality Number (Van Tharp)", "System Quality Number (Van Tharp)")}
                 >
                   <span className={adv.sqn >= 1.6 ? "text-pnl-pos" : "text-pnl-warn"}>
                     {fmtNum(adv.sqn, lang, 2)}
@@ -1459,7 +1492,6 @@ export function AnalyticsPage() {
                     <span className="text-pnl-neg">{m.maxLossStreak}</span>
                   </span>
                 </RatioCell>
-
                 <RatioCell
                   label={lang === "es" ? "Úlcer" : "Ulcer"}
                   hint={desc("Índice de Úlcera (Peter Martin)", "Ulcer Index (Peter Martin)")}

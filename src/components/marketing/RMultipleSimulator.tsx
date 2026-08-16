@@ -44,6 +44,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
   const [avgWinR, setAvgWinR] = useState(2.0);
   const [avgLossR, setAvgLossR] = useState(1.0);
   const [riskPct, setRiskPct] = useState(1.0);
+  const [monthlyWithdrawal, setMonthlyWithdrawal] = useState(0); // $
   const [seed, setSeed] = useState(1);
 
   const SIM_RUNS = 300;
@@ -63,56 +64,90 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
     const wr = winRate / 100;
     const expectancyR = wr * avgWinR - (1 - wr) * avgLossR;
 
+    // Fórmula Analítica de Probabilidad de Ruina:
+    // P(Ruin) = exp(-2 * E * B / sigma^2)
+    // donde E = EV por trade en %, B = Capital inicial en %, sigma^2 = varianza del retorno
+    const meanTradePct = (expectancyR * riskPct) / 100;
+    const varTradePct = wr * Math.pow((avgWinR * riskPct) / 100 - meanTradePct, 2) +
+      (1 - wr) * Math.pow((-avgLossR * riskPct) / 100 - meanTradePct, 2);
+    const analyticalRuinProb = meanTradePct > 0 && varTradePct > 0
+      ? Math.min(100, Math.max(0, Math.exp((-2 * meanTradePct * 1.0) / varTradePct) * 100))
+      : 100;
+
     // Simular SIM_RUNS caminos de `trades` operaciones cada uno.
-    // Cada op: gana (p=wr) → +avgWinR·riskPct%·balance; pierde → -avgLossR·riskPct%·balance.
-    // Riesgo compuesto sobre el balance actual (como en la realidad).
     const rng = mulberry32(seed * 7919 + 1);
     const paths: number[][] = [];
     let ruinCount = 0;
     let doubleCount = 0;
     const finalBalances: number[] = [];
+    const maxLossStreaks: number[] = [];
+
+    // Aproximamos 20 operaciones por mes para los retiros periódicos
+    const tradesPerMonth = 20;
 
     for (let run = 0; run < SIM_RUNS; run++) {
       const path: number[] = [startBalance];
       let bal = startBalance;
       let ruined = false;
+      let curLossStreak = 0;
+      let maxLossRun = 0;
+
       for (let t = 0; t < trades; t++) {
         if (bal <= 0) { ruined = true; break; }
         const r = rng();
         const riskUsd = bal * (riskPct / 100);
         if (r < wr) {
           bal += riskUsd * avgWinR;
+          curLossStreak = 0;
         } else {
           bal -= riskUsd * avgLossR;
+          curLossStreak++;
+          maxLossRun = Math.max(maxLossRun, curLossStreak);
         }
+
+        // Retiro periódico al final de cada bloque mensual
+        if ((t + 1) % tradesPerMonth === 0 && monthlyWithdrawal > 0) {
+          bal = Math.max(0, bal - monthlyWithdrawal);
+        }
+
         if (bal <= 0) { bal = 0; ruined = true; }
         path.push(bal);
       }
       paths.push(path);
       finalBalances.push(bal);
+      maxLossStreaks.push(maxLossRun);
       if (ruined) ruinCount++;
       if (bal >= startBalance * 2) doubleCount++;
     }
 
-    // Estadísticas por operación: P10, P50 (mediana), P90, media.
-    const statsPerTrade: { p10: number; p50: number; p90: number; mean: number }[] = [];
+    // Estadísticas por operación: P5, P25, P50 (mediana), P75, P95, media.
+    const statsPerTrade: { p5: number; p25: number; p50: number; p75: number; p95: number; mean: number }[] = [];
     for (let t = 0; t <= trades; t++) {
       const vals = paths.map((p) => p[t] ?? 0).sort((a, b) => a - b);
       const idx = (q: number) => Math.min(vals.length - 1, Math.max(0, Math.floor(q * vals.length)));
       statsPerTrade.push({
-        p10: vals[idx(0.10)],
+        p5: vals[idx(0.05)],
+        p25: vals[idx(0.25)],
         p50: vals[idx(0.50)],
-        p90: vals[idx(0.90)],
+        p75: vals[idx(0.75)],
+        p95: vals[idx(0.95)],
         mean: vals.reduce((s, v) => s + v, 0) / vals.length,
       });
     }
 
     const sortedFinal = [...finalBalances].sort((a, b) => a - b);
     const idx = (q: number) => Math.min(sortedFinal.length - 1, Math.max(0, Math.floor(q * sortedFinal.length)));
-    const finalP10 = sortedFinal[idx(0.10)];
+    const finalP5 = sortedFinal[idx(0.05)];
+    const finalP25 = sortedFinal[idx(0.25)];
     const finalP50 = sortedFinal[idx(0.50)];
-    const finalP90 = sortedFinal[idx(0.90)];
+    const finalP75 = sortedFinal[idx(0.75)];
+    const finalP95 = sortedFinal[idx(0.95)];
     const finalMean = finalBalances.reduce((s, v) => s + v, 0) / finalBalances.length;
+
+    // Distribución de racha máxima perdedora
+    const sortedStreaks = [...maxLossStreaks].sort((a, b) => a - b);
+    const medianMaxLossStreak = sortedStreaks[idx(0.50)];
+    const p95MaxLossStreak = sortedStreaks[idx(0.95)];
 
     const probRuin = (ruinCount / SIM_RUNS) * 100;
     const probDouble = (doubleCount / SIM_RUNS) * 100;
@@ -120,10 +155,13 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
     return {
       expectancyR,
       statsPerTrade,
-      finalP10, finalP50, finalP90, finalMean,
+      finalP5, finalP25, finalP50, finalP75, finalP95, finalMean,
+      medianMaxLossStreak,
+      p95MaxLossStreak,
+      analyticalRuinProb,
       probRuin, probDouble,
     };
-  }, [startBalance, trades, winRate, avgWinR, avgLossR, riskPct, seed, mulberry32]);
+  }, [startBalance, trades, winRate, avgWinR, avgLossR, riskPct, monthlyWithdrawal, seed, mulberry32]);
 
   const fmtUsd = (n: number) =>
     es
@@ -137,18 +175,18 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
 
   const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)} %`;
 
-  // ── SVG paths para el abanico P10-P90 + media + mediana ──────────
+  // ── SVG paths para el abanico P5-P95, P25-P75 + media + mediana ──────────
   const svgW = 540;
-  const svgH = 140;
+  const svgH = 150;
   const padX = 8;
   const padY = 10;
-  const allVals = c.statsPerTrade.flatMap((s) => [s.p10, s.p50, s.p90, s.mean]);
+  const allVals = c.statsPerTrade.flatMap((s) => [s.p5, s.p25, s.p50, s.p75, s.p95, s.mean]);
   const maxV = Math.max(...allVals, startBalance, 1);
   const minV = 0;
   const range = maxV - minV || 1;
   const N = c.statsPerTrade.length;
 
-  const toPath = (key: "p10" | "p50" | "p90" | "mean") => {
+  const toPath = (key: "p5" | "p25" | "p50" | "p75" | "p95" | "mean") => {
     const pts = c.statsPerTrade.map((s, i) => {
       const x = padX + (i / (N - 1)) * (svgW - padX * 2);
       const y = svgH - padY - ((s[key] - minV) / range) * (svgH - padY * 2);
@@ -157,11 +195,11 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
     return "M " + pts.join(" L ");
   };
 
-  // Banda P10-P90 como area cerrada
-  const bandPath = useMemo(() => {
+  // Banda P5-P95 como area cerrada externa
+  const outerBandPath = useMemo(() => {
     const top = c.statsPerTrade.map((s, i) => {
       const x = padX + (i / (N - 1)) * (svgW - padX * 2);
-      const y = svgH - padY - ((s.p90 - minV) / range) * (svgH - padY * 2);
+      const y = svgH - padY - ((s.p95 - minV) / range) * (svgH - padY * 2);
       return `${x.toFixed(1)},${y.toFixed(1)}`;
     });
     const bottom = c.statsPerTrade
@@ -170,14 +208,32 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
       .map((s, i) => {
         const idx = N - 1 - i;
         const x = padX + (idx / (N - 1)) * (svgW - padX * 2);
-        const y = svgH - padY - ((c.statsPerTrade[idx].p10 - minV) / range) * (svgH - padY * 2);
+        const y = svgH - padY - ((c.statsPerTrade[idx].p5 - minV) / range) * (svgH - padY * 2);
         return `${x.toFixed(1)},${y.toFixed(1)}`;
       });
     return "M " + top.join(" L ") + " L " + bottom.join(" L ") + " Z";
   }, [c.statsPerTrade, N, range, minV]);
 
-  // Reusable slider — label + accent value pill + ≥44px touch row.
-  // Unified across all interactive tools (Risk/Equity/RMultiple/Savings/Edge).
+  // Banda P25-P75 como area cerrada interna
+  const innerBandPath = useMemo(() => {
+    const top = c.statsPerTrade.map((s, i) => {
+      const x = padX + (i / (N - 1)) * (svgW - padX * 2);
+      const y = svgH - padY - ((s.p75 - minV) / range) * (svgH - padY * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    });
+    const bottom = c.statsPerTrade
+      .slice()
+      .reverse()
+      .map((s, i) => {
+        const idx = N - 1 - i;
+        const x = padX + (idx / (N - 1)) * (svgW - padX * 2);
+        const y = svgH - padY - ((c.statsPerTrade[idx].p25 - minV) / range) * (svgH - padY * 2);
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+    return "M " + top.join(" L ") + " L " + bottom.join(" L ") + " Z";
+  }, [c.statsPerTrade, N, range, minV]);
+
+  // Reusable slider
   const slider = (
     label: string,
     value: number,
@@ -215,7 +271,6 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         className="tj-range w-full"
-        /* `--pct` pinta el tramo recorrido dentro de la pista del control. */
         style={
           {
             accentColor: "rgb(var(--accent-base))",
@@ -271,8 +326,8 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", lineHeight: 1.62, color: "var(--ink-2)", maxWidth: "34em" }}
           >
             {es
-              ? "300 simulaciones de tus próximas operaciones. Cada camino es distinto: la banda muestra el rango probable (P10–P90). El mismo edge puede multiplicar tu cuenta o arruinarte — depende del orden. La disciplina es lo que te deja sobrevivir hasta cobrarlo."
-              : "300 simulations of your next trades. Each path is different: the band shows the likely range (P10–P90). The same edge can multiply your account or ruin you — it depends on order. Discipline is what lets you survive long enough to collect it."}
+              ? "300 simulaciones de tus próximas operaciones. Cada camino es distinto: el abanico muestra los percentiles completos (P5 a P95). El mismo edge puede multiplicar tu cuenta o arruinarte según el orden. La disciplina es lo que te deja sobrevivir hasta cobrarlo."
+              : "300 simulations of your next trades. Each path is different: the fan shows full percentiles (P5 to P95). The same edge can multiply your account or ruin you depending on order. Discipline is what lets you survive long enough to collect it."}
           </p>
 
           {/* Archetype Presets */}
@@ -312,6 +367,8 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             {slider(es ? "Ganancia media" : "Avg win (R)", avgWinR, 0.5, 5, 0.1, setAvgWinR, " R", es ? "Ganancia media en R" : "Average win in R")}
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
             {slider(es ? "Riesgo/op." : "Risk/trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, " %", es ? "Riesgo por operación" : "Risk per trade")}
+            {slider(es ? "Retiro mensual ($)" : "Monthly withdrawal ($)", monthlyWithdrawal, 0, 5000, 100, setMonthlyWithdrawal, " $", es ? "Retiro mensual de beneficios" : "Monthly profit withdrawal")}
+            {slider(es ? "Semilla PRNG" : "PRNG Seed", seed, 1, 50, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
           </div>
 
           <button
@@ -328,7 +385,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M2.5 8a5.5 5.5 0 019.4-3.9M13.5 8a5.5 5.5 0 01-9.4 3.9M13 2.5v3h-3M3 13.5v-3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {es ? "Volver a tirar" : "Re-roll"}
+            {es ? "Volver a tirar (Semilla +1)" : "Re-roll (Seed +1)"}
           </button>
         </div>
 
@@ -354,9 +411,9 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             </div>
             <div className="text-right">
               <div className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Simulaciones" : "Simulations"}
+                {es ? "Simulaciones deterministas" : "Deterministic simulations"}
               </div>
-              <div className="tnum" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{SIM_RUNS}</div>
+              <div className="tnum" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{SIM_RUNS} runs (seed #{seed})</div>
             </div>
           </div>
 
@@ -367,16 +424,21 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
                 {es ? "Abanico de caminos" : "Path fan"} · {trades} {es ? "ops" : "trades"}
               </span>
               <div className="flex items-center gap-3 tnum" style={{ fontSize: 9.5, color: "var(--ink-3)" }}>
-                <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-1.5 rounded-[1px]" style={{ background: "rgb(var(--accent-base) / 0.18)" }} /> P10–P90</span>
+                <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-1.5 rounded-[1px]" style={{ background: "rgb(var(--accent-base) / 0.12)" }} /> P5–P95</span>
+                <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-1.5 rounded-[1px]" style={{ background: "rgb(var(--accent-base) / 0.28)" }} /> P25–P75</span>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-[2px]" style={{ background: "rgb(var(--accent-base))" }} /> {es ? "Media" : "Mean"}</span>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-[1.5px] border-t border-dashed" style={{ borderColor: "var(--ink-2)" }} /> P50</span>
               </div>
             </div>
             <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ height: "auto", display: "block" }} aria-label={es ? "Abanico de caminos simulados" : "Fan of simulated paths"} role="img">
               <defs>
-                <linearGradient id="rs-band" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.22" />
-                  <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.06" />
+                <linearGradient id="rs-outer-band" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.14" />
+                  <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.04" />
+                </linearGradient>
+                <linearGradient id="rs-inner-band" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.30" />
+                  <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.12" />
                 </linearGradient>
               </defs>
               {/* baseline (start balance) */}
@@ -389,8 +451,10 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
                 strokeWidth="1"
                 strokeDasharray="3 3"
               />
-              {/* P10-P90 band */}
-              <path d={bandPath} fill="url(#rs-band)" />
+              {/* P5-P95 outer band */}
+              <path d={outerBandPath} fill="url(#rs-outer-band)" />
+              {/* P25-P75 inner band */}
+              <path d={innerBandPath} fill="url(#rs-inner-band)" />
               {/* mean line */}
               <path d={toPath("mean")} fill="none" stroke="rgb(var(--accent-base))" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
               {/* median dashed */}
@@ -398,39 +462,71 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             </svg>
           </div>
 
-          {/* Final-balance distribution stats */}
-          <div className="grid grid-cols-2 gap-3.5 mb-4">
-            <Result label={es ? "Final P10" : "Final P10"} value={fmtUsd(c.finalP10)} color="rgb(var(--pnl-neg))" />
-            <Result label={es ? "Final P50" : "Final P50"} value={fmtUsd(c.finalP50)} color="var(--ink)" />
-            <Result label={es ? "Final P90" : "Final P90"} value={fmtUsd(c.finalP90)} color="rgb(var(--pnl-pos))" />
-            <Result label={es ? "Final medio" : "Mean final"} value={fmtUsd(c.finalMean)} color="rgb(var(--accent-base))" />
+          {/* Final-balance distribution 5 percentiles */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-4 text-center font-mono">
+            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
+              <span className="block text-[9.5px] text-tertiary">P5 (Cola 5%)</span>
+              <span className="text-xs font-bold text-[rgb(var(--pnl-neg))]">{fmtUsd(c.finalP5)}</span>
+            </div>
+            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
+              <span className="block text-[9.5px] text-tertiary">P25 (Q1)</span>
+              <span className="text-xs font-bold text-secondary">{fmtUsd(c.finalP25)}</span>
+            </div>
+            <div className="p-2 rounded bg-[rgb(var(--accent-base)/0.08)] border border-[rgb(var(--accent-base)/0.25)]">
+              <span className="block text-[9.5px] text-[rgb(var(--accent-base))] font-semibold">P50 (Mediana)</span>
+              <span className="text-xs font-bold text-[rgb(var(--accent-base))]">{fmtUsd(c.finalP50)}</span>
+            </div>
+            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
+              <span className="block text-[9.5px] text-tertiary">P75 (Q3)</span>
+              <span className="text-xs font-bold text-secondary">{fmtUsd(c.finalP75)}</span>
+            </div>
+            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
+              <span className="block text-[9.5px] text-tertiary">P95 (Top 5%)</span>
+              <span className="text-xs font-bold text-[rgb(var(--pnl-pos))]">{fmtUsd(c.finalP95)}</span>
+            </div>
           </div>
 
-          {/* Probabilities */}
+          {/* Probabilities & Racha Perdedora */}
           <div
-            className="grid grid-cols-2 gap-2 rounded-[2px] p-3 mb-4"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-[2px] p-3 mb-4 text-center font-mono"
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.05)" }}
           >
             <div>
               <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Prob. de ruina" : "Prob. of ruin"}
+                {es ? "Ruina (Monte Carlo)" : "Ruin (Monte Carlo)"}
               </div>
               <div
-                className="tnum"
-                style={{ fontSize: 16, fontWeight: 700, marginTop: 2, color: c.probRuin > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)" }}
+                className="tnum text-sm font-bold mt-1"
+                style={{ color: c.probRuin > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)" }}
               >
                 {fmtPct(c.probRuin, 1)}
               </div>
             </div>
             <div>
               <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Prob. doblar cuenta" : "Prob. to double"}
+                {es ? "Ruina Analítica" : "Analytical Ruin"}
               </div>
               <div
-                className="tnum"
-                style={{ fontSize: 16, fontWeight: 700, marginTop: 2, color: c.probDouble > 50 ? "rgb(var(--pnl-pos))" : "var(--ink)" }}
+                className="tnum text-sm font-bold mt-1"
+                style={{ color: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)" }}
               >
-                {fmtPct(c.probDouble, 1)}
+                {fmtPct(c.analyticalRuinProb, 1)}
+              </div>
+            </div>
+            <div>
+              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+                {es ? "Racha Pérdidas (P50)" : "Loss Streak (P50)"}
+              </div>
+              <div className="tnum text-sm font-bold mt-1 text-primary">
+                {c.medianMaxLossStreak} ops
+              </div>
+            </div>
+            <div>
+              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+                {es ? "Peor Racha (P95)" : "Worst Streak (P95)"}
+              </div>
+              <div className="tnum text-sm font-bold mt-1 text-[rgb(var(--pnl-neg))]">
+                {c.p95MaxLossStreak} ops
               </div>
             </div>
           </div>
@@ -449,24 +545,5 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
         </div>
       </div>
     </section>
-  );
-}
-
-function Result({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <div
-      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
-      style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
-    >
-      <div className="tnum relative" style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-        {label}
-      </div>
-      <div
-        className="tnum min-w-0 break-words relative"
-        style={{ fontSize: 18, fontWeight: 700, marginTop: 4, color, transition: "color 0.18s var(--ease-suave)" }}
-      >
-        {value}
-      </div>
-    </div>
   );
 }

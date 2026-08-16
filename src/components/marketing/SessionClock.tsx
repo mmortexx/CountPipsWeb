@@ -31,7 +31,7 @@ import { useLang } from "@/lib/i18n";
  * .tj-paper + .tj-paper-glow. Sin overflow mobile. Actualiza cada minuto.
  */
 type Session = {
-  id: "asia" | "london" | "ny";
+  id: "sydney" | "asia" | "london" | "ny";
   nameEs: string;
   nameEn: string;
   startUtc: number; // hour 0-24
@@ -39,27 +39,46 @@ type Session = {
   color: string;
   cityEs: string;
   cityEn: string;
+  avgVolatilityPips: number;
+};
+
+type Killzone = {
+  id: string;
+  nameEs: string;
+  nameEn: string;
+  startUtc: number;
+  endUtc: number;
+  descriptionEs: string;
+  descriptionEn: string;
 };
 
 const SESSIONS: Session[] = [
-  { id: "asia", nameEs: "Asia", nameEn: "Asia", startUtc: 0, endUtc: 9, color: "rgb(var(--sig-amber))", cityEs: "Tokio", cityEn: "Tokyo" },
-  { id: "london", nameEs: "Londres", nameEn: "London", startUtc: 7, endUtc: 16, color: "rgb(var(--accent-base))", cityEs: "Londres", cityEn: "London" },
-  { id: "ny", nameEs: "Nueva York", nameEn: "New York", startUtc: 12, endUtc: 21, color: "rgb(var(--pnl-pos))", cityEs: "Nueva York", cityEn: "New York" },
+  { id: "sydney", nameEs: "Sídney", nameEn: "Sydney", startUtc: 21, endUtc: 6, color: "rgb(var(--sig-purple, 168 85 247))", cityEs: "Sídney", cityEn: "Sydney", avgVolatilityPips: 42 },
+  { id: "asia", nameEs: "Asia / Tokio", nameEn: "Asia / Tokyo", startUtc: 0, endUtc: 9, color: "rgb(var(--sig-amber))", cityEs: "Tokio", cityEn: "Tokyo", avgVolatilityPips: 58 },
+  { id: "london", nameEs: "Londres", nameEn: "London", startUtc: 7, endUtc: 16, color: "rgb(var(--accent-base))", cityEs: "Londres", cityEn: "London", avgVolatilityPips: 94 },
+  { id: "ny", nameEs: "Nueva York", nameEn: "New York", startUtc: 12, endUtc: 21, color: "rgb(var(--pnl-pos))", cityEs: "Nueva York", cityEn: "New York", avgVolatilityPips: 112 },
 ];
+
+const KILLZONES: Killzone[] = [
+  { id: "london_open", nameEs: "London Open Killzone", nameEn: "London Open Killzone", startUtc: 7, endUtc: 10, descriptionEs: "Inyección masiva de liquidez europea y establecimiento del rango diario.", descriptionEn: "Massive European liquidity injection establishing the initial daily range." },
+  { id: "ny_open", nameEs: "NY Open Killzone", nameEn: "NY Open Killzone", startUtc: 12, endUtc: 15, descriptionEs: "Solape transatlántico de máxima volatilidad y volumen de negociación.", descriptionEn: "Transatlantic overlap with highest volatility and trading volume." },
+  { id: "london_close", nameEs: "London Close Killzone", nameEn: "London Close Killzone", startUtc: 15, endUtc: 16.5, descriptionEs: "Tomas de beneficio de mesas institucionales y reversiones de fin de sesión.", descriptionEn: "Institutional profit taking and end-of-day mean reversions." },
+];
+
+type TimezoneMode = "local" | "utc" | "est" | "cet";
 
 export function SessionClock({ num = "02" }: { num?: string }) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Hora UTC actual como fracción de día (0-24). SSR-safe: empieza en
-  // 0 y se corrige tras mount para evitar mismatch de hidratación.
   const [utcHour, setUtcHour] = useState<number | null>(null);
   const [localTz, setLocalTz] = useState("");
+  const [tzMode, setTzMode] = useState<TimezoneMode>("local");
 
   useEffect(() => {
     const tick = () => {
       const now = new Date();
-      const h = now.getUTCHours() + now.getUTCMinutes() / 60;
+      const h = now.getUTCHours() + now.getUTCMinutes() / 60 + now.getUTCSeconds() / 3600;
       setUtcHour(h);
       try {
         setLocalTz(Intl.DateTimeFormat().resolvedOptions().timeZone || "");
@@ -68,23 +87,34 @@ export function SessionClock({ num = "02" }: { num?: string }) {
       }
     };
     tick();
-    const id = window.setInterval(tick, 60_000); // cada minuto
+    const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
   }, []);
 
-  // Estado de cada sesión: open / closed + si está en solape
+  const sessionIsOpen = (s: Session, h: number): boolean => {
+    if (s.startUtc < s.endUtc) return h >= s.startUtc && h < s.endUtc;
+    return h >= s.startUtc || h < s.endUtc;
+  };
+
+  // Estado de cada sesión
   const states = useMemo(() => {
     if (utcHour === null) return null;
-    return SESSIONS.map((s) => {
-      const open = utcHour >= s.startUtc && utcHour < s.endUtc;
-      return { ...s, open };
-    });
+    return SESSIONS.map((s) => ({
+      ...s,
+      open: sessionIsOpen(s, utcHour),
+    }));
+  }, [utcHour]);
+
+  // Killzones activas
+  const activeKillzones = useMemo(() => {
+    if (utcHour === null) return [];
+    return KILLZONES.filter((kz) => utcHour >= kz.startUtc && utcHour < kz.endUtc);
   }, [utcHour]);
 
   // Solapes activos
   const overlaps = useMemo(() => {
     if (utcHour === null) return [];
-    const active = SESSIONS.filter((s) => utcHour >= s.startUtc && utcHour < s.endUtc);
+    const active = SESSIONS.filter((s) => sessionIsOpen(s, utcHour));
     if (active.length < 2) return [];
     const pairs: { a: Session; b: Session; label: string }[] = [];
     for (let i = 0; i < active.length; i++) {
@@ -99,10 +129,10 @@ export function SessionClock({ num = "02" }: { num?: string }) {
     return pairs;
   }, [utcHour]);
 
-  // Próxima sesión en abrir
+  // Próxima sesión en abrir con temporizador en tiempo real
   const nextSession = useMemo(() => {
     if (utcHour === null) return null;
-    const closed = SESSIONS.filter((s) => !(utcHour >= s.startUtc && utcHour < s.endUtc));
+    const closed = SESSIONS.filter((s) => !sessionIsOpen(s, utcHour));
     if (closed.length === 0) return null;
 
     let closest: { session: Session; hoursUntil: number } | null = null;
@@ -115,6 +145,17 @@ export function SessionClock({ num = "02" }: { num?: string }) {
     }
     return closest;
   }, [utcHour]);
+
+  const tzOffset = useMemo(() => {
+    if (utcHour === null) return 0;
+    if (tzMode === "utc") return 0;
+    if (tzMode === "est") return -5;
+    if (tzMode === "cet") return 1;
+    if (typeof window !== "undefined") {
+      return -new Date().getTimezoneOffset() / 60;
+    }
+    return 0;
+  }, [tzMode, utcHour]);
 
   const openCount = states?.filter((s) => s.open).length ?? 0;
 
@@ -137,7 +178,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
             </span>
             <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
             <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
-              {es ? "SESIONES" : "SESSIONS"}
+              {es ? "SESIONES Y KILLZONES" : "SESSIONS & KILLZONES"}
             </span>
           </div>
           <h2
@@ -153,23 +194,49 @@ export function SessionClock({ num = "02" }: { num?: string }) {
           >
             {es ? (
               <>
-                ¿Qué sesión <span style={{ color: "rgb(var(--accent-base))" }}>abre ahora</span>?
+                ¿Qué sesión y killzone <span style={{ color: "rgb(var(--accent-base))" }}>están activas</span>?
               </>
             ) : (
               <>
-                Which session <span style={{ color: "rgb(var(--accent-base))" }}>is open now</span>?
+                Which session and killzone <span style={{ color: "rgb(var(--accent-base))" }}>are active</span>?
               </>
             )}
           </h2>
           <p className="mt-4" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
             {es
-              ? "Las sesiones de trading marcan la liquidez. Los solapes (London ∩ New York) son las ventanas más activas. Tu zona horaria: " + (localTz || "—") + "."
-              : "Trading sessions drive liquidity. Overlaps (London ∩ New York) are the most active windows. Your timezone: " + (localTz || "—") + "."}
+              ? "Monitor en tiempo real de las 4 plazas mundiales, solapes de alta liquidez y las ventanas institucionales de ejecución (Killzones)."
+              : "Real-time monitor across 4 global sessions, high-liquidity overlaps, and institutional execution windows (Killzones)."}
           </p>
+
+          {/* Selector de zona horaria */}
+          <div className="mt-5 flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] uppercase tracking-wider text-tertiary mr-1">
+              {es ? "Referencia horaria:" : "Timezone reference:"}
+            </span>
+            {[
+              { id: "local" as const, labelEs: `Local (${localTz || "Auto"})`, labelEn: `Local (${localTz || "Auto"})` },
+              { id: "utc" as const, labelEs: "UTC (Global)", labelEn: "UTC (Global)" },
+              { id: "est" as const, labelEs: "EST (Nueva York)", labelEn: "EST (New York)" },
+              { id: "cet" as const, labelEs: "CET (Europa Central)", labelEn: "CET (Central Europe)" },
+            ].map((tz) => (
+              <button
+                key={tz.id}
+                type="button"
+                onClick={() => setTzMode(tz.id)}
+                className={`min-h-[32px] px-3 rounded-[2px] text-xs font-mono transition-colors ${
+                  tzMode === tz.id
+                    ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
+                    : "bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary"
+                }`}
+              >
+                {es ? tz.labelEs : tz.labelEn}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Live status cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
+        {/* Live status cards: 4 plazas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           {SESSIONS.map((s) => {
             const open = states?.find((x) => x.id === s.id)?.open ?? false;
             return (
@@ -186,10 +253,9 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                       {es ? s.nameEs : s.nameEn}
                     </div>
                     <div className="text-[11px]" style={{ color: "var(--ink-3)" }}>
-                      {es ? s.cityEs : s.cityEn} · {fmtHour(s.startUtc)}–{fmtHour(s.endUtc)} UTC
+                      {s.cityEn} · {fmtHour(s.startUtc)}–{fmtHour(s.endUtc)} UTC
                     </div>
                   </div>
-                  {/* Live status dot */}
                   <span
                     className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.1em]"
                     style={{
@@ -198,22 +264,60 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                       border: `1px solid color-mix(in oklab, ${open ? s.color : "rgb(var(--divider))"} ${open ? "35%" : "12%"}, transparent)`,
                     }}
                   >
-                    {open && (
-                      <MotionPingDot color={s.color} />
-                    )}
+                    {open && <MotionPingDot color={s.color} />}
                     {!open && <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--ink-3)" }} />}
                     {open ? (es ? "Abierta" : "Open") : (es ? "Cerrada" : "Closed")}
                   </span>
                 </div>
-                {/* Local-time conversion (when open) */}
-                {open && utcHour !== null && (
-                  <div className="tnum text-[11px]" style={{ color: "var(--ink-2)" }}>
-                    {es ? "Ahora" : "Now"}: {fmtHour(utcHour)} UTC
-                  </div>
-                )}
+                <div className="mt-2 flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-tertiary">{es ? "Volatilidad media:" : "Avg Volatility:"}</span>
+                  <span className="font-bold text-primary">~{s.avgVolatilityPips} pips</span>
+                </div>
               </div>
             );
           })}
+        </div>
+
+        {/* Panel de Killzones Institucionales */}
+        <div className="mb-6 p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] uppercase tracking-wider text-tertiary font-mono">
+              {es ? "Ventanas Institucionales (Killzones)" : "Institutional Killzones"}
+            </span>
+            {activeKillzones.length > 0 ? (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[2px] text-xs font-mono font-bold bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.3)]">
+                <span className="w-2 h-2 rounded-full bg-[rgb(var(--accent-base))]" />
+                {activeKillzones.map((k) => (es ? k.nameEs : k.nameEn)).join(", ")}
+              </span>
+            ) : (
+              <span className="text-xs font-mono text-tertiary">
+                {es ? "Fuera de Killzones principales" : "Outside major Killzones"}
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {KILLZONES.map((kz) => {
+              const active = utcHour !== null && utcHour >= kz.startUtc && utcHour < kz.endUtc;
+              return (
+                <div
+                  key={kz.id}
+                  className={`p-3 rounded-[2px] border transition-colors ${
+                    active
+                      ? "bg-[color-mix(in_oklab,rgb(var(--accent-base))_8%,transparent)] border-[rgb(var(--accent-base)/0.4)]"
+                      : "bg-[rgb(var(--divider)/0.02)] border-[rgb(var(--divider)/0.08)]"
+                  }`}
+                >
+                  <div className="flex items-center justify-between text-xs font-semibold mb-1">
+                    <span style={{ color: active ? "rgb(var(--accent-base))" : "var(--ink)" }}>{es ? kz.nameEs : kz.nameEn}</span>
+                    <span className="font-mono text-tertiary">{fmtHour(kz.startUtc)}–{fmtHour(kz.endUtc)} UTC</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-secondary m-0">
+                    {es ? kz.descriptionEs : kz.descriptionEn}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* 24h band */}
@@ -223,7 +327,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
             <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-              {es ? "Banda 24h (UTC)" : "24h band (UTC)"}
+              {es ? `Banda 24h (${tzMode.toUpperCase()} offset ${tzOffset >= 0 ? "+" : ""}${tzOffset}h)` : `24h band (${tzMode.toUpperCase()} offset ${tzOffset >= 0 ? "+" : ""}${tzOffset}h)`}
             </span>
             <div className="flex items-center gap-3">
               {nextSession && (
@@ -251,42 +355,36 @@ export function SessionClock({ num = "02" }: { num?: string }) {
               />
             ))}
             {/* Session bands */}
-            {SESSIONS.map((s) => (
-              <div
-                key={s.id}
-                className="absolute top-1 bottom-1 rounded-[2px]"
-                style={{
-                  left: `${hourPct(s.startUtc)}%`,
-                  width: `${hourPct(s.endUtc - s.startUtc)}%`,
-                  // La banda abierta baja del 38 % al 22 %. No es un ajuste
-                  // de gusto: a 38 % el tinte competía con su propio rótulo y
-                  // lo dejaba en 3,23:1 en el peor caso —Londres, sobre el
-                  // acento—, por debajo del mínimo. A 22 % la banda sigue
-                  // leyéndose como abierta y el peor caso sube a 5,2:1. El
-                  // filete acompaña, que es donde vive de verdad la señal.
-                  background: `color-mix(in oklab, ${s.color} ${states?.find((x) => x.id === s.id)?.open ? "22%" : "14%"}, transparent)`,
-                  border: `1px solid color-mix(in oklab, ${s.color} ${states?.find((x) => x.id === s.id)?.open ? "58%" : "20%"}, transparent)`,
-                }}
-                aria-label={`${es ? s.nameEs : s.nameEn} ${fmtHour(s.startUtc)}-${fmtHour(s.endUtc)} UTC`}
-              >
-                {/* La sesión abierta rotula en TINTA, no en su propio color.
-                    Lo llevaba en el color de la sesión, y como la banda ya se
-                    tiñe con ese mismo color al 38 %, el rótulo quedaba en
-                    3,54:1 sobre su propio fondo — color sobre su tinte, que es
-                    la peor combinación posible. Que la sesión está abierta ya
-                    lo dicen el relleno y el filete; el nombre sólo tiene que
-                    leerse. */}
-                <span className="absolute inset-0 flex items-center justify-center text-[9.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: states?.find((x) => x.id === s.id)?.open ? "var(--ink)" : "var(--ink-2)" }}>
-                  {es ? s.nameEs : s.nameEn}
-                </span>
-              </div>
-            ))}
+            {SESSIONS.map((s) => {
+              const start = (s.startUtc + tzOffset + 24) % 24;
+              const end = (s.endUtc + tzOffset + 24) % 24;
+              const isCrossing = start > end;
+              const isOpen = states?.find((x) => x.id === s.id)?.open ?? false;
+
+              return (
+                <div
+                  key={s.id}
+                  className="absolute top-1 bottom-1 rounded-[2px]"
+                  style={{
+                    left: `${hourPct(isCrossing ? 0 : start)}%`,
+                    width: `${hourPct(isCrossing ? 24 : end - start)}%`,
+                    background: `color-mix(in oklab, ${s.color} ${isOpen ? "22%" : "14%"}, transparent)`,
+                    border: `1px solid color-mix(in oklab, ${s.color} ${isOpen ? "58%" : "20%"}, transparent)`,
+                  }}
+                  aria-label={`${es ? s.nameEs : s.nameEn} ${fmtHour(s.startUtc)}-${fmtHour(s.endUtc)} UTC`}
+                >
+                  <span className="absolute inset-0 flex items-center justify-center text-[9.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: isOpen ? "var(--ink)" : "var(--ink-2)" }}>
+                    {es ? s.nameEs : s.nameEn}
+                  </span>
+                </div>
+              );
+            })}
             {/* Now marker (live) */}
             {utcHour !== null && (
               <div
                 aria-hidden
                 className="absolute top-0 bottom-0"
-                style={{ left: `${hourPct(utcHour)}%`, width: 2, background: "var(--ink)", boxShadow: "0 0 8px rgb(var(--accent-base))" }}
+                style={{ left: `${hourPct((utcHour + tzOffset + 24) % 24)}%`, width: 2, background: "var(--ink)", boxShadow: "0 0 8px rgb(var(--accent-base))" }}
               >
                 <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full" style={{ background: "var(--ink)" }} />
               </div>
@@ -326,8 +424,8 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                 {" — "}
                 {overlaps.map((o) => `${o.a.nameEn} ∩ ${o.b.nameEn}`).join(", ")}
                 {es
-                  ? ". Ventana de máxima liquidez y volatilidad."
-                  : ". Window of maximum liquidity and volatility."}
+                  ? ". Ventana de máxima liquidez y volumen institucional."
+                  : ". Window of maximum liquidity and institutional volume."}
               </div>
             </div>
           )}

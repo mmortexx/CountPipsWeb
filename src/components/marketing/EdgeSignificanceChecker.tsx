@@ -39,6 +39,8 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
   const [winRate, setWinRate] = useState(58); // %
   const [avgWinR, setAvgWinR] = useState(2.0);
   const [avgLossR, setAvgLossR] = useState(1.0);
+  const [parametersCount, setParametersCount] = useState(3);
+  const [copied, setCopied] = useState(false);
 
   const c = useMemo(() => {
     const wr = winRate / 100;
@@ -58,17 +60,31 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
     const z = canTest && se > 0 ? (observedWins - expectedWins) / se : 0;
 
     // p-valor (two-tailed, approx normal CDF via erf)
-    // p = 2 * (1 - Φ(|z|))
     const pValue = canTest ? 2 * (1 - normalCdf(Math.abs(z))) : 1;
 
     const significant = pValue < 0.05;
     const strongSignificant = pValue < 0.01;
 
-    // Muestra mínima para detectar `winRate` al 95% confianza, margen ±5%
-    // n = z² · p·(1-p) / e²  con z=1.96 (95%), p=winRate, e=0.05
-    const e = 0.05;
+    // Intervalo de confianza Wilson Score (al 95% con z=1.96)
     const z95 = 1.96;
-    const minSample = Math.ceil((z95 * z95 * (wr) * (1 - wr)) / (e * e));
+    const zSq = z95 * z95;
+    const denom = 1 + zSq / n;
+    const center = (wr + zSq / (2 * n)) / denom;
+    const margin = (z95 * Math.sqrt((wr * (1 - wr)) / n + zSq / (4 * n * n))) / denom;
+    const wilsonLower = Math.max(0, center - margin) * 100;
+    const wilsonUpper = Math.min(1, center + margin) * 100;
+
+    // Muestra mínima para 90%, 95% y 99% de confianza (margen error e = ±5%)
+    const e = 0.05;
+    const z90 = 1.645;
+    const z99 = 2.576;
+    const minSample90 = Math.ceil((z90 * z90 * wr * (1 - wr)) / (e * e));
+    const minSample95 = Math.ceil((z95 * z95 * wr * (1 - wr)) / (e * e));
+    const minSample99 = Math.ceil((z99 * z99 * wr * (1 - wr)) / (e * e));
+
+    // Detector de Sobreajuste (Overfitting): Ratio de trades por parámetro (mínimo institucional 20:1)
+    const tradesPerParam = n / Math.max(1, parametersCount);
+    const overfittingRisk = tradesPerParam < 20;
 
     return {
       expectancyR,
@@ -77,12 +93,19 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
       significant,
       strongSignificant,
       canTest,
-      minSample,
-      sampleAdequate: n >= minSample,
+      wilsonLower,
+      wilsonUpper,
+      minSample: minSample95,
+      minSample90,
+      minSample95,
+      minSample99,
+      sampleAdequate: n >= minSample95,
+      tradesPerParam,
+      overfittingRisk,
       wins: Math.round(observedWins),
       losses: n - Math.round(observedWins),
     };
-  }, [trades, winRate, avgWinR, avgLossR]);
+  }, [trades, winRate, avgWinR, avgLossR, parametersCount]);
 
   const fmtNum = (n: number, dec = 2) =>
     es
@@ -226,6 +249,35 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             {slider(es ? "Ganancia media" : "Avg win (R)", avgWinR, 0.5, 5, 0.1, setAvgWinR, " R", es ? "Ganancia media en R" : "Average win in R")}
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
           </div>
+
+          {/* Detector de sobreajuste / Grados de libertad del setup */}
+          <div className="mt-5 p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+            <div className="flex items-center justify-between mb-2">
+              <span className="tnum text-[11px] uppercase tracking-wider text-tertiary">
+                {es ? "Parámetros / Reglas del Setup" : "Setup Parameters / Rules"}
+              </span>
+              <span className="tnum font-mono font-bold text-primary">{parametersCount}</span>
+            </div>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              step={1}
+              value={parametersCount}
+              onChange={(e) => setParametersCount(parseInt(e.target.value, 10))}
+              aria-label={es ? "Número de parámetros del setup" : "Number of setup parameters"}
+              className="tj-range w-full"
+              style={{ accentColor: "rgb(var(--accent-base))", height: 36 }}
+            />
+            <div className="mt-2 flex items-center justify-between text-[11px]">
+              <span className="text-secondary">
+                {es ? "Ratio trades/parámetro:" : "Trades/parameter ratio:"} <strong className="font-mono text-primary">{c.tradesPerParam.toFixed(1)}:1</strong>
+              </span>
+              <span className={`font-semibold ${c.overfittingRisk ? "text-[rgb(var(--pnl-neg))]" : "text-[rgb(var(--pnl-pos))]"}`}>
+                {c.overfittingRisk ? (es ? "⚠ Riesgo de Sobreajuste" : "⚠ Overfitting Risk") : (es ? "✓ Robusto (≥20:1)" : "✓ Robust (≥20:1)")}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Right: results card */}
@@ -269,11 +321,38 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           </div>
 
           {/* Stats grid */}
-          <div className="grid grid-cols-2 gap-3.5 mb-4">
+          <div className="grid grid-cols-2 gap-3 mb-4">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
-            <Result label="z-score" value={fmtNum(c.z, 2)} color="var(--ink)" />
-            <Result label="p-valor" value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
-            <Result label={es ? "Aciertos / Pérdidas" : "Wins / Losses"} value={`${c.wins} / ${c.losses}`} color="var(--ink)" />
+            <Result label="p-valor (H₀: 50%)" value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
+            <Result label={es ? "IC Wilson 95%" : "Wilson 95% CI"} value={`[${fmtNum(c.wilsonLower, 1)}%, ${fmtNum(c.wilsonUpper, 1)}%]`} color="var(--ink)" />
+            <Result label={es ? "z-score observado" : "Observed z-score"} value={fmtNum(c.z, 2)} color="var(--ink)" />
+          </div>
+
+          {/* Matriz de Muestra Mínima */}
+          <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]">
+            <span className="block text-[10px] uppercase tracking-wider text-tertiary mb-2">
+              {es ? "Muestra requerida según confianza (margen ±5%)" : "Required sample by confidence (margin ±5%)"}
+            </span>
+            <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+              <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.04)]">
+                <span className="block text-[10px] text-tertiary">90% (z=1.65)</span>
+                <span className={`font-bold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
+                  {c.minSample90} ops
+                </span>
+              </div>
+              <div className="p-1.5 rounded bg-[rgb(var(--accent-base)/0.08)] border border-[rgb(var(--accent-base)/0.2)]">
+                <span className="block text-[10px] text-[rgb(var(--accent-base))] font-semibold">95% (z=1.96)</span>
+                <span className={`font-bold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
+                  {c.minSample95} ops
+                </span>
+              </div>
+              <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.04)]">
+                <span className="block text-[10px] text-tertiary">99% (z=2.58)</span>
+                <span className={`font-bold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
+                  {c.minSample99} ops
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Sample-size adequacy bar */}
@@ -315,16 +394,33 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             </p>
           </div>
 
-          {/* Disclaimer */}
-          <div
-            className="rounded-[2px] px-3 py-2.5"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.06)" }}
-          >
-            <p className="tnum m-0 text-[11px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
-              {es
-                ? "Test binomial (aproximación normal) asumiendo operaciones iid. El trading real NO es iid (regímenes cambian, correlación entre operaciones). Es una cota orientativa, no una garantía. El verdadero test es el tiempo + validación fuera de muestra."
-                : "Binomial test (normal approximation) assuming iid trades. Real trading is NOT iid (regimes shift, trades correlate). This is an orientative bound, not a guarantee. The real test is time + out-of-sample validation."}
-            </p>
+          {/* Exportar informe */}
+          <div className="mt-4 pt-3 border-t border-[rgb(var(--divider)/0.08)] flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => {
+                const report = es
+                  ? `Informe de Significancia Estadística (CountPips):\n• Muestra analizada: ${trades} operaciones\n• Win Rate observado: ${winRate}%\n• IC 95% Wilson Score: [${c.wilsonLower.toFixed(1)}%, ${c.wilsonUpper.toFixed(1)}%]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${c.expectancyR.toFixed(3)} R\n• z-score: ${c.z.toFixed(2)} | p-valor: ${c.pValue.toFixed(4)}\n• Veredicto: ${verdict.label} (${c.significant ? "Significativo p < 0.05" : "No significativo"})\n• Muestra 95% requerida: ${c.minSample95} ops\n• Parámetros del setup: ${parametersCount} (${c.tradesPerParam.toFixed(1)}:1 ratio)`
+                  : `Statistical Significance Report (CountPips):\n• Analyzed Sample: ${trades} trades\n• Observed Win Rate: ${winRate}%\n• Wilson 95% CI: [${c.wilsonLower.toFixed(1)}%, ${c.wilsonUpper.toFixed(1)}%]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${c.expectancyR.toFixed(3)} R\n• z-score: ${c.z.toFixed(2)} | p-value: ${c.pValue.toFixed(4)}\n• Verdict: ${verdict.label} (${c.significant ? "Significant p < 0.05" : "Not significant"})\n• 95% Min Sample: ${c.minSample95} trades\n• Setup Parameters: ${parametersCount} (${c.tradesPerParam.toFixed(1)}:1 ratio)`;
+
+                if (navigator?.clipboard?.writeText) {
+                  navigator.clipboard.writeText(report).then(() => {
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2200);
+                  });
+                }
+              }}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+                <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" strokeWidth="1.3" />
+              </svg>
+              {copied ? (es ? "¡Informe copiado!" : "Report copied!") : (es ? "Copiar informe estadístico" : "Copy statistical report")}
+            </button>
+            <span className="text-[11px] text-tertiary font-mono">
+              {es ? "100% privado en navegador" : "100% private in browser"}
+            </span>
           </div>
         </div>
       </div>

@@ -93,7 +93,12 @@ export default function Error({
             <button
               type="button"
               onClick={reset}
-              className="bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 py-2 rounded-[2px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-[background-color,box-shadow] hover:shadow-[0_12px_32px_-8px_rgb(var(--accent-base)/0.7)]"
+              /* `group` + `min-h-[44px]`: el icono llevaba
+                 `group-hover:-rotate-45` sin ningún padre `group`, así que
+                 nunca rotaba; y con `py-2` el botón medía ~36 px, por
+                 debajo del objetivo táctil de 44 px que exige R2 en
+                 cualquier control interactivo. */
+              className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[2px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-[background-color,box-shadow] hover:shadow-[0_12px_32px_-8px_rgb(var(--accent-base)/0.7)]"
             >
               <svg
                 className="mr-2 transition-transform group-hover:-rotate-45"
@@ -117,7 +122,7 @@ export default function Error({
           <div className="tj-pulsa inline-flex">
             <Link
               href="/"
-              className="tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.20)] text-primary px-8 py-3 rounded-[2px] font-medium hover:bg-[rgb(var(--accent-base))] hover:text-[rgb(var(--accent-ink))] transition-[background-color,color,transform] hover:-translate-y-0.5"
+              className="tj-paper tj-paper-dense inline-flex min-h-[44px] items-center border border-[rgb(var(--divider)/0.20)] text-primary px-8 rounded-[2px] font-medium hover:bg-[rgb(var(--accent-base))] hover:text-[rgb(var(--accent-ink))] transition-[background-color,color,transform] hover:-translate-y-0.5"
             >
               {es ? "Volver al inicio" : "Back to home"}
             </Link>

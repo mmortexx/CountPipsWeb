@@ -265,6 +265,120 @@ describe("Criterio de Kelly (Puro, Medio y Cuarto) y clamping", () => {
   });
 });
 
+describe("Ratio Omega y Asimetría de Drawdown", () => {
+  it("calcula el Ratio Omega como grossWin / grossLoss", () => {
+    expect(METRICS.omega).toBeGreaterThan(0);
+    expect(METRICS.omega).toBeCloseTo(METRICS.profitFactor, 6);
+  });
+
+  it("calcula la asimetría de recuperación de drawdown requerida R_req = DD / (1 - DD)", async () => {
+    const { drawdownRecoveryRequired } = await import("@/lib/trading/data");
+    expect(drawdownRecoveryRequired(10)).toBeCloseTo(11.1111, 3); // 10% DD -> 11.11% ganancia
+    expect(drawdownRecoveryRequired(20)).toBeCloseTo(25.0, 3);    // 20% DD -> 25% ganancia
+    expect(drawdownRecoveryRequired(50)).toBeCloseTo(100.0, 3);   // 50% DD -> 100% ganancia
+    expect(drawdownRecoveryRequired(90)).toBeCloseTo(900.0, 3);   // 90% DD -> 900% ganancia
+  });
+});
+
+describe("Multiplicadores de futuros institucionales y multi-activo", () => {
+  it("incluye el contrato E-mini Russell 2000 (RTY) a 50 $/punto y tickSize 0.1", async () => {
+    const { FUTURES_CONTRACTS } = await import("@/components/marketing/RiskCalculator");
+    const rty = FUTURES_CONTRACTS.find((c) => c.id === "rty");
+    expect(rty).toBeDefined();
+    expect(rty?.mult).toBe(50);
+    expect(rty?.tickSize).toBe(0.1);
+  });
+
+  it("resuelve multiplicadores oficiales en data.ts para todas las clases de activo", async () => {
+    const { getInstrumentMultiplier, INSTRUMENT_MULTIPLIERS } = await import("@/lib/trading/data");
+    expect(INSTRUMENT_MULTIPLIERS["ES"]).toBe(50);
+    expect(INSTRUMENT_MULTIPLIERS["NQ"]).toBe(20);
+    expect(INSTRUMENT_MULTIPLIERS["MES"]).toBe(5);
+    expect(INSTRUMENT_MULTIPLIERS["MNQ"]).toBe(2);
+    expect(INSTRUMENT_MULTIPLIERS["CL"]).toBe(1000);
+    expect(INSTRUMENT_MULTIPLIERS["GC"]).toBe(100);
+    expect(INSTRUMENT_MULTIPLIERS["EURUSD"]).toBe(100000);
+    expect(INSTRUMENT_MULTIPLIERS["BTC/USDT"]).toBe(1);
+
+    expect(getInstrumentMultiplier("NQ")).toBe(20);
+    expect(getInstrumentMultiplier("ES")).toBe(50);
+    expect(getInstrumentMultiplier("CUSTOM_FUT", "futures")).toBe(50);
+    expect(getInstrumentMultiplier("CUSTOM_FX", "forex")).toBe(100000);
+    expect(getInstrumentMultiplier("CUSTOM_EQ", "stock")).toBe(1);
+  });
+});
+
+describe("Wald-Wolfowitz Runs Test para Secuencias de Trading", () => {
+  it("maneja casos límite de muestras pequeñas (n = 0, n = 1) sin errores", async () => {
+    const { computeRunsTest } = await import("@/lib/trading/data");
+    const resEmpty = computeRunsTest([]);
+    expect(resEmpty.n).toBe(0);
+    expect(resEmpty.zScore).toBe(0);
+    expect(resEmpty.pValue).toBe(1);
+    expect(resEmpty.isRandom).toBe(true);
+
+    const resSingle = computeRunsTest([mockTrade({ netPnl: 100 })]);
+    expect(resSingle.n).toBe(1);
+    expect(resSingle.zScore).toBe(0);
+    expect(resSingle.pValue).toBe(1);
+  });
+
+  it("maneja secuencias homogéneas (100% ganancias o 100% pérdidas)", async () => {
+    const { computeRunsTest } = await import("@/lib/trading/data");
+    const allWins = Array.from({ length: 20 }, (_, i) => mockTrade({ id: i, netPnl: 150 }));
+    const res = computeRunsTest(allWins);
+    expect(res.wins).toBe(20);
+    expect(res.losses).toBe(0);
+    expect(res.runs).toBe(1);
+    expect(res.pValue).toBe(1);
+    expect(res.isRandom).toBe(true);
+  });
+
+  it("detecta alternancia sistemática (mean reversion excesiva) con z > 1.96 y p < 0.05", async () => {
+    const { computeRunsTest } = await import("@/lib/trading/data");
+    // Secuencia alternada perfecta: W, L, W, L, W, L... (30 operaciones)
+    const alternating = Array.from({ length: 30 }, (_, i) =>
+      mockTrade({ id: i, netPnl: i % 2 === 0 ? 100 : -100 })
+    );
+    const res = computeRunsTest(alternating);
+    expect(res.n).toBe(30);
+    expect(res.wins).toBe(15);
+    expect(res.losses).toBe(15);
+    expect(res.runs).toBe(30); // Máximo número de rachas posible
+    expect(res.zScore).toBeGreaterThan(1.96);
+    expect(res.pValue).toBeLessThan(0.05);
+    expect(res.isAlternating).toBe(true);
+    expect(res.isClustered).toBe(false);
+  });
+
+  it("detecta agrupamiento o persistencia temporal (clustering/streaks) con z < -1.96 y p < 0.05", async () => {
+    const { computeRunsTest } = await import("@/lib/trading/data");
+    // Secuencia agrupada: 15 victorias seguidas de 15 pérdidas seguidas (2 rachas)
+    const clustered = [
+      ...Array.from({ length: 15 }, (_, i) => mockTrade({ id: i, netPnl: 100 })),
+      ...Array.from({ length: 15 }, (_, i) => mockTrade({ id: i + 15, netPnl: -100 })),
+    ];
+    const res = computeRunsTest(clustered);
+    expect(res.n).toBe(30);
+    expect(res.runs).toBe(2);
+    expect(res.zScore).toBeLessThan(-1.96);
+    expect(res.pValue).toBeLessThan(0.05);
+    expect(res.isClustered).toBe(true);
+    expect(res.isAlternating).toBe(false);
+  });
+
+  it("evalúa la secuencia determinista de trades de muestra TRADES", async () => {
+    const { computeRunsTest, TRADES } = await import("@/lib/trading/data");
+    const res = computeRunsTest(TRADES);
+    expect(res.n).toBe(200);
+    expect(res.wins + res.losses).toBe(200);
+    expect(Number.isFinite(res.zScore)).toBe(true);
+    expect(Number.isFinite(res.pValue)).toBe(true);
+    expect(res.pValue).toBeGreaterThanOrEqual(0);
+    expect(res.pValue).toBeLessThanOrEqual(1);
+  });
+});
+
 function mockTrade(overrides: Partial<import("@/lib/trading/data").Trade> = {}): import("@/lib/trading/data").Trade {
   return {
     id: 1,

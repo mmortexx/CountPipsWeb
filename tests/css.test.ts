@@ -105,3 +105,35 @@ describe("globals.css se analiza como CSS, no como prosa", () => {
     ).not.toBeNull();
   });
 });
+
+describe("la contención de scroll no vuelve a tragarse la rueda", () => {
+  /* Sin comentarios: la prosa de esta hoja CITA los selectores que
+     vigila, y con comentarios dentro un regex casaría con la
+     explicación en vez de con la regla. */
+  const hoja = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  it("las capas flotantes contienen el scroll (diálogos, menús, cajón, paletas)", () => {
+    expect(hoja).toMatch(
+      /dialog,\s*\[role="dialog"\],\s*\[role="menu"\]\s*\{\s*overscroll-behavior:\s*contain;\s*\}/
+    );
+  });
+
+  it("las cajas de scroll horizontal contienen SOLO el eje X", () => {
+    expect(hoja).toMatch(
+      /\[class\*="overflow-x-auto"\]\s*\{\s*overscroll-behavior-x:\s*contain;\s*\}/
+    );
+  });
+
+  it("ninguna caja con overflow general vuelve a contener ambos ejes", () => {
+    /* La regla que esto prohíbe es la que atrapaba la rueda: toda caja
+       con scroll propio «contenía», y en Chromium una tabla con
+       overflow-x recibía la rueda vertical, no podía desplazarse en
+       ese eje y el gesto moría ahí — medido: 0 px de página por cada
+       600 px de rueda sobre la tabla de /pricing. La contención
+       pertenece a las capas FLOTANTES; los paneles incorporados a la
+       página encadenan el gesto al llegar a su límite. */
+    expect(hoja).not.toMatch(
+      /\[class\*="overflow-(?:y-auto|auto)"\][^{}]*\{[^}]*overscroll-behavior:\s*contain/
+    );
+  });
+});

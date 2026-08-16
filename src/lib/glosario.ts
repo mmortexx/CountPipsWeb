@@ -255,3 +255,99 @@ export const HERRAMIENTA_DE: Record<string, string> = {
   "revenge-trading": "/test",
   fomo: "/test",
 };
+
+/**
+ * Fórmulas matemáticas institucionales para los términos cuantitativos.
+ */
+export const FORMULAS_GLOSARIO: Record<string, { formula: string; variablesEs: string; variablesEn: string }> = {
+  sharpe: {
+    formula: "S = \\frac{E[R - R_f]}{\\sigma}",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σ: desviación estándar total",
+    variablesEn: "μ: mean return, Rf: risk-free rate, σ: total standard deviation",
+  },
+  "sharpe-ratio": {
+    formula: "S = \\frac{E[R - R_f]}{\\sigma}",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σ: desviación estándar total",
+    variablesEn: "μ: mean return, Rf: risk-free rate, σ: total standard deviation",
+  },
+  sortino: {
+    formula: "So = \\frac{E[R - R_f]}{\\sigma_d}",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σd: desviación estándar de retornos negativos",
+    variablesEn: "μ: mean return, Rf: risk-free rate, σd: downside standard deviation",
+  },
+  "sortino-ratio": {
+    formula: "So = \\frac{E[R - R_f]}{\\sigma_d}",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σd: desviación estándar de retornos negativos",
+    variablesEn: "μ: mean return, Rf: risk-free rate, σd: downside standard deviation",
+  },
+  "calmar-ratio": {
+    formula: "Ca = \\frac{CAGR}{|MaxDD|}",
+    variablesEs: "CAGR: tasa de crecimiento anual compuesta, MaxDD: máximo drawdown histórico pico a valle",
+    variablesEn: "CAGR: compound annual growth rate, MaxDD: historical peak-to-trough max drawdown",
+  },
+  "omega-ratio": {
+    formula: "\\Omega(L) = \\frac{\\int_L^{+\\infty} (1 - F(r))\\,dr}{\\int_{-\\infty}^L F(r)\\,dr}",
+    variablesEs: "L: umbral de rentabilidad objetivo, F(r): función de distribución acumulada de retornos",
+    variablesEn: "L: threshold target return, F(r): cumulative distribution function of returns",
+  },
+  expectancy: {
+    formula: "E(R) = (WR \\times \\bar{W}) - ((1 - WR) \\times \\bar{L})",
+    variablesEs: "WR: tasa de acierto, W̄: ganancia media en R, L̄: pérdida media en R",
+    variablesEn: "WR: win rate, W̄: average win in R, L̄: average loss in R",
+  },
+  "profit-factor": {
+    formula: "PF = \\frac{\\sum \\text{Ganancias Brutas}}{\\sum |\\text{Pérdidas Brutas}|}",
+    variablesEs: "Suma de todos los beneficios cerrados dividida entre la suma de todas las pérdidas",
+    variablesEn: "Gross closed profits divided by gross closed losses",
+  },
+  drawdown: {
+    formula: "DD_t = \\frac{\\max_{\\tau \\le t} X_\\tau - X_t}{\\max_{\\tau \\le t} X_\\tau}",
+    variablesEs: "X_t: valor actual de la cuenta, max X_τ: pico histórico más alto hasta el momento",
+    variablesEn: "X_t: current equity, max X_τ: historical high-water mark",
+  },
+  "max-drawdown": {
+    formula: "MaxDD = \\max_{t} \\left( \\frac{\\max_{\\tau \\le t} X_\\tau - X_t}{\\max_{\\tau \\le t} X_\\tau} \\right)",
+    variablesEs: "El mayor retroceso porcentual registrado en toda la serie temporal",
+    variablesEn: "Largest peak-to-trough percentage decline recorded across the full series",
+  },
+  "kelly-criterion": {
+    formula: "f^* = \\frac{p \\cdot b - q}{b} = p - \\frac{q}{b}",
+    variablesEs: "p: probabilidad de acierto, q = 1 - p: probabilidad de fallo, b: ratio de pago (payoff)",
+    variablesEn: "p: win probability, q = 1 - p: loss probability, b: payoff ratio",
+  },
+  "risk-of-ruin": {
+    formula: "P(\\text{Ruina}) = e^{-\\frac{2 \\cdot E \\cdot B}{\\sigma^2}}",
+    variablesEs: "E: valor esperado por trade, B: capital antes del nivel de quiebra, σ²: varianza del retorno",
+    variablesEn: "E: expected value per trade, B: bankroll buffer before bankruptcy, σ²: variance",
+  },
+  cagr: {
+    formula: "CAGR = \\left( \\frac{V_f}{V_i} \\right)^{\\frac{1}{t}} - 1",
+    variablesEs: "Vf: valor final, Vi: valor inicial, t: tiempo transcurrido en años",
+    variablesEn: "Vf: final value, Vi: initial value, t: time in years",
+  },
+  "r-multiple": {
+    formula: "R = \\frac{\\text{Pnl}}{\\text{Riesgo Inicial } (1R)}",
+    variablesEs: "Beneficio o pérdida normalizado entre la distancia en dólares al stop loss inicial",
+    variablesEn: "Profit or loss normalized by the initial dollar risk to the stop loss",
+  },
+  "position-sizing": {
+    formula: "\\text{Tamaño} = \\frac{\\text{Balance} \\times \\text{Riesgo}\\%}{|\\text{Precio Entrada} - \\text{Precio Stop}| \\times \\text{Multiplicador}}",
+    variablesEs: "Cálculo matemático para fijar la pérdida máxima exacta al nivel de invalidación",
+    variablesEn: "Mathematical sizing to cap maximum dollar risk exactly at the stop level",
+  },
+  "risk-reward-ratio": {
+    formula: "RR = \\frac{|\\text{Objetivo} - \\text{Entrada}|}{|\\text{Entrada} - \\text{Stop}|}",
+    variablesEs: "Relación entre el beneficio proyectado en el take profit y el riesgo asumido en el stop loss",
+    variablesEn: "Ratio of projected target reward versus stop loss risk",
+  },
+  "win-rate": {
+    formula: "WR = \\frac{\\text{Operaciones Ganadoras}}{N_{\\text{total}}} \\times 100",
+    variablesEs: "Porcentaje de operaciones con resultado neto positivo",
+    variablesEn: "Percentage of total trades that closed with a positive net return",
+  },
+  payoff: {
+    formula: "\\text{Payoff} = \\frac{\\bar{W}}{\\bar{L}} = \\frac{\\text{Ganancia Media}}{\\text{Pérdida Media}}",
+    variablesEs: "Ratio de asimetría entre la ganancia media y la pérdida media",
+    variablesEn: "Asymmetry ratio between average winning trade and average losing trade",
+  },
+};

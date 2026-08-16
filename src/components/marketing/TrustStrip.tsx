@@ -23,28 +23,24 @@ export function TrustStrip() {
 
   const items = [
     {
-      // Sustituye a la antigua "Garantía 30 días" (retirada: no se
-      // ofrecen reembolsos). El escudo se reaprovecha para el Guardián,
-      // que es su significado en el resto del sitio — así la tira
-      // mantiene sus 5 elementos y el icono no queda huérfano.
       icon: <ShieldIcon />,
-      label: es ? "Guardián de disciplina" : "Discipline guardian",
-    },
-    {
-      icon: <InfinityIcon />,
-      label: es ? "Demo sin registro" : "No-sign-up demo",
+      label: es ? "Guardián de disciplina en vivo" : "Live discipline guardian",
     },
     {
       icon: <LockIcon />,
-      label: es ? "Datos 100 % locales" : "100 % local data",
+      label: es ? "SQLite WAL · Cifrado local" : "SQLite WAL · Local encryption",
+    },
+    {
+      icon: <InfinityIcon />,
+      label: es ? "Cero telemetría · 100 % privado" : "Zero telemetry · 100 % private",
     },
     {
       icon: <GlobeIcon />,
-      label: "ES + EN",
+      label: es ? "Windows 11 / WinUI 3 nativo" : "Native Windows 11 / WinUI 3",
     },
     {
       icon: <SparkIcon />,
-      label: es ? "Sin tarjeta" : "No card",
+      label: es ? "Demo interactiva sin registro" : "No-sign-up interactive demo",
     },
   ];
 

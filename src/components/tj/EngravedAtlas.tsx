@@ -177,66 +177,27 @@ function serie(id: keyof typeof SERIES_ROTULOS): readonly string[] {
 /** Interruptor de comparación. Se deja escrito porque la única forma
  *  honesta de saber lo que cuesta el revelado es medir el MISMO recorrido
  *  con él y sin él; ponerlo a `false` devuelve el trazo de línea. */
-/** Separación entre centros de punto, en píxeles CSS. */
-const PASO_TRAMA = 6;
+/** Separación entre centros de punto, en píxeles CSS: 3.2px para micro-estipulado hiperdenso y fino. */
+const PASO_TRAMA = 3.2;
 
 /* ── CUÁNTAS VECES SE REVELA UNA LÁMINA MIENTRAS AVANZA ────────────────
-   El trazo se redondeaba a 512 pasos por lámina, que sobre el recorrido
-   de una figura son unos dos píxeles de avance: por debajo de eso, con
-   línea, no había nada que ver.
-
-   Con trama, el suelo ya no son dos píxeles: es EL PASO DE LA RETÍCULA.
-   La salida está cuantizada a celdas de 6 px, así que un avance de dos
-   píxeles no cambia ni un punto — se rehace el revelado entero para
-   producir exactamente la misma imagen. Medido: p99 del fotograma subía
-   de 6,8 ms a 25,5 ms, y esa era la razón.
-
-   160 pasos dan ~6 px de avance por paso, justo una celda. Es el valor
-   más alto que no pierde nada, porque lo que se perdería está por debajo
-   de la resolución de la propia trama. */
-const PASOS_TRAZO = 48;
-/** Radio máximo, en fracción del paso. Por encima de 0,5 los puntos se
- *  tocarían y la trama se cerraría en mancha. */
+   Retícula de ultra-alta definición con micro-puntos diminutos de precisión. */
+const PASOS_TRAZO = 64;
+/** Radio máximo, en fracción del paso. */
 const RADIO_TRAMA = 0.44;
-/** Amplificación de la cobertura muestreada. Las láminas se dibujaron para
- *  verse como línea tenue; al reducirlas a 1/5 su tinta por celda es muy
- *  baja, y sin ganancia la trama saldría casi vacía. */
-const GANANCIA_TRAMA = 3.4;
-/** Cobertura por debajo de la cual no se pinta punto. Sin umbral, el
- *  antialiasing deja medio papel sembrado de puntos de radio 0,1 px que no
- *  se ven y sí se pagan. */
-const UMBRAL_TRAMA = 0.06;
+/** Amplificación de la cobertura muestreada para definición micro-estructural. */
+const GANANCIA_TRAMA = 2.9;
+/** Cobertura por debajo de la cual no se pinta punto. */
+const UMBRAL_TRAMA = 0.035;
 
 /* ── EL ASIENTO: un punto no aparece colocado, se COLOCA ───────────────
-   Es el gesto del fondo, y es uno solo. Cuando una celda recibe tinta por
-   primera vez, su punto nace DISPERSO —desplazado de su casilla y más
-   pequeño— y va cayendo a su sitio conforme la lámina sigue avanzando.
-   El borde del dibujo es, por tanto, una nube que se resuelve en retícula
-   unos píxeles por detrás.
-
-   Por qué éste y no otro: es la única animación del sitio que dice algo
-   cierto del producto. Una medida con pocos datos no está equivocada,
-   está DISPERSA, y se concreta al llegar más muestra — que es
-   literalmente lo que hace esta aplicación cuando responde «no
-   concluyente» en vez de inventarse una cifra. El movimiento no decora
-   el dato: lo explica.
-
-   Es también lo que evita el defecto clásico de una trama animada, que
-   es parpadear. Aquí ningún punto salta: cada uno recorre su camino una
-   sola vez y se queda quieto para siempre.
-
-   `VENTANA_ASIENTO` va en unidades de progreso de la lámina, no en
-   segundos, porque quien manda es el scroll: si te paras, la nube se
-   queda a medio asentar, que es lo correcto — no ha llegado más dato. */
-const VENTANA_ASIENTO = 0.055;
+   Micro-asiento suave y orgánico de máxima fluidez matemática. */
+const VENTANA_ASIENTO = 0.045;
 /** Cuánto se aparta de su casilla un punto recién nacido, en píxeles. */
-const DISPERSION_TRAMA = PASO_TRAMA * 1.9;
+const DISPERSION_TRAMA = PASO_TRAMA * 1.5;
 /** Tamaño del punto recién nacido, en fracción del que tendrá asentado. */
-const CRIA_TRAMA = 0.3;
-/** A partir de aquí la lámina fuerza el asiento de todo lo que le quede.
- *  Sin esto, los últimos puntos en aparecer se quedarían dispersos PARA
- *  SIEMPRE: la lámina terminada se cachea con t=1 y ya no se revela más,
- *  así que su borde final nunca llegaría a colocarse. */
+const CRIA_TRAMA = 0.35;
+/** A partir de aquí la lámina fuerza el asiento de todo lo que le quede. */
 const CIERRE_ASIENTO = 0.9;
 
 const R_MAX = PASO_TRAMA * RADIO_TRAMA;
@@ -331,17 +292,19 @@ function tramar(
       }
 
       const r = asiento === 1 ? rPleno : rPleno * (CRIA_TRAMA + (1 - CRIA_TRAMA) * asiento);
-      if (r < 0.34) continue;
+      if (r < 0.25) continue;
 
       if (asiento === 1) {
         const cx = (col + 0.5) * PASO_TRAMA;
-        puntos.rect(cx - r, cyBase - r, r * 2, r * 2);
+        puntos.moveTo(cx + r, cyBase);
+        puntos.arc(cx, cyBase, r, 0, Math.PI * 2);
       } else {
         const inv = 1 - asiento;
         const d = inv * inv * DISPERSION_TRAMA;
         const cx = (col + 0.5) * PASO_TRAMA + jitter(k) * d;
         const cy = cyBase + jitter(k + 7919) * d;
-        puntos.rect(cx - r, cy - r, r * 2, r * 2);
+        puntos.moveTo(cx + r, cy);
+        puntos.arc(cx, cy, r, 0, Math.PI * 2);
       }
     }
   }
@@ -372,6 +335,15 @@ const phase = (t: number, from: number, len: number) => easeOut(clamp01((t - fro
 
 type Ctx = CanvasRenderingContext2D;
 type Pt = [number, number];
+
+/* ── PRIMITIVAS EXPORTADAS ──────────────────────────────────────────────
+   El grabado de la 404 (`Grabado404.tsx`) comparte este vocabulario de
+   trazo —temblor, lápiz, trama, marco— pero no el motor de scroll, que
+   no tiene sentido en una página de una sola pantalla. Se exportan las
+   piezas puras; quien las use decide cuándo y a qué ritmo llamarlas,
+   igual que hacen las dieciséis láminas de este archivo. */
+export { clamp01, ease, easeOut, phase, pencil, hatch, graphite, engraveLine, handRect, label, plateChrome, jitter, rnd };
+export type { Ctx, Pt };
 
 /* =====================================================================
    Utilidades de grabado

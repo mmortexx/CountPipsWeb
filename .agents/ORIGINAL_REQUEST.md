@@ -67,3 +67,53 @@ Verificar coherencia completa del almacén determinista (`demoStore.ts` con PRNG
 ### Disciplina Operacional
 - [ ] Edición estrictamente en sitio sin archivos duplicados (`_v2`, `_fix`).
 - [ ] Commits atómicos verificados tras cada bloque de trabajo.
+
+## Follow-up — 2026-08-16T00:06:45Z
+
+Perfeccionamiento continuo, expansión cuantitativa y auditoría integral de la plataforma CountPipsWeb (Windows 11 / WinUI 3 web portal) con implementación 100% propia y artesanal desde cero, sin copiar código externo, alcanzando máxima fidelidad matemática y rendimiento a 165 fps.
+
+Working directory: c:\Users\jmqc1\Documents\Cosas\web-trading-journal
+Integrity mode: development
+
+## Requirements
+
+### R1. Auditoría Integral y Aseguramiento de Regresión Cero
+Auditar exhaustivamente la base de código Next.js 16 SSG, React 19, TypeScript estricto y Tailwind CSS 4. Asegurar que las 182 páginas estáticas compilen sin fallos y mantengan paridad bilingüe 100% entre español (`/`) e inglés (`/en`).
+
+### R2. Expansión Cuantitativa Institucional (100% Propietaria)
+Desarrollar y refinar desde cero los modelos matemáticos y estadísticos del motor cuantitativo:
+- Cálculo riguroso de métricas de riesgo: Sharpe, Sortino (downside deviation), Calmar, Ratio Omega, Dimensionamiento Half Kelly, SQN (Van Tharp), Índice de Úlcera y Asimetría de Drawdown.
+- Inferencia estadística: Intervalo de confianza de Wilson al 95%, matrices de tamaño muestral $n$ y prueba de hipótesis de paseo aleatorio.
+- Soporte para multiplicadores oficiales multi-activo (Futuros: ES, NQ, MES, MNQ, RTY, GC, CL; Forex: 100k, 10k, 1k).
+
+### R3. Fidelidad Gráfica Fluent 2 y Rendimiento a 165 fps
+Optimizar y pulir las superficies de interfaz de la demo interactiva WinUI 3 (`/demo`):
+- Aceleración por hardware GPU en transiciones y menús (`translate3d`, `scale()`, `will-change`, `contain: layout paint`, curvas Fluent 2).
+- Micro-trama de estipulado vectorial en canvas (`EngravedAtlas.tsx` / `BackgroundFX.tsx`) con renderizado eficiente sub-píxel y dispersión cuántica estocástica.
+- Materiales Mica/Paper Dense con doble luz de borde (*catch-light*) y desenfoque GPU.
+
+### R4. Accesibilidad y Responsividad Multi-Resolución
+Garantizar soporte completo para todos los viewports: Escritorio, Portátil, Tableta y Móvil (390×844), además de modo sin JavaScript, asegurando un ratio de contraste WCAG AA en el 100% de los elementos de texto.
+
+## Verification Resources
+
+Suite de verificación empírica independiente y obligatoria:
+- `npm run lint` -> 0 errores.
+- `npm run typecheck` -> `tsc --noEmit` con código de salida 0.
+- `npm run test` -> 222/222 pruebas unitarias y de integración pasando al 100%.
+- `npm run build` -> 182 páginas estáticas compiladas en SSG.
+- `npm run legible` -> 2.850 textos analizados y verificados en WCAG AA sobre fondos reales.
+- `node scripts/humo.mjs --serve out` -> Auditoría de 19 rutas en 4 viewports (incluyendo 390×844) e idiomas.
+
+## Acceptance Criteria
+
+### Integridad del Código y Tipado
+- [ ] Cero errores y cero advertencias en `npm run lint` y `npm run typecheck`.
+- [ ] 100% de las suites de prueba unitarias e integración aprobadas (`npm run test`).
+- [ ] Compilación estática limpia de todas las rutas (`npm run build`).
+
+### Excelencia Matemática y Visual
+- [ ] Todo el código nuevo está desarrollado desde cero con rigor matemático sin dependencias externas innecesarias ni código copiado.
+- [ ] Las 5 vistas de la Demo WinUI 3 (Dashboard, Trades, Analytics, Journal, TradeDetail) operan fluidamente a 165 fps sin tirones de GPU/layout.
+- [ ] Auditoría de accesibilidad WCAG AA (`npm run legible`) superada al 100%.
+- [ ] Auditoría de humo multi-resolución (`humo.mjs`) completada con éxito en los 4 viewports (con énfasis en móvil 390×844) y modo sin JavaScript.
