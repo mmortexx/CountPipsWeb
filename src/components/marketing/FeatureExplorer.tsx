@@ -178,7 +178,7 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
             </span>
             <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
             <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
-              {es ? "EXPLORADOR" : "EXPLORER"}
+              {es ? "ÍNDICE" : "INDEX"}
             </span>
           </div>
           <h2
@@ -194,18 +194,18 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
           >
             {es ? (
               <>
-                ¿Qué buscas? <span style={{ color: "rgb(var(--accent-base))" }}>Te lo enseño.</span>
+                Elige el eje. <span style={{ color: "rgb(var(--accent-base))" }}>Sale lo que encaja.</span>
               </>
             ) : (
               <>
-                What do you need? <span style={{ color: "rgb(var(--accent-base))" }}>I'll show you.</span>
+                Pick the axis. <span style={{ color: "rgb(var(--accent-base))" }}>What fits comes up.</span>
               </>
             )}
           </h2>
           <p className="mt-4" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
             {es
-              ? "Marca lo que te importa. Destacamos las características de CountPips que mejor encajan contigo."
-              : "Mark what matters to you. We highlight the CountPips features that best fit your needs."}
+              ? "Marca uno o varios ejes. El índice se recorta a lo que el producto hace de verdad en ese terreno."
+              : "Mark one or more axes. The index trims to what the product actually does in that ground."}
           </p>
         </div>
 
@@ -254,76 +254,32 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
           <div>
             <div className="mb-4 flex items-center justify-between">
               <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Mejores coincidencias" : "Top matches"} · {topMatches.length}
+                {es ? "En este recorte" : "In this cut"} · {topMatches.length}
               </span>
               {topMatches.length === 0 && (
                 <span className="text-[12px]" style={{ color: "var(--ink-3)" }}>
-                  {es ? "Ninguna coincidencia — prueba con otro filtro." : "No matches — try another filter."}
+                  {es ? "Nada en esos ejes — prueba otro." : "Nothing on those axes — try another."}
                 </span>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
               {topMatches.map((f) => (
-                <div
+                <li
                   key={f.id}
-                  className="tj-paper rounded-[2px] p-4 transition-[border-color,transform] duration-200 hover:-translate-y-0.5"
-                  style={{
-                    border: f.score >= 75
-                      ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 38%, transparent)"
-                      : "1px solid rgb(var(--divider) / 0.12)",
-                  }}
+                  className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-6"
                 >
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="m-0 text-[14px] font-semibold" style={{ color: "var(--ink)" }}>
-                      {es ? f.titleEs : f.titleEn}
-                    </h3>
-                    {/* Match score ring */}
-                    <span
-                      className="tnum shrink-0 inline-flex items-center justify-center text-[11px] font-bold rounded-full"
-                      style={{
-                        minWidth: 38,
-                        height: 38,
-                        padding: "0 8px",
-                        background: f.score >= 75
-                          ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                          : "color-mix(in oklab, var(--divider) 8%, transparent)",
-                        color: f.score >= 75 ? "rgb(var(--accent-base))" : "var(--ink-2)",
-                        border: f.score >= 75
-                          ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)"
-                          : "1px solid rgb(var(--divider) / 0.14)",
-                      }}
-                      aria-label={`${es ? "Coincidencia" : "Match"} ${f.score}%`}
-                    >
-                      {f.score}%
-                    </span>
-                  </div>
-                  <p className="m-0 text-[12.5px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
+                  <h3 className="m-0 text-[14.5px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
+                    {es ? f.titleEs : f.titleEn}
+                  </h3>
+                  <p className="m-0 text-[13px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
                     {es ? f.descEs : f.descEn}
                   </p>
-                  {/* Matched tags */}
-                  {f.matches.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1.5">
-                      {f.matches.map((t) => {
-                        const tag = TAGS.find((x) => x.id === t)!;
-                        return (
-                          <span
-                            key={t}
-                            className="tnum text-[9.5px] uppercase tracking-[0.1em] font-semibold px-2 py-0.5 rounded-full"
-                            style={{
-                              background: "color-mix(in oklab, rgb(var(--accent-base)) 10%, transparent)",
-                              color: "rgb(var(--accent-base))",
-                              border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 25%, transparent)",
-                            }}
-                          >
-                            {es ? tag.labelEs : tag.labelEn}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                  <span className="tnum text-[11px] text-tertiary sm:justify-self-end">
+                    {f.matches.length} {es ? "ejes" : "axes"}
+                  </span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         ) : (
           // Empty state — show all features as a static grid
@@ -333,22 +289,21 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
                 {es ? "Todas las características" : "All features"} · {FEATURES.length}
               </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
               {FEATURES.map((f) => (
-                <div
+                <li
                   key={f.id}
-                  className="tj-paper rounded-[2px] p-4 transition-[border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.25)]"
-                  style={{ border: "1px solid rgb(var(--divider) / 0.12)" }}
+                  className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
                 >
-                  <h3 className="m-0 mb-2 text-[13px] font-semibold" style={{ color: "var(--ink)" }}>
+                  <h3 className="m-0 text-[14.5px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
                   </h3>
-                  <p className="m-0 text-[12px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+                  <p className="m-0 text-[13px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
                     {es ? f.descEs : f.descEn}
                   </p>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
       </div>

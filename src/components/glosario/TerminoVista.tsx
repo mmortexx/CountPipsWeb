@@ -136,12 +136,12 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                 <p className="eyebrow m-0">
                   {es ? "De la misma familia" : "Same family"}
                 </p>
-                <ul className="mt-4 grid list-none gap-3 p-0 sm:grid-cols-2">
+                <ul className="mt-4 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
                   {cercanos.map((t) => (
-                    <li key={t.slug}>
+                    <li key={t.slug} className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
                       <Link
                         href={`/glosario/${t.slug}`}
-                        className="tj-paper group flex h-full flex-col rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-3.5 transition-colors hover:border-[rgb(var(--accent-base)/0.35)]"
+                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
                       >
                         <span
                           lang="en"
@@ -149,7 +149,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                         >
                           {t.term}
                         </span>
-                        <span className="mt-1 line-clamp-2 text-[13px] leading-[1.5] text-secondary">
+                        <span className="line-clamp-2 text-[13px] leading-[1.5] text-secondary">
                           {es ? t.es : t.en}
                         </span>
                       </Link>

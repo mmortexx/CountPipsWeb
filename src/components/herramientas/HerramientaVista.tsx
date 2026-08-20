@@ -117,17 +117,17 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                 <p className="eyebrow m-0">
                   {es ? "Otras herramientas" : "Other tools"}
                 </p>
-                <ul className="mt-4 grid list-none gap-3 p-0 sm:grid-cols-3">
+                <ul className="mt-4 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
                   {otras.map((h) => (
-                    <li key={h.slug}>
+                    <li key={h.slug} className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
                       <Link
                         href={`/herramientas/${h.slug}`}
-                        className="tj-paper group flex h-full flex-col rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-3.5 transition-colors hover:border-[rgb(var(--accent-base)/0.35)]"
+                        className="group grid min-h-[52px] grid-cols-1 gap-1 px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5"
                       >
                         <span className="text-[14px] font-semibold text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]">
                           {es ? h.tituloEs : h.tituloEn}
                         </span>
-                        <span className="mt-1 text-[12.5px] leading-[1.5] text-secondary">
+                        <span className="text-[12.5px] leading-[1.5] text-secondary">
                           {es ? h.resumenEs : h.resumenEn}
                         </span>
                       </Link>
