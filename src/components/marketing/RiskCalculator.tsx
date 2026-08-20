@@ -667,7 +667,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
           <div>
             <div className="flex items-center justify-between mb-2 text-xs">
               <span className="tnum inline-flex items-center gap-1.5 text-tertiary">
-                <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--pnl-neg))]" />
+                <span aria-hidden className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--pnl-neg))]" />
                 {es ? "Riesgo" : "Risk"}
               </span>
               <span className="tnum font-bold text-[rgb(var(--accent-base))]">
@@ -675,7 +675,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </span>
               <span className="tnum inline-flex items-center gap-1.5 text-tertiary">
                 {es ? "Beneficio" : "Profit"}
-                <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--pnl-pos))]" />
+                <span aria-hidden className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--pnl-pos))]" />
               </span>
             </div>
             <div className="relative h-2 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">

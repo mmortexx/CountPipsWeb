@@ -1734,7 +1734,7 @@ function UtcClock() {
           color en verde P&L ya comunica "sesión abierta". */}
       <span
         aria-hidden
-        className="rounded-full"
+        className="rounded-[1px]"
         style={{
           width: 5,
           height: 5,

@@ -1518,7 +1518,7 @@ export function AnalyticsPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <span className="relative inline-flex items-center justify-center">
                   <span
-                    className={`relative inline-block w-2.5 h-2.5 rounded-full ${verdictLedClass}`}
+                    className={`relative inline-block w-2.5 h-2.5 rounded-[1px] ${verdictLedClass}`}
                     aria-hidden="true"
                   />
                 </span>

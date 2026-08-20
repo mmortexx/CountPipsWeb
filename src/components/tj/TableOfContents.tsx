@@ -151,7 +151,7 @@ export function TableOfContents() {
                 >
                   <span
                     aria-hidden
-                    className="mt-[5px] flex-none w-1.5 h-1.5 rounded-full transition-[background-color,border-color] duration-200"
+                    className="mt-[5px] flex-none w-1.5 h-1.5 rounded-[1px] transition-[background-color,border-color] duration-200"
                     style={{
                       background: active ? "rgb(var(--accent-base))" : "transparent",
                       border: active

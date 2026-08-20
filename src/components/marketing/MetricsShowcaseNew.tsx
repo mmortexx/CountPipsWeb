@@ -358,7 +358,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                   {/* R24-1c: tiny accent dot before each stat label so the
                       three stats read as a synchronized footer row rather
                       than three floating micro-headers. */}
-                  <span aria-hidden className="w-1 h-1 rounded-full" style={{ background: "rgb(var(--accent-base))" }} />
+                  <span aria-hidden className="w-1 h-1 rounded-[1px]" style={{ background: "rgb(var(--accent-base))" }} />
                   {s.l}
                 </div>
                 <div className="tnum" style={{ fontSize: 18, fontWeight: 700, marginTop: 4, color: "var(--ink)" }}>{s.v}</div>

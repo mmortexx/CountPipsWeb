@@ -162,6 +162,19 @@ describe("Cromo de mesa", () => {
     expect(sesiones).not.toMatch(/MotionPingDot/);
     expect(sesiones).not.toMatch(/tj-ping/);
     expect(sesiones).not.toMatch(/rounded-full/);
+    const barra = sinComentarios(leer("src/components/marketing/Navbar.tsx"));
+    const proyector = sinComentarios(
+      leer("src/components/marketing/EquityProjector.tsx"),
+    );
+    const paleta = sinComentarios(leer("src/components/ui/command.tsx"));
+    const ejes = sinComentarios(
+      leer("src/components/marketing/FeaturePageNav.tsx"),
+    );
+    expect(barra).not.toMatch(/className="rounded-full"/);
+    expect(proyector).not.toMatch(/w-1\.5 h-1\.5 rounded-full/);
+    expect(proyector).not.toMatch(/0 0 20px rgb\(var\(--pnl-pos\)/);
+    expect(paleta).not.toMatch(/rounded-sm/);
+    expect(ejes).not.toMatch(/w-1 h-1 rounded-full/);
   });
 
   it("las etiquetas vivas no usan la clase .pill", () => {

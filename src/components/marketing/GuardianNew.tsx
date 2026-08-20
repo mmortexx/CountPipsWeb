@@ -113,7 +113,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               style={{
                 fontSize: 10,
                 padding: "3px 9px",
-                borderRadius: 4,
+                borderRadius: 2,
                 background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
                 color: "rgb(var(--accent-base))",
                 border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
@@ -121,7 +121,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             >
               <span
                 aria-hidden
-                className="inline-block rounded-full"
+                className="inline-block rounded-[1px]"
                 style={{
                   width: 5,
                   height: 5,
@@ -144,7 +144,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                 className="tnum inline-block"
                 style={{
                   padding: "4px 10px",
-                  borderRadius: 4,
+                  borderRadius: 2,
                   background: "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)",
                   color: "rgb(var(--pnl-pos))",
                   fontSize: 11,
@@ -342,7 +342,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   onClick={() => setEstado("ajustado")}
                   className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                   style={{
-                    borderRadius: 4,
+                    borderRadius: 2,
                     background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
                     color: "rgb(var(--accent-base))",
                     border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
@@ -360,7 +360,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   onClick={() => setEstado("anulado")}
                   className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                   style={{
-                    borderRadius: 4,
+                    borderRadius: 2,
                     background: "transparent",
                     color: "var(--ink-2)",
                     border: "1px solid rgb(var(--divider) / 0.13)",
@@ -378,7 +378,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                 onClick={() => setEstado("bloqueado")}
                 className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                 style={{
-                  borderRadius: 4,
+                  borderRadius: 2,
                   background: "transparent",
                   color: "var(--ink-2)",
                   border: "1px solid rgb(var(--divider) / 0.13)",

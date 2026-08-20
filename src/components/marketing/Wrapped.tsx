@@ -220,7 +220,7 @@ export function Wrapped() {
                     </span>
                     <span aria-hidden className="w-px h-3" style={{ background: "rgb(var(--divider) / 0.18)" }} />
                     <span
-                      className="w-1.5 h-1.5 rounded-full"
+                      className="w-1.5 h-1.5 rounded-[1px]"
                       style={{
                         background: glowColor,
                       }}

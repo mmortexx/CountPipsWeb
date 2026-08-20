@@ -285,7 +285,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
                   border: `1px solid color-mix(in oklab, ${verdict.color} 35%, transparent)`,
                 }}
               >
-                <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: verdict.color }} />
+                <span aria-hidden className="w-1.5 h-1.5 rounded-[1px]" style={{ background: verdict.color }} />
                 <span className="tnum" style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: verdict.color }}>
                   {verdict.label}
                 </span>

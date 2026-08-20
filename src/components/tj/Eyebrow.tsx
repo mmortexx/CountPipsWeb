@@ -30,7 +30,7 @@ export function Eyebrow({ children, className = "", mark = "line" }: EyebrowProp
       )}
       {mark === "dot" && (
         <span
-          className="inline-block w-1 h-1 rounded-full"
+          className="inline-block w-1 h-1 rounded-[1px]"
           style={{ background: "rgb(var(--accent-base))" }}
           aria-hidden="true"
         />

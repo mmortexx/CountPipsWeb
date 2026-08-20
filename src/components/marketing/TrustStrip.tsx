@@ -108,7 +108,7 @@ export function TrustStrip() {
               {i < items.length - 1 && (
                 <span
                   aria-hidden="true"
-                  className="hidden md:inline-block w-1 h-1 rounded-full bg-[rgb(var(--accent-base)/0.50)]"
+                  className="hidden md:inline-block w-1 h-1 rounded-[1px] bg-[rgb(var(--accent-base)/0.50)]"
                 />
               )}
             </Fragment>

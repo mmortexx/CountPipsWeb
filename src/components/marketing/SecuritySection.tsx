@@ -123,7 +123,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
         <div className="mb-14 rounded-[3px] border border-[rgb(var(--divider)/0.18)] bg-[rgb(var(--divider)/0.03)] p-5 sm:p-6 font-mono text-xs">
           <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgb(var(--divider)/0.12)]">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[rgb(var(--pnl-pos))]" aria-hidden="true" />
+              <span className="w-2 h-2 rounded-[1px] bg-[rgb(var(--pnl-pos))]" aria-hidden="true" />
               <span className="font-bold text-primary text-[11px] uppercase tracking-wider">
                 {es ? "AUDITORÍA DE INTEGRIDAD SQLite NATIVA" : "NATIVE SQLite INTEGRITY AUDIT"}
               </span>

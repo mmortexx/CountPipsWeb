@@ -1010,7 +1010,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     <button
                       type="button"
                       onClick={() => setReinvestMode("compound")}
-                      className="p-2.5 text-left rounded-[3px] transition-all cursor-pointer"
+                      className="p-2.5 text-left rounded-[2px] transition-all cursor-pointer"
                       style={{
                         background:
                           reinvestMode === "compound"
@@ -1029,7 +1029,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         }}
                       >
                         <span>{es ? "Interés Compuesto" : "Compounding"}</span>
-                        {reinvestMode === "compound" && <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))]" />}
+                        {reinvestMode === "compound" && <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />}
                       </div>
                       <div className="text-[9.5px] text-[var(--ink-3)] leading-tight mt-0.5">
                         {es ? "Escala con el capital" : "Scales with equity"}
@@ -1039,7 +1039,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     <button
                       type="button"
                       onClick={() => setReinvestMode("linear")}
-                      className="p-2.5 text-left rounded-[3px] transition-all cursor-pointer"
+                      className="p-2.5 text-left rounded-[2px] transition-all cursor-pointer"
                       style={{
                         background:
                           reinvestMode === "linear"
@@ -1058,7 +1058,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         }}
                       >
                         <span>{es ? "Retiro Fijo / PnL" : "Fixed / Withdrawal"}</span>
-                        {reinvestMode === "linear" && <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))]" />}
+                        {reinvestMode === "linear" && <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />}
                       </div>
                       <div className="text-[9.5px] text-[var(--ink-3)] leading-tight mt-0.5">
                         {es ? "Riesgo fijo en base" : "Fixed on starting"}
@@ -1077,14 +1077,14 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 <div className="min-w-0">
                   <div className="tnum flex items-center gap-2 text-[10px] tracking-wider uppercase font-semibold text-[var(--ink-3)]">
                     <span>{es ? "EXPECTANCY NETA POR OPERACIÓN" : "NET EXPECTANCY PER TRADE"}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))]" />
+                    <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />
                   </div>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span
                       className="tnum font-mono text-3xl sm:text-4xl font-bold tracking-tight whitespace-nowrap"
                       style={{
                         color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                        textShadow: c.hasEdge ? "0 0 20px rgb(var(--pnl-pos) / 0.25)" : "none",
+                        textShadow: "none",
                       }}
                     >
                       {c.netExpectancyR >= 0 ? "+" : ""}
@@ -1110,7 +1110,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         : "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 40%, transparent)",
                     }}
                   >
-                    <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
+                    <span className="w-1.5 h-1.5 rounded-[1px]" style={{ background: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
                     <span>
                       {c.hasEdge
                         ? es
@@ -1131,7 +1131,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               {/* Alerta si no hay edge */}
               {!c.hasEdge && (
                 <div
-                  className="p-3 rounded-[3px] text-xs font-mono leading-relaxed"
+                  className="p-3 rounded-[2px] text-xs font-mono leading-relaxed"
                   style={{
                     background: "color-mix(in oklab, rgb(var(--pnl-neg)) 14%, transparent)",
                     border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 40%, transparent)",
@@ -1148,7 +1148,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                <div className="flex items-center gap-1 p-0.5 rounded-[3px] bg-[rgb(var(--divider)/0.10)] border border-[rgb(var(--divider)/0.12)]">
+                <div className="flex items-center gap-1 p-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.10)] border border-[rgb(var(--divider)/0.12)]">
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}
@@ -1209,7 +1209,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 <div className="space-y-2">
                   {/* Tooltip Dinámico Scrubber */}
                   <div
-                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-[3px] border border-[rgb(var(--divider)/0.15)] font-mono text-xs shadow-sm"
+                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.15)] font-mono text-xs shadow-sm"
                     style={{ background: "color-mix(in oklab, var(--surface-2) 90%, transparent)" }}
                   >
                     <div className="flex items-center gap-2">
@@ -1248,7 +1248,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
                   {/* SVG Chart con Renderizado Preciso */}
                   <div
-                    className="relative cursor-crosshair touch-none select-none rounded-[3px] overflow-hidden border border-[rgb(var(--divider)/0.14)]"
+                    className="relative cursor-crosshair touch-none select-none rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.14)]"
                     style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
                     onMouseMove={(e) => handleSvgMove(e.clientX)}
                     onTouchMove={(e) => {
@@ -1405,7 +1405,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
               {/* VISTA 2: Matriz Anual */}
               {viewTab === "table" && (
-                <div className="overflow-x-auto rounded-[3px] border border-[rgb(var(--divider)/0.14)] shadow-sm">
+                <div className="overflow-x-auto rounded-[2px] border border-[rgb(var(--divider)/0.14)] shadow-sm">
                   <table className="w-full text-left font-mono text-xs">
                     <thead>
                       <tr
@@ -1462,7 +1462,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               {/* Matriz de KPIs (6 Bloques de Alta Densidad) */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
                 <div
-                  className="p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
+                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold flex items-center justify-between">
@@ -1478,7 +1478,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
+                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
@@ -1496,7 +1496,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
+                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
@@ -1518,7 +1518,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
+                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
@@ -1533,7 +1533,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
+                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
@@ -1552,7 +1552,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[3px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
+                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
                   style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
@@ -1576,7 +1576,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 <button
                   type="button"
                   onClick={copySummary}
-                  className="px-4 py-2 rounded-[3px] text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                  className="px-4 py-2 rounded-[2px] text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                   style={{
                     background: copied
                       ? "rgb(var(--pnl-pos))"
@@ -1602,7 +1602,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
               {/* Disclaimer */}
               <div
-                className="p-2.5 rounded-[3px]"
+                className="p-2.5 rounded-[2px]"
                 style={{
                   background: "color-mix(in oklab, var(--surface-2) 40%, transparent)",
                   border: "1px solid rgb(var(--divider) / 0.10)",

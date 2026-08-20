@@ -159,7 +159,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                       accent dot before so the keyboard shortcut reads as a
                       real key rather than floating tertiary text. */}
                   <span className="block text-[10px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
-                    <span aria-hidden className="inline-block w-1 h-1 rounded-full mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
+                    <span aria-hidden className="inline-block w-1 h-1 rounded-[1px] mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
                     {es ? "Anterior" : "Previous"}
                     <kbd className="kbd ml-1.5" style={{ borderColor: "rgb(var(--accent-base) / 0.30)" }}>Alt ←</kbd>
                   </span>
@@ -184,7 +184,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[10px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
-                    <span aria-hidden className="inline-block w-1 h-1 rounded-full mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
+                    <span aria-hidden className="inline-block w-1 h-1 rounded-[1px] mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
                     {es ? "Siguiente" : "Next"}
                     <kbd className="kbd ml-1.5" style={{ borderColor: "rgb(var(--accent-base) / 0.30)" }}>Alt →</kbd>
                   </span>

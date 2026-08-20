@@ -509,7 +509,7 @@ export function DashboardPage() {
                                     : "0 0 0px 0px rgb(0 0 0 / 0)",
                                 }}
                                 transition={{ duration: 0.25 }}
-                                className={`inline-block w-2 h-2 rounded-full ${
+                                className={`inline-block w-2 h-2 rounded-[1px] ${
                                   d === "long" ? "bg-pnl-pos" : "bg-pnl-neg"
                                 }`}
                                 aria-hidden="true"
@@ -1412,7 +1412,7 @@ function DirectionChip({
       }`}
     >
       <span
-        className={`inline-block w-1 h-1 rounded-full ${
+        className={`inline-block w-1 h-1 rounded-[1px] ${
           isLong ? "bg-pnl-pos" : "bg-pnl-neg"
         }`}
         aria-hidden="true"

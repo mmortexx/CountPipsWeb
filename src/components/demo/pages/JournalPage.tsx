@@ -1428,7 +1428,7 @@ export function JournalPage() {
                       <div className="text-secondary min-w-0 truncate flex items-center gap-2">
                         <span
                           aria-hidden
-                          className={`inline-block w-1 h-1 rounded-full ${
+                          className={`inline-block w-1 h-1 rounded-[1px] ${
                             isSaver ? "bg-pnl-pos" : "bg-pnl-neg"
                           }`}
                         />
