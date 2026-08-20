@@ -184,26 +184,14 @@ export function Story() {
             {phases.map((p, i) => (
               <Reveal key={i} delay={i * 0.08}>
                 <div className="relative pl-9">
-                  {/* Dot — pops in (scale 0→1, spring). Color reflects the trader's arc (red → green). */}
                   <span
                     data-entra="sello"
-                    className={`absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full ring-4 ring-[rgb(var(--tint))] ${toneDot[p.tone]}`}
+                    className={`absolute left-0 top-2 h-[7px] w-[7px] ${toneDot[p.tone]}`}
                     aria-hidden="true"
-                  />
-                  {/* Dot pulse halo — un único "aliento" al entrar en
-                      viewport (softened scale 2.1, opacity inicial 0.30).
-                      El bucle infinito que tenía la fase terminal "pos" se
-                      retiró (movimiento decorativo gratuito); ahora las
-                      cinco fases comparten el mismo pulso de entrada, una
-                      sola vez. */}
-                  <span
-                    data-entra="sello"
-                    aria-hidden="true"
-                    className={`absolute left-0 top-1.5 w-[15px] h-[15px] rounded-full ${toneDot[p.tone]} pointer-events-none`}
                   />
                   <div
                     data-entra
-                    className="group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
+                    className="relative min-w-0 border-b border-[rgb(var(--divider)/0.10)] pb-5"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span

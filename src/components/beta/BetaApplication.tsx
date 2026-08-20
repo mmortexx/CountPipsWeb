@@ -247,7 +247,7 @@ export function BetaApplication() {
     return (
       <div ref={exitoRef} tabIndex={-1} className="tj-paper tj-paper-glow border border-[rgb(var(--divider)/0.14)] p-7 sm:p-10 outline-none" role="status">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-          <span className="grid size-14 place-items-center rounded-full bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
+          <span className="grid size-14 place-items-center rounded-[2px] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
             <Check size={26} aria-hidden />
           </span>
           <h2 className="mt-5 t-h3 text-primary">{es ? "Solicitud recibida." : "Application received."}</h2>

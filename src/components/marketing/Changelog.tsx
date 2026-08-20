@@ -3,7 +3,6 @@
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
-import { Chip } from "@/components/tj/Chip";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 
 /**
@@ -140,142 +139,55 @@ export function Changelog() {
           </Reveal>
         </div>
 
-        {/* Timeline */}
-        <div className="relative mt-16 md:mt-20">
-          {/* Center line — left on mobile, center on desktop */}
-          <div
-            className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px md:-translate-x-1/2 bg-gradient-to-b from-transparent via-[rgb(var(--divider)/0.35)] to-transparent"
-            aria-hidden
-          />
-
-          <div className="space-y-8 md:space-y-10">
-            {entries.map((entry, i) => {
-              const isPast = entry.stage === "delivered";
-              const isPilot = entry.stage === "pilot";
-              const isLeft = i % 2 === 0; // even → left side on desktop
-
-              return (
-                <div
-                  key={entry.version}
-                  className={`relative md:flex md:items-center ${
-                    isLeft ? "md:flex-row" : "md:flex-row-reverse"
+        <ol className="relative mt-14 m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+          {entries.map((entry) => {
+            const isPast = entry.stage === "delivered";
+            const isPilot = entry.stage === "pilot";
+            const estado = isPast
+              ? (es ? "Entregado" : "Delivered")
+              : isPilot
+                ? (es ? "Acceso anticipado" : "Early access")
+                : (es ? "Previsto" : "Planned");
+            return (
+              <li
+                key={entry.version}
+                data-entra
+                className="grid gap-2 border-b border-[rgb(var(--divider)/0.08)] px-4 py-4 last:border-b-0 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-5"
+              >
+                <span
+                  className="tnum text-[12px] font-semibold"
+                  style={{ color: "rgb(var(--accent-base))" }}
+                >
+                  {entry.version}
+                </span>
+                <div>
+                  <h3 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
+                    {entry.title}
+                  </h3>
+                  <p className="mt-1 m-0 text-[12px] text-tertiary tnum">
+                    {estado}
+                    <span aria-hidden> · </span>
+                    {entry.date}
+                  </p>
+                </div>
+                <p
+                  className={`m-0 text-[13.5px] leading-[1.55] ${
+                    isPast || isPilot ? "text-secondary" : "text-tertiary"
                   }`}
                 >
-                  {/* Card column */}
-                  <div
-                    className={`pl-12 md:pl-0 md:w-1/2 ${
-                      isLeft ? "md:pr-12 md:text-right" : "md:pl-12"
-                    }`}
-                  >
-                    {/* La entrada va en el envoltorio y NO también en la
-                        tarjeta: el de dentro era un `motion.div` sin props
-                        de animación, y dos entradas anidadas multiplican
-                        sus opacidades — la tarjeta empezaría a 0 × 0 y
-                        llegaría tarde a su propio sitio. */}
-                    <div
-                      data-entra={isLeft ? "izq" : "der"}
-                      className="h-full"
-                    >
-                      <div
-                        className={`tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 h-full min-w-0 transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] ${
-                          isPast
-                            ? "hover:border-[rgb(var(--accent-base)/0.30)]"
-                            : "hover:border-[rgb(var(--divider)/0.25)]"
-                        }`}
-                      >
-                          <div
-                            className={`flex flex-wrap items-center gap-2 ${
-                              isLeft ? "md:justify-end" : "md:justify-start"
-                            }`}
-                          >
-                            <Chip
-                              variant={isPast ? "accent" : isPilot ? "accent" : "neutral"}
-                              /* El borde discontinuo se va DE AQUÍ: el sello
-                                 que hay justo al lado ya dice que la entrega
-                                 está prevista, y decirlo dos veces con la
-                                 misma línea de trazos no lo dice más fuerte,
-                                 sólo hace que el número de versión parezca
-                                 él mismo provisional. La versión es firme;
-                                 lo previsto es la fecha. */
-                              className={isPast ? "" : "text-tertiary"}
-                            >
-                              <span className="t-h4 tnum">{entry.version}</span>
-                            </Chip>
-                            {/* El chip ámbar de «Futuro» era el tercer
-                                dialecto del sitio para decir lo mismo, y
-                                encima con color de aviso: una entrega
-                                planificada no es una advertencia. Pasa al
-                                sello, que es la misma pieza que marca el
-                                precio previsto y las filas pendientes del
-                                estado. El acceso anticipado SÍ conserva su
-                                chip: eso no está previsto, está abierto. */}
-                            {!isPast && (
-                              isPilot ? (
-                                <Chip variant="accent">
-                                  {es ? "Acceso anticipado" : "Early access"}
-                                </Chip>
-                              ) : (
-                                <SelloPrevisto es="Previsto" en="Planned" />
-                              )
-                            )}
-                          </div>
-
-                          {/* Título siempre a pleno contraste. Las
-                              entregas futuras se atenuaban por triplicado
-                              —tarjeta al 90 %, título al 90 % y descripción
-                              en gris terciario—, así que media sección se
-                              leía como deshabilitada. El chip "Próximo" y
-                              el borde discontinuo ya dicen que aún no está;
-                              no hace falta apagar el texto. */}
-                          <h3 className="mt-3 t-h4 text-primary">
-                            {entry.title}
-                          </h3>
-                          <p
-                            className={`mt-1.5 text-sm leading-[1.6] ${
-                              isPast || isPilot ? "text-secondary" : "text-tertiary"
-                            }`}
-                          >
-                            {entry.description}
-                          </p>
-
-                          <div
-                            className={`mt-3 flex items-center gap-1.5 text-xs text-tertiary tnum ${
-                              isLeft ? "md:justify-end" : "md:justify-start"
-                            }`}
-                          >
-                              <span
-                                className={`inline-block w-1.5 h-1.5 rounded-full ${
-                                isPast ? "bg-[rgb(var(--accent-base)/0.85)]" : isPilot ? "bg-pnl-pos/80" : "bg-pnl-warn/70"
-                              }`}
-                              aria-hidden
-                            />
-                            {entry.date}
-                          </div>
-                        </div>
-                    </div>
-                  </div>
-
-                  {/* Node dot — pops in on view. Past: solid accent dot.
-                      Future: hollow ring signals "in progress". */}
-                  <div
-                    data-entra="sello"
-                    className="absolute left-4 md:left-1/2 top-6 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10"
-                    aria-hidden
-                  >
-                    {isPast || isPilot ? (
-                      <span className="block w-3.5 h-3.5 rounded-full bg-[rgb(var(--accent-base))]" />
-                    ) : (
-                      <span className="relative block w-3.5 h-3.5 rounded-full border-2 border-[rgb(var(--pnl-warn)/0.85)] bg-background" />
-                    )}
-                  </div>
-
-                  {/* Spacer for the other half on desktop */}
-                  <div className="hidden md:block md:w-1/2" aria-hidden />
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                  {entry.description}
+                </p>
+                {!isPast && !isPilot ? (
+                  <span className="sm:justify-self-end">
+                    <SelloPrevisto es="Previsto" en="Planned" />
+                  </span>
+                ) : (
+                  <span className="hidden sm:block" aria-hidden />
+                )}
+              </li>
+            );
+          })}
+        </ol>
 
         {/* Footer line */}
         <Reveal delay={0.1}>

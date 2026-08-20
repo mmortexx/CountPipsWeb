@@ -49,4 +49,30 @@ describe("Cromo de mesa", () => {
     expect(caps).not.toMatch(/hover:shadow-\[0_8px_24px_-8px_rgb\(var\(--accent-base\)/);
     expect(caps).toMatch(/padStart\(2, "0"\)/);
   });
+
+  it("el changelog de about es un índice, no una línea de tiempo en zigzag", () => {
+    const log = sinComentarios(leer("src/components/marketing/Changelog.tsx"));
+    expect(log).toMatch(/<ol /);
+    expect(log).not.toMatch(/md:flex-row-reverse/);
+    expect(log).not.toMatch(/rounded-full bg-\[rgb\(var\(--accent-base\)\)\]/);
+  });
+
+  it("traders no pinta tres tarjetas de icono; usa filas numeradas", () => {
+    const traders = sinComentarios(
+      leer("src/components/beta/TraderProfilePage.tsx"),
+    );
+    expect(traders).toMatch(/data\.cards\.map/);
+    expect(traders).not.toMatch(/<article key=\{titleEs\}/);
+    expect(traders).toMatch(/sm:grid-cols-\[3rem_minmax\(0,14rem\)_minmax\(0,1fr\)\]/);
+  });
+
+  it("el test de disciplina y el éxito de beta no usan píldoras redondas", () => {
+    const test = sinComentarios(
+      leer("src/components/marketing/DisciplineScore.tsx"),
+    );
+    const beta = sinComentarios(leer("src/components/beta/BetaApplication.tsx"));
+    expect(test).not.toMatch(/className="h-1 rounded-full overflow-hidden"/);
+    expect(test).not.toMatch(/ml-auto px-2\.5 py-1 rounded-full/);
+    expect(beta).not.toMatch(/size-14 place-items-center rounded-full/);
+  });
 });

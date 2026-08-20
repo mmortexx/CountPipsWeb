@@ -161,7 +161,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
                 no se descuelga cuando el elemento ocupa varias líneas. */}
             <span
               aria-hidden
-              className="mt-[0.62em] h-1 w-1 shrink-0 rounded-full"
+              className="mt-[0.62em] h-1 w-1 shrink-0 rounded-[1px]"
               style={{ background: "rgb(var(--accent-base))" }}
             />
             <span>{t}</span>

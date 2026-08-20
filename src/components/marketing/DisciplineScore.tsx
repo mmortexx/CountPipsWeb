@@ -419,9 +419,9 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                   {answeredCount} / {QUESTIONS.length}
                 </span>
               </div>
-              <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgb(var(--divider) / 0.13)" }}>
+              <div className="h-1 rounded-[1px] overflow-hidden" style={{ background: "rgb(var(--divider) / 0.13)" }}>
                 <div
-                  className="h-full rounded-full"
+                  className="h-full rounded-[1px]"
                   style={{
                     width: `${(answeredCount / QUESTIONS.length) * 100}%`,
                     background: "rgb(var(--accent-base))",
@@ -618,7 +618,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 </span>
                 {level && (
                   <span
-                    className="tnum ml-auto px-2.5 py-1 rounded-full"
+                    className="tnum ml-auto px-2.5 py-1 rounded-[2px]"
                     style={{
                       fontSize: 11,
                       fontWeight: 700,
@@ -661,11 +661,11 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                       </span>
                     </div>
                     <div
-                      className="h-1.5 rounded-full overflow-hidden"
+                      className="h-1.5 rounded-[1px] overflow-hidden"
                       style={{ background: "rgb(var(--divider) / 0.12)" }}
                     >
                       <div
-                        className="h-full rounded-full"
+                        className="h-full rounded-[1px]"
                         style={{
                           width: `${respondidas ? pct : 0}%`,
                           background: barColor(pct),

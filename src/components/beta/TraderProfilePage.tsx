@@ -107,15 +107,27 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
             entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It is which part of your process deserves repeating, and which part needs a rule before you return to the market."}
           />
-          <div className="mt-12 grid gap-4 md:grid-cols-3">
-            {data.cards.map(({ icon: Icon, titleEs, titleEn, textEs, textEn }) => (
-              <article key={titleEs} className="tj-paper border border-[rgb(var(--divider)/0.14)] p-5 sm:p-6">
-                <Icon size={18} className="text-[rgb(var(--accent-base))]" aria-hidden />
-                <h2 className="mt-5 text-lg font-semibold text-primary">{es ? titleEs : titleEn}</h2>
-                <p className="mt-3 text-sm leading-relaxed text-secondary">{es ? textEs : textEn}</p>
-              </article>
+          <ul className="mt-12 m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+            {data.cards.map(({ titleEs, titleEn, textEs, textEn }, i) => (
+              <li
+                key={titleEs}
+                className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-4 last:border-b-0 sm:grid-cols-[3rem_minmax(0,14rem)_minmax(0,1fr)] sm:items-baseline sm:gap-5"
+              >
+                <span
+                  className="tnum text-[11px] font-semibold"
+                  style={{ color: "rgb(var(--accent-base))" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h2 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
+                  {es ? titleEs : titleEn}
+                </h2>
+                <p className="m-0 text-[13.5px] leading-[1.55] text-secondary">
+                  {es ? textEs : textEn}
+                </p>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
