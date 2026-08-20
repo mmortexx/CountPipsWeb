@@ -379,6 +379,114 @@ describe("Wald-Wolfowitz Runs Test para Secuencias de Trading", () => {
   });
 });
 
+describe("Métricas cuantitativas institucionales ampliadas", () => {
+  it("calcula Van Tharp SQN correctamente y gestiona casos límite (n=0, n=1, sigma=0)", async () => {
+    const { computeSqn } = await import("@/lib/trading/data");
+    expect(computeSqn([])).toBe(0);
+    expect(computeSqn([mockTrade({ rMultiple: 2 })])).toBe(0);
+
+    // Varianza cero: dos trades con idéntico R
+    const zeroStd = [
+      mockTrade({ id: 1, rMultiple: 1.5 }),
+      mockTrade({ id: 2, rMultiple: 1.5 }),
+    ];
+    expect(computeSqn(zeroStd)).toBe(0);
+
+    // Muestra normal
+    const sample = [
+      mockTrade({ id: 1, rMultiple: 2.0 }),
+      mockTrade({ id: 2, rMultiple: -1.0 }),
+      mockTrade({ id: 3, rMultiple: 1.5 }),
+      mockTrade({ id: 4, rMultiple: -0.5 }),
+    ];
+    const sqn = computeSqn(sample);
+    expect(Number.isFinite(sqn)).toBe(true);
+    expect(sqn).toBeGreaterThan(0);
+  });
+
+  it("calcula Peter Martin Ulcer Index (UI) correctamente y gestiona curvas sin drawdown", async () => {
+    const { computeUlcerIndex } = await import("@/lib/trading/data");
+    expect(computeUlcerIndex([])).toBe(0);
+
+    // Curva monótona creciente (cero drawdown)
+    const allWinners = [
+      mockTrade({ id: 1, netPnl: 100, closedAt: new Date("2026-01-01T00:00:00Z") }),
+      mockTrade({ id: 2, netPnl: 200, closedAt: new Date("2026-01-02T00:00:00Z") }),
+      mockTrade({ id: 3, netPnl: 300, closedAt: new Date("2026-01-03T00:00:00Z") }),
+    ];
+    expect(computeUlcerIndex(allWinners)).toBe(0);
+
+    // Con drawdown controlado
+    const withDd = [
+      mockTrade({ id: 1, netPnl: 1000, closedAt: new Date("2026-01-01T00:00:00Z") }), // bal 11k, peak 11k
+      mockTrade({ id: 2, netPnl: -1100, closedAt: new Date("2026-01-02T00:00:00Z") }), // bal 9.9k, dd = 10%
+      mockTrade({ id: 3, netPnl: 2000, closedAt: new Date("2026-01-03T00:00:00Z") }), // bal 11.9k, peak 11.9k
+    ];
+    const ui = computeUlcerIndex(withDd);
+    expect(ui).toBeGreaterThan(0);
+    expect(Number.isFinite(ui)).toBe(true);
+  });
+
+  it("calcula Drawdown Skewness y gestiona n < 3 o varianza nula", async () => {
+    const { computeDrawdownSkewness } = await import("@/lib/trading/data");
+    expect(computeDrawdownSkewness([])).toBe(0);
+    expect(computeDrawdownSkewness([mockTrade()])).toBe(0);
+    expect(computeDrawdownSkewness([mockTrade(), mockTrade()])).toBe(0);
+
+    // Todos ganadores -> DD = [0, 0, 0] -> stdDd = 0 -> skew = 0
+    const flat = [
+      mockTrade({ id: 1, netPnl: 100, closedAt: new Date("2026-01-01T00:00:00Z") }),
+      mockTrade({ id: 2, netPnl: 100, closedAt: new Date("2026-01-02T00:00:00Z") }),
+      mockTrade({ id: 3, netPnl: 100, closedAt: new Date("2026-01-03T00:00:00Z") }),
+    ];
+    expect(computeDrawdownSkewness(flat)).toBe(0);
+  });
+
+  it("calcula Wilson Score Interval al 95% con precisión y límites [0, 100]", async () => {
+    const { computeWilsonCI } = await import("@/lib/trading/data");
+    const empty = computeWilsonCI(0, 0);
+    expect(empty.lower).toBe(0);
+    expect(empty.upper).toBe(0);
+
+    // 60 aciertos en 100 trades (p = 0.60, n = 100, z = 1.96 -> center = 59.63%)
+    const w = computeWilsonCI(60, 100);
+    expect(w.lower).toBeGreaterThan(49);
+    expect(w.upper).toBeLessThan(70);
+    expect(w.center).toBeCloseTo(59.63, 2);
+
+    // 100% aciertos
+    const perfect = computeWilsonCI(10, 10);
+    expect(perfect.upper).toBe(100);
+    expect(perfect.lower).toBeGreaterThan(65);
+  });
+
+  it("calcula Gain-to-Pain Ratio (Schwager) de forma segura", async () => {
+    const { computeGainToPain } = await import("@/lib/trading/data");
+    // Sin pérdidas
+    const noLoss = [mockTrade({ id: 1, netPnl: 500 })];
+    expect(computeGainToPain(noLoss)).toBe(100);
+
+    // Con pérdidas
+    const withLoss = [
+      mockTrade({ id: 1, netPnl: 1000 }),
+      mockTrade({ id: 2, netPnl: -200 }),
+    ];
+    // NetPnL = 800, Losses = 200 -> GPR = 4.0
+    expect(computeGainToPain(withLoss)).toBe(4.0);
+  });
+
+  it("expone las nuevas métricas institucionales en METRICS con valores válidos y finitos", async () => {
+    const { METRICS } = await import("@/lib/trading/data");
+    expect(Number.isFinite(METRICS.sqn)).toBe(true);
+    expect(Number.isFinite(METRICS.ulcerIndex)).toBe(true);
+    expect(Number.isFinite(METRICS.drawdownSkewness)).toBe(true);
+    expect(Number.isFinite(METRICS.halfKelly)).toBe(true);
+    expect(Number.isFinite(METRICS.gainToPainRatio)).toBe(true);
+    expect(METRICS.sqn).toBeGreaterThan(0);
+    expect(METRICS.gainToPainRatio).toBeGreaterThan(0);
+  });
+});
+
 function mockTrade(overrides: Partial<import("@/lib/trading/data").Trade> = {}): import("@/lib/trading/data").Trade {
   return {
     id: 1,

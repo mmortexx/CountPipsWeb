@@ -213,31 +213,18 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
               {es ? "TEST ESTADÍSTICO" : "STATISTICAL TEST"}
             </span>
           </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.85rem, 3.3vw, 2.8rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.1,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.1] text-primary text-balance">
             {es ? (
               <>
-                ¿Tu win rate es <span style={{ color: "rgb(var(--accent-base))" }}>real</span> o es suerte?
+                ¿Tu win rate es <span className="text-[rgb(var(--accent-base))]">real</span> o es suerte?
               </>
             ) : (
               <>
-                Is your win rate <span style={{ color: "rgb(var(--accent-base))" }}>real</span> or luck?
+                Is your win rate <span className="text-[rgb(var(--accent-base))]">real</span> or luck?
               </>
             )}
           </h2>
-          <p
-            className="mt-5 mb-7"
-            style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)", maxWidth: "34em" }}
-          >
+          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
               ? "60% de aciertos en 20 operaciones suena bien — pero estadísticamente es indistinguible de una moneda. Este test te dice si tu muestra basta para afirmar que tienes un edge."
               : "60% win rate over 20 trades sounds good — but statistically it's indistinguishable from a coin. This test tells you if your sample is enough to claim you have an edge."}

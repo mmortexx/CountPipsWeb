@@ -177,22 +177,34 @@ function serie(id: keyof typeof SERIES_ROTULOS): readonly string[] {
 /** Interruptor de comparación. Se deja escrito porque la única forma
  *  honesta de saber lo que cuesta el revelado es medir el MISMO recorrido
  *  con él y sin él; ponerlo a `false` devuelve el trazo de línea. */
-/** Separación entre centros de punto, en píxeles CSS: 3.2px para micro-estipulado hiperdenso y fino. */
-const PASO_TRAMA = 3.2;
+/** Separación entre centros de punto, en píxeles CSS.
+ *
+ *  ESTE NÚMERO MANDA SOBRE EL PRESUPUESTO DE FOTOGRAMAS. El coste de
+ *  regrabar una lámina crece con el CUADRADO de la densidad: a paso 3,2
+ *  una ventana de 1440×900 son 126.504 celdas frente a las 36.000 del
+ *  paso 6, y un regrabado —que no se puede partir— se iba a 75 ms
+ *  medidos por el banco (`scripts/fluidez.mjs`), con un presupuesto de
+ *  28. El «micro-estipulado hiperdenso» se retiró por eso: no era un
+ *  cambio de gusto, era una regresión de fluidez que el banco pilló.
+ *  Si se quiere densificar, se mide FLUIDEZ con cada paso y se queda
+ *  el número más fino que lo respete. */
+const PASO_TRAMA = 6;
 
 /* ── CUÁNTAS VECES SE REVELA UNA LÁMINA MIENTRAS AVANZA ────────────────
-   Retícula de ultra-alta definición con micro-puntos diminutos de precisión. */
-const PASOS_TRAZO = 64;
+   48 pasos: suficientes para que el avance se lea continuo (un paso es
+   una fracción de punto de trama) sin multiplicar los regrabados — cada
+   paso extra es otra pasada por el muestreo completo de la máscara. */
+const PASOS_TRAZO = 48;
 /** Radio máximo, en fracción del paso. */
 const RADIO_TRAMA = 0.44;
-/** Amplificación de la cobertura muestreada para definición micro-estructural. */
-const GANANCIA_TRAMA = 2.9;
+/** Amplificación de la cobertura muestreada. Con el paso 6, compensa la
+    rejilla más gruesa subiendo la tinta de las coberturas parciales. */
+const GANANCIA_TRAMA = 3.4;
 /** Cobertura por debajo de la cual no se pinta punto. */
-const UMBRAL_TRAMA = 0.035;
+const UMBRAL_TRAMA = 0.06;
 
-/* ── EL ASIENTO: un punto no aparece colocado, se COLOCA ───────────────
-   Micro-asiento suave y orgánico de máxima fluidez matemática. */
-const VENTANA_ASIENTO = 0.045;
+/* ── EL ASIENTO: un punto no aparece colocado, se COLOCA ─────────────── */
+const VENTANA_ASIENTO = 0.055;
 /** Cuánto se aparta de su casilla un punto recién nacido, en píxeles. */
 const DISPERSION_TRAMA = PASO_TRAMA * 1.5;
 /** Tamaño del punto recién nacido, en fracción del que tendrá asentado. */
@@ -2542,10 +2554,23 @@ export function EngravedAtlas() {
 
     const readInk = () => {
       const antes = ink;
+      /* `--ink` está declarado como `rgb(var(--txt-primary))`.
+         `getPropertyValue("--ink")` devuelve ESA cadena, sin resolver
+         la variable anidada. El canvas no entiende `rgb(var(...))` y
+         ignora el stroke: el grabado se pintaba en negro por defecto,
+         invisible sobre el tema oscuro y como un polvillo sobre el
+         claro — exactamente "no sale ningún gráfico". Se resuelve
+         asignando `color: var(--ink)` a un nodo y leyendo el color
+         computado, que sí es un `rgb()` real. */
+      const probe = document.createElement("span");
+      probe.style.color = "var(--ink)";
+      probe.style.position = "absolute";
+      probe.style.visibility = "hidden";
+      document.documentElement.appendChild(probe);
+      const resolved = getComputedStyle(probe).color;
+      probe.remove();
       ink =
-        getComputedStyle(document.documentElement)
-          .getPropertyValue("--ink")
-          .trim() || "#1a1714";
+        resolved && resolved !== "rgba(0, 0, 0, 0)" ? resolved : "#1a1714";
       /* Cambiar de tema cambia la tinta, y las láminas guardadas están
          grabadas con la anterior. Se tiran. */
       if (ink !== antes) descartarBitmaps();

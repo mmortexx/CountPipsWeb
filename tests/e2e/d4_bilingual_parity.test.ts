@@ -61,10 +61,10 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
       expect(nonStringKeys, "Non-string/non-function values in STR dictionary").toEqual([]);
     });
 
-    it("D4-T1-2: Glossary parity across all 51 terms and all 5 categories", () => {
-      // 1. Total count check (exactly 51 frozen terms)
-      expect(GLOSSARY.length).toBe(51);
-      expect(TERMINOS.length).toBe(51);
+    it("D4-T1-2: Glossary parity across all 57 terms and all 5 categories", () => {
+      // 1. Total count check (exactly 57 frozen terms)
+      expect(GLOSSARY.length).toBe(57);
+      expect(TERMINOS.length).toBe(57);
 
       // 2. Categories integrity check
       const expectedCategories: GlossaryCategory[] = [

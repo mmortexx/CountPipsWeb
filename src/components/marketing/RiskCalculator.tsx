@@ -237,28 +237,16 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     }
   }, []);
 
-  const chipStyle = (active: boolean) => ({
-    padding: "6px 14px",
-    fontSize: 12,
-    fontWeight: active ? 600 : 400,
-    borderRadius: 2,
-    cursor: "pointer",
-    transition: "all 0.15s ease",
-    background: active
-      ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-      : "color-mix(in oklab, var(--surface-2) 60%, transparent)",
-    color: active ? "rgb(var(--accent-base))" : "var(--ink-2)",
-    border: active
-      ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)"
-      : "1px solid rgb(var(--divider) / 0.13)",
-  });
+  const chipStyle = (active: boolean) =>
+    `min-h-[36px] px-3.5 py-1.5 text-xs rounded-[2px] transition-all font-mono ${
+      active
+        ? "bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.5)] font-semibold shadow-sm"
+        : "bg-[var(--surface-2)]/60 text-secondary border border-[rgb(var(--divider)/0.13)] hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+    }`;
 
   const numInput = (label: string, value: number, onChange: (n: number) => void, ariaLabel: string) => (
     <label className="block min-w-0">
-      <span
-        className="tnum block"
-        style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)", marginBottom: 4 }}
-      >
+      <span className="tnum block text-[10px] uppercase tracking-[0.12em] text-tertiary mb-1">
         {label}
       </span>
       <input
@@ -272,15 +260,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
           onChange(Number.isFinite(v) ? v : 0);
         }}
         aria-label={ariaLabel}
-        className="tnum w-full min-h-[44px] rounded-[2px] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] transition-colors"
-        style={{
-          fontSize: 16,
-          fontWeight: 600,
-          color: "var(--ink)",
-          background: "color-mix(in oklab, var(--surface-2) 60%, transparent)",
-          border: "1px solid rgb(var(--divider) / 0.13)",
-          padding: "8px 12px",
-        }}
+        className="tnum w-full min-h-[44px] rounded-[2px] px-3 text-base font-semibold text-primary bg-[var(--surface-2)]/60 border border-[rgb(var(--divider)/0.13)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] transition-colors outline-none"
       />
     </label>
   );
@@ -320,52 +300,28 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-            >
+            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
               § {num}
             </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span
-              className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-            >
+            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
+            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
               {es ? "CALCULADORA DE RIESGO" : "RISK CALCULATOR"}
             </span>
           </div>
 
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.95rem, 3.5vw, 3rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.08,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
             {es ? (
               <>
-                Calcula tu riesgo <span style={{ color: "rgb(var(--accent-base))" }}>antes</span> de operar.
+                Calcula tu riesgo <span className="text-[rgb(var(--accent-base))]">antes</span> de operar.
               </>
             ) : (
               <>
-                Calculate your risk <span style={{ color: "rgb(var(--accent-base))" }}>before</span> you trade.
+                Calculate your risk <span className="text-[rgb(var(--accent-base))]">before</span> you trade.
               </>
             )}
           </h2>
 
-          <p
-            className="mt-5 mb-7"
-            style={{
-              fontSize: "clamp(1rem, 1.3vw, 1.1rem)",
-              lineHeight: 1.62,
-              color: "var(--ink-2)",
-              maxWidth: "34em",
-            }}
-          >
+          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
               ? "Introduce tu capital y la distancia a tu stop. Calculamos el tamaño exacto en unidades, lotes o contratos según el mercado que operes."
               : "Enter your balance and stop distance. We work out the exact sizing in units, lots or contracts tailored to your market."}
@@ -373,10 +329,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Selector de clase de activo */}
           <div className="mb-5">
-            <div
-              className="tnum mb-2"
-              style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
+            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Mercado / Instrumento" : "Market / Instrument"}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -389,7 +342,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   key={m.id}
                   type="button"
                   onClick={() => handleAssetChange(m.id)}
-                  style={chipStyle(assetMode === m.id)}
+                  className={chipStyle(assetMode === m.id)}
                 >
                   {es ? m.labelEs : m.labelEn}
                 </button>
@@ -476,18 +429,16 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Chips de plantilla */}
           <div className="mb-4">
-            <div
-              className="tnum mb-2"
-              style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
+            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Plantilla de riesgo" : "Risk preset"}
             </div>
             <div className="flex flex-wrap gap-2">
               {presets.map((p) => (
                 <button
                   key={p.label}
+                  type="button"
                   onClick={() => setRiskPct(p.pct)}
-                  style={chipStyle(riskPct === p.pct)}
+                  className={chipStyle(riskPct === p.pct)}
                   aria-pressed={riskPct === p.pct}
                 >
                   {p.label} · {fmtNum(p.pct)} %
@@ -498,18 +449,16 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Chips de balance */}
           <div>
-            <div
-              className="tnum mb-2"
-              style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
+            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Balance de cuenta" : "Account balance"}
             </div>
             <div className="flex flex-wrap gap-2">
               {balances.map((b) => (
                 <button
                   key={b.label}
+                  type="button"
                   onClick={() => setBalance(b.v)}
-                  style={chipStyle(balance === b.v)}
+                  className={chipStyle(balance === b.v)}
                   aria-pressed={balance === b.v}
                 >
                   {b.label}

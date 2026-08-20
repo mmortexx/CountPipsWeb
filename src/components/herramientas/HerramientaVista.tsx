@@ -42,6 +42,11 @@ const COMPONENTES = {
   DisciplineCost: dynamic(() =>
     import("@/components/marketing/DisciplineCost").then((m) => m.DisciplineCost),
   ),
+  CommissionDragCalculator: dynamic(() =>
+    import("@/components/marketing/CommissionDragCalculator").then(
+      (m) => m.CommissionDragCalculator,
+    ),
+  ),
 } as const;
 
 export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) {
@@ -55,7 +60,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
     <>
       <Componente num="01" />
 
-      {/* Cinta de Acceso Rápido entre las 7 Herramientas */}
+      {/* Cinta de Acceso Rápido entre las 8 Herramientas */}
       <section className="border-t border-[rgb(var(--divider)/0.10)] bg-veil py-4">
         <div className="tj-container">
           <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
@@ -68,9 +73,9 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                 <Link
                   key={h.slug}
                   href={`/herramientas/${h.slug}`}
-                  className={`h-8 px-3 rounded-[2px] text-[11.5px] font-mono transition-all flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`min-h-[40px] px-3.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-1.5 whitespace-nowrap ${
                     active
-                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold"
+                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
                       : "border border-[rgb(var(--divider)/0.15)] bg-[var(--surface-1)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
                   }`}
                 >
@@ -139,7 +144,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                     className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
                   >
                     <span className="link-underline">
-                      {es ? "Ver las siete herramientas" : "See all seven tools"}
+                      {es ? "Ver todas las herramientas" : "See all tools"}
                     </span>
                   </Link>
                 </p>

@@ -27,7 +27,8 @@ export type Herramienta = {
     | "EquityProjector"
     | "SavingsCalculator"
     | "SessionClock"
-    | "DisciplineCost";
+    | "DisciplineCost"
+    | "CommissionDragCalculator";
   tituloEs: string;
   tituloEn: string;
   /** Titular de la cabecera. Corto: se anima carácter a carácter. */
@@ -185,6 +186,26 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Compara un coste mensual con las referencias de lanzamiento de CountPips, sin convertir el resultado en una promesa de compra.",
     descripcionEn:
       "Compare a monthly cost with CountPips launch references; the result is not a purchase offer.",
+  },
+  {
+    slug: "impacto-de-comisiones",
+    componente: "CommissionDragCalculator",
+    tituloEs: "Calculadora de comisiones y deslizamiento",
+    tituloEn: "Commission and slippage calculator",
+    h1Es: "La factura oculta de tu bróker.",
+    h1En: "The hidden bill from your broker.",
+    resaltaEs: "de tu bróker.",
+    resaltaEn: "your broker.",
+    subtituloEs:
+      "En futuros CME y Forex, las comisiones y el deslizamiento pueden comerse hasta el 40 % de tus ganancias. Introduce tus contratos y calcula el umbral de rentabilidad real por trade.",
+    subtituloEn:
+      "In CME futures and Forex, commissions and slippage can absorb up to 40% of gross profits. Enter your contracts and calculate the exact break-even threshold per trade.",
+    resumenEs: "El impacto real de las tarifas CME, spread y deslizamiento en tu cuenta.",
+    resumenEn: "The real bottom-line impact of CME fees, spread and slippage on your trading.",
+    descripcionEs:
+      "Calcula el drag de comisiones, el coste por deslizamiento y el umbral de break-even por trade en futuros (NQ, ES, MES, MNQ) y Forex.",
+    descripcionEn:
+      "Calculate commission drag, slippage friction and the exact break-even threshold per trade in futures (NQ, ES, MES, MNQ) and Forex.",
   },
 ];
 

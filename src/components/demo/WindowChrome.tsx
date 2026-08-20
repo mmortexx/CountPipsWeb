@@ -53,10 +53,30 @@ function pad2(n: number): string {
 
 /* --- Fuente de tiempo para useSyncExternalStore --------------------- */
 
-/** Avisa a React una vez por segundo. */
+/** Avisa a React una vez por segundo (pausado cuando la pestaña está en segundo plano). */
 function subscribeToSecond(onChange: () => void): () => void {
-  const id = window.setInterval(onChange, 1000);
-  return () => window.clearInterval(id);
+  let id = 0;
+  const tick = () => onChange();
+  const parar = () => {
+    if (id) window.clearInterval(id);
+    id = 0;
+  };
+  const arrancar = () => {
+    parar();
+    if (typeof document !== "undefined" && document.hidden) return;
+    tick();
+    id = window.setInterval(tick, 1000);
+  };
+  arrancar();
+  if (typeof document !== "undefined") {
+    document.addEventListener("visibilitychange", arrancar);
+  }
+  return () => {
+    parar();
+    if (typeof document !== "undefined") {
+      document.removeEventListener("visibilitychange", arrancar);
+    }
+  };
 }
 
 /**

@@ -1,9 +1,8 @@
 "use client";
 
 import { Link } from "@/components/tj/LocaleLink";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { HeroMicroCalcs } from "@/components/marketing/HeroMicroCalcs";
 
 /**
  * Hero — sección `#top`.
@@ -272,17 +271,10 @@ export function Hero() {
               className="inline-flex h-[52px] min-w-[180px] w-fit lg:w-full items-center justify-center gap-2.5 rounded-[2px] border px-7 text-[15px] font-semibold text-[var(--ink)] outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{ borderColor: "rgb(var(--divider) / 0.20)" }}
             >
-              <Play size={14} fill="currentColor" aria-hidden />
               {es ? "Ver precios" : "See pricing"}
             </Link>
           </div>
         </div>
-
-        {/* Micro-calculadoras del hero: esperanza matemática y recuperación
-            de drawdown, con controles reales. Ver HeroMicroCalcs.tsx —
-            nacieron estáticas con un rótulo que prometía interactividad
-            que no existía; ahora calculan de verdad, en local. */}
-        <HeroMicroCalcs />
 
         {/* ---- Placa de especificaciones ----
             Sustituye a la fila de distintivos con puntos de acento. Cada

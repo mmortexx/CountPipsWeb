@@ -292,39 +292,26 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum" style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}>
+            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
               § {num}
             </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
+            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
               {es ? "SIMULADOR" : "SIMULATOR"}
             </span>
           </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.95rem, 3.5vw, 3rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.08,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
             {es ? (
               <>
-                El edge existe. <span style={{ color: "rgb(var(--accent-base))" }}>La varianza</span>, también.
+                El edge existe. <span className="text-[rgb(var(--accent-base))]">La varianza</span>, también.
               </>
             ) : (
               <>
-                The edge is real. <span style={{ color: "rgb(var(--accent-base))" }}>So is variance.</span>
+                The edge is real. <span className="text-[rgb(var(--accent-base))]">So is variance.</span>
               </>
             )}
           </h2>
-          <p
-            className="mt-5 mb-7"
-            style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", lineHeight: 1.62, color: "var(--ink-2)", maxWidth: "34em" }}
-          >
+          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
               ? "300 simulaciones de tus próximas operaciones. Cada camino es distinto: el abanico muestra los percentiles completos (P5 a P95). El mismo edge puede multiplicar tu cuenta o arruinarte según el orden. La disciplina es lo que te deja sobrevivir hasta cobrarlo."
               : "300 simulations of your next trades. Each path is different: the fan shows full percentiles (P5 to P95). The same edge can multiply your account or ruin you depending on order. Discipline is what lets you survive long enough to collect it."}

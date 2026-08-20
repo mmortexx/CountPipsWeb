@@ -46,19 +46,21 @@ export function HowItWorks() {
         {/* Header */}
         <SectionHeader
           composicion="partida"
-          etiqueta={es ? "Cómo funciona" : "How it works"}
+          etiqueta={es ? "El ciclo de sesión" : "The session cycle"}
           titulo={es ? (
               <>
-                Tres pasos. <span className="text-gradient">Cero fricción.</span>
+                Registrar. Medir. Frenar{" "}
+                <span className="text-gradient">antes del error.</span>
               </>
             ) : (
               <>
-                Three steps. <span className="text-gradient">Zero friction.</span>
+                Log. Measure. Brake{" "}
+                <span className="text-gradient">before the error.</span>
               </>
             )}
           entradilla={es
-              ? "Diseñado para el trader que opera todos los días: rápido de entrada, brutal de análisis, honesto de diagnóstico."
-              : "Designed for the trader who trades every day: fast to enter, brutal on analysis, honest on diagnosis."}
+              ? "El mismo ritual de una mesa: anotar la operación, leer las métricas y dejar que el Guardián corte lo que el plan no permite."
+              : "The same desk ritual: log the trade, read the metrics, and let the Guardian cut what the plan does not allow."}
         />
 
         {/* Steps */}
@@ -131,7 +133,7 @@ export function HowItWorks() {
                 {/* Title + kbd */}
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="t-h3 text-primary">{s.title}</h3>
-                  <kbd className="hidden md:inline-flex items-center px-1.5 h-5 rounded text-[10px] font-mono text-[rgb(var(--accent-base)/0.85)] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.20)]">
+                  <kbd className="hidden md:inline-flex items-center px-1.5 h-5 rounded-[2px] text-[10px] font-mono text-[rgb(var(--accent-base)/0.85)] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.20)]">
                     {s.kbd}
                   </kbd>
                 </div>
@@ -154,11 +156,12 @@ export function HowItWorks() {
 function CaptureIcon() {
   return (
     <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-      <rect x="8" y="14" width="48" height="34" rx="3" stroke="rgb(var(--accent-base))" strokeWidth="1.6" />
+      <rect x="8" y="14" width="48" height="34" rx="2" stroke="rgb(var(--accent-base))" strokeWidth="1.6" />
       <path d="M8 22h48" stroke="rgb(var(--accent-base))" strokeWidth="1.6" />
-      <circle cx="12.5" cy="18" r="1" fill="rgb(var(--accent-base))" />
-      <circle cx="16.5" cy="18" r="1" fill="rgb(var(--accent-base))" opacity="0.6" />
-      <circle cx="20.5" cy="18" r="1" fill="rgb(var(--accent-base))" opacity="0.4" />
+      {/* Barra de título Windows 11: minimizar, maximizar, cerrar a la derecha. */}
+      <path d="M42 18h6" stroke="rgb(var(--accent-base))" strokeWidth="1.2" strokeLinecap="round" />
+      <rect x="50.2" y="16.4" width="3.2" height="3.2" stroke="rgb(var(--accent-base))" strokeWidth="1.1" />
+      <path d="M56.2 16.4l3.2 3.2M59.4 16.4l-3.2 3.2" stroke="rgb(var(--accent-base))" strokeWidth="1.1" strokeLinecap="round" />
       {/* Candlesticks */}
       <g stroke="rgb(var(--pnl-pos))" strokeWidth="1.4" strokeLinecap="round">
         <path d="M22 36v-6M22 42v4" />
@@ -173,8 +176,8 @@ function CaptureIcon() {
       </g>
       <rect x="40" y="34" width="4" height="12" fill="rgb(var(--pnl-pos))" opacity="0.25" stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" />
       {/* Plus badge */}
-      <circle cx="50" cy="44" r="6" fill="rgb(var(--accent-base))" />
-      <path d="M50 41v6M47 44h6" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="44" y="38" width="12" height="12" fill="rgb(var(--accent-base))" />
+      <path d="M50 41v6M47 44h6" stroke="rgb(var(--accent-ink))" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }

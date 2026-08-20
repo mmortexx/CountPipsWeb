@@ -83,7 +83,7 @@ export function StatsBandNew() {
                   ties the band to the accent palette used across the
                   rest of the pricing page (R24-1d). */}
               <span
-                className="size-1.5 rounded-full bg-[rgb(var(--accent-base))] mb-3.5"
+                className="mb-3.5 inline-block h-[5px] w-[5px] bg-[rgb(var(--accent-base))]"
                 aria-hidden="true"
               />
               <div

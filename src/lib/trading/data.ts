@@ -366,6 +366,11 @@ export interface Metrics {
   drawdownCeiling: number[];
   finalBalance: number;
   roiPct: number;
+  sqn: number;
+  ulcerIndex: number;
+  drawdownSkewness: number;
+  halfKelly: number;
+  gainToPainRatio: number;
 }
 
 export function computeMetrics(trades: Trade[]): Metrics {
@@ -480,16 +485,24 @@ export function computeMetrics(trades: Trade[]): Metrics {
     0
   );
 
+  const payoff = avgLoss ? avgWin / avgLoss : 0;
+  const winRate = n ? wins.length / n : 0;
+  const sqn = computeSqn(sorted);
+  const ulcerIndex = computeUlcerIndex(sorted, INITIAL_BALANCE);
+  const drawdownSkewness = computeDrawdownSkewness(sorted, INITIAL_BALANCE);
+  const halfKelly = computeHalfKelly(winRate, payoff);
+  const gainToPainRatio = computeGainToPain(sorted);
+
   return {
     closedCount: n,
     netPnl,
-    winRate: n ? wins.length / n : 0,
+    winRate,
     wins: wins.length,
     losses: losses.length,
     expectancy: n ? netPnl / n : 0,
     expectancyR,
     profitFactor: grossLoss ? grossWin / grossLoss : grossWin,
-    payoff: avgLoss ? avgWin / avgLoss : 0,
+    payoff,
     avgWin,
     avgLoss,
     largestWin: wins.length ? Math.max(...wins.map((t) => t.netPnl)) : 0,
@@ -513,7 +526,121 @@ export function computeMetrics(trades: Trade[]): Metrics {
     drawdownCeiling,
     finalBalance: bal,
     roiPct: (bal - INITIAL_BALANCE) / INITIAL_BALANCE,
+    sqn,
+    ulcerIndex,
+    drawdownSkewness,
+    halfKelly,
+    gainToPainRatio,
   };
+}
+
+/**
+ * Van Tharp System Quality Number (SQN).
+ * SQN = sqrt(N) * mean(R) / std(R)
+ * Mide la calidad estadística de un sistema independiente del tamaño de la cuenta.
+ */
+export function computeSqn(trades: Trade[]): number {
+  const rs = trades.map((t) => t.rMultiple).filter((r) => Number.isFinite(r));
+  const n = rs.length;
+  if (n < 2) return 0;
+  const meanR = rs.reduce((s, v) => s + v, 0) / n;
+  const varR = rs.reduce((s, v) => s + (v - meanR) ** 2, 0) / (n - 1);
+  const stdR = Math.sqrt(Math.max(0, varR));
+  return stdR > 0 ? +((Math.sqrt(n) * meanR) / stdR).toFixed(4) : 0;
+}
+
+/**
+ * Peter Martin Ulcer Index (UI).
+ * UI = sqrt( (1/N) * sum(DD%_i^2) )
+ * Mide el estrés y profundidad cuadrática de los periodos de drawdown.
+ */
+export function computeUlcerIndex(trades: Trade[], initialBalance = INITIAL_BALANCE): number {
+  const sorted = [...trades].sort((a, b) => a.closedAt.getTime() - b.closedAt.getTime());
+  const n = sorted.length;
+  if (n === 0) return 0;
+  let bal = initialBalance;
+  let peak = initialBalance;
+  let sumSq = 0;
+  for (const t of sorted) {
+    bal += t.netPnl;
+    if (bal > peak) peak = bal;
+    const ddPct = peak > 0 ? ((peak - bal) / peak) * 100 : 0;
+    sumSq += ddPct * ddPct;
+  }
+  return +Math.sqrt(sumSq / n).toFixed(4);
+}
+
+/**
+ * Asimetría de la serie de Drawdowns (Drawdown Skewness).
+ * Cuantifica la propensión a caídas en cola pesada.
+ */
+export function computeDrawdownSkewness(trades: Trade[], initialBalance = INITIAL_BALANCE): number {
+  const sorted = [...trades].sort((a, b) => a.closedAt.getTime() - b.closedAt.getTime());
+  const n = sorted.length;
+  if (n < 3) return 0;
+  let bal = initialBalance;
+  let peak = initialBalance;
+  const dds: number[] = [];
+  for (const t of sorted) {
+    bal += t.netPnl;
+    if (bal > peak) peak = bal;
+    const ddPct = peak > 0 ? ((peak - bal) / peak) * 100 : 0;
+    dds.push(ddPct);
+  }
+  const meanDd = dds.reduce((s, d) => s + d, 0) / n;
+  const varDd = dds.reduce((s, d) => s + (d - meanDd) ** 2, 0) / n;
+  const stdDd = Math.sqrt(varDd);
+  if (stdDd === 0) return 0;
+  const skew = dds.reduce((s, d) => s + ((d - meanDd) / stdDd) ** 3, 0) / n;
+  return +skew.toFixed(4);
+}
+
+/**
+ * Criterio de Half Kelly (%) = max(0, f* / 2) * 100
+ * donde f* = (p*b - q) / b
+ */
+export function computeHalfKelly(winRate: number, payoff: number): number {
+  const p = winRate > 1 ? winRate / 100 : winRate;
+  const q = 1 - p;
+  const b = payoff > 0 ? payoff : 1;
+  const fullKelly = b > 0 ? (p * b - q) / b : 0;
+  return fullKelly > 0 ? +(Math.max(0, fullKelly / 2) * 100).toFixed(2) : 0;
+}
+
+/**
+ * Wilson Score Interval al 95% (o parámetro z).
+ */
+export function computeWilsonCI(
+  wins: number,
+  total: number,
+  z = 1.96
+): { lower: number; upper: number; center: number; margin: number } {
+  if (total <= 0) return { lower: 0, upper: 0, center: 0, margin: 0 };
+  const p = Math.max(0, Math.min(1, wins / total));
+  const zSq = z * z;
+  const denom = 1 + zSq / total;
+  const center = (p + zSq / (2 * total)) / denom;
+  const margin = (z * Math.sqrt((p * (1 - p)) / total + zSq / (4 * total * total))) / denom;
+  const lower = Math.max(0, center - margin);
+  const upper = Math.min(1, center + margin);
+  return {
+    lower: +(lower * 100).toFixed(2),
+    upper: +(upper * 100).toFixed(2),
+    center: +(center * 100).toFixed(2),
+    margin: +(margin * 100).toFixed(2),
+  };
+}
+
+/**
+ * Gain-to-Pain Ratio (Jack Schwager)
+ * GPR = sum(NetPnL) / sum(|Losses|)
+ */
+export function computeGainToPain(trades: Trade[]): number {
+  const netPnl = trades.reduce((s, t) => s + t.netPnl, 0);
+  const losses = trades.filter((t) => t.netPnl < 0);
+  const absLoss = Math.abs(losses.reduce((s, t) => s + t.netPnl, 0));
+  if (absLoss === 0) return netPnl > 0 ? 100 : 0;
+  return +(netPnl / absLoss).toFixed(4);
 }
 
 /**
@@ -523,7 +650,7 @@ export function computeMetrics(trades: Trade[]): Metrics {
  */
 export function drawdownRecoveryRequired(ddPct: number): number {
   if (ddPct <= 0) return 0;
-  if (ddPct >= 100 || (ddPct >= 1 && ddPct < 2 && ddPct === 1)) return Infinity;
+  if (ddPct >= 100 || ddPct === 1) return Infinity;
   // Si se pasa como número porcentual (ej. 10 para 10%)
   if (ddPct > 1) {
     const d = ddPct / 100;
@@ -703,8 +830,14 @@ export function heatmap(trades: Trade[]): number[][] {
   return grid;
 }
 
-export function weekdayBreakdown(trades: Trade[]): { day: string; pnl: number }[] {
-  const days = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const DAYS_ES = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const DAYS_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export function weekdayBreakdown(trades: Trade[], lang: "es" | "en" = "es"): { day: string; pnl: number }[] {
+  const days = lang === "en" ? DAYS_EN : DAYS_ES;
   return days.map((day, i) => ({
     day,
     pnl: trades
@@ -715,8 +848,8 @@ export function weekdayBreakdown(trades: Trade[]): { day: string; pnl: number }[
   }));
 }
 
-export function monthlyBreakdown(trades: Trade[]): { month: string; pnl: number }[] {
-  const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+export function monthlyBreakdown(trades: Trade[], lang: "es" | "en" = "es"): { month: string; pnl: number }[] {
+  const months = lang === "en" ? MONTHS_EN : MONTHS_ES;
   const byMonth = new Map<number, number>();
   for (const t of trades) {
     const m = t.closedAt.getUTCMonth();

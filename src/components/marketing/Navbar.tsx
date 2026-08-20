@@ -98,6 +98,278 @@ import { useAtajoPaleta } from "@/hooks/use-tecla-mando";
    relación con lo que hay detrás. Lo vigila `tests/barra-fija.test.ts`. */
 const ALTURA_BARRA = 68;
 
+const PRODUCT_ITEMS: {
+  href: string;
+  labelEs: string;
+  labelEn: string;
+  descEs: string;
+  descEn: string;
+  grupo: "producto" | "laboratorio";
+  icon: React.ReactNode;
+}[] = [
+  {
+    href: "/features",
+    labelEs: "Características",
+    labelEn: "Features",
+    descEs: "Vista general del producto",
+    descEn: "Product overview",
+    grupo: "producto",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor" />
+        <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+        <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+        <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+      </svg>
+    ),
+  },
+  {
+    href: "/features/metricas",
+    labelEs: "Métricas",
+    labelEn: "Metrics",
+    descEs: "Sharpe, profit factor, expectancy",
+    descEn: "Sharpe, profit factor, expectancy",
+    grupo: "producto",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path d="M2 13V7M6 13V3M10 13V9M14 13V5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/features/disciplina",
+    labelEs: "Disciplina",
+    labelEn: "Discipline",
+    descEs: "El Guardián frena antes del error",
+    descEn: "The Guardian brakes before the error",
+    grupo: "producto",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path d="M8 1.6 2.9 3.8v3.5c0 3.1 2.2 5.5 5.1 6.5 2.9-1 5.1-3.4 5.1-6.5V3.8L8 1.6Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/features/seguridad",
+    labelEs: "Seguridad",
+    labelEn: "Security",
+    descEs: "Local-first, sin nube ni cuentas",
+    descEn: "Local-first, no cloud, no accounts",
+    grupo: "producto",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2.5" y="6.5" width="11" height="7.5" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M5 6.5V4.5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/test",
+    labelEs: "Test de disciplina",
+    labelEn: "Discipline test",
+    descEs: "Mídete en cinco ejes, sin email",
+    descEn: "Measure yourself across five axes, no email",
+    grupo: "laboratorio",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path d="M8 14.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        <path d="M8 8l4-3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        <circle cx="8" cy="8" r="1.4" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    href: "/herramientas",
+    labelEs: "Herramientas",
+    labelEn: "Tools",
+    descEs: "Siete calculadoras, gratis y sin registro",
+    descEn: "Seven calculators, free and with no sign-up",
+    grupo: "laboratorio",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path
+          d="M10.4 2.3a3.4 3.4 0 0 0-4 4.4L2.6 10.5a1.3 1.3 0 0 0 1.8 1.8l3.8-3.8a3.4 3.4 0 0 0 4.4-4l-2 2-1.6-1.6 2-1.6Z"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
+    href: "/glosario",
+    labelEs: "Glosario",
+    labelEn: "Glossary",
+    descEs: "51 términos explicados sin rodeos",
+    descEn: "51 terms explained without waffle",
+    grupo: "laboratorio",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path
+          d="M3 2.6h6.2a2 2 0 0 1 2 2v8.8H5a2 2 0 0 1-2-2V2.6Z"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
+        <path d="M5.4 5.6h3.6M5.4 8h3.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+];
+
+const DRAWER_GRUPOS: {
+  id: "producto" | "operativa" | "laboratorio" | "empresa";
+  es: string;
+  en: string;
+}[] = [
+  { id: "producto", es: "Producto", en: "Product" },
+  { id: "operativa", es: "Operativa", en: "Trading" },
+  { id: "laboratorio", es: "Laboratorio", en: "Lab" },
+  { id: "empresa", es: "Empresa", en: "Company" },
+];
+
+const DRAWER_LINKS: {
+  href: string;
+  labelEs: string;
+  labelEn: string;
+  grupo: (typeof DRAWER_GRUPOS)[number]["id"];
+  icon: React.ReactNode;
+}[] = [
+  {
+    href: "/features",
+    labelEs: "Características",
+    labelEn: "Features",
+    grupo: "producto",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor" />
+        <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+        <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+        <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
+      </svg>
+    ),
+  },
+  {
+    href: "/demo",
+    labelEs: "Demo",
+    labelEn: "Demo",
+    grupo: "producto",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M6.5 6.5v3l2.8-1.5-2.8-1.5Z" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    href: "/traders/manual",
+    labelEs: "Operativa manual",
+    labelEn: "Manual trading",
+    grupo: "operativa",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path d="M3 13V5.5L8 3l5 2.5V13" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+        <path d="M8 7.5v5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/traders/prop-firms",
+    labelEs: "Prop firms",
+    labelEn: "Prop firms",
+    grupo: "operativa",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <rect x="2.5" y="3.5" width="11" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M2.5 6.5h11M6 9.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/beta",
+    labelEs: "Acceso anticipado",
+    labelEn: "Early access",
+    grupo: "operativa",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path d="M3.5 12.5 8 3.5l4.5 9H3.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/about",
+    labelEs: "Acerca de",
+    labelEn: "About",
+    grupo: "empresa",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M8 7v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        <circle cx="8" cy="5" r="0.85" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    href: "/test",
+    labelEs: "Test de disciplina",
+    labelEn: "Discipline test",
+    grupo: "laboratorio",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path d="M8 14.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        <path d="M8 8l4-3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        <circle cx="8" cy="8" r="1.4" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    href: "/herramientas",
+    labelEs: "Herramientas",
+    labelEn: "Tools",
+    grupo: "laboratorio",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path
+          d="M10.4 2.3a3.4 3.4 0 0 0-4 4.4L2.6 10.5a1.3 1.3 0 0 0 1.8 1.8l3.8-3.8a3.4 3.4 0 0 0 4.4-4l-2 2-1.6-1.6 2-1.6Z"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
+  {
+    href: "/glosario",
+    labelEs: "Glosario",
+    labelEn: "Glossary",
+    grupo: "laboratorio",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <path
+          d="M3 2.6h6.2a2 2 0 0 1 2 2v8.8H5a2 2 0 0 1-2-2V2.6Z"
+          stroke="currentColor"
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
+        <path d="M5.4 5.6h3.6M5.4 8h3.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/faq",
+    labelEs: "FAQ",
+    labelEn: "FAQ",
+    grupo: "laboratorio",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
+        <path d="M6.3 6.4c.1-1 .9-1.6 1.9-1.6 1.1 0 1.8.6 1.8 1.4 0 .7-.4 1-1 1.3-.6.3-.8.5-.8 1.1v.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+        <circle cx="8" cy="11.3" r="0.85" fill="currentColor" />
+      </svg>
+    ),
+  },
+];
+
 export function Navbar() {
   const { t, lang } = useLang();
   const es = lang === "es";
@@ -325,263 +597,8 @@ export function Navbar() {
     setHovered(null);
   }, [pathname]);
 
-  const productItems: {
-    href: string;
-    labelEs: string;
-    labelEn: string;
-    descEs: string;
-    descEn: string;
-    icon: React.ReactNode;
-  }[] = [
-    {
-      href: "/features",
-      labelEs: "Características",
-      labelEn: "Features",
-      descEs: "Vista general del producto",
-      descEn: "Product overview",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor" />
-          <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-          <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-          <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-        </svg>
-      ),
-    },
-    {
-      href: "/features/metricas",
-      labelEs: "Métricas",
-      labelEn: "Metrics",
-      descEs: "Sharpe, profit factor, expectancy",
-      descEn: "Sharpe, profit factor, expectancy",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path d="M2 13V7M6 13V3M10 13V9M14 13V5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
-      ),
-    },
-    {
-      href: "/features/disciplina",
-      labelEs: "Disciplina",
-      labelEn: "Discipline",
-      descEs: "El Guardián frena antes del error",
-      descEn: "The Guardian brakes before the error",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path d="M8 1.6 2.9 3.8v3.5c0 3.1 2.2 5.5 5.1 6.5 2.9-1 5.1-3.4 5.1-6.5V3.8L8 1.6Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-        </svg>
-      ),
-    },
-    {
-      href: "/features/seguridad",
-      labelEs: "Seguridad",
-      labelEn: "Security",
-      descEs: "Local-first, sin nube ni cuentas",
-      descEn: "Local-first, no cloud, no accounts",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <rect x="2.5" y="6.5" width="11" height="7.5" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M5 6.5V4.5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
-      ),
-    },
-    {
-      /* El diagnóstico. Estaba al final de la página de disciplina, donde
-         sólo lo encontraba quien ya había bajado del todo, y es la pieza
-         que más engancha: se sale de ella con una cifra propia. */
-      href: "/test",
-      labelEs: "Test de disciplina",
-      labelEn: "Discipline test",
-      descEs: "Mídete en cinco ejes, sin email",
-      descEn: "Measure yourself across five axes, no email",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path d="M8 14.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          <path d="M8 8l4-3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          <circle cx="8" cy="8" r="1.4" fill="currentColor" />
-        </svg>
-      ),
-    },
-    {
-      /* Las calculadoras tenían dirección propia desde hoy pero seguían
-         sin estar en ningún menú: existir y no poder encontrarse es
-         quedarse a mitad de camino. */
-      href: "/herramientas",
-      labelEs: "Herramientas",
-      labelEn: "Tools",
-      descEs: "Siete calculadoras, gratis y sin registro",
-      descEn: "Seven calculators, free and with no sign-up",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path
-            d="M10.4 2.3a3.4 3.4 0 0 0-4 4.4L2.6 10.5a1.3 1.3 0 0 0 1.8 1.8l3.8-3.8a3.4 3.4 0 0 0 4.4-4l-2 2-1.6-1.6 2-1.6Z"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      href: "/glosario",
-      labelEs: "Glosario",
-      labelEn: "Glossary",
-      descEs: "51 términos explicados sin rodeos",
-      descEn: "51 terms explained without waffle",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path
-            d="M3 2.6h6.2a2 2 0 0 1 2 2v8.8H5a2 2 0 0 1-2-2V2.6Z"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinejoin="round"
-          />
-          <path d="M5.4 5.6h3.6M5.4 8h3.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
-      ),
-    },
-  ];
-
-  // Enlaces del drawer móvil. La demo, los precios y el acceso anticipado quedan
-  // visibles sin obligar a descubrirlos dentro del megamenú.
-  // Cada entrada lleva un icono de línea de 14 px: el drawer se abre
-  // para escanear, y el icono acelera el reconocimiento frente a una
-  // lista en plano de solo texto. El estilo es el mismo que usa el
-  // megamenú de escritorio — coherencia entre las dos vías de entrada.
-  const drawerLinks: {
-    href: string;
-    labelEs: string;
-    labelEn: string;
-    icon: React.ReactNode;
-  }[] = [
-    {
-      href: "/features",
-      labelEs: "Características",
-      labelEn: "Features",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor" />
-          <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-          <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-          <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-        </svg>
-      ),
-    },
-    {
-      href: "/demo",
-      labelEs: "Demo",
-      labelEn: "Demo",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M6.5 6.5v3l2.8-1.5-2.8-1.5Z" fill="currentColor" />
-        </svg>
-      ),
-    },
-    {
-      href: "/traders/manual",
-      labelEs: "Operativa manual",
-      labelEn: "Manual trading",
-      icon: <span aria-hidden className="text-[13px]">M</span>,
-    },
-    {
-      href: "/traders/prop-firms",
-      labelEs: "Prop firms",
-      labelEn: "Prop firms",
-      icon: <span aria-hidden className="text-[13px]">P</span>,
-    },
-    {
-      href: "/beta",
-      labelEs: "Acceso anticipado",
-      labelEn: "Early access",
-      icon: <span aria-hidden className="text-[13px]">β</span>,
-    },
-    {
-      href: "/pricing",
-      labelEs: "Precios",
-      labelEn: "Pricing",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path d="M8 1.5 2 4v4.5c0 3.2 2.5 5.7 6 6.5 3.5-.8 6-3.3 6-6.5V4L8 1.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-          <path d="M5.8 8.2l1.5 1.5 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      ),
-    },
-    {
-      href: "/about",
-      labelEs: "Acerca de",
-      labelEn: "About",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M8 7v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          <circle cx="8" cy="5" r="0.85" fill="currentColor" />
-        </svg>
-      ),
-    },
-    {
-      /* El test va ANTES de la FAQ: es una acción, no una consulta, y en
-         un menú corto lo que se puede hacer pesa más que lo que se puede
-         leer. */
-      href: "/test",
-      labelEs: "Test de disciplina",
-      labelEn: "Discipline test",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path d="M8 14.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          <path d="M8 8l4-3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          <circle cx="8" cy="8" r="1.4" fill="currentColor" />
-        </svg>
-      ),
-    },
-    {
-      /* Las herramientas, también en móvil y no sólo en el megamenú de
-         escritorio: el desplegable de Producto no existe por debajo de
-         768 px, así que sin esta entrada las siete calculadoras serían
-         inalcanzables desde un teléfono. */
-      href: "/herramientas",
-      labelEs: "Herramientas",
-      labelEn: "Tools",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path
-            d="M10.4 2.3a3.4 3.4 0 0 0-4 4.4L2.6 10.5a1.3 1.3 0 0 0 1.8 1.8l3.8-3.8a3.4 3.4 0 0 0 4.4-4l-2 2-1.6-1.6 2-1.6Z"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ),
-    },
-    {
-      href: "/glosario",
-      labelEs: "Glosario",
-      labelEn: "Glossary",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <path
-            d="M3 2.6h6.2a2 2 0 0 1 2 2v8.8H5a2 2 0 0 1-2-2V2.6Z"
-            stroke="currentColor"
-            strokeWidth="1.3"
-            strokeLinejoin="round"
-          />
-          <path d="M5.4 5.6h3.6M5.4 8h3.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        </svg>
-      ),
-    },
-    {
-      href: "/faq",
-      labelEs: "FAQ",
-      labelEn: "FAQ",
-      icon: (
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-          <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
-          <path d="M6.3 6.4c.1-1 .9-1.6 1.9-1.6 1.1 0 1.8.6 1.8 1.4 0 .7-.4 1-1 1.3-.6.3-.8.5-.8 1.1v.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          <circle cx="8" cy="11.3" r="0.85" fill="currentColor" />
-        </svg>
-      ),
-    },
-  ];
+  const productItems = PRODUCT_ITEMS;
+  const drawerLinks = DRAWER_LINKS;
 
   /** ¿Esta ruta (o una subruta suya) es la página actual?
    *
@@ -768,7 +785,7 @@ export function Navbar() {
               móvil (el glifo + texto solos medían 32 px). */}
           <Link
             href="/"
-            className="flex min-h-[44px] min-w-0 items-center gap-[11px] justify-self-start rounded-lg px-1 outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            className="flex min-h-[44px] min-w-0 items-center gap-[11px] justify-self-start rounded-[2px] px-1 outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             style={{ color: "var(--ink)" }}
             aria-label={t("appName")}
           >
@@ -917,7 +934,7 @@ export function Navbar() {
                        corriente se leían enteros por debajo de sus
                        entradas. Un menú se pone delante de la página; si
                        la deja ver, las dos compiten por el mismo sitio. */
-                    className="tj-cae tj-paper tj-paper-dense tj-paper-glow absolute left-1/2 w-[520px] max-w-[calc(100vw-3rem)] origin-top rounded-[2px] border p-2"
+                    className="tj-cae tj-paper tj-paper-dense tj-paper-glow absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[2px] border p-0"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
@@ -938,59 +955,85 @@ export function Navbar() {
                         background: "var(--paper-dense)",
                       }}
                     />
-                    <div className="relative grid grid-cols-2 gap-1">
-                      {productItems.map((item) => (
-                        <div key={item.href}>
-                          <Link
-                            href={item.href}
-                            role="menuitem"
-                            onClick={() => setMegaOpen(false)}
-                            className="group flex gap-[11px] rounded-[2px] px-3 py-[11px] outline-none transition-[background-color,transform] duration-150 ease-[var(--ease-menu-in)] hover:translate-x-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-                            style={{ color: "var(--ink)" }}
-                            onMouseEnter={() => {
-                              const id = "prefetch-" + item.href.replace(/[^a-z0-9]/gi, "-");
-                              if (!document.getElementById(id)) {
-                                const link = document.createElement("link");
-                                link.id = id;
-                                link.rel = "prefetch";
-                                link.href = item.href;
-                                link.as = "document";
-                                document.head.appendChild(link);
-                              }
+                    {(() => {
+                      const fila = (item: (typeof productItems)[number]) => (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          role="menuitem"
+                          onClick={() => setMegaOpen(false)}
+                          className="group flex gap-[11px] rounded-[2px] px-2.5 py-[9px] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                          style={{ color: "var(--ink)" }}
+                          onMouseEnter={() => {
+                            const id = "prefetch-" + item.href.replace(/[^a-z0-9]/gi, "-");
+                            if (!document.getElementById(id)) {
+                              const link = document.createElement("link");
+                              link.id = id;
+                              link.rel = "prefetch";
+                              link.href = item.href;
+                              link.as = "document";
+                              document.head.appendChild(link);
+                            }
+                          }}
+                        >
+                          <span
+                            className="grid flex-none place-items-center rounded-[2px]"
+                            style={{
+                              width: 28,
+                              height: 28,
+                              color: "rgb(var(--accent-base))",
                             }}
                           >
+                            {item.icon}
+                          </span>
+                          <span>
+                            <span className="block text-[13px] font-semibold">
+                              {es ? item.labelEs : item.labelEn}
+                            </span>
                             <span
-                              className="grid flex-none place-items-center rounded-[2px] transition-transform duration-150 ease-[var(--ease-menu-in)] group-hover:scale-105"
-                              style={{
-                                width: 30,
-                                height: 30,
-                                background: "rgb(var(--accent-base) / 0.14)",
-                                color: "rgb(var(--accent-base))",
-                              }}
+                              className="mt-0.5 block text-[11.5px] leading-[1.4]"
+                              style={{ color: "var(--ink-2)" }}
                             >
-                              {item.icon}
+                              {es ? item.descEs : item.descEn}
                             </span>
-                            <span>
-                              <span className="block text-[13px] font-semibold">
-                                {es ? item.labelEs : item.labelEn}
-                              </span>
-                              <span
-                                className="mt-0.5 block text-[11.5px] leading-[1.4]"
-                                // R27-1c — --ink-3 → --ink-2. A 11.5 px el
-                                // token terciario (~5.5:1) se acerca al
-                                // suelo WCAG una vez se apilan el 96 % de
-                                // surface y el blur de 24 px del panel. El
-                                // secundario (~9:1) lo deja seguro en
-                                // ambos temas.
-                                style={{ color: "var(--ink-2)" }}
-                              >
-                                {es ? item.descEs : item.descEn}
-                              </span>
+                          </span>
+                        </Link>
+                      );
+                      return (
+                        <>
+                          <div className="relative grid grid-cols-2 divide-x divide-[rgb(var(--divider)/0.10)] p-2">
+                            <div className="pr-2">
+                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+                                {es ? "Producto" : "Product"}
+                              </p>
+                              {productItems.filter((i) => i.grupo === "producto").map(fila)}
+                            </div>
+                            <div className="pl-2">
+                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+                                {es ? "Laboratorio" : "Lab"}
+                              </p>
+                              {productItems.filter((i) => i.grupo === "laboratorio").map(fila)}
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between border-t border-[rgb(var(--divider)/0.10)] px-4 py-2.5">
+                            <span className="tnum text-[11px] text-tertiary">
+                              {es
+                                ? `${atajo} · buscar cualquier sección`
+                                : `${atajo} · search any section`}
                             </span>
-                          </Link>
-                        </div>
-                      ))}
-                    </div>
+                            <Link
+                              href="/demo"
+                              role="menuitem"
+                              onClick={() => setMegaOpen(false)}
+                              className="tnum text-[11.5px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                              style={{ color: "rgb(var(--accent-base))" }}
+                            >
+                              {es ? "Abrir la demo →" : "Open the demo →"}
+                            </Link>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
               )}
             </div>
@@ -1119,7 +1162,7 @@ export function Navbar() {
                 }
                 setMobileOpen((o) => !o);
               }}
-              className="grid h-11 w-11 place-items-center rounded-full text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
+              className="grid h-11 w-11 place-items-center rounded-[2px] text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
               aria-label={mobileOpen ? (es ? "Cerrar menú" : "Close menu") : (es ? "Abrir menú" : "Open menu")}
               aria-expanded={mobileOpen}
               aria-haspopup="dialog"
@@ -1204,7 +1247,7 @@ export function Navbar() {
                   // P8 — `min-h-[44px]` iguala el suelo táctil del botón
                   // "Cerrar" contiguo (también h-11). Antes la marca medía
                   // 32 px (solo el glifo), por debajo del mínimo móvil.
-                  className="flex min-h-[44px] items-center gap-2.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                  className="flex min-h-[44px] items-center gap-2.5 rounded-[2px] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   aria-label={t("appName")}
                 >
                   <BrandMark />
@@ -1231,68 +1274,74 @@ export function Navbar() {
                 {/* Etiqueta de sección — la navegación es la pieza
                     principal del drawer; un pequeño sobretexto la
                     enmarca y da aire al primer enlace. */}
-                <span
-                  className="px-3 pb-2 text-[10.5px] font-semibold uppercase tracking-[0.14em]"
-                  style={{ color: "var(--ink-3)" }}
-                >
-                  {es ? "Secciones" : "Sections"}
-                </span>
-                {drawerLinks.map((l) => {
-                  const active = isActive(l.href);
-                  return (
-                    <Link
-                      key={l.href}
-                      href={l.href}
-                      onClick={() => setMobileOpen(false)}
-                      aria-current={active ? "page" : undefined}
-                      className={`group relative flex min-h-[48px] items-center gap-3 rounded-[2px] py-2.5 pr-3 pl-3 text-sm outline-none transition-[background-color,transform,color] duration-150 ease-[var(--ease-menu-in)] hover:translate-x-1 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
-                        active
-                          ? "bg-[rgb(var(--divider)/0.06)] font-medium text-[var(--ink)]"
-                          : "text-[var(--ink-2)] hover:bg-[rgb(var(--divider)/0.04)] hover:text-[var(--ink)]"
-                      }`}
-                    >
-                      {/* Barra de acento a la izquierda: patrón estándar
-                          de fila activa, mucho más legible de un vistazo
-                          que un punto decorativo a la derecha. */}
-                      {active && (
-                        <span
-                          aria-hidden
-                          className="absolute top-1.5 bottom-1.5 left-0 w-[3px] rounded-r-full"
-                          style={{ background: "rgb(var(--accent-base))" }}
-                        />
-                      )}
-                      {/* Icono: tono apagado en reposo, acento/ink en
-                          activo. Lo guía el `currentColor` del span. */}
-                      <span
-                        className="grid h-7 w-7 flex-none place-items-center rounded-[5px]"
-                        style={{
-                          background: active
-                            ? "rgb(var(--accent-base) / 0.12)"
-                            : "rgb(var(--divider) / 0.06)",
-                          color: active
-                            ? "rgb(var(--accent-base))"
-                            : "var(--ink-3)",
-                        }}
-                      >
-                        {l.icon}
-                      </span>
-                      <span className="flex-1">{es ? l.labelEs : l.labelEn}</span>
-                      {/* Chevron discreto: reafirma que es navegable sin
-                          reclamar atención. */}
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 16 16"
-                        fill="none"
+                {DRAWER_GRUPOS.map((grupo, gi) => (
+                  <div key={grupo.id}>
+                    {gi > 0 && (
+                      <div
                         aria-hidden
-                        className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
-                        style={{ color: "var(--ink-3)" }}
-                      >
-                        <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </Link>
-                  );
-                })}
+                        className="mx-3 mt-3 mb-1 h-px"
+                        style={{ background: "rgb(var(--divider) / 0.08)" }}
+                      />
+                    )}
+                    <span
+                      className={`block px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] ${gi === 0 ? "" : "pt-2.5"}`}
+                      style={{ color: "var(--ink-3)" }}
+                    >
+                      {es ? grupo.es : grupo.en}
+                    </span>
+                    {drawerLinks
+                      .filter((l) => l.grupo === grupo.id)
+                      .map((l) => {
+                        const active = isActive(l.href);
+                        return (
+                          <Link
+                            key={l.href}
+                            href={l.href}
+                            onClick={() => setMobileOpen(false)}
+                            aria-current={active ? "page" : undefined}
+                            className={`group relative flex min-h-[44px] items-center gap-3 rounded-[2px] py-2 pr-3 pl-3 text-sm outline-none transition-[background-color,transform,color] duration-150 ease-[var(--ease-menu-in)] hover:translate-x-1 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                              active
+                                ? "bg-[rgb(var(--divider)/0.06)] font-medium text-[var(--ink)]"
+                                : "text-[var(--ink-2)] hover:bg-[rgb(var(--divider)/0.04)] hover:text-[var(--ink)]"
+                            }`}
+                          >
+                            {active && (
+                              <span
+                                aria-hidden
+                                className="absolute top-1.5 bottom-1.5 left-0 w-[2px]"
+                                style={{ background: "rgb(var(--accent-base))" }}
+                              />
+                            )}
+                            <span
+                              className="grid h-7 w-7 flex-none place-items-center rounded-[2px]"
+                              style={{
+                                background: active
+                                  ? "rgb(var(--accent-base) / 0.12)"
+                                  : "rgb(var(--divider) / 0.06)",
+                                color: active
+                                  ? "rgb(var(--accent-base))"
+                                  : "var(--ink-3)",
+                              }}
+                            >
+                              {l.icon}
+                            </span>
+                            <span className="flex-1">{es ? l.labelEs : l.labelEn}</span>
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 16 16"
+                              fill="none"
+                              aria-hidden
+                              className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
+                              style={{ color: "var(--ink-3)" }}
+                            >
+                              <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </Link>
+                        );
+                      })}
+                  </div>
+                ))}
 
                 {/* Utilidades dentro del drawer: idioma y tema. En móvil
                     la barra superior queda cubierta por el backdrop en

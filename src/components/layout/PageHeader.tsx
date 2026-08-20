@@ -210,7 +210,7 @@ export function PageHeader({
         {readingTimeMin != null && readingTimeMin > 0 && (
           <div data-entra="4" className="mt-5 flex items-center gap-2">
             <span
-              className="inline-flex items-center gap-1.5 rounded-full border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] px-3 py-1 text-xs font-medium text-tertiary"
+              className="inline-flex items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] px-3 py-1 text-xs font-medium text-tertiary"
               aria-label={es ? `${readingTimeMin} minutos de lectura` : `${readingTimeMin} min read`}
             >
               <Clock size={12} className="opacity-70" aria-hidden />

@@ -55,12 +55,12 @@ const listaSchema = {
 export const metadata: Metadata = {
   title: "Herramientas de trading",
   description:
-    "Calculadora de tamaño de posición, Monte Carlo, significancia de tu edge, proyector de capital y reloj de sesiones. Gratis, sin registro y sin enviar datos.",
+    "Calculadora de riesgo, Monte Carlo, significancia estadística, proyector de capital, reloj de sesiones, coste de indisciplina, ahorro vs suscripción e impacto de comisiones. Gratis, sin registro y sin enviar datos.",
   alternates: { canonical: `${SITE_URL}/herramientas/`, languages: hreflangDe("/herramientas") },
   openGraph: {
     title: "Herramientas de trading — CountPips",
     description:
-      "Siete herramientas que funcionan en tu navegador. Sin registro y sin enviar datos.",
+      "Ocho herramientas que funcionan en tu navegador. Sin registro y sin enviar datos.",
     url: `${SITE_URL}/herramientas/`,
     type: "website",
     siteName: "CountPips",
@@ -70,7 +70,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Herramientas de trading — CountPips",
-    description: "Siete herramientas gratis, sin registro y sin enviar datos.",
+    description: "Ocho herramientas gratis, sin registro y sin enviar datos.",
   },
 };
 
@@ -82,10 +82,6 @@ export function HerramientasBody() {
     <>
       <PageHeader
         tono="instrumento"
-        /* Las tarjetas que hay en la página: las seis calculadoras MÁS el
-           test de disciplina. El folio decía 6 y la entradilla, tres
-           líneas más abajo, decía «Siete» — dos cifras a un centímetro
-           que cualquiera comprueba contando. */
         folio={`[ ${HERRAMIENTAS.length + 1} ]`}
         eyebrowEs="Gratis"
         eyebrowEn="Free"
@@ -93,8 +89,8 @@ export function HerramientasBody() {
         titleEn="Tools that do the maths for you."
         titleHighlightEs="la cuenta por ti."
         titleHighlightEn="the maths for you."
-        subtitleEs="Siete calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo."
-        subtitleEn="Seven calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine."
+        subtitleEs="Ocho calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo."
+        subtitleEn="Eight calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine."
         breadcrumbEs="Herramientas"
         breadcrumbEn="Tools"
       />

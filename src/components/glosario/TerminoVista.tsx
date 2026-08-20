@@ -58,12 +58,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
               </span>
               <Link
                 href={`/glosario#${termino.category}`}
-                className="inline-flex min-h-[44px] items-center rounded-[2px] border px-3 font-medium transition-colors"
-                style={{
-                  borderColor: "rgb(var(--accent-base) / 0.35)",
-                  color: "rgb(var(--accent-base))",
-                  background: "color-mix(in oklab, rgb(var(--accent-base)) 8%, transparent)",
-                }}
+                className="inline-flex min-h-[44px] items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.08)] px-3 font-medium text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.15)] transition-colors"
               >
                 {es ? familia.es : familia.en}
               </Link>

@@ -216,7 +216,7 @@ export function Values() {
                     filete crece con el mismo gesto que el del lateral. */}
                 <Link
                   href={v.href}
-                  className="relative mt-4 inline-flex items-center gap-1.5 text-xs font-medium text-[rgb(var(--accent-base))] underline decoration-[rgb(var(--accent-base)/0.35)] decoration-1 underline-offset-4 outline-none transition-colors duration-200 hover:decoration-[rgb(var(--accent-base))] focus-visible:rounded-[2px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+                  className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[rgb(var(--accent-base))] underline decoration-[rgb(var(--accent-base)/0.35)] decoration-1 underline-offset-4 outline-none transition-colors duration-200 hover:decoration-[rgb(var(--accent-base))] focus-visible:rounded-[2px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
                 >
                   {es ? v.pruebaEs : v.pruebaEn}
                   <span aria-hidden="true">→</span>

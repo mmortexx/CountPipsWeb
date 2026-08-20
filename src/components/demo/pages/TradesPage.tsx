@@ -638,14 +638,74 @@ export function TradesPage() {
   };
 
   const handleExport = (format: "csv" | "json") => {
+    if (!filtered.length) return;
     if (format === "csv") {
+      const headers = [
+        "id",
+        "instrument",
+        "direction",
+        "setup",
+        "session",
+        "entry",
+        "exit",
+        "quantity",
+        "netPnl",
+        "rMultiple",
+        "durationMin",
+        "closedAt",
+        "compliance",
+      ];
+      const rows = filtered.map((t) => [
+        t.id,
+        t.instrument,
+        t.direction,
+        `"${t.setup.replace(/"/g, '""')}"`,
+        t.session,
+        t.entry,
+        t.exit,
+        t.qty,
+        t.netPnl,
+        t.rMultiple,
+        t.durationMin,
+        t.closedAt.toISOString(),
+        t.compliance,
+      ]);
+      const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `countpips-trades-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
       toast({
         title: es ? "Exportación CSV generada" : "CSV export generated",
         description: es
-          ? `${filtered.length} operaciones exportadas con esquema estándar de trading.`
-          : `${filtered.length} trades exported with standard trading schema.`,
+          ? `${filtered.length} operaciones descargadas en formato CSV estándar.`
+          : `${filtered.length} trades downloaded in standard CSV format.`,
       });
     } else {
+      const jsonContent = JSON.stringify(
+        filtered.map((t) => ({
+          ...t,
+          closedAt: t.closedAt.toISOString(),
+        })),
+        null,
+        2
+      );
+      const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `countpips-trades-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
       toast({
         title: es ? "Snapshot JSON generado" : "JSON snapshot generated",
         description: es

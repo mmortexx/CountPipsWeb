@@ -50,42 +50,26 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
       <div className="relative tj-container">
         <div className="max-w-[760px] mb-12">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-            >
+            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
               § {num}
             </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span
-              className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-            >
+            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
+            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
               {es ? "CARACTERÍSTICAS" : "FEATURES"}
             </span>
           </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.95rem, 3.5vw, 3.05rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.08,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
             {es ? (
               <>
                 Todo lo que una mesa profesional
                 <br />
-                espera de un <span style={{ color: "rgb(var(--accent-base))" }}>diario</span>.
+                espera de un <span className="text-[rgb(var(--accent-base))]">diario</span>.
               </>
             ) : (
               <>
                 Everything a professional desk
                 <br />
-                expects from a <span style={{ color: "rgb(var(--accent-base))" }}>journal</span>.
+                expects from a <span className="text-[rgb(var(--accent-base))]">journal</span>.
               </>
             )}
           </h2>
@@ -127,22 +111,15 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             />
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-lg border border-[rgb(var(--accent-base)/0.20)]"
-                style={{ width: 30, height: 30, background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)", color: "rgb(var(--accent-base))" }}
+                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
               >
                 <CalendarDays size={15} aria-hidden />
               </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
+              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Calendario de P&L" : "P&L calendar"}
               </span>
             </div>
-            <h3
-              className="font-serif m-0"
-              style={{ fontSize: "clamp(1.4rem, 2.4vw, 1.85rem)", letterSpacing: "-0.02em", color: "var(--ink)" }}
-            >
+            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary">
               {es ? "Cada día, en un vistazo" : "Every day, at a glance"}
             </h3>
             {/* Mes + iniciales de los días. `cal.label` y `cal.chip` se
@@ -241,22 +218,15 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-lg border border-[rgb(var(--accent-base)/0.20)]"
-                style={{ width: 30, height: 30, background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)", color: "rgb(var(--accent-base))" }}
+                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
               >
                 <LineChart size={15} aria-hidden />
               </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
+              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Rendimiento por hora" : "Hourly performance"}
               </span>
             </div>
-            <h3
-              className="font-serif m-0"
-              style={{ fontSize: "clamp(1.4rem, 2.4vw, 1.85rem)", letterSpacing: "-0.02em", color: "var(--ink)" }}
-            >
+            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary">
               {es ? "Sabe cuándo rendirte y cuándo apretar" : "Knows when to push and when to back off"}
             </h3>
             {/* Bar chart hardcoded 24 barras (horas) */}
@@ -361,22 +331,15 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-lg border border-[rgb(var(--accent-base)/0.20)]"
-                style={{ width: 30, height: 30, background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)", color: "rgb(var(--accent-base))" }}
+                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
               >
                 <BookOpen size={15} aria-hidden />
               </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
+              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Playbooks" : "Playbooks"}
               </span>
             </div>
-            <h3
-              className="font-serif m-0"
-              style={{ fontSize: "clamp(1.4rem, 2.4vw, 1.85rem)", letterSpacing: "-0.02em", color: "var(--ink)" }}
-            >
+            <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
               {es ? "Sólo setups que tienen edge" : "Only setups with edge"}
             </h3>
             <div className="mt-4 space-y-2.5">
@@ -426,22 +389,15 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-lg border border-[rgb(var(--accent-base)/0.20)]"
-                style={{ width: 30, height: 30, background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)", color: "rgb(var(--accent-base))" }}
+                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
               >
                 <NotebookPen size={15} aria-hidden />
               </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
+              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Diario narrativo" : "Narrative journal"}
               </span>
             </div>
-            <h3
-              className="font-serif m-0"
-              style={{ fontSize: "clamp(1.4rem, 2.4vw, 1.85rem)", letterSpacing: "-0.02em", color: "var(--ink)" }}
-            >
+            <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
               {es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}
             </h3>
             <div
@@ -474,22 +430,15 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-lg border border-[rgb(var(--accent-base)/0.20)]"
-                style={{ width: 30, height: 30, background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)", color: "rgb(var(--accent-base))" }}
+                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
               >
                 <Layers size={15} aria-hidden />
               </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
+              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Multi-cuenta, multi-activo" : "Multi-account, multi-asset"}
               </span>
             </div>
-            <h3
-              className="font-serif m-0"
-              style={{ fontSize: "clamp(1.4rem, 2.4vw, 1.85rem)", letterSpacing: "-0.02em", color: "var(--ink)" }}
-            >
+            <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
               {es ? "Una cuenta o diez, en la misma vista" : "One account or ten, in the same view"}
             </h3>
             <div className="mt-4 space-y-2 text-xs font-mono">

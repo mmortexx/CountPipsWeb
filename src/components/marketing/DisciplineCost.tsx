@@ -326,7 +326,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
 
           {/* Factura Dinámica */}
           <div
-            className="relative p-6 rounded-[3px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface)_75%,transparent)] backdrop-blur-xl shadow-xl"
+            className="relative p-6 rounded-[3px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface)_75%,transparent)] backdrop-blur-sm shadow-xl"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.08)]">
               <div>
@@ -384,7 +384,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                     {offPlanTrades} {es ? "operaciones indisciplinadas" : "off-plan trades"}
                   </span>
                 </div>
-                <span className="font-serif text-2xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
+                <span className="font-mono text-2xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(totalLeakMonthly, lang)}
                 </span>
               </div>

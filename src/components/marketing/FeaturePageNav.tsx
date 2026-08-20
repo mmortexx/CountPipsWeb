@@ -155,7 +155,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                     divider bg + tertiary text to accent-tinted bg + accent
                     text, so the icon reads as the tap target rather than a
                     decorative bullet. */}
-                <span className="grid place-items-center w-11 h-11 rounded-full bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
+                <span className="grid place-items-center w-11 h-11 rounded-[2px] bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
                   <ArrowLeft size={18} />
                 </span>
                 <span className="min-w-0">
@@ -183,7 +183,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                 className="group tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 min-h-[44px] flex items-center gap-4 transition-[background-color,border-color,box-shadow,transform] duration-300 hover:border-[rgb(var(--accent-base)/0.30)] md:flex-row-reverse md:text-right focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
                 {/* R24-1c: mirror of the prev card’s icon-container polish. */}
-                <span className="grid place-items-center w-11 h-11 rounded-full bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
+                <span className="grid place-items-center w-11 h-11 rounded-[2px] bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
                   <ArrowRight size={18} />
                 </span>
                 <span className="min-w-0">

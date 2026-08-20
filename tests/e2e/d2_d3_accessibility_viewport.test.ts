@@ -171,8 +171,8 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 1 Feature Cov
     const glosarioIndice = readSrc("src/components/glosario/GlosarioIndice.tsx");
     const globalsCss = readSrc("src/app/globals.css");
 
-    // Direct font size >= 16px in RiskCalculator inputs
-    expect(riskCalc).toMatch(/fontSize:\s*16/);
+    // Direct font size >= 16px in RiskCalculator inputs (text-base or inline fontSize: 16)
+    expect(riskCalc).toMatch(/fontSize:\s*16|text-base/);
 
     // Glosario search input has text-[15px] or text-base or >=16px in mobile styles
     expect(glosarioIndice).toMatch(/text-\[15px\]|text-base|text-sm md:text-base|text-base md:text-sm/);

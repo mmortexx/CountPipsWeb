@@ -217,8 +217,8 @@ export function GlobalShortcuts() {
             <span className="text-[11px] text-tertiary font-medium">
               +
             </span>
-            {/* Pulsing accent placeholder for the next key */}
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-dashed border-[rgb(var(--accent-base)/0.5)] text-[11px] font-mono text-[rgb(var(--accent-base))] tnum animate-pulse">
+            {/* Accent placeholder for the next key */}
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-dashed border-[rgb(var(--accent-base)/0.5)] text-[11px] font-mono text-[rgb(var(--accent-base))] tnum">
               ?
             </span>
       </div>

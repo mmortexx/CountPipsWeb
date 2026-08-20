@@ -76,6 +76,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
   const [tzMode, setTzMode] = useState<TimezoneMode>("local");
 
   useEffect(() => {
+    let id = 0;
     const tick = () => {
       const now = new Date();
       const h = now.getUTCHours() + now.getUTCMinutes() / 60 + now.getUTCSeconds() / 3600;
@@ -86,9 +87,22 @@ export function SessionClock({ num = "02" }: { num?: string }) {
         setLocalTz("UTC");
       }
     };
-    tick();
-    const id = window.setInterval(tick, 1000);
-    return () => window.clearInterval(id);
+    const parar = () => {
+      if (id) window.clearInterval(id);
+      id = 0;
+    };
+    const arrancar = () => {
+      parar();
+      if (document.hidden) return;
+      tick();
+      id = window.setInterval(tick, 1000);
+    };
+    arrancar();
+    document.addEventListener("visibilitychange", arrancar);
+    return () => {
+      parar();
+      document.removeEventListener("visibilitychange", arrancar);
+    };
   }, []);
 
   const sessionIsOpen = (s: Session, h: number): boolean => {

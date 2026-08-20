@@ -249,9 +249,14 @@ export function Grabado404() {
 
     const leerTinta = () => {
       const antes = ink;
-      ink =
-        getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() ||
-        "#1a1714";
+      const probe = document.createElement("span");
+      probe.style.color = "var(--ink)";
+      probe.style.position = "absolute";
+      probe.style.visibility = "hidden";
+      document.documentElement.appendChild(probe);
+      const resolved = getComputedStyle(probe).color;
+      probe.remove();
+      ink = resolved && resolved !== "rgba(0, 0, 0, 0)" ? resolved : "#1a1714";
       if (ink !== antes) pintar(terminado ? 1 : progreso);
     };
 

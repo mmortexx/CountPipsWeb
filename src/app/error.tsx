@@ -19,9 +19,11 @@ export default function Error({
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Surface unexpected runtime errors to the console in dev/production for observability.
+  // Surface unexpected runtime errors to the console in development for observability.
   useEffect(() => {
-    console.error("Root error boundary caught:", error);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Root error boundary caught:", error);
+    }
   }, [error]);
 
   return (
@@ -33,8 +35,8 @@ export default function Error({
       <div
         className="absolute top-1/4 -left-32 w-[440px] h-[440px] rounded-full blur-[130px] pointer-events-none"
         style={{
-          background: "radial-gradient(circle, rgb(var(--accent-base)), transparent 70%)",
-          opacity: 0.16,
+          background: "radial-gradient(circle, rgb(var(--pnl-neg) / 0.6), transparent 70%)",
+          opacity: 0.12,
         }}
         aria-hidden="true"
       />
@@ -52,7 +54,6 @@ export default function Error({
           className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[12px] text-secondary mb-7"
         >
           <span className="relative flex w-1.5 h-1.5">
-            <span className="absolute inline-flex w-full h-full rounded-full bg-pnl-neg opacity-60 animate-ping" />
             <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-pnl-neg" />
           </span>
           {es ? "Error en tiempo de ejecución" : "Runtime error"}

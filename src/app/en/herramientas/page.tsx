@@ -37,14 +37,14 @@ const listaSchema = {
 export const metadata: Metadata = {
   title: "Trading tools",
   description:
-    "Position size calculator, Monte Carlo, edge significance checker, equity projector and session clock. Free, no sign-up and nothing sent anywhere.",
+    "Risk calculator, Monte Carlo, edge significance checker, equity projector, session clock, cost of indiscipline, savings vs subscription and commission drag. Free, no sign-up and nothing sent anywhere.",
   alternates: {
     canonical: `${SITE_URL}/en/herramientas/`,
     languages: hreflangDe("/herramientas"),
   },
   openGraph: {
     title: "Trading tools — CountPips",
-    description: "Seven tools that run in your browser. No sign-up and nothing sent anywhere.",
+    description: "Eight tools that run in your browser. No sign-up and nothing sent anywhere.",
     url: `${SITE_URL}/en/herramientas/`,
     type: "website",
     siteName: "CountPips",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Trading tools — CountPips",
-    description: "Seven free tools, no sign-up and nothing sent anywhere.",
+    description: "Eight free tools, no sign-up and nothing sent anywhere.",
   },
 };
 

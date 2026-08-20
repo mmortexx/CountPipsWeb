@@ -16,6 +16,9 @@ import {
   monthlyBreakdown,
   rankByExpectancy,
   heatmap as heatmapGrid,
+  computeSqn,
+  computeUlcerIndex,
+  computeHalfKelly,
   type Trade,
   type RankingRow,
 } from "@/lib/trading/data";
@@ -293,7 +296,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
  * ============================================================ */
 function WeekdayBars({ trades }: { trades: Trade[] }) {
   const { lang } = useLang();
-  const rows = useMemo(() => weekdayBreakdown(trades), [trades]);
+  const rows = useMemo(() => weekdayBreakdown(trades, lang), [trades, lang]);
   const maxAbs = useMemo(
     () => Math.max(1, ...rows.map((r) => Math.abs(r.pnl))),
     [rows]
@@ -350,7 +353,7 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
  * ============================================================ */
 function MonthlyBars({ trades }: { trades: Trade[] }) {
   const { lang } = useLang();
-  const rows = useMemo(() => monthlyBreakdown(trades), [trades]);
+  const rows = useMemo(() => monthlyBreakdown(trades, lang), [trades, lang]);
   const maxAbs = useMemo(
     () => Math.max(1, ...rows.map((r) => Math.abs(r.pnl))),
     [rows]
@@ -739,13 +742,15 @@ function computeEquityQuality(trades: Trade[]) {
  * verdict is "Inconclusive"; with 30-100 it's "Suggestive" if the
  * CI excludes zero; with 100+ it's "Confirmed".
  * ============================================================ */
-function computeEdge(trades: Trade[]) {
+function computeEdge(trades: Trade[], lang: "es" | "en") {
   const n = trades.length;
   if (n < 5) {
     return {
       verdict: "Inconclusive",
       verdictTone: "neutral" as const,
-      hint: "Muy pocas operaciones para emitir veredicto.",
+      hint: lang === "es"
+        ? "Muy pocas operaciones para emitir veredicto."
+        : "Too few trades to reach a verdict.",
       pValue: 1,
       winRate: 0,
       winRateCi: "—",
@@ -804,19 +809,27 @@ function computeEdge(trades: Trade[]) {
   if (n < 30) {
     verdict = "Inconclusive";
     verdictTone = "neutral";
-    hint = "Necesitas al menos 30 operaciones para emitir un veredicto con confianza estadística.";
+    hint = lang === "es"
+      ? "Necesitas al menos 30 operaciones para emitir un veredicto con confianza estadística."
+      : "You need at least 30 trades to reach a verdict with statistical confidence.";
   } else if (loR > 0) {
-    verdict = "Edge confirmado";
+    verdict = lang === "es" ? "Edge confirmado" : "Confirmed edge";
     verdictTone = "pos";
-    hint = "El intervalo de confianza del 95 % de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa.";
+    hint = lang === "es"
+      ? "El intervalo de confianza del 95 % de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa."
+      : "The 95 % confidence interval for R expectancy excludes zero: your edge is statistically significant.";
   } else if (loR > -0.1) {
-    verdict = "Sugerente";
+    verdict = lang === "es" ? "Sugerente" : "Suggestive";
     verdictTone = "warn";
-    hint = "La señal apunta en la dirección correcta pero el intervalo aún incluye al cero — sigue operando para estrecharlo.";
+    hint = lang === "es"
+      ? "La señal apunta en la dirección correcta pero el intervalo aún incluye al cero — sigue operando para estrecharlo."
+      : "The signal points the right way but the interval still includes zero — keep trading to narrow it.";
   } else {
-    verdict = "Sin edge";
+    verdict = lang === "es" ? "Sin edge" : "No edge";
     verdictTone = "neutral";
-    hint = "El intervalo de confianza incluye al cero y la media es cercana o negativa: no hay evidencia de ventaja real.";
+    hint = lang === "es"
+      ? "El intervalo de confianza incluye al cero y la media es cercana o negativa: no hay evidencia de ventaja real."
+      : "The confidence interval includes zero and the mean is near or negative: no evidence of a real edge.";
   }
 
   const tradesNeeded = Math.max(0, Math.ceil(((1.96 * stdR) / Math.max(0.05, Math.abs(meanR) || 0.05)) ** 2) - n);
@@ -827,7 +840,7 @@ function computeEdge(trades: Trade[]) {
     hint,
     pValue,
     winRate,
-    winRateCi: `[${fmtPct(loW, "es", 0)}, ${fmtPct(hiW, "es", 0)}]`,
+    winRateCi: `[${fmtPct(loW, lang, 0)}, ${fmtPct(hiW, lang, 0)}]`,
     expectancyR: meanR,
     expectancyRCi: `[${loR.toFixed(2)}, ${hiR.toFixed(2)}]`,
     profitFactor,
@@ -856,29 +869,14 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
   const n = trades.length;
   if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: 0, omega: 1 };
 
-  // SQN = sqrt(n) * mean(R) / std(R).
-  const rs = trades.map((t) => t.rMultiple);
-  const meanR = rs.reduce((s, v) => s + v, 0) / n;
-  const varR = rs.reduce((s, v) => s + (v - meanR) ** 2, 0) / (n - 1);
-  const stdR = Math.sqrt(varR);
-  const sqn = stdR > 0 ? (Math.sqrt(n) * meanR) / stdR : 0;
+  // SQN and Ulcer index via canonical pure quantitative functions
+  const sqn = computeSqn(trades);
+  const ulcer = computeUlcerIndex(trades, 10_000);
 
-  // Ulcer index over the equity curve.
+  // CAGR — time-weighted, ~180 days of history.
   const chrono = [...trades].sort(
     (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
   );
-  let peak = 10_000;
-  let bal = 10_000;
-  let sumSq = 0;
-  for (const t of chrono) {
-    bal += t.netPnl;
-    if (bal > peak) peak = bal;
-    const ddPct = peak > 0 ? ((peak - bal) / peak) * 100 : 0;
-    sumSq += ddPct * ddPct;
-  }
-  const ulcer = Math.sqrt(sumSq / n);
-
-  // CAGR — time-weighted, ~180 days of history.
   const netPnl = trades.reduce((s, t) => s + t.netPnl, 0);
   const final = 10_000 + netPnl;
   const yearsSpan = Math.max(
@@ -898,9 +896,7 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
   const avgW = wins.length > 0 ? wins.reduce((s, t) => s + t.netPnl, 0) / wins.length : 1;
   const avgL = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.netPnl, 0) / losses.length) : 1;
   const b = mStats?.payoff ?? (avgL > 0 ? avgW / avgL : 1);
-  const q = 1 - p;
-  const fullKelly = b > 0 ? (p * b - q) / b : 0;
-  const halfKelly = Math.max(0, fullKelly / 2) * 100;
+  const halfKelly = computeHalfKelly(p, b);
 
   // Omega ratio: sum(gains) / sum(|losses|)
   const grossWin = trades.filter((t) => t.netPnl > 0).reduce((s, t) => s + t.netPnl, 0);
@@ -1086,7 +1082,7 @@ export function AnalyticsPage() {
   );
   const periodRows = useMemo(() => buildPeriodRows(filteredTrades), [filteredTrades]);
   const equityQ = useMemo(() => computeEquityQuality(filteredTrades), [filteredTrades]);
-  const edge = useMemo(() => computeEdge(filteredTrades), [filteredTrades]);
+  const edge = useMemo(() => computeEdge(filteredTrades, lang), [filteredTrades, lang]);
   const adv = useMemo(() => computeAdvanced(filteredTrades, m), [filteredTrades, m]);
 
   const filterSig = `${filters.instrument}|${filters.setup}|${filters.direction}|${filters.compliance}`;

@@ -69,20 +69,9 @@ export function BackgroundFX() {
           se corte ni se desalinee al pasar de una a la siguiente. */}
       <div className="tj-margin-rules" />
 
-      {/* Retícula ambiental de micro-puntos de precisión geométrica */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink) 14%, transparent) 0.85px, transparent 0)",
-          backgroundSize: "28px 28px",
-          opacity: 0.45,
-          maskImage:
-            "radial-gradient(ellipse 75% 65% at 50% 38%, black 45%, transparent 95%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 75% 65% at 50% 38%, black 45%, transparent 95%)",
-        }}
-      />
+
+
+
 
       {/* Grano — la fibra del papel */}
       <div

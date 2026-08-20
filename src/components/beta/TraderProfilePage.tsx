@@ -212,7 +212,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   <span>{es ? `Límite diario (${firm.dailyPct}%)` : `Daily limit (${firm.dailyPct}%)`}</span>
                   <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
                 </div>
-                <div className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-neg))] tnum">
+                <div className="text-2xl font-mono font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(dailyLossLimit, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -225,7 +225,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   <span>{es ? `Max Drawdown (${firm.maxDDPct}%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
-                <div className="text-2xl font-serif font-semibold text-primary tnum">
+                <div className="text-2xl font-mono font-semibold text-primary tnum">
                   −{fmtMoney(maxTrailingLoss, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -240,7 +240,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   <span>{es ? `Fase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
                   <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
                 </div>
-                <div className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-pos))] tnum">
+                <div className="text-2xl font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   +{fmtMoney(phase1Target, lang)} {firm.phase2Pct > 0 && <span className="text-sm font-normal text-secondary">/ +{fmtMoney(phase2Target, lang)}</span>}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -253,7 +253,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   <span>{es ? "Riesgo seguro (0.75%)" : "Safe risk (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
-                <div className="text-2xl font-serif font-semibold text-primary tnum">
+                <div className="text-2xl font-mono font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -305,7 +305,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
-                <span className="text-2xl font-serif font-semibold text-[rgb(var(--pnl-pos))] tnum">
+                <span className="text-2xl font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   {manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+1.12 R" : "+0.42 R"}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
@@ -319,7 +319,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
-                <span className="text-2xl font-serif font-semibold text-primary tnum">
+                <span className="text-2xl font-mono font-semibold text-primary tnum">
                   {manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R"}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
@@ -329,7 +329,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="tj-paper p-5 rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
-                <span className="text-2xl font-serif font-semibold text-primary tnum">
+                <span className="text-2xl font-mono font-semibold text-primary tnum">
                   {manualSetup === "breakout" ? "92%" : manualSetup === "sweep" ? "86%" : "74%"}
                 </span>
                 <span className="text-xs text-[rgb(var(--pnl-neg))] block mt-2">

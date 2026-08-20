@@ -153,14 +153,13 @@ export function ProductShowcase() {
                       document.getElementById(`studio-tab-${STUDIO_SETUPS[last].id}`)?.focus();
                     }
                   }}
-                  className={`h-9 px-3.5 rounded-[2px] text-xs font-mono transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base))] ${
+                  className={`min-h-[44px] px-3.5 rounded-[2px] text-xs sm:text-sm font-mono transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base))] ${
                     active
                       ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
                       : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--surface-2)/0.5)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
                   }`}
                 >
                   <Icon size={13} className={active ? "opacity-100" : "opacity-70"} />
-                  <span className="opacity-60">{setup.num}.</span>
                   <span>{es ? setup.labelEs : setup.labelEn}</span>
                 </button>
               );

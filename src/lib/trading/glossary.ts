@@ -351,6 +351,42 @@ export const GLOSSARY: GlossaryTerm[] = [
     en: "High-probability time window within a session where the trader's setups historically work best (e.g. London open kill zone 08:00–10:00 UTC, NY AM kill zone 13:30–15:30 UTC). Filtering trades by kill zone usually raises expectancy notably.",
     category: "execution",
   },
+  {
+    term: "SQN (System Quality Number)",
+    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (esperanza en R / desviación típica de R). Valores superiores a 2,5 indican un sistema excelente y robusto.",
+    en: "Van Tharp metric assessing statistical system quality: SQN = √N × (expectancy in R / standard deviation of R). Values above 2.5 indicate an excellent, robust trading edge.",
+    category: "metrics",
+  },
+  {
+    term: "Ulcer index",
+    es: "Medida cuadrática de la profundidad y duración del drawdown sobre la curva de capital de Peter Martin. Pondera las caídas prolongadas de forma más severa que la volatilidad ordinaria.",
+    en: "Peter Martin's quadratic measure of drawdown depth and duration on the equity curve. Penalizes protracted drawdowns more heavily than ordinary volatility.",
+    category: "risk",
+  },
+  {
+    term: "Drawdown skewness",
+    es: "Asimetría estadística de la serie de drawdowns. Cuantifica si las caídas tienden a ser simétricas o si existe propensión a colas pesadas de pérdidas agudas.",
+    en: "Statistical asymmetry of the drawdown series. Quantifies whether dips are symmetric or prone to fat-tailed acute drawdown events.",
+    category: "risk",
+  },
+  {
+    term: "Gain-to-pain ratio",
+    es: "Métrica de Jack Schwager que divide la suma de todos los rendimientos netos entre el valor absoluto de la suma de pérdidas. Mide el retorno generado por cada unidad de dolor soportado.",
+    en: "Jack Schwager's ratio dividing the sum of all net profits by the absolute sum of all losses. Measures total return generated per unit of downside pain endured.",
+    category: "metrics",
+  },
+  {
+    term: "Wald-Wolfowitz runs test",
+    es: "Test no paramétrico de rachas que evalúa si la secuencia de operaciones ganadoras y perdedoras es aleatoria e independiente (i.i.d.) o si exhibe clustering o alternancia artificial.",
+    en: "Non-parametric runs test evaluating whether the sequence of wins and losses is random and independent (i.i.d.) or exhibits clustering or excessive alternation.",
+    category: "metrics",
+  },
+  {
+    term: "Wilson score interval",
+    es: "Intervalo de confianza asimétrico para proporciones binomiales (win rate). Proporciona límites superior e inferior robustos con muestras pequeñas sin distorsión cerca de los extremos.",
+    en: "Asymmetric confidence interval for binomial proportions (win rate). Yields robust lower and upper bounds on small samples without extreme boundary distortions.",
+    category: "metrics",
+  },
 ];
 
 /** Category metadata: id, ES/EN label, accent variant for the chip. */

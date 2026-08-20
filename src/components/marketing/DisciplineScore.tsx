@@ -268,6 +268,32 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
     )[0];
   }, [perDim, allAnswered]);
 
+  const [copied, setCopied] = useState(false);
+
+  const copyAssessment = async () => {
+    if (!allAnswered || !level) return;
+    const lines = [
+      es ? "Diagnóstico de Disciplina — CountPips" : "Discipline Assessment — CountPips",
+      "─".repeat(32),
+      `${es ? "Puntuación Global" : "Global Score"}: ${score} / 100 (${level.label})`,
+      "",
+      es ? "Desglose por Ejes:" : "Axis Breakdown:",
+      ...perDim.map(({ dim, pct }) => `  · ${es ? dim.es : dim.en}: ${pct}%`),
+      "",
+      `${es ? "Punto a reforzar" : "Priority focus"}: ${weakest ? (es ? weakest.dim.es : weakest.dim.en) : "—"}`,
+      weakest ? (es ? weakest.dim.tipEs : weakest.dim.tipEn) : "",
+      "─".repeat(32),
+      "https://countpips.com/test",
+    ];
+    try {
+      await navigator.clipboard.writeText(lines.join("\n"));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      // clipboard fallback
+    }
+  };
+
   const reset = () => setAnswers(QUESTIONS.map(() => null));
 
   const setAnswer = (qi: number, oi: number) =>
@@ -653,25 +679,41 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
 
               {/* Qué arreglar primero */}
               {weakest ? (
-                <div
-                  className="rounded-[2px] p-4"
-                  style={{
-                    background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
-                    border: "1px solid rgb(var(--divider) / 0.1)",
-                  }}
-                >
-                  <div
-                    className="tnum mb-2"
-                    style={{ fontSize: 9.5, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgb(var(--accent-base))" }}
-                  >
-                    {es ? "Empieza por aquí" : "Start here"}
+                <>
+                  <div className="rounded-[2px] p-4 bg-[var(--surface-2)]/50 border border-[rgb(var(--divider)/0.1)]">
+                    <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-[rgb(var(--accent-base))] font-semibold">
+                      {es ? "Empieza por aquí" : "Start here"}
+                    </div>
+                    <p className="m-0 text-sm leading-relaxed text-secondary">
+                      {es ? weakest.dim.tipEs : weakest.dim.tipEn}
+                    </p>
                   </div>
-                  <p className="m-0" style={{ fontSize: 13, lineHeight: 1.55, color: "var(--ink-2)" }}>
-                    {es ? weakest.dim.tipEs : weakest.dim.tipEn}
-                  </p>
-                </div>
+
+                  <button
+                    type="button"
+                    onClick={copyAssessment}
+                    className="mt-3.5 w-full inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-[2px] text-xs font-mono font-semibold transition-colors duration-150 border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.2)] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] cursor-pointer"
+                  >
+                    {copied ? (
+                      <>
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <span>{es ? "Diagnóstico copiado" : "Assessment copied"}</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                          <rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                          <path d="M3 11V3.5A1.5 1.5 0 014.5 2H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
+                        <span>{es ? "Copiar diagnóstico completo" : "Copy full assessment"}</span>
+                      </>
+                    )}
+                  </button>
+                </>
               ) : (
-                <p className="m-0" style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--ink-3)" }}>
+                <p className="m-0 text-xs leading-relaxed text-tertiary">
                   {es
                     ? `Responde las ${QUESTIONS.length} preguntas para ver tu perfil completo y por dónde empezar.`
                     : `Answer all ${QUESTIONS.length} questions to see your full profile and where to start.`}

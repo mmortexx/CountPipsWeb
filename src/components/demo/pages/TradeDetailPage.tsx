@@ -357,7 +357,7 @@ function TagPill({
     error: "rgb(var(--pnl-neg))",
     win: "rgb(var(--pnl-pos))",
     emotion: "rgb(var(--accent-base))",
-    custom: "rgb(156 163 175)",
+    custom: "rgb(var(--txt-tertiary))",
   };
   return (
     <span
@@ -538,10 +538,7 @@ export function TradeDetailPage() {
               la demo. El h1 del documento es el titular de esa página, y dos
               h1 rompen el esquema de encabezados —lectores de pantalla y
               buscadores lo usan para entender la jerarquía—. */}
-          <h2
-            className="text-2xl md:text-3xl font-medium tracking-[-0.01em] text-primary tnum"
-            style={{ fontFamily: "'Cascadia Mono', Consolas, monospace" }}
-          >
+          <h2 className="text-2xl md:text-3xl font-mono font-medium tracking-[-0.01em] text-primary tnum">
             {trade.instrument}
           </h2>
           <Chip variant={isLong ? "pos" : "neg"}>

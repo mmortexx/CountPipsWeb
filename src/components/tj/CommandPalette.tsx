@@ -70,6 +70,7 @@ const PAGES: Page[] = [
   { path: "/herramientas/coste-de-indisciplina", es: "Calculadora de coste de indisciplina", en: "Cost of indiscipline calculator", keywords: "factura errores fomo gap fuga capital", category: "tools" },
   { path: "/herramientas/reloj-de-sesiones", es: "Reloj de sesiones de mercado", en: "Market session clock", keywords: "horarios londres nueva york asia solapes forex", category: "tools" },
   { path: "/herramientas/ahorro-vs-suscripcion", es: "Escenario de ahorro vs suscripción", en: "Savings vs subscription scenario", keywords: "precio coste retorno roi comparativa", category: "tools" },
+  { path: "/herramientas/impacto-de-comisiones", es: "Calculadora de comisiones y deslizamiento", en: "Commission and slippage calculator", keywords: "comisiones tarifas cme spread deslizamiento slippage breakeven friccion", category: "tools" },
   { path: "/glosario", es: "Glosario de trading", en: "Trading glossary", keywords: "terminos definiciones vocabulario conceptos", category: "main" },
   { path: "/pricing", es: "Precios y licencias", en: "Pricing & licenses", keywords: "core pro coste pago unico", category: "main" },
   { path: "/about", es: "Acerca de y Manifiesto", en: "About & Manifesto", keywords: "historia principios tecnologia changelog", category: "main" },

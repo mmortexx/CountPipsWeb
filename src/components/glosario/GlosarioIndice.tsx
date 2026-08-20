@@ -56,7 +56,7 @@ export function GlosarioIndice() {
       <div className="tj-container">
         {/* Buscador */}
         <Reveal>
-          <div className="mx-auto max-w-xl">
+          <div className="tj-paper mx-auto max-w-xl rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-3 sm:p-4">
             <label htmlFor="glos-q" className="sr-only">
               {es ? "Buscar un término" : "Search a term"}
             </label>
@@ -70,11 +70,7 @@ export function GlosarioIndice() {
                   ? "Busca por nombre o por lo que significa…"
                   : "Search by name or by what it means…"
               }
-              className="h-12 w-full rounded-[2px] border px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary"
-              style={{
-                borderColor: "rgb(var(--divider) / 0.16)",
-                background: "rgb(var(--divider) / 0.04)",
-              }}
+              className="h-12 w-full rounded-[2px] border border-[rgb(var(--divider)/0.16)] bg-[rgb(var(--divider)/0.04)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.5)] focus:ring-1 focus:ring-[rgb(var(--accent-base)/0.5)]"
             />
             {/* Category Pills */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
@@ -136,7 +132,7 @@ export function GlosarioIndice() {
                   : "Nothing by that name. Try a word from the definition."}
               </p>
             ) : (
-              <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
                 {filtrados.map((t) => (
                   <TarjetaTermino key={t.slug} termino={t} es={es} />
                 ))}
@@ -171,7 +167,7 @@ export function GlosarioIndice() {
                     <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-secondary">
                       {es ? meta.descEs : meta.descEn}
                     </p>
-                    <ul className="mt-6 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+                    <ul className="mt-6 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
                       {lista.map((t) => (
                         <TarjetaTermino key={t.slug} termino={t} es={es} />
                       ))}
@@ -195,29 +191,18 @@ function TarjetaTermino({
   es: boolean;
 }) {
   return (
-    <li>
-      {/* La tarjeta ENTERA es el enlace, no solo el título: en móvil
-          apuntar a dos palabras con el pulgar es peor que apuntar a un
-          bloque de 100 px de alto.
-
-          El `border` en reposo NO es decorativo: sin él, el
-          `hover:border-…` de al lado no pintaba nada. `.tj-paper` no
-          declara borde y el reglaje base deja el grosor a 0, así que
-          cambiar sólo el COLOR en el hover no produce ninguna línea
-          visible. La tarjeta respondía al puntero en el papel y no en la
-          pantalla. Mismo arreglo en las otras cinco tarjetas de glosario
-          y herramientas. */}
+    <li className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
       <Link
         href={`/glosario/${termino.slug}`}
-        className="tj-paper group flex h-full flex-col rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 transition-colors duration-200 hover:border-[rgb(var(--accent-base)/0.35)]"
+        className="group grid min-h-[56px] grid-cols-1 items-baseline gap-1 px-4 py-3.5 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6"
       >
         <span
           lang="en"
-          className="text-[15px] font-semibold tracking-tight text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
+          className="text-[14.5px] font-semibold tracking-tight text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
         >
           {termino.term}
         </span>
-        <span className="mt-1.5 line-clamp-3 text-[13.5px] leading-[1.55] text-secondary">
+        <span className="line-clamp-2 text-[13.5px] leading-[1.5] text-secondary">
           {es ? termino.es : termino.en}
         </span>
       </Link>

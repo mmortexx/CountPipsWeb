@@ -184,8 +184,8 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
   });
 
   it("Pairwise 7: Language toggle + Frozen Glossary English terms preservation", () => {
-    // 51 glossary terms maintain untranslated English term across both languages
-    expect(GLOSSARY).toHaveLength(51);
+    // 57 glossary terms maintain untranslated English term across both languages
+    expect(GLOSSARY).toHaveLength(57);
 
     for (const item of GLOSSARY) {
       expect(item.term).toBeTruthy();
@@ -366,8 +366,8 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
   it("Pairwise 16: Mobile touch target compliance (>= 44px) + Input font size (>= 16px)", () => {
     const riskCalc = readSrc("src/components/marketing/RiskCalculator.tsx");
 
-    // Both touch target min-h-[44px] and font size 16px co-exist on the numeric inputs
+    // Both touch target min-h-[44px] and font size 16px (text-base) co-exist on the numeric inputs
     expect(riskCalc).toContain("min-h-[44px]");
-    expect(riskCalc).toContain("fontSize: 16");
+    expect(riskCalc.includes("text-base") || riskCalc.includes("fontSize: 16")).toBe(true);
   });
 });

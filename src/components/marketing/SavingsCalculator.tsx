@@ -111,18 +111,12 @@ export function SavingsCalculator() {
   const cpY = svgH - padY - (c.cpPrice / maxV) * (svgH - padY * 2);
   const cpLineY = Math.max(padY, Math.min(svgH - padY, cpY));
 
-  const chipStyle = (active: boolean): React.CSSProperties => ({
-    fontSize: 12,
-    lineHeight: 1.2,
-    minHeight: 44,
-    padding: "12px 18px",
-    borderRadius: 4,
-    cursor: "pointer",
-    transition: "background 0.2s, color 0.2s, border-color 0.2s",
-    background: active ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)" : "transparent",
-    color: active ? "rgb(var(--accent-base))" : "var(--ink-2)",
-    border: active ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)" : "1px solid rgb(var(--divider) / 0.13)",
-  });
+  const chipStyle = (active: boolean) =>
+    `min-h-[44px] px-4 py-2.5 text-xs rounded-[2px] transition-all font-mono ${
+      active
+        ? "bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.5)] font-semibold shadow-sm"
+        : "bg-[var(--surface-2)]/40 text-secondary border border-[rgb(var(--divider)/0.13)] hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
+    }`;
 
   return (
     <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
@@ -130,39 +124,26 @@ export function SavingsCalculator() {
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum" style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}>
+            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
               §
             </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
+            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
               {es ? "ESCENARIO" : "SCENARIO"}
             </span>
           </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.95rem, 3.5vw, 3rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.08,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
             {es ? (
               <>
-                Un escenario de coste. <span style={{ color: "rgb(var(--accent-base))" }}>No es una oferta.</span>
+                Un escenario de coste. <span className="text-[rgb(var(--accent-base))]">No es una oferta.</span>
               </>
             ) : (
               <>
-                A cost scenario. <span style={{ color: "rgb(var(--accent-base))" }}>Not an offer.</span>
+                A cost scenario. <span className="text-[rgb(var(--accent-base))]">Not an offer.</span>
               </>
             )}
           </h2>
-          <p
-            className="mt-5 mb-7"
-            style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", lineHeight: 1.62, color: "var(--ink-2)", maxWidth: "34em" }}
-          >
+          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
               ? "Core $149 y Pro $249 son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial."
               : "Core $149 and Pro $249 are planned launch references. Compare a monthly cost scenario without treating the result as a commercial promise."}
@@ -170,7 +151,7 @@ export function SavingsCalculator() {
 
           {/* Plan CountPips */}
           <div className="mb-5">
-            <div className="tnum mb-2" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Referencia prevista" : "Planned reference"}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -179,7 +160,7 @@ export function SavingsCalculator() {
                   key={p.id}
                   type="button"
                   onClick={() => setPlan(p.id)}
-                  style={chipStyle(plan === p.id)}
+                  className={chipStyle(plan === p.id)}
                   aria-pressed={plan === p.id}
                   aria-label={`${p.label} ${fmtUsd(p.price)}`}
                 >
@@ -191,7 +172,7 @@ export function SavingsCalculator() {
 
           {/* Alternativa suscripción */}
           <div className="mb-5">
-            <div className="tnum mb-2" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Alternativa por suscripción ($/mes)" : "Subscription alternative ($/mo)"}
             </div>
             <div className="flex flex-wrap gap-2 mb-3">
@@ -200,7 +181,7 @@ export function SavingsCalculator() {
                   key={a.label}
                   type="button"
                   onClick={() => setAltMonthly(a.v)}
-                  style={chipStyle(altMonthly === a.v)}
+                  className={chipStyle(altMonthly === a.v)}
                   aria-pressed={altMonthly === a.v}
                   aria-label={`${a.label} ${fmtUsd(a.v)} ${es ? "al mes" : "per month"}`}
                 >

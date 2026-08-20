@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import {
@@ -147,13 +147,25 @@ export function CookieConsent() {
    *  do the same thing today (no non-essential cookies are loaded), but the
    *  stored value lets future analytics/preference scripts branch on consent
    *  without re-prompting. */
-  function choose(choice: "accepted" | "declined") {
+  const choose = useCallback((choice: "accepted" | "declined") => {
     setVisible(false);
     setDismissed(true);
     // `writeConsent` guarda y avisa; si el almacenamiento está bloqueado,
     // la elección vale igual para esta sesión (ver src/lib/consent.ts).
     writeConsent(choice);
-  }
+  }, []);
+
+  // Dismiss on Escape key for keyboard accessibility (WCAG 2.1.1)
+  useEffect(() => {
+    if (!visible) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        choose("declined");
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [visible, choose]);
 
   return (
     <>
@@ -232,14 +244,14 @@ export function CookieConsent() {
               <button
                 type="button"
                 onClick={() => choose("declined")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-lg text-[13px] font-medium text-secondary border border-[rgb(var(--divider)/0.22)] hover:bg-[rgb(var(--divider)/0.06)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[13px] font-medium text-secondary border border-[rgb(var(--divider)/0.22)] hover:bg-[rgb(var(--divider)/0.06)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
               >
                 {es ? "Solo necesarias" : "Necessary only"}
               </button>
               <button
                 type="button"
                 onClick={() => choose("accepted")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-lg text-[13px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[13px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
               >
                 {es ? "Aceptar analítica" : "Accept analytics"}
               </button>
@@ -255,7 +267,7 @@ export function CookieConsent() {
 function CookieIcon() {
   return (
     <span
-      className="shrink-0 mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-[rgb(var(--divider)/0.05)] text-primary"
+      className="shrink-0 mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-[2px] bg-[rgb(var(--divider)/0.05)] text-primary"
       aria-hidden="true"
     >
       <svg

@@ -121,6 +121,7 @@ export function Footer() {
         { label: "FAQ", href: "/faq" },
         { label: es ? "Glosario" : "Glossary", href: "/glosario" },
         { label: es ? "Herramientas" : "Tools", href: "/herramientas" },
+        { label: es ? "Test de disciplina" : "Discipline test", href: "/test" },
       ],
     },
     {

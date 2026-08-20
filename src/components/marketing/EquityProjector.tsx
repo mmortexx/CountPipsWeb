@@ -1077,7 +1077,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 <div className="min-w-0">
                   <div className="tnum flex items-center gap-2 text-[10px] tracking-wider uppercase font-semibold text-[var(--ink-3)]">
                     <span>{es ? "EXPECTANCY NETA POR OPERACIÓN" : "NET EXPECTANCY PER TRADE"}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))] animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))]" />
                   </div>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span

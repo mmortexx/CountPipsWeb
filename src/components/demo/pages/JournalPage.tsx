@@ -938,13 +938,13 @@ export function JournalPage() {
 
   const weekly = useMemo(
     () =>
-      weekdayBreakdown(TRADES).map((d) => ({ label: d.day, pnl: d.pnl })),
-    []
+      weekdayBreakdown(TRADES, lang).map((d) => ({ label: d.day, pnl: d.pnl })),
+    [lang]
   );
   const monthly = useMemo(
     () =>
-      monthlyBreakdown(TRADES).map((d) => ({ label: d.month, pnl: d.pnl })),
-    []
+      monthlyBreakdown(TRADES, lang).map((d) => ({ label: d.month, pnl: d.pnl })),
+    [lang]
   );
   const history = useMemo(() => buildHistory(TRADES), []);
 

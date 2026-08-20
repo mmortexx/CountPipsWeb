@@ -123,7 +123,7 @@ export function MoreFeatures() {
               >
                 {/* Icon */}
                 <div
-                  className="w-10 h-10 rounded-lg bg-[rgb(var(--accent-base)/0.14)] border border-[rgb(var(--accent-base)/0.20)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex items-center justify-center text-[rgb(var(--accent-base))] mb-4 transition-colors duration-300 group-hover:bg-[rgb(var(--accent-base)/0.20)] group-hover:border-[rgb(var(--accent-base)/0.34)]"
+                  className="w-10 h-10 rounded-[2px] border border-[rgb(var(--divider)/0.16)] flex items-center justify-center text-[rgb(var(--accent-base))] mb-4 transition-colors duration-200 group-hover:border-[rgb(var(--accent-base)/0.40)]"
                 >
                   {f.icon}
                 </div>

@@ -141,7 +141,8 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
         {/* Search input — filters FAQ items in real time */}
         <Reveal delay={0.1} y={24}>
-          <div className="relative mt-8 max-w-3xl mx-auto">
+          <div className="mt-8 max-w-3xl mx-auto">
+            <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
               aria-hidden="true"
@@ -154,6 +155,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               aria-label={es ? "Buscar en las preguntas frecuentes" : "Search frequently asked questions"}
               className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[2px] h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
             />
+            </div>
             {/* Category Pills */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
               {categories.map((cat) => (
@@ -237,7 +239,15 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           like "What's the difference between Core and Pro?"
                           on a 375px viewport without pushing the chevron
                           off the right edge. */}
-                      <span className="min-w-0 break-words">{item.q}</span>
+                      <span className="min-w-0 break-words">
+                        <span
+                          className="tnum mr-2.5 text-[11px] font-semibold text-tertiary"
+                          aria-hidden
+                        >
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        {item.q}
+                      </span>
                     </AccordionTrigger>
                     <AccordionContent className="text-secondary leading-relaxed text-[0.95rem] pb-5">
                       {item.a}
