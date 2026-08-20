@@ -309,11 +309,11 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           usa `.demo-window` (el lienzo de la app, ver globals.css) y no
           `.liquid-glass`, que pintaba un contorno blanco al 30 % arriba y
           abajo — el brillo que hacía que esto pareciera un mockup web.
-          Radio 8 px, el ControlCornerRadius de WinUI. */}
+          Radio 2 px, el canto del sistema. */}
       <div
         ref={demoRootRef}
         className={`relative mx-auto transition-[transform,border-radius,box-shadow,opacity] duration-500 ease-[var(--ease-suave)] ${
-          fullscreen ? "fixed inset-3 z-[100] rounded-lg" : "rounded-lg"
+          fullscreen ? "fixed inset-3 z-[100] rounded-[2px]" : "rounded-[2px]"
         }`}
       >
         {/* ── `overflow-clip` Y NO `overflow-hidden` ──────────────────
@@ -325,8 +325,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
             de hoy», la fila de métricas entera— se quedaban a opacidad 0
             para siempre. No es que no entraran con gracia: es que no se
             veían. Medido en el navegador antes y después. */}
-        <div className="rounded-lg overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[0_2px_8px_rgb(0_0_0/0.28),0_18px_50px_-12px_rgb(0_0_0/0.55)]">
-        <div className="demo-window rounded-lg overflow-clip">
+        <div className="rounded-[2px] overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[0_2px_8px_rgb(0_0_0/0.28),0_18px_50px_-12px_rgb(0_0_0/0.55)]">
+        <div className="demo-window rounded-[2px] overflow-clip">
           <WindowChrome />
           <TopNav />
 

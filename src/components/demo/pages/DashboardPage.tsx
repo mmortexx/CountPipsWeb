@@ -56,7 +56,7 @@ function sliceMetricsByDays(m: Metrics, days: number): Metrics {
 }
 
 const inputCls =
-  "w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-9 px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
+  "w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
 const labelCls =
   "block text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1.5";
 
@@ -339,7 +339,7 @@ export function DashboardPage() {
                     // enseñaba una zona de soltar vacía. Compacta sigue
                     // comunicando que el flujo admite capturas, sin robarle la
                     // pantalla a lo que de verdad hay que ver.
-                    className="w-full border border-dashed border-[rgb(var(--divider)/0.15)] rounded-md flex flex-col items-center justify-center gap-2 text-tertiary hover:text-secondary hover:border-[rgb(var(--divider)/0.3)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors group h-[104px] sm:h-[320px] md:h-[380px]"
+                    className="w-full border border-dashed border-[rgb(var(--divider)/0.15)] rounded-[2px] flex flex-col items-center justify-center gap-2 text-tertiary hover:text-secondary hover:border-[rgb(var(--divider)/0.3)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors group h-[104px] sm:h-[320px] md:h-[380px]"
                   >
                     <svg
                       width="32"
@@ -391,7 +391,7 @@ export function DashboardPage() {
                         los 224 disponibles. */}
                     <div className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)_1px_minmax(0,1fr)] gap-x-2 sm:gap-x-4 items-stretch">
                       {/* Risk $ */}
-                      <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-md transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+                      <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                         <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                           {t("riskUsd")}
                         </div>
@@ -406,7 +406,7 @@ export function DashboardPage() {
                         aria-hidden="true"
                       />
                       {/* R:R planned */}
-                      <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-md transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+                      <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                         <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                           {t("rr")}
                         </div>
@@ -428,7 +428,7 @@ export function DashboardPage() {
                         aria-hidden="true"
                       />
                       {/* % of account */}
-                      <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-md transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+                      <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                         <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                           {es ? "% cuenta" : "% acct"}
                         </div>
@@ -471,7 +471,7 @@ export function DashboardPage() {
                             role="radio"
                             aria-checked={active}
                             onClick={() => setDirection(d)}
-                            className={`relative h-11 rounded-md border text-sm font-medium transition-colors ${
+                            className={`relative h-11 rounded-[2px] border text-sm font-medium transition-colors ${
                               active
                                 ? d === "long"
                                   ? "bg-pnl-pos/15 border-pnl-pos/40 text-primary"
@@ -482,7 +482,7 @@ export function DashboardPage() {
                             {active && (
                               <motion.span
                                 layoutId="dir-pill"
-                                className={`absolute inset-0 rounded-md ${
+                                className={`absolute inset-0 rounded-[2px] ${
                                   d === "long"
                                     ? "bg-pnl-pos/15 border border-pnl-pos/40"
                                     : "bg-pnl-neg/15 border border-pnl-neg/40"
@@ -615,7 +615,7 @@ export function DashboardPage() {
                             setQuantity(q < 1 ? q.toFixed(3) : q.toFixed(2));
                           }
                         }}
-                        className="h-9 px-3 inline-flex items-center gap-1.5 rounded-md border border-[rgb(var(--divider)/0.12)] text-[12px] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.06)] transition-colors whitespace-nowrap"
+                        className="h-9 px-3 inline-flex items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-[12px] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.06)] transition-colors whitespace-nowrap"
                       >
                         <svg
                           width="12"
@@ -701,7 +701,7 @@ export function DashboardPage() {
                       onChange={(e) => setNote(e.target.value)}
                       placeholder={t("notePlaceholder")}
                       rows={3}
-                      className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md px-3 py-2 text-sm text-primary placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors resize-none min-h-[88px] flex-1"
+                      className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] px-3 py-2 text-sm text-primary placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors resize-none min-h-[88px] flex-1"
                       aria-label={t("notePlaceholder")}
                     />
                   </div>
@@ -723,14 +723,14 @@ export function DashboardPage() {
                     />
                     <span
                       aria-hidden="true"
-                      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
+                      className={`relative w-9 h-5 rounded-[2px] transition-colors shrink-0 ${
                         advanced
                           ? "bg-[rgb(var(--accent-base))]"
                           : "bg-[rgb(var(--divider)/0.15)]"
                       } peer-focus-visible:ring-2 peer-focus-visible:ring-[rgb(var(--accent-base)/0.5)]`}
                     >
                       <span
-                        className={`absolute top-[3px] w-3.5 h-3.5 rounded-full transition-[left] ${
+                        className={`absolute top-[3px] w-3.5 h-3.5 rounded-[2px] transition-[left] ${
                           advanced ? "left-[19px] bg-[rgb(var(--bg-canvas))]" : "left-[3px] bg-[rgb(var(--txt-secondary))]"
                         }`}
                       />
@@ -765,7 +765,7 @@ export function DashboardPage() {
                     type="button"
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-                    className="h-11 px-4 rounded-md bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
+                    className="h-11 px-4 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
                   >
                     <svg
                       width="14"
@@ -788,7 +788,7 @@ export function DashboardPage() {
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
                     title={`${mando}+Enter`}
-                    className="group h-11 min-w-[200px] px-4 rounded-md bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
+                    className="group h-11 min-w-[200px] px-4 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
                   >
                     <svg
                       width="14"
@@ -1002,7 +1002,7 @@ export function DashboardPage() {
                     </div>
                   </div>
                   {/* Timeframe selector — 1M / 3M / 6M */}
-                  <div className="flex items-center gap-0.5 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md p-0.5">
+                  <div className="flex items-center gap-0.5 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] p-0.5">
                     {TIMEFRAMES.map((mode) => {
                       const active = tfSel === mode;
                       return (
@@ -1104,7 +1104,7 @@ export function DashboardPage() {
                        fila pasa a dos líneas en móvil (47 → 79px): arriba
                        instrumento y dirección, abajo R y resultado a la
                        derecha. En sm+ vuelve a ser una sola línea. */
-                    className="group w-full flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-2.5 hover:bg-[rgb(var(--divider)/0.05)] -mx-2 px-2 rounded-md transition-colors text-left"
+                    className="group w-full flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-2.5 hover:bg-[rgb(var(--divider)/0.05)] -mx-2 px-2 rounded-[2px] transition-colors text-left"
                   >
                     {/* 80px se quedaba corto: "BTC/USDT" mide 79px de texto
                         él solo, y a eso hay que sumarle el icono + el hueco
@@ -1184,7 +1184,7 @@ function KpiCell({
   value: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-1 text-center min-w-[5.5rem] shrink-0 px-1 py-1 rounded-md transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+    <div className="flex flex-col items-center gap-1 text-center min-w-[5.5rem] shrink-0 px-1 py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
       <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary truncate max-w-full">
         {label}
       </div>

@@ -180,7 +180,7 @@ export function TopNav() {
               // only, `sm:bg-transparent` resets it) + the gold bar reads as
               // "selected" the way iOS/Material tab bars do. The bar also
               // bumps from w-5 → w-6 on mobile for visibility.
-              className={`relative h-full min-w-[44px] sm:min-w-0 px-3 sm:px-4 flex items-center justify-center sm:justify-start gap-2 text-[13px] transition-[background-color,color,transform] duration-150 ease-[var(--ease-menu-in)] whitespace-nowrap outline-none focus-visible:ring-1 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:-ring-offset-1 rounded-md sm:rounded-none ${
+              className={`relative h-full min-w-[44px] sm:min-w-0 px-3 sm:px-4 flex items-center justify-center sm:justify-start gap-2 text-[13px] transition-[background-color,color,transform] duration-150 ease-[var(--ease-menu-in)] whitespace-nowrap outline-none focus-visible:ring-1 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:-ring-offset-1 rounded-[2px] sm:rounded-none ${
                 active
                   ? "text-primary bg-[rgb(var(--accent-base)/0.10)] sm:bg-transparent"
                   : "text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.04)] sm:hover:bg-transparent"
@@ -209,7 +209,7 @@ export function TopNav() {
               {active && (
                 <span
                   aria-hidden="true"
-                  className="absolute bottom-[6px] left-1/2 -translate-x-1/2 w-6 sm:w-5 h-[3px] rounded-full transition-all duration-200 ease-[var(--ease-menu-in)]"
+                  className="absolute bottom-[6px] left-1/2 -translate-x-1/2 w-6 sm:w-5 h-[3px] rounded-[1px] transition-all duration-200 ease-[var(--ease-menu-in)]"
                   style={{ background: "rgb(var(--accent-base))" }}
                 />
               )}

@@ -481,7 +481,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               return (
                 <li key={f.t} className="flex items-start gap-3">
                   <span
-                    className="w-10 h-10 rounded-lg bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex-none inline-grid place-items-center text-[rgb(var(--accent-base))]"
+                    className="w-10 h-10 rounded-[2px] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex-none inline-grid place-items-center text-[rgb(var(--accent-base))]"
                   >
                     <Icon size={18} aria-hidden />
                   </span>

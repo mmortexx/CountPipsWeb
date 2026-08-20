@@ -181,9 +181,9 @@ function MarketClock() {
                   del XAML). Solo se pinta cuando la plaza está abierta —
                   una barra a medias en una plaza cerrada se lee como un
                   dato, y no lo es. */}
-              <div className="mt-[3px] h-[2px] rounded-full bg-[rgb(var(--divider)/0.10)] overflow-hidden">
+              <div className="mt-[3px] h-[2px] bg-[rgb(var(--divider)/0.10)] overflow-hidden">
                 <div
-                  className="h-full rounded-full"
+                  className="h-full"
                   style={{
                     width: open
                       ? `${sessionProgress(s.open, s.close, utcMin)}%`

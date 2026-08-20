@@ -104,7 +104,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
                 className="tj-paper tj-hoja p-6 sm:p-7"
               >
                 <span
-                  className="w-10 h-10 rounded-lg bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
+                  className="w-10 h-10 rounded-[2px] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
                 >
                   <Icon size={18} aria-hidden />
                 </span>

@@ -58,16 +58,10 @@ const AppDemo = dynamic(
  *   el demo real monta su propio panel `h-[560px] md:h-[640px]`.
  *   LAS TRES ALTURAS VAN JUNTAS: si cambia el panel, cambia esta reserva.
  *
- * The outer container uses the EXACT same two-layer material + shadow
- * classes as the live demo window — outer wrapper carries
- * `rounded-xl overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[...]` (a
- * 4-layer shadow stack: depth-3's key/fill/accent glow + the task's
- * heavier `0 24px 80px -12px rgb(0 0 0/0.6)` drop shadow; kept off the
- * `.liquid-glass` element so it isn't overridden by the class's own
- * `border: none` + `box-shadow`), inner carries
- * `tj-paper tj-paper-dense rounded-[2px] overflow-hidden` — so hydration is visually
- * seamless. Only the inner content swaps from greyed-out skeleton blocks
- * to the real interactive dashboard.
+ * The outer container uses the same two-layer material as the live
+ * demo window: canto de 2 px, filete y sombra neutra. Inner carries
+ * `tj-paper tj-paper-dense rounded-[2px] overflow-hidden` so hydration
+ * is visually seamless.
  */
 function DemoSkeleton() {
   return (
@@ -91,7 +85,7 @@ function DemoSkeleton() {
           </div>
           {/* Center — account chip + market clock skeletons. */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-2">
-            <Skeleton className="h-5 w-24 rounded-pill" />
+            <Skeleton className="h-5 w-24 rounded-[2px]" />
             <Skeleton className="h-3 w-20" />
           </div>
           {/* Right — Local-first LED + caption buttons. */}
@@ -121,7 +115,7 @@ function DemoSkeleton() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className={`h-9 px-3 sm:px-4 rounded-md flex items-center gap-2 ${
+                className={`h-9 px-3 sm:px-4 rounded-[2px] flex items-center gap-2 ${
                   i === 0 ? "bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)]" : ""
                 }`}
               >

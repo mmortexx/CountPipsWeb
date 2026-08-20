@@ -162,7 +162,7 @@ function ChecklistRow({
         className="w-full flex items-center gap-3 group text-left"
       >
         <span
-          className={`shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${
+          className={`shrink-0 w-5 h-5 rounded-[2px] border flex items-center justify-center transition-colors ${
             checked
               ? accent
                 ? "bg-[rgb(var(--divider)/0.1)] border-[rgb(var(--divider)/0.2)] text-primary"
@@ -221,10 +221,10 @@ function DayScoreDots({
             className="relative w-5 h-5"
           >
             <span
-              className="absolute inset-0 rounded-full bg-[rgb(var(--divider)/0.10)]"
+              className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.10)]"
             />
             <motion.span
-              className="absolute inset-0 rounded-full bg-[rgb(var(--accent-base))]"
+              className="absolute inset-0 rounded-[2px] bg-[rgb(var(--accent-base))]"
               animate={{
                 opacity: active ? 1 : 0,
                 scale: active ? 1 : 0.7,
@@ -234,7 +234,7 @@ function DayScoreDots({
             {isSelected && (
               <motion.span
                 layoutId={`${idPrefix}-day-score-ring`}
-                className="absolute -inset-1 rounded-full border border-[rgb(var(--accent-base)/0.55)]"
+                className="absolute -inset-1 rounded-[2px] border border-[rgb(var(--accent-base)/0.55)]"
                 transition={{ type: "spring", stiffness: 320, damping: 26 }}
               />
             )}
@@ -328,7 +328,7 @@ function RitualColumn({
           onChange={(e) => onNoteChange(e.target.value)}
           rows={3}
           placeholder={placeholder}
-          className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md p-3 text-sm text-primary placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] outline-none transition-colors resize-none custom-scroll"
+          className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] p-3 text-sm text-primary placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] outline-none transition-colors resize-none custom-scroll"
         />
       </div>
     </div>
@@ -433,7 +433,6 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
 
 function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
   const { lang } = useLang();
-  const reduce = useReducedMotion();
   const label =
     lang === "es"
       ? level === "green"
@@ -446,10 +445,10 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
       : level === "amber"
       ? "Medium discipline"
       : "Low discipline";
-  const lights: { key: "green" | "amber" | "red"; color: string; rgb: string }[] = [
-    { key: "green", color: "rgb(var(--sig-green))", rgb: "var(--sig-green)" },
-    { key: "amber", color: "rgb(var(--sig-amber))", rgb: "var(--sig-amber)" },
-    { key: "red", color: "rgb(var(--sig-red))", rgb: "var(--sig-red)" },
+  const lights: { key: "green" | "amber" | "red"; color: string }[] = [
+    { key: "green", color: "rgb(var(--sig-green))" },
+    { key: "amber", color: "rgb(var(--sig-amber))" },
+    { key: "red", color: "rgb(var(--sig-red))" },
   ];
   return (
     <div
@@ -461,29 +460,15 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
           no una pieza negra pegada encima. Atado al tinte del sistema y a
           la sombra tonal, se lee como rebaje en los dos temas; en negro
           fijo era una mancha sobre el papel claro. */}
-      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[rgb(var(--divider)/0.10)] border border-[rgb(var(--divider)/0.1)] shadow-[inset_0_1px_2px_rgb(var(--sombra)/0.28)]">
+      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.10)] border border-[rgb(var(--divider)/0.1)]">
         {lights.map((l) => {
           const active = l.key === level;
           return (
             <div key={l.key} className="relative w-2.5 h-2.5">
-              {active && !reduce && (
-                <span
-                  aria-hidden
-                  className="absolute -inset-1.5 rounded-full pointer-events-none"
-                  style={{
-                    backgroundColor: l.color,
-                    filter: "blur(5px)",
-                    opacity: 0.55,
-                  }}
-                />
-              )}
               <motion.span
                 className="absolute inset-0 rounded-full"
                 style={{
                   backgroundColor: l.color,
-                  boxShadow: active
-                    ? `0 0 6px 1px rgb(${l.rgb} / 0.8), inset 0 0 3px rgb(255 255 255 / 0.5)`
-                    : "inset 0 0 2px rgb(0 0 0 / 0.4)",
                 }}
                 animate={{
                   opacity: active ? 1 : 0.22,
@@ -522,7 +507,7 @@ function DivergingBar({
   const inPct = (Math.abs(inPlan) / maxAbs) * 50;
   const outPct = (Math.abs(outPlan) / maxAbs) * 50;
   return (
-    <div className="relative h-2.5 rounded-full bg-[rgb(var(--divider)/0.05)] overflow-hidden">
+    <div className="relative h-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden">
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
       <motion.div
         className="absolute top-0 bottom-0 right-1/2 bg-pnl-pos/80"
@@ -693,7 +678,7 @@ function SegmentedMeter({
               aria-label={`${label} ${n}`}
               onClick={() => onChange(n)}
               whileTap={{ scale: 0.92 }}
-              className="relative h-8 rounded-md border transition-colors"
+              className="relative h-8 rounded-[2px] border transition-colors"
               style={{
                 backgroundColor: active
                   ? "rgb(var(--accent-base) / 0.55)"
@@ -706,7 +691,7 @@ function SegmentedMeter({
               {isSelected && (
                 <motion.span
                   layoutId={`segmented-ring-${label}`}
-                  className="absolute -inset-px rounded-md border border-[rgb(var(--accent-base)/0.55)] pointer-events-none"
+                  className="absolute -inset-px rounded-[2px] border border-[rgb(var(--accent-base)/0.55)] pointer-events-none"
                   transition={{ type: "spring", stiffness: 320, damping: 26 }}
                 />
               )}
@@ -741,7 +726,7 @@ function SleepStepper({
           whileTap={{ scale: 0.9 }}
           onClick={onMinus}
           aria-label={lang === "es" ? "Restar 0,5 h" : "Subtract 0.5 h"}
-          className="shrink-0 w-9 h-9 rounded-full border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
+          className="shrink-0 w-9 h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
         >
           <svg
             width="14"
@@ -761,9 +746,9 @@ function SleepStepper({
             {hours.toFixed(1)}
             <span className="text-xs text-tertiary font-normal ml-1">h</span>
           </div>
-          <div className="relative h-1.5 rounded-full bg-[rgb(var(--divider)/0.08)] overflow-hidden">
+          <div className="relative h-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] overflow-hidden">
             <motion.div
-              className="absolute inset-y-0 left-0 rounded-full bg-[rgb(var(--accent-base))]"
+              className="absolute inset-y-0 left-0 rounded-[2px] bg-[rgb(var(--accent-base))]"
               initial={reduce ? undefined : { width: 0 }}
               animate={{ width: `${pct}%` }}
               transition={{ duration: 0.6, ease: EASE }}
@@ -775,7 +760,7 @@ function SleepStepper({
           whileTap={{ scale: 0.9 }}
           onClick={onPlus}
           aria-label={lang === "es" ? "Sumar 0,5 h" : "Add 0.5 h"}
-          className="shrink-0 w-9 h-9 rounded-full border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
+          className="shrink-0 w-9 h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
         >
           <svg
             width="14"
@@ -817,7 +802,7 @@ function PlanToggle({
         className="inline-flex items-center gap-2.5 group"
       >
         <span
-          className={`relative w-11 h-6 rounded-full transition-colors ${
+          className={`relative w-11 h-6 rounded-[2px] transition-colors ${
             on ? "bg-[rgb(var(--accent-base))]" : "bg-pnl-warn/40"
           }`}
         >
@@ -826,7 +811,7 @@ function PlanToggle({
             transition={{ type: "spring", stiffness: 380, damping: 28 }}
             className={`absolute top-0.5 ${
               on ? "left-[1.375rem]" : "left-0.5"
-            } w-5 h-5 rounded-full shadow-md ${
+            } w-5 h-5 rounded-[2px] ${
               // La manecilla se define por CONTRASTE con su propia pista, no
               // por un blanco fijo: sobre el acento va la tinta que el
               // sistema reserva para escribir encima del acento, y sobre la
@@ -1057,14 +1042,6 @@ export function JournalPage() {
       {/* Header */}
       <Reveal>
         <header className="space-y-3 relative">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -top-16 -left-10 w-56 h-32 rounded-full opacity-50"
-            style={{
-              background:
-                "radial-gradient(closest-side, rgb(var(--accent-base) / 0.16), transparent 70%)",
-            }}
-          />
           <div className="relative">
             <Eyebrow>{t("journalEyebrow")}</Eyebrow>
             {/* h2 y no h1: esta es una pantalla SIMULADA dentro de la página de
@@ -1181,7 +1158,7 @@ export function JournalPage() {
                       terciaria se calibra para el fondo plano de la página,
                       y aquí se apoya en el tinte del acento — un paso más
                       de tinta es lo que le devuelve el margen. */}
-                  <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.3)]">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-[2px] bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.3)]">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-secondary">
                       {L("Actual", "Current")}
                     </span>
@@ -1193,7 +1170,7 @@ export function JournalPage() {
                     </span>
                   </span>
                   {/* Best streak — neutral pill. */}
-                  <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)]">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)]">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                       {L("Mejor", "Best")}
                     </span>
@@ -1233,7 +1210,7 @@ export function JournalPage() {
         <div className="demo-card p-5 md:p-6">
           <div className="flex items-center justify-between gap-3 mb-5">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-full shrink-0" />
+              <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
               <h2 className="font-medium text-primary text-base md:text-lg truncate">
                 {t("ritualTitle")}
               </h2>
@@ -1299,7 +1276,7 @@ export function JournalPage() {
           <div className="relative space-y-6">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2 min-w-0">
-                <span className="w-1 h-5 bg-pnl-warn rounded-full shrink-0" />
+                <span className="w-1 h-5 bg-pnl-warn rounded-[1px] shrink-0" />
                 <h2 className="font-medium text-primary text-base md:text-lg truncate">
                   {t("disciplineReport")}
                 </h2>
@@ -1374,7 +1351,7 @@ export function JournalPage() {
                   {/* `text-secondary`, no `text-tertiary`: aquí la etiqueta
                       va sobre el tinte de ganancia/pérdida, no sobre la
                       página, y la terciaria se queda corta en ese fondo. */}
-                  <div className="rounded-md p-3 bg-pnl-pos/10 border border-pnl-pos/20">
+                  <div className="rounded-[2px] p-3 bg-pnl-pos/10 border border-pnl-pos/20">
                     <div className="text-[10px] uppercase tracking-[0.15em] text-secondary">
                       {t("expInPlan")}
                     </div>
@@ -1382,7 +1359,7 @@ export function JournalPage() {
                       <Money value={expInPlan} sign compact colorizeSign />
                     </div>
                   </div>
-                  <div className="rounded-md p-3 bg-pnl-neg/10 border border-pnl-neg/20">
+                  <div className="rounded-[2px] p-3 bg-pnl-neg/10 border border-pnl-neg/20">
                     <div className="text-[10px] uppercase tracking-[0.15em] text-secondary">
                       {t("expOutPlan")}
                     </div>
@@ -1405,7 +1382,7 @@ export function JournalPage() {
             <div className="pt-5 border-t border-[rgb(var(--divider)/0.1)]">
               <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-1 h-4 bg-pnl-neg rounded-full shrink-0" />
+                  <span className="w-1 h-4 bg-pnl-neg rounded-[1px] shrink-0" />
                   <h3 className="text-[13px] font-medium text-primary tracking-[-0.01em]">
                     {L(
                       "Desglose por tipo de indisciplina",
@@ -1514,7 +1491,7 @@ export function JournalPage() {
                 labeled progress-bar per month. */}
             <div className="pt-5 border-t border-[rgb(var(--divider)/0.1)]">
               <div className="flex items-center gap-2 mb-4">
-                <span className="w-1 h-4 bg-[rgb(var(--accent-base))] rounded-full shrink-0" />
+                <span className="w-1 h-4 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
                 <h3 className="text-[13px] font-medium text-primary tracking-[-0.01em]">
                   {L("Cumplimiento mensual", "Monthly compliance")}
                 </h3>
@@ -1532,9 +1509,9 @@ export function JournalPage() {
                     <span className="text-[11px] text-secondary tnum">
                       {row.label}
                     </span>
-                    <div className="relative h-1.5 rounded-full bg-[rgb(var(--divider)/0.08)] overflow-hidden">
+                    <div className="relative h-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] overflow-hidden">
                       <motion.div
-                        className="absolute inset-y-0 left-0 rounded-full"
+                        className="absolute inset-y-0 left-0 rounded-[2px]"
                         style={{
                           backgroundColor:
                             row.fraction > 0.7
@@ -1565,7 +1542,7 @@ export function JournalPage() {
         <div className="demo-card p-5 md:p-6">
           <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-full shrink-0" />
+              <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
               <h2 className="font-medium text-primary text-base md:text-lg truncate">
                 {t("review2")}
               </h2>
@@ -1573,7 +1550,7 @@ export function JournalPage() {
             <div
               role="tablist"
               aria-label={t("review2")}
-              className="relative inline-flex bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-full p-1"
+              className="relative inline-flex bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] p-1"
             >
               {(["weekly", "monthly"] as const).map((key) => {
                 const active = tab === key;
@@ -1590,7 +1567,7 @@ export function JournalPage() {
                     {active && (
                       <motion.span
                         layoutId="review-tab-pill"
-                        className="absolute inset-0 rounded-full bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.2)]"
+                        className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.2)]"
                         transition={{
                           type: "spring",
                           stiffness: 360,
@@ -1647,7 +1624,7 @@ export function JournalPage() {
       <Reveal delay={0.2}>
         <div className="demo-card p-5 md:p-6">
           <div className="flex items-center gap-2 mb-5">
-            <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-full shrink-0" />
+            <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
             <h2 className="font-medium text-primary text-base md:text-lg">
               {t("history")}
             </h2>
@@ -1695,7 +1672,7 @@ export function JournalPage() {
                 >
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <div className="flex flex-col items-center justify-center w-11 h-11 rounded-md bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] shrink-0">
+                      <div className="flex flex-col items-center justify-center w-11 h-11 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] shrink-0">
                         <div className="text-[9.5px] uppercase tracking-[0.14em] text-tertiary leading-none">
                           {/* En UTC, como el resto de fechas de la
                               muestra (ver `format.ts`): sin fijarlo, el

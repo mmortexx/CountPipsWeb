@@ -46,7 +46,7 @@ import { fmtPct } from "@/lib/trading/format";
  * justify-between px-3 text-[11px] text-tertiary tnum` — the
  * institutional status-bar pattern. The bottom corners are rounded
  * automatically by the parent window's `overflow-hidden` +
- * `rounded-xl`.
+ * `rounded-[2px]`.
  *
  * The pre-R25-1a `onOpenShortcuts` + `onReset` props are removed — the
  * buttons that used them are gone (the keyboard-shortcuts overlay is

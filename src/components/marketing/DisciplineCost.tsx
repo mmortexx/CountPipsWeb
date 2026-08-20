@@ -201,7 +201,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                     step={2}
                     value={totalTrades}
                     onChange={(e) => setTotalTrades(Number(e.target.value))}
-                    className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
+                    className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
                   />
                 </div>
 
@@ -220,7 +220,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                     step={1}
                     value={breachPct}
                     onChange={(e) => setBreachPct(Number(e.target.value))}
-                    className="w-full accent-[rgb(var(--pnl-neg))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
+                    className="w-full accent-[rgb(var(--pnl-neg))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
                   />
                 </div>
               </div>

@@ -286,7 +286,7 @@ function ExcursionBar({ mae, mfe }: { mae: number; mfe: number }) {
   const maePct = (Math.abs(mae) / maxAbs) * 50;
   const mfePct = (Math.abs(mfe) / maxAbs) * 50;
   return (
-    <div className="relative h-2 rounded-full bg-[rgb(var(--divider)/0.05)] overflow-hidden">
+    <div className="relative h-2 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden">
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
       <motion.div
         className="absolute top-0 bottom-0 right-1/2 bg-pnl-neg/80"
@@ -324,7 +324,7 @@ function RiskRewardBar({
           {lang === "es" ? "Recompensa" : "Reward"} · {fmtNum(plannedRr, lang, 1)}R
         </span>
       </div>
-      <div className="relative h-2.5 rounded-full bg-[rgb(var(--divider)/0.05)] overflow-hidden flex">
+      <div className="relative h-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden flex">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${riskFraction * 100}%` }}
@@ -451,7 +451,7 @@ export function TradeDetailPage() {
         <button
           type="button"
           onClick={goBack}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-secondary hover:text-primary border border-[rgb(var(--divider)/0.10)] transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] text-sm font-medium text-secondary hover:text-primary border border-[rgb(var(--divider)/0.10)] transition-colors"
         >
           <svg
             width="14"
@@ -516,7 +516,7 @@ export function TradeDetailPage() {
         <button
           type="button"
           onClick={goBack}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium text-secondary hover:text-primary border border-[rgb(var(--divider)/0.10)] transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[2px] text-sm font-medium text-secondary hover:text-primary border border-[rgb(var(--divider)/0.10)] transition-colors"
         >
           <svg
             width="14"
@@ -557,7 +557,7 @@ export function TradeDetailPage() {
             onClick={() => prevTrade && goDetail(prevTrade.id)}
             disabled={!prevTrade}
             aria-label={lang === "es" ? "Operación anterior" : "Previous trade"}
-            className="w-8 h-8 rounded-md border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
+            className="w-8 h-8 rounded-[2px] border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
           >
             <svg
               width="14"
@@ -578,7 +578,7 @@ export function TradeDetailPage() {
             onClick={() => nextTrade && goDetail(nextTrade.id)}
             disabled={!nextTrade}
             aria-label={lang === "es" ? "Operación siguiente" : "Next trade"}
-            className="w-8 h-8 rounded-md border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
+            className="w-8 h-8 rounded-[2px] border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] transition-colors inline-flex items-center justify-center disabled:opacity-30 disabled:pointer-events-none"
           >
             <svg
               width="14"
@@ -995,7 +995,7 @@ export function TradeDetailPage() {
             className="demo-card p-5"
           >
             <Eyebrow className="mb-4">{t("screenshots")}</Eyebrow>
-            <div className="border-2 border-dashed border-[rgb(var(--divider)/0.1)] rounded-md p-4 text-center text-xs text-tertiary mb-3 transition-colors hover:border-[rgb(var(--divider)/0.2)] hover:bg-[rgb(var(--divider)/0.02)]">
+            <div className="border-2 border-dashed border-[rgb(var(--divider)/0.1)] rounded-[2px] p-4 text-center text-xs text-tertiary mb-3 transition-colors hover:border-[rgb(var(--divider)/0.2)] hover:bg-[rgb(var(--divider)/0.02)]">
               <svg
                 className="mx-auto mb-2 opacity-60"
                 width="22"
@@ -1013,10 +1013,10 @@ export function TradeDetailPage() {
               {t("dropScreens")}
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <div className="aspect-[4/3] rounded-md overflow-hidden border border-[rgb(var(--divider)/0.10)] p-1.5">
+              <div className="aspect-[4/3] rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.10)] p-1.5">
                 <MiniCandles seed={trade.id * 7 + 1} win={isWin} />
               </div>
-              <div className="aspect-[4/3] rounded-md overflow-hidden border border-[rgb(var(--divider)/0.10)] p-1.5">
+              <div className="aspect-[4/3] rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.10)] p-1.5">
                 <MiniCandles seed={trade.id * 13 + 5} win={isWin} />
               </div>
             </div>
@@ -1141,7 +1141,7 @@ export function TradeDetailPage() {
                     type="button"
                     onClick={() => setReview(opt)}
                     aria-pressed={active}
-                    className={`relative h-10 rounded-md text-sm font-medium transition-colors ${
+                    className={`relative h-10 rounded-[2px] text-sm font-medium transition-colors ${
                       active
                         ? "text-primary"
                         : "text-tertiary hover:text-secondary hover:bg-[rgb(var(--divider)/0.05)]"
@@ -1150,7 +1150,7 @@ export function TradeDetailPage() {
                     {active && (
                       <motion.span
                         layoutId="review-pill"
-                        className="absolute inset-0 rounded-md bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.2)]"
+                        className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.2)]"
                         transition={{
                           type: "spring",
                           stiffness: 400,
@@ -1193,7 +1193,7 @@ export function TradeDetailPage() {
               <MagneticButton
                 type="button"
                 strength={0.25}
-                className="w-full h-11 rounded-md bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-medium text-sm transition-colors hover:bg-[rgb(var(--accent-hover))] inline-flex items-center justify-center"
+                className="w-full h-11 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-medium text-sm transition-colors hover:bg-[rgb(var(--accent-hover))] inline-flex items-center justify-center"
               >
                 {t("saveChanges")}
               </MagneticButton>

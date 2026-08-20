@@ -504,7 +504,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               value={riskPct}
               onChange={(e) => setRiskPct(parseFloat(e.target.value))}
               aria-label={es ? "Porcentaje de riesgo por operación" : "Risk percentage per trade"}
-              className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-2 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
+              className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-2 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
             />
             <div className="flex justify-between mt-1 text-[9.5px] text-tertiary font-mono">
               {RISK_MARKS.map((m) => (
@@ -557,7 +557,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   value={kellyWinRate}
                   onChange={(e) => setKellyWinRate(parseInt(e.target.value, 10))}
                   aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
-                  className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-lg appearance-none"
+                  className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
                 />
                 <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono">
                   <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.08)]">

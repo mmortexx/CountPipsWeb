@@ -385,7 +385,7 @@ const PnlCell = memo(function PnlCell({
       <motion.span
         key={`flash-${filterSig}-${value}`}
         aria-hidden
-        className="pointer-events-none absolute -inset-x-2 -inset-y-0.5 rounded-md"
+        className="pointer-events-none absolute -inset-x-2 -inset-y-0.5 rounded-[2px]"
         style={{ backgroundColor: `rgb(${colorTriple})` }}
         initial={{ opacity: 0.28 }}
         animate={{ opacity: 0 }}
@@ -448,12 +448,12 @@ function FilterChip({
       {active && (
         <motion.span
           layoutId={`trade-filter-${group}`}
-          className="pointer-events-none absolute inset-0 rounded-full bg-[rgb(var(--accent-base)/0.16)]"
+          className="pointer-events-none absolute inset-0 rounded-[2px] bg-[rgb(var(--accent-base)/0.16)]"
           transition={{ type: "spring", stiffness: 380, damping: 30 }}
         />
       )}
       <span
-        className={`relative inline-flex items-center rounded-full px-3 py-[5px] text-[12px] whitespace-nowrap transition-colors ${
+        className={`relative inline-flex items-center rounded-[2px] px-3 py-[5px] text-[12px] whitespace-nowrap transition-colors ${
           active
             ? "text-[rgb(var(--accent-hover))] font-medium"
             : "text-secondary bg-[rgb(var(--divider)/0.05)] hover:bg-[rgb(var(--divider)/0.09)] hover:text-primary"
@@ -565,7 +565,7 @@ function BulkActionBar({
           }}
           placeholder={lang === "es" ? "Añadir etiqueta…" : "Add tag…"}
           aria-label={lang === "es" ? "Etiqueta en lote" : "Bulk tag"}
-          className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-7 px-2 text-xs text-primary placeholder:text-tertiary focus:outline-none focus:border-[rgb(var(--divider)/0.25)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors w-40"
+          className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-7 px-2 text-xs text-primary placeholder:text-tertiary focus:outline-none focus:border-[rgb(var(--divider)/0.25)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors w-40"
         />
         <button
           type="button"
@@ -575,7 +575,7 @@ function BulkActionBar({
               setTag("");
             }
           }}
-          className="text-[11px] font-medium text-secondary hover:text-primary border border-[rgb(var(--divider)/0.1)] hover:border-[rgb(var(--divider)/0.25)] rounded-md h-7 px-2 transition-colors"
+          className="text-[11px] font-medium text-secondary hover:text-primary border border-[rgb(var(--divider)/0.1)] hover:border-[rgb(var(--divider)/0.25)] rounded-[2px] h-7 px-2 transition-colors"
         >
           {lang === "es" ? "Añadir" : "Add"}
         </button>
@@ -587,7 +587,7 @@ function BulkActionBar({
               setTag("");
             }
           }}
-          className="text-[11px] font-medium text-tertiary hover:text-secondary border border-[rgb(var(--divider)/0.1)] hover:border-[rgb(var(--divider)/0.25)] rounded-md h-7 px-2 transition-colors"
+          className="text-[11px] font-medium text-tertiary hover:text-secondary border border-[rgb(var(--divider)/0.1)] hover:border-[rgb(var(--divider)/0.25)] rounded-[2px] h-7 px-2 transition-colors"
         >
           {lang === "es" ? "Quitar" : "Remove"}
         </button>
@@ -918,7 +918,7 @@ export function TradesPage() {
                 type="button"
                 onClick={() => handleExport("csv")}
                 title={es ? "Exportar a CSV" : "Export to CSV"}
-                className="h-9 px-2.5 rounded-md border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] text-xs font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1.5"
+                className="h-9 px-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] text-xs font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1.5"
               >
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M2.5 10.5v2a1 1 0 001 1h9a1 1 0 001-1v-2M8 2.5v7m0 0l-2.5-2.5M8 9.5l2.5-2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
@@ -929,7 +929,7 @@ export function TradesPage() {
                 type="button"
                 onClick={() => handleExport("json")}
                 title={es ? "Exportar a JSON" : "Export to JSON"}
-                className="h-9 px-2.5 rounded-md border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] text-xs font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1.5"
+                className="h-9 px-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] text-xs font-semibold text-secondary hover:text-primary transition-colors flex items-center gap-1.5"
               >
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M4.5 3a2 2 0 00-2 2v2a2 2 0 01-1.5 2 2 2 0 011.5 2v2a2 2 0 002 2M11.5 3a2 2 0 012 2v2a2 2 0 001.5 2 2 2 0 00-1.5 2v2a2 2 0 01-2 2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
@@ -961,7 +961,7 @@ export function TradesPage() {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("searchPlaceholder")}
                 aria-label={t("searchPlaceholder")}
-                className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-9 pl-9 pr-3 text-sm w-full text-primary placeholder:text-tertiary focus:outline-none focus:border-[rgb(var(--divider)/0.25)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors"
+                className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 pl-9 pr-3 text-sm w-full text-primary placeholder:text-tertiary focus:outline-none focus:border-[rgb(var(--divider)/0.25)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors"
               />
             </div>
           </div>
@@ -1269,7 +1269,7 @@ export function TradesPage() {
             <button
               type="button"
               onClick={resetAll}
-              className="ml-auto inline-flex items-center gap-1.5 text-xs text-tertiary hover:text-secondary transition-colors px-2 py-1 rounded-md hover:bg-[rgb(var(--divider)/0.05)]"
+              className="ml-auto inline-flex items-center gap-1.5 text-xs text-tertiary hover:text-secondary transition-colors px-2 py-1 rounded-[2px] hover:bg-[rgb(var(--divider)/0.05)]"
               aria-label={t("clearFilters")}
             >
               <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
@@ -1496,7 +1496,7 @@ export function TradesPage() {
                         <button
                           type="button"
                           onClick={resetAll}
-                          className="px-3 py-1.5 rounded-md text-xs font-medium border border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors text-secondary"
+                          className="px-3 py-1.5 rounded-[2px] text-xs font-medium border border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors text-secondary"
                         >
                           {t("clearFilters")}
                         </button>
@@ -1586,7 +1586,7 @@ export function TradesPage() {
               onClick={() =>
                 setVisibleCount((c) => Math.min(c + PAGE_SIZE, sorted.length))
               }
-              className="px-4 py-1.5 rounded-md text-xs font-medium border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.05)] transition-colors"
+              className="px-4 py-1.5 rounded-[2px] text-xs font-medium border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.05)] transition-colors"
             >
               {lang === "es"
                 ? `Cargar más (${sorted.length - visibleCount} restantes)`

@@ -114,7 +114,7 @@ function KpiStripCell({
 }) {
   return (
     <div className="flex items-stretch flex-1 min-w-[6rem] md:min-w-0 shrink-0 md:shrink">
-      <div className="flex-1 min-w-0 flex flex-col gap-1.5 px-2 sm:px-3 items-center text-center rounded-md transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+      <div className="flex-1 min-w-0 flex flex-col gap-1.5 px-2 sm:px-3 items-center text-center rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
         <div className="text-[10px] uppercase tracking-[0.14em] text-tertiary truncate">
           {label}
         </div>
@@ -953,7 +953,7 @@ function SectionBar({
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(s.id)}
-              className={`relative whitespace-nowrap px-3 py-1.5 text-xs font-medium transition-colors rounded-md ${
+              className={`relative whitespace-nowrap px-3 py-1.5 text-xs font-medium transition-colors rounded-[2px] ${
                 isActive
                   ? "text-primary"
                   : "text-tertiary hover:text-secondary hover:bg-[rgb(var(--divider)/0.05)]"
@@ -968,7 +968,7 @@ function SectionBar({
               {isActive && (
                 <motion.span
                   layoutId="analytics-section-underline"
-                  className="absolute left-2 right-2 -bottom-0.5 h-[2px] rounded-full bg-[rgb(var(--accent-base))]"
+                  className="absolute left-2 right-2 -bottom-0.5 h-[2px] rounded-[1px] bg-[rgb(var(--accent-base))]"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
@@ -1009,7 +1009,7 @@ function FilterSelect({
           aria-label={header}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-md h-8 pl-2.5 pr-7 text-xs text-primary tnum focus:outline-none focus:border-[rgb(var(--divider)/0.3)] transition-colors appearance-none cursor-pointer w-full"
+          className="bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-8 pl-2.5 pr-7 text-xs text-primary tnum focus:outline-none focus:border-[rgb(var(--divider)/0.3)] transition-colors appearance-none cursor-pointer w-full"
         >
           {children}
         </select>
@@ -1204,7 +1204,7 @@ export function AnalyticsPage() {
             <button
               type="button"
               onClick={clearFilters}
-              className="text-xs text-tertiary hover:text-secondary transition-colors px-2 py-1 rounded-md hover:bg-[rgb(var(--divider)/0.05)] mb-0.5"
+              className="text-xs text-tertiary hover:text-secondary transition-colors px-2 py-1 rounded-[2px] hover:bg-[rgb(var(--divider)/0.05)] mb-0.5"
               aria-label={t("clearFilters")}
             >
               ✕ {t("clearFilters")}
@@ -1240,7 +1240,7 @@ export function AnalyticsPage() {
             <button
               type="button"
               onClick={clearFilters}
-              className="px-3 py-1.5 rounded-md text-xs font-medium border border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors text-secondary"
+              className="px-3 py-1.5 rounded-[2px] text-xs font-medium border border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors text-secondary"
             >
               {t("clearFilters")}
             </button>
@@ -1517,21 +1517,8 @@ export function AnalyticsPage() {
               {/* Verdict row — LED + label + p-value pill. */}
               <div className="flex flex-wrap items-center gap-3">
                 <span className="relative inline-flex items-center justify-center">
-                  {/* Verdict LED — larger + with a soft pulsing glow so the
-                      verdict reads as the card's focal point. Mirrors the
-                      real app's verdict Ellipse with a subtle glow halo. */}
                   <span
-                    aria-hidden
-                    className={`absolute -inset-1.5 rounded-full blur-md ${verdictLedClass} opacity-40`}
-                  />
-                  <motion.span
-                    animate={{ opacity: [1, 0.65, 1] }}
-                    transition={{
-                      duration: 2.4,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                    className={`relative inline-block w-4 h-4 rounded-full ${verdictLedClass} ring-2 ring-[rgb(var(--divider)/0.12)]`}
+                    className={`relative inline-block w-2.5 h-2.5 rounded-full ${verdictLedClass}`}
                     aria-hidden="true"
                   />
                 </span>
@@ -1631,7 +1618,7 @@ export function AnalyticsPage() {
                 )}
               </p>
               <div className="space-y-3">
-                <div className="space-y-1.5 rounded-md p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+                <div className="space-y-1.5 rounded-[2px] p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
                       R²
@@ -1645,7 +1632,7 @@ export function AnalyticsPage() {
                   </div>
                 </div>
                 <div className="h-px bg-[rgb(var(--divider)/0.18)]" />
-                <div className="space-y-1.5 rounded-md p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+                <div className="space-y-1.5 rounded-[2px] p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
                       K-Ratio
@@ -1659,7 +1646,7 @@ export function AnalyticsPage() {
                   </div>
                 </div>
                 <div className="h-px bg-[rgb(var(--divider)/0.18)]" />
-                <div className="space-y-1.5 rounded-md p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
+                <div className="space-y-1.5 rounded-[2px] p-2 -mx-2 transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
                       {lang === "es" ? "Pendiente" : "Slope"}

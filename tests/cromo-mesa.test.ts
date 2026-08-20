@@ -117,4 +117,26 @@ describe("Cromo de mesa", () => {
     expect(slider).not.toMatch(/shadow-\[0_8px_24px_-6px_rgb\(var\(--accent-base\)/);
     expect(slider).not.toMatch(/w-11 h-11 rounded-full/);
   });
+
+  it("el casco de la demo no usa radio 8/12 ni píldoras de consumo", () => {
+    const demo = sinComentarios(leer("src/components/demo/AppDemo.tsx"));
+    const casco = sinComentarios(leer("src/components/demo/AppDemoClient.tsx"));
+    const nav = sinComentarios(leer("src/components/demo/TopNav.tsx"));
+    const trades = sinComentarios(leer("src/components/demo/pages/TradesPage.tsx"));
+    const journal = sinComentarios(
+      leer("src/components/demo/pages/JournalPage.tsx"),
+    );
+    const analytics = sinComentarios(
+      leer("src/components/demo/pages/AnalyticsPage.tsx"),
+    );
+    expect(demo).not.toMatch(/rounded-lg/);
+    expect(demo).toMatch(/rounded-\[2px\]/);
+    expect(casco).not.toMatch(/rounded-xl/);
+    expect(casco).not.toMatch(/h-9 px-3 sm:px-4 rounded-md/);
+    expect(nav).not.toMatch(/rounded-md sm:rounded-none/);
+    expect(trades).not.toMatch(/rounded-full px-3 py-\[5px\]/);
+    expect(journal).not.toMatch(/w-11 h-6 rounded-full/);
+    expect(journal).not.toMatch(/w-56 h-32 rounded-full/);
+    expect(analytics).not.toMatch(/blur-md/);
+  });
 });
