@@ -195,7 +195,7 @@ export function Footer() {
                 habría empujado el resto de la columna. */}
             <Link
               href="/"
-              className="flex items-center gap-2.5 group rounded-md -my-2 py-2"
+              className="flex items-center gap-2.5 group rounded-[2px] -my-2 py-2"
               aria-label={t("appName")}
             >
               <BrandMark />
@@ -476,7 +476,7 @@ function ConsentPreferencesButton() {
 function BrandMark() {
   return (
     <span
-      className="relative shrink-0 w-7 h-7 rounded-md grid place-items-center border overflow-hidden"
+      className="relative shrink-0 w-7 h-7 rounded-[2px] grid place-items-center border overflow-hidden"
       style={{
         borderColor: "rgb(var(--divider) / 0.13)",
         background: "color-mix(in srgb, var(--surface) 66%, transparent)",

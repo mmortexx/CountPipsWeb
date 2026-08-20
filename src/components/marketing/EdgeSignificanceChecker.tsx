@@ -130,7 +130,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           {label}
         </span>
         <span
-          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-full"
+          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
           style={{
             fontSize: 13,
             fontWeight: 700,
@@ -279,7 +279,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             </div>
             <div className="flex items-baseline gap-3 mt-1 mb-2">
               <span
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px]"
                 style={{
                   background: `color-mix(in oklab, ${verdict.color} 12%, transparent)`,
                   border: `1px solid color-mix(in oklab, ${verdict.color} 35%, transparent)`,

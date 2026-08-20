@@ -195,7 +195,7 @@ export function SavingsCalculator() {
                 {es ? "Precio mensual" : "Monthly price"}
               </span>
               <span
-                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-full"
+                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
                 style={{
                   fontSize: 13,
                   fontWeight: 700,
@@ -242,7 +242,7 @@ export function SavingsCalculator() {
                 {es ? "Años de uso" : "Years of use"}
               </span>
               <span
-                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-full"
+                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
                 style={{
                   fontSize: 13,
                   fontWeight: 700,

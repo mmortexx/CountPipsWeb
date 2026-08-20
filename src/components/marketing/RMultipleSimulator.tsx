@@ -250,7 +250,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
           {label}
         </span>
         <span
-          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-full"
+          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
           style={{
             fontSize: 13,
             fontWeight: 700,

@@ -37,8 +37,8 @@ const Grabado404 = dynamicImport(
  * Copy:
  *  - Trading-themed headline: "stopped out like a bad stop loss".
  *  - Bilingual subhead explaining the page is missing.
- *  - Quick-link tiles to the three primary destinations (Features, Demo,
- *    Pricing) plus the home CTA.
+ *  - Índice numerado a las tres destinos principales (Características,
+ *    Demo, Precios) más el CTA de inicio.
  *  - Inline search box that routes to the FAQ page with the query as the
  *    `q` search param (the FAQ's real-time search picks it up on load) so
  *    users can find what they were looking for in one keystroke.
@@ -94,15 +94,6 @@ export function NotFoundClient() {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <Grabado404 />
       </div>
-      {/* Ambient accent orb for depth */}
-      <div
-        className="absolute top-1/4 -left-32 w-[440px] h-[440px] rounded-full blur-[130px] pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, rgb(var(--accent-base)), transparent 70%)",
-          opacity: 0.18,
-        }}
-        aria-hidden="true"
-      />
 
       <div className="relative z-[2] text-center max-w-xl mx-auto">
         <div
@@ -176,48 +167,51 @@ export function NotFoundClient() {
           </div>
         </form>
 
-        {/* Quick-link tiles — Features, Demo, Pricing.
-            Each tile uses the tj-paper utility so it sits cohesively with
-            the rest of the site's surfaces. */}
-        <div
+        <ol
           style={{ animationDelay: "0.4s" }}
-          className="tj-alza mt-7 grid grid-cols-1 sm:grid-cols-3 gap-3"
+          className="tj-alza mt-7 m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0 text-left"
         >
-          {tiles.map((tile) => (
-            <div
+          {tiles.map((tile, i) => (
+            <li
               key={tile.href}
-              className="tj-alza h-full"
+              className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0"
             >
               <Link
                 href={tile.href}
-                className="group tj-paper block h-full rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 text-left transition-colors hover:border-[rgb(var(--divider)/0.25)]"
+                className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold text-primary">
+                <span
+                  className="tnum text-[11px] font-semibold"
+                  style={{ color: "rgb(var(--accent-base))" }}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-primary">
                     {tile.label}
                   </span>
-                  <svg
-                    className="size-3.5 text-tertiary transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M3 8h9M8 4l4 4-4 4"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                <p className="mt-1 text-xs text-secondary leading-snug">
-                  {tile.desc}
-                </p>
+                  <span className="mt-0.5 block text-xs text-secondary leading-snug">
+                    {tile.desc}
+                  </span>
+                </span>
+                <svg
+                  className="size-3.5 text-tertiary transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 8h9M8 4l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </Link>
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
 
         <div
           style={{ animationDelay: "0.48s" }}
@@ -232,7 +226,7 @@ export function NotFoundClient() {
                  `group-hover` sin padre `group` — nunca se movía —, y con
                  `py-2` el enlace medía ~36 px, bajo el objetivo táctil de
                  44 px que rige el resto de controles del sitio. */
-              className="group inline-flex min-h-[44px] items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-[background-color,box-shadow] hover:bg-[rgb(var(--accent-hover))] hover:shadow-[0_12px_32px_-8px_rgb(var(--accent-base)/0.7)]"
+              className="group inline-flex min-h-[44px] items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
             >
               {es ? "Volver al inicio" : "Back to home"}
               <svg

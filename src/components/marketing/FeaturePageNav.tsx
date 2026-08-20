@@ -16,8 +16,7 @@ import { Reveal } from "@/components/tj/Reveal";
  *  - Prev / Next links to the other feature subpages so visitors can
  *    browse the three deep-dive axes (Métricas → Disciplina → Seguridad)
  *    without going back to the /features overview.
- *  - A "Sigue explorando" card grid linking to all three subpages,
- *    highlighting the current one.
+ *  - Un índice "Sigue explorando" con los tres ejes, marcado el actual.
  *
  * The component is fully theme-aware (uses --divider, --surface, text-primary/
  * secondary/tertiary tokens) and matches the site's tj-paper material
@@ -28,7 +27,7 @@ type Axis = "metricas" | "disciplina" | "seguridad";
 
 const AXES: Record<
   Axis,
-  { href: string; labelEs: string; labelEn: string; descEs: string; descEn: string; icon: string }
+  { href: string; labelEs: string; labelEn: string; descEs: string; descEn: string }
 > = {
   metricas: {
     href: "/features/metricas",
@@ -36,7 +35,6 @@ const AXES: Record<
     labelEn: "Metrics",
     descEs: "40+ ratios institucionales y calculadora de riesgo",
     descEn: "40+ institutional ratios and risk calculator",
-    icon: "M2 13V7M6 13V3M10 13V9M14 13V5",
   },
   disciplina: {
     href: "/features/disciplina",
@@ -44,7 +42,6 @@ const AXES: Record<
     labelEn: "Discipline",
     descEs: "El Guardián frena antes del error",
     descEn: "The Guardian brakes before the error",
-    icon: "M8 1.6 2.9 3.8v3.5c0 3.1 2.2 5.5 5.1 6.5 2.9-1 5.1-3.4 5.1-6.5V3.8L8 1.6Z",
   },
   seguridad: {
     href: "/features/seguridad",
@@ -52,7 +49,6 @@ const AXES: Record<
     labelEn: "Security",
     descEs: "Local-first, sin nube ni cuentas",
     descEn: "Local-first, no cloud, no accounts",
-    icon: "M5 7V5a3 3 0 016 0v2M4 7h8v7H4V7z",
   },
 };
 
@@ -121,7 +117,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
             onClick={handleShare}
             // T2h: bumped h-10 → min-h-[44px] (h-11 = 44px) so the
             // share control meets the ≥44px touch-target spec on mobile.
-            className="inline-flex items-center gap-2 min-h-[44px] bg-[rgb(var(--divider)/0.04)] px-5 rounded-[2px] text-sm font-medium text-primary border border-[rgb(var(--divider)/0.15)] hover:bg-[rgb(var(--divider)/0.06)] hover:-translate-y-0.5 transition-[background-color,transform] duration-200"
+            className="inline-flex items-center gap-2 min-h-[44px] bg-[rgb(var(--divider)/0.04)] px-5 rounded-[2px] text-sm font-medium text-primary border border-[rgb(var(--divider)/0.15)] hover:bg-[rgb(var(--divider)/0.06)] transition-colors duration-200"
             aria-label={es ? "Compartir esta página" : "Share this page"}
           >
             {copied ? (
@@ -203,14 +199,6 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
           )}
         </div>
 
-        {/* "Sigue explorando" — all three axes.
-            T2h: mobile horizontal scroll rail (overflow-x-auto + snap-x)
-            per the brief — the 3 axis cards become a swipeable carousel
-            on touch (min-w-[260px] each, ~1.4 visible at 390px so the
-            "peek" signals scrollability), and snap to grid-cols-3 on
-            md+. The rail also gets a mobile-only right-edge gradient
-            fade + a "Desliza →" hint, same vocabulary as the
-            Comparison table. */}
         <Reveal delay={0.1}>
           <div className="text-center mb-6">
             <span className="eyebrow inline-flex items-center gap-2 justify-center text-tertiary">
@@ -220,115 +208,54 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
             </span>
           </div>
         </Reveal>
-        {/* P6 — `-mx-5` → `-mx-[clamp(1.25rem,4vw,2.25rem)]`: the rail's
-            negative margin now matches tj-container's fluid padding exactly
-            (clamp tracks 4vw between 20–36px). Previously the fixed -20px
-            left a 4–8px gutter on each side at 480–768px viewports where
-            the container's 4vw padding exceeds 20px — the rail's left edge
-            was visibly inset from the section above/below it. Inner px
-            matches the same clamp so the cards inside re-establish the
-            container's content edge. */}
-        <div className="relative md:block -mx-[clamp(1.25rem,4vw,2.25rem)] md:mx-0">
-          {/* Mobile-only right-edge gradient fade — signals "swipe for more".
-              pointer-events-none keeps taps flowing to the underlying cards. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 md:hidden z-10"
-            style={{
-              background: "linear-gradient(to left, rgb(var(--bg) / 0.92), transparent)",
-            }}
-          />
-          <div
-            className="flex md:grid md:grid-cols-3 gap-3 md:gap-4 overflow-x-auto md:overflow-visible
- snap-x snap-mandatory md:snap-none px-[clamp(1.25rem,4vw,2.25rem)] md:px-0 pb-2 md:pb-0
-                       [scrollbar-width:thin] [scrollbar-color:rgb(var(--accent-base)/0.4)_transparent]"
-            style={{ scrollbarWidth: "thin" }}
-          >
+        <ol className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
           {ORDER.map((axis, i) => {
             const isActive = axis === current;
             const a = AXES[axis];
             return (
-              <Reveal key={axis} delay={i * 0.06} className="shrink-0 md:shrink min-w-[260px] md:min-w-0 snap-start md:snap-none">
+              <li
+                key={axis}
+                className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0"
+              >
                 <Link
                   href={a.href}
                   aria-current={isActive ? "page" : undefined}
-                  // Ninguna de las dos se levanta al pasar el ratón. La
-                  // inactiva subía 4 px y la activa se quedaba quieta, y ese
-                  // desnivel hacía que la tarjeta de la página actual pareciera
-                  // deshabilitada en vez de actual. Ahora las dos se quedan en
-                  // el plano y la diferencia la lleva el filete: la activa lo
-                  // tiene marcado en acento de forma permanente, la inactiva lo
-                  // marca al apuntarla.
-                  // T2h: `min-h-[44px]` en el propio enlace para que toda la
-                  //   tarjeta llegue al mínimo táctil aunque el texto sea corto.
-                  className={`group relative tj-paper rounded-[2px] border p-5 block min-h-[44px] transition-[background-color,border-color] duration-300 ease-[var(--ease-suave)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
+                  className={`group grid min-h-[64px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.6)] ${
                     isActive
-                      ? "border-[rgb(var(--accent-base)/0.4)]"
-                      : "border-[rgb(var(--divider)/0.13)] hover:border-[rgb(var(--accent-base)/0.28)]"
-                  }`
-                  }
+                      ? "bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                      : "hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                  }`}
                 >
-                  {/* R20-3b: hover-only accent inner ring (inactive cards) —
-                      sits behind content, fades in on hover to read as a
-                      “this card is the target” affordance. Skipped on the
-                      active card (it already has the static accent border). */}
-                  {!isActive && (
-                    <span
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 rounded-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ boxShadow: "inset 0 0 0 1px rgb(var(--accent-base) / 0.30)" }}
-                    />
-                  )}
-                  {isActive && (
-                    // R20-3b: "Aqui" / "Here" badge - a stamped accent
-                    //   badge (bg accent/12 + border accent/35) so the
-                    //   "you are here" state reads as deliberate.
-                    <span
-                      aria-hidden
-                      className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.35)] text-[10px] uppercase tracking-[0.12em] font-semibold text-[rgb(var(--accent-base))]"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-[rgb(var(--accent-base))]" />
+                  <span
+                    className="tnum text-[11px] font-semibold"
+                    style={{ color: "rgb(var(--accent-base))" }}
+                  >
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-primary">
+                      {es ? a.labelEs : a.labelEn}
+                    </span>
+                    <span className="mt-0.5 block text-xs text-secondary leading-snug">
+                      {es ? a.descEs : a.descEn}
+                    </span>
+                  </span>
+                  {isActive ? (
+                    <span className="tnum shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--accent-base))]">
                       {es ? "Aquí" : "Here"}
                     </span>
+                  ) : (
+                    <ArrowRight
+                      size={14}
+                      className="shrink-0 text-tertiary transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                      aria-hidden
+                    />
                   )}
-                  <span
-                    className="relative grid place-items-center w-9 h-9 rounded-lg mb-3 transition-[background-color,color,box-shadow] duration-300"
-                    style={{
-                      background: isActive
-                        ? "rgb(var(--accent-base) / 0.14)"
-                        : "rgb(var(--divider) / 0.06)",
-                      color: isActive ? "rgb(var(--accent-base))" : "var(--ink-2)",
-                      // Active card's icon container wears a hairline accent
-                      // inset ring so the icon reads as selected rather
-                      // than just a tinted square.
-                      boxShadow: isActive
-                        ? "inset 0 0 0 1px rgb(var(--accent-base) / 0.30)"
-                        : undefined,
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-                      <path d={a.icon} stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                  <span className="relative block text-sm font-semibold text-primary mb-1">
-                    {es ? a.labelEs : a.labelEn}
-                  </span>
-                  <span className="relative block text-xs text-tertiary leading-relaxed">
-                    {es ? a.descEs : a.descEn}
-                  </span>
                 </Link>
-              </Reveal>
+              </li>
             );
           })}
-          </div>
-          {/* Mobile-only scroll hint — bidirectional arrows + label.
-              Same vocabulary as the Comparison table's mobile hint. */}
-          <div className="md:hidden mt-3 flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold">
-            <span aria-hidden="true">←</span>
-            <span>{es ? "Desliza para explorar" : "Swipe to explore"}</span>
-            <span aria-hidden="true">→</span>
-          </div>
-        </div>
+        </ol>
       </div>
     </section>
   );

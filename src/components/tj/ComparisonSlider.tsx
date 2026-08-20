@@ -288,8 +288,8 @@ export function ComparisonSlider() {
                 }}
               />
               {/* Chip ANTES (top-left) */}
-              <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-pnl-neg/12 border border-pnl-neg/28 shadow-[0_4px_12px_-4px_rgb(var(--pnl-neg)/0.30)]">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-pnl-neg/18 text-pnl-neg">
+              <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-pnl-neg/12 border border-pnl-neg/28">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-pnl-neg/18 text-pnl-neg">
                   <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                     <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
@@ -306,7 +306,7 @@ export function ComparisonSlider() {
                     data-entra="ciclo"
                     className="flex items-start gap-3"
                   >
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-full bg-pnl-neg/15 ring-1 ring-pnl-neg/35 items-center justify-center mt-0.5">
+                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-neg/15 ring-1 ring-pnl-neg/35 items-center justify-center mt-0.5">
                       <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                         <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
                       </svg>
@@ -328,7 +328,7 @@ export function ComparisonSlider() {
                  oculta desde la izquierda hasta v%: cuanto MAYOR es v, menos
                  «después» se ve. */
               style={{
-                clipPath: "inset(0 0 0 calc(var(--tj-cmp) * 1%) round 8px)",
+                clipPath: "inset(0 0 0 calc(var(--tj-cmp) * 1%) round 2px)",
                 willChange: "clip-path",
               }}
               >
@@ -360,8 +360,8 @@ export function ComparisonSlider() {
                 }}
               />
               {/* Chip DESPUÉS (top-right) */}
-              <div className="absolute top-3 right-3 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.32)] shadow-[0_4px_12px_-4px_rgb(var(--accent-base)/0.30)]">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-pnl-pos/15 text-pnl-pos">
+              <div className="absolute top-3 right-3 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.32)]">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-pnl-pos/15 text-pnl-pos">
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                     <path d="M2 6.5l2.5 2.5L10 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -378,7 +378,7 @@ export function ComparisonSlider() {
                     data-entra="ciclo"
                     className="flex items-start gap-3"
                   >
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-full bg-pnl-pos/15 ring-1 ring-pnl-pos/40 items-center justify-center mt-0.5">
+                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-pos/15 ring-1 ring-pnl-pos/40 items-center justify-center mt-0.5">
                       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                         <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
@@ -405,23 +405,16 @@ export function ComparisonSlider() {
               style={{ left: "calc(var(--tj-cmp) * 1%)", touchAction: "none" }}
               className="group/handle absolute top-0 bottom-0 z-30 -translate-x-1/2 w-12 cursor-ew-resize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.60)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             >
-              {/* Glow filament */}
               <span
                 aria-hidden="true"
-                className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-3 blur-[3px] bg-[rgb(var(--accent-base)/0.40)] opacity-70 group-hover/handle:opacity-100 transition-opacity duration-200"
-              />
-              {/* Visible line — 2px gold gradient */}
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5 transition-[background-color] duration-200"
+                className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5"
                 style={{
                   background:
                     "linear-gradient(180deg, rgb(var(--accent-base) / 0.5) 0%, rgb(var(--divider) / 0.75) 22%, rgb(var(--divider) / 0.75) 78%, rgb(var(--accent-base) / 0.5) 100%)",
                 }}
               />
-              {/* Circular grip — 44px tap target, paper material */}
               <span
-                className="tj-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-11 h-11 rounded-full text-primary border border-[rgb(var(--divider)/0.28)] ring-1 ring-[rgb(var(--accent-base)/0.45)] group-hover/handle:ring-[rgb(var(--accent-base)/0.70)] shadow-[0_8px_24px_-6px_rgb(var(--accent-base)/0.55)] group-hover/handle:shadow-[0_10px_28px_-6px_rgb(var(--accent-base)/0.70)] transition-[transform,box-shadow] duration-200 ease-[var(--ease-suave)] group-hover/handle:scale-105"
+                className="tj-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-11 h-11 rounded-[2px] text-primary border border-[rgb(var(--divider)/0.28)]"
                 style={{ transform: "translateZ(0) translate(-50%, -50%)" }}
                 aria-hidden="true"
               >

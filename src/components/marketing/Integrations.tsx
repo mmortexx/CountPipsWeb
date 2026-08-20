@@ -86,7 +86,7 @@ export function Integrations() {
               {/* Row: monogram mark (left) + CSV chip (right). */}
               <div className="relative flex items-center justify-between">
                 <span
-                  className="w-10 h-10 rounded-md bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex items-center justify-center text-primary text-[12px] font-bold tracking-tight"
+                  className="w-10 h-10 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex items-center justify-center text-primary text-[12px] font-bold tracking-tight"
                   style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
                   aria-hidden="true"
                 >

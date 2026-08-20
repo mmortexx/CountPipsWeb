@@ -75,4 +75,46 @@ describe("Cromo de mesa", () => {
     expect(test).not.toMatch(/ml-auto px-2\.5 py-1 rounded-full/);
     expect(beta).not.toMatch(/size-14 place-items-center rounded-full/);
   });
+
+  it("el pie y el atajo global no usan radio de consumo", () => {
+    const pie = sinComentarios(leer("src/components/marketing/Footer.tsx"));
+    const atajos = sinComentarios(leer("src/components/tj/GlobalShortcuts.tsx"));
+    expect(pie).toMatch(/group rounded-\[2px\] -my-2 py-2/);
+    expect(pie).not.toMatch(/group rounded-md -my-2 py-2/);
+    expect(atajos).toMatch(/rounded-\[2px\] pl-3 pr-3\.5/);
+    expect(atajos).not.toMatch(/rounded-full pl-3 pr-3\.5/);
+  });
+
+  it("la 404 y el error no pintan orbes borrosos ni tarjetas de destino", () => {
+    const nf = sinComentarios(leer("src/components/tj/NotFoundClient.tsx"));
+    const err = sinComentarios(leer("src/app/error.tsx"));
+    expect(nf).not.toMatch(/blur-\[130px\]/);
+    expect(err).not.toMatch(/blur-\[130px\]/);
+    expect(nf).toMatch(/<ol[\s>]/);
+    expect(nf).toMatch(/padStart\(2, "0"\)/);
+    expect(nf).not.toMatch(/hover:shadow-\[0_12px_32px_-8px_rgb\(var\(--accent-base\)/);
+  });
+
+  it("precios, comparación y ejes de features no usan sellos redondos ni carrusel de tarjetas", () => {
+    const precios = sinComentarios(leer("src/components/marketing/Pricing.tsx"));
+    const cmp = sinComentarios(leer("src/components/marketing/Comparison.tsx"));
+    const ejes = sinComentarios(
+      leer("src/components/marketing/FeaturePageNav.tsx"),
+    );
+    expect(precios).not.toMatch(/w-5 h-5 rounded-full bg-\[rgb\(var\(--accent-base\)/);
+    expect(precios).not.toMatch(/hover:shadow-\[0_6px_16px_rgb\(var\(--accent-base\)/);
+    expect(cmp).not.toMatch(/w-5 h-5 rounded-full bg-pnl-pos/);
+    expect(ejes).toMatch(/<ol /);
+    expect(ejes).toMatch(/padStart\(2, "0"\)/);
+    expect(ejes).not.toMatch(/md:grid-cols-3/);
+    expect(ejes).not.toMatch(/Desliza para explorar/);
+  });
+
+  it("volver arriba y el comparador no llevan sombra de acento", () => {
+    const top = sinComentarios(leer("src/components/tj/BackToTop.tsx"));
+    const slider = sinComentarios(leer("src/components/tj/ComparisonSlider.tsx"));
+    expect(top).not.toMatch(/hover:shadow-\[0_8px_28px_rgb\(var\(--accent-base\)/);
+    expect(slider).not.toMatch(/shadow-\[0_8px_24px_-6px_rgb\(var\(--accent-base\)/);
+    expect(slider).not.toMatch(/w-11 h-11 rounded-full/);
+  });
 });

@@ -204,7 +204,7 @@ export function GlobalShortcuts() {
       data-visible={showHint ? "true" : "false"}
       aria-hidden="true"
     >
-          <div className="tj-paper tj-paper-dense rounded-full pl-3 pr-3.5 py-1.5 flex items-center gap-2 border border-[rgb(var(--divider)/0.15)] shadow-lg">
+          <div className="tj-paper tj-paper-dense rounded-[2px] pl-3 pr-3.5 py-1.5 flex items-center gap-2 border border-[rgb(var(--divider)/0.15)]">
             {/* Label — tells the user what the prefix does */}
             <span className="text-[10px] uppercase tracking-[0.12em] text-tertiary font-semibold hidden sm:inline">
               {es ? "navegación" : "navigation"}

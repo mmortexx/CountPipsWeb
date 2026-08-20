@@ -608,7 +608,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             >
               <span
                 aria-hidden
-                className="inline-flex items-center justify-center rounded-full w-4 h-4 font-bold text-[10px]"
+                className="inline-flex items-center justify-center rounded-[2px] w-4 h-4 font-bold text-[10px]"
                 style={{
                   background: c.direction === "short"
                     ? "color-mix(in oklab, rgb(var(--pnl-neg)) 16%, transparent)"

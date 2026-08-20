@@ -209,7 +209,7 @@ export function Comparison() {
                         {c.highlight && (
                           <span
                             aria-hidden="true"
-                            className="absolute top-0 left-3 right-3 h-[2px] rounded-full pointer-events-none"
+                            className="absolute top-0 left-3 right-3 h-[2px] pointer-events-none"
                             style={{
                               background:
                                 "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.85) 30%, rgb(var(--accent-hover) / 0.95) 50%, rgb(var(--accent-base) / 0.85) 70%, transparent 100%)",
@@ -260,7 +260,7 @@ export function Comparison() {
                     >
                       <th
                         scope="row"
-                        className="text-left p-5 md:p-6 font-medium text-secondary text-[14px] h-16 md:h-[72px] align-middle transition-shadow duration-200 group-hover:shadow-[inset_3px_0_0_0_rgb(var(--accent-base)/0.40)] sticky left-0 z-10"
+                        className="text-left p-5 md:p-6 font-medium text-secondary text-[14px] h-16 md:h-[72px] align-middle sticky left-0 z-10"
                         // T2h: opaque background for the sticky row-header
                         // column — same color-mix approach as the col header.
                         style={{ backgroundColor: "color-mix(in srgb, var(--bg) 100%, transparent)" }}
@@ -404,7 +404,7 @@ function CheckIcon() {
        chips hold their definition in light theme (where /15 was
        nearly invisible on the paper veil) without going garish in
        dark theme. */
-    <span className="inline-flex w-5 h-5 rounded-full bg-pnl-pos/20 ring-1 ring-inset ring-pnl-pos/15 items-center justify-center">
+    <span className="inline-flex w-5 h-5 rounded-[2px] bg-pnl-pos/20 ring-1 ring-inset ring-pnl-pos/15 items-center justify-center">
       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -414,7 +414,7 @@ function CheckIcon() {
 
 function CrossIcon() {
   return (
-    <span className="inline-flex w-5 h-5 rounded-full bg-pnl-neg/20 ring-1 ring-inset ring-pnl-neg/15 items-center justify-center">
+    <span className="inline-flex w-5 h-5 rounded-[2px] bg-pnl-neg/20 ring-1 ring-inset ring-pnl-neg/15 items-center justify-center">
       <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
       </svg>
@@ -424,7 +424,7 @@ function CrossIcon() {
 
 function PartialIcon() {
   return (
-    <span className="inline-flex w-5 h-5 rounded-full bg-pnl-warn/20 ring-1 ring-inset ring-pnl-warn/15 items-center justify-center">
+    <span className="inline-flex w-5 h-5 rounded-[2px] bg-pnl-warn/20 ring-1 ring-inset ring-pnl-warn/15 items-center justify-center">
       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M2 6h8" stroke="rgb(var(--pnl-warn))" strokeWidth="2" strokeLinecap="round" />
       </svg>

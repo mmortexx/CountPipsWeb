@@ -145,7 +145,7 @@ export function TableOfContents() {
                   href={`#${item.id}`}
                   onClick={(e) => handleClick(e, item.id)}
                   aria-current={active ? "location" : undefined}
-                  className={`group flex items-start gap-2 rounded-md px-2 py-1.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-1 focus-visible:ring-offset-transparent ${
+                  className={`group flex items-start gap-2 rounded-[2px] px-2 py-1.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-1 focus-visible:ring-offset-transparent ${
                     active ? "bg-[rgb(var(--divider)/0.06)]" : "hover:bg-[rgb(var(--divider)/0.03)]"
                   }`}
                 >

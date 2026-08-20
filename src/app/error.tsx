@@ -31,24 +31,6 @@ export default function Error({
       aria-labelledby="error-heading"
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
-      {/* Soft acrylic depth orb */}
-      <div
-        className="absolute top-1/4 -left-32 w-[440px] h-[440px] rounded-full blur-[130px] pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, rgb(var(--pnl-neg) / 0.6), transparent 70%)",
-          opacity: 0.12,
-        }}
-        aria-hidden="true"
-      />
-      <div
-        className="absolute bottom-1/4 -right-32 w-[420px] h-[420px] rounded-full blur-[130px] pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, rgb(var(--pnl-neg) / 0.6), transparent 70%)",
-          opacity: 0.12,
-        }}
-        aria-hidden="true"
-      />
-
       <div className="relative z-[2] text-center max-w-xl mx-auto">
         <div
           className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[12px] text-secondary mb-7"
@@ -99,7 +81,7 @@ export default function Error({
                  nunca rotaba; y con `py-2` el botón medía ~36 px, por
                  debajo del objetivo táctil de 44 px que exige R2 en
                  cualquier control interactivo. */
-              className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[2px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-[background-color,box-shadow] hover:shadow-[0_12px_32px_-8px_rgb(var(--accent-base)/0.7)]"
+              className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[2px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
             >
               <svg
                 className="mr-2 transition-transform group-hover:-rotate-45"
@@ -123,7 +105,7 @@ export default function Error({
           <div className="tj-pulsa inline-flex">
             <Link
               href="/"
-              className="tj-paper tj-paper-dense inline-flex min-h-[44px] items-center border border-[rgb(var(--divider)/0.20)] text-primary px-8 rounded-[2px] font-medium hover:bg-[rgb(var(--accent-base))] hover:text-[rgb(var(--accent-ink))] transition-[background-color,color,transform] hover:-translate-y-0.5"
+              className="tj-paper tj-paper-dense inline-flex min-h-[44px] items-center border border-[rgb(var(--divider)/0.20)] text-primary px-8 rounded-[2px] font-medium hover:bg-[rgb(var(--accent-base))] hover:text-[rgb(var(--accent-ink))] transition-[background-color,color]"
             >
               {es ? "Volver al inicio" : "Back to home"}
             </Link>

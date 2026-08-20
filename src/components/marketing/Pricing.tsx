@@ -414,16 +414,10 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
       <ul className="space-y-3.5 flex-1">
         {plan.features.map((f) => (
           <li key={f} className="flex items-start gap-3 text-sm">
-            {/* Pro feature checks get an accent-tinted circular badge —
-                a 20×20 rounded-full fill + inset accent ring around the
-                16×16 CheckIcon — so the Pro feature list reads as a
-                "ribbon of premium yes" distinct from Core's plain
-                outline checks (R24-1d). Core keeps the bare CheckIcon in
-                pnl-pos green for the standard positive treatment. */}
             <span
               className={`shrink-0 mt-0.5 ${
                 isPro
-                  ? "inline-flex items-center justify-center w-5 h-5 rounded-full bg-[rgb(var(--accent-base)/0.14)] ring-1 ring-inset ring-[rgb(var(--accent-base)/0.26)] text-[rgb(var(--accent-base))]"
+                  ? "inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-[rgb(var(--accent-base)/0.14)] ring-1 ring-inset ring-[rgb(var(--accent-base)/0.26)] text-[rgb(var(--accent-base))]"
                   : "text-pnl-pos"
               }`}
               aria-hidden="true"
@@ -475,8 +469,8 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
             // primary surface (txt-primary bg + bg text) with the same
             // shadow + lift treatment for visual parity.
             isPro
-              ? "group w-full max-w-[260px] sm:w-fit sm:max-w-[260px] flex items-center justify-center gap-2 h-12 px-6 rounded-[2px] text-sm font-semibold transition-[background-color,box-shadow,transform] duration-200 bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] shadow-[0_1px_2px_rgb(var(--accent-base)/0.25)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgb(var(--accent-base)/0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-              : "group w-full max-w-[260px] sm:w-fit sm:max-w-[260px] flex items-center justify-center gap-2 h-12 px-6 rounded-[2px] text-sm font-medium transition-[background-color,box-shadow,transform] duration-200 bg-[rgb(var(--txt-primary))] text-[var(--bg)] shadow-[0_1px_2px_rgb(0_0_0/0.20)] hover:bg-[rgb(var(--txt-primary)/0.88)] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(0_0_0/0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              ? "group w-full max-w-[260px] sm:w-fit sm:max-w-[260px] flex items-center justify-center gap-2 h-12 px-6 rounded-[2px] text-sm font-semibold transition-colors duration-200 bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              : "group w-full max-w-[260px] sm:w-fit sm:max-w-[260px] flex items-center justify-center gap-2 h-12 px-6 rounded-[2px] text-sm font-medium transition-colors duration-200 bg-[rgb(var(--txt-primary))] text-[var(--bg)] hover:bg-[rgb(var(--txt-primary)/0.88)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           }
         >
           {plan.cta}

@@ -187,7 +187,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             ].map((c, i) => (
               <div key={i} className="flex items-start gap-2.5 py-0.5">
                 <span
-                  className="inline-grid place-items-center rounded-full flex-none mt-px"
+                  className="inline-grid place-items-center rounded-[2px] flex-none mt-px"
                   style={{
                     width: 20,
                     height: 20,
@@ -286,7 +286,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                 <div className="flex items-center gap-2 mb-1">
                   <span
                     aria-hidden
-                    className="inline-grid place-items-center rounded-full"
+                    className="inline-grid place-items-center rounded-[2px]"
                     style={{
                       width: 20,
                       height: 20,

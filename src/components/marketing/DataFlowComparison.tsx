@@ -176,7 +176,7 @@ function FlowColumn({
           <div className="text-[15px] font-semibold" style={{ color: "var(--ink)" }}>{title}</div>
           <div className="tnum text-[10px]" style={{ letterSpacing: "0.14em", textTransform: "uppercase", color }}>{subtitle}</div>
         </div>
-        <span aria-hidden className="inline-flex items-center justify-center w-7 h-7 rounded-full" style={{ background: `color-mix(in oklab, ${color} 12%, transparent)`, border: `1px solid color-mix(in oklab, ${color} 30%, transparent)` }}>
+        <span aria-hidden className="inline-flex items-center justify-center w-7 h-7 rounded-[2px]" style={{ background: `color-mix(in oklab, ${color} 12%, transparent)`, border: `1px solid color-mix(in oklab, ${color} 30%, transparent)` }}>
           <span className="w-2 h-2 rounded-full" style={{ background: color }} />
         </span>
       </div>

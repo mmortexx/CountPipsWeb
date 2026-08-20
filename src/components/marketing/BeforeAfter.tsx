@@ -86,7 +86,7 @@ export function BeforeAfter() {
           <Reveal className="h-full flex flex-col">
             {/* Tinted header pill */}
             <div className="mb-3 self-start inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-pnl-neg/10 border border-pnl-neg/25">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-pnl-neg/15 text-pnl-neg">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-pnl-neg/15 text-pnl-neg">
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
@@ -136,7 +136,7 @@ export function BeforeAfter() {
                         so the disc reads as a stamped seal against the
                         desaturated Before card (the bg-pnl-neg/15 fill alone
                         was barely distinguishable from the red wash behind it). */}
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-full bg-pnl-neg/15 ring-1 ring-pnl-neg/35 items-center justify-center mt-0.5">
+                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-neg/15 ring-1 ring-pnl-neg/35 items-center justify-center mt-0.5">
                       <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                         <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
                       </svg>
@@ -161,7 +161,7 @@ export function BeforeAfter() {
             </span>
             <span
               data-entra="sello"
-              className="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-[rgb(var(--divider)/0.08)] text-primary ring-1 ring-[rgb(var(--divider)/0.25)]"
+              className="relative inline-flex items-center justify-center w-10 h-10 rounded-[2px] bg-[rgb(var(--divider)/0.08)] text-primary ring-1 ring-[rgb(var(--divider)/0.25)]"
               aria-hidden="true"
             >
               {/* ↓ arrow — mobile */}
@@ -179,7 +179,7 @@ export function BeforeAfter() {
           <Reveal delay={0.2} className="h-full flex flex-col">
             {/* Tinted header pill */}
             <div className="mb-3 self-start inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.1)] border border-[rgb(var(--accent-base)/0.3)]">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))]">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))]">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M2 6.5l2.5 2.5L10 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -228,7 +228,7 @@ export function BeforeAfter() {
                     {/* R20-3b: ✓ icon container — ring-1 ring-pnl-pos/40 for
                         parity with the ✗ container polish above; the disc
                         reads as a confirmed-state badge rather than a flat tint. */}
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-full bg-pnl-pos/15 ring-1 ring-pnl-pos/40 items-center justify-center mt-0.5">
+                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-pos/15 ring-1 ring-pnl-pos/40 items-center justify-center mt-0.5">
                       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                         <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>

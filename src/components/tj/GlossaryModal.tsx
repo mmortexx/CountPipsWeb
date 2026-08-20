@@ -296,7 +296,7 @@ export function GlossaryModal({
                   setActiveCat(e.target.value as GlossaryCategory | "all")
                 }
                 aria-label={es ? "Filtrar por categoría" : "Filter by category"}
-                className="appearance-none bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-md h-9 pl-3 pr-8 text-sm text-secondary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.30)] cursor-pointer"
+                className="appearance-none bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[2px] h-9 pl-3 pr-8 text-sm text-secondary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.30)] cursor-pointer"
               >
                 {GLOSSARY_CATEGORIES.map((c) => (
                   <option key={c.id} value={c.id} className="bg-background text-primary">

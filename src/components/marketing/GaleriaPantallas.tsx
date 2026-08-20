@@ -105,7 +105,7 @@ export function GaleriaPantallas({ num = "03" }: { num?: string }) {
                 tabIndex={seleccionada ? 0 : -1}
                 onClick={() => setActiva(clave)}
                 onKeyDown={(e) => enTeclado(e, i)}
-                className="shrink-0 rounded-md px-3.5 py-2 text-[13px] transition-colors min-h-[44px]"
+                className="shrink-0 rounded-[2px] px-3.5 py-2 text-[13px] transition-colors min-h-[44px]"
                 style={{
                   color: seleccionada ? "var(--ink)" : "var(--ink-3)",
                   background: seleccionada ? "rgb(var(--divider) / 0.10)" : "transparent",

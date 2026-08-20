@@ -271,7 +271,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                     </div>
                   </div>
                   <span
-                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.1em]"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.1em]"
                     style={{
                       background: open ? `color-mix(in oklab, ${s.color} 14%, transparent)` : "color-mix(in oklab, rgb(var(--divider)) 8%, transparent)",
                       color: open ? s.color : "var(--ink-3)",

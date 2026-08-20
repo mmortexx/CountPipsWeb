@@ -354,7 +354,7 @@ export function ShortcutsHelp({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={es ? "Cerrar" : "Close"}
-                className="icon-btn shrink-0 w-8 h-8 rounded-md flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+                className="icon-btn shrink-0 w-8 h-8 rounded-[2px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
               >
                 <svg
                   width="14"
@@ -378,7 +378,7 @@ export function ShortcutsHelp({
               {shortcuts.map((s, i) => (
                 <li
                   key={i}
-                  className="flex items-center justify-between gap-4 px-2 py-2 rounded-md hover:bg-[rgb(var(--divider)/0.03)] transition-colors"
+                  className="flex items-center justify-between gap-4 px-2 py-2 rounded-[2px] hover:bg-[rgb(var(--divider)/0.03)] transition-colors"
                 >
                   <span className="text-sm text-secondary">{s.label}</span>
                   <span className="flex items-center gap-1 shrink-0">

@@ -72,7 +72,7 @@ const AppDemo = dynamic(
 function DemoSkeleton() {
   return (
     <div
-      className="rounded-xl overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[0_4px_10px_rgb(0_0_0/0.26),0_18px_40px_rgb(0_0_0/0.3),0_0_28px_rgb(var(--accent-base)/0.1),0_24px_80px_-12px_rgb(0_0_0/0.6)] h-[678px] sm:h-[674px] md:h-[754px]"
+      className="rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[0_4px_10px_rgb(0_0_0/0.26),0_18px_40px_rgb(0_0_0/0.3),0_24px_80px_-12px_rgb(0_0_0/0.6)] h-[678px] sm:h-[674px] md:h-[754px]"
       aria-hidden="true"
     >
       <div className="tj-paper tj-paper-dense rounded-[2px] overflow-hidden h-full flex flex-col">
