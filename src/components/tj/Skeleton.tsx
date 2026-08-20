@@ -25,7 +25,7 @@ export function Skeleton({ className = "", shimmer = false, style }: SkeletonPro
       <div
         aria-hidden="true"
         style={style}
-        className={`animate-pulse rounded-md bg-[rgb(var(--divider)/0.05)] ${className}`}
+        className={`animate-pulse rounded-[2px] bg-[rgb(var(--divider)/0.05)] ${className}`}
       />
     );
   }
@@ -33,7 +33,7 @@ export function Skeleton({ className = "", shimmer = false, style }: SkeletonPro
     <div
       aria-hidden="true"
       style={style}
-      className={`relative overflow-hidden rounded-md bg-[rgb(var(--divider)/0.05)] animate-pulse ${className}`}
+      className={`relative overflow-hidden rounded-[2px] bg-[rgb(var(--divider)/0.05)] animate-pulse ${className}`}
     >
       <div className="tj-shimmer absolute inset-0" />
     </div>

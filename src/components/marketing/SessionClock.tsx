@@ -278,8 +278,11 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                       border: `1px solid color-mix(in oklab, ${open ? s.color : "rgb(var(--divider))"} ${open ? "35%" : "12%"}, transparent)`,
                     }}
                   >
-                    {open && <MotionPingDot color={s.color} />}
-                    {!open && <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: "var(--ink-3)" }} />}
+                    <span
+                      aria-hidden
+                      className="w-1.5 h-1.5 rounded-[1px]"
+                      style={{ background: open ? s.color : "var(--ink-3)" }}
+                    />
                     {open ? (es ? "Abierta" : "Open") : (es ? "Cerrada" : "Closed")}
                   </span>
                 </div>
@@ -300,7 +303,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
             </span>
             {activeKillzones.length > 0 ? (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[2px] text-xs font-mono font-bold bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.3)]">
-                <span className="w-2 h-2 rounded-full bg-[rgb(var(--accent-base))]" />
+                <span className="w-2 h-2 rounded-[1px] bg-[rgb(var(--accent-base))]" />
                 {activeKillzones.map((k) => (es ? k.nameEs : k.nameEn)).join(", ")}
               </span>
             ) : (
@@ -398,9 +401,9 @@ export function SessionClock({ num = "02" }: { num?: string }) {
               <div
                 aria-hidden
                 className="absolute top-0 bottom-0"
-                style={{ left: `${hourPct((utcHour + tzOffset + 24) % 24)}%`, width: 2, background: "var(--ink)", boxShadow: "0 0 8px rgb(var(--accent-base))" }}
+                style={{ left: `${hourPct((utcHour + tzOffset + 24) % 24)}%`, width: 2, background: "var(--ink)" }}
               >
-                <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full" style={{ background: "var(--ink)" }} />
+                <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-[1px]" style={{ background: "var(--ink)" }} />
               </div>
             )}
           </div>
@@ -452,22 +455,5 @@ export function SessionClock({ num = "02" }: { num?: string }) {
         </p>
       </div>
     </section>
-  );
-}
-
-/* ── MotionPingDot — punto pulsante para "Abierta" (live feel) ──
-   Mayúscula inicial obligatoria: JSX distingue componente de etiqueta HTML
-   por ahí. Escrito en minúscula, `<motionPingDot />` se compilaba como un
-   elemento nativo desconocido y el punto no llegaba a dibujarse nunca. */
-function MotionPingDot({ color }: { color: string }) {
-  return (
-    <span className="relative inline-flex w-1.5 h-1.5">
-      <span
-        aria-hidden
-        className="absolute inline-flex w-full h-full rounded-full opacity-60"
-        style={{ background: color, animation: "tj-ping 1.8s cubic-bezier(0,0,0.2,1) infinite" }}
-      />
-      <span aria-hidden className="relative inline-flex w-1.5 h-1.5 rounded-full" style={{ background: color }} />
-    </span>
   );
 }

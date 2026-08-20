@@ -1783,7 +1783,7 @@
     padding-inline: clamp(1.25rem, 4vw, 2.25rem);
   }
   .rounded-card { border-radius: 3px; }
-  .rounded-pill { border-radius: 12px; }
+  .rounded-pill { border-radius: var(--radius-md); }
 
   /* Optional scroll-snap helpers — NOT applied globally. Apply `.snap-container`
      on the scroll parent and `.snap-section` on each child to opt in. Uses

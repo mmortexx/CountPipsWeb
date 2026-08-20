@@ -5,9 +5,9 @@ interface ChipProps {
   variant?: "default" | "pos" | "neg" | "warn" | "accent" | "neutral";
   className?: string;
   /**
-   * When `as="button"`, the chip renders as a `<button>` with the same pill
-   * styling, a 44px minimum touch target, and focus-visible ring — for
-   * filter / toggle chips the visitor can press. Default `"span"` keeps
+   * When `as="button"`, the chip renders as a `<button>` with the same
+   * etiqueta styling, a 44px minimum touch target, and focus-visible ring —
+   * for filter / toggle chips the visitor can press. Default `"span"` keeps
    * the legacy non-interactive badge behavior. Backward-compatible.
    */
   as?: "span" | "button";
@@ -23,9 +23,9 @@ interface ChipProps {
   disabled?: boolean;
 }
 
-/** Small pill chip for direction, status, etc. Interactive variant
- *  (`as="button"`) renders a 44px-touch-target button with focus ring;
- *  default span variant is for static status badges. */
+/** Etiqueta compacta de dirección o estado. La variante interactiva
+ *  (`as="button"`) es un botón de 44 px con anillo de foco; el `span`
+ *  por defecto es la insignia estática. */
 export function Chip({
   children,
   variant = "default",
@@ -56,8 +56,6 @@ export function Chip({
         aria-label={ariaLabel}
         disabled={disabled}
         // 44px min touch target + focus-visible ring for keyboard users.
-        // `inline-flex` keeps the pill shape; the min-height + py-2 guarantee
-        // the target without distorting the compact look on a single line.
         className={`inline-flex items-center justify-center min-h-[44px] py-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-1 focus-visible:ring-offset-[rgb(var(--bg))] ${cls}`}
       >
         {children}

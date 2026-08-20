@@ -139,4 +139,26 @@ describe("Cromo de mesa", () => {
     expect(journal).not.toMatch(/w-56 h-32 rounded-full/);
     expect(analytics).not.toMatch(/blur-md/);
   });
+
+  it("el casco vivo no usa discos de consumo ni píldoras de 12 px", () => {
+    const chrome = sinComentarios(leer("src/components/demo/WindowChrome.tsx"));
+    const status = sinComentarios(leer("src/components/demo/StatusBar.tsx"));
+    const marca = sinComentarios(leer("src/components/demo/AssetMark.tsx"));
+    const cookies = sinComentarios(leer("src/components/tj/CookieConsent.tsx"));
+    const chip = sinComentarios(leer("src/components/tj/Chip.tsx"));
+    const sesiones = sinComentarios(
+      leer("src/components/marketing/SessionClock.tsx"),
+    );
+    expect(chrome).not.toMatch(/w-\[7px\] h-\[7px\] rounded-full/);
+    expect(chrome).toMatch(/rounded-\[1px\]/);
+    expect(status).not.toMatch(/w-1\.5 h-1\.5 rounded-full/);
+    expect(status).toMatch(/w-2 h-2 rounded-\[1px\]/);
+    expect(marca).not.toMatch(/forex: "rounded-full"/);
+    expect(marca).toMatch(/clip-path:polygon/);
+    expect(cookies).not.toMatch(/rounded-t-\[12px\]/);
+    expect(cookies).toMatch(/rounded-t-\[2px\]/);
+    expect(chip).toMatch(/const cls = `pill /);
+    expect(sesiones).not.toMatch(/MotionPingDot/);
+    expect(sesiones).not.toMatch(/tj-ping/);
+  });
 });

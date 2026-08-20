@@ -168,7 +168,7 @@ function MarketClock() {
               <div className="flex items-center gap-1.5">
                 <span
                   aria-hidden="true"
-                  className={`w-[7px] h-[7px] rounded-full shrink-0 ${
+                  className={`w-[5px] h-[5px] rounded-[1px] shrink-0 ${
                     open ? "bg-pnl-pos" : "bg-pnl-neg opacity-50"
                   }`}
                 />
@@ -328,7 +328,7 @@ function LocalFirstLED() {
       title={t("titleLocalFirstLed")}
       aria-label={t("titleLocalFirstLed")}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-pnl-pos" aria-hidden="true" />
+      <span className="w-2 h-2 rounded-[1px] bg-pnl-pos" aria-hidden="true" />
       <span className="text-[11px] text-tertiary truncate">{t("localFirst")}</span>
     </div>
   );

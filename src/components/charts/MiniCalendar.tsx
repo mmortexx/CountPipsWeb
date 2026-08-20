@@ -76,14 +76,14 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
         <div className="flex gap-1">
           <button
             onClick={() => setOffset((o) => o - 1)}
-            className="w-11 h-11 sm:w-7 sm:h-7 rounded-md flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+            className="w-11 h-11 sm:w-7 sm:h-7 rounded-[2px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
             aria-label={lang === "es" ? "Mes anterior" : "Previous month"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
           <button
             onClick={() => setOffset((o) => o + 1)}
-            className="w-11 h-11 sm:w-7 sm:h-7 rounded-md flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+            className="w-11 h-11 sm:w-7 sm:h-7 rounded-[2px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
             aria-label={lang === "es" ? "Mes siguiente" : "Next month"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>

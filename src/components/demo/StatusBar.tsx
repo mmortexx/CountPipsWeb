@@ -19,8 +19,7 @@ import { fmtPct } from "@/lib/trading/format";
  *   │ ● Disciplina: 84 %        Guardado automático en tu equipo    v2.4.1 │
  *   └──────────────────────────────────────────────────────────────────────┘
  *
- *   LEFT    — discipline LED (green dot, matches the real app's
- *             DisciplineLed Ellipse) + "Disciplina: NN %" text. The
+ *   LEFT    — discipline pip + "Disciplina: NN %" text. The
  *             % is the deterministic demo's compliancePct — the share
  *             of trades that respected the plan. Reads as the
  *             institutional "are you trading well?" heartbeat the real
@@ -67,12 +66,8 @@ export function StatusBar() {
 
   return (
     <div className="demo-chrome demo-hairline border-t relative flex items-center justify-between px-3 sm:px-4 h-7 text-[11px] text-tertiary select-none gap-2">
-      {/* LEFT — discipline LED + "Disciplina: NN %" text. Static
-          (non-clickable) — matches the real app's DisciplineStatus
-          StackPanel (XAML L313-318), which is a status indicator, not
-          a navigation affordance. The LED carries a subtle breathing
-          halo so the bar feels alive without losing the steady-state
-          indicator semantic. */}
+      {/* LEFT — pip de disciplina + texto. Estático, como el
+          DisciplineStatus de la app: indicador, no navegación. */}
       <span
         className="flex items-center gap-2 min-w-0"
         title={`${t("discipline")}: ${complianceLabel}`}
@@ -109,17 +104,15 @@ export function StatusBar() {
 /* ------------------------------------------------------------------ */
 
 /**
- * DisciplineLED — punto fijo, sin pulso ni halo, exactamente como el
- * Ellipse DisciplineLed de la app (XAML L353-354). El LED es un
- * indicador de ESTADO (verde = disciplina sana, ámbar = aviso), no un
- * latido: animarlo lo convertía en una decoración de web y era una de
- * las cosas que delataban que esto no era la app.
+ * DisciplineLED — pip fijo, sin pulso ni halo. Verde = disciplina
+ * sana, ámbar = aviso. Un disco redondo aquí se leía como semáforo
+ * de consumo; el canto de 1 px es el del resto de la mesa.
  */
 function DisciplineLED({ healthy }: { healthy: boolean }) {
   const colorVar = healthy ? "--pnl-pos" : "--pnl-warn";
   return (
     <span
-      className="w-1.5 h-1.5 rounded-full shrink-0"
+      className="w-2 h-2 rounded-[1px] shrink-0"
       style={{ backgroundColor: `rgb(var(${colorVar}))` }}
       aria-hidden="true"
     />

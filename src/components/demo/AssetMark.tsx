@@ -13,20 +13,18 @@
  *     mirada busca precisamente eso. Medido sobre papel claro: 1,53:1 y
  *     1,58:1 — por debajo del 3:1 que pide una señal gráfica.
  *
- * La clase pasa a codificarse por FORMA, en tinta terciaria: rombo, disco,
- * anillo y cuadrado. Se distinguen sin color —también con daltonismo, y en
- * una impresión en blanco y negro— y el color queda libre para el dato.
+ * La clase se codifica por FORMA, en tinta terciaria: rombo, triángulo,
+ * marco y cuadrado. Sin discos: un círculo aquí se leía como píldora
+ * de estado, no como clase de activo. Se distinguen sin color —también
+ * con daltonismo, y en una impresión en blanco y negro— y el color
+ * queda libre para el dato.
  */
 
 const FORMA: Record<string, string> = {
-  // rombo — un cuadrado girado; la diagonal lo hace el más ancho de los cuatro
   crypto: "rotate-45",
-  // disco
-  forex: "rounded-full",
-  // anillo: mismo disco, vaciado
-  stock: "rounded-full bg-transparent border-[1.5px] border-[rgb(var(--txt-tertiary))]",
-  // cuadrado
-  futures: "",
+  forex: "[clip-path:polygon(50%_0%,100%_100%,0%_100%)]",
+  stock: "bg-transparent border-[1.5px] border-[rgb(var(--txt-tertiary))] rounded-[1px]",
+  futures: "rounded-[1px]",
 };
 
 export function AssetMark({

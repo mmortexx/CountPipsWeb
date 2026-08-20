@@ -207,7 +207,7 @@ export function CookieConsent() {
             //
             // z-50 sobre BackToTop (z-40). safe-bottom para el home
             // indicator de iOS en el sheet móvil.
-            className="tj-entra-abajo tj-paper tj-paper-dense z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[12px] border-t border-[rgb(var(--divider)/0.14)] p-4 shadow-2xl md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[2px] md:border md:border-[rgb(var(--divider)/0.13)] md:p-5"
+            className="tj-entra-abajo tj-paper tj-paper-dense z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[2px] border-t border-[rgb(var(--divider)/0.14)] p-4 shadow-2xl md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[2px] md:border md:border-[rgb(var(--divider)/0.13)] md:p-5"
           >
             <div className="flex items-start gap-2.5 md:gap-3">
               <CookieIcon />

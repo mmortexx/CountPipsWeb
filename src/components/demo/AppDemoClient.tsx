@@ -91,7 +91,7 @@ function DemoSkeleton() {
           {/* Right — Local-first LED + caption buttons. */}
           <div className="flex items-stretch h-full">
             <div className="hidden sm:flex items-center gap-1.5 px-3">
-              <Skeleton className="h-1.5 w-1.5 rounded-full" />
+              <Skeleton className="h-2 w-2 rounded-[1px]" />
               <Skeleton className="h-3 w-16" />
             </div>
             <div className="w-11 sm:w-[46px] h-full flex items-center justify-center">

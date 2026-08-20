@@ -251,12 +251,11 @@ function PulseDot({ pulseKey, pulseId, delay, color }: { pulseKey: number; pulse
   return (
     <span
       key={`${pulseId}-${pulseKey}`}
-      className="tj-pulso pointer-events-none absolute top-1/2 left-1/2 rounded-full"
+      className="tj-pulso pointer-events-none absolute top-1/2 left-1/2 rounded-[1px]"
       style={{
-        width: 10,
-        height: 10,
+        width: 8,
+        height: 8,
         background: color,
-        boxShadow: `0 0 12px ${color}`,
         animationDelay: `${delay}ms`,
       }}
       aria-hidden="true"
