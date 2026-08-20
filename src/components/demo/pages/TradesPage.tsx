@@ -91,7 +91,7 @@ function RChip({ value, lang }: { value: number; lang: "es" | "en" }) {
       ? "bg-pnl-pos/15 text-pnl-pos border-pnl-pos/30 shadow-[inset_0_0_0_1px_rgb(var(--pnl-pos)/0.08)]"
       : "bg-pnl-neg/15 text-pnl-neg border-pnl-neg/30 shadow-[inset_0_0_0_1px_rgb(var(--pnl-neg)/0.08)]";
   return (
-    <span className={`pill tnum text-[11px] font-semibold border ${cls}`}>
+    <span className={`inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] tnum text-[11px] font-semibold leading-[1.4] border ${cls}`}>
       {value > 0 ? "+" : ""}
       {fmtNum(value, lang, 2)}R
     </span>
@@ -530,7 +530,7 @@ function BulkActionBar({
         className="absolute left-0 top-0 bottom-0 w-[3px] bg-[rgb(var(--accent-base))]"
       />
       <div className="flex flex-wrap items-center gap-3">
-        <span className="pill tnum text-[11px] font-semibold bg-[rgb(var(--accent-base)/0.15)] text-primary border border-[rgb(var(--accent-base)/0.35)]">
+        <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] tnum text-[11px] font-semibold leading-[1.4] bg-[rgb(var(--accent-base)/0.15)] text-primary border border-[rgb(var(--accent-base)/0.35)]">
           {count}
         </span>
         <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary hidden sm:inline">

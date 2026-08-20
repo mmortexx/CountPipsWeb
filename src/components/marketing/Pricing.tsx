@@ -282,7 +282,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
               accent ring + glow already framing the Pro card, so the whole
               Pro surface reads as a single premium object (R20-3c). */}
           <span
-            className="pill !rounded-[2px] border uppercase tracking-[0.1em] backdrop-blur-md backdrop-saturate-150"
+            className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] border uppercase tracking-[0.1em]"
             style={{
               /* Fondo de acento PLANO con la tinta que le corresponde.
                  Antes el texto era `--accent-pressed` (#B0905A) sobre un
@@ -338,7 +338,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
             (R24-1d). text-primary kept for full WCAG-AA contrast on the
             tinted backdrop in both themes. */}
         <span
-          className={`pill !rounded-[2px] border shrink-0 ${
+          className={`inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] border shrink-0 ${
             isPro
               ? "bg-[rgb(var(--accent-base)/0.12)] text-primary border-[rgb(var(--accent-base)/0.32)]"
               : "bg-[rgb(var(--divider)/0.05)] text-tertiary border-[rgb(var(--divider)/0.10)]"

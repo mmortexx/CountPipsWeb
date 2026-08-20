@@ -361,7 +361,7 @@ function TagPill({
   };
   return (
     <span
-      className="pill inline-flex items-center gap-1.5 text-[11px] border"
+      className="inline-flex items-center gap-1.5 rounded-[2px] px-[0.55rem] py-[0.15rem] text-[11px] font-semibold leading-[1.4] border"
       style={{
         color: colors[kind],
         borderColor: `${colors[kind]} / 0.3)`,
@@ -369,7 +369,7 @@ function TagPill({
       }}
     >
       <span
-        className="w-1.5 h-1.5 rounded-full"
+        className="w-1.5 h-1.5 rounded-[1px]"
         style={{ backgroundColor: colors[kind] }}
         aria-hidden
       />
@@ -766,7 +766,7 @@ export function TradeDetailPage() {
               <Eyebrow>
                 {lang === "es" ? "Anatomía" : "Anatomy"}
               </Eyebrow>
-              <span className="pill bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)] text-[10px] tnum">
+              <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[10px] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)] tnum">
                 {fills.length} {lang === "es" ? "fills" : "fills"}
               </span>
             </div>
@@ -1059,7 +1059,7 @@ export function TradeDetailPage() {
                     },
                   ])
                 }
-                className="pill inline-flex items-center gap-1 text-[11px] border border-dashed border-[rgb(var(--divider)/0.15)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors"
+                className="inline-flex items-center gap-1 rounded-[2px] px-[0.55rem] py-[0.15rem] text-[11px] font-semibold leading-[1.4] border border-dashed border-[rgb(var(--divider)/0.15)] text-tertiary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors"
                 aria-label={lang === "es" ? "Añadir etiqueta" : "Add tag"}
               >
                 <svg

@@ -45,7 +45,7 @@ export function Chip({
     accent: "bg-[rgb(var(--divider)/0.08)] text-primary border border-[rgb(var(--divider)/0.20)]",
     neutral: "bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.08)]",
   };
-  const cls = `pill ${styles[variant]} ${className}`;
+  const cls = `inline-flex items-center gap-[0.35rem] rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] ${styles[variant]} ${className}`;
 
   if (as === "button") {
     return (

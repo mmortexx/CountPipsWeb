@@ -1533,7 +1533,7 @@ export function AnalyticsPage() {
                     ? "Inconcluso"
                     : edge.verdict}
                 </span>
-                <span className="pill text-[11px] bg-[rgb(var(--divider)/0.08)] text-tertiary border border-[rgb(var(--divider)/0.12)]">
+                <span className="inline-flex items-center gap-[0.35rem] rounded-[2px] px-[0.55rem] py-[0.15rem] text-[11px] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.08)] text-tertiary border border-[rgb(var(--divider)/0.12)]">
                   <span>p =</span>
                   <span className="tnum">{fmtNum(edge.pValue, lang, 3)}</span>
                 </span>

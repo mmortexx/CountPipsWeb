@@ -157,8 +157,28 @@ describe("Cromo de mesa", () => {
     expect(marca).toMatch(/clip-path:polygon/);
     expect(cookies).not.toMatch(/rounded-t-\[12px\]/);
     expect(cookies).toMatch(/rounded-t-\[2px\]/);
-    expect(chip).toMatch(/const cls = `pill /);
+    expect(chip).not.toMatch(/`pill /);
+    expect(chip).toMatch(/rounded-\[2px\]/);
     expect(sesiones).not.toMatch(/MotionPingDot/);
     expect(sesiones).not.toMatch(/tj-ping/);
+    expect(sesiones).not.toMatch(/rounded-full/);
+  });
+
+  it("las etiquetas vivas no usan la clase .pill", () => {
+    const superficies = [
+      "src/components/tj/Chip.tsx",
+      "src/components/marketing/Pricing.tsx",
+      "src/components/marketing/PricingFAQ.tsx",
+      "src/components/marketing/Comparison.tsx",
+      "src/components/demo/pages/TradesPage.tsx",
+      "src/components/demo/pages/JournalPage.tsx",
+      "src/components/demo/pages/AnalyticsPage.tsx",
+      "src/components/demo/pages/TradeDetailPage.tsx",
+    ];
+    for (const rel of superficies) {
+      const fuente = sinComentarios(leer(rel));
+      expect(fuente, rel).not.toMatch(/className=\{?[`"]pill[\s`"]/);
+      expect(fuente, rel).not.toMatch(/pill !rounded/);
+    }
   });
 });

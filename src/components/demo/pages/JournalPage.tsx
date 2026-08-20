@@ -281,13 +281,13 @@ function RitualColumn({
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span
-            className={`w-2 h-2 rounded-full ${
+            className={`w-2 h-2 rounded-[1px] ${
               accent ? "bg-[rgb(var(--accent-base))]" : "bg-pnl-pos"
             }`}
           />
           <h3 className="font-medium text-primary">{title}</h3>
         </div>
-        <span className="pill bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)] tnum">
+        <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)] tnum">
           {checkedCount}/{items.length}
         </span>
       </div>
@@ -1215,7 +1215,7 @@ export function JournalPage() {
                 {t("ritualTitle")}
               </h2>
             </div>
-            <span className="pill bg-[rgb(var(--divider)/0.08)] text-primary border border-[rgb(var(--divider)/0.2)] shrink-0">
+            <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.08)] text-primary border border-[rgb(var(--divider)/0.2)] shrink-0">
               {L("Hoy", "Today")}
             </span>
           </div>

@@ -107,9 +107,9 @@ export function PricingFAQ() {
               <span
                 data-entra="ciclo"
                 key={label}
-                className="pill !rounded-[2px] bg-[rgb(var(--divider)/0.05)] text-secondary border border-[rgb(var(--divider)/0.10)] tnum"
+                className="inline-flex items-center gap-[0.35rem] rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-secondary border border-[rgb(var(--divider)/0.10)] tnum"
               >
-                <span className="size-1.5 rounded-full bg-[rgb(var(--accent-base))]" aria-hidden="true" />
+                <span className="size-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" aria-hidden="true" />
                 {label}
               </span>
             ))}
