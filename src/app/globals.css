@@ -3639,12 +3639,55 @@ button.icon-btn:hover > svg,
 }
 .tj-interlude-caption {
   pointer-events: auto;
+  position: relative;
   width: 100%;
   max-width: var(--page-w, 1080px);
   margin-inline: auto;
   padding: 0 1.25rem clamp(2rem, 5vh, 4rem);
   display: grid;
   gap: 0.55rem;
+}
+/* ── VELO DEL PIE DE LÁMINA ───────────────────────────────────────────
+   El pie es lo único que se lee dentro de la pausa, y estaba escrito
+   directamente sobre la figura, que justo ahí es donde más tinta tiene:
+   la lámina existe para enseñar el atlas ENTERO, así que el trazo pasa
+   por debajo del texto a plena densidad.
+
+   No es una sospecha. Midiendo el fondo real bajo cada pie —el peor
+   píxel, no la media, que es lo que engaña con un grabado de puntos— los
+   catorce pies del sitio tenían área por debajo del mínimo WCAG, y en el
+   peor caso el trazo llegaba a 1,44:1 contra la letra: puntos
+   prácticamente del mismo tono que el texto, cruzándolo. En /glosario la
+   nota tenía casi un 10 % de su fondo así.
+
+   Por qué un velo y no papel: una tarjeta de papel opaca resolvería la
+   lectura tapando la figura, y la figura es el motivo de que la pausa
+   exista. Por qué un velo y no bajarle tinta al atlas: el resto de la
+   lámina —los tres cuartos superiores, donde no hay texto— tiene que
+   seguir viéndose como está.
+
+   Es el mismo criterio, y el mismo recurso, que `.page-header-scrim`:
+   un degradado no pinta densidad aquí, protege una lectura. Sube desde
+   la base —donde el grabado ya se apaga contra el canto— y se desvanece
+   antes de llegar al cuerpo de la figura, así que no deja costura. Se
+   desborda a los lados a propósito: cortado a la caja del texto se vería
+   el rectángulo. */
+.tj-interlude-caption::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  left: -6vw;
+  right: -6vw;
+  bottom: 0;
+  top: -3.5rem;
+  background: linear-gradient(
+    to top,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--bg) 88%, transparent) 42%,
+    color-mix(in srgb, var(--bg) 55%, transparent) 72%,
+    transparent 100%
+  );
 }
 .tj-interlude-rule {
   height: 3px;
