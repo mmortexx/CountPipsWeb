@@ -3629,6 +3629,16 @@ button.icon-btn:hover > svg,
   display: flex;
   align-items: flex-end;
   pointer-events: none;
+  /* El velo del pie (`.tj-interlude-caption::before`) se desborda a los
+     lados para no cortar en seco. En escritorio cabe de sobra en el
+     margen que deja la mancha, pero en móvil el pie ocupa todo el ancho
+     y ese desbordamiento SÍ contaba: 413 px de documento en una ventana
+     de 390, o sea barra horizontal en todas las rutas. Aquí se recorta.
+
+     `clip` y no `hidden`, como en el resto del sitio: recorta igual sin
+     abrir contenedor de desplazamiento, que es lo que dejaría sin animar
+     a lo que viva dentro. */
+  overflow-x: clip;
 }
 /* La portada mantiene su ritmo original: allí la figura ES el
    argumento, y hay seis secciones de texto que la sostienen. Quién es
