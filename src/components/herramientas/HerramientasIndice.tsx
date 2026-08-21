@@ -130,11 +130,38 @@ export function HerramientasIndice() {
         </div>
 
         <Reveal delay={0.3}>
-          <p className="mt-8 text-center text-[13.5px] text-tertiary">
-            {es
-              ? "Todas funcionan en tu navegador. No se envía nada a ningún servidor, no piden correo y no hay registro."
-              : "They all run in your browser. Nothing is sent to any server, no email is asked for and there is no sign-up."}
-          </p>
+          {/* ── EL ARGUMENTO DE PRIVACIDAD NO ES UN PIE DE PÁGINA ──────
+              Esta línea dice lo que más distingue al producto —que las
+              ocho herramientas no mandan nada a ningún sitio— y estaba
+              puesta como una nota al pie: `text-tertiary`, el color más
+              apagado del sistema, a 13,5 px, centrada y justo sobre la
+              zona más densa del grabado. Era, literalmente, el texto
+              menos legible de la página, y el que más peso comercial
+              tiene.
+
+              Se apoya en papel, que es el recurso que este sitio usa
+              cuando un texto tiene que ganarle al fondo, sube a tinta
+              secundaria y se le pone delante su sello. Así se lee como
+              lo que es: una garantía firmada al cierre de la sección, no
+              un descargo de responsabilidad. */}
+          <div className="tj-paper mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 rounded-[2px] border border-[rgb(var(--divider)/0.13)] px-6 py-4 sm:flex-row sm:gap-5 sm:py-3.5">
+            <span
+              className="shrink-0 font-mono text-[10px] uppercase"
+              style={{ letterSpacing: "0.16em", color: "rgb(var(--pnl-pos))" }}
+            >
+              {es ? "Sin servidor" : "No server"}
+            </span>
+            <span
+              aria-hidden
+              className="hidden h-4 w-px shrink-0 sm:block"
+              style={{ background: "rgb(var(--divider) / 0.22)" }}
+            />
+            <p className="m-0 text-center text-[13.5px] leading-relaxed text-secondary sm:text-left">
+              {es
+                ? "Todas funcionan en tu navegador. No se envía nada a ningún servidor, no piden correo y no hay registro."
+                : "They all run in your browser. Nothing is sent to any server, no email is asked for and there is no sign-up."}
+            </p>
+          </div>
         </Reveal>
       </div>
     </section>

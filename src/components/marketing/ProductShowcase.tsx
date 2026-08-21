@@ -267,9 +267,25 @@ export function ProductShowcase() {
           </div>
         </div>
 
-        {/* Enlace a la Demo */}
-        <div className="mt-8 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t border-[rgb(var(--divider)/0.08)]">
-          <span className="text-xs font-mono text-[var(--ink-3)]">
+        {/* ── EL PIE DE LA SECCIÓN, CON PESO Y CON SUELO ──────────────
+            Aquí había dos líneas de monoespaciado de 12 px sueltas sobre
+            el fondo: la ficha técnica a la izquierda y, a la derecha, la
+            ÚNICA salida hacia la demo de toda la sección. Dos problemas a
+            la vez.
+
+            El de lectura: el grabado pasa por detrás con su trama densa
+            justo a esa altura, y el punteado cruzaba las letras —se ve en
+            cuanto se mira la portada a 1440 px—. Ahora el pie se apoya en
+            papel, que es lo que este sitio usa cuando un texto tiene que
+            ganarle al fondo.
+
+            El de jerarquía, que era el peor: después de enseñar la
+            aplicación a toda anchura, la invitación a probarla era letra
+            pequeña de la misma talla que el pie de specs. Pasa a botón
+            sólido, el mismo de la portada, porque es la acción que esta
+            sección existe para provocar. */}
+        <div className="tj-paper mt-8 flex flex-col gap-4 rounded-[2px] border border-[rgb(var(--divider)/0.13)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <span className="text-xs font-mono leading-relaxed text-[var(--ink-3)]">
             {es
               ? "Arquitectura nativa de Windows · Cero latencia en local · SQLite integrado"
               : "Native Windows architecture · Zero local latency · Embedded SQLite"}
@@ -277,10 +293,11 @@ export function ProductShowcase() {
 
           <Link
             href="/demo"
-            className="text-xs font-mono font-semibold text-[rgb(var(--accent-base))] hover:underline flex items-center gap-1.5"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-[2px] px-5 text-[13.5px] font-semibold outline-none transition-[background-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+            style={{ background: "rgb(var(--accent-base))", color: "rgb(var(--accent-ink))" }}
           >
-            <span>{es ? "Recorrer la demo interactiva sin registro" : "Launch interactive demo without sign-up"}</span>
-            <ArrowRight size={13} />
+            {es ? "Recorrer la demo sin registro" : "Explore the demo, no sign-up"}
+            <ArrowRight size={15} aria-hidden />
           </Link>
         </div>
 
