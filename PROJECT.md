@@ -4,8 +4,8 @@
 CountPips is a static marketing website and interactive browser demo for a native Windows trading journal.
 - **Framework**: Next.js 16 (App Router, SSG output export) + React 19 + TypeScript (Strict).
 - **Styling**: Tailwind CSS v4 + Design Tokens (`--tj-*`, `--surface-*`, `--text-*`, `--accent-*`, `--pnl-*`).
-- **I18n Architecture**: Symmetric bilingual routing (Spanish `/` + English `/en/`), 210 `STR` keys, 51 glossary terms, 7 tools, 17 FAQs, 4 legal documents.
-- **Interactive Tools**: 100% local client-side calculators and simulators (`RiskCalculator`, `EdgeSignificanceChecker`, `RMultipleSimulator`, `EquityProjector`, `DisciplineCost`, `GuardianNew`, `SavingsCalculator`, `SessionClock`).
+- **I18n Architecture**: Symmetric bilingual routing (Spanish `/` + English `/en/`), 210 `STR` keys, 57 glossary terms, 8 tools, 13 FAQs (bilingual), 4 legal documents.
+- **Interactive Tools**: 100% local client-side calculators and simulators (`RiskCalculator`, `EdgeSignificanceChecker`, `RMultipleSimulator`, `EquityProjector`, `DisciplineCost`, `GuardianNew`, `SavingsCalculator`, `SessionClock`, `CommissionDragCalculator`).
 - **Demo Engine**: Deterministic PRNG (`mulberry32`), strict UTC date indexing, `useSyncExternalStore` reactive decoupled state (`demoStore.ts`), 5 WinUI 3 demo views (Dashboard, Trades, TradeDetail, Analytics, Journal).
 - **Analytics & Consent**: Client-side PostHog (EU) with strict consent gating (`CookieConsent`), session recording disabled, masking enabled, 0 cookies.
 - **Rendering & Animation**: Hardware-accelerated GPU transforms (`translate3d`, `scale()`, `will-change`), Fluent 2 spring dynamics, sub-pixel canvas vector stippling (`EngravedAtlas.tsx`, `BackgroundFX.tsx`), double catch-light highlights on Mica/Paper Dense surfaces.
@@ -19,14 +19,14 @@ CountPips is a static marketing website and interactive browser demo for a nativ
 | 4 | Design System Token Purity | D8 | Replace inline hex with CSS tokens in `WindowChrome.tsx`, `DashboardPage.tsx` | M1 | Survey UI/UX |
 | 5 | SSG Hydration Determinism | D6 | Replace non-deterministic dates in `DisciplineCost.tsx` and `TradeCandleChart.tsx` | M1 | Survey UI/UX |
 | 6 | Math Edge Case NaN Guard | D1, D12 | Guard `cagr` against `finalBalance <= 0` in `EquityProjector.tsx` | M2 | Survey UI/UX |
-| 7 | Quantitative Verification & Risk Metrics | D1, D7 | Sharpe, Sortino (downside dev MAR=0), Calmar (365.25d), Omega Ratio, Half Kelly, SQN, Ulcer Index, Drawdown Skewness in `src/lib/trading/data.ts` | M2 | Survey Tech |
+| 7 | Quantitative Verification & Risk Metrics | D1, D7 | Sharpe, Sortino (downside dev MAR=0), Calmar (365.25d), Keating-Shadwick Omega Ratio, Half Kelly, SQN, Ulcer Index, Drawdown Skewness in `src/lib/trading/data.ts` | M2 | Survey Tech |
 | 8 | Statistical Inference Engine | D1, D7 | Wilson 95% CI, Sample size $n$ determination matrices, Abramowitz & Stegun normal CDF, Wald-Wolfowitz runs test | M2 | Survey Tech |
 | 9 | Multi-Asset Official Multipliers | D1 | CME/NYMEX Futures (ES, NQ, MES, MNQ, RTY, GC, CL) and Forex (100k, 10k, 1k) multipliers | M2 | Survey Tech |
 | 10 | Mobile Input Font Sizes & Touch Targets | D2, D3 | Enforce input `fontSize >= 16px` and touch targets `>= 44x44px` in interactive tools and controls | M3 | Survey UI/UX |
 | 11 | Fluent 2 GPU Acceleration & 165 FPS | D6, D8 | Hardware acceleration (`translate3d`, `contain: layout paint`), spring curves, sub-pixel canvas stippling (`EngravedAtlas.tsx`) | M3 | Survey UI/UX |
-| 12 | Bilingual Parity Maintenance | D4 | Maintain 100% parity across `STR`, glossary (51 terms), tools (7), FAQs (17), and legal docs (4) | M3 | Survey Spec |
+| 12 | Bilingual Parity Maintenance | D4 | Maintain 100% parity across `STR`, glossary (57 terms), tools (8), FAQs (13 bilingües), and legal docs (4) | M3 | Survey Spec |
 | 13 | Security & Privacy Local Guard | D9 | Verify zero client-side leaks, PostHog consent-gating, sanitized JSON-LD | M3 | Survey Tech |
-| 14 | E2E Opaque-Box Test Suite | D1-D13 | Requirement-driven test suite (Tiers 1-4) across 182 pages, 7 tools, 51 glossary terms | E2E Track | ORIGINAL_REQUEST |
+| 14 | E2E Opaque-Box Test Suite | D1-D13 | Requirement-driven test suite (Tiers 1-4) across 196 pages, 8 tools, 57 glossary terms | E2E Track | ORIGINAL_REQUEST |
 | 15 | Adversarial Coverage Hardening | D1-D13 | White-box stress-testing, edge-case generation, and coverage audit (Tier 5) | M4 | ORIGINAL_REQUEST |
 
 ## Milestones

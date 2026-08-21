@@ -266,9 +266,22 @@ describe("Criterio de Kelly (Puro, Medio y Cuarto) y clamping", () => {
 });
 
 describe("Ratio Omega y Asimetría de Drawdown", () => {
-  it("calcula el Ratio Omega como grossWin / grossLoss", () => {
+  it("calcula el Ratio Omega con la formulación discreta de Keating-Shadwick", async () => {
+    const { computeOmega, TRADES } = await import("@/lib/trading/data");
     expect(METRICS.omega).toBeGreaterThan(0);
-    expect(METRICS.omega).toBeCloseTo(METRICS.profitFactor, 6);
+    // Para L=0 sobre PnL discreto, coincide formalmente con el Profit Factor
+    expect(computeOmega(TRADES, 0)).toBeCloseTo(METRICS.profitFactor, 4);
+
+    // Con umbral exigente L > 0, el ratio Omega disminuye monótonamente (penaliza retornos bajo el umbral)
+    const omegaL50 = computeOmega(TRADES, 50);
+    expect(omegaL50).toBeLessThan(METRICS.omega);
+
+    // Con umbral permisivo L < 0, el ratio Omega aumenta monótonamente
+    const omegaLMinus50 = computeOmega(TRADES, -50);
+    expect(omegaLMinus50).toBeGreaterThan(METRICS.omega);
+
+    // Guardas de borde
+    expect(computeOmega([])).toBe(0);
   });
 
   it("calcula la asimetría de recuperación de drawdown requerida R_req = DD / (1 - DD)", async () => {
@@ -484,6 +497,79 @@ describe("Métricas cuantitativas institucionales ampliadas", () => {
     expect(Number.isFinite(METRICS.gainToPainRatio)).toBe(true);
     expect(METRICS.sqn).toBeGreaterThan(0);
     expect(METRICS.gainToPainRatio).toBeGreaterThan(0);
+  });
+});
+
+describe("Modelos Institucionales de Ruina, Rachas y Valor en Riesgo", () => {
+  it("computeRiskOfRuin devuelve 100% cuando no hay ventaja matemática (EV <= 0)", async () => {
+    const { computeRiskOfRuin } = await import("@/lib/trading/data");
+    // Win rate 40% con 1:1 payoff -> EV = 0.40 * 1 - 0.60 = -0.20 (EV negativo)
+    expect(computeRiskOfRuin(40, 1.0, 1.0, 50)).toBe(100);
+    // Win rate 50% con 1:1 payoff -> EV = 0
+    expect(computeRiskOfRuin(50, 1.0, 1.0, 50)).toBe(100);
+  });
+
+  it("computeRiskOfRuin disminuye monótonamente al aumentar la ventaja y al reducir el riesgo", async () => {
+    const { computeRiskOfRuin } = await import("@/lib/trading/data");
+    // WR 55%, 2:1 payoff, riesgo 1% vs 3%
+    const r1 = computeRiskOfRuin(55, 2.0, 1.0, 50);
+    const r3 = computeRiskOfRuin(55, 2.0, 3.0, 50);
+    expect(r1).toBeLessThan(r3);
+    expect(r1).toBeGreaterThanOrEqual(0);
+    expect(r3).toBeLessThanOrEqual(100);
+  });
+
+  it("computeExpectedMaxLossStreak calcula correctamente la longitud de racha analítica", async () => {
+    const { computeExpectedMaxLossStreak } = await import("@/lib/trading/data");
+    // Con WR = 50% y N = 100 -> q = 0.5, ln(100)/-ln(0.5) = 4.605 / 0.693 = 6.64 -> ~7 operaciones
+    expect(computeExpectedMaxLossStreak(50, 100)).toBe(7);
+    // Con WR = 60% y N = 100 -> q = 0.4, ln(100)/-ln(0.4) = 4.605 / 0.916 = 5.02 -> ~5 operaciones
+    expect(computeExpectedMaxLossStreak(60, 100)).toBe(5);
+    // Guardas en bordes
+    expect(computeExpectedMaxLossStreak(100, 100)).toBe(0);
+    expect(computeExpectedMaxLossStreak(0, 100)).toBe(100);
+  });
+
+  it("computeParametricVaR calcula el VaR paramétrico en dólares según nivel de confianza", async () => {
+    const { computeParametricVaR } = await import("@/lib/trading/data");
+    // Balance $10,000, 1% riesgo ($100 1R)
+    // 95% CI -> 100 * 1.645 = $164.50
+    expect(computeParametricVaR(10000, 1.0, 95)).toBe(164.5);
+    // 99% CI -> 100 * 2.326 = $232.60
+    expect(computeParametricVaR(10000, 1.0, 99)).toBe(232.6);
+  });
+
+  it("soporta activos commodity con multiplicadores y clases asignadas", async () => {
+    const { INSTRUMENTS, getInstrumentMultiplier } = await import("@/lib/trading/data");
+    const gold = INSTRUMENTS.find((i) => i.symbol === "XAU/USD");
+    const oil = INSTRUMENTS.find((i) => i.symbol === "CL");
+    expect(gold?.assetClass).toBe("commodity");
+    expect(oil?.assetClass).toBe("commodity");
+    expect(getInstrumentMultiplier("XAU/USD")).toBe(100);
+    expect(getInstrumentMultiplier("CL")).toBe(1000);
+    expect(getInstrumentMultiplier("UNKNOWN", "commodity")).toBe(50);
+  });
+
+  it("normalCdf calcula la integral gaussiana con precisión de Abramowitz & Stegun", async () => {
+    const { normalCdf } = await import("@/lib/trading/data");
+    expect(normalCdf(0)).toBe(0.5);
+    expect(normalCdf(1.96)).toBeCloseTo(0.975, 3);
+    expect(normalCdf(-1.96)).toBeCloseTo(0.025, 3);
+    expect(normalCdf(2.576)).toBeCloseTo(0.995, 3);
+  });
+
+  it("computeStatisticalPower devuelve 0% sin ventaja y crece monótonamente con la muestra", async () => {
+    const { computeStatisticalPower } = await import("@/lib/trading/data");
+    // Win rate <= 50% -> Potencia 0% (H0 es cierta)
+    expect(computeStatisticalPower(50, 100)).toBe(0);
+    expect(computeStatisticalPower(45, 100)).toBe(0);
+    // Win rate 60% con N=30 vs N=100 vs N=300
+    const p30 = computeStatisticalPower(60, 30);
+    const p100 = computeStatisticalPower(60, 100);
+    const p300 = computeStatisticalPower(60, 300);
+    expect(p30).toBeLessThan(p100);
+    expect(p100).toBeLessThan(p300);
+    expect(p300).toBeGreaterThanOrEqual(80); // Muestra suficiente para potencia institucional >=80%
   });
 });
 

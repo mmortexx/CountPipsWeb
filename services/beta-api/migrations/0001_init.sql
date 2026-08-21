@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS applications (
   notes TEXT,
   language TEXT NOT NULL CHECK (language IN ('es', 'en')),
   marketing_consent INTEGER NOT NULL DEFAULT 0 CHECK (marketing_consent IN (0, 1)),
+  privacy_consent_at TEXT,
+  privacy_policy_version TEXT,
   status TEXT NOT NULL DEFAULT 'nuevo' CHECK (status IN ('nuevo', 'revisando', 'invitado', 'aceptado', 'espera', 'descartado')),
   cohort TEXT,
   source_path TEXT,

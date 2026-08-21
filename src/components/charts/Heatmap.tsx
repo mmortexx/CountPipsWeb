@@ -82,7 +82,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                   <div
                     data-entra="sello"
                     key={c}
-                    className="tj-realce h-8 rounded-sm flex items-center justify-center text-[9.5px] font-semibold tnum cursor-default relative overflow-hidden group"
+                    className="tj-realce h-8 rounded-[2px] flex items-center justify-center text-[9.5px] font-semibold tnum cursor-default relative overflow-hidden group"
                     style={{ backgroundColor: bg }}
                     onMouseEnter={(e) => {
                       const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();

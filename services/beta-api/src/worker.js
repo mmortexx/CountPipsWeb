@@ -313,19 +313,21 @@ async function createApplication(request, env) {
   const existing = await env.DB.prepare("SELECT id FROM applications WHERE email_hash = ?1 LIMIT 1")
     .bind(emailHash)
     .first();
-  if (existing) return json({ ok: true, duplicate: true }, 200, request, env);
+  if (existing) return json({ ok: true }, 200, request, env);
 
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
   const ip = request.headers.get("CF-Connecting-IP") || "";
   const ipHash = ip ? await sha256Hex(ip) : null;
+  const privacyVersion = "2026-08";
   try {
     await env.DB.prepare(
       `INSERT INTO applications (
         id, email, email_hash, profile, experience, markets, workflow, goal, notes,
-        language, marketing_consent, status, cohort, source_path, landing_origin,
+        language, marketing_consent, privacy_consent_at, privacy_policy_version,
+        status, cohort, source_path, landing_origin,
         utm_source, utm_medium, utm_campaign, ip_hash, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'nuevo', NULL, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'nuevo', NULL, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
       .bind(
         id,
@@ -339,6 +341,8 @@ async function createApplication(request, env) {
         application.notes || null,
         application.language,
         application.marketingConsent ? 1 : 0,
+        now,
+        privacyVersion,
         application.sourcePath || null,
         application.landingOrigin || null,
         application.utmSource || null,
@@ -351,12 +355,12 @@ async function createApplication(request, env) {
       .run();
   } catch (error) {
     if (String(error?.message || "").toLowerCase().includes("unique")) {
-      return json({ ok: true, duplicate: true }, 200, request, env);
+      return json({ ok: true }, 200, request, env);
     }
     return errorResponse("storage_unavailable", 503, request, env);
   }
 
-  return json({ ok: true, duplicate: false }, 201, request, env);
+  return json({ ok: true }, 201, request, env);
 }
 
 function adminQuery(request) {

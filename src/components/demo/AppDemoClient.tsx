@@ -119,7 +119,7 @@ function DemoSkeleton() {
                   i === 0 ? "bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)]" : ""
                 }`}
               >
-                <Skeleton className="h-3.5 w-3.5 rounded-sm" />
+                <Skeleton className="h-3.5 w-3.5 rounded-[2px]" />
                 <Skeleton className="h-3 w-14 hidden sm:block" />
               </div>
             ))}
@@ -156,7 +156,7 @@ function DemoSkeleton() {
             {Array.from({ length: 12 }).map((_, i) => (
               <Skeleton
                 key={i}
-                className="flex-1 rounded-sm"
+                className="flex-1 rounded-[2px]"
                 // Varying heights so the bar-chart silhouette reads.
                 style={{ height: `${30 + ((i * 37) % 60)}%` }}
               />

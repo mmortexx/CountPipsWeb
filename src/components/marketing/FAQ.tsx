@@ -204,7 +204,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                 <button
                   type="button"
                   onClick={() => setGlossaryOpen(true)}
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[2px]"
                 >
                   {es ? "Abrir glosario →" : "Open glossary →"}
                 </button>
@@ -286,7 +286,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                      enlace suelto en mitad de un párrafo, y medía 20 px
                      de alto. El relleno lateral además separa el foco
                      del texto para que el anillo no lo estrangule. */
-                  className="min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-sm"
+                  className="min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[2px]"
                 >
                   {es
                     ? "¿No encuentras tu término? Consulta el glosario →"

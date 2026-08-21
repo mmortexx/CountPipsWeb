@@ -147,17 +147,25 @@ export async function submitForm(fields: FormFields): Promise<SubmitResult> {
     return { ok: false, reason: "unconfigured" };
   }
 
-  // El honeypot se envía siempre, aunque venga vacío: Web3Forms solo aplica
-  // el filtro si el campo está presente en el payload.
-  const { botcheck = "", ...rest } = fields;
+  // Límites de longitud y saneamiento previo
+  const email = (fields.email ?? "").trim().slice(0, 254);
+  const subject = (fields.subject ?? "").trim().slice(0, 160);
+  const name = fields.name ? fields.name.trim().slice(0, 100) : undefined;
+  const message = fields.message ? fields.message.trim().slice(0, 3000) : undefined;
+  const botcheck = (fields.botcheck ?? "").slice(0, 100);
+
+  if (!email || !email.includes("@")) {
+    return { ok: false, reason: "rejected" };
+  }
 
   const res = await postJson(ENDPOINT, {
     access_key: ACCESS_KEY,
     botcheck,
-    // Remitente visible en el email; cae al nombre del sitio si el
-    // formulario no pide nombre.
-    from_name: rest.name?.trim() || "CountPips Web",
-    ...rest,
+    subject,
+    email,
+    name,
+    message,
+    from_name: name || "CountPips Web",
   });
 
   if (!res) return { ok: false, reason: "network" };

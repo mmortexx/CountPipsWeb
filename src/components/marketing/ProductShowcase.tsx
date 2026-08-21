@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { asset } from "@/lib/asset";
+import { METRICS, TRADES } from "@/lib/trading/data";
+import { fmtNum } from "@/lib/trading/format";
 import { ArrowRight, BarChart3, Calendar, ListFilter, Layout, Monitor } from "lucide-react";
 
 interface StudioSetup {
@@ -29,12 +31,22 @@ const STUDIO_SETUPS: StudioSetup[] = [
     labelEn: "Analytics Station",
     titleEs: "Estación Cuantitativa Panorámica",
     titleEn: "Panoramic Quantitative Station",
-    descEs: "Monitor curvo ultrawide con auditoría estadística integral: Sharpe (4.08), Sortino (1.59), Calmar (30.53) y verificación matemática de ventaja al 99% de confianza.",
-    descEn: "Ultrawide curved display with comprehensive statistical audit: Sharpe (4.08), Sortino (1.59), Calmar (30.53) and 99% confidence edge verification.",
+    descEs: `Monitor curvo ultrawide con auditoría estadística integral: Sharpe (${fmtNum(METRICS.sharpe, "es", 2)}), Sortino (${fmtNum(METRICS.sortino, "es", 2)}), Calmar (${fmtNum(METRICS.calmar, "es", 2)}) y verificación matemática de ventaja al 99% de confianza.`,
+    descEn: `Ultrawide curved display with comprehensive statistical audit: Sharpe (${fmtNum(METRICS.sharpe, "en", 2)}), Sortino (${fmtNum(METRICS.sortino, "en", 2)}), Calmar (${fmtNum(METRICS.calmar, "en", 2)}) and 99% confidence edge verification.`,
     img: "/img/studio/studio-analitica.webp",
     icon: BarChart3,
-    badgesEs: ["Sharpe: 4,08", "Sortino: 1,59", "Calmar: 30,53", "Ventaja Confirmada: 99%"],
-    badgesEn: ["Sharpe: 4.08", "Sortino: 1.59", "Calmar: 30.53", "Confirmed Edge: 99%"],
+    badgesEs: [
+      `Sharpe: ${fmtNum(METRICS.sharpe, "es", 2)}`,
+      `Sortino: ${fmtNum(METRICS.sortino, "es", 2)}`,
+      `Calmar: ${fmtNum(METRICS.calmar, "es", 2)}`,
+      "Ventaja Confirmada: 99%",
+    ],
+    badgesEn: [
+      `Sharpe: ${fmtNum(METRICS.sharpe, "en", 2)}`,
+      `Sortino: ${fmtNum(METRICS.sortino, "en", 2)}`,
+      `Calmar: ${fmtNum(METRICS.calmar, "en", 2)}`,
+      "Confirmed Edge: 99%",
+    ],
   },
   {
     id: "resumen",
@@ -61,8 +73,18 @@ const STUDIO_SETUPS: StudioSetup[] = [
     descEn: "High-concentration execution setup with institutional trade filtering, setup tagging, exact trade duration, and discipline score.",
     img: "/img/studio/studio-operaciones.webp",
     icon: ListFilter,
-    badgesEs: ["200 Trades Auditados", "Filtrado por Setup", "Win Rate: 50%", "Expectancy: +0,36 R"],
-    badgesEn: ["200 Audited Trades", "Filter by Setup", "Win Rate: 50%", "Expectancy: +0.36 R"],
+    badgesEs: [
+      `${TRADES.length} Trades Auditados`,
+      "Filtrado por Setup",
+      `Win Rate: ${fmtNum(METRICS.winRate, "es", 0)}%`,
+      `Expectancy: +${fmtNum(METRICS.expectancyR, "es", 2)} R`,
+    ],
+    badgesEn: [
+      `${TRADES.length} Audited Trades`,
+      "Filter by Setup",
+      `Win Rate: ${fmtNum(METRICS.winRate, "en", 0)}%`,
+      `Expectancy: +${fmtNum(METRICS.expectancyR, "en", 2)} R`,
+    ],
   },
   {
     id: "playbook",

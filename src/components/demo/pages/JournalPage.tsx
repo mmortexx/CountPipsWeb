@@ -466,7 +466,7 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
           return (
             <div key={l.key} className="relative w-2.5 h-2.5">
               <motion.span
-                className="absolute inset-0 rounded-full"
+                className="absolute inset-0 rounded-[1px]"
                 style={{
                   backgroundColor: l.color,
                 }}
@@ -478,7 +478,7 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
               />
               <span
                 aria-hidden
-                className="absolute top-[1px] left-[1px] w-[3px] h-[3px] rounded-full bg-[rgb(var(--divider)/0.55)] pointer-events-none"
+                className="absolute top-[1px] left-[1px] w-[3px] h-[3px] rounded-[1px] bg-[rgb(var(--divider)/0.55)] pointer-events-none"
                 style={{ opacity: active ? 0.85 : 0.18 }}
               />
             </div>
@@ -554,7 +554,7 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: `${pct / 2}%`, opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.04 * i, ease: EASE }}
-                className={`absolute left-1/2 -translate-x-1/2 w-2/3 rounded-sm group-hover:w-4/5 transition-[width] ${
+                className={`absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] group-hover:w-4/5 transition-[width] ${
                   isPos
                     ? "bottom-1/2 bg-pnl-pos/80"
                     : "top-1/2 bg-pnl-neg/80"
@@ -1187,7 +1187,7 @@ export function JournalPage() {
                 {streakStrip.map((d) => (
                   <div
                     key={d.i}
-                    className="flex-1 h-full rounded-sm"
+                    className="flex-1 h-full rounded-[2px]"
                     style={{
                       backgroundColor: d.has
                         ? "rgb(var(--accent-base))"
@@ -1609,11 +1609,11 @@ export function JournalPage() {
 
           <div className="mt-4 flex items-center justify-center gap-4 text-[10px] text-tertiary uppercase tracking-[0.14em]">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-pnl-pos/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/70" />
               {L("Positivo", "Positive")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-pnl-neg/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-neg/70" />
               {L("Negativo", "Negative")}
             </span>
           </div>

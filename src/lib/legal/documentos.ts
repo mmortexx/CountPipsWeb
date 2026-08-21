@@ -363,6 +363,10 @@ const cookies: DocumentoLegal = {
               es: ["Si ya viste la animación de entrada", "No repetírtela en la misma visita", "Hasta que cierres la pestaña"],
               en: ["Whether you have seen the intro animation", "So it is not repeated in the same visit", "Until you close the tab"],
             },
+            {
+              es: ["Identificador PostHog (ph_* en localStorage)", "Medición analítica anónima (únicamente si aceptas analítica)", "Hasta que borres datos o revoques consentimiento"],
+              en: ["PostHog identifier (ph_* in localStorage)", "Anonymous analytics measurement (only if analytics accepted)", "Until browser data cleared or consent revoked"],
+            },
           ],
         },
         {

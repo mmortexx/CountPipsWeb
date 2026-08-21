@@ -25,6 +25,7 @@ const FORMA: Record<string, string> = {
   forex: "[clip-path:polygon(50%_0%,100%_100%,0%_100%)]",
   stock: "bg-transparent border-[1.5px] border-[rgb(var(--txt-tertiary))] rounded-[1px]",
   futures: "rounded-[1px]",
+  commodity: "bg-transparent border-[1.5px] border-[rgb(var(--txt-tertiary))] rotate-45 rounded-[0.5px]",
 };
 
 export function AssetMark({

@@ -96,3 +96,9 @@ db/custom.db
 # versionado. Es un registro, no codigo ni documentacion operativa, y
 # cada clon lo arrastraba. Se conserva en disco; deja de viajar.
 worklog.md
+
+# Session debris and agent workspaces (not for repo)
+.agents/
+.snapshots/
+.mimosa/
+

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
+import { computeRiskOfRuin, computeParametricVaR } from "@/lib/trading/data";
 
 /**
  * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
@@ -165,6 +166,9 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       fullKellyPct,
       halfKellyPct,
       quarterKellyPct,
+      riskOfRuin: computeRiskOfRuin(kellyWinRate, rr, riskPct, 50),
+      var95: computeParametricVaR(balance, riskPct, 95),
+      leverage: valid && balance > 0 ? positionValue / balance : 0,
     };
   }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, lotMultiplier, includeFriction, kellyWinRate, es]);
 
@@ -636,9 +640,9 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             <Result label={es ? "Fricción estimada" : "Est. Friction"} value={`-${fmtUsd(c.estimatedFriction)}`} color="var(--ink-2)" />
           </div>
 
-          {/* Stats adicionales: valor posición + % balance */}
+          {/* Stats adicionales: valor posición, apalancamiento, VaR 95% y riesgo de ruina */}
           <div
-            className="grid grid-cols-2 gap-2 mb-5 rounded-[2px] p-3 border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]"
+            className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5 rounded-[2px] p-3 border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]"
           >
             <div>
               <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
@@ -650,15 +654,36 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             </div>
             <div>
               <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
-                {es ? "% del balance" : "% of balance"}
+                {es ? "Apalancamiento" : "Leverage"}
               </div>
               <div
                 className="tnum text-sm font-semibold mt-0.5"
                 style={{
-                  color: c.positionPct > 100 && assetMode === "equities" ? "rgb(var(--pnl-neg))" : "var(--ink)",
+                  color: c.leverage > 10 ? "rgb(var(--pnl-neg))" : "var(--ink)",
                 }}
               >
-                {fmtNum(c.positionPct, 1)} %
+                {fmtNum(c.leverage, 1)}x
+              </div>
+            </div>
+            <div>
+              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
+                {es ? "VaR 95% (1-Trade)" : "95% VaR (1-Trade)"}
+              </div>
+              <div className="tnum text-sm font-semibold mt-0.5 text-primary">
+                {fmtUsd(c.var95)}
+              </div>
+            </div>
+            <div>
+              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
+                {es ? "Riesgo de Ruina" : "Risk of Ruin (50%)"}
+              </div>
+              <div
+                className="tnum text-sm font-semibold mt-0.5"
+                style={{
+                  color: c.riskOfRuin > 1 ? "rgb(var(--pnl-neg))" : "rgb(var(--pnl-pos))",
+                }}
+              >
+                {fmtNum(c.riskOfRuin, 2)}%
               </div>
             </div>
           </div>

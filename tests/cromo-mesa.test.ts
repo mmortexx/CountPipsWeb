@@ -194,4 +194,21 @@ describe("Cromo de mesa", () => {
       expect(fuente, rel).not.toMatch(/pill !rounded/);
     }
   });
+
+  it("el diario, el error y los controles no usan disco ni rounded-sm", () => {
+    const diario = sinComentarios(
+      leer("src/components/demo/pages/JournalPage.tsx"),
+    );
+    const err = sinComentarios(leer("src/app/error.tsx"));
+    const faq = sinComentarios(leer("src/components/marketing/FAQ.tsx"));
+    const calor = sinComentarios(leer("src/components/charts/Heatmap.tsx"));
+    const cal = sinComentarios(leer("src/components/charts/MiniCalendar.tsx"));
+    const css = leer("src/app/globals.css");
+    expect(diario).not.toMatch(/rounded-full/);
+    expect(err).not.toMatch(/rounded-full/);
+    expect(faq).not.toMatch(/rounded-sm/);
+    expect(calor).not.toMatch(/rounded-sm/);
+    expect(cal).not.toMatch(/rounded-sm/);
+    expect(css).not.toMatch(/pill-round/);
+  });
 });

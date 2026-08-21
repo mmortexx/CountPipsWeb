@@ -19,6 +19,7 @@ import {
   computeSqn,
   computeUlcerIndex,
   computeHalfKelly,
+  computeOmega,
   type Trade,
   type RankingRow,
 } from "@/lib/trading/data";
@@ -309,7 +310,7 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
         return (
           <div key={r.day} className="flex items-center gap-3">
             <div className="w-8 text-[11px] text-tertiary tnum">{r.day}</div>
-            <div className="flex-1 h-5 bg-[rgb(var(--divider)/0.03)] rounded-sm overflow-hidden relative">
+            <div className="flex-1 h-5 bg-[rgb(var(--divider)/0.03)] rounded-[2px] overflow-hidden relative">
               {/* `scaleX` y no `width`: animar el ancho obliga al navegador
                   a rehacer la maquetación en cada fotograma; escalar lo
                   resuelve el compositor. La barra se pinta ya a su tamaño
@@ -324,7 +325,7 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
                   duration: 0.7,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="h-full rounded-sm"
+                className="h-full rounded-[2px]"
                 style={{
                   width: `${pct}%`,
                   transformOrigin: "left",
@@ -496,7 +497,7 @@ function RankingCard({
                     </span>
                   </div>
                 </div>
-                <div className="h-2 bg-[rgb(var(--divider)/0.03)] rounded-sm overflow-hidden ml-5">
+                <div className="h-2 bg-[rgb(var(--divider)/0.03)] rounded-[2px] overflow-hidden ml-5">
                   {/* Mismo motivo que la barra de arriba: `scaleX`, no
                       `width`. */}
                   <motion.div
@@ -508,7 +509,7 @@ function RankingCard({
                       duration: 0.7,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="h-full rounded-sm"
+                    className="h-full rounded-[2px]"
                     style={{
                       width: `${pct}%`,
                       transformOrigin: "left",
@@ -561,7 +562,7 @@ function HeatmapLegend({ trades }: { trades: Trade[] }) {
         <span className="text-[10px] uppercase tracking-wider text-tertiary">
           {lang === "es" ? "Escala" : "Scale"}
         </span>
-        <div className="flex items-center gap-0.5 h-3 rounded-sm overflow-hidden">
+        <div className="flex items-center gap-0.5 h-3 rounded-[2px] overflow-hidden">
           {swatches.map((bg, i) => (
             <div
               key={i}
@@ -579,11 +580,11 @@ function HeatmapLegend({ trades }: { trades: Trade[] }) {
       </div>
       <div className="flex items-center gap-3 text-[10px] uppercase tracking-wider text-tertiary">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-sm bg-pnl-pos/70" />
+          <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/70" />
           {lang === "es" ? "Positivo" : "Positive"}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-sm bg-pnl-neg/70" />
+          <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-neg/70" />
           {lang === "es" ? "Negativo" : "Negative"}
         </span>
       </div>
@@ -614,17 +615,17 @@ function HistogramLegend({
         {kind === "pos-neg" ? (
           <>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-pnl-neg/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-neg/70" />
               {lang === "es" ? "Negativo" : "Negative"} {symbol}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-pnl-pos/70" />
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-pnl-pos/70" />
               {lang === "es" ? "Positivo" : "Positive"} {symbol}
             </span>
           </>
         ) : (
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-sm bg-[rgb(var(--accent-base)/0.7)]" />
+            <span className="w-2.5 h-2.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.7)]" />
             {lang === "es" ? "Frecuencia" : "Frequency"}
           </span>
         )}
@@ -898,10 +899,8 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
   const b = mStats?.payoff ?? (avgL > 0 ? avgW / avgL : 1);
   const halfKelly = computeHalfKelly(p, b);
 
-  // Omega ratio: sum(gains) / sum(|losses|)
-  const grossWin = trades.filter((t) => t.netPnl > 0).reduce((s, t) => s + t.netPnl, 0);
-  const grossLoss = Math.abs(trades.filter((t) => t.netPnl < 0).reduce((s, t) => s + t.netPnl, 0));
-  const omega = grossLoss > 0 ? grossWin / grossLoss : grossWin > 0 ? 9.99 : 1;
+  // Omega ratio: Keating & Shadwick con umbral L = 0
+  const omega = computeOmega(trades, 0);
 
   return { sqn, ulcer, cagr, halfKelly, omega };
 }
@@ -1450,7 +1449,7 @@ export function AnalyticsPage() {
                 </RatioCell>
                 <RatioCell
                   label="Omega (Ω)"
-                  hint={desc("Ratio Omega: ganancias / pérdidas totales", "Omega ratio: total gains / losses")}
+                  hint={desc("Ratio Omega (Keating-Shadwick, umbral L=0)", "Omega ratio (Keating-Shadwick, threshold L=0)")}
                 >
                   <span className={adv.omega >= 1.2 ? "text-pnl-pos" : "text-pnl-warn"}>
                     {fmtNum(adv.omega, lang, 2)}
@@ -1674,7 +1673,7 @@ export function AnalyticsPage() {
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-2.5 h-2.5 rounded-sm"
+                      className="w-2.5 h-2.5 rounded-[2px]"
                       style={{ backgroundColor: "rgb(var(--pnl-pos))" }}
                       aria-hidden="true"
                     />
@@ -1687,7 +1686,7 @@ export function AnalyticsPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-2.5 h-2.5 rounded-sm"
+                      className="w-2.5 h-2.5 rounded-[2px]"
                       style={{ backgroundColor: "rgb(var(--pnl-neg))" }}
                       aria-hidden="true"
                     />

@@ -74,6 +74,17 @@ const INSTRUMENT_SPECS: InstrumentConfig[] = [
     unitNameEn: "dollars",
   },
   {
+    id: "MCL",
+    name: "MCL · Micro Crude Oil",
+    category: "micro",
+    pointValue: 100,
+    tickSize: 0.01,
+    tickValue: 1.0,
+    defaultCommissionRT: 1.24,
+    unitNameEs: "dólares",
+    unitNameEn: "dollars",
+  },
+  {
     id: "GC",
     name: "GC · Oro (Gold Futures)",
     category: "futures",
@@ -83,6 +94,28 @@ const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 4.5,
     unitNameEs: "dólares",
     unitNameEn: "dollars",
+  },
+  {
+    id: "MGC",
+    name: "MGC · Micro Gold",
+    category: "micro",
+    pointValue: 10,
+    tickSize: 0.1,
+    tickValue: 1.0,
+    defaultCommissionRT: 1.24,
+    unitNameEs: "dólares",
+    unitNameEn: "dollars",
+  },
+  {
+    id: "RTY",
+    name: "RTY · E-mini Russell 2000",
+    category: "futures",
+    pointValue: 50,
+    tickSize: 0.1,
+    tickValue: 5.0,
+    defaultCommissionRT: 4.5,
+    unitNameEs: "puntos",
+    unitNameEn: "points",
   },
   {
     id: "EURUSD",
@@ -122,8 +155,10 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
       setTargetUnits(6); // 6 puntos en S&P
     } else if (item.id === "NQ" || item.id === "MNQ") {
       setTargetUnits(20); // 20 puntos en Nasdaq
+    } else if (item.id === "RTY") {
+      setTargetUnits(10); // 10 puntos en Russell
     } else {
-      setTargetUnits(0.5); // 50 centavos en CL/GC
+      setTargetUnits(0.5); // 50 centavos en CL/GC/MCL/MGC
     }
   };
 
@@ -137,6 +172,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
   const slippagePerTrade = slippageTicks * inst.tickValue * contracts;
   const totalSlippageMonthly = slippagePerTrade * monthlyTrades;
 
+  const totalCostPerTrade = commissionPerTrade + slippagePerTrade;
   const totalCostMonthly = totalCommissionsMonthly + totalSlippageMonthly;
   const netMonthly = grossMonthly - totalCostMonthly;
   const netAnnual = netMonthly * 12;
@@ -146,9 +182,16 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
   const costDragPct = grossMonthly > 0 ? (totalCostMonthly / grossMonthly) * 100 : 0;
   const breakEvenTicksPerTrade =
     inst.tickValue * contracts > 0
-      ? (commissionPerTrade + slippagePerTrade) / (inst.tickValue * contracts)
+      ? totalCostPerTrade / (inst.tickValue * contracts)
       : 0;
   const breakEvenUnitsPerTrade = breakEvenTicksPerTrade * inst.tickSize;
+
+  // Win rate de equilibrio a 1.5:1 R:R
+  const nominalStopPerTrade = grossProfitPerTrade / 1.5;
+  const breakEvenWinRate =
+    nominalStopPerTrade + grossProfitPerTrade > 0
+      ? ((nominalStopPerTrade + totalCostPerTrade) / (nominalStopPerTrade + grossProfitPerTrade)) * 100
+      : 40;
 
   return (
     <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.08)]">
@@ -354,14 +397,14 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
               </div>
             </div>
 
-            {/* Indicadores Clave: Drag % y Break-Even */}
-            <div className="grid grid-cols-2 gap-3 pt-4">
-              <div className="p-3 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
-                <span className="text-[11px] text-tertiary block mb-1">
+            {/* Indicadores Clave: Drag %, Break-Even Ticks y Win Rate Exigido */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-4">
+              <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+                <span className="text-[10.5px] text-tertiary block mb-1">
                   {es ? "Arrastre de Costes:" : "Fee Drag %:"}
                 </span>
                 <span
-                  className={`text-lg font-mono font-bold tnum ${
+                  className={`text-base font-mono font-bold tnum ${
                     costDragPct > 30
                       ? "text-[rgb(var(--pnl-neg))]"
                       : costDragPct > 15
@@ -371,20 +414,32 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                 >
                   {costDragPct.toFixed(1)}%
                 </span>
-                <span className="text-[10px] text-tertiary block mt-0.5">
-                  {es ? "del beneficio bruto" : "of gross profit"}
+                <span className="text-[9.5px] text-tertiary block mt-0.5">
+                  {es ? "del beneficio" : "of profit"}
                 </span>
               </div>
 
-              <div className="p-3 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
-                <span className="text-[11px] text-tertiary block mb-1">
-                  {es ? "Break-even por Trade:" : "Break-even per Trade:"}
+              <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+                <span className="text-[10.5px] text-tertiary block mb-1">
+                  {es ? "Break-even Ticks:" : "Break-even Ticks:"}
                 </span>
-                <span className="text-lg font-mono font-bold text-primary tnum">
-                  {breakEvenTicksPerTrade.toFixed(2)} ticks
+                <span className="text-base font-mono font-bold text-primary tnum">
+                  {breakEvenTicksPerTrade.toFixed(2)}
                 </span>
-                <span className="text-[10px] text-tertiary block mt-0.5 font-mono">
-                  ({fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn})
+                <span className="text-[9.5px] text-tertiary block mt-0.5 font-mono">
+                  {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn}
+                </span>
+              </div>
+
+              <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+                <span className="text-[10.5px] text-tertiary block mb-1">
+                  {es ? "Win Rate Exigido:" : "Required BE Win Rate:"}
+                </span>
+                <span className="text-base font-mono font-bold text-[rgb(var(--accent-base))] tnum">
+                  {breakEvenWinRate.toFixed(1)}%
+                </span>
+                <span className="text-[9.5px] text-tertiary block mt-0.5">
+                  {es ? "a 1.5:1 R:R" : "at 1.5:1 R:R"}
                 </span>
               </div>
             </div>

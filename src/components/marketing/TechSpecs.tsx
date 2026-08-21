@@ -57,6 +57,7 @@ export function TechSpecs() {
       valueEs: "CSV universal, mapeo de columnas",
       valueEn: "Universal CSV, column mapping",
     },
+
     {
       labelEs: "Exportación",
       labelEn: "Export",
@@ -72,33 +73,25 @@ export function TechSpecs() {
     {
       labelEs: "Actualizaciones",
       labelEn: "Updates",
-      // Major versions (v2.0, v3.0…) are paid with a discount — see FAQ.
-      // "Free within your major version" mirrors the FAQ answer:
-      // "son gratuitas dentro de la misma versión mayor (1.x → 1.x)".
       valueEs: "Gratis en tu versión mayor",
       valueEn: "Free within your major version",
     },
     {
       labelEs: "Privacidad",
       labelEn: "Privacy",
-      valueEs: "100% local, sin telemetría",
-      valueEn: "100% local, no telemetry",
+      valueEs: "App 100% local, cero telemetría",
+      valueEn: "100% local app, zero telemetry",
     },
   ];
 
   return (
     <section className="section bg-veil relative overflow-clip">
       <div className="relative tj-container">
-        {/* Header */}
-        {/* `partida` y no `apilada`: en /features/seguridad esta sección e
-            `Integrations` iban seguidas con la misma composición, y dos
-            cabeceras idénticas una detrás de otra convierten la cadencia
-            en plantilla. La entradilla tiene cuerpo suficiente para
-            sostener la segunda columna, que es el criterio para partirla. */}
         <SectionHeader
           composicion="partida"
           etiqueta={es ? "Técnico" : "Technical"}
-          titulo={es ? (
+          titulo={
+            es ? (
               <>
                 Construido <span className="text-gradient">para durar.</span>
               </>
@@ -106,32 +99,20 @@ export function TechSpecs() {
               <>
                 Built <span className="text-gradient">to last.</span>
               </>
-            )}
-          entradilla={es
-              ? "Sin dependencias externas, sin procesos en segundo plano, sin telemetría. Una vez instalado, es tuyo."
-              : "No external dependencies, no background processes, no telemetry. Once installed, it's yours."}
+            )
+          }
+          entradilla={
+            es
+              ? "La aplicación de escritorio no tiene dependencias externas, procesos en segundo plano ni telemetría. Una vez instalada, es tuya."
+              : "The desktop application has no external dependencies, no background processes, and zero telemetry. Once installed, it's yours."
+          }
         />
-
-        {/* ── Pliego de especificaciones, no tarjeta ───────────────────
-            Era una lámina con esquina, sombra y relleno de 32 px que
-            envolvía ocho pares etiqueta/valor. Pero una hoja de
-            especificaciones no es un objeto que se coge: es la última
-            página del manual, donde el fabricante declara lo que la
-            máquina es. Eso se publica en retícula.
-
-            Fuera la caja; quedan los filetes. `gap` a 0 a propósito —
-            con hueco los trazos se rompen y dejan de leerse como
-            cuadrícula continua; la separación la da el relleno interior
-            de cada celda. Y todas las celdas conservan su filete
-            inferior, incluidas las dos últimas: en una tarjeta el borde
-            final sobra porque ya está el canto, pero aquí es el trazo
-            que cierra la retícula por abajo. */}
         <Reveal delay={0.1} y={28} className="mt-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
             {rows.map((r) => (
               <dl
-                data-entra="ciclo"
                 key={r.labelEn}
+                data-entra="ciclo"
                 /* El filete vertical sólo en la segunda columna y sólo
                    cuando hay dos: en móvil la retícula es una sola
                    columna y una raya a la izquierda no separaría nada. */

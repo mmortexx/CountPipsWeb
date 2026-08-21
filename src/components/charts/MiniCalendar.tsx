@@ -112,7 +112,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
             <div
               data-entra="sello"
               key={i}
-              className="tj-realce aspect-square rounded-sm flex flex-col items-center justify-center text-[10px] tnum cursor-default relative group"
+              className="tj-realce aspect-square rounded-[2px] flex flex-col items-center justify-center text-[10px] tnum cursor-default relative group"
               style={{ backgroundColor: bg, border: pnl !== undefined ? "1px solid rgb(var(--divider) / 0.06)" : "1px solid transparent" }}
               onMouseEnter={(e) => {
                 const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();

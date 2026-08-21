@@ -32,7 +32,7 @@ export function TrustStrip() {
     },
     {
       icon: <InfinityIcon />,
-      label: es ? "Cero telemetría · 100 % privado" : "Zero telemetry · 100 % private",
+      label: es ? "App 100 % local · Cero telemetría" : "100% local app · Zero telemetry",
     },
     {
       icon: <GlobeIcon />,

@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
+import { computeExpectedMaxLossStreak } from "@/lib/trading/data";
 
 /**
  * RMultipleSimulator — simulador Monte Carlo de distribución de R.
@@ -158,6 +159,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
       finalP5, finalP25, finalP50, finalP75, finalP95, finalMean,
       medianMaxLossStreak,
       p95MaxLossStreak,
+      theoreticalMaxLossStreak: computeExpectedMaxLossStreak(winRate, trades),
       analyticalRuinProb,
       probRuin, probDouble,
     };
@@ -502,10 +504,10 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             </div>
             <div>
               <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Racha Pérdidas (P50)" : "Loss Streak (P50)"}
+                {es ? "Racha Teórica (E[L])" : "Expected Streak (E[L])"}
               </div>
               <div className="tnum text-sm font-bold mt-1 text-primary">
-                {c.medianMaxLossStreak} ops
+                ~{c.theoreticalMaxLossStreak} <span className="text-[10px] font-normal text-tertiary">(Med: {c.medianMaxLossStreak})</span>
               </div>
             </div>
             <div>

@@ -261,24 +261,24 @@ export const HERRAMIENTA_DE: Record<string, string> = {
  */
 export const FORMULAS_GLOSARIO: Record<string, { formula: string; variablesEs: string; variablesEn: string }> = {
   sharpe: {
-    formula: "S = \\frac{E[R - R_f]}{\\sigma}",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σ: desviación estándar total",
-    variablesEn: "μ: mean return, Rf: risk-free rate, σ: total standard deviation",
+    formula: "S = \\frac{E[R - R_f]}{\\sigma} \\times \\sqrt{N}",
+    variablesEs: "μ: retorno medio por trade, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σ: desviación estándar, N: trades/año",
+    variablesEn: "μ: mean return per trade, Rf: risk-free rate (Rf=0 in intraday trading), σ: standard deviation, N: trades/year",
   },
   "sharpe-ratio": {
-    formula: "S = \\frac{E[R - R_f]}{\\sigma}",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σ: desviación estándar total",
-    variablesEn: "μ: mean return, Rf: risk-free rate, σ: total standard deviation",
+    formula: "S = \\frac{E[R - R_f]}{\\sigma} \\times \\sqrt{N}",
+    variablesEs: "μ: retorno medio por trade, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σ: desviación estándar, N: trades/año",
+    variablesEn: "μ: mean return per trade, Rf: risk-free rate (Rf=0 in intraday trading), σ: standard deviation, N: trades/year",
   },
   sortino: {
-    formula: "So = \\frac{E[R - R_f]}{\\sigma_d}",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σd: desviación estándar de retornos negativos",
-    variablesEn: "μ: mean return, Rf: risk-free rate, σd: downside standard deviation",
+    formula: "So = \\frac{E[R - R_f]}{\\sigma_d} \\times \\sqrt{N}",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en demo), σd: desviación estándar de retornos negativos, N: trades/año",
+    variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in demo), σd: downside standard deviation, N: trades/year",
   },
   "sortino-ratio": {
-    formula: "So = \\frac{E[R - R_f]}{\\sigma_d}",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo, σd: desviación estándar de retornos negativos",
-    variablesEn: "μ: mean return, Rf: risk-free rate, σd: downside standard deviation",
+    formula: "So = \\frac{E[R - R_f]}{\\sigma_d} \\times \\sqrt{N}",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en demo), σd: desviación estándar de retornos negativos, N: trades/año",
+    variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in demo), σd: downside standard deviation, N: trades/year",
   },
   "calmar-ratio": {
     formula: "Ca = \\frac{CAGR}{|MaxDD|}",
@@ -286,9 +286,9 @@ export const FORMULAS_GLOSARIO: Record<string, { formula: string; variablesEs: s
     variablesEn: "CAGR: compound annual growth rate, MaxDD: historical peak-to-trough max drawdown",
   },
   "omega-ratio": {
-    formula: "\\Omega(L) = \\frac{\\int_L^{+\\infty} (1 - F(r))\\,dr}{\\int_{-\\infty}^L F(r)\\,dr}",
-    variablesEs: "L: umbral de rentabilidad objetivo, F(r): función de distribución acumulada de retornos",
-    variablesEn: "L: threshold target return, F(r): cumulative distribution function of returns",
+    formula: "\\Omega(L) = \\frac{\\int_L^{+\\infty} (1 - F(r))\\,dr}{\\int_{-\\infty}^L F(r)\\,dr} = \\frac{\\sum \\max(r_i - L, 0)}{\\sum \\max(L - r_i, 0)}",
+    variablesEs: "L: umbral objetivo (para L=0 en muestra discreta equivale al Profit Factor; para L>0 evalúa asimetría sobre benchmark), F(r): distribución acumulada",
+    variablesEn: "L: threshold target (for L=0 on discrete sample matches Profit Factor; for L>0 evaluates asymmetry over benchmark), F(r): cumulative distribution",
   },
   expectancy: {
     formula: "E(R) = (WR \\times \\bar{W}) - ((1 - WR) \\times \\bar{L})",

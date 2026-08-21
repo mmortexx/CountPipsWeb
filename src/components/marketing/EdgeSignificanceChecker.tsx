@@ -2,6 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
+import { computeStatisticalPower, normalCdf } from "@/lib/trading/data";
+
+export { normalCdf };
 
 /**
  * EdgeSignificanceChecker — ¿tu edge es real o suerte?
@@ -102,6 +105,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
       sampleAdequate: n >= minSample95,
       tradesPerParam,
       overfittingRisk,
+      power: computeStatisticalPower(winRate, trades),
       wins: Math.round(observedWins),
       losses: n - Math.round(observedWins),
     };
@@ -311,8 +315,8 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           <div className="grid grid-cols-2 gap-3 mb-4">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label="p-valor (H₀: 50%)" value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
+            <Result label={es ? "Potencia (1 - β)" : "Statistical Power"} value={`${fmtNum(c.power, 1)}%`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
             <Result label={es ? "IC Wilson 95%" : "Wilson 95% CI"} value={`[${fmtNum(c.wilsonLower, 1)}%, ${fmtNum(c.wilsonUpper, 1)}%]`} color="var(--ink)" />
-            <Result label={es ? "z-score observado" : "Observed z-score"} value={fmtNum(c.z, 2)} color="var(--ink)" />
           </div>
 
           {/* Matriz de Muestra Mínima */}
@@ -415,19 +419,6 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
   );
 }
 
-/* ── normalCdf — CDF de la normal estándar vía erf (Abramowitz & Stegun 7.1.26) ── */
-export function normalCdf(x: number): number {
-  if (x === 0) return 0.5;
-  const z = Math.abs(x) / Math.SQRT2;
-  const t = 1 / (1 + 0.3275911 * z);
-  const erf =
-    1 -
-    ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) *
-      t *
-      Math.exp(-z * z);
-  const phi = 0.5 * (1 + erf);
-  return x > 0 ? phi : 1 - phi;
-}
 
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (

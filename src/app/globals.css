@@ -1103,9 +1103,8 @@
 
      Ahora sigue el radio del sistema, así que los `!important`
      desaparecen de las llamadas y las trece etiquetas —marketing y
-     demo— comparten canto. Para lo que SÍ tiene que ser redondo (un
-     punto de estado, un contador circular) está `.pill-round`, que es
-     una decisión explícita en vez de un valor heredado.
+     demo— comparten canto. Un punto de estado usa `rounded-[1px]`,
+     no un disco de 999 px.
 
      Ojo: `--radius-md` vale 2 px en la paleta activa, no los 8 px que
      declara la escala base de `@theme`. Es lo correcto y está explicado
@@ -1119,11 +1118,6 @@
     font-size: 0.72rem;
     font-weight: 600;
     line-height: 1.4;
-  }
-
-  /* La variante deliberadamente redonda. */
-  .pill-round {
-    border-radius: 999px;
   }
 
   /* ------------------------------------------------------------

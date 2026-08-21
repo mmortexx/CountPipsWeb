@@ -36,7 +36,7 @@ export default function Error({
           className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[12px] text-secondary mb-7"
         >
           <span className="relative flex w-1.5 h-1.5">
-            <span className="relative inline-flex w-1.5 h-1.5 rounded-full bg-pnl-neg" />
+            <span className="relative inline-flex w-1.5 h-1.5 rounded-[1px] bg-pnl-neg" />
           </span>
           {es ? "Error en tiempo de ejecución" : "Runtime error"}
         </div>

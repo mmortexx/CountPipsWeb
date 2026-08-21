@@ -45,6 +45,7 @@ const ASSET_LABEL: Record<string, { es: string; en: string }> = {
   forex: { es: "Forex", en: "Forex" },
   stock: { es: "Acciones", en: "Stock" },
   futures: { es: "Futuros", en: "Futures" },
+  commodity: { es: "Materias Primas", en: "Commodities" },
 };
 
 /** La app escribe la plaza con su nombre completo y traducido ("Nueva
@@ -120,7 +121,7 @@ function SortHeader({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 -mx-1.5 rounded-sm group/sort transition-colors hover:bg-[rgb(var(--divider)/0.04)] ${
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 -mx-1.5 rounded-[2px] group/sort transition-colors hover:bg-[rgb(var(--divider)/0.04)] ${
         align === "right" ? "flex-row-reverse ml-auto" : ""
       }`}
     >
@@ -237,7 +238,7 @@ const TradeRow = memo(function TradeRow({
           </span>
           {isCustom && (
             <span
-              className="text-[9.5px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-sm px-1 py-px"
+              className="text-[9.5px] uppercase tracking-[0.15em] font-semibold text-primary border border-[rgb(var(--divider)/0.2)] rounded-[2px] px-1 py-px"
               title={t("customTradeBadge")}
             >
               {t("customTradeBadge")}

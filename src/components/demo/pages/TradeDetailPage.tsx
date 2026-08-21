@@ -379,7 +379,7 @@ function TagPill({
           type="button"
           onClick={onRemove}
           aria-label="Remove tag"
-          className="ml-0.5 -mr-0.5 w-4 h-4 rounded-sm hover:bg-[rgb(var(--divider)/0.1)] inline-flex items-center justify-center"
+          className="ml-0.5 -mr-0.5 w-4 h-4 rounded-[2px] hover:bg-[rgb(var(--divider)/0.1)] inline-flex items-center justify-center"
         >
           <svg
             width="9"

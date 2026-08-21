@@ -35,7 +35,7 @@ Servicio aislado para recibir solicitudes de beta y operar el portal interno. La
 
 ## Contrato
 
-- `POST /v1/applications`: solicitud pública. Requiere origen permitido, consentimiento obligatorio, Turnstile válido y campos de perfil. Devuelve `duplicate: true` sin revelar datos ni posición.
+- `POST /v1/applications`: solicitud pública. Requiere origen permitido, consentimiento obligatorio, Turnstile válido y campos de perfil. Devuelve respuesta uniforme `{ ok: true }` sin revelar si el correo ya estaba registrado ni exponer datos previos.
 - `GET /v1/applications`: portal interno. Requiere `Authorization: Bearer <ADMIN_TOKEN>` y permite filtrar por `status` o `cohort`.
 - `PATCH /v1/applications/:id`: cambia `status` y `cohort` desde el portal interno.
 - `GET /admin`: interfaz privada de operaciones. No se enlaza desde CountPips. El HTML exige HTTP Basic Auth (usuario cualquiera, contraseña = `ADMIN_TOKEN`) antes de servirse; las llamadas que hace ese panel a `GET`/`PATCH /v1/applications` siguen exigiendo el mismo token como `Bearer`.
