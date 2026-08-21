@@ -86,7 +86,13 @@ export function DemoCapabilities() {
           </h2>
         </Reveal>
 
-        <ol className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+        {/* `clip`, no `hidden`: recorta igual las esquinas contra el borde,
+            pero NO crea contenedor de desplazamiento. Con `hidden`, las
+            quince filas de aquí dentro colgaban su `view()` de una caja
+            que no se mueve nunca y no llegaban a entrar — se veían, sí,
+            pero a plena tinta y de golpe. Lo cazó `scripts/humo.mjs` en
+            las cuatro pantallas. */}
+        <ol className="m-0 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
           {capabilities.map((c, i) => (
             <Reveal key={c.titleEs} delay={i * 0.04}>
               <li

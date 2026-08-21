@@ -892,6 +892,38 @@
   :root[data-theme="light"] select:focus {
     background-color: rgb(255 255 255 / 0.85);
   }
+
+  /* ── EN TÁCTIL, NINGÚN CAMPO BAJA DE 16 px ────────────────────────
+     Safari en iOS hace zoom AUTOMÁTICO al enfocar un campo cuyo texto
+     mida menos de 16 px. No es un detalle estético: la página entera se
+     amplía y se descoloca, el resto del formulario se sale de pantalla y
+     al salir del campo no siempre vuelve. Basta un solo campo pequeño
+     para estropear el formulario completo.
+
+     El proyecto lo daba por resuelto —`PROJECT.md`, hito M3, "enforce
+     input fontSize >= 16px"—, pero no había ninguna regla que lo
+     sostuviera: midiendo a 390 px aparecían campos a 14 px en la
+     calculadora de indisciplina, en la demo y en el 404, y a 12 px en el
+     formulario de acceso anticipado. Una promesa sin nadie que la
+     cumpliera.
+
+     La condición es `pointer: coarse` y no un ancho: lo que provoca el
+     zoom es el teclado virtual del dispositivo táctil, no la ventana
+     estrecha. Así un escritorio angosto conserva su escala tipográfica
+     —donde 14 px es una decisión de diseño— y sólo se corrige donde el
+     navegador iba a intervenir por su cuenta.
+
+     Fuera quedan los controles sin texto que escribir: casillas, radios
+     y deslizadores no abren teclado y no disparan el zoom. */
+  @media (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not(
+        [type="color"]
+      ):not([type="submit"]):not([type="button"]),
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
 }
 
 @layer components {

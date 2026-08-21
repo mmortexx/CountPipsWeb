@@ -132,7 +132,20 @@ export function Comparison() {
                 blocking touch, and (2) a tiny eyebrow-style text hint below
                 the table. Both are hidden at md+ where the table fits
                 without scrolling. */}
-            <div className="relative overflow-x-auto">
+            {/* ── EL DESPLAZAMIENTO LATERAL SÓLO DONDE HACE FALTA ──────
+                La tabla pide 680 px. Por debajo de `lg` no caben y el
+                `overflow-x-auto` es imprescindible; de `lg` para arriba
+                sobra el sitio y nadie desplaza nada, pero la caja seguía
+                siendo contenedor de desplazamiento igualmente — y con
+                ella las VEINTISIETE filas de dentro colgaban su `view()`
+                de algo que no se mueve y no llegaban a entrar nunca
+                (medido por `scripts/humo.mjs` en escritorio y portátil).
+
+                `clip` recorta igual pero no abre contenedor, y es la
+                única que deja el eje vertical en `visible`. Así en
+                escritorio las filas recuperan su entrada escalonada y en
+                móvil se conserva el desplazamiento que allí sí se usa. */}
+            <div className="relative overflow-x-auto lg:overflow-x-clip">
               <div className="relative min-w-[680px]">
                 <table className="w-full text-sm table-fixed tnum">
                   <colgroup>

@@ -167,19 +167,38 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                 key={m.id}
                 className="group/metric relative min-w-0 border-b border-[rgb(var(--divider)/0.14)] py-4 pr-5 [&:nth-child(even)]:pl-5 [&:nth-child(even)]:border-l [&:nth-child(even)]:border-l-[rgb(var(--divider)/0.14)] transition-colors duration-200"
               >
-                <div className="flex items-center justify-between">
-                  <span
-                    className="block text-[10px] uppercase"
-                    style={{ letterSpacing: "0.14em", color: "var(--ink-3)" }}
-                  >
-                    {m.l}
-                  </span>
-                  <span className="text-[10px] font-mono text-tertiary">
-                    {m.formula}
-                  </span>
-                </div>
+                {/* ── LA FÓRMULA NO LE DISPUTA EL ANCHO A LA ETIQUETA ────
+                    Estaban las dos en un `flex justify-between`, y ahí la
+                    fórmula sólo cabía si era corta. Las cuatro largas
+                    —Sortino, Omega, Esperanza y Max Drawdown— envolvían a
+                    dos líneas y acababan PEGADAS a su etiqueta: medido en
+                    la portada, hueco de 0 px entre una y otra. Se leía
+                    como un amasijo justo en la sección que presume de
+                    rigor.
+
+                    Ahora cada una tiene su renglón. La etiqueta manda,
+                    la fórmula va debajo en monoespaciado terciario —que
+                    es su rango: referencia, no titular— y no envuelve
+                    nunca. El recorte es sólo red de seguridad; a 10 px
+                    la más larga pide ~186 px y la celda da ~230 px.
+
+                    Por debajo de `sm` desaparece: en 390 px la celda cae
+                    a ~170 px y la fórmula saldría cortada a media
+                    integral, que se lee peor que no estar. */}
                 <span
-                  className="tnum mt-1.5 block text-[22px] sm:text-[26px]"
+                  className="block text-[10px] uppercase"
+                  style={{ letterSpacing: "0.14em", color: "var(--ink-3)" }}
+                >
+                  {m.l}
+                </span>
+                <span
+                  className="mt-0.5 hidden overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[10px] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
+                  title={m.formula}
+                >
+                  {m.formula}
+                </span>
+                <span
+                  className="tnum mt-2 block text-[22px] sm:text-[26px]"
                   style={{ fontWeight: 600, color: m.c, letterSpacing: "-0.02em", lineHeight: 1.1 }}
                 >
                   {m.v}

@@ -208,7 +208,11 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
             </span>
           </div>
         </Reveal>
-        <ol className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+        {/* `clip` y no `hidden`, por lo mismo que el resto de listas
+            recortadas del sitio: `hidden` abriría contenedor de
+            desplazamiento y anularía en silencio la entrada de las
+            piezas que se le añadan aquí dentro. */}
+        <ol className="m-0 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
           {ORDER.map((axis, i) => {
             const isActive = axis === current;
             const a = AXES[axis];
