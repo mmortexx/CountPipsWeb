@@ -2105,6 +2105,12 @@ textarea:focus-visible,
   cursor: pointer;
   /* El control mide lo mismo que su bolita para que quepa entera. */
   height: 44px;
+  /* Los dos tramos de la pista, en variables: el recorrido y el surco
+     que queda por recorrer. Están aquí, en el elemento, para que las
+     variantes de tema puedan cambiar UN tramo sin reescribir el
+     `background` entero — que es como se perdió el recorrido antes. */
+  --tj-recorrido: rgb(var(--accent-base));
+  --tj-surco: rgb(var(--divider) / 0.18);
 }
 
 /* ---- LA PISTA SE DECLARA, NO SE DEJA AL NAVEGADOR --------------------
@@ -2139,14 +2145,14 @@ textarea:focus-visible,
      próxima revisión de «cero degradados» no lo cuente entre ellos. */
   background: linear-gradient(
     to right,
-    rgb(var(--accent-base)) 0 var(--pct, 0%),
-    rgb(var(--divider) / 0.18) var(--pct, 0%) 100%
+    var(--tj-recorrido) 0 var(--pct, 0%),
+    var(--tj-surco) var(--pct, 0%) 100%
   );
 }
 .tj-range::-moz-range-track {
   height: 4px;
   border-radius: 999px;
-  background: rgb(var(--divider) / 0.18);
+  background: var(--tj-surco);
 }
 /* Lo ya recorrido, en el color de acento. Sólo Firefox lo ofrece como
    pseudo-elemento; en WebKit lo pinta el propio componente. */
@@ -2195,30 +2201,47 @@ textarea:focus-visible,
   /* Layered radial-gradient: top highlight + 2px card ring + accent
      disc, all painted on the transparent 44px box so only the inner
      18px disc is visible. */
+  /* ── EL TIRADOR ES UN BOTÓN, NO UNA LUZ ─────────────────────────
+     Aquí había un disco de acento con un punto de luz encima y una
+     sombra de 12 px de desenfoque tintada de acento. Sobre el papel
+     claro esa sombra no lee como profundidad: lee como un halo pálido
+     de más de cuarenta píxeles alrededor de una bolita de catorce, y
+     eso es lo primero que se ve al abrir el proyector — cinco veces,
+     una por deslizador.
+
+     Un halo difuso es además el único resto de «cristal» que quedaba
+     en un sitio que decidió ser papel. Se sustituye por lo que este
+     sitio usa para todo lo demás: una superficie de papel, un filete
+     que la define y una sombra de CONTACTO de un píxel. El tirador se
+     lee como una pieza que se puede coger, no como algo que brilla. */
   background-color: transparent;
-  background-image:
-    radial-gradient(circle at 50% 38%,
-      rgb(255 255 255 / 0.45) 0 3px,
-      transparent 3.5px),
-    radial-gradient(circle at center,
-      rgb(var(--accent-base)) 0 9px,
-      rgb(var(--card) / 0.95) 9px 11px,
-      transparent 11.5px 100%);
-  /* Outer accent halo — soft blur only (no spread ring, which would sit
-     on the 44px box edge). Hover lifts opacity; focus-visible adds a
-     crisp 4px ring at the box edge as a focus affordance. */
-  box-shadow:
-    0 4px 12px -2px rgb(var(--accent-base) / 0.45);
+  background-image: radial-gradient(
+    circle at center,
+    var(--raised) 0 7px,
+    var(--ink) 7px 8.5px,
+    transparent 9px 100%
+  );
+  /* ── LA SOMBRA VA EN `filter`, NO EN `box-shadow` ──────────────
+     `box-shadow` sigue la CAJA del tirador, y esa caja mide 44 px
+     porque es el área táctil; el disco que se ve mide 18. Con una
+     sombra de caja, alrededor de una bolita de 18 px aparecía un
+     círculo de cuarenta y tantos —el halo pálido que se veía en el
+     proyector—. `drop-shadow` sigue lo que de verdad está pintado, o
+     sea el disco, así que la sombra mide lo que tiene que medir. */
+  filter: drop-shadow(0 1px 1.5px rgb(19 29 38 / 0.3));
   transition: transform 0.18s var(--ease-suave),
-              box-shadow 0.18s var(--ease-suave);
+              filter 0.18s var(--ease-suave);
 }
 .tj-range::-webkit-slider-thumb:hover {
-  /* Scale the whole 44px box: the visible 18px disc scales to 20.16px
-     (1.12×), matching the original visual. The transparent hit area
-     scales with it — still ≥44px after the lift. */
+  /* Crece la caja de 44 px entera: el disco visible pasa de 18 a 20 px
+     y el área táctil sigue por encima del mínimo. */
   transform: scale(1.12);
-  box-shadow:
-    0 6px 16px -2px rgb(var(--accent-base) / 0.55);
+  filter: drop-shadow(0 2px 3px rgb(19 29 38 / 0.36));
+}
+.tj-range:active::-webkit-slider-thumb {
+  /* Al arrastrar se hunde: la sombra de contacto se cierra. */
+  transform: scale(1.06);
+  filter: drop-shadow(0 0 1px rgb(19 29 38 / 0.4));
 }
 .tj-range:focus-visible::-webkit-slider-thumb {
   /* Focus ring at the 44px box edge — crisp 4px accent halo + 1px ring
@@ -2227,12 +2250,20 @@ textarea:focus-visible,
     0 0 0 4px rgb(var(--accent-base) / 0.25),
     0 0 0 1px rgb(var(--accent-base) / 0.7);
 }
-/* WebKit track — neutral thin rule */
-.tj-range::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 999px;
-  background: rgb(var(--divider) / 0.18);
-}
+/* ── AQUÍ ESTABA LA PISTA QUE BORRABA EL RECORRIDO ────────────────────
+   Sobraba, y hacía daño. Cien líneas más arriba se declara esta misma
+   pista con el tramo recorrido pintado a partir de `--pct`, con un
+   comentario largo explicando por qué el relleno va DENTRO de la pista y
+   no en una barra superpuesta. Y luego venía esto: la misma pista, sin
+   relleno, más abajo en el fichero. Ganaba por orden.
+
+   Resultado: las cinco calculadoras enseñaban una pista gris plana en
+   toda su longitud, sin indicar cuánto llevas recorrido — el componente
+   calculaba y ponía `--pct` en cada render, medido al 27 % y al 31 % en
+   el proyector, y nadie lo pintaba. La explicación describía algo que el
+   navegador no llegaba a dibujar nunca.
+
+   La declaración buena es la de arriba. Ésta se retira. */
 /* Firefox thumb — P9: same 44×44 hit-area expansion as WebKit. Firefox
    honors `padding` + `background-clip: content-box` on ::-moz-range-thumb
    since v109, so the same pattern works: visible 18px disc on a 44px
@@ -2245,24 +2276,22 @@ textarea:focus-visible,
   background-clip: content-box;
   border: none;
   border-radius: 50%;
+  /* Mismo tirador que en WebKit — papel, filete y sombra de contacto.
+     Ver el porqué en la regla equivalente de arriba. */
   background-color: transparent;
-  background-image:
-    radial-gradient(circle at 50% 38%,
-      rgb(255 255 255 / 0.45) 0 3px,
-      transparent 3.5px),
-    radial-gradient(circle at center,
-      rgb(var(--accent-base)) 0 9px,
-      rgb(var(--card) / 0.95) 9px 11px,
-      transparent 11.5px 100%);
-  box-shadow:
-    0 4px 12px -2px rgb(var(--accent-base) / 0.45);
+  background-image: radial-gradient(
+    circle at center,
+    var(--raised) 0 7px,
+    var(--ink) 7px 8.5px,
+    transparent 9px 100%
+  );
+  filter: drop-shadow(0 1px 1.5px rgb(19 29 38 / 0.3));
   transition: transform 0.18s var(--ease-suave),
-              box-shadow 0.18s var(--ease-suave);
+              filter 0.18s var(--ease-suave);
 }
 .tj-range::-moz-range-thumb:hover {
   transform: scale(1.12);
-  box-shadow:
-    0 6px 16px -2px rgb(var(--accent-base) / 0.55);
+  filter: drop-shadow(0 2px 3px rgb(19 29 38 / 0.36));
 }
 .tj-range:focus-visible::-moz-range-thumb {
   box-shadow:
@@ -2275,9 +2304,83 @@ textarea:focus-visible,
   border-radius: 999px;
   background: rgb(var(--divider) / 0.18);
 }
-:root[data-theme="light"] .tj-range::-webkit-slider-runnable-track,
+/* En claro, el surco sin recorrer necesita algo más de cuerpo que el
+   `--divider` al 18 %. Se cambia SÓLO ese tramo, con la misma variable
+   que usa la declaración base: si aquí se escribiera un `background`
+   entero volvería a borrarse el recorrido, que es justamente el fallo
+   que traía este bloque. */
+:root[data-theme="light"] .tj-range {
+  --tj-surco: rgb(19 29 38 / 0.13);
+}
 :root[data-theme="light"] .tj-range::-moz-range-track {
-  background: rgb(0 0 0 / 0.10);
+  background: var(--tj-surco);
+}
+
+/* ============================================================
+   TJ-SEGMENTADO — el grupo de opciones excluyentes
+   ============================================================
+   Los selectores de las calculadoras eran botones sueltos separados por
+   4 px de hueco, cada uno con su propio filete alrededor. Seis rectángulos
+   grises en fila no se leen como UNA elección con seis posibilidades: se
+   leen como seis botones que por casualidad están juntos, y en el
+   proyector hay cinco grupos así, uno debajo de otro.
+
+   Un conmutador segmentado dice lo que es: un solo bloque, con su filete
+   exterior, dividido por dentro. Los segmentos se tocan —el hueco
+   desaparece— y lo que los separa es un filete de un píxel, que es el
+   mismo recurso con el que este sitio separa las celdas de sus cuadros
+   de cifras. El elegido se pinta en tinta plena; no hace falta nada más
+   para que se vea cuál es.
+
+   `overflow-clip` y no `hidden`: recorta las esquinas contra el filete
+   igual, sin abrir contenedor de desplazamiento.
+   ============================================================ */
+.tj-segmentado {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border: 1px solid rgb(var(--divider) / 0.18);
+  border-radius: 2px;
+  overflow-clip-margin: 0;
+  overflow: clip;
+  background: color-mix(in srgb, var(--raised) 45%, transparent);
+}
+.tj-segmentado > * {
+  /* 32 px de alto: por encima del mínimo de 24 que pide la norma para un
+     objetivo, y a la altura del resto de controles de la ficha. */
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0 0.5rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.1;
+  color: var(--ink-2);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.16s var(--ease-suave),
+              color 0.16s var(--ease-suave);
+}
+.tj-segmentado > * + * {
+  border-left: 1px solid rgb(var(--divider) / 0.18);
+}
+.tj-segmentado > *:hover:not([aria-pressed="true"]):not([data-activo="true"]) {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  color: var(--ink);
+}
+.tj-segmentado > *:focus-visible {
+  outline: none;
+  /* Por dentro, para que el foco no se coma el filete del vecino. */
+  box-shadow: inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
+  color: var(--ink);
+}
+.tj-segmentado > [aria-pressed="true"],
+.tj-segmentado > [data-activo="true"] {
+  background: var(--ink);
+  color: var(--raised);
+  font-weight: 600;
 }
 
 /* ============================================================

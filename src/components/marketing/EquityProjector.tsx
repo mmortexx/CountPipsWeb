@@ -764,29 +764,25 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   </span>
                 </div>
 
-                {/* Chips de Capital Inicial */}
+                {/* Capital inicial — conmutador segmentado.
+                    Eran seis botones sueltos con 4 px de hueco y un
+                    filete cada uno: seis rectángulos en fila, que no se
+                    leen como UNA elección de seis posibilidades. Ahora
+                    son un bloque con su filete exterior y divisiones de
+                    un píxel, que es como este sitio separa las celdas de
+                    sus cuadros de cifras. Ver `.tj-segmentado`. */}
                 <div>
-                  <div className="grid grid-cols-6 gap-1">
+                  <div className="tj-segmentado" role="group">
                     {CAPITAL_CHIPS.map((chip) => {
                       const active = startBalance === chip.v;
                       return (
                         <button
                           key={chip.v}
                           type="button"
+                          aria-pressed={active}
                           onClick={() => {
                             onManualChange();
                             setStartBalance(chip.v);
-                          }}
-                          className="py-1 text-center text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer"
-                          style={{
-                            background: active
-                              ? "rgb(var(--accent-base))"
-                              : "color-mix(in oklab, var(--surface-2) 80%, transparent)",
-                            color: active ? "rgb(var(--accent-ink))" : "var(--ink-2)",
-                            border: active
-                              ? "1px solid rgb(var(--accent-base))"
-                              : "1px solid rgb(var(--divider) / 0.12)",
-                            fontWeight: active ? 700 : 500,
                           }}
                         >
                           {chip.label}
@@ -827,27 +823,17 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       +{fmtUsd(monthlyContribution)} / {es ? "mes" : "mo"}
                     </span>
                   </div>
-                  <div className="grid grid-cols-4 gap-1">
+                  <div className="tj-segmentado" role="group">
                     {[0, 250, 500, 1000].map((amt) => {
                       const active = monthlyContribution === amt;
                       return (
                         <button
                           key={amt}
                           type="button"
+                          aria-pressed={active}
                           onClick={() => {
                             onManualChange();
                             setMonthlyContribution(amt);
-                          }}
-                          className="py-1 text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer text-center"
-                          style={{
-                            background: active
-                              ? "color-mix(in oklab, rgb(var(--accent-base)) 16%, transparent)"
-                              : "color-mix(in oklab, var(--surface-2) 50%, transparent)",
-                            color: active ? "rgb(var(--accent-base))" : "var(--ink-3)",
-                            border: active
-                              ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 45%, transparent)"
-                              : "1px solid rgb(var(--divider) / 0.10)",
-                            fontWeight: active ? 700 : 400,
                           }}
                         >
                           {amt === 0 ? (es ? "Sin aporte" : "None") : `+$${amt}`}
@@ -918,27 +904,17 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   <span className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Fricción (Comisiones / Slippage)" : "Friction (Fees / Slippage)"}
                   </span>
-                  <div className="flex gap-1">
+                  <div className="tj-segmentado" role="group">
                     {[0.0, 0.02, 0.04, 0.06].map((f) => {
                       const active = frictionR === f;
                       return (
                         <button
                           key={f}
                           type="button"
+                          aria-pressed={active}
                           onClick={() => {
                             onManualChange();
                             setFrictionR(f);
-                          }}
-                          className="px-2 py-0.5 text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer"
-                          style={{
-                            background: active
-                              ? "color-mix(in oklab, rgb(var(--accent-base)) 18%, transparent)"
-                              : "color-mix(in oklab, var(--surface-2) 50%, transparent)",
-                            color: active ? "rgb(var(--accent-base))" : "var(--ink-3)",
-                            border: active
-                              ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 45%, transparent)"
-                              : "1px solid rgb(var(--divider) / 0.10)",
-                            fontWeight: active ? 700 : 400,
                           }}
                         >
                           {f === 0 ? "0R" : `${f}R`}
@@ -974,27 +950,17 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
                 {/* Horizonte */}
                 <div>
-                  <div className="grid grid-cols-5 gap-1">
+                  <div className="tj-segmentado" role="group">
                     {HORIZON_CHIPS.map((y) => {
                       const active = years === y;
                       return (
                         <button
                           key={y}
                           type="button"
+                          aria-pressed={active}
                           onClick={() => {
                             onManualChange();
                             setYears(y);
-                          }}
-                          className="py-1 text-[10.5px] font-mono rounded-[2px] transition-all cursor-pointer text-center"
-                          style={{
-                            background: active
-                              ? "rgb(var(--accent-base))"
-                              : "color-mix(in oklab, var(--surface-2) 80%, transparent)",
-                            color: active ? "rgb(var(--accent-ink))" : "var(--ink-2)",
-                            border: active
-                              ? "1px solid rgb(var(--accent-base))"
-                              : "1px solid rgb(var(--divider) / 0.12)",
-                            fontWeight: active ? 700 : 500,
                           }}
                         >
                           {y} {es ? (y === 1 ? "año" : "años") : (y === 1 ? "yr" : "yrs")}
