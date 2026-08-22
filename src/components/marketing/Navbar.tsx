@@ -1270,7 +1270,13 @@ export function Navbar() {
                 </button>
               </div>
 
-              <nav className="flex flex-1 flex-col overflow-y-auto px-3 py-4" aria-label={es ? "Secciones" : "Sections"}>
+              {/* `tj-cajon-lista` añade la pista de que hay más abajo.
+                  Medido en 390x844: la lista pide 744 px y dispone de
+                  592, o sea 152 px de secciones —«Empresa» entera— que
+                  quedaban ocultas bajo la botonera fija sin nada que lo
+                  insinuara. El corte caía justo en un epígrafe, que es
+                  el peor sitio: parece el final de la lista. */}
+              <nav className="tj-cajon-lista flex flex-1 flex-col overflow-y-auto px-3 py-4" aria-label={es ? "Secciones" : "Sections"}>
                 {/* Etiqueta de sección — la navegación es la pieza
                     principal del drawer; un pequeño sobretexto la
                     enmarca y da aire al primer enlace. */}

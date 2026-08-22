@@ -3458,10 +3458,26 @@ button.icon-btn:hover > svg,
 }
 /* La barra y el cajón móvil son la excepción: por debajo de ellos pasa
    el contenido al hacer scroll, así que necesitan tapar de verdad. Un
-   90 % dejaría ver los titulares cruzando por detrás de la navegación. */
+   90 % dejaría ver los titulares cruzando por detrás de la navegación.
+
+   ── EL CAJÓN SALE DE AQUÍ ─────────────────────────────────────────
+   Esa misma decisión —«las superficies que flotan sobre contenido
+   tapan»— estaba escrita en TRES sitios, con tres valores que no
+   coincidían: `.tj-paper-dense` (opaca, con su token), el tinte claro
+   de `.tj-paper` (95 %) y esta regla (98 % y, además, sacando el color
+   de `--surface` en vez del token del papel denso).
+
+   El cajón ya declara `tj-paper tj-paper-dense`, pero esta regla lleva
+   un ID y le ganaba a todo: se quedaba en 98 % —y de un gris distinto
+   al de la barra, que es la misma superficie de navegación—. Ese 2 %
+   bastaba para que el titular del hero se intuyera cruzando por detrás
+   de las entradas del menú, que es justo lo que el comentario de
+   arriba dice querer evitar.
+
+   Quitándolo de la lista, el cajón usa lo que ya dicen sus clases: el
+   token único, opaco, y el mismo tono que la barra. */
 :root[data-palette="clasico"] header.liquid-glass,
-:root[data-palette="clasico"] aside.liquid-glass,
-:root[data-palette="clasico"] #mobile-nav-drawer {
+:root[data-palette="clasico"] aside.liquid-glass {
   background: color-mix(in srgb, var(--surface) 98%, transparent);
 }
 
@@ -5706,6 +5722,63 @@ svg [data-entra="sello"] {
    defecto que se corrigió en el megamenú y el cajón. */
 .tj-paper-dense {
   background-color: var(--paper-dense);
+}
+
+/* ── LA PISTA DE QUE EL CAJÓN SIGUE ──────────────────────────────────
+   El cajón móvil pide más alto del que tiene: medido en 390×844, la
+   lista de secciones ocupa 744 px y dispone de 592. Los 152 px que
+   sobran —el grupo «Empresa» al completo— quedaban debajo de la
+   botonera fija sin ninguna señal, y el corte caía justo en un
+   epígrafe: no se leía como «hay más», se leía como el final.
+
+   Es el mismo recurso que ya lleva la tabla comparativa para avisar de
+   que se puede desplazar de lado, girado al eje vertical: un
+   desvanecido anclado al borde que dice «esto continúa» sin robar sitio
+   ni interceptar el dedo.
+
+   El desvanecido se retira solo al llegar abajo, con `scroll()`, para
+   no quedarse velando la última entrada. Donde no haya líneas de tiempo
+   de desplazamiento se queda fijo, y por eso la lista reserva abajo el
+   mismo alto que él: así, incluso sin retirarse, lo que vela es hueco y
+   nunca una sección.
+
+   `sticky` con margen negativo lo mantiene pegado al borde inferior sin
+   ocupar una fila propia en la columna. */
+.tj-cajon-lista::after {
+  content: "";
+  display: block;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  height: 2.75rem;
+  margin-top: -2.75rem;
+  pointer-events: none;
+  flex: none;
+  background: linear-gradient(
+    to top,
+    var(--paper-dense) 12%,
+    color-mix(in srgb, var(--paper-dense) 72%, transparent) 55%,
+    transparent 100%
+  );
+}
+/* El hueco que garantiza que el desvanecido nunca tape una entrada. */
+.tj-cajon-lista > :last-child {
+  margin-bottom: 2.75rem;
+}
+@supports (animation-timeline: scroll()) {
+  .tj-cajon-lista::after {
+    animation: tj-pista-fin linear both;
+    animation-timeline: scroll(nearest block);
+  }
+}
+@keyframes tj-pista-fin {
+  0%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ============================================================
