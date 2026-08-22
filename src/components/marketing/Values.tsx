@@ -162,8 +162,37 @@ export function Values() {
                 /* Sin salto al pasar por encima: una entrada de
                    declaración no se levanta. La única respuesta al
                    puntero es que el filo de acento del lateral se
-                   marque — ya estaba y se conserva. */
-                className="group relative h-full overflow-hidden border-b border-[rgb(var(--divider)/0.14)] py-6 pr-6 md:[&]:pl-0 transition-colors duration-300"
+                   marque — ya estaba y se conserva.
+
+                   ── LA RETÍCULA NO ERA UNA RETÍCULA ─────────────────
+                   Esto se escribió para leerse «como el cuadro de
+                   cifras»: filetes que se tocan y forman cuadrícula, con
+                   la separación puesta por el relleno interior. Pero
+                   sólo llegó la mitad. Había `border-b` y nada más —sin
+                   filete vertical— y el relleno era `pr-6` con el
+                   izquierdo anulado a cero, así que entre la columna de
+                   la izquierda y la de la derecha quedaban 24 px: el
+                   párrafo de una celda terminaba casi tocando el icono
+                   de la de al lado. Cuatro declaraciones apretujadas de
+                   dos en dos, sin canal y sin cuadrícula.
+
+                   Ahora la columna par entra con su propio relleno, y
+                   entre las dos hay un canal de 80 px. El separador
+                   vertical no es un `border` nuevo: es el filo de acento
+                   que esta celda ya tenía en `left-0` — que en la
+                   columna derecha cae justo en mitad del canal y hace de
+                   filete, marcándose además al pasar el ratón.
+
+                   El relleno de la columna derecha se decide con el
+                   índice y no con `nth-child`: el hijo directo de la
+                   retícula es el `Reveal`, no este `article`, así que
+                   cualquier `:nth-child` de aquí mediría siempre 1.
+
+                   `clip` y no `hidden` por lo de siempre: recorta igual
+                   sin abrir contenedor de desplazamiento. */
+                className={`group relative h-full overflow-clip border-b border-[rgb(var(--divider)/0.14)] py-7 pr-6 transition-colors duration-300 md:py-8 md:pr-10 ${
+                  i % 2 === 1 ? "md:pl-10" : ""
+                }`}
               >
                 {/* Accent edge — grows on hover. Scaled up from 1.25 → 1.4
                     for a more pronounced lift; the base color is now a low
@@ -176,25 +205,21 @@ export function Values() {
                   className="absolute left-0 top-6 bottom-6 w-px bg-[rgb(var(--accent-base)/0.20)] origin-center transition-[transform,background-color] duration-300 group-hover:scale-y-[1.4] group-hover:bg-[rgb(var(--accent-base)/0.65)]"
                 />
 
-                <div className="relative flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    {/* Icon container — switched from rounded-md to rounded-lg
-                        to mirror the card radius (8px / .rounded-card) for a
-                        cohesive surface language. Hover tints the icon stroke
-                        to the accent green so the affordance reads as a live
-                        accent, not a static mono glyph. Adds an inset accent
-                        ring at base (0.18 alpha) so the icon reads as a
-                        branded mark at rest, not a neutral chip — the brand
-                        color is present before hover. The base ring deepens
-                        to 0.30 on hover to match the existing hover shadow. */}
-                    <span
-                      className="shrink-0 w-10 h-10 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--accent-base)/0.18)] flex items-center justify-center text-tertiary transition-colors duration-300 group-hover:text-[rgb(var(--accent-base))] group-hover:border-[rgb(var(--accent-base)/0.30)]"
-                      aria-hidden="true"
-                    >
-                      {v.icon}
-                    </span>
-                  </div>
-                </div>
+                {/* El sello del principio. Iba dentro de dos
+                    envoltorios —un `flex justify-between` y otro `flex
+                    gap-3`— que sobraban: los dos tenían un único hijo y
+                    ninguno repartía nada, restos de cuando la fila
+                    llevaba algo más a la derecha.
+
+                    El anillo de acento al 18 % hace que el sello se lea
+                    como marca desde el principio, no sólo al pasar el
+                    ratón; entonces sube a 30 % y el trazo se tiñe. */}
+                <span
+                  className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[2px] border border-[rgb(var(--accent-base)/0.18)] bg-[rgb(var(--divider)/0.05)] text-tertiary transition-colors duration-300 group-hover:border-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))]"
+                  aria-hidden="true"
+                >
+                  {v.icon}
+                </span>
 
                 <h3 className="relative mt-5 t-h3 text-primary">
                   {es ? v.titleEs : v.titleEn}
