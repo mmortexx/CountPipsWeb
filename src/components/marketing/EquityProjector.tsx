@@ -1371,65 +1371,120 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
               {/* VISTA 2: Matriz Anual */}
               {viewTab === "table" && (
-                <div className="overflow-x-auto rounded-[2px] border border-[rgb(var(--divider)/0.14)] shadow-sm">
-                  <table className="w-full text-left font-mono text-xs">
+                /* ── LA MATRIZ, COMO UN CUADRO DE UN INFORME ──────────
+                   Era una tabla correcta y sin voz: cabecera con un
+                   fondo gris, filas separadas por una línea al 8 % y
+                   nada que dijera dónde acaba la cuenta. Cinco filas de
+                   cifras que se leen todas igual de importantes.
+
+                   Ahora sigue las convenciones de un cuadro impreso, que
+                   son las mismas que ya usa el resto del sitio:
+
+                   · La cabecera se remata con FILETE DOBLE —el mismo de
+                     los pies de lámina—, no con una banda de color.
+                   · El último ejercicio es el RESULTADO, y va marcado
+                     como tal: filete doble encima y tinta plena. Es la
+                     cifra a la que se viene, y antes se perdía entre las
+                     demás.
+                   · Cada fila lleva su BARRA de balance, dibujada al
+                     fondo de la celda final en proporción al mayor de la
+                     serie. No es adorno: convierte una columna de
+                     números en una curva que se lee de un vistazo, que
+                     es justo lo que la herramienta quiere enseñar.
+                   · Los años van en versalitas de tinta, no en acento:
+                     el color se reserva para el signo del resultado. */
+                <div className="overflow-x-auto rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                  <table className="w-full text-left font-mono text-xs tnum">
                     <thead>
-                      <tr
-                        className="border-b border-[rgb(var(--divider)/0.14)] text-[10px] uppercase tracking-wider text-[var(--ink-3)]"
-                        style={{ background: "color-mix(in oklab, var(--surface-2) 75%, transparent)" }}
-                      >
-                        <th className="py-2 px-3">{es ? "Año" : "Year"}</th>
-                        <th className="py-2 px-3 text-right">{es ? "Balance Inicial" : "Start Bal"}</th>
-                        <th className="py-2 px-3 text-right">{es ? "PnL Anual" : "Year PnL"}</th>
-                        <th className="py-2 px-3 text-right">{es ? "Retorno %" : "Return %"}</th>
-                        <th className="py-2 px-3 text-right">{es ? "Balance Final" : "End Bal"}</th>
+                      <tr className="text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                        <th className="tj-matriz-cab py-2.5 px-3 font-medium">{es ? "Año" : "Year"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance Inicial" : "Start Bal"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "PnL Anual" : "Year PnL"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Retorno %" : "Return %"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance Final" : "End Bal"}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[rgb(var(--divider)/0.08)]">
-                      {c.yearlyBreakdown.map((row) => (
-                        <tr
-                          key={row.year}
-                          className="hover:bg-[rgb(var(--divider)/0.06)] transition-colors"
-                        >
-                          <td className="py-2 px-3 font-bold text-[rgb(var(--accent-base))]">
-                            {es ? "Año" : "Year"} {row.year}
-                          </td>
-                          <td className="py-2 px-3 text-right text-[var(--ink-2)]">
-                            {fmtUsd(row.startBal)}
-                          </td>
-                          <td
-                            className="py-2 px-3 text-right font-medium"
-                            style={{
-                              color: row.yearProfit >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                            }}
+                    <tbody>
+                      {c.yearlyBreakdown.map((row, i) => {
+                        const ultimo = i === c.yearlyBreakdown.length - 1;
+                        const techo = Math.max(
+                          ...c.yearlyBreakdown.map((r) => Math.abs(r.endBal)),
+                          1,
+                        );
+                        const cuota = Math.max(0, Math.min(1, row.endBal / techo));
+                        return (
+                          <tr
+                            key={row.year}
+                            className={`transition-colors hover:bg-[rgb(var(--divider)/0.06)] ${
+                              ultimo ? "tj-matriz-total" : "border-t border-[rgb(var(--divider)/0.09)]"
+                            }`}
                           >
-                            {row.yearProfit >= 0 ? "+" : ""}
-                            {fmtUsd(row.yearProfit)}
-                          </td>
-                          <td
-                            className="py-2 px-3 text-right font-semibold"
-                            style={{
-                              color:
-                                row.yearReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                            }}
-                          >
-                            {fmtPct(row.yearReturnPct, 1)}
-                          </td>
-                          <td className="py-2 px-3 text-right font-bold text-[var(--ink)]">
-                            {fmtUsd(row.endBal)}
-                          </td>
-                        </tr>
-                      ))}
+                            <td
+                              className="py-2 px-3 uppercase tracking-[0.08em]"
+                              style={{ color: "var(--ink-2)" }}
+                            >
+                              {es ? "Año" : "Year"} {row.year}
+                            </td>
+                            <td className="py-2 px-3 text-right text-[var(--ink-3)]">
+                              {fmtUsd(row.startBal)}
+                            </td>
+                            <td
+                              className="py-2 px-3 text-right"
+                              style={{
+                                color: row.yearProfit >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
+                              }}
+                            >
+                              {row.yearProfit >= 0 ? "+" : ""}
+                              {fmtUsd(row.yearProfit)}
+                            </td>
+                            <td
+                              className="py-2 px-3 text-right"
+                              style={{
+                                color:
+                                  row.yearReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
+                              }}
+                            >
+                              {fmtPct(row.yearReturnPct, 1)}
+                            </td>
+                            {/* La barra vive detrás de la cifra, anclada a
+                                la derecha, para que crezca hacia donde se
+                                lee el número. */}
+                            <td className="relative py-2 px-3 text-right font-semibold text-[var(--ink)]">
+                              <span
+                                aria-hidden
+                                className="pointer-events-none absolute inset-y-[3px] right-0 rounded-[1px]"
+                                style={{
+                                  width: `${(cuota * 100).toFixed(2)}%`,
+                                  background: "rgb(var(--divider) / 0.13)",
+                                }}
+                              />
+                              <span className="relative">{fmtUsd(row.endBal)}</span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
               )}
 
-              {/* Matriz de KPIs (6 Bloques de Alta Densidad) */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              {/* ── LAS SEIS CIFRAS, EN UNA RETICULA DE FILETES ────────
+                  Eran seis tarjetas sueltas con 10 px de hueco, borde y
+                  sombra cada una: seis objetos que por casualidad estan
+                  juntos. Son las seis lecturas de UNA proyeccion, y se
+                  presentan como tales — el mismo cuadro de filetes que
+                  usa la portada para sus metricas.
+
+                  Los filetes son el `gap` de un pixel dejando ver el
+                  fondo del contenedor; por eso las celdas necesitan
+                  fondo OPACO, o el trazo se les veria por debajo. */}
+              <div
+                className="grid grid-cols-2 gap-px overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.14)] sm:grid-cols-3"
+                style={{ background: "rgb(var(--divider) / 0.14)" }}
+              >
                 <div
-                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
-                  style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
+                  className="p-3.5"
+                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold flex items-center justify-between">
                     <span>{es ? "Balance Proyectado" : "Projected Balance"}</span>
@@ -1444,8 +1499,8 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
-                  style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
+                  className="p-3.5"
+                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     CAGR ({es ? "Tasa Anual" : "Annual Rate"})
@@ -1462,8 +1517,8 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
-                  style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
+                  className="p-3.5"
+                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Retorno Total / PnL" : "Total Return / PnL"}
@@ -1484,8 +1539,8 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
-                  style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
+                  className="p-3.5"
+                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Max DD Est. (99% Conf.)" : "Est. Max DD (99% Conf.)"}
@@ -1499,8 +1554,8 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
-                  style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
+                  className="p-3.5"
+                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Tiempo para Duplicar" : "Time to Double (2x)"}
@@ -1518,8 +1573,8 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] shadow-sm"
-                  style={{ background: "color-mix(in oklab, var(--surface-2) 60%, transparent)" }}
+                  className="p-3.5"
+                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     Profit Factor / Kelly
