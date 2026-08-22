@@ -63,7 +63,11 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
       {/* Cinta de Acceso Rápido entre las 8 Herramientas */}
       <section className="border-t border-[rgb(var(--divider)/0.10)] bg-veil py-4">
         <div className="tj-container">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
+          {/* `tj-cinta` añade la pista de que la fila sigue: sin ella la
+              última herramienta quedaba partida contra el canto en las
+              ocho páginas, y eso no se lee como «hay más» sino como un
+              texto cortado. */}
+          <div className="tj-cinta flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
             <span className="text-[11px] font-mono text-tertiary uppercase tracking-wider whitespace-nowrap pr-2">
               {es ? "Herramientas:" : "Tools:"}
             </span>

@@ -2317,6 +2317,56 @@ textarea:focus-visible,
 }
 
 /* ============================================================
+   TJ-CINTA — la fila que sigue a la derecha
+   ============================================================
+   La cinta de acceso entre las ocho herramientas se desplaza en
+   horizontal, y en las pantallas donde no caben las ocho la última
+   quedaba PARTIDA contra el canto: «04. Proye». Sin barra visible
+   —lleva `scrollbar-width: thin`, que en escritorio no se pinta hasta
+   que alguien interactúa— eso no se lee como «hay más a la derecha», se
+   lee como un texto cortado, y sale así en las ocho páginas.
+
+   Es el mismo recurso que el cajón móvil, girado al eje horizontal: un
+   desvanecido anclado al canto derecho que dice «esto continúa» sin
+   robar sitio ni interceptar el dedo. Se retira solo al llegar al final,
+   con `scroll()`, para no velar la última entrada.
+
+   Donde no haya líneas de tiempo de desplazamiento el desvanecido se
+   queda fijo; por eso la cinta reserva a la derecha el mismo ancho que
+   él, y lo que vela es hueco y nunca una entrada.
+   ============================================================ */
+.tj-cinta {
+  position: relative;
+}
+.tj-cinta::after {
+  content: "";
+  position: sticky;
+  right: 0;
+  z-index: 1;
+  flex: none;
+  align-self: stretch;
+  width: 3rem;
+  margin-left: -3rem;
+  pointer-events: none;
+  background: linear-gradient(
+    to left,
+    var(--bg) 10%,
+    color-mix(in srgb, var(--bg) 70%, transparent) 55%,
+    transparent 100%
+  );
+}
+/* El hueco que garantiza que el desvanecido nunca tape una entrada. */
+.tj-cinta > :last-of-type {
+  margin-right: 3rem;
+}
+@supports (animation-timeline: scroll()) {
+  .tj-cinta::after {
+    animation: tj-pista-fin linear both;
+    animation-timeline: scroll(nearest inline);
+  }
+}
+
+/* ============================================================
    TJ-MATRIZ — el cuadro de cifras de un informe
    ============================================================
    Las convenciones de un cuadro impreso, que son además las que este
