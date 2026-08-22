@@ -466,12 +466,10 @@ function ConsentPreferencesButton() {
  *
  * `overflow-hidden` recorta el halo al cuadrado redondeado.
  *
- * Ya NO se le pasa un color de texto: el logotipo lleva su propia paleta
- * —la piel marrón, el dorado de las velas, el crema del canto—, que es lo
- * que lo hace reconocible como el icono del escritorio. Heredar la tinta
- * del tema lo convertiría en otra cosa. El glifo sube de 16 a 20 px por
- * el mismo motivo que en la barra: es un icono macizo y no una silueta
- * abierta, así que necesita menos aire alrededor.
+ * El logotipo dibuja con `rgb(var(--accent-base))` — la marca vigente es
+ * la retícula de puntos y su tinta ES el acento del tema, así que aquí no
+ * se le pasa color: lo hereda resuelto. A 20 px sale la variante
+ * reducida, que es la dibujada para este rango.
  */
 function BrandMark() {
   return (

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """
-Genera los mapas de bits de la marca a partir de la MISMA geometría que
-el logotipo vectorial (src/components/tj/BrandGlyph.tsx, variante
-reducida — que a su vez sale de 02-diseno/logo/countpips-logo-small.svg
-en el repositorio de la aplicación).
+Genera los artefactos de la marca de CountPips: la curva de capital en
+retícula de puntos.
 
     public/logo.png        512x512  — dato estructurado de Organization
                                       (es el logotipo que toma Google) e
@@ -11,30 +9,50 @@ en el repositorio de la aplicación).
     src/app/apple-icon.png 180x180  — icono al añadir a pantalla de inicio
     src/app/favicon.ico    16/32/48 — reserva para navegadores que no
                                       resuelven src/app/icon.svg
+    src/app/icon.svg       vector   — favicon principal
 
-POR QUÉ EXISTE ESTE SCRIPT
-El logotipo de la web es SVG, pero hay tres sitios donde el formato lo
-impone quien consume el archivo, no nosotros: el buscador, el sistema
-operativo al instalar la PWA y la pestaña del navegador. Si esos tres se
-quedan con el mapa de bits antiguo, la marca se parte justo donde más se
-ve desde fuera.
+DE DÓNDE SALE EL DIBUJO
+No está inventado: se extrajo punto por punto de la imagen de referencia
+que aportó el propietario (un icono de panel LED, 4096x4096, retícula de
+41x41 con paso de ~77 px medido por FFT sobre una franja central). El
+mapa MOTIVO de abajo es esa extracción, recentrada un punto para que la
+figura quede cuadrada dentro de la placa. Seis barras, la línea de precio
+en zigzag por encima y la flecha ascendente con su punta: exactamente lo
+que trae la referencia.
 
-QUÉ DIBUJA, Y QUÉ DIBUJABA ANTES
-El cuaderno de piel con las tres velas japonesas en la tapa: el mismo
-icono que la aplicación de escritorio. Antes dibujaba un libro ABIERTO a
-línea que no es el logotipo del producto — llegó ahí porque los
-comentarios del código afirmaban que el archivo de la aplicación era «el
-ojo de iris rojo», y no lo es.
+Sustituye al cuaderno con velas por decisión del propietario (agosto de
+2026).
 
-Se dibuja la variante REDUCIDA y no la completa a propósito: estos tres
-destinos se ven a 16-180 px, y a esos tamaños la sombra proyectada, el
-filete de encuadernación y el rayado del canto no aportan detalle, sólo
-ensucian la silueta.
+EL FONDO ES PAPEL, NO NEGRO
+La referencia trae la placa sobre negro. Aquí el fondo de los mapas de
+bits es el papel del sitio (#F0EDE4) y la tinta es la pizarra del acento
+en tema claro (#131D26): «papel entintado», que es el lenguaje del sitio,
+y despega el icono tanto de una barra clara como de una oscura. El
+componente web no lleva fondo: dibuja con rgb(var(--accent-base)) y
+hereda el tema.
+
+UNA SOLA RETÍCULA, DOS ACABADOS
+Se probaron retículas más gruesas para los tamaños pequeños (27, 21, 17 y
+15) remuestreando la referencia, y todas ROMPEN el dibujo: a 27 las
+barras salen con huecos de un punto y la punta de la flecha se pierde.
+Umbralizar un motivo de trazo fino a baja resolución no simplifica, hace
+ruido. Así que la retícula es siempre la misma —la de la referencia— y lo
+único que cambia por debajo de 32 px es que se retira la PLACA de puntos
+apagados: a ese tamaño mide menos de un píxel por punto y no es detalle,
+es suciedad alrededor de la silueta.
+
+LOS PUNTOS SE DIBUJAN COMO UN SOLO TRAZO
+En el SVG, cada punto es un subtrazo de longitud cero con
+`stroke-linecap: round`. Rinde idéntico a un <circle> —comprobado en
+navegador: 3.195 frente a 3.205 píxeles con tinta— y deja UN nodo en vez
+de 326. Con la placa serían más de mil.
 
 USO
-    python scripts/generate-brand.py
+    python scripts/generate-brand.py          # escribe los artefactos
+    python scripts/generate-brand.py --tsx    # imprime las constantes TSX
 """
 
+import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -42,190 +60,187 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parent.parent
 
 PAPER = (240, 237, 228, 255)  # #F0EDE4 — el papel del sitio
-
-# El logotipo se dibuja en el mismo lienzo de 512 que el SVG, así que las
-# coordenadas de aquí son literalmente las del componente.
+TINTA = (19, 29, 38)          # #131D26 — pizarra: --accent-base en claro
 VIEW = 512.0
+SS = 8  # supermuestreo: PIL no antialiasa círculos pequeños
 
-# Supermuestreo: se dibuja 4x y se reduce. PIL no antialiasa, y sin esto
-# las esquinas redondeadas salen escalonadas.
-SS = 4
+# La placa se probó a 0,16 de tinta con el punto casi del tamaño del de
+# la figura, que es como se ve en la referencia — pero allí es tinta
+# CLARA sobre negro y aquí es tinta OSCURA sobre papel, así que la
+# relación se invierte: a esos valores el motivo no se despegaba de su
+# propio fondo. Medido a cuatro tintas y dos radios, el punto apagado
+# tiene que ser visiblemente MENOR y mucho más claro.
+TINTA_PLACA = 0.08   # opacidad de los puntos apagados, relativa a la figura
+RADIO_REL = 0.36     # radio del punto en fracción del paso de la retícula
+RADIO_PLACA_REL = 0.62  # el punto apagado, en fracción del de la figura
+UMBRAL_PLACA = 32    # por debajo de este tamaño no se dibuja la placa
 
-# ── Paletas ───────────────────────────────────────────────────────────
-# Mismas paradas que la variante reducida del componente. Cada degradado
-# es (x1, y1, x2, y2, [(offset, "#rrggbb"), ...]) con las coordenadas en
-# fracción de la caja de la forma, que es como se comporta un
-# `linearGradient` de SVG sin `gradientUnits`.
-COVER = (0.05, 0.0, 0.95, 1.0, [(0.0, "#C67E41"), (0.34, "#A85F2A"), (1.0, "#6E3512")])
-SPINE = (0.0, 0.0, 1.0, 0.0, [(0.0, "#4F240B"), (0.5, "#82471C"), (1.0, "#9A5A27")])
-PAGES = (0.0, 0.0, 1.0, 0.0, [(0.0, "#C6A87F"), (0.34, "#FCF4E3"), (1.0, "#A98B61")])
-GOLD = (0.0, 0.0, 0.6, 1.0, [(0.0, "#FFF3DC"), (0.5, "#F5D6A4"), (1.0, "#D09E63")])
-RIBBON = (0.0, 0.0, 1.0, 0.2, [(0.0, "#EFBE86"), (1.0, "#94571F")])
+# ── El motivo, extraído de la imagen de referencia ────────────────────
+# 41x41. Una fila por línea; "#" es punto encendido. No editar a ojo: si
+# hay que rehacerlo, volver a extraerlo de la referencia.
+MOTIVO = """\
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+..................................#......
+................................##.......
+.............................#####.......
+...............................###.......
+..............................####.......
+.............................###.........
+............................###..........
+...........................###...........
+...........................##..#.........
+............###...........##..##.........
+...........##.##.........##..###.........
+..........#....##.......##...###.........
+.........##....###.....###...###.........
+.........#..#...###....##.##.###.........
+........##.##.#..###.###..##.###.........
+.......##..##.##..#####..###.###.........
+.......##..##.##...###...###.###.........
+......##..###.##.#.....#.###.###.........
+......#...###.##.##...##.###.###.........
+..........###.##.###.###.###.###.........
+..........###.##.###.###.###.###.........
+.......##.###.##.###.###.###.###.........
+......###.###.##.###.###.###.###.........
+......###.###.##.###.###.###.###.........
+......###.###.##.###.###.###.###.........
+......###.###.##.###.###.###.###.........
+......###.###.##.###.###.###.###.........
+......###.###.##.###.###.###.###.........
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+"""
+
+N = len(MOTIVO.strip("\n").split("\n"))
+PASO = VIEW / (N + 1)
+RADIO = round(PASO * RADIO_REL, 2)
+RADIO_PLACA = round(RADIO * RADIO_PLACA_REL, 2)
 
 
-def hex_rgb(s):
-    s = s.lstrip("#")
-    return tuple(int(s[i : i + 2], 16) for i in (0, 2, 4))
+def celdas_motivo():
+    """Celdas (fila, columna) encendidas del motivo."""
+    filas = MOTIVO.strip("\n").split("\n")
+    return {(r, c) for r, f in enumerate(filas) for c, ch in enumerate(f) if ch == "#"}
 
 
-def interpola(stops, t):
-    """Color en la posición `t` (0-1) de una lista de paradas."""
-    if t <= stops[0][0]:
-        return hex_rgb(stops[0][1])
-    if t >= stops[-1][0]:
-        return hex_rgb(stops[-1][1])
-    for (o0, c0), (o1, c1) in zip(stops, stops[1:]):
-        if o0 <= t <= o1:
-            f = 0.0 if o1 == o0 else (t - o0) / (o1 - o0)
-            a, b = hex_rgb(c0), hex_rgb(c1)
-            return tuple(round(a[i] + (b[i] - a[i]) * f) for i in range(3))
-    return hex_rgb(stops[-1][1])
+def celdas_placa():
+    """Celdas de la placa: el cuadrado redondeado menos el motivo.
 
-
-def pinta_degradado(lienzo, mascara, caja, grad):
-    """Rellena `mascara` con un degradado lineal y lo pega en `lienzo`.
-
-    `caja` es (x0, y0, x1, y1) en píxeles: la caja de la forma, porque un
-    degradado de SVG se escala a la caja de CADA forma, no al lienzo.
+    |x|^4 + |y|^4 <= 1 da la silueta de «squircle» de la referencia, que
+    no es un rectángulo redondeado sino una curva continua.
     """
-    x0, y0, x1, y1 = caja
-    an, al = max(1, int(x1 - x0)), max(1, int(y1 - y0))
-    gx1, gy1, gx2, gy2, stops = grad
-
-    # Vector del degradado, en píxeles dentro de la caja.
-    ax, ay = gx1 * an, gy1 * al
-    bx, by = gx2 * an, gy2 * al
-    dx, dy = bx - ax, by - ay
-    largo2 = dx * dx + dy * dy or 1.0
-
-    tira = Image.new("RGB", (an, al))
-    px = tira.load()
-    for j in range(al):
-        for i in range(an):
-            # Proyección del píxel sobre el vector del degradado.
-            t = ((i - ax) * dx + (j - ay) * dy) / largo2
-            px[i, j] = interpola(stops, min(1.0, max(0.0, t)))
-
-    capa = Image.new("RGBA", lienzo.size, (0, 0, 0, 0))
-    capa.paste(tira, (int(x0), int(y0)))
-    lienzo.paste(capa, (0, 0), mascara)
+    c0 = (N - 1) / 2
+    dentro = {
+        (r, q)
+        for r in range(N)
+        for q in range(N)
+        if abs((q - c0) / c0) ** 4 + abs((r - c0) / c0) ** 4 <= 1.0
+    }
+    return dentro - celdas_motivo()
 
 
-def forma(lienzo, dibuja_en_mascara, caja, grad):
-    """Dibuja una forma con relleno degradado."""
-    m = Image.new("L", lienzo.size, 0)
-    dibuja_en_mascara(ImageDraw.Draw(m))
-    pinta_degradado(lienzo, m, caja, grad)
+def centro(r, c):
+    return round(PASO * (c + 1), 1), round(PASO * (r + 1), 1)
 
 
-def q_bezier(p0, p1, p2, pasos=24):
-    """Cuadrática de Bézier muestreada — las esquinas del lomo."""
-    out = []
-    for i in range(pasos + 1):
-        t = i / pasos
-        u = 1 - t
-        out.append(
-            (
-                u * u * p0[0] + 2 * u * t * p1[0] + t * t * p2[0],
-                u * u * p0[1] + 2 * u * t * p1[1] + t * t * p2[1],
-            )
-        )
-    return out
+MOTIVO_CELDAS = sorted(celdas_motivo())
+PLACA_CELDAS = sorted(celdas_placa())
 
 
-def render(size, with_bg=True):
-    """Dibuja el logotipo a `size` px."""
-    s = size * SS
-    k = s / VIEW  # factor del viewBox de 512 a píxeles reales
-    img = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+def trazo(celdas):
+    """`d` de un trazo cuyos subtrazos de longitud cero son los puntos."""
+    return "".join("M%s %sh0" % centro(r, c) for r, c in celdas)
 
-    if with_bg:
-        ImageDraw.Draw(img).rounded_rectangle(
-            [0, 0, s - 1, s - 1], radius=int(s * 86 / 512), fill=PAPER
-        )
 
-    def E(*v):
-        """Escala coordenadas del viewBox a píxeles."""
-        return [x * k for x in v]
+# ── Mapas de bits ─────────────────────────────────────────────────────
+def dibuja(px, con_placa, fondo=PAPER):
+    """Pinta la retícula a `px` píxeles de lado sobre el papel."""
+    L = px * SS
+    esc = L / VIEW
+    img = Image.new("RGBA", (L, L), fondo)
+    d = ImageDraw.Draw(img)
 
-    def rect(x, y, w, h, r, grad):
-        X, Y, W, H, R = E(x, y, w, h, r)
-        caja = (X, Y, X + W, Y + H)
-        forma(img, lambda d: d.rounded_rectangle([X, Y, X + W, Y + H], radius=R, fill=255), caja, grad)
+    def puntos(celdas, radio, alpha):
+        rr = radio * esc
+        for r, c in celdas:
+            cx, cy = centro(r, c)
+            x, y = cx * esc, cy * esc
+            d.ellipse([x - rr, y - rr, x + rr, y + rr], fill=TINTA + (alpha,))
 
-    # ── Bloque de hojas ───────────────────────────────────────────────
-    rect(352, 98, 56, 322, 12, PAGES)
-    rect(132, 386, 272, 38, 12, PAGES)
+    if con_placa:
+        puntos(PLACA_CELDAS, RADIO_PLACA, round(255 * TINTA_PLACA))
+    puntos(MOTIVO_CELDAS, RADIO, 255)
+    return img.resize((px, px), Image.LANCZOS)
 
-    # ── Marcapáginas ──────────────────────────────────────────────────
-    cinta = [(292, 380), (346, 380), (346, 470), (319, 446), (292, 470)]
-    pts = [(x * k, y * k) for x, y in cinta]
-    caja = (min(p[0] for p in pts), min(p[1] for p in pts),
-            max(p[0] for p in pts), max(p[1] for p in pts))
-    forma(img, lambda d: d.polygon(pts, fill=255), caja, RIBBON)
 
-    # ── Tapa ──────────────────────────────────────────────────────────
-    rect(104, 84, 264, 318, 20, COVER)
+def icon_svg():
+    """El favicon vectorial.
 
-    # ── Lomo ──────────────────────────────────────────────────────────
-    # M104 104 Q104 84 124 84 L162 84 L162 402 L124 402 Q104 402 104 382 Z
-    lomo = [(104, 104)]
-    lomo += q_bezier((104, 104), (104, 84), (124, 84))
-    lomo += [(162, 84), (162, 402), (124, 402)]
-    lomo += q_bezier((124, 402), (104, 402), (104, 382))
-    pts = [(x * k, y * k) for x, y in lomo]
-    caja = (min(p[0] for p in pts), min(p[1] for p in pts),
-            max(p[0] for p in pts), max(p[1] for p in pts))
-    forma(img, lambda d: d.polygon(pts, fill=255), caja, SPINE)
-
-    # Filete claro del lomo — color plano con transparencia, no degradado.
-    filete = Image.new("RGBA", img.size, (0, 0, 0, 0))
-    X, Y, W, H, R = E(150, 92, 9, 302, 4.5)
-    ImageDraw.Draw(filete).rounded_rectangle(
-        [X, Y, X + W, Y + H], radius=R, fill=(255, 217, 168, int(255 * 0.34))
+    Sin placa: un favicon se dibuja a 16-32 px, que es justo el rango en
+    el que los puntos apagados dejan de ser detalle. El papel de fondo se
+    conserva porque despega la figura tanto de una barra clara como de
+    una oscura; en transparente, la tinta pizarra desaparecería sobre
+    pestañas negras.
+    """
+    papel = "#%02X%02X%02X" % PAPER[:3]
+    tinta = "#%02X%02X%02X" % TINTA
+    return (
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" '
+        'width="512" height="512">\n'
+        "  <!-- Favicon: la curva de capital en reticula de puntos.\n"
+        "       Generado por scripts/generate-brand.py - no editar a mano. -->\n"
+        '  <rect width="512" height="512" rx="96" fill="%s"/>\n' % papel
+        + '  <path d="%s" fill="none" stroke="%s" stroke-width="%s" '
+        'stroke-linecap="round"/>\n' % (trazo(MOTIVO_CELDAS), tinta, RADIO * 2)
+        + "</svg>\n"
     )
-    img = Image.alpha_composite(img, filete)
 
-    # ── Velas ─────────────────────────────────────────────────────────
-    # Cuerpo y mechas de las tres, en las coordenadas del componente.
-    velas = [
-        (192, 256, 46, 86, 10), (208, 228, 14, 28, 7), (208, 342, 14, 26, 7),
-        (252, 196, 46, 102, 10), (268, 166, 14, 30, 7), (268, 298, 14, 26, 7),
-        (312, 140, 46, 92, 10), (328, 112, 14, 28, 7), (328, 232, 14, 26, 7),
-    ]
-    # Un solo degradado para el grupo entero, como el `<g fill=...>` del
-    # SVG: si cada vela llevara el suyo, las tres saldrían idénticas y se
-    # perdería el barrido de luz que las recorre en diagonal.
-    m = Image.new("L", img.size, 0)
-    d = ImageDraw.Draw(m)
-    for x, y, w, h, r in velas:
-        X, Y, W, H, R = E(x, y, w, h, r)
-        d.rounded_rectangle([X, Y, X + W, Y + H], radius=R, fill=255)
-    xs = [E(v[0])[0] for v in velas] + [E(v[0] + v[2])[0] for v in velas]
-    ys = [E(v[1])[0] for v in velas] + [E(v[1] + v[3])[0] for v in velas]
-    pinta_degradado(img, m, (min(xs), min(ys), max(xs), max(ys)), GOLD)
 
-    return img.resize((size, size), Image.LANCZOS)
+def tsx():
+    """Imprime las constantes para src/components/tj/BrandGlyph.tsx."""
+    print('const MOTIVO = "%s";' % trazo(MOTIVO_CELDAS))
+    print('const PLACA = "%s";' % trazo(PLACA_CELDAS))
+    print("const GROSOR = %s;" % (RADIO * 2))
+    print("const GROSOR_PLACA = %s;" % (RADIO_PLACA * 2))
+    print("const UMBRAL_PLACA = %s;" % UMBRAL_PLACA)
 
 
 def main():
-    logo = render(512)
-    logo.save(ROOT / "public" / "logo.png")
-    print("public/logo.png                512x512")
+    if "--tsx" in sys.argv:
+        tsx()
+        return
 
-    render(180).save(ROOT / "src" / "app" / "apple-icon.png")
-    print("src/app/apple-icon.png        180x180")
+    dibuja(512, con_placa=True).save(ROOT / "public" / "logo.png")
+    dibuja(180, con_placa=True).save(ROOT / "src" / "app" / "apple-icon.png")
 
-    # favicon.ico — tres tamaños en un archivo.
-    tam = [48, 32, 16]
-    frames = [render(t) for t in tam]
-    frames[0].save(
+    # El .ico sirve 16, 32 y 48: los tres por debajo del umbral, así que
+    # ninguno lleva placa. A 48 px un punto apagado mide 0,2 px y lo
+    # único que hace es emborronar la silueta justo donde más falta hace
+    # que se lea.
+    dibuja(48, con_placa=False).save(
         ROOT / "src" / "app" / "favicon.ico",
-        format="ICO",
-        sizes=[(t, t) for t in tam],
-        append_images=frames[1:],
+        sizes=[(16, 16), (32, 32), (48, 48)],
+        append_images=[dibuja(32, con_placa=False), dibuja(16, con_placa=False)],
     )
-    print("src/app/favicon.ico           48/32/16")
+
+    (ROOT / "src" / "app" / "icon.svg").write_text(icon_svg(), encoding="ascii")
+
+    print("logo.png, apple-icon.png, favicon.ico, icon.svg regenerados.")
+    print(
+        "reticula %dx%d - motivo %d puntos, placa %d."
+        % (N, N, len(MOTIVO_CELDAS), len(PLACA_CELDAS))
+    )
 
 
 if __name__ == "__main__":

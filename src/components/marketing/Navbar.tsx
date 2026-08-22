@@ -1679,20 +1679,14 @@ function GlobeIcon() {
  * BrandMark — el logotipo sobre un cuadrado de vidrio (32 px, blur +
  * hairline + inset highlight).
  *
- * Aquí ponía que «el logotipo real es el ojo» y que el trío de velas no
- * existía en la aplicación. Es exactamente al revés: el icono de la
- * aplicación es un cuaderno de piel CON tres velas japonesas en la tapa
- * —`CountPips.App/Assets/app-logo.png`—, y sobre aquella descripción
- * equivocada se retiró el motivo bueno. Ahora `BrandGlyph` dibuja el
- * logotipo de verdad; ver su cabecera.
+ * `BrandGlyph` dibuja la marca vigente —la curva de capital en retícula
+ * de puntos; ver su cabecera— con la tinta del acento, así que hereda el
+ * tema sin más.
  *
  * La placa de vidrio se conserva — es el material de la web y hace de
- * equivalente a la placa sobre la que va el icono en el escritorio.
- *
- * El glifo sube de 17 a 22 px dentro de la placa: el trazo anterior era
- * una silueta abierta que necesitaba aire alrededor, y éste es un icono
- * macizo que a 17 px flotaba perdido en el centro de un cuadrado de 32.
- * La placa no cambia de tamaño, así que la barra no se mueve.
+ * encuadre. A 22 px el glifo dibuja su variante reducida, pensada
+ * exactamente para este rango; la placa no cambia de tamaño, así que la
+ * barra no se mueve.
  */
 function BrandMark() {
   return (

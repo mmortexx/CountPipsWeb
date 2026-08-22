@@ -140,8 +140,8 @@ export function IntroSequence() {
       '<div style="position:absolute;left:0;right:0;bottom:0;height:2px;background:rgb(var(--divider) / 0.06)"><div data-lb style="height:100%;width:100%;transform:scaleX(0);transform-origin:left;background:linear-gradient(90deg,rgb(var(--accent-base)),rgb(var(--accent-hover)));"></div></div>' +
       '<div style="display:flex;flex-direction:column;align-items:center;gap:15px">' +
       '<span style="width:46px;height:46px;border-radius:12px;background:color-mix(in srgb,var(--surface) 66%,transparent);border:1px solid rgb(var(--divider) / 0.13);display:grid;place-items:center">' +
-      /* 30 px en una placa de 46: el logotipo es un icono macizo, no la
-         silueta abierta de antes, y a 22 quedaba nadando en el centro. */
+      /* 30 px en una placa de 46: a menos, la reticula de puntos del
+         logotipo quedaba nadando en el centro. */
       BRAND_GLYPH_SVG(30) +
       "</span>" +
       '<div class="font-serif" style="font-size:25px;color:var(--ink);letter-spacing:-.01em">CountPips</div>' +

@@ -1,132 +1,67 @@
-import { useId } from "react";
-
 /**
- * BrandGlyph — el logotipo de CountPips: el cuaderno con las tres velas.
+ * BrandGlyph — el logotipo de CountPips: la curva de capital en retícula
+ * de puntos.
  *
- * Es EL MISMO dibujo que la aplicación de escritorio, no una versión para
- * web: sale de `02-diseno/logo/countpips-logo.svg` y de su variante
- * pequeña, los dos archivos de los que también salen el icono de la app,
- * el de la bandeja del sistema y la barra de título.
+ * ── Qué dibuja ────────────────────────────────────────────────────────
+ * Seis barras, la línea de precio en zigzag por encima y la flecha
+ * ascendente con su punta, en una retícula de 41x41 puntos. NO es una
+ * interpretación: el mapa se extrajo punto por punto de la imagen de
+ * referencia que aportó el propietario, y de ahí salen también
+ * logo.png, apple-icon.png, favicon.ico e icon.svg. La fuente única es
+ * scripts/generate-brand.py — las constantes de abajo las imprime él con
+ * `--tsx`, y no se editan a mano.
  *
- * ── Por qué cambió, y esto conviene leerlo ────────────────────────────
- * Aquí había un libro ABIERTO dibujado a línea, heredado de la marca
- * anterior. No es el logotipo del producto. Y no fue un descuido
- * cualquiera: el comentario que justificaba el cambio afirmaba que el
- * archivo de la aplicación era «el ojo de iris rojo y amarillo», y en
- * `WindowChrome` otro decía que era «el ojo de trazo champagne sobre
- * placa oscura». Ninguna de las dos cosas es cierta — basta abrir
- * `CountPips.App/Assets/app-logo.png` para ver un cuaderno de piel con
- * tres velas japonesas en la tapa. Se retiró el motivo correcto por
- * describir mal el archivo que se tenía al lado, y la web anduvo desde
- * entonces con un logotipo que su producto no usa en ninguna parte.
+ * Sustituye al cuaderno con velas por decisión del propietario (agosto
+ * de 2026).
  *
- * El sitio es papel y tinta, y este glifo entra a todo color. Es
- * deliberado: una marca se reconoce o no se reconoce, y quien vea el
- * cuaderno en la barra tiene que reconocer el mismo icono que va a
- * tener en su escritorio. La placa de vidrio de alrededor —que ponen
- * la barra, el pie y la intro— sigue siendo el material de la web y
- * hace de encuadre.
+ * ── El color no es fijo, y eso es deliberado ──────────────────────────
+ * La marca anterior llevaba paleta propia. Ésta se dibuja con
+ * `rgb(var(--accent-base))` — la plata nardo en tema oscuro y la pizarra
+ * en claro — porque la retícula ES el lenguaje del sitio: los mismos
+ * puntos del atlas grabado del fondo, la misma tinta del acento. Un
+ * color fijo brillaría en un tema y desaparecería en el otro; el token
+ * ya resolvió ese problema una vez y aquí se hereda resuelto.
  *
- * ── Dos versiones, como en la aplicación ──────────────────────────────
- * Por debajo de 32 px se dibuja la variante reducida: sin sombra
- * proyectada, sin filete de encuadernación, sin el rayado del canto de
- * las hojas, y con las velas más gruesas y separadas. No es pereza —
- * a 16 px esos detalles miden menos de un píxel y lo que producen no es
- * detalle, es suciedad. El canto de las hojas y el marcapáginas se
- * conservan y se ensanchan, porque son las dos señales que distinguen
- * un cuaderno de un rectángulo con cosas encima.
+ * ── Una retícula, dos acabados ────────────────────────────────────────
+ * Se probaron retículas más gruesas para los tamaños pequeños (27, 21,
+ * 17 y 15) remuestreando la referencia, y todas ROMPEN el dibujo: a 27
+ * las barras salen con huecos de un punto y la punta de la flecha se
+ * pierde. Umbralizar un motivo de trazo fino a baja resolución no
+ * simplifica, hace ruido. Así que la retícula es siempre la misma y lo
+ * único que cambia por debajo de UMBRAL_PLACA es que se retira la placa
+ * de puntos apagados: ahí mide menos de un píxel por punto y no es
+ * detalle, es suciedad alrededor de la silueta. En la web el glifo se
+ * pinta a 18-30 px (barra, pie, cromo de la demo, intro), así que la
+ * placa sólo aparece si alguien lo llama más grande.
  *
- * ── Los identificadores llevan sufijo, y hace falta ───────────────────
- * Los degradados de un SVG se referencian por `id`, y ese `id` es
- * GLOBAL a la página. La barra y el pie dibujan este glifo a la vez: con
- * identificadores fijos, ambos apuntarían a la primera definición y al
- * desmontarse esa —cambiar de ruta, cerrar el menú— el otro se quedaría
- * sin relleno, negro o invisible. `useId` le da a cada instancia los
- * suyos.
+ * ── Un nodo, no trescientos veintiséis ────────────────────────────────
+ * Cada punto es un subtrazo de longitud cero con `stroke-linecap:
+ * round`. Rinde idéntico a un <circle> —comprobado en navegador: 3.195
+ * frente a 3.205 píxeles con tinta— y deja UN nodo en vez de 326; con la
+ * placa serían 1.457. Como no hay `defs` ni degradados, tampoco hace
+ * falta `useId`: dos instancias en la misma página no pueden chocar.
  */
 
-/** Paleta del logotipo. Fija a propósito: es la marca, no el tema. */
-const PARADAS = {
-  cover: [
-    ["0", "#8B9299"],
-    ["0.30", "#727980"],
-    ["0.68", "#585E64"],
-    ["1", "#3C4348"],
-  ],
-  coverSmall: [
-    ["0", "#8B9299"],
-    ["0.34", "#6E757C"],
-    ["1", "#42484E"],
-  ],
-  spine: [
-    ["0", "#2B333A"],
-    ["0.38", "#4B545C"],
-    ["0.74", "#69727B"],
-    ["1", "#4A535A"],
-  ],
-  spineSmall: [
-    ["0", "#2B333A"],
-    ["0.5", "#515A62"],
-    ["1", "#646D76"],
-  ],
-  pages: [
-    ["0", "#A4A7A9"],
-    ["0.26", "#F1F4F7"],
-    ["0.62", "#D2D5D8"],
-    ["1", "#919496"],
-  ],
-  pagesSmall: [
-    ["0", "#ABAEB0"],
-    ["0.34", "#F2F5F8"],
-    ["1", "#8E9193"],
-  ],
-  gold: [
-    ["0", "#E8ECF0"],
-    ["0.42", "#C3CBD3"],
-    ["1", "#7E8791"],
-  ],
-  goldSmall: [
-    ["0", "#EBEFF3"],
-    ["0.5", "#CBD3DA"],
-    ["1", "#949DA6"],
-  ],
-  ribbon: [
-    ["0", "#C0C8D0"],
-    ["0.55", "#8D959E"],
-    ["1", "#5A626B"],
-  ],
-  ribbonSmall: [
-    ["0", "#C0C8D0"],
-    ["1", "#5E666F"],
-  ],
-} as const;
+const MOTIVO = "M426.7 85.3h0M402.3 97.5h0M414.5 97.5h0M365.7 109.7h0M377.9 109.7h0M390.1 109.7h0M402.3 109.7h0M414.5 109.7h0M390.1 121.9h0M402.3 121.9h0M414.5 121.9h0M377.9 134.1h0M390.1 134.1h0M402.3 134.1h0M414.5 134.1h0M365.7 146.3h0M377.9 146.3h0M390.1 146.3h0M353.5 158.5h0M365.7 158.5h0M377.9 158.5h0M341.3 170.7h0M353.5 170.7h0M365.7 170.7h0M341.3 182.9h0M353.5 182.9h0M390.1 182.9h0M158.5 195.0h0M170.7 195.0h0M182.9 195.0h0M329.1 195.0h0M341.3 195.0h0M377.9 195.0h0M390.1 195.0h0M146.3 207.2h0M158.5 207.2h0M182.9 207.2h0M195.0 207.2h0M317.0 207.2h0M329.1 207.2h0M365.7 207.2h0M377.9 207.2h0M390.1 207.2h0M134.1 219.4h0M195.0 219.4h0M207.2 219.4h0M304.8 219.4h0M317.0 219.4h0M365.7 219.4h0M377.9 219.4h0M390.1 219.4h0M121.9 231.6h0M134.1 231.6h0M195.0 231.6h0M207.2 231.6h0M219.4 231.6h0M292.6 231.6h0M304.8 231.6h0M317.0 231.6h0M365.7 231.6h0M377.9 231.6h0M390.1 231.6h0M121.9 243.8h0M158.5 243.8h0M207.2 243.8h0M219.4 243.8h0M231.6 243.8h0M292.6 243.8h0M304.8 243.8h0M329.1 243.8h0M341.3 243.8h0M365.7 243.8h0M377.9 243.8h0M390.1 243.8h0M109.7 256.0h0M121.9 256.0h0M146.3 256.0h0M158.5 256.0h0M182.9 256.0h0M219.4 256.0h0M231.6 256.0h0M243.8 256.0h0M268.2 256.0h0M280.4 256.0h0M292.6 256.0h0M329.1 256.0h0M341.3 256.0h0M365.7 256.0h0M377.9 256.0h0M390.1 256.0h0M97.5 268.2h0M109.7 268.2h0M146.3 268.2h0M158.5 268.2h0M182.9 268.2h0M195.0 268.2h0M231.6 268.2h0M243.8 268.2h0M256.0 268.2h0M268.2 268.2h0M280.4 268.2h0M317.0 268.2h0M329.1 268.2h0M341.3 268.2h0M365.7 268.2h0M377.9 268.2h0M390.1 268.2h0M97.5 280.4h0M109.7 280.4h0M146.3 280.4h0M158.5 280.4h0M182.9 280.4h0M195.0 280.4h0M243.8 280.4h0M256.0 280.4h0M268.2 280.4h0M317.0 280.4h0M329.1 280.4h0M341.3 280.4h0M365.7 280.4h0M377.9 280.4h0M390.1 280.4h0M85.3 292.6h0M97.5 292.6h0M134.1 292.6h0M146.3 292.6h0M158.5 292.6h0M182.9 292.6h0M195.0 292.6h0M219.4 292.6h0M292.6 292.6h0M317.0 292.6h0M329.1 292.6h0M341.3 292.6h0M365.7 292.6h0M377.9 292.6h0M390.1 292.6h0M85.3 304.8h0M134.1 304.8h0M146.3 304.8h0M158.5 304.8h0M182.9 304.8h0M195.0 304.8h0M219.4 304.8h0M231.6 304.8h0M280.4 304.8h0M292.6 304.8h0M317.0 304.8h0M329.1 304.8h0M341.3 304.8h0M365.7 304.8h0M377.9 304.8h0M390.1 304.8h0M134.1 317.0h0M146.3 317.0h0M158.5 317.0h0M182.9 317.0h0M195.0 317.0h0M219.4 317.0h0M231.6 317.0h0M243.8 317.0h0M268.2 317.0h0M280.4 317.0h0M292.6 317.0h0M317.0 317.0h0M329.1 317.0h0M341.3 317.0h0M365.7 317.0h0M377.9 317.0h0M390.1 317.0h0M134.1 329.1h0M146.3 329.1h0M158.5 329.1h0M182.9 329.1h0M195.0 329.1h0M219.4 329.1h0M231.6 329.1h0M243.8 329.1h0M268.2 329.1h0M280.4 329.1h0M292.6 329.1h0M317.0 329.1h0M329.1 329.1h0M341.3 329.1h0M365.7 329.1h0M377.9 329.1h0M390.1 329.1h0M97.5 341.3h0M109.7 341.3h0M134.1 341.3h0M146.3 341.3h0M158.5 341.3h0M182.9 341.3h0M195.0 341.3h0M219.4 341.3h0M231.6 341.3h0M243.8 341.3h0M268.2 341.3h0M280.4 341.3h0M292.6 341.3h0M317.0 341.3h0M329.1 341.3h0M341.3 341.3h0M365.7 341.3h0M377.9 341.3h0M390.1 341.3h0M85.3 353.5h0M97.5 353.5h0M109.7 353.5h0M134.1 353.5h0M146.3 353.5h0M158.5 353.5h0M182.9 353.5h0M195.0 353.5h0M219.4 353.5h0M231.6 353.5h0M243.8 353.5h0M268.2 353.5h0M280.4 353.5h0M292.6 353.5h0M317.0 353.5h0M329.1 353.5h0M341.3 353.5h0M365.7 353.5h0M377.9 353.5h0M390.1 353.5h0M85.3 365.7h0M97.5 365.7h0M109.7 365.7h0M134.1 365.7h0M146.3 365.7h0M158.5 365.7h0M182.9 365.7h0M195.0 365.7h0M219.4 365.7h0M231.6 365.7h0M243.8 365.7h0M268.2 365.7h0M280.4 365.7h0M292.6 365.7h0M317.0 365.7h0M329.1 365.7h0M341.3 365.7h0M365.7 365.7h0M377.9 365.7h0M390.1 365.7h0M85.3 377.9h0M97.5 377.9h0M109.7 377.9h0M134.1 377.9h0M146.3 377.9h0M158.5 377.9h0M182.9 377.9h0M195.0 377.9h0M219.4 377.9h0M231.6 377.9h0M243.8 377.9h0M268.2 377.9h0M280.4 377.9h0M292.6 377.9h0M317.0 377.9h0M329.1 377.9h0M341.3 377.9h0M365.7 377.9h0M377.9 377.9h0M390.1 377.9h0M85.3 390.1h0M97.5 390.1h0M109.7 390.1h0M134.1 390.1h0M146.3 390.1h0M158.5 390.1h0M182.9 390.1h0M195.0 390.1h0M219.4 390.1h0M231.6 390.1h0M243.8 390.1h0M268.2 390.1h0M280.4 390.1h0M292.6 390.1h0M317.0 390.1h0M329.1 390.1h0M341.3 390.1h0M365.7 390.1h0M377.9 390.1h0M390.1 390.1h0M85.3 402.3h0M97.5 402.3h0M109.7 402.3h0M134.1 402.3h0M146.3 402.3h0M158.5 402.3h0M182.9 402.3h0M195.0 402.3h0M219.4 402.3h0M231.6 402.3h0M243.8 402.3h0M268.2 402.3h0M280.4 402.3h0M292.6 402.3h0M317.0 402.3h0M329.1 402.3h0M341.3 402.3h0M365.7 402.3h0M377.9 402.3h0M390.1 402.3h0M85.3 414.5h0M97.5 414.5h0M109.7 414.5h0M134.1 414.5h0M146.3 414.5h0M158.5 414.5h0M182.9 414.5h0M195.0 414.5h0M219.4 414.5h0M231.6 414.5h0M243.8 414.5h0M268.2 414.5h0M280.4 414.5h0M292.6 414.5h0M317.0 414.5h0M329.1 414.5h0M341.3 414.5h0M365.7 414.5h0M377.9 414.5h0M390.1 414.5h0";
+const PLACA = "M256.0 12.2h0M97.5 24.4h0M109.7 24.4h0M121.9 24.4h0M134.1 24.4h0M146.3 24.4h0M158.5 24.4h0M170.7 24.4h0M182.9 24.4h0M195.0 24.4h0M207.2 24.4h0M219.4 24.4h0M231.6 24.4h0M243.8 24.4h0M256.0 24.4h0M268.2 24.4h0M280.4 24.4h0M292.6 24.4h0M304.8 24.4h0M317.0 24.4h0M329.1 24.4h0M341.3 24.4h0M353.5 24.4h0M365.7 24.4h0M377.9 24.4h0M390.1 24.4h0M402.3 24.4h0M414.5 24.4h0M73.1 36.6h0M85.3 36.6h0M97.5 36.6h0M109.7 36.6h0M121.9 36.6h0M134.1 36.6h0M146.3 36.6h0M158.5 36.6h0M170.7 36.6h0M182.9 36.6h0M195.0 36.6h0M207.2 36.6h0M219.4 36.6h0M231.6 36.6h0M243.8 36.6h0M256.0 36.6h0M268.2 36.6h0M280.4 36.6h0M292.6 36.6h0M304.8 36.6h0M317.0 36.6h0M329.1 36.6h0M341.3 36.6h0M353.5 36.6h0M365.7 36.6h0M377.9 36.6h0M390.1 36.6h0M402.3 36.6h0M414.5 36.6h0M426.7 36.6h0M438.9 36.6h0M61.0 48.8h0M73.1 48.8h0M85.3 48.8h0M97.5 48.8h0M109.7 48.8h0M121.9 48.8h0M134.1 48.8h0M146.3 48.8h0M158.5 48.8h0M170.7 48.8h0M182.9 48.8h0M195.0 48.8h0M207.2 48.8h0M219.4 48.8h0M231.6 48.8h0M243.8 48.8h0M256.0 48.8h0M268.2 48.8h0M280.4 48.8h0M292.6 48.8h0M304.8 48.8h0M317.0 48.8h0M329.1 48.8h0M341.3 48.8h0M353.5 48.8h0M365.7 48.8h0M377.9 48.8h0M390.1 48.8h0M402.3 48.8h0M414.5 48.8h0M426.7 48.8h0M438.9 48.8h0M451.0 48.8h0M48.8 61.0h0M61.0 61.0h0M73.1 61.0h0M85.3 61.0h0M97.5 61.0h0M109.7 61.0h0M121.9 61.0h0M134.1 61.0h0M146.3 61.0h0M158.5 61.0h0M170.7 61.0h0M182.9 61.0h0M195.0 61.0h0M207.2 61.0h0M219.4 61.0h0M231.6 61.0h0M243.8 61.0h0M256.0 61.0h0M268.2 61.0h0M280.4 61.0h0M292.6 61.0h0M304.8 61.0h0M317.0 61.0h0M329.1 61.0h0M341.3 61.0h0M353.5 61.0h0M365.7 61.0h0M377.9 61.0h0M390.1 61.0h0M402.3 61.0h0M414.5 61.0h0M426.7 61.0h0M438.9 61.0h0M451.0 61.0h0M463.2 61.0h0M36.6 73.1h0M48.8 73.1h0M61.0 73.1h0M73.1 73.1h0M85.3 73.1h0M97.5 73.1h0M109.7 73.1h0M121.9 73.1h0M134.1 73.1h0M146.3 73.1h0M158.5 73.1h0M170.7 73.1h0M182.9 73.1h0M195.0 73.1h0M207.2 73.1h0M219.4 73.1h0M231.6 73.1h0M243.8 73.1h0M256.0 73.1h0M268.2 73.1h0M280.4 73.1h0M292.6 73.1h0M304.8 73.1h0M317.0 73.1h0M329.1 73.1h0M341.3 73.1h0M353.5 73.1h0M365.7 73.1h0M377.9 73.1h0M390.1 73.1h0M402.3 73.1h0M414.5 73.1h0M426.7 73.1h0M438.9 73.1h0M451.0 73.1h0M463.2 73.1h0M475.4 73.1h0M36.6 85.3h0M48.8 85.3h0M61.0 85.3h0M73.1 85.3h0M85.3 85.3h0M97.5 85.3h0M109.7 85.3h0M121.9 85.3h0M134.1 85.3h0M146.3 85.3h0M158.5 85.3h0M170.7 85.3h0M182.9 85.3h0M195.0 85.3h0M207.2 85.3h0M219.4 85.3h0M231.6 85.3h0M243.8 85.3h0M256.0 85.3h0M268.2 85.3h0M280.4 85.3h0M292.6 85.3h0M304.8 85.3h0M317.0 85.3h0M329.1 85.3h0M341.3 85.3h0M353.5 85.3h0M365.7 85.3h0M377.9 85.3h0M390.1 85.3h0M402.3 85.3h0M414.5 85.3h0M438.9 85.3h0M451.0 85.3h0M463.2 85.3h0M475.4 85.3h0M24.4 97.5h0M36.6 97.5h0M48.8 97.5h0M61.0 97.5h0M73.1 97.5h0M85.3 97.5h0M97.5 97.5h0M109.7 97.5h0M121.9 97.5h0M134.1 97.5h0M146.3 97.5h0M158.5 97.5h0M170.7 97.5h0M182.9 97.5h0M195.0 97.5h0M207.2 97.5h0M219.4 97.5h0M231.6 97.5h0M243.8 97.5h0M256.0 97.5h0M268.2 97.5h0M280.4 97.5h0M292.6 97.5h0M304.8 97.5h0M317.0 97.5h0M329.1 97.5h0M341.3 97.5h0M353.5 97.5h0M365.7 97.5h0M377.9 97.5h0M390.1 97.5h0M426.7 97.5h0M438.9 97.5h0M451.0 97.5h0M463.2 97.5h0M475.4 97.5h0M487.6 97.5h0M24.4 109.7h0M36.6 109.7h0M48.8 109.7h0M61.0 109.7h0M73.1 109.7h0M85.3 109.7h0M97.5 109.7h0M109.7 109.7h0M121.9 109.7h0M134.1 109.7h0M146.3 109.7h0M158.5 109.7h0M170.7 109.7h0M182.9 109.7h0M195.0 109.7h0M207.2 109.7h0M219.4 109.7h0M231.6 109.7h0M243.8 109.7h0M256.0 109.7h0M268.2 109.7h0M280.4 109.7h0M292.6 109.7h0M304.8 109.7h0M317.0 109.7h0M329.1 109.7h0M341.3 109.7h0M353.5 109.7h0M426.7 109.7h0M438.9 109.7h0M451.0 109.7h0M463.2 109.7h0M475.4 109.7h0M487.6 109.7h0M24.4 121.9h0M36.6 121.9h0M48.8 121.9h0M61.0 121.9h0M73.1 121.9h0M85.3 121.9h0M97.5 121.9h0M109.7 121.9h0M121.9 121.9h0M134.1 121.9h0M146.3 121.9h0M158.5 121.9h0M170.7 121.9h0M182.9 121.9h0M195.0 121.9h0M207.2 121.9h0M219.4 121.9h0M231.6 121.9h0M243.8 121.9h0M256.0 121.9h0M268.2 121.9h0M280.4 121.9h0M292.6 121.9h0M304.8 121.9h0M317.0 121.9h0M329.1 121.9h0M341.3 121.9h0M353.5 121.9h0M365.7 121.9h0M377.9 121.9h0M426.7 121.9h0M438.9 121.9h0M451.0 121.9h0M463.2 121.9h0M475.4 121.9h0M487.6 121.9h0M24.4 134.1h0M36.6 134.1h0M48.8 134.1h0M61.0 134.1h0M73.1 134.1h0M85.3 134.1h0M97.5 134.1h0M109.7 134.1h0M121.9 134.1h0M134.1 134.1h0M146.3 134.1h0M158.5 134.1h0M170.7 134.1h0M182.9 134.1h0M195.0 134.1h0M207.2 134.1h0M219.4 134.1h0M231.6 134.1h0M243.8 134.1h0M256.0 134.1h0M268.2 134.1h0M280.4 134.1h0M292.6 134.1h0M304.8 134.1h0M317.0 134.1h0M329.1 134.1h0M341.3 134.1h0M353.5 134.1h0M365.7 134.1h0M426.7 134.1h0M438.9 134.1h0M451.0 134.1h0M463.2 134.1h0M475.4 134.1h0M487.6 134.1h0M24.4 146.3h0M36.6 146.3h0M48.8 146.3h0M61.0 146.3h0M73.1 146.3h0M85.3 146.3h0M97.5 146.3h0M109.7 146.3h0M121.9 146.3h0M134.1 146.3h0M146.3 146.3h0M158.5 146.3h0M170.7 146.3h0M182.9 146.3h0M195.0 146.3h0M207.2 146.3h0M219.4 146.3h0M231.6 146.3h0M243.8 146.3h0M256.0 146.3h0M268.2 146.3h0M280.4 146.3h0M292.6 146.3h0M304.8 146.3h0M317.0 146.3h0M329.1 146.3h0M341.3 146.3h0M353.5 146.3h0M402.3 146.3h0M414.5 146.3h0M426.7 146.3h0M438.9 146.3h0M451.0 146.3h0M463.2 146.3h0M475.4 146.3h0M487.6 146.3h0M24.4 158.5h0M36.6 158.5h0M48.8 158.5h0M61.0 158.5h0M73.1 158.5h0M85.3 158.5h0M97.5 158.5h0M109.7 158.5h0M121.9 158.5h0M134.1 158.5h0M146.3 158.5h0M158.5 158.5h0M170.7 158.5h0M182.9 158.5h0M195.0 158.5h0M207.2 158.5h0M219.4 158.5h0M231.6 158.5h0M243.8 158.5h0M256.0 158.5h0M268.2 158.5h0M280.4 158.5h0M292.6 158.5h0M304.8 158.5h0M317.0 158.5h0M329.1 158.5h0M341.3 158.5h0M390.1 158.5h0M402.3 158.5h0M414.5 158.5h0M426.7 158.5h0M438.9 158.5h0M451.0 158.5h0M463.2 158.5h0M475.4 158.5h0M487.6 158.5h0M24.4 170.7h0M36.6 170.7h0M48.8 170.7h0M61.0 170.7h0M73.1 170.7h0M85.3 170.7h0M97.5 170.7h0M109.7 170.7h0M121.9 170.7h0M134.1 170.7h0M146.3 170.7h0M158.5 170.7h0M170.7 170.7h0M182.9 170.7h0M195.0 170.7h0M207.2 170.7h0M219.4 170.7h0M231.6 170.7h0M243.8 170.7h0M256.0 170.7h0M268.2 170.7h0M280.4 170.7h0M292.6 170.7h0M304.8 170.7h0M317.0 170.7h0M329.1 170.7h0M377.9 170.7h0M390.1 170.7h0M402.3 170.7h0M414.5 170.7h0M426.7 170.7h0M438.9 170.7h0M451.0 170.7h0M463.2 170.7h0M475.4 170.7h0M487.6 170.7h0M24.4 182.9h0M36.6 182.9h0M48.8 182.9h0M61.0 182.9h0M73.1 182.9h0M85.3 182.9h0M97.5 182.9h0M109.7 182.9h0M121.9 182.9h0M134.1 182.9h0M146.3 182.9h0M158.5 182.9h0M170.7 182.9h0M182.9 182.9h0M195.0 182.9h0M207.2 182.9h0M219.4 182.9h0M231.6 182.9h0M243.8 182.9h0M256.0 182.9h0M268.2 182.9h0M280.4 182.9h0M292.6 182.9h0M304.8 182.9h0M317.0 182.9h0M329.1 182.9h0M365.7 182.9h0M377.9 182.9h0M402.3 182.9h0M414.5 182.9h0M426.7 182.9h0M438.9 182.9h0M451.0 182.9h0M463.2 182.9h0M475.4 182.9h0M487.6 182.9h0M24.4 195.0h0M36.6 195.0h0M48.8 195.0h0M61.0 195.0h0M73.1 195.0h0M85.3 195.0h0M97.5 195.0h0M109.7 195.0h0M121.9 195.0h0M134.1 195.0h0M146.3 195.0h0M195.0 195.0h0M207.2 195.0h0M219.4 195.0h0M231.6 195.0h0M243.8 195.0h0M256.0 195.0h0M268.2 195.0h0M280.4 195.0h0M292.6 195.0h0M304.8 195.0h0M317.0 195.0h0M353.5 195.0h0M365.7 195.0h0M402.3 195.0h0M414.5 195.0h0M426.7 195.0h0M438.9 195.0h0M451.0 195.0h0M463.2 195.0h0M475.4 195.0h0M487.6 195.0h0M24.4 207.2h0M36.6 207.2h0M48.8 207.2h0M61.0 207.2h0M73.1 207.2h0M85.3 207.2h0M97.5 207.2h0M109.7 207.2h0M121.9 207.2h0M134.1 207.2h0M170.7 207.2h0M207.2 207.2h0M219.4 207.2h0M231.6 207.2h0M243.8 207.2h0M256.0 207.2h0M268.2 207.2h0M280.4 207.2h0M292.6 207.2h0M304.8 207.2h0M341.3 207.2h0M353.5 207.2h0M402.3 207.2h0M414.5 207.2h0M426.7 207.2h0M438.9 207.2h0M451.0 207.2h0M463.2 207.2h0M475.4 207.2h0M487.6 207.2h0M24.4 219.4h0M36.6 219.4h0M48.8 219.4h0M61.0 219.4h0M73.1 219.4h0M85.3 219.4h0M97.5 219.4h0M109.7 219.4h0M121.9 219.4h0M146.3 219.4h0M158.5 219.4h0M170.7 219.4h0M182.9 219.4h0M219.4 219.4h0M231.6 219.4h0M243.8 219.4h0M256.0 219.4h0M268.2 219.4h0M280.4 219.4h0M292.6 219.4h0M329.1 219.4h0M341.3 219.4h0M353.5 219.4h0M402.3 219.4h0M414.5 219.4h0M426.7 219.4h0M438.9 219.4h0M451.0 219.4h0M463.2 219.4h0M475.4 219.4h0M487.6 219.4h0M24.4 231.6h0M36.6 231.6h0M48.8 231.6h0M61.0 231.6h0M73.1 231.6h0M85.3 231.6h0M97.5 231.6h0M109.7 231.6h0M146.3 231.6h0M158.5 231.6h0M170.7 231.6h0M182.9 231.6h0M231.6 231.6h0M243.8 231.6h0M256.0 231.6h0M268.2 231.6h0M280.4 231.6h0M329.1 231.6h0M341.3 231.6h0M353.5 231.6h0M402.3 231.6h0M414.5 231.6h0M426.7 231.6h0M438.9 231.6h0M451.0 231.6h0M463.2 231.6h0M475.4 231.6h0M487.6 231.6h0M24.4 243.8h0M36.6 243.8h0M48.8 243.8h0M61.0 243.8h0M73.1 243.8h0M85.3 243.8h0M97.5 243.8h0M109.7 243.8h0M134.1 243.8h0M146.3 243.8h0M170.7 243.8h0M182.9 243.8h0M195.0 243.8h0M243.8 243.8h0M256.0 243.8h0M268.2 243.8h0M280.4 243.8h0M317.0 243.8h0M353.5 243.8h0M402.3 243.8h0M414.5 243.8h0M426.7 243.8h0M438.9 243.8h0M451.0 243.8h0M463.2 243.8h0M475.4 243.8h0M487.6 243.8h0M12.2 256.0h0M24.4 256.0h0M36.6 256.0h0M48.8 256.0h0M61.0 256.0h0M73.1 256.0h0M85.3 256.0h0M97.5 256.0h0M134.1 256.0h0M170.7 256.0h0M195.0 256.0h0M207.2 256.0h0M256.0 256.0h0M304.8 256.0h0M317.0 256.0h0M353.5 256.0h0M402.3 256.0h0M414.5 256.0h0M426.7 256.0h0M438.9 256.0h0M451.0 256.0h0M463.2 256.0h0M475.4 256.0h0M487.6 256.0h0M499.8 256.0h0M24.4 268.2h0M36.6 268.2h0M48.8 268.2h0M61.0 268.2h0M73.1 268.2h0M85.3 268.2h0M121.9 268.2h0M134.1 268.2h0M170.7 268.2h0M207.2 268.2h0M219.4 268.2h0M292.6 268.2h0M304.8 268.2h0M353.5 268.2h0M402.3 268.2h0M414.5 268.2h0M426.7 268.2h0M438.9 268.2h0M451.0 268.2h0M463.2 268.2h0M475.4 268.2h0M487.6 268.2h0M24.4 280.4h0M36.6 280.4h0M48.8 280.4h0M61.0 280.4h0M73.1 280.4h0M85.3 280.4h0M121.9 280.4h0M134.1 280.4h0M170.7 280.4h0M207.2 280.4h0M219.4 280.4h0M231.6 280.4h0M280.4 280.4h0M292.6 280.4h0M304.8 280.4h0M353.5 280.4h0M402.3 280.4h0M414.5 280.4h0M426.7 280.4h0M438.9 280.4h0M451.0 280.4h0M463.2 280.4h0M475.4 280.4h0M487.6 280.4h0M24.4 292.6h0M36.6 292.6h0M48.8 292.6h0M61.0 292.6h0M73.1 292.6h0M109.7 292.6h0M121.9 292.6h0M170.7 292.6h0M207.2 292.6h0M231.6 292.6h0M243.8 292.6h0M256.0 292.6h0M268.2 292.6h0M280.4 292.6h0M304.8 292.6h0M353.5 292.6h0M402.3 292.6h0M414.5 292.6h0M426.7 292.6h0M438.9 292.6h0M451.0 292.6h0M463.2 292.6h0M475.4 292.6h0M487.6 292.6h0M24.4 304.8h0M36.6 304.8h0M48.8 304.8h0M61.0 304.8h0M73.1 304.8h0M97.5 304.8h0M109.7 304.8h0M121.9 304.8h0M170.7 304.8h0M207.2 304.8h0M243.8 304.8h0M256.0 304.8h0M268.2 304.8h0M304.8 304.8h0M353.5 304.8h0M402.3 304.8h0M414.5 304.8h0M426.7 304.8h0M438.9 304.8h0M451.0 304.8h0M463.2 304.8h0M475.4 304.8h0M487.6 304.8h0M24.4 317.0h0M36.6 317.0h0M48.8 317.0h0M61.0 317.0h0M73.1 317.0h0M85.3 317.0h0M97.5 317.0h0M109.7 317.0h0M121.9 317.0h0M170.7 317.0h0M207.2 317.0h0M256.0 317.0h0M304.8 317.0h0M353.5 317.0h0M402.3 317.0h0M414.5 317.0h0M426.7 317.0h0M438.9 317.0h0M451.0 317.0h0M463.2 317.0h0M475.4 317.0h0M487.6 317.0h0M24.4 329.1h0M36.6 329.1h0M48.8 329.1h0M61.0 329.1h0M73.1 329.1h0M85.3 329.1h0M97.5 329.1h0M109.7 329.1h0M121.9 329.1h0M170.7 329.1h0M207.2 329.1h0M256.0 329.1h0M304.8 329.1h0M353.5 329.1h0M402.3 329.1h0M414.5 329.1h0M426.7 329.1h0M438.9 329.1h0M451.0 329.1h0M463.2 329.1h0M475.4 329.1h0M487.6 329.1h0M24.4 341.3h0M36.6 341.3h0M48.8 341.3h0M61.0 341.3h0M73.1 341.3h0M85.3 341.3h0M121.9 341.3h0M170.7 341.3h0M207.2 341.3h0M256.0 341.3h0M304.8 341.3h0M353.5 341.3h0M402.3 341.3h0M414.5 341.3h0M426.7 341.3h0M438.9 341.3h0M451.0 341.3h0M463.2 341.3h0M475.4 341.3h0M487.6 341.3h0M24.4 353.5h0M36.6 353.5h0M48.8 353.5h0M61.0 353.5h0M73.1 353.5h0M121.9 353.5h0M170.7 353.5h0M207.2 353.5h0M256.0 353.5h0M304.8 353.5h0M353.5 353.5h0M402.3 353.5h0M414.5 353.5h0M426.7 353.5h0M438.9 353.5h0M451.0 353.5h0M463.2 353.5h0M475.4 353.5h0M487.6 353.5h0M24.4 365.7h0M36.6 365.7h0M48.8 365.7h0M61.0 365.7h0M73.1 365.7h0M121.9 365.7h0M170.7 365.7h0M207.2 365.7h0M256.0 365.7h0M304.8 365.7h0M353.5 365.7h0M402.3 365.7h0M414.5 365.7h0M426.7 365.7h0M438.9 365.7h0M451.0 365.7h0M463.2 365.7h0M475.4 365.7h0M487.6 365.7h0M24.4 377.9h0M36.6 377.9h0M48.8 377.9h0M61.0 377.9h0M73.1 377.9h0M121.9 377.9h0M170.7 377.9h0M207.2 377.9h0M256.0 377.9h0M304.8 377.9h0M353.5 377.9h0M402.3 377.9h0M414.5 377.9h0M426.7 377.9h0M438.9 377.9h0M451.0 377.9h0M463.2 377.9h0M475.4 377.9h0M487.6 377.9h0M24.4 390.1h0M36.6 390.1h0M48.8 390.1h0M61.0 390.1h0M73.1 390.1h0M121.9 390.1h0M170.7 390.1h0M207.2 390.1h0M256.0 390.1h0M304.8 390.1h0M353.5 390.1h0M402.3 390.1h0M414.5 390.1h0M426.7 390.1h0M438.9 390.1h0M451.0 390.1h0M463.2 390.1h0M475.4 390.1h0M487.6 390.1h0M24.4 402.3h0M36.6 402.3h0M48.8 402.3h0M61.0 402.3h0M73.1 402.3h0M121.9 402.3h0M170.7 402.3h0M207.2 402.3h0M256.0 402.3h0M304.8 402.3h0M353.5 402.3h0M402.3 402.3h0M414.5 402.3h0M426.7 402.3h0M438.9 402.3h0M451.0 402.3h0M463.2 402.3h0M475.4 402.3h0M487.6 402.3h0M24.4 414.5h0M36.6 414.5h0M48.8 414.5h0M61.0 414.5h0M73.1 414.5h0M121.9 414.5h0M170.7 414.5h0M207.2 414.5h0M256.0 414.5h0M304.8 414.5h0M353.5 414.5h0M402.3 414.5h0M414.5 414.5h0M426.7 414.5h0M438.9 414.5h0M451.0 414.5h0M463.2 414.5h0M475.4 414.5h0M487.6 414.5h0M36.6 426.7h0M48.8 426.7h0M61.0 426.7h0M73.1 426.7h0M85.3 426.7h0M97.5 426.7h0M109.7 426.7h0M121.9 426.7h0M134.1 426.7h0M146.3 426.7h0M158.5 426.7h0M170.7 426.7h0M182.9 426.7h0M195.0 426.7h0M207.2 426.7h0M219.4 426.7h0M231.6 426.7h0M243.8 426.7h0M256.0 426.7h0M268.2 426.7h0M280.4 426.7h0M292.6 426.7h0M304.8 426.7h0M317.0 426.7h0M329.1 426.7h0M341.3 426.7h0M353.5 426.7h0M365.7 426.7h0M377.9 426.7h0M390.1 426.7h0M402.3 426.7h0M414.5 426.7h0M426.7 426.7h0M438.9 426.7h0M451.0 426.7h0M463.2 426.7h0M475.4 426.7h0M36.6 438.9h0M48.8 438.9h0M61.0 438.9h0M73.1 438.9h0M85.3 438.9h0M97.5 438.9h0M109.7 438.9h0M121.9 438.9h0M134.1 438.9h0M146.3 438.9h0M158.5 438.9h0M170.7 438.9h0M182.9 438.9h0M195.0 438.9h0M207.2 438.9h0M219.4 438.9h0M231.6 438.9h0M243.8 438.9h0M256.0 438.9h0M268.2 438.9h0M280.4 438.9h0M292.6 438.9h0M304.8 438.9h0M317.0 438.9h0M329.1 438.9h0M341.3 438.9h0M353.5 438.9h0M365.7 438.9h0M377.9 438.9h0M390.1 438.9h0M402.3 438.9h0M414.5 438.9h0M426.7 438.9h0M438.9 438.9h0M451.0 438.9h0M463.2 438.9h0M475.4 438.9h0M48.8 451.0h0M61.0 451.0h0M73.1 451.0h0M85.3 451.0h0M97.5 451.0h0M109.7 451.0h0M121.9 451.0h0M134.1 451.0h0M146.3 451.0h0M158.5 451.0h0M170.7 451.0h0M182.9 451.0h0M195.0 451.0h0M207.2 451.0h0M219.4 451.0h0M231.6 451.0h0M243.8 451.0h0M256.0 451.0h0M268.2 451.0h0M280.4 451.0h0M292.6 451.0h0M304.8 451.0h0M317.0 451.0h0M329.1 451.0h0M341.3 451.0h0M353.5 451.0h0M365.7 451.0h0M377.9 451.0h0M390.1 451.0h0M402.3 451.0h0M414.5 451.0h0M426.7 451.0h0M438.9 451.0h0M451.0 451.0h0M463.2 451.0h0M61.0 463.2h0M73.1 463.2h0M85.3 463.2h0M97.5 463.2h0M109.7 463.2h0M121.9 463.2h0M134.1 463.2h0M146.3 463.2h0M158.5 463.2h0M170.7 463.2h0M182.9 463.2h0M195.0 463.2h0M207.2 463.2h0M219.4 463.2h0M231.6 463.2h0M243.8 463.2h0M256.0 463.2h0M268.2 463.2h0M280.4 463.2h0M292.6 463.2h0M304.8 463.2h0M317.0 463.2h0M329.1 463.2h0M341.3 463.2h0M353.5 463.2h0M365.7 463.2h0M377.9 463.2h0M390.1 463.2h0M402.3 463.2h0M414.5 463.2h0M426.7 463.2h0M438.9 463.2h0M451.0 463.2h0M73.1 475.4h0M85.3 475.4h0M97.5 475.4h0M109.7 475.4h0M121.9 475.4h0M134.1 475.4h0M146.3 475.4h0M158.5 475.4h0M170.7 475.4h0M182.9 475.4h0M195.0 475.4h0M207.2 475.4h0M219.4 475.4h0M231.6 475.4h0M243.8 475.4h0M256.0 475.4h0M268.2 475.4h0M280.4 475.4h0M292.6 475.4h0M304.8 475.4h0M317.0 475.4h0M329.1 475.4h0M341.3 475.4h0M353.5 475.4h0M365.7 475.4h0M377.9 475.4h0M390.1 475.4h0M402.3 475.4h0M414.5 475.4h0M426.7 475.4h0M438.9 475.4h0M97.5 487.6h0M109.7 487.6h0M121.9 487.6h0M134.1 487.6h0M146.3 487.6h0M158.5 487.6h0M170.7 487.6h0M182.9 487.6h0M195.0 487.6h0M207.2 487.6h0M219.4 487.6h0M231.6 487.6h0M243.8 487.6h0M256.0 487.6h0M268.2 487.6h0M280.4 487.6h0M292.6 487.6h0M304.8 487.6h0M317.0 487.6h0M329.1 487.6h0M341.3 487.6h0M353.5 487.6h0M365.7 487.6h0M377.9 487.6h0M390.1 487.6h0M402.3 487.6h0M414.5 487.6h0M256.0 499.8h0";
+const GROSOR = 8.78;
+const GROSOR_PLACA = 5.44;
+const UMBRAL_PLACA = 32;
 
-/** A partir de este tamaño se dibuja el logotipo con todo su detalle. */
-const UMBRAL_DETALLE = 32;
+/** Tinta de la placa apagada, relativa a la figura. */
+const TINTA_PLACA = 0.08;
 
-type Parada = readonly (readonly [string, string])[];
 
-function Degradado({
-  id,
-  paradas,
-  x1 = 0,
-  y1 = 0,
-  x2 = 1,
-  y2 = 0,
-}: {
-  id: string;
-  paradas: Parada;
-  x1?: number;
-  y1?: number;
-  x2?: number;
-  y2?: number;
-}) {
+function Trazo({ d, grosor, opacity }: { d: string; grosor: number; opacity?: number }) {
   return (
-    <linearGradient id={id} x1={x1} y1={y1} x2={x2} y2={y2}>
-      {paradas.map(([offset, color]) => (
-        <stop key={offset} offset={offset} stopColor={color} />
-      ))}
-    </linearGradient>
+    <path
+      d={d}
+      fill="none"
+      stroke="rgb(var(--accent-base))"
+      strokeWidth={grosor}
+      strokeLinecap="round"
+      opacity={opacity}
+    />
   );
 }
 
@@ -137,11 +72,6 @@ export function BrandGlyph({
   size?: number;
   className?: string;
 }) {
-  const uid = useId().replace(/:/g, "");
-  const detalle = size >= UMBRAL_DETALLE;
-  const g = (n: string) => `cp-${uid}-${n}`;
-  const u = (n: string) => `url(#${g(n)})`;
-
   return (
     <svg
       width={size}
@@ -151,176 +81,10 @@ export function BrandGlyph({
       aria-hidden="true"
       className={className}
     >
-      <defs>
-        <Degradado
-          id={g("cover")}
-          paradas={detalle ? PARADAS.cover : PARADAS.coverSmall}
-          x1={0.05}
-          y1={0}
-          x2={0.95}
-          y2={1}
-        />
-        <Degradado id={g("spine")} paradas={detalle ? PARADAS.spine : PARADAS.spineSmall} />
-        <Degradado id={g("pages")} paradas={detalle ? PARADAS.pages : PARADAS.pagesSmall} />
-        <Degradado
-          id={g("gold")}
-          paradas={detalle ? PARADAS.gold : PARADAS.goldSmall}
-          x2={0.6}
-          y2={1}
-        />
-        <Degradado
-          id={g("ribbon")}
-          paradas={detalle ? PARADAS.ribbon : PARADAS.ribbonSmall}
-          y2={0.2}
-        />
-        {detalle && (
-          <>
-            {/* Abombado de la piel: un realce ancho y suave, no un brillo
-                de plástico. */}
-            <radialGradient id={g("bulge")} cx="0.34" cy="0.28" r="0.78">
-              <stop offset="0" stopColor="#DDE0E4" stopOpacity="0.26" />
-              <stop offset="0.55" stopColor="#DDE0E4" stopOpacity="0.06" />
-              <stop offset="1" stopColor="#21272D" stopOpacity="0.20" />
-            </radialGradient>
-            <linearGradient id={g("pagesBottom")} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#E9ECEF" />
-              <stop offset="1" stopColor="#919496" />
-            </linearGradient>
-            <filter id={g("sh")} x="-25%" y="-25%" width="150%" height="150%">
-              <feGaussianBlur stdDeviation="13" />
-            </filter>
-            <filter id={g("shs")} x="-40%" y="-40%" width="180%" height="180%">
-              <feGaussianBlur stdDeviation="4" />
-            </filter>
-          </>
-        )}
-      </defs>
-
-      {detalle ? (
-        <>
-          {/* Sombra proyectada */}
-          <g filter={`url(#${g("sh")})`} opacity="0.28">
-            <rect
-              x="140"
-              y="126"
-              width="266"
-              height="306"
-              rx="18"
-              fill="#151A1F"
-              transform="translate(6,14)"
-            />
-          </g>
-
-          {/* Bloque de hojas: asoma por la derecha y por abajo */}
-          <rect x="362" y="110" width="42" height="300" rx="10" fill={u("pages")} />
-          <rect x="148" y="384" width="252" height="30" rx="10" fill={u("pagesBottom")} />
-          <g stroke="#929598" strokeOpacity="0.5" strokeWidth="2.6" strokeLinecap="round">
-            <path d="M370 148 L398 148" />
-            <path d="M370 184 L398 184" />
-            <path d="M370 220 L398 220" />
-            <path d="M370 256 L398 256" />
-            <path d="M370 292 L398 292" />
-            <path d="M370 328 L398 328" />
-          </g>
-
-          {/* Cinta marcapáginas, saliendo de entre las hojas */}
-          <path d="M300 378 L348 378 L348 458 L324 438 L300 458 Z" fill={u("ribbon")} />
-          <path d="M300 378 L311 378 L311 454 L300 458 Z" fill="#FFFFFF" opacity="0.22" />
-
-          {/* Tapa */}
-          <rect x="126" y="96" width="250" height="300" rx="18" fill={u("cover")} />
-          <rect x="126" y="96" width="250" height="300" rx="18" fill={`url(#${g("bulge")})`} />
-          {/* Lomo */}
-          <path
-            d="M126 114 Q126 96 144 96 L174 96 L174 396 L144 396 Q126 396 126 378 Z"
-            fill={u("spine")}
-          />
-          <rect x="164" y="103" width="6" height="286" rx="3" fill="#DDE0E4" opacity="0.32" />
-          {/* Filo superior iluminado y canto inferior en sombra */}
-          <path
-            d="M146 99 L370 99"
-            stroke="#E3E6EA"
-            strokeOpacity="0.38"
-            strokeWidth="4"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <path
-            d="M150 393 L370 393"
-            stroke="#21272D"
-            strokeOpacity="0.38"
-            strokeWidth="6"
-            strokeLinecap="round"
-            fill="none"
-          />
-          {/* Filete de encuadernación */}
-          <rect
-            x="198"
-            y="122"
-            width="152"
-            height="248"
-            rx="9"
-            fill="none"
-            stroke="#DDE0E4"
-            strokeOpacity="0.22"
-            strokeWidth="2.6"
-          />
-
-          {/* Velas japonesas en relieve sobre la tapa */}
-          <g filter={`url(#${g("shs")})`} fill="#21272D" opacity="0.55" transform="translate(4,6)">
-            <rect x="210" y="262" width="38" height="72" rx="8" />
-            <rect x="223" y="236" width="12" height="26" rx="6" />
-            <rect x="223" y="334" width="12" height="24" rx="6" />
-            <rect x="256" y="204" width="38" height="88" rx="8" />
-            <rect x="269" y="176" width="12" height="28" rx="6" />
-            <rect x="269" y="292" width="12" height="24" rx="6" />
-            <rect x="302" y="150" width="38" height="78" rx="8" />
-            <rect x="315" y="124" width="12" height="26" rx="6" />
-            <rect x="315" y="228" width="12" height="24" rx="6" />
-          </g>
-          <g fill={u("gold")}>
-            <rect x="210" y="262" width="38" height="72" rx="8" />
-            <rect x="223" y="236" width="12" height="26" rx="6" />
-            <rect x="223" y="334" width="12" height="24" rx="6" />
-            <rect x="256" y="204" width="38" height="88" rx="8" />
-            <rect x="269" y="176" width="12" height="28" rx="6" />
-            <rect x="269" y="292" width="12" height="24" rx="6" />
-            <rect x="302" y="150" width="38" height="78" rx="8" />
-            <rect x="315" y="124" width="12" height="26" rx="6" />
-            <rect x="315" y="228" width="12" height="24" rx="6" />
-          </g>
-        </>
-      ) : (
-        <>
-          {/* Bloque de hojas */}
-          <rect x="352" y="98" width="56" height="322" rx="12" fill={u("pages")} />
-          <rect x="132" y="386" width="272" height="38" rx="12" fill={u("pages")} />
-
-          {/* Marcapáginas */}
-          <path d="M292 380 L346 380 L346 470 L319 446 L292 470 Z" fill={u("ribbon")} />
-
-          {/* Tapa */}
-          <rect x="104" y="84" width="264" height="318" rx="20" fill={u("cover")} />
-          <path
-            d="M104 104 Q104 84 124 84 L162 84 L162 402 L124 402 Q104 402 104 382 Z"
-            fill={u("spine")}
-          />
-          <rect x="150" y="92" width="9" height="302" rx="4.5" fill="#DDE0E4" opacity="0.34" />
-
-          {/* Velas: tres, gruesas y bien separadas */}
-          <g fill={u("gold")}>
-            <rect x="192" y="256" width="46" height="86" rx="10" />
-            <rect x="208" y="228" width="14" height="28" rx="7" />
-            <rect x="208" y="342" width="14" height="26" rx="7" />
-            <rect x="252" y="196" width="46" height="102" rx="10" />
-            <rect x="268" y="166" width="14" height="30" rx="7" />
-            <rect x="268" y="298" width="14" height="26" rx="7" />
-            <rect x="312" y="140" width="46" height="92" rx="10" />
-            <rect x="328" y="112" width="14" height="28" rx="7" />
-            <rect x="328" y="232" width="14" height="26" rx="7" />
-          </g>
-        </>
+      {size >= UMBRAL_PLACA && (
+        <Trazo d={PLACA} grosor={GROSOR_PLACA} opacity={TINTA_PLACA} />
       )}
+      <Trazo d={MOTIVO} grosor={GROSOR} />
     </svg>
   );
 }
@@ -329,51 +93,15 @@ export function BrandGlyph({
  * El mismo logotipo como cadena de marcado, para los pocos sitios que
  * construyen HTML a mano (la intro monta su nodo con `innerHTML`).
  *
- * `sufijo` cumple aquí el papel que `useId` cumple en el componente: si
- * esta cadena se inserta mientras hay otro glifo en la página, los
- * identificadores de los degradados chocan. Por defecto lleva uno propio
- * que no colisiona con los que genera React.
+ * `rgb(var(--accent-base))` funciona igual en una cadena insertada,
+ * porque el nodo vive dentro de la página y hereda sus variables.
  */
-export const BRAND_GLYPH_SVG = (size = 22, sufijo = "intro") => {
-  const g = (n: string) => `cp-${sufijo}-${n}`;
-  const grad = (
-    id: string,
-    paradas: Parada,
-    coords = 'x1="0" y1="0" x2="1" y2="0"',
-  ) =>
-    `<linearGradient id="${g(id)}" ${coords}>` +
-    paradas.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join("") +
-    `</linearGradient>`;
-
-  /* Siempre las paradas de la variante reducida, porque el cuerpo de
-     abajo es el reducido. Mezclar los degradados de una versión con la
-     geometría de la otra es la clase de incoherencia que no se ve en
-     pantalla y luego nadie sabe explicar. */
-  const defs =
-    grad("cover", PARADAS.coverSmall, 'x1="0.05" y1="0" x2="0.95" y2="1"') +
-    grad("spine", PARADAS.spineSmall) +
-    grad("pages", PARADAS.pagesSmall) +
-    grad("gold", PARADAS.goldSmall, 'x1="0" y1="0" x2="0.6" y2="1"') +
-    grad("ribbon", PARADAS.ribbonSmall, 'x1="0" y1="0" x2="1" y2="0.2"');
-
-  /* La cadena se usa sólo en la intro, a 22-30 px, así que dibuja la
-     variante reducida: es la que está pensada para ese tamaño. */
-  const cuerpo =
-    `<rect x="352" y="98" width="56" height="322" rx="12" fill="url(#${g("pages")})"/>` +
-    `<rect x="132" y="386" width="272" height="38" rx="12" fill="url(#${g("pages")})"/>` +
-    `<path d="M292 380 L346 380 L346 470 L319 446 L292 470 Z" fill="url(#${g("ribbon")})"/>` +
-    `<rect x="104" y="84" width="264" height="318" rx="20" fill="url(#${g("cover")})"/>` +
-    `<path d="M104 104 Q104 84 124 84 L162 84 L162 402 L124 402 Q104 402 104 382 Z" fill="url(#${g("spine")})"/>` +
-    `<rect x="150" y="92" width="9" height="302" rx="4.5" fill="#DDE0E4" opacity="0.34"/>` +
-    `<g fill="url(#${g("gold")})">` +
-    `<rect x="192" y="256" width="46" height="86" rx="10"/><rect x="208" y="228" width="14" height="28" rx="7"/><rect x="208" y="342" width="14" height="26" rx="7"/>` +
-    `<rect x="252" y="196" width="46" height="102" rx="10"/><rect x="268" y="166" width="14" height="30" rx="7"/><rect x="268" y="298" width="14" height="26" rx="7"/>` +
-    `<rect x="312" y="140" width="46" height="92" rx="10"/><rect x="328" y="112" width="14" height="28" rx="7"/><rect x="328" y="232" width="14" height="26" rx="7"/>` +
-    `</g>`;
-
-  return (
-    `<svg width="${size}" height="${size}" viewBox="0 0 512 512" fill="none" ` +
-    `aria-hidden="true" style="display:block">` +
-    `<defs>${defs}</defs>${cuerpo}</svg>`
-  );
-};
+export const BRAND_GLYPH_SVG = (size = 22) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 512 512" fill="none" ` +
+  `aria-hidden="true" style="display:block">` +
+  (size >= UMBRAL_PLACA
+    ? `<path d="${PLACA}" fill="none" stroke="rgb(var(--accent-base))" ` +
+      `stroke-width="${GROSOR_PLACA}" stroke-linecap="round" opacity="${TINTA_PLACA}"/>`
+    : "") +
+  `<path d="${MOTIVO}" fill="none" stroke="rgb(var(--accent-base))" ` +
+  `stroke-width="${GROSOR}" stroke-linecap="round"/></svg>`;

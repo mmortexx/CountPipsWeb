@@ -407,3 +407,102 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
     );
   });
 });
+
+/**
+ * La marca vive en cinco ficheros y sólo uno la calcula.
+ *
+ * `scripts/generate-brand.py` extrae el motivo de la imagen de
+ * referencia y de ahí salen `logo.png`, `apple-icon.png`, `favicon.ico`,
+ * `src/app/icon.svg` y las constantes incrustadas en
+ * `src/components/tj/BrandGlyph.tsx`. Las tres últimas son texto plano
+ * que alguien puede tocar a mano sin que falle ni el compilador ni el
+ * linter, y entonces la web enseñaría un logotipo y la pestaña otro.
+ *
+ * Esta prueba no repite la geometría: la RECALCULA leyendo del propio
+ * script su mapa de puntos y sus constantes, así que si allí se cambia
+ * el radio o el motivo, aquí se recalcula solo y lo único que puede
+ * fallar es que los derivados se hayan quedado atrás.
+ */
+describe("el logotipo y su generador dibujan lo mismo", () => {
+  const script = leer("scripts/generate-brand.py");
+
+  const num = (nombre: string) => {
+    const m = script.match(new RegExp(`^${nombre} = ([0-9.]+)`, "m"));
+    if (!m) throw new Error(`no se encuentra ${nombre} en generate-brand.py`);
+    return Number(m[1]);
+  };
+
+  /** El mapa de puntos tal cual lo declara el script. */
+  const filas = (() => {
+    const m = script.match(/^MOTIVO = """\\\r?\n([\s\S]*?)^"""/m);
+    if (!m) throw new Error("no se encuentra el mapa MOTIVO");
+    return m[1].replace(/\r/g, "").replace(/\n$/, "").split("\n");
+  })();
+
+  const N = filas.length;
+  const PASO = 512 / (N + 1);
+  const RADIO = Math.round(PASO * num("RADIO_REL") * 100) / 100;
+  const RADIO_PLACA = Math.round(RADIO * num("RADIO_PLACA_REL") * 100) / 100;
+
+  /* Mismo recorrido que `trazo()` en el script: fila a fila, columna a
+     columna, y cada punto como un subtrazo de longitud cero. */
+  const trazo = (encendida: (r: number, c: number) => boolean) => {
+    let d = "";
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        if (!encendida(r, c)) continue;
+        const x = (PASO * (c + 1)).toFixed(1);
+        const y = (PASO * (r + 1)).toFixed(1);
+        d += `M${x} ${y}h0`;
+      }
+    }
+    return d;
+  };
+
+  const esMotivo = (r: number, c: number) => filas[r][c] === "#";
+  const enPlaca = (r: number, c: number) => {
+    const c0 = (N - 1) / 2;
+    const dentro =
+      Math.abs((c - c0) / c0) ** 4 + Math.abs((r - c0) / c0) ** 4 <= 1;
+    return dentro && !esMotivo(r, c);
+  };
+
+  const dMotivo = trazo(esMotivo);
+  const dPlaca = trazo(enPlaca);
+
+  const constante = (fuente: string, nombre: string) => {
+    const m = fuente.match(new RegExp(`const ${nombre} = "([^"]*)"`));
+    if (!m) throw new Error(`no se encuentra la constante ${nombre}`);
+    return m[1];
+  };
+
+  it("el componente lleva la retícula que calcula el script", () => {
+    const glifo = leer("src/components/tj/BrandGlyph.tsx");
+    expect(constante(glifo, "MOTIVO"), "MOTIVO desincronizado").toBe(dMotivo);
+    expect(constante(glifo, "PLACA"), "PLACA desincronizada").toBe(dPlaca);
+    expect(Number(glifo.match(/const GROSOR = ([\d.]+)/)![1])).toBeCloseTo(
+      RADIO * 2,
+      4,
+    );
+    expect(Number(glifo.match(/const GROSOR_PLACA = ([\d.]+)/)![1])).toBeCloseTo(
+      RADIO_PLACA * 2,
+      4,
+    );
+  });
+
+  it("el favicon vectorial lleva el mismo motivo", () => {
+    const svg = leer("src/app/icon.svg");
+    const m = svg.match(/<path d="([^"]+)"/);
+    expect(m, "icon.svg no trae el trazo del motivo").not.toBeNull();
+    expect(m![1], "icon.svg desincronizado").toBe(dMotivo);
+  });
+
+  it("el glifo pinta con el acento del tema y no con un color fijo", () => {
+    const glifo = sinComentarios(leer("src/components/tj/BrandGlyph.tsx"));
+    expect(glifo).toContain("rgb(var(--accent-base))");
+    expect(
+      glifo.match(/#[0-9a-fA-F]{3,8}\b/g) ?? [],
+      "color fijo en el logotipo de la web: no seguiría al tema",
+    ).toEqual([]);
+  });
+});
