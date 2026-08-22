@@ -893,6 +893,26 @@
     background-color: rgb(255 255 255 / 0.85);
   }
 
+  /* ── CASILLAS Y RADIOS A LA ESCALA DEL FORMULARIO ─────────────────
+     Iban al tamaño de fábrica del navegador —13 px— junto a un texto de
+     12 y campos de 44 px de alto. El área para pincharlas nunca fue el
+     problema: viven dentro de su `<label>`, así que se activa toda la
+     línea. El problema es que a esa talla no parecen parte del
+     formulario, parecen un resto del navegador.
+
+     16 px las pone a la escala del resto y les da el acento de la
+     paleta activa. `accent-color` basta: pintarlas a mano con
+     `appearance: none` obligaría a redibujar la marca de verificación,
+     el estado indeterminado y el foco en cada tema, y el control nativo
+     ya los trae bien resueltos. */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: rgb(var(--accent-base));
+    cursor: pointer;
+  }
+
   /* ── EN TÁCTIL, NINGÚN CAMPO BAJA DE 16 px ────────────────────────
      Safari en iOS hace zoom AUTOMÁTICO al enfocar un campo cuyo texto
      mida menos de 16 px. No es un detalle estético: la página entera se
@@ -2441,6 +2461,34 @@ textarea:focus-visible,
 }
 .tj-segmentado > * + * {
   border-left: 1px solid rgb(var(--divider) / 0.18);
+}
+
+/* ── VARIANTE APILADA ────────────────────────────────────────────────
+   Para los grupos cuyas etiquetas son frases —«Acciones / Cripto»,
+   «Conservador · 0,50 %»— y no caben en fila en un móvil. Con
+   `flex-wrap`, que es lo que había, el último se quedaba solo en una
+   segunda fila y con otro ancho: tres opciones que son lo mismo se
+   veían como dos cosas y una suelta.
+
+   Apiladas, cada opción ocupa el ancho completo y el filete que las
+   separa pasa de vertical a horizontal. De `sm` para arriba vuelven a
+   la fila, donde sí caben. */
+.tj-segmentado-apila {
+  grid-auto-flow: row;
+}
+.tj-segmentado-apila > * + * {
+  border-left: none;
+  border-top: 1px solid rgb(var(--divider) / 0.18);
+}
+@media (min-width: 640px) {
+  .tj-segmentado-apila {
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+  }
+  .tj-segmentado-apila > * + * {
+    border-top: none;
+    border-left: 1px solid rgb(var(--divider) / 0.18);
+  }
 }
 .tj-segmentado > *:hover:not([aria-pressed="true"]):not([data-activo="true"]) {
   background: color-mix(in srgb, var(--ink) 6%, transparent);

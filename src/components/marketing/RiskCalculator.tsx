@@ -241,12 +241,11 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
     }
   }, []);
 
-  const chipStyle = (active: boolean) =>
-    `min-h-[36px] px-3.5 py-1.5 text-xs rounded-[2px] transition-all font-mono ${
-      active
-        ? "bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.5)] font-semibold shadow-sm"
-        : "bg-[var(--surface-2)]/60 text-secondary border border-[rgb(var(--divider)/0.13)] hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
-    }`;
+  /* Aqui vivia `chipStyle`, que vestia a mano cada opcion de los tres
+     grupos de esta calculadora. Ya no hace falta: los grupos son
+     conmutadores segmentados y el estilo del elegido lo pone
+     `.tj-segmentado` a partir de `aria-pressed`, que es ademas lo que
+     un lector de pantalla necesita para anunciarlo. */
 
   const numInput = (label: string, value: number, onChange: (n: number) => void, ariaLabel: string) => (
     <label className="block min-w-0">
@@ -336,7 +335,11 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Mercado / Instrumento" : "Market / Instrument"}
             </div>
-            <div className="flex flex-wrap gap-2">
+            {/* Conmutador, no tres botones sueltos: con `flex-wrap` el
+                tercero se quedaba solo en una segunda fila y con otro
+                ancho, y tres opciones que son lo mismo se veian como dos
+                cosas y una suelta. Ver `.tj-segmentado`. */}
+            <div className="tj-segmentado tj-segmentado-apila" role="group">
               {[
                 { id: "equities" as const, labelEs: "Acciones / Cripto", labelEn: "Stocks / Crypto" },
                 { id: "forex" as const, labelEs: "Forex (Lotes)", labelEn: "Forex (Lots)" },
@@ -345,8 +348,8 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 <button
                   key={m.id}
                   type="button"
+                  aria-pressed={assetMode === m.id}
                   onClick={() => handleAssetChange(m.id)}
-                  className={chipStyle(assetMode === m.id)}
                 >
                   {es ? m.labelEs : m.labelEn}
                 </button>
@@ -436,13 +439,12 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Plantilla de riesgo" : "Risk preset"}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="tj-segmentado tj-segmentado-apila" role="group">
               {presets.map((p) => (
                 <button
                   key={p.label}
                   type="button"
                   onClick={() => setRiskPct(p.pct)}
-                  className={chipStyle(riskPct === p.pct)}
                   aria-pressed={riskPct === p.pct}
                 >
                   {p.label} · {fmtNum(p.pct)} %
@@ -456,13 +458,14 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Balance de cuenta" : "Account balance"}
             </div>
-            <div className="flex flex-wrap gap-2">
+            {/* Aqui no hace falta apilar: son cuatro etiquetas de cuatro
+                caracteres y caben en fila hasta en 390 px. */}
+            <div className="tj-segmentado" role="group">
               {balances.map((b) => (
                 <button
                   key={b.label}
                   type="button"
                   onClick={() => setBalance(b.v)}
-                  className={chipStyle(balance === b.v)}
                   aria-pressed={balance === b.v}
                 >
                   {b.label}
