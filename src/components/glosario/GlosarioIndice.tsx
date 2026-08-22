@@ -52,7 +52,15 @@ export function GlosarioIndice() {
   }, [q, activeCategory, es]);
 
   return (
-    <section className="section-tight">
+    <section
+      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
+         Sin superficie propia, su texto cae directamente sobre el atlas
+         grabado del fondo, que se dibuja a pantalla completa en TODAS
+         las anchuras. Medido antes de ponerlo: el fondo bajo los
+         rótulos pequeños llegaba a 1,3:1 en el peor píxel, con más de
+         un 20 % del área del texto por debajo del mínimo AA. */
+      className="section-tight bg-veil"
+    >
       <div className="tj-container">
         {/* Buscador */}
         <Reveal>

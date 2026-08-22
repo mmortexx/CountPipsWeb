@@ -112,7 +112,14 @@ export function ProductShowcase() {
   return (
     <section
       id="producto"
-      className="section border-b border-[rgb(var(--divider)/0.1)] relative overflow-hidden"
+      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
+         Es la que el propietario señaló: el rótulo «§ 02», el titular,
+         su párrafo y la fila de pestañas quedaban cruzados por la
+         figura de puntos del fondo. Medido a 656 px antes de ponerlo:
+         el peor píxel bajo el rótulo daba 1,01:1 y bajo el párrafo
+         1,00:1, con hasta un 6,4 % del área por debajo del mínimo; con
+         el atlas apagado, 0,0 %. */
+      className="section border-b border-[rgb(var(--divider)/0.1)] relative overflow-hidden bg-veil"
       aria-labelledby="producto-titulo"
     >
       <div className="mx-auto w-[var(--page-w)]">

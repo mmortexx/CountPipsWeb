@@ -101,7 +101,15 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
           lo que se deduce de los números que introduce el visitante, y
           nada más. Sin esta línea, una herramienta que dice «arriesga
           este tamaño» se puede leer como una recomendación. */}
-      <section className="section-tight">
+      <section
+      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
+         Sin superficie propia, su texto cae directamente sobre el atlas
+         grabado del fondo, que se dibuja a pantalla completa en TODAS
+         las anchuras. Medido antes de ponerlo: el fondo bajo los
+         rótulos pequeños llegaba a 1,3:1 en el peor píxel, con más de
+         un 20 % del área del texto por debajo del mínimo AA. */
+        className="section-tight bg-veil"
+      >
         <div className="tj-container">
           <div className="mx-auto max-w-[62ch]">
             <Reveal>

@@ -3832,31 +3832,43 @@ button.icon-btn:hover > svg,
 }
 
 /* ============================================================
-   EL PLIEGO: COLUMNA DE TEXTO + PANEL DE LÁMINA
+   CÓMO SE REPARTEN EL SITIO EL TEXTO Y EL ATLAS
    ============================================================
-   Tres intentos anteriores atacaron esto bajando el velo, ensanchando
-   los márgenes y oscureciendo el lápiz. Todos fallaron por el mismo
-   motivo: el contenido y el fondo se disputaban el MISMO espacio. Da
-   igual lo transparente que sea el velo — si encima hay una sección de
-   700 px de alto, debajo no se ve una lámina, se ve una lámina tapada.
+   AQUÍ HABÍA ESCRITO UN REPARTO QUE NO EXISTE. Decía, con detalle, que
+   a partir de 1.280 px la página se divide en una columna de texto a la
+   izquierda y un panel de lámina a la derecha, y que el atlas se dibuja
+   DENTRO de ese panel. Nunca se implementó: no hay una sola regla que
+   lo haga, ni en este fichero ni en el compilado. La regla real del
+   atlas es `position: absolute; inset: 0` sin ninguna media query, y su
+   contenedor es `fixed inset-0` (`BackgroundFX.tsx`). El atlas es de
+   pantalla completa en TODAS las anchuras — que es justo lo que dice el
+   comentario de la línea siguiente, tres renglones más abajo, en
+   contradicción directa con éste.
 
-   La solución no es de opacidad, es de reparto. En un tratado, el texto
-   y la lámina no se superponen: conviven en el pliego, cada uno con su
-   mitad. Aquí igual — a partir de 1280 px la página se divide:
+   Ese párrafo no era inocuo. Mientras estuvo aquí, cualquiera que
+   buscara por qué el texto se lee mal sobre el fondo encontraba una
+   explicación tranquilizadora —«ya está resuelto por encima de 1.280»—
+   que no describía nada. Medido en 7 anchuras y los 2 temas: de los
+   elementos afectados a 1.279 px, 406 de 424 lo están igual a 1.280, y
+   el peor caso del sitio es PEOR a 1.440 que a 1.279.
 
-     · IZQUIERDA — la columna de texto. Todo el contenido baja por aquí.
-     · DERECHA   — el panel de lámina. Siempre despejado, siempre a la
-                   vista. El atlas se dibuja DENTRO de él, así que se ve
-                   la figura entera con su marco, su cartela y su
-                   graduación, no un trozo asomando por los lados.
+   EL REPARTO DE VERDAD es el que siempre hubo, y es de superficie, no
+   de columnas:
 
-   Es además lo que el fondo pedía desde el principio: se graba con el
-   scroll, o sea que está contando algo mientras lees. Un elemento que
-   narra no puede vivir detrás del texto; tiene que estar al lado.
+     · El atlas se dibuja a pantalla completa, por debajo de todo.
+     · Cada sección de contenido se apoya en su propia superficie
+       —`.bg-veil`, `.tj-paper` o `.liquid-glass`—, que es lo que aísla
+       su texto del grabado. La cuenta de contraste vive en la nota de
+       `.bg-veil`.
+     · El atlas se ve entero donde NO hay sección: el hero, los aires
+       entre capítulos y, sobre todo, las pausas de lámina
+       (`.tj-interlude`), que existen exactamente para eso.
 
-   Por debajo de 1280 px no hay anchura para dos columnas, así que se
-   vuelve al reparto anterior: contenido centrado y atlas de fondo a
-   pantalla completa. */
+   O sea que una sección de contenido SIN superficie no es una variante
+   de estilo: es un agujero. Cuatro se habían quedado sin ella
+   —`ProductShowcase`, `TerminoVista`, `GlosarioIndice` y el cuerpo de
+   `HerramientaVista`, entre las dos últimas 136 rutas generadas— y su
+   texto caía directamente sobre el grabado. */
 /* ---- Las pausas de lámina --------------------------------------------
    El atlas es un FONDO a pantalla completa: esa es su naturaleza y no se
    toca. El problema nunca fue dónde está, sino que no tenía un solo
@@ -4275,12 +4287,33 @@ button.icon-btn:hover > svg,
      el bloque «VEIL REBALANCE» del final del fichero declaró otros tres
      valores sin quitar éste — ver la nota que quedó en su lugar. */
   --velo: 84%;
+  /* ── LA RAMPA NO PUEDE SER MAS ALTA QUE LA SECCION ────────────────
+     El desvanecido vertical media 96 px fijos por arriba y por abajo.
+     En una seccion de menos de 192 px las dos rampas SE SOLAPAN y el
+     velo no alcanza en ningun punto el 84 % para el que esta hecha la
+     cuenta de contraste de arriba: la seccion cree tener velo y no lo
+     tiene.
+
+     No es hipotetico. La franja de migas y otras herramientas de
+     `HerramientaVista` mide 81 px —igual a 656, 1279 y 1440 px— y su
+     rotulo «Herramientas:» quedaba a 1,47:1 con el 20 % de su area por
+     debajo de AA, dentro de una seccion que SI declara `bg-veil`.
+     Cualquier seccion mas baja de 192 px tenia el mismo agujero, en
+     silencio y en las 16 paginas de /herramientas.
+
+     Con `min()` la rampa es lo que quepa: 96 px cuando hay sitio, y un
+     cuarto de la altura cuando no, que deja la mitad central a plena
+     opacidad en cualquier seccion. En las secciones altas —que son casi
+     todas— el 25 % nunca gana al tope de 96 px, asi que su aspecto no
+     cambia en absoluto. */
+  --velo-rampa: min(96px, 25%);
   background-color: transparent;
   background-image: linear-gradient(
     to bottom,
     transparent,
-    color-mix(in srgb, var(--bg) var(--velo), transparent) 96px,
-    color-mix(in srgb, var(--bg) var(--velo), transparent) calc(100% - 96px),
+    color-mix(in srgb, var(--bg) var(--velo), transparent) var(--velo-rampa),
+    color-mix(in srgb, var(--bg) var(--velo), transparent)
+      calc(100% - var(--velo-rampa)),
     transparent
   );
   -webkit-mask-image: linear-gradient(

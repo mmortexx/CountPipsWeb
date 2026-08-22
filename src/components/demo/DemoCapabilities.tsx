@@ -61,7 +61,13 @@ export function DemoCapabilities() {
   return (
     <section
       aria-label={es ? "Qué puedes hacer en la demo" : "What you can do in the demo"}
-      className="section-tight cv-auto relative"
+      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
+         Sin superficie propia su texto cae directamente sobre el atlas
+         grabado, que se dibuja a pantalla completa en TODAS las
+         anchuras: el reparto a dos columnas que decía resolverlo por
+         encima de 1.280 px nunca existió (ver la nota del atlas en
+         globals.css). */
+      className="section-tight cv-auto relative bg-veil"
     >
       <div className="max-w-page mx-auto px-5 md:px-8">
         <Reveal className="text-center max-w-2xl mx-auto mb-8">
