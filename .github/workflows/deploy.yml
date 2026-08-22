@@ -26,7 +26,19 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # 20 y no 10. Este trabajo hace mucho más que compilar: instala,
+    # corre las 303 pruebas, exporta 196 páginas y ejecuta humo.mjs con
+    # un navegador real sobre 19 rutas × 4 pantallas. Eso venía tardando
+    # 9 m 58 s, 10 m 3 s y 10 m 10 s — o sea, rozando el techo en cada
+    # despliegue— hasta que uno tardó 10 m 7 s y GitHub lo cortó a
+    # mitad, saltándose la publicación. El commit quedó en la rama y
+    # NO en la web, que es la peor forma de fallar: en verde por todas
+    # partes y sin publicar.
+    #
+    # Subir el techo no relaja ninguna comprobación: las mismas pruebas
+    # tienen que pasar igual. Sólo deja de convertir «ha tardado tres
+    # segundos más» en «no se ha desplegado».
+    timeout-minutes: 20
     # PREFIJO DE RUTAS — declarado a nivel de JOB, no del paso de build.
     #
     # Estaba sólo en el `env:` del paso «Build», y ahí nació un fallo que
