@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { transform } from "lightningcss";
 
@@ -47,6 +47,21 @@ import { transform } from "lightningcss";
 
 const RUTA = join(process.cwd(), "src", "app", "globals.css");
 const CSS = readFileSync(RUTA, "utf8");
+
+/** Todos los .tsx/.ts de `src`, para cruzar declaraciones con usos. */
+function ficherosTsx(): string[] {
+  const salida: string[] = [];
+  const recorrer = (dir: string) => {
+    for (const e of readdirSync(dir)) {
+      const p = join(dir, e);
+      if (statSync(p).isDirectory()) recorrer(p);
+      else if (e.endsWith(".tsx") || e.endsWith(".ts")) salida.push(p);
+    }
+  };
+  recorrer(join(process.cwd(), "src"));
+  return salida;
+}
+
 
 /** Analiza como lo haría el navegador y devuelve el error, o null. */
 function analizar(css: string): string | null {
@@ -197,5 +212,78 @@ describe("nada de :last-of-type donde se quiere decir :last-child", () => {
     expect(usos, "casan una vez por tipo de etiqueta, no una sola vez").toEqual(
       [],
     );
+  });
+});
+
+/**
+ * Una clase declarada que no lleva nadie es peso muerto — y, peor, es
+ * documentación que miente por omisión.
+ *
+ * `globals.css` acumuló 24 clases así, 567 líneas entre reglas y sus
+ * bloques de comentario normativo. Dos de ellas —`.glass`/`.glass-thin`
+ * y toda la familia `.depth-*`— tenían cabecera propia y explicaban con
+ * detalle un comportamiento que ninguna página producía. Peor todavía:
+ * una prueba de `tests/e2e` exigía que `.depth-1 {` existiera, así que
+ * el código muerto estaba PROTEGIDO por una comprobación que decía estar
+ * vigilando la elevación del sistema de diseño.
+ *
+ * Se comprueba contra el CÓDIGO FUENTE y no contra `out/`, porque en la
+ * integración continua las pruebas corren antes del build y esa carpeta
+ * todavía no existe. Basta: las clases se escriben literalmente en los
+ * `className` de los componentes.
+ */
+describe("no se acumulan clases que no lleva nadie", () => {
+  /** Clases declaradas a propósito sin usar todavía, con su motivo. */
+  const GANCHOS: Record<string, string> = {
+    "tj-no-print":
+      "gancho de la hoja de impresión: marca lo que no debe salir en " +
+      "papel. Está para poder usarlo desde cualquier componente sin " +
+      "tocar el CSS, y su coste es una línea dentro de una lista que ya " +
+      "existe.",
+  };
+
+  it("toda clase de globals.css aparece en algún componente", () => {
+    /* Fuera comentarios, cadenas y `url(...)` ANTES de extraer nombres:
+       dentro de un SVG embebido en `url("data:image/svg+xml,…")` hay un
+       `www.w3.org` del que un extractor ingenuo saca las clases `.w3` y
+       `.org`, y las daría por muertas para siempre. */
+    const hoja = CSS.replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/url\([^)]*\)/g, "")
+      .replace(/"[^"]*"/g, '""')
+      .replace(/'[^']*'/g, "''");
+    const declaradas = [
+      ...new Set([...hoja.matchAll(/\.([a-zA-Z][\w-]*)/g)].map((m) => m[1])),
+    ].sort();
+
+    const fuente = ficherosTsx()
+      .map((f) => readFileSync(f, "utf8"))
+      .join("\n")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/(^|[^:])\/\/.*$/gm, "$1");
+
+    const muertas = declaradas.filter((c) => {
+      if (GANCHOS[c]) return false;
+      /* Las barras van DOBLES: dentro de una plantilla, `\w` se evalúa
+         como la letra `w`, así que el regex habría quedado
+         `(?<![w-])`, que sólo excluye esa letra y el guion. Pasaba en
+         verde por casualidad — ningún nombre de clase del fichero va
+         precedido de una `w` en el código. */
+      return !new RegExp(`(?<![\\w-])${c}(?![\\w-])`).test(fuente);
+    });
+
+    expect(
+      muertas,
+      "Clases declaradas que no lleva ningún componente. Quítalas de " +
+        "globals.css (con su comentario), o apúntalas en GANCHOS con el " +
+        "motivo por el que se quedan.",
+    ).toEqual([]);
+  });
+
+  it("la lista de ganchos no protege clases que ya no se declaran", () => {
+    const hoja = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
+    const huerfanos = Object.keys(GANCHOS).filter(
+      (c) => !new RegExp(`\\.${c}(?![\\w-])`).test(hoja),
+    );
+    expect(huerfanos, "ganchos que ya no apuntan a ninguna regla").toEqual([]);
   });
 });

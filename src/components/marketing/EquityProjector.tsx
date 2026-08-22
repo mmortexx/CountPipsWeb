@@ -676,7 +676,11 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
             </div>
 
             {/* Presets Toolbar en la Barra Superior */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 sm:pb-0">
+            {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.
+                Sin aviso, la ultima entrada queda partida contra el canto
+                y eso no se lee como «hay mas a la derecha» sino como un
+                texto cortado. Medido a 390 px: 838 px de contenido en 316. */}
+            <div className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-0.5 sm:pb-0">
               {PRESETS.map((p) => {
                 const active = selectedPreset === p.id;
                 return (
@@ -997,7 +1001,13 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         <span>{es ? "Interés Compuesto" : "Compounding"}</span>
                         {reinvestMode === "compound" && <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />}
                       </div>
-                      <div className="text-[9.5px] text-[var(--ink-3)] leading-tight mt-0.5">
+                      {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
+                            opcion, sobre su propia superficie, que es mas
+                            clara que el velo contra el que se calibro el
+                            terciario. Medido ahi: 4,28:1 en tema oscuro,
+                            por debajo del 4,5:1 de AA. Con el secundario
+                            sube por encima del listón. */}
+                      <div className="text-[9.5px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Escala con el capital" : "Scales with equity"}
                       </div>
                     </button>
@@ -1026,7 +1036,13 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         <span>{es ? "Retiro Fijo / PnL" : "Fixed / Withdrawal"}</span>
                         {reinvestMode === "linear" && <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />}
                       </div>
-                      <div className="text-[9.5px] text-[var(--ink-3)] leading-tight mt-0.5">
+                      {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
+                            opcion, sobre su propia superficie, que es mas
+                            clara que el velo contra el que se calibro el
+                            terciario. Medido ahi: 4,28:1 en tema oscuro,
+                            por debajo del 4,5:1 de AA. Con el secundario
+                            sube por encima del listón. */}
+                      <div className="text-[9.5px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Riesgo fijo en base" : "Fixed on starting"}
                       </div>
                     </button>

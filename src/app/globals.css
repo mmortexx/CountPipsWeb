@@ -603,31 +603,10 @@
     line-height: 1.6;
     letter-spacing: -0.01em;
   }
-  .t-body-sm {
-    font-size: 0.8125rem;
-    line-height: 1.55;
-    letter-spacing: -0.005em;
-  }
-  /* .t-small — compact secondary text (footnotes, table captions,
-     helper copy under form fields). The 0.75rem size + 1.5 leading
-     mirrors the rhythm Linear / Stripe use for tertiary copy. */
-  .t-small,
   .t-caption {
     font-size: 0.75rem;
     line-height: 1.5;
     letter-spacing: 0;
-  }
-  /* .t-mono — monospace data display (tickers, hashes, code samples,
-     keyboard shortcuts). Inherits the Geist Mono stack (loaded by
-     next/font on <body>) and pairs tabular figures with the same
-     -0.01em tracking as body so numeric data columns line up cleanly. */
-  .t-mono {
-    font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular,
-      Menlo, Consolas, monospace;
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    letter-spacing: -0.01em;
-    font-feature-settings: "tnum" 1, "zero" 1;
   }
   .t-label {
     font-size: 0.6875rem;
@@ -643,51 +622,6 @@
      explicit opt-in on non-heading elements (paragraphs, etc.). */
   h1, h2, h3 { text-wrap: balance; }
 
-  /* ══════════════════════════════════════════════════════════════
-     AJUSTE FINO DE COMPOSICIÓN
-     ══════════════════════════════════════════════════════════════
-     La escala de tamaños ya estaba resuelta. Lo que no había era
-     nada de lo que un tipógrafo da por descontado, y su ausencia es
-     de las cosas que hacen que una página se lea como plantilla
-     aunque los tamaños sean correctos: cero control de huérfanas en
-     los párrafos, cero partición de palabra, cero ligaduras
-     declaradas, cero medida de lectura. Se comprobó antes de
-     escribir esto — ninguna de estas propiedades aparecía una sola
-     vez en el archivo.
-
-     Va en el elemento, no en clases nuevas: el objetivo es que las
-     44 secciones del sitio mejoren sin tocar 44 ficheros. */
-
-  /* ══════════════════════════════════════════════════════════════
-     COMPORTAMIENTO TÁCTIL Y DE PUNTERO
-     ══════════════════════════════════════════════════════════════
-     Tres defectos que no se ven en un escritorio con ratón y que en un
-     móvil delatan al instante que una web no está terminada. Los tres
-     estaban presentes: comprobado antes de escribir esto — ni
-     `@media (hover: hover)`, ni `-webkit-tap-highlight-color`, ni
-     `overscroll-behavior` aparecían una sola vez en el archivo.
-
-     Salen de las pautas de interfaz que mantiene Rauno Freiberg
-     (design engineer en Vercel), que es la referencia habitual para
-     este nivel de detalle. */
-
-  /* 1 · EL HOVER SE QUEDA PEGADO EN TÁCTIL.
-     Sin esta condición, el navegador de un móvil aplica el estado de
-     hover al TOCAR y lo deja puesto hasta que tocas otra cosa: la
-     tarjeta que pulsaste se queda levantada e iluminada mientras lees
-     lo que hay debajo. Se limita a punteros que de verdad pueden
-     apuntar. */
-  @media (hover: none) {
-    .depth-1:hover,
-    .depth-2:hover,
-    .depth-3:hover,
-    .depth-4:hover {
-      box-shadow: none;
-    }
-    /* El navegador ya ha aplicado la sombra de reposo por su cuenta:
-       basta con que el hover no la pise. */
-    .depth-1:hover { box-shadow: 0 1px 2px rgb(var(--sombra) / 0.16); }
-  }
 
   /* 2 · EL RECUADRO GRIS AL TOCAR.
      iOS y Android pintan por su cuenta un rectángulo translúcido
@@ -801,7 +735,6 @@
      dentro de tarjetas, tablas y pies que ya están acotados por su
      caja, y meterles un tope los descolocaría. */
   .medida { max-width: 68ch; }
-  .medida-corta { max-width: 52ch; }
 
   /* Cifras. Cualquier número que el lector vaya a comparar —una
      columna de resultados, un precio junto a otro, un contador que
@@ -947,186 +880,6 @@
 }
 
 @layer components {
-  /* GLASS CARD — translucent so the acrylic backdrop shows through, blurred + saturated.
-     Apple-style "liquid glass": strong saturation (180%, macOS Big Sur level),
-     a vertical specular gradient on the rim that brightens at the top, an inner
-     highlight + base shadow for material depth, and a soft elevation shadow that
-     floats the card off the acrylic backdrop. The accent-tinted 1px border stays
-     subtle so the rim gradient — not the border — carries the edge; 0.35 opacity
-     (bumped from 0.30 for visibility on lower-saturation palettes like ónix /
-     seda where the accent itself reads close to neutral gray on the dark tint). */
-  .glass {
-    background-color: rgb(var(--card) / var(--card-op));
-    /* Subtle vertical gradient overlay (2% white at the top fading to
-       transparent at 50%) — gives the card a hair of depth beyond the
-       flat fill, like a soft top-light highlight. Tiny enough to read
-       as material weight, not a visible gradient. Sits under the
-       ::before refraction border so it never competes with the rim. */
-    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.02), transparent 50%);
-    /* ORDEN OBLIGATORIO: el -webkit- va PRIMERO y el estándar DESPUÉS.
-       No es cosmético. Lightning CSS (el compilador de Tailwind v4)
-       colapsa el par en una sola declaración y se queda con la ÚLTIMA.
-       Con el orden inverso —el natural, estándar primero— el CSS
-       publicado salía únicamente con `-webkit-backdrop-filter`, que
-       Firefox no entiende: TODAS las superficies de cristal del sitio
-       (.glass, .glass-thin, .liquid-glass, y con ellas navbar, tarjetas,
-       ventana de la demo, paleta de comandos…) se veían allí como un
-       relleno translúcido plano, sin desenfoque. Se detectó comparando
-       la regla del CSS compilado con la del fuente.
-
-       Las utilidades `backdrop-blur-*` de Tailwind no sufrían el fallo
-       porque ella misma las genera ya en este orden.
-
-       Comprobación tras tocar esto: `npx next build` y buscar en
-       out/_next/static/chunks/*.css que aparezcan LAS DOS formas. */
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    backdrop-filter: blur(16px) saturate(150%);
-    border: 1px solid rgb(var(--accent-base) / 0.35);
-    border-radius: 3px;
-    position: relative;
-    box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.08),
-      0 4px 16px -4px rgb(0 0 0 / 0.2);
-    /* GPU hint for the transform transition below + the Framer Motion
-       `whileHover` lift that pairs with .depth-N. Browsers can promote
-       the card to its own compositor layer up-front so the hover lift
-       never triggers a main-thread repaint — critical for the buttery
-       60fps feel at the now-reduced 16px blur radius (heavier blurs
-       are the usual culprit for scroll/hover jank, so keeping the
-       layer promoted preempts any residual repaint cost). Scoped to
-       .glass only (not global) so unrelated elements don't pay the
-       compositor-layer memory tax. */
-    will-change: transform;
-    /* Premium hover transition — covers every property that changes on
-       hover (background tint, border accent, shadow deepening, transform
-       lift) so the motion is always buttery. The cubic-bezier is the
-       same "soft settle" curve used by ScrollReveal + Framer Motion
-       spring transitions across the site. Tailwind utilities like
-       `transition-shadow` / `transition-colors` still override
-       per-element when they need different timing — but the defaults
-       here mean a bare `class="glass depth-2"` already animates
-       smoothly without per-element opt-in. */
-    transition:
-      background-color 0.3s var(--ease-suave),
-      border-color 0.3s var(--ease-suave),
-      box-shadow 0.3s var(--ease-suave),
-      transform 0.3s var(--ease-suave);
-  }
-  .glass::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.12) 0%, rgb(255 255 255 / 0.03) 50%, rgb(0 0 0 / 0.08) 100%);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-  /* Subtle film-grain texture layered onto every glass card. Sits above
-     the glass fill but below the ::before refraction border, so the
-     grain reads as part of the material itself rather than a sticker.
-     Opacity is intentionally tiny (0.015) — at normal viewing distance
-     it reads as soft depth rather than noise. mix-blend-mode: overlay
-     lets the grain darken shadows and lift highlights without shifting
-     the accent hue. Same SVG fractalNoise as the body grain (which is
-     fixed to the viewport); here it tiles per-card so each surface has
-     its own micro-texture. */
-  .glass::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    opacity: 0.015;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    mix-blend-mode: overlay;
-  }
-  :root[data-theme="light"] .glass::before {
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.95) 0%, rgb(255 255 255 / 0.5) 40%, rgb(0 0 0 / 0.06) 100%);
-  }
-  :root[data-theme="light"] .glass {
-    /* Bright + airy override: explicit 0.65 background opacity (vs the
-       0.60 --card-op variable) keeps light glass feeling solid without
-       going slab-heavy; the softer 0.25 accent border (down from 0.40)
-       lets the rim read as a luminous hairline rather than a hard rule —
-       what makes Apple's light glass feel weightless even at low blur. */
-    background-color: rgb(var(--card) / 0.65);
-    border-color: rgb(var(--accent-base) / 0.25);
-    /* Light theme: brighter specular highlight + softer elevation so the
-       card reads as light glass on a light backdrop rather than a heavy slab. */
-    box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.5),
-      inset 0 -1px 0 0 rgb(0 0 0 / 0.04),
-      0 8px 32px -8px rgb(0 0 0 / 0.15);
-  }
-
-  /* GLASS-THIN — whisper-thin material for overlays that should hover
-     above content without blocking it (tooltips, dropdown menus,
-     popovers, command palettes — used by MiniCalendar / EquityCurve /
-     Heatmap / Histogram chart tooltips). Apply alongside .glass; the
-     compound selector (.glass.glass-thin = 0,2,0) beats .glass (0,1,0)
-     and the light-theme override raises specificity to clear
-     :root[data-theme="light"] .glass (0,3,0). Lower opacity + lighter
-     blur keeps the underlying content legible through the surface. */
-  .glass.glass-thin {
-    --card-op: 0.40;
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
-    backdrop-filter: blur(12px) saturate(140%);
-    box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.06),
-      inset 0 -1px 0 0 rgb(0 0 0 / 0.04),
-      0 4px 16px -4px rgb(0 0 0 / 0.25);
-  }
-  .glass.glass-thin::before {
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.16) 0%, rgb(255 255 255 / 0.04) 40%, rgb(0 0 0 / 0.10) 100%);
-  }
-  :root[data-theme="light"] .glass.glass-thin {
-    box-shadow:
-      inset 0 1px 0 0 rgb(255 255 255 / 0.4),
-      inset 0 -1px 0 0 rgb(0 0 0 / 0.03),
-      0 4px 16px -4px rgb(0 0 0 / 0.12);
-  }
-  :root[data-theme="light"] .glass.glass-thin::before {
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.85) 0%, rgb(255 255 255 / 0.35) 45%, rgb(0 0 0 / 0.05) 100%);
-  }
-
-  /* GRADIENT BORDER — accent-tinted 135deg gradient ring that overrides
-     the neutral .glass::before refraction border on cards that need
-     extra emphasis (the Bento hero "Disciplina" card, the Pro pricing
-     card). Uses the same 1px-padding + composite-mask technique as
-     .glass::before so the ring hugs the inherited border-radius and
-     never bleeds into the card interior. Declared AFTER the .glass
-     rules so its equal specificity (0,1,1) wins in dark theme; the
-     light-theme override below raises specificity just enough to
-     beat :root[data-theme="light"] .glass::before (0,3,1) so the
-     accent gradient survives in both themes. */
-  .gradient-border {
-    position: relative;
-  }
-  /* El nombre se queda porque lo lleva escrito la tarjeta de Pro en
-     `Pricing.tsx`, pero el borde ya no es un degradado: era una diagonal
-     de 135° que iba del acento al 40 % a transparente y volvía al 20 %,
-     es decir, un marco que se desvanecía por dos de sus cuatro lados. Un
-     marco grabado tiene los cuatro. Se conserva la técnica de máscara
-     —que es recorte, no pintura— para dibujarlo por dentro del radio. */
-  .gradient-border::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background-color: rgb(var(--accent-base) / 0.4);
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-  :root[data-theme="light"] .gradient-border::before {
-    background-color: rgb(var(--accent-base) / 0.55);
-  }
 
   /* DEPTH SCALE + BTN-APPLE are defined below as Tailwind v4 `@utility`
      tokens and standard classes in the utilities layer so they support
@@ -1141,36 +894,6 @@
     color: rgb(var(--txt-tertiary));
   }
 
-  /* ------------------------------------------------------------
-     .pill — la etiqueta pequeña del sistema (estado, credencial,
-     recuento). El nombre viene de cuando era redonda; ya no lo es.
-
-     TENÍA `border-radius: 999px`, y eso chocaba de frente con la
-     doctrina del canto afilado que gobierna el resto del sitio: «una
-     píldora lee app store; un rectángulo lee terminal». La prueba de
-     que el choque era real está en los consumidores — cinco de las
-     trece llamadas escribían `!rounded-[2px]` para pelearse con su
-     propio componente a golpe de `!important`. Cuando media plantilla
-     anula un valor por defecto, el valor por defecto está mal.
-
-     Ahora sigue el radio del sistema, así que los `!important`
-     desaparecen de las llamadas y las trece etiquetas —marketing y
-     demo— comparten canto. Un punto de estado usa `rounded-[1px]`,
-     no un disco de 999 px.
-
-     Ojo: `--radius-md` vale 2 px en la paleta activa, no los 8 px que
-     declara la escala base de `@theme`. Es lo correcto y está explicado
-     arriba, en la nota del canto afilado. */
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.15rem 0.55rem;
-    border-radius: var(--radius-md);
-    font-size: 0.72rem;
-    font-weight: 600;
-    line-height: 1.4;
-  }
 
   /* ------------------------------------------------------------
      .terms-bar — placa de condiciones: pares etiqueta/valor
@@ -1283,104 +1006,6 @@
     0 6px 14px rgb(0 0 0 / 0.30),
     0 24px 56px rgb(0 0 0 / 0.36);
 }
-:root[data-theme="light"] .depth-1 {
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.06),
-    0 2px 6px rgb(0 0 0 / 0.08);
-}
-:root[data-theme="light"] .depth-2 {
-  box-shadow:
-    0 2px 4px rgb(0 0 0 / 0.08),
-    0 8px 18px rgb(0 0 0 / 0.10);
-}
-:root[data-theme="light"] .depth-3 {
-  box-shadow:
-    0 4px 10px rgb(0 0 0 / 0.12),
-    0 18px 40px rgb(0 0 0 / 0.14);
-}
-:root[data-theme="light"] .depth-4 {
-  box-shadow:
-    0 6px 14px rgb(0 0 0 / 0.16),
-    0 24px 56px rgb(0 0 0 / 0.20);
-}
-
-/* ============================================================
-   DEPTH HOVER DEEPENING — each level lifts to the NEXT level's
-   shadow on hover. Defined in plain CSS (outside any @layer) so
-   they win cascade precedence over Tailwind utility transitions
-   (`transition-colors`, `transition-all`) that would otherwise
-   prevent the box-shadow swap from animating. The base `.depth-N`
-   also carries the box-shadow + transform transition so the
-   deepening is always buttery even on cards that forgot to add
-   an explicit `transition-*` utility class.
-
-   Pair with Framer Motion `whileHover={{ y: -4 }}` on the
-   component — the JS spring handles the transform lift, this CSS
-   handles the shadow swap. They share the same cubic-bezier so
-   the two motions stay in sync. Honored by the global
-   prefers-reduced-motion rule above.
-   ============================================================ */
-.depth-1,
-.depth-2,
-.depth-3,
-.depth-4 {
-  transition:
-    color 0.3s var(--ease-suave),
-    background-color 0.3s var(--ease-suave),
-    border-color 0.3s var(--ease-suave),
-    box-shadow 0.3s var(--ease-suave),
-    transform 0.3s var(--ease-suave);
-}
-.depth-1:hover {
-  box-shadow:
-    0 2px 4px rgb(var(--sombra) / 0.22),
-    0 8px 18px rgb(var(--sombra) / 0.22);
-}
-/* Elevación SIN tinte de acento.
-   Estas tres reglas llevaban un halo de color incrustado
-   (`0 0 Npx rgb(var(--accent-base) / …)`), así que cada tarjeta del
-   sitio se encendía en dorado al pasar por encima. Era la fuente
-   SISTÉMICA del brillo: por eso, al limpiar los componentes uno a uno,
-   seguían apareciendo decenas de sombras de acento — no estaban en los
-   componentes, estaban aquí.
-   La elevación ahora es sombra neutra pura, que es lo que una sombra
-   debe comunicar: distancia, no color. El acento se reserva para
-   señales con significado (ruta activa, foco, CTA). */
-.depth-2:hover {
-  box-shadow:
-    0 4px 10px rgb(var(--sombra) / 0.26),
-    0 18px 40px rgb(var(--sombra) / 0.30);
-}
-.depth-3:hover {
-  box-shadow:
-    0 6px 14px rgb(var(--sombra) / 0.30),
-    0 24px 56px rgb(var(--sombra) / 0.36);
-}
-.depth-4:hover {
-  box-shadow:
-    0 8px 18px rgb(var(--sombra) / 0.34),
-    0 30px 72px rgb(var(--sombra) / 0.42);
-}
-:root[data-theme="light"] .depth-1:hover {
-  box-shadow:
-    0 2px 4px rgb(var(--sombra) / 0.08),
-    0 8px 18px rgb(var(--sombra) / 0.10);
-}
-:root[data-theme="light"] .depth-2:hover {
-  box-shadow:
-    0 4px 10px rgb(var(--sombra) / 0.12),
-    0 18px 40px rgb(var(--sombra) / 0.14);
-}
-:root[data-theme="light"] .depth-3:hover {
-  box-shadow:
-    0 6px 14px rgb(var(--sombra) / 0.16),
-    0 24px 56px rgb(var(--sombra) / 0.20);
-}
-:root[data-theme="light"] .depth-4:hover {
-  box-shadow:
-    0 8px 18px rgb(var(--sombra) / 0.20),
-    0 30px 72px rgb(var(--sombra) / 0.26);
-}
 
 /* ══════════════════════════════════════════════════════════════════
    ELEVACIÓN EN REPOSO, Y SOMBRAS QUE NO SON NEGRAS
@@ -1409,91 +1034,12 @@
   --sombra: 19 29 38;
 }
 
-.depth-1 { box-shadow: 0 1px 2px rgb(var(--sombra) / 0.16); }
-.depth-2 {
-  box-shadow:
-    0 1px 2px rgb(var(--sombra) / 0.14),
-    0 4px 10px -4px rgb(var(--sombra) / 0.20);
-}
-.depth-3 {
-  box-shadow:
-    0 1px 2px rgb(var(--sombra) / 0.14),
-    0 8px 20px -8px rgb(var(--sombra) / 0.26);
-}
-.depth-4 {
-  box-shadow:
-    0 2px 4px rgb(var(--sombra) / 0.16),
-    0 14px 34px -12px rgb(var(--sombra) / 0.32);
-}
-:root[data-theme="light"] .depth-1 { box-shadow: 0 1px 2px rgb(var(--sombra) / 0.07); }
-:root[data-theme="light"] .depth-2 {
-  box-shadow:
-    0 1px 2px rgb(var(--sombra) / 0.06),
-    0 4px 10px -4px rgb(var(--sombra) / 0.10);
-}
-:root[data-theme="light"] .depth-3 {
-  box-shadow:
-    0 1px 2px rgb(var(--sombra) / 0.06),
-    0 8px 20px -8px rgb(var(--sombra) / 0.14);
-}
-:root[data-theme="light"] .depth-4 {
-  box-shadow:
-    0 2px 4px rgb(var(--sombra) / 0.08),
-    0 14px 34px -12px rgb(var(--sombra) / 0.18);
-}
-
-/* ══════════════════════════════════════════════════════════════════
-   FILO CAPILAR
-   ══════════════════════════════════════════════════════════════════
-   Un borde de 1 px en CSS son 2 o 3 píxeles FÍSICOS en cualquier
-   pantalla moderna, y a ese grosor una línea deja de ser un filo y
-   pasa a ser un marco: es de las cosas que más abaratan el aspecto de
-   una interfaz. El detalle fino son medias líneas, que es lo que usan
-   las interfaces nativas de escritorio — de donde viene este producto.
-
-   Se hace con un borde falso de 0,5 px físico vía `device-pixel-ratio`
-   en lugar de con `border`, porque `border: 0.5px` lo redondea a 1 en
-   varios navegadores y en otros lo desaparece. */
-.filo,
-.filo-t,
-.filo-b {
-  position: relative;
-}
-.filo::after,
-.filo-t::after,
-.filo-b::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border: 0 solid rgb(var(--divider) / 0.14);
-  border-radius: inherit;
-}
-.filo::after { border-width: 1px; }
-.filo-t::after { border-top-width: 1px; }
-.filo-b::after { border-bottom-width: 1px; }
-
-@media (min-resolution: 1.5dppx) {
-  .filo::after,
-  .filo-t::after,
-  .filo-b::after {
-    /* El truco: se dibuja al DOBLE de tamaño con un borde de 1 px y se
-       encoge a la mitad, con lo que ese píxel acaba midiendo medio. */
-    width: 200%;
-    height: 200%;
-    inset: 0 auto auto 0;
-    transform: scale(0.5);
-    transform-origin: 0 0;
-    border-radius: calc(var(--radius) * 2);
-  }
-}
 
 @layer utilities {
   .text-primary { color: rgb(var(--txt-primary)); }
   .text-secondary { color: rgb(var(--txt-secondary)); }
   .text-tertiary { color: rgb(var(--txt-tertiary)); }
 
-  .bg-tint { background-color: rgb(var(--tint)); }
 
   /* ── El realce del titular: CURSIVA, porque el color no puede ─────
      Era un `linear-gradient` de 120° recortado contra el texto. Aparte
@@ -1576,12 +1122,6 @@
     padding-top: var(--ritmo-2);
     padding-bottom: calc(var(--ritmo-2) * 0.8);
   }
-  /* Para el cierre de una página o un cambio de capítulo, donde el
-     aire SÍ tiene que notarse porque separa dos ideas distintas. */
-  .section-suelta {
-    padding-top: var(--ritmo-4);
-    padding-bottom: calc(var(--ritmo-4) * 0.8);
-  }
 
   /* Y el arreglo del aire muerto: cuando dos secciones se tocan, la
      de abajo no vuelve a abrir el hueco entero — ya lo puso la de
@@ -1652,34 +1192,18 @@
       0 0 28px rgb(255 255 255 / 0.55);
   }
 
-  /* El halo es una red de seguridad para TEXTO SUELTO sobre el lienzo.
-     `text-shadow` se hereda, así que también caía sobre todo lo que vive
-     dentro del bloque: botones, píldoras, insignias, campos. Un botón
-     dorado con letra casi negra ya trae su propio contraste (~9:1); el
-     halo blanco heredado le dibujaba un cerco difuso alrededor de cada
-     letra — el "brillo" que delataba la plantilla. Aquí se corta la
-     herencia en todo lo que aporta su propia superficie.
-
-     `:where()` mantiene la especificidad en 0, de modo que cualquier
-     regla posterior que SÍ quiera halo dentro de un enlace puede
-     recuperarlo sin pelear con !important. */
-  .tj-legible-text
-    :where(
-      a,
-      button,
-      input,
-      select,
-      textarea,
-      summary,
-      [role="button"],
-      [role="radio"],
-      .pill,
-      .chip,
-      .glass,
-      .liquid-glass,
-      code,
-      kbd
-    ) {
+  .tj-legible-text :where( a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [role="radio"],
+  .chip,
+  .liquid-glass,
+  code,
+  kbd ) {
     text-shadow: none;
   }
 
@@ -1828,14 +1352,6 @@
     margin-inline: auto;
     padding-inline: clamp(1.25rem, 4vw, 2.25rem);
   }
-  .rounded-card { border-radius: 3px; }
-  .rounded-pill { border-radius: var(--radius-md); }
-
-  /* Optional scroll-snap helpers — NOT applied globally. Apply `.snap-container`
-     on the scroll parent and `.snap-section` on each child to opt in. Uses
-     `proximity` so users retain free scroll control between sections. */
-  .snap-container { scroll-snap-type: y proximity; }
-  .snap-section { scroll-snap-align: start; scroll-snap-stop: normal; }
 
   /* Balanced text wrapping for headings — avoids orphan words on the last
      line and produces more even line breaks in large display type. */
@@ -2409,6 +1925,21 @@ textarea:focus-visible,
 .tj-fila-sigue > :last-child {
   margin-right: 3rem;
 }
+/* ── CUANDO LA RESERVA SOBRA ──────────────────────────────────────────
+   La reserva de arriba existe para los navegadores SIN lineas de tiempo
+   de desplazamiento, donde el desvanecido se queda fijo y taparia la
+   ultima entrada. En una fila de entradas eso importa. En un envoltorio
+   de UN solo hijo —una tabla— no: alli el desvanecido vela el canto de
+   la ultima columna, que se sigue leyendo, y a cambio los 3rem SUMAN
+   ancho y crean desplazamiento donde no lo habia.
+
+   Medido: la tabla de los documentos legales cabia justa a 656 px
+   (612 de ancho util), y con la reserva pasaba a 660 — o sea 48 px de
+   hueco vacio que el lector tenia que desplazar para nada, con su
+   desvanecido incluido. Esta variante retira la reserva. */
+.tj-fila-sigue--sin-reserva > :last-child {
+  margin-right: 0;
+}
 @supports (animation-timeline: scroll()) {
   .tj-fila-sigue::after {
     animation: tj-pista-fin linear both;
@@ -2820,17 +2351,6 @@ button.icon-btn:hover > svg,
     color: #000000 !important;
   }
 
-  /* 7. Strip glass surfaces, shadows and borders so cards read as
-        plain text blocks on white. Also neutralize the decorative
-        ::before / ::after pseudo-elements that carry the gradient
-        refraction border, film-grain texture, accent gradient ring,
-        .grain overlay, link-underline sweep and sheen / spotlight
-        effects — these are NOT matched by the `*` universal rule
-        below (pseudo-elements need their own selector) and would
-        otherwise print their backgrounds if the user enables
-        "Background graphics" in the print dialog. */
-  .glass,
-  .glass-thin,
   .liquid-glass,
   .bg-veil {
     background: #ffffff !important;
@@ -2840,11 +2360,8 @@ button.icon-btn:hover > svg,
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
   }
-  .glass::before,
-  .glass::after,
   .liquid-glass::before,
   .liquid-glass::after,
-  .gradient-border::before,
   .link-underline::after,
   .grain::after {
     display: none !important;
@@ -3678,24 +3195,6 @@ button.icon-btn:hover > svg,
   --radius-2xl: 2px;
 }
 
-/* ---- Material: papel, no cristal -------------------------------------
-   El estilo del producto apila tres niveles de material translúcido con
-   desenfoque detrás — cristal líquido. El papel no se desenfoca: se
-   apila. Las tarjetas pasan a superficie opaca con un filete, y el
-   `backdrop-filter` se retira (además de ser lo correcto, quita el coste
-   de composición más caro de la página). */
-:root[data-palette="clasico"] .glass,
-:root[data-palette="clasico"] .glass.glass-thin {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background: var(--surface);
-  border: 1px solid var(--line-2);
-  box-shadow: none;
-}
-:root[data-palette="clasico"] .glass::before,
-:root[data-palette="clasico"] .glass.glass-thin::before {
-  display: none;
-}
 
 /* `.liquid-glass` es la variante de material que usan las bandas de
    ancho completo (la cinta de cotizaciones, la barra). Se quedó fuera
@@ -3738,20 +3237,6 @@ button.icon-btn:hover > svg,
   background: color-mix(in srgb, var(--surface) 98%, transparent);
 }
 
-/* Las cuatro alturas de sombra se colapsan a una impresión plana con un
-   único filete. En papel la profundidad no la da la sombra, la da el
-   filete y el aire alrededor. */
-:root[data-palette="clasico"] .depth-1,
-:root[data-palette="clasico"] .depth-2,
-:root[data-palette="clasico"] .depth-3,
-:root[data-palette="clasico"] .depth-4,
-:root[data-palette="clasico"] .depth-1:hover,
-:root[data-palette="clasico"] .depth-2:hover,
-:root[data-palette="clasico"] .depth-3:hover,
-:root[data-palette="clasico"] .depth-4:hover {
-  box-shadow: none;
-  border: 1px solid var(--line-2);
-}
 
 /* ---- Ornamento: el filete doble --------------------------------------
    El único adorno que se añade, y se añade porque significa algo: marca
@@ -4771,18 +4256,11 @@ button.icon-btn:hover > svg,
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
 }
-/* La misma línea de trazos, como marco de un bloque entero: el precio, una
-   tarjeta, una fila de estado. */
-.marco-previsto {
-  border: 1px dashed rgb(var(--divider) / 0.28);
-  border-radius: 2px;
-}
 @media (prefers-contrast: more) {
   /* Un trazo discontinuo al 34 % puede desaparecer en pantallas con poco
      contraste o para quien pide más. El SIGNIFICADO va en que sea
      discontinuo, no en que sea tenue. */
   .sello-previsto { border-color: rgb(var(--divider) / 0.6); }
-  .marco-previsto { border-color: rgb(var(--divider) / 0.5); }
 }
 
 /* ── Distintivo de lámina destacada ────────────────────────────────
@@ -6192,20 +5670,9 @@ svg [data-entra="sello"] {
 .tj-realce:hover {
   transform: translateY(-3px);
 }
-/* Aquí había un `.tj-pulsa:active { transform: scale(0.98) }` que no
-   llegaba nunca a la pantalla: más abajo el mismo selector se vuelve a
-   declarar con 0,97 y su propia transición, y en igualdad de
-   especificidad gana el último. Dos verdades para el mismo gesto, y la
-   que se leía primero era la falsa. */
-/* Para los controles pequeños —iconos de 24 px, botones de fila— donde
-   un 2 % de reducción no se percibe. */
-.tj-pulsa-fuerte:active {
-  transform: scale(0.92);
-}
 @media (prefers-reduced-motion: reduce) {
   .tj-realce:hover,
-  .tj-pulsa:active,
-  .tj-pulsa-fuerte:active {
+  .tj-pulsa:active {
     transform: none;
   }
 }
@@ -6520,12 +5987,6 @@ svg [data-entra="sello"] {
   --escuadra: rgb(var(--divider) / 0.55);
 }
 
-.tj-hoja--nota {
-  box-shadow: none;
-}
-.tj-hoja--nota::after {
-  content: none;
-}
 
 /* A SANGRE — para lo que se imprime hasta el canto.
    Una tabla o una captura ocupan la hoja entera, y ahí el filete interior

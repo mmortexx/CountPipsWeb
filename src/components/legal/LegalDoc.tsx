@@ -183,8 +183,13 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
   return (
     /* La tabla se desplaza dentro de su propia caja. Una tabla de tres
        columnas con frases dentro no cabe en 376 px, y sin este envoltorio
-       la que se desplazaría sería la página entera. */
-    <div className="-mx-1 overflow-x-auto px-1">
+       la que se desplazaría sería la página entera.
+
+       `tj-fila-sigue` añade el aviso de que sigue: sin él, la última
+       columna queda partida contra el canto y eso no se lee como «hay
+       más a la derecha» sino como una tabla cortada. Medido a 390 px:
+       552 px de contenido en 358. */
+    <div className="tj-fila-sigue tj-fila-sigue--sin-reserva -mx-1 overflow-x-auto px-1">
       <table className="w-full min-w-[34rem] border-collapse text-left text-[14px]">
         <thead>
           <tr>

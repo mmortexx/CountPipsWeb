@@ -251,16 +251,59 @@ describe("Dimension D8: Design System Tokens (Tier 2 Boundary & Corner Cases)", 
     expect(parsePalette(null)).toBe("clasico");
   });
 
+  /**
+   * ANTES ESTA PRUEBA EXIGIA QUE EXISTIERA `.depth-1 {` … `.depth-4 {`.
+   *
+   * Comprobaba texto, no comportamiento — y el texto que comprobaba
+   * estaba muerto: ninguna de las cuatro clases la llevaba un solo
+   * elemento, ni en las 154 paginas exportadas ni en el codigo fuente.
+   * O sea que la unica funcion que cumplia era impedir que se retirara
+   * codigo que no hacia nada, con el titulo de estar vigilando la
+   * elevacion del sistema de diseno.
+   *
+   * La elevacion de verdad la lleva el token `--sombra`, que sale
+   * TENIDO del material —una sombra es luz que falta, asi que sobre
+   * chapa gris es gris mas oscuro y no negro— y que cambia con el tema.
+   * Eso es lo que se comprueba ahora: que este definido en los dos
+   * temas, que cada uno traiga el suyo, y que alguien lo use de verdad.
+   * Lo ultimo es lo que impide que esta prueba vuelva a proteger codigo
+   * muerto.
+   */
   it("T2.5: Elevation and depth shadow tokens maintain hierarchy across light and dark modes", () => {
-    // Both dark and light mode depth classes exist
-    expect(globalsCss).toContain(".depth-1 {");
-    expect(globalsCss).toContain(".depth-2 {");
-    expect(globalsCss).toContain(".depth-3 {");
-    expect(globalsCss).toContain(".depth-4 {");
+    /* Los dos bloques son dedicados —sólo declaran `--sombra`—, así que
+       se casan enteros. Un regex que buscara «desde `:root` hasta el
+       primer `--sombra`» tropezaba con el `:root` gigante de la cabecera
+       del fichero, que declara otras cuarenta variables y ninguna de
+       éstas. */
+    const leer = (re: RegExp) => {
+      const m = globalsCss.match(re);
+      return m ? m[1].trim().split(/\s+/).map(Number) : null;
+    };
+    const oscuro = leer(/:root\s*\{\s*--sombra:\s*([\d ]+);\s*\}/);
+    const claro = leer(
+      /:root\[data-theme="light"\]\s*\{\s*--sombra:\s*([\d ]+);\s*\}/,
+    );
 
-    expect(globalsCss).toContain(':root[data-theme="light"] .depth-1');
-    expect(globalsCss).toContain(':root[data-theme="light"] .depth-2');
-    expect(globalsCss).toContain(':root[data-theme="light"] .depth-3');
-    expect(globalsCss).toContain(':root[data-theme="light"] .depth-4');
+    expect(oscuro, "--sombra sin definir en el tema oscuro").not.toBeNull();
+    expect(claro, "--sombra sin definir en el tema claro").not.toBeNull();
+    for (const canal of [...oscuro!, ...claro!]) {
+      expect(canal).toBeGreaterThanOrEqual(0);
+      expect(canal).toBeLessThanOrEqual(255);
+    }
+    expect(oscuro!).toHaveLength(3);
+    expect(claro!).toHaveLength(3);
+    expect(
+      oscuro!.join(" "),
+      "los dos temas comparten sombra: entonces no esta tenida con su material",
+    ).not.toBe(claro!.join(" "));
+
+    // Y alguien tiene que consumirlo, o volveriamos a vigilar codigo muerto.
+    const consumidores = getAllSrcFiles("src").filter((f) =>
+      readFileSync(f, "utf8").includes("var(--sombra)"),
+    );
+    expect(
+      consumidores.length,
+      "nadie usa --sombra: o la elevacion se pinta de otra forma, o sobra",
+    ).toBeGreaterThan(0);
   });
 });

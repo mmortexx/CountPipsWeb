@@ -330,8 +330,47 @@ async function mideContraste(pagina, cand) {
       for (let i = 1; i < 256; i++) if (hist[i] > hist[moda]) moda = i;
       const Lfondo = moda / 255;
 
-      const n = (color.match(/[\d.]+/g) || []).map(Number);
-      const rgb = color.startsWith("color(") ? n.slice(0, 3).map((v) => v * 255) : n.slice(0, 3);
+      /* ── EL COLOR LO RESUELVE EL NAVEGADOR, NO UNA EXPRESIÓN REGULAR ──
+         Aquí había `color.match(/[\d.]+/g)` y luego se tomaban los tres
+         primeros números como RGB. Falla en silencio con los espacios de
+         color modernos, que es lo que Chromium devuelve para cualquier
+         color de Tailwind con opacidad en este sitio:
+
+           oklab(0.81038 -0.00504845 -0.0102674 / 0.86)
+
+         El regex se come los signos menos y entrega [0.81, 0.005, 0.010],
+         que interpretados como RGB son negro casi puro. La comprobación
+         seguía en verde porque los cuatro selectores que mira resuelven
+         hoy a `rgb()` plano; bastaba cambiar un selector o una clase para
+         que empezara a mentir sin avisar.
+
+         Un lienzo de 1×1 acepta CUALQUIER color que el navegador
+         entienda —`oklab`, `color()`, `lab`, `hwb`, nombres— y devuelve
+         los canales ya resueltos. Y si el color trae transparencia, se
+         compone sobre el fondo medido en vez de darlo por opaco. */
+      const lienzo = document.createElement("canvas");
+      lienzo.width = lienzo.height = 1;
+      const cl = lienzo.getContext("2d", { willReadFrequently: true });
+      cl.clearRect(0, 0, 1, 1);
+      cl.fillStyle = "#000";
+      cl.fillStyle = color;
+      cl.fillRect(0, 0, 1, 1);
+      const px = cl.getImageData(0, 0, 1, 1).data;
+      const alfa = px[3] / 255;
+      /* El gris del fondo dominante, para componer un texto translúcido.
+         `Lfondo` es luminancia LINEAL, así que hay que volver a codificar
+         en gamma para obtener el nivel sRGB equivalente; usar `moda` tal
+         cual daría un gris bastante más oscuro del real. */
+      const gris =
+        255 *
+        (Lfondo <= 0.0031308
+          ? Lfondo * 12.92
+          : 1.055 * Math.pow(Lfondo, 1 / 2.4) - 0.055);
+      const rgb = [
+        alfa >= 0.999 ? px[0] : px[0] * alfa + gris * (1 - alfa),
+        alfa >= 0.999 ? px[1] : px[1] * alfa + gris * (1 - alfa),
+        alfa >= 0.999 ? px[2] : px[2] * alfa + gris * (1 - alfa),
+      ];
       const Ltexto = lum(rgb[0], rgb[1], rgb[2]);
 
       lums.sort((a, b) => a - b);

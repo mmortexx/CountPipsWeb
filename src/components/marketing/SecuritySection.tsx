@@ -161,7 +161,11 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
           // atlas se filtre por los bordes sin competir con la tabla.
           className="tj-paper-dense tj-hoja tj-hoja--sangre relative overflow-hidden"
         >
-          <div className="relative overflow-x-auto">
+          {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.
+                Sin aviso, la ultima entrada queda partida contra el canto
+                y eso no se lee como «hay mas a la derecha» sino como un
+                texto cortado. Medido a 390 px: 480 px de contenido en 348. */}
+          <div className="tj-fila-sigue tj-fila-sigue--sin-reserva relative overflow-x-auto">
             <div className="min-w-[480px]">
           {/* ── UNA TABLA DE VERDAD, NO UNA REJILLA DE `div` ─────────────
               Esto era una rejilla de `div` con los iconos ✓ y ✕ desnudos:
