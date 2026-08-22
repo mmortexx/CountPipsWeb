@@ -4393,6 +4393,27 @@ button.icon-btn:hover > svg,
    clara sobre un fondo claro no tiene borde y parece que el contenido
    empieza sin más. */
 :root[data-theme="light"] .tj-paper-dense {
+  /* ── EL PAPEL DENSO NO ERA OPACO EN TEMA CLARO ──────────────────
+     `.tj-paper-dense` existe para que el megamenú, el cajón y la barra
+     TAPEN la página en vez de dejarla ver, y el archivo lo da por
+     resuelto: «las densas van DESPUÉS, o el tinte translúcido de arriba
+     les ganaría por orden». Pero el problema nunca fue el orden, era la
+     especificidad. El tinte claro se declara en
+     `:root[data-theme="light"] .tj-paper` —(0,3,0)— y la densa en
+     `.tj-paper-dense` —(0,1,0)—, así que la densa no podía ganar
+     estuviera donde estuviera. En claro el papel «opaco» se quedaba al
+     95 %.
+
+     Ese 5 % basta: medido con el megamenú abierto sobre la portada, el
+     titular del hero —serif enorme y casi negro, lo más contrastado que
+     tiene el sitio— se leía entero por detrás de las entradas del menú.
+     Justo el defecto que el comentario del megamenú afirmaba haber
+     corregido.
+
+     La declaración va aquí, con la misma especificidad que el tinte al
+     que tiene que ganar y después de él. En oscuro no hacía falta:
+     allí `.tj-paper` no lleva prefijo de tema y basta el orden. */
+  background-color: var(--paper-dense);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.9),
     inset 0 -1px 0 rgb(19 29 38 / 0.09),
