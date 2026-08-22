@@ -1045,16 +1045,22 @@ export function Navbar() {
             {navLink("/faq", es ? "Recursos" : "Resources")}
           </div>
 
-          {/* ZONA 3 — Utilidades: reloj UTC · tema · idioma · CTA · hamburguesa.
-              En móvil (<768px) el reloj/tema/idioma/⌘K/CTA se OCULTAN aquí
+          {/* ZONA 3 — Utilidades: tema · idioma · CTA · hamburguesa.
+              En móvil (<768px) el tema/idioma/⌘K/CTA se OCULTAN aquí
               porque están duplicados dentro del drawer a ≥44 px (ver
               "Preferencias" más abajo). Antes mostraban a 36 px en la barra
               superior móvil, por debajo del mínimo táctil de 44 px — el
               usuario los veía "mal posicionados". Ahora la barra móvil sólo
-              lleva logo + hamburguesa, ambos limpios. */}
+              lleva logo + hamburguesa, ambos limpios.
+
+              AQUÍ HUBO UN RELOJ UTC. Se retira por decisión del fundador:
+              una barra de navegación es para navegar, y la hora no lleva
+              a ninguna parte. Además era el único elemento del sitio que
+              se repintaba una vez por segundo. Quien necesite la hora de
+              las sesiones tiene la herramienta que existe para eso, el
+              reloj de sesiones de mercado, con sus solapes. */}
           <div className="flex flex-none items-center gap-2 justify-self-end">
             <div className="hidden min-[1120px]:flex min-[1120px]:items-center min-[1120px]:gap-2">
-            <UtcClock />
             <IconButton
               onClick={toggleTheme}
               label={es ? "Cambiar tema" : "Toggle theme"}
@@ -1666,99 +1672,6 @@ function GlobeIcon() {
       <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
       <path d="M2 8h12M8 2c1.7 1.8 2.6 3.9 2.6 6S9.7 12.2 8 14C6.3 12.2 5.4 10.1 5.4 8S6.3 3.8 8 2Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
     </svg>
-  );
-}
-
-/**
- * UtcClock — "UTC HH:MM:SS" en vivo con punto de sesión verde. Renderiza
- * "--:--:--" en servidor y primer paint; el intervalo arranca en un
- * efecto (cero mismatch de hidratación).
- *
- * OCULTO POR DEBAJO DE 1280 px. Antes esperaba a 1024, y no bastaba: la
- * barra completa necesita unos 1.047 px de contenido, así que a 820 px
- * sus elementos se montaban unos sobre otros — la marca sobre el primer
- * enlace, el menú sobre el reloj y el reloj sobre el selector de idioma.
- * Nadie lo había visto porque nadie miraba a ese ancho; ahora lo vigila
- * `scripts/humo.mjs` comparando caja contra caja en la barra.
- *
- * La barra entera pasa al cajón lateral por debajo de 1.120 px, y este
- * reloj —lo menos esencial que lleva— espera a 1.280 para que en la
- * franja intermedia quepa lo que sí importa: navegación, idioma y la
- * llamada a la acción.
- */
-function UtcClock() {
-  const [time, setTime] = useState("--:--:--");
-  useEffect(() => {
-    /* ── EL RELOJ NO CORRE DONDE NO SE VE ────────────────────────────
-       Este elemento está oculto por debajo de 1280 px (`xl:inline-flex`),
-       que es la mayoría del tráfico. El intervalo corría igual: un render
-       de React por segundo, en las 155 páginas, para actualizar un texto
-       que nadie tiene delante — y en el móvil, además, gastando batería.
-
-       La misma media query que decide si se ve decide ahora si corre. Y
-       se para al ocultar la pestaña, porque un reloj que nadie mira no
-       necesita ir al día: al volver, la primera cosa que hace es ponerse
-       en hora. */
-    const anchoXl = window.matchMedia("(min-width: 1280px)");
-    const fmt = new Intl.DateTimeFormat("es-ES", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-      timeZone: "UTC",
-    });
-    let id = 0;
-    const tick = () => setTime(fmt.format(new Date()));
-    const parar = () => {
-      if (id) window.clearInterval(id);
-      id = 0;
-    };
-    const arrancar = () => {
-      parar();
-      if (!anchoXl.matches || document.hidden) return;
-      tick();
-      id = window.setInterval(tick, 1000);
-    };
-    arrancar();
-    anchoXl.addEventListener("change", arrancar);
-    document.addEventListener("visibilitychange", arrancar);
-    return () => {
-      parar();
-      anchoXl.removeEventListener("change", arrancar);
-      document.removeEventListener("visibilitychange", arrancar);
-    };
-  }, []);
-  return (
-    <span
-      className="mr-0.5 hidden items-center gap-1.5 border-r pr-2 xl:inline-flex"
-      style={{ borderColor: "rgb(var(--divider) / 0.13)" }}
-    >
-      {/* Punto de sesión — sólido, sin el latido `tj-pulse-dot`. Era el
-          último bucle infinito decorativo que quedaba en la barra: una
-          luz parpadeando permanentemente junto al reloj compite con la
-          lectura y no aporta información (el estado no cambia). El
-          color en verde P&L ya comunica "sesión abierta". */}
-      <span
-        aria-hidden
-        className="rounded-[1px]"
-        style={{
-          width: 5,
-          height: 5,
-          background: "rgb(var(--pnl-pos, 62 207 142))",
-        }}
-      />
-      <span
-        className="tnum whitespace-nowrap"
-        // R27-1c — etiqueta y valor comparten --ink-2. Antes la etiqueta
-        // era terciaria y solo la hora secundaria, y el reloj entero se
-        // leía verdoso y desigual en tema claro. Ahora es un token
-        // monoespaciado uniforme; el punto pulsante es el único
-        // elemento en verde de acento.
-        style={{ fontSize: 11, letterSpacing: "0.04em", color: "var(--ink-2)" }}
-      >
-        UTC <span>{time}</span>
-      </span>
-    </span>
   );
 }
 
