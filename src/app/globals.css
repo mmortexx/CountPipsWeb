@@ -3711,14 +3711,27 @@ button.icon-btn:hover > svg,
    atraviesan y el velo sigue haciendo su trabajo de aislar.
 
    MARGEN DE CONTRASTE: el peor caso es texto terciario cayendo justo
-   encima de una línea del grabado. Con el atlas al 0,62 y el velo
-   dejando pasar un 16 %, la línea aporta como mucho un 10 % de tinta —y
-   eso solo si la línea va a opacidad plena, cosa que casi ninguna hace—,
-   lo que lleva la superficie hundida de #CDD2D8 a ≈#B9BDC2 en ese punto
-   exacto: el terciario #484D51 se queda en 4,53:1, por encima del 4,5:1
-   de AA. CUENTA REHECHA al cambiar el material — con el papel anterior
-   daba 4,7:1, y al pasar a chapa gris sin rehacerla el terciario se
-   habia quedado en 4,15:1, por DEBAJO del minimo.
+   encima de una línea del grabado.
+
+   ── LA CUENTA ESTABA HECHA CON UN ATLAS QUE YA NO EXISTE ────────────
+   Aquí decía «con el atlas al 0,62 y el velo dejando pasar un 16 %, la
+   línea aporta como mucho un 10 % de tinta», y de ahí salía un terciario
+   a 4,53:1. Pero el atlas se dibuja al 0,84 en oscuro y al 0,76 en
+   claro: alguien subió una de las dos cifras sin rehacer la cuenta, que
+   es justo contra lo que avisa el párrafo de abajo.
+
+   Medido en píxeles reales sobre el rótulo «§ 02» de la portada, que es
+   el peor caso del sitio: 2,10:1 en oscuro y 2,96:1 en claro, con un 2 %
+   del área del texto por debajo del mínimo. No era una décima de margen
+   perdida — era menos de la mitad de lo que hace falta.
+
+   Y el culpable principal no era la opacidad sino LA RAMPA. Ver la nota
+   de `--velo-rampa` más abajo.
+
+   Con la rampa corregida y el velo al 88 %, ese mismo rótulo mide 4,85:1
+   en oscuro y 5,12:1 en claro, y ningún otro texto medido empeora. El
+   velo sube de 84 a 88 —cuatro puntos— porque con la rampa arreglada
+   sola se quedaba en 4,45:1, cinco centésimas por debajo del listón.
 
    El velo SUBIÓ de 66 a 84 al oscurecer el lápiz, y ese es el
    compromiso: el trazo se ve mucho más donde importa —el hero y los
@@ -3771,7 +3784,7 @@ button.icon-btn:hover > svg,
      rehace la cuenta de contraste de arriba. Es lo que no ocurrió cuando
      el bloque «VEIL REBALANCE» del final del fichero declaró otros tres
      valores sin quitar éste — ver la nota que quedó en su lugar. */
-  --velo: 84%;
+  --velo: 88%;
   /* ── LA RAMPA NO PUEDE SER MAS ALTA QUE LA SECCION ────────────────
      El desvanecido vertical media 96 px fijos por arriba y por abajo.
      En una seccion de menos de 192 px las dos rampas SE SOLAPAN y el
@@ -3791,7 +3804,22 @@ button.icon-btn:hover > svg,
      opacidad en cualquier seccion. En las secciones altas —que son casi
      todas— el 25 % nunca gana al tope de 96 px, asi que su aspecto no
      cambia en absoluto. */
-  --velo-rampa: min(96px, 25%);
+  /* ── Y LA RAMPA MIDE 40 px, NO 96 ────────────────────────────────
+     Con 96 px, los primeros 96 px de CADA sección quedaban bajo un velo
+     a medio subir. Y ahí es exactamente donde vive la cabecera: medido
+     en la portada, el primer texto de sus secciones empieza a 52, 72,
+     96, 105, 110 y 114 px del canto. O sea que el rótulo y el titular
+     —el texto más pequeño y más apagado de la sección— eran justo lo
+     único que el velo no llegaba a proteger.
+
+     Barrido de valores midiendo píxeles reales bajo el rótulo «§ 02»:
+     96 px da 2,10:1, 64 px da 3,74:1, 40 px da 4,45:1 y por debajo de 40
+     ya no mejora — ahí el suelo lo pone lo que el grabado atraviesa a
+     través del velo completo, no la rampa. Se queda en 40: el
+     desvanecido sigue evitando el corte seco contra la sección vecina
+     —que además trae el suyo por abajo— y termina antes de que empiece
+     el contenido de ninguna sección del sitio. */
+  --velo-rampa: min(40px, 25%);
   background-color: transparent;
   background-image: linear-gradient(
     to bottom,
