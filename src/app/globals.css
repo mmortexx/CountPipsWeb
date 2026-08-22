@@ -748,11 +748,13 @@
   /* Standardized baseline transition for interactive + material
      surfaces. Buttons / links use the spec's `all 0.2s` cadence so
      every press / hover across the site shares the same tactile
-     feel; .pill gets the same. .glass is overridden below with a
-     richer 0.3s transition that also covers box-shadow + transform
-     so the depth-N hover deepening always eases smoothly. Tailwind
-     utilities (`transition-colors`, `transition-all`, `transition-shadow`)
-     still override per-element when they need different timing. */
+     feel. Tailwind utilities (`transition-colors`, `transition-all`,
+     `transition-shadow`) still override per-element when they need
+     different timing.
+
+     Este párrafo nombraba `.pill`, `.glass` y «the depth-N hover
+     deepening». Las tres se retiraron por no llevarlas nadie; el
+     comentario se quedó describiéndolas. */
   /* `transition: all` era la regla, y es una mala idea en una hoja que
      gobierna TODOS los enlaces y botones del sitio: `all` incluye las
      propiedades de maquetación (ancho, alto, relleno, posición), así
@@ -881,11 +883,6 @@
 
 @layer components {
 
-  /* DEPTH SCALE + BTN-APPLE are defined below as Tailwind v4 `@utility`
-     tokens and standard classes in the utilities layer so they support
-     `hover:depth-N` variants and win over conflicting utility classes
-     (`transition-colors`, `transition-all`) without per-element hacks. */
-
   .eyebrow {
     text-transform: uppercase;
     letter-spacing: 0.14em;
@@ -959,53 +956,6 @@
 
 }
 
-/* ============================================================
-   DEPTH-1 / DEPTH-2 / DEPTH-3 — Apple-style translucent
-   elevation shadows. Apply alongside `.glass` (or any translucent
-   surface) to give cards the perceived "floating layer" feel of
-   macOS / iOS material design.
-
-   Three escalating levels map to common UX roles:
-     depth-1  KPI tiles, chips, compact stat cells  (subtle rest)
-     depth-2  content cards, tables, chart panels   (clear lift)
-     depth-3  hero bands, featured CTAs, composers   (floating focal)
-
-   Each level pairs a tight contact shadow (small offset, sharp
-   falloff — the "key light") with a softer ambient shadow (large
-   blur, low alpha — the "fill"). At depth-3 we add an accent-tinted
-   glow so the focal card reads as glowing rather than just shadowed.
-
-   Light-theme shadows use stronger black alphas because lighter
-   backdrops absorb less ambient light; otherwise the elevation
-   disappears. The accent glow scales up in light theme too so it
-   stays visible against the brighter canvas.
-
-   Defined via `@utility` (Tailwind v4) so `hover:depth-N`,
-   `md:depth-N`, `group-hover:depth-N` etc. work as variants —
-   used across the demo + chart surfaces for the "deepen on hover"
-   effect (e.g. a `depth-1` card that becomes `depth-2` on hover).
-   ============================================================ */
-@utility depth-1 {
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.20),
-    0 2px 6px rgb(0 0 0 / 0.16);
-}
-@utility depth-2 {
-  box-shadow:
-    0 2px 4px rgb(0 0 0 / 0.22),
-    0 8px 18px rgb(0 0 0 / 0.22);
-}
-/* Sin tinte de acento: una sombra comunica DISTANCIA, no color. */
-@utility depth-3 {
-  box-shadow:
-    0 4px 10px rgb(0 0 0 / 0.26),
-    0 18px 40px rgb(0 0 0 / 0.30);
-}
-@utility depth-4 {
-  box-shadow:
-    0 6px 14px rgb(0 0 0 / 0.30),
-    0 24px 56px rgb(0 0 0 / 0.36);
-}
 
 /* ══════════════════════════════════════════════════════════════════
    ELEVACIÓN EN REPOSO, Y SOMBRAS QUE NO SON NEGRAS
@@ -1391,11 +1341,6 @@
     contain-intrinsic-size: auto 500px;
   }
 
-  /* DEPTH tokens are defined above as Tailwind v4 `@utility` declarations
-     (so `hover:depth-N`, `md:depth-N` etc. variants work) plus plain CSS
-     `:hover` deepen rules outside any layer (so they win cascade
-     precedence over conflicting `transition-colors` / `transition-all`
-     utilities). No duplicate definitions here. */
 }
 
 /* Thin, theme-aware scrollbar — subtle at rest, accent-tinted on hover.

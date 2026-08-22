@@ -251,8 +251,20 @@ describe("no se acumulan clases que no lleva nadie", () => {
       .replace(/url\([^)]*\)/g, "")
       .replace(/"[^"]*"/g, '""')
       .replace(/'[^']*'/g, "''");
+    /* Dos formas de declarar una clase, y la segunda no lleva punto.
+       Tailwind v4 define utilidades con `@utility nombre { … }`, y de ahí
+       sale una `.nombre` en el CSS que recibe el navegador. Buscando sólo
+       `.nombre`, esta prueba daba por retiradas las cuatro `depth-*`
+       mientras la hoja PUBLICADA las seguía sirviendo: se habían quitado
+       sus reglas normales y se habían dejado las declaraciones
+       `@utility`. Se descubrió comprobando el CSS de la web desplegada,
+       no el del repositorio — que es la diferencia entre creer que algo
+       está hecho y saberlo. */
     const declaradas = [
-      ...new Set([...hoja.matchAll(/\.([a-zA-Z][\w-]*)/g)].map((m) => m[1])),
+      ...new Set([
+        ...[...hoja.matchAll(/\.([a-zA-Z][\w-]*)/g)].map((m) => m[1]),
+        ...[...hoja.matchAll(/@utility\s+([a-zA-Z][\w-]*)/g)].map((m) => m[1]),
+      ]),
     ].sort();
 
     const fuente = ficherosTsx()
@@ -282,7 +294,7 @@ describe("no se acumulan clases que no lleva nadie", () => {
   it("la lista de ganchos no protege clases que ya no se declaran", () => {
     const hoja = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
     const huerfanos = Object.keys(GANCHOS).filter(
-      (c) => !new RegExp(`\\.${c}(?![\\w-])`).test(hoja),
+      (c) => !new RegExp(`(\\.|@utility\\s+)${c}(?![\\w-])`).test(hoja),
     );
     expect(huerfanos, "ganchos que ya no apuntan a ninguna regla").toEqual([]);
   });
