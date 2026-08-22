@@ -2337,7 +2337,29 @@ textarea:focus-visible,
 }
 
 /* ============================================================
-   TJ-CINTA — la fila que sigue a la derecha
+   TJ-FILA-SIGUE — la fila que sigue a la derecha
+   ============================================================
+   SE LLAMABA `.tj-cinta`, Y ESE NOMBRE YA ESTABA COGIDO. La banda de
+   simbolos de la portada (`Ticker.tsx`) declara su propio `.tj-cinta`
+   mas abajo en este mismo fichero, con `animation: tj-cinta-corre`. Dos
+   componentes sin ninguna relacion compartiendo clase quiere decir que
+   cada uno hereda los estilos del otro, y los dos salieron rotos:
+
+     · La fila de herramientas recibia la animacion de la banda y SE
+       DESLIZABA SOLA. Medido en `/herramientas/reloj-de-sesiones`: de
+       -11,9 px a -37,3 px en 2,5 s. En los 50 s del ciclo recorre la
+       mitad de sus 2.463 px, o sea 1.231 px, y las primeras
+       herramientas se salen de la vista sin que nadie las toque. En las
+       ocho paginas.
+     · La banda de la portada recibia el `margin-right: 3rem` que la
+       regla de abajo pone al ultimo hijo, y eso rompe la costura del
+       bucle: la pista pasaba de 2.034 px a 2.082 px mientras cada fila
+       seguia midiendo 1.017 px, asi que el -50 % caia en 1.041 px y
+       cada vuelta daba un SALTO de 24 px. Es exactamente el defecto
+       contra el que avisa el comentario de `tj-cinta-corre`, provocado
+       por una regla escrita para otro componente.
+
+   El nombre nuevo no es cosmetico: es lo que impide que vuelva a pasar.
    ============================================================
    La cinta de acceso entre las ocho herramientas se desplaza en
    horizontal, y en las pantallas donde no caben las ocho la última
@@ -2355,10 +2377,10 @@ textarea:focus-visible,
    queda fijo; por eso la cinta reserva a la derecha el mismo ancho que
    él, y lo que vela es hueco y nunca una entrada.
    ============================================================ */
-.tj-cinta {
+.tj-fila-sigue {
   position: relative;
 }
-.tj-cinta::after {
+.tj-fila-sigue::after {
   content: "";
   position: sticky;
   right: 0;
@@ -2376,11 +2398,11 @@ textarea:focus-visible,
   );
 }
 /* El hueco que garantiza que el desvanecido nunca tape una entrada. */
-.tj-cinta > :last-of-type {
+.tj-fila-sigue > :last-of-type {
   margin-right: 3rem;
 }
 @supports (animation-timeline: scroll()) {
-  .tj-cinta::after {
+  .tj-fila-sigue::after {
     animation: tj-pista-fin linear both;
     animation-timeline: scroll(nearest inline);
   }
@@ -5469,6 +5491,11 @@ svg [data-entra="sello"] {
 
    La pausa al pasar por encima ya no necesita estado de React: la deja
    quieta el navegador. */
+/* Esta clase es SOLO de la banda de simbolos de la portada. La fila de
+   acceso a las herramientas se llamo `.tj-cinta` durante un tiempo y
+   heredaba esta animacion: se deslizaba sola. Hoy se llama
+   `.tj-fila-sigue`. Antes de reutilizar este nombre, comprobar que no
+   se lo pone nadie mas. */
 .tj-cinta {
   animation: tj-cinta-corre 50s linear infinite;
   will-change: transform;
