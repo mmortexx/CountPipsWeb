@@ -2397,8 +2397,16 @@ textarea:focus-visible,
     transparent 100%
   );
 }
-/* El hueco que garantiza que el desvanecido nunca tape una entrada. */
-.tj-fila-sigue > :last-of-type {
+/* El hueco que garantiza que el desvanecido nunca tape una entrada.
+
+   `:last-child` y NO `:last-of-type`. Con `-of-type` la regla casaba
+   dos veces: la fila es un <span> de etiqueta seguido de ocho <a>, y el
+   <span> es el unico de su tipo, asi que tambien era «el ultimo de su
+   tipo». Resultado medido en las ocho paginas de /herramientas: 48 px
+   de margen colgando de «Herramientas:», que dejaban un hueco de 56 px
+   hasta la primera ficha donde el hueco normal es de 8. Siete veces lo
+   que toca, justo en la entrada de la cinta. */
+.tj-fila-sigue > :last-child {
   margin-right: 3rem;
 }
 @supports (animation-timeline: scroll()) {
@@ -4850,7 +4858,11 @@ button.icon-btn:hover > svg,
    existe desde hace tiempo para que la barra fija no tape lo que se
    enfoca, y funciona; abajo no había nada, así que el navegador llevaba
    el elemento enfocado al borde inferior de la ventana… justo debajo de
-   la hoja de cookies, que a 390 px ocupa unos 150 px a sangre.
+   la hoja de cookies, que a 390 px ocupa 112 px a sangre (145 px a
+   1440). Aquí ponía «unos 150 px»: remedido, son 112. La reserva de
+   11rem sigue cubriéndolo de sobra —0 de 68 paradas de tabulación
+   solapan el aviso a 390 px, 0 de 78 a 1440—, así que la cifra estaba
+   mal pero la decisión no.
 
    Medido tabulando parada a parada: en `/demo` a 390 px, NUEVE paradas
    quedaban tapadas del todo —entre ellas los botones Long y Short, los
@@ -5979,11 +5991,15 @@ svg [data-entra="sello"] {
 }
 
 /* ── LA PISTA DE QUE EL CAJÓN SIGUE ──────────────────────────────────
-   El cajón móvil pide más alto del que tiene: medido en 390×844, la
-   lista de secciones ocupa 744 px y dispone de 592. Los 152 px que
-   sobran —el grupo «Empresa» al completo— quedaban debajo de la
-   botonera fija sin ninguna señal, y el corte caía justo en un
-   epígrafe: no se leía como «hay más», se leía como el final.
+   El cajón móvil pide más alto del que tiene: remedido hoy en 390×844,
+   la lista de secciones ocupa 788 px y dispone de 592. Los 196 px que
+   sobran quedaban debajo de la botonera fija sin ninguna señal, y el
+   corte caía justo en un epígrafe: no se leía como «hay más», se leía
+   como el final.
+
+   (Ponía 744 y 592, «los 152 px que sobran — el grupo Empresa al
+   completo». La lista ha crecido desde entonces y ya no es ese grupo lo
+   que queda debajo del corte; el mecanismo no cambia, la cifra sí.)
 
    Es el mismo recurso que ya lleva la tabla comparativa para avisar de
    que se puede desplazar de lado, girado al eje vertical: un
