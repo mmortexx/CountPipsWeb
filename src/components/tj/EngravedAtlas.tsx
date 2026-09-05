@@ -825,6 +825,41 @@ function plateChrome(ctx: Ctx, w: number, h: number, t: number) {
   }
 }
 
+/* ---- EL SUELO DE LA FIGURA ------------------------------------------
+   El pie de la lámina (`.tj-interlude-caption`) se apoya en el canto
+   inferior de la pausa y trae su propio velo, que sube 3,5 rem por
+   encima del texto para que el grabado no cruce las letras. Medido en
+   la pausa de la portada, ese velo empieza en el 0,62 del alto de la
+   ventana a 1280×720, y más abajo en ventanas más altas.
+
+   O sea: TODO lo que una figura quiera que se lea —ejes, rótulos,
+   graduación, la aguja de un instrumento, la barra de totales— tiene
+   que quedar por encima de esa línea. Tres láminas lo ignoraban y
+   dibujaban hasta el borde: el calendario perdía la cabecera de días y
+   la barra de totales (que caía FUERA del lienzo), la distribución
+   enterraba su eje y sus rótulos de R bajo el velo, y del cuadrante de
+   riesgo se veía la bóveda pero no la aguja, ni el eje, ni la peana.
+   Quedaban tres figuras a medio contar debajo de un pie que las
+   describía enteras.
+
+   No vale una constante: la pausa de la portada mide 88 vh y la de las
+   páginas interiores 62, así que el pie sube o baja según dónde se
+   esté. Medido, el suelo va del 0,43 (una interior en una ventana de
+   640 de alto) al 0,69 (la portada a 1000). Fijarlo en el peor caso
+   encogería la portada sin motivo, y en el mejor volvería a enterrar
+   las figuras de las interiores.
+
+   Así que lo mide `measureAnchors`, que ya recorre las pausas una a una
+   cuando cambia la maqueta: aprovecha el mismo recorrido y no cuesta
+   una medida más de las que ya se pagan. Este valor es el de partida,
+   el que rige hasta la primera medida. */
+let sueloFigura = 0.54;
+
+/** El alto útil de la figura: por debajo empieza el velo del pie. */
+function suelo(h: number): number {
+  return h * sueloFigura;
+}
+
 /* =====================================================================
    LÁMINA I — La curva de rendimiento
    ===================================================================== */
@@ -1091,12 +1126,29 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
 
   const cols = 7;
   const rows = 5;
-  const gw = Math.min(w * 0.86, h * 1.55);
-  const gh = gw * 0.66;
+  /* La rejilla se calcula desde el hueco que queda LIBRE —entre el
+     margen del marco y el suelo de la figura—, no desde el lienzo
+     entero. Antes salía de `min(w·0.86, h·1.55)` con alto fijo de
+     0,66 del ancho: a 1440×900 daban 1238×817 sobre un lienzo de 900,
+     así que la cabecera de días arrancaba pegada al canto y la barra
+     de totales caía en el píxel 903 — fuera. */
+  const m = Math.min(w, h) * 0.055;
+  const techo = m + 34;
+  const sueloY = suelo(h);
+  const anchoUtil = w - (m + 30) * 2;
+  const ALTO_CABECERA = 26;
+  const ALTO_TOTALES = 42;
+  const altoRejilla = sueloY - techo - ALTO_CABECERA - ALTO_TOTALES;
+  /* Celda apaisada, como la de un calendario impreso, pero sin pasar de
+     1,55 de proporción ni caer en columnas estrechas y altas cuando la
+     ventana es de móvil. */
+  const chBruto = Math.min(altoRejilla / rows, 120);
+  const cw = Math.min(anchoUtil / cols, chBruto * 1.55);
+  const ch = Math.min(chBruto, cw * 1.15);
+  const gw = cw * cols;
+  const gh = ch * rows;
   const x0 = (w - gw) / 2;
-  const y0 = (h - gh) / 2 + h * 0.03;
-  const cw = gw / cols;
-  const ch = gh / rows;
+  const y0 = techo + ALTO_CABECERA + Math.max(0, (altoRejilla - gh) / 2);
 
   const days = serie("diasSemana");
   const hp = phase(t, 0.06, 0.2);
@@ -1110,8 +1162,8 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
       [x0 + gw, y0 - 7],
     ],
     hp,
-    0.7,
-    0.3,
+    1.2,
+    0.5,
     201
   );
 
@@ -1126,7 +1178,12 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
     const y = y0 + r * ch;
     const pad = 3;
 
-    handRect(ctx, x + pad, y + pad, cw - pad * 2, ch - pad * 2, easeOut(local), 0.55, 0.24, i * 3, 2);
+    /* El filete de la celda pesa más que antes (0,55 y 0,24 de tinta):
+       la máscara de trama se dibuja a 1/6 de escala, y ahí una línea de
+       medio píxel a un cuarto de tinta se queda por debajo del umbral y
+       no llega a soltar punto. Sin filete, las treinta y cinco celdas
+       se fundían en un solo campo rayado. */
+    handRect(ctx, x + pad, y + pad, cw - pad * 2, ch - pad * 2, easeOut(local), 1.15, 0.5, i * 3, 2);
     label(ctx, String(i + 1), x + cw - pad - 6, y + pad + 9, 9.5, 0.3, easeOut(local), "right");
 
     if (c === 5 || c === 6) continue; // el mercado cierra
@@ -1139,7 +1196,17 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
     ctx.beginPath();
     ctx.rect(x + pad + 1.5, y + pad + 1.5, cw - pad * 2 - 3, ch - pad * 2 - 3);
     ctx.clip();
-    const sp = 7.5 - mag * 4.2; // más apretado = día más grande
+    /* Más apretado = día más grande. El rango era 7,5→3,3 px, y ahí
+       estaba el ruido: la trama de puntos tiene paso 6 (`PASO_TRAMA`),
+       así que una raya cada 5-9 px LATE contra la rejilla y sale moaré
+       en vez de sombreado. Por debajo de 4 el muestreo la lee como
+       mancha llena —uniforme, sin densidad que leer— y el rango viejo
+       cruzaba las dos zonas: unas celdas macizas, otras vibrando.
+
+       De 15 a 23 px cada raya cae en su sitio y se cuenta: seis en un
+       día flojo, diez en uno fuerte. Es la diferencia que el pie
+       promete. */
+    const sp = 27 - mag * 12;
     hatch(ctx, x, y, cw, ch, -Math.PI / 4, sp, 0.5, 0.4, easeOut(local), i);
     /* Los días en pérdida llevan la segunda pasada cruzada: en grabado,
        el negro más profundo se hace cruzando la trama. */
@@ -1152,7 +1219,7 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
 
   /* Barra de totales bajo la rejilla: el resultado de cada columna. */
   const bp = phase(t, 0.74, 0.24);
-  const by = y0 + gh + 18;
+  const by = y0 + gh + 16;
   for (let c = 0; c < cols; c++) {
     const val = c > 4 ? 0 : 0.25 + rnd(c * 17 + 3) * 0.75;
     const bh = val * 26;
@@ -1165,7 +1232,7 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
     ctx.clip();
     hatch(ctx, bx, by, bwid, bh, Math.PI / 2, 3.2, 0.45, 0.36, 1, c * 11);
     ctx.restore();
-    handRect(ctx, bx, by, bwid, bh * bp, bp, 0.6, 0.3, c * 23, 1.5);
+    handRect(ctx, bx, by, bwid, bh * bp, bp, 1.1, 0.5, c * 23, 1.5);
   }
   engraveLine(
     ctx,
@@ -1174,8 +1241,8 @@ function plateCalendar(ctx: Ctx, w: number, h: number, t: number) {
       [x0 + gw, by],
     ],
     bp,
-    0.8,
-    0.34,
+    1.2,
+    0.5,
     211
   );
 }
@@ -1202,8 +1269,11 @@ function plateDistribution(ctx: Ctx, w: number, h: number, t: number) {
 
   const x0 = w * 0.07;
   const x1 = w * 0.93;
-  const y0 = h * 0.22;
-  const y1 = h * 0.76;
+  const y0 = h * 0.17;
+  /* El eje va por encima del velo del pie, con hueco para los rótulos
+     de R que cuelgan trece píxeles por debajo. Estaba en 0,76 del alto:
+     el histograma se apoyaba sobre una línea que nadie llegaba a ver. */
+  const y1 = suelo(h) - 34;
   const n = BARS.length;
   const bw = (x1 - x0) / n;
   const max = Math.max(...BARS);
@@ -1291,8 +1361,13 @@ function plateGauge(ctx: Ctx, w: number, h: number, t: number) {
   plateChrome(ctx, w, h, t);
 
   const cx = w / 2;
-  const cy = h * 0.68;
-  const R = Math.min(w * 0.42, h * 0.46);
+  /* El eje del instrumento —la aguja, el cubo y la peana— es lo último
+     que se dibuja y lo primero que hay que ver. Estaba en 0,68 del
+     alto, dentro del velo del pie: se veía la bóveda graduada y nada
+     más, como un arco suelto. Sube por encima del suelo de la figura,
+     dejando sitio para la peana, que cuelga veinte píxeles. */
+  const cy = suelo(h) - 44;
+  const R = Math.min(w * 0.42, h * 0.42);
   const A0 = Math.PI * 1.04;
   const A1 = Math.PI * 1.96;
 
@@ -1308,20 +1383,24 @@ function plateGauge(ctx: Ctx, w: number, h: number, t: number) {
 
   const arcR = phase(t, 0.04, 0.32);
   pencil(ctx, arcPts(R), arcR, 1.3, 0.46, 41, 2);
-  engraveLine(ctx, arcPts(R + 9), arcR, 0.55, 0.24, 43);
-  engraveLine(ctx, arcPts(R - 26), arcR, 0.5, 0.2, 47);
+  engraveLine(ctx, arcPts(R + 9), arcR, 0.95, 0.42, 43);
+  engraveLine(ctx, arcPts(R - 26), arcR, 0.9, 0.38, 47);
 
   /* Graduación: marca larga cada cinco, con su cifra. */
   const tickR = phase(t, 0.16, 0.34);
   const ticks = 50;
   const shown = Math.ceil(ticks * tickR);
   ctx.save();
-  ctx.globalAlpha *= 0.42;
+  /* La graduación es lo que convierte un arco en un instrumento, y era
+     justo lo que no llegaba a pintarse: a 0,55 px de grueso y 0,42 de
+     tinta, la máscara de trama —que se dibuja a 1/6— no pasaba del
+     umbral y el cuadrante salía liso. */
+  ctx.globalAlpha *= 0.55;
   for (let i = 0; i <= shown && i <= ticks; i++) {
     const a = A0 + (A1 - A0) * (i / ticks);
     const long = i % 5 === 0;
-    const r0 = R - (long ? 15 : 8);
-    ctx.lineWidth = long ? 1.05 : 0.55;
+    const r0 = R - (long ? 18 : 9);
+    ctx.lineWidth = long ? 1.9 : 1.1;
     ctx.beginPath();
     ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
     ctx.lineTo(cx + Math.cos(a) * (R - 1), cy + Math.sin(a) * (R - 1));
@@ -1354,8 +1433,11 @@ function plateGauge(ctx: Ctx, w: number, h: number, t: number) {
     ctx.arc(cx, cy, R - 25, A1, A1 - (A1 - A0) * 0.24, true);
     ctx.closePath();
     ctx.clip();
-    hatch(ctx, cx - R, cy - R, R * 2, R * 2, Math.PI / 4, 4.5, 0.5, 0.42, dangerR, 61);
-    hatch(ctx, cx - R, cy - R, R * 2, R * 2, -Math.PI / 4, 7, 0.4, 0.24, dangerR, 63);
+    /* Separaciones por encima del doble del paso de trama: a 4,5 y 7 px
+       la zona de peligro salía vibrando contra la rejilla de puntos en
+       vez de rayada. */
+    hatch(ctx, cx - R, cy - R, R * 2, R * 2, Math.PI / 4, 15, 0.9, 0.5, dangerR, 61);
+    hatch(ctx, cx - R, cy - R, R * 2, R * 2, -Math.PI / 4, 23, 0.7, 0.3, dangerR, 63);
     graphite(ctx, cx - R, cy - R, R * 2, R * 2, 260, 0.3, dangerR, 67);
     ctx.restore();
     label(
@@ -1385,37 +1467,47 @@ function plateGauge(ctx: Ctx, w: number, h: number, t: number) {
     53,
     2
   );
+  /* El cubo y la peana iban en píxeles fijos —6 de radio, 68 de ancho—
+     bajo una esfera que en escritorio pasa de setecientos de diámetro:
+     el instrumento quedaba apoyado en una pieza de juguete. Van atados
+     al radio, como en cualquier lámina de instrumento. */
+  const rHub = Math.max(6, R * 0.028);
   const hub: Pt[] = [];
   for (let i = 0; i <= 24; i++) {
     const ang = (i / 24) * Math.PI * 2;
-    hub.push([cx + Math.cos(ang) * 6, cy + Math.sin(ang) * 6]);
+    hub.push([cx + Math.cos(ang) * rHub, cy + Math.sin(ang) * rHub]);
   }
-  engraveLine(ctx, hub, needleR, 1.1, 0.5, 57);
+  engraveLine(ctx, hub, needleR, 1.3, 0.55, 57);
 
   /* Pie del instrumento: la peana. */
   const fp = phase(t, 0.66, 0.26);
+  const pw2 = Math.max(34, R * 0.13);
+  const pw1 = pw2 * 0.58;
+  const ph2 = Math.max(20, R * 0.075);
   engraveLine(
     ctx,
     [
-      [cx - 34, cy + 20],
-      [cx - 20, cy + 6],
-      [cx + 20, cy + 6],
-      [cx + 34, cy + 20],
+      [cx - pw2, cy + ph2],
+      [cx - pw1, cy + ph2 * 0.3],
+      [cx + pw1, cy + ph2 * 0.3],
+      [cx + pw2, cy + ph2],
     ],
     fp,
-    0.9,
-    0.32,
+    1.15,
+    0.46,
     59
   );
   ctx.save();
   ctx.beginPath();
-  ctx.moveTo(cx - 34, cy + 20);
-  ctx.lineTo(cx - 20, cy + 6);
-  ctx.lineTo(cx + 20, cy + 6);
-  ctx.lineTo(cx + 34, cy + 20);
+  ctx.moveTo(cx - pw2, cy + ph2);
+  ctx.lineTo(cx - pw1, cy + ph2 * 0.3);
+  ctx.lineTo(cx + pw1, cy + ph2 * 0.3);
+  ctx.lineTo(cx + pw2, cy + ph2);
   ctx.closePath();
   ctx.clip();
-  hatch(ctx, cx - 34, cy, 68, 22, Math.PI / 4, 4, 0.4, 0.3, fp, 69);
+  /* Trama por debajo del paso de la rejilla: a esta escala la peana se
+     quiere maciza, no rayada. */
+  hatch(ctx, cx - pw2, cy, pw2 * 2, ph2 * 1.2, Math.PI / 4, 2.6, 0.5, 0.34, fp, 69);
   ctx.restore();
 }
 
@@ -2885,12 +2977,42 @@ export function EngravedAtlas() {
       /* El primer ancla arranca donde termina la bienvenida, no en cero:
          ver `INTRO_HASTA`. */
       const list: [number, number][] = [[0, INTRO_HASTA * span]];
+      /* De paso —y sin pagar una pasada más— se mide dónde empieza el
+         velo del pie de cada pausa cuando está centrada: es el suelo por
+         debajo del cual una figura ya no se lee. Se queda el más alto de
+         todos, que es el que sirve para todas. Ver `sueloFigura`. */
+      let suelo0 = 1;
       nodes.forEach((el, i) => {
         const r = el.getBoundingClientRect();
         /* Scroll al que esta pausa queda centrada en la ventana. */
         const centred = r.top + scrollY + r.height / 2 - innerHeight / 2;
         list.push([Math.max(0, centred), Math.min(1, (i + 0.97) * span)]);
+        /* Sólo cuentan las pausas ALTAS —62 vh o 88 vh, las dos medidas
+           reales del sitio—, nunca las cortas. En ≤900 px de ancho la
+           propia hoja de estilos encoge la pausa a 32-38 vh (la nota
+           está junto a `.tj-interlude` en `globals.css`) para no dejar
+           un hueco muerto de scroll. Ahí el pie ocupa casi toda la caja
+           y su velo arranca casi en el techo del recorte —a un 0,29 de
+           la ventana, medido—, muy por encima de donde de verdad hace
+           falta subir la figura: el lienzo es del tamaño de la VENTANA
+           entera, no de la pausa, así que tomar ese suelo habría
+           encogido el cuadrante de riesgo hasta dejarlo asomando por
+           detrás de la sección anterior. El umbral de la mitad separa
+           limpio los dos mundos —0,62 y 0,88 pasan, 0,32-0,38 no—; en
+           una pausa corta la propia caja ya reparte el espacio y no
+           necesita esta medida. */
+        if (r.height < innerHeight * 0.5) return;
+        const pie = el.querySelector(".tj-interlude-caption");
+        if (pie && innerHeight > 0) {
+          /* `top: -3.5rem` en `.tj-interlude-caption::before`. */
+          const arriba = pie.getBoundingClientRect().top + scrollY - 56 - centred;
+          const f = arriba / innerHeight;
+          if (f < suelo0) suelo0 = f;
+        }
       });
+      /* Los topes evitan que una maqueta a medio asentar deje el atlas
+         dibujando en una franja absurda. */
+      if (suelo0 < 1) sueloFigura = Math.min(0.72, Math.max(0.46, suelo0));
       const max = document.documentElement.scrollHeight - innerHeight;
       if (max > 0) list.push([max, 1]);
       /* Estrictamente creciente en x: si dos anclas caen en el mismo
