@@ -281,16 +281,25 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             />
           ))}
 
-          {/* Grid lines */}
+          {/* Grid lines. Su etiqueta de precio se omite cuando cae encima
+              de la de SL, TP o entrada: las tres viven en la misma franja
+              del margen derecho, y cuando una operación tiene el stop o el
+              objetivo cerca de una división de la rejilla, los dos textos
+              caían en el mismo Y y salían superpuestos e ilegibles. La
+              línea de puntos se mantiene — sólo se retira el número que
+              ya dice la etiqueta con recuadro. */}
           {[0.2, 0.4, 0.6, 0.8].map((ratio) => {
             const y = padT + ratio * chartH;
             const priceVal = maxPrice - ratio * priceRange;
+            const chocaConNivel = [entryY, stopY, targetY].some((ny) => Math.abs(ny - y) < 9);
             return (
               <g key={ratio}>
                 <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="rgb(var(--divider)/0.08)" strokeDasharray="3 3" />
-                <text x={W - padR + 6} y={y + 3} fill="var(--ink-3)" fontSize="9" fontFamily="monospace" textAnchor="start">
-                  {fmtPrice(priceVal, decimals, lang)}
-                </text>
+                {!chocaConNivel && (
+                  <text x={W - padR + 6} y={y + 3} fill="var(--ink-3)" fontSize="9" fontFamily="monospace" textAnchor="start">
+                    {fmtPrice(priceVal, decimals, lang)}
+                  </text>
+                )}
               </g>
             );
           })}
