@@ -5150,10 +5150,36 @@ svg [data-entra="sello"] {
 
    `both` en el modo de relleno: sin él, el elemento parpadea a su
    estado final durante el retardo antes de empezar. */
+/* Dos animaciones y no una: `tj-estampa` sólo mueve la escala desde que
+   el sobreimpulso dejó de arrastrar a la tinta (ver el bloque del sello),
+   así que la opacidad necesita la suya. Con una sola, el disco nacía
+   opaco y sólo crecía.
+
+   En longhands por lo mismo que allí: el atajo `animation` con lista
+   pierde el segundo elemento al compilar. */
 .tj-estampa-ya {
-  animation: tj-estampa 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-name: tj-estampa, tj-estampa-tinta;
+  animation-duration: 0.45s, 0.3s;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1), var(--ease-suave);
+  animation-fill-mode: both, both;
   transform-box: fill-box;
   transform-origin: center;
+}
+/* Aquí el muelle sí tiene su línea de tiempo natural —el disco se estampa
+   al pulsar «enviar», por reloj y no por scroll—, así que se lleva la
+   misma curva de muelle real que el sello. */
+@supports (animation-timing-function: linear(0, 1)) {
+  .tj-estampa-ya {
+    animation-timing-function:
+      linear(
+        0, 0.017, 0.061, 0.127, 0.207, 0.296, 0.389, 0.483, 0.574, 0.66,
+        0.739, 0.81, 0.872, 0.926, 0.971, 1.008, 1.037, 1.058, 1.074, 1.084,
+        1.089, 1.09, 1.088, 1.084, 1.078, 1.07, 1.062, 1.054, 1.045, 1.037,
+        1.03, 1.023, 1.016, 1.011, 1.006, 1.002, 0.999, 0.996, 0.995, 0.993,
+        0.992, 0.992, 0.992, 0.992, 0.993, 0.993, 0.994, 0.995, 0.995, 1
+      ),
+      var(--ease-suave);
+  }
 }
 .tj-dibuja-ya {
   stroke-dasharray: 1;
@@ -5521,13 +5547,24 @@ svg [data-entra="sello"] {
    espera. La entrada dura algo más que la salida para que el contenido
    nuevo llegue asentándose en vez de frenando en seco. */
 
+/* La entrada lleva `--ease-suave` por su nombre y no copiada a mano:
+   `cubic-bezier(0.22, 1, 0.36, 1)` escrito aquí era la curva de la casa
+   duplicada, y una copia es una curva que el día que se afine el token
+   se queda atrás sin que nadie se entere. Las propiedades personalizadas
+   heredan al árbol de la transición de vista desde la raíz, así que el
+   token llega —comprobado leyendo la animación resuelta, no supuesto.
+
+   La salida NO tiene token, y es deliberado: `cubic-bezier(0.4, 0, 1, 1)`
+   acelera hacia fuera, que es lo contrario de todo lo demás en esta
+   hoja. Una página que se va debe quitarse de en medio; sólo ocurre
+   aquí, así que no se asciende a token. */
 ::view-transition-old(pagina) {
   animation:
     tj-vt-sale 200ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 ::view-transition-new(pagina) {
   animation:
-    tj-vt-entra 260ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+    tj-vt-entra 260ms var(--ease-suave) 60ms both;
 }
 @keyframes tj-vt-sale {
   to {
