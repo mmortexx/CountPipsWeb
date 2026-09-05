@@ -25,9 +25,10 @@ import { LAMINAS_PRODUCTO, ORDEN_LAMINAS } from "@/lib/laminas";
  * usa el programa: una barra de secciones arriba y una pantalla debajo.
  * La galería imita esa barra a propósito.
  *
- * La portada NO usa esto: allí van dos láminas fijas, sin pestañas, y por
- * un motivo que está escrito en `ProductShowcase` — quien llega frío no
- * elige, mira lo que se le pone delante. Aquí ya ha entrado a leer las
+ * La portada monta las mismas láminas por su cuenta (`ProductShowcase`,
+ * § 02) pero sólo cuatro: allí la sección tiene que caber en una portada
+ * que ya mide diez mil píxeles. Aquí van las siete, que es lo que esta
+ * página promete. Aquí ya ha entrado a leer las
  * características, así que elegir es una mejora y no un peaje.
  *
  * ── Lo que NO hace ────────────────────────────────────────────────────
