@@ -98,6 +98,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
             return (
               <div
                 key={c.t}
+                data-entra="ciclo"
                 // El papel translúcido conserva el filtrado del atlas por los
                 // bordes; `tj-hoja` le pone encima el doble filete y el apoyo
                 // del resto de superficies del sitio.

@@ -67,6 +67,7 @@ export function ProfileSelector() {
               <Link
                 key={profile.id}
                 href={profile.href}
+                data-entra="ciclo"
                 onClick={() => trackEvent("profile_selected", { profile: profile.id })}
                 /* `tj-hoja`: el mismo doble filete y el mismo apoyo que la
                    lámina de una captura. Antes era un filete al 15 % sobre

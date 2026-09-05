@@ -54,17 +54,48 @@ diseño sección por sección: abrir la ruta en claro y oscuro, escritorio y
 móvil, y comparar contra el resto del sitio — no hay una lista cerrada de
 pendientes porque el objetivo es "al máximo nivel", no una casilla que marcar.
 
-## Pendiente señalado por el propietario
+## La pasada de animaciones (hecha el 2026-09-05)
 
-- **Animaciones del fondo y de la web en general**: el propietario pide una
-  pasada específica para llevarlas "al máximo nivel de diseño y
-  profesionalidad", usando el modelo Fable 5.1 cuando esté disponible en esta
-  sesión. Alcance a revisar: el revelado del atlas grabado (`EngravedAtlas.tsx`,
-  el ritmo de `phase()`/`easeOut()` de cada lámina), las entradas por scroll
-  (`data-entra`, `Reveal.tsx`, `SectionReveal.tsx`), la intro de primera visita
-  (`IntroSequence.tsx`) y cualquier transición de `framer-motion` o CSS que
-  quede corta frente al resto del pulido visual ya hecho. No es una lista de
-  bugs — es una petición de subir el nivel de ambición del movimiento en sí.
+Se resolvió lo que de verdad se veía mal, que no era la cantidad de
+movimiento sino su **cadencia**:
+
+- **La bienvenida del atlas se grababa detrás de la cortina.** El reloj
+  arrancaba al montar el lienzo, y el loader de primera visita tapa la
+  pantalla más de un segundo. Encima el destino se tomaba como el mayor
+  entre el scroll y la intro, y el primer ancla ya declaraba el destino
+  entero en scrollY = 0: la lámina se plantaba de un tirón y la curva de
+  cinco segundos no gobernaba nada. Ahora la intro espera a que suba la
+  cortina (`src/lib/intro.ts`) y su recorrido es la parte por debajo de
+  `INTRO_HASTA`, con el scroll añadiendo sólo lo que pida por encima.
+- **La curva de fase de las dieciséis láminas** pasa de cúbica a
+  cuadrática. Una lámina tiene veinte fases y la cúbica daba veinte
+  latigazos escalonados.
+- **El cruce entre láminas** mueve la figura con la misma curva con la
+  que la funde; era lineal y se cortaba en seco.
+- **El cambio de tema se funde** con una transición de vista (una sola
+  animación que incluye el canvas del fondo) en vez de cambiar todos los
+  píxeles en el mismo fotograma.
+- Escalonado de entrada donde faltaba (selector de perfil, tarjetas de
+  seguridad, pasos del diagrama de datos), curva de la casa en el botón
+  de volver arriba, y fuera el rótulo que flotaba en bucle sobre el
+  comparador.
+
+### Lo que se probó y se descartó, con la medida
+
+Se llegó a reescribir el asiento de la trama de puntos (por reloj en vez
+de por scroll, con retícula girada 14° y temblor por celda, para que el
+marco no se leyera como una perforación). Se ve mejor en detalle, pero el
+banco de fluidez lo tumbó: p99 de 29,6 a 37,4 ms contra un presupuesto de
+28, en las cuatro medidas. Se probó a acotarlo con un tope de puntos vivos
+y con una ventana de asiento adaptativa, y siguió por encima. **Se
+revirtió entero.** Si alguien lo retoma, el camino no es acotar el número
+de puntos animados: es que el asiento no obligue a recorrer la máscara
+completa en cada fotograma.
+
+Queda pendiente, sin urgencia: completar la migración de `framer-motion`
+a CSS/WAAPI en la demo interactiva (`AppDemo` y sus cinco páginas), que es
+lo único que sigue cargando la biblioteca — y sólo en `/demo`, en diferido,
+así que no pesa en las otras 154 páginas.
 
 ## Herramientas de auditoría propias
 

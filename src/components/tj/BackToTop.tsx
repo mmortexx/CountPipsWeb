@@ -240,7 +240,7 @@ export function BackToTop() {
           mismo eje: mezclarlas en un elemento hace que la última escrita
           pise a la anterior. */}
       <div
-        className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform duration-200 ease-out motion-reduce:transition-none"
+        className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform duration-200 ease-[var(--ease-suave)] motion-reduce:transition-none"
         style={{ transform: `translateY(-${totalLift}px)` }}
       >
         {/* Montado siempre y visible por atributo, en vez de montado y
