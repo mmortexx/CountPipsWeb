@@ -246,6 +246,49 @@ nueva. Si un cambio de CSS «no hace nada», comprobar primero con
   piezas revisadas y 1 sola en la tercera categoría**, y esa es un caso
   de borde justo en el pliegue. Nada atascado al fondo en ninguna ruta.
 
+### Tercera tanda: foco, toque y reglas de móvil
+
+Tres reglas que el sistema de diseño exige por escrito, medidas en vez
+de supuestas, tabulando la página y midiendo cajas a 390×844.
+
+- **Anillo de foco**: 0 fallos. Todo lo tabulable de catorce rutas tiene
+  contorno o sombra al recibir el foco. No hacía falta tocar nada.
+- **Objetivo de toque de 44 px**: catorce controles por debajo.
+  - Los cuatro enlaces de las tarjetas de Valores en la portada, a
+    **20 px** — el único control de su tarjeta y el peor del sitio.
+  - Las fichas de zona horaria (32), las de setup del perfil de trader
+    (36), las siete de firma y tamaño de cuenta (32), el botón de copiar
+    informe (32) y las dos etiquetas de consentimiento de `/beta` (36).
+  - Dos arreglos distintos: en Valores basta `min-h-[44px]`, el modismo
+    de la casa, con el margen bajado de `mt-4` a `mt-1` para que el
+    enlace **no se mueva ni un píxel** y sólo crezca la zona que
+    responde. En las filas de fichas no vale subirlas en todas las
+    anchuras —una ficha de 44 px con texto de 12 es casi todo aire, y
+    viven en herramientas densas—, así que se añade `.toque-comodo` bajo
+    `@media (pointer: coarse)`: lo que decide si hacen falta 44 px es si
+    apunta un dedo o un ratón, no el ancho de la ventana.
+- **Letra de 16 px en campos de móvil**: los seis del formulario de alta
+  iban a 14. Safari de iOS hace zoom al enfocar por debajo de 16 y deja
+  la página desencuadrada. Pasan a `text-base sm:text-sm`, como ya hacía
+  `ContactForm`.
+
+De paso, en las mismas catorce rutas: **0 desbordes horizontales** y
+**0 jerarquías de titular rotas** (un solo `h1`, sin saltos).
+
+Y dos defectos sueltos en un mismo deslizador, el de «número de
+parámetros»: pasaba `height: 36` cuando `.tj-range` declara 44 y los
+otros **cinco** deslizadores del sitio pasan 44; y le faltaba `--pct`,
+así que la pista caía al respaldo de 0 % y **el tramo recorrido no se
+pintaba nunca**.
+
+> Aviso sobre las herramientas de medida: dos de los «fallos» que
+> encontraron eran suyos, no del sitio. El `SkipLink` sale como 1×1
+> porque es `sr-only` hasta recibir foco, y una casilla envuelta por su
+> `<label>` se pulsa por el texto entero, así que su objetivo real es la
+> etiqueta y no el cuadrito de 16 px. Las dos exclusiones están escritas
+> en el guion; conviene desconfiar de un informe antes de arreglar lo
+> que señala.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
