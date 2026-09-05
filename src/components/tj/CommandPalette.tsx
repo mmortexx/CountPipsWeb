@@ -113,6 +113,14 @@ export function CommandPalette({
     return () => window.removeEventListener("keydown", onEsc, true);
   }, [open, setOpen]);
 
+  /* `cmdk` no autoenfoca su input: sin esto, ⌘K abre la paleta y lo
+     primero que se teclea se pierde, porque el foco se queda en lo que
+     ya lo tuviera antes de abrir. */
+  useEffect(() => {
+    if (!open) return;
+    panelRef.current?.querySelector<HTMLInputElement>("[cmdk-input]")?.focus();
+  }, [open]);
+
   useEffect(() => {
     if (!open) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;

@@ -1,65 +1,60 @@
-# E2E Test Infra: CountPips
+# Infraestructura de tests: CountPips
 
-## Test Philosophy
-- **Opaque-box & Requirement-driven**: Tests derive strictly from user requirements in `ORIGINAL_REQUEST.md` and user-facing specifications across all 13 quality dimensions (D1 to D13).
-- **Systematic Multi-Tier Verification**:
-  - **Tier 1: Feature Coverage** (>=5 test cases per dimension covering nominal happy-path functionality).
-  - **Tier 2: Boundary & Corner Cases** (>=5 test cases per dimension covering extremes, null/empty/overflow/zero states).
-  - **Tier 3: Cross-Feature Interactions** (Pairwise combination testing verifying integrated behavior).
-  - **Tier 4: Real-World Application Workloads** (End-to-end user journeys and trading scenarios).
-- **Progressive Testability**: Verification uses standard Vitest execution (`npm test`) in Node.js environment without circular dependencies or unneeded complexity.
+## Filosofía
 
----
+- **Caja opaca y dirigida por requisitos**: `tests/e2e/` verifica las 13+1
+  dimensiones de calidad del producto (matemáticas, accesibilidad, i18n, SEO,
+  rendimiento, tokens, seguridad, atajos, motor de demo, métricas institucionales).
+- **Contratos de diseño**: `tests/` (raíz) verifica invariantes concretos del
+  sitio en construcción — cosas que un cambio de CSS o de copy podría romper
+  sin que ningún tipo se queje.
+- **Runner**: Vitest (`npm test` / `npx vitest run`). Sin mocks que sustituyan
+  lógica real, sin fechas no deterministas.
 
-## 13 Quality Dimensions & Feature Inventory
+## `tests/e2e/` — por dimensión de calidad
 
-| # | Dimension | Requirement | Tier 1 (Nominal) | Tier 2 (Boundary) | Tier 3 (Pairwise) | Tier 4 (Real-World) |
-|---|-----------|-------------|:----------------:|:-----------------:|:-----------------:|:-------------------:|
-| D1 | Quantitative & Financial Math | Sharpe, Sortino, Calmar, PF CI, Kelly, Binomial CDF, Monte Carlo, Guardian | ≥5 | ≥5 | ✓ | ✓ |
-| D2 | WCAG 2.1 AA Accessibility | Touch targets ≥44x44, contrast, focus traps, ARIA, reduced-motion | ≥5 | ≥5 | ✓ | ✓ |
-| D3 | Mobile Viewport 390×844 | Zero overflow, font sizes ≥16px for inputs, table/chart responsive | ≥5 | ≥5 | ✓ | ✓ |
-| D4 | Bilingual Parity ES/EN | 100% STR dictionary parity, 51 glossary terms, tools, FAQs, legal | ≥5 | ≥5 | ✓ | ✓ |
-| D5 | SEO & Metadata | Unique titles, descriptions ≤160 chars, canonicals, hreflang, JSON-LD | ≥5 | ≥5 | ✓ | ✓ |
-| D6 | Performance & Hydration | Deterministic SSR/SSG time, pure CSS animations, dynamic imports | ≥5 | ≥5 | ✓ | ✓ |
-| D7 | Type Integrity & Tooling | TypeScript strictness, zero any, test suite execution | ≥5 | ≥5 | ✓ | ✓ |
-| D8 | Design System Tokens | `--tj-*`, `--surface-*` token purity, theme switching light/dark | ≥5 | ≥5 | ✓ | ✓ |
-| D9 | Security & Privacy | 100% local processing, zero external telemetry leaks, CookieConsent | ≥5 | ≥5 | ✓ | ✓ |
-| D10 | Editorial Tone & Copy | Institutional copy, pricing disclaimers, no false promises | ≥5 | ≥5 | ✓ | ✓ |
-| D11 | Navigation & Shortcuts | Ctrl+K command palette, Ctrl+G glossary, logical tab index | ≥5 | ≥5 | ✓ | ✓ |
-| D12 | Error Handling & Resilience | NaN/Infinity guards, localStorage try-catch, invalid input rejection | ≥5 | ≥5 | ✓ | ✓ |
-| D13 | Demo Engine State Sync | Deterministic mulberry32 PRNG, UTC timestamps, useSyncExternalStore | ≥5 | ≥5 | ✓ | ✓ |
+| Fichero | Dimensión | Qué verifica |
+|---|---|---|
+| `d1_math_accuracy.test.ts` | D1 | Sharpe, Sortino, Calmar, Kelly, CDF normal, Monte Carlo, Guardian |
+| `d2_d3_accessibility_viewport.test.ts` | D2 + D3 | WCAG AA (contraste, touch targets, ARIA) y viewport 390×844 |
+| `d4_bilingual_parity.test.ts` | D4 | Paridad 1:1 de `STR`, glosario, herramientas, FAQ, legales |
+| `d5_seo_metadata.test.ts` | D5 | Títulos únicos, descripciones ≤160, canonical, hreflang, JSON-LD |
+| `d6_performance_hydration.test.ts` | D6 | Determinismo SSR/SSG, fechas de publicación, sin hidratación no determinista |
+| `d7_d13_demo_engine.test.ts` | D7 + D13 | PRNG `mulberry32` determinista, fechas UTC, sincronía entre vistas |
+| `d8_design_tokens.test.ts` | D8 | Pureza de tokens, sin hex sueltos, mapeo de paletas claro/oscuro |
+| `d9_d10_security_editorial.test.ts` | D9 + D10 | Privacidad cliente, consentimiento de PostHog, tono institucional |
+| `d11_d12_shortcuts_resilience.test.ts` | D11 + D12 | Ctrl+K / Ctrl+G, `try/catch` de storage, validación de entradas |
+| `d14_institutional_suite.test.ts` | D14 | Multiplicadores de instrumento, SQN, índice de úlcera, asimetría de drawdown |
+| `tier3_pairwise_combinations.test.ts` | — | Combinaciones de features por pares |
+| `tier4_real_world_scenarios.test.ts` | — | Recorridos de usuario completos |
 
----
+## `tests/` (raíz) — contratos del sitio
 
-## Test Architecture & Layout
+| Fichero | Qué vigila |
+|---|---|
+| `adversarial_stress.test.ts` | Casos límite adversariales del motor de métricas y contratos de futuros |
+| `atlas.test.ts` | Qué lámina del fondo grabado le toca a cada ruta (`atlas.ts`) |
+| `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida |
+| `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas |
+| `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
+| `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
+| `grabado-404.test.ts` | Contrato de `Grabado404`, la lámina de la página 404 |
+| `grabado.test.ts` | Reglas del estilo "grabado" comprobables por máquina |
+| `hero-calcs.test.ts` | Las micro-calculadoras del hero (sin deslizadores) |
+| `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
+| `metricas.test.ts` | El motor de métricas y la distribución de R de la portada |
+| `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
+| `tipografias.test.ts` | El build no depende de que Google Fonts responda |
+| `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma |
 
-- **Runner**: Vitest (`npm test` / `npx vitest run`)
-- **Location**: `tests/` and `tests/e2e/`
-- **Suites**:
-  1. `tests/e2e/d1_math_accuracy.test.ts` — Comprehensive financial formulas, delta-method CI, Kelly, Monte Carlo, Guardian.
-  2. `tests/e2e/d2_accessibility_wcag.test.ts` — Touch target standards, ARIA attributes, focus states, reduced-motion specs.
-  3. `tests/e2e/d3_mobile_viewport.test.ts` — Viewport 390x844 layout assertions, font-size >= 16px checks, responsive constraints.
-  4. `tests/e2e/d4_bilingual_parity.test.ts` — Key-by-key parity in `STR`, glossary (51 terms), tools, FAQs, and legal routes.
-  5. `tests/e2e/d5_seo_metadata.test.ts` — Title uniqueness, description <= 160 length, canonical URLs, hreflang symmetry, JSON-LD schema validity.
-  6. `tests/e2e/d6_d8_performance_tokens.test.ts` — Design token usage, no raw hex leaks, SSR determinism, theme token mappings.
-  7. `tests/e2e/d9_d10_security_editorial.test.ts` — Client-side privacy, PostHog consent gating, institutional tone invariants.
-  8. `tests/e2e/d11_d12_shortcuts_resilience.test.ts` — Shortcut keybindings (Ctrl+K, Ctrl+G), storage error handling, input validation.
-  9. `tests/e2e/d13_demo_engine.test.ts` — Mulberry32 PRNG determinism, UTC date consistency, cross-view state synchronization.
-  10. `tests/e2e/tier3_pairwise_combinations.test.ts` — Multi-feature interaction matrix.
-  11. `tests/e2e/tier4_real_world_scenarios.test.ts` — Full user lifecycle and trading journal workflows.
+## Fuera de Vitest: auditoría manual con el sitio compilado
 
----
+No son parte de `npm test` — se corren aparte, contra `/out`, y cada uno
+explica en su cabecera qué mide. Ver la lista de comandos en
+[PROJECT.md](PROJECT.md#herramientas-de-auditoría-propias).
 
-## Minimum Coverage Thresholds
-- **Tier 1 (Feature Coverage)**: ≥65 test cases (≥5 per dimension × 13 dimensions)
-- **Tier 2 (Boundary & Corner Cases)**: ≥65 test cases (≥5 per dimension × 13 dimensions)
-- **Tier 3 (Cross-Feature Combinations)**: ≥15 test cases (Pairwise interactions)
-- **Tier 4 (Real-World Application Scenarios)**: ≥8 complex scenarios
-- **Total Minimum Target**: ≥153 test cases
+## Umbral de aceptación
 
----
-
-## Pass/Fail Acceptance Criteria
-- All tests execute and pass via `npm test` with exit code 0.
-- Zero flaky or time-dependent assertions (all dates mocked or deterministic UTC).
-- Zero mock shortcuts that bypass actual module business logic.
+- Todo pasa con `npx vitest run`, código de salida 0.
+- Cero aserciones dependientes del reloj real (fechas mockeadas o UTC fijo).
+- Cero atajos que salten la lógica real del módulo bajo prueba.
