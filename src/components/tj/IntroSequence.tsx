@@ -65,7 +65,27 @@ import { levantarCortina } from "@/lib/intro";
 const LOADER_MS = 600;
 const PAUSA_MS = 80;
 const REVEAL_RETARDO_MS = 40;
-const REVEAL_PASO_MS = 55;
+/* 40 y no 55 desde que el escalonado va en la dirección del telón. Dos
+   motivos, y los dos empujan al mismo sitio:
+
+   · El canto del telón tarda unos 136 ms en recorrer el hero de abajo
+     arriba (medido: la barra de specs se destapa a 1061 ms y la ceja a
+     1197). Con 55 ms de paso, las seis piezas se reparten 275 ms y el
+     escalonado se queda por detrás del canto; con 40 son 200 ms, que
+     lo sigue de cerca.
+   · Invertir el orden le pone al h1 el retardo largo en vez del corto,
+     y el h1 es lo que `scripts/arranque.mjs` cronometra. Ese coste no
+     se puede evitar del todo, sólo acotar: con paso de 40, medido tres
+     veces por versión con el freno a ×4 (mediana), el titular pasa de
+     1442 a 1530 ms — unos 90 ms, contra un presupuesto de 2500. El
+     total de la secuencia no empeora: 2327 → 2308 ms.
+
+     Se paga a sabiendas. Noventa milisegundos en una cifra que sobra
+     por casi un segundo, a cambio de que la entrada del hero se vea en
+     vez de ocurrir a oscuras, es un cambio que sale a favor. Si algún
+     día ese presupuesto se aprieta, esto es lo primero que hay que
+     mirar. */
+const REVEAL_PASO_MS = 40;
 const REVEAL_MS = 520;
 
 export function IntroSequence() {
