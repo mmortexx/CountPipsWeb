@@ -148,8 +148,17 @@ export function ProductShowcase() {
               reutilizarla: sin él, el `<img>` conserva la captura
               anterior mientras descarga la nueva y la pestaña parece no
               responder. La primera va con prioridad porque es la que se
-              pinta sin que nadie la pida. */}
-          <ProductPlate key={activa} lamina={lamina} priority={activa === PANTALLAS_PORTADA[0]} />
+              pinta sin que nadie la pida.
+
+              `tj-lamina-cambia` es lo que le faltaba: la galería de
+              `/features` monta ESTE MISMO componente con esta misma
+              interacción y allí el cambio de pestaña se revela, mientras
+              que aquí —en la portada, que es donde más gente lo va a
+              tocar— la captura se reemplazaba de golpe. La misma acción
+              no puede comportarse de dos maneras según la página. */}
+          <div key={activa} className="tj-lamina-cambia">
+            <ProductPlate lamina={lamina} priority={activa === PANTALLAS_PORTADA[0]} />
+          </div>
         </div>
 
         {/* ── EL PIE DE LA SECCIÓN, CON PESO Y CON SUELO ──────────────
