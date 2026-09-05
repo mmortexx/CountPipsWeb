@@ -1395,9 +1395,8 @@ html {
        applies immediately (e.g. IntroSequence's 5s failsafe delay,
        staggered ScrollReveal children).
      - iteration-count → 1  detiene los bucles infinitos que queden
-       (hoy sólo `tj-float`) tras una sola
-       tick — combined with the 0.01ms duration the loop body is
-       invisible.
+       (la cinta de cotizaciones) tras un solo tick — con la duración de
+       0,01 ms el cuerpo del bucle es invisible.
      - scroll-behavior → auto  cancels the html { scroll-behavior:
        smooth } rule so anchor jumps are instant.
      The per-component overrides scattered below (.grain::after,
@@ -2627,10 +2626,6 @@ button.icon-btn:hover > svg,
   display: inline-block;
   animation: tj-char-in 420ms var(--ease-suave) backwards;
   animation-delay: var(--tj-char-delay, 0ms);
-}
-@keyframes tj-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
 }
 /* Intro — estado pre-hidratación: el script inline del <head> añade
    `.tj-preload` al <html> en la primera visita de la sesión, así los
@@ -5426,6 +5421,40 @@ svg [data-entra="sello"] {
   ::view-transition-old(pagina),
   ::view-transition-new(pagina) {
     animation: none;
+  }
+}
+
+/* ── EL CAMBIO DE TEMA SE FUNDE, NO SALTA ─────────────────────────────
+   Pasar de papel a noche cambiaba todos los píxeles en el mismo
+   fotograma: un fogonazo. Transicionar cada color por CSS es la solución
+   habitual y la peor —cientos de transiciones a la vez, cada una con su
+   propio tempo, y el lienzo del fondo no sabe transicionar—. Con una
+   transición de vista el navegador funde una FOTO de la página vieja
+   sobre la nueva: una sola animación, todo incluido, el atlas también.
+
+   La clase la pone `ThemeProvider` sólo durante el cambio de tema, para
+   que la raíz siga quieta en las transiciones de página de arriba. Sólo
+   se anima la foto vieja —apagándose sobre la nueva, que ya está
+   pintada—: el fundido cruzado con las dos animadas necesita mezcla
+   aditiva y en un fondo casi negro se ve un escalón de brillo. */
+/* Durante el cambio de tema el contenido NO se separa de la raíz: con su
+   `view-transition-name` propio (el de las transiciones de página, puesto
+   en línea en layout.tsx) se llevaría además el deslizamiento de página,
+   y el titular se veía doble y desplazado a mitad del fundido. */
+:root.tj-tema-cambia #main-content {
+  view-transition-name: none !important;
+}
+:root.tj-tema-cambia::view-transition-old(root) {
+  animation: tj-vt-tema 320ms var(--ease-suave) both;
+  mix-blend-mode: normal;
+}
+:root.tj-tema-cambia::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+@keyframes tj-vt-tema {
+  to {
+    opacity: 0;
   }
 }
 
