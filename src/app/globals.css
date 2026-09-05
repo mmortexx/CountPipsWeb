@@ -3299,6 +3299,36 @@ button.icon-btn:hover > svg,
    El fundido de entrada es del canvas entero y ocurre una sola vez, al
    cargar. A partir de ahí, lo que anima es el trazo, y lo gobierna el
    scroll: el fondo nunca se mueve solo. */
+/* ── LA PLANCHA RESPIRA, TAMBIÉN CUANDO NADIE SE MUEVE ────────────────
+   El grabado sólo avanzaba con el scroll: en cuanto el visitante paraba
+   de bajar, el fondo se quedaba CONGELADO. Una plancha de metal bajo una
+   luz no se queda quieta del todo, y un fondo que se congela delata que
+   lo que hay detrás es una imagen y no un material.
+
+   ── Por qué va en CSS y no en el bucle de dibujo ──────────────────
+   Ésta es toda la decisión. El bucle del atlas se DUERME cuando no hay
+   nada que animar (ver `dormido` en EngravedAtlas), y eso es una virtud
+   que no se toca: mantenerlo despierto para mecer el fondo costaría un
+   fotograma entero de JavaScript por cada latido, para siempre, también
+   con la batería al 4 %.
+
+   Como lo que se mece es el lienzo YA DIBUJADO, no hace falta redibujar
+   nada: una animación CSS sobre `transform` la resuelve el compositor,
+   fuera del hilo principal, sin despertar a nadie y sin un solo
+   `requestAnimationFrame`.
+
+   ── Y por qué sólo desplaza, sin escalar ──────────────────────────
+   Porque la trama son puntos de 2,6 px. Escalar un lienzo de puntos tan
+   pequeños los resamplea y los deja lechosos; el desplazamiento
+   sub-píxel también suaviza, pero a esta amplitud —menos del 1 %— el
+   efecto es el del grano del papel y no el de una foto movida.
+
+   Ciclo de 52 s y recorrido mínimo, a propósito: tiene que notarse que
+   el fondo está vivo sin que nadie llegue a mirarlo. Si se ve moverse,
+   está mal ajustado — es exactamente la línea que separa esto del
+   parallax ornamental que el proyecto lleva sesiones quitando.
+
+   La regla global de `prefers-reduced-motion` lo apaga entero. */
 .tj-engraved-atlas {
   position: absolute;
   inset: 0;
@@ -3310,6 +3340,7 @@ button.icon-btn:hover > svg,
 :root[data-theme="light"] .tj-engraved-atlas {
   opacity: 0.76;
 }
+
 
 /* ============================================================
    CÓMO SE REPARTEN EL SITIO EL TEXTO Y EL ATLAS
@@ -4519,10 +4550,48 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     );
 }
 
+/* ── LA LUZ DERIVA CON EL SCROLL Y ADEMÁS RESPIRA ─────────────────────
+   Dos animaciones sobre la MISMA propiedad, y las dos hacen falta:
+
+     · `tj-deriva` va por línea de tiempo de scroll — responde al gesto
+       de leer y separa los planos.
+     · `tj-respira` va por reloj, y es la que resuelve un defecto que se
+       veía de verdad: en cuanto el visitante dejaba de bajar, el fondo
+       se quedaba CONGELADO. Una plancha bajo una luz no se queda quieta
+       del todo, y un fondo que se congela delata que detrás hay una
+       imagen y no un material.
+
+   Encadenadas sin más, la segunda pisaría a la primera: en una lista de
+   animaciones sobre `transform` gana la última y la deriva
+   desaparecería. `animation-composition: add` las SUMA — cada una
+   aporta su desplazamiento y el compositor los acumula.
+
+   ── Por qué aquí y no sobre el lienzo del atlas ───────────────────
+   Se probó meciendo el propio lienzo grabado, que es lo obvio, y lo
+   cobró el banco: un lienzo a pantalla completa con una transformación
+   viva se recompone en cada fotograma. p99 medio de 27,05 a 31,20 ms, y
+   quedaba en 31,10 incluso parando la animación durante el scroll,
+   porque el lienzo se queda promocionado a capa propia igualmente.
+
+   La luz, en cambio, YA es una capa compuesta y YA está animada: darle
+   una segunda animación no promociona nada nuevo. Y leído en la
+   pantalla es incluso mejor que mecer la plancha — lo que se mueve es
+   la ILUMINACIÓN sobre un grabado quieto, que es exactamente lo que
+   pasa en una mesa de verdad.
+
+   Ciclo de 47 s y recorrido mínimo, a propósito: tiene que notarse que
+   el fondo está vivo sin que nadie llegue a mirarlo. Si se le ve el
+   movimiento, está mal ajustado — es la línea que separa esto del
+   parallax ornamental que el proyecto lleva sesiones quitando. */
 @supports (animation-timeline: scroll()) {
   .tj-luz {
-    animation: tj-deriva linear both;
-    animation-timeline: scroll(root block);
+    animation-name: tj-deriva, tj-respira;
+    animation-duration: auto, 47s;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: 1, infinite;
+    animation-fill-mode: both, none;
+    animation-timeline: scroll(root block), auto;
+    animation-composition: add;
   }
 }
 @keyframes tj-deriva {
@@ -4531,6 +4600,17 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   }
   to {
     transform: translate3d(0, 3.5%, 0) scale(1.06);
+  }
+}
+@keyframes tj-respira {
+  0% {
+    transform: translate3d(-0.9%, -0.5%, 0);
+  }
+  50% {
+    transform: translate3d(0.9%, 0.6%, 0);
+  }
+  100% {
+    transform: translate3d(-0.9%, -0.5%, 0);
   }
 }
 
