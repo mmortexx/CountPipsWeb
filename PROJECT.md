@@ -54,6 +54,18 @@ diseño sección por sección: abrir la ruta en claro y oscuro, escritorio y
 móvil, y comparar contra el resto del sitio — no hay una lista cerrada de
 pendientes porque el objetivo es "al máximo nivel", no una casilla que marcar.
 
+## Pendiente señalado por el propietario
+
+- **Animaciones del fondo y de la web en general**: el propietario pide una
+  pasada específica para llevarlas "al máximo nivel de diseño y
+  profesionalidad", usando el modelo Fable 5.1 cuando esté disponible en esta
+  sesión. Alcance a revisar: el revelado del atlas grabado (`EngravedAtlas.tsx`,
+  el ritmo de `phase()`/`easeOut()` de cada lámina), las entradas por scroll
+  (`data-entra`, `Reveal.tsx`, `SectionReveal.tsx`), la intro de primera visita
+  (`IntroSequence.tsx`) y cualquier transición de `framer-motion` o CSS que
+  quede corta frente al resto del pulido visual ya hecho. No es una lista de
+  bugs — es una petición de subir el nivel de ambición del movimiento en sí.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
