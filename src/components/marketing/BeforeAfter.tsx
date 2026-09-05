@@ -225,12 +225,14 @@ export function BeforeAfter() {
                     key={i}
                     className="flex items-start gap-3"
                   >
-                    {/* R20-3b: ✓ icon container — ring-1 ring-pnl-pos/40 for
-                        parity with the ✗ container polish above; the disc
-                        reads as a confirmed-state badge rather than a flat tint. */}
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-pos/15 ring-1 ring-pnl-pos/40 items-center justify-center mt-0.5">
+                    {/* R20-3b: contenedor del ✓ con anillo, para hacer juego con el
+                        del ✗ de arriba: el disco se lee como una insignia de
+                        estado confirmado y no como un tinte plano.
+                        El verde es el del SEMÁFORO (`--sig-green`), no el del
+                        P&L: esto dice «sí, lo tiene», no «esto dio dinero». */}
+                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-signal-green/15 ring-1 ring-signal-green/40 items-center justify-center mt-0.5">
                       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--sig-green))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </span>
                     <span className="text-[14px] text-primary font-medium">{line}</span>

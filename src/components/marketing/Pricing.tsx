@@ -418,7 +418,12 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
               className={`shrink-0 mt-0.5 ${
                 isPro
                   ? "inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-[rgb(var(--accent-base)/0.14)] ring-1 ring-inset ring-[rgb(var(--accent-base)/0.26)] text-[rgb(var(--accent-base))]"
-                  : "text-pnl-pos"
+                  /* Verde de SEMÁFORO, no de P&L. En oscuro `--pnl-pos`
+                     es #00F5A0, el menta de neón que aquí significa
+                     dinero ganado; un check de «el plan lo incluye» habla
+                     de estado, no de dinero. `--sig-green` (#3DAE73) dice
+                     lo mismo sin invocar la caja. */
+                  : "text-signal-green"
               }`}
               aria-hidden="true"
             >

@@ -240,15 +240,15 @@ export function ContactForm() {
                           cx="32"
                           cy="32"
                           r="28"
-                          stroke="rgb(var(--pnl-pos))"
+                          stroke="rgb(var(--sig-green))"
                           strokeWidth="2"
-                          fill="rgb(var(--pnl-pos) / 0.10)"
+                          fill="rgb(var(--sig-green) / 0.10)"
                         />
                         <path
                           className="tj-dibuja-ya"
                           pathLength="1"
                           d="M20 33.5l8 8 16-18"
-                          stroke="rgb(var(--pnl-pos))"
+                          stroke="rgb(var(--sig-green))"
                           strokeWidth="3"
                           strokeLinecap="round"
                           strokeLinejoin="round"

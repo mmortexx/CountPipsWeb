@@ -147,7 +147,7 @@ export function HerramientasIndice() {
           <div className="tj-paper mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 rounded-[2px] border border-[rgb(var(--divider)/0.13)] px-6 py-4 sm:flex-row sm:gap-5 sm:py-3.5">
             <span
               className="shrink-0 font-mono text-[10px] uppercase"
-              style={{ letterSpacing: "0.16em", color: "rgb(var(--pnl-pos))" }}
+              style={{ letterSpacing: "0.16em", color: "rgb(var(--sig-green))" }}
             >
               {es ? "Sin servidor" : "No server"}
             </span>

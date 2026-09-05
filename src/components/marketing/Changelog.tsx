@@ -197,7 +197,7 @@ export function Changelog() {
           <div className="mt-14 flex flex-col items-center gap-3 text-center">
             <div className="divider-grad w-40" aria-hidden />
             <p className="text-sm text-secondary">
-              <span className="text-[rgb(var(--pnl-pos))] font-medium">✓</span>{" "}
+              <span className="text-[rgb(var(--sig-green))] font-medium">✓</span>{" "}
               {es
                 ? "El acceso anticipado se abre con usuarios reales. Publicamos cambios cuando están validados."
                 : "Early access opens with real users. We publish changes once they are validated."}

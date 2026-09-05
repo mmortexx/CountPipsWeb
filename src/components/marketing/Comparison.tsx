@@ -356,7 +356,7 @@ function CellRenderer({
         >
           <CheckIcon />
         </span>
-        <span className="text-[13px] font-medium text-pnl-pos">{es ? "Sí" : "Yes"}</span>
+        <span className="text-[13px] font-medium text-signal-green">{es ? "Sí" : "Yes"}</span>
       </span>
     );
   }
@@ -370,7 +370,7 @@ function CellRenderer({
         >
           <CheckIcon />
         </span>
-        <span className="text-[13px] font-medium text-pnl-pos">{es ? "Sí" : "Yes"}</span>
+        <span className="text-[13px] font-medium text-signal-green">{es ? "Sí" : "Yes"}</span>
         <span className="inline-flex items-center rounded-[2px] px-1.5 py-0 bg-[rgb(var(--divider)/0.05)] text-primary border border-[rgb(var(--divider)/0.20)] text-[10px] font-semibold leading-[1.4] uppercase tracking-[0.1em]">
           Pro
         </span>
@@ -413,13 +413,22 @@ function CellRenderer({
 
 function CheckIcon() {
   return (
-    /* R24-1d — bumped tinted bg /15 → /20 + inset ring so the icon
-       chips hold their definition in light theme (where /15 was
-       nearly invisible on the paper veil) without going garish in
-       dark theme. */
-    <span className="inline-flex w-5 h-5 rounded-[2px] bg-pnl-pos/20 ring-1 ring-inset ring-pnl-pos/15 items-center justify-center">
+    /* R24-1d — se subió el tinte de /15 a /20 y se le puso un anillo
+       interior para que las fichas del icono conserven su definición en
+       tema claro (donde /15 era casi invisible sobre el velo de papel)
+       sin quedar chillonas en oscuro.
+
+       ── EL VERDE ES EL DEL SEMÁFORO, NO EL DEL P&L ──────────────────
+       Iba en `--pnl-pos`, y en tema oscuro ése es #00F5A0: un menta de
+       neón que en este producto SIGNIFICA dinero ganado. Un check de
+       «esta app lo tiene» no habla de dinero, habla de estado, y para
+       eso existe la tercera familia de color: `--sig-green`, #3DAE73,
+       el mismo verde apagado e institucional. En tema claro los dos
+       tokens valen lo mismo (#1E7A4C), así que el cambio sólo se ve en
+       oscuro — que es justo donde el neón desentonaba. */
+    <span className="inline-flex w-5 h-5 rounded-[2px] bg-signal-green/20 ring-1 ring-inset ring-signal-green/15 items-center justify-center">
       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-        <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--sig-green))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </span>
   );
