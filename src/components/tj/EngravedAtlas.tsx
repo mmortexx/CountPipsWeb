@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { alLevantarCortina } from "@/lib/intro";
 import {
   platesForRoute,
   ROTULOS,
@@ -342,8 +343,45 @@ function rnd(seed: number): number {
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const ease = (t: number) => t * t * (3 - 2 * t);
 const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
-/** Progreso de una fase dentro de la lámina: empieza en `from`, dura `len`. */
-const phase = (t: number, from: number, len: number) => easeOut(clamp01((t - from) / len));
+/** Progreso de una fase dentro de la lámina: empieza en `from`, dura `len`.
+ *
+ *  Salida CUADRÁTICA, no cúbica. Una lámina tiene veinte fases —el marco,
+ *  los rosetones, la retícula, los ejes, la curva, la lente, cada
+ *  rótulo—, y con la cúbica cada una arranca a plena velocidad y frena de
+ *  golpe: veinte latigazos escalonados, que es lo que hacía que el
+ *  revelado se leyera mecánico en vez de dibujado. La cuadrática entra
+ *  con menos brusquedad y frena más largo, que es como avanza una mano
+ *  sobre el papel. Es un cambio de una línea y se nota en las dieciséis
+ *  láminas a la vez, porque todas pasan por aquí. */
+const phase = (t: number, from: number, len: number) => {
+  const u = clamp01((t - from) / len);
+  return 1 - (1 - u) * (1 - u);
+};
+
+/** Una `cubic-bezier` del CSS, resuelta por bisección. */
+function bezier(x1: number, y1: number, x2: number, y2: number) {
+  const bx = (t: number) => 3 * (1 - t) * (1 - t) * t * x1 + 3 * (1 - t) * t * t * x2 + t * t * t;
+  const by = (t: number) => 3 * (1 - t) * (1 - t) * t * y1 + 3 * (1 - t) * t * t * y2 + t * t * t;
+  return (x: number) => {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    let lo = 0;
+    let hi = 1;
+    let t = x;
+    for (let i = 0; i < 18; i++) {
+      if (bx(t) < x) lo = t;
+      else hi = t;
+      t = (lo + hi) / 2;
+    }
+    return by(t);
+  };
+}
+
+/* La cadencia del grabado de bienvenida: la punta se posa, recorre con
+   decisión y se detiene largo. Con la salida cúbica que había, la mitad
+   de la lámina aparecía en el primer segundo y los cuatro restantes se
+   arrastraban — el gesto entero se veía al revés de como se dibuja. */
+const curvaIntro = bezier(0.42, 0, 0.18, 1);
 
 type Ctx = CanvasRenderingContext2D;
 type Pt = [number, number];
@@ -2625,6 +2663,8 @@ export function EngravedAtlas() {
     let last = 0;
     let visible = true;
     let introStart = 0;
+    let quitarCortina: (() => void) | null = null;
+    let topeIntro = 0;
     /* La primera lámina, en unidades de progreso global. */
     const span0 = 1 / PLATES.length;
     /* Si el bucle está parado. No es «pausado por la pestaña»: es que el
@@ -3105,7 +3145,16 @@ export function EngravedAtlas() {
         const alpha = Math.min(fadeIn, fadeOut);
         if (alpha <= 0.004) continue;
 
-        const lift = local > 1 ? (local - 1) * -46 : local < 0 ? -local * 30 : 0;
+        /* El desplazamiento del cruce va con la MISMA curva que su
+           fundido. Era lineal, así que la lámina saliente se apartaba a
+           velocidad constante y se cortaba en seco al desaparecer; ahora
+           las dos cosas —lo que se ve y lo que se mueve— llegan juntas. */
+        const lift =
+          local > 1
+            ? -46 * ease(clamp01((local - 1) / 0.2))
+            : local < 0
+              ? 30 * (1 - ease(clamp01((local + 0.2) / 0.2)))
+              : 0;
 
         /* El progreso del TRAZO se redondea a pasos fijos; el de la
            COMPOSICIÓN no se toca. Así, entre dos pasos, la lámina se
@@ -3212,8 +3261,30 @@ export function EngravedAtlas() {
          marco ya trazados, y aún le queda un quinto de revelado que el
          scroll se encarga de completar justo cuando la pausa I entra en
          pantalla. La intro presenta la figura; el scroll la termina. */
-      const introT = clamp01((now - introStart) / DURACION_INTRO_MS);
-      const goal = Math.max(target, easeOut(introT) * INTRO_HASTA * span0);
+      /* ── LA BIENVENIDA SE GRABABA DETRÁS DEL TELÓN, Y ADEMÁS NO ERA
+         LA BIENVENIDA ────────────────────────────────────────────────
+         Dos fallos encadenados, y el efecto que justifica todo este
+         componente —ver cómo se dibuja la primera lámina— no se veía.
+
+         Uno: el reloj arrancaba al montar el lienzo, y el loader de
+         primera visita tapa la pantalla durante más de un segundo. Ese
+         primer tramo, que es el que más se nota porque el papel está en
+         blanco, ocurría detrás de la cortina. Ahora `introStart` vale −1
+         hasta que `IntroSequence` avisa de que la cortina sube (ver
+         `@/lib/intro`), con un tope por si nadie avisara.
+
+         Dos: el objetivo se tomaba como el MAYOR entre el scroll y la
+         bienvenida, y el primer ancla del mapa de scroll ya declara
+         `INTRO_HASTA` en scrollY = 0 —para que al empezar a bajar el
+         dibujo no retroceda—. O sea que el máximo daba el destino entero
+         desde el primer fotograma: la lámina se plantaba de un tirón, al
+         ritmo del suavizado, y la curva de cinco segundos no gobernaba
+         nada. Ahora la bienvenida es la parte del recorrido por debajo de
+         `INTRO_HASTA` y el scroll sólo añade lo que pida por encima, así
+         que las dos cosas conviven en vez de pisarse. */
+      const introT = introStart < 0 ? 0 : clamp01((now - introStart) / DURACION_INTRO_MS);
+      const base = INTRO_HASTA * span0;
+      const goal = Math.max(target - base, 0) + curvaIntro(introT) * base;
 
       const next = shown + (goal - shown) * (1 - Math.exp((-dt * 6) / 1000));
 
@@ -3241,7 +3312,7 @@ export function EngravedAtlas() {
            terminado, el bucle se PARA. Lo despierta lo único que puede
            cambiar el destino: el scroll, un cambio de tamaño o volver a
            la pestaña. Parado de verdad, no parado de mentira. */
-        const introViva = now - introStart < DURACION_INTRO_MS;
+        const introViva = introStart >= 0 && now - introStart < DURACION_INTRO_MS;
         if (!introViva && goal === shown && capasAlDia) {
           dormido = true;
           raf = 0;
@@ -3288,11 +3359,20 @@ export function EngravedAtlas() {
       draw(shown);
     } else {
       shown = 0;
-      introStart = performance.now();
-      last = introStart;
+      introStart = -1;
       ready = true;
       draw(shown);
-      raf = requestAnimationFrame(frame);
+      /* Arranca DORMIDO: lo despierta la cortina —o el scroll, si alguien
+         se adelanta—. El tope de tres segundos es la red de seguridad
+         para el caso en que `IntroSequence` no llegara a montar. */
+      dormido = true;
+      const empezarIntro = () => {
+        if (introStart >= 0) return;
+        introStart = performance.now();
+        despertar();
+      };
+      quitarCortina = alLevantarCortina(empezarIntro);
+      topeIntro = window.setTimeout(empezarIntro, 3000);
     }
 
     addEventListener("scroll", onScroll, { passive: true });
@@ -3371,6 +3451,9 @@ export function EngravedAtlas() {
     const obs = new MutationObserver(() => {
       readInk();
       draw(shown);
+      /* Las láminas guardadas se tiraron con la tinta vieja: hay que
+         volver a grabarlas, y para eso el bucle no puede estar dormido. */
+      despertar();
     });
     obs.observe(document.documentElement, {
       attributes: true,
@@ -3379,6 +3462,8 @@ export function EngravedAtlas() {
 
     return () => {
       cancelAnimationFrame(raf);
+      quitarCortina?.();
+      window.clearTimeout(topeIntro);
       removeEventListener("scroll", onScroll);
       ro.disconnect();
       roDoc.disconnect();

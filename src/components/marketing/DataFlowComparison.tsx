@@ -184,7 +184,7 @@ function FlowColumn({
       {/* Steps with animated dot */}
       <div className="relative">
         {steps.map((step, i) => (
-          <div key={i} className="relative flex items-start gap-3" style={{ marginBottom: i < steps.length - 1 ? 28 : 0 }}>
+          <div key={i} data-entra="ciclo" className="relative flex items-start gap-3" style={{ marginBottom: i < steps.length - 1 ? 28 : 0 }}>
             {/* Node */}
             <div className="relative shrink-0">
               <div

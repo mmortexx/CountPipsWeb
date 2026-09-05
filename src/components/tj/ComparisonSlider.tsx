@@ -430,20 +430,12 @@ export function ComparisonSlider() {
               </span>
             </button>
 
-            {/* Pista de arrastre, arriba al centro.
-                Se renderiza siempre. Antes se ocultaba con `!reduce`, y
-                eso mezclaba dos cosas distintas: quien pide menos
-                movimiento no pide menos INSTRUCCIONES — se quedaba sin
-                saber que el bloque se puede arrastrar. Lo que sobra es su
-                balanceo, y de eso se ocupa la regla global de
-                `prefers-reduced-motion` de globals.css, que le pone
-                `animation-iteration-count: 1` y una duración de 0,01 ms a
-                todo lo que se mueva en el sitio. */}
+            {/* Pista de arrastre, arriba al centro. Quieta: flotaba arriba
+                y abajo en bucle, y un rótulo que rebota sin parar es
+                justo la clase de animación de escaparate que este sitio
+                no hace (la bienvenida del tirador ya enseña el gesto). */}
             {(
-              <div
-                className="absolute top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none"
-                style={{ animation: "tj-float 2.4s ease-in-out infinite" }}
-              >
+              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
                 <span className="text-[10px] uppercase tracking-[0.18em] text-tertiary font-semibold">
                   {es ? "← Arrastra" : "← Drag"}
                 </span>

@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { flushSync } from "react-dom";
 
 export type Theme = "dark" | "light";
 /* ---- Estilo único: "clasico" ----------------------------------------
@@ -68,6 +69,48 @@ function readSavedPalette(): PaletteName {
   return "clasico";
 }
 
+/**
+ * Aplica un cambio de tema dentro de una transición de vista, si el
+ * navegador la tiene y el visitante no ha pedido menos movimiento. El DOM
+ * se toca DENTRO del callback —atributo y clase a mano, y el estado de
+ * React vaciado con `flushSync`— porque el navegador fotografía la página
+ * justo antes y justo después de ese callback; un cambio que llegara en un
+ * efecto posterior quedaría fuera de la foto. La clase `tj-tema-cambia`
+ * enciende el fundido en globals.css sólo mientras dura.
+ */
+function cambiarTemaConFundido(next: Theme, aplicar: () => void) {
+  const doc = document as Document & {
+    startViewTransition?: (cb: () => void) => { finished: Promise<void> };
+  };
+  const root = document.documentElement;
+  const pintar = () => {
+    root.dataset.theme = next;
+    root.classList.toggle("dark", next === "dark");
+    flushSync(aplicar);
+  };
+  if (
+    typeof doc.startViewTransition !== "function" ||
+    matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    pintar();
+    return;
+  }
+  root.classList.add("tj-tema-cambia");
+  let vt: { finished: Promise<void> };
+  try {
+    vt = doc.startViewTransition(pintar);
+  } catch {
+    root.classList.remove("tj-tema-cambia");
+    pintar();
+    return;
+  }
+  /* `finished` RECHAZA si el navegador salta la transición (pestaña
+     oculta, otra transición en curso): se limpia igual y sin dejar una
+     promesa rechazada en la consola. */
+  const fin = () => root.classList.remove("tj-tema-cambia");
+  vt.finished.then(fin, fin);
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   // Start with defaults on both server and client to avoid hydration mismatch.
   // The inline script in layout.tsx already applied the DOM attributes before
@@ -111,8 +154,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ThemeCtx>(
     () => ({
       theme,
-      setTheme,
-      toggleTheme: () => setTheme((p) => (p === "dark" ? "light" : "dark")),
+      setTheme: (t) => cambiarTemaConFundido(t, () => setTheme(t)),
+      toggleTheme: () => {
+        const next: Theme = theme === "dark" ? "light" : "dark";
+        cambiarTemaConFundido(next, () => setTheme(next));
+      },
       palette,
       setPalette,
     }),

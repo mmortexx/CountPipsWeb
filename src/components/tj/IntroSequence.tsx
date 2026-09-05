@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { BRAND_GLYPH_SVG } from "@/components/tj/BrandGlyph";
 import { curva } from "@/lib/motion";
+import { levantarCortina } from "@/lib/intro";
 
 /**
  * IntroSequence — puerto del `_intro()` del HTML de referencia.
@@ -86,6 +87,8 @@ export function IntroSequence() {
 
     if (reduce || !first) {
       root.classList.remove("tj-preload");
+      /* Sin telón, el atlas del fondo puede empezar su grabado ya. */
+      levantarCortina();
       return () => window.clearTimeout(failsafe);
     }
 
@@ -178,6 +181,10 @@ export function IntroSequence() {
       } else {
         window.setTimeout(() => {
           ov.classList.add("done");
+          /* La cortina empieza a subir: el fondo arranca su grabado de
+             bienvenida AHORA y no al montarse, para que el trazo se vea
+             desde el primer punto en vez de nacer detrás del telón. */
+          levantarCortina();
           reveal();
           window.setTimeout(() => {
             ov.remove();
