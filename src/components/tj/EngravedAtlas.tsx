@@ -2987,6 +2987,21 @@ export function EngravedAtlas() {
         /* Scroll al que esta pausa queda centrada en la ventana. */
         const centred = r.top + scrollY + r.height / 2 - innerHeight / 2;
         list.push([Math.max(0, centred), Math.min(1, (i + 0.97) * span)]);
+        /* Sólo cuentan las pausas ALTAS —62 vh o 88 vh, las dos medidas
+           reales del sitio—, nunca las cortas. En ≤900 px de ancho la
+           propia hoja de estilos encoge la pausa a 32-38 vh (la nota
+           está junto a `.tj-interlude` en `globals.css`) para no dejar
+           un hueco muerto de scroll. Ahí el pie ocupa casi toda la caja
+           y su velo arranca casi en el techo del recorte —a un 0,29 de
+           la ventana, medido—, muy por encima de donde de verdad hace
+           falta subir la figura: el lienzo es del tamaño de la VENTANA
+           entera, no de la pausa, así que tomar ese suelo habría
+           encogido el cuadrante de riesgo hasta dejarlo asomando por
+           detrás de la sección anterior. El umbral de la mitad separa
+           limpio los dos mundos —0,62 y 0,88 pasan, 0,32-0,38 no—; en
+           una pausa corta la propia caja ya reparte el espacio y no
+           necesita esta medida. */
+        if (r.height < innerHeight * 0.5) return;
         const pie = el.querySelector(".tj-interlude-caption");
         if (pie && innerHeight > 0) {
           /* `top: -3.5rem` en `.tj-interlude-caption::before`. */
@@ -2997,7 +3012,7 @@ export function EngravedAtlas() {
       });
       /* Los topes evitan que una maqueta a medio asentar deje el atlas
          dibujando en una franja absurda. */
-      if (suelo0 < 1) sueloFigura = Math.min(0.72, Math.max(0.34, suelo0));
+      if (suelo0 < 1) sueloFigura = Math.min(0.72, Math.max(0.46, suelo0));
       const max = document.documentElement.scrollHeight - innerHeight;
       if (max > 0) list.push([max, 1]);
       /* Estrictamente creciente en x: si dos anclas caen en el mismo
