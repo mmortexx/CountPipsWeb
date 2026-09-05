@@ -2660,9 +2660,37 @@ button.icon-btn:hover > svg,
   justify-content: center;
   overflow: hidden;
 }
+/* ── LA CORTINA SE VA CON LA CURVA DE LA CASA, NO CON LA DE IDA Y VUELTA
+   Iba con `--ease-entrada-salida` (0.76, 0, 0.24, 1), que ARRANCA LENTO
+   porque está pensada para algo que sale y vuelve. Un telón que se
+   marcha no vuelve: lo único que hace en esos primeros cientos de
+   milisegundos es tapar.
+
+   Y no era un detalle de gusto. Medido en la portada a 1440×900, con la
+   entrada escalonada del hero disparándose en el mismo instante en que
+   el telón empieza a subir:
+
+     elemento        se destapa   entrada acabada   opacidad al destaparse
+     ceja              1514 ms        1381 ms              1,00
+     h1                1514 ms        1447 ms              1,00
+     subtítulo         1447 ms        1498 ms              0,98
+     CTA / CTA         1447 ms     1549 / 1611 ms       0,95 / 0,90
+     barra de specs    1364 ms        1672 ms              0,36
+
+   O sea: la ceja y el titular —las dos piezas que justifican la
+   secuencia— TERMINABAN su entrada detrás del telón, y asomaban ya a
+   tinta plena. Es exactamente el fallo que se corrigió para el grabado
+   del fondo, sin corregir aquí.
+
+   Con la curva de la casa el telón ha recorrido más del 80 % del camino
+   en los primeros 180 ms, así que descubre el hero mientras el
+   escalonado todavía está empezando: las dos animaciones dejan de
+   competir por el mismo segundo y pasan a ser un solo gesto. No se
+   toca ni la duración ni el retardo del escalonado — sólo deja de
+   ocurrir a oscuras. */
 #tj-loader.done {
   transform: translateY(-101%);
-  transition: transform 0.9s var(--ease-entrada-salida);
+  transition: transform 0.9s var(--ease-suave);
 }
 
 /* ── Aquí estaban el «sheen» y el «spotlight» ─────────────────────

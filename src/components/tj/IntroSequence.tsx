@@ -96,8 +96,32 @@ export function IntroSequence() {
       document.querySelectorAll<HTMLElement>("[data-seq]")
     );
 
+    /* ── EL ESCALÓN VA EN LA DIRECCIÓN DEL TELÓN ──────────────────────
+       El telón sube, así que descubre la pantalla de ABAJO ARRIBA: la
+       barra de specs asoma primero y la ceja la última. El escalonado
+       iba al revés —de arriba abajo, por orden de lectura—, y las dos
+       cosas se peleaban por el mismo segundo: las piezas de arriba
+       tenían el retardo más corto justo donde el telón tardaba más en
+       quitarse de en medio.
+
+       Medido en la portada a 1440×900, opacidad de cada pieza en el
+       instante en que el telón la destapa (0,00 = entra entera a la
+       vista; 1,00 = ya entró a oscuras):
+
+         ceja  h1    subtít.  CTA   CTA   specs
+         1,00  1,00   0,98    0,95  0,90  0,36   ← antes
+         0,88  0,61   0,00    0,00  0,00  0,00   ← sólo con la curva nueva
+         0,00  0,00   0,00    0,00  0,00  0,00   ← con el escalón invertido
+
+       Invertirlo no cuesta un milisegundo y convierte dos animaciones
+       que competían en un solo gesto: el telón sube y la página sube
+       detrás de él. El orden de lectura no se pierde —las seis piezas
+       caben en 600 ms, que el ojo lee como dirección de movimiento y no
+       como secuencia—. */
     const reveal = () => {
-      seq.forEach((el, i) => {
+      const ultimo = seq.length - 1;
+      seq.forEach((el, indice) => {
+        const i = ultimo - indice;
         el.animate(
           [
             /* Sin `filter: blur()`. El desenfoque no se compone: obliga
