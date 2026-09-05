@@ -155,7 +155,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                     key={f.id}
                     type="button"
                     onClick={() => setSelectedFirm(f.id)}
-                    className={`h-8 px-3 rounded-[2px] text-xs font-semibold transition-all ${
+                    className={`toque-comodo h-8 px-3 rounded-[2px] text-xs font-semibold transition-all ${
                       selectedFirm === f.id
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                         : "text-secondary hover:text-primary"
@@ -175,7 +175,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                       setPropBalance(bal);
                       setCurrentEquity(bal * 1.035);
                     }}
-                    className={`h-8 px-3 rounded-[2px] text-xs font-semibold tnum transition-all ${
+                    className={`toque-comodo h-8 px-3 rounded-[2px] text-xs font-semibold tnum transition-all ${
                       propBalance === bal
                         ? "bg-primary text-[var(--surface)]"
                         : "text-secondary hover:text-primary"

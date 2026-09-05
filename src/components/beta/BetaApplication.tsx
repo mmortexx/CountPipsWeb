@@ -27,8 +27,19 @@ declare global {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/* `text-base sm:text-sm` y no `text-sm` a secas — el mismo modismo que
+   ya usa `ContactForm`.
+
+   Safari de iOS hace ZOOM al enfocar un campo cuya letra mide menos de
+   16 px, y al hacerlo deja la página desencuadrada y al visitante
+   pellizcando para volver. Con `text-sm` (14 px) los seis campos de este
+   formulario lo provocaban — y éste es el formulario de alta, o sea el
+   sitio donde menos conviene que el móvil dé un salto.
+
+   De 640 px para arriba vuelve a 14 px, que es la densidad que pide un
+   formulario largo en escritorio. */
 const inputClass =
-  "mt-2 min-h-12 w-full rounded-[2px] border border-[rgb(var(--divider)/0.18)] bg-[rgb(var(--divider)/0.05)] px-3.5 text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.62)] focus:ring-2 focus:ring-[rgb(var(--accent-base)/0.14)]";
+  "mt-2 min-h-12 w-full rounded-[2px] border border-[rgb(var(--divider)/0.18)] bg-[rgb(var(--divider)/0.05)] px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.62)] focus:ring-2 focus:ring-[rgb(var(--accent-base)/0.14)]";
 
 /* WCAG 3.3.1 (identificación de errores): el resumen general en
    role="alert" dice que "algo falta", pero no cuál — quien usa lector de
@@ -376,13 +387,13 @@ export function BetaApplication() {
           </div>
 
           <div>
-            <label className="flex items-start gap-2.5 text-xs text-secondary">
+            <label className="toque-comodo flex items-start gap-2.5 text-xs text-secondary">
               <input ref={privacyRef} type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} className="mt-0.5 accent-[rgb(var(--accent-base))]" required aria-invalid={privacyInvalid} aria-describedby={privacyInvalid ? "privacy-error" : undefined} />
               <span>{es ? <>He leído la <Link href="/privacidad" className="text-primary underline underline-offset-2">política de privacidad</Link> y acepto que se gestione esta solicitud.</> : <>I have read the <Link href="/privacidad" className="text-primary underline underline-offset-2">privacy policy</Link> and agree to this application being processed.</>}</span>
             </label>
             <FieldError id="privacy-error" show={privacyInvalid} message={es ? "Debes aceptar la política de privacidad para continuar." : "You must accept the privacy policy to continue."} />
           </div>
-          <label className="flex items-start gap-2.5 text-xs text-secondary">
+          <label className="toque-comodo flex items-start gap-2.5 text-xs text-secondary">
             <input type="checkbox" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} className="mt-0.5 accent-[rgb(var(--accent-base))]" />
             <span>{es ? "Quiero recibir avisos puntuales sobre el lanzamiento y futuras versiones." : "I want occasional updates about launch and future versions."}</span>
           </label>
