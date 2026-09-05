@@ -213,7 +213,87 @@ de forma fiable**. Dos veces se midió una hoja vieja creyendo medir la
 nueva. Si un cambio de CSS «no hace nada», comprobar primero con
 `curl` la hoja servida antes de dudar de la hipótesis.
 
+### Segunda tanda de la misma pasada
+
+- **El disco de «enviado» se había quedado sin fundido.** Al sacar
+  `opacity` de los fotogramas de `tj-estampa` (para que el sobreimpulso
+  no arrastrara a la tinta), `.tj-estampa-ya` —que comparte esos
+  fotogramas— pasó a nacer opaco y sólo crecer. Ahora lleva las dos
+  animaciones. Aquí el muelle sí tiene su línea de tiempo natural, así
+  que se lleva también la curva de muelle real.
+- **`::view-transition-new(pagina)` llevaba `--ease-suave` copiada a
+  mano.** Pasa a usar el token; comprobado con una navegación real que
+  resuelve dentro del árbol de la transición. La curva de SALIDA se
+  queda literal a propósito: acelera hacia fuera, al revés que todo lo
+  demás, y sólo se usa ahí.
+- **La portada no revelaba la lámina al cambiar de pestaña** y
+  `/features` sí, montando el mismo componente. Medido pulsando la
+  segunda pestaña: 2 → 11 valores distintos de opacidad, los mismos que
+  `/features`.
+- **El verde de los veredictos** (checks, «Sin servidor», el ✓ de la
+  hoja de ruta) pasa de `--pnl-pos` a `--sig-green`. **No se ve**: en la
+  paleta que el sitio usa de verdad los dos tokens valen lo mismo
+  (#3FCE92). Es un cambio de intención, para que el día que alguien
+  toque uno de los dos los checks se muevan con el semáforo y no con la
+  caja.
+- **`prefers-reduced-motion` verificado de verdad**, con la preferencia
+  puesta y bajando la página entera: no queda nada apagado, ni movido,
+  ni animándose, en `/`, `/features`, `/pricing`, `/about` y `/faq`.
+- **Auditoría de entradas ampliada a 15 rutas.** Separando las tres
+  causas por las que una pieza puede «saltar» —ya estaba en la primera
+  pantalla (correcto), anima por reloj y no por scroll (el muestreo no
+  la ve), o entra desde abajo y aun así salta (defecto)— quedan **283
+  piezas revisadas y 1 sola en la tercera categoría**, y esa es un caso
+  de borde justo en el pliegue. Nada atascado al fondo en ninguna ruta.
+
+### La decisión sobre `framer-motion`: no se migra
+
+El encargo pedía decidirlo con un motivo. Medido sobre el sitio
+compilado:
+
+- El trozo que contiene la biblioteca pesa **336 KB en bruto, 88 KB
+  comprimido**, y **ninguna página que no sea `/demo` lo referencia** —
+  se carga en diferido, sólo ahí.
+- La superficie a reescribir son **89 elementos `motion.*`** repartidos
+  en ocho ficheros, más **6 `AnimatePresence`**, 4 `useReducedMotion` y
+  4 `MotionConfig`.
+
+No compensa, y el motivo no es la pereza: las migraciones anteriores
+quitaron `framer-motion` de sitios donde no estaba justificado —una
+página de marketing arrastrando la biblioteca entera para cuatro
+checks—. Aquí sí lo está. La demo es una aplicación con transiciones de
+montaje y desmontaje, que es exactamente para lo que existe la
+biblioteca, y los `AnimatePresence` son la parte más cara de replicar a
+mano. Cambiarlo son 89 puntos de reescritura en los cinco ficheros más
+grandes del repositorio (47-72 KB cada uno), sin una sola mejora visible
+para el visitante y con riesgo real de estropear la demo, que es la
+pieza comercial principal. El coste que evitaría ya está confinado a una
+ruta de 155 y llega en diferido.
+
+Si algún día se retoma, el orden sensato es al revés del tamaño:
+primero `DemoShortcutsHint` y `DemoCommandPalette` (4 y 6 usos), que son
+autónomos, y sólo después las cinco páginas.
+
 ### Lo que NO se tocó, y por qué
+
+**El filtro del glosario.** El encargo lo proponía como candidato a
+transición de estado, y es justo donde no debe ir una: la lista se
+recalcula en CADA pulsación de tecla, así que animarla la volvería
+perezosa y ruidosa. Un buscador tiene que responder, no coreografiar.
+
+**Las duraciones.** Hay quince valores distintos entre 100 y 600 ms, y
+la tentación era imponer una escala de cuatro o cinco pasos como hacen
+Linear o Stripe. No se hace: cada uno de esos valores tiene al lado un
+comentario que explica por qué es ése (los 120 ms del hundido al tocar,
+porque «por encima de 200 el gesto deja de percibirse como respuesta»),
+y ya forman casi una rejilla de 20 ms. Reafinarlos en bloque sería
+mover quince cosas que funcionan sin una sola medida que diga que están
+mal.
+
+**La marca verde de Core frente a la azul de Pro** en la tabla de
+precios. Parece una incoherencia —las dos dicen «incluido» y se pintan
+distinto— pero es deliberada: la tarjeta Pro lleva el acento en todo
+(su píldora, su filete superior, sus fichas), y es su señal de nivel.
 
 La tipografía. El encargo la daba por pendiente, y no lo estaba: `html`
 ya lleva `font-optical-sizing: auto`, `font-kerning`, ligaduras
