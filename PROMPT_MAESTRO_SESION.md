@@ -12,7 +12,7 @@ Stack y versiones bloqueadas:
 - Tipografía local: Instrument Sans (sans variable), Newsreader (serif variable con cursiva real y eje óptico), Geist Mono (monoespaciada)
 - Despliegue: GitHub Pages con `basePath` dinámico (helper `asset()` de `@/lib/asset`)
 
-Arquitectura I18n: Routing simétrico bilingüe — español en raíz (`/`) e inglés bajo `/en/`. 210 claves `STR`, 51 términos de glosario, 7 herramientas, 17 FAQs, 4 documentos legales. Paridad 1:1 obligatoria.
+Arquitectura I18n: Routing simétrico bilingüe — español en raíz (`/`) e inglés bajo `/en/`. 210 claves `STR`, 57 términos de glosario, 8 herramientas, 13 FAQs, 4 documentos legales. Paridad 1:1 obligatoria.
 
 Decisiones de diseño ya tomadas e irrevocables:
 - Acento AZUL ACERO (#CDD9E4 oscuro / #004D7C claro) — jamás volver a dorado, tierra ni igualarlo al verde P&L.
@@ -135,18 +135,20 @@ PRODUCTO:
   /features/disciplina — Control emocional + DisciplineScore + DisciplineCost + GuardianNew
   /features/seguridad — Privacidad local + SecuritySection + DataFlowComparison
 
-7 HERRAMIENTAS (ruta dinámica /herramientas/[herramienta]):
-  /herramientas/calculadora-de-riesgo      → RiskCalculator (35 KB)
-  /herramientas/significancia-estadistica   → EdgeSignificanceChecker (27 KB)
-  /herramientas/monte-carlo                 → RMultipleSimulator (28 KB)
-  /herramientas/proyector-de-capital        → EquityProjector (72 KB)
-  /herramientas/coste-de-indisciplina       → DisciplineCost (24 KB)
-  /herramientas/reloj-de-sesiones           → SessionClock (22 KB)
-  /herramientas/ahorro-vs-suscripcion       → SavingsCalculator (20 KB)
+8 HERRAMIENTAS + 1 TEST (ruta dinámica /herramientas/[herramienta]):
+  /herramientas/calculadora-de-riesgo      → RiskCalculator
+  /herramientas/significancia-estadistica  → EdgeSignificanceChecker
+  /herramientas/monte-carlo                → RMultipleSimulator
+  /herramientas/proyector-de-capital       → EquityProjector
+  /herramientas/coste-de-indisciplina      → DisciplineCost
+  /herramientas/reloj-de-sesiones          → SessionClock
+  /herramientas/ahorro-vs-suscripcion      → SavingsCalculator
+  /herramientas/impacto-de-comisiones      → CommissionDragCalculator
+  (+ el test de disciplina, T-01, con su propio motor de 15 preguntas)
 
 COMERCIAL:
   /pricing · /demo · /faq · /about · /beta · /test
-  /glosario (índice + 51 páginas individuales de término)
+  /glosario (índice + 57 páginas individuales de término, cinco familias)
   /traders/manual · /traders/prop-firms
 
 LEGAL (4 documentos):
@@ -269,9 +271,9 @@ LIBRERÍAS CORE (src/lib/):
 - i18n.tsx (21 KB) — 210 claves STR bilingües + useLang()
 - theme.tsx (5 KB) — getTheme/setTheme con try-catch defensivo
 - site.ts (17 KB) — Metadata, JSON-LD, hreflang
-- glosario.ts (16 KB) — 51 términos bilingües
-- herramientas.ts (12 KB) — 7 definiciones de herramientas
-- faq.ts (11 KB) — 17 FAQs bilingües
+- glosario.ts (16 KB) — 57 términos bilingües, cinco familias
+- herramientas.ts (12 KB) — 8 definiciones de herramientas
+- faq.ts (11 KB) — 13 FAQs bilingües
 - atlas.ts (24 KB) — Configuración del EngravedAtlas
 - consent.ts (4 KB) — Gestión de consentimiento con try-catch
 - forms.ts (14 KB) — Validación de formularios
@@ -404,8 +406,8 @@ VOZ:
 
 PARIDAD BILINGÜE:
 - Cada string visible → correspondiente EN en src/lib/i18n.tsx.
-- 51 términos de glosario en ambos idiomas.
-- 17 FAQs completas en ambos idiomas.
+- 57 términos de glosario en ambos idiomas.
+- 13 FAQs completas en ambos idiomas.
 - 4 documentos legales en ambos idiomas.
 - Formatos numéricos respetan locale (punto/coma decimal).
 
