@@ -1341,6 +1341,33 @@
     contain-intrinsic-size: auto 500px;
   }
 
+  /* ============================================================
+     OBJETIVO DE TOQUE — 44 px, pero SÓLO donde hay dedos
+     ============================================================
+     El sistema de diseño pide 44×44 px mínimo, y lo pide en el
+     apartado de móvil. Las filas de fichas —el selector de zona
+     horaria del reloj de sesiones, el de setup del perfil de trader,
+     el botón de copiar informe— median 32 y 36 px: pasan el mínimo AA
+     de 24 px de la WCAG 2.2, pero no el listón de la casa.
+
+     Subirlas a 44 px en TODAS las anchuras las dejaría cebadas: una
+     ficha de 44 px de alto con texto de 12 px es casi todo aire, y
+     esas filas viven en herramientas densas donde la compacidad es
+     parte del oficio.
+
+     `pointer: coarse` es la pregunta correcta, y no el ancho de la
+     ventana: lo que decide si 44 px hacen falta es si el que apunta es
+     un dedo o un ratón. Un portátil táctil de 1440 px los necesita; un
+     escritorio a 390 px de ancho —redimensionado a mano— no.
+
+     Se usa `min-height` para que la ficha crezca sin descolocar su
+     contenido, que ya va centrado. */
+  @media (pointer: coarse) {
+    .toque-comodo {
+      min-height: 44px;
+    }
+  }
+
 }
 
 /* Thin, theme-aware scrollbar — subtle at rest, accent-tinted on hover.

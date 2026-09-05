@@ -258,7 +258,23 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
               onChange={(e) => setParametersCount(parseInt(e.target.value, 10))}
               aria-label={es ? "Número de parámetros del setup" : "Number of setup parameters"}
               className="tj-range w-full"
-              style={{ accentColor: "rgb(var(--accent-base))", height: 36 }}
+              /* `height: 44` y no 36: es lo que declara `.tj-range` —«el
+                 control mide lo mismo que su bolita para que quepa
+                 entera»— y lo que pasan los otros cinco deslizadores del
+                 sitio. Este se había quedado en 36, por debajo del mínimo
+                 de toque y desalineado con sus hermanos.
+
+                 Y `--pct`, que también faltaba: sin ella la pista se
+                 pinta con `--pct: 0%` de respaldo, o sea entera de surco.
+                 El tramo recorrido NO se veía nunca, así que el
+                 deslizador no enseñaba por dónde iba. */
+              style={
+                {
+                  accentColor: "rgb(var(--accent-base))",
+                  height: 44,
+                  "--pct": `${((parametersCount - 1) / 9) * 100}%`,
+                } as React.CSSProperties
+              }
             />
             <div className="mt-2 flex items-center justify-between text-[11px]">
               <span className="text-secondary">
@@ -401,7 +417,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
                   });
                 }
               }}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+              className="toque-comodo inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />

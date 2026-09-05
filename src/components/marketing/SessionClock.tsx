@@ -237,7 +237,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                 key={tz.id}
                 type="button"
                 onClick={() => setTzMode(tz.id)}
-                className={`min-h-[32px] px-3 rounded-[2px] text-xs font-mono transition-colors ${
+                className={`toque-comodo min-h-[32px] px-3 rounded-[2px] text-xs font-mono transition-colors ${
                   tzMode === tz.id
                     ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                     : "bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary"

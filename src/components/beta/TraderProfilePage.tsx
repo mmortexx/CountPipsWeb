@@ -302,7 +302,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   type="button"
                   aria-pressed={manualSetup === s.id}
                   onClick={() => setManualSetup(s.id)}
-                  className={`h-9 px-4 rounded-[2px] text-xs font-semibold transition-all ${
+                  className={`toque-comodo h-9 px-4 rounded-[2px] text-xs font-semibold transition-all ${
                     manualSetup === s.id
                       ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                       : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"

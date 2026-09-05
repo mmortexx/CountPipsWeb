@@ -238,10 +238,23 @@ export function Values() {
                 {/* Dónde se comprueba. Va DESPUÉS de la afirmación, no
                     antes: primero se dice, luego se ofrece ir a mirar.
                     El subrayado se declara para ratón Y teclado, y el
-                    filete crece con el mismo gesto que el del lateral. */}
+                    filete crece con el mismo gesto que el del lateral.
+
+                    ── `min-h-[44px]`, y el margen bajado a compensarlo ──
+                    Es el ÚNICO control de la tarjeta, y en móvil medía
+                    20 px de alto: menos de la mitad del mínimo de 44 que
+                    pide el propio sistema de diseño. Medido tabulando y
+                    midiendo cajas a 390×844, era el peor objetivo de
+                    toque de la portada (166×20, 173×20, 170×20, 127×20).
+
+                    El margen pasa de `mt-4` a `mt-1` a propósito: con la
+                    caja a 44 px y el texto centrado en ella, 4 + 12 de
+                    centrado vuelven a dar los mismos 16 px de aire que
+                    antes. El enlace NO se mueve ni un píxel; lo que
+                    crece es la zona que responde al dedo. */}
                 <Link
                   href={v.href}
-                  className="relative mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[rgb(var(--accent-base))] underline decoration-[rgb(var(--accent-base)/0.35)] decoration-1 underline-offset-4 outline-none transition-colors duration-200 hover:decoration-[rgb(var(--accent-base))] focus-visible:rounded-[2px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+                  className="relative mt-1 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-[rgb(var(--accent-base))] underline decoration-[rgb(var(--accent-base)/0.35)] decoration-1 underline-offset-4 outline-none transition-colors duration-200 hover:decoration-[rgb(var(--accent-base))] focus-visible:rounded-[2px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
                 >
                   {es ? v.pruebaEs : v.pruebaEn}
                   <span aria-hidden="true">→</span>
