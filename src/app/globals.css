@@ -4617,28 +4617,64 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
    Si alguien escribe una nueva con `overflow-hidden`, sus entradas
    dejarán de animarse en silencio.
 
-   La otra causa de silencio es `content-visibility: auto` (la clase
-   `cv-auto`): mientras el navegador salta el contenido, tampoco
-   actualiza sus animaciones. Ahí no hay nada que arreglar —el ahorro de
-   maquetación compensa— y el resultado sigue siendo correcto: la pieza
-   aparece a plena tinta en vez de entrar. */
+   ── EL RANGO VA EN `cover`, Y NO EN `entry`, POR UNA RAZÓN MEDIDA ────
+   Aquí se culpaba a `content-visibility: auto` de que muchas piezas
+   «aparecieran a plena tinta en vez de entrar», y se daba por bueno.
+   No era eso. Se comprobó desactivando `cv-auto` por completo: las
+   mismas 75 piezas de `/pricing` seguían sin animarse.
+
+   La causa real es que **`entry` mide en unidades del PROPIO elemento**.
+   Su longitud es la altura del sujeto, así que `entry 0% → 30%` sobre
+   un check de 8,4 px son 2,5 px de scroll: la animación entera cabe
+   entre dos fotogramas de una rueda normal, y lo que se ve es un salto.
+   Leído del navegador, `activeDuration` del sello valía 0,3037 % de una
+   línea de tiempo de 908 px — **2,76 píxeles**.
+
+   `cover` no depende del sujeto: su longitud es la ventana más la
+   altura del elemento, así que un mismo porcentaje da el mismo recorrido
+   para un titular de 300 px y para un check de 8. Con `cover 0% → 22%`
+   el sello pasó a 21,998 % — **200 px**, setenta y dos veces más.
+
+   Piezas que nunca llegan a verse a media tinta, bajando la página con
+   un scroll continuo de rueda:
+
+                        con `entry`   con `cover`
+     /pricing (94)         75            5
+     /features (37)         —            4
+     portada (30)           —            0
+
+     y por familia en /pricing:  sello 34/34 → 0/34 · trazo 15/16 → 0/16
+     · traza 2/2 → 0/2 · ciclo 8/12 → 0/12
+
+   Las cinco que quedan son piezas que ya están en pantalla al cargar:
+   ésas nacen a plena tinta a propósito, que es lo que debe pasar.
+
+   El riesgo de `cover` es el contrario —lo que cae en la última pantalla
+   podría no completar su recorrido nunca— y se comprobó: al fondo del
+   todo de `/`, `/features`, `/pricing`, `/about`, `/faq` y
+   `/traders/manual` no queda ni una pieza a media tinta. El pie da
+   scroll de sobra.
+
+   La regla de sección de más arriba se queda en `entry` A PROPÓSITO: una
+   sección mide cientos de píxeles, así que allí `entry` ya da un
+   recorrido largo y su valor está afinado. */
 @supports (animation-timeline: view()) {
   [data-entra] {
     animation: tj-entra-pieza linear both;
     animation-timeline: view(block);
-    animation-range: entry 0% entry 40%;
+    animation-range: cover 0% cover 24%;
   }
   [data-entra="2"] {
-    animation-range: entry 4% entry 46%;
+    animation-range: cover 2% cover 26%;
   }
   [data-entra="3"] {
-    animation-range: entry 8% entry 52%;
+    animation-range: cover 4% cover 28%;
   }
   [data-entra="4"] {
-    animation-range: entry 12% entry 58%;
+    animation-range: cover 6% cover 30%;
   }
   [data-entra="5"] {
-    animation-range: entry 16% entry 64%;
+    animation-range: cover 8% cover 32%;
   }
 
   /* ── DENTRO DE LA DEMO NO HAY ENTRADA QUE VALGA ──────────────────
@@ -4688,19 +4724,81 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
    cuando la fila entra en pantalla, no al cargar la página. */
 @supports (animation-timeline: view()) {
   [data-entra="sello"] {
-    animation: tj-estampa cubic-bezier(0.34, 1.56, 0.64, 1) both;
-    animation-timeline: view(block);
-    animation-range: entry 0% entry 30%;
+    animation-name: tj-estampa, tj-estampa-tinta;
+    animation-fill-mode: both, both;
+    animation-timeline: view(block), view(block);
+    animation-range: cover 0% cover 22%, cover 0% cover 16%;
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1), ease-out;
+  }
+}
+
+/* ── EL MUELLE, AHORA DE VERDAD ───────────────────────────────────────
+   `cubic-bezier(.34,1.56,.64,1)` es un muelle FINGIDO: se pasa de largo
+   una vez y vuelve en línea recta. Un muelle real cruza su destino,
+   vuelve, lo cruza otra vez y se asienta. `linear()` sí sabe describir
+   eso, porque aproxima la curva por puntos en vez de por dos tiradores.
+
+   Los cincuenta puntos de abajo son la solución de un muelle de masa 1
+   con ω₀ = 17,9 rad/s y ζ = 0,608, muestreada a lo largo de 520 ms. La
+   DENSIDAD es lo que decide si se lee como muelle: con once puntos el
+   asentamiento se ve escalonado, con cincuenta se ve continuo.
+
+   El sobreimpulso se ha ajustado al del bezier que sustituye —9 %, dos
+   cruces— A PROPÓSITO: aquí no se viene a hacer el sello más saltarín,
+   que sería el error de marketing que este proyecto lleva tres sesiones
+   evitando, sino a que el mismo gesto se asiente como se asienta un
+   muelle. En un check de 18 px la diferencia es de matiz; se hace
+   porque el matiz es gratis y porque el respaldo es exactamente lo que
+   había.
+
+   ── Y SÓLO SOBRE `transform` ────────────────────────────────────────
+   La regla anterior llevaba `opacity` y `transform` en la MISMA
+   animación, así que la tinta heredaba el sobreimpulso: la opacidad
+   pasaba de 1, se recortaba, y el check quedaba opaco a mitad del
+   recorrido esperando a que la escala terminara de asentarse. Ahora son
+   dos animaciones —la tinta con la curva de la casa y un rango más
+   corto, la escala con el muelle—, que es además la única forma de
+   aplicar un muelle sin que arrastre a lo que no debe.
+
+   ── OJO: NADA DE ATAJO `animation` CON LISTA ────────────────────────
+   Esta regla se escribió primero como `animation: a curva both, b curva
+   both`, y el compilador de estilos del proyecto (Lightning CSS, vía
+   Tailwind v4) **se comió el segundo elemento de la lista sin avisar**:
+   en la hoja servida sólo quedaba `tj-estampa`, sin error ni en la
+   consola ni en el build. Con las propiedades por separado —
+   `animation-name`, `animation-fill-mode`, `animation-timeline`,
+   `animation-range`, `animation-timing-function`— las dos sobreviven.
+
+   Vale para cualquier animación múltiple de esta hoja: aquí el atajo
+   con lista no es equivalente a las longhands, es una pérdida
+   silenciosa. */
+@supports (animation-timing-function: linear(0, 1)) {
+  [data-entra="sello"] {
+    animation-timing-function:
+      linear(
+        0, 0.017, 0.061, 0.127, 0.207, 0.296, 0.389, 0.483, 0.574, 0.66,
+        0.739, 0.81, 0.872, 0.926, 0.971, 1.008, 1.037, 1.058, 1.074, 1.084,
+        1.089, 1.09, 1.088, 1.084, 1.078, 1.07, 1.062, 1.054, 1.045, 1.037,
+        1.03, 1.023, 1.016, 1.011, 1.006, 1.002, 0.999, 0.996, 0.995, 0.993,
+        0.992, 0.992, 0.992, 0.992, 0.993, 0.993, 0.994, 0.995, 0.995, 1
+      ),
+      var(--ease-suave);
   }
 }
 @keyframes tj-estampa {
   from {
-    opacity: 0;
     transform: scale(0.6);
   }
   to {
-    opacity: 1;
     transform: none;
+  }
+}
+@keyframes tj-estampa-tinta {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
@@ -4720,7 +4818,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     [data-entra="der"] {
       animation: tj-entra-izq linear both;
       animation-timeline: view(block);
-      animation-range: entry 0% entry 45%;
+      animation-range: cover 0% cover 29%;
     }
     [data-entra="der"] {
       animation-name: tj-entra-der;
@@ -4755,7 +4853,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     [data-entra="der"] {
       animation: tj-entra-pieza linear both;
       animation-timeline: view(block);
-      animation-range: entry 0% entry 40%;
+      animation-range: cover 0% cover 24%;
     }
   }
 }
@@ -4772,7 +4870,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   [data-entra="traza"] {
     animation: tj-traza-limpia linear both;
     animation-timeline: view(block);
-    animation-range: entry 0% entry 50%;
+    animation-range: cover 0% cover 32%;
   }
 }
 @keyframes tj-traza-limpia {
@@ -4799,7 +4897,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   [data-entra="lamina"] {
     animation: tj-posa linear both;
     animation-timeline: view(block);
-    animation-range: entry 0% entry 55%;
+    animation-range: cover 0% cover 34%;
   }
 }
 @keyframes tj-posa {
@@ -4832,7 +4930,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     stroke-dasharray: 1;
     animation: tj-dibuja linear both;
     animation-timeline: view(block);
-    animation-range: entry 4% entry 45%;
+    animation-range: cover 2% cover 26%;
   }
 }
 @keyframes tj-dibuja {
@@ -5154,19 +5252,19 @@ svg [data-entra="sello"] {
   [data-entra="ciclo"] {
     animation: tj-entra-pieza linear both;
     animation-timeline: view(block);
-    animation-range: entry 0% entry 40%;
+    animation-range: cover 0% cover 24%;
   }
   [data-entra="ciclo"]:nth-child(5n + 2) {
-    animation-range: entry 4% entry 46%;
+    animation-range: cover 2% cover 26%;
   }
   [data-entra="ciclo"]:nth-child(5n + 3) {
-    animation-range: entry 8% entry 52%;
+    animation-range: cover 4% cover 28%;
   }
   [data-entra="ciclo"]:nth-child(5n + 4) {
-    animation-range: entry 12% entry 58%;
+    animation-range: cover 6% cover 30%;
   }
   [data-entra="ciclo"]:nth-child(5n + 5) {
-    animation-range: entry 16% entry 64%;
+    animation-range: cover 8% cover 32%;
   }
 }
 
@@ -5188,7 +5286,15 @@ svg [data-entra="sello"] {
 
    `scaleX` sobre un elemento de 1 px de alto: el compositor lo resuelve
    sin repintar, a diferencia de animar `width`, que reflowea la línea
-   en cada fotograma. */
+   en cada fotograma.
+
+   Y ese 1 px de alto es justo lo que hacía que el filete NO se trazara
+   nunca. El rango iba en `entry`, que se mide en unidades del propio
+   elemento: `entry 10% → 60%` sobre una línea de 1 px son **medio
+   píxel** de scroll. La regla existía, la animación estaba registrada y
+   el gesto no ocurría jamás — el caso más extremo del problema que se
+   explica en el bloque de `[data-entra]`. En `cover` el mismo gesto
+   dura unos 235 px. */
 .tj-filete {
   height: 1px;
   width: 100%;
@@ -5199,7 +5305,7 @@ svg [data-entra="sello"] {
   .tj-filete {
     animation: tj-traza linear both;
     animation-timeline: view(block);
-    animation-range: entry 10% entry 60%;
+    animation-range: cover 8% cover 34%;
   }
 }
 @keyframes tj-traza {
@@ -5285,7 +5391,7 @@ svg [data-entra="sello"] {
     .tj-folio {
       animation: tj-entra-folio linear both;
       animation-timeline: view(block);
-      animation-range: entry 10% entry 55%;
+      animation-range: cover 8% cover 33%;
     }
   }
 }
