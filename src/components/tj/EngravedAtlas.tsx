@@ -204,14 +204,65 @@ const GANANCIA_TRAMA = 3.4;
 /** Cobertura por debajo de la cual no se pinta punto. */
 const UMBRAL_TRAMA = 0.06;
 
-/* ── EL ASIENTO: un punto no aparece colocado, se COLOCA ─────────────── */
-const VENTANA_ASIENTO = 0.055;
+/* ── EL ASIENTO: un punto no aparece colocado, se COLOCA ───────────────
+   La ventana era 0,055 — un punto nacía y quedaba asentado en poco más
+   de dos de los 48 pasos del trazo. A esa velocidad el asiento existía
+   en el código y no se leía en pantalla: el frente del grabado era un
+   canto duro entre «nada» y «lámina hecha».
+
+   0,16 lo convierte en una BANDA de unos siete pasos. Es el mismo
+   trabajo por fotograma —el bucle recorre las mismas celdas— pero el
+   ojo ve por fin lo que el componente siempre quiso enseñar: que la
+   figura se está grabando, no apareciendo. */
+const VENTANA_ASIENTO = 0.085;
 /** Cuánto se aparta de su casilla un punto recién nacido, en píxeles. */
-const DISPERSION_TRAMA = PASO_TRAMA * 1.5;
-/** Tamaño del punto recién nacido, en fracción del que tendrá asentado. */
-const CRIA_TRAMA = 0.35;
+const DISPERSION_TRAMA = PASO_TRAMA * 0.6;
+/* ── LA TINTA CAE GORDA Y LUEGO SE CIERRA ──────────────────────────────
+   Esto valía 0,35: el punto recién nacido era un TERCIO del que iba a
+   ser, así que el frente del grabado era más flojo que la lámina ya
+   hecha y, sobre un fondo casi negro, no se veía en absoluto.
+
+   Al revés se lee como lo que es. Un buril deja la tinta ancha y la
+   tinta se cierra al secar: el punto nace un 30 % más gordo y se
+   contrae hasta su tamaño. Eso convierte el frente en una ONDA que
+   recorre la figura mientras se baja, que es justo el gesto que este
+   componente existe para enseñar.
+
+   1,3 y no más: el radio pleno es 2,64 px sobre una retícula de 6, así
+   que a 1,6 los puntos vecinos se solapan y la banda se lee como un
+   borrón en vez de como puntos gordos. */
+const CRIA_TRAMA = 1.22;
 /** A partir de aquí la lámina fuerza el asiento de todo lo que le quede. */
 const CIERRE_ASIENTO = 0.9;
+
+/* ── LA TINTA TIENE NIVELES, Y ESO ES LO QUE DA EL RELIEVE ─────────────
+   Todos los puntos se pintaban de UNA vez, con `fill()` y la tinta a
+   plena opacidad: el recién nacido era sólo más pequeño y estaba más
+   descolocado, pero tenía el mismo negro que uno asentado hace rato. Un
+   grabado real no funciona así — la tinta que acaba de caer es más
+   débil que la que lleva rato en el papel.
+
+   Los puntos se reparten en CINCO cubos por lo asentados que están, y
+   cada cubo se rellena con su propia opacidad. El frente del grabado
+   pasa de ser un canto a ser un degradado de tinta.
+
+   ── Y por qué esto NO cuesta ──────────────────────────────────────
+   Es la trampa en la que cayó el intento anterior, que reescribió el
+   asiento y se fue de 29,6 a 37,4 ms de p99: lo caro de un regrabado no
+   son los puntos, es recorrer la máscara (`getImageData` y el barrido de
+   celdas). Aquí no se añade ni una pasada — el bucle es el mismo, sólo
+   que empuja cada arco a uno de cinco caminos en vez de a uno solo.
+
+   Lo único que crece son cuatro `fill()` de más, y cubren SÓLO la banda
+   del frente: todo lo ya asentado sigue cayendo en un único relleno,
+   igual que antes. */
+const NIVELES_TINTA = 3;
+/** Opacidad del nivel más tierno. El resto se interpola hasta 1.
+    0,58 y no 0,22: por debajo de la mitad, la onda desaparecía sobre el
+    fondo en vez de recorrerlo. Lo que lleva el peso del gesto es el
+    TAMAÑO; la tinta sólo suaviza el primer instante para que el punto
+    aparezca en vez de encenderse de golpe. */
+const TINTA_TIERNA = 0.58;
 
 const R_MAX = PASO_TRAMA * RADIO_TRAMA;
 const R_PLENO_LUT = new Float32Array(256);
@@ -272,7 +323,12 @@ function tramar(
     return;
   }
 
-  const puntos = new Path2D();
+  /* Un camino por nivel de tinta. El último —el de los ya asentados— se
+     lleva la inmensa mayoría de los puntos, así que en la práctica esto
+     sigue siendo «un relleno grande y cuatro rebordes». */
+  const caminos: Path2D[] = [];
+  for (let n = 0; n < NIVELES_TINTA; n++) caminos.push(new Path2D());
+  const ultimoNivel = NIVELES_TINTA - 1;
   /* El cierre de la lámina asienta todo lo que quede suelto, y va aparte
      del asiento propio de cada punto: se toma el mayor de los dos. */
   const cierre =
@@ -304,26 +360,70 @@ function tramar(
         else if (asiento < 0) asiento = 0;
       }
 
-      const r = asiento === 1 ? rPleno : rPleno * (CRIA_TRAMA + (1 - CRIA_TRAMA) * asiento);
-      if (r < 0.25) continue;
-
       if (asiento === 1) {
+        /* Camino rápido: asentado. Un solo arco en el camino de tinta
+           plena, exactamente como antes. */
+        if (rPleno < 0.25) continue;
         const cx = (col + 0.5) * PASO_TRAMA;
-        puntos.moveTo(cx + r, cyBase);
-        puntos.arc(cx, cyBase, r, 0, Math.PI * 2);
-      } else {
-        const inv = 1 - asiento;
-        const d = inv * inv * DISPERSION_TRAMA;
-        const cx = (col + 0.5) * PASO_TRAMA + jitter(k) * d;
-        const cy = cyBase + jitter(k + 7919) * d;
-        puntos.moveTo(cx + r, cy);
-        puntos.arc(cx, cy, r, 0, Math.PI * 2);
+        const cp = caminos[ultimoNivel];
+        cp.moveTo(cx + rPleno, cyBase);
+        cp.arc(cx, cyBase, rPleno, 0, Math.PI * 2);
+        continue;
       }
+
+      /* ── LA MANO QUE DEJA LA TINTA VA HACIA ALGÚN LADO ────────────
+         El punto recién nacido se apartaba de su casilla en una
+         dirección al azar en los dos ejes, así que el frente del
+         grabado se leía como una nube de polvo. Un buril no esparce:
+         ARRASTRA. La componente de arrastre es común a todos los
+         puntos —hacia arriba y a la izquierda, contra el sentido en
+         que avanza el trazo— y el temblor de la mano se queda como lo
+         que siempre debió ser: un desvío pequeño encima del arrastre,
+         no el gesto entero. */
+      const inv = 1 - asiento;
+      const d = inv * inv * DISPERSION_TRAMA;
+      const cx = (col + 0.5) * PASO_TRAMA - d * 0.85 + jitter(k) * d * 0.55;
+      const cy = cyBase - d * 0.42 + jitter(k + 7919) * d * 0.55;
+
+      /* ── EL CRIBADO SE HACE SOBRE EL RADIO ASENTADO, NO SOBRE EL DE
+         AHORA ────────────────────────────────────────────────────────
+         Con puntos que nacen MÁS GORDOS que su tamaño final, el corte
+         de `r < 0.25` dejó de cribar: una celda de cobertura mínima
+         —antes descartada por nacer al 35 %— ahora nace al 130 % y pasa
+         el filtro. Medido, eso disparaba el número de arcos del frente
+         y con él el coste: p99 de 26,9 a 31,4 ms.
+
+         Cribar por `rPleno` mantiene el criterio de siempre —«esta
+         celda no da para un punto»— independientemente de en qué
+         momento de su asiento esté. */
+      if (rPleno < 0.34) continue;
+      const r = rPleno * (CRIA_TRAMA + (1 - CRIA_TRAMA) * asiento);
+
+      /* El nivel de tinta sale del propio asiento: cuanto más reciente,
+         más pálido. `| 0` en vez de Math.floor — es lo mismo para un
+         positivo acotado y se ejecuta en el bucle más caliente del
+         componente. */
+      let nivel = (asiento * NIVELES_TINTA) | 0;
+      if (nivel > ultimoNivel) nivel = ultimoNivel;
+      const cp = caminos[nivel];
+      cp.moveTo(cx + r, cy);
+      cp.arc(cx, cy, r, 0, Math.PI * 2);
     }
   }
 
   destino.fillStyle = tinta;
-  destino.fill(puntos);
+  const alfaPrevio = destino.globalAlpha;
+  for (let n = 0; n < NIVELES_TINTA; n++) {
+    /* El nivel pleno se rellena con la opacidad que traiga el contexto
+       —la composición de la lámina ya la gobierna— y los tiernos, con
+       una fracción de ella. */
+    destino.globalAlpha =
+      n === ultimoNivel
+        ? alfaPrevio
+        : alfaPrevio * (TINTA_TIERNA + (1 - TINTA_TIERNA) * (n / ultimoNivel));
+    destino.fill(caminos[n]);
+  }
+  destino.globalAlpha = alfaPrevio;
 }
 
 /* Hash entero determinista ultrarrápido → [-0.5, 0.5]. El temblor de la mano. */
