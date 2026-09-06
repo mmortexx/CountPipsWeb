@@ -289,6 +289,69 @@ pintaba nunca**.
 > en el guion; conviene desconfiar de un informe antes de arreglar lo
 > que señala.
 
+### Cuarta tanda: el fondo, y lo que el perfil desmiente
+
+El encargo era «que el fondo no vaya a trompicones, lo más fluido
+posible, como a 165 fps». Lo primero fue dejar de suponer dónde está el
+coste y perfilar la CPU de verdad durante un scroll continuo:
+
+| | |
+|---|---|
+| ocioso | **72,8 %** |
+| interno del navegador | 14,8 % |
+| `drawImage` | 5,6 % |
+| `arc` | 1,1 % |
+| `getImageData` | 0,9 % |
+
+**El regrabado es el 2 %.** El muestreo de la máscara y el bucle de
+celdas —que la sesión anterior y ésta dieron por culpables— no son el
+cuello de botella; el hilo principal va ocioso tres cuartas partes del
+tiempo. Lo más caro identificable es componer los lienzos a pantalla
+completa, y eso ya está muy afinado: DPR capado a 1,5, capas cacheadas,
+como mucho dos láminas vivas, el fotograma sin cambios descartado y el
+bucle durmiéndose de verdad cuando converge.
+
+#### Lo que entra
+
+- **Radio de trama 0,44 → 0,52.** Con paso 6 son 3,12 px sobre una
+  separación de 6, así que las zonas de cobertura plena se cierran en vez
+  de quedar perforadas. No toca el número de celdas ni de arcos, sólo su
+  tamaño. −0,39 ms de p99 (error típico 1,66): gratis.
+- **Constante de seguimiento del scroll 6 → 15.** El fondo perseguía al
+  scroll con un suavizado que lo dejaba ~170 ms por detrás. Parando en
+  seco y contando cuánto sigue cambiando el dibujo: 778/1360/192 ms →
+  442/1208/190 ms. Sin coste (3,7 contra 4,0 fotogramas perdidos de 426).
+
+#### Lo que se midió y se tiró
+
+- **Densificar la retícula (paso 6 → 5)**, que es lo que se pide
+  siempre: **+3,89 ms de p99 con error típico 1,37 —fuera del ruido— y
+  la cola mucho peor** (6 de 16 medidas por encima de 35 ms contra 1 de
+  16). Confirma para el paso 5 lo que ya se sabía del paso 4.
+- **Afinar la cuantización del revelado (48 → 112 pasos)** con más
+  presupuesto de regrabado (1 → 3 ms): los dibujos distintos apenas
+  suben (76 → 84 de 243 fotogramas) y los fotogramas perdidos se
+  **duplican** (6 → 12). No era la cuantización.
+
+#### La trampa que hay que dejar escrita
+
+`mix-blend-mode: overlay` en la capa de grano parece el sospechoso
+obvio de cualquier auditoría de rendimiento: fusión a pantalla completa
+por encima del atlas animado. **Quitarlo empeora las cosas 3×**
+(6,7 → 20,7 fotogramas perdidos de 426, tres repeticiones por variante),
+y quitar el grano entero, lo mismo. Está aplanando la pila en una sola
+capa y es lo que hace que vaya rápido. **No se toca.**
+
+#### Lo que no se puede medir aquí
+
+El banco corre en Chromium sin ventana, con una cadencia de ~23 ms
+(≈43 fps): **no puede decir nada sobre 165 Hz**, y la mediana de 17-19 ms
+que sale en `fluidez.mjs` es vsync, no trabajo. Para saber si hay
+tirones reales a 165 Hz hay que medir en la máquina del que los ve.
+Lo que sí queda comprobado es que esta rama **no añade ninguno**: 4,0
+fotogramas perdidos de 426 en `main` y 4,0 en la rama, cuatro pasadas
+pareadas.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
