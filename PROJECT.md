@@ -342,6 +342,54 @@ por encima del atlas animado. **Quitarlo empeora las cosas 3×**
 y quitar el grano entero, lo mismo. Está aplanando la pila en una sola
 capa y es lo que hace que vaya rápido. **No se toca.**
 
+#### LO DE LOS TROMPICONES ERA LA CUANTIZACIÓN, Y LA MEDIDA ESTABA CIEGA
+
+Lo anterior de esta sección se escribió midiendo mal. Queda como aviso.
+
+El fondo **no perdía fotogramas: avanzaba a saltos**. Con
+`PASOS_TRAZO = 48` el dibujo sólo cambiaba **53 veces por segundo**
+mientras la pantalla iba a 165: diez de cada once fotogramas
+recomponían exactamente la misma imagen.
+
+Dos errores de método lo taparon, los dos propios:
+
+1. **El banco corre en Chromium sin ventana**, clavado a 60 Hz (aquí ni
+   eso, ~43). No puede ver un salto a 165 Hz. Hay que medir **con
+   ventana**, que usa el refresco real del monitor.
+2. **La sonda de píxeles falseaba la medida.** Leer el lienzo con
+   `getImageData` en cada fotograma fuerza una lectura de GPU y hundía
+   la cadencia de 769 a 34 Hz. Medía mi propia sonda, no el sitio.
+
+Con ventana y sin sonda, la página va a **714 Hz durante el scroll**
+(1,4 ms por fotograma). No había ningún problema de rendimiento.
+
+El barrido de pasos, medido así:
+
+| pasos | avances/s | 1 de cada N fotogramas | peor fotograma |
+|---|---|---|---|
+| 48 | 53 | 11,0 | ~10 ms |
+| **96** | **86** | **5,7** | **11,2 ms** |
+| 144 | 101 | 3,7 | 21,9 ms |
+| 200 | 106 | 2,7 | ~27 ms |
+
+**96**: +62 % de avances con el peor fotograma igual. Por encima se
+compran tirones —22 ms a 165 Hz son cuatro fotogramas perdidos— a cambio
+de cada vez menos suavidad. Comprobado alternando con la referencia:
+peor fotograma 11,9 ms de media en `main` y 12,0 en la rama.
+
+Subir el presupuesto de regrabado de 1 a 2,6 ms **no cambia nada** (107
+avances/s contra 106): el freno no era ése.
+
+#### Cómo medir esto de ahora en adelante
+
+- Con **ventana** (`headless: false`) y `--disable-frame-rate-limit`.
+- **Sin leer píxeles** en el bucle. Para saber cuántas veces avanza el
+  dibujo, pinchar `getImageData` y CONTAR las llamadas que hace el
+  atlas; no llamarla uno mismo.
+- Mirar tres cosas distintas y no confundirlas: **cadencia** (Hz reales),
+  **peor fotograma** (el tirón que se nota) y **avances por segundo**
+  (si el dibujo se mueve o repite).
+
 #### Lo que no se puede medir aquí
 
 El banco corre en Chromium sin ventana, con una cadencia de ~23 ms
