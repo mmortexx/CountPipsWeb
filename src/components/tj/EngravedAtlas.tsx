@@ -192,10 +192,30 @@ function serie(id: keyof typeof SERIES_ROTULOS): readonly string[] {
 const PASO_TRAMA = 6;
 
 /* ── CUÁNTAS VECES SE REVELA UNA LÁMINA MIENTRAS AVANZA ────────────────
-   48 pasos: suficientes para que el avance se lea continuo (un paso es
-   una fracción de punto de trama) sin multiplicar los regrabados — cada
-   paso extra es otra pasada por el muestreo completo de la máscara. */
-const PASOS_TRAZO = 48;
+   Esto valía 48, y ERA la causa de que el fondo se viera «a
+   trompicones» en un monitor rápido. No se perdían fotogramas: es que el
+   dibujo sólo avanzaba 53 veces por segundo mientras la pantalla iba a
+   165. El resto del tiempo se recomponía la misma imagen.
+
+   Medido con ventana de verdad y sin sonda que falsee (una lectura de
+   píxeles por fotograma hundía la cadencia de 769 a 34 Hz y me tuvo un
+   rato persiguiendo un fantasma):
+
+     pasos   avances/s   1 de cada N fotogramas   peor fotograma
+      48        53             11,0                  ~10 ms
+      96        86              5,7                   11,2 ms
+     144       101              3,7                   21,9 ms
+     200       106              2,7                   ~27 ms
+
+   96 es el punto: un 62 % más de avances con el peor fotograma
+   prácticamente igual que antes. Por encima se compran tirones —y un
+   tirón de 22 ms a 165 Hz son cuatro fotogramas perdidos— a cambio de
+   cada vez menos suavidad.
+
+   Y se degrada solo: el presupuesto de regrabado descarta los pasos que
+   no caben, así que una máquina lenta se comporta como antes y una
+   rápida aprovecha los que puede. */
+const PASOS_TRAZO = 96;
 /* ── EL RADIO ES EL EJE BARATO DE LA PRESENCIA ─────────────────────────
    Densificar la retícula es lo que se pide siempre y es lo que NO sale:
    el paso 4 se midió en su día a 75 ms, y el paso 5 se ha medido ahora
