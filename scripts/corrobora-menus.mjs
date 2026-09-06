@@ -36,18 +36,13 @@ for (const [ruta, patron] of [
   ok(`barra navega a ${ruta}`, page.url().includes(ruta));
 }
 
-// 4. Paleta de comandos Ctrl+K (el input de cmdk expone role=combobox).
+// 4. La paleta de comandos ⌘K se retiro del sitio: un sitio de
+//    marketing con siete enlaces de navegacion no tenia que buscar. Lo
+//    que queda es comprobar que el atajo NO abre nada, para que no vuelva
+//    a colarse por descuido.
 await page.keyboard.press("Control+k");
-await page.waitForTimeout(900);
-const paletteInput = page.getByRole("combobox");
-ok("Ctrl+K abre la paleta", (await paletteInput.count()) === 1);
-await paletteInput.fill("glosario");
 await page.waitForTimeout(700);
-const sugerencias = await page.getByRole("option").count();
-ok("paleta sugiere con «glosario»", sugerencias >= 1, `${sugerencias} resultados`);
-await page.keyboard.press("Enter");
-await page.waitForURL("**/glosario**", { timeout: 8000 });
-ok("paleta navega al glosario", /glosario/.test(page.url()));
+ok("Ctrl+K ya no abre ninguna paleta", (await page.getByRole("combobox").count()) === 0);
 
 // 5. Glosario Ctrl+G (modal Radix; nombre del DialogTitle).
 await page.keyboard.press("Control+g");
@@ -105,19 +100,14 @@ if (enUrl) {
   ok("<html lang> corrige a en", htmlLang === "en", htmlLang);
   const h1 = await page.locator("h1").first().innerText();
   ok("h1 en inglés", !/[áéíóúñ]/.test(h1), h1.slice(0, 44));
-  // La paleta en inglés busca y navega en inglés.
-  await page.keyboard.press("Control+k");
-  await page.waitForTimeout(900);
-  const combo = page.getByRole("combobox");
-  if ((await combo.count()) === 1) {
-    await combo.fill("pricing");
-    await page.waitForTimeout(600);
-    await page.keyboard.press("Enter");
-    await page.waitForURL("**/en/pricing", { timeout: 8000 }).catch(() => {});
-    ok("paleta EN navega a /en/pricing", /\/en\/pricing/.test(page.url()), page.url());
-  } else {
-    ok("paleta EN abre", false);
-  }
+  // Lo que comprobaba la paleta en ingles —que se puede llegar a
+  // /en/pricing desde la version inglesa— lo comprueba ahora la barra,
+  // que es por donde se navega desde que la paleta se retiro.
+  // «Precios» no es un enlace de primer nivel de la barra: vive en el
+  // megamenu y en el pie. Se busca en toda la pagina.
+  await page.getByRole("link", { name: /^Pricing$/ }).first().click();
+  await page.waitForURL("**/en/pricing**", { timeout: 8000 }).catch(() => {});
+  ok("la barra EN navega a /en/pricing", /\/en\/pricing/.test(page.url()), page.url());
 }
 
 /* ─────────── Móvil 390×844 ─────────── */

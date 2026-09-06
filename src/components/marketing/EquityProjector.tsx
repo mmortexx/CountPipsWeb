@@ -5,7 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { Copy, Check, Table, LineChart, Sparkles, Activity, ShieldCheck, ArrowUpRight } from "lucide-react";
 
 /**
- * EquityProjector — Terminal Cuantitativo y Proyector de Curva de Capital de Alta Resolución.
+ * EquityProjector — Proyector de curva de capital de alta resolución.
  *
  * Modelo estocástico con cono de varianza analítico (p10–p90), cálculo
  * institucional de expectancy neta, profit factor, drawdown al 99% de
@@ -601,7 +601,14 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               className="tnum uppercase text-[10.5px] tracking-[0.2em] font-semibold"
               style={{ color: "var(--ink-3)" }}
             >
-              {es ? "TERMINAL CUANTITATIVO · SIMULADOR DE CAPITAL" : "QUANTITATIVE CAPITAL TERMINAL"}
+              {/* Decia «TERMINAL CUANTITATIVO · SIMULADOR DE CAPITAL».
+                  «Terminal» vuelve a sugerir una pieza de producto, y
+                  «Simulador» es peor que vago: es el nombre de una
+                  pantalla que la app SI tiene y que no es esta, asi que
+                  quien lo lea puede creer que esta viendo aquella. Se
+                  nombra la herramienta por su nombre real, el mismo del
+                  rotulo del marco y el de `herramientas.ts`. */}
+              {es ? "PROYECTOR DE CAPITAL" : "EQUITY PROJECTOR"}
             </span>
           </div>
 
@@ -650,7 +657,8 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
             boxShadow: "0 15px 35px -10px rgba(0,0,0,0.12)",
           }}
         >
-          {/* Barra Superior del Terminal (Titlebar) */}
+          {/* Cabecera de la herramienta. NO es la barra de titulo de
+              una ventana: esto no es una pantalla del programa. */}
           <div
             className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b"
             style={{
@@ -658,22 +666,24 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               background: "color-mix(in oklab, var(--surface-2) 80%, transparent)",
             }}
           >
-            <div className="flex items-center gap-2.5">
-              <span
-                aria-hidden="true"
-                className="px-1.5 py-0.5 rounded-[2px] text-[9.5px] font-mono font-bold"
-                style={{
-                  background: "color-mix(in oklab, rgb(var(--accent-base)) 15%, transparent)",
-                  color: "rgb(var(--accent-base))",
-                  border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
-                }}
-              >
-                WINUI3
-              </span>
-              <span className="text-[11px] font-mono tracking-wider font-semibold text-[var(--ink)]">
-                COUNTPIPS · {es ? "MOTOR CUANTITATIVO DE CAPITAL" : "QUANTITATIVE CAPITAL ENGINE"}
-              </span>
-            </div>
+            {/* ── ESTA HERRAMIENTA NO ES UNA PANTALLA DEL PROGRAMA ────
+                Aqui habia una insignia «WINUI3» junto al rotulo «MOTOR
+                CUANTITATIVO DE CAPITAL», y las dos cosas juntas se leian
+                como una captura de la aplicacion de escritorio. No lo es:
+                la app no tiene ningun proyector con deslizadores de win
+                rate, R medio y horizonte, ni publica CAGR proyectado,
+                retorno total ni tiempo para duplicar. Lo que si tiene es
+                el Simulador, que contesta la misma pregunta sorteando
+                entre las operaciones REALES del trader.
+
+                Era ademas la unica de las ocho herramientas de la web con
+                marco de aplicacion; las otras siete no fingen ser el
+                programa. El marco se queda —es la caja de la herramienta—
+                pero el rotulo la nombra por su nombre real, el mismo que
+                usa `src/lib/herramientas.ts` para esta entrada. */}
+            <span className="font-mono text-[11px] font-semibold tracking-wider text-[var(--ink)]">
+              COUNTPIPS · {es ? "PROYECTOR DE CAPITAL" : "EQUITY PROJECTOR"}
+            </span>
 
             {/* Presets Toolbar en la Barra Superior */}
             {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.
@@ -1051,7 +1061,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               </div>
             </div>
 
-            {/* ══════════ PANEL DERECHO: TERMINAL CUANTITATIVO (7 cols) ══════════ */}
+            {/* ══════════ PANEL DERECHO: RESULTADOS (7 cols) ══════════ */}
             <div className="lg:col-span-7 p-5 sm:p-6 space-y-5 flex flex-col justify-between" style={{ background: "color-mix(in oklab, var(--surface-1) 40%, transparent)" }}>
               
               {/* Encabezado: Expectancy & Live Status */}
@@ -1207,7 +1217,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-4 text-xs">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <div>
                         <span className="text-[var(--ink-3)] text-[10px] mr-1">{es ? "Capital:" : "Equity:"}</span>
                         <span className="font-bold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
@@ -1499,15 +1509,18 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 style={{ background: "rgb(var(--divider) / 0.14)" }}
               >
                 <div
-                  className="p-3.5"
+                  /* Cada casilla es el contenedor contra el que se mide
+                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
+                     salia 33 px a 320 px. */
+                  className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold flex items-center justify-between">
                     <span>{es ? "Balance Proyectado" : "Projected Balance"}</span>
                     <ArrowUpRight className="w-3 h-3 text-[rgb(var(--accent-base))]" />
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[rgb(var(--accent-base))]">
-                    {fmtUsd(c.finalBalance)}
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[rgb(var(--accent-base))]">
+                    {fmtUsd(c.finalBalance, true)}
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
                     {startBalance > 0 ? `${(c.finalBalance / startBalance).toFixed(1)}x capital inicial` : ""}
@@ -1515,7 +1528,10 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3.5"
+                  /* Cada casilla es el contenedor contra el que se mide
+                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
+                     salia 33 px a 320 px. */
+                  className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
@@ -1533,7 +1549,10 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3.5"
+                  /* Cada casilla es el contenedor contra el que se mide
+                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
+                     salia 33 px a 320 px. */
+                  className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
@@ -1555,13 +1574,16 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3.5"
+                  /* Cada casilla es el contenedor contra el que se mide
+                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
+                     salia 33 px a 320 px. */
+                  className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Max DD Est. (99% Conf.)" : "Est. Max DD (99% Conf.)"}
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[rgb(var(--pnl-neg))]">
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[rgb(var(--pnl-neg))]">
                     -{fmtPct(c.estMaxDDpct, 1)}
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
@@ -1570,13 +1592,16 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3.5"
+                  /* Cada casilla es el contenedor contra el que se mide
+                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
+                     salia 33 px a 320 px. */
+                  className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Tiempo para Duplicar" : "Time to Double (2x)"}
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[var(--ink)]">
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[var(--ink)]">
                     {c.monthsToDouble !== null
                       ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "mo"}`
                       : "—"}
@@ -1589,13 +1614,16 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 </div>
 
                 <div
-                  className="p-3.5"
+                  /* Cada casilla es el contenedor contra el que se mide
+                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
+                     salia 33 px a 320 px. */
+                  className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     Profit Factor / Kelly
                   </div>
-                  <div className="tnum text-lg sm:text-xl font-mono font-bold mt-1 text-[var(--ink)]">
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[var(--ink)]">
                     {fmtNum(c.profitFactor, 2)}
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">

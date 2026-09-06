@@ -1368,6 +1368,37 @@
     }
   }
 
+  /* ============================================================
+     UNA CIFRA NO PUEDE EMPUJAR SU CELDA
+     ============================================================
+     Un importe con cuerpo fijo dentro de una celda de retícula se
+     sale en cuanto la celda encoge, y encoge a anchos que no son el
+     más estrecho: medido, «−10.000,00 US$» se salía 35 px a 1024 px
+     y estaba perfecto a 320 y a 1440, porque a 1024 es donde esa
+     retícula pasa a cuatro columnas.
+
+     Por eso `clamp()` contra `vw` no sirve aquí: la ventana no sabe
+     cuánto mide la celda. La pregunta correcta es el ANCHO DE LA
+     PROPIA CAJA, y eso son consultas de contenedor: se declara
+     `.caja-cifra` en la celda y la cifra se mide en `cqi`.
+
+     Los tres tamaños cubren lo que hay: el número grande de una
+     tarjeta, el de una fila de estadísticas y el de una ficha
+     pequeña. Cada uno tiene su suelo —por debajo no se encoge más,
+     se prefiere partir— y su techo, que es el tamaño de siempre. */
+  .caja-cifra {
+    container-type: inline-size;
+  }
+  .cifra-xl {
+    font-size: clamp(1rem, 13cqi, 1.5rem);
+  }
+  .cifra-lg {
+    font-size: clamp(0.86rem, 11cqi, 1.125rem);
+  }
+  .cifra-sm {
+    font-size: clamp(0.7rem, 9cqi, 0.875rem);
+  }
+
 }
 
 /* Thin, theme-aware scrollbar — subtle at rest, accent-tinted on hover.
