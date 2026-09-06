@@ -1082,7 +1082,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       {c.netExpectancyR >= 0 ? "+" : ""}
                       {fmtNum(c.netExpectancyR, 3)} R
                     </span>
-                    <span className="tnum font-mono text-xs whitespace-nowrap" style={{ color: "var(--ink-2)" }}>
+                    <span className="tnum font-mono text-xs" style={{ color: "var(--ink-2)" }}>
                       ≈ {fmtUsd(c.expectancyUsdInitial)} / {es ? "op." : "trade"}
                     </span>
                   </div>

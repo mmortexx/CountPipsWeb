@@ -442,7 +442,13 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
-      <div className="tnum relative" style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+      {/* «EXPECTANCY» en versalitas con 0,12em de espaciado mide mas que
+          la celda a 320 px: se recortaba. Con el espaciado a cero cuando
+          no cabe y permiso para partir, se lee entero. */}
+      <div
+        className="tnum relative leading-[1.3] [overflow-wrap:anywhere]"
+        style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
+      >
         {label}
       </div>
       <div

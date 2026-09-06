@@ -654,18 +654,22 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Stats adicionales: valor posición, apalancamiento, VaR 95% y riesgo de ruina */}
           <div
-            className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5 rounded-[2px] p-3 border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]"
+            /* La clase va en CADA celda y no como variante `[&>div]:`:
+               Tailwind no compone una clase propia dentro de un variante
+               arbitrario y ahi no llegaba a generar regla ninguna —
+               comprobado en la hoja construida. */
+            className="mb-5 grid grid-cols-2 gap-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)] p-3 sm:grid-cols-4"
           >
-            <div>
-              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
+            <div className="caja-cifra">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
                 {es ? "Valor nocional" : "Notional value"}
               </div>
-              <div className="tnum text-sm font-semibold mt-0.5 text-primary">
+              <div className="tnum cifra-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
                 {fmtUsd(c.positionValue)}
               </div>
             </div>
-            <div>
-              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
+            <div className="caja-cifra">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
                 {es ? "Apalancamiento" : "Leverage"}
               </div>
               <div
@@ -677,16 +681,16 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 {fmtNum(c.leverage, 1)}x
               </div>
             </div>
-            <div>
-              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
+            <div className="caja-cifra">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
                 {es ? "VaR 95% (1-Trade)" : "95% VaR (1-Trade)"}
               </div>
-              <div className="tnum text-sm font-semibold mt-0.5 text-primary">
+              <div className="tnum cifra-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
                 {fmtUsd(c.var95)}
               </div>
             </div>
-            <div>
-              <div className="tnum text-[10px] uppercase tracking-wider text-tertiary">
+            <div className="caja-cifra">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
                 {es ? "Riesgo de Ruina" : "Risk of Ruin (50%)"}
               </div>
               <div

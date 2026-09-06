@@ -72,7 +72,7 @@ export function Wrapped() {
                 qualifies as WCAG "large text" (≥24px regular) which only
                 requires 3:1. Desktop was already text-2xl so no visual
                 change there. */}
-            <Money value={topSetup.totalPnl} sign colorizeSign className="text-2xl font-medium whitespace-nowrap" />
+            <Money value={topSetup.totalPnl} sign compact colorizeSign className="text-2xl font-medium whitespace-nowrap" />
             {/* R20-3b: added tnum so the `count` and `winRate` digits align
                 with the adjacent Money figure — mixed proportional /
                 tabular figures in the same baseline row looked jittery when
@@ -96,7 +96,7 @@ export function Wrapped() {
           <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-primary whitespace-nowrap leading-tight">{bestDayName}</span>
           {/* R27-1d — same text-xl→text-2xl bump as the setup card Money
               above, for the same WCAG AA light-theme reason. */}
-          <Money value={bestDay.pnl} sign colorizeSign className="text-2xl font-medium whitespace-nowrap" />
+          <Money value={bestDay.pnl} sign compact colorizeSign className="text-2xl font-medium whitespace-nowrap" />
         </span>
       ),
       sub: es
@@ -109,7 +109,7 @@ export function Wrapped() {
       label: es ? "Total operado" : "Total traded",
       value: (
         <span className="flex flex-col items-start gap-1 min-w-0">
-          <Money value={totalOperado} compact colorizeSign={false} className="t-display text-[clamp(1.75rem,9cqi,2.75rem)] tnum text-primary whitespace-nowrap" />
+          <Money value={totalOperado} compact colorizeSign={false} className="t-display text-[clamp(1.15rem,9cqi,2.75rem)] tnum text-primary whitespace-nowrap" />
           <span className="text-base text-tertiary">{es ? "de volumen bruto" : "gross volume"}</span>
         </span>
       ),
@@ -123,7 +123,7 @@ export function Wrapped() {
       label: es ? "Coste de indisciplina" : "Cost of indiscipline",
       value: (
         <span className="flex items-baseline gap-2 min-w-0">
-          <Money value={METRICS.costOfIndiscipline} colorizeSign className="t-display text-[clamp(1.75rem,9cqi,2.75rem)] tnum text-pnl-warn whitespace-nowrap" />
+          <Money value={METRICS.costOfIndiscipline} compact colorizeSign className="t-display text-[clamp(1.75rem,9cqi,2.75rem)] tnum text-pnl-warn whitespace-nowrap" />
         </span>
       ),
       sub: es
@@ -140,7 +140,7 @@ export function Wrapped() {
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1 tnum min-w-0">
             {/* R27-1d — same text-xl→text-2xl bump as the setup card Money
                 above, for the same WCAG AA light-theme reason. */}
-            <Money value={topInstrument.totalPnl} sign colorizeSign className="text-2xl font-medium whitespace-nowrap" />
+            <Money value={topInstrument.totalPnl} sign compact colorizeSign className="text-2xl font-medium whitespace-nowrap" />
             {/* R20-3b: tnum on the count chip — same rationale as the setup
                 card above. */}
             <span className="tnum text-sm text-tertiary whitespace-nowrap">
@@ -196,7 +196,13 @@ export function Wrapped() {
                 ? "md:col-span-3"
                 : i === 2
                 ? "md:col-span-3"
-                : "md:col-span-2";
+                /* Los tres de la fila baja eran un TERCIO del ancho ya a
+                   768 px, y ahi una cifra de P&L a 24 px —que no puede
+                   bajar de ahi sin perder el contraste que pide la
+                   norma— se salia 31 px de su fila. A la mitad hasta
+                   1024 px y a un tercio a partir de ahi, que es cuando
+                   el tercio da de si. */
+                : "md:col-span-3 lg:col-span-2";
             const glowColor =
               c.tone === "pos"
                 ? "rgb(var(--pnl-pos))"

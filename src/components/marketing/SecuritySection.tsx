@@ -137,7 +137,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-[11px]">
             <div>
               <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Almacén en Disco" : "Disk Storage"}</span>
-              <span className="text-primary font-semibold truncate block">%LOCALAPPDATA%\CountPips\countpips.sqlite</span>
+              <span className="block break-all font-semibold text-primary">%LOCALAPPDATA%\CountPips\countpips.sqlite</span>
             </div>
             <div>
               <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Modo de Registro" : "Journal Mode"}</span>

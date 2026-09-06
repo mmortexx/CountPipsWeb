@@ -192,7 +192,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                   {m.l}
                 </span>
                 <span
-                  className="mt-0.5 hidden overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[10px] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
+                  className="mt-0.5 hidden break-words font-mono text-[10px] leading-[1.35] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
                   title={m.formula}
                 >
                   {m.formula}
@@ -363,7 +363,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               vecino. Las tres cifras salen del motor: eran «50 %»,
               «+0,32R» y «1,59» escritas a mano, y sólo la primera se
               acercaba a la verdad. */}
-          <div className="mt-5 grid grid-cols-3 gap-4 pt-4 border-t" style={{ borderColor: "rgb(var(--divider) / 0.06)" }}>
+          <div className="mt-5 grid grid-cols-3 gap-x-2.5 gap-y-4 pt-4 border-t sm:gap-x-4" style={{ borderColor: "rgb(var(--divider) / 0.06)" }}>
             {[
               { l: es ? "Ganadoras" : "Winners", v: fmtPct(METRICS.winRate, lang, 1) },
               { l: es ? "R medio" : "Avg R", v: fmtR(METRICS.expectancyR, lang, 2) },
@@ -371,7 +371,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
             ].map((s) => (
               <div key={s.l} className="relative">
                 <div
-                  className="tnum inline-flex items-center gap-1.5"
+                  className="tnum flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5"
                   style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {/* R24-1c: tiny accent dot before each stat label so the

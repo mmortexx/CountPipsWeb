@@ -229,8 +229,8 @@ export function Comparison() {
                             }}
                           />
                         )}
-                        <div className="flex items-center gap-2">
-                          <span className={`font-medium tracking-tight ${c.highlight ? "text-primary" : "text-primary"}`}>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                          <span className={`min-w-0 font-medium tracking-tight ${c.highlight ? "text-primary" : "text-primary"}`}>
                             {c.label}
                           </span>
                           {c.highlight && (

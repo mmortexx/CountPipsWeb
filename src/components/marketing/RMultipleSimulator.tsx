@@ -170,6 +170,17 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
       ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n)
       : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 
+  /* Importe corto para las cinco celdas de percentil, que a 320 px miden
+     poco mas de 70 px. A mano y no con `notation: "compact"` de Intl:
+     en espanol eso devuelve «18,9 mil», que ocupa MAS que «18.906». */
+  const fmtUsdCorto = (n: number) => {
+    const a = Math.abs(n);
+    const signo = n < 0 ? "−" : "";
+    if (a >= 1_000_000) return `${signo}${fmtNum(a / 1_000_000, 2)} M $`;
+    if (a >= 10_000) return `${signo}${fmtNum(a / 1_000, 0)} k $`;
+    return fmtUsd(n);
+  };
+
   const fmtNum = (n: number, dec = 2) =>
     es
       ? new Intl.NumberFormat("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n)
@@ -319,33 +330,61 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               : "300 simulations of your next trades. Each path is different: the fan shows full percentiles (P5 to P95). The same edge can multiply your account or ruin you depending on order. Discipline is what lets you survive long enough to collect it."}
           </p>
 
-          {/* Archetype Presets */}
+          {/* ── ARQUETIPOS ────────────────────────────────────────────
+              Eran cuatro fichas sueltas en `flex-wrap` con etiquetas de
+              largos muy distintos: se repartian en tres filas desiguales
+              y el bloque se leia como un monton de botones, no como una
+              eleccion entre cuatro cosas del mismo rango.
+
+              Ahora es el control segmentado del sitio, el mismo que usan
+              las otras calculadoras: apilado en estrecho y en fila desde
+              `sm`, con todas las opciones del MISMO ancho. El parametro
+              que las distingue baja a una segunda linea atenuada en vez
+              de alargar el nombre entre parentesis — es el patron que ya
+              usan los presets del proyector. */}
           <div className="mb-6">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-tertiary block mb-2">
-              {es ? "Arquetipos de trading predefinidos:" : "Pre-calibrated trading archetypes:"}
+            <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-tertiary">
+              {es ? "Arquetipos de trading predefinidos" : "Pre-calibrated trading archetypes"}
             </span>
-            <div className="flex flex-wrap gap-2">
+            <div className="tj-segmentado tj-segmentado-apila" role="group">
               {[
-                { label: es ? "Evaluación Prop (0.75% Riesgo)" : "Prop Challenge (0.75% Risk)", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
-                { label: es ? "Seguimiento de Tendencia" : "Trend Following", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
-                { label: es ? "Scalping de Reversión" : "Mean Reversion Scalp", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
-                { label: es ? "Sobre-apalancamiento (Peligro)" : "Over-leveraged (Danger)", wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
-              ].map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => {
-                    setWinRate(preset.wr);
-                    setAvgWinR(preset.winR);
-                    setAvgLossR(preset.lossR);
-                    setRiskPct(preset.risk);
-                    setSeed((s) => s + 1);
-                  }}
-                  className="toque-comodo px-2.5 py-1 text-xs font-mono rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--accent-base)/0.4)] transition-colors"
-                >
-                  {preset.label}
-                </button>
-              ))}
+                { label: es ? "Evaluación Prop" : "Prop Challenge", nota: es ? "0,75 % riesgo" : "0.75% risk", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
+                { label: es ? "Seguimiento de tendencia" : "Trend Following", nota: es ? "42 % acierto · 3,2 R" : "42% hit · 3.2R", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
+                { label: es ? "Scalping de reversión" : "Mean Reversion Scalp", nota: es ? "65 % acierto · 1,2 R" : "65% hit · 1.2R", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
+                { label: es ? "Sobre-apalancamiento" : "Over-leveraged", nota: es ? "3,5 % riesgo · peligro" : "3.5% risk · danger", wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
+              ].map((preset) => {
+                const activo =
+                  winRate === preset.wr &&
+                  avgWinR === preset.winR &&
+                  avgLossR === preset.lossR &&
+                  riskPct === preset.risk;
+                return (
+                  <button
+                    key={preset.label}
+                    type="button"
+                    aria-pressed={activo}
+                    onClick={() => {
+                      setWinRate(preset.wr);
+                      setAvgWinR(preset.winR);
+                      setAvgLossR(preset.lossR);
+                      setRiskPct(preset.risk);
+                      setSeed((s) => s + 1);
+                    }}
+                  >
+                    {/* El nombre reserva DOS lineas aunque ocupe una:
+                        «Evaluación Prop» cabe en una y los otros tres no,
+                        y sin el suelo las cuatro notas quedaban a alturas
+                        distintas — que es lo que hacia que cuatro
+                        opciones del mismo rango se leyeran desiguales. */}
+                    <span className="grid min-w-0 text-center leading-[1.25]">
+                      <span className="flex min-h-[2.5em] items-center justify-center">
+                        {preset.label}
+                      </span>
+                      <span className="mt-0.5 text-[9.5px] opacity-70">{preset.nota}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -451,73 +490,131 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             </svg>
           </div>
 
-          {/* Final-balance distribution 5 percentiles */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 mb-4 text-center font-mono">
-            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
-              <span className="block text-[9.5px] text-tertiary">P5 (Cola 5%)</span>
-              <span className="text-xs font-bold text-[rgb(var(--pnl-neg))]">{fmtUsd(c.finalP5)}</span>
-            </div>
-            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
-              <span className="block text-[9.5px] text-tertiary">P25 (Q1)</span>
-              <span className="text-xs font-bold text-secondary">{fmtUsd(c.finalP25)}</span>
-            </div>
-            <div className="p-2 rounded bg-[rgb(var(--accent-base)/0.08)] border border-[rgb(var(--accent-base)/0.25)]">
-              <span className="block text-[9.5px] text-[rgb(var(--accent-base))] font-semibold">P50 (Mediana)</span>
-              <span className="text-xs font-bold text-[rgb(var(--accent-base))]">{fmtUsd(c.finalP50)}</span>
-            </div>
-            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
-              <span className="block text-[9.5px] text-tertiary">P75 (Q3)</span>
-              <span className="text-xs font-bold text-secondary">{fmtUsd(c.finalP75)}</span>
-            </div>
-            <div className="p-2 rounded bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.08)]">
-              <span className="block text-[9.5px] text-tertiary">P95 (Top 5%)</span>
-              <span className="text-xs font-bold text-[rgb(var(--pnl-pos))]">{fmtUsd(c.finalP95)}</span>
-            </div>
+          {/* ── LA DISTRIBUCION, EN UNA SOLA TIRA ─────────────────────
+              Eran cinco cajas con borde y fondo propios, y cada rotulo
+              arrastraba un parentesis («P5 (Cola 5%)») que a dos columnas
+              partia en dos lineas y empujaba la cifra fuera.
+
+              Cinco percentiles son UNA distribucion, no cinco datos
+              sueltos: se dibujan como una tira reglada con filetes entre
+              columnas y una sola caja alrededor. La mediana no se marca
+              con otro fondo sino con un filete de acento arriba, que es
+              como se senala una referencia en una tabla y no compite con
+              los otros cuatro valores.
+
+              Cada columna es su propio contenedor de medida (`caja-cifra`)
+              y el importe va abreviado: «18,9 k $» en vez de «18.906 US$»,
+              que no cabe en 70 px. */}
+          <div
+            className="mb-4 grid grid-cols-5 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-center font-mono"
+            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
+          >
+            {[
+              { k: "P5", n: es ? "Cola 5 %" : "Bottom 5%", v: c.finalP5, col: "rgb(var(--pnl-neg))", ref: false },
+              { k: "P25", n: "Q1", v: c.finalP25, col: "var(--ink-2)", ref: false },
+              { k: "P50", n: es ? "Mediana" : "Median", v: c.finalP50, col: "rgb(var(--accent-base))", ref: true },
+              { k: "P75", n: "Q3", v: c.finalP75, col: "var(--ink-2)", ref: false },
+              { k: "P95", n: es ? "Cima 5 %" : "Top 5%", v: c.finalP95, col: "rgb(var(--pnl-pos))", ref: false },
+            ].map((p, i) => (
+              <div
+                key={p.k}
+                title={fmtUsd(p.v)}
+                className={`caja-cifra relative min-w-0 px-1 py-2.5 ${i > 0 ? "border-l border-[rgb(var(--divider)/0.10)]" : ""}`}
+              >
+                {p.ref && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 top-0 h-[2px]"
+                    style={{ background: "rgb(var(--accent-base))" }}
+                  />
+                )}
+                <span
+                  className="tnum block text-[9.5px] font-semibold tracking-[0.1em]"
+                  style={{ color: p.ref ? "rgb(var(--accent-base))" : "var(--ink-3)" }}
+                >
+                  {p.k}
+                </span>
+                <span className="mt-0.5 block text-[9.5px] leading-[1.2] text-tertiary">{p.n}</span>
+                <span
+                  className="tnum cifra-sm mt-1.5 block whitespace-nowrap font-bold"
+                  style={{ color: p.col }}
+                >
+                  {fmtUsdCorto(p.v)}
+                </span>
+              </div>
+            ))}
           </div>
 
-          {/* Probabilities & Racha Perdedora */}
+          {/* ── RUINA Y RACHAS ────────────────────────────────────────
+              Cuatro rotulos en versalitas con 0,12em de espaciado
+              —«RUINA (MONTE CARLO)», «RACHA TEORICA (E[L])»— sobre
+              columnas de 90 px: partian en dos y tres lineas de largos
+              distintos y las cuatro cifras quedaban a alturas distintas,
+              que es lo que hacia que el bloque se leyera desordenado.
+
+              Se separan las dos cosas que el rotulo mezclaba: arriba el
+              CONCEPTO en una sola linea, debajo la PRECISION (de donde
+              sale el numero) en redonda y atenuada. Con `grid-rows` de
+              tres filas las cuatro cifras caen en la misma linea de base
+              pase lo que pase con el texto de encima.
+
+              Filetes entre columnas en vez de separacion: son cuatro
+              lecturas de la misma simulacion, no cuatro tarjetas. */}
           <div
-            className="grid grid-cols-2 sm:grid-cols-4 gap-2 rounded-[2px] p-3 mb-4 text-center font-mono"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.05)" }}
+            className="mb-4 grid grid-cols-2 overflow-clip rounded-[2px] text-center font-mono sm:grid-cols-4"
+            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.10)" }}
           >
-            <div>
-              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Ruina (Monte Carlo)" : "Ruin (Monte Carlo)"}
-              </div>
+            {[
+              {
+                t: es ? "Ruina" : "Ruin",
+                sub: "Monte Carlo",
+                v: fmtPct(c.probRuin, 1),
+                col: c.probRuin > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
+              },
+              {
+                t: es ? "Ruina" : "Ruin",
+                sub: es ? "Analítica" : "Analytical",
+                v: fmtPct(c.analyticalRuinProb, 1),
+                col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
+              },
+              {
+                t: es ? "Racha perdedora" : "Losing streak",
+                sub: es ? `Esperada · mediana ${c.medianMaxLossStreak}` : `Expected · median ${c.medianMaxLossStreak}`,
+                v: `~${c.theoreticalMaxLossStreak}`,
+                col: "var(--ink)",
+              },
+              {
+                t: es ? "Peor racha" : "Worst streak",
+                sub: "P95",
+                v: `${c.p95MaxLossStreak} ${es ? "ops" : "trades"}`,
+                col: "rgb(var(--pnl-neg))",
+              },
+            ].map((m, i) => (
               <div
-                className="tnum text-sm font-bold mt-1"
-                style={{ color: c.probRuin > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)" }}
+                key={m.t + m.sub}
+                className={`caja-cifra grid min-w-0 grid-rows-[auto_auto_1fr] px-2 py-3 ${
+                  i % 2 === 1 ? "border-l border-[rgb(var(--divider)/0.10)]" : ""
+                } ${i >= 2 ? "border-t border-[rgb(var(--divider)/0.10)] sm:border-t-0" : ""} ${
+                  i === 2 ? "sm:border-l sm:border-[rgb(var(--divider)/0.10)]" : ""
+                }`}
               >
-                {fmtPct(c.probRuin, 1)}
+                <span
+                  className="tnum text-[9.5px] uppercase leading-[1.25] tracking-[0.12em]"
+                  style={{ color: "var(--ink-3)" }}
+                >
+                  {m.t}
+                </span>
+                <span className="mt-0.5 text-[9.5px] leading-[1.25] text-tertiary [overflow-wrap:anywhere]">
+                  {m.sub}
+                </span>
+                <span
+                  className="tnum cifra-sm mt-1.5 self-end whitespace-nowrap font-bold"
+                  style={{ color: m.col }}
+                >
+                  {m.v}
+                </span>
               </div>
-            </div>
-            <div>
-              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Ruina Analítica" : "Analytical Ruin"}
-              </div>
-              <div
-                className="tnum text-sm font-bold mt-1"
-                style={{ color: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)" }}
-              >
-                {fmtPct(c.analyticalRuinProb, 1)}
-              </div>
-            </div>
-            <div>
-              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Racha Teórica (E[L])" : "Expected Streak (E[L])"}
-              </div>
-              <div className="tnum text-sm font-bold mt-1 text-primary">
-                ~{c.theoreticalMaxLossStreak} <span className="text-[10px] font-normal text-tertiary">(Med: {c.medianMaxLossStreak})</span>
-              </div>
-            </div>
-            <div>
-              <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Peor Racha (P95)" : "Worst Streak (P95)"}
-              </div>
-              <div className="tnum text-sm font-bold mt-1 text-[rgb(var(--pnl-neg))]">
-                {c.p95MaxLossStreak} ops
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Disclaimer */}

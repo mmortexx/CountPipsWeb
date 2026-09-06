@@ -473,6 +473,73 @@ pasada. La puerta es más estrecha que el ruido del banco sin ventana:
 o se ensancha el presupuesto o se mide con ventana. No es una regresión
 de esta rama.
 
+### Sexta tanda: que nada se salga a NINGÚN ancho
+
+El encargo era «nada sobresaliendo ni defectos visuales de ningún tipo».
+Se midió con un barrido de **16 anchos × 14 rutas** (`anchos.mjs` en el
+cuaderno de la sesión) que busca tres cosas distintas: la página con
+scroll horizontal, un elemento cuyo contenido no cabe en su caja, y un
+elemento que se sale de su contenedor.
+
+**73 hallazgos la primera pasada. Cero la última.**
+
+#### El patrón era casi siempre el mismo
+
+Una cifra con cuerpo fijo dentro de una celda de retícula. Y el defecto
+no aparecía en el ancho más estrecho: `−10.000,00 US$` se salía 35 px a
+**1024 px** y estaba perfecta a 320 y a 1440, porque 1024 es donde esa
+retícula pasa a cuatro columnas.
+
+Por eso `clamp()` contra `vw` no sirve: **la ventana no sabe cuánto mide
+la celda**. La pregunta correcta es el ancho de la propia caja, y eso son
+consultas de contenedor. Se añadieron `.caja-cifra` (declara el
+contenedor) y `.cifra-xl` / `.cifra-lg` / `.cifra-sm` (miden en `cqi`).
+
+Dos trampas por el camino:
+
+- **`[&>div]:caja-cifra` no genera regla.** Tailwind no compone una
+  clase propia dentro de un variante arbitrario. Se comprobó en la hoja
+  construida: `.caja-cifra` aparecía una sola vez, su definición. La
+  clase va en cada celda.
+- **`notation: "compact"` de Intl EMPEORA el español.** Devuelve
+  «121,1 mil», que ocupa más que «121.069». Las abreviaturas se escriben
+  a mano con `k` y `M`.
+
+#### Seis deslizadores sin agarradera
+
+Aparte del tamaño, seis `input[type=range]` de las calculadoras no
+usaban `.tj-range`: eran `appearance-none` de 6 a 8 px **sin regla de
+bolita**, y en WebKit eso deja el control sin nada visible que arrastrar.
+Tres tampoco tenían nombre accesible.
+
+#### Lo que se rediseñó, y por qué
+
+- **La factura de indisciplina**: el desglose pasa a retícula de tres
+  columnas declaradas —concepto elástico, porcentaje e importe a su
+  ancho— y las barras se miden contra el error MAYOR en vez de contra un
+  `pct * 2.5` que llenaba la barra en el 40 % y recortaba por encima sin
+  avisar.
+- **El simulador de Monte Carlo**: los cuatro arquetipos eran fichas
+  sueltas en `flex-wrap` que caían en tres filas desiguales; ahora son el
+  control segmentado del sitio, con el parámetro en una segunda línea
+  atenuada y el nombre reservando dos líneas para que las cuatro notas
+  caigan en la misma base. Los cinco percentiles eran cinco cajas con
+  borde propio y pasan a una tira reglada con la mediana marcada por un
+  filete de acento — son UNA distribución, no cinco datos sueltos. El
+  bloque de ruina separa concepto y precisión en dos líneas fijas para
+  que las cuatro cifras compartan línea de base.
+
+#### Lo que hubo que retocar en las puertas
+
+- `corrobora-menus.mjs` seguía comprobando la paleta ⌘K retirada: ahora
+  verifica que **no** abre nada. Además asume servidor de desarrollo, no
+  la exportación estática — contra `serve out` falla por la barra final.
+- Dos pruebas fijaban el literal `min-w-[320px]` de la tabla de
+  expectancy. Comprueban la intención (que el ancho mínimo exista) y no
+  el número, que subió porque a 320 px las propias celdas no cabían.
+- `legible.mjs` cazó dos rótulos nuevos a 9 px: el suelo del sitio es
+  9,5.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
