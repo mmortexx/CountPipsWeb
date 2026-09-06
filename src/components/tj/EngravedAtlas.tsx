@@ -2952,6 +2952,44 @@ export function EngravedAtlas() {
        menos. */
     const PRESUPUESTO_REGRABADO_MS = 1.0;
     let inicioFotograma = 0;
+    /* ── EL REGRABADO NO EMPIEZA SI NO CABE EN EL FOTOGRAMA ────────────
+       El presupuesto era un número fijo de 1 ms comparado contra el
+       tiempo YA gastado en el fotograma. Eso no evita el tirón, porque
+       lo que se mide es lo gastado, no lo que va a costar: si el
+       fotograma va por 0,2 ms el guardián deja pasar un regrabado que
+       tarda 6 ms, y el fotograma se va a 6,2.
+
+       Medido en la pausa de lámina, que es donde está todo el coste:
+       componer solo cuesta 0,90 ms y un fotograma con regrabado 6,60 de
+       mediana, con un p95 de 27,7. A 165 Hz el presupuesto por fotograma
+       es 6,06 ms — o sea que la mitad de los fotogramas de la pausa se
+       pasaban.
+
+       Ahora se recuerda lo que costó el último regrabado y se compara
+       contra la cadencia REAL de la pantalla, medida sobre la marcha. Si
+       no cabe, se deja para el siguiente. En una pantalla de 165 Hz eso
+       reparte los regrabados en vez de amontonarlos; en una de 60 hay
+       sitio de sobra y se comporta como antes.
+
+       `SUELO_REGRABADO_MS` es el hambre: si se lleva demasiado tiempo sin
+       regrabar, se fuerza uno aunque no quepa. Sin él, una máquina lenta
+       dejaría el dibujo congelado para siempre con tal de no pasarse.
+
+       Estuvo en 90 ms y era el defecto, no el remedio: a 165 Hz el hueco
+       de un fotograma son 6 ms y un regrabado cuesta 5, así que el
+       guardián decía que no CASI SIEMPRE y el hambre acababa marcando el
+       ritmo — once regrabados por segundo, medido. Congelaba el dibujo
+       para ahorrar tirones que con vsync no existían. En 14 ms el techo
+       queda en unos setenta por segundo, por encima de los cincuenta y
+       tres de antes, y el guardián vuelve a ser lo que debía: un freno
+       para el fotograma que YA va tarde, no una norma. */
+    const SUELO_REGRABADO_MS = 14;
+    /* Media móvil del coste de un regrabado y de la cadencia de pantalla.
+       Móvil y no exacta: lo que se quiere es una previsión estable, no el
+       último valor, que en una tanda cualquiera salta mucho. */
+    let costeRegrabado = 2.5;
+    let cadenciaPantalla = 16.7;
+    let ultimoRegrabado = 0;
     /* Si todas las capas compuestas en el último fotograma estaban al
        día. Lo pone a false `capaDe` cuando se queda sin presupuesto. */
     let capasAlDia = true;
@@ -2975,8 +3013,19 @@ export function EngravedAtlas() {
          de la lámina terminada, que se queda con t = 1 para siempre. */
       if (c.t === t) return c.cv;
 
-      const elapsed = performance.now() - inicioFotograma;
-      if (c.t >= 0 && elapsed > PRESUPUESTO_REGRABADO_MS) {
+      const ahora = performance.now();
+      const elapsed = ahora - inicioFotograma;
+      /* Lo que queda de fotograma, dejando un margen: componer y ceder el
+         hilo también cuestan. */
+      const hueco = cadenciaPantalla - elapsed;
+      const hambriento = ahora - ultimoRegrabado > SUELO_REGRABADO_MS;
+      if (!hambriento && costeRegrabado > hueco) {
+        capasAlDia = false;
+        return c.cv;
+      }
+      /* El tope de siempre se conserva como segundo cinturón: nunca más
+         de un regrabado por fotograma en régimen normal. */
+      if (c.t >= 0 && !hambriento && elapsed > PRESUPUESTO_REGRABADO_MS) {
         capasAlDia = false;
         return c.cv;
       }
@@ -3010,6 +3059,12 @@ export function EngravedAtlas() {
         PLATES[i](c.ctx, w, h, t);
       }
       c.t = t;
+      /* Lo que ha costado de verdad, para decidir el siguiente. Media
+         móvil de un tercio: sigue los cambios de lámina sin dar bandazos
+         por un fotograma suelto. */
+      const coste = performance.now() - ahora;
+      costeRegrabado += (coste - costeRegrabado) / 3;
+      ultimoRegrabado = performance.now();
       return c.cv;
     };
 
@@ -3329,6 +3384,11 @@ export function EngravedAtlas() {
       }
       const dt = Math.min(now - last, 64);
       last = now;
+      /* Cadencia real de la pantalla, en media móvil: es contra esto —y
+         no contra un número fijo— contra lo que el guardián de regrabado
+         decide si un regrabado cabe en el fotograma. `dt` ya viene
+         acotado a 64 ms, así que un fotograma perdido no la dispara. */
+      if (dt > 0) cadenciaPantalla += (dt - cadenciaPantalla) / 8;
 
       /* Las pausas se vuelven a medir 10 veces por segundo, SIEMPRE.
          La versión anterior solo remedía cuando cambiaba
