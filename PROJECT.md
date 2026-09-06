@@ -400,6 +400,79 @@ Lo que sí queda comprobado es que esta rama **no añade ninguno**: 4,0
 fotogramas perdidos de 426 en `main` y 4,0 en la rama, cuatro pasadas
 pareadas.
 
+### Quinta tanda: el trompicón no era lo que parecía
+
+Tres rondas persiguiendo fotogramas perdidos, y no había casi ninguno.
+
+#### El banco mentía dos veces
+
+**Sin ventana.** Chromium headless va clavado a ~43-60 Hz. No puede ver
+un tirón a 165 Hz, y todo lo que se rechazó por «más caro» midiéndolo
+así hay que volver a mirarlo. Se pasó a Chromium **con ventana**, que
+usa el refresco real del monitor.
+
+**Sin vsync.** Con `--disable-frame-rate-limit --disable-gpu-vsync` la
+cadencia sale a 1,10 ms (900 Hz). Eso es útil para exagerar picos —un
+pico se ve contra 1 ms, no contra 6— pero **no es lo que nadie ve**, y
+usarlo para decidir presupuestos lleva a conclusiones falsas: el
+guardián de regrabado se calibró contra 1,10 ms y salió estrangulado.
+Con vsync la pantalla da **6,10 ms (164 Hz)**, y ahí:
+
+| | fotogramas tardíos de 1450 | avances del dibujo por segundo |
+|---|---|---|
+| `main` | 2 | 15 |
+| esta rama | 2 | 32 |
+
+Dos de mil cuatrocientos cincuenta. **No se pierden fotogramas.** Lo que
+se veía como trompicón era otra cosa.
+
+#### Lo que sí era: el dibujo avanzaba a 15 pasos por segundo
+
+Con la pantalla a 164 Hz, el fondo cambiaba **quince veces por
+segundo**: cada estado del dibujo duraba once fotogramas. Eso se ve a
+saltos por muy puntual que sea la entrega. El defecto no estaba en el
+coste de un fotograma sino en **cuántas veces se regraba la lámina**.
+
+El regrabado se pedía a ciegas: si tocaba, se hacía. Ahora se mira lo
+que queda de fotograma —contra la cadencia **medida sobre la marcha**,
+no contra un 60 Hz supuesto— y lo que suele costar un regrabado, y si
+no cabe se deja para el siguiente.
+
+`SUELO_REGRABADO_MS` es el hambre que impide que ese freno congele el
+dibujo. **Estuvo en 90 ms y era el defecto, no el remedio**: a 165 Hz el
+hueco de un fotograma son 6 ms y un regrabado cuesta 5, así que el
+guardián decía que no casi siempre y el hambre acababa marcando el
+ritmo —once regrabados por segundo, medido—. Congelaba el dibujo para
+ahorrar tirones que con vsync no existían. En **14 ms** el techo queda
+en unos setenta por segundo y el guardián vuelve a ser lo que debía: un
+freno para el fotograma que YA va tarde, no una norma.
+
+#### La tensión que sigue abierta
+
+`PASOS_TRAZO` cuantiza el revelado. En 48 el dibujo escalona; subirlo a
+96 lo suaviza pero multiplicó por cuatro los picos (17-27 de 1450 en
+`main`, 85-90 en la rama, medido sin vsync). El guardián resuelve esa
+tensión —96 pasos y 2 picos, los mismos que `main`— pero el techo real
+sigue siendo el coste del regrabado: **5,2 ms de redibujar el vector de
+la lámina** contra un hueco de 6,10 ms. Por eso se queda en 32 avances
+por segundo y no en los setenta que permitiría el suelo: el guardián
+refusa la mitad de las veces porque de verdad no cabe.
+
+Bajar de ahí exige abaratar el vector de la lámina, no tocar más
+umbrales.
+
+#### `fluidez.mjs` no pasa, y no pasaba antes
+
+La puerta pide p99 ≤ 28 ms. Ocho medidas pareadas, misma tanda:
+
+- rama: 27,1 · 28,0 · 30,6 · 35,2 · 30,6 · 26,0 · 26,0 · 33,1 → media **29,6**
+- `main`: 32,4 · 27,7 · 26,7 · 24,3 · 26,5 · 30,1 · 33,7 · 32,0 → media **29,2**
+
+Indistinguibles, y **las dos fallan**, en rutas distintas según la
+pasada. La puerta es más estrecha que el ruido del banco sin ventana:
+o se ensancha el presupuesto o se mide con ventana. No es una regresión
+de esta rama.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
