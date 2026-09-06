@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { ANIO_PUBLICACION } from "@/lib/publicacion";
 import { fmtMoney, fmtNum } from "@/lib/trading/format";
@@ -170,7 +170,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                       type="button"
                       aria-pressed={active}
                       onClick={() => aplicarPreset(p)}
-                      className={`h-8 px-3 rounded-[2px] text-[12.5px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                      className={`toque-comodo h-8 px-3 rounded-[2px] text-[12.5px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                         active
                           ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold shadow-sm"
                           : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-secondary hover:text-primary"
@@ -201,7 +201,18 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                     step={2}
                     value={totalTrades}
                     onChange={(e) => setTotalTrades(Number(e.target.value))}
-                    className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
+                    /* `.tj-range`, como los otros seis deslizadores del
+                       sitio. Antes era `appearance-none` con 6 px de alto
+                       y sin regla de bolita: en WebKit eso deja el control
+                       SIN AGARRADERA —no se ve qué se arrastra— y 6 px no
+                       se cogen con el dedo. La clase trae los 44 px, la
+                       bolita y la pista de dos tramos. */
+                    className="tj-range w-full"
+                    style={
+                      {
+                        "--pct": `${((totalTrades - 10) / (200 - 10)) * 100}%`,
+                      } as CSSProperties
+                    }
                   />
                 </div>
 
@@ -220,7 +231,18 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                     step={1}
                     value={breachPct}
                     onChange={(e) => setBreachPct(Number(e.target.value))}
-                    className="w-full accent-[rgb(var(--pnl-neg))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
+                    /* El tramo recorrido va en rojo porque lo que mide es
+                       el porcentaje de operaciones FUERA de plan: aquí más
+                       es peor. `--tj-recorrido` existe justamente para
+                       cambiar ese tramo sin reescribir la pista. */
+                    className="tj-range w-full"
+                    style={
+                      {
+                        accentColor: "rgb(var(--pnl-neg))",
+                        "--tj-recorrido": "rgb(var(--pnl-neg))",
+                        "--pct": `${((breachPct - 5) / (80 - 5)) * 100}%`,
+                      } as CSSProperties
+                    }
                   />
                 </div>
               </div>
@@ -447,7 +469,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
               <button
                 type="button"
                 onClick={copiarResumen}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="toque-comodo inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
               >
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />

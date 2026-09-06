@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR } from "@/lib/trading/data";
 
@@ -424,7 +424,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             <button
               type="button"
               onClick={() => setIncludeFriction((v) => !v)}
-              className={`min-h-[32px] px-3 rounded-[2px] text-xs font-mono font-semibold transition-colors ${
+              className={`toque-comodo min-h-[32px] px-3 rounded-[2px] text-xs font-mono font-semibold transition-colors ${
                 includeFriction
                   ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                   : "bg-[rgb(var(--divider)/0.08)] text-tertiary hover:text-primary"
@@ -511,7 +511,16 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               value={riskPct}
               onChange={(e) => setRiskPct(parseFloat(e.target.value))}
               aria-label={es ? "Porcentaje de riesgo por operación" : "Risk percentage per trade"}
-              className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-2 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
+              /* `.tj-range`, como los otros deslizadores del sitio. Era
+                 `appearance-none` con 8 px de alto y sin regla de bolita:
+                 en WebKit eso deja el control sin agarradera visible, y
+                 8 px no se cogen con el dedo. */
+              className="tj-range w-full"
+              style={
+                {
+                  "--pct": `${((riskPct - RISK_MIN) / (RISK_MAX - RISK_MIN)) * 100}%`,
+                } as CSSProperties
+              }
             />
             <div className="flex justify-between mt-1 text-[9.5px] text-tertiary font-mono">
               {RISK_MARKS.map((m) => (

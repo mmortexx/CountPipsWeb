@@ -4,11 +4,11 @@ import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Manual trading",
-  description: "Metrics, playbooks and trade review for manual traders.",
+  description: "Metrics, playbooks and trade review for traders who work by hand: measure your real edge, revisit every entry and find the pattern that keeps costing you money.",
   alternates: { canonical: `${SITE_URL}/en/traders/manual/`, languages: hreflangDe("/traders/manual") },
   openGraph: {
     title: "Manual trading — CountPips",
-    description: "Metrics, playbooks and trade review for manual traders.",
+    description: "Metrics, playbooks and trade review for traders who work by hand: measure your real edge, revisit every entry and find the pattern that keeps costing you money.",
     url: `${SITE_URL}/en/traders/manual/`,
     type: "website",
     siteName: "CountPips",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Manual trading — CountPips",
-    description: "Metrics, playbooks and trade review for manual traders.",
+    description: "Metrics, playbooks and trade review for traders who work by hand: measure your real edge, revisit every entry and find the pattern that keeps costing you money.",
   },
 };
 

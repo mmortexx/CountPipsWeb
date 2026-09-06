@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum } from "@/lib/trading/format";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
@@ -143,6 +143,12 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
   const [customCommission, setCustomCommission] = useState<number>(1.24);
 
   const inst = INSTRUMENT_SPECS.find((i) => i.id === selectedInstId) || INSTRUMENT_SPECS[0];
+  /* Los limites del deslizador de objetivo dependen del instrumento, y
+     ahora los necesita tambien `--pct` para pintar el tramo recorrido de
+     la pista. Salen aqui una vez en vez de repetir el ternario. */
+  const esMini = inst.id === "ES" || inst.id === "MES";
+  const objetivoMin = inst.category === "forex" ? 5 : esMini ? 2 : 5;
+  const objetivoMax = inst.category === "forex" ? 80 : esMini ? 40 : 100;
 
   const handleSelectInstrument = (instId: string) => {
     const item = INSTRUMENT_SPECS.find((i) => i.id === instId);
@@ -267,7 +273,9 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                   step="1"
                   value={contracts}
                   onChange={(e) => setContracts(Number(e.target.value))}
-                  className="w-full accent-[rgb(var(--accent-base))]"
+                  aria-label={es ? "Contratos por operacion" : "Contracts per trade"}
+                  className="tj-range w-full"
+                  style={{ "--pct": `${((contracts - 1) / 19) * 100}%` } as CSSProperties}
                 />
               </div>
 
@@ -285,10 +293,14 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                   step="5"
                   value={monthlyTrades}
                   onChange={(e) => setMonthlyTrades(Number(e.target.value))}
-                  className="w-full accent-[rgb(var(--accent-base))]"
+                  aria-label={es ? "Operaciones al mes" : "Trades per month"}
+                  className="tj-range w-full"
+                  style={{ "--pct": `${((monthlyTrades - 10) / 290) * 100}%` } as CSSProperties}
                 />
               </div>
 
+              {/* Los limites del recorrido salen a variables porque ahora
+                  los usa tambien `--pct`, el relleno de la pista. */}
               <div className="tj-paper p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-secondary font-medium">
@@ -302,12 +314,18 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                 </div>
                 <input
                   type="range"
-                  min={inst.category === "forex" ? 5 : inst.id === "ES" || inst.id === "MES" ? 2 : 5}
-                  max={inst.category === "forex" ? 80 : inst.id === "ES" || inst.id === "MES" ? 40 : 100}
+                  min={objetivoMin}
+                  max={objetivoMax}
                   step={inst.category === "forex" ? 1 : 0.5}
                   value={targetUnits}
                   onChange={(e) => setTargetUnits(Number(e.target.value))}
-                  className="w-full accent-[rgb(var(--accent-base))]"
+                  aria-label={es ? "Ganancia media esperada" : "Expected average gain"}
+                  className="tj-range w-full"
+                  style={
+                    {
+                      "--pct": `${((targetUnits - objetivoMin) / (objetivoMax - objetivoMin)) * 100}%`,
+                    } as CSSProperties
+                  }
                 />
               </div>
 

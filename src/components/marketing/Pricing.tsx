@@ -218,7 +218,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             {es ? "Son precios de lanzamiento previstos. " : "These are planned launch prices. "}
             <Link
               href="/beta"
-              className="link-underline-host -my-2 inline-flex py-2 text-secondary transition-colors hover:text-primary"
+              className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
             >
               <span className="link-underline">
                 {es ? "Solicitar acceso anticipado" : "Request early access"}

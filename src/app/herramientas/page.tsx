@@ -55,7 +55,7 @@ const listaSchema = {
 export const metadata: Metadata = {
   title: "Herramientas de trading",
   description:
-    "Calculadora de riesgo, Monte Carlo, significancia estadística, proyector de capital, reloj de sesiones, coste de indisciplina, ahorro vs suscripción e impacto de comisiones. Gratis, sin registro y sin enviar datos.",
+    "Ocho calculadoras de trading: riesgo por operación, Monte Carlo, significancia estadística y coste de comisiones. Gratis, sin registro y sin enviar datos.",
   alternates: { canonical: `${SITE_URL}/herramientas/`, languages: hreflangDe("/herramientas") },
   openGraph: {
     title: "Herramientas de trading — CountPips",

@@ -341,7 +341,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
                     setRiskPct(preset.risk);
                     setSeed((s) => s + 1);
                   }}
-                  className="px-2.5 py-1 text-xs font-mono rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--accent-base)/0.4)] transition-colors"
+                  className="toque-comodo px-2.5 py-1 text-xs font-mono rounded-[2px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--accent-base)/0.4)] transition-colors"
                 >
                   {preset.label}
                 </button>

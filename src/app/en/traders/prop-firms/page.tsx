@@ -4,11 +4,11 @@ import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Prop firms — evaluations and funded accounts",
-  description: "Visible risk, rules and track record for prop-firm traders.",
+  description: "Risk in plain sight before every entry, firm rules always on screen and a track record that carries your evaluation. Built for funded-account traders.",
   alternates: { canonical: `${SITE_URL}/en/traders/prop-firms/`, languages: hreflangDe("/traders/prop-firms") },
   openGraph: {
     title: "Prop firms — CountPips",
-    description: "Visible risk, rules and track record for prop-firm traders.",
+    description: "Risk in plain sight before every entry, firm rules always on screen and a track record that carries your evaluation. Built for funded-account traders.",
     url: `${SITE_URL}/en/traders/prop-firms/`,
     type: "website",
     siteName: "CountPips",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Prop firms — CountPips",
-    description: "Visible risk, rules and track record for prop-firm traders.",
+    description: "Risk in plain sight before every entry, firm rules always on screen and a track record that carries your evaluation. Built for funded-account traders.",
   },
 };
 

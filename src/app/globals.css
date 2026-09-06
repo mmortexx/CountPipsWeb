@@ -1995,6 +1995,23 @@ textarea:focus-visible,
   border-left: 1px solid rgb(var(--divider) / 0.18);
 }
 
+/* ── CON EL DEDO, 44 PX ───────────────────────────────────────────────
+   Los 32 px de arriba son la altura correcta con un ratón: pasan el
+   mínimo de 24 px de la norma y mantienen la densidad de una ficha de
+   herramienta. Con un dedo no bastan, y estos grupos están en las
+   calculadoras, que es justo donde se toca más.
+
+   La pregunta es `pointer: coarse` y no el ancho de la ventana: lo que
+   decide si hacen falta 44 px es quién apunta, no cuánto mide la
+   pantalla. Es el mismo criterio que `.toque-comodo`, y arreglado aquí
+   vale para los cuarenta y un controles de las tres calculadoras a la
+   vez en lugar de componente por componente. */
+@media (pointer: coarse) {
+  .tj-segmentado > * {
+    min-height: 44px;
+  }
+}
+
 /* ── VARIANTE APILADA ────────────────────────────────────────────────
    Para los grupos cuyas etiquetas son frases —«Acciones / Cripto»,
    «Conservador · 0,50 %»— y no caben en fila en un móvil. Con

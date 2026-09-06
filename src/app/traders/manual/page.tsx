@@ -4,11 +4,11 @@ import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Trading manual",
-  description: "Métricas, playbooks y revisión de operaciones para traders manuales.",
+  description: "Métricas, playbooks y revisión de operaciones para quien opera a mano: mide tu ventaja real, repasa cada entrada y detecta el patrón que te está costando dinero.",
   alternates: { canonical: `${SITE_URL}/traders/manual/`, languages: hreflangDe("/traders/manual") },
   openGraph: {
     title: "Trading manual — CountPips",
-    description: "Métricas, playbooks y revisión de operaciones para traders manuales.",
+    description: "Métricas, playbooks y revisión de operaciones para quien opera a mano: mide tu ventaja real, repasa cada entrada y detecta el patrón que te está costando dinero.",
     url: `${SITE_URL}/traders/manual/`,
     type: "website",
     siteName: "CountPips",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Trading manual — CountPips",
-    description: "Métricas, playbooks y revisión de operaciones para traders manuales.",
+    description: "Métricas, playbooks y revisión de operaciones para quien opera a mano: mide tu ventaja real, repasa cada entrada y detecta el patrón que te está costando dinero.",
   },
 };
 
