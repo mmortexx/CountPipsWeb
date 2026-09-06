@@ -40,11 +40,6 @@ export function useTeclaMando(): string {
   return esApple() ? "⌘" : "Ctrl";
 }
 
-/** El atajo completo, listo para un `aria-label` o un `title`. */
-export function useAtajoPaleta(): string {
-  return `${useTeclaMando()}+K`;
-}
-
 function esApple(): boolean {
   if (typeof navigator === "undefined") return false;
   const nav = navigator as Navigator & {

@@ -25,14 +25,15 @@ const ROOT = join(import.meta.dirname, "..", "..");
 const readSrc = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
 
 describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)", () => {
-  it("T1.1: OverlayHost and GlobalShortcuts bind Ctrl+K / Cmd+K and ? keybindings correctly", () => {
+  it("T1.1: OverlayHost and GlobalShortcuts bind Ctrl+G and ? keybindings correctly", () => {
     const overlayHost = readSrc("src/components/tj/OverlayHost.tsx");
     const globalShortcuts = readSrc("src/components/tj/GlobalShortcuts.tsx");
 
-    // CommandPalette listener in OverlayHost
-    expect(overlayHost).toContain('(e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k"');
+    // El glosario es el unico atajo con modificador que queda: la paleta
+    // de comandos se retiro (ver el commit que la quita).
+    expect(overlayHost).toContain('(e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "g"');
     expect(overlayHost).toContain("e.preventDefault()");
-    expect(overlayHost).toContain("setCmdOpen((o) => !o)");
+    expect(overlayHost).not.toContain("CommandPalette");
 
     // ShortcutsHelp listener in GlobalShortcuts
     expect(globalShortcuts).toContain('key === "?"');

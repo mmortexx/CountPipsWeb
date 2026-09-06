@@ -111,16 +111,16 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 1 Feature Cov
   });
 
   it("T1.3: ARIA attributes and semantic landmarks are correctly applied across interactive components", () => {
-    const commandPalette = readSrc("src/components/tj/CommandPalette.tsx");
     const glossaryModal = readSrc("src/components/tj/GlossaryModal.tsx");
     const shortcutsHelp = readSrc("src/components/tj/ShortcutsHelp.tsx");
     const cookieConsent = readSrc("src/components/tj/CookieConsent.tsx");
 
-    // CommandPalette dialog landmark & accessibility
-    expect(commandPalette).toContain('role="dialog"');
-    expect(commandPalette).toContain('aria-modal="true"');
-    expect(commandPalette).toContain('aria-labelledby="command-palette-title"');
-    expect(commandPalette).toContain('aria-hidden="true"');
+    // ShortcutsHelp dialog landmark & accessibility
+    expect(shortcutsHelp).toContain('role="dialog"');
+    expect(shortcutsHelp).toContain('aria-modal="true"');
+    expect(shortcutsHelp).toContain('aria-labelledby="tj-atajos-titulo"');
+    expect(shortcutsHelp).toContain('id="tj-atajos-titulo"');
+    expect(shortcutsHelp).toContain('aria-hidden="true"');
 
     // GlossaryModal listbox, option & expanded accessibility
     expect(glossaryModal).toContain('role="listbox"');
@@ -136,14 +136,18 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 1 Feature Cov
 
   it("T1.4: prefers-reduced-motion is respected across animations and scroll behaviors", () => {
     const globalsCss = readSrc("src/app/globals.css");
-    const commandPalette = readSrc("src/components/tj/CommandPalette.tsx");
+    const countUp = readSrc("src/components/tj/CountUp.tsx");
+    const ticker = readSrc("src/components/marketing/Ticker.tsx");
+    const atlas = readSrc("src/components/tj/EngravedAtlas.tsx");
 
     // CSS reduced motion media query handles animations
     expect(globalsCss).toMatch(/@media\s*\(\s*prefers-reduced-motion:\s*reduce\s*\)/);
 
-    // CommandPalette checks matchMedia for reduced motion to disable smooth scroll
-    expect(commandPalette).toContain("prefers-reduced-motion: reduce");
-    expect(commandPalette).toContain('behavior: PREFERS_REDUCED_MOTION ? "auto" : "smooth"');
+    // Lo que no puede resolver la hoja de estilos lo consulta el JS:
+    // el contador, la cinta y el fondo grabado.
+    expect(countUp).toContain("prefers-reduced-motion: reduce");
+    expect(ticker).toContain("prefers-reduced-motion: reduce");
+    expect(atlas).toContain("prefers-reduced-motion: reduce");
   });
 
   it("T1.5: Skip link is the first focusable element, bilingual, and targets #main-content", () => {
@@ -229,14 +233,14 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 2 Boundary & 
   });
 
   it("T2.4: Modal keyboard focus traps and roving tabindex handle boundaries safely", () => {
-    const commandPalette = readSrc("src/components/tj/CommandPalette.tsx");
+    const shortcutsHelp = readSrc("src/components/tj/ShortcutsHelp.tsx");
     const glossaryModal = readSrc("src/components/tj/GlossaryModal.tsx");
 
-    // CommandPalette traps focus between first and last element on Tab and Shift+Tab
-    expect(commandPalette).toContain("e.key !== \"Tab\"");
-    expect(commandPalette).toContain("first.focus()");
-    expect(commandPalette).toContain("last.focus()");
-    expect(commandPalette).toContain("previouslyFocused?.focus?.()");
+    // ShortcutsHelp traps focus between first and last element on Tab and Shift+Tab
+    expect(shortcutsHelp).toContain("e.key !== \"Tab\"");
+    expect(shortcutsHelp).toContain("first.focus()");
+    expect(shortcutsHelp).toContain("last.focus()");
+    expect(shortcutsHelp).toContain("previouslyFocused?.focus?.()");
 
     // GlossaryModal roving tabindex with ArrowUp, ArrowDown, Home, End
     expect(glossaryModal).toContain('e.key === "ArrowDown"');

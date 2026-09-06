@@ -147,7 +147,7 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
 
   it("Pairwise 5: Touch viewport (390px) + Modal overlay focus trapping & roving tabindex", () => {
     const glossaryModal = readSrc("src/components/tj/GlossaryModal.tsx");
-    const commandPalette = readSrc("src/components/tj/CommandPalette.tsx");
+    const shortcutsHelp = readSrc("src/components/tj/ShortcutsHelp.tsx");
 
     // Roving tabindex and dialog content structure
     expect(glossaryModal).toContain('role="listbox"');
@@ -155,8 +155,8 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     expect(glossaryModal).toContain('role="option"');
 
     // Dialog content wraps with mobile safe layout
-    expect(commandPalette).toContain("pt-[15vh]");
-    expect(commandPalette).toContain("max-w-xl");
+    expect(shortcutsHelp).toContain("pt-[15vh]");
+    expect(shortcutsHelp).toContain("max-w-md");
   });
 
   it("Pairwise 6: Error input (Negative/NaN balance) + Recovery plan / Equity projection determinism", () => {

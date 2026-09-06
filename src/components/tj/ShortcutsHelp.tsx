@@ -130,17 +130,6 @@ export function ShortcutsHelp({
               ayuda de atajos es justo donde peor sienta hacer elegir al
               lector. Ver `useTeclaMando`. */}
           <Kbd>{mando}</Kbd>
-          <Kbd>K</Kbd>
-        </>
-      ),
-      // «Abrir command palette» mezclaba los dos idiomas en la versión
-      // española; el resto del sitio la llama «paleta de comandos».
-      label: es ? "Abrir la paleta de comandos" : "Open the command palette",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>{mando}</Kbd>
           <Kbd>G</Kbd>
         </>
       ),
@@ -318,7 +307,12 @@ export function ShortcutsHelp({
           className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[15vh]"
           role="dialog"
           aria-modal="true"
-          aria-label={es ? "Atajos de teclado" : "Keyboard shortcuts"}
+          /* El nombre accesible SALE DEL TITULO VISIBLE, no de un
+             `aria-label` paralelo: así no pueden divergir cuando uno de
+             los dos se retoque, y quien usa lector oye exactamente lo
+             que los demas leen. El subtitulo va de descripcion. */
+          aria-labelledby="tj-atajos-titulo"
+          aria-describedby="tj-atajos-sub"
         >
           {/* Backdrop — subtle blur + fade-in */}
           <div
@@ -341,10 +335,13 @@ export function ShortcutsHelp({
             {/* Header */}
             <div className="flex items-center justify-between gap-3 px-4 py-3 border-b ">
               <div className="min-w-0">
-                <h2 className="text-sm font-medium tracking-tight text-primary">
+                <h2
+                  id="tj-atajos-titulo"
+                  className="text-sm font-medium tracking-tight text-primary"
+                >
                   {es ? "Atajos de teclado" : "Keyboard shortcuts"}
                 </h2>
-                <p className="text-[11px] text-tertiary mt-0.5">
+                <p id="tj-atajos-sub" className="text-[11px] text-tertiary mt-0.5">
                   {es
                     ? "Muévete más rápido por la app."
                     : "Move faster through the app."}

@@ -5,18 +5,14 @@ import { useCallback, useEffect, useState } from "react";
 import { OPEN_GLOSSARY, OPEN_SHORTCUTS_HELP } from "@/lib/overlays";
 
 /**
- * OverlayHost — el portero de las tres ventanas de overlay globales.
+ * OverlayHost — el portero de las ventanas de overlay globales.
  *
  * ── El problema que resuelve ──────────────────────────────────────────
- * `CommandPalette`, `ShortcutsHelp` y `GlossaryModal` estaban montados en
- * el layout o componentes sueltos. Al centralizarlos aquí bajo demanda,
- * ningún overlay descarga su JavaScript hasta el primer gesto o atajo.
+ * `ShortcutsHelp` y `GlossaryModal` estaban montados en el layout o en
+ * componentes sueltos. Al centralizarlos aquí bajo demanda, ningún
+ * overlay descarga su JavaScript hasta el primer gesto o atajo.
  */
 
-const CommandPalette = dynamic(
-  () => import("@/components/tj/CommandPalette").then((m) => m.CommandPalette),
-  { ssr: false }
-);
 
 const ShortcutsHelp = dynamic(
   () => import("@/components/tj/ShortcutsHelp").then((m) => m.ShortcutsHelp),
@@ -35,7 +31,6 @@ function prefetchOverlays() {
     if (pedido) return;
     pedido = true;
     quitar();
-    import("@/components/tj/CommandPalette");
     import("@/components/tj/ShortcutsHelp");
     import("@/components/tj/GlossaryModal");
   };
@@ -57,17 +52,10 @@ const EXIT_MS = 260;
 
 export function OverlayHost() {
   // `mounted` decide si el overlay existe en el árbol de React.
-  const [cmdMounted, setCmdMounted] = useState(false);
-  const [cmdOpen, setCmdOpen] = useState(false);
   const [helpMounted, setHelpMounted] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [glossaryMounted, setGlossaryMounted] = useState(false);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
-
-  const openCmd = useCallback((next: boolean) => {
-    setCmdMounted(true);
-    setCmdOpen(next);
-  }, []);
 
   const openHelp = useCallback((next: boolean) => {
     setHelpMounted(true);
@@ -78,12 +66,6 @@ export function OverlayHost() {
     setGlossaryMounted(true);
     setGlossaryOpen(next);
   }, []);
-
-  useEffect(() => {
-    if (cmdOpen || !cmdMounted) return;
-    const t = window.setTimeout(() => setCmdMounted(false), EXIT_MS);
-    return () => window.clearTimeout(t);
-  }, [cmdOpen, cmdMounted]);
 
   useEffect(() => {
     if (helpOpen || !helpMounted) return;
@@ -100,7 +82,6 @@ export function OverlayHost() {
   useEffect(() => {
     prefetchOverlays();
 
-    // ⌘K / ⌃K — paleta de comandos
     // ⌘G / ⌃G — glosario
     const onKey = (e: KeyboardEvent) => {
       // Si el usuario escribe en un campo de texto, no interceptar Ctrl+G si es búsqueda u otro
@@ -117,11 +98,7 @@ export function OverlayHost() {
         }
       }
 
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setCmdMounted(true);
-        setCmdOpen((o) => !o);
-      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "g") {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "g") {
         e.preventDefault();
         setGlossaryMounted(true);
         setGlossaryOpen((o) => !o);
@@ -150,7 +127,6 @@ export function OverlayHost() {
 
   return (
     <>
-      {cmdMounted && <CommandPalette open={cmdOpen} onOpenChange={openCmd} />}
       {helpMounted && <ShortcutsHelp open={helpOpen} onOpenChange={openHelp} />}
       {glossaryMounted && (
         <GlossaryModal
