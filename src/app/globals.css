@@ -5106,10 +5106,13 @@ svg [data-entra="sello"] {
 .tj-cmp-saluda {
   animation: tj-cmp-bienvenida 1.55s var(--ease-suave, ease) both;
 }
+/* La bienvenida BAJA, porque abajo es donde está la mejora: enseña lo
+   que se gana, no lo que ya se sufre. Los valores caen en bordes de fila
+   (0, 25, 50, 75, 100) para que coincida con el salto del tirador. */
 @keyframes tj-cmp-bienvenida {
   0% { --tj-cmp: 50; }
-  32% { --tj-cmp: 12; }
-  55% { --tj-cmp: 12; }
+  32% { --tj-cmp: 100; }
+  55% { --tj-cmp: 100; }
   100% { --tj-cmp: 50; }
 }
 @media (prefers-reduced-motion: reduce) {

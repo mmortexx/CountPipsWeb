@@ -12,144 +12,131 @@ import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 
 /**
- * ComparisonSlider — "Antes vs Después" con arrastre intuitivo.
+ * ComparisonSlider — «Antes vs Después», con la barra que de verdad
+ * transforma lo que hay debajo.
  *
- * ── Hacia dónde se arrastra, y por qué ────────────────────────────────
- * Este bloque llevaba escrito que arrastrar a la DERECHA revelaba más
- * del después, y el texto de la página lo repetía. Es imposible con esta
- * disposición, y se notaba usándolo: el "antes" ocupa el lado izquierdo
- * a sangre y el "después" es el recorte de la derecha, cuyo borde
- * izquierdo va pegado al tirador. Si el tirador avanza hacia la derecha,
- * el recorte se estrecha — o sea, aparece MÁS "antes", justo lo
- * contrario de lo prometido.
+ * ── Lo que estaba mal, y no era el rótulo ─────────────────────────────
+ * Esto era un comparador de cortinilla HORIZONTAL con el «antes» en la
+ * mitad izquierda y el «después» en la derecha. Dos defectos de fondo:
  *
- * No es un fallo de la mecánica sino del rótulo: en cualquier comparador
- * con el antes a la izquierda, lo nuevo se descubre tirando HACIA LA
- * IZQUIERDA. Eso es lo que dice ahora la página.
+ *  1. Las dos listas ocupaban MITADES DISTINTAS, así que la barra no
+ *     comparaba nada: en el punto medio se veían dos listas diferentes
+ *     una al lado de otra, y arrastrar sólo barría un color por encima.
+ *     Un antes/después significa algo cuando los dos estados ocupan EL
+ *     MISMO SITIO y uno sustituye al otro.
+ *  2. Para descubrir la mejora había que arrastrar hacia la IZQUIERDA
+ *     —hacia atrás—. La ronda anterior lo «arregló» cambiando el texto
+ *     de la página en vez de la mecánica, y quedó un gesto que va al
+ *     revés de lo que promete.
  *
- *   · tirador a la derecha   → se ve casi todo ANTES (rojo)
- *   · tirador al centro      → mitad y mitad
- *   · tirador a la izquierda → se ve casi todo DESPUÉS (verde)
- *   · arrastrar a la izquierda → CRECE el después
+ * ── Cómo funciona ahora ───────────────────────────────────────────────
+ * Cuatro hábitos, uno por fila, a todo el ancho. Las dos capas tienen la
+ * MISMA retícula, así que cada fila del «antes» cae exactamente sobre su
+ * pareja del «después». Una barra horizontal baja por encima: lo que
+ * queda por encima de la barra ya está convertido, lo de debajo todavía
+ * no.
  *
- * ── Animación de bienvenida ───────────────────────────────────────────
- * Al entrar en viewport, el tirador viaja 50 → 12 → 50 % en ~1,55 s. El
- * visitante ve el efecto sin tocar nada. Con `prefers-reduced-motion` se
- * queda en 50/50, y el primer arrastre la cancela.
+ *   · barra arriba del todo → los cuatro hábitos en rojo
+ *   · barra abajo del todo  → los cuatro en verde
+ *   · bajar la barra        → se convierte un hábito más
+ *
+ * ── Por qué la cortinilla SALTA de fila en fila ───────────────────────
+ * Con texto, una cortinilla continua es ilegible: el corte cae a mitad
+ * de una palabra y se lee media frase de cada estado a la vez. Al saltar
+ * a los bordes de fila, cada hábito está siempre entero en uno de los
+ * dos estados. Además el gesto gana sentido —se convierten hábitos, no
+ * píxeles— y el tirador da un tope suave en cada uno.
+ *
+ * El eje vertical resuelve de paso la discusión de la dirección: no hay
+ * «izquierda» ni «derecha», hay avanzar hacia abajo por la lista.
  *
  * ── Fluidez ───────────────────────────────────────────────────────────
- *  · Una propiedad personalizada (`--tj-cmp`) mueve el recorte y el
- *    tirador sin un solo render por fotograma. Ver el comentario del
- *    cuerpo y `@property --tj-cmp` en globals.css.
- *  · `will-change: clip-path` en el overlay; `translateZ(0)` en el grip.
+ * Una sola propiedad personalizada (`--tj-cmp`, 0–100) mueve el recorte
+ * y el tirador sin un render por fotograma. Está declarada con
+ * `@property` en globals.css para que se pueda ANIMAR, que es lo que
+ * hace la bienvenida.
  *
  * ── Accesibilidad ─────────────────────────────────────────────────────
- *  · `role="slider"`, `aria-orientation`, `aria-valuenow/text`.
- *  · Teclado: ←/↓ −8 %, →/↑ +8 %, Home/End a los extremos.
- *  · Touch: `touch-action: none` en el contenedor para no scrollear la
- *    página al arrastrar.
+ *  · `role="slider"` con `aria-orientation="vertical"`, y `aria-valuenow`
+ *    en HÁBITOS convertidos (0–4), no en porcentaje: es lo que significa.
+ *  · Teclado: ↑/↓ y ←/→ un hábito, Home/End a los extremos.
+ *  · `touch-action: none` para no scrollear la página al arrastrar.
+ *  · Las dos listas están SIEMPRE en el árbol y ninguna se oculta a la
+ *    tecnología asistiva: quien no ve la cortinilla lee los cuatro pares
+ *    completos, que es la información de la sección.
  */
 
-const MIN_PCT = 4;
-const MAX_PCT = 96;
-const KEYBOARD_STEP = 8;
+/** Un hábito y en qué se convierte. El orden es el de la lista. */
+type Par = { antes: string; despues: string };
+
+const KEYBOARD_STEP = 1;
 
 export function ComparisonSlider() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  const before = es
+  const pares: Par[] = es
     ? [
-        "Operas por instinto",
-        "No recuerdas por qué entraste",
-        "Repites los mismos errores",
-        "No sabes tu win rate real",
+        { antes: "Operas por instinto", despues: "Cada operación tiene un plan" },
+        { antes: "No recuerdas por qué entraste", despues: "Sabes qué funcionó y qué no" },
+        { antes: "Repites los mismos errores", despues: "Mejoras cada semana, medido" },
+        { antes: "No sabes tu win rate real", despues: "Conoces tu expectancy" },
       ]
     : [
-        "You trade on instinct",
-        "You don't remember why you entered",
-        "You repeat the same mistakes",
-        "You don't know your real win rate",
+        { antes: "You trade on instinct", despues: "Every trade has a plan" },
+        { antes: "You don't remember why you entered", despues: "You know what worked and what didn't" },
+        { antes: "You repeat the same mistakes", despues: "You improve every week, measured" },
+        { antes: "You don't know your real win rate", despues: "You know your expectancy" },
       ];
 
-  const after = es
-    ? [
-        "Cada operación tiene un plan",
-        "Sabes qué funcionó y qué no",
-        "Mejoras cada semana, medido",
-        "Conoces tu expectancy",
-      ]
-    : [
-        "Every trade has a plan",
-        "You know what worked and what didn't",
-        "You improve every week, measured",
-        "You know your expectancy",
-      ];
+  const FILAS = pares.length;
 
-  /* ── UNA SOLA CIFRA, ESCRITA EN CSS ────────────────────────────────
-     La posición del tirador (0–100) vive en la propiedad personalizada
-     `--tj-cmp` del contenedor. De ahí salen, con `calc()`, el recorte
-     del panel «después» y el `left` del propio tirador — las dos
-     derivadas que antes eran `useTransform` de framer-motion.
-
-     Escribir una propiedad personalizada NO provoca render, igual que un
-     valor de movimiento de la biblioteca, y ésa era la única razón por
-     la que estaba aquí. El porqué de declararla con `@property` —para
-     que se pueda ANIMAR, y la bienvenida no salte de 50 a 12 de golpe—
-     está en globals.css.
-
-     `posRef` guarda el mismo número para poder leerlo sin tocar el DOM:
-     los saltos de teclado necesitan saber de dónde parten. */
+  /* La cifra viva (0–100) y su equivalente en hábitos convertidos. `pos`
+     se escribe en el DOM sin pasar por React; `hechos` sí es estado
+     porque lo leen el rótulo y `aria-valuenow`. */
   const posRef = useRef(50);
-
-  // El DESPUÉS es el overlay recortado: su borde izquierdo sigue al
-  // tirador. `inset(0 0 0 v%)` oculta desde la izquierda hasta v% y deja
-  // visible de v% a 100%. Así que cuanto MAYOR es v, MENOS después se ve:
-  //   v=4  → el después ocupa casi todo
-  //   v=50 → mitad y mitad
-  //   v=96 → apenas una franja: se ve casi todo el antes
-  // El comentario anterior decía justo lo contrario y de ahí salió el
-  // rótulo equivocado de la página.
-  const [ariaPct, setAriaPct] = useState(50);
+  const [hechos, setHechos] = useState(2);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const draggingRef = useRef(false);
   const autoPlayedRef = useRef(false);
-  /** Marca la bienvenida como en curso, para cancelarla al primer toque. */
   const [saludando, setSaludando] = useState(false);
 
-  /** Único punto por el que se escribe la posición. Acota y devuelve. */
-  const fijar = useCallback((v: number) => {
-    const c = Math.min(MAX_PCT, Math.max(MIN_PCT, v));
-    posRef.current = c;
-    containerRef.current?.style.setProperty("--tj-cmp", String(c));
-    return c;
-  }, []);
+  /** Único punto por el que se escribe la posición. Salta a la fila más
+   *  cercana y devuelve cuántos hábitos quedan convertidos. */
+  const fijar = useCallback(
+    (pct: number) => {
+      const filas = Math.round((Math.min(100, Math.max(0, pct)) / 100) * FILAS);
+      const ajustado = (filas / FILAS) * 100;
+      posRef.current = ajustado;
+      containerRef.current?.style.setProperty("--tj-cmp", String(ajustado));
+      return filas;
+    },
+    [FILAS],
+  );
 
-  // ── Auto-animación de bienvenida ─────────────────────────────────
-  // Al entrar en viewport por primera vez, viaja 50 → 88 → 50 % para
-  // enseñar el efecto. Se cancela si el usuario empieza a arrastrar.
-  useEffect(() => {
-    if (autoPlayedRef.current) return;
-    const el = containerRef.current;
-    if (!el) return;
-
+  /* ── Bienvenida ────────────────────────────────────────────────────
+     Al entrar en pantalla la barra baja sola y vuelve, para enseñar que
+     se arrastra. Va HACIA ABAJO porque abajo es donde está la mejora: la
+     bienvenida tiene que enseñar lo que se gana. Vive en una clase de
+     globals.css, que también decide sola no reproducirse cuando alguien
+     pide menos movimiento. */
+  /* Ref de CALLBACK y no `useEffect` sobre `containerRef`: la caja vive
+     dentro de un `<Reveal>`, así que en el momento en que corría el
+     efecto el nodo todavía no existía, el efecto salía por el `return`
+     temprano y la bienvenida no se reproducía nunca. Con el callback, el
+     observador se monta EXACTAMENTE cuando aparece el nodo. */
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const montarCaja = useCallback((el: HTMLDivElement | null) => {
+    containerRef.current = el;
+    observerRef.current?.disconnect();
+    observerRef.current = null;
+    if (!el || autoPlayedRef.current) return;
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (e.isIntersecting && !autoPlayedRef.current) {
             autoPlayedRef.current = true;
-            /* La bienvenida es ahora una clase: la coreografía
-               50 → 12 → 50 vive en `tj-cmp-bienvenida` (globals.css),
-               que también decide sola no reproducirse cuando el visitante
-               pide menos movimiento. Antes eran dos llamadas a `animate()`
-               encadenadas con un `setTimeout` de 820 ms y un
-               `useReducedMotion()` para saltárselas — tres piezas que
-               tenían que estar de acuerdo entre sí.
-
-               Va hacia la IZQUIERDA porque es el lado que descubre el
-               después: la bienvenida tiene que enseñar lo que se gana, no
-               lo que ya se sufre. */
             setSaludando(true);
             io.disconnect();
           }
@@ -158,74 +145,104 @@ export function ComparisonSlider() {
       { threshold: 0.45 },
     );
     io.observe(el);
-    return () => io.disconnect();
+    observerRef.current = io;
   }, []);
 
-  // ── Arrastre por puntero ─────────────────────────────────────────
-  const onPointerMove = useCallback(
-    (e: PointerEvent) => {
-      if (!draggingRef.current) return;
+  useEffect(() => () => observerRef.current?.disconnect(), []);
+
+  const desdeEvento = useCallback(
+    (clientY: number) => {
       const el = containerRef.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
-      const pct = ((e.clientX - r.left) / r.width) * 100;
-      fijar(pct);
+      setHechos(fijar(((clientY - r.top) / r.height) * 100));
     },
     [fijar],
   );
 
   useEffect(() => {
-    const stop = () => {
+    const mover = (e: PointerEvent) => {
       if (!draggingRef.current) return;
+      desdeEvento(e.clientY);
+    };
+    const soltar = () => {
       draggingRef.current = false;
-      setAriaPct(Math.round(posRef.current));
     };
-    window.addEventListener("pointerup", stop);
-    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", soltar);
+    window.addEventListener("pointermove", mover);
     return () => {
-      window.removeEventListener("pointerup", stop);
-      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", soltar);
+      window.removeEventListener("pointermove", mover);
     };
-  }, [onPointerMove]);
+  }, [desdeEvento]);
 
   const startDrag = (e: ReactPointerEvent<HTMLButtonElement>) => {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    /* El primer toque cancela la bienvenida. Sin esto, la animación
-       seguiría escribiendo `--tj-cmp` por encima del dedo hasta acabar:
-       el tirador se iría solo mientras el visitante lo arrastra. */
+    /* El primer toque cancela la bienvenida: sin esto seguiría
+       escribiendo `--tj-cmp` por encima del dedo hasta acabar. */
     setSaludando(false);
     draggingRef.current = true;
-    const el = containerRef.current;
-    if (el) {
-      const r = el.getBoundingClientRect();
-      const pct = ((e.clientX - r.left) / r.width) * 100;
-      fijar(pct);
-    }
+    desdeEvento(e.clientY);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    let next = posRef.current;
+    const actual = Math.round((posRef.current / 100) * FILAS);
+    let next = actual;
     switch (e.key) {
-      case "ArrowLeft":
-      case "ArrowDown":
-        next = next - KEYBOARD_STEP;
-        break;
-      case "ArrowRight":
       case "ArrowUp":
-        next = next + KEYBOARD_STEP;
+      case "ArrowLeft":
+        next = actual - KEYBOARD_STEP;
+        break;
+      case "ArrowDown":
+      case "ArrowRight":
+        next = actual + KEYBOARD_STEP;
         break;
       case "Home":
-        next = MIN_PCT;
+        next = 0;
         break;
       case "End":
-        next = MAX_PCT;
+        next = FILAS;
         break;
       default:
         return;
     }
     e.preventDefault();
-    setAriaPct(Math.round(fijar(next)));
+    setSaludando(false);
+    setHechos(fijar((Math.min(FILAS, Math.max(0, next)) / FILAS) * 100));
   };
+
+  /* Una fila, en el estado que toque. Las dos capas la pintan con la
+     MISMA caja para que el salto de una a otra sea exacto. */
+  const Fila = ({ texto, bueno }: { texto: string; bueno: boolean }) => (
+    <li className="flex items-center gap-3 px-5 sm:px-8">
+      <span
+        className={`inline-flex shrink-0 w-5 h-5 items-center justify-center rounded-[2px] ring-1 ${
+          bueno
+            ? "bg-pnl-pos/15 ring-pnl-pos/40"
+            : "bg-pnl-neg/15 ring-pnl-neg/35"
+        }`}
+      >
+        {bueno ? (
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        ) : (
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        )}
+      </span>
+      {/* `min-w-0` + equilibrado: a 320 px estas frases ocupan dos
+          líneas, y sin esto la más larga empujaba la caja. */}
+      <span
+        className={`min-w-0 text-pretty text-[13px] leading-[1.35] sm:text-[14.5px] ${
+          bueno ? "font-medium text-primary" : "text-secondary"
+        }`}
+      >
+        {texto}
+      </span>
+    </li>
+  );
 
   return (
     <section className="section bg-veil">
@@ -237,210 +254,157 @@ export function ComparisonSlider() {
           <h2 className="mt-5 t-h2 text-primary">
             {es ? (
               <>
-                Mueve la barra. <span className="text-gradient">Mira tu reflejo.</span>
+                Baja la barra. <span className="text-gradient">Mira tu reflejo.</span>
               </>
             ) : (
               <>
-                Move the bar. <span className="text-gradient">See your reflection.</span>
+                Pull the bar down. <span className="text-gradient">See your reflection.</span>
               </>
             )}
           </h2>
           <p className="mt-4 text-secondary leading-[1.6]">
             {es
-              ? "Arrastra la barra hacia la izquierda para descubrir lo que cambia con CountPips. La transformación no es magia: es disciplina medida."
-              : "Drag the bar to the left to uncover what changes with CountPips. The transformation isn't magic: it's measured discipline."}
+              ? "Cada hábito que dejas atrás se convierte en el de abajo. Baja la barra y mira en qué se transforma tu operativa: no es magia, es disciplina medida."
+              : "Each habit you leave behind turns into the one below. Pull the bar down and watch your trading change: it isn't magic, it's measured discipline."}
           </p>
         </Reveal>
 
         <Reveal delay={0.1} y={28}>
-          <div
-            ref={containerRef}
-            /* `--tj-cmp` se declara aquí y la heredan las dos capas que
-               dependen de ella. La clase de bienvenida se retira en cuanto
-               el visitante toca el tirador: ver `startDrag`. */
-            className={`tj-paper rounded-[2px] overflow-clip h-[320px] sm:h-[300px] relative select-none mt-10 max-w-3xl mx-auto border border-[rgb(var(--divider)/0.16)] transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] ${
-              saludando ? "tj-cmp-saluda" : ""
-            }`}
-            style={{ touchAction: "none", "--tj-cmp": 50 } as React.CSSProperties}
-          >
-            {/* ─────────── BEFORE (base layer, full width) ─────────── */}
-            {/* El "antes" es la base a sangre: siempre pintado, con tinte
-                rojo apagado y contenido en la mitad izquierda. Cuando el
-                overlay del después se repliega, lo que queda visible es
-                este lado. */}
-            <div className="absolute inset-0">
-              {/* Surface muted rojo */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(180deg, color-mix(in srgb, var(--surface) 97%, rgb(var(--pnl-neg))), color-mix(in srgb, var(--surface) 88%, rgb(var(--pnl-neg))))",
-                }}
-              />
-              {/* Soft red wash */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(120% 80% at 0% 0%, rgb(var(--pnl-neg) / 0.16), transparent 60%)",
-                }}
-              />
-              {/* Chip ANTES (top-left) */}
-              <div className="absolute top-3 left-3 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-pnl-neg/12 border border-pnl-neg/28">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-pnl-neg/18 text-pnl-neg">
-                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                    <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </span>
-                <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-pnl-neg">
-                  {es ? "Antes" : "Before"}
-                </span>
-              </div>
-              {/* Lista ANTES — mitad izquierda */}
-              <ul className="absolute inset-y-0 left-0 w-1/2 flex flex-col justify-center gap-4 px-6 md:px-8">
-                {before.map((line, i) => (
-                  <li
-                    key={i}
-                    data-entra="ciclo"
-                    className="flex items-start gap-3"
-                  >
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-neg/15 ring-1 ring-pnl-neg/35 items-center justify-center mt-0.5">
-                      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
-                      </svg>
-                    </span>
-                    <span className="text-[13px] sm:text-[14px] text-secondary">{line}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* ─────────── AFTER (clipped overlay, right side) ─────────── */}
-            {/* El "después" es el recorte de la derecha: su borde izquierdo va
-                pegado al tirador, así que arrastrar hacia la IZQUIERDA lo
-                hace crecer. Ver la nota de cabecera. */}
-            <div
-              className="absolute inset-0"
-              /* El recorte se deriva de la MISMA variable que la posición del
-                 tirador, así que no pueden desincronizarse. `inset(0 0 0 v%)`
-                 oculta desde la izquierda hasta v%: cuanto MAYOR es v, menos
-                 «después» se ve. */
-              style={{
-                clipPath: "inset(0 0 0 calc(var(--tj-cmp) * 1%) round 2px)",
-                willChange: "clip-path",
-              }}
-              >
-              {/* Surface vibrante verde/champagne */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, rgb(var(--pnl-pos))), color-mix(in srgb, var(--surface) 84%, rgb(var(--pnl-pos))))",
-                }}
-              />
-              {/* Accent wash */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(120% 80% at 100% 0%, rgb(var(--accent-base) / 0.18), transparent 60%)",
-                }}
-              />
-              {/* Accent top-line */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-x-0 top-0 h-px opacity-70"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, rgb(var(--accent-base)), transparent)",
-                }}
-              />
-              {/* Chip DESPUÉS (top-right) */}
-              <div className="absolute top-3 right-3 z-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.32)]">
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-pnl-pos/15 text-pnl-pos">
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                    <path d="M2 6.5l2.5 2.5L10 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </span>
-                <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-[rgb(var(--accent-base))]">
-                  {es ? "Con CountPips" : "With CountPips"}
-                </span>
-              </div>
-              {/* Lista DESPUÉS — mitad derecha */}
-              <ul className="absolute inset-y-0 right-0 w-1/2 flex flex-col justify-center gap-4 px-6 md:px-8">
-                {after.map((line, i) => (
-                  <li
-                    key={i}
-                    data-entra="ciclo"
-                    className="flex items-start gap-3"
-                  >
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-pos/15 ring-1 ring-pnl-pos/40 items-center justify-center mt-0.5">
-                      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </span>
-                    <span className="text-[13px] sm:text-[14px] text-primary font-medium">{line}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* ─────────── DRAG HANDLE ─────────── */}
-            {/* Hit area ancha (48px) para touch; línea visible de 2px. */}
-            <button
-              type="button"
-              role="slider"
-              aria-label={es ? "Arrastra para comparar antes y después" : "Drag to compare before and after"}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={ariaPct}
-              aria-valuetext={es ? `${ariaPct}% después visible` : `${ariaPct}% after shown`}
-              aria-orientation="horizontal"
-              onPointerDown={startDrag}
-              onKeyDown={onKeyDown}
-              style={{ left: "calc(var(--tj-cmp) * 1%)", touchAction: "none" }}
-              className="group/handle absolute top-0 bottom-0 z-30 -translate-x-1/2 w-12 cursor-ew-resize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.60)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-            >
-              <span
-                aria-hidden="true"
-                className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-0.5"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgb(var(--accent-base) / 0.5) 0%, rgb(var(--divider) / 0.75) 22%, rgb(var(--divider) / 0.75) 78%, rgb(var(--accent-base) / 0.5) 100%)",
-                }}
-              />
-              <span
-                className="tj-paper absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 inline-flex items-center justify-center w-11 h-11 rounded-[2px] text-primary border border-[rgb(var(--divider)/0.28)]"
-                style={{ transform: "translateZ(0) translate(-50%, -50%)" }}
-                aria-hidden="true"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M5 5L2.5 8L5 11M11 5L13.5 8L11 11"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+          <div className="mt-10 max-w-3xl mx-auto">
+            {/* Leyenda fuera de la caja: dentro chocaría con las filas y
+                obligaría a descuadrar una de las dos capas. */}
+            <div className="tnum mb-3 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em]">
+              <span className="text-pnl-pos">
+                {es ? "Convertidos" : "Converted"} · {hechos}/{FILAS}
               </span>
-            </button>
+              <span className="text-tertiary">
+                {es ? "Arrastra ↓" : "Drag ↓"}
+              </span>
+            </div>
 
-            {/* Pista de arrastre, arriba al centro. Quieta: flotaba arriba
-                y abajo en bucle, y un rótulo que rebota sin parar es
-                justo la clase de animación de escaparate que este sitio
-                no hace (la bienvenida del tirador ya enseña el gesto). */}
-            {(
-              <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-                <span className="text-[10px] uppercase tracking-[0.18em] text-tertiary font-semibold">
-                  {es ? "← Arrastra" : "← Drag"}
-                </span>
+            <div
+              ref={montarCaja}
+              className={`tj-paper relative select-none overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.16)] ${
+                saludando ? "tj-cmp-saluda" : ""
+              }`}
+              style={
+                {
+                  touchAction: "none",
+                  "--tj-cmp": 50,
+                  /* Alto derivado del número de filas y no fijo: con un
+                     `h-[320px]` cerrado, a 320 px de ancho las frases
+                     pasan a dos líneas y se salían de su fila. */
+                  minHeight: `calc(${FILAS} * 4.75rem)`,
+                } as React.CSSProperties
+              }
+            >
+              {/* ── ANTES — la base, siempre pintada ─────────────── */}
+              <div className="absolute inset-0">
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, color-mix(in srgb, var(--surface) 97%, rgb(var(--pnl-neg))), color-mix(in srgb, var(--surface) 88%, rgb(var(--pnl-neg))))",
+                  }}
+                />
               </div>
-            )}
+              <ul
+                className="absolute inset-0 grid"
+                style={{ gridTemplateRows: `repeat(${FILAS}, minmax(0, 1fr))` }}
+              >
+                {pares.map((p) => (
+                  <Fila key={p.antes} texto={p.antes} bueno={false} />
+                ))}
+              </ul>
+
+              {/* ── DESPUÉS — recortado desde ABAJO ──────────────── */}
+              {/* `inset(0 0 (100−v)% 0)` deja ver de arriba hasta v%:
+                  cuanto MÁS baja la barra, más convertido hay. La misma
+                  variable gobierna el recorte y el tirador, así que no
+                  pueden desincronizarse. */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  clipPath:
+                    "inset(0 0 calc((100 - var(--tj-cmp)) * 1%) 0 round 2px)",
+                  willChange: "clip-path",
+                }}
+              >
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, rgb(var(--pnl-pos))), color-mix(in srgb, var(--surface) 84%, rgb(var(--pnl-pos))))",
+                  }}
+                />
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(120% 80% at 100% 0%, rgb(var(--accent-base) / 0.16), transparent 60%)",
+                  }}
+                />
+                <ul
+                  className="absolute inset-0 grid"
+                  style={{ gridTemplateRows: `repeat(${FILAS}, minmax(0, 1fr))` }}
+                >
+                  {pares.map((p) => (
+                    <Fila key={p.despues} texto={p.despues} bueno />
+                  ))}
+                </ul>
+              </div>
+
+              {/* ── TIRADOR ──────────────────────────────────────── */}
+              <button
+                type="button"
+                role="slider"
+                aria-label={
+                  es
+                    ? "Baja la barra para convertir hábitos"
+                    : "Pull the bar down to convert habits"
+                }
+                aria-orientation="vertical"
+                aria-valuemin={0}
+                aria-valuemax={FILAS}
+                aria-valuenow={hechos}
+                aria-valuetext={
+                  es
+                    ? `${hechos} de ${FILAS} hábitos convertidos`
+                    : `${hechos} of ${FILAS} habits converted`
+                }
+                onPointerDown={startDrag}
+                onKeyDown={onKeyDown}
+                style={{ top: "calc(var(--tj-cmp) * 1%)", touchAction: "none" }}
+                /* 48 px de alto para el dedo, sobre una línea de 2 px. */
+                className="absolute inset-x-0 z-30 h-12 -translate-y-1/2 cursor-ns-resize outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)]"
+              >
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, rgb(var(--accent-base) / 0.5) 0%, rgb(var(--divider) / 0.75) 22%, rgb(var(--divider) / 0.75) 78%, rgb(var(--accent-base) / 0.5) 100%)",
+                  }}
+                />
+                <span
+                  aria-hidden="true"
+                  className="tj-paper absolute left-1/2 top-1/2 inline-flex h-11 w-11 items-center justify-center rounded-[2px] border border-[rgb(var(--divider)/0.28)] text-primary"
+                  style={{ transform: "translateZ(0) translate(-50%, -50%)" }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M5 5L8 2.5L11 5M5 11L8 13.5L11 11"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </button>
+            </div>
           </div>
         </Reveal>
 
