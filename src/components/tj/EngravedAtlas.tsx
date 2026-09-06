@@ -196,8 +196,22 @@ const PASO_TRAMA = 6;
    una fracción de punto de trama) sin multiplicar los regrabados — cada
    paso extra es otra pasada por el muestreo completo de la máscara. */
 const PASOS_TRAZO = 48;
-/** Radio máximo, en fracción del paso. */
-const RADIO_TRAMA = 0.44;
+/* ── EL RADIO ES EL EJE BARATO DE LA PRESENCIA ─────────────────────────
+   Densificar la retícula es lo que se pide siempre y es lo que NO sale:
+   el paso 4 se midió en su día a 75 ms, y el paso 5 se ha medido ahora
+   —cuatro pasadas pareadas, dieciséis medidas por versión— en +3,89 ms
+   de p99 con un error típico de 1,37, o sea fuera del ruido, y con la
+   cola mucho peor (6 de 16 medidas por encima de 35 ms contra 1 de 16).
+   Es coherente: bajar el paso multiplica las celdas, y con ellas el
+   muestreo de la máscara, que es lo caro.
+
+   El radio no toca el número de celdas ni el de arcos: sólo los hace más
+   gordos, y eso lo resuelve el relleno sin más trabajo de recorrido. Con
+   el paso 6, un radio de 0,52 da 3,12 px sobre una separación de 6, así
+   que las zonas de cobertura plena se cierran del todo en vez de quedar
+   perforadas — que era justo lo que hacía que la figura se intuyera en
+   vez de leerse. */
+const RADIO_TRAMA = 0.52;
 /** Amplificación de la cobertura muestreada. Con el paso 6, compensa la
     rejilla más gruesa subiendo la tinta de las coberturas parciales. */
 const GANANCIA_TRAMA = 3.4;
@@ -3386,7 +3400,7 @@ export function EngravedAtlas() {
       const base = INTRO_HASTA * span0;
       const goal = Math.max(target - base, 0) + curvaIntro(introT) * base;
 
-      const next = shown + (goal - shown) * (1 - Math.exp((-dt * 6) / 1000));
+      const next = shown + (goal - shown) * (1 - Math.exp((-dt * 15) / 1000));
 
       /* NO hay techo de fotogramas ni umbral de avance. Los hubo, y eran un
          error: ahorraban trabajo a costa de lo único que se nota, que es la
