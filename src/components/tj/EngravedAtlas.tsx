@@ -215,7 +215,7 @@ const PASO_TRAMA = 6;
    Y se degrada solo: el presupuesto de regrabado descarta los pasos que
    no caben, así que una máquina lenta se comporta como antes y una
    rápida aprovecha los que puede. */
-const PASOS_TRAZO = 96;
+const PASOS_TRAZO = 192;
 /* ── EL RADIO ES EL EJE BARATO DE LA PRESENCIA ─────────────────────────
    Densificar la retícula es lo que se pide siempre y es lo que NO sale:
    el paso 4 se midió en su día a 75 ms, y el paso 5 se ha medido ahora
@@ -310,6 +310,33 @@ for (let b = 0; b < 256; b++) {
   }
 }
 
+/* ── LA TINTA QUE YA SECÓ NO SE VUELVE A DIBUJAR ─────────────────────
+   Medido: un regrabado construía 14.862 arcos y se le iban 2,40 ms de
+   mediana (p95 4,10) sólo en el bucle de celdas —contra 0,30 ms de
+   dibujar el vector y 0,60 de leer la máscara—. Ahí estaba el coste, no
+   donde se había supuesto.
+
+   Y la inmensa mayoría de esos arcos salían IDÉNTICOS al regrabado
+   anterior: un punto asentado no cambia nunca más. Sólo se mueve el
+   frente, la franja de puntos que todavía están cayendo.
+
+   Así que los asentados se guardan en un `Path2D` al que sólo se AÑADE,
+   y cada regrabado construye únicamente el frente. `alfa` recuerda con
+   qué cobertura entró cada celda para no repetirla.
+
+   El revelado avanza, así que la cobertura sólo crece y un punto más
+   gordo encima de otro más pequeño es el mismo punto —relleno nonzero,
+   sin oscurecer—. Si alguna celda ENCOGE, el camino guardado tendría un
+   punto de más que no se puede borrar: se aborta, se tira la senda y se
+   rehace la pasada entera. Cuesta lo que costaba antes, y sólo en el
+   fotograma en que pasa. */
+type Senda = {
+  camino: Path2D;
+  /** Cobertura (byte alfa de la máscara) con la que cada celda entró en
+   *  el camino. 0 = no está. */
+  alfa: Uint8Array;
+};
+
 /**
  * Dibuja `lamina` en `destino` convertida en trama de puntos.
  *
@@ -320,6 +347,8 @@ for (let b = 0; b < 256; b++) {
  * primera vez (−1 = vacía). Vive en la capa de cada lámina y no aquí,
  * porque cada figura tiene su propio recorrido; compartirlo mezclaría el
  * asiento de una con el de la siguiente en cada transición.
+ *
+ * `senda` es la tinta que YA SECÓ. Ver `Senda`.
  */
 function tramar(
   destino: CanvasRenderingContext2D,
@@ -330,6 +359,7 @@ function tramar(
   t: number,
   tinta: string,
   nacido: Float32Array | null,
+  senda: Senda | null,
 ): void {
   const cols = mascara.canvas.width;
   const filas = mascara.canvas.height;
@@ -357,17 +387,44 @@ function tramar(
     return;
   }
 
-  /* Un camino por nivel de tinta. El último —el de los ya asentados— se
-     lleva la inmensa mayoría de los puntos, así que en la práctica esto
-     sigue siendo «un relleno grande y cuatro rebordes». */
-  const caminos: Path2D[] = [];
-  for (let n = 0; n < NIVELES_TINTA; n++) caminos.push(new Path2D());
   const ultimoNivel = NIVELES_TINTA - 1;
   /* El cierre de la lámina asienta todo lo que quede suelto, y va aparte
      del asiento propio de cada punto: se toma el mayor de los dos. */
   const cierre =
     t <= CIERRE_ASIENTO ? 0 : (t - CIERRE_ASIENTO) / (1 - CIERRE_ASIENTO);
   const invVentana = 1 / VENTANA_ASIENTO;
+
+  /* Un camino por nivel de tinta. El último —el de los ya asentados— se
+     lleva la inmensa mayoría de los puntos, así que en la práctica esto
+     sigue siendo «un relleno grande y cuatro rebordes». */
+  let caminos: Path2D[] = [];
+
+  /* ── LA COMPROBACIÓN VA ANTES, Y NO TOCA NADA ─────────────────────
+     El primer intento abortaba a mitad del bucle cuando encontraba una
+     celda encogida. Estaba mal: el bucle escribe en `nacido` según
+     avanza, así que al reintentar las celdas ya visitadas figuraban como
+     recién nacidas y se dibujaban como frente en vez de como asentadas.
+     Medido: 8,5 % más tinta en la primera pasada y 15 % menos al volver
+     tras retroceder, contra un 0,2 % sin la caché.
+
+     La condición que hay que sostener es una sola —«ninguna celda
+     guardada cubre ahora MENOS de lo que se guardó»— y se comprueba de
+     un vistazo sobre los bytes, sin arcos y sin escribir. Si falla, la
+     senda se tira antes de empezar y el bucle corre una sola vez. */
+  if (senda) {
+    for (let k = 0; k < senda.alfa.length; k++) {
+      const guardado = senda.alfa[k];
+      if (guardado !== 0 && datos[(k << 2) + 3] < guardado) {
+        senda.camino = new Path2D();
+        senda.alfa.fill(0);
+        break;
+      }
+    }
+  }
+
+  const pasada = (usar: Senda | null): void => {
+  caminos = [];
+  for (let n = 0; n < NIVELES_TINTA; n++) caminos.push(new Path2D());
 
   for (let fila = 0; fila < filas; fila++) {
     const rowOffset = fila * cols;
@@ -395,10 +452,20 @@ function tramar(
       }
 
       if (asiento === 1) {
-        /* Camino rápido: asentado. Un solo arco en el camino de tinta
-           plena, exactamente como antes. */
+        /* Camino rápido: asentado. Un solo arco de tinta plena. */
         if (rPleno < 0.25) continue;
         const cx = (col + 0.5) * PASO_TRAMA;
+        if (usar) {
+          const antes = usar.alfa[k];
+          /* Ya está en la senda con esta misma cobertura: no se toca.
+             Éste es el caso de casi todos los puntos, y es de donde sale
+             el ahorro. */
+          if (aByte === antes) continue;
+          usar.alfa[k] = aByte;
+          usar.camino.moveTo(cx + rPleno, cyBase);
+          usar.camino.arc(cx, cyBase, rPleno, 0, Math.PI * 2);
+          continue;
+        }
         const cp = caminos[ultimoNivel];
         cp.moveTo(cx + rPleno, cyBase);
         cp.arc(cx, cyBase, rPleno, 0, Math.PI * 2);
@@ -444,9 +511,13 @@ function tramar(
       cp.arc(cx, cy, r, 0, Math.PI * 2);
     }
   }
+  };
+
+  pasada(senda);
 
   destino.fillStyle = tinta;
   const alfaPrevio = destino.globalAlpha;
+  if (senda) destino.fill(senda.camino);
   for (let n = 0; n < NIVELES_TINTA; n++) {
     /* El nivel pleno se rellena con la opacidad que traiga el contexto
        —la composición de la lámina ya la gobierna— y los tiernos, con
@@ -2878,6 +2949,8 @@ export function EngravedAtlas() {
        *  vez, −1 si está vacía. Es la memoria del asiento (ver `tramar`).
        *  Una por lámina: cada figura tiene su propio recorrido. */
       nacido: Float32Array | null;
+      /** La tinta ya seca de esta lámina (ver `Senda`). */
+      senda: Senda | null;
     };
     let capas: (Capa | null)[] = PLATES.map(() => null);
 
@@ -3006,7 +3079,7 @@ export function EngravedAtlas() {
            traza directamente sobre el lienzo visible. Peor rendimiento,
            pero se sigue viendo — nunca una pantalla en blanco. */
         if (!cctx) return null;
-        c = { cv, ctx: cctx, t: -1, nacido: null };
+        c = { cv, ctx: cctx, t: -1, nacido: null, senda: null };
         capas[i] = c;
       }
       /* Ya trazada a este progreso: no se toca. Cubre de un golpe el caso
@@ -3051,10 +3124,14 @@ export function EngravedAtlas() {
         const celdas = m.canvas.width * m.canvas.height;
         if (!c.nacido || c.nacido.length !== celdas) {
           c.nacido = new Float32Array(celdas).fill(-1);
+          c.senda = { camino: new Path2D(), alfa: new Uint8Array(celdas) };
         } else if (t < c.t) {
           c.nacido.fill(-1);
+          /* Retroceder deshace la figura: la tinta seca deja de estar
+             seca y la senda entera queda sin valor. */
+          c.senda = { camino: new Path2D(), alfa: new Uint8Array(celdas) };
         }
-        tramar(c.ctx, m, PLATES[i], w, h, t, ink, c.nacido);
+        tramar(c.ctx, m, PLATES[i], w, h, t, ink, c.nacido, c.senda);
       } else {
         PLATES[i](c.ctx, w, h, t);
       }
