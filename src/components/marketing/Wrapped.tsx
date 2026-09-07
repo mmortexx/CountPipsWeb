@@ -1,6 +1,6 @@
 "use client";
 
-import { langDatos, useLang } from "@/lib/i18n";
+import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { CountUp } from "@/components/tj/CountUp";
@@ -63,7 +63,7 @@ export function Wrapped() {
       label: es ? "Tu setup más rentable" : "Your most profitable setup",
       value: (
         <span className="flex flex-col gap-1 min-w-0">
-          <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-pnl-pos break-words leading-tight">{nombreSetup(topSetup.name, langDatos(lang))}</span>
+          <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-pnl-pos break-words leading-tight">{nombreSetup(topSetup.name, lang)}</span>
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1 tnum min-w-0">
             {/* R27-1d — bumped text-xl→text-2xl (always 24px) so the green
                 P&L figure (text-pnl-pos #0B8B4B ≈ 4.3:1 on the tj-paper

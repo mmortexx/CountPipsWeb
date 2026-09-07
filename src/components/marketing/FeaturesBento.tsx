@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarDays, BookOpen, LineChart, NotebookPen, Layers } from "lucide-react";
-import { langDatos, useLang } from "@/lib/i18n";
+import { useLang } from "@/lib/i18n";
 import { getCal } from "@/lib/trading/fixtures";
 import { nombreSetup, type SetupName } from "@/lib/trading/data";
 
@@ -359,7 +359,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 <div key={s.k} className="p-2 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)] hover:border-[rgb(var(--accent-base)/0.3)] transition-colors">
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-medium text-primary">
-                      {nombreSetup(s.k as SetupName, langDatos(lang))}
+                      {nombreSetup(s.k as SetupName, lang)}
                     </span>
                     <div className="flex items-center gap-2 font-mono text-[10px]">
                       <span className="text-tertiary">{s.n}</span>
