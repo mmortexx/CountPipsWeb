@@ -1002,7 +1002,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             outcome === "win"
-              ? "bg-[rgb(var(--pnl-pos))] text-black font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1017,7 +1017,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             outcome === "loss"
-              ? "bg-[rgb(var(--pnl-neg))] text-white font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1033,7 +1033,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             filters.compliance === "no"
-              ? "bg-[rgb(var(--pnl-neg))] text-white font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1049,7 +1049,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             filters.compliance === "yes"
-              ? "bg-[rgb(var(--pnl-pos))] text-black font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >

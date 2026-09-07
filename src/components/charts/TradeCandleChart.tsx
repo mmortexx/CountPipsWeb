@@ -308,7 +308,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           <g>
             <line x1={padL} y1={stopY} x2={W - padR} y2={stopY} stroke="rgb(var(--pnl-neg))" strokeWidth="1.2" strokeDasharray="4 2" />
             <rect x={W - padR + 2} y={stopY - 7} width={padR - 4} height={14} fill="rgb(var(--pnl-neg))" rx="2" />
-            <text x={W - padR + 5} y={stopY + 3.5} fill="#fff" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+            <text x={W - padR + 5} y={stopY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
               SL {fmtPrice(trade.initialStop, decimals, lang)}
             </text>
           </g>
@@ -317,7 +317,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           <g>
             <line x1={padL} y1={targetY} x2={W - padR} y2={targetY} stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" strokeDasharray="4 2" />
             <rect x={W - padR + 2} y={targetY - 7} width={padR - 4} height={14} fill="rgb(var(--pnl-pos))" rx="2" />
-            <text x={W - padR + 5} y={targetY + 3.5} fill="#000" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+            <text x={W - padR + 5} y={targetY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
               TP {fmtPrice(trade.target, decimals, lang)}
             </text>
           </g>

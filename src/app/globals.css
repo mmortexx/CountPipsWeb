@@ -205,6 +205,16 @@
   --pnl-pos: 0 245 160; /* #00F5A0 */
   --pnl-neg: 255 77 77; /* #FF4D4D */
   --pnl-warn: 224 147 43; /* #E0932B */
+  /* Tinta del texto que va ENCIMA de un fondo lleno de P&L.
+     Es el gemelo de `--accent-ink` para la segunda familia de color, y
+     faltaba: el acento ya giraba su tinta con el tema y el P&L no, así
+     que ocho sitios la escribían fija —`text-white`, `text-black`,
+     `fill="#fff"`— y cada uno se apagaba en un tema distinto. En oscuro
+     el verde y el rojo son claros y piden tinta oscura; en claro son
+     oscuros y piden tinta clara. Un solo token vale para los tres
+     colores de la familia porque los tres giran a la vez.
+     Medido sobre este bloque: verde 13,16:1 · rojo 5,80:1 · ámbar 7,57:1. */
+  --pnl-ink: 12 17 22; /* #0C1116 */
 
   /* Tope del tinte de las celdas del calendario de P&L.
      Este token SOLO estaba declarado para el tema claro, donde ya se
@@ -325,6 +335,8 @@
   --pnl-pos: 30 122 76;   /* #1E7A4C — el verde de la app (Colors.xaml:69) */
   --pnl-neg: 153 27 27;   /* #991B1B — más oscuro que el de la app, por contraste */
   --pnl-warn: 146 64 14;  /* #92400E */
+  /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 4,66:1 · rojo 7,28:1 · ámbar 6,21:1. */
+  --pnl-ink: 238 240 243; /* #EEF0F3 */
 
   /* Aquí el acento es OSCURO (#004D7C), así que su tinta se invierte:
      casi blanco, 8,23:1. Ver la nota de --accent-ink en :root. */
@@ -3012,6 +3024,8 @@ button.icon-btn:hover > svg,
   --pnl-pos: 63 206 146; /* #3FCE92 */
   --pnl-neg: 240 119 106; /* #F0776A */
   --pnl-warn: 224 147 43; /* #E0932B */
+  /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 9,44:1 · rojo 6,82:1 · ámbar 7,57:1. */
+  --pnl-ink: 12 17 22; /* #0C1116 */
   --pnl-neg-on-tint: 240 119 106;
   /* 0,22 y no 0,3, el mismo tope que el tema claro. En oscuro el acento es
      PLATA —un color claro— así que una celda teñida al 30 % se aclara hasta
@@ -3121,6 +3135,8 @@ button.icon-btn:hover > svg,
   --pnl-pos: 0 85 47; /* #00552F — 5,05:1 en el peor fondo */
   --pnl-neg: 147 19 21; /* #931315 — 5,05:1 */
   --pnl-warn: 123 53 0; /* #7B3500 — 5,03:1 */
+  /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 7,86:1 · rojo 7,85:1 · ámbar 7,82:1. */
+  --pnl-ink: 238 240 243; /* #EEF0F3 */
   --pnl-neg-on-tint: 147 19 21;
   --cal-tint-max: 0.22;
   --sig-green: 0 85 47;

@@ -715,7 +715,9 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     <span
                       className="text-[9.5px] opacity-75 font-normal px-1 rounded-[1px]"
                       style={{
-                        background: active ? "rgba(0,0,0,0.15)" : "rgb(var(--divider) / 0.10)",
+                        background: active
+                          ? "color-mix(in oklab, rgb(var(--accent-ink)) 15%, transparent)"
+                          : "rgb(var(--divider) / 0.10)",
                       }}
                     >
                       {es ? p.tagEs : p.tagEn}
@@ -744,19 +746,6 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               >
                 {es ? "Manual" : "Custom"}
               </button>
-
-              {/* Controles de Ventana Nativos Windows 11 */}
-              <div className="hidden sm:flex items-center gap-2.5 pl-2.5 border-l border-[rgb(var(--divider)/0.18)] text-[var(--ink-3)]" aria-hidden="true">
-                <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor" className="opacity-70">
-                  <rect width="10" height="1" />
-                </svg>
-                <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.1" className="opacity-70">
-                  <rect x="0.5" y="0.5" width="9" height="9" />
-                </svg>
-                <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.3" className="opacity-70">
-                  <path d="M1 1L9 9M9 1L1 9" />
-                </svg>
-              </div>
             </div>
           </div>
 
@@ -1386,7 +1375,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                             cx={activeCoord.x}
                             cy={activeCoord.y}
                             r="2"
-                            fill="#ffffff"
+                            fill="rgb(var(--accent-ink))"
                           />
                         </g>
                       )}
@@ -1646,7 +1635,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     background: copied
                       ? "rgb(var(--pnl-pos))"
                       : "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                    color: copied ? "#000000" : "rgb(var(--accent-base))",
+                    color: copied ? "rgb(var(--pnl-ink))" : "rgb(var(--accent-base))",
                     border: copied
                       ? "1px solid rgb(var(--pnl-pos))"
                       : "1px solid color-mix(in oklab, rgb(var(--accent-base)) 45%, transparent)",
