@@ -23,6 +23,17 @@ export const Histogram = memo(function Histogram({
 
   const maxCount = useMemo(() => Math.max(...data.map((d) => d.count), 1), [data]);
 
+  /* ── CON MUCHAS BARRAS, UN ROTULO SI Y OTRO NO ─────────────────────
+     El rotulo del eje llevaba `truncate`, asi que a 320 px —donde cada
+     columna mide unos 20 px y «−1,5R» pide 29— se cortaban TODOS: el eje
+     entero quedaba ilegible.
+
+     Truncar reparte el dano entre todos; saltarse uno de cada dos lo
+     concentra en la mitad y deja la otra mitad entera, que es como se
+     comporta cualquier eje de verdad cuando no cabe. Solo por debajo de
+     `sm`: de ahi para arriba caben todos. */
+  const denso = data.length > 8;
+
   const containerRef = useRef<HTMLDivElement>(null);
   // Hovered bar: index + anchor point (px, relative to container).
   const [hovered, setHovered] = useState<{ i: number; x: number; y: number } | null>(null);
@@ -74,7 +85,11 @@ export const Histogram = memo(function Histogram({
                   opacity: hovered && hovered.i === i ? 1 : 0.9,
                 }}
               />
-              <div className="text-[9.5px] text-tertiary mt-1 tnum truncate w-full text-center">
+              <div
+                className={`mt-1 w-full whitespace-nowrap text-center text-[9.5px] tnum text-tertiary ${
+                  denso && i % 2 === 1 ? "hidden sm:block" : ""
+                }`}
+              >
                 {formatX(d.x)}
               </div>
             </div>

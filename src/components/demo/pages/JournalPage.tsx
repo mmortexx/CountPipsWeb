@@ -1151,7 +1151,10 @@ export function JournalPage() {
                 <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
                   {L("Constancia del check-in · 30 días", "Check-in consistency · 30 days")}
                 </span>
-                <div className="flex items-center gap-2">
+                {/* `flex-wrap`: las dos pastillas juntas piden 5 px mas de
+                    los que hay a 320 px y la segunda se salia. Bajar de
+                    linea no cuesta nada; recortar una racha, si. */}
+                <div className="flex flex-wrap items-center gap-2">
                   {/* Current streak — accent-tinted pill so the count reads
                       as the strip's focal point. */}
                   {/* Etiquetas en `text-secondary`, no `text-tertiary`: la
@@ -1211,7 +1214,12 @@ export function JournalPage() {
           <div className="flex items-center justify-between gap-3 mb-5">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
-              <h2 className="font-medium text-primary text-base md:text-lg truncate">
+              {/* `sm:truncate` y no `truncate` a secas: a 320 px estos
+                  titulares perdian hasta 173 px de texto y no quedaba
+                  nada legible. Por debajo de `sm` se parten en dos
+                  lineas; de ahi para arriba caben y el recorte no llega
+                  a actuar. */}
+              <h2 className="font-medium text-primary text-base md:text-lg sm:truncate">
                 {t("ritualTitle")}
               </h2>
             </div>
@@ -1277,7 +1285,12 @@ export function JournalPage() {
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="w-1 h-5 bg-pnl-warn rounded-[1px] shrink-0" />
-                <h2 className="font-medium text-primary text-base md:text-lg truncate">
+                {/* `sm:truncate` y no `truncate` a secas: a 320 px estos
+                  titulares perdian hasta 173 px de texto y no quedaba
+                  nada legible. Por debajo de `sm` se parten en dos
+                  lineas; de ahi para arriba caben y el recorte no llega
+                  a actuar. */}
+              <h2 className="font-medium text-primary text-base md:text-lg sm:truncate">
                   {t("disciplineReport")}
                 </h2>
               </div>
@@ -1352,18 +1365,18 @@ export function JournalPage() {
                       va sobre el tinte de ganancia/pérdida, no sobre la
                       página, y la terciaria se queda corta en ese fondo. */}
                   <div className="rounded-[2px] p-3 bg-pnl-pos/10 border border-pnl-pos/20">
-                    <div className="text-[10px] uppercase tracking-[0.15em] text-secondary">
+                    <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expInPlan")}
                     </div>
-                    <div className="text-pnl-pos font-bold text-lg tnum mt-1">
+                    <div className="mt-1 break-words font-bold tnum text-pnl-pos text-base sm:text-lg">
                       <Money value={expInPlan} sign compact colorizeSign />
                     </div>
                   </div>
                   <div className="rounded-[2px] p-3 bg-pnl-neg/10 border border-pnl-neg/20">
-                    <div className="text-[10px] uppercase tracking-[0.15em] text-secondary">
+                    <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expOutPlan")}
                     </div>
-                    <div className="text-pnl-neg font-bold text-lg tnum mt-1">
+                    <div className="mt-1 break-words font-bold tnum text-pnl-neg text-base sm:text-lg">
                       <Money value={expOutPlan} sign compact colorizeSign />
                     </div>
                   </div>
@@ -1395,8 +1408,16 @@ export function JournalPage() {
                 </span>
               </div>
 
+              {/* ── LA TABLA SE DESPLAZA, NO SE APLASTA ──────────────
+                  Cuatro columnas de ancho fijo suman 212 px antes de
+                  repartir nada, y a 320 px la tarjeta deja 240: la ultima
+                  —el coste, que es el dato de la tabla— se salia 77 px. Se
+                  declara el ancho que necesita y se le da desplazamiento
+                  lateral propio, como ya hace la tabla de expectancy del
+                  sitio. */}
+              <div className="overflow-x-auto custom-scroll">
               {/* Table header row */}
-              <div className="grid grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 pb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)] font-mono">
+              <div className="grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 pb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)] font-mono">
                 <div>{L("Tipo", "Type")}</div>
                 <div className="text-right">#</div>
                 <div className="text-right">%</div>
@@ -1421,7 +1442,7 @@ export function JournalPage() {
                         delay: i * 0.05,
                         ease: EASE,
                       }}
-                      className={`grid grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-2.5 items-center text-sm border-b border-dashed border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.025)] transition-colors font-mono ${
+                      className={`grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-2.5 items-center text-sm border-b border-dashed border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.025)] transition-colors font-mono ${
                         i % 2 === 1 ? "bg-[rgb(var(--divider)/0.012)]" : ""
                       }`}
                     >
@@ -1456,7 +1477,7 @@ export function JournalPage() {
               </div>
 
               {/* Total row */}
-              <div className="grid grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-3 items-center mt-1 border-t-2 border-[rgb(var(--divider)/0.15)] font-mono">
+              <div className="grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-3 items-center mt-1 border-t-2 border-[rgb(var(--divider)/0.15)] font-mono">
                 <div
                   className={`text-[11px] uppercase tracking-[0.15em] font-bold ${
                     totalMistakeCost < 0 ? "text-pnl-pos" : "text-pnl-neg"
@@ -1476,6 +1497,7 @@ export function JournalPage() {
                   {totalMistakeCost < 0 ? "+" : "−"}
                   {fmtMoney(Math.abs(totalMistakeCost), lang, { decimals: 0 })}
                 </div>
+              </div>
               </div>
 
               <div className="mt-2 px-2 text-[10px] text-tertiary/80 italic leading-relaxed">
@@ -1543,7 +1565,12 @@ export function JournalPage() {
           <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
-              <h2 className="font-medium text-primary text-base md:text-lg truncate">
+              {/* `sm:truncate` y no `truncate` a secas: a 320 px estos
+                  titulares perdian hasta 173 px de texto y no quedaba
+                  nada legible. Por debajo de `sm` se parten en dos
+                  lineas; de ahi para arriba caben y el recorte no llega
+                  a actuar. */}
+              <h2 className="font-medium text-primary text-base md:text-lg sm:truncate">
                 {t("review2")}
               </h2>
             </div>
@@ -1719,7 +1746,7 @@ export function JournalPage() {
                     <div className="flex items-center gap-2 shrink-0">
                       <Chip variant={complianceVariant}>{complianceLabel}</Chip>
                       <div
-                        className={`font-bold tnum text-base md:text-lg ${
+                        className={`break-words font-bold tnum text-sm sm:text-base md:text-lg ${
                           tone === "pos"
                             ? "text-pnl-pos"
                             : tone === "neg"

@@ -148,12 +148,19 @@ function MarketClock() {
         </span>
       </div>
 
+      {/* ── LAS SESIONES ENTRAN EN `xl`, NO EN `lg` ──────────────────
+          Las cuatro plazas piden unos 330 px y en `lg` —1024— la barra
+          de titulo no los tiene: se salian 119 px por la derecha, en las
+          cuatro pestanas. A 1280 caben con holgura, que es donde el
+          barrido de anchos deja de marcarlo. El bloque UTC sigue
+          entrando en `md`: es la referencia con la que se anota una
+          operacion y ese si cabe. */}
       <span
         aria-hidden="true"
-        className="hidden lg:block w-px h-[18px] bg-[rgb(var(--divider)/0.12)]"
+        className="hidden xl:block w-px h-[18px] bg-[rgb(var(--divider)/0.12)]"
       />
 
-      <div className="hidden lg:flex items-center gap-3.5">
+      <div className="hidden xl:flex items-center gap-3.5">
         {SESSIONS.map((s) => {
           const open = sessionIsOpen(s.open, s.close, utcMin);
           const name = es ? s.nameEs : s.nameEn;

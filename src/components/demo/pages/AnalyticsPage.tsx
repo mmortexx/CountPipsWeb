@@ -477,7 +477,10 @@ function RankingCard({
                     <span className="text-[10px] text-tertiary tnum w-3">
                       {i + 1}
                     </span>
-                    <span className="text-xs font-medium text-primary truncate">
+                    {/* Se parte, no se trunca: a 320 px «Tendencia»
+                        quedaba en «Tenden…», y es el nombre del setup, o
+                        sea la clave de la fila. */}
+                    <span className="min-w-0 text-xs font-medium leading-[1.3] text-primary [overflow-wrap:anywhere]">
                       {r.name}
                     </span>
                     <Chip variant="neutral" className="text-[9.5px] py-0 px-1.5 tnum">

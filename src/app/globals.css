@@ -1386,6 +1386,27 @@
      tarjeta, el de una fila de estadísticas y el de una ficha
      pequeña. Cada uno tiene su suelo —por debajo no se encoge más,
      se prefiere partir— y su techo, que es el tamaño de siempre. */
+  /* ============================================================
+     LAS FLECHAS DEL CAMPO NUMÉRICO OCUPAN SITIO AUNQUE NO SE VEAN
+     ============================================================
+     Los campos numéricos del sitio llevan `appearance: none`, que
+     quita el aspecto del control pero NO retira el botón de flechas
+     de WebKit: sigue reservando su ancho dentro de la caja. Medido en
+     la demo a 320 px, un campo de 80 px con 24 de relleno dejaba 56
+     de contenido y pedía 70 — el número se recortaba.
+
+     Se retira el botón explícitamente, que es lo único que devuelve
+     ese ancho al texto. En Firefox lo hace `-moz-appearance`, que
+     sigue siendo la forma de decirlo ahí. */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   .caja-cifra {
     container-type: inline-size;
   }

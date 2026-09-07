@@ -56,7 +56,12 @@ function sliceMetricsByDays(m: Metrics, days: number): Metrics {
 }
 
 const inputCls =
-  "w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
+  /* `min-w-0` en la clase compartida: `w-full` no basta. Un
+     `<input type=number>` trae un ancho intrinseco del navegador y, como
+     elemento de reticula, su `min-width: auto` impide que la celda baje
+     de ahi — a 320 px se salia 14 px. Aqui vale para todos los campos de
+     la demo de una vez. */
+  "w-full min-w-0 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
 const labelCls =
   "block text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1.5";
 
@@ -241,8 +246,17 @@ export function DashboardPage() {
     <div className="p-5 md:p-6 space-y-8 relative">
       {/* ============ SECTION 1: REGISTRAR OPERACIÓN (protagonist) ============ */}
       <section className="relative">
-        {/* Cabecera: eyebrow + title (left) │ live Risk $ 28px (right) */}
-        <div className="flex items-start justify-between gap-4 mb-5">
+        {/* ── CABECERA ──────────────────────────────────────────────
+            Titular a la izquierda y lectura de riesgo a la derecha, en
+            una fila. A 320 px eso no cabe: la cifra a 28 px se lleva 185
+            de los 280 utiles y al titular le quedan 100, donde «operado»
+            no entra — se salia 35 px de su caja.
+
+            Por debajo de `sm` se apilan, que es lo que hace una ventana
+            de verdad al encogerse: el titular a todo el ancho y la
+            lectura debajo como una tira de rotulo e importe separada por
+            un filete. Ni se recorta nada ni se esconde un dato. */}
+        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0">
             <Reveal delay={0}>
               <Eyebrow>{t("captureEyebrow")}</Eyebrow>
@@ -262,7 +276,7 @@ export function DashboardPage() {
               The number animates softly when the value changes (entry/stop/qty
               edits) — same live-readout language as the WinUI app. */}
           <Reveal delay={0.08}>
-            <div className="text-right shrink-0">
+            <div className="flex items-baseline justify-between gap-3 border-t border-[rgb(var(--divider)/0.12)] pt-2.5 sm:block sm:shrink-0 sm:border-0 sm:pt-0 sm:text-right">
               <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                 {t("riskUsd")}
               </div>
@@ -272,7 +286,9 @@ export function DashboardPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 320, damping: 22 }}
                 aria-live="polite"
-                className="mt-1 text-[28px] font-bold tnum text-primary leading-none"
+                /* En la tira apilada la cifra va a 22 px y sin margen
+                   superior, porque comparte linea con su rotulo. */
+                className="text-[22px] font-bold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
               >
                 <Money value={riskUsdLive} />
               </motion.div>
@@ -313,7 +329,10 @@ export function DashboardPage() {
                   nada: el recorte se come el desbordamiento, así que ni la
                   consola, ni los tests, ni el ancho del documento se
                   enteraban. Lo vigila ahora `humo.mjs`. */}
-              <div className="grid md:grid-cols-2 gap-6">
+              {/* `minmax(0,1fr)` por lo mismo que la reticula de entrada y
+                  salida: un `<input type=number>` no baja de su ancho
+                  intrinseco y arrastraba la columna. */}
+              <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                 {/* ============ LEFT COLUMN: image + risk footer ============ */}
                 <div className="flex flex-col min-w-0">
                   {/* Screenshot dropzone — 380px FIXED height (matches the
@@ -544,8 +563,13 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Entry + Exit — 2-col grid */}
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Entry + Exit — 2-col grid.
+                      `minmax(0,1fr)` y no `1fr`: un `<input type=number>`
+                      trae un ancho intrinseco del navegador, y en una
+                      reticula una columna `1fr` no baja de el por mucho
+                      `w-full` que lleve el campo. A 320 px se salia 14 px
+                      de su celda. */}
+                  <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                     <div>
                       <label htmlFor="d-entry" className={labelCls}>
                         {es ? "Entrada" : "Entry"}
@@ -637,7 +661,7 @@ export function DashboardPage() {
 
                   {/* Stop + Target — 2-col grid (InitialStop / InitialTarget
                       in the real app — gives the planned R:R). */}
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                     <div>
                       <label htmlFor="d-stop" className={labelCls}>
                         {es ? "Stop" : "Stop"}
@@ -1192,7 +1216,10 @@ function KpiCell({
           cells share the exact same numeric typography, regardless of
           whether the value is a <Money> span, a plain number, or a streak
           chip — keeps the row's baseline perfectly aligned. */}
-      <div className="min-w-0 break-words [&>*]:text-lg [&>*]:font-semibold [&>span]:tnum">{value}</div>
+      {/* La celda es su propio contenedor de medida: «+6807,72 US$»
+          a `text-lg` fijo se salia 15 px a 768 px, que es donde esta
+          reticula pasa a varias columnas. */}
+      <div className="caja-cifra min-w-0 break-words [&>*]:cifra-lg [&>*]:font-semibold [&>span]:tnum">{value}</div>
     </div>
   );
 }
