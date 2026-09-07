@@ -540,6 +540,72 @@ Tres tampoco tenían nombre accesible.
 - `legible.mjs` cazó dos rótulos nuevos a 9 px: el suelo del sitio es
   9,5.
 
+### Séptima tanda: la demo, y dos trampas de medida propias
+
+#### El servidor de pruebas mentía
+
+`npx serve -s out` —la bandera de aplicación de una sola página—
+**devuelve la portada para TODAS las rutas**. Medir con eso es medir la
+portada dieciséis veces creyendo que son catorce páginas. Se comprobó
+por el `<title>` y se corrigió sirviendo sin `-s`.
+
+Cómo se caza: pedir tres rutas y mirar el título. Si los tres son el de
+la portada, el banco no está midiendo lo que dice.
+
+#### La sonda de desbordes marcaba de más
+
+De 195 hallazgos en la demo, **192 eran falsos**. Dos motivos, los dos
+de la sonda:
+
+- Un **margen horizontal negativo** es la técnica normal para que el
+  realce de una fila sangre hasta el canto de su tarjeta (`-mx-2 px-2`).
+  Sobresalir del padre inmediato es justo lo que se le pide. Ahora se
+  saltan, y la comparación va contra el primer antepasado que de verdad
+  contiene: el que tiene relleno o recorta.
+- Marcaba como recortado cualquier contenido más ancho que su caja **aun
+  con `overflow-x: visible`**, donde el texto se lee entero. Sólo cuenta
+  si se recorta de verdad.
+
+Con la sonda arreglada quedaban 96 defectos reales en las cuatro
+pestañas. Ahora cero, a diez anchos.
+
+#### Lo que sí estaba roto en la demo
+
+- La cabecera del registro se apila por debajo de `sm`: a 320 px la
+  cifra de riesgo a 28 px se llevaba 185 de los 280 útiles.
+- **Los campos numéricos**: `w-full` no basta porque el `min-width: auto`
+  de un elemento de retícula lo impide, y encima WebKit seguía
+  reservando el ancho del botón de flechas pese a `appearance: none`. Se
+  retira el botón en globals.css — arregla todos los campos numéricos
+  del sitio de una vez.
+- El eje del histograma truncaba TODOS sus rótulos a 320 px. Ahora se
+  salta uno de cada dos cuando hay muchas barras.
+- Las sesiones de la barra de título entraban en `lg` sin caber hasta
+  1280: se salían 119 px. Pasan a `xl`.
+
+Un intento fallido, anotado en el código: `container-type: inline-size`
+sobre cajas que se dimensionaban por su contenido las dejó sin crecer y
+el importe se salió MÁS —de 14 a 92 px—. Esa utilidad sólo sirve cuando
+el ancho lo pone el padre.
+
+#### El despliegue se rompió, y fue por commitear el borrador
+
+`FeaturesBento.tsx` y `Wrapped.tsx` se commitearon llamando a
+`langDatos(lang)`, un ajuste de compilación del borrador de idiomas que
+vive en un `i18n.tsx` **sin commitear**. En local todo pasaba en verde
+porque el árbol de trabajo sí tiene el borrador; lo publicado no
+compilaba y el despliegue de Pages falló.
+
+**La regla que faltaba:** cuando hay cambios sin commitear que el resto
+del código usa, las comprobaciones locales NO dicen si el commit está
+sano. Hay que sacar el commit a un lado —`git stash` del borrador, o un
+`git worktree` con dependencias— y compilarlo AHÍ.
+
+Para commitear con un borrador ajeno delante: se construye la versión a
+publicar en memoria, se mete en el índice con `git hash-object -w` +
+`git update-index --cacheinfo`, y se comprueba que `git diff --cached`
+no contiene ni rastro del borrador. El árbol de trabajo no se toca.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
