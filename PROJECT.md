@@ -606,6 +606,70 @@ publicar en memoria, se mete en el índice con `git hash-object -w` +
 `git update-index --cacheinfo`, y se comprueba que `git diff --cached`
 no contiene ni rastro del borrador. El árbol de trabajo no se toca.
 
+### Octava tanda: la tinta que no giraba con el tema
+
+El sistema tiene tres familias de color y sólo una declaraba su tinta
+por tema. `--accent-ink` existía desde hace tiempo; el P&L no tenía
+gemelo, así que ocho sitios escribían la tinta a mano —`text-white`,
+`text-black`, `fill="#fff"`, `color: "#000000"`— y **cada uno se
+apagaba en un tema distinto**: en oscuro el verde y el rojo son
+CLAROS y piden tinta oscura; en claro son OSCUROS y piden tinta clara.
+La misma tinta fija no puede servir en los dos.
+
+Medido sobre el sitio compilado, con la paleta viva:
+
+| sitio | tema | antes | ahora |
+|---|---|---|---|
+| etiqueta SL del gráfico de velas | oscuro | 2,78:1 | 6,82:1 |
+| etiqueta TP del gráfico de velas | claro | 2,34:1 | 7,86:1 |
+| filtros «Ganadoras» / «100% en Plan» | claro | 2,34:1 | 7,86:1 |
+| filtros «Pérdidas» / «Fuera de Plan» | oscuro | 2,78:1 | 6,82:1 |
+| botón de cerrar de la demo (hover) | oscuro | 2,78:1 | 6,82:1 |
+| botón «Copiado» del proyector | claro | 2,34:1 | 7,86:1 |
+
+`--pnl-ink` se declara en los cuatro bloques de tema. **Un solo token
+vale para verde, rojo y ámbar** porque los tres giran a la vez, que es
+justo lo que hace que la familia sea una familia.
+
+#### Por qué no lo había cazado ninguna puerta
+
+`legible.mjs` compone el fondo recorriendo los ANTEPASADOS CSS. En un
+`<svg>` el fondo de una etiqueta es un `<rect>` **hermano**, no un
+antepasado, así que las daba por «sin fondo plano» y las dejaba pasar.
+Se añade `scripts/tinta.mjs`, que mide esos casos a mano en los dos
+temas —incluidos los que exigen interacción: el filtro pulsado, el
+botón en hover, el botón ya copiado— y comprueba de paso la trampa del
+servidor que devuelve la portada para todas las rutas.
+
+Dos avisos para quien mida esto:
+
+- **El banner de consentimiento tapa la mitad inferior de la página.**
+  Sin retirarlo, un barrido de contraste encuentra la gráfica de la
+  demo «sobre un botón azul» y el hover del botón de cerrar no llega a
+  ocurrir: se mide el estado en reposo creyendo medir el hover.
+- **Un `<g>` no pinta fondo.** Su `fill` es la pintura que HEREDAN sus
+  hijos. Una sonda que recorra `elementsFromPoint` y trate cualquier
+  elemento SVG como fondo dará 20 falsos «texto sobre negro», porque el
+  `fill` por defecto de SVG es negro y `--divider` vale 0 0 0 en claro.
+
+#### Lo que se revisó y NO era un defecto
+
+De los 78 literales de color que quedan en componentes, los que se
+tocan son los ocho de arriba. Los demás son legítimos y se quedan:
+`opengraph-image` y `twitter-image` se dibujan fuera del navegador, sin
+variables CSS; `themeColor` de la metadata tiene que ser un literal; la
+máscara del atlas usa `#000` como canal alfa; y `EngravedAtlas` /
+`Grabado404` guardan un `#1a1714` de respaldo por si
+`getComputedStyle` no resuelve. Las tres sombras `rgba(0,0,0,0.12)` del
+proyector son sombras neutras, no color de marca.
+
+Y los tres **controles de ventana decorativos** del proyector de
+capital (minimizar, maximizar, cerrar) se quitan: era la misma
+afirmación que ya se corrigió al retirar la insignia «WINUI3» de ahí —
+la web presentaba una calculadora del sitio como una pantalla del
+programa. En `/demo` los controles se quedan, porque allí sí se simula
+la aplicación.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
@@ -675,6 +739,7 @@ node scripts/fondos.mjs --serve out   # que cada sección dibuje un fondo distin
 node scripts/fluidez.mjs --serve out  # presupuesto de fotogramas del atlas (28 ms)
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
 node scripts/deep_audit.mjs             # códigos 200, lang, canonical, hreflang
+node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
 node scripts/corrobora-menus.mjs        # navegación y menús, escritorio + móvil
 npx vitest run                          # 26 suites, ~305 tests
 npx tsc --noEmit && npx eslint .
