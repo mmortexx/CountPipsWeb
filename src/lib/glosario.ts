@@ -259,94 +259,129 @@ export const HERRAMIENTA_DE: Record<string, string> = {
 /**
  * Fórmulas matemáticas institucionales para los términos cuantitativos.
  */
-export const FORMULAS_GLOSARIO: Record<string, { formula: string; variablesEs: string; variablesEn: string }> = {
-  sharpe: {
-    formula: "S = \\frac{E[R - R_f]}{\\sigma} \\times \\sqrt{N}",
-    variablesEs: "μ: retorno medio por trade, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σ: desviación estándar, N: trades/año",
-    variablesEn: "μ: mean return per trade, Rf: risk-free rate (Rf=0 in intraday trading), σ: standard deviation, N: trades/year",
-  },
+/* Notacion Unicode, no LaTeX.
+ *
+ * El valor era una cadena de LaTeX que se volcaba TAL CUAL en la pagina:
+ * dieciocho fichas ensenaban \max, \frac y \tau en crudo, dentro de una
+ * caja rotulada "LATEX", sin ningun renderizador detras.
+ *
+ * Y siete de esas formulas llevaban palabras CASTELLANAS dentro del propio
+ * LaTeX (Ganancias Brutas, Riesgo Inicial, Tamano, Objetivo), asi que la
+ * pagina inglesa tambien las ensenaba en espanol. Por eso ahora hay una
+ * formula por idioma.
+ *
+ * Se escriben con los simbolos de verdad —sigma, raiz, sumatorio, integral,
+ * subindices— en la monoespaciada que la caja ya usaba. La alternativa era
+ * cargar KaTeX y sus fuentes para dieciocho fichas de las 155 paginas del
+ * sitio, que no compensa: aqui no hay matrices ni integrales anidadas, y la
+ * casa no mete dependencias nuevas sin un motivo que no sea la comodidad. */
+export const FORMULAS_GLOSARIO: Record<
+  string,
+  { formulaEs: string; formulaEn: string; variablesEs: string; variablesEn: string }
+> = {
   "sharpe-ratio": {
-    formula: "S = \\frac{E[R - R_f]}{\\sigma} \\times \\sqrt{N}",
+    formulaEs: "S = (E[R − Rf] / σ) × √N",
+    formulaEn: "S = (E[R − Rf] / σ) × √N",
     variablesEs: "μ: retorno medio por trade, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σ: desviación estándar, N: trades/año",
     variablesEn: "μ: mean return per trade, Rf: risk-free rate (Rf=0 in intraday trading), σ: standard deviation, N: trades/year",
-  },
-  sortino: {
-    formula: "So = \\frac{E[R - R_f]}{\\sigma_d} \\times \\sqrt{N}",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en demo), σd: desviación estándar de retornos negativos, N: trades/año",
-    variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in demo), σd: downside standard deviation, N: trades/year",
   },
   "sortino-ratio": {
-    formula: "So = \\frac{E[R - R_f]}{\\sigma_d} \\times \\sqrt{N}",
+    formulaEs: "So = (E[R − Rf] / σd) × √N",
+    formulaEn: "So = (E[R − Rf] / σd) × √N",
     variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en demo), σd: desviación estándar de retornos negativos, N: trades/año",
     variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in demo), σd: downside standard deviation, N: trades/year",
   },
   "calmar-ratio": {
-    formula: "Ca = \\frac{CAGR}{|MaxDD|}",
+    formulaEs: "Ca = CAGR / |MaxDD|",
+    formulaEn: "Ca = CAGR / |MaxDD|",
     variablesEs: "CAGR: tasa de crecimiento anual compuesta, MaxDD: máximo drawdown histórico pico a valle",
     variablesEn: "CAGR: compound annual growth rate, MaxDD: historical peak-to-trough max drawdown",
   },
+  /* No hay ningun termino "Omega" en el glosario todavia, asi que esta
+     formula no la ve nadie. Se conserva porque el motor SI calcula el
+     ratio (`calcOmega` en trading/data.ts) y el dia que entre la ficha
+     ya esta escrita. */
   "omega-ratio": {
-    formula: "\\Omega(L) = \\frac{\\int_L^{+\\infty} (1 - F(r))\\,dr}{\\int_{-\\infty}^L F(r)\\,dr} = \\frac{\\sum \\max(r_i - L, 0)}{\\sum \\max(L - r_i, 0)}",
-    variablesEs: "L: umbral objetivo (para L=0 en muestra discreta equivale al Profit Factor; para L>0 evalúa asimetría sobre benchmark), F(r): distribución acumulada",
-    variablesEn: "L: threshold target (for L=0 on discrete sample matches Profit Factor; for L>0 evaluates asymmetry over benchmark), F(r): cumulative distribution",
+    /* Solo la forma discreta, que es la que calcula el motor. La razon de
+       integrales entera ocupaba ochenta caracteres y a 390 px se partia en
+       tres renglones por mitad de la expresion; vive en las variables. */
+    formulaEs: "Ω(L) = Σ máx(rᵢ − L, 0) / Σ máx(L − rᵢ, 0)",
+    formulaEn: "Ω(L) = Σ max(rᵢ − L, 0) / Σ max(L − rᵢ, 0)",
+    variablesEs: "Forma discreta de ∫(L,∞)(1−F(r))dr / ∫(−∞,L)F(r)dr. L: umbral objetivo (para L=0 equivale al Profit Factor; para L>0 evalúa asimetría sobre benchmark), rᵢ: retorno de cada operación, F(r): distribución acumulada",
+    variablesEn: "Discrete form of ∫(L,∞)(1−F(r))dr / ∫(−∞,L)F(r)dr. L: threshold target (for L=0 matches Profit Factor; for L>0 evaluates asymmetry over benchmark), rᵢ: return of each trade, F(r): cumulative distribution",
   },
   expectancy: {
-    formula: "E(R) = (WR \\times \\bar{W}) - ((1 - WR) \\times \\bar{L})",
+    formulaEs: "E(R) = (WR × W̄) − ((1 − WR) × L̄)",
+    formulaEn: "E(R) = (WR × W̄) − ((1 − WR) × L̄)",
     variablesEs: "WR: tasa de acierto, W̄: ganancia media en R, L̄: pérdida media en R",
     variablesEn: "WR: win rate, W̄: average win in R, L̄: average loss in R",
   },
   "profit-factor": {
-    formula: "PF = \\frac{\\sum \\text{Ganancias Brutas}}{\\sum |\\text{Pérdidas Brutas}|}",
+    formulaEs: "PF = Σ Ganancias brutas / Σ |Pérdidas brutas|",
+    formulaEn: "PF = Σ Gross profits / Σ |Gross losses|",
     variablesEs: "Suma de todos los beneficios cerrados dividida entre la suma de todas las pérdidas",
     variablesEn: "Gross closed profits divided by gross closed losses",
   },
   drawdown: {
-    formula: "DD_t = \\frac{\\max_{\\tau \\le t} X_\\tau - X_t}{\\max_{\\tau \\le t} X_\\tau}",
-    variablesEs: "X_t: valor actual de la cuenta, max X_τ: pico histórico más alto hasta el momento",
-    variablesEn: "X_t: current equity, max X_τ: historical high-water mark",
+    /* El indice mudo iba en tau, y la tau de la monoespaciada se lee como
+       una T mayuscula al lado de la t del tiempo. Se nombra el pico como
+       HWM, que ademas es como lo llama el resto del producto. */
+    formulaEs: "DDₜ = (HWMₜ − Xₜ) / HWMₜ",
+    formulaEn: "DDₜ = (HWMₜ − Xₜ) / HWMₜ",
+    variablesEs: "Xₜ: valor de la cuenta en el momento t, HWMₜ: pico histórico mas alto alcanzado hasta t (high-water mark)",
+    variablesEn: "Xₜ: equity at time t, HWMₜ: highest historical peak reached up to t (high-water mark)",
   },
   "max-drawdown": {
-    formula: "MaxDD = \\max_{t} \\left( \\frac{\\max_{\\tau \\le t} X_\\tau - X_t}{\\max_{\\tau \\le t} X_\\tau} \\right)",
-    variablesEs: "El mayor retroceso porcentual registrado en toda la serie temporal",
-    variablesEn: "Largest peak-to-trough percentage decline recorded across the full series",
+    formulaEs: "MaxDD = máx [ (HWMₜ − Xₜ) / HWMₜ ]  para todo t",
+    formulaEn: "MaxDD = max [ (HWMₜ − Xₜ) / HWMₜ ]  over all t",
+    variablesEs: "El mayor retroceso porcentual registrado en toda la serie. HWMₜ: pico historico mas alto hasta t",
+    variablesEn: "Largest peak-to-trough percentage decline across the full series. HWMₜ: highest historical peak up to t",
   },
   "kelly-criterion": {
-    formula: "f^* = \\frac{p \\cdot b - q}{b} = p - \\frac{q}{b}",
-    variablesEs: "p: probabilidad de acierto, q = 1 - p: probabilidad de fallo, b: ratio de pago (payoff)",
-    variablesEn: "p: win probability, q = 1 - p: loss probability, b: payoff ratio",
+    formulaEs: "f* = (p · b − q) / b = p − q / b",
+    formulaEn: "f* = (p · b − q) / b = p − q / b",
+    variablesEs: "p: probabilidad de acierto, q = 1 − p: probabilidad de fallo, b: ratio de pago (payoff)",
+    variablesEn: "p: win probability, q = 1 − p: loss probability, b: payoff ratio",
   },
   "risk-of-ruin": {
-    formula: "P(\\text{Ruina}) = e^{-\\frac{2 \\cdot E \\cdot B}{\\sigma^2}}",
+    formulaEs: "P(Ruina) = e^(−2 · E · B / σ²)",
+    formulaEn: "P(Ruin) = e^(−2 · E · B / σ²)",
     variablesEs: "E: valor esperado por trade, B: capital antes del nivel de quiebra, σ²: varianza del retorno",
     variablesEn: "E: expected value per trade, B: bankroll buffer before bankruptcy, σ²: variance",
   },
   cagr: {
-    formula: "CAGR = \\left( \\frac{V_f}{V_i} \\right)^{\\frac{1}{t}} - 1",
+    formulaEs: "CAGR = (Vf / Vi)^(1 / t) − 1",
+    formulaEn: "CAGR = (Vf / Vi)^(1 / t) − 1",
     variablesEs: "Vf: valor final, Vi: valor inicial, t: tiempo transcurrido en años",
     variablesEn: "Vf: final value, Vi: initial value, t: time in years",
   },
   "r-multiple": {
-    formula: "R = \\frac{\\text{Pnl}}{\\text{Riesgo Inicial } (1R)}",
+    formulaEs: "R = PnL / Riesgo inicial (1R)",
+    formulaEn: "R = PnL / Initial risk (1R)",
     variablesEs: "Beneficio o pérdida normalizado entre la distancia en dólares al stop loss inicial",
     variablesEn: "Profit or loss normalized by the initial dollar risk to the stop loss",
   },
   "position-sizing": {
-    formula: "\\text{Tamaño} = \\frac{\\text{Balance} \\times \\text{Riesgo}\\%}{|\\text{Precio Entrada} - \\text{Precio Stop}| \\times \\text{Multiplicador}}",
+    formulaEs: "Tamaño = (Balance × Riesgo %) / (|Precio entrada − Precio stop| × Multiplicador)",
+    formulaEn: "Size = (Balance × Risk %) / (|Entry price − Stop price| × Multiplier)",
     variablesEs: "Cálculo matemático para fijar la pérdida máxima exacta al nivel de invalidación",
     variablesEn: "Mathematical sizing to cap maximum dollar risk exactly at the stop level",
   },
   "risk-reward-ratio": {
-    formula: "RR = \\frac{|\\text{Objetivo} - \\text{Entrada}|}{|\\text{Entrada} - \\text{Stop}|}",
+    formulaEs: "RR = |Objetivo − Entrada| / |Entrada − Stop|",
+    formulaEn: "RR = |Target − Entry| / |Entry − Stop|",
     variablesEs: "Relación entre el beneficio proyectado en el take profit y el riesgo asumido en el stop loss",
     variablesEn: "Ratio of projected target reward versus stop loss risk",
   },
   "win-rate": {
-    formula: "WR = \\frac{\\text{Operaciones Ganadoras}}{N_{\\text{total}}} \\times 100",
+    formulaEs: "WR = (Operaciones ganadoras / N) × 100",
+    formulaEn: "WR = (Winning trades / N) × 100",
     variablesEs: "Porcentaje de operaciones con resultado neto positivo",
     variablesEn: "Percentage of total trades that closed with a positive net return",
   },
   payoff: {
-    formula: "\\text{Payoff} = \\frac{\\bar{W}}{\\bar{L}} = \\frac{\\text{Ganancia Media}}{\\text{Pérdida Media}}",
+    formulaEs: "Payoff = W̄ / L̄ = Ganancia media / Pérdida media",
+    formulaEn: "Payoff = W̄ / L̄ = Average win / Average loss",
     variablesEs: "Ratio de asimetría entre la ganancia media y la pérdida media",
     variablesEn: "Asymmetry ratio between average winning trade and average losing trade",
   },

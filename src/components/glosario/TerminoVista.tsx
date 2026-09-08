@@ -80,12 +80,13 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           {FORMULAS_GLOSARIO[termino.slug] && (
             <Reveal delay={0.08}>
               <div className="mt-7 p-4 rounded-[2px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]">
-                <div className="flex items-center justify-between text-xs text-tertiary uppercase tracking-wider mb-2 font-mono">
-                  <span>{es ? "Fórmula Cuantitativa" : "Quantitative Formula"}</span>
-                  <span className="text-[rgb(var(--accent-base))] font-semibold">LaTeX</span>
+                {/* Aqui iba un sello que decia "LaTeX". Ya no describe nada:
+                    la formula se escribe en notacion Unicode. */}
+                <div className="text-xs text-tertiary uppercase tracking-wider mb-2 font-mono">
+                  {es ? "Fórmula Cuantitativa" : "Quantitative Formula"}
                 </div>
                 <div className="py-2 text-base md:text-lg font-mono font-bold text-primary tracking-wide text-center bg-[rgb(var(--divider)/0.03)] rounded border border-[rgb(var(--divider)/0.08)] mb-2">
-                  {FORMULAS_GLOSARIO[termino.slug].formula}
+                  {es ? FORMULAS_GLOSARIO[termino.slug].formulaEs : FORMULAS_GLOSARIO[termino.slug].formulaEn}
                 </div>
                 <p className="text-xs text-tertiary leading-relaxed m-0">
                   <strong className="text-secondary">{es ? "Variables:" : "Variables:"}</strong> {es ? FORMULAS_GLOSARIO[termino.slug].variablesEs : FORMULAS_GLOSARIO[termino.slug].variablesEn}
