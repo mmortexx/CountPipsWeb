@@ -149,13 +149,20 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
             {/* Selectores: Firma y Balance */}
             <div className="flex flex-wrap items-center gap-4 mb-6">
-              <div className="flex items-center gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              {/* `items-stretch` y `min-h-8`, no `items-center` y `h-8`. Con
+                  alto FIJO, "FTMO (Drawdown estático)" envolvía a tres líneas
+                  a 390 px y la tercera —"estático)"— se salía por debajo del
+                  fondo de su propia ficha, encima de la fila de importes. Es
+                  el mismo fallo que el deslizador de 36 px de la sexta tanda:
+                  una altura escrita a mano que el contenido desborda. Con el
+                  mínimo, la ficha crece y las tres comparten la más alta. */}
+              <div className="flex items-stretch gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
                 {PROP_FIRMS.map((f) => (
                   <button
                     key={f.id}
                     type="button"
                     onClick={() => setSelectedFirm(f.id)}
-                    className={`toque-comodo h-8 px-3 rounded-[2px] text-xs font-semibold transition-all ${
+                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[2px] text-xs font-semibold leading-tight text-center transition-all ${
                       selectedFirm === f.id
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                         : "text-secondary hover:text-primary"
@@ -166,7 +173,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 ))}
               </div>
 
-              <div className="flex items-center gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <div className="flex items-stretch gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
                 {PROP_BALANCES.map((bal) => (
                   <button
                     key={bal}
@@ -175,7 +182,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                       setPropBalance(bal);
                       setCurrentEquity(bal * 1.035);
                     }}
-                    className={`toque-comodo h-8 px-3 rounded-[2px] text-xs font-semibold tnum transition-all ${
+                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[2px] text-xs font-semibold leading-tight tnum transition-all ${
                       propBalance === bal
                         ? "bg-primary text-[var(--surface)]"
                         : "text-secondary hover:text-primary"
@@ -189,7 +196,9 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
             {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
             <div className="p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
-              <div className="flex items-center justify-between text-xs mb-2">
+              {/* Apilado por debajo de `sm`: en una sola fila, el rotulo y la
+                  cifra se metian el uno dentro del otro a 390 px. */}
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">
                 <span className="font-semibold text-primary">
                   {es ? "Distancia al umbral de liquidación:" : "Distance to liquidation threshold:"}
                 </span>
@@ -359,7 +368,17 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
                   {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? " %" : "%")}
                 </span>
-                <span className="text-xs text-[rgb(var(--pnl-neg))] block mt-2">
+                {/* El color seguia al rotulo y no al mensaje: estaba fijo en
+                    rojo mientras el texto cambia de aviso a elogio segun el
+                    setup, asi que "Proceso consistente y repetible" salia
+                    pintado de perdida en dos de los tres casos. Y va en la
+                    familia del semaforo, no en la del P&L: esto es un
+                    veredicto sobre el proceso, no una cifra de dinero. */}
+                <span className={`text-xs block mt-2 ${
+                  manualSetup === "reversion"
+                    ? "text-[rgb(var(--sig-red))]"
+                    : "text-[rgb(var(--sig-green))]"
+                }`}>
                   {manualSetup === "reversion"
                     ? (es ? "Fuga de capital detectada en salidas prematuras" : "Capital leak detected on early exits")
                     : (es ? "Proceso consistente y repetible" : "Consistent, repeatable process")}
