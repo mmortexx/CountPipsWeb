@@ -754,6 +754,42 @@ todos.
   otra; gana la hoja, que es la que tiene razón. Lo que sobra es la
   clase del componente.
 
+### Décima tanda (en curso): palabras partidas por la mitad
+
+Un barrido nuevo: recorrer cada nodo de texto carácter a carácter con un
+`Range` y detectar dónde salta de línea **dentro** de una palabra, sin
+guion. Sobre 18 rutas × 2 idiomas × 3 anchos: **7 casos, todos en la
+calculadora de riesgo. Ahora 0.**
+
+- Las seis celdas de resultado pasan a `caja-cifra` + `cifra-lg`.
+- Los cuatro rótulos cambian `overflow-wrap: anywhere` por
+  `hyphens: auto` — «APALANCAMIENT|O» pasa a partirse con guion.
+- La rejilla de resultados cuenta sus columnas contra **su propio
+  ancho** (`auto-fit` + `minmax(8.25rem,1fr)`), no contra la ventana.
+
+#### Otra vez el punto medio, y dos trampas de la sonda
+
+El fallo no estaba en el ancho más estrecho sino a **1024 px**, donde la
+rejilla cae a 324 px y `sm:grid-cols-3` sigue pidiendo tres columnas.
+A 1280 y 1440 la misma rejilla mide 432 y va sobrada.
+
+Dos avisos para quien reescriba esa sonda:
+
+- **`hyphens: auto` hay que excluirlo.** El guion que pone el navegador
+  es sintético: no está en el nodo de texto, así que una sonda ingenua
+  lee «discip|line» como palabra rota cuando en pantalla dice
+  «discip-line». Sin ese filtro salían once falsos positivos de párrafos
+  en inglés perfectamente compuestos.
+- **Y las cajas de menos de 24 px.** Una caja de 11 px con texto de 18
+  no es un texto partido: es una cifra a mitad de su animación de
+  entrada. Otros diez falsos.
+- **Y un error propio:** el informe imprimía el ancho de la caja donde
+  decía «ventana», porque el objeto de la medida sobrescribía la clave.
+  Con eso se diagnosticó durante un rato el caso equivocado —y se llegó
+  a bajar el suelo de `.cifra-lg`, cambio que luego se revirtió porque
+  no arreglaba nada. Si una medida no cuadra con lo que se ve, el primer
+  sospechoso es el rótulo del informe.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
