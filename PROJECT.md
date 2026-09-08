@@ -670,6 +670,90 @@ la web presentaba una calculadora del sitio como una pantalla del
 programa. En `/demo` los controles se quedan, porque allí sí se simula
 la aplicación.
 
+### Novena tanda: mirar la web, no sólo medirla
+
+Las siete tandas anteriores midieron. Ésta abre las páginas en claro y
+en oscuro, a 1440 y a 390, y **mira**. Tres defectos, y ninguno lo
+cazaba puerta alguna porque ninguno es un fallo de contraste de texto,
+de desborde ni de animación.
+
+#### El ✓ de la página de precios no existía
+
+`CheckIcon` pintaba el disco con `fill="currentColor"` y la marca encima
+con `stroke="currentColor"`. Es el mismo color: **1,00:1** en los dos
+planes y en los dos temas. Lo que se veía eran dieciséis discos lisos, y
+en el plan Pro —donde el disco es el acento, casi negro en claro— se
+leían como botones de radio SIN marcar, justo lo contrario de
+«incluido».
+
+| | oscuro | claro |
+|---|---|---|
+| Core | 1,00 → 9,44:1 | 1,00 → 7,86:1 |
+| Pro | 1,00 → 13,22:1 | 1,00 → 14,94:1 |
+
+Se completa el sistema de tintas con `--sig-ink`. Ahora las tres
+familias de color declaran la suya: `--accent-ink`, `--pnl-ink`,
+`--sig-ink`. `tinta.mjs` pasa a barrer también los sellos, con la puerta
+de 3:1 que WCAG pide a un elemento gráfico.
+
+**La comprobación geométrica no es un adorno.** Sin ella el banco
+marcaba tres iconos de dos piezas que comparten color a propósito
+porque cada una ocupa su sitio y no se solapan. Un `<circle>` y un
+`<path>` en el mismo `<svg>` no significan que uno vaya encima del otro.
+
+#### El grabado del fondo pesaba un 40 % menos en papel
+
+La hoja daba por hecho que «una línea oscura sobre fondo claro pesa más
+que una clara sobre fondo oscuro» y bajaba por eso la opacidad del atlas
+en claro. Medido leyendo el lienzo y componiendo su tinta sobre el fondo
+real, con la misma cantidad de píxeles grabados en los dos temas
+(2,6 %), el sentido es el contrario:
+
+| | opacidad | peso |
+|---|---|---|
+| oscuro | 0,84 | **3,92:1** |
+| claro (antes) | 0,76 | **2,34:1** |
+| claro (ahora) | 0,94 | **3,00:1** |
+
+No manda la opacidad sino el recorrido disponible. De noche la tinta es
+casi blanca sobre casi negro y tiene toda la escala; en papel la tinta
+ya está al fondo (`#15171a`) pero la chapa es un gris medio (`#d4d9dd`),
+no un blanco, así que **el techo del claro con opacidad 1 es 3,25:1** y
+no alcanza al oscuro ni apurándolo. Subir la tinta no cabe y densificar
+la trama se midió en la cuarta tanda y cuesta fotogramas.
+
+El texto de encima no se resiente: `humo.mjs` deja el peor texto pequeño
+sobre el grabado en 5,66:1, el mismo de antes, porque donde hay
+contenido manda el velo. La subida sólo se ve donde el atlas está
+desnudo, que son las pausas de lámina — es decir, justo donde debe.
+
+#### Los dos botones del hero, dentados en móvil
+
+El canto dentado del par de CTA ya estaba corregido —el comentario del
+propio código lo explica— pero sólo para `lg`. Por debajo de `sm`
+seguían apilados con ancho natural, que es donde más se nota:
+
+    español  240 / 180  →  240 / 240   (escalón 60 px → 0)
+    inglés   254 / 180  →  254 / 254   (escalón 74 px → 0)
+
+Es un aviso de método: **un arreglo escrito con un prefijo de punto de
+ruptura arregla ese punto de ruptura y nada más.** Si el motivo del
+arreglo vale para todos los anchos, las clases tienen que valer para
+todos.
+
+#### Dos cosas que parecían defectos y no lo eran
+
+- **Las tres cifras de la banda de la portada** («40+ / 0 bytes / 8»)
+  parecían ir en degradado, cada una más pálida que la anterior. Medido:
+  mismo color y opacidad 1 en las tres. Era una ilusión del número de
+  glifos —un «8» aislado pesa menos a la vista que un «40+»— y de mirar
+  una captura reducida. No se tocó nada.
+- **`font-serif` en esa misma banda no se aplica**, y es correcto: la
+  hoja declara con `!important` que `.tnum` va en la sans porque «las
+  cifras son datos». El componente pide una cosa y la hoja le niega
+  otra; gana la hoja, que es la que tiene razón. Lo que sobra es la
+  clase del componente.
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
