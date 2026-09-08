@@ -1982,6 +1982,19 @@ textarea:focus-visible,
    (612 de ancho util), y con la reserva pasaba a 660 — o sea 48 px de
    hueco vacio que el lector tenia que desplazar para nada, con su
    desvanecido incluido. Esta variante retira la reserva. */
+.tj-fila-sigue--sin-reserva {
+  /* El desvanecido de ::after se monta con `position: sticky`,
+     `flex: none` y `align-self: stretch` — una receta que sólo tiene
+     sentido DENTRO de un contenedor flexible. Las dos filas de fichas
+     que usan esta clase ya traen `flex` de Tailwind; los dos
+     envoltorios de tabla (los documentos legales y la matriz de
+     seguridad) no, así que allí el pseudoelemento se maquetaba como un
+     bloque vacío y resolvía a ALTURA CERO: el aviso estaba escrito y no
+     lo veía nadie. Medido a 390 px en /privacidad y /cookies: 552 px de
+     tabla en 358 de caja, 186 ocultos, y ni un pixel de degradado que
+     dijera que había más a la derecha. */
+  display: flex;
+}
 .tj-fila-sigue--sin-reserva > :last-child {
   margin-right: 0;
 }
