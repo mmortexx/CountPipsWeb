@@ -642,8 +642,22 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             </div>
           )}
 
-          {/* Resultados */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+          {/* Resultados — la rejilla cuenta sus columnas contra SU ancho,
+              no contra el de la ventana. Con `sm:grid-cols-3` pedia tres
+              columnas siempre que la ventana pasara de 640, y en
+              /features/metricas esta calculadora vive en una columna
+              estrecha: a 1024 px de ventana la rejilla medía 324 px, la
+              celda 100 y el hueco de la cifra 66, mientras «100,10 US$»
+              pedia 84 — se partia en dos lineas. A 1280 y a 1440 la misma
+              rejilla mide 432 y va sobrada, que es por lo que no se veia
+              mirando solo los extremos.
+
+              `auto-fit` + `minmax(8.25rem, 1fr)` deja que sea el ancho
+              real quien lo decida. Medido, da el mismo reparto de siempre
+              donde ya estaba bien —3 columnas a 1280, 1440 y en la
+              herramienta a 768; 2 en movil— y baja a 2 solo en el caso
+              que se rompia. */}
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(8.25rem,1fr))] gap-3 mb-5">
             <Result label={es ? "Riesgo total $" : "Total Risk $"} value={fmtUsd(c.totalRiskUsd)} color="rgb(var(--pnl-neg))" />
             <Result label={es ? "Beneficio neto" : "Net Profit"} value={fmtUsd(c.profit)} color="rgb(var(--pnl-pos))" />
             <Result label={es ? "Tamaño de posición" : "Position Size"} value={`${fmtNum(c.size, assetMode === "forex" ? 2 : (assetMode === "futures" ? 1 : 2))} ${c.sizeLabel}`} color="var(--ink)" />
@@ -661,7 +675,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             className="mb-5 grid grid-cols-2 gap-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)] p-3 sm:grid-cols-4"
           >
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "Valor nocional" : "Notional value"}
               </div>
               <div className="tnum cifra-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
@@ -669,7 +683,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "Apalancamiento" : "Leverage"}
               </div>
               <div
@@ -682,7 +696,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "VaR 95% (1-Trade)" : "95% VaR (1-Trade)"}
               </div>
               <div className="tnum cifra-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
@@ -690,7 +704,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [overflow-wrap:anywhere]">
+              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "Riesgo de Ruina" : "Risk of Ruin (50%)"}
               </div>
               <div
@@ -772,8 +786,14 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
+    /* `caja-cifra` + `cifra-lg`: la cifra se mide contra el ancho de SU
+       celda y encoge de 18 a 13,8 px antes que partirse. Con cuerpo fijo
+       se partia por la mitad —«0,20 US|$», «$100.1|0», «20,00 accion|es»—
+       en cuanto la celda bajaba de unos 100 px, que es lo que pasa cuando
+       esta calculadora vive en la columna estrecha de /features/metricas.
+       Una cifra rota en dos lineas deja de leerse como un dato. */
     <div
-      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.08)] px-4 py-3.5 transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]"
+      className="caja-cifra group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.08)] px-4 py-3.5 transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]"
     >
       <div
         className="tnum text-[10px] uppercase tracking-[0.12em] text-tertiary"
@@ -781,7 +801,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
         {label}
       </div>
       <div
-        className="tnum min-w-0 break-words font-bold text-lg mt-1"
+        className="tnum cifra-lg min-w-0 break-words font-bold mt-1"
         style={{ color }}
       >
         {value}
