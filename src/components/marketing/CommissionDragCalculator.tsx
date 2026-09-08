@@ -2,7 +2,7 @@
 
 import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney, fmtNum } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtPct } from "@/lib/trading/format";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 
 interface InstrumentConfig {
@@ -430,7 +430,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                       : "text-[rgb(var(--pnl-pos))]"
                   }`}
                 >
-                  {costDragPct.toFixed(1)}%
+                  {fmtPct(costDragPct / 100, lang)}
                 </span>
                 <span className="text-[9.5px] text-tertiary block mt-0.5">
                   {es ? "del beneficio" : "of profit"}
@@ -454,7 +454,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                   {es ? "Win Rate Exigido:" : "Required BE Win Rate:"}
                 </span>
                 <span className="text-base font-mono font-bold text-[rgb(var(--accent-base))] tnum">
-                  {breakEvenWinRate.toFixed(1)}%
+                  {fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
                 <span className="text-[9.5px] text-tertiary block mt-0.5">
                   {es ? "a 1.5:1 R:R" : "at 1.5:1 R:R"}

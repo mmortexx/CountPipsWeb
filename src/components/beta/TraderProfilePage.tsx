@@ -7,7 +7,7 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Link } from "@/components/tj/LocaleLink";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney } from "@/lib/trading/format";
+import { fmtMoney, fmtPct } from "@/lib/trading/format";
 
 export type TraderProfile = "manual" | "prop";
 
@@ -194,7 +194,12 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   {es ? "Distancia al umbral de liquidación:" : "Distance to liquidation threshold:"}
                 </span>
                 <span className="font-mono font-bold text-[rgb(var(--accent-base))]">
-                  +{fmtMoney(distanceToLiquidation, lang)} ({distancePct.toFixed(1)}% {es ? "del colchón disponible" : "buffer left"})
+                  {/* `fmtPct`, no `toFixed`: `toFixed` escribe siempre el punto
+                      decimal inglés, así que en español esta cifra decía
+                      "135.0%" en una fila donde el importe de al lado decía
+                      "13.500,00 US$". Dos convenciones distintas en el mismo
+                      renglón. */}
+                  +{fmtMoney(distanceToLiquidation, lang)} ({fmtPct(distancePct / 100, lang)} {es ? "del colchón disponible" : "buffer left"})
                 </span>
               </div>
               <div className="relative h-2.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
@@ -221,20 +226,20 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? `Límite diario (${firm.dailyPct}%)` : `Daily limit (${firm.dailyPct}%)`}</span>
+                  <span>{es ? `Límite diario (${firm.dailyPct}\u00a0%)` : `Daily limit (${firm.dailyPct}%)`}</span>
                   <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
                 </div>
                 <div className="cifra-xl font-mono font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(dailyLossLimit, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "El Guardián bloquea nuevas entradas al alcanzar el 80% de este umbral." : "Guardian locks further entries when reaching 80% of this ceiling."}
+                  {es ? "El Guardián bloquea nuevas entradas al alcanzar el 80 % de este umbral." : "Guardian locks further entries when reaching 80% of this ceiling."}
                 </p>
               </div>
 
               <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? `Max Drawdown (${firm.maxDDPct}%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
+                  <span>{es ? `Max Drawdown (${firm.maxDDPct}\u00a0%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
                 <div className="cifra-xl font-mono font-semibold text-primary tnum">
@@ -249,7 +254,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? `Fase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
+                  <span>{es ? `Fase 1 (+${firm.phase1Pct}\u00a0%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}\u00a0%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
                   <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
                 </div>
                 <div className="cifra-xl font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
@@ -267,7 +272,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? "Riesgo seguro (0.75%)" : "Safe risk (0.75%)"}</span>
+                  <span>{es ? "Riesgo seguro (0,75 %)" : "Safe risk (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
                 <div className="cifra-xl font-mono font-semibold text-primary tnum">
@@ -339,7 +344,9 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
-                  {manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R"}
+                  {es
+                    ? (manualSetup === "breakout" ? "54 % · 1:2,4 R:R" : manualSetup === "sweep" ? "48 % · 1:3,1 R:R" : "61 % · 1:1,3 R:R")
+                    : (manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R")}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
                   {es ? "Ventaja estadísticamente significativa" : "Statistically significant edge"}
@@ -350,7 +357,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
-                  {manualSetup === "breakout" ? "92%" : manualSetup === "sweep" ? "86%" : "74%"}
+                  {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? " %" : "%")}
                 </span>
                 <span className="text-xs text-[rgb(var(--pnl-neg))] block mt-2">
                   {manualSetup === "reversion"
