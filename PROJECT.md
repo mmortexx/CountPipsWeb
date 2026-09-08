@@ -25,7 +25,7 @@ del diario de trading nativo de Windows (WinUI 3, no incluido en este repo).
 - **Backend beta**: Worker de Cloudflare en `services/beta-api/` (D1 + KV + Turnstile);
   ver su propio [README](services/beta-api/README.md).
 
-## Dónde está ahora (2026-09-05)
+## Dónde está ahora (2026-09-08)
 
 El grueso de auditoría cuantitativa y de accesibilidad de las 13 dimensiones
 (matemáticas financieras, WCAG AA, paridad bilingüe, SEO, tokens de diseño,
@@ -754,7 +754,7 @@ todos.
   otra; gana la hoja, que es la que tiene razón. Lo que sobra es la
   clase del componente.
 
-### Décima tanda (en curso): palabras partidas por la mitad
+### Décima tanda: palabras partidas por la mitad
 
 Un barrido nuevo: recorrer cada nodo de texto carácter a carácter con un
 `Range` y detectar dónde salta de línea **dentro** de una palabra, sin
@@ -789,6 +789,169 @@ Dos avisos para quien reescriba esa sonda:
   a bajar el suelo de `.cifra-lg`, cambio que luego se revirtió porque
   no arreglaba nada. Si una medida no cuadra con lo que se ve, el primer
   sospechoso es el rótulo del informe.
+
+### Undécima tanda: las zonas que nadie había mirado
+
+Las diez tandas anteriores nunca abrieron `/glosario` y sus fichas,
+`/beta`, `/test`, `/traders/manual`, `/traders/prop-firms`, los cuatro
+legales, el 404 ni el pie. Se barrieron esas diez rutas en claro y en
+oscuro a **1440, 1024 y 390 px**, mirando las imágenes. Ocho defectos, y
+ninguna puerta cazaba ninguno: `legible`, `fondos`, `tinta` y
+`deep_audit` pasaron limpias las cuatro (64 rutas, 2.698 trozos de texto
+medidos contra su fondo real).
+
+#### El glosario decía 51 términos teniendo 57
+
+El subtítulo de la portada del glosario llevaba la cifra escrita a mano
+y en letra —«Cincuenta y un términos» / «Fifty-one terms»— mientras el
+contador de la propia caja de búsqueda, dos palmos más abajo, decía 57.
+El margen ya sacaba su folio de `TERMINOS.length` y el comentario que
+hay encima explica por qué; el subtítulo de al lado no lo hacía.
+
+Lo mismo en las **tres cabeceras de metadatos de cada idioma**
+—`description`, OpenGraph y Twitter—, que es lo que lee un buscador:
+seis cadenas anunciando 51 términos. Todas salen ya de la lista.
+
+#### «Psicología» caía sola, y fallaba por seis píxeles
+
+| | suma de las seis fichas | ancho útil | líneas |
+|---|---|---|---|
+| inglés | 459 px | 542 | 1 |
+| español | **548 px** | 542 | **2** |
+
+El ancho de la caja del buscador se había medido contra el inglés. Con
+`max-w-2xl` en vez de `max-w-xl` la fila pasa a 638 px y el español
+entra en una sola línea a 1440, a 1024 y a 768.
+
+Es el aviso de método de esta tanda: **una caja dimensionada contra un
+idioma no está dimensionada.** El español ocupa entre un 15 y un 20 %
+más que el inglés en rótulos cortos, y la retícula no lo sabe.
+
+#### «135.0%» en una fila que decía «+13.500,00 US$»
+
+`toFixed()` escribe SIEMPRE el punto decimal inglés. La distancia al
+umbral de liquidación de `/traders/prop-firms` lo usaba, así que en
+español la cifra y el importe de al lado —separados por un paréntesis—
+seguían dos convenciones distintas. Pasa por `fmtPct`, que es el
+formateador de la casa y ya resuelve locale, separador y el guardia de
+menos-cero. Lo mismo en dos de las tres cifras de la calculadora de
+comisiones, cuya tercera cifra, dentro de la misma tarjeta, ya usaba
+`fmtNum`.
+
+Y la ortografía del signo en la copia castellana de esa página: «0.75%»
+pasa a «0,75 %», con el espacio duro que la casa ya tenía decidido en
+`PCT_SEP`. **En las plantillas hay que escribirlo como escape y no como
+carácter invisible**, o `no-irregular-whitespace` lo rechaza — la regla
+perdona el literal invisible dentro de una cadena normal pero no dentro
+de una plantilla.
+
+Queda fuera a propósito el `Ticker` de la portada: es decorativo
+(`aria-hidden`), imita una cinta de mercado —donde el punto es la
+convención internacional— y no recibe el idioma.
+
+#### Un elogio pintado de rojo
+
+El pie de la tarjeta «Cumplimiento de plan» tenía el color FIJO en
+`--pnl-neg` mientras su texto cambia con el setup. En dos de los tres
+casos el mensaje dice «Proceso consistente y repetible»: un elogio en
+color de pérdida. Ahora el color sigue al mensaje, y va en la familia
+del semáforo y no en la del P&L, que es la distinción que el sistema ya
+tenía escrita: esto es un veredicto sobre el proceso, no una cifra de
+dinero.
+
+#### Alturas escritas a mano que el contenido desborda
+
+Dos casos, el mismo patrón que el deslizador de 36 px de la sexta tanda:
+
+- **Las fichas de firma de prop firm** llevaban `h-8`. A 390 px el
+  rótulo «FTMO (Drawdown estático)» envuelve a tres líneas y la tercera
+  se salía por debajo del fondo de su propia ficha, encima de la fila de
+  importes. Con alto MÍNIMO y la tira a `items-stretch`, la ficha crece
+  y las tres comparten la más alta.
+- **La tercera columna de «Estado del producto»** de `/beta` ponía un
+  sello de 22 px donde sus hermanas ponen un icono de 17. Sin caja de
+  alto fijo para la marca, esos cinco píxeles empujaban su titular ocho
+  por debajo: medido, 1710 contra 1702. Ahora las tres a 1702.
+
+#### El aviso de «sigue a la derecha» no lo veía nadie
+
+El desvanecido del canto derecho de una tabla se monta con
+`position: sticky`, `flex: none` y `align-self: stretch` — una receta
+que sólo funciona DENTRO de un contenedor flexible. Las dos filas de
+fichas que usan `.tj-fila-sigue` ya traen `flex` de Tailwind. Los dos
+envoltorios de TABLA que usan la variante `--sin-reserva` no, así que el
+pseudoelemento se maquetaba como un bloque vacío y **resolvía a altura
+cero**.
+
+El aviso estaba escrito, el navegador lo aceptaba, y no ocurría jamás.
+Misma familia que las animaciones de entrada de la segunda tanda.
+
+Medido a 390 px en `/privacidad` y `/cookies`: 552 px de tabla dentro de
+una caja de 358, **186 ocultos** —la columna entera de «A dónde va» y
+«Cuánto dura»— y ni un píxel de degradado. La última columna quedaba
+partida contra el canto, que no se lee como «hay más a la derecha» sino
+como una tabla rota. En un documento de privacidad, lo invisible era
+justo dónde van tus datos. Con `display: flex` en la variante, el
+pseudoelemento pasa de `auto` (0 px) a 244 px.
+
+#### El 404 flotaba sobre la lámina sin red
+
+El texto de la página 404 cae DIRECTAMENTE sobre la lámina grabada, sin
+panel ni velo detrás — el caso exacto para el que existe
+`.tj-legible-text`. No estaba puesta, así que el filete vertical del
+registro pasaba entre «o» y «nunca» del párrafo y seguía por dentro del
+campo de búsqueda.
+
+**La primera hipótesis era falsa y la medida la tumbó.** Parecía que la
+lámina pesaba más en claro. Compuesta sobre el fondo real:
+
+| | opacidad | cobertura | pico de tinta |
+|---|---|---|---|
+| claro | 0,9 | 3,83 % | **4,24:1** |
+| oscuro | 0,9 | 3,83 % | **5,31:1** |
+
+Pesa más en OSCURO. El defecto era geométrico, no cromático, y por eso
+la solución es la red de legibilidad y no bajar la opacidad, que habría
+apagado el dibujo entero para arreglar dos renglones.
+
+#### Tres cosas que parecían defectos y no lo eran
+
+- **Los 17 errores 404 de consola en cada página.** Next 16 exporta las
+  cargas de prefetch de segmento como CARPETA al compilar en Windows
+  (`/beta/__next.beta/__PAGE__.txt`) y como fichero PLANO al compilar en
+  Linux (`/beta/__next.beta.__PAGE__.txt`), que es lo que pide el
+  cliente. Comprobado en los dos lados: en el sitio publicado el plano
+  devuelve 200 y el anidado 404, o sea exactamente lo contrario que en
+  local. `humo.mjs` daba **76 fallos y los 76 eran esto**. Se filtra en
+  `RUIDO`, porque una puerta que siempre falla en la máquina donde se
+  trabaja deja de leerse. Para volver a distinguir los dos casos:
+  `find out -name "__next.*.__PAGE__.txt" | wc -l` — cero significa que
+  quien compiló fue Windows.
+- **La trama de puntos «encima» del texto.** Dos barridos independientes
+  —a 390 y a 1024— la reportaron como adorno mal posicionado sobre
+  `/traders/prop-firms` y `/traders/manual`. **Los dos se equivocan**: el
+  lienzo del atlas vive dentro de un padre `position: fixed` y el titular
+  baja 40 px por cada 40 px de scroll, así que cualquier coincidencia
+  dura un fotograma y no es una colisión de maquetación. Se comprobó
+  midiendo el titular en tres posiciones de scroll (217 → 177 → 117 px).
+  Que dos sondas coincidan no las hace ciertas.
+- **La definición cortada a media palabra** en «De la misma familia» de
+  una ficha de glosario («permite s…»). Es el comportamiento propio de
+  `-webkit-line-clamp`, que corta en el punto de desbordamiento y no en
+  la última palabra entera; no hay `overflow-wrap: anywhere` de por
+  medio (medido: `normal`). Arreglarlo pide truncar en JavaScript, con
+  el riesgo de hidratación que eso trae, para ganar tres letras. **No se
+  toca.**
+
+#### Y una puerta que no se podía ejecutar
+
+`eslint` no arrancaba en local: le faltaba `@babel/core`, que `bun`
+instala como dependencia de pares de `eslint-plugin-react-hooks` y `npm`
+no. Se resuelve con `npm i --no-save @babel/core` — con un aviso caro:
+esa orden **PODA todo lo que no esté en `package.json`** (se llevó 463
+paquetes por delante; se recupera con `npm install`, y conviene borrar
+el `package-lock.json` que deja, que aquí no pinta nada). Con la puerta
+en marcha, su primer uso ya cazó cuatro espacios duros mal escritos.
 
 ### La decisión sobre `framer-motion`: no se migra
 
