@@ -533,12 +533,19 @@ export function TradeDetailPage() {
           </svg>
           {t("back")}
         </button>
-        <div className="flex items-center gap-3 flex-1 min-w-0 justify-center">
+        {/* `w-full` por debajo de `sm`: los tres grupos van en una fila con
+            `flex-wrap`, y el del centro llevaba `flex-1 min-w-0` pero su `h2`
+            —24 px, monoespaciada— no encoge, asi que a 390 px desbordaba su
+            propia caja y, al ir centrado, se derramaba por los DOS lados: el
+            simbolo tapaba el boton de volver a la izquierda y la insignia de
+            direccion pisaba el numero de operacion a la derecha. Con el ancho
+            completo baja a su propia linea y no compite con nadie. */}
+        <div className="order-last sm:order-none flex items-center gap-3 w-full sm:w-auto sm:flex-1 min-w-0 justify-start sm:justify-center">
           {/* h2 y no h1: esta es una pantalla SIMULADA dentro de la página de
               la demo. El h1 del documento es el titular de esa página, y dos
               h1 rompen el esquema de encabezados —lectores de pantalla y
               buscadores lo usan para entender la jerarquía—. */}
-          <h2 className="text-2xl md:text-3xl font-mono font-medium tracking-[-0.01em] text-primary tnum">
+          <h2 className="text-2xl md:text-3xl font-mono font-medium tracking-[-0.01em] text-primary tnum min-w-0 truncate">
             {trade.instrument}
           </h2>
           <Chip variant={isLong ? "pos" : "neg"}>
