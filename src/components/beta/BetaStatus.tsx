@@ -28,11 +28,17 @@ export function ProductStatus() {
           <div className="grid gap-3 sm:grid-cols-3">
             {rows.map(({ icon: Icon, tone, title, text }) => (
               <div key={title} className="border-t border-[rgb(var(--divider)/0.18)] pt-4">
-                {Icon ? (
-                  <Icon size={17} className={tone} aria-hidden />
-                ) : (
-                  <SelloPrevisto es="Previsto" en="Planned" />
-                )}
+                {/* Caja de alto fijo para la marca. El icono mide 17 px y el
+                    sello 22, así que sin ella la tercera columna empujaba su
+                    titular ocho píxeles por debajo de las otras dos y las
+                    tres líneas base dejaban de ser una. */}
+                <div className="flex h-6 items-center">
+                  {Icon ? (
+                    <Icon size={17} className={tone} aria-hidden />
+                  ) : (
+                    <SelloPrevisto es="Previsto" en="Planned" />
+                  )}
+                </div>
                 <h3 className="mt-3 text-sm font-semibold text-primary">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-secondary">{text}</p>
               </div>
