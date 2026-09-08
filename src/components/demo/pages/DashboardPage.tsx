@@ -1219,7 +1219,22 @@ function KpiCell({
       {/* La celda es su propio contenedor de medida: «+6807,72 US$»
           a `text-lg` fijo se salia 15 px a 768 px, que es donde esta
           reticula pasa a varias columnas. */}
-      <div className="caja-cifra min-w-0 break-words [&>*]:cifra-lg [&>*]:font-semibold [&>span]:tnum">{value}</div>
+      {/* `w-full` NO es decorativo: `caja-cifra` declara
+          `container-type: inline-size`, y un contenedor de medida sobre una
+          caja que se dimensiona por su CONTENIDO —esta lo hace, porque su
+          padre es `flex flex-col items-center`— colapsa a cero. Con ancho
+          cero, `11cqi` vale cero y `break-words` parte la cifra en un
+          caracter por renglon: a 390 px «+6807,72 US$» se pintaba en
+          vertical, letra a letra, en la PRIMERA pantalla de la demo. Es la
+          trampa que la septima tanda dejo escrita: esa utilidad solo sirve
+          cuando el ancho lo pone el padre.
+
+          Y `whitespace-nowrap` en vez de `break-words`: el valor llega con
+          `text-lg` propio, que gana a `cifra-lg`, asi que la consulta de
+          contenedor NO puede encogerlo y a cualquier ancho acabaria
+          partiendo «US$» por la mitad. La tira ya se desplaza de lado
+          (`overflow-x-auto`), que es justo para lo que se puso. */}
+      <div className="caja-cifra w-full min-w-0 whitespace-nowrap [&>*]:cifra-lg [&>*]:font-semibold [&>span]:tnum">{value}</div>
     </div>
   );
 }
