@@ -3374,12 +3374,32 @@ button.icon-btn:hover > svg,
    El canvas del fondo. Ocupa toda la ventana y no recibe eventos: la
    página se usa por encima de él como si no estuviera.
 
-   La opacidad de reposo es distinta en papel y en tinta porque la
-   percepción no es simétrica: una línea oscura sobre fondo claro pesa
-   más que una clara sobre fondo oscuro, así que en papel el atlas va
-   más tenue para no competir con el texto que lleva encima. Estos dos
+   La opacidad de reposo es distinta en papel y en tinta, y estos dos
    valores son el único mando del protagonismo del fondo — subirlos lo
    trae al frente, bajarlos lo deja en textura.
+
+   OJO AL SENTIDO, QUE ESTUVO AL REVÉS. Aquí estaba escrito que en papel
+   el atlas va más tenue porque «una línea oscura sobre fondo claro pesa
+   más que una clara sobre fondo oscuro». Medido leyendo el lienzo y
+   componiendo su tinta sobre el fondo real, con la misma cantidad de
+   píxeles grabados en los dos temas (2,6 %), pasa lo contrario:
+
+       oscuro, opacidad 0,84 → 3,92:1
+       claro,  opacidad 0,76 → 2,34:1
+
+   El papel no pesa más: pesa un 40 % MENOS. Y no es la opacidad la que
+   manda, sino el recorrido disponible. En noche la tinta es casi blanca
+   sobre casi negro y tiene todo el rango; en papel la tinta ya es casi
+   negra (#15171a) pero la chapa clara es un gris medio (#d4d9dd), no un
+   blanco, así que el techo del claro con opacidad 1 es 3,25:1 y no
+   alcanza al oscuro ni apurándolo. Subir la tinta no cabe —ya está al
+   fondo de la escala— y densificar la trama se midió y cuesta
+   fotogramas (ver PROJECT.md, cuarta tanda).
+
+   Queda en 0,94: cierra la mitad de la brecha (2,34 → 3,00:1) sin
+   apurar el mando hasta el tope, y el texto de encima sigue despejando
+   AA — comprobado con `legible.mjs` y `humo.mjs`, que es quien mide el
+   texto que cae sobre el grabado.
 
    El fundido de entrada es del canvas entero y ocurre una sola vez, al
    cargar. A partir de ahí, lo que anima es el trazo, y lo gobierna el
@@ -3423,7 +3443,7 @@ button.icon-btn:hover > svg,
   animation: tj-atlas-in 1.2s ease-out both;
 }
 :root[data-theme="light"] .tj-engraved-atlas {
-  opacity: 0.76;
+  opacity: 0.94;
 }
 
 
