@@ -354,9 +354,13 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
     [es],
   );
 
+  /* El espacio antes del signo es ESPANOL. En ingles el signo va pegado;
+     la casa lo tiene decidido en `PCT_SEP` de lib/trading/format.ts y aqui
+     se escribia siempre con espacio, en los dos idiomas. Espacio duro para
+     que el signo no se quede solo al principio de la linea siguiente. */
   const fmtPct = useCallback(
-    (n: number, dec = 1) => `${fmtNum(n, dec)} %`,
-    [fmtNum],
+    (n: number, dec = 1) => `${fmtNum(n, dec)}${es ? "\u00a0%" : "%"}`,
+    [fmtNum, es],
   );
 
   // ── Renderizado del Gráfico Vectorial en Ultra Alta Resolución ───
@@ -482,7 +486,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
       `  • ${es ? "Balance Final" : "Final Balance"}: ${fmtUsd(c.finalBalance)}`,
       `  • ${es ? "Beneficio Neto" : "Net Profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
       `  • CAGR: ${fmtPct(c.cagr * 100, 1)}`,
-      `  • ${es ? "Max DD Estimado (99%)" : "Est. Max DD (99%)"}: ${fmtPct(c.estMaxDDpct, 1)}`,
+      `  • ${es ? "Max DD Estimado (99\u00a0%)" : "Est. Max DD (99%)"}: ${fmtPct(c.estMaxDDpct, 1)}`,
       `  • ${es ? "Tiempo para Duplicar" : "Time to Double"}: ${c.monthsToDouble ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : "N/A"}`,
       "═".repeat(38),
       "https://countpips.com/herramientas/proyector-de-capital",
@@ -813,7 +817,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   4,
                   setTradesPerYear,
                   es ? " ops" : " trades",
-                  `≈ ${(tradesPerYear / 12).toFixed(1)} ${es ? "ops/mes" : "trades/mo"}`
+                  `≈ ${fmtNum(tradesPerYear / 12, 1)} ${es ? "ops/mes" : "trades/mo"}`
                 )}
 
                 {/* Aporte mensual */}
@@ -920,7 +924,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                             setFrictionR(f);
                           }}
                         >
-                          {f === 0 ? "0R" : `${f}R`}
+                          {f === 0 ? `0${es ? "\u00a0" : ""}R` : `${fmtNum(f, 2)}${es ? "\u00a0" : ""}R`}
                         </button>
                       );
                     })}
@@ -948,7 +952,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   0.05,
                   setRiskPct,
                   " %",
-                  `Kelly 1/2: ${fmtNum(c.halfKellyPct, 1)}%`
+                  `Kelly 1/2: ${fmtPct(c.halfKellyPct, 1)}`
                 )}
 
                 {/* Horizonte */}
@@ -1180,7 +1184,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         border: "1px solid rgb(var(--accent-base))",
                       }}
                     />
-                    <span>{es ? "Cono 80% Varianza" : "80% Variance Cone"}</span>
+                    <span>{es ? `Cono 80\u00a0% Varianza` : "80% Variance Cone"}</span>
                   </button>
                 )}
               </div>
@@ -1512,7 +1516,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     {fmtUsd(c.finalBalance, true)}
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
-                    {startBalance > 0 ? `${(c.finalBalance / startBalance).toFixed(1)}x capital inicial` : ""}
+                    {startBalance > 0 ? `${fmtNum(c.finalBalance / startBalance, 1)}x capital inicial` : ""}
                   </div>
                 </div>
 
@@ -1570,7 +1574,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
-                    {es ? "Max DD Est. (99% Conf.)" : "Est. Max DD (99% Conf.)"}
+                    {es ? "Max DD Est. (99 % Conf.)" : "Est. Max DD (99% Conf.)"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[rgb(var(--pnl-neg))]">
                     -{fmtPct(c.estMaxDDpct, 1)}
@@ -1597,7 +1601,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
                     {c.monthsToDouble !== null
-                      ? `≈ ${(c.monthsToDouble / 12).toFixed(1)} ${es ? "años" : "yrs"}`
+                      ? `≈ ${fmtNum(c.monthsToDouble / 12, 1)} ${es ? "años" : "yrs"}`
                       : es ? "Sin crecimiento" : "No growth"}
                   </div>
                 </div>
@@ -1616,7 +1620,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     {fmtNum(c.profitFactor, 2)}
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
-                    {es ? `Sugerido: ${fmtNum(c.halfKellyPct, 1)}% riesgo` : `Rec: ${fmtNum(c.halfKellyPct, 1)}% risk`}
+                    {es ? `Sugerido: ${fmtPct(c.halfKellyPct, 1)} riesgo` : `Rec: ${fmtPct(c.halfKellyPct, 1)} risk`}
                   </div>
                 </div>
               </div>

@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR } from "@/lib/trading/data";
+import { fmtPct } from "@/lib/trading/format";
 
 /**
  * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
@@ -40,6 +41,9 @@ type ForexLotType = "standard" | "mini" | "micro";
 
 export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   const { lang } = useLang();
+  /* Espacio duro antes del signo en espanol, pegado en ingles: la regla
+     de la casa, escrita en `PCT_SEP` de lib/trading/format.ts. */
+  const PCT = lang === "es" ? "\u00a0%" : "%";
   const es = lang === "es";
 
   const presets = [
@@ -523,8 +527,11 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               }
             />
             <div className="flex justify-between mt-1 text-[9.5px] text-tertiary font-mono">
+              {/* `0.25%` con punto ingles, en una lista donde la cifra de al
+                  lado dice `3,00%`. La marca salia del numero crudo de
+                  JavaScript, que siempre lleva punto decimal. */}
               {RISK_MARKS.map((m) => (
-                <span key={m}>{m}%</span>
+                <span key={m}>{fmtPct(m / 100, lang, m < 1 ? 2 : 0)}</span>
               ))}
             </div>
           </div>
@@ -555,7 +562,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </button>
               <span className="text-[10px] font-mono text-tertiary">
                 {es ? "Medio Kelly: " : "Half-Kelly: "}
-                <strong className="text-primary font-bold">{fmtNum(c.halfKellyPct)}%</strong>
+                <strong className="text-primary font-bold">{fmtNum(c.halfKellyPct)}{PCT}</strong>
               </span>
             </div>
 
@@ -563,7 +570,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               <div className="mt-3 pt-3 border-t border-[rgb(var(--divider)/0.08)] space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-tertiary">{es ? "Win Rate histórico estimado:" : "Estimated historical Win Rate:"}</span>
-                  <span className="font-mono font-bold text-primary">{kellyWinRate}%</span>
+                  <span className="font-mono font-bold text-primary">{kellyWinRate}{PCT}</span>
                 </div>
                 <input
                   type="range"
@@ -578,15 +585,15 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono">
                   <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.08)]">
                     <div className="text-tertiary">{es ? "Kelly Puro" : "Full Kelly"}</div>
-                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}%</div>
+                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}{PCT}</div>
                   </div>
                   <div className="p-1.5 rounded bg-[rgb(var(--accent-base)/0.1)] border border-[rgb(var(--accent-base)/0.3)]">
                     <div className="text-[rgb(var(--accent-base))] font-semibold">{es ? "Medio Kelly" : "Half Kelly"}</div>
-                    <div className="font-bold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}%</div>
+                    <div className="font-bold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}{PCT}</div>
                   </div>
                   <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.08)]">
                     <div className="text-tertiary">{es ? "Cuarto Kelly" : "Quarter Kelly"}</div>
-                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}%</div>
+                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}{PCT}</div>
                   </div>
                 </div>
                 <button
@@ -596,8 +603,8 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   className="w-full py-1.5 text-[11px] font-mono font-semibold rounded bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.25)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {c.halfKellyPct <= 0
-                    ? (es ? "Sin ventaja (Kelly = 0% · No operar)" : "No edge (Kelly = 0% · Do not trade)")
-                    : (es ? `Aplicar sugerencia Medio Kelly (${fmtNum(c.halfKellyPct)}% riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`)}
+                    ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
+                    : (es ? `Aplicar sugerencia Medio Kelly (${fmtNum(c.halfKellyPct)}${PCT} riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`)}
                 </button>
               </div>
             )}
@@ -697,7 +704,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             </div>
             <div className="caja-cifra">
               <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
-                {es ? "VaR 95% (1-Trade)" : "95% VaR (1-Trade)"}
+                {es ? "VaR 95 % (1-Trade)" : "95% VaR (1-Trade)"}
               </div>
               <div className="tnum cifra-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
                 {fmtUsd(c.var95)}
@@ -713,7 +720,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   color: c.riskOfRuin > 1 ? "rgb(var(--pnl-neg))" : "rgb(var(--pnl-pos))",
                 }}
               >
-                {fmtNum(c.riskOfRuin, 2)}%
+                {fmtNum(c.riskOfRuin, 2)}{PCT}
               </div>
             </div>
           </div>
@@ -749,7 +756,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             </div>
             <div className="mt-2 flex items-center justify-between tnum text-[11px] text-secondary">
               <span>{fmtUsd(c.riskUsd)}</span>
-              <span className="text-tertiary">{fmtNum(c.profitPct, 1)}% {es ? "del balance" : "of balance"}</span>
+              <span className="text-tertiary">{fmtNum(c.profitPct, 1)}{PCT} {es ? "del balance" : "of balance"}</span>
               <span>{fmtUsd(c.profit)}</span>
             </div>
           </div>

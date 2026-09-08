@@ -149,7 +149,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
             </div>
             <div>
               <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Fuga Externa" : "External Egress"}</span>
-              <span className="text-[rgb(var(--pnl-pos))] font-bold">0.00 KB (Zero Sockets)</span>
+              <span className="text-[rgb(var(--pnl-pos))] font-bold">{es ? "0,00 KB (Zero Sockets)" : "0.00 KB (Zero Sockets)"}</span>
             </div>
           </div>
         </div>

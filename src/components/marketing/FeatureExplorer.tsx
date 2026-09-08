@@ -91,7 +91,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: "local",
-    titleEs: "100% en local",
+    titleEs: "100 % en local",
     titleEn: "100% local",
     descEs: "Todo vive en tu disco. Sin servidores, sin telemetría, sin cuentas. Cifra la carpeta con BitLocker.",
     descEn: "Everything lives on your disk. No servers, no telemetry, no accounts. Encrypt the folder with BitLocker.",

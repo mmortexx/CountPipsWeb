@@ -346,7 +346,7 @@ export function SavingsCalculator() {
             <Result label={es ? "Referencia CountPips" : "CountPips reference"} value={fmtUsd(c.cpPrice)} color="rgb(var(--accent-base))" />
             <Result label={es ? "Alternativa acumulada" : "Cumulative alternative"} value={fmtUsd(c.altTotal)} color="rgb(var(--pnl-neg))" />
             <Result label={es ? "Ahorro directo" : "Direct savings"} value={fmtUsd(c.savings)} color={savingsColor} />
-            <Result label={es ? "Reinvertido al 8% anual" : "Compounded at 8% p.a."} value={fmtUsd(c.compoundAdvantage)} color="rgb(var(--pnl-pos))" />
+            <Result label={es ? "Reinvertido al 8 % anual" : "Compounded at 8% p.a."} value={fmtUsd(c.compoundAdvantage)} color="rgb(var(--pnl-pos))" />
           </div>
 
           {/* Break-even note */}
@@ -363,7 +363,7 @@ export function SavingsCalculator() {
             </div>
             <p className="tnum m-0 text-[11.5px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
               {es
-                ? `En solo ${c.breakEvenMonths} meses el coste de la alternativa SaaS supera el pago único perpetuo. A ${years} años, reinvertir el dinero ahorrado al 8% genera ${fmtUsd(c.compoundAdvantage)} netos adicionales.`
+                ? `En solo ${c.breakEvenMonths} meses el coste de la alternativa SaaS supera el pago único perpetuo. A ${years} años, reinvertir el dinero ahorrado al 8\u00a0% genera ${fmtUsd(c.compoundAdvantage)} netos adicionales.`
                 : `In just ${c.breakEvenMonths} months the SaaS alternative exceeds the one-time perpetual license. Over ${years} years, reinvesting saved fees at 8% yields +${fmtUsd(c.compoundAdvantage)} in net capital.`}
             </p>
           </div>

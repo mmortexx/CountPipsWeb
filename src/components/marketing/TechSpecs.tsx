@@ -79,7 +79,7 @@ export function TechSpecs() {
     {
       labelEs: "Privacidad",
       labelEn: "Privacy",
-      valueEs: "App 100% local, cero telemetría",
+      valueEs: "App 100 % local, cero telemetría",
       valueEn: "100% local app, zero telemetry",
     },
   ];

@@ -37,6 +37,11 @@ export { normalCdf };
 export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
   const { lang } = useLang();
   const es = lang === "es";
+  /* Espacio DURO antes del signo en espanol, pegado en ingles: la misma
+     regla que `PCT_SEP` de lib/trading/format.ts. Aqui se escribia pegado
+     en los dos idiomas, y convivia con cifras que si respetan el locale
+     ("0,2579" y "20,1%" en la misma tarjeta). */
+  const PCT = es ? "\u00a0%" : "%";
 
   const [trades, setTrades] = useState(50);
   const [winRate, setWinRate] = useState(58); // %
@@ -184,7 +189,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           label: es ? "No significativo" : "Not significant",
           color: "rgb(var(--pnl-neg))",
           text: es
-            ? `Un ${fmtNum(winRate, 0)}% de aciertos en ${trades} operaciones NO es estadísticamente distinto de tirar una moneda (p = ${fmtNum(c.pValue, 3)}). Podría ser suerte. Sigue operando y midiendo.`
+            ? `Un ${fmtNum(winRate, 0)}${PCT} de aciertos en ${trades} operaciones NO es estadísticamente distinto de tirar una moneda (p = ${fmtNum(c.pValue, 3)}). Podría ser suerte. Sigue operando y midiendo.`
             : `A ${fmtNum(winRate, 0)}% win rate over ${trades} trades is NOT statistically distinct from a coin flip (p = ${fmtNum(c.pValue, 3)}). It could be luck. Keep trading and measuring.`,
         }
       : c.strongSignificant
@@ -192,14 +197,14 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             label: es ? "Edge fuerte" : "Strong edge",
             color: "rgb(var(--pnl-pos))",
             text: es
-              ? `Un ${fmtNum(winRate, 0)}% en ${trades} operaciones es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí — pero valídalo fuera de muestra.`
+              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí — pero valídalo fuera de muestra.`
               : `A ${fmtNum(winRate, 0)}% over ${trades} trades is very unlikely by chance (p = ${fmtNum(c.pValue, 4)} < 0.01). There's something real here — but validate out-of-sample.`,
           }
         : {
             label: es ? "Edge moderado" : "Moderate edge",
             color: "rgb(var(--accent-base))",
             text: es
-              ? `Un ${fmtNum(winRate, 0)}% en ${trades} operaciones es significativo (p = ${fmtNum(c.pValue, 3)} < 0,05). Probablemente hay un edge, pero el margen es fino: acumula más operaciones para confirmarlo.`
+              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es significativo (p = ${fmtNum(c.pValue, 3)} < 0,05). Probablemente hay un edge, pero el margen es fino: acumula más operaciones para confirmarlo.`
               : `A ${fmtNum(winRate, 0)}% over ${trades} trades is significant (p = ${fmtNum(c.pValue, 3)} < 0.05). There's likely an edge, but the margin is thin: accumulate more trades to confirm.`,
           };
 
@@ -230,7 +235,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           </h2>
           <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
-              ? "60% de aciertos en 20 operaciones suena bien — pero estadísticamente es indistinguible de una moneda. Este test te dice si tu muestra basta para afirmar que tienes un edge."
+              ? `60${PCT} de aciertos en 20 operaciones suena bien — pero estadísticamente es indistinguible de una moneda. Este test te dice si tu muestra basta para afirmar que tienes un edge.`
               : "60% win rate over 20 trades sounds good — but statistically it's indistinguishable from a coin. This test tells you if your sample is enough to claim you have an edge."}
           </p>
 
@@ -278,7 +283,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             />
             <div className="mt-2 flex items-center justify-between text-[11px]">
               <span className="text-secondary">
-                {es ? "Ratio trades/parámetro:" : "Trades/parameter ratio:"} <strong className="font-mono text-primary">{c.tradesPerParam.toFixed(1)}:1</strong>
+                {es ? "Ratio trades/parámetro:" : "Trades/parameter ratio:"} <strong className="font-mono text-primary">{fmtNum(c.tradesPerParam, 1)}:1</strong>
               </span>
               <span className={`font-semibold ${c.overfittingRisk ? "text-[rgb(var(--pnl-neg))]" : "text-[rgb(var(--pnl-pos))]"}`}>
                 {c.overfittingRisk ? (es ? "⚠ Riesgo de Sobreajuste" : "⚠ Overfitting Risk") : (es ? "✓ Robusto (≥20:1)" : "✓ Robust (≥20:1)")}
@@ -321,7 +326,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             <div className="flex items-center justify-between text-[10px] font-mono text-tertiary uppercase tracking-wider mb-1">
               <span>{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
               <span>
-                {es ? "Región crítica: |z| ≥ 1.96" : "Critical zone: |z| ≥ 1.96"}
+                {es ? "Región crítica: |z| ≥ 1,96" : "Critical zone: |z| ≥ 1.96"}
               </span>
             </div>
             <GaussianBellCurve z={c.z} isSignificant={c.significant} />
@@ -330,31 +335,31 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           {/* Stats grid */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
-            <Result label="p-valor (H₀: 50%)" value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
-            <Result label={es ? "Potencia (1 - β)" : "Statistical Power"} value={`${fmtNum(c.power, 1)}%`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
-            <Result label={es ? "IC Wilson 95%" : "Wilson 95% CI"} value={`[${fmtNum(c.wilsonLower, 1)}%, ${fmtNum(c.wilsonUpper, 1)}%]`} color="var(--ink)" />
+            <Result label={es ? `p-valor (H₀: 50${PCT})` : `p-value (H₀: 50%)`} value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
+            <Result label={es ? "Potencia (1 - β)" : "Statistical Power"} value={`${fmtNum(c.power, 1)}${PCT}`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
+            <Result label={es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"} value={`[${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]`} color="var(--ink)" />
           </div>
 
           {/* Matriz de Muestra Mínima */}
           <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]">
             <span className="block text-[10px] uppercase tracking-wider text-tertiary mb-2">
-              {es ? "Muestra requerida según confianza (margen ±5%)" : "Required sample by confidence (margin ±5%)"}
+              {es ? `Muestra requerida según confianza (margen ±5${PCT})` : "Required sample by confidence (margin ±5%)"}
             </span>
             <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
               <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.04)]">
-                <span className="block text-[10px] text-tertiary">90% (z=1.65)</span>
+                <span className="block text-[10px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
                 <span className={`font-bold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample90} ops
                 </span>
               </div>
               <div className="p-1.5 rounded bg-[rgb(var(--accent-base)/0.08)] border border-[rgb(var(--accent-base)/0.2)]">
-                <span className="block text-[10px] text-[rgb(var(--accent-base))] font-semibold">95% (z=1.96)</span>
+                <span className="block text-[10px] text-[rgb(var(--accent-base))] font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
                 <span className={`font-bold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
                   {c.minSample95} ops
                 </span>
               </div>
               <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.04)]">
-                <span className="block text-[10px] text-tertiary">99% (z=2.58)</span>
+                <span className="block text-[10px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
                 <span className={`font-bold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample99} ops
                 </span>
@@ -396,8 +401,8 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
             </div>
             <p className="tnum m-0 mt-1.5 text-[10.5px]" style={{ color: "var(--ink-3)" }}>
               {c.sampleAdequate
-                ? (es ? `Muestra suficiente para detectar un ${fmtNum(winRate, 0)}% real al 95% de confianza (±5%).` : `Sample sufficient to detect a real ${fmtNum(winRate, 0)}% at 95% confidence (±5%).`)
-                : (es ? `Te faltan ${c.minSample - trades} operaciones más para detectar un ${fmtNum(winRate, 0)}% real al 95% de confianza.` : `You need ${c.minSample - trades} more trades to detect a real ${fmtNum(winRate, 0)}% at 95% confidence.`)}
+                ? (es ? `Muestra suficiente para detectar un ${fmtNum(winRate, 0)}${PCT} real al 95${PCT} de confianza (±5${PCT}).` : `Sample sufficient to detect a real ${fmtNum(winRate, 0)}% at 95% confidence (±5%).`)
+                : (es ? `Te faltan ${c.minSample - trades} operaciones más para detectar un ${fmtNum(winRate, 0)}${PCT} real al 95${PCT} de confianza.` : `You need ${c.minSample - trades} more trades to detect a real ${fmtNum(winRate, 0)}% at 95% confidence.`)}
             </p>
           </div>
 
@@ -407,7 +412,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
               type="button"
               onClick={() => {
                 const report = es
-                  ? `Informe de Significancia Estadística (CountPips):\n• Muestra analizada: ${trades} operaciones\n• Win Rate observado: ${winRate}%\n• IC 95% Wilson Score: [${c.wilsonLower.toFixed(1)}%, ${c.wilsonUpper.toFixed(1)}%]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${c.expectancyR.toFixed(3)} R\n• z-score: ${c.z.toFixed(2)} | p-valor: ${c.pValue.toFixed(4)}\n• Veredicto: ${verdict.label} (${c.significant ? "Significativo p < 0.05" : "No significativo"})\n• Muestra 95% requerida: ${c.minSample95} ops\n• Parámetros del setup: ${parametersCount} (${c.tradesPerParam.toFixed(1)}:1 ratio)`
+                  ? `Informe de Significancia Estadística (CountPips):\n• Muestra analizada: ${trades} operaciones\n• Win Rate observado: ${fmtNum(winRate, 0)}${PCT}\n• IC 95${PCT} Wilson Score: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R\n• z-score: ${fmtNum(c.z, 2)} | p-valor: ${fmtNum(c.pValue, 4)}\n• Veredicto: ${verdict.label} (${c.significant ? "Significativo p < 0,05" : "No significativo"})\n• Muestra 95${PCT} requerida: ${c.minSample95} ops\n• Parámetros del setup: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`
                   : `Statistical Significance Report (CountPips):\n• Analyzed Sample: ${trades} trades\n• Observed Win Rate: ${winRate}%\n• Wilson 95% CI: [${c.wilsonLower.toFixed(1)}%, ${c.wilsonUpper.toFixed(1)}%]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${c.expectancyR.toFixed(3)} R\n• z-score: ${c.z.toFixed(2)} | p-value: ${c.pValue.toFixed(4)}\n• Verdict: ${verdict.label} (${c.significant ? "Significant p < 0.05" : "Not significant"})\n• 95% Min Sample: ${c.minSample95} trades\n• Setup Parameters: ${parametersCount} (${c.tradesPerParam.toFixed(1)}:1 ratio)`;
 
                 if (navigator?.clipboard?.writeText) {
@@ -426,7 +431,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
               {copied ? (es ? "¡Informe copiado!" : "Report copied!") : (es ? "Copiar informe estadístico" : "Copy statistical report")}
             </button>
             <span className="text-[11px] text-tertiary font-mono">
-              {es ? "100% privado en navegador" : "100% private in browser"}
+              {es ? "100 % privado en navegador" : "100% private in browser"}
             </span>
           </div>
         </div>

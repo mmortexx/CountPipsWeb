@@ -116,7 +116,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
 
   const copiarResumen = () => {
     const texto = es
-      ? `Factura de Indisciplina (CountPips):\n• Operaciones/mes: ${totalTrades} (${breachPct}% fuera de plan)\n• Expectancy en plan: +${inPlanExp.toFixed(2)} $\n• Expectancy fuera de plan: ${offPlanExp.toFixed(2)} $\n• Brecha por trade: -${gap.toFixed(2)} $\n• Fuga mensual: -${totalLeakMonthly.toFixed(2)} $\n• Fuga anual proyectada: -${totalLeakAnnual.toFixed(2)} $`
+      ? `Factura de Indisciplina (CountPips):\n• Operaciones/mes: ${totalTrades} (${breachPct}\u00a0% fuera de plan)\n• Expectancy en plan: +${inPlanExp.toFixed(2)} $\n• Expectancy fuera de plan: ${offPlanExp.toFixed(2)} $\n• Brecha por trade: -${gap.toFixed(2)} $\n• Fuga mensual: -${totalLeakMonthly.toFixed(2)} $\n• Fuga anual proyectada: -${totalLeakAnnual.toFixed(2)} $`
       : `Indiscipline Invoice (CountPips):\n• Trades/month: ${totalTrades} (${breachPct}% off-plan)\n• In-plan expectancy: +${inPlanExp.toFixed(2)} $\n• Off-plan expectancy: ${offPlanExp.toFixed(2)} $\n• Gap per trade: -${gap.toFixed(2)} $\n• Monthly leak: -${totalLeakMonthly.toFixed(2)} $\n• Projected annual leak: -${totalLeakAnnual.toFixed(2)} $`;
 
     if (navigator?.clipboard?.writeText) {
@@ -523,7 +523,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 </div>
                 <p className="text-xs text-secondary leading-relaxed mb-3">
                   {es
-                    ? `Frenando el 60% de tus operaciones fuera de plan recuperas +${fmtMoney(totalLeakMonthly * 0.6, lang)} al mes. La licencia Core ($149) se amortiza sola en ${Math.max(1, Math.round(149 / ((totalLeakMonthly * 0.6) / 30)))} días de operativa.`
+                    ? `Frenando el 60\u00a0% de tus operaciones fuera de plan recuperas +${fmtMoney(totalLeakMonthly * 0.6, lang)} al mes. La licencia Core ($149) se amortiza sola en ${Math.max(1, Math.round(149 / ((totalLeakMonthly * 0.6) / 30)))} días de operativa.`
                     : `Stopping 60% of your off-plan trades recovers +${fmtMoney(totalLeakMonthly * 0.6, lang)} each month. The Core license ($149) pays for itself in ${Math.max(1, Math.round(149 / ((totalLeakMonthly * 0.6) / 30)))} trading days.`}
                 </p>
                 {/* Mismo tratamiento que la proyeccion: el «al mes» baja a
@@ -569,7 +569,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
               </button>
 
               <span className="text-[11px] text-tertiary font-mono">
-                {es ? "100% privado en tu navegador" : "100% private in browser"}
+                {es ? "100 % privado en tu navegador" : "100% private in browser"}
               </span>
             </div>
           </div>

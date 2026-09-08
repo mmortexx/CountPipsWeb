@@ -442,7 +442,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                   {es ? "Break-even Ticks:" : "Break-even Ticks:"}
                 </span>
                 <span className="text-base font-mono font-bold text-primary tnum">
-                  {breakEvenTicksPerTrade.toFixed(2)}
+                  {fmtNum(breakEvenTicksPerTrade, lang, 2)}
                 </span>
                 <span className="text-[9.5px] text-tertiary block mt-0.5 font-mono">
                   {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn}
@@ -457,7 +457,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                   {fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
                 <span className="text-[9.5px] text-tertiary block mt-0.5">
-                  {es ? "a 1.5:1 R:R" : "at 1.5:1 R:R"}
+                  {es ? "a 1,5:1 R:R" : "at 1.5:1 R:R"}
                 </span>
               </div>
             </div>

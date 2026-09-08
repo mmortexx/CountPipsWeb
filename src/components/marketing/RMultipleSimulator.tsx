@@ -624,7 +624,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
           >
             <p className="tnum m-0 text-[11px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
               {es
-                ? "Simulación Monte Carlo con PRNG determinista (seed " + seed + "). 300 caminos muestreados de Bernoulli(" + fmtNum(winRate, 0) + "%). Asume payouts fijos en R y riesgo compuesto. La realidad tiene colas más pesadas: el drawdown real puede superar el P10. No es consejo financiero."
+                ? "Simulación Monte Carlo con PRNG determinista (seed " + seed + "). 300 caminos muestreados de Bernoulli(" + fmtNum(winRate, 0) + "\u00a0%). Asume payouts fijos en R y riesgo compuesto. La realidad tiene colas más pesadas: el drawdown real puede superar el P10. No es consejo financiero."
                 : "Monte Carlo simulation with deterministic PRNG (seed " + seed + "). 300 paths sampled from Bernoulli(" + fmtNum(winRate, 0) + "%). Assumes fixed R payouts and compounding risk. Reality has heavier tails: actual drawdown may exceed P10. Not financial advice."}
             </p>
           </div>

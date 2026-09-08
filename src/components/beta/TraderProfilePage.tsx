@@ -338,7 +338,9 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
-                  {manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+1.12 R" : "+0.42 R"}
+                  {es
+                    ? (manualSetup === "breakout" ? "+0,84 R" : manualSetup === "sweep" ? "+1,12 R" : "+0,42 R")
+                    : (manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+1.12 R" : "+0.42 R")}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
                   {manualSetup === "breakout"

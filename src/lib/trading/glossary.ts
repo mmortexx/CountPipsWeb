@@ -201,7 +201,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Profit factor",
-    es: "Cociente entre el beneficio bruto de las operaciones ganadoras y la pérdida bruta de las perdedoras. Un valor superior a 1.5 es sólido; por encima de 2 es excelente.",
+    es: "Cociente entre el beneficio bruto de las operaciones ganadoras y la pérdida bruta de las perdedoras. Un valor superior a 1,5 es sólido; por encima de 2 es excelente.",
     en: "The ratio of gross profit from winning trades to gross loss from losing trades. A value above 1.5 is solid; above 2 is excellent.",
     category: "metrics",
   },
@@ -231,8 +231,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Win rate",
-    es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70 % de aciertos con payoff 0.5 pierde dinero; un 35 % con payoff 3 gana.",
-    en: "The percentage of winning trades out of the total. Misleading on its own: a 70 % hit rate with a 0.5 payoff loses money; 35 % with a 3 payoff wins.",
+    es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70 % de aciertos con payoff 0,5 pierde dinero; un 35 % con payoff 3 gana.",
+    en: "The percentage of winning trades out of the total. Misleading on its own: a 70% hit rate with a 0.5 payoff loses money; 35% with a 3 payoff wins.",
     category: "metrics",
   },
   {
