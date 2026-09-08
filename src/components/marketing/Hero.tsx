@@ -256,11 +256,21 @@ export function Hero() {
               `grid-cols-[max-content]` hace que la columna mida lo que
               el más ancho de los dos, y `w-full` estira al otro hasta
               ahí. Se ajusta solo si mañana cambia el texto o el idioma,
-              que es la razón de no fijar un ancho a mano. */}
-          <div data-seq className="flex flex-col items-center gap-3.5 sm:flex-row sm:items-center sm:justify-center lg:grid lg:grid-cols-[max-content] lg:justify-end lg:self-end">
+              que es la razón de no fijar un ancho a mano.
+
+              Y VALE PARA LAS DOS PILAS, NO SOLO PARA LA DE ESCRITORIO.
+              Esto se escribió como `lg:` y por debajo de `sm` los
+              botones seguían apilados con ancho natural, que es el
+              mismo canto dentado en el sitio donde más se nota — un
+              móvil no tiene aire alrededor para disimularlo. Medido a
+              360, 390 y 430 px: 240 contra 180 en español y 254 contra
+              180 en inglés, un escalón de 60 y 74 px. En la fila de
+              `sm` no aplica: ahí van uno al lado del otro y cada uno
+              mide lo suyo. */}
+          <div data-seq className="grid grid-cols-[max-content] justify-center gap-3.5 sm:flex sm:flex-row sm:items-center sm:justify-center lg:grid lg:grid-cols-[max-content] lg:justify-end lg:self-end">
             <Link
               href="/demo"
-              className="inline-flex h-[52px] min-w-[180px] w-fit lg:w-full items-center justify-center gap-2.5 rounded-[2px] px-7 text-[15px] font-semibold outline-none transition-[background-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="inline-flex h-[52px] min-w-[180px] w-full sm:w-fit lg:w-full items-center justify-center gap-2.5 rounded-[2px] px-7 text-[15px] font-semibold outline-none transition-[background-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{ background: "rgb(var(--accent-base))", color: "rgb(var(--accent-ink))" }}
             >
               {es ? "Ver la demo interactiva" : "See the interactive demo"}
@@ -268,7 +278,7 @@ export function Hero() {
             </Link>
             <Link
               href="/pricing"
-              className="inline-flex h-[52px] min-w-[180px] w-fit lg:w-full items-center justify-center gap-2.5 rounded-[2px] border px-7 text-[15px] font-semibold text-[var(--ink)] outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
+              className="inline-flex h-[52px] min-w-[180px] w-full sm:w-fit lg:w-full items-center justify-center gap-2.5 rounded-[2px] border px-7 text-[15px] font-semibold text-[var(--ink)] outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
               style={{ borderColor: "rgb(var(--divider) / 0.20)" }}
             >
               {es ? "Ver precios" : "See pricing"}
