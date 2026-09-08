@@ -95,7 +95,14 @@ export function NotFoundClient() {
         <Grabado404 />
       </div>
 
-      <div className="relative z-[2] text-center max-w-xl mx-auto">
+      {/* `tj-legible-text`: aquí el texto flota DIRECTAMENTE sobre la
+          lámina grabada, sin panel ni velo detrás — el caso exacto para
+          el que existe esa red. Sin ella, el filete vertical del registro
+          cruza por mitad del párrafo y del campo de búsqueda, y en tema
+          claro compite con la propia letra (la tinta de la lámina llega a
+          4,24:1 sobre la chapa; en oscuro, 5,31:1). La regla exime a
+          campos, botones y enlaces, así que el formulario no se toca. */}
+      <div className="tj-legible-text relative z-[2] text-center max-w-xl mx-auto">
         <div
           className="tj-alza font-semibold tracking-[-0.04em] leading-[0.9] text-gradient tnum"
           style={{ fontSize: "clamp(6rem, 18vw, 12rem)" }}
