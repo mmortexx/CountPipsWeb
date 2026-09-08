@@ -387,9 +387,24 @@ async function mideContraste(pagina, cand) {
 }
 
 /* Ruido de terceros y del servidor de desarrollo que no dice nada del
-   sitio. Se filtra para que un fallo real no se pierda entre él. */
+   sitio. Se filtra para que un fallo real no se pierda entre él.
+
+   El último trozo —`__next.…txt?_rsc=`— es el que costó una tanda entera.
+   Son las cargas de prefetch de segmento que el enrutador de Next pide al
+   pasar el ratón por un enlace. Al exportar en WINDOWS, Next las escribe
+   como carpeta (`/beta/__next.beta/__PAGE__.txt`) mientras el cliente las
+   pide en plano (`/beta/__next.beta.__PAGE__.txt`): 404 en todas, en todas
+   las páginas, 17 por ruta. Compilando en LINUX —que es lo que hace la
+   integración continua— sale el fichero plano y no falla ninguna;
+   comprobado contra el sitio publicado, donde ese fichero devuelve 200.
+   O sea: es un artefacto de la máquina que compila, no del sitio, y sin
+   este filtro esta puerta NO PUEDE PASAR en un portátil Windows, que es
+   justo donde se trabaja. Si algún día hay que volver a mirarlo, el
+   comando es
+     find out -name "__next.*.__PAGE__.txt" | wc -l
+   sobre la exportación: cero significa que quien compiló fue Windows. */
 const RUIDO =
-  /favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|posthog|challenges\.cloudflare|\[Fast Refresh\]|webpack-hmr|Warning: Extra attributes from the server/i;
+  /favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|posthog|challenges\.cloudflare|\[Fast Refresh\]|webpack-hmr|Warning: Extra attributes from the server|__next\.[^"'\s]*\.txt(\?|$)/i;
 
 const navegador = await chromium.launch();
 
