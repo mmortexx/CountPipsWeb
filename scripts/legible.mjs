@@ -53,6 +53,29 @@ const RUTAS = [
   "/traders/manual",
   "/glosario",
   "/herramientas",
+  /* Las OCHO calculadoras, las cuatro legales, el acceso, el test, una
+     ficha de glosario y el 404. Ninguna estaba aqui, y son la mitad de
+     las paginas escritas a mano del sitio: el barrido decia "12 rutas"
+     y las herramientas solo entraban por su indice, que es la unica de
+     las nueve que NO tiene una calculadora dentro. Las fichas y los
+     documentos legales salen de plantilla, asi que con una de cada
+     familia se cubre la forma entera. */
+  "/herramientas/calculadora-de-riesgo",
+  "/herramientas/significancia-estadistica",
+  "/herramientas/monte-carlo",
+  "/herramientas/proyector-de-capital",
+  "/herramientas/coste-de-indisciplina",
+  "/herramientas/reloj-de-sesiones",
+  "/herramientas/ahorro-vs-suscripcion",
+  "/herramientas/impacto-de-comisiones",
+  "/traders/prop-firms",
+  "/beta",
+  "/test",
+  "/glosario/expectancy",
+  "/aviso-legal",
+  "/privacidad",
+  "/cookies",
+  "/terminos",
 ];
 
 const PANTALLAS = [
