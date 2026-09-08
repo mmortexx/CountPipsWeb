@@ -8,7 +8,8 @@ import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
  * /en/glosario/[termino] — English counterpart of /glosario/[termino].
- * Same 51 static params: the term data (`t.en`) already exists, this
+ * Same static params as the Spanish route: the term data (`t.en`)
+ * already exists, this
  * route only needed its own address and its own English metadata/schema.
  */
 

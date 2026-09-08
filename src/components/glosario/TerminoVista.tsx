@@ -17,7 +17,7 @@ import {
  * La página de un término.
  *
  * ── El riesgo que hay que evitar aquí ─────────────────────────────────
- * Una definición son una o dos frases. Cincuenta y una páginas con dos
+ * Una definición son una o dos frases. Medio centenar de páginas con dos
  * frases cada una es justo lo que un buscador clasifica como contenido
  * pobre, y entonces no sirven de nada: ni posicionan ni ayudan.
  *
@@ -26,7 +26,7 @@ import {
  * sus vecinos, dónde continúa dentro del producto, y —cuando la hay— la
  * herramienta que lo calcula. Todo son enlaces reales a páginas reales.
  *
- * El resultado además cumple otra función: ninguna de las 51 páginas es
+ * El resultado además cumple otra función: ninguna de las páginas es
  * un callejón sin salida. Se puede entrar por cualquiera y seguir.
  */
 export function TerminoVista({ termino }: { termino: TerminoGlosario }) {

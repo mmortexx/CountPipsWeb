@@ -7,7 +7,7 @@ import { CATEGORIAS, TERMINOS, terminoPorSlug, tituloDeTermino } from "@/lib/glo
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /glosario/[termino] — una página por cada uno de los 51 términos.
+ * /glosario/[termino] — una página por cada término del registro.
  *
  * `generateStaticParams` las genera todas durante la compilación, que es
  * lo que exige el modo de exportación estática: no hay servidor que pueda

@@ -7,7 +7,7 @@ import { TERMINOS } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /glosario — los 51 términos, cada uno con su dirección.
+ * /glosario — los términos del registro, cada uno con su dirección.
  *
  * Llevaban escritos desde hace tiempo, en los dos idiomas y con
  * definiciones buenas, encerrados en una ventana emergente que se abre
@@ -29,8 +29,8 @@ const breadcrumbSchema = {
 };
 
 /* `DefinedTermSet` es el tipo que describe un glosario entero. Enumera sus
-   términos para que el buscador entienda que las 51 páginas de dentro son
-   partes de una misma obra y no 51 artículos sueltos. */
+   términos para que el buscador entienda que las páginas de dentro son
+   partes de una misma obra y no artículos sueltos. */
 const glosarioSchema = {
   "@context": "https://schema.org",
   "@type": "DefinedTermSet",
@@ -49,13 +49,13 @@ const glosarioSchema = {
 
 export const metadata: Metadata = {
   title: "Glosario de trading",
-  description:
-    "51 términos de trading explicados sin rodeos: riesgo, métricas, ejecución y psicología. Qué significa cada uno y por qué importa al medir tu operativa.",
+  /* La cifra sale de la lista. Escrita a mano decía 51 con 57 términos
+     publicados, y eso es lo que leía el buscador en las tres cabeceras. */
+  description: `${TERMINOS.length} términos de trading explicados sin rodeos: riesgo, métricas, ejecución y psicología. Qué significa cada uno y por qué importa al medir tu operativa.`,
   alternates: { canonical: `${SITE_URL}/glosario/`, languages: hreflangDe("/glosario") },
   openGraph: {
     title: "Glosario de trading — CountPips",
-    description:
-      "51 términos explicados sin rodeos. Riesgo, métricas, ejecución y psicología.",
+    description: `${TERMINOS.length} términos explicados sin rodeos. Riesgo, métricas, ejecución y psicología.`,
     url: `${SITE_URL}/glosario/`,
     type: "website",
     siteName: "CountPips",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Glosario de trading — CountPips",
-    description: "51 términos explicados sin rodeos.",
+    description: `${TERMINOS.length} términos explicados sin rodeos.`,
   },
 };
 
@@ -86,8 +86,12 @@ export function GlosarioBody() {
         titleEn="Trading glossary."
         titleHighlightEs="de trading."
         titleHighlightEn="glossary."
-        subtitleEs="Cincuenta y un términos, definidos como los usa alguien que opera y no como los define un diccionario. El nombre se queda en inglés a propósito: es como aparecen en tu plataforma y en cualquier comunidad."
-        subtitleEn="Fifty-one terms, defined the way someone who trades uses them rather than the way a dictionary does. The name stays in English on purpose: that is how they appear on your platform and in any community."
+        /* La cifra sale de la lista por el mismo motivo que el folio de
+           arriba: escrita a mano decía "cincuenta y un" con cincuenta y
+           siete términos en la página, y el contador de la caja de
+           búsqueda la desmentía dos palmos más abajo. */
+        subtitleEs={`${TERMINOS.length} términos, definidos como los usa alguien que opera y no como los define un diccionario. El nombre se queda en inglés a propósito: es como aparecen en tu plataforma y en cualquier comunidad.`}
+        subtitleEn={`${TERMINOS.length} terms, defined the way someone who trades uses them rather than the way a dictionary does. The name stays in English on purpose: that is how they appear on your platform and in any community.`}
         breadcrumbEs="Glosario"
         breadcrumbEn="Glossary"
       />

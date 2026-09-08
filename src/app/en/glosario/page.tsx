@@ -30,15 +30,14 @@ const glosarioSchema = {
 
 export const metadata: Metadata = {
   title: "Trading glossary",
-  description:
-    "51 trading terms explained without the jargon: risk, metrics, execution and psychology. What each one means and why it matters for measuring your trading.",
+  description: `${TERMINOS.length} trading terms explained without the jargon: risk, metrics, execution and psychology. What each one means and why it matters for measuring your trading.`,
   alternates: {
     canonical: `${SITE_URL}/en/glosario/`,
     languages: hreflangDe("/glosario"),
   },
   openGraph: {
     title: "Trading glossary — CountPips",
-    description: "51 terms explained without the jargon. Risk, metrics, execution and psychology.",
+    description: `${TERMINOS.length} terms explained without the jargon. Risk, metrics, execution and psychology.`,
     url: `${SITE_URL}/en/glosario/`,
     type: "website",
     siteName: "CountPips",
@@ -48,7 +47,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Trading glossary — CountPips",
-    description: "51 terms explained without the jargon.",
+    description: `${TERMINOS.length} terms explained without the jargon.`,
   },
 };
 

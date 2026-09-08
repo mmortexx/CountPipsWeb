@@ -12,9 +12,9 @@ import {
 } from "@/lib/glosario";
 
 /**
- * El índice del glosario: las cinco familias y sus 51 términos.
+ * El índice del glosario: las cinco familias y sus términos.
  *
- * Lleva buscador porque con 51 entradas la alternativa es que el visitante
+ * Lleva buscador porque con medio centenar de entradas la alternativa es que el visitante
  * recorra la página entera con la vista. Filtra por nombre Y por
  * definición: quien no recuerda cómo se llama algo lo busca por lo que
  * hace («cuánto puedo perder», «racha»), y así también lo encuentra.
@@ -64,7 +64,13 @@ export function GlosarioIndice() {
       <div className="tj-container">
         {/* Buscador */}
         <Reveal>
-          <div className="tj-paper mx-auto max-w-xl rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-3 sm:p-4">
+          {/* `max-w-2xl`, no `max-w-xl`. El ancho anterior se midió contra
+              el inglés: sus seis fichas de familia suman 459 px y entraban
+              en los 542 útiles. Las españolas suman 548 y se quedaban a
+              SEIS píxeles, así que "Psicología" caía sola a una segunda
+              línea — sólo en español, y en todas las anchuras a partir de
+              `sm`, no en un punto de ruptura concreto. */}
+          <div className="tj-paper mx-auto max-w-2xl rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-3 sm:p-4">
             <label htmlFor="glos-q" className="sr-only">
               {es ? "Buscar un término" : "Search a term"}
             </label>

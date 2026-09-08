@@ -4,7 +4,7 @@ import { GLOSSARY, type GlossaryCategory, type GlossaryTerm } from "@/lib/tradin
  * El glosario, convertido en secciones del sitio.
  *
  * ── Por qué existe este archivo ───────────────────────────────────────
- * Los 51 términos llevaban tiempo escritos, en los dos idiomas y con
+ * Los términos llevaban tiempo escritos, en los dos idiomas y con
  * definiciones de calidad, y solo se veían dentro de una ventana emergente
  * que se abre desde un enlace del pie. Cero direcciones propias, cero
  * posibilidad de que alguien llegue buscando «qué es el drawdown». Era el
@@ -31,7 +31,7 @@ export function slugTermino(term: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-/** Los 51 términos con su dirección ya calculada. */
+/** Los términos con su dirección ya calculada. */
 export const TERMINOS: TerminoGlosario[] = GLOSSARY.map((t) => ({
   ...t,
   slug: slugTermino(t.term),
@@ -55,7 +55,7 @@ export function terminoPorSlug(slug: string): TerminoGlosario | undefined {
  * donde está la promesa de la página.
  *
  * ── Por qué se calcula y no se escribe a mano ─────────────────────────
- * Un campo `tituloCorto` en los datos son 51 decisiones que hay que
+ * Un campo `tituloCorto` en los datos es una decisión por término que hay que
  * recordar tomar cada vez que se añade una voz, y nadie las va a tomar.
  * Esto se ajusta solo y en el orden que menos duele:
  *
