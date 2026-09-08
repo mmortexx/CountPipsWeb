@@ -68,12 +68,16 @@ const SONDA = () => {
     a: 1,
   });
   const esSvg = (n) => n.namespaceURI === "http://www.w3.org/2000/svg";
+  /* Lo que pinta un elemento SVG es su relleno, salvo que no tenga: un
+     trazo (el ✓ de un sello, la linea de un grafico) va en `stroke`, y
+     leerle el `fill` devuelve «none» y deja la medida sin hacer. */
+  const pinta = (s) => (s.fill && s.fill !== "none" ? s.fill : s.stroke);
 
   window.__mide = (elTexto, elFondo) => {
     const t = elTexto, f = elFondo || elTexto;
     const st = getComputedStyle(t), sf = getComputedStyle(f);
-    const tinta = rgba(esSvg(t) ? st.fill : st.color);
-    let fondo = rgba(esSvg(f) ? sf.fill : sf.backgroundColor);
+    const tinta = rgba(esSvg(t) ? pinta(st) : st.color);
+    let fondo = rgba(esSvg(f) ? pinta(sf) : sf.backgroundColor);
     if (!tinta || !fondo) return { falta: "color sin resolver" };
     if (fondo.a < 1) {
       const base = rgba(getComputedStyle(document.body).backgroundColor) || { r: 255, g: 255, b: 255, a: 1 };
@@ -82,8 +86,8 @@ const SONDA = () => {
     const [l1, l2] = [luz(tinta), luz(fondo)].sort((x, y) => y - x);
     return {
       ratio: +(((l1 + 0.05) / (l2 + 0.05))).toFixed(2),
-      tinta: esSvg(t) ? st.fill : st.color,
-      fondo: esSvg(f) ? sf.fill : sf.backgroundColor,
+      tinta: esSvg(t) ? pinta(st) : st.color,
+      fondo: esSvg(f) ? pinta(sf) : sf.backgroundColor,
       px: parseFloat(st.fontSize),
       peso: st.fontWeight,
     };
@@ -205,6 +209,47 @@ for (const tema of ["dark", "light"]) {
   const restos = await p.evaluate(() =>
     document.querySelectorAll('svg path[d="M1 1L9 9M9 1L1 9"]').length);
   console.log(`${tema} · controles de ventana decorativos en el proyector: ${restos} ${restos === 0 ? "OK" : "SIGUEN"}`);
+
+  /* ── Sellos: una marca trazada ENCIMA de un disco relleno ──────────
+     El mismo defecto que las etiquetas, en forma de dibujo: el disco y
+     el trazo salian los dos en `currentColor` y daban 1,00:1, o sea que
+     el ✓ no existia. Aqui la puerta es 3:1 —es un elemento grafico, no
+     texto— y se barre cualquier <svg> que tenga un circulo relleno y un
+     trazo dentro, sin saber de que pagina es. */
+  for (const ruta of ["/pricing/", "/"]) {
+    await p.goto(base + ruta, { waitUntil: "domcontentloaded" });
+    await p.waitForTimeout(2200);
+    await fijaTema();
+    const sellos = await p.evaluate(() => {
+      const vistos = new Map();
+      for (const svg of document.querySelectorAll("svg")) {
+        const disco = svg.querySelector("circle");
+        const trazo = svg.querySelector("path[stroke], line[stroke], polyline[stroke]");
+        if (!disco || !trazo) continue;
+        const sd = getComputedStyle(disco);
+        if (!sd.fill || sd.fill === "none") continue;
+        /* Que haya un circulo y un trazo en el mismo <svg> no significa
+           que uno vaya ENCIMA del otro: en un icono de dos piezas cada
+           una ocupa su sitio y comparten color a proposito. Solo cuenta
+           como sello si el trazo cae dentro del disco. */
+        const a = trazo.getBoundingClientRect(), b = disco.getBoundingClientRect();
+        if (!b.width || !b.height) continue;
+        const dentro = a.left >= b.left - 1 && a.right <= b.right + 1 &&
+                       a.top >= b.top - 1 && a.bottom <= b.bottom + 1;
+        if (!dentro) continue;
+        const m = window.__mide(trazo, disco);
+        if (m.falta) continue;
+        /* Un mismo icono se repite en toda la lista: interesa el par de
+           colores distinto, no cuantas veces aparece. */
+        const clave = `${m.tinta}|${m.fondo}`;
+        if (!vistos.has(clave)) vistos.set(clave, { ...m, veces: 0 });
+        vistos.get(clave).veces++;
+      }
+      return [...vistos.values()];
+    });
+    sellos.forEach((s, i) =>
+      filas.push({ tema, sitio: `sello ${ruta}${sellos.length > 1 ? ` #${i + 1}` : ""}`, grafico: true, ...s }));
+  }
   await p.close();
 }
 
@@ -214,7 +259,8 @@ let mal = 0;
 for (const f of filas) {
   if (f.falta) { console.log(`${f.tema.padEnd(6)} ${f.sitio.padEnd(25)} NO MEDIDO (${f.falta})`); mal++; continue; }
   const grande = f.px >= 24 || (f.px >= 18.66 && Number(f.peso) >= 700);
-  const puerta = grande ? 3 : 4.5;
+  /* Un glifo no es texto: WCAG le pide 3:1, no 4,5:1. */
+  const puerta = f.grafico || grande ? 3 : 4.5;
   const ok = f.ratio >= puerta;
   if (!ok) mal++;
   console.log(

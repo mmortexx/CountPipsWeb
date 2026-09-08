@@ -215,6 +215,11 @@
      colores de la familia porque los tres giran a la vez.
      Medido sobre este bloque: verde 13,16:1 · rojo 5,80:1 · ámbar 7,57:1. */
   --pnl-ink: 12 17 22; /* #0C1116 */
+  /* Lo mismo para la tercera familia, la del semaforo. Vale igual que
+     `--pnl-ink` porque el verde de estado y el de dinero giran a la vez,
+     pero se nombra aparte: son familias distintas y el dia que una se
+     mueva, la otra no tiene por que seguirla. */
+  --sig-ink: 12 17 22; /* #0C1116 */
 
   /* Tope del tinte de las celdas del calendario de P&L.
      Este token SOLO estaba declarado para el tema claro, donde ya se
@@ -337,6 +342,11 @@
   --pnl-warn: 146 64 14;  /* #92400E */
   /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 4,66:1 · rojo 7,28:1 · ámbar 6,21:1. */
   --pnl-ink: 238 240 243; /* #EEF0F3 */
+  /* Lo mismo para la tercera familia, la del semaforo. Vale igual que
+     `--pnl-ink` porque el verde de estado y el de dinero giran a la vez,
+     pero se nombra aparte: son familias distintas y el dia que una se
+     mueva, la otra no tiene por que seguirla. */
+  --sig-ink: 238 240 243; /* #EEF0F3 */
 
   /* Aquí el acento es OSCURO (#004D7C), así que su tinta se invierte:
      casi blanco, 8,23:1. Ver la nota de --accent-ink en :root. */
@@ -3026,6 +3036,11 @@ button.icon-btn:hover > svg,
   --pnl-warn: 224 147 43; /* #E0932B */
   /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 9,44:1 · rojo 6,82:1 · ámbar 7,57:1. */
   --pnl-ink: 12 17 22; /* #0C1116 */
+  /* Lo mismo para la tercera familia, la del semaforo. Vale igual que
+     `--pnl-ink` porque el verde de estado y el de dinero giran a la vez,
+     pero se nombra aparte: son familias distintas y el dia que una se
+     mueva, la otra no tiene por que seguirla. */
+  --sig-ink: 12 17 22; /* #0C1116 */
   --pnl-neg-on-tint: 240 119 106;
   /* 0,22 y no 0,3, el mismo tope que el tema claro. En oscuro el acento es
      PLATA —un color claro— así que una celda teñida al 30 % se aclara hasta
@@ -3137,6 +3152,11 @@ button.icon-btn:hover > svg,
   --pnl-warn: 123 53 0; /* #7B3500 — 5,03:1 */
   /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 7,86:1 · rojo 7,85:1 · ámbar 7,82:1. */
   --pnl-ink: 238 240 243; /* #EEF0F3 */
+  /* Lo mismo para la tercera familia, la del semaforo. Vale igual que
+     `--pnl-ink` porque el verde de estado y el de dinero giran a la vez,
+     pero se nombra aparte: son familias distintas y el dia que una se
+     mueva, la otra no tiene por que seguirla. */
+  --sig-ink: 238 240 243; /* #EEF0F3 */
   --pnl-neg-on-tint: 147 19 21;
   --cal-tint-max: 0.22;
   --sig-green: 0 85 47;

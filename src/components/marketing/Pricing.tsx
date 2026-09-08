@@ -427,7 +427,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
               }`}
               aria-hidden="true"
             >
-              <CheckIcon />
+              <CheckIcon tinta={isPro ? "rgb(var(--accent-ink))" : "rgb(var(--sig-ink))"} />
             </span>
             <span className="text-secondary leading-[1.6] min-w-0 break-words">{f}</span>
           </li>
@@ -514,7 +514,13 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
    Ya no recibe `delay`: el escalonado por columna lo daba el retardo que
    le pasaba la fila, y ahora lo da la posición del icono en la ventana,
    que es la misma información sin tener que propagarla. */
-function CheckIcon() {
+/* La marca va en la tinta del disco, no en su mismo color.
+   El disco y el trazo iban los DOS en `currentColor`: medido sobre la
+   pagina compilada daba 1,00:1 en los dos planes y en los dos temas, o
+   sea que el ✓ no existia en pantalla — dieciseis vinetas que eran un
+   disco liso. Cada familia de color declara su tinta (`--accent-ink`,
+   `--pnl-ink`, `--sig-ink`) y es esa la que se usa aqui. */
+function CheckIcon({ tinta }: { tinta: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <circle data-entra="sello" cx="8" cy="8" r="7" fill="currentColor" />
@@ -522,7 +528,7 @@ function CheckIcon() {
         data-entra="trazo"
         pathLength="1"
         d="m5 8 2 2 4-4"
-        stroke="currentColor"
+        stroke={tinta}
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
