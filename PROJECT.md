@@ -953,6 +953,177 @@ paquetes por delante; se recupera con `npm install`, y conviene borrar
 el `package-lock.json` que deja, que aquí no pinta nada). Con la puerta
 en marcha, su primer uso ya cazó cuatro espacios duros mal escritos.
 
+### Duodécima tanda: las fichas, las calculadoras y la demo en móvil
+
+Las tres zonas que quedaban sin mirar. Seis defectos, dos de ellos de los
+que se ven desde la otra punta de la habitación.
+
+#### Quince fichas de glosario enseñaban el LaTeX en crudo
+
+La caja «Fórmula Cuantitativa» volcaba la cadena de LaTeX tal cual, sin
+ningún renderizador detrás. En pantalla se leía
+
+    MaxDD = \max_{t} \left( \frac{\max_{\tau \le t} X_\tau - X_t}{…
+
+dentro de un sello que decía **LATEX**. Quince fichas, los dos idiomas,
+los dos temas, todas las anchuras. Ninguna puerta lo miraba porque no es
+un fallo de contraste, ni de desborde, ni de animación: es texto que se
+lee perfectamente y no significa nada.
+
+Y siete de esas fórmulas llevaban palabras **castellanas dentro del
+propio LaTeX** —Ganancias Brutas, Riesgo Inicial, Tamaño, Objetivo,
+Ruina—, así que la página inglesa también las enseñaba en español.
+
+Se pasan a notación Unicode en la monoespaciada que la caja ya usaba, y
+hay una fórmula por idioma. La alternativa era cargar KaTeX y sus
+fuentes: aquí no hay matrices ni integrales anidadas, y no compensa una
+dependencia más un fichero de fuentes por quince fichas de 155 páginas.
+
+Dos decisiones que costaron una vuelta:
+
+- **El índice mudo iba en tau**, y la tau de Geist Mono se lee como una
+  T mayúscula justo al lado de la t del tiempo. Se nombra el pico como
+  `HWM`, que además es como lo llama el resto del producto.
+- **La razón de integrales de Omega** ocupaba ochenta caracteres y a
+  390 px se partía en tres renglones por mitad de la expresión. Se queda
+  la forma discreta, que es la que calcula el motor, y la integral pasa
+  a la línea de variables.
+
+Comprobado: las dieciséis fórmulas vivas se pintan enteras y sin
+desbordar a 390 px, en los dos idiomas. De paso se retiran dos claves
+duplicadas (`sharpe`, `sortino`) que no corresponden a ningún término.
+
+#### Las cifras de la demo se pintaban en vertical
+
+En la **primera pantalla de la demo**, a 390 px, «+6807,72 US$» y
+«50,5 %» salían partidas en un carácter por renglón: una columna de diez
+líneas con una letra en cada una. Medido: la caja del valor tenía ancho
+**cero** y el `<span>` de dentro, 13 px de ancho por 330 de alto.
+
+Es la trampa que la séptima tanda dejó escrita y que aquí volvió a
+morder: `caja-cifra` declara `container-type: inline-size`, y un
+contenedor de medida sobre una caja que se dimensiona por su CONTENIDO
+colapsa a cero. Ésta lo hacía porque su padre es `flex flex-col
+items-center`. Con ancho cero, `11cqi` vale cero y `break-words` parte
+la cifra letra a letra.
+
+Dos cosas, no una: `w-full` para que el ancho lo ponga el padre, y
+`whitespace-nowrap` en vez de `break-words` — el valor llega con su
+propio `text-lg`, que **gana a `cifra-lg`**, así que la consulta de
+contenedor no puede encogerlo y a cualquier ancho acabaría partiendo
+«US$» por la mitad (comprobado subiendo la celda a 7 rem: pasó a romper
+en «U | S$»). La tira ya se desplaza de lado, que es para lo que se le
+puso `overflow-x-auto`.
+
+Comprobado a 390, 768 y 1440: las siete celdas comparten altura (55 px),
+la tira se desplaza donde no cabe (822 px de contenido en 277 visibles)
+y la página no gana barra horizontal en ningún ancho.
+
+#### La cabecera del detalle se pisaba a sí misma
+
+Los tres grupos —volver, símbolo, número y flechas— van en una fila con
+`flex-wrap`. El del centro llevaba `flex-1 min-w-0`, pero su `h2` de
+24 px monoespaciada **no encoge**, así que a 390 px desbordaba su caja y,
+al ir centrado, se derramaba por los DOS lados: «EURUSD» tapaba el botón
+de Volver y «Short» pisaba el «#066». El control de volver quedaba
+ilegible y a medias pulsable.
+
+Por debajo de `sm` el grupo del símbolo ocupa la línea entera y va el
+último, para que la primera línea la compartan los dos grupos de
+controles como en escritorio. Medido: **cero solapes** (antes dos) y la
+cabecera baja de tres líneas a dos.
+
+#### La copia castellana estaba escrita con números ingleses
+
+Medido sobre el sitio compilado, en las 22 rutas castellanas escritas a
+mano:
+
+| | antes | ahora |
+|---|---|---|
+| decimales con punto inglés | 30 en 10 rutas | **0** |
+| signo de % pegado a la cifra | 64 de 224 | **0** |
+
+Las tres calculadoras más grandes —riesgo, significancia y proyector—
+**no importaban el formateador de la casa**: componían cada cifra a mano
+con `toFixed`, que escribe siempre el punto decimal inglés. Por eso
+convivían en la misma tarjeta un «p-valor 0,2579» correcto y un
+«95% (z=1.96)» que no lo es, o una lista de marcas que empieza en
+«0.25%» y termina en «3,00%».
+
+Cada una recibe el separador que la casa ya tenía decidido en `PCT_SEP`:
+espacio DURO antes del signo en español, pegado en inglés. Estaba
+escrito pegado en los dos idiomas, y el proyector lo tenía al revés —con
+espacio en los dos, o sea mal en inglés—.
+
+**Dos avisos de método:**
+
+- **`no-irregular-whitespace` perdona el espacio duro literal dentro de
+  una cadena normal pero NO dentro de una plantilla.** En las plantillas
+  hay que escribirlo como escape.
+- **`toFixed` no es un formateador**, es una conversión. Cualquier cifra
+  que vea un visitante pasa por `fmtNum` / `fmtPct` / `fmtMoney`.
+
+#### Y un fallo de paridad bilingüe
+
+El rótulo «p-valor (H₀: 50%)» del comprobador de significancia no estaba
+traducido, así que la página **inglesa** decía «P-VALOR». Ninguna puerta
+lo veía: `humo.mjs` revisa palabra a palabra siete páginas inglesas y
+ninguna de ellas es una herramienta.
+
+#### La puerta de contraste no miraba las calculadoras
+
+`legible.mjs` tenía doce rutas y entre ellas `/herramientas`, que es el
+**índice** — la única de las nueve páginas de esa familia que no lleva
+una calculadora dentro. Las ocho herramientas interactivas, que son las
+páginas con más texto pequeño sobre fondo de color del sitio, no las
+medía nadie. Tampoco los cuatro legales, ni `/beta`, ni `/test`, ni una
+ficha de glosario, ni `/traders/prop-firms`.
+
+Pasa de 12 a 28 rutas: **5.474 trozos de texto contra su fondo real, 0
+fallos**. No había nada roto, pero hasta ahora nadie lo sabía.
+
+#### Lo que queda medido y sin arreglar
+
+Cinco defectos más de la demo en móvil, vistos y localizados pero no
+corregidos en esta tanda. Viven todos en ficheros del borrador de
+idiomas, así que exigen el procedimiento de apartar el borrador para
+cada uno:
+
+- **Diario · Historial**: la insignia de cumplimiento y el importe se
+  dibujan encima del día y la fecha, y la línea de metadatos se parte en
+  una palabra por renglón.
+- **Analítica · «De un vistazo»** y **Diario · «Desglose por tipo de
+  indisciplina»**: la última columna —el importe, que es el dato por el
+  que existe la tabla— se corta contra el canto sin degradado que avise
+  de que hay más a la derecha. Es la misma familia que el aviso muerto
+  de los documentos legales de la undécima tanda.
+- **Analítica · «Distribución de P&L»**: las etiquetas del primer y
+  último grupo de barras se cortan contra el borde. El histograma de
+  R-múltiplos vecino no lo sufre porque ya oculta una etiqueta de cada
+  dos, corrección que aquí no llega a aplicarse por tener menos barras.
+- **Operaciones**: el rótulo «Operaciones» deja una «s» huérfana y la
+  cuarta métrica se corta sin aviso de desplazamiento.
+
+Y los cuatro múltiplos en R de `FeaturesBento` («+1.8R») siguen con
+punto decimal inglés en la copia castellana, por el mismo motivo.
+
+#### Tres cosas que parecían defectos y no lo eran
+
+- **La trama de puntos «encima» del texto**, otra vez. Dos barridos
+  independientes la reportaron en la undécima tanda y una ficha de
+  glosario la volvió a señalar en ésta. El lienzo del atlas vive en un
+  padre `position: fixed` y el texto se desplaza sobre él: la
+  coincidencia dura un fotograma.
+- **El botón de volver arriba rozando un titular.** Es `position:
+  fixed`; cualquier texto que pase por esa esquina se solapa un
+  instante por diseño.
+- **La definición cortada a media palabra** en «De la misma familia»
+  («permite s…»). Es el comportamiento propio de `-webkit-line-clamp`,
+  que corta en el punto de desbordamiento y no en la última palabra
+  entera; no hay `overflow-wrap: anywhere` de por medio (medido:
+  `normal`). Arreglarlo pide truncar en JavaScript, con el riesgo de
+  hidratación que eso trae, para ganar tres letras. **No se toca.**
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
@@ -1017,7 +1188,7 @@ Antes de dar por terminado un cambio visible, correr lo que aplique:
 ```bash
 npm run build                       # compila a /out
 node scripts/humo.mjs --serve out   # contraste, láminas, velo, entradas, menú…
-node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano
+node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (28 rutas)
 node scripts/fondos.mjs --serve out   # que cada sección dibuje un fondo distinto
 node scripts/fluidez.mjs --serve out  # presupuesto de fotogramas del atlas (28 ms)
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
