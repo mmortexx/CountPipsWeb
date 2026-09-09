@@ -237,7 +237,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
   const gap = (W - barW * n) / Math.max(1, n - 1);
 
   return (
-    <div className="overflow-x-auto custom-scroll -mx-1 px-1">
+    <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll -mx-1 px-1">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         width="100%"
@@ -373,7 +373,7 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
   const W = rows.length * barW + (rows.length - 1) * gap;
 
   return (
-    <div className="overflow-x-auto custom-scroll -mx-1 px-1">
+    <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll -mx-1 px-1">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         width="100%"
@@ -804,7 +804,7 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
     const seLogPf = Math.sqrt(Math.max(0, varLogPf));
     const loPf = Math.max(0, profitFactor * Math.exp(-1.96 * seLogPf));
     const hiPf = profitFactor * Math.exp(1.96 * seLogPf);
-    profitFactorCi = `[${loPf.toFixed(2)}, ${hiPf.toFixed(2)}]`;
+    profitFactorCi = `[${fmtNum(loPf, lang, 2)}, ${fmtNum(hiPf, lang, 2)}]`;
   }
 
   let verdict: string;
@@ -846,7 +846,7 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
     winRate,
     winRateCi: `[${fmtPct(loW, lang, 0)}, ${fmtPct(hiW, lang, 0)}]`,
     expectancyR: meanR,
-    expectancyRCi: `[${loR.toFixed(2)}, ${hiR.toFixed(2)}]`,
+    expectancyRCi: `[${fmtNum(loR, lang, 2)}, ${fmtNum(hiR, lang, 2)}]`,
     profitFactor,
     profitFactorCi,
     tradesNeeded,
@@ -944,7 +944,7 @@ function SectionBar({
       <div
         role="tablist"
         aria-label={lang === "es" ? "Secciones" : "Sections"}
-        className="flex items-center gap-1 overflow-x-auto custom-scroll -mx-1 px-1"
+        className="tj-fila-sigue flex items-center gap-1 overflow-x-auto custom-scroll -mx-1 px-1"
       >
         {SECTIONS.map((s) => {
           const isActive = s.id === active;
@@ -1256,7 +1256,7 @@ export function AnalyticsPage() {
           <SectionCard
             eyebrow={lang === "es" ? "De un vistazo" : "At a glance"}
           >
-            <div className="overflow-x-auto custom-scroll -mx-1">
+            <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll -mx-1">
               <table className="w-full text-sm min-w-[560px]">
                 <thead>
                   <tr className="text-left">
@@ -1324,7 +1324,7 @@ export function AnalyticsPage() {
             <Eyebrow>
               {lang === "es" ? "Resumen del periodo filtrado" : "Filtered period summary"}
             </Eyebrow>
-            <div className="flex items-stretch py-2 overflow-x-auto custom-scroll -mx-1 px-1">
+            <div className="tj-fila-sigue flex items-stretch py-2 overflow-x-auto custom-scroll -mx-1 px-1">
               <KpiStripCell
                 label={lang === "es" ? "Operaciones" : "Trades"}
                 showHairline
@@ -1741,7 +1741,7 @@ export function AnalyticsPage() {
                 data={rHist}
                 height={140}
                 colorize="pos-neg"
-                formatX={(x) => `${x}R`}
+                formatX={(x) => `${typeof x === "number" ? fmtNum(x, lang, 1) : x}R`}
                 className="overflow-hidden [&_.flex-1]:min-w-0"
               />
               <HistogramLegend

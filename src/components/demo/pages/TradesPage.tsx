@@ -974,7 +974,7 @@ export function TradesPage() {
       </Reveal>
 
       {/* Quick Filter Presets Bar */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
+      <div className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
         <span className="text-[10px] uppercase tracking-wider text-tertiary mr-1 shrink-0">
           {es ? "Vistas rápidas:" : "Quick views:"}
         </span>
@@ -1053,7 +1053,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          {es ? "100% en Plan" : "100% In-plan"}
+          {es ? "100 % en Plan" : "100% In-plan"}
         </button>
 
         <button
@@ -1295,7 +1295,7 @@ export function TradesPage() {
             (TradesPage.xaml L15-16, "full-bleed: menos superficies
             encajonadas"). Meterlos en una tarjeta, como hacía la demo,
             rompía esa jerarquía y llenaba la pantalla de recuadros. */}
-        <div className="flex items-stretch py-2 overflow-x-auto custom-scroll -mx-1 px-1">
+        <div className="tj-fila-sigue flex items-stretch py-2 overflow-x-auto custom-scroll -mx-1 px-1">
           {/* El símbolo va DETRÁS de la cifra ("+5.732,24 US$"), como en
               toda la app y como en la propia columna P&L de la tabla de
               abajo. Con el prefijo "$" delante, este KPI era el único
@@ -1336,7 +1336,7 @@ export function TradesPage() {
            table from inflating the card width on narrow viewports. */}
       <div className="demo-card overflow-hidden min-w-0">
         <div className="relative min-w-0">
-          <div className="overflow-x-auto custom-scroll min-w-0">
+          <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll min-w-0">
             <table className="w-full text-sm border-collapse min-w-[1080px]">
               <thead className="demo-chrome border-b border-[rgb(var(--divider)/0.10)]">
                 <tr className="text-left">

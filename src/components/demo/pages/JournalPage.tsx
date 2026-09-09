@@ -10,7 +10,7 @@ import {
   monthlyBreakdown,
   type Trade,
 } from "@/lib/trading/data";
-import { fmtInt, fmtDate, fmtMoney, fmtPct } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtDate, fmtMoney, fmtPct } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -743,7 +743,7 @@ function SleepStepper({
         </motion.button>
         <div className="flex-1 space-y-1.5 text-center">
           <div className="text-2xl font-semibold tnum text-primary leading-none">
-            {hours.toFixed(1)}
+            {fmtNum(hours, lang, 1)}
             <span className="text-xs text-tertiary font-normal ml-1">h</span>
           </div>
           <div className="relative h-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] overflow-hidden">
@@ -1415,7 +1415,7 @@ export function JournalPage() {
                   declara el ancho que necesita y se le da desplazamiento
                   lateral propio, como ya hace la tabla de expectancy del
                   sitio. */}
-              <div className="overflow-x-auto custom-scroll">
+              <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll">
               {/* Table header row */}
               <div className="grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 pb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)] font-mono">
                 <div>{L("Tipo", "Type")}</div>
@@ -1488,7 +1488,7 @@ export function JournalPage() {
                 <div className="text-right tnum font-bold text-primary">
                   {fmtInt(totalMistakeCount, lang)}
                 </div>
-                <div className="text-right tnum text-tertiary">100%</div>
+                <div className="text-right tnum text-tertiary">{lang === "es" ? "100 %" : "100%"}</div>
                 <div
                   className={`text-right tnum font-bold ${
                     totalMistakeCost < 0 ? "text-pnl-pos" : "text-pnl-neg"
@@ -1743,7 +1743,15 @@ export function JournalPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    {/* `w-full` por debajo de `sm`. La fila son dos grupos: el
+                        de la fecha y la nota, que encoge (`min-w-0 flex-1`), y
+                        este, que no (`shrink-0`). A 390 px, dentro del panel de
+                        la demo, este se llevaba lo suyo y al otro le quedaban
+                        sesenta pixeles: sus rotulos caian a VEINTISEIS px de
+                        ancho y «16 jul 2026» salia en tres renglones, uno por
+                        palabra. Bajando a su propia linea, el grupo de la fecha
+                        recupera el ancho entero. */}
+                    <div className="flex items-center gap-2 w-full justify-between sm:w-auto sm:justify-start shrink-0">
                       <Chip variant={complianceVariant}>{complianceLabel}</Chip>
                       <div
                         className={`break-words font-bold tnum text-sm sm:text-base md:text-lg ${
