@@ -6,6 +6,7 @@ import { Reveal } from "@/components/tj/Reveal";
 import { CountUp } from "@/components/tj/CountUp";
 import { Money } from "@/components/tj/Money";
 import { METRICS, TRADES, nombreSetup, rankByExpectancy, weekdayBreakdown } from "@/lib/trading/data";
+import { fmtPct } from "@/lib/trading/format";
 
 /** Spotify Wrapped-style annual stats recap. Playful but professional. */
 export function Wrapped() {
@@ -78,7 +79,12 @@ export function Wrapped() {
                 tabular figures in the same baseline row looked jittery when
                 the win-rate changed. */}
             <span className="tnum text-sm text-tertiary whitespace-nowrap">
-              {es ? `${topSetup.count} ops · ${(topSetup.winRate * 100).toFixed(0)}% win` : `${topSetup.count} trades · ${(topSetup.winRate * 100).toFixed(0)}% win`}
+              {/* `toFixed` no es un formateador: escribía «54% win» con el
+                  signo pegado también en castellano, dentro de una ficha
+                  donde el importe de al lado sale de `Money`. Y «win» a
+                  secas no es ninguno de los dos idiomas: la casa llama a
+                  esto «win rate» en los dos (clave `winRate` de i18n). */}
+              {es ? `${topSetup.count} ops · ${fmtPct(topSetup.winRate, lang, 0)} win rate` : `${topSetup.count} trades · ${fmtPct(topSetup.winRate, lang, 0)} win rate`}
             </span>
           </span>
         </span>
