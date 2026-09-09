@@ -2025,6 +2025,19 @@ textarea:focus-visible,
     margin-right: 0;
   }
 }
+/* Misma idea, otro punto de ruptura: la tabla comparativa de /pricing pasa
+   a `overflow-x: clip` en `lg` —para que sus veintisiete filas cuelguen su
+   `view()` de algo que sí se mueve— y ahí deja de haber desplazamiento que
+   anunciar. Con `clip` tampoco hay puerto de desplazamiento, así que el
+   `position: sticky` del aviso no tendría contra qué anclarse. */
+@media (width >= 64rem) {
+  .tj-fila-sigue--hasta-lg::after {
+    content: none;
+  }
+  .tj-fila-sigue--hasta-lg > :last-child {
+    margin-right: 0;
+  }
+}
 
 @supports (animation-timeline: scroll()) {
   .tj-fila-sigue::after {

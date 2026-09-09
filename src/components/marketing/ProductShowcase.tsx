@@ -102,11 +102,15 @@ export function ProductShowcase() {
         {/* La barra de pantallas, con el mismo gesto que la del programa.
             Se desplaza en horizontal en móvil en vez de partirse en dos
             filas: partida deja de leerse como una barra de aplicación. */}
+        {/* `tj-fila-sigue`: la tira de pestañas se desplaza de lado y su
+            barra va oculta a propósito, así que sin el desvanecido no
+            había ningún indicio de que hubiera más. Medido a 390 px:
+            30 px de 420 escondidos en la portada. */}
         <div
           ref={tablist}
           role="tablist"
           aria-label={es ? "Pantallas del programa" : "Application screens"}
-          className="mb-8 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="tj-fila-sigue mb-8 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {PANTALLAS_PORTADA.map((clave, i) => {
             const l = LAMINAS_PRODUCTO[clave];

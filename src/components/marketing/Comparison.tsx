@@ -145,8 +145,15 @@ export function Comparison() {
                 única que deja el eje vertical en `visible`. Así en
                 escritorio las filas recuperan su entrada escalonada y en
                 móvil se conserva el desplazamiento que allí sí se usa. */}
-            <div className="relative overflow-x-auto lg:overflow-x-clip">
-              <div className="relative min-w-[680px]">
+            {/* Y con el desplazamiento, su aviso: la tabla pide 680 px y a
+                390 esconde 330 —las dos últimas columnas, «Diarios en la
+                nube» y «Excel»— contra el canto, que no se lee como «hay
+                más a la derecha» sino como una tabla rota. `--sin-reserva`
+                porque el envoltorio tiene un solo hijo, y `--hasta-lg`
+                porque de `lg` para arriba la caja pasa a `clip` y ya no
+                desplaza nada. */}
+            <div className="tj-fila-sigue tj-fila-sigue--sin-reserva tj-fila-sigue--hasta-lg relative overflow-x-auto lg:overflow-x-clip">
+              <div className="relative w-full min-w-[680px]">
                 <table className="w-full text-sm table-fixed tnum">
                   <colgroup>
                     <col className="w-[33%]" />

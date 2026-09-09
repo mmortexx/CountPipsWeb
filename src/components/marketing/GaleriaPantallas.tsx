@@ -93,11 +93,15 @@ export function GaleriaPantallas({ num = "03" }: { num?: string }) {
         {/* La barra de pantallas. Se desplaza en horizontal en móvil en vez
             de partirse en dos filas: partida deja de leerse como la barra
             de una aplicación, que es de donde saca su sentido. */}
+        {/* `tj-fila-sigue`: la tira de pestañas se desplaza de lado y su
+            barra va oculta a propósito, así que sin el desvanecido no
+            había ningún indicio de que hubiera más. Medido a 390 px:
+            335 px de 725 escondidos en /features, y 80 a 768 px. */}
         <div
           ref={tablist}
           role="tablist"
           aria-label={es ? "Pantallas del programa" : "Application screens"}
-          className="mt-10 mb-8 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="tj-fila-sigue mt-10 mb-8 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {ORDEN_LAMINAS.map((clave, i) => {
             const l = LAMINAS_PRODUCTO[clave];
