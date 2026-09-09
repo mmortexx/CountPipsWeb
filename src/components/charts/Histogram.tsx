@@ -31,8 +31,22 @@ export const Histogram = memo(function Histogram({
      Truncar reparte el dano entre todos; saltarse uno de cada dos lo
      concentra en la mitad y deja la otra mitad entera, que es como se
      comporta cualquier eje de verdad cuando no cabe. Solo por debajo de
-     `sm`: de ahi para arriba caben todos. */
+     `sm`: de ahi para arriba caben todos.
+
+     Y uno de cada dos no siempre basta. Con nueve barras en 237 px —el
+     ancho del panel de la demo a 390— cinco rotulos de «431 US$» suman
+     176 px y se quedan a 4 px unos de otros, que se lee como un solo
+     renglon corrido. El salto se decide por lo LARGO que sea el rotulo
+     mas largo, que es el dato que gobierna si caben: hasta seis
+     caracteres, uno de cada dos; por encima, uno de cada cuatro. El
+     ultimo se pinta siempre, porque un eje sin su extremo derecho no
+     dice donde acaba. */
   const denso = data.length > 8;
+  const largoMax = useMemo(
+    () => Math.max(...data.map((d) => formatX(d.x).length), 0),
+    [data, formatX]
+  );
+  const salto = denso ? (largoMax > 6 ? 4 : 2) : 1;
 
   const containerRef = useRef<HTMLDivElement>(null);
   // Hovered bar: index + anchor point (px, relative to container).
@@ -85,9 +99,33 @@ export const Histogram = memo(function Histogram({
                   opacity: hovered && hovered.i === i ? 1 : 0.9,
                 }}
               />
+              {/* ── LOS DOS EXTREMOS SE ALINEAN CON SU CANTO ──────────
+                  El rótulo va centrado en una columna que a 390 px mide
+                  23 px, y «431 US$» pide 36: sobra por los dos lados. En
+                  las columnas de en medio eso no importa —el vecino está
+                  oculto y el hueco está libre—, pero en la ÚLTIMA la
+                  sobra cae fuera de la tarjeta, que lleva
+                  `overflow-hidden`, y la cifra se corta contra el canto.
+                  Medido en el histograma de P&L de la Analítica de la
+                  demo a 390 px: 13 px de «431 US$» por fuera del borde
+                  derecho. Y `text-align` no basta: cuando el texto es MÁS
+                  ancho que su caja, la línea arranca igual en el canto
+                  izquierdo y la sobra sigue saliendo por la derecha
+                  (medido: los mismos 13 px). Los dos extremos pasan a
+                  caja del tamaño de su contenido, anclada a su propio
+                  lado, que es como se rotula cualquier eje: la sobra se
+                  va hacia dentro, donde hay sitio. */}
               <div
-                className={`mt-1 w-full whitespace-nowrap text-center text-[9.5px] tnum text-tertiary ${
-                  denso && i % 2 === 1 ? "hidden sm:block" : ""
+                className={`mt-1 whitespace-nowrap text-[9.5px] tnum text-tertiary ${
+                  i === 0
+                    ? "w-max self-start"
+                    : i === data.length - 1
+                      ? "w-max self-end"
+                      : "w-full text-center"
+                } ${
+                  salto > 1 && i % salto !== 0 && i !== data.length - 1
+                    ? "hidden sm:block"
+                    : ""
                 }`}
               >
                 {formatX(d.x)}
