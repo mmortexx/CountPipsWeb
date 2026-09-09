@@ -882,7 +882,7 @@ export function DashboardPage() {
           {/* Mobile: horizontal-scroll strip with min-w cells (so the 7 KPIs
               stay readable instead of collapsing to ~25px each inside the
               316px panel). Desktop: same 7-col grid as before, no scroll. */}
-          <div className="flex md:grid md:grid-cols-[repeat(7,minmax(5.5rem,1fr))] gap-x-4 px-1 py-2 overflow-x-auto custom-scroll">
+          <div className="tj-fila-sigue tj-fila-sigue--solo-movil flex md:grid md:grid-cols-[repeat(7,minmax(5.5rem,1fr))] gap-x-4 px-1 py-2 overflow-x-auto custom-scroll">
             <KpiCell
               label={t("pnlTotal")}
               value={

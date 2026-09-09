@@ -1998,6 +1998,22 @@ textarea:focus-visible,
 .tj-fila-sigue--sin-reserva > :last-child {
   margin-right: 0;
 }
+/* ── CUANDO LA FILA SE VUELVE REJILLA ─────────────────────────────────
+   La tira de indicadores del Resumen de la demo es `flex` en movil y
+   `grid` de siete columnas por encima de `md`. El desvanecido se monta
+   como pseudoelemento del contenedor, y dentro de una rejilla eso es un
+   ITEM MAS: una octava celda en una rejilla declarada de siete. Esta
+   variante lo apaga justo donde la fila deja de ser fila — que es
+   ademas donde ya no hace falta, porque ahi no se desplaza nada. */
+@media (width >= 48rem) {
+  .tj-fila-sigue--solo-movil::after {
+    content: none;
+  }
+  .tj-fila-sigue--solo-movil > :last-child {
+    margin-right: 0;
+  }
+}
+
 @supports (animation-timeline: scroll()) {
   .tj-fila-sigue::after {
     animation: tj-pista-fin linear both;
