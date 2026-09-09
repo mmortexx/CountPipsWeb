@@ -25,7 +25,7 @@ del diario de trading nativo de Windows (WinUI 3, no incluido en este repo).
 - **Backend beta**: Worker de Cloudflare en `services/beta-api/` (D1 + KV + Turnstile);
   ver su propio [README](services/beta-api/README.md).
 
-## Dónde está ahora (2026-09-08)
+## Dónde está ahora (2026-09-09)
 
 El grueso de auditoría cuantitativa y de accesibilidad de las 13 dimensiones
 (matemáticas financieras, WCAG AA, paridad bilingüe, SEO, tokens de diseño,
@@ -1228,6 +1228,187 @@ De cuatro hallazgos brutos en Operaciones, cero reales. Van ya tres
 tandas en las que más de la mitad de lo que señala un barrido automático
 es defecto del barrido.
 
+
+### Decimocuarta tanda: /features y /pricing, que nadie había mirado
+
+Las nueve rutas de marketing que las trece tandas anteriores no habían
+abierto —`/features` y sus tres hijas, `/pricing`, `/about`, `/faq`,
+`/herramientas` y la envoltura de `/demo`— barridas en claro y oscuro a
+1440, 1024, 768 y 390 px. Siete defectos, y **ninguna puerta cazaba
+ninguno**: `humo`, `legible` (5.474 trozos), `fondos`, `tinta` y
+`deep_audit` (64 rutas) pasaron limpias antes y después.
+
+#### Las cuatro barras de playbook se pintaban llenas
+
+El defecto más caro de la tanda, y el más fácil de ver una vez visto. El
+acierto de cada setup vivía en un solo campo que servía de **rótulo** y
+de **ancho de la barra** (`width: s.w`). Con el espacio que pide la
+ortografía castellana, «62 %» no es una medida CSS válida: el navegador
+la descartaba, la barra se quedaba sin ancho y, siendo un bloque dentro
+de su pista, la llenaba entera.
+
+| | antes | ahora |
+|---|---|---|
+| Breakout 62 % | 197 px de 197 | 122 |
+| Pullback 58 % | 197 px de 197 | 114 |
+| Reversal 41 % | 197 px de 197 | **81** |
+| Trend 55 % | 197 px de 197 | 108 |
+
+La tarjeta que promete «sólo setups que tienen edge» enseñaba el
+Reversal —41 % de acierto y su propia insignia «Sin ventaja»— con la
+barra roja llena de lado a lado, que dice justo lo contrario que el
+número de al lado.
+
+**La regla que queda escrita:** un valor que se pinta Y se mide no puede
+ser el mismo dato. El porcentaje pasa a número; el rótulo sale de
+`fmtPct` y el ancho de `Math.round(wr * 100)`, y ya no pueden divergir.
+(Y `0.58 * 100` es `57.99999999999999`: el redondeo no es cosmético.)
+
+#### La matriz de seguridad se quedó a 480 px en una tarjeta de 1166
+
+Regresión de la undécima tanda, que hizo `display: flex` la variante
+`--sin-reserva` para que el aviso de «sigue a la derecha» dejara de
+resolver a altura cero. El precio no se midió: el hijo dejó de ser un
+bloque —que ocupa el ancho entero— y pasó a ser un **item**, que se
+dimensiona por su contenido.
+
+| ancho | caja | tabla |
+|---|---|---|
+| 1440 | 1166 | 480 |
+| 1024 | 950 | 480 |
+| 768 | 705 | 480 |
+
+Casi setecientos píxeles de tarjeta vacía a la derecha de una tabla cuyas
+franjas se cortan a media caja — que no se lee como «tabla estrecha» sino
+como «tabla rota», en la página cuyo argumento central sostiene esa
+tabla. Con `flex: 1 1 auto` el hijo vuelve a llenarla y el suelo de
+`min-width` sigue mandando a 390.
+
+**La regla:** cada vez que una clase de disposición cambia de `block` a
+`flex` hay que volver a medir a sus hijos. Es el mismo tipo de trampa que
+la decimotercera tanda encontró con `flex` → `grid`.
+
+#### El punto separador colgaba al final de cada línea
+
+La tira de confianza —portada y `/pricing`— alternaba señal y punto
+separador «porque es una sola línea de cinco piezas cortas». Medida, no
+lo es a **ningún** ancho: las cinco piezas suman más que los 1008 px
+útiles de su caja a 1440, así que siempre baja al menos una, y el punto
+que sigue a la última pieza de una línea se queda solo contra el canto,
+detrás de nada. Comprobado a 1440, 1280, 1152, 1024 y 768: un huérfano
+al final de cada línea.
+
+No hay CSS que distinga «último de la línea» de «último de la lista», y
+pintarlos delante sólo mueve el huérfano al principio de la línea
+siguiente. Fuera los puntos; separa el hueco, que ya hacía el trabajo.
+
+#### Tres tiras más que se desplazaban sin decirlo
+
+La decimotercera tanda puso el aviso en las diez tiras de la demo. Fuera
+de la demo quedaban tres, dos de ellas en las páginas más visitadas:
+
+- **La barra de pantallas de `/features`** esconde 335 px de 725 a 390 y
+  80 a 768, con su barra de desplazamiento oculta a propósito para que la
+  tira se lea como la barra de una aplicación: ningún indicio de que
+  hubiera más pestañas. La misma barra en la portada esconde 30.
+- **La tabla comparativa de `/pricing`** pide 680 px y a 390 esconde 330
+  — las dos últimas columnas enteras, «Diarios en la nube» y
+  «Excel / Sheets»—, con la última partida contra el canto.
+
+La tabla necesitó variante propia. De `lg` para arriba su caja pasa a
+`overflow-x: clip` a propósito (para que sus veintisiete filas cuelguen
+su `view()` de algo que sí se mueve), y con `clip` no hay puerto de
+desplazamiento contra el que anclar un `position: sticky`.
+`--hasta-lg` apaga el aviso justo ahí: 733 px de desvanecido a 390,
+`content: none` a 1440.
+
+#### La última cifra del eje se cortaba contra el canto
+
+El pendiente que la duodécima tanda dejó **medido y sin verificar**.
+Confirmado en la Analítica de la demo a 390 px, donde el panel deja
+237: el rótulo va centrado en una columna de 23 px y «431 US$» pide 36,
+así que sobra por los dos lados. En las columnas de en medio da igual
+—el vecino va oculto—, pero en la última la sobra cae fuera de la
+tarjeta, que lleva `overflow-hidden`: **13 px de cifra por fuera**.
+
+Dos cosas, no una:
+
+- `text-align` no basta. Cuando el texto es más ancho que su caja, la
+  línea arranca igual en el canto izquierdo y la sobra sigue saliendo
+  por la derecha — medidos los mismos 13 px con `text-right` puesto. Los
+  dos extremos pasan a caja del tamaño de su contenido, anclada a su
+  propio lado.
+- «Uno de cada dos» tampoco basta. Con nueve barras en 237 px, cinco
+  rótulos de «431 US$» suman 176 y se quedaban a 4 px unos de otros, que
+  se lee como un renglón corrido. El salto lo decide ahora el rótulo más
+  largo: hasta seis caracteres uno de cada dos —el eje de R sigue con sus
+  cinco—, por encima uno de cada cuatro, que en el de P&L deja tres
+  cifras separadas por 62 px. El último se pinta siempre: un eje sin su
+  extremo derecho no dice dónde acaba.
+
+#### Números y rótulos ingleses en copia castellana
+
+Cuatro de la misma familia, todos en rutas nunca miradas:
+
+- El **titular** de `/features/seguridad` («Tus datos, 100% en tu
+  máquina»), el subtítulo de `/features`, la descripción de la portada y
+  cinco cabeceras de metadatos llevaban el porcentaje pegado.
+- El **proyector de capital** abreviaba «$2,18M» también en castellano
+  —la divisa delante, que es la convención inglesa— al lado de un
+  «2.182.131 US$» de la casilla vecina que sale de `Intl` y la pone
+  detrás. Y «net» y «1000 trades» sin traducir.
+- La **calculadora de indisciplina**: «($/trade)» y la columna «TRADES»
+  en castellano, ésta seis líneas por debajo de su propio rótulo
+  «Operaciones al mes». Y el resumen que copia al portapapeles componía
+  sus seis cifras con `toFixed` dentro de un texto cuyo porcentaje ya
+  llevaba su espacio duro.
+- **`Wrapped`** (la ficha del setup más rentable de
+  `/features/metricas`) escribía «54% win»: signo pegado en los dos
+  idiomas y un rótulo que no es ninguno de los dos — la casa llama a esto
+  «win rate» en ambos, que es lo que dice su propia clave de i18n.
+
+#### Cinco cosas que parecían defectos y no lo eran
+
+- **Las dos últimas filas de `/herramientas` a media tinta.** Era la
+  entrada escalonada a medio camino: medida la opacidad de las nueve
+  filas, todas a 1. **Los 1800 ms de espera tras el scroll que dejó
+  escrita la novena tanda no siempre bastan** — con un escalonado largo
+  hacen falta 2500. La misma sombra salía en la tabla de `/pricing`.
+- **«2000,00 US$» sin separador de millares** en la calculadora de
+  riesgo. Es lo correcto: `es-ES` no agrupa hasta cinco dígitos.
+- **La tira de perfiles del proyector cortada a 1024** («Scalping · Alta
+  Frecuen…»). Ya lleva su `tj-fila-sigue`; lo que se ve es el
+  desvanecido haciendo su trabajo.
+- **«29.73» en los dos campos de la calculadora de indisciplina.** Son
+  `input[type=number]`: el navegador escribe el valor crudo con punto
+  decimal y no hay locale que lo cambie sin convertirlos en campos de
+  texto y perder el teclado numérico y los pasos.
+- **`tj-interlude` escondiendo 23 px** en nueve rutas a 390. Es
+  `overflow-x: clip` sobre una lámina decorativa: no hay nada que
+  desplazar ni nada que avisar.
+
+#### Lo que se vio y se deja escrito sin tocar
+
+En la Analítica de la demo conviven dos ejes con dos signos menos
+distintos: el de R-múltiplos escribe «-1,5R» con el guion que devuelve
+`Intl` para `es-ES`, y el de P&L «−260 US$» con el menos tipográfico que
+pone `fmtMoney`. Se decidió no tocarlo: unificar exige o meterle un
+reemplazo a mano al eje de R —un apaño— o cambiar el signo que devuelve
+el formateador de la casa, que es una decisión de todo el sitio y no de
+un gráfico.
+
+#### Lo que sigue sin mirar
+
+Para quien retome. Nunca han pasado por el barrido visual en los cuatro
+anchos y los dos temas: las 46 fichas de glosario restantes (se miraron
+11, elegidas por ser los extremos de contenido); los overlays —paleta de
+comandos, glosario modal, cajón móvil, panel de atajos—, que no se han
+abierto nunca para mirarlos; los estados de foco, error y envío de los
+formularios de `/beta` y de contacto (el anillo de foco se midió en la
+tercera tanda, pero nunca se miró); y las reglas de impresión de
+`globals.css`, que existen y no las ha comprobado nadie. Del lado inglés
+esta tanda barrió `/en/features` y `/en/pricing`; el resto sigue revisado
+sólo palabra a palabra.
 
 ### La decisión sobre `framer-motion`: no se migra
 
