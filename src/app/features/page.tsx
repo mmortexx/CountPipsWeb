@@ -81,7 +81,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Características — CountPips",
-    description: "40+ métricas institucionales, disciplina que cuesta dinero, playbook en vivo y 100% local.",
+    description: "40+ métricas institucionales, disciplina que cuesta dinero, playbook en vivo y 100 % local.",
   },
 };
 
@@ -143,7 +143,7 @@ export function FeaturesBody() {
         titleEn="Everything you need to trade with discipline."
         titleHighlightEs="operar con disciplina."
         titleHighlightEn="trade with discipline."
-        subtitleEs="Métricas institucionales, un guardián que te frena antes de la tontería, y tus datos 100% en tu máquina. No es otro diario con las mismas 30 métricas. Profundiza en cada eje en su propia página."
+        subtitleEs="Métricas institucionales, un guardián que te frena antes de la tontería, y tus datos 100 % en tu máquina. No es otro diario con las mismas 30 métricas. Profundiza en cada eje en su propia página."
         subtitleEn="Institutional metrics, a guardian that stops you before the dumb trade, and your data 100% on your machine. Not another journal with the same 30 metrics. Dive into each axis on its own page."
         breadcrumbEs="Características"
         breadcrumbEn="Features"

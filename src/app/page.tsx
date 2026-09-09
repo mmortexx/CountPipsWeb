@@ -13,7 +13,7 @@ import { SUPPORT_EMAIL } from "@/lib/forms";
 // metadataBase + basePath double-resolution issue (also see layout.tsx).
 
 const PAGE_DESCRIPTION =
-  "Diario de trading nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y datos 100% locales.";
+  "Diario de trading nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y datos 100 % locales.";
 
 export const metadata: Metadata = {
   title: { absolute: "CountPips — Opera como una mesa institucional." },

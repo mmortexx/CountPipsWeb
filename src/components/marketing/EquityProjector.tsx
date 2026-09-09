@@ -328,11 +328,17 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
   const fmtUsd = useCallback(
     (n: number, compact = false) => {
       const locale = es ? "es-ES" : "en-US";
+      /* Las abreviadas escribian «$2,18M» tambien en castellano: la
+         divisa delante, que es la convencion inglesa, al lado de un
+         «2.182.131 US$» de la casilla vecina que sale de `Intl` y la
+         pone detras. Ahora cada idioma abrevia como escribe. */
       if (compact && Math.abs(n) >= 1_000_000) {
-        return `$${(n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 2 })}M`;
+        const cifra = (n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+        return es ? `${cifra}\u00a0M US$` : `$${cifra}M`;
       }
       if (compact && Math.abs(n) >= 10_000) {
-        return `$${(n / 1_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}k`;
+        const cifra = (n / 1_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return es ? `${cifra}\u00a0k US$` : `$${cifra}k`;
       }
       return new Intl.NumberFormat(locale, {
         style: "currency",
@@ -1206,7 +1212,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                           ? es
                             ? "Inicio (Año 0)"
                             : "Start (Year 0)"
-                          : `${es ? "Año" : "Year"} ${activePoint.year} (${activePoint.trades} trades)`}
+                          : `${es ? "Año" : "Year"} ${activePoint.year} (${activePoint.trades} ${es ? "ops" : "trades"})`}
                       </span>
                     </div>
 
@@ -1562,7 +1568,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
                     {c.finalNetProfit >= 0 ? "+" : ""}
-                    {fmtUsd(c.finalNetProfit, true)} net
+                    {fmtUsd(c.finalNetProfit, true)} {es ? "neto" : "net"}
                   </div>
                 </div>
 
@@ -1574,10 +1580,10 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
-                    {es ? "Max DD Est. (99 % Conf.)" : "Est. Max DD (99% Conf.)"}
+                    {es ? "Max DD Est. (99\u00a0% Conf.)" : "Est. Max DD (99% Conf.)"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[rgb(var(--pnl-neg))]">
-                    -{fmtPct(c.estMaxDDpct, 1)}
+                    −{fmtPct(c.estMaxDDpct, 1)}
                   </div>
                   <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
                     {es ? `Racha peor: ~${c.maxConsecLosses} pérdidas` : `Streak: ~${c.maxConsecLosses} losses`}

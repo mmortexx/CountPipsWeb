@@ -27,7 +27,7 @@ const breadcrumbSchema = {
 const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Tus datos, 100% en tu máquina",
+  headline: "Tus datos, 100 % en tu máquina",
   description:
     "Local-first, sin nube ni cuentas. CountPips es local-first: tus operaciones viven en tu Windows, cifradas en reposo.",
   url: `${SITE_URL}/features/seguridad/`,
@@ -66,11 +66,11 @@ export const metadata: Metadata = {
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Seguridad — CountPips" },
   description:
-    "Local-first: tus datos 100% en tu máquina, sin nube ni cuentas. Especificaciones técnicas, integraciones con tu flujo y privacidad por diseño.",
+    "Local-first: tus datos 100 % en tu máquina, sin nube ni cuentas. Especificaciones técnicas, integraciones con tu flujo y privacidad por diseño.",
   alternates: { canonical: `${SITE_URL}/features/seguridad/`, languages: hreflangDe("/features/seguridad") },
   openGraph: {
     title: "Seguridad — CountPips",
-    description: "Local-first, sin nube ni cuentas. Tus datos 100% en tu máquina.",
+    description: "Local-first, sin nube ni cuentas. Tus datos 100 % en tu máquina.",
     url: `${SITE_URL}/features/seguridad/`,
     type: "website",
     siteName: "CountPips",
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Seguridad — CountPips",
-    description: "Local-first, sin nube ni cuentas. Tus datos 100% en tu máquina.",
+    description: "Local-first, sin nube ni cuentas. Tus datos 100 % en tu máquina.",
   },
 };
 
@@ -129,9 +129,9 @@ export function SeguridadBody() {
         folio="I·c"
         eyebrowEs="Producto"
         eyebrowEn="Product"
-        titleEs="Tus datos, 100% en tu máquina."
+        titleEs="Tus datos, 100 % en tu máquina."
         titleEn="Your data, 100% on your machine."
-        titleHighlightEs="100% en tu máquina."
+        titleHighlightEs="100 % en tu máquina."
         titleHighlightEn="100% on your machine."
         subtitleEs="Sin nube, sin cuentas, sin servidores. CountPips es local-first: tus operaciones viven en tu Windows, cifradas en reposo, sin tocar nunca un servidor ajeno. Privacidad por diseño, no por configuración."
         subtitleEn="No cloud, no accounts, no servers. CountPips is local-first: your trades live on your Windows, encrypted at rest, never touching anyone else's server. Privacy by design, not by configuration."

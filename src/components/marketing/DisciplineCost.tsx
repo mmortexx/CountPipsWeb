@@ -115,9 +115,15 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
   };
 
   const copiarResumen = () => {
+    /* Las seis cifras del resumen salían de `toFixed`, o sea con punto
+       decimal inglés, dentro de un texto castellano cuyo porcentaje
+       ya llevaba su espacio duro. Es texto que el visitante se lleva:
+       `fmtMoney` pone separador de millares, divisa, y el signo
+       menos tipográfico que usa el resto del sitio. */
+    const eur = (v: number) => fmtMoney(v, lang, { sign: true });
     const texto = es
-      ? `Factura de Indisciplina (CountPips):\n• Operaciones/mes: ${totalTrades} (${breachPct}\u00a0% fuera de plan)\n• Expectancy en plan: +${inPlanExp.toFixed(2)} $\n• Expectancy fuera de plan: ${offPlanExp.toFixed(2)} $\n• Brecha por trade: -${gap.toFixed(2)} $\n• Fuga mensual: -${totalLeakMonthly.toFixed(2)} $\n• Fuga anual proyectada: -${totalLeakAnnual.toFixed(2)} $`
-      : `Indiscipline Invoice (CountPips):\n• Trades/month: ${totalTrades} (${breachPct}% off-plan)\n• In-plan expectancy: +${inPlanExp.toFixed(2)} $\n• Off-plan expectancy: ${offPlanExp.toFixed(2)} $\n• Gap per trade: -${gap.toFixed(2)} $\n• Monthly leak: -${totalLeakMonthly.toFixed(2)} $\n• Projected annual leak: -${totalLeakAnnual.toFixed(2)} $`;
+      ? `Factura de Indisciplina (CountPips):\n• Operaciones/mes: ${totalTrades} (${breachPct}\u00a0% fuera de plan)\n• Expectancy en plan: ${eur(inPlanExp)}\n• Expectancy fuera de plan: ${eur(offPlanExp)}\n• Brecha por operación: ${eur(-gap)}\n• Fuga mensual: ${eur(-totalLeakMonthly)}\n• Fuga anual proyectada: ${eur(-totalLeakAnnual)}`
+      : `Indiscipline Invoice (CountPips):\n• Trades/month: ${totalTrades} (${breachPct}% off-plan)\n• In-plan expectancy: ${eur(inPlanExp)}\n• Off-plan expectancy: ${eur(offPlanExp)}\n• Gap per trade: ${eur(-gap)}\n• Monthly leak: ${eur(-totalLeakMonthly)}\n• Projected annual leak: ${eur(-totalLeakAnnual)}`;
 
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(texto).then(() => {
@@ -278,7 +284,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[rgb(var(--divider)/0.08)]">
                 <div>
                   <label htmlFor="disc-inplan" className="block text-[11px] uppercase tracking-wider text-tertiary mb-1">
-                    {es ? "Ganancia media en plan ($/trade)" : "Avg win in-plan ($/trade)"}
+                    {es ? "Ganancia media en plan ($/op.)" : "Avg win in-plan ($/trade)"}
                   </label>
                   <div className="relative">
                     <input
@@ -321,7 +327,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
               <div className="overflow-x-auto custom-scroll">
                 <div className="grid grid-cols-4 min-w-[400px] border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
                   <span className="tnum text-[10px] uppercase tracking-[0.14em]">{es ? "Modo" : "Mode"}</span>
-                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Trades" : "Trades"}</span>
+                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Ops" : "Trades"}</span>
                   <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Expectancy" : "Expectancy"}</span>
                   <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Neto" : "Net P&L"}</span>
                 </div>
