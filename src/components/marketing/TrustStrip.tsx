@@ -1,6 +1,5 @@
 "use client";
 
-import { Fragment } from "react";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -85,33 +84,29 @@ export function TrustStrip() {
           // visual weight of the icons (16px gap ≈ icon height). Slight
           // but reads as a deliberate rhythm rather than two cramped
           // lines.
-          className="flex flex-wrap items-center justify-center gap-x-5 sm:gap-x-8 gap-y-4 text-secondary text-sm"
+          // T14 — fuera los puntos separadores. Iban entre señal y señal
+          // «porque la tira es una sola línea», y medida no lo es a
+          // NINGÚN ancho: las cinco piezas suman más que la caja (1008 px
+          // útiles a 1440) y siempre baja al menos una. Con `flex-wrap`,
+          // el separador que sigue a la última pieza de una línea se
+          // queda colgando en el canto, detrás de nada — medido a 1440,
+          // 1280, 1152, 1024 y 768, un punto huérfano al final de CADA
+          // línea. Y no hay CSS que distinga «último de la línea» de
+          // «último de la lista»: la alternativa era pintarlos delante,
+          // que sólo mueve el huérfano al principio de la línea
+          // siguiente. Separa el hueco, que es lo que ya hacía el trabajo.
+          className="flex flex-wrap items-center justify-center gap-x-5 sm:gap-x-8 md:gap-x-10 gap-y-4 text-secondary text-sm"
         >
-          {items.map((item, i) => (
-            <Fragment key={item.label}>
-              {/* Sin escalón individual, y es deliberado: `ciclo` reparte
-                  el retardo por `nth-child`, y aquí los hermanos alternan
-                  señal y punto separador, así que las cinco señales caen
-                  en las posiciones 1, 3, 5, 7 y 9 — les tocarían los
-                  escalones 1, 3, 5, 2 y 4, es decir, desordenados. La
-                  tira es una sola línea de cinco piezas cortas: entra
-                  como bloque con su contenedor, que es lo que se lee. */}
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-primary shrink-0 inline-flex"
-                  aria-hidden="true"
-                >
-                  {item.icon}
-                </span>
-                <span className="t-caption text-secondary whitespace-nowrap tnum">{item.label}</span>
-              </div>
-              {i < items.length - 1 && (
-                <span
-                  aria-hidden="true"
-                  className="hidden md:inline-block w-1 h-1 rounded-[1px] bg-[rgb(var(--accent-base)/0.50)]"
-                />
-              )}
-            </Fragment>
+          {items.map((item) => (
+            <div key={item.label} className="flex items-center gap-2">
+              <span
+                className="text-primary shrink-0 inline-flex"
+                aria-hidden="true"
+              >
+                {item.icon}
+              </span>
+              <span className="t-caption text-secondary whitespace-nowrap tnum">{item.label}</span>
+            </div>
           ))}
         </div>
       </div>
