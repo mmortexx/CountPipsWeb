@@ -1998,6 +1998,18 @@ textarea:focus-visible,
 .tj-fila-sigue--sin-reserva > :last-child {
   margin-right: 0;
 }
+/* Y el precio de haberlo hecho flexible: el hijo dejó de ser un bloque
+   —que ocupa el ancho entero— y pasó a ser un ITEM, que se dimensiona
+   por su contenido. La matriz de seguridad, cuyo envoltorio sólo declara
+   `min-w-[480px]`, se quedó clavada en 480 px dentro de una tarjeta de
+   1166: 686 px de tarjeta vacía a la derecha de una tabla cuyas franjas
+   se cortan a media caja, que no se lee como «tabla estrecha» sino como
+   «tabla rota». Medido a 1440, 1024 y 768: 480 px de tabla en 1166, 950
+   y 705 de caja. Con `flex: 1 1 auto` el hijo vuelve a llenar la caja y
+   el suelo de `min-width` sigue mandando cuando no cabe. */
+.tj-fila-sigue--sin-reserva > :first-child {
+  flex: 1 1 auto;
+}
 /* ── CUANDO LA FILA SE VUELVE REJILLA ─────────────────────────────────
    La tira de indicadores del Resumen de la demo es `flex` en movil y
    `grid` de siete columnas por encima de `md`. El desvanecido se monta
