@@ -1124,6 +1124,111 @@ punto decimal inglés en la copia castellana, por el mismo motivo.
   `normal`). Arreglarlo pide truncar en JavaScript, con el riesgo de
   hidratación que eso trae, para ganar tres letras. **No se toca.**
 
+### Decimotercera tanda: lo que la demo escondía sin decirlo
+
+Los cinco defectos que la duodécima tanda dejó **medidos y sin arreglar**
+por vivir en ficheros del borrador de idiomas. Se resuelven con el
+procedimiento de apartar el borrador, y el saldo son diez contenedores
+arreglados y tres falsos positivos de la propia sonda.
+
+#### Diez tiras se desplazaban de lado sin decirlo
+
+Medidas las cuatro vistas a 390 px, las tablas y las tiras de fichas de
+la demo esconden **entre 67 y 803 px** de contenido a la derecha y
+ninguna lo avisaba. En los filtros de Operaciones la barra va además
+oculta con `no-scrollbar`: no había absolutamente ningún indicio, y la
+última columna quedaba partida contra el canto — que no se lee como «hay
+más a la derecha» sino como una tabla rota.
+
+Es exactamente el defecto que la undécima tanda encontró en los
+documentos legales, repetido diez veces dentro de la pieza comercial
+principal.
+
+Se les pone `tj-fila-sigue`. Los envoltorios de UN solo hijo —las
+tablas— llevan además `--sin-reserva`, que es la variante que se hizo
+flexible en la tanda anterior para que el desvanecido llegue a existir.
+Comprobado uno a uno: los diez pseudoelementos se pintan con altura real
+(de 28 a 969 px), y ningún elemento se sale del panel sin un antepasado
+que se desplace.
+
+#### La tira de indicadores, y por qué necesitó una variante propia
+
+La del Resumen es `flex` en móvil y **`grid` de siete columnas** por
+encima de `md`. El desvanecido se monta como pseudoelemento del
+contenedor, y dentro de una rejilla eso es un ITEM MÁS: una octava celda
+en una rejilla declarada de siete.
+
+Se añade `--solo-movil`, que apaga el pseudoelemento a partir de 48 rem
+— justo donde la fila deja de ser fila, y donde ya no hace falta porque
+no se desplaza nada. Comprobado a los dos lados: a 390 px el contenedor
+es `flex` y el aviso mide 55 px; a 1440 es `grid` de **siete** columnas y
+el pseudoelemento vale `content: none`.
+
+**La regla que queda escrita:** un pseudoelemento posicionado sobre un
+contenedor que cambia de `flex` a `grid` en un punto de ruptura no es el
+mismo elemento a los dos lados. En `flex` es decoración; en `grid` es una
+celda.
+
+#### La tarjeta del historial se ahogaba a sesenta píxeles
+
+La fila del Diario son dos grupos: el de la fecha y la nota, que encoge
+(`min-w-0 flex-1`), y el del sello y el importe, que no (`shrink-0`). A
+390 px, dentro del panel de la demo, el segundo se llevaba lo suyo y al
+primero le quedaban sesenta píxeles: sus rótulos caían a **veintiséis
+píxeles de ancho** y «16 jul 2026» salía en tres renglones, uno por
+palabra. Siete rótulos así por tarjeta, en todas.
+
+El grupo del sello baja a su propia línea por debajo de `sm`. Medido: de
+siete rótulos colapsados a cero.
+
+#### Y los números de la demo, que quedaban fuera
+
+La duodécima tanda dejó la copia castellana limpia de números ingleses
+en todo el sitio menos aquí. Ahora también:
+
+| | antes | ahora |
+|---|---|---|
+| decimales con punto inglés | 13 en 4 vistas | **0** |
+| signo de % pegado | 2 | **0** |
+
+«7.0 h» de las horas de sueño, los dos intervalos de confianza de
+Analítica («[0.05, 0.41]») y el eje del histograma de R-múltiplos
+(«-1.5R») pasan por `fmtNum`; «100%» del filtro de Operaciones y de la
+tabla del Diario, y la latencia «0.2ms» de la barra de estado, llevan el
+espacio duro. Lo único que queda con punto es `v2.4.1`, que es un número
+de versión.
+
+#### Y una puerta que se quedó buscando el rótulo viejo
+
+Al poner el espacio duro en «100 % en Plan», `tinta.mjs` dejó de
+encontrarlo: buscaba el literal `100% en Plan` con espacio normal. La
+puerta reportaba dos «NO MEDIDO» que no eran del sitio sino suyos.
+
+**Es el precio de tocar la copia:** cualquier guion que localice un
+elemento por su texto visible se rompe cuando ese texto cambia, y lo
+hace en silencio — no falla como «contraste insuficiente», falla como
+«no medido», que es fácil de leer por encima. Ahora busca por el trozo
+estable del rótulo.
+
+#### Tres falsos positivos, y los tres de la sonda
+
+- **«Nueva York», «1h 12m» y «16 jul 2026» a tres renglones** en
+  Operaciones. El detector contaba renglones dividiendo el alto de la
+  caja entre la altura de línea, y en una celda de tabla ese alto es
+  sobre todo RELLENO. Medidos de verdad: `white-space: nowrap`, y el
+  ancho que necesitan (82, 56 y 80 px) cabe de sobra en el que tienen
+  (85, 91 y 98). No se partían.
+- **Dos rótulos de ancho cero** en la misma vista: elementos ocultos
+  (`sr-only`), no defectos.
+- **Los «solapes» de la cabecera**: todos eran la barra de navegación de
+  la página, el bloque de datos estructurados y el botón de volver
+  arriba — el armazón del sitio, no la demo.
+
+De cuatro hallazgos brutos en Operaciones, cero reales. Van ya tres
+tandas en las que más de la mitad de lo que señala un barrido automático
+es defecto del barrido.
+
+
 ### La decisión sobre `framer-motion`: no se migra
 
 El encargo pedía decidirlo con un motivo. Medido sobre el sitio
