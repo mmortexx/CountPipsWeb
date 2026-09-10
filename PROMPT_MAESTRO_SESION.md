@@ -50,7 +50,7 @@ PROHIBICIONES ABSOLUTAS:
 
 OBLIGATORIO en ventanas, modales y tarjetas de interfaz:
 - Barra de control nativa Windows 11 en esquina superior derecha: Minimizar (—), Maximizar/Restaurar (□), Cerrar (✕).
-- Atajos de teclado normalizados a PC: Ctrl+K (Command Palette), Ctrl+G (Glosario), Ctrl+O (Operaciones).
+- Atajos de teclado normalizados a PC: Ctrl+G (Glosario), Ctrl+O (Operaciones), `?` (panel de atajos). Ctrl+K es de la demo, no de la web.
 - Radio de esquina 2-4 px en controles (el radio real de la app en Styles.xaml). Nunca más de 5 px en tarjetas.
 </platform_rules>
 ```
@@ -227,7 +227,6 @@ COMPONENTES TJ (infraestructura):
 - BackToTop (17 KB) — Botón de vuelta arriba
 - BrandGlyph (15 KB) — Marca con glifo de vela
 - Chip — Chip/etiqueta
-- CommandPalette (19 KB) — Paleta global Ctrl+K
 - ComparisonSlider (23 KB) — Slider antes/después
 - CookieConsent (14 KB) — Banner RGPD
 - CountUp — Conteo animado

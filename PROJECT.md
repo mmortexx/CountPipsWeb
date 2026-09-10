@@ -45,7 +45,8 @@ sido una pasada continua de pulido visual y de detalle, sección por sección:
   reales del programa (mismas que ya usaba `/features`), con las mismas pestañas
   y el mismo componente `ProductPlate`.
 - Paleta de comandos (⌘K/Ctrl+K): ahora enfoca su campo de búsqueda al abrir
-  (antes lo primero que se tecleaba se perdía).
+  (antes lo primero que se tecleaba se perdía). **Ya no aplica**: la paleta
+  de la web se retiró después; queda la de la demo.
 - Gráfico de velas de la demo: las etiquetas de precio de SL/TP/entrada ya no se
   superponen con las cifras de la rejilla cuando caen cerca.
 
@@ -1495,8 +1496,13 @@ fuente de verdad, no este documento.
   incluso si `localStorage` da `SecurityError` (navegación privada).
 
 ### `src/components/tj/OverlayHost.tsx`
-- `(e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k"` → paleta de comandos.
 - `(e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "g"` → glosario.
+- **No hay paleta de comandos en la web.** Se retiró (ver «Lo que hubo que
+  retocar en las puertas»), y este contrato siguió anunciando un Ctrl+K que
+  no existe: `src/components/tj/CommandPalette.tsx` no está en el árbol y
+  nadie importa `src/components/ui/command.tsx` ni, por tanto, `cmdk`. La
+  que sí existe es la de la demo (`DemoCommandPalette`), y el panel de
+  atajos —lo que ve el visitante— ya no la ofrecía.
 
 ### `src/components/marketing/EquityProjector.tsx`
 - `cagr`: `startBalance > 0 && finalBalance > 0 && years > 0` →

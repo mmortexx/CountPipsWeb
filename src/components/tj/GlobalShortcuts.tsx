@@ -34,8 +34,9 @@ import { openShortcutsHelp } from "@/lib/overlays";
  * All listeners are skipped when:
  *  - The user is typing in an INPUT, TEXTAREA, SELECT, or contentEditable
  *    element (so we don't hijack regular typing).
- *  - The CommandPalette is open (detected via the `[cmdk-root]` selector cmdk
- *    renders while mounted — see CommandPalette.tsx).
+ *  - The demo's command palette is open (detected via the `[cmdk-root]`
+ *    attribute that `DemoCommandPalette` sets on its modal root while open).
+ *    La paleta global de la web se retiró; este guardia protege la de /demo.
  *  - The ShortcutsHelp overlay itself is open (`body[data-shortcuts-help-open]`
  *    is set by ShortcutsHelp while it's mounted open).
  *  - A meta/ctrl/alt modifier is held (so we never swallow Cmd+T, Ctrl+L, etc.
@@ -120,7 +121,7 @@ export function GlobalShortcuts() {
         }
       }
 
-      // 2) Skip when the CommandPalette is open.
+      // 2) Skip when the demo's command palette is open.
       if (document.querySelector("[cmdk-root]")) return;
 
       // 3) Skip when the ShortcutsHelp overlay is open.
