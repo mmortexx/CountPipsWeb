@@ -2047,6 +2047,46 @@ textarea:focus-visible,
 }
 
 /* ============================================================
+   EL ANCLAJE DE LOS CUATRO MATERIALES, EN SU CAPA
+   ============================================================
+   Los cuatro materiales del sistema —papel, papel de hoja, cristal
+   mecanizado y tarjeta de demo— declaraban `position: relative` en su
+   propia regla, y esa regla vive FUERA de toda `@layer`. En la cascada,
+   lo que no está en una capa gana a lo que sí lo está, y las utilidades
+   de Tailwind viven en `@layer utilities`: cualquier `fixed`,
+   `absolute` o `sticky` puesto sobre un elemento con `.tj-paper`
+   quedaba anulado en silencio. No es un empate de especificidad que se
+   pueda ganar añadiendo una clase más: la capa manda antes.
+
+   Costó tres piezas antes de encontrarse. Dos se habían parcheado a
+   mano con `style={{ position: "fixed" }}` —el cajón móvil de la barra
+   y el aviso de cookies, los dos con su comentario explicando el
+   apaño—, y las que quedaban no:
+
+   - El GLOSARIO MODAL (Ctrl+G y su botón del pie) pedía `fixed` y
+     resolvía a `relative`: se maquetaba al final del documento, a
+     9.683 px del borde superior de la ventana. Pulsarlo oscurecía la
+     página y no enseñaba nada.
+   - El TIRADOR del comparador antes/después de /features/disciplina
+     pedía `absolute left-1/2 top-1/2`.
+   - El PANEL DE RESULTADOS de la calculadora de comisiones pedía
+     `sticky top-24` y no se quedaba quieto al desplazar.
+
+   El anclaje sólo existe para que los pseudoelementos decorativos de
+   cada material (grano, filo, catch-light) tengan contra qué colocarse,
+   y cualquier posición no estática sirve para eso. Declararlo en
+   `@layer components` conserva el comportamiento donde no hay utilidad
+   y deja de pisarla donde la hay. */
+@layer components {
+  .tj-paper,
+  .tj-hoja,
+  .liquid-glass,
+  .demo-card {
+    position: relative;
+  }
+}
+
+/* ============================================================
    TJ-MATRIZ — el cuadro de cifras de un informe
    ============================================================
    Las convenciones de un cuadro impreso, que son además las que este
@@ -2634,7 +2674,6 @@ button.icon-btn:hover > svg,
      Matches the .glass saturate value for material-system coherence. */
   -webkit-backdrop-filter: blur(4px) saturate(150%);
   backdrop-filter: blur(4px) saturate(150%);
-  position: relative;
 }
 .liquid-glass::before {
   content: '';
@@ -2923,7 +2962,6 @@ button.icon-btn:hover > svg,
 /* Nivel 2 — la tarjeta (GlassCardBrush + HeroCardBorderBrush). El relleno
    lo da el tinte de la paleta; el filo, el degradado de acento. */
 .demo-card {
-  position: relative;
   border-radius: 3px;
   background: rgb(var(--divider) / 0.022);
 }
@@ -4274,7 +4312,6 @@ button.icon-btn:hover > svg,
    texto pequeño (ahí sigue mandando .bg-veil / .liquid-glass).
    ============================================================ */
 .tj-paper {
-  position: relative;
   /* Translucidez REAL pero MUY LEVE Y SUTIL (P9): el usuario pidió que
      el atlas animado del fondo se intuya suavemente a través del papel,
      no que se vea entero. 56% en oscuro dejaba pasar demasiado iris — el
@@ -6371,7 +6408,6 @@ svg [data-entra="sello"] {
    sombra negra al 30 % sobre papel casi blanco no se ve.
    ============================================================ */
 .tj-hoja {
-  position: relative;
   border: 1px solid rgb(var(--divider) / 0.26);
   box-shadow:
     /* la luz del canto, que ya traía `.tj-paper` y aquí se conserva
