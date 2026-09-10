@@ -6510,3 +6510,57 @@ svg [data-entra="sello"] {
     transition: none;
   }
 }
+
+/* ============================================================
+   IMPRESIÓN — LOS TOKENS DE COLOR, ESTA VEZ DE VERDAD
+   ============================================================
+   El bloque `@media print` de más arriba abre con «Force light-theme CSS
+   variables», y no forzaba ninguna. Dos motivos a la vez:
+
+   1. ESCRIBÍA EL FORMATO EQUIVOCADO. `--bg` es un COLOR en este sistema
+      (`#0c1116`), no una tripleta; el bloque le ponía `255 255 255`, que
+      como color no vale nada. Al revés en `--tint`, que sí es tripleta.
+   2. LLEGABA ANTES. Las declaraciones reales del tema oscuro viven más
+      abajo en este mismo fichero —`--bg` se declara CINCO veces, la
+      última en la línea ~3.174— y con la misma especificidad gana la
+      última. El bloque de impresión estaba en la 2.391.
+
+   El resultado, medido emulando `print` con el tema oscuro puesto: el
+   texto y el papel salían bien (esos se fuerzan con `!important` sobre
+   `html`/`body`), pero los TRECE degradados decorativos que interpolan
+   `--bg` o `--tint` seguían siendo casi negros. El mayor cubre 2,56
+   millones de px² —una lámina a sangre sobre la primera hoja—; después,
+   el velo lateral del hero, el velo de la cabecera de página (568.000
+   px² en /privacidad, /features y /pricing) y los desvanecidos de «sigue
+   a la derecha», que además caen justo encima de la última columna de la
+   tabla. Quien tenga el sitio en oscuro e imprima una página legal se
+   lleva bandas negras y una columna tapada.
+
+   Ni un selector nuevo: con los tokens en blanco, cada uno de esos
+   degradados va de blanco a transparente y desaparece sobre el papel.
+   Va al FINAL del fichero para que nada lo pise, y con `!important` por
+   si alguna variante de paleta sube la especificidad. */
+@media print {
+  :root,
+  :root[data-theme="dark"],
+  :root[data-theme="light"] {
+    /* colores */
+    --bg: #ffffff !important;
+    --surface: #ffffff !important;
+    --surface-2: #f5f5f5 !important;
+    --raised: #ffffff !important;
+    --paper-dense: #ffffff !important;
+    --ink: #111111 !important;
+    --ink-2: #333333 !important;
+    --ink-3: #666666 !important;
+    /* tripletas */
+    --tint: 255 255 255 !important;
+    --canvas: 255 255 255 !important;
+    --chrome: 255 255 255 !important;
+    --card: 255 255 255 !important;
+    --txt-primary: 17 17 17 !important;
+    --txt-secondary: 51 51 51 !important;
+    --txt-tertiary: 102 102 102 !important;
+    --divider: 0 0 0 !important;
+  }
+}
