@@ -25,7 +25,7 @@ del diario de trading nativo de Windows (WinUI 3, no incluido en este repo).
 - **Backend beta**: Worker de Cloudflare en `services/beta-api/` (D1 + KV + Turnstile);
   ver su propio [README](services/beta-api/README.md).
 
-## Dónde está ahora (2026-09-09)
+## Dónde está ahora (2026-09-10)
 
 El grueso de auditoría cuantitativa y de accesibilidad de las 13 dimensiones
 (matemáticas financieras, WCAG AA, paridad bilingüe, SEO, tokens de diseño,
@@ -1400,16 +1400,161 @@ un gráfico.
 
 #### Lo que sigue sin mirar
 
-Para quien retome. Nunca han pasado por el barrido visual en los cuatro
-anchos y los dos temas: las 46 fichas de glosario restantes (se miraron
-11, elegidas por ser los extremos de contenido); los overlays —paleta de
-comandos, glosario modal, cajón móvil, panel de atajos—, que no se han
-abierto nunca para mirarlos; los estados de foco, error y envío de los
-formularios de `/beta` y de contacto (el anillo de foco se midió en la
-tercera tanda, pero nunca se miró); y las reglas de impresión de
-`globals.css`, que existen y no las ha comprobado nadie. Del lado inglés
-esta tanda barrió `/en/features` y `/en/pricing`; el resto sigue revisado
-sólo palabra a palabra.
+Para quien retome. Los overlays, los formularios y la hoja impresa se
+miraron en la decimoquinta tanda. Quedan: las 46 fichas de glosario
+restantes (se miraron 11, elegidas por ser los extremos de contenido) y
+el lado inglés, del que esta tanda barrió `/en/features` y `/en/pricing`
+y el resto sigue revisado sólo palabra a palabra.
+
+### Decimoquinta tanda: los overlays, los formularios y la hoja impresa
+
+Las tres zonas que quedaban sin abrir. La primera dio el defecto más
+grave que ha salido en quince tandas, y no lo cazaba ninguna puerta
+porque **no se ve sin pulsar una tecla**.
+
+#### El glosario oscurecía la página y no enseñaba nada
+
+Ctrl+G montaba el modal, el velo cubría la ventana… y la ficha se
+maquetaba **a 9.683 px del borde superior**, al final del documento.
+Pedía `position: fixed` y resolvía a `relative`.
+
+La causa no es un empate de especificidad —añadir clases no lo habría
+arreglado— sino la CAPA. `.tj-paper`, `.tj-hoja`, `.liquid-glass` y
+`.demo-card` declaran su anclaje en reglas que viven **fuera de toda
+`@layer`**, y en la cascada lo que no está en una capa gana a lo que sí:
+las utilidades de Tailwind viven en `@layer utilities`. Comprobado con la
+cascada que devuelve el propio navegador (`CSS.getMatchedStylesForNode`):
+
+| selector | capa | declara |
+|---|---|---|
+| `.fixed` | `utilities` | `position: fixed` |
+| `.tj-paper` | (sin capa) | `position: relative` |
+
+**Cualquier `fixed`, `absolute` o `sticky` puesto sobre un elemento con
+uno de los cuatro materiales quedaba anulado en silencio.** Y llevaba
+tiempo mordiendo: dos piezas ya se habían parcheado a mano con
+`style={{ position: "fixed" }}` —el cajón móvil de la barra y el aviso de
+cookies, cada uno con su comentario explicando el apaño— sin buscar la
+causa común. Las que no se habían parcheado:
+
+- El **glosario modal**, arriba.
+- El **tirador del comparador** de `/features/disciplina`, que pedía
+  `absolute left-1/2 top-1/2` y caía en el flujo.
+- El **panel de resultados** de la calculadora de comisiones, que pedía
+  `sticky top-24` y no se quedaba quieto.
+
+El anclaje sólo existe para que los pseudoelementos decorativos de cada
+material tengan contra qué colocarse, y cualquier posición no estática
+sirve: declararlo en `@layer components` conserva el comportamiento
+donde no hay utilidad y deja de pisarla donde la hay. Comprobado: modal
+centrado (672×868 a 1440×900), tirador en el centro de su pista (698 de
+337-1103) y panel clavado en `top: 96` tras desplazar 400 px. Barrido de
+16 rutas buscando utilidades de posición anuladas: cero.
+
+**La regla que queda escrita:** en Tailwind v4, una clase propia SIN
+capa gana a cualquier utilidad. Si una clase de material declara
+`position`, `display` o cualquier cosa que una utilidad pueda querer
+cambiar, va en `@layer components`.
+
+#### Y con el glosario ya visible, dos defectos suyos
+
+- **El listado medía 1.868 px de ancho dentro de una caja de 670.** Cada
+  ficha es item de rejilla, y un item de rejilla arranca con
+  `min-width: auto`: no baja de lo que mide su contenido. La definición
+  lleva `truncate`, que es `nowrap`, así que su contenido es la frase
+  entera. 1.198 px escondidos de lado y la definición cortada a media
+  palabra contra el canto en vez de con sus puntos suspensivos. Con
+  `min-w-0`, la lista mide exactamente su caja a 1440 y a 390.
+- **La ficha no cabía en el móvil.** 900 px de alto dentro de 844: 28
+  cortados por arriba —la ceja y el titular— y otros 28 por abajo, y
+  como el único que se desplazaba era el listado de dentro, esos 56 px
+  no había manera de verlos. Con tope de ventana y el listado quedándose
+  con lo que sobra: 812 px a 390×844, 868 a 1440×900.
+
+#### El panel de atajos escondía la mitad de sus atajos
+
+Mismo tipo de fallo, otra pieza. Crecía con su lista de veinte y no
+tenía tope: medido a 390×844, **911 px de panel** empezando 127 por
+debajo del borde (su `pt-[15vh]`), o sea 194 por debajo del pliegue, y
+ningún elemento con desplazamiento. Los diez últimos atajos no se podían
+leer ni alcanzar. Ahora 685 px, la lista con su propio desplazamiento y
+el pie a la vista.
+
+#### La web anunciaba una paleta Ctrl+K que no existe
+
+Los «Contratos de interfaz (siguen vigentes)» y el inventario del prompt
+maestro declaraban un Ctrl+K en `OverlayHost` y un componente
+`CommandPalette` de 19 KB. Ninguno existe: el fichero no está en el
+árbol, nadie importa `src/components/ui/command.tsx` y, por tanto, nadie
+importa `cmdk`. La paleta se retiró hace tandas —está anotado en «Lo que
+hubo que retocar en las puertas»— y el panel de atajos, que es lo que ve
+el visitante, ya no la ofrecía. Comprobado en el navegador: Ctrl+K y
+Cmd+K en la portada no cambian un solo byte del DOM. Corregidos los dos
+documentos.
+
+Queda **código muerto sin retirar**, anotado aquí para no volver a
+descubrirlo: `src/components/ui/command.tsx` (sin importadores) y la
+dependencia `cmdk` que sólo él usa. No se toca en esta tanda porque
+sacar una dependencia obliga a rehacer el candado y eso se decide
+aparte; no pesa en el sitio publicado, que no la empaqueta.
+
+#### Quien imprimía en tema oscuro se llevaba bandas negras
+
+Las reglas de impresión existían y no las había comprobado nadie.
+Emulando `print` con el tema oscuro: el texto y el papel salen bien
+—eso se fuerza con `!important` sobre `html`/`body`— pero **trece
+degradados decorativos seguían siendo casi negros**, porque interpolan
+`--bg` o `--tint` y esas variables nunca se reseteaban. El mayor cubre
+2,56 millones de px²; detrás van el velo lateral del hero, el velo de la
+cabecera de página (568.000 px² en `/privacidad`, `/features` y
+`/pricing`) y los desvanecidos de «sigue a la derecha», que caen encima
+de la última columna de la tabla — en un documento de privacidad, lo
+tapado era otra vez a dónde van tus datos.
+
+El bloque `@media print` abre con «Force light-theme CSS variables» y no
+forzaba ninguna, por dos motivos a la vez:
+
+- **Escribía el formato equivocado.** `--bg` es un COLOR en este sistema
+  (`#0c1116`), no una tripleta, y le ponía `255 255 255`.
+- **Llegaba antes.** `--bg` se declara CINCO veces en el fichero y la
+  última está en la línea ~3.174; el bloque de impresión, en la 2.391.
+  Con la misma especificidad gana la última.
+
+Ni un selector nuevo: con los tokens en blanco, cada degradado va de
+blanco a transparente y desaparece sobre el papel. Comprobado en seis
+rutas y en los dos temas: ni un color oscuro sobrevive.
+
+#### Lo que se miró y estaba bien
+
+- **Los estados de los dos formularios.** `/beta`: anillo de foco de 2 px
+  más halo de 4 en los doce controles, `aria-invalid` en los seis campos
+  obligatorios al enviar vacío, un mensaje propio por campo enlazado con
+  `aria-describedby`, y el foco viajando al primer campo inválido. El
+  formulario de contacto de `/faq` usa el otro patrón válido: un resumen
+  con `role="alert"` al que apuntan los tres campos. Nada que arreglar.
+- **El señuelo anti-robots** de los dos formularios. Parecía enfocable
+  —la sonda le sacaba anillo de foco— pero es la sonda: `.focus()` por
+  JavaScript se salta `tabIndex={-1}`. Va dentro de un contenedor
+  `aria-hidden` fuera de pantalla. Correcto.
+- **El cajón móvil**, que ya llevaba su parche de posición inline: 300 px
+  fijos a la derecha, sin un solo desbordamiento dentro.
+
+#### Y un conejillo que se durmió por tercera vez
+
+`tests/css.test.ts` rompe `globals.css` a propósito —mete un cierre de
+comentario donde no toca— para demostrar que la comprobación de al lado
+puede fallar. Mover el anclaje de `.tj-paper` a su capa lo desarmó: con
+recuperación de errores, el analizador pasó a descartar la prosa suelta
+sin llevarse el bloque por delante, y las dos hojas emiten byte a byte lo
+mismo (72.643 en las dos).
+
+Es la tercera vez que ese conejillo se duerme, y las tres por lo mismo:
+exigía UN síntoma concreto, y cuál aparece depende de por dónde caiga el
+desfase que la prosa provoca — algo que cambia con cada edición de la
+hoja. Ahora exige que ocurra alguno de los dos: o el analizador estricto
+protesta (comprobado hoy: sigue dando «Invalid empty selector», que es
+justo lo que vigila la prueba de al lado) o el compilador de producción
+emite otra cosa.
 
 ### La decisión sobre `framer-motion`: no se migra
 
