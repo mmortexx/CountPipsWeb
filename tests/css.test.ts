@@ -144,12 +144,33 @@ describe("globals.css se analiza como CSS, no como prosa", () => {
         errorRecovery: true,
       }).code.toString();
 
+    /* ── SE EXIGEN LOS DOS SÍNTOMAS, NO UNO ─────────────────────────────
+     * Tercera vuelta a la misma tuerca. La versión que sólo exigía ERROR
+     * DE ANÁLISIS se desarmó cuando el desfase dejó de topar con una
+     * llave; se cambió por «lo emitido tiene que cambiar», y esa se
+     * desarmó al mover `position: relative` de `.tj-paper` a su capa: con
+     * la recuperación de errores, el analizador pasó a descartar la prosa
+     * suelta SIN llevarse el bloque por delante, así que las dos hojas
+     * emiten byte a byte lo mismo (72.643 en las dos, medido).
+     *
+     * Los dos síntomas dependen de por dónde caiga el desfase, y eso
+     * cambia cada vez que se toca la hoja. Lo que NO depende de la suerte
+     * es que ocurra alguno de los dos: o el analizador estricto protesta
+     * —que es justo lo que vigila la prueba de arriba— o el compilador de
+     * producción emite otra cosa. Se exige eso. Si algún día no pasara
+     * ninguno de los dos, el conejillo habría dejado de serlo de verdad y
+     * esto se pone rojo, que es lo que se quiere.
+     */
+    const protesta = analizar(roto);
+    const emiteDistinto = emitir(roto) !== emitir(CSS);
+
     expect(
-      emitir(roto),
-      "Cerrar un comentario a medias debería cambiar lo que recibe el " +
-        "navegador. Si lo emitido es idéntico, este comentario ya no vela " +
-        "nada y la prueba de arriba no está demostrando lo que dice.",
-    ).not.toEqual(emitir(CSS));
+      protesta !== null || emiteDistinto,
+      "Cerrar un comentario a medias debería o hacer protestar al " +
+        "analizador estricto o cambiar lo que emite el compilador de " +
+        "producción. No hace ninguna de las dos: este comentario ya no " +
+        "vela nada y la prueba de arriba no está demostrando lo que dice.",
+    ).toBe(true);
   });
 });
 
