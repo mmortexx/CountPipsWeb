@@ -227,7 +227,14 @@ export function GlossaryModal({
         </DialogTrigger>
       )}
 
-      <DialogContent className="sm:max-w-2xl p-0 gap-0 overflow-hidden">
+      {/* `flex flex-col` en vez de la rejilla del primitivo, y un tope de
+          ventana: la ficha crecía con sus 57 términos y a 390×844 medía
+          900 px dentro de 844, con 28 px cortados por arriba —la ceja y el
+          titular— y otros 28 por abajo. Como el único que se desplazaba
+          era el listado de dentro, esos 56 px no había forma de verlos.
+          Ahora manda el alto de la ventana y el listado se queda con lo
+          que sobra. */}
+      <DialogContent className="sm:max-w-2xl p-0 gap-0 overflow-hidden flex flex-col max-h-[calc(100svh-2rem)]">
         {/* Header — accent eyebrow + bilingual title + subtitle */}
         <DialogHeader className="px-6 pt-6 pb-4 text-left">
           <div className="flex justify-start">
@@ -332,7 +339,7 @@ export function GlossaryModal({
         <div className="divider-grad" />
 
         {/* Scrollable list of term cards */}
-        <div className="max-h-[60vh] overflow-y-auto custom-scroll px-6 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto custom-scroll px-6 py-4">
           {/* Recently viewed — last 3 expanded terms, persisted in localStorage */}
           {recentTerms.length > 0 && (
             <div className="mb-4">
@@ -404,7 +411,16 @@ export function GlossaryModal({
                     data-glossary-index={i}
                     data-glossary-term={g.term}
                     className={[
-                      "tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] p-4 transition-[border-color,box-shadow,background-color] cursor-pointer",
+                      /* `min-w-0`: la ficha es item de una rejilla, y un
+                         item de rejilla arranca con `min-width: auto`, o
+                         sea que no baja de lo que mide su contenido. La
+                         definicion lleva `truncate` —que es `nowrap`—, asi
+                         que su contenido es la FRASE ENTERA y la columna
+                         crecia con ella. Medido: 1.868 px de lista dentro
+                         de una caja de 670, 1.198 escondidos de lado, y la
+                         definicion cortada a media palabra contra el canto
+                         en vez de con sus puntos suspensivos. */
+                      "tj-paper tj-paper-dense min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.16)] p-4 transition-[border-color,box-shadow,background-color] cursor-pointer",
                       isActive
                         ? "border-[rgb(var(--divider)/0.30)] ring-1 ring-[rgb(var(--divider)/0.20)] bg-[rgb(var(--divider)/0.06)] shadow-[0_0_28px_-8px_rgb(var(--divider)/0.18)]"
                         : "hover:border-[rgb(var(--divider)/0.25)]",
