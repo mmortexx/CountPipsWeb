@@ -186,7 +186,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
               </span>
             </div>
             <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary">
-              {es ? "Sabe cuándo rendirte y cuándo apretar" : "Knows when to push and when to back off"}
+              {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
             </h3>
             {/* Bar chart hardcoded 24 barras (horas) */}
             <div className="mt-5 flex items-end gap-[3px]" style={{ height: 100 }}>
@@ -411,9 +411,9 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
             </h3>
             <div className="mt-4 space-y-2 text-xs font-mono">
               {[
-                { name: "Apex 150k (#1)", balance: "154.820 $", pnl: "+1.420 $", status: "FUNDED", pnlPos: true },
-                { name: "Topstep 50k (#2)", balance: "51.240 $", pnl: "+650 $", status: "PASSED", pnlPos: true },
-                { name: "IBKR Futures Core", balance: "84.190 $", pnl: "+2.100 $", status: "MASTER", pnlPos: true },
+                { name: "Apex 150k (#1)", balance: "154.820 $", pnl: "+1.420 $", status: es ? "En curso" : "In progress", pnlPos: true },
+                { name: "Topstep 50k (#2)", balance: "51.240 $", pnl: "+650 $", status: es ? "Aprobada" : "Passed", pnlPos: true },
+                { name: "IBKR Futures Core", balance: "84.190 $", pnl: "+2.100 $", status: es ? "Personal" : "Personal", pnlPos: true },
               ].map((acc) => (
                 <div
                   key={acc.name}

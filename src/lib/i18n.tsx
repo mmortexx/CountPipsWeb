@@ -90,8 +90,8 @@ export const STR = {
   // tooltip is "Local-first · sin nube" — slightly longer than the
   // visible "Local-first" text, mirrors the native WinUI tooltip.
   titleLocalFirstLed: {
-    es: "Local-first · sin nube",
-    en: "Local-first · no cloud",
+    es: "Local-first · tus datos en tu equipo",
+    en: "Local-first · your data on your machine",
   },
 
   // ---- Dashboard ----
