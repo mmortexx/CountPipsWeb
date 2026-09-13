@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/marketing/Hero";
 import { ProfileSelector } from "@/components/marketing/ProfileSelector";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
+import { MetricsShowcaseNew } from "@/components/marketing/MetricsShowcaseNew";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
 import { SUPPORT_EMAIL } from "@/lib/forms";
 
@@ -60,12 +61,6 @@ export const metadata: Metadata = {
 const StatsBandNew = dynamic(
   () => import("@/components/marketing/StatsBandNew").then((m) => m.StatsBandNew)
 );
-const MetricsShowcaseNew = dynamic(
-  () =>
-    import("@/components/marketing/MetricsShowcaseNew").then(
-      (m) => m.MetricsShowcaseNew
-    )
-);
 const GuardianNew = dynamic(
   () => import("@/components/marketing/GuardianNew").then((m) => m.GuardianNew)
 );
@@ -77,19 +72,18 @@ const FinalCTANew = dynamic(
 );
 
 /**
- * Portada: promesa y producto en la primera pantalla, las cifras que la
- * sostienen, los dos recorridos, las pantallas reales y, después, qué
- * mide, cómo frena y en qué cree. Una idea por sección y un solo cierre.
+ * Portada: promesa y cifras de la muestra en la primera pantalla, lo que
+ * la sostiene, los dos recorridos, las pantallas reales y, después, cómo
+ * frena y en qué cree. Una idea por sección y un solo cierre.
  * `app/en/page.tsx` reutiliza este cuerpo; cada sección lee `useLang()`.
  */
 export function HomeBody() {
   return (
     <>
-      <Hero />
+      <Hero producto={<MetricsShowcaseNew enPortada />} />
       <StatsBandNew />
       <ProfileSelector />
       <ProductShowcase />
-      <MetricsShowcaseNew />
       <GuardianNew />
       <Values />
       <FinalCTANew />

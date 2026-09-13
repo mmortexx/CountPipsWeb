@@ -1,361 +1,434 @@
 "use client";
 
+import { useId, useState, type KeyboardEvent, type PointerEvent } from "react";
+import type { Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n";
-import { Reveal } from "@/components/tj/Reveal";
-import { METRICS } from "@/lib/trading/data";
+import { Escritorio } from "@/components/tj/Escritorio";
+import { useLente } from "@/components/tj/useLente";
+import { INITIAL_BALANCE_CONST, METRICS } from "@/lib/trading/data";
 import { getRDistribution } from "@/lib/trading/fixtures";
-import { fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
+import { fmtDate, fmtMoney, fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
 
-/* ── TODA CIFRA DE ESTA SECCIÓN SALE DEL MOTOR ─────────────────────────
-   Antes estaban escritas a mano, y la tarjeta se contradecía a sí misma
-   en tres sitios a la vez: el histograma dibujaba un 63 % de ganadoras
-   bajo un pie que declaraba 50 %; implicaba +1,16R junto a una ficha que
-   decía +0,32R; y el rótulo anunciaba «60 ops» sobre una muestra de 200.
-   Ninguna de las cuatro fichas coincidía ya con `METRICS`, y la peor
-   desviación no era cosmética: el drawdown máximo se anunciaba como
-   −8,0 % cuando el real era dos puntos peor. Una cifra copiada a mano
-   envejece hacia el lado favorable sin que nadie lo decida — por eso
-   este comentario tampoco repite el valor de hoy: lo pinta `METRICS`.
+/* Toda cifra sale de `METRICS` y `getRDistribution()`, calculados sobre las
+   mismas operaciones deterministas de /demo. Nada escrito a mano. */
 
-   `METRICS` y `getRDistribution()` se calculan sobre las MISMAS 200
-   operaciones deterministas que alimentan /demo, así que la home y la
-   demo cuentan ahora la misma historia — que era justo la intención
-   declarada en la cabecera de `fixtures.ts`. Nada de esto es aleatorio:
-   la semilla es fija y el resultado, reproducible. */
-const R_BINS = getRDistribution();
-const R_MAX_COUNT = Math.max(1, ...R_BINS.map((b) => b.count));
-/** Cubo con más operaciones: se marca como moda en el gráfico. */
-const R_MODE_INDEX = R_BINS.findIndex((b) => b.count === R_MAX_COUNT);
+const BINS = getRDistribution();
+const TOTAL_BINS = Math.max(1, BINS.reduce((s, b) => s + b.count, 0));
+const MAX_BIN = Math.max(1, ...BINS.map((b) => b.count));
+const MODA = BINS.findIndex((b) => b.count === MAX_BIN);
+const R_LO = BINS[0]?.from ?? 0;
+const R_HI = BINS[BINS.length - 1]?.to ?? 1;
+const enR = (r: number) => Math.min(100, Math.max(0, ((r - R_LO) / (R_HI - R_LO || 1)) * 100));
 
-/**
- * MetricsShowcaseNew — sección `#metrics` del HTML. Dos columnas:
- * - Lista de ratios (Sharpe, Profit Factor, Expectancy, Max DD)
- * - Tarjeta de "Distribución de R-múltiplo" con histograma
- * Le siguen catálogo de métricas (4 familias) y la calculadora de
- * riesgo interactiva — esos se renderizan en sus propios componentes
- * y se montan desde la home.
- */
-/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
-export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } = {}) {
-  const { lang } = useLang();
-  const es = lang === "es";
+const INICIAL = INITIAL_BALANCE_CONST;
+const SALDOS = [INICIAL, ...METRICS.equityCurve.map((e) => e.balance)];
+const TECHOS = [INICIAL, ...METRICS.drawdownCeiling];
+const FECHAS: (Date | null)[] = [null, ...METRICS.equityCurve.map((e) => e.date)];
+const N = SALDOS.length;
+const S_MIN = Math.min(...SALDOS);
+const S_MAX = Math.max(...SALDOS);
+const MARGEN = (S_MAX - S_MIN || 1) * 0.1;
+const Y_MIN = S_MIN - MARGEN;
+const Y_MAX = S_MAX + MARGEN;
+const W = 1000;
+const H = 300;
+const px = (i: number) => (N > 1 ? (i / (N - 1)) * W : 0);
+const py = (v: number) => (1 - (v - Y_MIN) / (Y_MAX - Y_MIN)) * H;
+const puntos = (serie: number[]) => serie.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`);
+const LINEA = `M${puntos(SALDOS).join("L")}`;
+const AREA = `${LINEA}L${W},${H}L0,${H}Z`;
+const BAJO_AGUA = `M${puntos(TECHOS).join("L")}L${puntos(SALDOS).reverse().join("L")}Z`;
+
+const { VALLE, CIMA } = (() => {
+  let valle = 0;
+  let peor = 0;
+  for (let i = 0; i < N; i++) {
+    if (TECHOS[i] - SALDOS[i] > peor) {
+      peor = TECHOS[i] - SALDOS[i];
+      valle = i;
+    }
+  }
+  let cima = valle;
+  while (cima > 0 && SALDOS[cima] < TECHOS[valle] - 1e-6) cima--;
+  return { VALLE: valle, CIMA: cima };
+})();
+
+type Vista = "curva" | "dist";
+type Enfoque = "maxDd" | "expectancy" | "winRate" | null;
+
+const acotar = (v: number, max: number) => Math.min(max, Math.max(0, v));
+
+/** Flechas, Inicio/Fin y Mayús para saltar de diez en diez. */
+function teclado(e: KeyboardEvent, actual: number | null, max: number, fijar: (v: number | null) => void) {
+  const paso = e.shiftKey ? 10 : 1;
+  const base = actual ?? max;
+  const mapa: Record<string, number> = {
+    ArrowLeft: base - paso,
+    ArrowDown: base - paso,
+    ArrowRight: base + paso,
+    ArrowUp: base + paso,
+    Home: 0,
+    End: max,
+  };
+  if (e.key === "Escape") return fijar(null);
+  if (!(e.key in mapa)) return;
+  e.preventDefault();
+  fijar(acotar(mapa[e.key], max));
+}
+
+function Lectura({ rotulo, cifra, detalle, tono }: { rotulo: string; cifra: string; detalle: string; tono?: string }) {
   return (
-    <section
-      id="metrics"
-      className="section relative scroll-mt-24"
-    >
-      {/* T2c — `tj-container` sustituye a `max-w-[1240px] mx-auto px-5 md:px-8`
-          para heredar los gutters fluidos (clamp(1.25rem, 4vw, 2.25rem))
-          y el page-w de T2a. El `gap-12` desktop se mantiene; en móvil el
-          gap baja a `gap-10` para evitar 48 px de aire entre titular y
-          tarjeta cuando se apilan. */}
-      <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
-        <div>
-          {!enPagina && (
-          <Reveal>
-            <div className="inline-flex items-center gap-3 mb-5">
-              <span className="eyebrow">
-                {es ? "MÉTRICAS" : "METRICS"}
-              </span>
-            </div>
-          </Reveal>
-          )}
-          <Reveal delay={0.06}>
-            <h2
-              className={enPagina ? "sr-only" : "font-serif m-0"}
-              style={{
-                fontSize: "clamp(2rem, 3.6vw, 3rem)",
-                fontWeight: 400,
-                letterSpacing: "-0.022em",
-                lineHeight: 1.08,
-                color: "var(--ink)",
-                textWrap: "balance",
-              }}
-            >
-              {es ? (
-                <>
-                  Las cifras que usan{" "}
-                  <span style={{ color: "rgb(var(--accent-base))" }}>los que viven de esto</span>.
-                </>
-              ) : (
-                <>
-                  The numbers used by{" "}
-                  <span style={{ color: "rgb(var(--accent-base))" }}>people who trade for a living</span>.
-                </>
-              )}
-            </h2>
-          </Reveal>
-          {!enPagina && (
-          <Reveal delay={0.12}>
-            <p
-              className="mt-5 mb-8"
-              style={{
-                fontSize: "clamp(1rem, 1.3vw, 1.12rem)",
-                lineHeight: 1.62,
-                color: "var(--ink-2)",
-                maxWidth: "36em",
-              }}
-            >
-              {es
-                ? "No gráficos bonitos. Ratios con su muestra y su intervalo de confianza: lo que separa un edge real de una racha."
-                : "Not pretty charts. Ratios with their sample size and confidence interval: what separates a real edge from a streak."}
-            </p>
-          </Reveal>
-          )}
-          {/* T2c — `gap-4` (16 px) en vez de `gap-3` (12 px): las tarjetas
-              2×2 ya no se pegan en móvil y el número grande (19 px / 700)
-              no roza la etiqueta.
-              P1 — envoltorio Reveal stagger 0.18 para que las 4 KPIs
-              entren en escena como bloque coordinado, no como lista
-              asíncrona. El stagger interno entre las 4 tiles se logra con
-              el `delay` único del wrapper (no por tile): en móvil las 4 se
-              asientan a la vez, leyendo como placa de ratios, no como
-              cascada decorativa. */}
-          <Reveal delay={0.18}>
-          {/* ── Cuadro de cifras, no rejilla de tarjetas ─────────────
-              Esto eran cuatro cajas redondeadas con borde, fondo propio
-              y un punto de color: el patrón por defecto de cualquier
-              panel, y lo que hacía que la sección se leyera como un
-              cuadro de mandos de plantilla en vez de como la ficha de
-              datos de una institución.
+    <div className="tj-metricas-lectura" aria-live="polite">
+      <span className="block truncate text-[12px] text-tertiary">{rotulo}</span>
+      <span className="tnum mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+        <span className="text-[clamp(1.5rem,2.6vw,2rem)] font-semibold leading-none tracking-[-0.03em] text-primary">{cifra}</span>
+        <span className="text-[13px] leading-tight" style={{ color: tono ?? "var(--ink-3)" }}>
+          {detalle}
+        </span>
+      </span>
+    </div>
+  );
+}
 
-              El registro correcto para una cifra financiera no es la
-              caja: es la RETÍCULA. Un informe de mercado, una terminal
-              o una memoria anual alinean los datos con reglas finas y
-              dejan que manden las cifras — la caja compite con el dato
-              que tiene dentro. Se retiran los recuadros y queda una
-              cuadrícula de filetes: separador arriba de cada celda,
-              vertical entre columnas, y nada más.
+function Curva({ lang, es, enfoque }: { lang: Lang; es: boolean; enfoque: Enfoque }) {
+  const [i, setI] = useState<number | null>(null);
+  const k = i ?? N - 1;
+  const saldo = SALDOS[k];
+  const pnl = saldo - INICIAL;
+  const dd = TECHOS[k] > 0 ? (TECHOS[k] - saldo) / TECHOS[k] : 0;
+  const fecha = FECHAS[k];
 
-              `gap` pasa a 0 a propósito: con hueco, los filetes se
-              rompen y dejan de leerse como una cuadrícula continua. La
-              separación la da el relleno interior de cada celda. */}
-          <ul className="m-0 p-0 list-none grid grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
-            {[
-              { id: "sharpe", l: "Sharpe Ratio", v: fmtNum(METRICS.sharpe, lang, 2), c: "rgb(var(--pnl-pos))", formula: "S = (μ - Rf) / σ", descEs: "Retorno ajustado a la volatilidad total.", descEn: "Return adjusted to total volatility." },
-              { id: "sortino", l: "Sortino Ratio", v: fmtNum(METRICS.sortino, lang, 2), c: "rgb(var(--pnl-pos))", formula: "So = (μ - Rf) / σ_d", descEs: "Penaliza únicamente la volatilidad bajista.", descEn: "Penalizes only downside deviation." },
-              { id: "omega", l: "Ratio Omega", v: fmtNum(METRICS.omega, lang, 2), c: "var(--ink)", formula: "Ω = ∫[L,+∞] (1-F) / ∫[-∞,L] F", descEs: "Pondera toda la distribución de colas.", descEn: "Weights entire distribution tail risk." },
-              { id: "calmar", l: "Ratio Calmar", v: fmtNum(METRICS.calmar, lang, 2), c: "var(--ink)", formula: "Ca = CAGR / MaxDD", descEs: "Rendimiento anualizado vs peor drawdown.", descEn: "Annual return vs maximum drawdown." },
-              {
-                id: "expectancy",
-                l: es ? "Esperanza E(R)" : "Expectancy E(R)",
-                v: fmtR(METRICS.expectancyR, lang, 2),
-                c: METRICS.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                formula: "E(R) = (WR × W̄) - ((1-WR) × L̄)",
-                descEs: "Beneficio matemático medio por operación.",
-                descEn: "Mathematical mean edge per trade in R.",
-              },
-              {
-                id: "maxDd",
-                l: "Max Drawdown",
-                v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
-                c: "rgb(var(--pnl-neg))",
-                formula: "DD = (Peak - Trough) / Peak",
-                descEs: "Máxima caída pico a valle registrada.",
-                descEn: "Peak-to-trough historical drawdown.",
-              },
-            ].map((m) => (
-              <li
-                key={m.id}
-                className="group/metric relative min-w-0 border-b border-[rgb(var(--divider)/0.14)] py-4 pr-5 [&:nth-child(even)]:pl-5 [&:nth-child(even)]:border-l [&:nth-child(even)]:border-l-[rgb(var(--divider)/0.14)] transition-colors duration-200"
-              >
-                {/* ── LA FÓRMULA NO LE DISPUTA EL ANCHO A LA ETIQUETA ────
-                    Estaban las dos en un `flex justify-between`, y ahí la
-                    fórmula sólo cabía si era corta. Las cuatro largas
-                    —Sortino, Omega, Esperanza y Max Drawdown— envolvían a
-                    dos líneas y acababan PEGADAS a su etiqueta: medido en
-                    la portada, hueco de 0 px entre una y otra. Se leía
-                    como un amasijo justo en la sección que presume de
-                    rigor.
+  const rotulo =
+    i === null
+      ? es
+        ? `Saldo tras ${N - 1} operaciones`
+        : `Balance after ${N - 1} trades`
+      : k === 0
+        ? es
+          ? "Saldo inicial"
+          : "Starting balance"
+        : `${es ? "Operación" : "Trade"} ${k} ${es ? "de" : "of"} ${N - 1}${fecha ? ` · ${fmtDate(fecha, lang)}` : ""}`;
 
-                    Ahora cada una tiene su renglón. La etiqueta manda,
-                    la fórmula va debajo en monoespaciado terciario —que
-                    es su rango: referencia, no titular— y no envuelve
-                    nunca. El recorte es sólo red de seguridad; a 10 px
-                    la más larga pide ~186 px y la celda da ~230 px.
+  const detalle =
+    k === 0
+      ? es
+        ? "Punto de partida"
+        : "Starting point"
+      : `${fmtMoney(pnl, lang, { sign: true, compact: true })} · ${pnl >= 0 ? "+" : ""}${fmtPct(pnl / INICIAL, lang, 1)}${
+          dd > 0.0005 ? ` · DD −${fmtPct(dd, lang, 1)}` : es ? " · en máximos" : " · at highs"
+        }`;
 
-                    Por debajo de `sm` desaparece: en 390 px la celda cae
-                    a ~170 px y la fórmula saldría cortada a media
-                    integral, que se lee peor que no estar. */}
-                <span
-                  className="block text-[11px] uppercase"
-                  style={{ letterSpacing: "0.08em", color: "var(--ink-3)" }}
-                >
-                  {m.l}
-                </span>
-                <span
-                  className="mt-0.5 hidden break-words font-mono text-[11px] leading-[1.35] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
-                  title={m.formula}
-                >
-                  {m.formula}
-                </span>
-                <span
-                  className="tnum mt-2 block text-[22px] sm:text-[26px]"
-                  style={{ fontWeight: 600, color: m.c, letterSpacing: "-0.02em", lineHeight: 1.1 }}
-                >
-                  {m.v}
-                </span>
-                <span className="text-[12px] text-tertiary mt-1 block">
-                  {es ? m.descEs : m.descEn}
-                </span>
-              </li>
-            ))}
-          </ul>
-          </Reveal>
-        </div>
+  const mover = (e: PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setI(Math.round(acotar((e.clientX - r.left) / r.width, 1) * (N - 1)));
+  };
 
-        {/* Distribución de R */}
+  const inicialY = (py(INICIAL) / H) * 100;
+  const verDd = enfoque === "maxDd";
+
+  return (
+    <>
+      <Lectura rotulo={rotulo} cifra={fmtMoney(saldo, lang, { compact: true })} detalle={detalle} tono={pnl < 0 ? "rgb(var(--pnl-neg))" : undefined} />
+      <div
+        className="tj-metricas-lienzo"
+        tabIndex={0}
+        role="group"
+        aria-label={
+          es
+            ? `Curva de capital de ${N - 1} operaciones de muestra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa las flechas para recorrerla.`
+            : `Equity curve of ${N - 1} sample trades: from ${fmtMoney(INICIAL, lang, { compact: true })} to ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, max drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use the arrow keys to explore.`
+        }
+        data-activo={i !== null ? "true" : undefined}
+        onPointerMove={mover}
+        onPointerDown={mover}
+        onPointerLeave={() => setI(null)}
+        onKeyDown={(e) => teclado(e, i, N - 1, setI)}
+        onBlur={() => setI(null)}
+      >
         <div
-          data-entra
-          className="relative lg:pl-8"
+          aria-hidden
+          className="tj-metricas-banda"
+          data-visible={verDd ? "true" : undefined}
+          style={{ left: `${(px(CIMA) / W) * 100}%`, width: `${((px(VALLE) - px(CIMA)) / W) * 100}%` }}
         >
-          <div className="flex items-center justify-between mb-8">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
-              {es ? "Distribución de R-múltiplo" : "R-multiple distribution"}
-            </span>
-            <span
-              className="tnum"
-              style={{ fontSize: 12, color: "var(--ink-3)" }}
-            >
-              {/* El recuento sale de la propia muestra. Estaba fijo en
-                  «60» sobre un conjunto de 200 operaciones: el rótulo que
-                  dice cuántas se han contado no puede ser el único dato
-                  del gráfico que nadie cuenta. */}
-              {es
-                ? `${METRICS.closedCount} ops`
-                : `${METRICS.closedCount} trades`}
-            </span>
-          </div>
-          <div className="relative min-w-0">
-          <div className="flex items-end gap-1.5" style={{ height: 160 }}>
-            {R_BINS.map((b, i) => {
-              const pct = (b.count / R_MAX_COUNT) * 100;
-              const rango = `${fmtR(b.from, lang, 1)} … ${fmtR(b.to, lang, 1)}`;
-              const cuenta = es
-                ? `${b.count} ${b.count === 1 ? "operación" : "operaciones"}`
-                : `${b.count} ${b.count === 1 ? "trade" : "trades"}`;
-              return (
-                <div
-                  key={`${b.from}`}
-                  title={`${rango} · ${cuenta}`}
-                  className="flex-1 rounded-t relative cursor-default transition-transform duration-200 ease-[var(--ease-suave)] hover:-translate-y-[3%]"
-                  style={{
-                    // Mínimo de 2 px para que un cubo vacío deje marca en
-                    // el eje en lugar de un agujero.
-                    height: b.count === 0 ? "2px" : `${Math.max(pct, 3)}%`,
-                    background:
-                      i === R_MODE_INDEX
-                        ? "rgb(var(--accent-base))"
-                        : b.losing
-                          ? "color-mix(in oklab, rgb(var(--pnl-neg)) 60%, transparent)"
-                          : "color-mix(in oklab, rgb(var(--pnl-pos)) 70%, transparent)",
-                    opacity: b.count === 0 ? 0.35 : 0.85,
-                  }}
-                  aria-hidden
+          <span className="tnum">
+            {es ? "Drawdown máx." : "Max drawdown"} −{fmtPct(METRICS.maxDrawdownPct, lang, 1)}
+          </span>
+        </div>
+        <div aria-hidden className="tj-metricas-base" style={{ top: `${inicialY}%` }}>
+          <span className="tnum">{fmtMoney(INICIAL, lang, { compact: true })}</span>
+        </div>
+        <svg aria-hidden className="tj-metricas-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="tj-metricas-relleno" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" className="tj-metricas-relleno-alto" />
+              <stop offset="1" className="tj-metricas-relleno-bajo" />
+            </linearGradient>
+          </defs>
+          <path d={AREA} className="tj-metricas-area" />
+          <path d={BAJO_AGUA} className="tj-metricas-agua" data-visible={verDd ? "true" : undefined} />
+          <path d={LINEA} className="tj-metricas-linea" vectorEffect="non-scaling-stroke" />
+        </svg>
+        <span
+          aria-hidden
+          className="tj-metricas-guia"
+          style={{ left: `${(px(k) / W) * 100}%` }}
+          data-visible={i !== null ? "true" : undefined}
+        />
+        <span
+          aria-hidden
+          className="tj-metricas-punto"
+          style={{ left: `${(px(k) / W) * 100}%`, top: `${(py(saldo) / H) * 100}%` }}
+        />
+      </div>
+      <div aria-hidden className="tj-metricas-eje tnum justify-between">
+        <span>{FECHAS[1] ? fmtDate(FECHAS[1], lang) : ""}</span>
+        <span>{FECHAS[N - 1] ? fmtDate(FECHAS[N - 1] as Date, lang) : ""}</span>
+      </div>
+    </>
+  );
+}
+
+function Distribucion({ lang, es, enfoque }: { lang: Lang; es: boolean; enfoque: Enfoque }) {
+  const [i, setI] = useState<number | null>(null);
+  const b = i === null ? null : BINS[i];
+  const acumulado = i === null ? 0 : BINS.slice(0, i + 1).reduce((s, x) => s + x.count, 0);
+  const rango = (x: (typeof BINS)[number], y = es ? "a" : "to") => `${fmtR(x.from, lang, 1)} ${y} ${fmtR(x.to, lang, 1)}`;
+  const ops = (n: number) => (es ? `${n} ${n === 1 ? "operación" : "operaciones"}` : `${n} ${n === 1 ? "trade" : "trades"}`);
+
+  const lectura = b
+    ? {
+        rotulo: `${es ? "Resultado entre" : "Result between"} ${rango(b, es ? "y" : "and")}`,
+        cifra: ops(b.count),
+        detalle: `${fmtPct(b.count / TOTAL_BINS, lang, 1)} ${es ? "de la muestra" : "of the sample"} · ${fmtPct(acumulado / TOTAL_BINS, lang, 0)} ${es ? "acumulado" : "cumulative"}`,
+        tono: undefined,
+      }
+    : {
+        rotulo: es ? "Esperanza por operación" : "Expectancy per trade",
+        cifra: fmtR(METRICS.expectancyR, lang, 2),
+        detalle: `${es ? "Moda de" : "Mode"} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
+        tono: undefined,
+      };
+
+  const verE = enfoque === "expectancy" || i === null;
+
+  return (
+    <>
+      <Lectura {...lectura} />
+      <div
+        className="tj-metricas-lienzo"
+        tabIndex={0}
+        role="group"
+        aria-label={
+          (es
+            ? `Distribución de R-múltiplo de ${TOTAL_BINS} operaciones de muestra: `
+            : `R-multiple distribution of ${TOTAL_BINS} sample trades: `) +
+          BINS.map((x) => `${rango(x)}, ${ops(x.count)}`).join("; ") +
+          (es ? ". Usa las flechas para recorrerla." : ". Use the arrow keys to explore.")
+        }
+        data-activo={i !== null ? "true" : undefined}
+        onPointerLeave={() => setI(null)}
+        onKeyDown={(e) => teclado(e, i, BINS.length - 1, setI)}
+        onBlur={() => setI(null)}
+      >
+        <span aria-hidden className="tj-metricas-cero" style={{ left: `${enR(0)}%` }} />
+        <span
+          aria-hidden
+          className="tj-metricas-esperanza"
+          data-visible={verE ? "true" : undefined}
+          data-enfoque={enfoque === "expectancy" ? "true" : undefined}
+          style={{ left: `${enR(METRICS.expectancyR)}%` }}
+        >
+          <span className="tnum">E(R)</span>
+        </span>
+        <div aria-hidden className="tj-metricas-barras" style={{ gridTemplateColumns: `repeat(${BINS.length}, minmax(0, 1fr))` }}>
+          {BINS.map((x, j) => {
+            const atenuada = (i !== null && i !== j) || (enfoque === "winRate" && x.losing);
+            return (
+              <div key={x.from} className="tj-metricas-columna" onPointerEnter={() => setI(j)} onPointerDown={() => setI(j)}>
+                <span
+                  className="tj-metricas-barra"
+                  data-signo={x.losing ? "neg" : "pos"}
+                  data-activa={i === j ? "true" : undefined}
+                  data-atenuada={atenuada ? "true" : undefined}
+                  style={{ height: x.count ? `${Math.max(2, (x.count / MAX_BIN) * 88)}%` : "2px", ["--j" as string]: j }}
                 >
-                  {i === R_MODE_INDEX && (
-                    <span
-                      className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px]"
-                      style={{
-                        fontSize: 11,
-                        color: "rgb(var(--accent-base))",
-                        background: "var(--chip)",
-                        border: "1px solid var(--chip-line)",
-                      }}
-                    >
-                      {es ? "Moda" : "Mode"}
-                    </span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {/* Baseline axis — 1px hairline beneath the bars. */}
-          <div aria-hidden className="h-px w-full" style={{ background: "rgb(var(--divider) / 0.13)" }} />
-          </div>
-          {/* Eje: un rótulo por cubo, con su borde izquierdo. Antes eran
-              nueve etiquetas fijas (−3R…+5R) que no describían ningún
-              dato — la muestra real va de −1,5R a +2,5R. */}
-          <div className="mt-2 flex items-center justify-between">
-            {R_BINS.map((b) => (
-              <span
-                key={b.from}
-                className="tnum flex-1 text-center"
-                style={{ fontSize: 11, color: "var(--ink-3)" }}
-              >
-                {fmtR(b.from, lang, 1)}
-              </span>
-            ))}
-          </div>
-          {/* Resumen del gráfico para lectores de pantalla: las barras van
-              `aria-hidden`, así que sin esto la tarjeta entera era mudo
-              decorado. Sale del mismo cálculo que dibuja las barras. */}
-          <p className="sr-only">
-            {es
-              ? `Distribución de R-múltiplo de ${METRICS.closedCount} operaciones de muestra: ` +
-                R_BINS.map(
-                  (b) =>
-                    `entre ${fmtR(b.from, lang, 1)} y ${fmtR(b.to, lang, 1)}, ${b.count} ${b.count === 1 ? "operación" : "operaciones"}`
-                ).join("; ") +
-                "."
-              : `R-multiple distribution across ${METRICS.closedCount} sample trades: ` +
-                R_BINS.map(
-                  (b) =>
-                    `between ${fmtR(b.from, lang, 1)} and ${fmtR(b.to, lang, 1)}, ${b.count} ${b.count === 1 ? "trade" : "trades"}`
-                ).join("; ") +
-                "."}
-          </p>
-          {/* T2c — `gap-3` → `gap-4` para igualar el ritmo de las tarjetas
-              de ratios; los valores largos no se pegan a la etiqueta del
-              vecino. Las tres cifras salen del motor: eran «50 %»,
-              «+0,32R» y «1,59» escritas a mano, y sólo la primera se
-              acercaba a la verdad. */}
-          <div className="mt-5 grid grid-cols-3 gap-x-2.5 gap-y-4 pt-4 border-t sm:gap-x-4" style={{ borderColor: "rgb(var(--divider) / 0.06)" }}>
-            {[
-              { l: es ? "Ganadoras" : "Winners", v: fmtPct(METRICS.winRate, lang, 1) },
-              { l: es ? "R medio" : "Avg R", v: fmtR(METRICS.expectancyR, lang, 2) },
-              { l: es ? "Payoff" : "Payoff", v: fmtNum(METRICS.payoff, lang, 2) },
-            ].map((s) => (
-              <div key={s.l} className="relative">
-                <div
-                  className="tnum flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5"
-                  style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
-                >
-                  {/* R24-1c: tiny accent dot before each stat label so the
-                      three stats read as a synchronized footer row rather
-                      than three floating micro-headers. */}
-                  <span aria-hidden className="w-1 h-1 rounded-[1px]" style={{ background: "rgb(var(--accent-base))" }} />
-                  {s.l}
-                </div>
-                <div className="tnum" style={{ fontSize: 18, fontWeight: 700, marginTop: 4, color: "var(--ink)" }}>{s.v}</div>
+                  <span className="tj-metricas-cuenta tnum" data-visible={i === j || (i === null && j === MODA) ? "true" : undefined}>
+                    {i === j ? x.count : es ? "Moda" : "Mode"}
+                  </span>
+                </span>
               </div>
-            ))}
-          </div>
-          {/* Qué son estas cifras. No es letra pequeña defensiva: la
-              sección enseña ratios de una operativa, y quien la lee tiene
-              derecho a saber que salen del conjunto de muestra de la demo
-              y no de una cuenta real. Decirlo una vez, aquí, evita
-              tener que matizarlo en cada número — y es lo que el contrato
-              del proyecto exige distinguir. El Sharpe se declara
-              anualizado porque un Sharpe sin periodo no significa nada. */}
-          <p
-            className="mt-4 pt-3 border-t"
-            style={{
-              borderColor: "rgb(var(--divider) / 0.06)",
-              fontSize: 12,
-              lineHeight: 1.5,
-              color: "var(--ink-3)",
-            }}
-          >
-            {es
-              ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
-              : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualized.`}
-          </p>
+            );
+          })}
         </div>
       </div>
+      <div aria-hidden className="tj-metricas-eje tj-metricas-eje--bordes tnum">
+        {[R_LO, ...BINS.map((x) => x.to)].map((r, j) => (
+          <span key={r} style={{ left: `${enR(r)}%` }} data-activa={i !== null && (j === i || j === i + 1) ? "true" : undefined}>
+            {fmtR(r, lang, 1)}
+          </span>
+        ))}
+      </div>
+    </>
+  );
+}
+
+/**
+ * Las cifras de la operativa de muestra en un panel de cristal: curva de
+ * capital y distribución de R recorribles con el ratón, el dedo o el
+ * teclado, y los ratios debajo. Al pasar por Max DD, E(R) o Ganadoras el
+ * gráfico señala de dónde sale la cifra.
+ *
+ * `enPortada`: va dentro del hero, sin sección propia.
+ * `enPagina`: bajo un PageHeader que ya titula, el título queda para lectores de pantalla.
+ */
+export function MetricsShowcaseNew({ enPagina = false, enPortada = false }: { enPagina?: boolean; enPortada?: boolean } = {}) {
+  const { lang } = useLang();
+  const es = lang === "es";
+  const lente = useLente("panel");
+  const [vista, setVista] = useState<Vista>("curva");
+  const [enfoque, setEnfoque] = useState<Enfoque>(null);
+  const id = useId();
+
+  const vistas: { id: Vista; l: string }[] = [
+    { id: "curva", l: es ? "Curva de capital" : "Equity curve" },
+    { id: "dist", l: es ? "Distribución de R" : "R distribution" },
+  ];
+
+  const ratios: { id: string; l: string; v: string; f: string; d: string; c?: string; enlaza?: Enfoque }[] = [
+    { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), f: "μ / σ", d: es ? "Retorno por unidad de volatilidad." : "Return per unit of volatility." },
+    { id: "sortino", l: "Sortino", v: fmtNum(METRICS.sortino, lang, 2), f: "μ / σ↓", d: es ? "Sólo penaliza la volatilidad bajista." : "Penalizes downside volatility only." },
+    { id: "omega", l: "Omega", v: fmtNum(METRICS.omega, lang, 2), f: "Σ ganancias / Σ pérdidas", d: es ? "Pondera la distribución entera." : "Weighs the whole distribution." },
+    { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst fall." },
+    {
+      id: "expectancy",
+      l: es ? "Esperanza" : "Expectancy",
+      v: fmtR(METRICS.expectancyR, lang, 2),
+      f: "WR·W̄ − (1−WR)·L̄",
+      d: es ? "Lo que deja cada operación, en R." : "What each trade leaves, in R.",
+      c: METRICS.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
+      enlaza: "expectancy",
+    },
+    {
+      id: "maxDd",
+      l: "Max drawdown",
+      v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
+      f: "(pico − valle) / pico",
+      d: es ? "La peor caída de pico a valle." : "The worst peak-to-trough fall.",
+      c: "rgb(var(--pnl-neg))",
+      enlaza: "maxDd",
+    },
+    { id: "winRate", l: es ? "Ganadoras" : "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: "G / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed in profit.", enlaza: "winRate" },
+    { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: es ? "Ganancia media frente a pérdida media." : "Average win against average loss." },
+  ];
+
+  const pista: Record<Exclude<Enfoque, null>, Vista> = { maxDd: "curva", expectancy: "dist", winRate: "dist" };
+
+  const titulo = (
+    <h2
+      className={enPagina ? "sr-only" : "m-0 font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-normal leading-[1.12] tracking-[-0.02em] text-primary text-balance"}
+    >
+      {es ? "Las cifras que usan los que viven de esto." : "The numbers used by people who trade for a living."}
+    </h2>
+  );
+
+  const contenido = (
+    <div className="relative">
+      <Escritorio className="tj-escritorio--ancho" />
+      <div ref={lente} className="tj-cristal tj-metricas relative">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className={enPagina ? "" : "max-w-[46rem]"}>
+            {titulo}
+            {!enPagina && (
+              <p className="m-0 mt-2 text-[14px] leading-[1.55] text-secondary">
+                {es ? "Ratios con su muestra, no gráficos bonitos. " : "Ratios with their sample, not pretty charts. "}
+                <span className="[@media(hover:none)]:hidden">
+                  {es ? "Pasa el ratón por la curva, las barras o las cifras." : "Hover the curve, the bars or the figures."}
+                </span>
+                <span className="hidden [@media(hover:none)]:inline">
+                  {es ? "Desliza el dedo por la curva o toca las barras." : "Slide a finger along the curve or tap the bars."}
+                </span>
+              </p>
+            )}
+          </div>
+          <div role="tablist" aria-label={es ? "Vista del gráfico" : "Chart view"} className="tj-segmento" data-lado={vista === "dist" ? "2" : "1"}>
+            {vistas.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                role="tab"
+                id={`${id}-${v.id}`}
+                aria-selected={vista === v.id}
+                aria-controls={`${id}-panel`}
+                tabIndex={vista === v.id ? 0 : -1}
+                onClick={() => setVista(v.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                    e.preventDefault();
+                    const otra = vista === "curva" ? "dist" : "curva";
+                    setVista(otra);
+                    document.getElementById(`${id}-${otra}`)?.focus();
+                  }
+                }}
+              >
+                {v.l}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${vista}`} className="tj-metricas-vista" key={vista}>
+          {vista === "curva" ? <Curva lang={lang} es={es} enfoque={enfoque} /> : <Distribucion lang={lang} es={es} enfoque={enfoque} />}
+        </div>
+
+        <ul className="tj-metricas-ratios">
+          {ratios.map((m) => {
+            const activa = m.enlaza && enfoque === m.enlaza && pista[m.enlaza] === vista;
+            return (
+              <li
+                key={m.id}
+                className="tj-metricas-ratio"
+                data-enfoque={activa ? "true" : undefined}
+                tabIndex={m.enlaza ? 0 : undefined}
+                onPointerEnter={() => m.enlaza && setEnfoque(m.enlaza)}
+                onPointerLeave={() => m.enlaza && setEnfoque(null)}
+                onFocus={() => m.enlaza && setEnfoque(m.enlaza)}
+                onBlur={() => m.enlaza && setEnfoque(null)}
+              >
+                <span className="block truncate text-[11px] uppercase tracking-[0.08em] text-tertiary">{m.l}</span>
+                <span className="tnum mt-1.5 block text-[clamp(1.25rem,1.9vw,1.5rem)] font-semibold leading-none tracking-[-0.02em]" style={{ color: m.c ?? "var(--ink)" }}>
+                  {m.v}
+                </span>
+                <span className="tj-metricas-pie mt-1.5 text-[12px] leading-snug text-tertiary">
+                  <span>{m.d}</span>
+                  <span className="tj-metricas-formula font-mono text-[11px]" aria-hidden>
+                    {m.f}
+                  </span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <p className="relative m-0 mt-4 text-center text-[12px] leading-[1.5] text-tertiary">
+        {es
+          ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
+          : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualized.`}
+      </p>
+    </div>
+  );
+
+  if (enPortada) {
+    return (
+      <div id="metrics" className="scroll-mt-24">
+        {contenido}
+      </div>
+    );
+  }
+
+  return (
+    <section id="metrics" className="section relative scroll-mt-24">
+      <div className="tj-container">{contenido}</div>
     </section>
   );
 }

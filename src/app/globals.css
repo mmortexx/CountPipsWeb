@@ -2925,49 +2925,16 @@ button.icon-btn:hover > svg,
   padding-bottom: var(--ritmo-3);
   background: linear-gradient(to bottom, transparent, var(--surface) 22%, var(--surface) 78%, transparent);
 }
-/* Halo detrás de la captura: la luz sale del producto, no de una banda. */
+/* La luz del escritorio bajo el panel de cifras desborda a lo ancho sin crear scroll. */
 .tj-hero {
   overflow-x: clip;
 }
-/* La ventana se apoya en un bisel de cristal sobre luz difusa, como la app
-   sobre el escritorio, y se disuelve hacia el fondo por abajo. */
-.tj-hero-producto {
-  position: relative;
-  margin-inline: 0;
-  padding: clamp(6px, 0.8vw, 11px) clamp(6px, 0.8vw, 11px) 0;
-  border-radius: clamp(14px, 1.6vw, 22px) clamp(14px, 1.6vw, 22px) 0 0;
-  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 98%);
-  mask-image: linear-gradient(to bottom, #000 58%, transparent 98%);
-}
-.tj-hero-producto > picture {
-  display: block;
-  overflow: hidden;
-  border-radius: clamp(8px, 1vw, 12px) clamp(8px, 1vw, 12px) 0 0;
-}
-.tj-hero-producto > .tj-captura--clara,
-:root[data-theme="light"] .tj-hero-producto > .tj-captura--oscura {
-  display: none;
-}
-:root[data-theme="light"] .tj-hero-producto > .tj-captura--clara {
-  display: block;
-}
-.tj-escritorio--hero {
-  inset: -14% calc(50% - 50vw) 18%;
-}
 /* Las capturas traen el filo de la ventana de Windows: se recorta bajo el
    marco para que no haya dos bordes. */
-.tj-hero-producto img,
 .tj-lamina-ventana img {
   display: block;
   width: 100%;
   height: auto;
-}
-@media (min-width: 641px) {
-  .tj-hero-producto img {
-    width: calc(100% + 4px);
-    max-width: none;
-    margin: 0 -2px -8px;
-  }
 }
 @media (min-width: 768px) {
   .tj-lamina-ventana img {
@@ -3335,6 +3302,379 @@ button.icon-btn:hover > svg,
 }
 .tj-escritorio--ancho {
   inset: -8% calc(50% - 50vw) 4%;
+}
+
+/* ---- Panel de cifras ------------------------------------------------ */
+.tj-metricas {
+  --pulgar: #fff;
+  border-radius: clamp(20px, 2.2vw, 28px);
+  padding: clamp(1.25rem, 2.8vw, 2.25rem);
+  text-align: left;
+}
+:root:not([data-theme="light"]) .tj-metricas {
+  --pulgar: color-mix(in srgb, var(--ink) 14%, transparent);
+}
+.tj-segmento {
+  position: relative;
+  display: inline-grid;
+  flex-shrink: 0;
+  grid-template-columns: 1fr 1fr;
+  align-self: flex-start;
+  padding: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+@media (min-width: 768px) {
+  .tj-segmento {
+    align-self: auto;
+  }
+}
+.tj-segmento::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 999px;
+  background: var(--pulgar);
+  box-shadow: 0 1px 2px rgb(11 15 20 / 0.08), 0 0 0 0.5px rgb(var(--divider) / 0.16);
+  transition: transform 0.5s var(--ease-suave);
+}
+.tj-segmento[data-lado="2"]::before {
+  transform: translateX(100%);
+}
+.tj-segmento button {
+  position: relative;
+  z-index: 1;
+  padding: 0.45rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color 0.25s;
+}
+.tj-segmento button:hover,
+.tj-segmento button[aria-selected="true"] {
+  color: var(--ink);
+}
+.tj-metricas-vista {
+  margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
+}
+.tj-metricas-lectura {
+  min-height: 4rem;
+  animation: tj-metricas-aparece 0.5s var(--ease-suave) both;
+}
+.tj-metricas-lienzo {
+  position: relative;
+  height: clamp(190px, 26vw, 300px);
+  margin-top: 0.5rem;
+  border-radius: 8px;
+  touch-action: pan-y;
+  cursor: crosshair;
+}
+.tj-metricas-lienzo:focus-visible {
+  outline-offset: 8px;
+}
+.tj-metricas-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: tj-metricas-trazo 1.6s var(--ease-suave) both;
+}
+.tj-metricas-linea {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.tj-metricas-area {
+  fill: url(#tj-metricas-relleno);
+}
+.tj-metricas-relleno-alto {
+  stop-color: var(--ink);
+  stop-opacity: 0.11;
+}
+.tj-metricas-relleno-bajo {
+  stop-color: var(--ink);
+  stop-opacity: 0;
+}
+.tj-metricas-agua {
+  fill: rgb(var(--pnl-neg));
+  opacity: 0.12;
+  transition: opacity 0.35s var(--ease-suave);
+}
+.tj-metricas-agua[data-visible] {
+  opacity: 0.3;
+}
+.tj-metricas-base {
+  position: absolute;
+  inset-inline: 0;
+  border-top: 1px dashed rgb(var(--divider) / 0.26);
+  pointer-events: none;
+}
+.tj-metricas-base span {
+  position: absolute;
+  right: 0;
+  bottom: 5px;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.tj-metricas-banda {
+  position: absolute;
+  inset-block: 0;
+  border-inline: 1px solid rgb(var(--pnl-neg) / 0.28);
+  background: linear-gradient(to bottom, rgb(var(--pnl-neg) / 0.02), rgb(var(--pnl-neg) / 0.1));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-suave);
+}
+.tj-metricas-banda[data-visible] {
+  opacity: 1;
+}
+.tj-metricas-banda span {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  white-space: nowrap;
+  color: rgb(var(--pnl-neg));
+}
+.tj-metricas-guia {
+  position: absolute;
+  inset-block: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  background: linear-gradient(to bottom, transparent, rgb(var(--divider) / 0.42) 14%, rgb(var(--divider) / 0.42) 86%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, left 0.08s linear;
+}
+.tj-metricas-guia[data-visible] {
+  opacity: 1;
+}
+.tj-metricas-punto {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow:
+    0 0 0 4px rgb(var(--cristal-tinte) / 0.85),
+    0 0 0 4.5px rgb(var(--divider) / 0.16),
+    0 0 22px 6px color-mix(in srgb, var(--ink) 16%, transparent);
+  pointer-events: none;
+  transition: left 0.08s linear, top 0.08s linear;
+  animation: tj-metricas-aparece 0.6s 1.2s var(--ease-suave) both;
+}
+.tj-metricas-eje {
+  display: flex;
+  margin-top: 0.625rem;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.tj-metricas-eje > span {
+  transition: color 0.2s;
+}
+.tj-metricas-eje > [data-activa] {
+  color: var(--ink);
+}
+.tj-metricas-eje--bordes {
+  position: relative;
+  height: 1rem;
+}
+.tj-metricas-eje--bordes > span {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.tj-metricas-eje--bordes > span:first-child {
+  transform: none;
+}
+.tj-metricas-eje--bordes > span:last-child {
+  transform: translateX(-100%);
+}
+@media (max-width: 639px) {
+  .tj-metricas-eje--bordes > span:nth-child(even) {
+    visibility: hidden;
+  }
+}
+.tj-metricas-barras {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-items: end;
+}
+.tj-metricas-columna {
+  display: flex;
+  height: 100%;
+  align-items: flex-end;
+  padding-inline: clamp(2px, 0.5vw, 7px);
+}
+.tj-metricas-barra {
+  position: relative;
+  width: 100%;
+  border-radius: 6px 6px 2px 2px;
+  transform-origin: bottom;
+  animation: tj-metricas-crece 0.9s var(--ease-suave) both;
+  animation-delay: calc(var(--j) * 45ms);
+  transition: opacity 0.3s var(--ease-suave), filter 0.3s var(--ease-suave);
+}
+.tj-metricas-barra[data-signo="pos"] {
+  background: linear-gradient(to top, rgb(var(--pnl-pos) / 0.5), rgb(var(--pnl-pos) / 0.85));
+}
+.tj-metricas-barra[data-signo="neg"] {
+  background: linear-gradient(to top, rgb(var(--pnl-neg) / 0.42), rgb(var(--pnl-neg) / 0.78));
+}
+.tj-metricas-barra::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  border-radius: inherit;
+  background: rgb(255 255 255 / 0.55);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.tj-metricas-barra[data-activa] {
+  filter: saturate(1.25) brightness(1.06);
+}
+.tj-metricas-barra[data-activa]::after {
+  opacity: 1;
+}
+.tj-metricas-barra[data-atenuada] {
+  opacity: 0.26;
+}
+.tj-metricas-cuenta {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--ink-2);
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.2s, transform 0.35s var(--ease-suave);
+}
+.tj-metricas-cuenta[data-visible] {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.tj-metricas-cero {
+  position: absolute;
+  inset-block: 0;
+  width: 1px;
+  background: rgb(var(--divider) / 0.22);
+  pointer-events: none;
+}
+.tj-metricas-esperanza {
+  position: absolute;
+  z-index: 1;
+  inset-block: 0;
+  border-left: 1px dashed color-mix(in srgb, var(--ink) 45%, transparent);
+  opacity: 0.25;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-suave), border-color 0.3s;
+}
+.tj-metricas-esperanza[data-visible] {
+  opacity: 1;
+}
+.tj-metricas-esperanza[data-enfoque] {
+  border-left-style: solid;
+  border-left-color: var(--ink);
+}
+.tj-metricas-esperanza span {
+  position: absolute;
+  top: 0;
+  left: 6px;
+  font-size: 11px;
+  color: var(--ink-2);
+}
+.tj-metricas-ratios {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem;
+  margin: clamp(1.5rem, 3vw, 2.25rem) -0.875rem 0;
+  padding: clamp(0.75rem, 1.6vw, 1.25rem) 0 0;
+  list-style: none;
+  border-top: 1px solid rgb(var(--divider) / 0.12);
+}
+@media (min-width: 768px) {
+  .tj-metricas-ratios {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.tj-metricas-ratio {
+  min-width: 0;
+  padding: 0.875rem;
+  border-radius: 14px;
+  transition: background-color 0.3s var(--ease-suave);
+}
+.tj-metricas-ratio:hover,
+.tj-metricas-ratio:focus-visible,
+.tj-metricas-ratio[data-enfoque] {
+  background-color: color-mix(in srgb, var(--ink) 4.5%, transparent);
+}
+/* La fórmula sustituye a la descripción al pasar por encima; en táctil
+   se queda la descripción. */
+.tj-metricas-pie {
+  display: grid;
+}
+.tj-metricas-pie > span {
+  grid-area: 1 / 1;
+  transition: opacity 0.25s, transform 0.45s var(--ease-suave);
+}
+.tj-metricas-formula {
+  opacity: 0;
+  transform: translateY(4px);
+  color: var(--ink-2);
+  pointer-events: none;
+}
+@media (hover: hover) {
+  .tj-metricas-ratio:hover .tj-metricas-pie > span:first-child,
+  .tj-metricas-ratio:focus-visible .tj-metricas-pie > span:first-child {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  .tj-metricas-ratio:hover .tj-metricas-formula,
+  .tj-metricas-ratio:focus-visible .tj-metricas-formula {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tj-metricas-trazo {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes tj-metricas-crece {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes tj-metricas-aparece {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-metricas-svg,
+  .tj-metricas-barra,
+  .tj-metricas-punto,
+  .tj-metricas-lectura {
+    animation: none;
+  }
 }
 
 @media (max-width: 640px) {
