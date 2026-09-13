@@ -6,10 +6,6 @@ import { FAQ } from "@/components/marketing/FAQ";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
-// Estimated reading time (16 Q&A entries + contact sections). ~650 words
-// across all answers at 220 wpm = ~3 min.
-const READING_TIME_MIN = 3;
-
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
 

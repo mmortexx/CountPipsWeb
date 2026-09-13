@@ -79,12 +79,6 @@ export function GuardianNew() {
             el resto de la home, en vez de aparecer estática. */}
         <div
           data-entra
-          // T3c — swap a `.tj-paper-dense`: contenido denso (fila de trade,
-          // checklist de 3, aviso de bloqueo, 2 CTAs) necesita más opacidad
-          // que el papel 72 % estándar para mantener WCAG AA. Sigue siendo
-          // papel translúcido cálido (86 %) — el atlas sigue filtrándose por
-          // los bordes. Estados rojo/verde (checklist + aviso bloqueo) se
-          // conservan intactos: tienen sus propios fondos teñidos.
           className="tj-paper-dense relative rounded-[2px] p-5 sm:p-6 md:p-8"
           style={{
             border: "1px solid rgb(var(--divider) / 0.13)",

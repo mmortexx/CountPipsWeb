@@ -18,10 +18,6 @@ import { SITE_URL, hreflangDe } from "@/lib/site";
  * secciones alrededor competiría con lo único que se ha venido a hacer.
  */
 
-// El test son quince preguntas de lectura rápida; el tiempo estimado es
-// el de responderlo, que es lo que le importa a quien llega.
-const READING_TIME_MIN = 4;
-
 const DisciplineScore = dynamic(
   () => import("@/components/marketing/DisciplineScore").then((m) => m.DisciplineScore),
 );

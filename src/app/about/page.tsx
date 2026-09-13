@@ -8,9 +8,6 @@ import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { BetaStatus } from "@/components/beta/BetaStatus";
 
-// Estimated reading time (story + values + changelog + beta status).
-const READING_TIME_MIN = 4;
-
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
 

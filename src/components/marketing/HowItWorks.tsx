@@ -98,8 +98,7 @@ export function HowItWorks() {
                   //
                   // Conserva superficie —no pasa a retícula— porque lo que
                   // hay dentro es un dibujo, y un dibujo necesita lienzo:
-                  // sin él, los tres iconos quedarían flotando sobre el
-                  // grabado del fondo.
+                  // sin él, los tres iconos quedarían flotando.
                   //
                   // T2h: 120px en móvil (ahorra ~24px verticales por paso),
                   // 144px desde sm+, donde la rejilla de 3 columnas tiene

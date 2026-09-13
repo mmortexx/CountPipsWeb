@@ -134,13 +134,12 @@ export function HerramientasIndice() {
               Esta línea dice lo que más distingue al producto —que las
               ocho herramientas no mandan nada a ningún sitio— y estaba
               puesta como una nota al pie: `text-tertiary`, el color más
-              apagado del sistema, a 13,5 px, centrada y justo sobre la
-              zona más densa del grabado. Era, literalmente, el texto
+              apagado del sistema, a 13,5 px, centrada y al final de la
+              página. Era, literalmente, el texto
               menos legible de la página, y el que más peso comercial
               tiene.
 
-              Se apoya en papel, que es el recurso que este sitio usa
-              cuando un texto tiene que ganarle al fondo, sube a tinta
+              Se apoya en una tarjeta, sube a tinta
               secundaria y se le pone delante su sello. Así se lee como
               lo que es: una garantía firmada al cierre de la sección, no
               un descargo de responsabilidad. */}

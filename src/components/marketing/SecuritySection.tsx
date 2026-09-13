@@ -79,9 +79,6 @@ export function SecuritySection() {
               <div
                 key={c.t}
                 data-entra="ciclo"
-                // El papel translúcido conserva el filtrado del atlas por los
-                // bordes; `tj-hoja` le pone encima el doble filete y el apoyo
-                // del resto de superficies del sitio.
                 className="tj-paper tj-hoja p-6 sm:p-7"
               >
                 <span
@@ -136,10 +133,6 @@ export function SecuritySection() {
 
         {/* Tabla comparativa — mobile: horizontal scroll inside the card. */}
         <div
-          // T3c — swap a `.tj-paper-dense`: la tabla comparativa tiene
-          // 5 filas de texto pequeño + cabecera; el 86 % de opacidad
-          // mantiene AA en los textos `--ink-2`/`--ink-3` y deja que el
-          // atlas se filtre por los bordes sin competir con la tabla.
           className="tj-paper-dense tj-hoja tj-hoja--sangre relative overflow-hidden"
         >
           {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.

@@ -12,13 +12,8 @@ import { asset } from "@/lib/asset";
  * ficheros reales dormían sin usar en `public/img/`. Una web de software
  * de escritorio que no enseña su ventana está pidiendo un acto de fe.
  *
- * ── Por qué como lámina y no como "mockup" ────────────────────────────
- * El sitio ya tiene un vocabulario para presentar una figura: el atlas
- * dibuja láminas y `PlateInterlude` les pone su pie numerado. Meter aquí
- * un marco de ventana con brillos y sombra sería un segundo idioma para
- * lo mismo. La captura entra por la misma puerta que el resto de figuras
- * —numeración, filete doble, pie que dice qué se está viendo— y así el
- * grabado deja de ser un envoltorio bonito y pasa a enmarcar la prueba.
+ * La captura va en un marco de 1 px con sombra suave (`.tj-lamina-marco`),
+ * el mismo que la de la portada, y un pie que dice qué se está viendo.
  *
  * ── EL RECORTE YA NO ES COSA DE ESTE COMPONENTE ───────────────────────
  * Aquí había una maquinaria para tapar por CSS la barra de título —dice
@@ -82,7 +77,7 @@ export type LaminaProducto = {
   /** Medidas reales de esa captura ya recortada, en píxeles. */
   ancho: number;
   alto: number;
-  /** Numeración de la lámina, en romanos, como el resto del atlas. */
+  /** Ordinal romano de la captura (hoy no se pinta). */
   roman: string;
   /**
    * El nombre corto de la pantalla —el mismo que lleva en la barra de

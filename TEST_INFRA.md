@@ -33,13 +33,11 @@
 | Fichero | Qué vigila |
 |---|---|
 | `adversarial_stress.test.ts` | Casos límite adversariales del motor de métricas y contratos de futuros |
-| `atlas.test.ts` | Qué lámina del fondo grabado le toca a cada ruta (`atlas.ts`) |
 | `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida |
 | `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas |
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
 | `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
-| `grabado-404.test.ts` | Contrato de `Grabado404`, la lámina de la página 404 |
-| `grabado.test.ts` | Reglas del estilo "grabado" comprobables por máquina |
+| `grabado.test.ts` | Reglas visuales comprobables por máquina: sin degradados decorativos, fondo limpio, sello de «previsto» |
 | `hero-calcs.test.ts` | Las micro-calculadoras del hero (sin deslizadores) |
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
 | `metricas.test.ts` | El motor de métricas y la distribución de R de la portada |

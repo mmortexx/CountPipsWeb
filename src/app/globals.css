@@ -2693,7 +2693,7 @@ button.icon-btn:hover > svg,
    CONTRASTE medido (WCAG 2.1) sobre bg / surface / surface-2:
      claro  — primario 19,2 · secundario 10,2 · terciario 6,3 → 5,5 ·
               verde 5,7 → 4,9 · rojo 6,6 → 5,7 · ámbar 6,8 → 5,9
-     oscuro — primario 17,0 · secundario 9,1 · terciario 6,3 → 5,3 (raised) ·
+     oscuro — primario 17,0 · secundario 9,1 · terciario 7,1 → 5,9 (raised) ·
               verde 9,8 · rojo 7,0 · ámbar 7,8
    Si se retoca un color, se vuelve a medir sobre las cuatro superficies. */
 
@@ -2714,6 +2714,7 @@ button.icon-btn:hover > svg,
   --sig-green: 63 206 146;
   --sig-amber: 224 147 43;
   --sig-red: 240 119 106;
+  --sig-purple: 192 132 252; /* #C084FC */
 
   --tint: 10 12 15;
   --canvas: 10 12 15;
@@ -2725,7 +2726,7 @@ button.icon-btn:hover > svg,
 
   --txt-primary: 236 239 242; /* #ECEFF2 */
   --txt-secondary: 170 178 186; /* #AAB2BA */
-  --txt-tertiary: 138 147 156; /* #8A939C */
+  --txt-tertiary: 148 157 166; /* #949DA6 */
   --divider: 236 239 242;
 
   --bg: #0a0c0f;
@@ -2748,7 +2749,7 @@ button.icon-btn:hover > svg,
   --secondary: #161a20;
   --secondary-foreground: #eceff2;
   --muted: #161a20;
-  --muted-foreground: #8a939c;
+  --muted-foreground: #949da6;
   --accent: rgb(var(--accent-base));
   --accent-foreground: rgb(var(--accent-ink));
   --destructive: #f0776a;
@@ -2781,6 +2782,7 @@ button.icon-btn:hover > svg,
   --sig-green: 6 118 71;
   --sig-amber: 138 75 0;
   --sig-red: 180 35 24;
+  --sig-purple: 109 40 217; /* #6D28D9 — 7,1:1 sobre blanco */
 
   --tint: 255 255 255;
   --canvas: 255 255 255;

@@ -12,14 +12,8 @@ import { ANIO_PUBLICACION } from "@/lib/publicacion";
 /**
  * Navbar — barra edge-to-edge con material de papel translúcido (e-reader).
  *
- * T3b — la barra y el drawer adoptan `.tj-paper` / `.tj-paper-dense`
- * (papel cálido translúcido: 72%/86% surface, blur 10px + saturate
- * 140%, grano de papel SVG, catch-light inset). Reemplaza al cristal
- * acrílico frío anterior. El megamenú añade `.tj-paper-glow` para un
- * halo champagne tenue en el borde superior. Al hacer scroll la barra
- * gana sombra, pero NO cambia de altura (ver `ALTURA_BARRA`) ni pasa a
- * opaca: el papel sigue dejando intuir el atlas animado del hero, que
- * es justo lo que pide el producto.
+ * La barra y el cajón usan `.tj-paper-dense` (opaca, color de fondo).
+ * Al hacer scroll la barra NO cambia de altura (ver `ALTURA_BARRA`).
  *
  * R28 — reescritura de la barra. Los tres problemas estructurales que
  * arrastraba la versión anterior y que esta corrige:
@@ -692,25 +686,14 @@ export function Navbar() {
       <header data-navbar-root className="fixed inset-x-0 top-0 z-50">
       <nav
         aria-label={es ? "Principal" : "Main"}
-        // T3b — papel cálido translúcido. `tj-paper` aporta el material
-        // (backdrop-blur 10px + saturate 140%, grano de papel SVG,
-        // catch-light inset); `tj-paper-dense` sube la opacidad de 72%
-        // a 86% (82% en claro) para que el texto del navbar siga siendo
-        // legible AA sobre el hero animado sin renunciar a la fibra de
-        // papel. Se retira el `background`/`backdropFilter` inline
-        // previo: ahora manda el material. Al desplazar sólo cambian la
-        // sombra y el filo —la altura es fija, ver `ALTURA_BARRA`— y la
-        // barra tampoco pasa a opaca: el atlas sigue intuyéndose a
-        // través del papel. `will-change: backdrop-filter` y
-        // `translateZ(0)` vienen heredados de `.tj-paper`
-        // (globals.css).
+        // Superficie opaca: la altura es fija (`ALTURA_BARRA`) y al desplazar sólo cambia el canto.
         className="tj-paper tj-paper-dense relative flex w-full items-center border-b"
         style={{
           height: ALTURA_BARRA,
-          borderColor: "rgb(var(--divider) / 0.1)",
+          borderColor: "var(--line)",
           boxShadow: scrolled
-            ? "inset 0 1px 0 rgb(var(--divider) / 0.16), 0 14px 40px -16px rgb(0 0 0 / 0.55)"
-            : "inset 0 1px 0 rgb(var(--divider) / 0.14), 0 6px 20px -12px rgb(0 0 0 / 0.4)",
+            ? "0 8px 24px -20px rgb(11 15 20 / 0.35)"
+            : "none",
           transition:
             "box-shadow 0.3s var(--ease-suave), border-color 0.3s var(--ease-suave)",
         }}

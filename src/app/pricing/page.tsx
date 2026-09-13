@@ -2,16 +2,10 @@ import type { Metadata } from "next";
 import { PRICING_FAQ_ES, jsonLdFaq } from "@/lib/faq";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { PRECIO_CORE } from "@/lib/precios";
 import { Pricing } from "@/components/marketing/Pricing";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { BetaStatus } from "@/components/beta/BetaStatus";
-
-// Estimated reading time (pricing cards + comparison + pricing FAQ +
-// trust strip + beta status).
-// ~850 words at 220 wpm = ~4 min.
-const READING_TIME_MIN = 4;
 
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.

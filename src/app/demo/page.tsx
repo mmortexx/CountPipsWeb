@@ -6,10 +6,6 @@ import { AppDemoClient } from "@/components/demo/AppDemoClient";
 import { DemoConversionPanel } from "@/components/demo/DemoConversionPanel";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
-// Estimated reading time (capabilities + demo + decision bridge + stats).
-// ~400 words at 220 wpm = ~2 min.
-const READING_TIME_MIN = 2;
-
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
 
