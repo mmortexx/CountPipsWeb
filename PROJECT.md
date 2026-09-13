@@ -18,14 +18,37 @@ del diario de trading nativo de Windows (WinUI 3, no incluido en este repo).
 - **Demo**: PRNG determinista (`mulberry32`), 200 operaciones de muestra, 5 vistas
   WinUI 3 (Resumen, Operaciones, Analítica, Diario, TradeDetail), estado reactivo
   desacoplado con `useSyncExternalStore` (`demoStore.ts`).
-- **Fondo grabado**: `EngravedAtlas.tsx` dibuja figuras a puntos (curva, calendario,
-  distribución de R, cuadrante de riesgo…) en un `<canvas>` fijo a pantalla completa,
-  sincronizado con el scroll a través de pausas (`PlateInterlude`, `data-plate`).
+- **Fondo**: liso (`--bg`). El atlas grabado a puntos, las pausas de lámina, el
+  grano y la pantalla de carga se retiraron en el rediseño institucional (2026-09-13).
 - **Analítica**: PostHog (UE), sólo tras consentimiento explícito, cero cookies.
 - **Backend beta**: Worker de Cloudflare en `services/beta-api/` (D1 + KV + Turnstile);
   ver su propio [README](services/beta-api/README.md).
 
-## Dónde está ahora (2026-09-10)
+## Rediseño institucional (2026-09-13, rama `rediseno-institucional`)
+
+Se cambió la piel, no el esqueleto: rutas, textos, demo, idiomas y motor de
+métricas siguen igual. Referencias usadas: Linear, Koyfin, Mercury, Stripe,
+Robinhood Legend, Two Sigma, Bridgewater.
+
+- **Paleta**: blanco y negro reales con neutro frío; el color queda para el
+  dinero (verde/rojo/ámbar) y las sesiones. Botón primario = tinta plena.
+  Contrastes medidos en el comentario de los tokens de `globals.css`.
+- **Fondo limpio**: fuera `EngravedAtlas`, `BackgroundFX`, `PlateInterlude`,
+  `Grabado404`, `IntroSequence` (pantalla de carga), `Ticker`, grano, velos y
+  filetes de margen. La caja de contenido es `.tj-container` (1200 px).
+- **Tipografía**: Newsreader sólo en h1/h2; h3 y todo lo demás en Instrument
+  Sans. Letra mínima 11 px (antes 9,5–10). `.text-gradient` ya no es cursiva:
+  es el tramo del titular en tono terciario. Sin numeración «§ 02» ni romanos.
+- **Superficies**: `.tj-paper` opaca, `.tj-hoja` con canto de 1 px y radio
+  6 px, sin doble filete ni escuadras. Radios: 3/4/6/6/8 px.
+- **Portada**: Hero con captura real a tamaño completo → cifras → recorridos →
+  pantallas (pestañas segmentadas `.tj-pestanas`) → métricas → guardián →
+  principios → cierre en bloque de tinta (`.tj-cierre`). CTA: `.cta`.
+- **Pendiente de decidir por el dueño**: el logotipo de puntos se ve borroso a
+  tamaño de barra; la captura oscura de «Resumen» no deja ver la curva; las
+  capturas sólo existen en español.
+
+## Dónde estaba antes del rediseño (2026-09-10)
 
 El grueso de auditoría cuantitativa y de accesibilidad de las 13 dimensiones
 (matemáticas financieras, WCAG AA, paridad bilingüe, SEO, tokens de diseño,
@@ -1621,13 +1644,11 @@ Antes de dar por terminado un cambio visible, correr lo que aplique:
 npm run build                       # compila a /out
 node scripts/humo.mjs --serve out   # contraste, láminas, velo, entradas, menú…
 node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (28 rutas)
-node scripts/fondos.mjs --serve out   # que cada sección dibuje un fondo distinto
-node scripts/fluidez.mjs --serve out  # presupuesto de fotogramas del atlas (28 ms)
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
 node scripts/deep_audit.mjs             # códigos 200, lang, canonical, hreflang
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
 node scripts/corrobora-menus.mjs        # navegación y menús, escritorio + móvil
-npx vitest run                          # 26 suites, ~305 tests
+npx vitest run                          # 24 suites, ~284 tests
 npx tsc --noEmit && npx eslint .
 ```
 
@@ -1663,17 +1684,15 @@ fuente de verdad, no este documento.
 
 - `src/app/`: rutas del App Router (ES en raíz, EN bajo `/en/`).
 - `src/components/ui/`: primitivas (button, input, badge, dialog — base Radix).
-- `src/components/tj/`: layout, navegación, overlays, consentimiento, el atlas
-  grabado (`EngravedAtlas.tsx`, `BackgroundFX.tsx`), láminas de producto real
-  (`ProductPlate.tsx`).
+- `src/components/tj/`: layout, navegación, overlays, consentimiento y
+  capturas de producto real (`ProductPlate.tsx`).
 - `src/components/marketing/`: calculadoras, secciones de producto, vitrinas
   (`ProductShowcase.tsx`, `GaleriaPantallas.tsx`), FAQ, héroes.
 - `src/components/demo/`: motor de la demo (dashboard, operaciones, calendario,
   analítica, diario, detalle de operación).
 - `src/components/glosario/`: índice y ficha de término bilingüe.
 - `src/lib/`: `i18n.tsx`, `theme.tsx`, `consent.ts`, `glosario.ts`,
-  `herramientas.ts`, `faq.ts`, `laminas.ts` (registro de capturas reales),
-  `atlas.ts` (qué lámina dibuja cada ruta).
+  `herramientas.ts`, `faq.ts`, `laminas.ts` (registro de capturas reales).
 - `src/lib/trading/`: motor cuantitativo, métricas, modelos de datos del glosario.
 - `scripts/`: herramientas de auditoría manual (ver arriba) + generación de
   marca (`generate-brand.py`) y recorte de capturas (`capturas.py`).

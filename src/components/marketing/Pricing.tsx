@@ -104,11 +104,8 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   return (
     <section
       id="pricing"
-      className="section cv-auto bg-veil relative overflow-clip scroll-mt-24"
+      className="section cv-auto relative overflow-clip scroll-mt-24"
     >
-      {/* Opt-in 3% fractalNoise grain — matches HeroVideo / Bento so the
-          conversion section reads as a premium printed surface. */}
-      <div className="grain absolute inset-0 pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 tj-container">
         {/* Header — centered, matches Stripe / Linear / Vercel pricing
@@ -214,7 +211,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             está explicado que las condiciones se publican al abrir la
             venta, que hoy es la respuesta verdadera. */}
         <Reveal delay={0.2}>
-          <p className="mt-4 text-center text-[13px] text-tertiary">
+          <p className="mt-4 text-center text-[14px] text-tertiary">
             {es ? "Son precios de lanzamiento previstos. " : "These are planned launch prices. "}
             <Link
               href="/beta"

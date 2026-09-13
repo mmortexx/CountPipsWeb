@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { QUESTIONS } from "@/lib/trading/disciplineQuestions";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -18,10 +17,6 @@ import { SITE_URL, hreflangDe } from "@/lib/site";
  * La página es deliberadamente corta: el diagnóstico y poco más. Meterle
  * secciones alrededor competiría con lo único que se ha venido a hacer.
  */
-
-// El test son quince preguntas de lectura rápida; el tiempo estimado es
-// el de responderlo, que es lo que le importa a quien llega.
-const READING_TIME_MIN = 4;
 
 const DisciplineScore = dynamic(
   () => import("@/components/marketing/DisciplineScore").then((m) => m.DisciplineScore),
@@ -121,7 +116,6 @@ export function TestBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio="[ TEST ]"
         eyebrowEs="Diagnóstico"
         eyebrowEn="Diagnosis"
         titleEs="¿Qué tipo de trader eres?"
@@ -132,11 +126,9 @@ export function TestBody() {
         subtitleEn="Not a personality quiz: fifteen questions about what you actually do when the market turns. At the end, your profile across five axes and the one worth fixing first."
         breadcrumbEs="Test"
         breadcrumbEn="Quiz"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <DisciplineScore num="01" />
+      <DisciplineScore />
 
-      <PlateInterlude index={0} />
       <FinalCTANew />
     </>
   );

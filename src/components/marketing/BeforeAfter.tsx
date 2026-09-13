@@ -60,7 +60,7 @@ export function BeforeAfter() {
       ];
 
   return (
-    <section className="section bg-veil relative overflow-clip">
+    <section className="section relative overflow-clip">
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="centrada"
@@ -116,15 +116,6 @@ export function BeforeAfter() {
               data-entra
               className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-clip border border-pnl-neg/30"
             >
-              {/* Soft red wash */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(120% 80% at 50% 0%, rgb(var(--pnl-neg) / 0.10), transparent 60%)",
-                }}
-              />
               <ul className="relative p-6 md:p-7 space-y-4">
                 {before.map((line, i) => (
                   <li
@@ -156,7 +147,7 @@ export function BeforeAfter() {
             delay={0.1}
             className="flex lg:flex-col items-center justify-center gap-3 lg:py-6"
           >
-            <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary font-semibold whitespace-nowrap">
+            <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold whitespace-nowrap">
               {es ? "La transformación" : "The transformation"}
             </span>
             <span
@@ -200,24 +191,6 @@ export function BeforeAfter() {
               data-entra="4"
               className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-clip border border-[rgb(var(--accent-base)/0.28)]"
             >
-              {/* Accent wash */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(120% 80% at 50% 0%, rgb(var(--accent-base) / 0.12), transparent 60%)",
-                }}
-              />
-              {/* Static accent top-line */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-x-0 top-0 h-px opacity-70"
-                style={{
-                  background:
-                    "linear-gradient(90deg, transparent, rgb(var(--accent-base)), transparent)",
-                }}
-              />
               <ul className="relative p-7 md:p-8 space-y-4">
                 {after.map((line, i) => (
                   <li

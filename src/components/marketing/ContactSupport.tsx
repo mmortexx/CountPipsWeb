@@ -88,19 +88,8 @@ export function ContactSupport() {
     <section
       id="support"
       aria-label={es ? "Soporte" : "Support"}
-      // R27-1b — `bg-veil` added: this section's only backing was the
-      // 3 % fractalNoise grain overlay (transparent in hue). The eye
-      // WebGL (bright red/green fibers in light theme) was showing
-      // through, washing out the "¿No encuentras tu respuesta?"
-      // heading + subtitle + the 3 support card titles. `bg-veil`
-      // (82 % bg in light / 74 % in dark) occludes the eye while
-      // the grain overlay still paints on top. The cards themselves
-      // (`tj-paper border border-[rgb(var(--divider)/0.13)]`) have their own opaque surface and
-      // are unaffected.
-      className="section-tight relative overflow-clip bg-veil scroll-mt-24"
+      className="section-tight relative overflow-clip scroll-mt-24"
     >
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
       <div className="relative z-10 tj-container">
         <div className="max-w-3xl mx-auto text-center">
           <Reveal>
@@ -156,16 +145,6 @@ export function ContactSupport() {
                   aria-label={`${title} — ${cta}`}
                   className="group relative flex flex-col tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
                 >
-                  {/* Hover accent sweep */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base)) 50%, transparent 100%)",
-                    }}
-                  />
-
                   <div className="flex items-start gap-4">
                     {/* Icon container — accent-tinted on hover so the icon
                         "lights up" in the brand green when the card is
@@ -188,7 +167,7 @@ export function ContactSupport() {
                         {desc}
                       </p>
                       {meta && (
-                        <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-primary font-semibold tnum">
+                        <p className="mt-2 text-[12px] uppercase tracking-[0.14em] text-primary font-semibold tnum">
                           {meta}
                         </p>
                       )}

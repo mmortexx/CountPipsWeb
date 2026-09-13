@@ -8,13 +8,7 @@ export function BetaDetails() {
   const es = lang === "es";
   return (
     <section
-      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
-         Sin superficie propia su texto cae directamente sobre el atlas
-         grabado, que se dibuja a pantalla completa en TODAS las
-         anchuras: el reparto a dos columnas que decía resolverlo por
-         encima de 1.280 px nunca existió (ver la nota del atlas en
-         globals.css). */
-      className="section bg-veil"
+      className="section"
     >
       <div className="tj-container grid gap-5 md:grid-cols-2">
         <article className="border-t border-[rgb(var(--divider)/0.18)] pt-5">

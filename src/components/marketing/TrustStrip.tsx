@@ -46,14 +46,7 @@ export function TrustStrip() {
   return (
     <section
       aria-label={es ? "Confianza" : "Trust"}
-      // R27-1b — `bg-veil` added: this thin trust band had no
-      // background — the eye WebGL (bright red/green fibers in light
-      // theme) was showing through between the icons + labels,
-      // washing out the small `t-caption text-secondary` labels.
-      // `bg-veil` (82 % bg in light / 74 % in dark) occludes the eye
-      // while the top accent gradient hairline still paints on top
-      // for the precision-machined top edge.
-      className="section-tight relative overflow-clip bg-veil"
+      className="section-tight relative overflow-clip"
     >
       {/* Accent gradient line that sweeps across the strip on view */}
       <div
@@ -61,12 +54,7 @@ export function TrustStrip() {
         data-entra="traza"
         className="absolute left-0 right-0 top-0 h-px pointer-events-none"
         style={{
-          /* El 0,9 de opacidad final que declaraba el `whileInView` vive
-             ahora en el propio color. La animación de la traza va de 0 a
-             1, así que sin esto el filete acabaría un 10 % más encendido
-             de lo que estaba. */
-          background:
-            "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.9) 50%, transparent 100%)",
+          background: "var(--line)",
           transformOrigin: "left center",
         }}
       />

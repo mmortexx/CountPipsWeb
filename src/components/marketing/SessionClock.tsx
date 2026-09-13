@@ -67,7 +67,7 @@ const KILLZONES: Killzone[] = [
 
 type TimezoneMode = "local" | "utc" | "est" | "cet";
 
-export function SessionClock({ num = "02" }: { num?: string }) {
+export function SessionClock() {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -183,15 +183,11 @@ export function SessionClock({ num = "02" }: { num?: string }) {
   const hourPct = (h: number) => (h / 24) * 100;
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container">
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum" style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}>
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span className="eyebrow">
               {es ? "SESIONES Y KILLZONES" : "SESSIONS & KILLZONES"}
             </span>
           </div>
@@ -224,7 +220,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
 
           {/* Selector de zona horaria */}
           <div className="mt-5 flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] uppercase tracking-wider text-tertiary mr-1">
+            <span className="text-[12px] uppercase tracking-wider text-tertiary mr-1">
               {es ? "Referencia horaria:" : "Timezone reference:"}
             </span>
             {[
@@ -266,12 +262,12 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                     <div className="text-[14px] font-semibold" style={{ color: "var(--ink)" }}>
                       {es ? s.nameEs : s.nameEn}
                     </div>
-                    <div className="text-[11px]" style={{ color: "var(--ink-3)" }}>
+                    <div className="text-[12px]" style={{ color: "var(--ink-3)" }}>
                       {s.cityEn} · {fmtHour(s.startUtc)}–{fmtHour(s.endUtc)} UTC
                     </div>
                   </div>
                   <span
-                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[2px] text-[10px] font-bold uppercase tracking-[0.1em]"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.1em]"
                     style={{
                       background: open ? `color-mix(in oklab, ${s.color} 14%, transparent)` : "color-mix(in oklab, rgb(var(--divider)) 8%, transparent)",
                       color: open ? s.color : "var(--ink-3)",
@@ -286,7 +282,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                     {open ? (es ? "Abierta" : "Open") : (es ? "Cerrada" : "Closed")}
                   </span>
                 </div>
-                <div className="mt-2 flex items-center justify-between text-[11px] font-mono">
+                <div className="mt-2 flex items-center justify-between text-[12px] font-mono">
                   <span className="text-tertiary">{es ? "Volatilidad media:" : "Avg Volatility:"}</span>
                   <span className="font-bold text-primary">~{s.avgVolatilityPips} pips</span>
                 </div>
@@ -298,7 +294,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
         {/* Panel de Killzones Institucionales */}
         <div className="mb-6 p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] uppercase tracking-wider text-tertiary font-mono">
+            <span className="text-[12px] uppercase tracking-wider text-tertiary font-mono">
               {es ? "Ventanas Institucionales (Killzones)" : "Institutional Killzones"}
             </span>
             {activeKillzones.length > 0 ? (
@@ -328,7 +324,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                     <span style={{ color: active ? "rgb(var(--accent-base))" : "var(--ink)" }}>{es ? kz.nameEs : kz.nameEn}</span>
                     <span className="font-mono text-tertiary">{fmtHour(kz.startUtc)}–{fmtHour(kz.endUtc)} UTC</span>
                   </div>
-                  <p className="text-[11px] leading-relaxed text-secondary m-0">
+                  <p className="text-[12px] leading-relaxed text-secondary m-0">
                     {es ? kz.descriptionEs : kz.descriptionEn}
                   </p>
                 </div>
@@ -343,17 +339,17 @@ export function SessionClock({ num = "02" }: { num?: string }) {
           style={{ border: "1px solid rgb(var(--divider) / 0.13)" }}
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-            <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
               {es ? `Banda 24h (${tzMode.toUpperCase()} offset ${tzOffset >= 0 ? "+" : ""}${tzOffset}h)` : `24h band (${tzMode.toUpperCase()} offset ${tzOffset >= 0 ? "+" : ""}${tzOffset}h)`}
             </span>
             <div className="flex items-center gap-3">
               {nextSession && (
-                <span className="tnum text-[11px] px-2 py-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.1)] text-tertiary">
+                <span className="tnum text-[12px] px-2 py-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.1)] text-tertiary">
                   {es ? "Próxima apertura" : "Next open"}: <span className="font-semibold text-primary">{es ? nextSession.session.nameEs : nextSession.session.nameEn}</span> {es ? "en" : "in"} {fmtHour(nextSession.hoursUntil)}h
                 </span>
               )}
               {openCount > 0 && (
-                <span className="tnum text-[11px] font-medium text-secondary">
+                <span className="tnum text-[12px] font-medium text-secondary">
                   {openCount} {es ? "abierta(s)" : "open"}
                 </span>
               )}
@@ -390,7 +386,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                   }}
                   aria-label={`${es ? s.nameEs : s.nameEn} ${fmtHour(s.startUtc)}-${fmtHour(s.endUtc)} UTC`}
                 >
-                  <span className="absolute inset-0 flex items-center justify-center text-[9.5px] font-semibold uppercase tracking-[0.08em]" style={{ color: isOpen ? "var(--ink)" : "var(--ink-2)" }}>
+                  <span className="absolute inset-0 flex items-center justify-center text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: isOpen ? "var(--ink)" : "var(--ink-2)" }}>
                     {es ? s.nameEs : s.nameEn}
                   </span>
                 </div>
@@ -413,7 +409,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
             {["00", "06", "12", "18", "24"].map((h) => (
               <span
                 key={h}
-                className="tnum absolute text-[9.5px]"
+                className="tnum absolute text-[11px]"
                 style={{ left: `${hourPct(parseInt(h))}%`, transform: "translateX(-50%)", color: "var(--ink-3)" }}
               >
                 {h}:00
@@ -434,7 +430,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
                 <path d="M8 1.5l6.5 11.5h-13L8 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
                 <path d="M8 6.5v3M8 11.5v0.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
               </svg>
-              <div className="text-[12px] leading-[1.5]" style={{ color: "var(--ink)" }}>
+              <div className="text-[13px] leading-[1.5]" style={{ color: "var(--ink)" }}>
                 <span className="font-semibold" style={{ color: "rgb(var(--pnl-pos))" }}>
                   {es ? "Solape activo" : "Active overlap"}
                 </span>
@@ -448,7 +444,7 @@ export function SessionClock({ num = "02" }: { num?: string }) {
           )}
         </div>
 
-        <p className="text-[11px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
+        <p className="text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
           {es
             ? "Horarios en UTC. Las sesiones se solapan: Asia ∩ Londres (07:00–09:00 UTC) y Londres ∩ Nueva York (12:00–16:00 UTC, la ventana más líquida). Actualización cada minuto."
             : "Times in UTC. Sessions overlap: Asia ∩ London (07:00–09:00 UTC) and London ∩ New York (12:00–16:00 UTC, the most liquid window). Updates every minute."}

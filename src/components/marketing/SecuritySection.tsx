@@ -7,11 +7,8 @@ import { Database, FileLock2, KeyRound, Check, X } from "lucide-react";
  * SecuritySection — sección `#security` del HTML. Local-first:
  * 3 tarjetas (100 % en local, archivo .sqlite, export/import)
  * + tabla comparativa "Diario en la nube vs CountPips".
- *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("06"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
  */
-export function SecuritySection({ num = "06" }: { num?: string }) {
+export function SecuritySection() {
   const { lang } = useLang();
   const es = lang === "es";
   const cards = [
@@ -29,29 +26,12 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
   return (
     <section
       id="security"
-      // R27-1b — `bg-veil` added: this section had NO background
-      // backing at all (just `border-t`). The eye WebGL (bright
-      // red/green fibers in light theme) was showing through the
-      // entire section, washing out the "Tus datos no salen de tu
-      // equipo. Nunca." heading + body copy + the TJ/cloud comparison
-      // rows. `bg-veil` (82 % bg in light / 74 % in dark) occludes
-      // the eye; the `border-t` top hairline is preserved.
-      className="section border-t border-[rgb(var(--divider)/0.06)] bg-veil scroll-mt-24"
+      className="section border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
     >
       <div className="tj-container" style={{ maxWidth: 1240 }}>
         <div className="max-w-[760px] mx-auto text-center mb-12">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-            >
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span
-              className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-            >
+            <span className="eyebrow">
               {es ? "SEGURIDAD" : "SECURITY"}
             </span>
           </div>
@@ -99,9 +79,6 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
               <div
                 key={c.t}
                 data-entra="ciclo"
-                // El papel translúcido conserva el filtrado del atlas por los
-                // bordes; `tj-hoja` le pone encima el doble filete y el apoyo
-                // del resto de superficies del sitio.
                 className="tj-paper tj-hoja p-6 sm:p-7"
               >
                 <span
@@ -112,7 +89,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
                 <h3 className="mt-3 mb-1 font-serif" style={{ fontSize: 20, fontWeight: 400, color: "var(--ink)", letterSpacing: "-0.02em" }}>
                   {c.t}
                 </h3>
-                <p className="m-0" style={{ fontSize: 13.5, lineHeight: 1.55, color: "var(--ink-2)" }}>
+                <p className="m-0" style={{ fontSize: 14, lineHeight: 1.55, color: "var(--ink-2)" }}>
                   {c.d}
                 </p>
               </div>
@@ -125,30 +102,30 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
           <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgb(var(--divider)/0.12)]">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-[1px] bg-[rgb(var(--pnl-pos))]" aria-hidden="true" />
-              <span className="font-bold text-primary text-[11px] uppercase tracking-wider">
+              <span className="font-bold text-primary text-[12px] uppercase tracking-wider">
                 {es ? "AUDITORÍA DE INTEGRIDAD SQLite NATIVA" : "NATIVE SQLite INTEGRITY AUDIT"}
               </span>
             </div>
-            <span className="text-[10px] text-tertiary">
+            <span className="text-[11px] text-tertiary">
               PRAGMA quick_check = <b className="text-[rgb(var(--pnl-pos))]">ok</b>
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-[11px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-[12px]">
             <div>
-              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Almacén en Disco" : "Disk Storage"}</span>
+              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Almacén en Disco" : "Disk Storage"}</span>
               <span className="block break-all font-semibold text-primary">%LOCALAPPDATA%\CountPips\countpips.sqlite</span>
             </div>
             <div>
-              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Modo de Registro" : "Journal Mode"}</span>
+              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Modo de Registro" : "Journal Mode"}</span>
               <span className="text-primary font-semibold">WAL (Write-Ahead Logging 2.0)</span>
             </div>
             <div>
-              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Cifrado en Reposo" : "At-Rest Encryption"}</span>
+              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Cifrado en Reposo" : "At-Rest Encryption"}</span>
               <span className="text-primary font-semibold">AES-256-GCM + Argon2id</span>
             </div>
             <div>
-              <span className="text-tertiary block text-[10px] uppercase tracking-wider mb-1">{es ? "Fuga Externa" : "External Egress"}</span>
+              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Fuga Externa" : "External Egress"}</span>
               <span className="text-[rgb(var(--pnl-pos))] font-bold">{es ? "0,00 KB (Zero Sockets)" : "0.00 KB (Zero Sockets)"}</span>
             </div>
           </div>
@@ -156,10 +133,6 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
 
         {/* Tabla comparativa — mobile: horizontal scroll inside the card. */}
         <div
-          // T3c — swap a `.tj-paper-dense`: la tabla comparativa tiene
-          // 5 filas de texto pequeño + cabecera; el 86 % de opacidad
-          // mantiene AA en los textos `--ink-2`/`--ink-3` y deja que el
-          // atlas se filtre por los bordes sin competir con la tabla.
           className="tj-paper-dense tj-hoja tj-hoja--sangre relative overflow-hidden"
         >
           {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.
@@ -198,21 +171,21 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
                 <th
                   scope="col"
                   className="tnum w-[33%]"
-                  style={{ padding: "12px 0 12px 18px", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                  style={{ padding: "12px 0 12px 18px", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
                 >
                   <span className="sr-only">{es ? "Característica" : "Feature"}</span>
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[33%] border-l-2 border-[rgb(var(--accent-base)/0.30)]"
-                  style={{ padding: "12px 8px 12px 10px", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgb(var(--accent-base))", fontWeight: 600 }}
+                  style={{ padding: "12px 8px 12px 10px", fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgb(var(--accent-base))", fontWeight: 600 }}
                 >
                   CountPips
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[34%]"
-                  style={{ padding: "12px 18px 12px 0", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                  style={{ padding: "12px 18px 12px 0", fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
                 >
                   {es ? "Diario en la nube" : "Cloud-based journal"}
                 </th>
@@ -256,17 +229,17 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
                   <tr key={row.l} style={{ borderBottom: borde }}>
                     <th
                       scope="row"
-                      style={{ padding: "14px 0 14px 18px", fontSize: 13, color: "var(--ink-2)", fontWeight: 400 }}
+                      style={{ padding: "14px 0 14px 18px", fontSize: 14, color: "var(--ink-2)", fontWeight: 400 }}
                     >
                       {row.l}
                     </th>
                     <td
                       className="border-l-2 border-[rgb(var(--accent-base)/0.30)]"
-                      style={{ padding: "14px 8px 14px 10px", fontSize: 13, color: "var(--ink)" }}
+                      style={{ padding: "14px 8px 14px 10px", fontSize: 14, color: "var(--ink)" }}
                     >
                       {typeof row.tj === "boolean" ? sello(row.tj, row.tj) : row.tj}
                     </td>
-                    <td style={{ padding: "14px 18px 14px 0", fontSize: 13, color: "var(--ink-2)" }}>
+                    <td style={{ padding: "14px 18px 14px 0", fontSize: 14, color: "var(--ink-2)" }}>
                       {typeof row.cloud === "boolean" ? sello(row.cloud, !row.cloud) : row.cloud}
                     </td>
                   </tr>
@@ -285,7 +258,7 @@ export function SecuritySection({ num = "06" }: { num?: string }) {
             />
           </div>
           {/* Mobile-only scroll hint. */}
-          <div className="md:hidden py-2 px-4 text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold text-center">
+          <div className="md:hidden py-2 px-4 text-[12px] uppercase tracking-[0.14em] text-tertiary font-semibold text-center">
             <span aria-hidden>←</span>{" "}{es ? "Desliza para comparar" : "Swipe to compare"}{" "}<span aria-hidden>→</span>
           </div>
         </div>

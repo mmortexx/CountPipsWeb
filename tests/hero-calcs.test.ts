@@ -33,8 +33,7 @@ describe("Hero sin deslizadores", () => {
     expect(hero).not.toMatch(/tj-range/);
   });
 
-  it("conserva la placa de especificaciones y los dos CTA", () => {
-    expect(hero).toMatch(/PLATAFORMA|PLATFORM/);
+  it("conserva los dos CTA", () => {
     expect(hero).toMatch(/\/demo/);
     expect(hero).toMatch(/\/pricing/);
   });

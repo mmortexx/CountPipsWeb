@@ -96,7 +96,7 @@ const CAPITAL_CHIPS = [
 
 const HORIZON_CHIPS = [1, 2, 3, 5, 10];
 
-export function EquityProjector({ num = "03" }: { num?: string }) {
+export function EquityProjector() {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -538,14 +538,14 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span
-            className="tnum text-[10.5px] font-medium tracking-wide uppercase"
+            className="tnum text-[12px] font-medium tracking-wide uppercase"
             style={{ color: "var(--ink-2)" }}
           >
             {label}
           </span>
           {badgeHint && (
             <span
-              className="text-[9.5px] font-mono px-1.5 py-0.2 rounded-[2px]"
+              className="text-[11px] font-mono px-1.5 py-0.2 rounded-[2px]"
               style={{
                 background: "color-mix(in oklab, var(--surface-2) 80%, transparent)",
                 color: "var(--ink-3)",
@@ -557,7 +557,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
           )}
         </div>
         <span
-          className="tnum font-mono text-[11.5px] font-bold px-1.5 py-0.2 rounded-[2px] shadow-sm"
+          className="tnum font-mono text-[13px] font-bold px-1.5 py-0.2 rounded-[2px] shadow-sm"
           style={{
             color: "rgb(var(--accent-base))",
             background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
@@ -565,7 +565,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
           }}
         >
           {fmtNum(value, Number.isInteger(step) ? 0 : 2)}
-          <span className="opacity-75 ml-0.5 text-[10px] font-normal">{suffix}</span>
+          <span className="opacity-75 ml-0.5 text-[11px] font-normal">{suffix}</span>
         </span>
       </div>
       <input
@@ -595,22 +595,13 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
   );
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.08)] relative overflow-hidden">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.08)] relative overflow-hidden">
       <div className="tj-container">
         
         {/* Cabecera Editorial */}
         <div className="max-w-3xl mb-8">
           <div className="inline-flex items-center gap-3 mb-3">
-            <span
-              className="tnum text-[11.5px] font-semibold tracking-wider text-[rgb(var(--accent-base))]"
-            >
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.22)" }} />
-            <span
-              className="tnum uppercase text-[10.5px] tracking-[0.2em] font-semibold"
-              style={{ color: "var(--ink-3)" }}
-            >
+            <span className="eyebrow">
               {/* Decia «TERMINAL CUANTITATIVO · SIMULADOR DE CAPITAL».
                   «Terminal» vuelve a sugerir una pieza de producto, y
                   «Simulador» es peor que vago: es el nombre de una
@@ -691,7 +682,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 programa. El marco se queda —es la caja de la herramienta—
                 pero el rotulo la nombra por su nombre real, el mismo que
                 usa `src/lib/herramientas.ts` para esta entrada. */}
-            <span className="font-mono text-[11px] font-semibold tracking-wider text-[var(--ink)]">
+            <span className="font-mono text-[12px] font-semibold tracking-wider text-[var(--ink)]">
               COUNTPIPS · {es ? "PROYECTOR DE CAPITAL" : "EQUITY PROJECTOR"}
             </span>
 
@@ -709,7 +700,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     type="button"
                     aria-pressed={active}
                     onClick={() => applyPreset(p.id)}
-                    className="toque-comodo px-2.5 py-1 rounded-[2px] text-[11px] font-mono transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+                    className="toque-comodo px-2.5 py-1 rounded-[2px] text-[12px] font-mono transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
                     style={{
                       background: active
                         ? "rgb(var(--accent-base))"
@@ -723,7 +714,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   >
                     <span>{es ? p.labelEs : p.labelEn}</span>
                     <span
-                      className="text-[9.5px] opacity-75 font-normal px-1 rounded-[1px]"
+                      className="text-[11px] opacity-75 font-normal px-1 rounded-[1px]"
                       style={{
                         background: active
                           ? "color-mix(in oklab, rgb(var(--accent-ink)) 15%, transparent)"
@@ -740,7 +731,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 type="button"
                 aria-pressed={selectedPreset === "custom"}
                 onClick={() => setSelectedPreset("custom")}
-                className="toque-comodo px-2.5 py-1 rounded-[2px] text-[11px] font-mono transition-all cursor-pointer whitespace-nowrap"
+                className="toque-comodo px-2.5 py-1 rounded-[2px] text-[12px] font-mono transition-all cursor-pointer whitespace-nowrap"
                 style={{
                   background:
                     selectedPreset === "custom"
@@ -768,11 +759,11 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               {/* Sección 1: Capital */}
               <div className="space-y-3.5">
                 <div className="flex items-center justify-between pb-1.5 border-b border-[rgb(var(--divider)/0.10)]">
-                  <span className="tnum text-[10.5px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))] flex items-center gap-1.5">
+                  <span className="tnum text-[12px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))] flex items-center gap-1.5">
                     <Activity className="w-3 h-3" />
                     01 · {es ? "CAPITAL Y FRECUENCIA" : "CAPITAL & FREQUENCY"}
                   </span>
-                  <span className="text-[11.5px] font-mono text-[var(--ink)] font-bold">
+                  <span className="text-[13px] font-mono text-[var(--ink)] font-bold">
                     {fmtUsd(startBalance)}
                   </span>
                 </div>
@@ -829,10 +820,10 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 {/* Aporte mensual */}
                 <div className="pt-2 border-t border-[rgb(var(--divider)/0.08)]">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                    <span className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                       {es ? "Aporte mensual de ahorro" : "Monthly cashflow injection"}
                     </span>
-                    <span className="text-[11px] font-mono text-[rgb(var(--accent-base))] font-bold">
+                    <span className="text-[12px] font-mono text-[rgb(var(--accent-base))] font-bold">
                       +{fmtUsd(monthlyContribution)} / {es ? "mes" : "mo"}
                     </span>
                   </div>
@@ -860,12 +851,12 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               {/* Sección 2: Edge */}
               <div className="space-y-3.5 pt-3.5 border-t border-[rgb(var(--divider)/0.12)]">
                 <div className="flex items-center justify-between pb-1.5 border-b border-[rgb(var(--divider)/0.10)]">
-                  <span className="tnum text-[10.5px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))] flex items-center gap-1.5">
+                  <span className="tnum text-[12px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))] flex items-center gap-1.5">
                     <Sparkles className="w-3 h-3" />
                     02 · {es ? "EDGE Y ESTADÍSTICA DE OPERATIVA" : "EDGE & TRADE STATISTICS"}
                   </span>
                   <span
-                    className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-[2px] shadow-sm"
+                    className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[2px] shadow-sm"
                     style={{
                       color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                       background: c.hasEdge
@@ -914,7 +905,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
                 {/* Fricción */}
                 <div className="pt-2 border-t border-[rgb(var(--divider)/0.08)] flex items-center justify-between">
-                  <span className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                  <span className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Fricción (Comisiones / Slippage)" : "Friction (Fees / Slippage)"}
                   </span>
                   <div className="tj-segmentado" role="group">
@@ -941,11 +932,11 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               {/* Sección 3: Riesgo y Horizonte */}
               <div className="space-y-3.5 pt-3.5 border-t border-[rgb(var(--divider)/0.12)]">
                 <div className="flex items-center justify-between pb-1.5 border-b border-[rgb(var(--divider)/0.10)]">
-                  <span className="tnum text-[10.5px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))] flex items-center gap-1.5">
+                  <span className="tnum text-[12px] font-bold uppercase tracking-wider text-[rgb(var(--accent-base))] flex items-center gap-1.5">
                     <ShieldCheck className="w-3 h-3" />
                     03 · {es ? "GESTIÓN DE RIESGO Y HORIZONTE" : "RISK & HORIZON"}
                   </span>
-                  <span className="text-[11px] font-mono text-[var(--ink)] font-bold">
+                  <span className="text-[12px] font-mono text-[var(--ink)] font-bold">
                     {years} {es ? "Años" : "Years"}
                   </span>
                 </div>
@@ -1002,7 +993,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       }}
                     >
                       <div
-                        className="text-[11.5px] font-mono font-semibold flex items-center justify-between"
+                        className="text-[13px] font-mono font-semibold flex items-center justify-between"
                         style={{
                           color: reinvestMode === "compound" ? "rgb(var(--accent-base))" : "var(--ink)",
                         }}
@@ -1016,7 +1007,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                             terciario. Medido ahi: 4,28:1 en tema oscuro,
                             por debajo del 4,5:1 de AA. Con el secundario
                             sube por encima del listón. */}
-                      <div className="text-[9.5px] text-[var(--ink-2)] leading-tight mt-0.5">
+                      <div className="text-[11px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Escala con el capital" : "Scales with equity"}
                       </div>
                     </button>
@@ -1037,7 +1028,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       }}
                     >
                       <div
-                        className="text-[11.5px] font-mono font-semibold flex items-center justify-between"
+                        className="text-[13px] font-mono font-semibold flex items-center justify-between"
                         style={{
                           color: reinvestMode === "linear" ? "rgb(var(--accent-base))" : "var(--ink)",
                         }}
@@ -1051,7 +1042,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                             terciario. Medido ahi: 4,28:1 en tema oscuro,
                             por debajo del 4,5:1 de AA. Con el secundario
                             sube por encima del listón. */}
-                      <div className="text-[9.5px] text-[var(--ink-2)] leading-tight mt-0.5">
+                      <div className="text-[11px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Riesgo fijo en base" : "Fixed on starting"}
                       </div>
                     </button>
@@ -1066,7 +1057,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
               {/* Encabezado: Expectancy & Live Status */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[rgb(var(--divider)/0.12)]">
                 <div className="min-w-0">
-                  <div className="tnum flex items-center gap-2 text-[10px] tracking-wider uppercase font-semibold text-[var(--ink-3)]">
+                  <div className="tnum flex items-center gap-2 text-[11px] tracking-wider uppercase font-semibold text-[var(--ink-3)]">
                     <span>{es ? "EXPECTANCY NETA POR OPERACIÓN" : "NET EXPECTANCY PER TRADE"}</span>
                     <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />
                   </div>
@@ -1090,7 +1081,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 {/* Badge de Convicción */}
                 <div className="text-left sm:text-right">
                   <div
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[2px] text-[11px] font-mono font-semibold shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[2px] text-[12px] font-mono font-semibold shadow-sm"
                     style={{
                       background: c.hasEdge
                         ? "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)"
@@ -1112,7 +1103,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                         : "NEGATIVE EXPECTANCY"}
                     </span>
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-1">
+                  <div className="text-[11px] text-[var(--ink-3)] font-mono mt-1">
                     {es ? "Generación teórica anual:" : "Yearly theoretical:"}{" "}
                     <span className="text-[var(--ink)] font-bold">{fmtUsd(c.yearlyUsdInitial)}</span>
                   </div>
@@ -1143,7 +1134,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}
-                    className="toque-comodo px-3 py-1 rounded-[2px] text-[11px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo px-3 py-1 rounded-[2px] text-[12px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "chart" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "chart" ? "var(--ink)" : "var(--ink-3)",
@@ -1157,7 +1148,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   <button
                     type="button"
                     onClick={() => setViewTab("table")}
-                    className="toque-comodo px-3 py-1 rounded-[2px] text-[11px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo px-3 py-1 rounded-[2px] text-[12px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "table" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "table" ? "var(--ink)" : "var(--ink-3)",
@@ -1174,7 +1165,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   <button
                     type="button"
                     onClick={() => setShowConfidenceCone(!showConfidenceCone)}
-                    className="toque-comodo text-[10.5px] font-mono px-2.5 py-1 rounded-[2px] transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo text-[12px] font-mono px-2.5 py-1 rounded-[2px] transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: showConfidenceCone
                         ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
@@ -1204,7 +1195,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     style={{ background: "color-mix(in oklab, var(--surface-2) 90%, transparent)" }}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="text-[var(--ink-3)] uppercase tracking-wider text-[9.5px] font-semibold">
+                      <span className="text-[var(--ink-3)] uppercase tracking-wider text-[11px] font-semibold">
                         {es ? "Hito Inspeccionado:" : "Milestone:"}
                       </span>
                       <span className="font-bold text-[rgb(var(--accent-base))] text-xs">
@@ -1218,11 +1209,11 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <div>
-                        <span className="text-[var(--ink-3)] text-[10px] mr-1">{es ? "Capital:" : "Equity:"}</span>
+                        <span className="text-[var(--ink-3)] text-[11px] mr-1">{es ? "Capital:" : "Equity:"}</span>
                         <span className="font-bold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
                       </div>
                       <div>
-                        <span className="text-[var(--ink-3)] text-[10px] mr-1">PnL:</span>
+                        <span className="text-[var(--ink-3)] text-[11px] mr-1">PnL:</span>
                         <span
                           className="font-bold"
                           style={{
@@ -1421,7 +1412,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                 <div className="overflow-x-auto rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
                   <table className="w-full text-left font-mono text-xs tnum">
                     <thead>
-                      <tr className="text-[10px] uppercase tracking-wider text-[var(--ink-3)]">
+                      <tr className="text-[11px] uppercase tracking-wider text-[var(--ink-3)]">
                         <th className="tj-matriz-cab py-2.5 px-3 font-medium">{es ? "Año" : "Year"}</th>
                         <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance Inicial" : "Start Bal"}</th>
                         <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "PnL Anual" : "Year PnL"}</th>
@@ -1514,14 +1505,14 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
-                  <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold flex items-center justify-between">
+                  <div className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold flex items-center justify-between">
                     <span>{es ? "Balance Proyectado" : "Projected Balance"}</span>
                     <ArrowUpRight className="w-3 h-3 text-[rgb(var(--accent-base))]" />
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[rgb(var(--accent-base))]">
                     {fmtUsd(c.finalBalance, true)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[11px] text-[var(--ink-3)] font-mono mt-0.5">
                     {startBalance > 0 ? `${fmtNum(c.finalBalance / startBalance, 1)}x capital inicial` : ""}
                   </div>
                 </div>
@@ -1533,7 +1524,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
-                  <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                  <div className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     CAGR ({es ? "Tasa Anual" : "Annual Rate"})
                   </div>
                   <div
@@ -1542,7 +1533,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   >
                     {fmtPct(c.cagr * 100, 1)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[11px] text-[var(--ink-3)] font-mono mt-0.5">
                     {es ? "Crecimiento geométrico" : "Geometric compound"}
                   </div>
                 </div>
@@ -1554,7 +1545,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
-                  <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                  <div className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Retorno Total / PnL" : "Total Return / PnL"}
                   </div>
                   <div
@@ -1566,7 +1557,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                     {c.totalReturnPct >= 0 ? "+" : ""}
                     {fmtPct(c.totalReturnPct, 0)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[11px] text-[var(--ink-3)] font-mono mt-0.5">
                     {c.finalNetProfit >= 0 ? "+" : ""}
                     {fmtUsd(c.finalNetProfit, true)} {es ? "neto" : "net"}
                   </div>
@@ -1579,13 +1570,13 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
-                  <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                  <div className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Max DD Est. (99\u00a0% Conf.)" : "Est. Max DD (99% Conf.)"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[rgb(var(--pnl-neg))]">
                     −{fmtPct(c.estMaxDDpct, 1)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[11px] text-[var(--ink-3)] font-mono mt-0.5">
                     {es ? `Racha peor: ~${c.maxConsecLosses} pérdidas` : `Streak: ~${c.maxConsecLosses} losses`}
                   </div>
                 </div>
@@ -1597,7 +1588,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
-                  <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                  <div className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     {es ? "Tiempo para Duplicar" : "Time to Double (2x)"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[var(--ink)]">
@@ -1605,7 +1596,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                       ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "mo"}`
                       : "—"}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[11px] text-[var(--ink-3)] font-mono mt-0.5">
                     {c.monthsToDouble !== null
                       ? `≈ ${fmtNum(c.monthsToDouble / 12, 1)} ${es ? "años" : "yrs"}`
                       : es ? "Sin crecimiento" : "No growth"}
@@ -1619,13 +1610,13 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   className="caja-cifra p-3.5"
                   style={{ background: "var(--surface-2)" }}
                 >
-                  <div className="tnum text-[9.5px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
+                  <div className="tnum text-[11px] uppercase tracking-wider text-[var(--ink-3)] font-semibold">
                     Profit Factor / Kelly
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-mono font-bold text-[var(--ink)]">
                     {fmtNum(c.profitFactor, 2)}
                   </div>
-                  <div className="text-[10px] text-[var(--ink-3)] font-mono mt-0.5">
+                  <div className="text-[11px] text-[var(--ink-3)] font-mono mt-0.5">
                     {es ? `Sugerido: ${fmtPct(c.halfKellyPct, 1)} riesgo` : `Rec: ${fmtPct(c.halfKellyPct, 1)} risk`}
                   </div>
                 </div>
@@ -1633,7 +1624,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
 
               {/* Botón de Copiar Resumen y Footer */}
               <div className="pt-3 border-t border-[rgb(var(--divider)/0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <span className="text-[10.5px] font-mono text-[var(--ink-3)]">
+                <span className="text-[12px] font-mono text-[var(--ink-3)]">
                   {es ? "Modelo estocástico determinista con cono de varianza." : "Deterministic stochastic model with variance cone."}
                 </span>
 
@@ -1672,7 +1663,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
                   border: "1px solid rgb(var(--divider) / 0.10)",
                 }}
               >
-                <p className="tnum m-0 text-[9.5px] leading-relaxed text-[var(--ink-3)]">
+                <p className="tnum m-0 text-[11px] leading-relaxed text-[var(--ink-3)]">
                   {es
                     ? "Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al 99 % de confianza estadística."
                     : "Statistical note: This projection assumes constant mathematical expectancy. In live trading, regimes shift and drawdowns may be larger. Estimated max drawdown models streaks at 99% confidence."}

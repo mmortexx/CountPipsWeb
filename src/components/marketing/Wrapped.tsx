@@ -162,9 +162,7 @@ export function Wrapped() {
   ];
 
   return (
-    <section className="section cv-auto relative overflow-clip bg-veil">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section className="section cv-auto relative overflow-clip">
 
       <div className="relative max-w-page mx-auto px-5 md:px-8">
         {/* Section header */}
@@ -242,7 +240,7 @@ export function Wrapped() {
 
                   <div className="flex-1 flex items-center">{c.value}</div>
 
-                  <p className="text-[13px] text-tertiary leading-relaxed">{c.sub}</p>
+                  <p className="text-[14px] text-tertiary leading-relaxed">{c.sub}</p>
                 </div>
               </article>
             );

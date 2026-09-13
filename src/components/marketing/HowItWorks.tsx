@@ -39,9 +39,7 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="section bg-veil relative overflow-clip">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section className="section relative overflow-clip">
       <div className="relative z-10 tj-container">
         {/* Header */}
         <SectionHeader
@@ -77,7 +75,7 @@ export function HowItWorks() {
           <div
             aria-hidden
             className="hidden md:block absolute top-[72px] left-[16.66%] right-[16.66%] h-px pointer-events-none"
-            style={{ background: "linear-gradient(90deg, transparent, rgb(var(--accent-base) / 0.30) 15%, rgb(var(--accent-base) / 0.30) 85%, transparent)" }}
+            style={{ background: "var(--line-2)" }}
           />
           <ol className="grid md:grid-cols-3 gap-6">
             {steps.map((s) => (
@@ -100,8 +98,7 @@ export function HowItWorks() {
                   //
                   // Conserva superficie —no pasa a retícula— porque lo que
                   // hay dentro es un dibujo, y un dibujo necesita lienzo:
-                  // sin él, los tres iconos quedarían flotando sobre el
-                  // grabado del fondo.
+                  // sin él, los tres iconos quedarían flotando.
                   //
                   // T2h: 120px en móvil (ahorra ~24px verticales por paso),
                   // 144px desde sm+, donde la rejilla de 3 columnas tiene
@@ -133,7 +130,7 @@ export function HowItWorks() {
                 {/* Title + kbd */}
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="t-h3 text-primary">{s.title}</h3>
-                  <kbd className="hidden md:inline-flex items-center px-1.5 h-5 rounded-[2px] text-[10px] font-mono text-[rgb(var(--accent-base)/0.85)] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.20)]">
+                  <kbd className="hidden md:inline-flex items-center px-1.5 h-5 rounded-[2px] text-[11px] font-mono text-[rgb(var(--accent-base)/0.85)] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.20)]">
                     {s.kbd}
                   </kbd>
                 </div>

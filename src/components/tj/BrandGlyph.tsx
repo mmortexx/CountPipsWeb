@@ -17,8 +17,7 @@
  * ── El color no es fijo, y eso es deliberado ──────────────────────────
  * La marca anterior llevaba paleta propia. Ésta se dibuja con
  * `rgb(var(--accent-base))` — la plata nardo en tema oscuro y la pizarra
- * en claro — porque la retícula ES el lenguaje del sitio: los mismos
- * puntos del atlas grabado del fondo, la misma tinta del acento. Un
+ * en claro — porque el acento es la tinta de la marca. Un
  * color fijo brillaría en un tema y desaparecería en el otro; el token
  * ya resolvió ese problema una vez y aquí se hereda resuelto.
  *

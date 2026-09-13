@@ -34,7 +34,7 @@ export { normalCdf };
  * ── Material ──────────────────────────────────────────────────────────
  * .tj-paper + .tj-paper-glow. Touch targets ≥44px. Sin overflow mobile.
  */
-export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
+export function EdgeSignificanceChecker() {
   const { lang } = useLang();
   const es = lang === "es";
   /* Espacio DURO antes del signo en espanol, pegado en ingles: la misma
@@ -135,13 +135,13 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
   ) => (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+        <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
           {label}
         </span>
         <span
           className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
           style={{
-            fontSize: 13,
+            fontSize: 14,
             fontWeight: 700,
             color: "rgb(var(--accent-base))",
             background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
@@ -209,16 +209,12 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           };
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum" style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}>
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span className="eyebrow">
               {es ? "TEST ESTADÍSTICO" : "STATISTICAL TEST"}
             </span>
           </div>
@@ -249,7 +245,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           {/* Detector de sobreajuste / Grados de libertad del setup */}
           <div className="mt-5 p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum text-[11px] uppercase tracking-wider text-tertiary">
+              <span className="tnum text-[12px] uppercase tracking-wider text-tertiary">
                 {es ? "Parámetros / Reglas del Setup" : "Setup Parameters / Rules"}
               </span>
               <span className="tnum font-mono font-bold text-primary">{parametersCount}</span>
@@ -281,7 +277,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
                 } as React.CSSProperties
               }
             />
-            <div className="mt-2 flex items-center justify-between text-[11px]">
+            <div className="mt-2 flex items-center justify-between text-[12px]">
               <span className="text-secondary">
                 {es ? "Ratio trades/parámetro:" : "Trades/parameter ratio:"} <strong className="font-mono text-primary">{fmtNum(c.tradesPerParam, 1)}:1</strong>
               </span>
@@ -299,7 +295,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
         >
           {/* Verdict headline */}
           <div className="mb-5">
-            <div className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
               {es ? "Veredicto" : "Verdict"}
             </div>
             <div className="flex items-baseline gap-3 mt-1 mb-2">
@@ -311,19 +307,19 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
                 }}
               >
                 <span aria-hidden className="w-1.5 h-1.5 rounded-[1px]" style={{ background: verdict.color }} />
-                <span className="tnum" style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: verdict.color }}>
+                <span className="tnum" style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: verdict.color }}>
                   {verdict.label}
                 </span>
               </span>
             </div>
-            <p className="m-0 text-[13px] leading-[1.6]" style={{ color: "var(--ink)" }}>
+            <p className="m-0 text-[14px] leading-[1.6]" style={{ color: "var(--ink)" }}>
               {verdict.text}
             </p>
           </div>
 
           {/* Gaussian Bell Curve Distribution Chart */}
           <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.02)]">
-            <div className="flex items-center justify-between text-[10px] font-mono text-tertiary uppercase tracking-wider mb-1">
+            <div className="flex items-center justify-between text-[11px] font-mono text-tertiary uppercase tracking-wider mb-1">
               <span>{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
               <span>
                 {es ? "Región crítica: |z| ≥ 1,96" : "Critical zone: |z| ≥ 1.96"}
@@ -342,24 +338,24 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
 
           {/* Matriz de Muestra Mínima */}
           <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]">
-            <span className="block text-[10px] uppercase tracking-wider text-tertiary mb-2">
+            <span className="block text-[11px] uppercase tracking-wider text-tertiary mb-2">
               {es ? `Muestra requerida según confianza (margen ±5${PCT})` : "Required sample by confidence (margin ±5%)"}
             </span>
             <div className="grid grid-cols-3 gap-2 text-center text-xs font-mono">
               <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.04)]">
-                <span className="block text-[10px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
+                <span className="block text-[11px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
                 <span className={`font-bold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample90} ops
                 </span>
               </div>
               <div className="p-1.5 rounded bg-[rgb(var(--accent-base)/0.08)] border border-[rgb(var(--accent-base)/0.2)]">
-                <span className="block text-[10px] text-[rgb(var(--accent-base))] font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
+                <span className="block text-[11px] text-[rgb(var(--accent-base))] font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
                 <span className={`font-bold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
                   {c.minSample95} ops
                 </span>
               </div>
               <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.04)]">
-                <span className="block text-[10px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
+                <span className="block text-[11px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
                 <span className={`font-bold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample99} ops
                 </span>
@@ -370,10 +366,10 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           {/* Sample-size adequacy bar */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Muestra vs. necesaria" : "Sample vs. needed"}
               </span>
-              <span className="tnum" style={{ fontSize: 11, fontWeight: 600, color: c.sampleAdequate ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}>
+              <span className="tnum" style={{ fontSize: 12, fontWeight: 600, color: c.sampleAdequate ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}>
                 {trades} / {c.minSample}
               </span>
             </div>
@@ -399,7 +395,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
                 }}
               />
             </div>
-            <p className="tnum m-0 mt-1.5 text-[10.5px]" style={{ color: "var(--ink-3)" }}>
+            <p className="tnum m-0 mt-1.5 text-[12px]" style={{ color: "var(--ink-3)" }}>
               {c.sampleAdequate
                 ? (es ? `Muestra suficiente para detectar un ${fmtNum(winRate, 0)}${PCT} real al 95${PCT} de confianza (±5${PCT}).` : `Sample sufficient to detect a real ${fmtNum(winRate, 0)}% at 95% confidence (±5%).`)
                 : (es ? `Te faltan ${c.minSample - trades} operaciones más para detectar un ${fmtNum(winRate, 0)}${PCT} real al 95${PCT} de confianza.` : `You need ${c.minSample - trades} more trades to detect a real ${fmtNum(winRate, 0)}% at 95% confidence.`)}
@@ -430,7 +426,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
               </svg>
               {copied ? (es ? "¡Informe copiado!" : "Report copied!") : (es ? "Copiar informe estadístico" : "Copy statistical report")}
             </button>
-            <span className="text-[11px] text-tertiary font-mono">
+            <span className="text-[12px] text-tertiary font-mono">
               {es ? "100 % privado en navegador" : "100% private in browser"}
             </span>
           </div>
@@ -452,7 +448,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
           no cabe y permiso para partir, se lee entero. */}
       <div
         className="tnum relative leading-[1.3] [overflow-wrap:anywhere]"
-        style={{ fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
+        style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
       >
         {label}
       </div>

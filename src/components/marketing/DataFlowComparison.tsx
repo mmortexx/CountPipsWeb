@@ -25,7 +25,7 @@ import { useLang } from "@/lib/i18n";
  * ── Material ──────────────────────────────────────────────────────────
  * .tj-paper. Touch targets ≥44px. Sin overflow mobile.
  */
-export function DataFlowComparison({ num = "02" }: { num?: string }) {
+export function DataFlowComparison() {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -35,16 +35,12 @@ export function DataFlowComparison({ num = "02" }: { num?: string }) {
   const send = useCallback(() => setPulses((p) => p + 1), []);
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container">
         {/* Header */}
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum" style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}>
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span className="eyebrow">
               {es ? "FLUJO DE DATOS" : "DATA FLOW"}
             </span>
           </div>
@@ -93,7 +89,7 @@ export function DataFlowComparison({ num = "02" }: { num?: string }) {
           </svg>
           {es ? "Añadir operación" : "Add trade"}
           {pulses > 0 && (
-            <span className="tnum ml-1 px-1.5 py-0.5 rounded-[2px] text-[10px]" style={{ background: "rgb(var(--divider) / 0.16)", color: "var(--ink-2)" }}>
+            <span className="tnum ml-1 px-1.5 py-0.5 rounded-[2px] text-[11px]" style={{ background: "rgb(var(--divider) / 0.16)", color: "var(--ink-2)" }}>
               {pulses}
             </span>
           )}
@@ -133,7 +129,7 @@ export function DataFlowComparison({ num = "02" }: { num?: string }) {
         </div>
 
         {/* Footer note */}
-        <p className="mt-6 text-[12px] leading-[1.55] max-w-2xl" style={{ color: "var(--ink-3)" }}>
+        <p className="mt-6 text-[13px] leading-[1.55] max-w-2xl" style={{ color: "var(--ink-3)" }}>
           {es
             ? "Cada punto es una operación. En CountPips nunca sale de tu equipo: el flujo local no depende de exponer tu historial a un servidor. Tu historial es tuyo."
             : "Each dot is a trade. In CountPips it stays on your machine: the local-first workflow does not depend on exposing your history to a server. Your history is yours."}
@@ -174,7 +170,7 @@ function FlowColumn({
       <div className="flex items-center justify-between mb-5">
         <div>
           <div className="text-[15px] font-semibold" style={{ color: "var(--ink)" }}>{title}</div>
-          <div className="tnum text-[10px]" style={{ letterSpacing: "0.14em", textTransform: "uppercase", color }}>{subtitle}</div>
+          <div className="tnum text-[11px]" style={{ letterSpacing: "0.14em", textTransform: "uppercase", color }}>{subtitle}</div>
         </div>
         <span aria-hidden className="inline-flex items-center justify-center w-7 h-7 rounded-[2px]" style={{ background: `color-mix(in oklab, ${color} 12%, transparent)`, border: `1px solid color-mix(in oklab, ${color} 30%, transparent)` }}>
           <span className="w-2 h-2 rounded-[1px]" style={{ background: color }} />
@@ -209,8 +205,8 @@ function FlowColumn({
             </div>
             {/* Label */}
             <div className="pt-1.5 min-w-0">
-              <div className="text-[13px] font-medium" style={{ color: "var(--ink)" }}>{step.label}</div>
-              {step.sub && <div className="text-[11px]" style={{ color: "var(--ink-3)" }}>{step.sub}</div>}
+              <div className="text-[14px] font-medium" style={{ color: "var(--ink)" }}>{step.label}</div>
+              {step.sub && <div className="text-[12px]" style={{ color: "var(--ink-3)" }}>{step.sub}</div>}
             </div>
             {/* Connector line to next step */}
             {i < steps.length - 1 && (

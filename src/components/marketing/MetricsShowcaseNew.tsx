@@ -34,17 +34,14 @@ const R_MODE_INDEX = R_BINS.findIndex((b) => b.count === R_MAX_COUNT);
  * Le siguen catálogo de métricas (4 familias) y la calculadora de
  * riesgo interactiva — esos se renderizan en sus propios componentes
  * y se montan desde la home.
- *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("04"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
  */
-export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
+export function MetricsShowcaseNew() {
   const { lang } = useLang();
   const es = lang === "es";
   return (
     <section
       id="metrics"
-      className="section bg-veil relative border-t border-b border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className="section relative border-t border-b border-[rgb(var(--divider)/0.06)] scroll-mt-24"
     >
       {/* T2c — `tj-container` sustituye a `max-w-[1240px] mx-auto px-5 md:px-8`
           para heredar los gutters fluidos (clamp(1.25rem, 4vw, 2.25rem))
@@ -55,17 +52,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
         <div>
           <Reveal>
             <div className="inline-flex items-center gap-3 mb-5">
-              <span
-                className="tnum"
-                style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-              >
-                § {num}
-              </span>
-              <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-              >
+              <span className="eyebrow">
                 {es ? "MÉTRICAS" : "METRICS"}
               </span>
             </div>
@@ -186,13 +173,13 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                     a ~170 px y la fórmula saldría cortada a media
                     integral, que se lee peor que no estar. */}
                 <span
-                  className="block text-[10px] uppercase"
+                  className="block text-[11px] uppercase"
                   style={{ letterSpacing: "0.14em", color: "var(--ink-3)" }}
                 >
                   {m.l}
                 </span>
                 <span
-                  className="mt-0.5 hidden break-words font-mono text-[10px] leading-[1.35] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
+                  className="mt-0.5 hidden break-words font-mono text-[11px] leading-[1.35] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
                   title={m.formula}
                 >
                   {m.formula}
@@ -203,7 +190,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                 >
                   {m.v}
                 </span>
-                <span className="text-[11px] text-tertiary mt-1 block">
+                <span className="text-[12px] text-tertiary mt-1 block">
                   {es ? m.descEs : m.descEn}
                 </span>
               </li>
@@ -228,14 +215,14 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
           <div className="flex items-center justify-between mb-3">
             <span
               className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+              style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
               {es ? "Distribución de R-múltiplo" : "R-multiple distribution"}
             </span>
             <span
               className="tnum"
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 padding: "4px 9px",
                 borderRadius: 4,
                 background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
@@ -309,7 +296,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                     <span
                       className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px]"
                       style={{
-                        fontSize: 9.5,
+                        fontSize: 11,
                         letterSpacing: "0.1em",
                         color: "rgb(var(--accent-base))",
                         background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
@@ -334,7 +321,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               <span
                 key={b.from}
                 className="tnum flex-1 text-center"
-                style={{ fontSize: 9.5, color: "var(--ink-3)" }}
+                style={{ fontSize: 11, color: "var(--ink-3)" }}
               >
                 {fmtR(b.from, lang, 1)}
               </span>
@@ -372,7 +359,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               <div key={s.l} className="relative">
                 <div
                   className="tnum flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5"
-                  style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {/* R24-1c: tiny accent dot before each stat label so the
                       three stats read as a synchronized footer row rather
@@ -395,7 +382,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
             className="mt-4 pt-3 border-t"
             style={{
               borderColor: "rgb(var(--divider) / 0.06)",
-              fontSize: 11,
+              fontSize: 12,
               lineHeight: 1.5,
               color: "var(--ink-3)",
             }}

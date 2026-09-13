@@ -66,12 +66,8 @@ export function PricingFAQ() {
     <section
       id="pricing-faq"
       aria-label={es ? "Preguntas frecuentes sobre precios" : "Pricing FAQ"}
-      className="section-tight bg-veil relative overflow-clip scroll-mt-24"
+      className="section-tight relative overflow-clip scroll-mt-24"
     >
-      {/* Opt-in 3% fractalNoise grain — matches HeroVideo / Bento /
-          Pricing so the FAQ reads as a continuation of the same premium
-          printed surface. */}
-      <div className="grain absolute inset-0 pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 tj-container">
         {/* Centered header — eyebrow + headline + lead + reassurance
@@ -186,8 +182,7 @@ export function PricingFAQ() {
           data-entra="traza"
           className="mt-12 h-px max-w-md mx-auto"
           style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.4) 50%, transparent 100%)",
+            background: "var(--line)",
             transformOrigin: "left center",
           }}
         />

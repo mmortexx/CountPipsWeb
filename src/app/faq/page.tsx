@@ -4,12 +4,7 @@ import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FAQ } from "@/components/marketing/FAQ";
 import { TableOfContents } from "@/components/tj/TableOfContents";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-
-// Estimated reading time (16 Q&A entries + contact sections). ~650 words
-// across all answers at 220 wpm = ~3 min.
-const READING_TIME_MIN = 3;
 
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
@@ -129,10 +124,9 @@ export function FaqBody() {
         subtitleEn="Everything you need to know before trying CountPips or requesting early access. Can't find your answer? Browse the glossary or write to us."
         breadcrumbEs="FAQ"
         breadcrumbEn="FAQ"
-        readingTimeMin={READING_TIME_MIN}
       />
       <FAQ standalone />
-      <EdgeSignificanceChecker num="01" />
+      <EdgeSignificanceChecker />
       {/* `StillHaveQuestions` retirado: la página encadenaba CUATRO
           bloques seguidos diciendo lo mismo ("¿aún tienes dudas?",
           "¿no encuentras tu respuesta?", el formulario y el cierre).
@@ -141,10 +135,8 @@ export function FaqBody() {
           sigue en el repositorio por si hace falta en otra página. */}
       <ContactSupport />
 
-      <PlateInterlude index={0} />
       <ContactForm />
 
-      <PlateInterlude index={1} />
       <FinalCTANew />
       <TableOfContents />
     </>

@@ -207,19 +207,19 @@ export function GlobalShortcuts() {
     >
           <div className="tj-paper tj-paper-dense rounded-[2px] pl-3 pr-3.5 py-1.5 flex items-center gap-2 border border-[rgb(var(--divider)/0.15)]">
             {/* Label — tells the user what the prefix does */}
-            <span className="text-[10px] uppercase tracking-[0.12em] text-tertiary font-semibold hidden sm:inline">
+            <span className="text-[11px] uppercase tracking-[0.12em] text-tertiary font-semibold hidden sm:inline">
               {es ? "navegación" : "navigation"}
             </span>
             <span className="hidden sm:inline w-px h-3 bg-[rgb(var(--divider)/0.2)]" aria-hidden />
             {/* The 'g' key — already pressed, shown as "active" */}
-            <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.06)] text-[11px] font-mono text-secondary tnum">
+            <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.06)] text-[12px] font-mono text-secondary tnum">
               g
             </kbd>
-            <span className="text-[11px] text-tertiary font-medium">
+            <span className="text-[12px] text-tertiary font-medium">
               +
             </span>
             {/* Accent placeholder for the next key */}
-            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-dashed border-[rgb(var(--accent-base)/0.5)] text-[11px] font-mono text-[rgb(var(--accent-base))] tnum">
+            <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-dashed border-[rgb(var(--accent-base)/0.5)] text-[12px] font-mono text-[rgb(var(--accent-base))] tnum">
               ?
             </span>
       </div>

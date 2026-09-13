@@ -48,7 +48,7 @@ export function ProfileSelector() {
   ] as const;
 
   return (
-    <section className="section-tight border-b border-[rgb(var(--divider)/0.1)] bg-veil" aria-labelledby="profile-selector-title">
+    <section className="section-tight border-b border-[rgb(var(--divider)/0.1)]" aria-labelledby="profile-selector-title">
       <div className="tj-container">
         <div className="max-w-2xl">
           <p className="eyebrow">{es ? "Elige tu recorrido" : "Choose your path"}</p>
@@ -81,7 +81,7 @@ export function ProfileSelector() {
                   </span>
                   <ArrowUpRight size={18} className="text-tertiary transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[rgb(var(--accent-base))]" aria-hidden />
                 </div>
-                <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.16em] text-tertiary">{profile.eyebrow}</p>
+                <p className="mt-8 text-[12px] font-semibold uppercase tracking-[0.16em] text-tertiary">{profile.eyebrow}</p>
                 <h3 className="mt-2 text-xl font-semibold tracking-tight text-primary">{profile.title}</h3>
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-secondary">{profile.body}</p>
                 <span className="mt-6 inline-flex text-sm font-medium text-primary underline decoration-[rgb(var(--accent-base)/0.55)] underline-offset-4">{profile.action}</span>

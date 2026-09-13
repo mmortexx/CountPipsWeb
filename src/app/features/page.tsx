@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -136,7 +135,6 @@ export function FeaturesBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="I"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Todo lo que necesitas para operar con disciplina."
@@ -147,26 +145,22 @@ export function FeaturesBody() {
         subtitleEn="Institutional metrics, a guardian that stops you before the dumb trade, and your data 100% on your machine. Not another journal with the same 30 metrics. Dive into each axis on its own page."
         breadcrumbEs="Características"
         breadcrumbEn="Features"
-        readingTimeMin={READING_TIME_MIN}
       />
       {/* Overview sections — broad strokes. Deep dives moved to
           /features/metricas, /features/disciplina, /features/seguridad. */}
-      <FeaturesBento num="01" />
-      <FeatureExplorer num="02" />
+      <FeaturesBento />
+      <FeatureExplorer />
 
       {/* La galería que esta página lleva prometiendo desde su primer
           `articleSchema` y no existía. Va aquí, después del explorador:
           el visitante acaba de marcar lo que le importa y de leer una
           lista de nombres, y lo siguiente que necesita es ver la cosa. */}
-      <GaleriaPantallas num="03" />
+      <GaleriaPantallas />
 
-      <PlateInterlude index={0} />
       <HowItWorks />
 
-      <PlateInterlude index={2} />
       <MoreFeatures />
 
-      <PlateInterlude index={3} />
       <FinalCTANew />
       <TableOfContents />
     </>

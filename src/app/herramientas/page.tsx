@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { HerramientasIndice } from "@/components/herramientas/HerramientasIndice";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -82,7 +81,6 @@ export function HerramientasBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio={`[ ${HERRAMIENTAS.length + 1} ]`}
         eyebrowEs="Gratis"
         eyebrowEn="Free"
         titleEs="Herramientas que hacen la cuenta por ti."
@@ -95,7 +93,6 @@ export function HerramientasBody() {
         breadcrumbEn="Tools"
       />
       <HerramientasIndice />
-      <PlateInterlude index={0} />
       <FinalCTANew />
     </>
   );

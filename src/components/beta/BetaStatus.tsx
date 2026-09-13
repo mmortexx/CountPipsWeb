@@ -18,7 +18,7 @@ export function ProductStatus() {
     { icon: null, tone: "", title: es ? "Apertura comercial" : "Commercial launch", text: es ? "Entrega, licencia, soporte y precios definitivos." : "Delivery, licensing, support and final pricing." },
   ];
   return (
-    <section className="section bg-veil">
+    <section className="section">
       <div className="tj-container">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>

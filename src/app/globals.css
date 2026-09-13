@@ -574,13 +574,13 @@
      never color — so they compose cleanly with text-primary /
      text-secondary / text-tertiary utilities. */
   .t-display {
-    font-size: clamp(2.5rem, 7vw, 5.5rem);
-    line-height: 1.05;
-    letter-spacing: -0.04em;
+    font-size: clamp(2.75rem, 6.4vw, 5.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
     font-weight: 500;
   }
   .t-h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(2.375rem, 5vw, 3.75rem);
     line-height: 1.05;
     letter-spacing: -0.035em;
     font-weight: 500;
@@ -590,8 +590,8 @@
     text-wrap: balance;
   }
   .t-h2 {
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    line-height: 1.1;
+    font-size: clamp(2rem, 3.6vw, 3rem);
+    line-height: 1.08;
     letter-spacing: -0.03em;
     font-weight: 500;
     /* Balance heading line breaks — applies to every section h2 that
@@ -600,10 +600,10 @@
     text-wrap: balance;
   }
   .t-h3 {
-    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-    line-height: 1.15;
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    line-height: 1.2;
     letter-spacing: -0.02em;
-    font-weight: 500;
+    font-weight: 600;
     /* Balance heading line breaks — parity with .t-h1 / .t-h2 so every
        heading token avoids orphan words on the last line (per R22-1a
        P0-1, extended to h3/h4 in R26-2b). */
@@ -620,20 +620,15 @@
        the second line optically even (R26-2b). */
     text-wrap: balance;
   }
-  .t-body {
-    font-size: 1rem;
-    line-height: 1.6;
-    letter-spacing: -0.01em;
-  }
   .t-caption {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     line-height: 1.5;
     letter-spacing: 0;
   }
   .t-label {
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     line-height: 1.4;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     font-weight: 600;
   }
@@ -643,7 +638,6 @@
      large display type. The `.text-balance` utility remains for
      explicit opt-in on non-heading elements (paragraphs, etc.). */
   h1, h2, h3 { text-wrap: balance; }
-
 
   /* 2 · EL RECUADRO GRIS AL TOCAR.
      iOS y Android pintan por su cuenta un rectángulo translúcido
@@ -907,12 +901,12 @@
 
   .eyebrow {
     text-transform: uppercase;
-    letter-spacing: 0.14em;
-    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem;
+    line-height: 1.4;
     font-weight: 600;
     color: rgb(var(--txt-tertiary));
   }
-
 
   /* ------------------------------------------------------------
      .terms-bar — placa de condiciones: pares etiqueta/valor
@@ -950,7 +944,7 @@
     border-top: 0;
   }
   .terms-bar__key {
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.14em;
@@ -977,7 +971,6 @@
   }
 
 }
-
 
 /* ══════════════════════════════════════════════════════════════════
    ELEVACIÓN EN REPOSO, Y SOMBRAS QUE NO SON NEGRAS
@@ -1006,12 +999,10 @@
   --sombra: 19 29 38;
 }
 
-
 @layer utilities {
   .text-primary { color: rgb(var(--txt-primary)); }
   .text-secondary { color: rgb(var(--txt-secondary)); }
   .text-tertiary { color: rgb(var(--txt-tertiary)); }
-
 
   /* ── El realce del titular: CURSIVA, porque el color no puede ─────
      Era un `linear-gradient` de 120° recortado contra el texto. Aparte
@@ -1040,10 +1031,10 @@
      Se conserva el NOMBRE de la clase a propósito: la usan medio
      centenar de titulares y renombrarla no cambiaría un píxel. */
   .text-gradient {
-    color: rgb(var(--accent-base));
+    color: rgb(var(--txt-tertiary));
     -webkit-text-fill-color: currentColor;
     background: none;
-    font-style: italic;
+    font-style: normal;
     /* La cursiva de una serif ocupa menos y se inclina: sin este respiro
        la última letra del tramo se pega a la primera del texto recto. */
     padding-right: 0.04em;
@@ -1081,8 +1072,8 @@
      terminar. Es la regla de proximidad aplicada al eje vertical. */
   :root {
     --ritmo-1: clamp(2rem, 4vw, 3rem);
-    --ritmo-2: clamp(3rem, 6vw, 4.5rem);
-    --ritmo-3: clamp(4rem, 8vw, 6.5rem);
+    --ritmo-2: clamp(3.5rem, 7vw, 5.5rem);
+    --ritmo-3: clamp(4.5rem, 9vw, 7.5rem);
     --ritmo-4: clamp(5.5rem, 11vw, 9rem);
   }
 
@@ -1110,27 +1101,6 @@
     padding-top: calc(var(--ritmo-2) * 0.5);
   }
 
-  /* Velo de sección — sustituye al antiguo `bg-black` opaco de las
-     secciones. Deja pasar ~26 % del ojo WebGL del fondo (BackgroundFX)
-     para que la web entera respire sobre él, manteniendo el contraste
-     del contenido: sobre el lienzo casi negro del canvas, el velo lee
-     como el mismo negro institucional de antes. En tema claro cubre
-     al 82 % para que el ojo quede como marca de agua. */
-  .bg-veil {
-    background-color: color-mix(in srgb, var(--bg) 80%, transparent);
-  }
-  /* En tema claro el iris ILUMINA en lugar de oscurecer, y al 82 % el
-     18 % restante bastaba para que la zona más brillante del ojo
-     asomara como un halo rosado en los aires entre tarjetas: dos
-     secciones veladas seguidas mostraban un resplandor en la costura
-     que se leía como un fallo de fondo, no como una marca de agua.
-     Al 90 % el ojo sigue estando —se intuye la forma detrás de todo el
-     sitio, que es lo que se busca— pero deja de competir con el
-     contenido. */
-  :root[data-theme="light"] .bg-veil {
-    background-color: color-mix(in srgb, var(--bg) 90%, transparent);
-  }
-
   /* Container-query wrapper — establece un contexto de contenedor
      inline-size para que los hijos puedan escalar (font-size, etc.)
      según el ANCHO DE LA CARD, no del viewport. Crucial para los
@@ -1140,118 +1110,7 @@
     container-type: inline-size;
   }
 
-  /* .tj-legible-text — red de legibilidad para texto que flota
-     DIRECTAMENTE sobre el ojo, sin ningún panel/velo detrás (p. ej.
-     VideoCTA, el cierre de la home): un text-shadow theme-aware en
-     vez de una caja opaca, así el ojo se ve entero y el texto sigue
-     leyéndose. Oscuro → sombra oscura (el texto es claro sobre un
-     fondo que puede iluminarse mucho cerca del rojo/verde del iris).
-     Claro → halo claro (el texto es oscuro sobre papel, pero el iris
-     ahora lleva color real y puede oscurecer el fondo puntualmente). */
-  .tj-legible-text {
-    /* Dos capas, no tres: una sombra de contacto a 1 px que separa la
-       letra del fondo y una difusa muy abierta que apaga los brillos
-       del iris. La versión anterior apilaba un tercer resplandor a 8 px
-       de radio y 0.45 de opacidad — a esa distancia el halo deja de leer
-       como sombra y empieza a leer como neón alrededor de la letra. */
-    text-shadow:
-      0 1px 2px rgb(0 0 0 / 0.55),
-      0 0 28px rgb(0 0 0 / 0.42);
-  }
-  :root[data-theme="light"] .tj-legible-text {
-    text-shadow:
-      0 1px 2px rgb(255 255 255 / 0.62),
-      0 0 28px rgb(255 255 255 / 0.55);
-  }
 
-  .tj-legible-text :where( a,
-  button,
-  input,
-  select,
-  textarea,
-  summary,
-  [role="button"],
-  [role="radio"],
-  .chip,
-  .liquid-glass,
-  code,
-  kbd ) {
-    text-shadow: none;
-  }
-
-  /* .page-header-scrim — velo de las cabeceras de subpágina.
-     ------------------------------------------------------------------
-     POR QUÉ ESTO SIGUE SIENDO UN DEGRADADO, si la regla del estilo es
-     que no haya ninguno: porque no pinta densidad, protege una lectura.
-     La regla apunta contra el ornamento —halos, auroras, barridos,
-     marcos que se desvanecen, titulares con el color en transición—, y
-     todo eso se ha ido. Un velo que tiene que estar donde hay texto y
-     no estar donde hay dibujo necesita un sitio donde dejar de estar; el
-     corte duro se vería como una costura vertical en mitad de la
-     cabecera. Es el mismo criterio por el que las máscaras se quedan.
-
-     RECALIBRADO. Los valores de antes (88 % hasta media anchura) se
-     eligieron contra el ojo WebGL que había de fondo, cuyas fibras rojas
-     y verdes hacían oscilar la luminancia bajo una misma línea de texto
-     entre 87 y 245. Ese fondo ya no existe: hoy detrás hay lápiz fino a
-     0,62 de opacidad, que no ilumina ni satura. Manteniendo el 88 % se
-     tapaba el grabado en la cabecera de las 150 páginas que la llevan
-     —el mismo error que cometía el velo de sección—, así que el tramo
-     protegido baja al 84 %, que es el valor del sistema (`--velo`) y el
-     que sostiene la cuenta de contraste del texto terciario, y se abre
-     antes para que la lámina entre en la cabecera. */
-  .page-header-scrim {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--bg) 84%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 84%, transparent) 45%,
-      color-mix(in srgb, var(--bg) 46%, transparent) 62%,
-      transparent 82%
-    );
-  }
-  :root[data-theme="light"] .page-header-scrim {
-    background: linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--bg) 88%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 88%, transparent) 45%,
-      color-mix(in srgb, var(--bg) 54%, transparent) 62%,
-      transparent 85%
-    );
-  }
-
-  /* .hero-side-scrim — R21-2d. Hero's left-side protective gradient over
-     the eye WebGL. The eye is the visual centerpiece of the hero, so the
-     scrim only covers the left text column (fading to transparent at 52 %
-     width) and leaves the right two-thirds of the iris fully visible.
-
-     DARK theme mixes the bg 72 % toward #000 → deepens the eye into a
-     near-black canvas so white text reads at ≥18:1. ✓ correct.
-
-     LIGHT theme used to inherit the same 72 % mix toward #000 → with
-     #f3f2ec as --bg that produced a mid-gray (~#8e8d87) veil, dropping
-     --accent-base / --ink-2 / --ink-3 contrast to 1.9-3.7:1 (audit
-     R21-1d §3, H1/H2/H3). The override below mixes at 88 % so the veil
-     stays bright (~#e4e2da) — the iris's red/green fibers can't wash out
-     dark text any more. Belt-and-suspenders: Hero's text container also
-     carries `.tj-legible-text` so the chips / scroll indicator in the
-     area where the scrim fades to transparent still get a white halo. */
-  .hero-side-scrim {
-    background:
-      linear-gradient(90deg,
-        color-mix(in oklab, var(--bg) 72%, #000),
-        color-mix(in oklab, var(--bg) 26%, transparent) 34%,
-        transparent 52%);
-  }
-  :root[data-theme="light"] .hero-side-scrim {
-    background:
-      linear-gradient(90deg,
-        color-mix(in oklab, var(--bg) 88%, #000),
-        color-mix(in oklab, var(--bg) 38%, transparent) 34%,
-        transparent 52%);
-  }
 
   /* ── EN MÓVIL EL VELO NO PUEDE SER LATERAL ─────────────────────────
      El degradado de arriba protege la COLUMNA IZQUIERDA, que es donde
@@ -1269,26 +1128,7 @@
      abierto arriba y abajo, para que el dibujo siga viéndose por encima
      del titular y por debajo de la placa de datos. Se protege lo que hay
      que leer sin tapar lo que hay que ver. */
-  @media (max-width: 1023px) {
-    .hero-side-scrim {
-      background:
-        linear-gradient(180deg,
-          transparent 0%,
-          color-mix(in oklab, var(--bg) 40%, transparent) 14%,
-          color-mix(in oklab, var(--bg) 78%, transparent) 26%,
-          color-mix(in oklab, var(--bg) 78%, transparent) 82%,
-          transparent 100%);
-    }
-    :root[data-theme="light"] .hero-side-scrim {
-      background:
-        linear-gradient(180deg,
-          transparent 0%,
-          color-mix(in oklab, var(--bg) 46%, transparent) 14%,
-          color-mix(in oklab, var(--bg) 84%, transparent) 26%,
-          color-mix(in oklab, var(--bg) 84%, transparent) 82%,
-          transparent 100%);
-    }
-  }
+
 
   .divider-grad {
     height: 1px;
@@ -1513,58 +1353,6 @@ html {
     transition-delay: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/* Film grain for depth — preserved at near-imperceptible opacity (0.01)
-   so the pure-black void still reads as a "material" with the faintest
-   tooth rather than a flat synthetic fill. mix-blend-mode: overlay lets
-   the grain lift highlights on the rare non-black surfaces (glass cards,
-   images) without shifting the accent hue. On the void itself it is
-   effectively invisible — kept only to maintain the material language
-   established by the glass-card ::after grain. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 0.01;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-:root[data-theme="light"] body::before { opacity: 0.02; }
-
-/* ============================================================
-   .GRAIN — opt-in richer film-grain texture for surfaces that want
-   the "expensive printed" feel (hero bands, full-bleed feature
-   panels, premium card surfaces). Adds a 3%-opacity SVG
-   fractalNoise overlay via ::after so the texture can be toggled
-   per-element without affecting the global body::before grain
-   (which stays at ~1% for the void). Use sparingly — the texture is
-   GPU-composited so applying it to dozens of cards simultaneously
-   can cost frame budget on low-end devices. mix-blend-mode: overlay
-   lets the grain lift highlights and deepen shadows without
-   shifting the accent hue. Note: applying .grain to a .glass card
-   intentionally overrides that card's lighter .glass::after grain
-   (1.5%) with this richer 3% version — that's the opt-in behavior.
-   ============================================================ */
-.grain::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  mix-blend-mode: overlay;
-  z-index: 0;
-}
-:root[data-theme="light"] .grain::after { opacity: 0.025; }
-@media (prefers-reduced-motion: reduce) {
-  /* Grain is static texture, but honor the user's motion preference by
-     dropping the opacity one notch so the surface is calmer. */
-  .grain::after { opacity: 0.02; }
 }
 
 /* ============================================================
@@ -2080,7 +1868,6 @@ textarea:focus-visible,
 @layer components {
   .tj-paper,
   .tj-hoja,
-  .liquid-glass,
   .demo-card {
     position: relative;
   }
@@ -2151,7 +1938,7 @@ textarea:focus-visible,
   gap: 0.35rem;
   padding: 0 0.5rem;
   font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.1;
   color: var(--ink-2);
   cursor: pointer;
@@ -2417,9 +2204,6 @@ button.icon-btn:hover > svg,
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
   }
-  body::before {
-    display: none !important;
-  }
   :root[data-theme="dark"] body,
   :root[data-theme="light"] body {
     background: #ffffff !important;
@@ -2481,9 +2265,7 @@ button.icon-btn:hover > svg,
   [class*="IntroSequence"],
   [class*="ScrollProgress"],
   #mobile-nav-drawer,
-  #tj-loader,
   canvas,
-  .grain,
   .tj-no-print {
     display: none !important;
   }
@@ -2507,19 +2289,7 @@ button.icon-btn:hover > svg,
     color: #000000 !important;
   }
 
-  .liquid-glass,
-  .bg-veil {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: none !important;
-    box-shadow: none !important;
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
-  .liquid-glass::before,
-  .liquid-glass::after,
-  .link-underline::after,
-  .grain::after {
+  .link-underline::after {
     display: none !important;
   }
   /* Decorative accent hairline dividers collapse to plain white so
@@ -2647,84 +2417,7 @@ button.icon-btn:hover > svg,
   }
 }
 
-/* ============================================================
-   LIQUID GLASS — premium glassmorphism for navbar and cards.
-   R3-a root-cause fix: previously set border:none + own box-shadow,
-   which silently overrode ALL Tailwind border-* / shadow-* utilities
-   on .liquid-glass elements (the demo window had zero drop-shadow).
-   Now: no border / no box-shadow on the host — Tailwind utilities own
-   them. The machined inset highlights live on a ::after pseudo so they
-   survive even when a component sets its own outer shadow utility.
-   ============================================================ */
-.liquid-glass {
-  /* Opacidad alta a propósito: las capturas reales de la app (WinUI 3,
-     material Acrylic/Mica) leen como superficies casi sólidas, con solo
-     una insinuación de translucidez en los bordes — nunca el "cristal"
-     muy transparente que tenía esta clase antes (0.4 dejaba ver el fondo
-     de sobra y competía con el contenido). */
-  background: rgba(0, 0, 0, 0.92);
-  background-blend-mode: luminosity;
-  /* blur + saturate — the same material recipe .glass uses (R26-2b):
-     blur(4px) is lighter than .glass's 16px because liquid-glass sits
-     on brighter, busier backdrops (navbar over hero video, demo window
-     over screenshots) where heavier blur would smear content underneath.
-     saturate(150%) compensates for the diffuse desaturation blur
-     introduces — without it the material reads as flat gray rather
-     than the rich tinted glass the WinUI Acrylic/Mica reference shows.
-     Matches the .glass saturate value for material-system coherence. */
-  -webkit-backdrop-filter: blur(4px) saturate(150%);
-  backdrop-filter: blur(4px) saturate(150%);
-}
-.liquid-glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 20%,
-    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
-    rgba(255,255,255,0.1) 80%, rgba(255,255,255,0.3) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-.liquid-glass::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.08),
-    inset 0 -1px 0 rgb(0 0 0 / 0.08);
-}
-:root[data-theme="light"] .liquid-glass {
-  background: rgba(255, 255, 255, 0.94);
-}
-:root[data-theme="light"] .liquid-glass::after {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.6),
-    inset 0 -1px 0 rgb(0 0 0 / 0.06);
-}
 
-/* Variante para superficies A SANGRE (el pie de página).
-   El rim de `::before` recorre los cuatro cantos, lo cual es correcto
-   cuando la pieza flota y tiene aire alrededor. Pegada a los bordes de la
-   ventana no: los cantos izquierdo y derecho caen justo sobre el filo del
-   navegador y se leen como dos rayas verticales sueltas a los lados de la
-   página, no como el canto de un material. Aquí se deja solo la luz
-   superior, que es la que de verdad separa la banda del contenido. */
-.liquid-glass.glass-band::before {
-  display: none;
-}
-.liquid-glass.glass-band::after {
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
-}
-:root[data-theme="light"] .liquid-glass.glass-band::after {
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
-}
 
 /* WindowFrame (src/components/tj/WindowFrame.tsx) light-theme shadow
    override. The dark-theme inline shadow (`0 8px 28px -12px rgb(0 0 0 /
@@ -2829,80 +2522,7 @@ button.icon-btn:hover > svg,
    La regla global de `prefers-reduced-motion` de más arriba ya
    colapsa duración y retardo a 0,01 ms, así que quien pide menos
    movimiento ve el titular entero de golpe. */
-@keyframes tj-char-in {
-  from { opacity: 0; transform: translateX(-18px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.tj-char {
-  display: inline-block;
-  animation: tj-char-in 420ms var(--ease-suave) backwards;
-  animation-delay: var(--tj-char-delay, 0ms);
-}
-/* Intro — estado pre-hidratación: el script inline del <head> añade
-   `.tj-preload` al <html> en la primera visita de la sesión, así los
-   elementos [data-seq] del hero arrancan ocultos sin flash y el
-   IntroSequence los revela escalonados con blur→0. */
-.tj-preload [data-seq] {
-  opacity: 0;
-  transform: translateY(30px);
-  filter: blur(7px);
-  /* Failsafe CSS puro: si el bundle JS nunca monta IntroSequence, esta
-     animación fuerza la visibilidad a los 5 s. En el flujo normal la
-     clase .tj-preload se retira mucho antes y esto no llega a verse. */
-  animation: tj-preload-release 0.8s var(--ease-salida) 5s forwards;
-}
-@keyframes tj-preload-release {
-  to {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
 
-/* Loader de primera visita (IntroSequence lo monta imperativamente). */
-#tj-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-/* ── LA CORTINA SE VA CON LA CURVA DE LA CASA, NO CON LA DE IDA Y VUELTA
-   Iba con `--ease-entrada-salida` (0.76, 0, 0.24, 1), que ARRANCA LENTO
-   porque está pensada para algo que sale y vuelve. Un telón que se
-   marcha no vuelve: lo único que hace en esos primeros cientos de
-   milisegundos es tapar.
-
-   Y no era un detalle de gusto. Medido en la portada a 1440×900, con la
-   entrada escalonada del hero disparándose en el mismo instante en que
-   el telón empieza a subir:
-
-     elemento        se destapa   entrada acabada   opacidad al destaparse
-     ceja              1514 ms        1381 ms              1,00
-     h1                1514 ms        1447 ms              1,00
-     subtítulo         1447 ms        1498 ms              0,98
-     CTA / CTA         1447 ms     1549 / 1611 ms       0,95 / 0,90
-     barra de specs    1364 ms        1672 ms              0,36
-
-   O sea: la ceja y el titular —las dos piezas que justifican la
-   secuencia— TERMINABAN su entrada detrás del telón, y asomaban ya a
-   tinta plena. Es exactamente el fallo que se corrigió para el grabado
-   del fondo, sin corregir aquí.
-
-   Con la curva de la casa el telón ha recorrido más del 80 % del camino
-   en los primeros 180 ms, así que descubre el hero mientras el
-   escalonado todavía está empezando: las dos animaciones dejan de
-   competir por el mismo segundo y pasan a ser un solo gesto. No se
-   toca ni la duración ni el retardo del escalonado — sólo deja de
-   ocurrir a oscuras. */
-#tj-loader.done {
-  transform: translateY(-101%);
-  transition: transform 0.9s var(--ease-suave);
-}
 
 /* ── Aquí estaban el «sheen» y el «spotlight» ─────────────────────
    `.tj-cta-sheen`: un barrido de luz blanca al 60 % cruzando el botón
@@ -3059,255 +2679,157 @@ button.icon-btn:hover > svg,
 }
 
 /* ============================================================
-   ESTILO "CLÁSICO" — Papel
+   ESTILO "CLÁSICO" — Institucional
    ============================================================
-   Segundo valor del eje `data-palette` (ver src/lib/theme.tsx). No es
-   un acento alternativo: redefine el juego COMPLETO de tokens y cambia
-   el tratamiento de tipografía, radios y ornamento. El producto es un
-   DIARIO, y este estilo lo trata como lo que su nombre dice: un objeto
-   impreso. Chapa gris nardo, tinta fría, acento azul acero, titulares
-   en serif y el ojo de la marca redibujado como grabado a buril.
+   Único valor del eje `data-palette` (ver src/lib/theme.tsx): redefine
+   el juego COMPLETO de tokens en cada tema. Blanco y negro de verdad,
+   un neutro frío y el color reservado al dinero (verde/rojo/ámbar).
+   El acento es la tinta plena: botón primario negro en claro, blanco
+   en oscuro.
 
-   El material era papel hueso con acento arcilla hasta que se midió
-   contra la marca de Anthropic: el acento caía a 0,3° de su "book
-   cloth" y el fondo a ΔE 0,012 de su ivory. No era un token suelto
-   parecido, era la fórmula entera. Ver la nota de :root.
+   Cada bloque declara el juego entero para que el combinado (0,3,0)
+   gane siempre al de tema (0,2,0) y no haya fugas.
 
-   Clásico y moderno a la vez, que es lo que se pidió: el material y la
-   tipografía de display vienen del libro; la retícula, el espaciado y
-   el cuerpo de texto (Instrument Sans) siguen siendo contemporáneos.
-   Es el mismo emparejamiento que usa Anthropic: serif editorial para
-   el display, sans neutra para todo lo demás.
+   CONTRASTE medido (WCAG 2.1) sobre bg / surface / surface-2:
+     claro  — primario 19,2 · secundario 10,2 · terciario 6,3 → 5,5 ·
+              verde 5,7 → 4,9 · rojo 6,6 → 5,7 · ámbar 6,8 → 5,9
+     oscuro — primario 17,0 · secundario 9,1 · terciario 7,1 → 5,9 (raised) ·
+              verde 9,8 · rojo 7,0 · ámbar 7,8
+   Si se retoca un color, se vuelve a medir sobre las cuatro superficies. */
 
-   CADA BLOQUE DECLARA EL JUEGO ENTERO a propósito. Los selectores de
-   estilo y de tema tienen la misma especificidad en un caso
-   (`:root[data-palette=...]` y `:root[data-theme="light"]`, ambos
-   0,2,0), así que un bloque incompleto dejaría fugas de tokens del
-   otro tema según el orden del archivo. Declarándolo todo, el bloque
-   combinado (0,3,0) gana siempre y no hay fugas posibles.
-
-   CONTRASTE: los 38 pares de esta paleta están medidos contra WCAG 2.1
-   AA (4,5:1 texto normal / 3:1 elementos de interfaz) sobre sus fondos
-   reales, incluidas las superficies elevadas, que es donde se cae el
-   contraste. Cuatro valores se apartaron del candidato inicial por
-   quedarse cortos ahí: la tinta terciaria del papel (#6E6555 → #635B4B,
-   4,32 → 5,05 sobre surface-2), la del modo tinta (#948B79 → #9E9583,
-   4,28 → 4,87 sobre raised), el ámbar (#AD5A00 → #964E00, 4,23 → 5,30)
-   y el verde de P&L (#1E7A4C → #1A6A42, 4,00 → 4,96 sobre surface-2).
-   Si se retoca un color aquí, hay que volver a medirlo sobre las
-   CUATRO superficies, no solo sobre el fondo de página.
-   ============================================================ */
-
-/* ---- Tokens · modo noche (oscuro) ------------------------------------
-   La contraparte nocturna de la chapa: el mismo gris frío bajo poca luz,
-   no un negro azulado genérico. Todo el neutro comparte el tono del gris
-   nardo (246°) para que el azul del acento se lea como el mismo material
-   con color, y no como un color prestado de otra hoja. */
 :root[data-palette="clasico"] {
-  --accent-base: 205 217 228; /* #CDD9E4 — plata nardo, 10,27:1 en el peor fondo */
-  --accent-hover: 230 238 246; /* #E6EEF6 */
-  --accent-pressed: 183 195 205; /* #B7C3CD */
-  --accent-soft: 205 217 228;
-  /* Tinta del texto que va ENCIMA del acento (botón primario). Ver la
-     nota de `--accent-ink` en :root: el valor fijo que había antes en
-     los componentes no servía para un acento oscuro. */
-  --accent-ink: 12 17 22; /* #0C1116 — 13,22:1 sobre la plata */
+  --accent-base: 236 239 242; /* #ECEFF2 */
+  --accent-hover: 255 255 255;
+  --accent-pressed: 206 212 218;
+  --accent-soft: 236 239 242;
+  --accent-ink: 10 12 15; /* #0A0C0F — 17,0:1 sobre el acento */
 
-  /* P&L atemperado. El #00F5A0 del estilo del producto es un verde de
-     fósforo, correcto en una terminal y demasiado crudo aquí. Estos son
-     los mismos semáforos bajados de intensidad, y siguen despejando AA
-     con holgura sobre los cuatro fondos nuevos (7,15:1 el peor del
-     verde, 5,16:1 el peor del rojo). Se conservan al cambiar el material
-     porque su trabajo no es pegar con el fondo, sino distinguirse del
-     acento. Con el acento acromático la confusión es imposible por
-     definición: el verde y el rojo son los ÚNICOS colores de la página.
-     Es exactamente lo que se busca en un diario de trading — el color
-     significa dinero, y nada más lo usa. */
   --pnl-pos: 63 206 146; /* #3FCE92 */
   --pnl-neg: 240 119 106; /* #F0776A */
   --pnl-warn: 224 147 43; /* #E0932B */
-  /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 9,44:1 · rojo 6,82:1 · ámbar 7,57:1. */
-  --pnl-ink: 12 17 22; /* #0C1116 */
-  /* Lo mismo para la tercera familia, la del semaforo. Vale igual que
-     `--pnl-ink` porque el verde de estado y el de dinero giran a la vez,
-     pero se nombra aparte: son familias distintas y el dia que una se
-     mueva, la otra no tiene por que seguirla. */
-  --sig-ink: 12 17 22; /* #0C1116 */
+  --pnl-ink: 10 12 15;
+  --sig-ink: 10 12 15;
   --pnl-neg-on-tint: 240 119 106;
-  /* 0,22 y no 0,3, el mismo tope que el tema claro. En oscuro el acento es
-     PLATA —un color claro— así que una celda teñida al 30 % se aclara hasta
-     competir con su propia cifra: medido, dejaba los importes del calendario
-     en 4,22:1 y los números de día en 3,03:1. El tope es el mismo en los dos
-     temas porque el problema es el mismo en los dos, sólo que invertido. */
   --cal-tint-max: 0.22;
   --sig-green: 63 206 146;
   --sig-amber: 224 147 43;
   --sig-red: 240 119 106;
+  --sig-purple: 192 132 252; /* #C084FC */
 
-  --tint: 12 17 22; /* #0C1116 */
-  --canvas: 12 17 22;
-  --chrome: 12 17 22;
-  --card: 12 17 22;
-  --canvas-op: 0.12;
-  --chrome-op: 0.82;
-  --card-op: 0.58;
+  --tint: 10 12 15;
+  --canvas: 10 12 15;
+  --chrome: 10 12 15;
+  --card: 16 19 24;
+  --canvas-op: 0;
+  --chrome-op: 0.92;
+  --card-op: 1;
 
-  /* La escalera de tinta va POR DEBAJO del acento. Con una marca sin
-     color, lo que llama la atención es lo más claro: el acento es plata
-     y el texto queda un paso por detrás, o el botón de compra no se
-     distinguiría de un párrafo. */
-  --txt-primary: 187 194 200; /* #BBC2C8 — 8,18:1 en el peor fondo */
-  --txt-secondary: 159 165 172; /* #9FA5AC — 5,93:1 */
-  --txt-tertiary: 138 144 150; /* #8A9096 — 4,56:1 */
-  --divider: 187 194 200;
+  --txt-primary: 236 239 242; /* #ECEFF2 */
+  --txt-secondary: 170 178 186; /* #AAB2BA */
+  --txt-tertiary: 148 157 166; /* #949DA6 */
+  --divider: 236 239 242;
 
-  /* Vocabulario --bg/--surface/--ink del HTML de referencia.
-
-     LA TINTA SE DECLARA UNA VEZ. Aquí había tres hex —#bbc2c8, #9fa5ac,
-     #8a9096— que repetían exactamente los tres tripletes de `--txt-*` de
-     ocho líneas más arriba, en otro formato. Dos vocabularios para la
-     misma escalera: 771 usos leen uno (por las utilidades `.text-*`) y
-     323 leen el otro, y el día que alguien ajuste un contraste sólo va a
-     tocar el que tenga delante. Ahora `--ink*` DERIVA de `--txt-*`, así
-     que no hay dos verdades que puedan separarse; los 323 usos siguen
-     funcionando sin tocar ni uno. */
-  --bg: #0c1116;
-  --surface: #161c21;
-  --surface-2: #1e242a;
-  --raised: #22292f;
+  --bg: #0a0c0f;
+  --surface: #101318;
+  --surface-2: #161a20;
+  --raised: #1b2027;
   --ink: rgb(var(--txt-primary));
   --ink-2: rgb(var(--txt-secondary));
   --ink-3: rgb(var(--txt-tertiary));
-  --line: rgba(205, 217, 228, 0.10);
-  --line-2: rgba(205, 217, 228, 0.19);
+  --line: rgba(236, 239, 242, 0.08);
+  --line-2: rgba(236, 239, 242, 0.15);
 
-  /* Capa de compatibilidad shadcn. */
-  --background: #0c1116;
-  --foreground: #bbc2c8;
-  --card-foreground: #bbc2c8;
-  --popover: #161c21;
-  --popover-foreground: #bbc2c8;
+  --background: #0a0c0f;
+  --foreground: #eceff2;
+  --card-foreground: #eceff2;
+  --popover: #101318;
+  --popover-foreground: #eceff2;
   --primary: rgb(var(--accent-base));
   --primary-foreground: rgb(var(--accent-ink));
-  --secondary: #1e242a;
-  --secondary-foreground: #bbc2c8;
-  --muted: #1e242a;
-  --muted-foreground: #8a9096;
+  --secondary: #161a20;
+  --secondary-foreground: #eceff2;
+  --muted: #161a20;
+  --muted-foreground: #949da6;
   --accent: rgb(var(--accent-base));
   --accent-foreground: rgb(var(--accent-ink));
-  /* Se usa el mismo rojo de P&L de este estilo en lugar del rojo de
-     shadcn, para que "destructivo" y "pérdida" no sean dos rojos
-     distintos a diez píxeles de distancia. Ya está medido (5,16:1 en el
-     peor fondo). */
   --destructive: #f0776a;
   --destructive-foreground: rgb(var(--accent-ink));
-  --border: rgba(205, 217, 228, 0.13);
-  --input: rgba(205, 217, 228, 0.17);
+  --border: rgba(236, 239, 242, 0.1);
+  --input: rgba(236, 239, 242, 0.16);
   --ring: rgb(var(--accent-base));
-  --sidebar: #161c21;
-  --sidebar-foreground: #bbc2c8;
-  --sidebar-accent: #1e242a;
-  --sidebar-accent-foreground: #bbc2c8;
-  --sidebar-border: rgba(205, 217, 228, 0.13);
+  --sidebar: #101318;
+  --sidebar-foreground: #eceff2;
+  --sidebar-accent: #161a20;
+  --sidebar-accent-foreground: #eceff2;
+  --sidebar-border: rgba(236, 239, 242, 0.1);
 }
 
-/* ---- Tokens · modo día (claro) --------------------------------------
-   El estado natural de este estilo, y el que ve toda primera visita.
-   #CBD0D4 es chapa gris nardo de verdad, no un blanco con matiz: da
-   1,55:1 contra el blanco puro, así que se lee gris sin ambigüedad.
-
-   POR QUÉ NO EL NARDO PURO (#6F7378). Se probó. En la mitad de la
-   escala de luminosidad no despega ni el texto oscuro ni el claro: el
-   fondo a esa altura tumbaba once pares de contraste, incluidos el
-   verde y el rojo de resultado, que no se pueden recolorear porque
-   significan ganancia y pérdida. La solución es la del propio coche —
-   la chapa va gris y lo que lleva información (tarjetas, cifras) va más
-   claro. El nardo entero vive en `--surface-2` y en los filos.
-
-   TODA la paleta está resuelta CONTRA esta chapa, no heredada del
-   material anterior: tintas, acento y P&L se recalcularon uno a uno.
-   Y hay un techo que no lo pone el gusto sino el material: sobre
-   `--surface-2` (#B6BBC0) el negro puro da 10,6:1 y no existe nada por
-   encima, así que la jerarquía de tintas se reparte por debajo. */
+/* Modo día: el que ve toda primera visita. */
 :root[data-theme="light"][data-palette="clasico"] {
-  --accent-base: 19 29 38; /* #131D26 — grafito nardo, 9,61:1 en el peor fondo */
-  --accent-hover: 7 15 23; /* #070F17 */
-  --accent-pressed: 38 47 55; /* #262F37 */
-  --accent-soft: 19 29 38;
-  --accent-ink: 238 240 243; /* #EEF0F3 — 14,8:1 sobre el grafito */
+  --accent-base: 11 15 20; /* #0B0F14 */
+  --accent-hover: 38 45 53;
+  --accent-pressed: 0 0 0;
+  --accent-soft: 11 15 20;
+  --accent-ink: 255 255 255; /* 19,2:1 */
 
-  /* Oscurecidos respecto al tema anterior: sobre la chapa gris, los
-     valores de papel se quedaban en 2,7–3,7:1. Conservan su TONO —el
-     verde sigue siendo verde— y bajan solo de luminosidad. */
-  --pnl-pos: 0 85 47; /* #00552F — 5,05:1 en el peor fondo */
-  --pnl-neg: 147 19 21; /* #931315 — 5,05:1 */
-  --pnl-warn: 123 53 0; /* #7B3500 — 5,03:1 */
-  /* Ver la nota de `--pnl-ink` en :root. Aquí: verde 7,86:1 · rojo 7,85:1 · ámbar 7,82:1. */
-  --pnl-ink: 238 240 243; /* #EEF0F3 */
-  /* Lo mismo para la tercera familia, la del semaforo. Vale igual que
-     `--pnl-ink` porque el verde de estado y el de dinero giran a la vez,
-     pero se nombra aparte: son familias distintas y el dia que una se
-     mueva, la otra no tiene por que seguirla. */
-  --sig-ink: 238 240 243; /* #EEF0F3 */
-  --pnl-neg-on-tint: 147 19 21;
+  --pnl-pos: 6 118 71; /* #067647 */
+  --pnl-neg: 180 35 24; /* #B42318 */
+  --pnl-warn: 138 75 0; /* #8A4B00 */
+  --pnl-ink: 255 255 255;
+  --sig-ink: 255 255 255;
+  --pnl-neg-on-tint: 180 35 24;
   --cal-tint-max: 0.22;
-  --sig-green: 0 85 47;
-  --sig-amber: 123 53 0;
-  --sig-red: 147 19 21;
+  --sig-green: 6 118 71;
+  --sig-amber: 138 75 0;
+  --sig-red: 180 35 24;
+  --sig-purple: 109 40 217; /* #6D28D9 — 7,1:1 sobre blanco */
 
-  --tint: 212 217 221; /* #D4D9DD */
-  --canvas: 203 208 212;
-  --chrome: 203 208 212;
-  --card: 203 208 212;
-  --canvas-op: 0.07;
-  --chrome-op: 0.8;
-  --card-op: 0.6;
+  --tint: 255 255 255;
+  --canvas: 255 255 255;
+  --chrome: 255 255 255;
+  --card: 255 255 255;
+  --canvas-op: 0;
+  --chrome-op: 0.92;
+  --card-op: 1;
 
-  /* Un paso por detrás del acento, que aquí es la tinta plena. */
-  /* Los ratios son sobre el PEOR fondo real, que no es la superficie
-     limpia sino la superficie hundida CON el grabado del fondo encima
-     (#B9BDC2). Ver la nota del velo en `.bg-veil`. */
-  --txt-primary: 38 44 49; /* #262C31 — 7,48:1 */
-  --txt-secondary: 57 62 67; /* #393E43 — 5,72:1 */
-  --txt-tertiary: 72 77 81; /* #484D51 — 4,53:1 */
-  --divider: 38 44 49;
+  --txt-primary: 11 15 20; /* #0B0F14 */
+  --txt-secondary: 58 66 75; /* #3A424B */
+  --txt-tertiary: 88 97 107; /* #58616B */
+  --divider: 11 15 20;
 
-  --bg: #d4d9dd;
-  --surface: #e2e6e9;
-  --surface-2: #cdd2d8;
-  --raised: #eef0f3;
-  /* Deriva de `--txt-*`, igual que en oscuro: los hex que había aquí
-     (#262c31 / #393e43 / #484d51) eran los mismos tres valores de arriba
-     escritos otra vez. Ver la nota en la paleta oscura. */
+  --bg: #ffffff;
+  --surface: #f6f7f9;
+  --surface-2: #eceff3;
+  --raised: #ffffff;
   --ink: rgb(var(--txt-primary));
   --ink-2: rgb(var(--txt-secondary));
   --ink-3: rgb(var(--txt-tertiary));
-  --line: rgba(19, 29, 38, 0.16);
-  --line-2: rgba(19, 29, 38, 0.28);
+  --line: rgba(11, 15, 20, 0.08);
+  --line-2: rgba(11, 15, 20, 0.15);
 
-  --background: #d4d9dd;
-  --foreground: #262c31;
-  --card-foreground: #262c31;
-  --popover: #eef0f3;
-  --popover-foreground: #262c31;
+  --background: #ffffff;
+  --foreground: #0b0f14;
+  --card-foreground: #0b0f14;
+  --popover: #ffffff;
+  --popover-foreground: #0b0f14;
   --primary: rgb(var(--accent-base));
   --primary-foreground: rgb(var(--accent-ink));
-  --secondary: #cdd2d8;
-  --secondary-foreground: #262c31;
-  --muted: #cdd2d8;
-  --muted-foreground: #484d51;
+  --secondary: #eceff3;
+  --secondary-foreground: #0b0f14;
+  --muted: #eceff3;
+  --muted-foreground: #58616b;
   --accent: rgb(var(--accent-base));
   --accent-foreground: rgb(var(--accent-ink));
-  --destructive: #931315;
+  --destructive: #b42318;
   --destructive-foreground: rgb(var(--accent-ink));
-  --border: rgba(19, 29, 38, 0.17);
-  --input: rgba(19, 29, 38, 0.21);
+  --border: rgba(11, 15, 20, 0.1);
+  --input: rgba(11, 15, 20, 0.18);
   --ring: rgb(var(--accent-base));
-  --sidebar: #e2e6e9;
-  --sidebar-foreground: #262c31;
-  --sidebar-accent: #cdd2d8;
-  --sidebar-accent-foreground: #262c31;
-  --sidebar-border: rgba(19, 29, 38, 0.17);
+  --sidebar: #f6f7f9;
+  --sidebar-foreground: #0b0f14;
+  --sidebar-accent: #eceff3;
+  --sidebar-accent-foreground: #0b0f14;
+  --sidebar-border: rgba(11, 15, 20, 0.1);
 }
 
 /* ---- Tipografía: el display pasa a serif -----------------------------
@@ -3334,8 +2856,7 @@ button.icon-btn:hover > svg,
    ni el peso de anuncio del 600. La jerarquía se compone ahora con la
    familia, no contra ella. */
 :root[data-palette="clasico"] h1,
-:root[data-palette="clasico"] h2,
-:root[data-palette="clasico"] h3 {
+:root[data-palette="clasico"] h2 {
   font-family: var(--font-serif), Georgia, "Times New Roman", serif !important;
   font-weight: 500 !important;
   text-transform: none !important;
@@ -3365,9 +2886,11 @@ button.icon-btn:hover > svg,
 /* Antetítulos en versalitas anchas — la marca de sección de un libro.
    Ya eran mayúsculas; aquí se les abre el tracking y se les baja el
    peso para que acompañen a la serif en vez de competir con ella. */
-:root[data-palette="clasico"] .eyebrow {
-  letter-spacing: 0.2em;
-  font-weight: 500;
+:root[data-palette="clasico"] h3 {
+  font-family: var(--font-sans), system-ui, sans-serif !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: -0.015em !important;
 }
 
 /* ---- Radios: el papel no tiene esquinas redondeadas ------------------
@@ -3376,93 +2899,11 @@ button.icon-btn:hover > svg,
    valor para todo — controles y superficies —, que es un radio MENOS
    que la escala del estilo del producto (4 px / 8 px). */
 :root[data-palette="clasico"] {
-  --radius-sm: 2px;
-  --radius-md: 2px;
-  --radius-lg: 2px;
-  --radius-xl: 2px;
-  /* `2xl` entra en la lista: quedaba fuera y heredaba los 5 px del
-     `@theme`, así que un solo `rounded-2xl` habría metido un segundo
-     radio en la página sin que nadie lo notara. Hoy no se usa en ningún
-     sitio; se cierra ahora para que no dependa de que siga sin usarse. */
-  --radius-2xl: 2px;
-}
-
-
-/* `.liquid-glass` es la variante de material que usan las bandas de
-   ancho completo (la cinta de cotizaciones, la barra). Se quedó fuera
-   del tratamiento de papel en la primera pasada y era el último sitio
-   donde seguía habiendo cristal desenfocado: una banda esmerilada
-   cruzando una página de papel. La cinta sigue yendo de borde a borde
-   —una cinta de cotizaciones se lee así—, pero ahora es papel. */
-:root[data-palette="clasico"] .liquid-glass {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  box-shadow: none;
-}
-:root[data-palette="clasico"] .liquid-glass::before,
-:root[data-palette="clasico"] .liquid-glass::after {
-  display: none;
-}
-/* La barra y el cajón móvil son la excepción: por debajo de ellos pasa
-   el contenido al hacer scroll, así que necesitan tapar de verdad. Un
-   90 % dejaría ver los titulares cruzando por detrás de la navegación.
-
-   ── EL CAJÓN SALE DE AQUÍ ─────────────────────────────────────────
-   Esa misma decisión —«las superficies que flotan sobre contenido
-   tapan»— estaba escrita en TRES sitios, con tres valores que no
-   coincidían: `.tj-paper-dense` (opaca, con su token), el tinte claro
-   de `.tj-paper` (95 %) y esta regla (98 % y, además, sacando el color
-   de `--surface` en vez del token del papel denso).
-
-   El cajón ya declara `tj-paper tj-paper-dense`, pero esta regla lleva
-   un ID y le ganaba a todo: se quedaba en 98 % —y de un gris distinto
-   al de la barra, que es la misma superficie de navegación—. Ese 2 %
-   bastaba para que el titular del hero se intuyera cruzando por detrás
-   de las entradas del menú, que es justo lo que el comentario de
-   arriba dice querer evitar.
-
-   Quitándolo de la lista, el cajón usa lo que ya dicen sus clases: el
-   token único, opaco, y el mismo tono que la barra. */
-:root[data-palette="clasico"] header.liquid-glass,
-:root[data-palette="clasico"] aside.liquid-glass {
-  background: color-mix(in srgb, var(--surface) 98%, transparent);
-}
-
-
-/* ---- Ornamento: el filete doble --------------------------------------
-   El único adorno que se añade, y se añade porque significa algo: marca
-   el final de un bloque, que es exactamente para lo que se usa en un
-   libro impreso. Regla gruesa + regla fina, la proporción del filete
-   tipográfico clásico. Se pide a mano con `.tj-rule` allí donde hoy hay
-   una hairline suelta; no se reparte por decoración. */
-.tj-rule {
-  border: 0;
-  height: 3px;
-  border-top: 1px solid rgb(var(--divider) / 0.28);
-  border-bottom: 1px solid rgb(var(--divider) / 0.28);
-  background: transparent;
-}
-:root:not([data-palette="clasico"]) .tj-rule {
-  height: 1px;
-  border-top: 1px solid rgb(var(--divider) / 0.14);
-  border-bottom: 0;
-}
-
-/* ---- Textura: la fibra del papel -------------------------------------
-   El grano ya existe en el sitio al 2-3 %, calibrado para que no se note
-   sobre superficies de cristal. Sobre papel sí tiene que notarse: es lo
-   que separa "fondo beige" de "material". Sube a 5,5 % en papel y a 4 %
-   en tinta, que es el punto donde se lee como fibra y todavía no
-   ensucia el texto pequeño. */
-:root[data-palette="clasico"] .grain::after {
-  opacity: 0.04;
-}
-:root[data-theme="light"][data-palette="clasico"] .grain::after {
-  opacity: 0.055;
-}
-:root[data-theme="light"][data-palette="clasico"] body::before {
-  opacity: 0.035;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 6px;
+  --radius-2xl: 8px;
 }
 
 /* ---- Lo que se apaga --------------------------------------------------
@@ -3482,259 +2923,131 @@ button.icon-btn:hover > svg,
   opacity: 0.35;
 }
 
-/* ---- El atlas grabado (EngravedAtlas) --------------------------------
-   El canvas del fondo. Ocupa toda la ventana y no recibe eventos: la
-   página se usa por encima de él como si no estuviera.
-
-   La opacidad de reposo es distinta en papel y en tinta, y estos dos
-   valores son el único mando del protagonismo del fondo — subirlos lo
-   trae al frente, bajarlos lo deja en textura.
-
-   OJO AL SENTIDO, QUE ESTUVO AL REVÉS. Aquí estaba escrito que en papel
-   el atlas va más tenue porque «una línea oscura sobre fondo claro pesa
-   más que una clara sobre fondo oscuro». Medido leyendo el lienzo y
-   componiendo su tinta sobre el fondo real, con la misma cantidad de
-   píxeles grabados en los dos temas (2,6 %), pasa lo contrario:
-
-       oscuro, opacidad 0,84 → 3,92:1
-       claro,  opacidad 0,76 → 2,34:1
-
-   El papel no pesa más: pesa un 40 % MENOS. Y no es la opacidad la que
-   manda, sino el recorrido disponible. En noche la tinta es casi blanca
-   sobre casi negro y tiene todo el rango; en papel la tinta ya es casi
-   negra (#15171a) pero la chapa clara es un gris medio (#d4d9dd), no un
-   blanco, así que el techo del claro con opacidad 1 es 3,25:1 y no
-   alcanza al oscuro ni apurándolo. Subir la tinta no cabe —ya está al
-   fondo de la escala— y densificar la trama se midió y cuesta
-   fotogramas (ver PROJECT.md, cuarta tanda).
-
-   Queda en 0,94: cierra la mitad de la brecha (2,34 → 3,00:1) sin
-   apurar el mando hasta el tope, y el texto de encima sigue despejando
-   AA — comprobado con `legible.mjs` y `humo.mjs`, que es quien mide el
-   texto que cae sobre el grabado.
-
-   El fundido de entrada es del canvas entero y ocurre una sola vez, al
-   cargar. A partir de ahí, lo que anima es el trazo, y lo gobierna el
-   scroll: el fondo nunca se mueve solo. */
-/* ── LA PLANCHA RESPIRA, TAMBIÉN CUANDO NADIE SE MUEVE ────────────────
-   El grabado sólo avanzaba con el scroll: en cuanto el visitante paraba
-   de bajar, el fondo se quedaba CONGELADO. Una plancha de metal bajo una
-   luz no se queda quieta del todo, y un fondo que se congela delata que
-   lo que hay detrás es una imagen y no un material.
-
-   ── Por qué va en CSS y no en el bucle de dibujo ──────────────────
-   Ésta es toda la decisión. El bucle del atlas se DUERME cuando no hay
-   nada que animar (ver `dormido` en EngravedAtlas), y eso es una virtud
-   que no se toca: mantenerlo despierto para mecer el fondo costaría un
-   fotograma entero de JavaScript por cada latido, para siempre, también
-   con la batería al 4 %.
-
-   Como lo que se mece es el lienzo YA DIBUJADO, no hace falta redibujar
-   nada: una animación CSS sobre `transform` la resuelve el compositor,
-   fuera del hilo principal, sin despertar a nadie y sin un solo
-   `requestAnimationFrame`.
-
-   ── Y por qué sólo desplaza, sin escalar ──────────────────────────
-   Porque la trama son puntos de 2,6 px. Escalar un lienzo de puntos tan
-   pequeños los resamplea y los deja lechosos; el desplazamiento
-   sub-píxel también suaviza, pero a esta amplitud —menos del 1 %— el
-   efecto es el del grano del papel y no el de una foto movida.
-
-   Ciclo de 52 s y recorrido mínimo, a propósito: tiene que notarse que
-   el fondo está vivo sin que nadie llegue a mirarlo. Si se ve moverse,
-   está mal ajustado — es exactamente la línea que separa esto del
-   parallax ornamental que el proyecto lleva sesiones quitando.
-
-   La regla global de `prefers-reduced-motion` lo apaga entero. */
-.tj-engraved-atlas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.84;
-  animation: tj-atlas-in 1.2s ease-out both;
+/* ---- Llamadas a la acción ------------------------------------------- */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  height: 48px;
+  padding: 0 1.375rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  outline: none;
+  transition: background-color 160ms var(--ease-suave), border-color 160ms var(--ease-suave), color 160ms var(--ease-suave);
 }
-:root[data-theme="light"] .tj-engraved-atlas {
-  opacity: 0.94;
+.cta:focus-visible {
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgb(var(--accent-base) / 0.6);
+}
+.cta--primario {
+  background: rgb(var(--accent-base));
+  color: rgb(var(--accent-ink));
+}
+.cta--primario:hover {
+  background: rgb(var(--accent-hover));
+}
+.cta--secundario {
+  color: var(--ink);
+  border-color: var(--line-2);
+  background: transparent;
+}
+.cta--secundario:hover {
+  border-color: rgb(var(--divider) / 0.4);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+@media (max-width: 480px) {
+  .cta {
+    width: 100%;
+  }
 }
 
-
-/* ============================================================
-   CÓMO SE REPARTEN EL SITIO EL TEXTO Y EL ATLAS
-   ============================================================
-   AQUÍ HABÍA ESCRITO UN REPARTO QUE NO EXISTE. Decía, con detalle, que
-   a partir de 1.280 px la página se divide en una columna de texto a la
-   izquierda y un panel de lámina a la derecha, y que el atlas se dibuja
-   DENTRO de ese panel. Nunca se implementó: no hay una sola regla que
-   lo haga, ni en este fichero ni en el compilado. La regla real del
-   atlas es `position: absolute; inset: 0` sin ninguna media query, y su
-   contenedor es `fixed inset-0` (`BackgroundFX.tsx`). El atlas es de
-   pantalla completa en TODAS las anchuras — que es justo lo que dice el
-   comentario de la línea siguiente, tres renglones más abajo, en
-   contradicción directa con éste.
-
-   Ese párrafo no era inocuo. Mientras estuvo aquí, cualquiera que
-   buscara por qué el texto se lee mal sobre el fondo encontraba una
-   explicación tranquilizadora —«ya está resuelto por encima de 1.280»—
-   que no describía nada. Medido en 7 anchuras y los 2 temas: de los
-   elementos afectados a 1.279 px, 406 de 424 lo están igual a 1.280, y
-   el peor caso del sitio es PEOR a 1.440 que a 1.279.
-
-   EL REPARTO DE VERDAD es el que siempre hubo, y es de superficie, no
-   de columnas:
-
-     · El atlas se dibuja a pantalla completa, por debajo de todo.
-     · Cada sección de contenido se apoya en su propia superficie
-       —`.bg-veil`, `.tj-paper` o `.liquid-glass`—, que es lo que aísla
-       su texto del grabado. La cuenta de contraste vive en la nota de
-       `.bg-veil`.
-     · El atlas se ve entero donde NO hay sección: el hero, los aires
-       entre capítulos y, sobre todo, las pausas de lámina
-       (`.tj-interlude`), que existen exactamente para eso.
-
-   O sea que una sección de contenido SIN superficie no es una variante
-   de estilo: es un agujero. Cuatro se habían quedado sin ella
-   —`ProductShowcase`, `TerminoVista`, `GlosarioIndice` y el cuerpo de
-   `HerramientaVista`, entre las dos últimas 136 rutas generadas— y su
-   texto caía directamente sobre el grabado. */
-/* ---- Las pausas de lámina --------------------------------------------
-   El atlas es un FONDO a pantalla completa: esa es su naturaleza y no se
-   toca. El problema nunca fue dónde está, sino que no tenía un solo
-   momento para sí. Un tratado no resuelve esto poniendo la figura al
-   margen: intercala LÁMINAS A PÁGINA COMPLETA entre los capítulos.
-
-   Eso es una pausa: una franja de altura casi completa donde no hay
-   absolutamente nada de contenido y el fondo se ve entero, con su marco,
-   su graduación y su cartela. Ninguna sección la vela, ninguna tarjeta
-   la cruza.
-
-   No son huecos vacíos. Cada una lleva su pie de figura —numeración,
-   título y una línea de lectura— exactamente como el pie que acompaña a
-   una lámina impresa, y ese pie explica QUÉ se está viendo dibujar. Es
-   contenido, y del más pertinente que tiene la página: el producto
-   contado a través de sus propias figuras.
-
-   La altura es de 88 vh y no de 100 vh a propósito: dejar asomar el
-   borde de la sección siguiente es lo que le dice al lector que la
-   página continúa. A pantalla completa exacta, una pausa parece el
-   final del documento. */
-/* ── La pausa dura MENOS en las páginas interiores ────────────────────
-   La lámina existe para que el atlas del fondo tenga una pantalla para
-   sí, sin ninguna sección encima. En la portada eso funciona: cuatro
-   pausas entre seis secciones, alternando texto y figura como un
-   tratado ilustrado.
-
-   En una página interior no. `/features` tiene cinco secciones de
-   contenido y TRES láminas, y a 88vh cada una eso son 3.222 px de
-   fondo sin contenido en una página de 8.700: el 37 % del recorrido.
-   Medido, no estimado. El visitante no lee eso como una pausa
-   editorial; lo lee como que la página se ha quedado vacía y sigue
-   bajando a ver si vuelve algo.
-
-   Una pausa se nota igual en dos tercios de pantalla, y ahí ya no hay
-   duda de que sigue habiendo página debajo: se ve el borde de la
-   siguiente sección asomando, que es lo que distingue una pausa de un
-   final. La portada conserva la pausa a pantalla casi completa, porque
-   allí la figura ES el argumento. */
-.tj-interlude {
-  position: relative;
-  min-height: 62vh;
+/* ---- Pestañas de pantalla (control segmentado) ---------------------- */
+.tj-pestanas {
   display: flex;
-  align-items: flex-end;
-  pointer-events: none;
-  /* El velo del pie (`.tj-interlude-caption::before`) se desborda a los
-     lados para no cortar en seco. En escritorio cabe de sobra en el
-     margen que deja la mancha, pero en móvil el pie ocupa todo el ancho
-     y ese desbordamiento SÍ contaba: 413 px de documento en una ventana
-     de 390, o sea barra horizontal en todas las rutas. Aquí se recorta.
-
-     `clip` y no `hidden`, como en el resto del sitio: recorta igual sin
-     abrir contenedor de desplazamiento, que es lo que dejaría sin animar
-     a lo que viva dentro. */
-  overflow-x: clip;
+  width: fit-content;
+  max-width: 100%;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
 }
-/* La portada mantiene su ritmo original: allí la figura ES el
-   argumento, y hay seis secciones de texto que la sostienen. Quién es
-   «amplio» lo decide el propio componente a partir de la ruta, que es
-   de donde ya deduce su pie de figura. */
-.tj-interlude-amplio {
-  min-height: 88vh;
+.tj-pestanas > [role="tab"] {
+  flex: none;
+  min-height: 36px;
+  padding: 0 0.875rem;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-2);
+  white-space: nowrap;
+  transition: background-color 160ms var(--ease-suave), color 160ms var(--ease-suave);
 }
-.tj-interlude-caption {
-  pointer-events: auto;
-  position: relative;
-  width: 100%;
-  max-width: var(--page-w, 1080px);
-  margin-inline: auto;
-  padding: 0 1.25rem clamp(2rem, 5vh, 4rem);
-  display: grid;
-  gap: 0.55rem;
-}
-/* ── VELO DEL PIE DE LÁMINA ───────────────────────────────────────────
-   El pie es lo único que se lee dentro de la pausa, y estaba escrito
-   directamente sobre la figura, que justo ahí es donde más tinta tiene:
-   la lámina existe para enseñar el atlas ENTERO, así que el trazo pasa
-   por debajo del texto a plena densidad.
-
-   No es una sospecha. Midiendo el fondo real bajo cada pie —el peor
-   píxel, no la media, que es lo que engaña con un grabado de puntos— los
-   catorce pies del sitio tenían área por debajo del mínimo WCAG, y en el
-   peor caso el trazo llegaba a 1,44:1 contra la letra: puntos
-   prácticamente del mismo tono que el texto, cruzándolo. En /glosario la
-   nota tenía casi un 10 % de su fondo así.
-
-   Por qué un velo y no papel: una tarjeta de papel opaca resolvería la
-   lectura tapando la figura, y la figura es el motivo de que la pausa
-   exista. Por qué un velo y no bajarle tinta al atlas: el resto de la
-   lámina —los tres cuartos superiores, donde no hay texto— tiene que
-   seguir viéndose como está.
-
-   Es el mismo criterio, y el mismo recurso, que `.page-header-scrim`:
-   un degradado no pinta densidad aquí, protege una lectura. Sube desde
-   la base —donde el grabado ya se apaga contra el canto— y se desvanece
-   antes de llegar al cuerpo de la figura, así que no deja costura. Se
-   desborda a los lados a propósito: cortado a la caja del texto se vería
-   el rectángulo. */
-.tj-interlude-caption::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  pointer-events: none;
-  left: -6vw;
-  right: -6vw;
-  bottom: 0;
-  top: -3.5rem;
-  background: linear-gradient(
-    to top,
-    var(--bg) 0%,
-    color-mix(in srgb, var(--bg) 88%, transparent) 42%,
-    color-mix(in srgb, var(--bg) 55%, transparent) 72%,
-    transparent 100%
-  );
-}
-.tj-interlude-rule {
-  height: 3px;
-  border-top: 1px solid rgb(var(--divider) / 0.26);
-  border-bottom: 1px solid rgb(var(--divider) / 0.26);
-  margin-bottom: 0.9rem;
-}
-.tj-interlude-num {
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgb(var(--accent-base));
-}
-.tj-interlude-title {
-  font-family: var(--font-serif), "Newsreader", Georgia, serif;
-  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
-  line-height: 1.15;
+.tj-pestanas > [role="tab"]:hover {
   color: var(--ink);
 }
-.tj-interlude-note {
-  font-size: 13.5px;
-  line-height: 1.6;
-  color: var(--ink-2);
-  max-width: 44em;
+.tj-pestanas > [role="tab"][aria-selected="true"] {
+  background: var(--raised);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgb(11 15 20 / 0.08), 0 0 0 1px var(--line);
+}
+.tj-pestanas > [role="tab"]:focus-visible {
+  outline: 2px solid rgb(var(--accent-base) / 0.6);
+  outline-offset: 1px;
+}
+@media (pointer: coarse) {
+  .tj-pestanas > [role="tab"] {
+    min-height: 44px;
+  }
+}
+
+/* ---- Bloque de cierre: tinta invertida ---------------------------- */
+.tj-cierre {
+  --accent-base: 255 255 255;
+  --accent-hover: 226 230 234;
+  --accent-ink: 11 15 20;
+  --ink: #ffffff;
+  --line-2: rgba(255, 255, 255, 0.24);
+  --bg: #0b0f14;
+  padding: clamp(2.5rem, 6vw, 5rem);
+  border-radius: 8px;
+  background: #0b0f14;
+  color: #ffffff;
+}
+.tj-cierre h2 {
+  color: #ffffff;
+}
+.tj-cierre-tenue {
+  color: #a9b1ba;
+}
+:root:not([data-theme="light"]) .tj-cierre {
+  --bg: #161a20;
+  background: #161a20;
+  box-shadow: inset 0 0 0 1px rgba(236, 239, 242, 0.08);
+}
+
+/* ---- La captura del producto en la portada ------------------------- */
+.tj-hero-producto {
+  margin-inline: 0;
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow:
+    0 1px 2px rgb(11 15 20 / 0.04),
+    0 24px 64px -24px rgb(11 15 20 / 0.22);
+}
+:root:not([data-theme="light"]) .tj-hero-producto {
+  box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.7);
+}
+.tj-hero-producto img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* ---- La lámina del producto -----------------------------------------
@@ -3751,27 +3064,18 @@ button.icon-btn:hover > svg,
 .tj-lamina-producto {
   margin: 0;
   display: grid;
-  gap: 1.1rem;
+  gap: 0;
 }
 .tj-lamina-marco {
-  border: 1px solid rgb(var(--divider) / 0.26);
-  padding: 5px;
-  background: var(--surface);
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--raised);
+  box-shadow:
+    0 1px 2px rgb(11 15 20 / 0.04),
+    0 24px 64px -28px rgb(11 15 20 / 0.22);
 }
 .tj-lamina-ventana {
-  /* Ya no recorta nada: el recorte de la barra de título y del sello de
-     desarrollo está hecho en el propio fichero (`scripts/capturas.py`), no
-     tapado con `overflow` y un margen negativo. Lo que queda es el filete y
-     el fondo, que es lo que hace que la captura se lea como lámina.
-
-     `line-height: 0` sigue haciendo falta: sin él, la caja de línea del
-     `img` añade unos píxeles de fondo bajo la imagen y el filete inferior
-     se despega. */
-  border: 1px solid rgb(var(--divider) / 0.16);
-  /* `var(--surface)` y no un `#0c1116` fijo: desde que hay captura clara y
-     captura oscura, un fondo negro clavado se veía como un filete negro
-     alrededor de una lámina blanca en el tema claro. */
-  background: var(--surface);
   line-height: 0;
 }
 .tj-lamina-ventana img {
@@ -3808,24 +3112,18 @@ button.icon-btn:hover > svg,
 .tj-lamina-pie {
   display: grid;
   gap: 0.5rem;
-}
-.tj-lamina-num {
-  font-size: 10.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgb(var(--accent-base));
+  margin-top: 1.75rem;
+  max-width: 44rem;
 }
 .tj-lamina-titulo {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(1.35rem, 2.2vw, 1.75rem);
-  line-height: 1.18;
+  font-size: 1.25rem;
+  line-height: 1.3;
   color: var(--ink);
 }
 .tj-lamina-nota {
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.65;
   color: var(--ink-2);
-  max-width: 46em;
 }
 /* «Detalle: el calendario del mes.» Sólo aparece donde de verdad se está
    sirviendo el recorte, y el umbral es EL MISMO que el del `<picture>` de
@@ -3834,7 +3132,7 @@ button.icon-btn:hover > svg,
    trozo. */
 .tj-lamina-detalle {
   display: none;
-  font-size: 11.5px;
+  font-size: 13px;
   letter-spacing: 0.02em;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
@@ -3844,74 +3142,15 @@ button.icon-btn:hover > svg,
     display: block;
   }
 }
-@media (max-width: 900px) {
-  .tj-interlude {
-    /* En móvil una lámina a 62 vh dejaba ~2.000 px de "página en blanco"
-       entre los capítulos (4 pausas × ~520 px), que se leía como que la
-       página se había cortado. Se baja a 38 vh — todavía respira y deja
-       ver el atlas, pero sin la sensación de hueco muerto — y se centra
-       verticalmente el pie para que ocupe su espacio en vez de flotar al
-       fondo de una caja casi vacía. */
-    min-height: 38vh;
-    align-items: center;
-  }
-  .tj-interlude-caption {
-    padding-top: clamp(1.5rem, 5vh, 3rem);
-  }
-}
-@media (max-width: 480px) {
-  .tj-interlude {
-    /* Pantallas muy estrechas: aún más compacta. */
-    min-height: 32vh;
-  }
-}
 
-/* ============================================================
-   LA CAJA DE LA PÁGINA
-   ============================================================
-   El motivo REAL por el que el atlas no se veía, y que las dos pasadas
-   anteriores no tocaron: la mancha de contenido mide 1240-1280 px y una
-   ventana normal de portátil mide ~1300. Los márgenes eran de TRECE
-   PÍXELES. No importaba lo oscuro que fuera el lápiz ni cuánto se
-   recortara el velo: no había sitio material donde el papel pudiera
-   verse. Se veía en las costuras entre secciones y en ningún otro sitio,
-   que es exactamente lo que se estaba reportando.
-
-   Un tratado no maqueta así. La mancha ocupa una parte del pliego y el
-   resto es margen — y el margen no es espacio sobrante, es donde vive el
-   papel. Aquí la mancha baja a 1080 px (o al 84 % en pantallas
-   estrechas), lo que en un portátil deja ~110 px de margen a cada lado y
-   en un monitor grande más de 300.
-
-   UNA SOLA MEDIDA gobierna las tres cosas que antes iban por su cuenta:
-   el ancho del contenido, dónde se desvanece el velo y dónde caen los
-   filetes de margen. Antes los filetes estaban en `min(11vw, 190px)`,
-   que en una ventana de 1306 px caía DENTRO del contenido: la línea que
-   debía marcar el margen cruzaba el texto. Con la variable no puede
-   volver a descuadrarse. */
+/* Caja de la página: una sola medida para todo el contenido. */
 :root[data-palette="clasico"] {
-  --page-w: min(1080px, 84vw);
+  --page-w: min(1200px, calc(100vw - 48px));
   --page-margin: max(0px, calc((100% - var(--page-w)) / 2));
 }
-
-/* ---- En un móvil no hay pliego que enseñar --------------------------
-   La regla de arriba reserva el 16 % del ancho para que se vea el papel.
-   En un monitor eso son 300 px de margen y es justo lo que se busca. En
-   un teléfono de 390 px son 31 px por lado, Y SE SUMAN al relleno de 20
-   que ya trae cada sección: 46 px de margen a cada lado, casi una cuarta
-   parte de la pantalla, para enseñar una franja de papel demasiado
-   estrecha como para leerse como tal.
-
-   Medido en la portada a 390 px, el resultado era peor que un margen
-   grande: márgenes DISTINTOS conviviendo en la misma página. La barra
-   superior arrancaba a 26 px, el titular a 50, casi todas las secciones
-   a 46 y la llamada final a 20 — cuatro alineaciones verticales que el
-   ojo lee como descuadre aunque no sepa medirlas.
-
-   Por debajo de 768 px la mancha pasa a ocupar el ancho completo y el
-   margen lo da UNA sola cosa, el relleno lateral de la sección. Así
-   todas las secciones arrancan en la misma vertical. El margen
-   proporcional vuelve en cuanto hay pantalla que lo justifique. */
+:root[data-palette="clasico"] #demo {
+  --page-w: min(1280px, calc(100vw - 32px));
+}
 @media (max-width: 767px) {
   :root[data-palette="clasico"],
   :root[data-palette="clasico"] #demo {
@@ -3922,196 +3161,6 @@ button.icon-btn:hover > svg,
 :root[data-palette="clasico"] .max-w-\[1280px\],
 :root[data-palette="clasico"] .max-w-page {
   max-width: var(--page-w);
-}
-
-/* La demo es una FIGURA DESPLEGABLE. En un tratado, la lámina que no
-   cabe en la caja se sale de ella y se dobla — no se encoge hasta que
-   deja de leerse. Aquí pasa igual: la ventana de la aplicación es una
-   reproducción a escala de una pantalla real, y al meterla en la mancha
-   de 1080 px su barra de husos horarios se apretaba tanto que "Nueva
-   York" partía en dos líneas. Se le concede su propio ancho, todavía con
-   más de 400 px de margen en un monitor grande.
-
-   Se implementa REDEFINIENDO la medida dentro de la sección, no con un
-   selector que repita las clases de ancho: es más corto, hereda a todo
-   lo que haya dentro, y evita reescribir los selectores escapados de
-   Tailwind (`.max-w-[1280px]`) — combinarlos con un id hacía que el
-   compilador descartara la regla sin avisar y el ancho no cambiaba. */
-:root[data-palette="clasico"] #demo {
-  --page-w: min(1240px, 92vw);
-}
-
-/* ---- Dejar respirar al atlas -----------------------------------------
-   Las secciones del sitio se velan con `.bg-veil` para aislarse del
-   fondo. Ese velo se calibró al 90 % contra el iris del estilo anterior,
-   que ILUMINABA: al 82 % la zona brillante del ojo asomaba entre
-   tarjetas como un halo rosado y se leía como un fallo de fondo.
-
-   El atlas no ilumina — son líneas finas de la misma tinta del texto—,
-   así que ese motivo desaparece, y al 90 % el velo tapaba justo lo que
-   hay que ver: si el fondo se graba con el scroll y nadie lo ve porque
-   cada sección lo cubre, el trabajo no existe. Al 66 % las láminas
-   atraviesan y el velo sigue haciendo su trabajo de aislar.
-
-   MARGEN DE CONTRASTE: el peor caso es texto terciario cayendo justo
-   encima de una línea del grabado.
-
-   ── LA CUENTA ESTABA HECHA CON UN ATLAS QUE YA NO EXISTE ────────────
-   Aquí decía «con el atlas al 0,62 y el velo dejando pasar un 16 %, la
-   línea aporta como mucho un 10 % de tinta», y de ahí salía un terciario
-   a 4,53:1. Pero el atlas se dibuja al 0,84 en oscuro y al 0,76 en
-   claro: alguien subió una de las dos cifras sin rehacer la cuenta, que
-   es justo contra lo que avisa el párrafo de abajo.
-
-   Medido en píxeles reales sobre el rótulo «§ 02» de la portada, que es
-   el peor caso del sitio: 2,10:1 en oscuro y 2,96:1 en claro, con un 2 %
-   del área del texto por debajo del mínimo. No era una décima de margen
-   perdida — era menos de la mitad de lo que hace falta.
-
-   Y el culpable principal no era la opacidad sino LA RAMPA. Ver la nota
-   de `--velo-rampa` más abajo.
-
-   Con la rampa corregida y el velo al 88 %, ese mismo rótulo mide 4,85:1
-   en oscuro y 5,12:1 en claro, y ningún otro texto medido empeora. El
-   velo sube de 84 a 88 —cuatro puntos— porque con la rampa arreglada
-   sola se quedaba en 4,45:1, cinco centésimas por debajo del listón.
-
-   El velo SUBIÓ de 66 a 84 al oscurecer el lápiz, y ese es el
-   compromiso: el trazo se ve mucho más donde importa —el hero y los
-   aires entre secciones, que no llevan velo— sin comerse el margen de
-   contraste del texto pequeño, que sí lo lleva. Las dos cifras van
-   atadas: si se sube una hay que bajar la otra y rehacer la cuenta.
-
-   (Este párrafo decía 84 y la regla de debajo escribía 88, que es una
-   forma tranquila de que la cuenta de contraste deje de describir lo
-   que pinta el navegador. Ahora el valor está en `--velo`, se escribe
-   una sola vez, y es el 84 % para el que está hecha la cuenta.) */
-:root[data-palette="clasico"] .bg-veil,
-:root[data-theme="light"][data-palette="clasico"] .bg-veil {
-  /* ---- El velo deja de ir a sangre ---------------------------------
-     Este es EL motivo por el que el atlas no se veía. Cada sección
-     pintaba su velo de borde a borde de la ventana, así que el fondo
-     solo asomaba en las costuras entre secciones: un fondo que se graba
-     con el scroll y que nadie llega a ver.
-
-     Ahora el velo se recorta por los cuatro lados con una máscara. Deja
-     de ser una banda opaca y pasa a ser lo que debía haber sido desde el
-     principio: la MANCHA de la página, con sus márgenes. El texto sigue
-     teniendo su superficie debajo —el contraste no se toca, porque en el
-     centro el velo es incluso más opaco que antes (88 %)— y el papel
-     grabado vuelve a existir alrededor, que es donde un libro lo enseña.
-
-     Los márgenes laterales son proporcionales al ancho (11 vw) con tope
-     de 190 px: en una pantalla ancha el margen es generoso y en un móvil
-     se reduce a casi nada, porque ahí no sobra sitio.
-
-     `mask-composite: intersect` combina las dos máscaras — la horizontal
-     y la vertical— en vez de superponerlas. Donde no se soporta, se
-     aplica solo la primera y el resultado sigue siendo correcto, solo
-     que sin el desvanecido superior e inferior. */
-  /* El velo se desvanece 30 px ANTES del borde de la mancha, no justo
-     encima: así el texto conserva un colchón de superficie a su
-     alrededor y el corte no cae nunca sobre una letra. */
-  --veil-x: max(0px, calc(var(--page-margin) - 30px));
-  /* El desvanecido VERTICAL lo hace el propio relleno, y el HORIZONTAL
-     una máscara de una sola capa.
-
-     Antes eran dos máscaras combinadas con `mask-composite: intersect`.
-     Se veía bien, pero una máscara compuesta obliga al navegador a
-     resolver dos capas y su intersección en CADA sección de pantalla
-     completa, y eso es trabajo de composición en cada repintado — una de
-     las causas de que el scroll no fuera fluido. Repartiendo el trabajo
-     entre el relleno (que es gratis) y una máscara simple, el resultado
-     visual es el mismo y desaparece el coste. */
-  /* El valor vive en UN sitio: si hay que moverlo, se mueve aquí y se
-     rehace la cuenta de contraste de arriba. Es lo que no ocurrió cuando
-     el bloque «VEIL REBALANCE» del final del fichero declaró otros tres
-     valores sin quitar éste — ver la nota que quedó en su lugar. */
-  --velo: 88%;
-  /* ── LA RAMPA NO PUEDE SER MAS ALTA QUE LA SECCION ────────────────
-     El desvanecido vertical media 96 px fijos por arriba y por abajo.
-     En una seccion de menos de 192 px las dos rampas SE SOLAPAN y el
-     velo no alcanza en ningun punto el 84 % para el que esta hecha la
-     cuenta de contraste de arriba: la seccion cree tener velo y no lo
-     tiene.
-
-     No es hipotetico. La franja de migas y otras herramientas de
-     `HerramientaVista` mide 81 px —igual a 656, 1279 y 1440 px— y su
-     rotulo «Herramientas:» quedaba a 1,47:1 con el 20 % de su area por
-     debajo de AA, dentro de una seccion que SI declara `bg-veil`.
-     Cualquier seccion mas baja de 192 px tenia el mismo agujero, en
-     silencio y en las 16 paginas de /herramientas.
-
-     Con `min()` la rampa es lo que quepa: 96 px cuando hay sitio, y un
-     cuarto de la altura cuando no, que deja la mitad central a plena
-     opacidad en cualquier seccion. En las secciones altas —que son casi
-     todas— el 25 % nunca gana al tope de 96 px, asi que su aspecto no
-     cambia en absoluto. */
-  /* ── Y LA RAMPA MIDE 40 px, NO 96 ────────────────────────────────
-     Con 96 px, los primeros 96 px de CADA sección quedaban bajo un velo
-     a medio subir. Y ahí es exactamente donde vive la cabecera: medido
-     en la portada, el primer texto de sus secciones empieza a 52, 72,
-     96, 105, 110 y 114 px del canto. O sea que el rótulo y el titular
-     —el texto más pequeño y más apagado de la sección— eran justo lo
-     único que el velo no llegaba a proteger.
-
-     Barrido de valores midiendo píxeles reales bajo el rótulo «§ 02»:
-     96 px da 2,10:1, 64 px da 3,74:1, 40 px da 4,45:1 y por debajo de 40
-     ya no mejora — ahí el suelo lo pone lo que el grabado atraviesa a
-     través del velo completo, no la rampa. Se queda en 40: el
-     desvanecido sigue evitando el corte seco contra la sección vecina
-     —que además trae el suyo por abajo— y termina antes de que empiece
-     el contenido de ninguna sección del sitio. */
-  --velo-rampa: min(40px, 25%);
-  background-color: transparent;
-  background-image: linear-gradient(
-    to bottom,
-    transparent,
-    color-mix(in srgb, var(--bg) var(--velo), transparent) var(--velo-rampa),
-    color-mix(in srgb, var(--bg) var(--velo), transparent)
-      calc(100% - var(--velo-rampa)),
-    transparent
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 var(--veil-x),
-    #000 calc(100% - var(--veil-x)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 var(--veil-x),
-    #000 calc(100% - var(--veil-x)),
-    transparent
-  );
-}
-
-/* El pie era la única superficie que seguía yendo a sangre, y encima en
-   blanco puro (#FFF al 94 %) en una web cuyo material es chapa gris:
-   cortaba la página con una banda más clara que todo lo demás. Pasa al
-   papel y se recorta por los lados como las secciones, así que el atlas
-   sigue corriendo por debajo hasta el final del documento. */
-:root[data-palette="clasico"] footer.glass-band,
-:root[data-palette="clasico"] footer.liquid-glass {
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 calc(var(--page-margin) - 30px),
-    #000 calc(100% - (var(--page-margin) - 30px)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 calc(var(--page-margin) - 30px),
-    #000 calc(100% - (var(--page-margin) - 30px)),
-    transparent
-  );
 }
 
 /* ---- Las superficies flotantes ---------------------------------------
@@ -4159,248 +3208,6 @@ button.icon-btn:hover > svg,
   border: 1px solid var(--line-2);
 }
 
-/* ---- Los filetes de margen -------------------------------------------
-   Dos líneas verticales finas a la altura de la mancha, de arriba abajo
-   del documento. Es el recurso con el que un libro impreso marca dónde
-   empieza y dónde acaba la caja de texto, y aquí hace un trabajo real:
-   ata las secciones —que hasta ahora flotaban una detrás de otra sin
-   nada en común— a una misma retícula, y da al ojo la referencia que
-   convierte el papel de los márgenes en margen y no en hueco.
-
-   Van en el fondo fijo, no en cada sección, así que son continuas: no se
-   cortan ni se desalinean al pasar de una sección a la siguiente. */
-:root[data-palette="clasico"] .tj-margin-rules {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-:root[data-palette="clasico"] .tj-margin-rules::before,
-:root[data-palette="clasico"] .tj-margin-rules::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgb(var(--divider) / 0.1);
-}
-:root[data-palette="clasico"] .tj-margin-rules::before {
-  left: calc(var(--page-margin) - 26px);
-}
-:root[data-palette="clasico"] .tj-margin-rules::after {
-  right: calc(var(--page-margin) - 26px);
-}
-
-/* ---- En pantalla estrecha no hay márgenes que enseñar -----------------
-   Todo lo de arriba se apoya en que sobre sitio a los lados de la
-   mancha. En un móvil no sobra: el contenido arranca a 24 px del borde,
-   mientras que el recorte del velo empezaría a 46 px (11 vw de 420 px).
-   Es decir, la primera columna de texto se quedaría SIN su superficie
-   debajo, justo en el sitio donde el atlas sigue dibujando — el peor
-   caso posible de contraste, y encima invisible desde un escritorio.
-
-   Por debajo de 900 px el velo vuelve a ir de borde a borde y los
-   filetes de margen se retiran: un margen de 20 px no es un margen, es
-   una línea pegada al borde de la pantalla. */
-@media (max-width: 900px) {
-  :root[data-palette="clasico"] .bg-veil {
-    --veil-x: 0px;
-  }
-  :root[data-palette="clasico"] footer.glass-band,
-  :root[data-palette="clasico"] footer.liquid-glass {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-  :root[data-palette="clasico"] .tj-margin-rules {
-    display: none;
-  }
-}
-
-/* ---- El texto que flota sobre el atlas --------------------------------
-   En el hero y en los aires entre secciones no hay velo: ahí el atlas se
-   ve a plena fuerza, que es justo lo que se busca. El texto que cae
-   encima se protege con su propio halo (`.tj-legible-text`), y con el
-   lápiz oscurecido ese halo tiene que apretar más.
-
-   Es la solución CORRECTA aquí, no un parche: el contraste se mide
-   contra el fondo inmediato de cada letra, y el halo hace que ese fondo
-   sea papel aunque justo detrás pase una línea del grabado. La
-   alternativa —bajar el atlas o meter una caja opaca— apaga el fondo en
-   toda la superficie para resolver un problema que solo existe en los
-   pocos píxeles que rodean a las letras. */
-:root[data-theme="light"][data-palette="clasico"] .tj-legible-text {
-  text-shadow:
-    0 1px 2px rgb(240 237 228 / 0.92),
-    0 0 6px rgb(240 237 228 / 0.85),
-    0 0 22px rgb(240 237 228 / 0.7);
-}
-:root[data-palette="clasico"] .tj-legible-text {
-  text-shadow:
-    0 1px 2px rgb(21 19 15 / 0.9),
-    0 0 6px rgb(21 19 15 / 0.82),
-    0 0 22px rgb(21 19 15 / 0.68);
-}
-@keyframes tj-atlas-in {
-  from {
-    opacity: 0;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tj-engraved-atlas {
-    animation: none;
-  }
-}
-
-/* ============================================================
-   TJPAPER — material "papel translúcido de e-reader"
-   ============================================================
-   Un usuario lo pidió explícito: un efecto translúcido como el
-   papel de una tablet de lectura (Kindle Paperwhite / Kobo), no
-   el cristal oscuro de liquid-glass. Este material es CÁLIDO,
-   ligeramente translúcido, con grano de papel y un halo de luz
-   superior — la superficie sobre la que el atlas grabado del
-   fondo se intuye sin competir con el texto.
-
-   Se diferencia de .liquid-glass en tres cosas:
-     1. Tinte propio en vez del neutro de cristal.
-     2. Translucidez del 86 % (oscuro) / 95 % (claro) — deja intuir el
-        atlas del fondo sin difuminarlo: papel, no cristal.
-     3. Grano de papel sutil + luz de borde superior.
-
-   (El "tinte CÁLIDO" de este párrafo es de cuando el material era papel
-   hueso. Se retiró al descartar el dorado — ver la nota del acento en
-   :root—: hoy el tinte sale de `--surface`, que es el gris de la chapa.)
-
-   ── UN CIERRE DE COMENTARIO DE MÁS DEJÓ AL PAPEL SIN MATERIAL ─────
-   El párrafo de arriba se añadió cerrando el comentario en su última
-   línea, y las cuatro que venían detrás —«Usar en: navbar, drawer…»—
-   quedaron fuera, como texto suelto en mitad de la hoja de estilos.
-   Para el compilador eso es basura: descarta lo que no entiende hasta
-   recuperarse, y en la recuperación se llevó por delante el bloque
-   `.tj-paper` ENTERO.
-
-   O sea que el material que da nombre a esta sección no existía en el
-   tema oscuro. Ni translucidez del 86 %, ni grano de papel, ni luz de
-   borde: las tarjetas salían con el color plano que les dejara
-   cualquier otra regla. Compilaba sin un aviso, y desde el navegador
-   se veía como «la web está un poco sosa» — que es exactamente el
-   síntoma con el que se abrió esta sesión.
-
-   Sólo la variante clara se salvó, porque su bloque viene después y el
-   parser ya se había recuperado. Por eso el tema claro se veía bien y
-   el oscuro no, sin que hubiera ninguna diferencia escrita entre los
-   dos que lo explicara.
-
-   Y VOLVIÓ A PASAR AQUÍ MISMO. El titular de este párrafo decía «UN
-   `[cierre de comentario]` DE MÁS», con la secuencia escrita tal cual
-   entre acentos graves. Los acentos graves no significan nada para un
-   analizador de CSS: la secuencia cerró ESTE comentario en su propia
-   línea y dejó las veinte siguientes —incluidas las que explican qué
-   no hay que hacer— sueltas en la hoja. `bun run dev` fallaba con
-   «Parsing CSS source code failed / Invalid empty selector», y
-   `bun run build` pasaba en verde, que es la peor combinación posible:
-   el fallo sólo aparecía trabajando, nunca al publicar.
-
-   Por eso la secuencia ya no se escribe en ninguna parte de este
-   fichero, ni citada. Lo vigila `tests/css.test.ts`. */
-
-/* ============================================================
-   (continúa TJPAPER)
-   ============================================================
-
-   Usar en: navbar, drawer móvil, tarjetas destacadas, banners
-   fijos. NO en superficies que necesitan contraste máximo sobre
-   texto pequeño (ahí sigue mandando .bg-veil / .liquid-glass).
-   ============================================================ */
-.tj-paper {
-  /* Translucidez REAL pero MUY LEVE Y SUTIL (P9): el usuario pidió que
-     el atlas animado del fondo se intuya suavemente a través del papel,
-     no que se vea entero. 56% en oscuro dejaba pasar demasiado iris — el
-     papel leía como cristal tintado, no como papel cálido. Se sube a
-     64% (oscuro) / 60% (claro): el atlas sigue asomando como marca de
-     agua difusa en los cantos y en las zonas de papel más amplio, PERO
-     el texto queda firme sobre una superficie que ya se sostiene sola.
-     Contraste AA medido sobre el papel real: ink sobre surface-2 sigue
-     en ≥7:1 en el peor caso (subir 8 puntos el tinte no baja el ratio
-     más de 0,4 porque el surface-2 ya era casi opaco). */
-  /* ── UNA sola capa de tinte, y sin cristal ────────────────────────
-     Aquí había lo mismo que en `.bg-veil`: un `background-color` al
-     64 % y ADEMÁS un degradado de 68 % a 58 % en `background-image`,
-     encima. Dos capas translúcidas se multiplican, no se promedian, de
-     modo que la "translucidez real (~72 %)" que anuncia la cabecera de
-     este bloque era en realidad del 88 % arriba y del 85 % abajo. El
-     comentario describía la primera capa; el navegador pintaba las dos.
-
-     Se funden en una, al 86 %, que es lo que se estaba viendo. El
-     grano se queda: es textura de fibra, no densidad fingida con
-     opacidad.
-
-     Y se va el `backdrop-filter`. La decisión «papel, no cristal» ya
-     lo había retirado de `.glass` y de `.liquid-glass` unos cientos de
-     líneas más arriba; `.tj-paper` se quedó fuera de aquella pasada y
-     era, con diferencia, la superficie más visible de las tres — la
-     barra de navegación y el cajón móvil la llevan. Un papel no
-     difumina lo que tiene detrás: lo tapa. Difuminar era además el
-     motivo del `will-change: backdrop-filter` del final del fichero,
-     que reservaba memoria de composición en cada lámina de la página. */
-  /* ── EL MATERIAL DE ESTE BLOQUE SE MUDÓ AL FINAL DEL FICHERO ──────
-     Aquí estaban el tinte, el grano y la luz de borde, y NINGUNO de los
-     tres llegaba al CSS compilado. Comprobado por partida triple sobre
-     la hoja generada: sin el `86 %` del tinte, sin el `feTurbulence`
-     del grano —de los cuatro que quedan en todo el sitio, ninguno es
-     éste— y sin el `box-shadow` del canto. La variante clara, escrita
-     doscientas líneas más abajo, sí llegaba entera; por eso el tema
-     claro se veía como material y el oscuro como color plano, sin que
-     hubiera una sola diferencia escrita entre los dos que lo
-     explicara.
-
-     Y no es una regresión reciente: se comprobó reconstruyendo desde el
-     último commit, y ya faltaba. Llevaba tiempo así.
-
-     No se ha identificado qué hace exactamente el compilador con este
-     bloque en esta posición del archivo —el CSS está balanceado y las
-     declaraciones son válidas por separado—, y perseguirlo más no
-     mejora la web. Lo que sí se sabe, medido, es que las mismas
-     declaraciones SÍ sobreviven al final del fichero. Allá van, con su
-     razonamiento completo, y el caso queda vigilado en `humo.mjs`: si
-     una superficie de papel vuelve a quedarse sin su grano, la
-     comprobación lo dice en vez de dejar la web «un poco sosa» y sin
-     motivo aparente. */
-}
-:root[data-theme="light"] .tj-paper {
-  /* ── El papel tiene que DESPEGAR del fondo ─────────────────────────
-     En el tema oscuro esto funcionaba solo: una lámina clara sobre un
-     fondo oscuro se lee como material aunque no lleve sombra. En claro
-     no, y aquí estaba el fallo — el papel salía de `--surface`, que
-     está a 0,05 de luminosidad de `--bg`. Al 60 % de opacidad esa
-     diferencia se quedaba en nada: las tarjetas de precio flotaban
-     sobre un fondo de su mismo tono, sin canto y sin sombra. No era
-     que faltara la clase; era que no se veía.
-
-     La lámina pasa a salir de `--raised` —el escalón más claro— y sube
-     de opacidad. La separación con el fondo pasa de 0,050 a 0,090 de
-     luminosidad, casi el doble, y el texto oscuro encima gana contraste
-     en vez de perderlo, porque el papel es más claro que antes.
-
-     Y sobre todo: SOMBRA PROYECTADA. Es lo que convierte una mancha más
-     clara en una lámina que está encima de algo. Va en dos alturas —un
-     filo de contacto a 1 px y una difusa larga— porque una sola sombra
-     lee como pegatina. La difusa lleva el tono del gris, no negro puro:
-     una sombra sobre chapa gris no es negra, es gris más oscuro. */
-  /* Misma fusión que en oscuro: color plano 78 % + degradado 84→74 %
-     daban un 96 % arriba y un 94 % abajo. O sea, el papel claro ya era
-     prácticamente opaco y el degradado no aportaba nada que se viera:
-     sólo impedía saber cuál era el valor real. Queda en 95 %. */
-  background-color: color-mix(in srgb, var(--raised) 95%, transparent);
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.35'/%3E%3C/svg%3E");
-  box-shadow:
-    /* canto: luz arriba, contacto abajo */
-    inset 0 1px 0 rgb(255 255 255 / 0.85),
-    inset 0 -1px 0 rgb(19 29 38 / 0.07),
-    /* elevación */
-    0 1px 2px rgb(19 29 38 / 0.07),
-    0 10px 28px -12px rgb(19 29 38 / 0.22);
-}
 /* ── La variante «densa» era la MENOS densa de las dos ────────────────
    Esta clase existe para las superficies que flotan sobre contenido en
    movimiento —la barra fija, el cajón lateral, el megamenú, la paleta
@@ -4429,58 +3236,36 @@ button.icon-btn:hover > svg,
    es un rombo girado y no puede llevar el grano de la hoja. Sin token,
    ese estilo en línea era una segunda copia del valor — y así fue como
    la punta se quedó al 72 % cuando el panel dejó de estarlo. */
+/* ---- Superficies: tarjeta y barra ----------------------------------
+   `.tj-paper` es la tarjeta (opaca, sobre el fondo), `.tj-paper-dense`
+   lo que flota sobre contenido (barra, cajón, menús) y `.tj-hoja` le
+   pone canto. Sin grano, sin doble filete y sin escuadras. */
 :root {
-  --paper-dense: var(--surface);
+  --paper-dense: var(--bg);
 }
-:root[data-theme="light"] {
-  --paper-dense: var(--raised);
+.tj-paper {
+  background-color: var(--raised);
 }
 .tj-paper-dense {
   background-color: var(--paper-dense);
 }
-/* ── El papel denso en claro: una sola declaración ────────────────────
-   Aquí había DOS reglas `:root[data-theme="light"] .tj-paper-dense`
-   seguidas, y la de más abajo ganaba por orden. Era el mismo defecto
-   que ya se corrigió en `.bg-veil` y en `.tj-paper`: dos sitios donde
-   se decide el mismo valor y sólo uno cuenta.
-
-   La barra de navegación y el cajón móvil llevan `tj-paper` Y
-   `tj-paper-dense`, y en su día `.tj-paper-dense` salía de `--surface`,
-   que en claro está a 0,04 de luminosidad de `--bg`: la barra se fundía
-   con la página. Sale de `--raised`, el escalón más claro, que es de
-   donde sale todo el papel claro.
-
-   El canto inferior marca dónde acaba la lámina. Sin él, una barra
-   clara sobre un fondo claro no tiene borde y parece que el contenido
-   empieza sin más. */
-:root[data-theme="light"] .tj-paper-dense {
-  /* ── EL PAPEL DENSO NO ERA OPACO EN TEMA CLARO ──────────────────
-     `.tj-paper-dense` existe para que el megamenú, el cajón y la barra
-     TAPEN la página en vez de dejarla ver, y el archivo lo da por
-     resuelto: «las densas van DESPUÉS, o el tinte translúcido de arriba
-     les ganaría por orden». Pero el problema nunca fue el orden, era la
-     especificidad. El tinte claro se declara en
-     `:root[data-theme="light"] .tj-paper` —(0,3,0)— y la densa en
-     `.tj-paper-dense` —(0,1,0)—, así que la densa no podía ganar
-     estuviera donde estuviera. En claro el papel «opaco» se quedaba al
-     95 %.
-
-     Ese 5 % basta: medido con el megamenú abierto sobre la portada, el
-     titular del hero —serif enorme y casi negro, lo más contrastado que
-     tiene el sitio— se leía entero por detrás de las entradas del menú.
-     Justo el defecto que el comentario del megamenú afirmaba haber
-     corregido.
-
-     La declaración va aquí, con la misma especificidad que el tinte al
-     que tiene que ganar y después de él. En oscuro no hacía falta:
-     allí `.tj-paper` no lleva prefijo de tema y basta el orden. */
-  background-color: var(--paper-dense);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.9),
-    inset 0 -1px 0 rgb(19 29 38 / 0.09),
-    0 1px 2px rgb(19 29 38 / 0.05),
-    0 8px 24px -14px rgb(19 29 38 / 0.18);
+.tj-hoja {
+  border: 1px solid var(--line-2);
+  border-radius: 6px;
+  transition: border-color 160ms var(--ease-suave), box-shadow 160ms var(--ease-suave);
 }
+.tj-hoja:hover {
+  border-color: rgb(var(--divider) / 0.28);
+}
+.tj-hoja--pliego {
+  box-shadow:
+    0 1px 2px rgb(11 15 20 / 0.04),
+    0 18px 44px -28px rgb(11 15 20 / 0.28);
+}
+:root:not([data-theme="light"]) .tj-hoja--pliego {
+  box-shadow: 0 18px 44px -28px rgb(0 0 0 / 0.8);
+}
+
 /* ============================================================
    EL SELLO DE «PREVISTO»
    ============================================================
@@ -4501,17 +3286,15 @@ button.icon-btn:hover > svg,
   align-items: baseline;
   gap: 0.5em;
   padding: 4px 9px;
-  border: 1px dashed rgb(var(--divider) / 0.34);
-  border-radius: 2px;
-  /* Sin fondo: el marco tiene que dejar ver el papel o el grabado que hay
-     detrás, igual que la línea de trazos de un plano no tapa la hoja. */
-  background: none;
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  background: var(--surface);
   color: var(--ink-3);
   vertical-align: middle;
 }
 .sello-previsto-texto {
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -4520,7 +3303,7 @@ button.icon-btn:hover > svg,
 }
 .sello-previsto-detalle {
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.02em;
   text-transform: none;
   color: var(--ink-3);
@@ -4531,27 +3314,6 @@ button.icon-btn:hover > svg,
      contraste o para quien pide más. El SIGNIFICADO va en que sea
      discontinuo, no en que sea tenue. */
   .sello-previsto { border-color: rgb(var(--divider) / 0.6); }
-}
-
-/* ── Distintivo de lámina destacada ────────────────────────────────
-   Era un `radial-gradient` del acento al 8 % cayendo desde el borde
-   superior: un resplandor. En una plancha grabada no hay resplandores
-   —no hay fuente de luz que dibujar— y la densidad se construye con
-   líneas que se pueden contar, no con una nube de color que se
-   desvanece. Además el halo tenía que apoyarse en `border-radius:
-   inherit` y en una capa de composición propia para taparse las
-   costuras, y no se leía a menos de mirarlo aposta.
-
-   Lo sustituye lo que un grabado usa para señalar la lámina que
-   importa: un FILETE de acento en el canto superior, del grosor del
-   canto del sistema. Se ve, se cuenta, y dice lo mismo. */
-.tj-paper-glow::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 2px;
-  pointer-events: none;
-  background-color: rgb(var(--accent-base) / 0.55);
 }
 
 /* ============================================================
@@ -4624,7 +3386,6 @@ button.icon-btn:hover > svg,
   }
 }
 
-
 /* ============================================================
    DRAWER OPEN — ocultar cookies + back-to-top cuando el drawer móvil
    está abierto. El Navbar marca `data-drawer-open` en <body>; aquí
@@ -4674,180 +3435,6 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   pointer-events: none !important;
   transition: opacity 0.18s ease;
 }
-
-/* ============================================================
-   LUZ VIVA — profundidad, foco y deriva
-   ============================================================
-   Por qué existe. El sitio se leía «sencillo» y la causa no era la
-   tipografía ni la retícula: era que el fondo es un negro PLANO. Un
-   plano no tiene distancia, así que todo lo que se pone encima flota a
-   la misma profundidad y la página entera se lee como una hoja de
-   pizarra. Las superficies que se sienten caras no llevan más adornos;
-   llevan luz, y la luz hace tres cosas que aquí no hacía nadie: separa
-   los planos, dirige la mirada y cambia cuando te mueves.
-
-   Tres capas, cada una con su trabajo:
-
-     · **Ambiente** — dos focos fijos en esquinas opuestas. Es la
-       iluminación de la sala: constante, y su único cometido es que el
-       centro de la mancha esté más iluminado que los bordes.
-     · **Foco** — fijo, en la parte alta de la ventana. Marca dónde
-       empieza a leerse la página, que es arriba.
-
-       Esto siguió al puntero durante una versión, y se retiró: una luz
-       pegada al cursor es un efecto de demostración técnica. Llama la
-       atención sobre el ratón justo cuando el visitante debería estar
-       leyendo, y a la décima vez que se ve, se ve el truco.
-     · **Deriva** — el conjunto se desplaza con el scroll a distinta
-       velocidad que el contenido. Paralaje de verdad, resuelta por el
-       compositor con `animation-timeline: scroll()`: cero JavaScript en
-       el hilo principal y cero listeners de scroll.
-
-   ── LA LUZ NO LLEVA COLOR ─────────────────────────────────────────
-   Aquí los dos focos principales iban teñidos con el verde de la marca
-   «como temperatura de la luz, no como tinta». En la práctica sí se
-   leía como tinta: una mancha verde difusa en la parte alta de la
-   página, visible sobre todo en el tema oscuro, donde el fondo casi
-   negro la dejaba destacar. Y contradecía la propia regla que el
-   párrafo defendía — en este producto el verde SIGNIFICA dinero, así
-   que gastarlo en iluminación ambiental es gastar el único color que
-   tiene significado en algo que no significa nada.
-
-   La luz se queda, porque lo que separaba los planos era la luz y no
-   el color; lo que se va es el tinte. Los tres focos van ahora en el
-   neutro de la paleta, entre el 3 % y el 6 %.
-
-   Todo se apaga con `prefers-reduced-motion`, salvo el ambiente, que no
-   se mueve y por tanto no molesta a nadie. */
-
-.tj-luz {
-  position: absolute;
-  /* Desbordado a propósito: la deriva mueve la capa y sin margen se
-     verían sus cantos entrar por arriba y por abajo. */
-  inset: -25% -10%;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      38rem 28rem at 50% 18%,
-      rgb(var(--accent-base) / 0.06),
-      transparent 62%
-    ),
-    radial-gradient(
-      56rem 40rem at 12% 4%,
-      rgb(var(--accent-base) / 0.055),
-      transparent 58%
-    ),
-    radial-gradient(
-      48rem 36rem at 88% 96%,
-      rgb(var(--accent-base) / 0.035),
-      transparent 56%
-    );
-  will-change: transform;
-}
-
-/* En papel la luz es rebote, no emisión: la misma geometría con la
-   mitad de fuerza. */
-:root[data-theme="light"] .tj-luz {
-  background:
-    radial-gradient(
-      38rem 28rem at 50% 18%,
-      rgb(19 29 38 / 0.04),
-      transparent 62%
-    ),
-    radial-gradient(
-      56rem 40rem at 12% 4%,
-      rgb(19 29 38 / 0.045),
-      transparent 58%
-    ),
-    radial-gradient(
-      48rem 36rem at 88% 96%,
-      rgb(19 29 38 / 0.03),
-      transparent 56%
-    );
-}
-
-/* ── LA LUZ DERIVA CON EL SCROLL Y ADEMÁS RESPIRA ─────────────────────
-   Dos animaciones sobre la MISMA propiedad, y las dos hacen falta:
-
-     · `tj-deriva` va por línea de tiempo de scroll — responde al gesto
-       de leer y separa los planos.
-     · `tj-respira` va por reloj, y es la que resuelve un defecto que se
-       veía de verdad: en cuanto el visitante dejaba de bajar, el fondo
-       se quedaba CONGELADO. Una plancha bajo una luz no se queda quieta
-       del todo, y un fondo que se congela delata que detrás hay una
-       imagen y no un material.
-
-   Encadenadas sin más, la segunda pisaría a la primera: en una lista de
-   animaciones sobre `transform` gana la última y la deriva
-   desaparecería. `animation-composition: add` las SUMA — cada una
-   aporta su desplazamiento y el compositor los acumula.
-
-   ── Por qué aquí y no sobre el lienzo del atlas ───────────────────
-   Se probó meciendo el propio lienzo grabado, que es lo obvio, y lo
-   cobró el banco: un lienzo a pantalla completa con una transformación
-   viva se recompone en cada fotograma. p99 medio de 27,05 a 31,20 ms, y
-   quedaba en 31,10 incluso parando la animación durante el scroll,
-   porque el lienzo se queda promocionado a capa propia igualmente.
-
-   La luz, en cambio, YA es una capa compuesta y YA está animada: darle
-   una segunda animación no promociona nada nuevo. Y leído en la
-   pantalla es incluso mejor que mecer la plancha — lo que se mueve es
-   la ILUMINACIÓN sobre un grabado quieto, que es exactamente lo que
-   pasa en una mesa de verdad.
-
-   Ciclo de 47 s y recorrido mínimo, a propósito: tiene que notarse que
-   el fondo está vivo sin que nadie llegue a mirarlo. Si se le ve el
-   movimiento, está mal ajustado — es la línea que separa esto del
-   parallax ornamental que el proyecto lleva sesiones quitando. */
-@supports (animation-timeline: scroll()) {
-  .tj-luz {
-    animation-name: tj-deriva, tj-respira;
-    animation-duration: auto, 47s;
-    animation-timing-function: linear, ease-in-out;
-    animation-iteration-count: 1, infinite;
-    animation-fill-mode: both, none;
-    animation-timeline: scroll(root block), auto;
-    animation-composition: add;
-  }
-}
-@keyframes tj-deriva {
-  from {
-    transform: translate3d(0, -3.5%, 0) scale(1.02);
-  }
-  to {
-    transform: translate3d(0, 3.5%, 0) scale(1.06);
-  }
-}
-@keyframes tj-respira {
-  0% {
-    transform: translate3d(-0.9%, -0.5%, 0);
-  }
-  50% {
-    transform: translate3d(0.9%, 0.6%, 0);
-  }
-  100% {
-    transform: translate3d(-0.9%, -0.5%, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tj-luz {
-    animation: none;
-    transform: none;
-  }
-}
-
-/* Aquí hubo un `.tj-realce`: un reflejo que seguía al puntero por
-   encima de cada tarjeta, y su gemelo en el fondo, un foco que
-   perseguía al ratón por toda la página. Los dos se retiran por
-   decisión del cliente, y con razón: una luz pegada al cursor es un
-   efecto de demostración técnica, no de producto — llama la atención
-   sobre el puntero justo cuando el visitante debería estar leyendo, y
-   la décima vez que la ve ya sabe que está ahí para lucirse.
-
-   Lo que queda del sistema de luz es lo que NO persigue a nadie: la
-   iluminación ambiental fija, que separa los planos, y la deriva por
-   scroll, que responde al gesto de leer y no al de mover la mano. */
 
 /* ============================================================
    ENTRADA DE SECCIÓN — ligada al scroll, no a la hidratación
@@ -4985,19 +3572,19 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   [data-entra] {
     animation: tj-entra-pieza linear both;
     animation-timeline: view(block);
-    animation-range: cover 0% cover 24%;
+    animation-range: entry 0% entry 36%;
   }
   [data-entra="2"] {
-    animation-range: cover 2% cover 26%;
+    animation-range: entry 3% entry 39%;
   }
   [data-entra="3"] {
-    animation-range: cover 4% cover 28%;
+    animation-range: entry 6% entry 42%;
   }
   [data-entra="4"] {
-    animation-range: cover 6% cover 30%;
+    animation-range: entry 9% entry 45%;
   }
   [data-entra="5"] {
-    animation-range: cover 8% cover 32%;
+    animation-range: entry 12% entry 48%;
   }
 
   /* ── DENTRO DE LA DEMO NO HAY ENTRADA QUE VALGA ──────────────────
@@ -5050,7 +3637,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     animation-name: tj-estampa, tj-estampa-tinta;
     animation-fill-mode: both, both;
     animation-timeline: view(block), view(block);
-    animation-range: cover 0% cover 22%, cover 0% cover 16%;
+    animation-range: entry 0% entry 33%, entry 0% entry 24%;
     animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1), ease-out;
   }
 }
@@ -5141,7 +3728,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     [data-entra="der"] {
       animation: tj-entra-izq linear both;
       animation-timeline: view(block);
-      animation-range: cover 0% cover 29%;
+      animation-range: entry 0% entry 44%;
     }
     [data-entra="der"] {
       animation-name: tj-entra-der;
@@ -5176,7 +3763,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     [data-entra="der"] {
       animation: tj-entra-pieza linear both;
       animation-timeline: view(block);
-      animation-range: cover 0% cover 24%;
+      animation-range: entry 0% entry 36%;
     }
   }
 }
@@ -5193,7 +3780,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   [data-entra="traza"] {
     animation: tj-traza-limpia linear both;
     animation-timeline: view(block);
-    animation-range: cover 0% cover 32%;
+    animation-range: entry 0% entry 48%;
   }
 }
 @keyframes tj-traza-limpia {
@@ -5220,7 +3807,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   [data-entra="lamina"] {
     animation: tj-posa linear both;
     animation-timeline: view(block);
-    animation-range: cover 0% cover 34%;
+    animation-range: entry 0% entry 51%;
   }
 }
 @keyframes tj-posa {
@@ -5253,7 +3840,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
     stroke-dasharray: 1;
     animation: tj-dibuja linear both;
     animation-timeline: view(block);
-    animation-range: cover 2% cover 26%;
+    animation-range: entry 3% entry 39%;
   }
 }
 @keyframes tj-dibuja {
@@ -5411,55 +3998,6 @@ svg [data-entra="sello"] {
   }
 }
 
-/* ── LA CINTA DE COTIZACIONES ─────────────────────────────────────────
-   El desplazamiento infinito lo llevaba un bucle de `requestAnimation
-   Frame` de framer-motion que escribía la posición fotograma a
-   fotograma en el hilo principal, y que además medía la pista con un
-   `ResizeObserver` para saber dónde reiniciar.
-
-   Aquí no hace falta ninguna de las dos cosas. Las dos filas son
-   idénticas, así que desplazar exactamente la mitad del recorrido
-   devuelve la cinta a un fotograma indistinguible del inicial: el
-   bucle no se ve porque no hay nada que ver. Y como la animación es
-   declarativa, el compositor la lleva sin tocar el hilo principal, y la
-   cinta se mueve aunque no haya JavaScript.
-
-   EL -50 % EXIGE QUE LA COSTURA MIDA LO MISMO QUE EL HUECO ENTRE
-   SÍMBOLOS. Por eso la separación entre las dos filas NO se pone con
-   `gap` en la pista: un `gap` sólo aparece ENTRE las dos filas, así que
-   el recorrido total sería `2·fila + hueco` y su mitad, `fila +
-   hueco/2` — medio hueco de menos en cada vuelta, que se ve como un
-   tirón. Cada fila lleva su propio relleno a la derecha, de modo que
-   las dos mitades son exactamente iguales.
-
-   La pausa al pasar por encima ya no necesita estado de React: la deja
-   quieta el navegador. */
-/* Esta clase es SOLO de la banda de simbolos de la portada. La fila de
-   acceso a las herramientas se llamo `.tj-cinta` durante un tiempo y
-   heredaba esta animacion: se deslizaba sola. Hoy se llama
-   `.tj-fila-sigue`. Antes de reutilizar este nombre, comprobar que no
-   se lo pone nadie mas. */
-.tj-cinta {
-  animation: tj-cinta-corre 50s linear infinite;
-  will-change: transform;
-}
-.tj-cinta-caja:hover .tj-cinta {
-  animation-play-state: paused;
-}
-@keyframes tj-cinta-corre {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tj-cinta {
-    animation: none;
-  }
-}
-
 /* ── LAS MISMAS ENTRADAS, PERO AL MONTARSE ────────────────────────────
    Todo lo de arriba se mapea con la posición en la ventana, y eso vale
    para lo que YA está en la página cuando se carga. No vale para lo que
@@ -5604,19 +4142,19 @@ svg [data-entra="sello"] {
   [data-entra="ciclo"] {
     animation: tj-entra-pieza linear both;
     animation-timeline: view(block);
-    animation-range: cover 0% cover 24%;
+    animation-range: entry 0% entry 36%;
   }
   [data-entra="ciclo"]:nth-child(5n + 2) {
-    animation-range: cover 2% cover 26%;
+    animation-range: entry 3% entry 39%;
   }
   [data-entra="ciclo"]:nth-child(5n + 3) {
-    animation-range: cover 4% cover 28%;
+    animation-range: entry 6% entry 42%;
   }
   [data-entra="ciclo"]:nth-child(5n + 4) {
-    animation-range: cover 6% cover 30%;
+    animation-range: entry 9% entry 45%;
   }
   [data-entra="ciclo"]:nth-child(5n + 5) {
-    animation-range: cover 8% cover 32%;
+    animation-range: entry 12% entry 48%;
   }
 }
 
@@ -5629,222 +4167,18 @@ svg [data-entra="sello"] {
   }
 }
 
-/* ============================================================
-   FILETE QUE SE DIBUJA
-   ============================================================
-   Una regla horizontal que aparece de golpe es una línea; una que se
-   traza de izquierda a derecha conforme subes es un gesto, y cuesta lo
-   mismo. Se usa en los separadores de sección y bajo los epígrafes.
-
-   `scaleX` sobre un elemento de 1 px de alto: el compositor lo resuelve
-   sin repintar, a diferencia de animar `width`, que reflowea la línea
-   en cada fotograma.
-
-   Y ese 1 px de alto es justo lo que hacía que el filete NO se trazara
-   nunca. El rango iba en `entry`, que se mide en unidades del propio
-   elemento: `entry 10% → 60%` sobre una línea de 1 px son **medio
-   píxel** de scroll. La regla existía, la animación estaba registrada y
-   el gesto no ocurría jamás — el caso más extremo del problema que se
-   explica en el bloque de `[data-entra]`. En `cover` el mismo gesto
-   dura unos 235 px. */
-.tj-filete {
-  height: 1px;
-  width: 100%;
-  background: rgb(var(--divider) / 0.22);
-  transform-origin: left center;
-}
-@supports (animation-timeline: view()) {
-  .tj-filete {
-    animation: tj-traza linear both;
-    animation-timeline: view(block);
-    animation-range: cover 8% cover 34%;
-  }
-}
-@keyframes tj-traza {
-  from {
-    transform: scaleX(0);
-    opacity: 0.4;
-  }
-  to {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tj-filete {
-    animation: none;
-    transform: none;
-  }
-}
-
-/* ============================================================
-   EL RITMO DE CADA PÁGINA
-   ============================================================
-   Las nueve páginas interiores compartían cabecera exacta: mismo aire
-   arriba, mismo filete, misma medida. Y no son la misma clase de cosa —
-   un capítulo se lee seguido, una calculadora se usa, un índice se
-   consulta, una tarifa se compara y un texto legal se archiva. Una
-   cabecera idéntica en las cinco le dice al visitante que da igual
-   dónde esté.
-
-   Cada tono cambia TRES cosas y ninguna más:
-
-     · **El folio** — la marca grande del margen. Cambia de tipografía y
-       de tamaño, y su significado depende del tono (ordinal, referencia,
-       recuento, cifra).
-     · **El filete** — el ancho y el peso de la línea bajo el epígrafe.
-     · **La medida** — cuántos caracteres por línea admite el subtítulo.
-
-   La retícula, los colores y las familias tipográficas NO cambian. Lo
-   que se busca es que cada página tenga carácter dentro del mismo
-   libro, no que parezca de otro sitio. */
-
+/* ---- Cabecera de página interior ---------------------------------- */
 .tj-cabecera {
-  padding-top: 8rem;
-  padding-bottom: 4rem;
-  --medida: 62ch;
-  --filete-ancho: 4rem;
-}
-@media (min-width: 768px) {
-  .tj-cabecera {
-    padding-top: 10rem;
-    padding-bottom: 5rem;
-  }
-}
-
-/* El filete de la cabecera no ocupa todo el ancho: es una marca, no un
-   separador. Su longitud es la seña del tono. */
-.tj-filete-cabecera {
-  width: var(--filete-ancho);
-}
-
-/* ── El folio ─────────────────────────────────────────────────────────
-   Posicionado en la marginalia izquierda, fuera de la mancha, y sólo a
-   partir de 1.280 px: por debajo no hay margen que le sobre a la
-   página, y un folio encima del texto es ruido. */
-.tj-folio {
-  display: none;
-}
-@media (min-width: 1280px) {
-  .tj-folio {
-    display: block;
-    position: absolute;
-    top: 0.5rem;
-    right: 100%;
-    margin-right: 2.5rem;
-    line-height: 0.82;
-    color: rgb(var(--ink-rgb, var(--divider)) / 0.13);
-    user-select: none;
-    white-space: nowrap;
-  }
-  /* Que el folio entre DESPUÉS que el titular: es la marca del margen,
-     no el asunto. Aparece cuando la cabecera ya se está leyendo. */
-  @supports (animation-timeline: view()) {
-    .tj-folio {
-      animation: tj-entra-folio linear both;
-      animation-timeline: view(block);
-      animation-range: cover 8% cover 33%;
-    }
-  }
-}
-@keyframes tj-entra-folio {
-  from {
-    opacity: 0;
-    transform: translate3d(10px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* CAPÍTULO — desarrolla una idea. El folio es un ordinal romano en la
-   serif del display, del tamaño de un titular: la página se abre como
-   se abre un capítulo. */
-.tj-cabecera[data-tono="capitulo"] {
-  --filete-ancho: 4rem;
+  padding-top: clamp(7.5rem, 13vh, 9.5rem);
+  padding-bottom: clamp(3rem, 6vw, 4.5rem);
   --medida: 62ch;
 }
-.tj-cabecera[data-tono="capitulo"] .tj-folio {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(3rem, 5vw, 5.5rem);
-  letter-spacing: -0.03em;
-}
-
-/* INSTRUMENTO — se usa, no se lee. El folio va monoespaciado y entre
-   corchetes, como la referencia de una pieza en un despiece, y el
-   filete es más largo y más marcado: una herramienta se presenta con
-   su regla al lado. */
-.tj-cabecera[data-tono="instrumento"] {
-  --filete-ancho: 7rem;
-  --medida: 58ch;
-}
-.tj-cabecera[data-tono="instrumento"] .tj-filete-cabecera {
-  height: 2px;
-  background: rgb(var(--accent-base) / 0.3);
-}
-.tj-cabecera[data-tono="instrumento"] .tj-folio {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: clamp(1.1rem, 1.5vw, 1.5rem);
-  letter-spacing: 0.1em;
-}
-
-/* REGISTRO — se consulta por entradas. El folio es el RECUENTO de lo
-   que hay dentro («51», «7»), en cifras tabulares y grande: lo primero
-   que quiere saber quien llega a un índice es cuánto abarca. El filete
-   se dobla, como el encabezado de una tabla. */
-.tj-cabecera[data-tono="registro"] {
-  --filete-ancho: 5rem;
-  --medida: 60ch;
-}
-.tj-cabecera[data-tono="registro"] .tj-filete-cabecera {
-  height: 3px;
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--divider) / 0.28) 0 1px,
-    transparent 1px 2px,
-    rgb(var(--divider) / 0.28) 2px 3px
-  );
-}
-.tj-cabecera[data-tono="registro"] .tj-folio {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  font-weight: 500;
-}
-
-/* TARIFA — se compara. El folio es una cifra del mismo palo que los
-   precios de la tabla, para que la página entera hable en números
-   desde el margen. */
-.tj-cabecera[data-tono="tarifa"] {
-  --filete-ancho: 3rem;
-  --medida: 56ch;
-}
-.tj-cabecera[data-tono="tarifa"] .tj-folio {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(2.2rem, 3.4vw, 3.4rem);
-  letter-spacing: -0.02em;
-}
-
-/* DOCUMENTO — se archiva. Sin folio, con menos aire arriba y la medida
-   más estrecha del sitio. Un texto legal no necesita presentación: lo
-   único que se le pide es que se lea sin cansar y que se encuentre el
-   párrafo que se busca. */
+.tj-cabecera[data-tono="instrumento"] { --medida: 58ch; }
+.tj-cabecera[data-tono="registro"] { --medida: 60ch; }
+.tj-cabecera[data-tono="tarifa"] { --medida: 56ch; }
 .tj-cabecera[data-tono="documento"] {
-  --filete-ancho: 2rem;
-  --medida: 52ch;
-  padding-top: 6.5rem;
+  --medida: 56ch;
   padding-bottom: 2.5rem;
-}
-@media (min-width: 768px) {
-  .tj-cabecera[data-tono="documento"] {
-    padding-top: 8rem;
-    padding-bottom: 3rem;
-  }
-}
-.tj-cabecera[data-tono="documento"] .tj-filete-cabecera {
-  opacity: 0.6;
 }
 
 /* ============================================================
@@ -5953,51 +4287,6 @@ svg [data-entra="sello"] {
   to {
     opacity: 0;
   }
-}
-
-
-/* ============================================================
-   EL MATERIAL DEL PAPEL (tema oscuro)
-   ============================================================
-   Estas cuatro declaraciones vivían en el bloque `.tj-paper` de más
-   arriba y no llegaban a la hoja compilada — ver la nota que quedó allí
-   con la evidencia. Al final del fichero sí sobreviven, que es lo único
-   que hace falta que hagan.
-
-   Qué aporta cada una:
-
-     · **El tinte al 86 %** — deja intuir el atlas grabado del fondo a
-       través de la lámina sin que compita con el texto. Es UNA capa, no
-       dos: aquí hubo un color plano y además un degradado encima, y dos
-       capas translúcidas se multiplican en vez de promediarse, así que
-       la «translucidez del 72 %» que anunciaba el comentario era en
-       realidad del 88 %.
-     · **El grano** — fibra de papel, no densidad fingida con opacidad.
-     · **La fusión en `overlay`** — hace que el grano module el tinte en
-       vez de posarse encima como una gasa gris.
-     · **La luz de borde** — el canto que atrapa la luz por arriba y
-       apoya por abajo. Es lo que separa una lámina de un rectángulo de
-       color.
-
-   Sin `backdrop-filter`, y eso es una decisión: «papel, no cristal». Un
-   papel no difumina lo que tiene detrás, lo tapa. */
-.tj-paper {
-  background-color: color-mix(in srgb, var(--surface) 86%, transparent);
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.4'/%3E%3C/svg%3E");
-  background-size: 180px 180px;
-  background-repeat: repeat;
-  background-blend-mode: overlay;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.1),
-    inset 0 -1px 0 rgb(0 0 0 / 0.05);
-}
-
-/* Las densas van DESPUÉS, o el tinte translúcido de arriba les ganaría
-   por orden y volverían a dejar ver la página por detrás — que es el
-   defecto que se corrigió en el megamenú y el cajón. */
-.tj-paper-dense {
-  background-color: var(--paper-dense);
 }
 
 /* ── LA PISTA DE QUE EL CAJÓN SIGUE ──────────────────────────────────
@@ -6361,149 +4650,6 @@ svg [data-entra="sello"] {
   }
 }
 
-/* ============================================================
-   LA HOJA — la superficie con rango
-   ============================================================
-   ── El síntoma ────────────────────────────────────────────────────────
-   «Los recuadros son muy básicos». Lo eran, y no por falta de trabajo:
-   cada tarjeta del sitio llevaba `rounded-[2px]` y un filete al 13 % de
-   `--divider` sobre una sección con `bg-veil`. Un filete a esa opacidad
-   contra un fondo casi del mismo color no dibuja una tarjeta: dibuja el
-   contorno de una tarjeta. Todo el peso visual quedaba en el texto, y
-   una rejilla de seis contornos iguales se lee como un boceto.
-
-   ── De dónde sale el material ─────────────────────────────────────────
-   No hace falta inventar un lenguaje: el sitio ya tiene uno, y muy
-   bueno, en `.tj-lamina-marco` — la lámina que enmarca las capturas del
-   programa. Es un DOBLE FILETE con aire entre los dos trazos, que es
-   como se rematan las láminas de un atlas impreso. Aquí eso pasa de ser
-   el marco de las figuras a ser el material de todas las superficies:
-   una web sobre un programa que se presenta como atlas debería tener un
-   solo material, no uno para las figuras y otro para las tarjetas.
-
-   ── Los tres rangos, y qué significa cada uno ─────────────────────────
-   El rango NO es decoración: dice qué mirar primero.
-
-    · `.tj-hoja`           — la hoja corriente. Doble filete y apoyo:
-                             una sombra corta y baja, la de un papel
-                             posado, no el halo difuso de una tarjeta
-                             de interfaz.
-    · `.tj-hoja--pliego`   — la protagonista de su rejilla. El filete
-                             exterior se cierra, la sombra se alarga y
-                             aparecen las ESCUADRAS DE REGISTRO en las
-                             cuatro esquinas: las marcas que lleva un
-                             pliego para alinear las tintas en la
-                             prensa. Es la firma de esta página, y por
-                             eso hay UNA por rejilla. Si se repiten,
-                             dejan de señalar.
-    · `.tj-hoja--nota`     — la hoja menor: sin filete interior, sin
-                             sombra. Para lo que acompaña.
-
-   ── Por qué la sombra es corta y no difusa ────────────────────────────
-   Una sombra grande y suave es el gesto por defecto de cualquier
-   interfaz de los últimos diez años, y aquí además mentiría: el papel
-   de esta web está POSADO sobre el pliego del fondo, no flotando sobre
-   él. Un desplazamiento pequeño con poco desenfoque es lo que proyecta
-   una hoja sobre otra. En tema claro sube algo de opacidad porque una
-   sombra negra al 30 % sobre papel casi blanco no se ve.
-   ============================================================ */
-.tj-hoja {
-  border: 1px solid rgb(var(--divider) / 0.26);
-  box-shadow:
-    /* la luz del canto, que ya traía `.tj-paper` y aquí se conserva
-       porque este bloque va después y le ganaría por orden */
-    inset 0 1px 0 rgb(255 255 255 / 0.08),
-    0 1px 0 rgb(var(--divider) / 0.06),
-    0 10px 22px -18px rgb(0 0 0 / 0.55);
-}
-:root[data-theme="light"] .tj-hoja {
-  border-color: rgb(var(--divider) / 0.18);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.6),
-    0 1px 0 rgb(var(--divider) / 0.05),
-    0 12px 26px -20px rgb(0 0 0 / 0.35);
-}
-/* El filete interior. `inset: 5px` es la misma distancia que separa los
-   dos trazos en `.tj-lamina-marco`: si uno cambia sin el otro, la web
-   pasa a tener dos dobles filetes distintos y se nota. */
-.tj-hoja::after {
-  content: "";
-  position: absolute;
-  inset: 5px;
-  border: 1px solid rgb(var(--divider) / 0.10);
-  pointer-events: none;
-}
-:root[data-theme="light"] .tj-hoja::after {
-  border-color: rgb(var(--divider) / 0.07);
-}
-
-.tj-hoja--pliego {
-  border-color: rgb(var(--divider) / 0.4);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.1),
-    0 1px 0 rgb(var(--divider) / 0.08),
-    0 22px 44px -28px rgb(0 0 0 / 0.7);
-}
-:root[data-theme="light"] .tj-hoja--pliego {
-  border-color: rgb(var(--divider) / 0.28);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.7),
-    0 1px 0 rgb(var(--divider) / 0.06),
-    0 24px 48px -30px rgb(0 0 0 / 0.42);
-}
-/* Las escuadras de registro: cuatro ángulos de 12 px en las esquinas,
-   dibujados con cuatro degradados en una sola capa. Van en `::after`
-   —el mismo que en la hoja corriente lleva el filete interior— porque
-   una lámina no lleva las dos cosas: el pliego se identifica por sus
-   marcas, no por un segundo trazo. */
-.tj-hoja--pliego::after {
-  inset: 9px;
-  border: 0;
-  --escuadra: rgb(var(--accent-base) / 0.55);
-  background-image:
-    linear-gradient(to right, var(--escuadra) 12px, transparent 12px),
-    linear-gradient(to bottom, var(--escuadra) 12px, transparent 12px),
-    linear-gradient(to left, var(--escuadra) 12px, transparent 12px),
-    linear-gradient(to bottom, var(--escuadra) 12px, transparent 12px),
-    linear-gradient(to right, var(--escuadra) 12px, transparent 12px),
-    linear-gradient(to top, var(--escuadra) 12px, transparent 12px),
-    linear-gradient(to left, var(--escuadra) 12px, transparent 12px),
-    linear-gradient(to top, var(--escuadra) 12px, transparent 12px);
-  background-size:
-    12px 1px, 1px 12px,
-    12px 1px, 1px 12px,
-    12px 1px, 1px 12px,
-    12px 1px, 1px 12px;
-  background-position:
-    left top, left top,
-    right top, right top,
-    left bottom, left bottom,
-    right bottom, right bottom;
-  background-repeat: no-repeat;
-}
-:root[data-theme="light"] .tj-hoja--pliego::after {
-  --escuadra: rgb(var(--divider) / 0.55);
-}
-
-
-/* A SANGRE — para lo que se imprime hasta el canto.
-   Una tabla o una captura ocupan la hoja entera, y ahí el filete interior
-   no remata: cruza el contenido. Se queda el filete exterior y el apoyo,
-   que son los que hacen que la hoja exista; se va el de dentro, que sólo
-   tiene sentido cuando hay margen que rematar. */
-.tj-hoja--sangre::after {
-  content: none;
-}
-
-/* El canto se cierra al pasar por encima: el filete exterior sube de
-   tinta y la sombra se alarga un punto. Nada de color nuevo — la
-   tarjeta no cambia de estado, sólo se levanta. */
-.tj-hoja:hover {
-  border-color: rgb(var(--divider) / 0.42);
-}
-:root[data-theme="light"] .tj-hoja:hover {
-  border-color: rgb(var(--divider) / 0.3);
-}
 @media (prefers-reduced-motion: reduce) {
   .tj-hoja,
   .tj-hoja:hover {

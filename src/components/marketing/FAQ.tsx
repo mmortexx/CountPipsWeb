@@ -97,7 +97,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
          vuelve invisible (sigue existiendo para el indice y para SEO).
          Con el padding completo de `.section` eso dejaba ~145 px de
          vacio absoluto entre la regla del hero y el buscador. */
-      className={`${standalone ? "pt-10 pb-[clamp(4rem,8vw,7rem)]" : "section"} cv-auto bg-veil relative overflow-clip scroll-mt-24`}
+      className={`${standalone ? "pt-10 pb-[clamp(4rem,8vw,7rem)]" : "section"} cv-auto relative overflow-clip scroll-mt-24`}
     >
       <div className="relative z-10 tj-container">
         {/* Encabezado interno — el h2 siempre se renderiza (necesario para
@@ -241,7 +241,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           off the right edge. */}
                       <span className="min-w-0 break-words">
                         <span
-                          className="tnum mr-2.5 text-[11px] font-semibold text-tertiary"
+                          className="tnum mr-2.5 text-[12px] font-semibold text-tertiary"
                           aria-hidden
                         >
                           {String(i + 1).padStart(2, "0")}

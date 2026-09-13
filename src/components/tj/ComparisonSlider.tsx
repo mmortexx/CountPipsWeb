@@ -235,7 +235,7 @@ export function ComparisonSlider() {
       {/* `min-w-0` + equilibrado: a 320 px estas frases ocupan dos
           líneas, y sin esto la más larga empujaba la caja. */}
       <span
-        className={`min-w-0 text-pretty text-[13px] leading-[1.35] sm:text-[14.5px] ${
+        className={`min-w-0 text-pretty text-[14px] leading-[1.35] sm:text-[15px] ${
           bueno ? "font-medium text-primary" : "text-secondary"
         }`}
       >
@@ -245,7 +245,7 @@ export function ComparisonSlider() {
   );
 
   return (
-    <section className="section bg-veil">
+    <section className="section">
       <div className="tj-container">
         <Reveal className="text-center max-w-2xl mx-auto">
           <Eyebrow className="justify-center">
@@ -273,7 +273,7 @@ export function ComparisonSlider() {
           <div className="mt-10 max-w-3xl mx-auto">
             {/* Leyenda fuera de la caja: dentro chocaría con las filas y
                 obligaría a descuadrar una de las dos capas. */}
-            <div className="tnum mb-3 flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em]">
+            <div className="tnum mb-3 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.18em]">
               <span className="text-pnl-pos">
                 {es ? "Convertidos" : "Converted"} · {hechos}/{FILAS}
               </span>

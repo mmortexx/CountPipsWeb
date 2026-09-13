@@ -340,7 +340,7 @@ export function ShortcutsHelp({
             }`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b ">
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b">
               <div className="min-w-0">
                 <h2
                   id="tj-atajos-titulo"
@@ -348,7 +348,7 @@ export function ShortcutsHelp({
                 >
                   {es ? "Atajos de teclado" : "Keyboard shortcuts"}
                 </h2>
-                <p id="tj-atajos-sub" className="text-[11px] text-tertiary mt-0.5">
+                <p id="tj-atajos-sub" className="text-[12px] text-tertiary mt-0.5">
                   {es
                     ? "Muévete más rápido por la app."
                     : "Move faster through the app."}
@@ -394,7 +394,7 @@ export function ShortcutsHelp({
 
             {/* Footer hint */}
             <div
-              className="flex items-center justify-between gap-2 px-3 py-2 border-t  text-[11px] text-tertiary"
+              className="flex items-center justify-between gap-2 px-3 py-2 border-t  text-[12px] text-tertiary"
               aria-hidden="true"
             >
               <span className="flex items-center gap-1.5">
@@ -415,7 +415,7 @@ export function ShortcutsHelp({
 /** Small inline keyboard key chip — mirrors the CommandPalette styling. */
 function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border  bg-[rgb(var(--divider)/0.03)] text-[11px] font-mono text-secondary tnum">
+    <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border  bg-[rgb(var(--divider)/0.03)] text-[12px] font-mono text-secondary tnum">
       {children}
     </kbd>
   );

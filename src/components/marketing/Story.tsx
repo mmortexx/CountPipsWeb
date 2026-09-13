@@ -92,9 +92,7 @@ export function Story() {
   const quoteWords = quote.split(" ");
 
   return (
-    <section id="story" className="section bg-veil relative scroll-mt-24 overflow-clip">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section id="story" className="section relative scroll-mt-24 overflow-clip">
       <div className="relative z-10 tj-container grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-20 items-start">
         {/* LEFT — editorial pull quote (sticky + subtle parallax) */}
         {/* Sin `data-entra`, y no por casualidad: esta columna es
@@ -195,7 +193,7 @@ export function Story() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span
-                        className={`text-[10px] uppercase tracking-[0.14em] font-semibold tnum ${toneText[p.tone]}`}
+                        className={`text-[11px] uppercase tracking-[0.14em] font-semibold tnum ${toneText[p.tone]}`}
                       >
                         {p.tag}
                       </span>
@@ -204,7 +202,7 @@ export function Story() {
                           stays tertiary. The contrast reinforces "you are
                           here" vs "of N" without adding a new color token.
                           Both keep tnum for tabular alignment. */}
-                      <span className="text-[10px] text-tertiary tnum">
+                      <span className="text-[11px] text-tertiary tnum">
                         <span className="text-secondary">
                           {String(i + 1).padStart(2, "0")}
                         </span>

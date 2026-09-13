@@ -69,9 +69,7 @@ export function MoreFeatures() {
   ];
 
   return (
-    <section className="section bg-veil relative overflow-clip">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section className="section relative overflow-clip">
       <div className="relative tj-container">
         {/* `apilada` y no `partida`: en /features esta sección viene justo
             detrás de `HowItWorks`, que ya parte su cabecera en dos
@@ -129,7 +127,7 @@ export function MoreFeatures() {
                 </div>
                 <h3 className="t-h4 text-primary">{f.title}</h3>
                 {/* T2h: leading-relaxed (1.625) → leading-[1.6] per spec. */}
-                <p className="mt-1.5 text-[13px] text-secondary leading-[1.6]">{f.desc}</p>
+                <p className="mt-1.5 text-[14px] text-secondary leading-[1.6]">{f.desc}</p>
               </article>
             ))}
           </div>

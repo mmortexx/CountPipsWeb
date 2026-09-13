@@ -48,7 +48,7 @@ const PRESETS = [
  * Muestra la brecha entre operar en plan y fuera de plan, la factura
  * mensual desglosada por tipología de fallo y la fuga anual de capital.
  */
-export function DisciplineCost({ num = "05·b" }: { num?: string }) {
+export function DisciplineCost() {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -134,21 +134,11 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
   };
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="max-w-[1240px] mx-auto px-5 md:px-8">
         {/* Cabecera de sección */}
         <div className="inline-flex items-center gap-3 mb-5">
-          <span
-            className="tnum"
-            style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-          >
-            § {num}
-          </span>
-          <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-          <span
-            className="tnum"
-            style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-          >
+          <span className="eyebrow">
             {es ? "COSTE REAL E INTERACTIVO" : "REAL & INTERACTIVE COST"}
           </span>
         </div>
@@ -192,7 +182,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
 
             {/* Presets rápidos */}
             <div className="mb-6">
-              <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary mb-2">
+              <span className="block text-[12px] uppercase tracking-[0.14em] text-tertiary mb-2">
                 {es ? "Escenarios rápidos" : "Quick scenarios"}
               </span>
               <div className="flex flex-wrap gap-2">
@@ -204,7 +194,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                       type="button"
                       aria-pressed={active}
                       onClick={() => aplicarPreset(p)}
-                      className={`toque-comodo h-8 px-3 rounded-[2px] text-[12.5px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                      className={`toque-comodo h-8 px-3 rounded-[2px] text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                         active
                           ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold shadow-sm"
                           : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-secondary hover:text-primary"
@@ -283,7 +273,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[rgb(var(--divider)/0.08)]">
                 <div>
-                  <label htmlFor="disc-inplan" className="block text-[11px] uppercase tracking-wider text-tertiary mb-1">
+                  <label htmlFor="disc-inplan" className="block text-[12px] uppercase tracking-wider text-tertiary mb-1">
                     {es ? "Ganancia media en plan ($/op.)" : "Avg win in-plan ($/trade)"}
                   </label>
                   <div className="relative">
@@ -301,7 +291,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 </div>
 
                 <div>
-                  <label htmlFor="disc-offplan" className="block text-[11px] uppercase tracking-wider text-tertiary mb-1">
+                  <label htmlFor="disc-offplan" className="block text-[12px] uppercase tracking-wider text-tertiary mb-1">
                     {es ? "Resultado medio fuera de plan ($)" : "Avg result off-plan ($)"}
                   </label>
                   <div className="relative">
@@ -326,21 +316,21 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
             >
               <div className="overflow-x-auto custom-scroll">
                 <div className="grid grid-cols-4 min-w-[400px] border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
-                  <span className="tnum text-[10px] uppercase tracking-[0.14em]">{es ? "Modo" : "Mode"}</span>
-                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Ops" : "Trades"}</span>
-                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Expectancy" : "Expectancy"}</span>
-                  <span className="tnum text-right text-[10px] uppercase tracking-[0.14em]">{es ? "Neto" : "Net P&L"}</span>
+                  <span className="tnum text-[11px] uppercase tracking-[0.14em]">{es ? "Modo" : "Mode"}</span>
+                  <span className="tnum text-right text-[11px] uppercase tracking-[0.14em]">{es ? "Ops" : "Trades"}</span>
+                  <span className="tnum text-right text-[11px] uppercase tracking-[0.14em]">{es ? "Expectancy" : "Expectancy"}</span>
+                  <span className="tnum text-right text-[11px] uppercase tracking-[0.14em]">{es ? "Neto" : "Net P&L"}</span>
                 </div>
 
                 {/* Fila En Plan */}
                 <div className="grid min-w-[400px] grid-cols-4 items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
                   <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[rgb(var(--accent-base))]" />
-                  <span className="font-medium text-primary text-[13.5px]">{es ? "En plan" : "In plan"}</span>
-                  <span className="tnum text-right text-secondary text-[13.5px]">{inPlanTrades}</span>
-                  <span className="tnum text-right text-[13px] font-semibold text-[rgb(var(--pnl-pos))]">
+                  <span className="font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</span>
+                  <span className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</span>
+                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
                     +{fmtNum(inPlanExp, lang, 2)} $
                   </span>
-                  <span className="tnum text-right text-[13px] font-semibold text-[rgb(var(--pnl-pos))]">
+                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
                     +{fmtNum(inPlanTotal, lang, 2)} $
                   </span>
                 </div>
@@ -348,12 +338,12 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 {/* Fila Fuera de Plan */}
                 <div className="grid min-w-[400px] grid-cols-4 items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
                   <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[rgb(var(--pnl-neg))]" />
-                  <span className="font-medium text-primary text-[13.5px]">{es ? "Fuera de plan" : "Off plan"}</span>
-                  <span className="tnum text-right text-secondary text-[13.5px]">{offPlanTrades}</span>
-                  <span className="tnum text-right text-[13px] font-semibold text-[rgb(var(--pnl-neg))]">
+                  <span className="font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</span>
+                  <span className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</span>
+                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
                     {fmtNum(offPlanExp, lang, 2)} $
                   </span>
-                  <span className="tnum text-right text-[13px] font-semibold text-[rgb(var(--pnl-neg))]">
+                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
                     {fmtNum(offPlanTotal, lang, 2)} $
                   </span>
                 </div>
@@ -362,7 +352,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 <div className="relative grid min-w-[400px] grid-cols-4 items-center bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_6%,transparent)] px-2.5 py-3.5 text-sm">
                   <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-[rgb(var(--pnl-neg))]" />
                   <span className="font-bold text-primary text-[14px]">GAP</span>
-                  <span className="tnum text-right text-secondary text-[13px]">—</span>
+                  <span className="tnum text-right text-secondary text-[14px]">—</span>
                   <span className="tnum text-right font-bold text-[rgb(var(--pnl-neg))] text-[14px]">
                     −{fmtNum(gap, lang, 2)} $
                   </span>
@@ -373,7 +363,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
               </div>
             </div>
 
-            <p className="mt-3 text-[11.5px] text-tertiary leading-relaxed">
+            <p className="mt-3 text-[13px] text-tertiary leading-relaxed">
               {es
                 ? "El GAP es el dinero que dejas de ganar en cada operación que rompe las reglas frente a haberla ejecutado con disciplina."
                 : "The GAP is the cash lost on every off-plan trade compared to executing cleanly inside your rules."}
@@ -386,7 +376,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.08)]">
               <div>
-                <span className="tnum text-[11px] font-semibold uppercase tracking-[0.14em] text-tertiary block">
+                <span className="tnum text-[12px] font-semibold uppercase tracking-[0.14em] text-tertiary block">
                   {es ? "Factura de indisciplina" : "Indiscipline invoice"}
                 </span>
                 <span className="text-xs text-secondary">
@@ -394,7 +384,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 </span>
               </div>
               <span
-                className="tnum text-[10px] px-2.5 py-1 rounded-[2px] bg-[rgb(var(--pnl-neg)/0.14)] text-[rgb(var(--pnl-neg))] border border-[rgb(var(--pnl-neg)/0.28)] font-mono self-start sm:self-auto"
+                className="tnum text-[11px] px-2.5 py-1 rounded-[2px] bg-[rgb(var(--pnl-neg)/0.14)] text-[rgb(var(--pnl-neg))] border border-[rgb(var(--pnl-neg)/0.28)] font-mono self-start sm:self-auto"
               >
                 #LEAK-{ANIO_PUBLICACION}
               </span>
@@ -424,7 +414,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                       <span className="min-w-0 font-medium leading-[1.3] text-primary [overflow-wrap:anywhere]">
                         {es ? row.labelEs : row.labelEn}
                       </span>
-                      <span className="tnum whitespace-nowrap text-[11px] text-tertiary">
+                      <span className="tnum whitespace-nowrap text-[12px] text-tertiary">
                         {row.pct} %
                       </span>
                       {/* Ancho mínimo común: los cinco importes acaban en
@@ -455,7 +445,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                   <span className="block text-xs font-semibold uppercase leading-[1.25] tracking-wider text-[rgb(var(--pnl-neg))] [overflow-wrap:anywhere]">
                     {es ? "Fuga mensual total" : "Total monthly leak"}
                   </span>
-                  <span className="block text-[11.5px] leading-[1.3] text-tertiary [overflow-wrap:anywhere]">
+                  <span className="block text-[13px] leading-[1.3] text-tertiary [overflow-wrap:anywhere]">
                     {offPlanTrades} {es ? "operaciones indisciplinadas" : "off-plan trades"}
                   </span>
                 </div>
@@ -483,7 +473,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 <span className="block text-xs font-semibold uppercase tracking-wider text-primary">
                   {es ? "Capital fugado acumulado" : "Cumulative leaked capital"}
                 </span>
-                <span className="mb-2.5 block text-[10.5px] text-tertiary">
+                <span className="mb-2.5 block text-[12px] text-tertiary">
                   {es ? "Reinvertido al 8 % anual" : "Reinvested at 8 % p.a."}
                 </span>
                 <div className="grid grid-cols-3 gap-2 text-center font-mono">
@@ -500,7 +490,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                         title={`−${fmtMoney(fv, lang)}`}
                         className="caja-cifra min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
                       >
-                        <span className="block text-[10px] text-tertiary">
+                        <span className="block text-[11px] text-tertiary">
                           {yr} {yr === 1 ? (es ? "año" : "year") : (es ? "años" : "years")}
                         </span>
                         <span
@@ -523,7 +513,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                   <span className="text-xs font-semibold text-[rgb(var(--accent-base))] uppercase tracking-wider">
                     {es ? "Plan de Recuperación con Guardián" : "Guardian Recovery Plan"}
                   </span>
-                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))]">
+                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))]">
                     {es ? "ROI Inmediato" : "Immediate ROI"}
                   </span>
                 </div>
@@ -542,7 +532,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                       title={`+${fmtMoney(totalLeakMonthly * f, lang)}`}
                       className="caja-cifra min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
                     >
-                      <span className="block text-[10px] uppercase text-tertiary">
+                      <span className="block text-[11px] uppercase text-tertiary">
                         {es ? `Ahorro al ${f * 100} %` : `${f * 100}% savings`}
                       </span>
                       <span
@@ -551,7 +541,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                       >
                         +{corto(totalLeakMonthly * f).replace("−", "")}
                       </span>
-                      <span className="block text-[9.5px] uppercase tracking-wider text-tertiary">
+                      <span className="block text-[11px] uppercase tracking-wider text-tertiary">
                         {es ? "al mes" : "per month"}
                       </span>
                     </div>
@@ -574,7 +564,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
                 {copied ? (es ? "¡Resumen copiado!" : "Summary copied!") : (es ? "Copiar este desglose" : "Copy breakdown")}
               </button>
 
-              <span className="text-[11px] text-tertiary font-mono">
+              <span className="text-[12px] text-tertiary font-mono">
                 {es ? "100 % privado en tu navegador" : "100% private in browser"}
               </span>
             </div>

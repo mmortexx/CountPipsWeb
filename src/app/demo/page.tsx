@@ -4,12 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { DemoCapabilities } from "@/components/demo/DemoCapabilities";
 import { AppDemoClient } from "@/components/demo/AppDemoClient";
 import { DemoConversionPanel } from "@/components/demo/DemoConversionPanel";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-
-// Estimated reading time (capabilities + demo + decision bridge + stats).
-// ~400 words at 220 wpm = ~2 min.
-const READING_TIME_MIN = 2;
 
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
@@ -96,7 +91,6 @@ export function DemoBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio="[ DEMO ]"
         eyebrowEs="Demo"
         eyebrowEn="Demo"
         titleEs="La app, en tu navegador."
@@ -107,18 +101,16 @@ export function DemoBody() {
         subtitleEn="Not a video or a gallery: explore CountPips' essential workflow with sample data, no sign-up and no installation."
         breadcrumbEs="Demo"
         breadcrumbEn="Demo"
-        readingTimeMin={READING_TIME_MIN}
       />
       {/* What you can do — 6 feature cards previewing the demo */}
       <DemoCapabilities />
-      <section id="demo" className="section bg-veil scroll-mt-16">
+      <section id="demo" className="section scroll-mt-16">
         {/* `hideHeader`: el PageHeader de arriba ya titula "La app, en tu
             navegador." y repite el mismo subtítulo, así que sin esta
             bandera el visitante leía el titular dos veces seguidas. */}
         <AppDemoClient hideHeader />
       </section>
       <DemoConversionPanel />
-      <PlateInterlude index={0} />
       <StatsBandNew />
       {/* Ready-to-buy CTA — catches visitors who just played with the demo */}
       {/* `DemoReadyToBuy` retirado: era un segundo CTA idéntico pegado

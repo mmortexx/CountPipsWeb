@@ -15,12 +15,12 @@ Stack y versiones bloqueadas:
 Arquitectura I18n: Routing simétrico bilingüe — español en raíz (`/`) e inglés bajo `/en/`. 210 claves `STR`, 57 términos de glosario, 8 herramientas, 13 FAQs, 4 documentos legales. Paridad 1:1 obligatoria.
 
 Decisiones de diseño ya tomadas e irrevocables:
-- Acento AZUL ACERO (#CDD9E4 oscuro / #004D7C claro) — jamás volver a dorado, tierra ni igualarlo al verde P&L.
-- Radios afilados (1-5 px) — canto institucional, no software de consumo. `rounded-full` solo para puntos de estado y píldoras.
-- Material de 3 niveles: canvas → chrome → card, translúcido con tokens de opacidad.
+- Dirección institucional (2026-09-13): blanco y negro reales, neutro frío, acento = tinta plena (#0B0F14 claro / #ECEFF2 oscuro). El color es del dinero (P&L) y de las sesiones; jamás dorado, tierra ni un acento que compita con el verde P&L.
+- Radios contenidos: 3-4 px en controles, 6 px en tarjetas, 8 px en bloques grandes. `rounded-full` solo para puntos de estado y píldoras.
+- Superficies opacas sobre fondo liso: `--bg` → `--surface` (bandas) → `--raised` (tarjetas). Sin texturas, grano, atlas de fondo ni pantallas de carga.
 - Curva de movimiento única `--ease-suave: cubic-bezier(0.22, 1, 0.36, 1)` consolidada como defecto global.
 - Fuentes locales en repositorio (no Google Fonts CDN).
-- Zero `backdrop-blur-xl` pesados. Superficies resueltas con tokens semánticos y catch-light de elevación.
+- Cero `backdrop-blur`. Elevación con canto de 1 px (`--line-2`) y, sólo en piezas destacadas, una sombra suave.
 ```
 
 ---
@@ -94,19 +94,23 @@ MOVIMIENTO:
   --ease-menu-in / --ease-menu-out / --ease-drawer — curvas del drawer móvil
 
 RADIOS:
-  --radius-sm (1px) → --radius-2xl (5px) — escala base
-  :root[data-palette="clasico"] colapsa TODO a 2 px — el valor REAL en pantalla
+  :root[data-palette="clasico"] fija la escala real: sm 3px · md 4px · lg/xl 6px · 2xl 8px
 
 TIPOGRAFÍA:
-  --font-sans  → Instrument Sans (400-700 variable) — cuerpo, rótulos, etiquetas
-  --font-serif → Newsreader (200-800 variable + cursiva) — titulares editoriales
+  --font-sans  → Instrument Sans (400-700 variable) — cuerpo, rótulos, etiquetas y h3
+  --font-serif → Newsreader (200-800 variable) — sólo h1 y h2, sin cursiva de realce
+  Letra mínima: 11 px. Realce de titular: `.text-gradient` (tono terciario, no cursiva).
   --font-mono  → Geist Mono — código, datos tabulares, métricas
 
 MATERIALES CSS (definidos en globals.css):
-  .tj-paper       — papel translúcido (72% surface, blur 10px, saturate 140%, grano SVG, catch-light inset)
-  .tj-paper-dense — papel denso (86% surface, más opacidad)
-  .tj-paper-glow  — halo tenue en borde superior de megamenú
-  .liquid-glass   — cristal mecanizado (rgba + 4px blur + machined inset edges + ::before rim gradient)
+  .tj-container   — caja de contenido única (1200 px + márgenes fluidos)
+  .tj-paper       — tarjeta opaca (`--raised`)
+  .tj-paper-dense — superficie que flota sobre contenido (barra, cajón, menús; `--bg`)
+  .tj-hoja        — canto de 1 px y radio 6 px; `.tj-hoja--pliego` añade sombra suave
+  .cta / .cta--primario / .cta--secundario — llamadas a la acción
+  .tj-pestanas    — control segmentado de pantallas
+  .tj-cierre      — bloque de cierre en tinta invertida
+  .tj-hero-producto / .tj-lamina-marco — marco de captura real del programa
 
 TEMAS (Dark + Light, sincronizados):
   Cada token tiene DOBLE declaración en :root (dark) y :root[data-theme="light"].
@@ -127,7 +131,7 @@ MAPA DE RUTAS (21 rutas × 2 idiomas = 42 páginas SSG):
 
 PORTADA:
   / (ES) · /en/ (EN)
-  Composición: Hero → ProfileSelector → StatsBandNew → ProductShowcase → PlateInterlude[0] → MetricsShowcaseNew → Ticker → PlateInterlude[1] → GuardianNew → PlateInterlude[2] → Values → TrustStrip → PlateInterlude[3] → FinalCTANew
+  Composición: Hero (con captura) → StatsBandNew → ProfileSelector → ProductShowcase → MetricsShowcaseNew → GuardianNew → Values → FinalCTANew
 
 PRODUCTO:
   /features — Catálogo general (FeaturePageNav + FeaturesBento + HowItWorks + MoreFeatures)
@@ -165,7 +169,7 @@ LEGAL (4 documentos):
 
 NAVBAR (89 KB, 1.786 líneas — Navbar.tsx):
 - Rejilla de 3 zonas [1fr_auto_1fr]: marca izquierda, nav centrado, clúster derecho
-- Material tj-paper-dense translúcido — NUNCA opaco (el atlas del fondo se intuye)
+- Material tj-paper-dense opaco (`--bg`) con canto inferior de 1 px
 - Altura FIJA 68 px (nunca se condensa al scroll, solo gana sombra + filo)
 - Hairline de acento en borde inferior que traza el progreso de lectura
 - Megamenú desplegable para Features y Herramientas
@@ -173,25 +177,20 @@ NAVBAR (89 KB, 1.786 líneas — Navbar.tsx):
 - Reloj arranca en "--:--:--" en servidor (zero hydration mismatch)
 - Hover/foco en CSS puro (hover: / focus-visible:), NUNCA en JS con onMouseEnter
 
-HERO (Hero.tsx + HeroMicroCalcs.tsx):
-- Sección #top, min-h-screen, centrado con sesgo bajo pt-[8vh]
-- Titular serif (Newsreader), subtítulo sans (Instrument Sans)
-- Barra de specs tipo placa de instrumento: PLATAFORMA, DATOS, RECORRIDO, IDIOMAS
-- Scrim lateral de legibilidad + fundido inferior
-- CTA rectangulares (4 px, sin sheen, sin sombra de color)
-- data-seq para entrada controlada por IntroSequence
+HERO (Hero.tsx):
+- Sección #top alineada a `.tj-container`, sin scrim ni animación de entrada
+- Ceja, titular serif `.t-display`, entradilla sans, dos `.cta` y tres datos
+- Captura real (`app-analitica`, clara/oscura y recorte móvil) en `.tj-hero-producto`
 
 PORTADA — SECCIONES EN ORDEN:
-- ProfileSelector (5 KB) — Selector de perfil (trader manual / prop firm)
-- StatsBandNew (6 KB) — 4 cifras que definen el producto
-- ProductShowcase (13 KB) — 4 fotos reales WebP 1920×1071 con HUD translúcido
-- PlateInterlude (4 KB × 4) — Pausas de lámina entre secciones, sincronizadas con EngravedAtlas
-- MetricsShowcaseNew (21 KB) — Ratios institucionales + distribución de R
-- Ticker (11 KB) — Banda animada con símbolos de mercados
-- GuardianNew (27 KB) — Disciplina que frena antes del error
-- Values (14 KB) — 4 principios del producto
-- TrustStrip (8 KB) — Banda de señales de confianza
-- FinalCTANew (9 KB) — CTA de cierre
+- StatsBandNew — 3 cifras que definen el producto
+- ProfileSelector — Selector de perfil (trader manual / prop firm)
+- ProductShowcase — capturas reales con pestañas `.tj-pestanas`, sobre banda `--surface`
+- MetricsShowcaseNew — Ratios institucionales + distribución de R
+- GuardianNew — Disciplina que frena antes del error
+- Values — 4 principios del producto
+- FinalCTANew — cierre en bloque de tinta `.tj-cierre`
+(TrustStrip sigue en /pricing.)
 
 FOOTER (27 KB, 515 líneas — Footer.tsx):
 - Material liquid-glass a sangre completa (sin rounded-t-xl)
@@ -223,19 +222,15 @@ MOTOR DE DEMO (5 vistas WinUI 3):
 - SavingsCalculator (20 KB) — Comparativa pago único vs suscripción
 
 COMPONENTES TJ (infraestructura):
-- AnimatedHeading — Titulares con animación de entrada
 - BackToTop (17 KB) — Botón de vuelta arriba
 - BrandGlyph (15 KB) — Marca con glifo de vela
 - Chip — Chip/etiqueta
 - ComparisonSlider (23 KB) — Slider antes/después
 - CookieConsent (14 KB) — Banner RGPD
 - CountUp — Conteo animado
-- EngravedAtlas (130 KB) — Canvas vector sub-pixel que se graba al scroll
 - Eyebrow — Ceja tipográfica (uppercase, wide tracking)
 - GlobalShortcuts (9 KB) — Listener global de atajos
 - GlossaryLauncher / GlossaryModal (18 KB) — Glosario modal Ctrl+G
-- Grabado404 (11 KB) — 404 con grabado
-- IntroSequence (10 KB) — Entrada escalonada del hero
 - MagneticButton (5 KB) — Efecto magnético de cursor
 - Money — Formateador monetario
 - NotFoundClient (11 KB) — Cliente 404
@@ -249,7 +244,6 @@ COMPONENTES TJ (infraestructura):
 - SkipLink — Salto de accesibilidad
 - TableOfContents (8 KB) — TOC lateral
 - TransicionPagina (7 KB) — Transición entre páginas
-- BackgroundFX (5 KB) — Efectos de fondo
 
 MARKETING ADICIONAL:
 - BeforeAfter (13 KB) · Changelog (13 KB) · CommissionDragCalculator (19 KB)
@@ -273,10 +267,9 @@ LIBRERÍAS CORE (src/lib/):
 - glosario.ts (16 KB) — 57 términos bilingües, cinco familias
 - herramientas.ts (12 KB) — 8 definiciones de herramientas
 - faq.ts (11 KB) — 13 FAQs bilingües
-- atlas.ts (24 KB) — Configuración del EngravedAtlas
 - consent.ts (4 KB) — Gestión de consentimiento con try-catch
 - forms.ts (14 KB) — Validación de formularios
-- laminas.ts (17 KB) — Definiciones de láminas
+- laminas.ts (17 KB) — Registro de capturas reales del programa
 - fechas.ts (5 KB) — Utilidades de fecha UTC
 - locale.ts (4 KB) — Detección de locale y prefijo
 - motion.ts (2 KB) — Configuración de Framer Motion
@@ -384,7 +377,7 @@ ACCESIBILIDAD (WCAG AA OBLIGATORIO):
 RENDIMIENTO VISUAL:
 - 60/120 FPS sin tirones.
 - translate3d, will-change (solo activo), contain: layout paint.
-- Cero setInterval en landing. Cero backdrop-blur-xl pesados.
+- Cero setInterval en landing. Cero backdrop-blur.
 - next/dynamic sin loading prop (evita Suspense que oculta contenido SSG).
 - Fuentes: display: "swap" + adjustFontFallback = cero layout shift.
 </visual_standards>

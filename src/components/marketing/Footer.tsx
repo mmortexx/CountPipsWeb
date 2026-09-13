@@ -155,12 +155,6 @@ export function Footer() {
   // quiet institutional credentials row, not a feature gallery. The
   // PositioningStrip on the home page carries the visual version of these;
   // the footer's is the closing reminder.
-  const trust: string[] = [
-    es ? "Demo interactiva · Sin registro" : "Interactive demo · No sign-up",
-    es ? "Datos 100 % locales" : "100 % local data",
-    "ES + EN",
-    es ? "Acceso anticipado privado" : "Private early access",
-  ];
 
   // SE QUEDA EN `liquid-glass` a propósito: el pie es una banda a ancho
   // completo, no una tarjeta, y el papel —con su grano y su sombra
@@ -169,7 +163,7 @@ export function Footer() {
   // así que renombrar la clase apagaría la luz del canto superior. Mismo caso
   // que la cinta de cotizaciones.
   return (
-    <footer className="relative mt-auto liquid-glass glass-band border-t border-[rgb(var(--divider)/0.1)] safe-bottom">
+    <footer className="relative mt-auto border-t border-[var(--line)] bg-[var(--bg)] safe-bottom">
       {/* `tj-container` (T2a's fluid gutter system: clamp(1.25rem, 4vw, 2.25rem))
           — same fluid gutter rhythm as Hero, StatsBand, MetricsShowcase, etc.
           so the footer's left/right inset reads as one with the page above it
@@ -207,22 +201,6 @@ export function Footer() {
               {t("tagline")}
             </p>
 
-            {/* Local-first badge — small inline pill (lock glyph + label).
-                Signals the "your data never leaves your machine" promise
-                inline in the brand column. Same hairline language as the
-                rest of the design system (filete sobre `--divider`). */}
-            <div className="mt-4 inline-flex items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.04)] px-2.5 py-1 text-[11px] font-medium text-secondary">
-              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path
-                  d="M5 7V5a3 3 0 016 0v2M4 7h8v7H4V7z"
-                  stroke="currentColor"
-                  strokeWidth="1.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <span>{es ? "100 % local" : "100 % local"}</span>
-            </div>
 
             {/* Social links — icon-only buttons at the WCAG 2.5.5 (AAA)
                 44 px tap target. P4 fix: this was `h-9 w-9` (36 px) which
@@ -237,7 +215,7 @@ export function Footer() {
                 the previous `gap-2` (8 px) — same premium-editorial
                 rhythm the eyebrow column headers use. MagneticButton
                 preserves the magnetic pull on fine-pointer devices. */}
-            <div className="mt-6 flex items-center gap-2.5">
+            <div className="mt-4 -ml-3 flex items-center gap-1">
               {SOCIAL_LINKS.map(({ label, href, Icon }) => (
                 <MagneticButton
                   key={label}
@@ -246,7 +224,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   ariaLabel={label}
                   strength={0.3}
-                  className="icon-btn grid h-11 w-11 place-items-center rounded-[2px] bg-[rgb(var(--divider)/0.05)] text-secondary transition-colors duration-150 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary focus-visible:bg-[rgb(var(--divider)/0.08)] focus-visible:text-primary"
+                  className="icon-btn grid h-11 w-11 place-items-center rounded-[4px] text-secondary transition-colors duration-150 hover:text-primary focus-visible:bg-[rgb(var(--divider)/0.08)] focus-visible:text-primary"
                 >
                   <Icon />
                 </MagneticButton>
@@ -322,35 +300,8 @@ export function Footer() {
           ))}
         </div>
 
-        {/* Structural separator — filete de 1px sobre `--divider`, en degradado
-            12% opacity. Floats rather than terminating in a hard edge.
-            Sits BETWEEN the link grid above and the trust-pills + bottom-bar
-            cluster below — the link grid is the footer's primary content
-            (navigation), and the trust pills + bottom bar are meta
-            (credentials, copyright, status). The hairline gives the meta
-            region its own visual zone rather than letting the pills float
-            ambiguously between the two. `mt-12` gives the grid room to
-            breathe above; `mb-8` gives the pills room below. */}
-        <div className="divider-grad mt-12 mb-8" />
+        <div className="mt-12 h-px bg-[var(--line)]" />
 
-        {/* Trust signals — compact inline pill strip. Hairline border +
-            faint tint so the pills read as quiet credentials, not as
-            feature cards (PositioningStrip on the home page already
-            carries the visual version). `flex-wrap` lets the row reflow
-            on narrow viewports; `gap-2` keeps a tight institutional
-            rhythm. Sits directly above the bottom bar so the two read
-            as a single "meta region" separated from the link grid by
-            the divider-grad above. */}
-        <div className="flex flex-wrap items-center gap-2">
-          {trust.map((item) => (
-            <span
-              key={item}
-              className="inline-flex items-center rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.02)] px-2.5 py-1 text-xs text-tertiary"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
 
         {/* Bottom bar — left: © year appName. rights; right: status
             indicator (pulsing emerald dot + label) + Privacy/Terms legal
@@ -358,7 +309,7 @@ export function Footer() {
             above. Status dot is decorative (aria-hidden); the label text
             carries the accessible meaning. `mt-8` separates it from the
             trust pills above. */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-secondary">
             © <span className="tnum">{year}</span> {t("appName")}. {t("rights")}
           </p>
@@ -448,50 +399,9 @@ function ConsentPreferencesButton() {
   );
 }
 
-/**
- * BrandMark — el logotipo (`BrandGlyph`, el mismo que la barra superior,
- * la intro y el cromo de la demo) sobre un cuadrado de vidrio mecanizado.
- *
- * Antes dibujaba aquí su propio trío de velas, "idéntico" al de la barra
- * superior salvo que no lo era: las mechas iban a 0,5 de opacidad en vez
- * de 0,45 y los cuerpos a otras alturas. Dos copias de una marca. Ahora
- * hay un único glifo y esto sólo pone la placa.
- *
- * La placa combina:
- *  - base de vidrio para que el dorado del logotipo resalte,
- *  - filete de 1 px con el mismo lenguaje que el resto del sistema,
- *  - realce blanco de 1 px arriba (el canto mecanizado de
- *    `.liquid-glass`),
- *  - un halo radial del acento desde el borde superior.
- *
- * `overflow-hidden` recorta el halo al cuadrado redondeado.
- *
- * El logotipo dibuja con `rgb(var(--accent-base))` — la marca vigente es
- * la retícula de puntos y su tinta ES el acento del tema, así que aquí no
- * se le pasa color: lo hereda resuelto. A 20 px sale la variante
- * reducida, que es la dibujada para este rango.
- */
+/** BrandMark — el glifo de la marca, sin placa. */
 function BrandMark() {
-  return (
-    <span
-      className="relative shrink-0 w-7 h-7 rounded-[2px] grid place-items-center border overflow-hidden"
-      style={{
-        borderColor: "rgb(var(--divider) / 0.13)",
-        background: "color-mix(in srgb, var(--surface) 66%, transparent)",
-        boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.08)",
-      }}
-    >
-      <span
-        aria-hidden
-        className="absolute inset-0 opacity-70"
-        style={{
-          background:
-            "radial-gradient(120% 120% at 50% 0%, rgb(var(--accent-base) / 0.35) 0%, rgb(var(--accent-base) / 0) 60%)",
-        }}
-      />
-      <BrandGlyph size={20} className="relative" />
-    </span>
-  );
+  return <BrandGlyph size={24} className="shrink-0" />;
 }
 
 /* ---------------- Inline brand SVG icons (currentColor, 14px box) ---------------- */

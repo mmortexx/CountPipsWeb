@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -129,7 +128,6 @@ export function DisciplinaBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="I·b"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Disciplina que actúa, no que sermonea."
@@ -140,18 +138,15 @@ export function DisciplinaBody() {
         subtitleEn="The Guardian doesn't tell you what to do. It blocks you when you break your own rules: sizes over your risk, daily drawdowns, off-plan trades. Every exception is logged with its reason and its outcome."
         breadcrumbEs="Características · Disciplina"
         breadcrumbEn="Features · Discipline"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <GuardianNew num="01" />
-      <DisciplineCost num="02" />
+      <GuardianNew />
+      <DisciplineCost />
 
-      <PlateInterlude index={0} />
       <BeforeAfter />
 
-      <PlateInterlude index={1} />
       <ComparisonSlider />
 
-      <RMultipleSimulator num="03" />
+      <RMultipleSimulator />
 
       {/* El diagnóstico de disciplina se mudó a `/test`, con página y
           entrada propias en el menú. Aquí estaba al final del todo, así
@@ -162,7 +157,6 @@ export function DisciplinaBody() {
           dos direcciones es contenido duplicado, y el buscador reparte
           entre ambas lo que debería ir a una. */}
 
-      <PlateInterlude index={2} />
       <FeaturePageNav current="disciplina" />
       <FinalCTANew />
       <TableOfContents />

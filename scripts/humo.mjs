@@ -771,19 +771,11 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── EL PAPEL, EN LOS DOS TEMAS ────────────────────────────────
-         El defecto original —`.tj-paper` sin grano ni luz de borde— sólo
-         existía en el tema OSCURO, y este guardián medía el documento tal
-         y como arranca, que es `data-theme="light"`. Es decir: vigilaba
-         el único tema donde el fallo no estaba, y habría seguido en verde
-         si alguien lo reintroducía.
-
-         Se fuerzan los dos temas sobre el mismo documento —es lo mismo
-         que hace el conmutador del sitio: `data-theme` más la clase
-         `dark`— y se mide en cada uno. Comprobado contra el fallo
-         borrando a mano el `background-image` del bloque oscuro en
-         `globals.css`: con esta versión salta en «oscuro» y con la
-         anterior seguía diciendo «correcto». */
+      /* ── LA TARJETA, OPACA EN LOS DOS TEMAS ────────────────────────
+         `.tj-paper` es la tarjeta del sitio: su texto se mide contra su
+         propio fondo, así que tiene que tapar lo que hay detrás. Se fuerzan
+         los dos temas sobre el mismo documento —lo mismo que hace el
+         conmutador: `data-theme` más la clase `dark`— y se mide en cada uno. */
       if (pantalla.nombre === "escritorio") {
         const papeles = await pagina.evaluate(async () => {
           const raiz = document.documentElement;
@@ -798,9 +790,7 @@ for (const pantalla of PANTALLAS) {
             const el = document.querySelector(".tj-paper:not(.tj-paper-dense)");
             salida[tema] = el
               ? {
-                  grano: getComputedStyle(el).backgroundImage !== "none",
                   tinte: getComputedStyle(el).backgroundColor,
-                  canto: getComputedStyle(el).boxShadow !== "none",
                 }
               : null;
           }
@@ -821,17 +811,13 @@ for (const pantalla of PANTALLAS) {
         for (const tema of ["light", "dark"]) {
           const p = papeles[tema];
           if (!p) {
-            avisos.push(`${etiqueta} (${tema}): ninguna superficie de papel que comprobar`);
+            avisos.push(`${etiqueta} (${tema}): ninguna tarjeta que comprobar`);
             continue;
           }
           papelesVistos.push(`${ruta} ${tema} tinte ${p.tinte}`);
-          if (!p.grano) {
-            fallos.push(
-              `${etiqueta} (tema ${tema}): el papel perdió su grano — la declaración no llega al elemento`
-            );
-          }
-          if (!p.canto) {
-            fallos.push(`${etiqueta} (tema ${tema}): el papel perdió su luz de borde`);
+          const alfa = /rgba?\([^)]*,\s*([\d.]+)\)$/.exec(p.tinte.replace(/\s*\/\s*/, ", "))?.[1];
+          if (p.tinte === "transparent" || (alfa !== undefined && p.tinte.startsWith("rgba") && Number(alfa) < 1)) {
+            fallos.push(`${etiqueta} (tema ${tema}): la tarjeta dejó de ser opaca (${p.tinte})`);
           }
         }
       }
