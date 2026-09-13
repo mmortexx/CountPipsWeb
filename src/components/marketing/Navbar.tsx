@@ -1213,7 +1213,7 @@ export function Navbar() {
                   aria-label={t("appName")}
                 >
                   <BrandMark />
-                  <span className="font-serif text-[17px] font-medium tracking-tight text-[var(--ink)]">
+                  <span className="text-[17px] font-semibold tracking-[-0.02em] text-[var(--ink)]">
                     {t("appName")}
                   </span>
                 </Link>
@@ -1405,7 +1405,7 @@ export function Navbar() {
                 <div className="mt-4 flex items-center gap-2 border-t border-[rgb(var(--divider)/0.06)] pt-3">
                   <BrandMark />
                   <div className="flex min-w-0 flex-col leading-tight">
-                    <span className="font-serif text-[13px] font-medium text-[var(--ink)]">
+                    <span className="text-[13px] font-semibold text-[var(--ink)]">
                       {t("appName")}
                     </span>
                     <span
