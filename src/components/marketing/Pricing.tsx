@@ -5,7 +5,6 @@ import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { Escritorio } from "@/components/tj/Escritorio";
-import { useLente } from "@/components/tj/useLente";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
@@ -185,13 +184,11 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
 
 function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   const isPro = plan.popular;
-  const lente = useLente("panel");
 
   return (
     <div
-      ref={lente}
       data-entra
-      className="tj-cristal relative flex h-full flex-col rounded-[22px] p-7 sm:p-9"
+      className="tj-cristal relative flex h-full flex-col rounded-[12px] p-7 sm:p-9"
     >
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-xl md:text-2xl font-semibold text-primary tracking-tight min-w-0 break-words">

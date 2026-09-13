@@ -8,7 +8,6 @@ import { sinPrefijoEn } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { ANIO_PUBLICACION } from "@/lib/publicacion";
-import { useLente } from "@/components/tj/useLente";
 
 /**
  * Navbar — barra edge-to-edge con material de papel translúcido (e-reader).
@@ -371,8 +370,6 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const lenteBarra = useLente("barra");
-  const lenteMenu = useLente("panel");
   const [mobileOpen, setMobileOpen] = useState(false);
   /* El cajón no existe hasta que alguien lo abre por primera vez, y a
      partir de ahí se queda montado para siempre.
@@ -690,7 +687,6 @@ export function Navbar() {
       <header data-navbar-root className="fixed inset-x-0 top-0 z-50">
       <nav
         aria-label={es ? "Principal" : "Main"}
-        ref={lenteBarra}
         className="tj-barra relative flex w-full items-center"
         data-cristal={scrolled ? "true" : "false"}
         style={{ height: ALTURA_BARRA }}
@@ -844,7 +840,6 @@ export function Navbar() {
                   biblioteca de animación a las 155 páginas del sitio. */}
               {megaOpen && (
                   <div
-                    ref={lenteMenu}
                     role="menu"
                     aria-labelledby="navbar-producto-trigger"
                     /* Navegación con flechas. Un menú abierto tiene que
@@ -882,7 +877,7 @@ export function Navbar() {
                     }}
                     // Cristal: la página se ve difuminada detrás. `position` en línea porque
                     // una regla posterior de globals.css pisaría la utilidad `absolute`.
-                    className="tj-cae tj-cristal tj-cristal--denso absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[16px] p-0"
+                    className="tj-cae tj-cristal tj-cristal--denso absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[8px] p-0"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",

@@ -4,7 +4,6 @@ import { useId, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n";
 import { Escritorio } from "@/components/tj/Escritorio";
-import { useLente } from "@/components/tj/useLente";
 import { INITIAL_BALANCE_CONST, METRICS } from "@/lib/trading/data";
 import { getRDistribution } from "@/lib/trading/fixtures";
 import { fmtDate, fmtMoney, fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
@@ -285,7 +284,6 @@ function Distribucion({ lang, es, enfoque }: { lang: Lang; es: boolean; enfoque:
 export function MetricsShowcaseNew({ enPagina = false, enPortada = false }: { enPagina?: boolean; enPortada?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
-  const lente = useLente("panel");
   const [vista, setVista] = useState<Vista>("curva");
   const [enfoque, setEnfoque] = useState<Enfoque>(null);
   const id = useId();
@@ -335,7 +333,7 @@ export function MetricsShowcaseNew({ enPagina = false, enPortada = false }: { en
   const contenido = (
     <div className="relative">
       <Escritorio className="tj-escritorio--ancho" />
-      <div ref={lente} className="tj-cristal tj-metricas relative">
+      <div className="tj-cristal tj-metricas relative">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className={enPagina ? "" : "max-w-[46rem]"}>
             {titulo}

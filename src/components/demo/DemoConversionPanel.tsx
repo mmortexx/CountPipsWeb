@@ -3,7 +3,6 @@
 import { Check, LockKeyhole } from "lucide-react";
 import { Reveal } from "@/components/tj/Reveal";
 import { Escritorio } from "@/components/tj/Escritorio";
-import { useLente } from "@/components/tj/useLente";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -14,7 +13,6 @@ import { useLang } from "@/lib/i18n";
 export function DemoConversionPanel() {
   const { lang } = useLang();
   const es = lang === "es";
-  const lente = useLente("panel");
 
   const steps = es
     ? [
@@ -57,9 +55,9 @@ export function DemoConversionPanel() {
           </Reveal>
 
           <div className="relative">
-            <aside ref={lente} className="tj-cristal relative rounded-[22px] p-6 sm:p-8">
+            <aside className="tj-cristal relative rounded-[12px] p-6 sm:p-8">
               <div className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-full bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">
+                <span className="grid size-10 place-items-center rounded-[6px] bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">
                   <LockKeyhole size={18} strokeWidth={1.6} aria-hidden />
                 </span>
                 <div>

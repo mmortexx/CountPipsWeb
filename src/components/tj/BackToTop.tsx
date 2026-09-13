@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { irArriba } from "@/lib/scroll";
 import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
-import { useLente } from "@/components/tj/useLente";
 
 /**
  * BackToTop — circular floating button with a scroll-progress ring.
@@ -115,7 +114,6 @@ export function BackToTop() {
      El efecto de abajo llama a `update()` nada más montar, así que el botón
      aparece igual de rápido; lo que ya no hace es contradecir al HTML. */
   const [visible, setVisible] = useState(false);
-  const lente = useLente("control");
   /* El botón no entra en el árbol hasta que el visitante baja lo
      suficiente para que tenga sentido, y entonces se queda. Montado
      desde el principio, su anillo de progreso en SVG viajaba en el HTML
@@ -256,12 +254,11 @@ export function BackToTop() {
             teclado se paraba en un botón invisible. */}
         <button
           type="button"
-          ref={lente}
           onClick={scrollToTop}
           aria-label={es ? "Volver arriba" : "Back to top"}
           data-visible={visible ? "true" : "false"}
           tabIndex={visible ? 0 : -1}
-          className="tj-emerge tj-subir pointer-events-auto relative w-11 h-11 rounded-full tj-cristal tj-cristal--denso tj-cristal--control flex items-center justify-center text-primary"
+          className="tj-emerge tj-subir pointer-events-auto relative w-11 h-11 rounded-full tj-cristal tj-cristal--denso flex items-center justify-center text-primary"
         >
               {/* Scroll-progress ring — SVG circle with a dash that fills
                   clockwise as the user scrolls. Rotated -90deg so 0% starts

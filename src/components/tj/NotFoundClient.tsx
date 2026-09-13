@@ -7,7 +7,6 @@ import { Search } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 import { Escritorio } from "@/components/tj/Escritorio";
-import { useLente } from "@/components/tj/useLente";
 
 /**
  * Custom 404 — full-screen premium error page.
@@ -30,7 +29,6 @@ import { useLente } from "@/components/tj/useLente";
  */
 export function NotFoundClient() {
   const { lang } = useLang();
-  const lente = useLente("control");
   const es = lang === "es";
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -111,7 +109,7 @@ export function NotFoundClient() {
           role="search"
           aria-label={es ? "Buscar en la web" : "Search the site"}
         >
-          <div ref={lente} className="tj-cristal relative rounded-full">
+          <div className="tj-cristal relative rounded-[8px]">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
               aria-hidden="true"
@@ -126,11 +124,11 @@ export function NotFoundClient() {
                   : "Search a metric or a question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              className="w-full h-14 rounded-full bg-transparent pl-11 pr-28 text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
+              className="w-full h-14 rounded-[8px] bg-transparent pl-11 pr-28 text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
             />
             <button
               type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-10 items-center rounded-full bg-[rgb(var(--accent-base))] px-5 text-[13px] font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
+              className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-10 items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-5 text-[13px] font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
             >
               {es ? "Buscar" : "Search"}
             </button>
@@ -145,7 +143,7 @@ export function NotFoundClient() {
             <li key={tile.href}>
               <Link
                 href={tile.href}
-                className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 rounded-[14px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
                 <span
                   className="tnum text-[12px] font-medium text-tertiary"
