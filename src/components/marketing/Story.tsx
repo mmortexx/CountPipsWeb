@@ -50,16 +50,16 @@ export function Story() {
       tag: es ? "Mes 6" : "Month 6",
       title: es ? "Romper el plan cuesta dinero" : "Breaking the plan costs money",
       desc: es
-        ? "Ves el coste de indisciplina en una cifra concreta. Cada vez que rompes tu plan, sabes cuánto te estás cobrando a ti mismo."
-        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you know exactly how much you're charging yourself.",
+        ? "Ves el coste de indisciplina en una cifra concreta. Cada vez que rompes tu plan, ves cuánto te estás cobrando a ti mismo."
+        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you see how much you're charging yourself.",
       tone: "accent",
     },
     {
       tag: es ? "Mes 12" : "Month 12",
       title: es ? "Tu operativa tiene forma" : "Your trading has shape",
       desc: es
-        ? "Tu curva de equity tiene pendiente. Tu playbook tiene muestra. Tú tienes un proceso — y eso es lo único que se sostiene en el tiempo."
-        : "Your equity curve has slope. Your playbook has sample. You have a process — and that's the only thing that holds up over time.",
+        ? "Sabes qué setups conservar y cuáles cortar. Tu playbook tiene muestra. Tienes un proceso que puedes revisar, y eso es lo único que se sostiene en el tiempo."
+        : "You know which setups to keep and which to cut. Your playbook has a sample. You have a process you can review, and that is the only thing that holds up over time.",
       tone: "pos",
     },
   ];

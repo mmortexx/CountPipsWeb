@@ -1084,17 +1084,6 @@
     padding-top: clamp(3rem, 6vw, 4.5rem);
   }
 
-  /* Container-query wrapper — establece un contexto de contenedor
-     inline-size para que los hijos puedan escalar (font-size, etc.)
-     según el ANCHO DE LA CARD, no del viewport. Crucial para los
-     números grandes de Wrapped, que se desbordaban en cards estrechas
-     (md:col-span-2 ≈ 1/3 del ancho) aunque el viewport fuera amplio. */
-  .cq-wrap {
-    container-type: inline-size;
-  }
-
-
-
   /* ── EN MÓVIL EL VELO NO PUEDE SER LATERAL ─────────────────────────
      El degradado de arriba protege la COLUMNA IZQUIERDA, que es donde
      vive el texto en escritorio, y se vuelve transparente al 52 % del
