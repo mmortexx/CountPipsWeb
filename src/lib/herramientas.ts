@@ -197,9 +197,9 @@ export const HERRAMIENTAS: Herramienta[] = [
     resaltaEs: "de tu bróker.",
     resaltaEn: "your broker.",
     subtituloEs:
-      "En futuros CME y Forex, las comisiones y el deslizamiento pueden comerse hasta el 40 % de tus ganancias. Introduce tus contratos y calcula el umbral de rentabilidad real por trade.",
+      "En futuros CME y Forex, las comisiones y el deslizamiento se comen parte de cada operación ganadora. Introduce tus contratos y calcula el umbral de rentabilidad real por trade.",
     subtituloEn:
-      "In CME futures and Forex, commissions and slippage can absorb up to 40% of gross profits. Enter your contracts and calculate the exact break-even threshold per trade.",
+      "In CME futures and Forex, commissions and slippage eat into every winning trade. Enter your contracts and calculate the break-even threshold per trade.",
     resumenEs: "El impacto real de las tarifas CME, spread y deslizamiento en tu cuenta.",
     resumenEn: "The real bottom-line impact of CME fees, spread and slippage on your trading.",
     descripcionEs:
