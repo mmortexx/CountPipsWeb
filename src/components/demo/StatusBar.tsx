@@ -16,7 +16,7 @@ import { fmtPct } from "@/lib/trading/format";
  * has three regions:
  *
  *   ┌──────────────────────────────────────────────────────────────────────┐
- *   │ ● Disciplina: 84 %        Guardado automático en tu equipo    v0.1.0 │
+ *   │ ● Disciplina: 84 %        Guardado automático en este navegador    v0.1.0 │
  *   └──────────────────────────────────────────────────────────────────────┘
  *
  *   LEFT    — discipline pip + "Disciplina: NN %" text. The
@@ -26,7 +26,7 @@ import { fmtPct } from "@/lib/trading/format";
  *             app shows (the real app's text + color are managed by
  *             RefreshRiskStatus() in code-behind; the demo uses a
  *             stable deterministic value).
- *   CENTER  — "Guardado automático en tu equipo" / "Auto-saved on your
+ *   CENTER  — "Guardado automático en este navegador" / "Auto-saved on your
  *             machine" (the real app's Status_DataNote resource,
  *             Strings/{es-ES,en-GB}/Resources.resw L31). Replaces the
  *             pre-R25-1a live mini-metrics ticker (cycling Net P&L /
