@@ -220,23 +220,6 @@ export function Story() {
             ))}
           </div>
 
-          {/* Coda */}
-          <Reveal delay={0.5}>
-            <div className="mt-8 pl-9">
-              <div className="flex items-center gap-2 text-sm text-primary font-medium">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M3 8h9M8 4l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                {es ? "Y la curva, por fin, sube." : "And the curve, finally, goes up."}
-              </div>
-            </div>
-          </Reveal>
         </div>
       </div>
     </section>

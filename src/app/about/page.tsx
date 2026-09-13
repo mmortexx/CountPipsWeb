@@ -6,7 +6,6 @@ import { Values } from "@/components/marketing/Values";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-import { BetaStatus } from "@/components/beta/BetaStatus";
 
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
@@ -108,12 +107,6 @@ export function AboutBody() {
 
       <Changelog />
 
-      {/* `Milestones` retirado: repetía en horizontal los cinco mismos
-          hitos que el Changelog acababa de contar dos pantallas antes
-          (v1.0, Playbook, Monte Carlo, Guardián, Importador). Dos líneas
-          de tiempo distintas para los mismos datos restan credibilidad
-          en vez de sumarla. El componente sigue en el repositorio. */}
-      <BetaStatus />
       <FinalCTANew />
       <TableOfContents />
     </>
