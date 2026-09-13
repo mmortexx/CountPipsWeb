@@ -5,7 +5,6 @@ import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { ProductPlate } from "@/components/tj/ProductPlate";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
-import { ArrowRight } from "lucide-react";
 
 /**
  * ProductShowcase — la sección que enseña el programa en la portada.
@@ -66,7 +65,7 @@ export function ProductShowcase() {
   return (
     <section
       id="producto"
-      className="section tj-banda relative overflow-clip border-y border-[var(--line)] bg-[var(--surface)]"
+      className="section tj-banda relative overflow-clip"
       aria-labelledby="producto-titulo"
     >
       <div className="tj-container">
@@ -116,9 +115,8 @@ export function ProductShowcase() {
         </div>
 
         <div className="mt-10">
-          <Link href="/demo" className="cta cta--primario">
+          <Link href="/demo" className="cta cta--secundario">
             {es ? "Recorrer la demo sin registro" : "Explore the demo, no sign-up"}
-            <ArrowRight size={16} aria-hidden />
           </Link>
         </div>
       </div>

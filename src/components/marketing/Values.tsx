@@ -113,7 +113,7 @@ export function Values() {
                   i % 2 === 1 ? "md:border-l md:pl-12" : "md:pr-12"
                 }`}
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-[6px] bg-[var(--chip)] text-primary" aria-hidden="true">
+                <span className="flex text-primary" aria-hidden="true">
                   {v.icon}
                 </span>
 

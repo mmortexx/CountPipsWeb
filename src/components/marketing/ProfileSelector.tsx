@@ -48,7 +48,7 @@ export function ProfileSelector() {
   ] as const;
 
   return (
-    <section className="section-tight border-t border-[var(--line)]" aria-labelledby="profile-selector-title">
+    <section className="section-tight" aria-labelledby="profile-selector-title">
       <div className="tj-container">
         <div className="max-w-2xl">
           <p className="eyebrow">{es ? "Elige tu recorrido" : "Choose your path"}</p>
@@ -60,8 +60,8 @@ export function ProfileSelector() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
-          {profiles.map((profile) => {
+        <div className="mt-12 grid md:grid-cols-2">
+          {profiles.map((profile, i) => {
             const Icon = profile.icon;
             return (
               <Link
@@ -69,19 +69,19 @@ export function ProfileSelector() {
                 href={profile.href}
                 data-entra="ciclo"
                 onClick={() => trackEvent("profile_selected", { profile: profile.id })}
-                className="group tj-paper tj-hoja relative flex flex-col overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-[rgb(var(--txt-primary)/0.35)] hover:shadow-[0_12px_32px_-16px_rgb(11_15_20/0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)]"
+                className={`group relative flex flex-col py-8 outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] ${
+                  i === 0 ? "md:pr-12" : "border-t border-[var(--line)] md:border-t-0 md:border-l md:pl-12"
+                }`}
               >
-                <div className="flex-1 p-7 sm:p-9">
-                  <p className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
-                    <Icon size={16} strokeWidth={1.75} aria-hidden className="text-primary" />
-                    {profile.eyebrow}
-                  </p>
-                  <h3 className="mt-5 text-[clamp(1.375rem,2vw,1.625rem)] leading-tight text-primary">{profile.title}</h3>
-                  <p className="mt-3 max-w-md text-[15px] leading-relaxed text-secondary">{profile.body}</p>
-                </div>
-                <span className="flex items-center justify-between border-t border-[var(--line)] px-7 py-4 text-[15px] font-medium text-primary sm:px-9">
+                <p className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+                  <Icon size={16} strokeWidth={1.75} aria-hidden className="text-primary" />
+                  {profile.eyebrow}
+                </p>
+                <h3 className="mt-5 text-[clamp(1.375rem,2vw,1.75rem)] leading-tight text-primary">{profile.title}</h3>
+                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-secondary">{profile.body}</p>
+                <span className="mt-6 inline-flex items-center gap-2 text-[15px] font-medium text-primary">
                   {profile.action}
-                  <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                  <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
                 </span>
               </Link>
             );

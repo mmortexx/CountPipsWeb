@@ -392,28 +392,22 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
       <section className="section">
         <div className="tj-container">
           <div className="tj-cierre">
-            <p className="eyebrow tj-cierre-tenue">{es ? "Siguiente paso" : "Next step"}</p>
-            <h2 className="t-h1 m-0 mt-5">
+            <h2 className="t-display m-0 mx-auto max-w-[20ch] text-balance">
               {es ? "Explora la app con datos de muestra." : "Explore the app with sample data."}{" "}
-              <span className="tj-cierre-tenue sm:block">{es ? "Después, solicita tu acceso." : "Then request your access."}</span>
+              <span className="tj-cierre-tenue">{es ? "Después, solicita tu acceso." : "Then request your access."}</span>
             </h2>
-            <div className="mt-10 grid gap-8 border-t border-[var(--line-2)] pt-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-16">
-              <p className="m-0 max-w-[36rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
-                {es ? "La demo es navegable y no pide registro. El piloto privado se concede por revisión de perfil, sin compromiso de compra." : "The demo is clickable and asks for no sign-up. The private pilot is granted by profile review, with no purchase commitment."}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link href="/demo" className="cta cta--primario">
-                  {es ? "Abrir la demo" : "Open the demo"}
-                  <ArrowRight size={16} aria-hidden />
-                </Link>
-                <Link href="/beta" className="cta cta--secundario">
-                  {es ? data.ctaEs : data.ctaEn}
-                </Link>
-              </div>
-            </div>
-            <p className="mt-8 max-w-[44rem] font-serif text-[clamp(1.125rem,1.6vw,1.375rem)] leading-snug text-white">
-              {es ? "No buscamos espectadores. Buscamos traders que quieran medir una decisión concreta." : "We are not looking for spectators. We are looking for traders willing to measure one concrete decision."}
+            <p className="mx-auto mt-6 mb-0 max-w-[34rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
+              {es ? "La demo es navegable y no pide registro. El piloto privado se concede por revisión de perfil, sin compromiso de compra." : "The demo is clickable and asks for no sign-up. The private pilot is granted by profile review, with no purchase commitment."}
             </p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+              <Link href="/demo" className="cta cta--primario">
+                {es ? "Abrir la demo" : "Open the demo"}
+                <ArrowRight size={16} aria-hidden />
+              </Link>
+              <Link href="/beta" className="cta cta--secundario">
+                {es ? data.ctaEs : data.ctaEn}
+              </Link>
+            </div>
           </div>
         </div>
       </section>

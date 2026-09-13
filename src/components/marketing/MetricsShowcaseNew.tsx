@@ -207,11 +207,7 @@ export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } 
         {/* Distribución de R */}
         <div
           data-entra
-          className="tj-paper relative rounded-[4px]"
-          style={{
-            padding: 24,
-            border: "1px solid var(--line-2)",
-          }}
+          className="relative lg:pl-8"
         >
           <div className="flex items-center justify-between mb-8">
             <span
@@ -222,14 +218,7 @@ export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } 
             </span>
             <span
               className="tnum"
-              style={{
-                fontSize: 11,
-                padding: "4px 9px",
-                borderRadius: 4,
-                background: "var(--chip)",
-                color: "rgb(var(--accent-base))",
-                border: "1px solid var(--chip-line)",
-              }}
+              style={{ fontSize: 12, color: "var(--ink-3)" }}
             >
               {/* El recuento sale de la propia muestra. Estaba fijo en
                   «60» sobre un conjunto de 200 operaciones: el rótulo que

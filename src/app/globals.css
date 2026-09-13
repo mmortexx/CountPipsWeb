@@ -2923,37 +2923,42 @@ button.icon-btn:hover > svg,
 .cta--primario:hover {
   background: rgb(var(--accent-hover));
 }
+/* La secundaria no compite: es texto con flecha, sin caja. */
 .cta--secundario {
+  padding: 0 0.25rem;
+  border: 0;
   color: var(--ink);
-  border-color: var(--line-2);
   background: transparent;
+  font-weight: 500;
+}
+.cta--secundario::after {
+  content: "→";
+  transition: transform 160ms var(--ease-suave);
 }
 .cta--secundario:hover {
-  border-color: rgb(var(--divider) / 0.4);
-  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  color: var(--ink-2);
+}
+.cta--secundario:hover::after {
+  transform: translateX(3px);
 }
 @media (max-width: 480px) {
-  .cta {
+  .cta--primario {
     width: 100%;
   }
 }
 
 /* ---- Pestañas de pantalla (control segmentado) ---------------------- */
+/* Pestañas como texto subrayado: sin cápsula ni fondo. */
 .tj-pestanas {
   display: flex;
   width: fit-content;
   max-width: 100%;
-  gap: 2px;
-  padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface-2);
+  gap: 1.75rem;
 }
 .tj-pestanas > [role="tab"] {
   flex: none;
   min-height: 36px;
-  padding: 0 0.875rem;
-  border-radius: 6px;
+  padding: 0;
   font-size: 14px;
   font-weight: 500;
   color: var(--ink-2);
@@ -2964,9 +2969,8 @@ button.icon-btn:hover > svg,
   color: var(--ink);
 }
 .tj-pestanas > [role="tab"][aria-selected="true"] {
-  background: var(--raised);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgb(11 15 20 / 0.08), 0 0 0 1px var(--line);
+  box-shadow: inset 0 -1.5px 0 var(--ink);
 }
 .tj-pestanas > [role="tab"]:focus-visible {
   outline: 2px solid rgb(var(--accent-base) / 0.6);
@@ -2978,33 +2982,26 @@ button.icon-btn:hover > svg,
   }
 }
 
-/* ---- Bloque de cierre: tinta invertida ---------------------------- */
+/* ---- Bloque de cierre: sobre el propio fondo, con un halo que lo funde - */
 .tj-cierre {
-  --accent-base: 255 255 255;
-  --accent-hover: 226 230 234;
-  --accent-ink: 11 15 20;
-  --ink: #ffffff;
-  --line-2: rgba(255, 255, 255, 0.24);
-  --bg: #0b0f14;
-  padding: clamp(2.5rem, 6vw, 5rem);
-  border-radius: 8px;
-  background: #0b0f14;
-  color: #ffffff;
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(2rem, 5vw, 4rem);
+  text-align: center;
 }
-:root:not([data-theme="light"]) .tj-cierre {
-  background: #141920;
-  box-shadow: inset 0 0 0 1px rgba(236, 239, 242, 0.08);
-}
-.tj-cierre h2 {
-  color: #ffffff;
+.tj-cierre::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -30% calc(50% - 50vw) -40%;
+  background: radial-gradient(60% 55% at 50% 60%, var(--surface), transparent 72%);
+  pointer-events: none;
 }
 .tj-cierre-tenue {
-  color: #a9b1ba;
+  color: var(--ink-2);
 }
-:root:not([data-theme="light"]) .tj-cierre {
-  --bg: #161a20;
-  background: #161a20;
-  box-shadow: inset 0 0 0 1px rgba(236, 239, 242, 0.08);
+.section:has(> .tj-container > .tj-cierre) {
+  overflow-x: clip;
 }
 
 /* ---- La captura del producto en la portada ------------------------- */
@@ -3015,30 +3012,27 @@ button.icon-btn:hover > svg,
 .tj-banda + .section-tight {
   padding-top: var(--ritmo-3);
 }
+/* La banda no corta: entra y sale del fondo con un degradado. */
 .section.tj-banda {
   padding-bottom: var(--ritmo-3);
+  background: linear-gradient(to bottom, transparent, var(--surface) 22%, var(--surface) 78%, transparent);
 }
+/* Halo detrás de la captura: la luz sale del producto, no de una banda. */
 .tj-hero::before {
   content: "";
   position: absolute;
   inset: auto 0 0 0;
-  height: clamp(14rem, 34vw, 26rem);
-  background: var(--surface);
-  border-bottom: 1px solid var(--line);
+  height: clamp(18rem, 44vw, 34rem);
+  background: radial-gradient(70% 60% at 50% 45%, var(--surface), transparent 75%);
   pointer-events: none;
 }
+/* Sin marco ni sombra: la captura se disuelve hacia el fondo por abajo. */
 .tj-hero-producto {
   margin-inline: 0;
-  border: 1px solid var(--line-2);
-  border-radius: 6px;
   overflow: hidden;
-  background: var(--surface);
-  box-shadow:
-    0 1px 2px rgb(11 15 20 / 0.04),
-    0 24px 64px -24px rgb(11 15 20 / 0.22);
-}
-:root:not([data-theme="light"]) .tj-hero-producto {
-  box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.7);
+  border-radius: 10px 10px 0 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 58%, transparent 98%);
 }
 /* Las capturas traen el filo de la ventana de Windows: se recorta bajo el
    marco para que no haya dos bordes. */
@@ -3080,13 +3074,11 @@ button.icon-btn:hover > svg,
   gap: 0;
 }
 .tj-lamina-marco {
-  border: 1px solid var(--line-2);
-  border-radius: 6px;
   overflow: hidden;
-  background: var(--raised);
-  box-shadow:
-    0 1px 2px rgb(11 15 20 / 0.04),
-    0 24px 64px -28px rgb(11 15 20 / 0.22);
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--line);
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
 }
 .tj-lamina-ventana {
   line-height: 0;

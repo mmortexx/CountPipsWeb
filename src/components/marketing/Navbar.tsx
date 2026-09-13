@@ -690,7 +690,7 @@ export function Navbar() {
         className="tj-paper tj-paper-dense relative flex w-full items-center border-b"
         style={{
           height: ALTURA_BARRA,
-          borderColor: "var(--line)",
+          borderColor: scrolled ? "var(--line)" : "transparent",
           boxShadow: scrolled
             ? "0 8px 24px -20px rgb(11 15 20 / 0.35)"
             : "none",
@@ -1330,7 +1330,7 @@ export function Navbar() {
                     aria-label={es ? "Cambiar tema" : "Toggle theme"}
                     title={es ? "Cambiar tema" : "Toggle theme"}
                     data-theme-toggle
-                    className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[4px] border bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                    className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   >
                     <span
                       key={theme}
@@ -1438,7 +1438,7 @@ function IconButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`grid flex-none cursor-pointer place-items-center rounded-[4px] border bg-transparent text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${className}`}
+      className={`grid flex-none cursor-pointer place-items-center rounded-[4px] border-0 bg-transparent text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${className}`}
       style={{ width: 36, height: 36 }}
       {...extraProps}
     >
@@ -1516,7 +1516,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
         aria-expanded={open}
         aria-label={es ? "Cambiar idioma" : "Change language"}
         title={es ? "Cambiar idioma" : "Change language"}
-        className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
+        className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
       >
         <GlobeIcon />
         <span className="tnum">{actual.code2}</span>
