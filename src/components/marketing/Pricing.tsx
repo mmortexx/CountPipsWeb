@@ -4,6 +4,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
+import { Escritorio } from "@/components/tj/Escritorio";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
@@ -142,12 +143,15 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
           )}
         </Reveal>
 
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 max-w-[60rem] mx-auto items-stretch">
-          {plans.map((plan, i) => (
-            <Reveal key={plan.id} delay={0.12 + i * 0.08} y={32} className="h-full">
+        <div className="relative mt-10">
+          <Escritorio curva className="tj-escritorio--ancho" />
+          <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 max-w-[60rem] mx-auto items-stretch">
+          {plans.map((plan) => (
+            <div key={plan.id} className="h-full">
               <PlanCard plan={plan} es={es} />
-            </Reveal>
+            </div>
           ))}
+        </div>
         </div>
 
 
@@ -184,9 +188,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   return (
     <div
       data-entra
-      className={`relative flex h-full flex-col rounded-[14px] p-7 sm:p-9 ${
-        "bg-[var(--surface)]"
-      }`}
+      className="tj-cristal relative flex h-full flex-col rounded-[22px] p-7 sm:p-9"
     >
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-xl md:text-2xl font-semibold text-primary tracking-tight min-w-0 break-words">

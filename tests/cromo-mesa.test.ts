@@ -145,8 +145,7 @@ describe("Cromo de mesa", () => {
     expect(status).toMatch(/w-2 h-2 rounded-\[1px\]/);
     expect(marca).not.toMatch(/forex: "rounded-full"/);
     expect(marca).toMatch(/clip-path:polygon/);
-    expect(cookies).not.toMatch(/rounded-t-\[12px\]/);
-    expect(cookies).toMatch(/rounded-t-\[2px\]/);
+    expect(cookies).toMatch(/tj-cristal/);
     expect(chip).not.toMatch(/`pill /);
     expect(chip).toMatch(/rounded-\[4px\]/);
     expect(sesiones).not.toMatch(/MotionPingDot/);

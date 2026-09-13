@@ -2898,23 +2898,14 @@ button.icon-btn:hover > svg,
 /* ---- Bloque de cierre: sobre el propio fondo, con un halo que lo funde - */
 .tj-cierre {
   position: relative;
-  isolation: isolate;
-  padding-block: clamp(2rem, 5vw, 4rem);
+  max-width: 68rem;
+  margin-inline: auto;
+  padding: clamp(3rem, 7vw, 5.5rem) clamp(1.25rem, 5vw, 4rem);
+  border-radius: clamp(20px, 2.4vw, 32px);
   text-align: center;
-}
-.tj-cierre::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  inset: -30% calc(50% - 50vw) -40%;
-  background: radial-gradient(60% 55% at 50% 60%, var(--surface), transparent 72%);
-  pointer-events: none;
 }
 .tj-cierre-tenue {
   color: var(--ink-2);
-}
-.section:has(> .tj-container > .tj-cierre) {
-  overflow-x: clip;
 }
 
 /* ---- La captura del producto en la portada ------------------------- */
@@ -2931,21 +2922,33 @@ button.icon-btn:hover > svg,
   background: linear-gradient(to bottom, transparent, var(--surface) 22%, var(--surface) 78%, transparent);
 }
 /* Halo detrás de la captura: la luz sale del producto, no de una banda. */
-.tj-hero::before {
-  content: "";
-  position: absolute;
-  inset: auto 0 0 0;
-  height: clamp(18rem, 44vw, 34rem);
-  background: radial-gradient(70% 60% at 50% 45%, var(--surface), transparent 75%);
-  pointer-events: none;
+.tj-hero {
+  overflow-x: clip;
 }
-/* Sin marco ni sombra: la captura se disuelve hacia el fondo por abajo. */
+/* La ventana se apoya en un bisel de cristal sobre luz difusa, como la app
+   sobre el escritorio, y se disuelve hacia el fondo por abajo. */
 .tj-hero-producto {
+  position: relative;
   margin-inline: 0;
-  overflow: hidden;
-  border-radius: 10px 10px 0 0;
+  padding: clamp(6px, 0.8vw, 11px) clamp(6px, 0.8vw, 11px) 0;
+  border-radius: clamp(14px, 1.6vw, 22px) clamp(14px, 1.6vw, 22px) 0 0;
   -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 98%);
   mask-image: linear-gradient(to bottom, #000 58%, transparent 98%);
+}
+.tj-hero-producto > picture {
+  display: block;
+  overflow: hidden;
+  border-radius: clamp(8px, 1vw, 12px) clamp(8px, 1vw, 12px) 0 0;
+}
+.tj-hero-producto > .tj-captura--clara,
+:root[data-theme="light"] .tj-hero-producto > .tj-captura--oscura {
+  display: none;
+}
+:root[data-theme="light"] .tj-hero-producto > .tj-captura--clara {
+  display: block;
+}
+.tj-escritorio--hero {
+  inset: -14% calc(50% - 50vw) 18%;
 }
 /* Las capturas traen el filo de la ventana de Windows: se recorta bajo el
    marco para que no haya dos bordes. */
@@ -3186,6 +3189,137 @@ button.icon-btn:hover > svg,
 }
 :root:not([data-theme="light"]) .tj-hoja--pliego {
   box-shadow: 0 18px 44px -28px rgb(0 0 0 / 0.8);
+}
+
+/* ============================================================
+   CRISTAL — el acrílico de la app de escritorio
+   ============================================================
+   Mismos ingredientes que el AcrylicBrush de la app: lo de detrás
+   difuminado y saturado, un tinte frío encima, grano muy fino y un filo
+   de luz arriba. El claro aclara el #E9EFF3 de la app porque aquí el
+   fondo es blanco; el oscuro usa su #0C1116. Sin nada detrás que
+   difuminar el cristal no se nota: por eso va sobre `.tj-escritorio`
+   o sobre la página que pasa bajo la barra. */
+:root {
+  --cristal-tinte: 246 248 250;
+  --cristal-alfa: 0.58;
+  --cristal-alfa-denso: 0.8;
+  --cristal-blur: 30px;
+  --cristal-saturacion: 175%;
+  --cristal-filo: rgb(255 255 255 / 0.85);
+  --cristal-canto: rgb(11 15 20 / 0.055);
+  --cristal-sombra: 0 1px 2px rgb(11 15 20 / 0.04), 0 28px 64px -36px rgb(11 15 20 / 0.3);
+  --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --luz-1: 173 199 227;
+  --luz-2: 208 196 236;
+  --luz-3: 186 226 208;
+  --luz-alfa: 0.55;
+  --curva: rgb(11 15 20 / 0.16);
+}
+:root:not([data-theme="light"]) {
+  --cristal-tinte: 12 17 22;
+  --cristal-alfa: 0.55;
+  --cristal-alfa-denso: 0.78;
+  --cristal-saturacion: 150%;
+  --cristal-filo: rgb(255 255 255 / 0.075);
+  --cristal-canto: rgb(255 255 255 / 0.045);
+  --cristal-sombra: 0 30px 70px -38px rgb(0 0 0 / 0.9);
+  --luz-1: 52 88 138;
+  --luz-2: 92 68 150;
+  --luz-3: 30 112 92;
+  --luz-alfa: 0.34;
+  --curva: rgb(236 239 242 / 0.2);
+}
+.tj-cristal,
+.tj-barra[data-cristal="true"]::before {
+  background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa));
+  background-image: var(--cristal-grano);
+  -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
+  backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
+}
+.tj-cristal {
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0 var(--cristal-filo),
+    inset 0 0 0 1px var(--cristal-canto),
+    var(--cristal-sombra);
+}
+.tj-cristal--denso {
+  background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa-denso));
+}
+
+/* La barra: opaca arriba del todo, cristal en cuanto la página pasa por
+   debajo. El material va en `::before` para que la barra no se vuelva
+   raíz de difuminado y el menú que cuelga de ella siga viendo la página. */
+.tj-barra {
+  isolation: isolate;
+}
+.tj-barra::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg);
+  transition: background-color 0.3s var(--ease-suave);
+}
+.tj-barra[data-cristal="true"]::before {
+  background-color: rgb(var(--cristal-tinte) / 0.72);
+}
+
+/* El fondo de escritorio: tres luces frías y difusas que se funden con la
+   página arriba y abajo, y una curva de capital opcional. */
+.tj-escritorio {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(38% 58% at 18% 48%, rgb(var(--luz-1) / var(--luz-alfa)), transparent 70%),
+    radial-gradient(34% 52% at 82% 56%, rgb(var(--luz-2) / var(--luz-alfa)), transparent 70%),
+    radial-gradient(28% 40% at 52% 22%, rgb(var(--luz-3) / calc(var(--luz-alfa) * 0.8)), transparent 72%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+}
+.tj-escritorio-curva {
+  position: absolute;
+  top: 26%;
+  left: 0;
+  width: 100%;
+  height: 54%;
+}
+.tj-escritorio-curva path {
+  fill: none;
+  stroke: var(--curva);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+.tj-escritorio--ancho {
+  inset: -8% calc(50% - 50vw) 4%;
+}
+
+@media (max-width: 640px) {
+  :root {
+    --cristal-blur: 20px;
+  }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .tj-cristal,
+  .tj-barra[data-cristal="true"]::before {
+    background-color: rgb(var(--cristal-tinte) / 0.96);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .tj-cristal,
+  .tj-barra[data-cristal="true"]::before {
+    background-color: var(--raised);
+    background-image: none;
+  }
+  .tj-barra[data-cristal="true"]::before {
+    background-color: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 /* ============================================================

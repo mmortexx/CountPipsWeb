@@ -258,7 +258,7 @@ export function BackToTop() {
           aria-label={es ? "Volver arriba" : "Back to top"}
           data-visible={visible ? "true" : "false"}
           tabIndex={visible ? 0 : -1}
-          className="tj-emerge tj-subir pointer-events-auto relative w-11 h-11 rounded-full bg-[var(--raised)] shadow-[0_1px_2px_rgb(11_15_20/0.08),0_6px_16px_-6px_rgb(11_15_20/0.2)] flex items-center justify-center text-primary"
+          className="tj-emerge tj-subir pointer-events-auto relative w-11 h-11 rounded-full tj-cristal tj-cristal--denso flex items-center justify-center text-primary"
         >
               {/* Scroll-progress ring — SVG circle with a dash that fills
                   clockwise as the user scrolls. Rotated -90deg so 0% starts

@@ -1,5 +1,6 @@
 "use client";
 
+import { Escritorio } from "@/components/tj/Escritorio";
 import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight, Check } from "lucide-react";
 import { useLang } from "@/lib/i18n";
@@ -62,7 +63,8 @@ export function Hero() {
       </div>
 
       <div className="tj-container relative mt-[clamp(3rem,5vw,4rem)]">
-        <figure className="tj-hero-producto">
+        <Escritorio className="tj-escritorio--ancho tj-escritorio--hero" />
+        <figure className="tj-hero-producto tj-cristal">
           {[
             { clase: "tj-captura--oscura", sufijo: "-oscuro" },
             { clase: "tj-captura--clara", sufijo: "" },
