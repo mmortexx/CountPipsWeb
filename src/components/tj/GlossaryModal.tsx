@@ -303,7 +303,7 @@ export function GlossaryModal({
                   setActiveCat(e.target.value as GlossaryCategory | "all")
                 }
                 aria-label={es ? "Filtrar por categoría" : "Filter by category"}
-                className="appearance-none bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[2px] h-9 pl-3 pr-8 text-sm text-secondary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.30)] cursor-pointer"
+                className="appearance-none bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[4px] h-9 pl-3 pr-8 text-sm text-secondary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.30)] cursor-pointer"
               >
                 {GLOSSARY_CATEGORIES.map((c) => (
                   <option key={c.id} value={c.id} className="bg-background text-primary">
@@ -343,7 +343,7 @@ export function GlossaryModal({
           {/* Recently viewed — last 3 expanded terms, persisted in localStorage */}
           {recentTerms.length > 0 && (
             <div className="mb-4">
-              <div className="flex items-center gap-1.5 mb-2 text-[11px] uppercase tracking-[0.12em] text-tertiary font-semibold">
+              <div className="flex items-center gap-1.5 mb-2 text-[12px] uppercase tracking-[0.08em] text-tertiary font-semibold">
                 <Clock className="size-3" aria-hidden="true" />
                 {es ? "Vistos recientemente" : "Recently viewed"}
               </div>
@@ -420,7 +420,7 @@ export function GlossaryModal({
                          de una caja de 670, 1.198 escondidos de lado, y la
                          definicion cortada a media palabra contra el canto
                          en vez de con sus puntos suspensivos. */
-                      "tj-paper tj-paper-dense min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.16)] p-4 transition-[border-color,box-shadow,background-color] cursor-pointer",
+                      "tj-paper tj-paper-dense min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.16)] p-4 transition-[border-color,box-shadow,background-color] cursor-pointer",
                       isActive
                         ? "border-[rgb(var(--divider)/0.30)] ring-1 ring-[rgb(var(--divider)/0.20)] bg-[rgb(var(--divider)/0.06)] shadow-[0_0_28px_-8px_rgb(var(--divider)/0.18)]"
                         : "hover:border-[rgb(var(--divider)/0.25)]",
@@ -465,7 +465,7 @@ export function GlossaryModal({
           )}
 
           {/* Keyboard hint footer */}
-          <p className="mt-4 text-[11px] text-tertiary text-center">
+          <p className="mt-4 text-[12px] text-tertiary text-center">
             {es
               ? "Usa ↑ ↓ para navegar y Enter para expandir."
               : "Use ↑ ↓ to navigate and Enter to expand."}

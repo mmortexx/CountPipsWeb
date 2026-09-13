@@ -87,35 +87,8 @@ describe("Dimension D6: Performance, SSG & Hydration", () => {
       expect(layoutCode).toContain("variable: \"--font-sans\"");
     });
 
-    it("D6-T1-4: Pure CSS GPU-accelerated ticker marquee animation (.tj-cinta & translate3d)", () => {
+    it("D6-T1-5: Containment & layout-shift prevention (content-visibility)", () => {
       const css = leer("src/app/globals.css");
-      const tickerCode = leer("src/components/marketing/Ticker.tsx");
-
-      // 1. globals.css keyframe definitions
-      expect(css).toContain("@keyframes tj-cinta-corre");
-      expect(css).toContain("transform: translate3d(0, 0, 0)");
-      expect(css).toContain("transform: translate3d(-50%, 0, 0)");
-      expect(css).toContain("will-change: transform");
-
-      // 2. Pause on hover
-      expect(css).toContain(".tj-cinta-caja:hover .tj-cinta");
-      expect(css).toContain("animation-play-state: paused");
-
-      // 3. prefers-reduced-motion override in CSS
-      expect(css).toContain("@media (prefers-reduced-motion: reduce)");
-      expect(css).toContain("animation: none");
-
-      // 4. Ticker.tsx uses CSS class
-      expect(tickerCode).toContain("tj-cinta");
-    });
-
-    it("D6-T1-5: Containment & layout-shift prevention (content-visibility & contain-intrinsic-size)", () => {
-      const tickerCode = leer("src/components/marketing/Ticker.tsx");
-      const css = leer("src/app/globals.css");
-
-      // Ticker contains intrinsic size declaration to avoid layout shifts when scrolling
-      expect(tickerCode).toContain("[content-visibility:auto]");
-      expect(tickerCode).toContain("[contain-intrinsic-size:auto_54px]");
 
       // globals.css defines cv-auto utilities for lazy rendering of offscreen sections
       expect(css).toContain("content-visibility: auto");

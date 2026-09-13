@@ -20,7 +20,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Discipline that acts, not lectures",
   description:
-    "The Guardian stops the mistake before it happens: it blocks sizes over your risk, forces you to respect the plan, and audits every exception.",
+    "The Guardian measures every trade against your rules with a risk light and, if you turn it on, a hard brake stops accepting new trades when you hit your limit.",
   url: `${SITE_URL}/en/features/disciplina/`,
   mainEntityOfPage: `${SITE_URL}/en/features/disciplina/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -42,14 +42,14 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: { absolute: "Discipline — CountPips" },
   description:
-    "The Guardian stops mistakes before they happen: blocking excessive sizes, enforcing trade plans, and auditing exceptions. Indiscipline measured in money.",
+    "The Guardian measures every trade against your rules with a risk light and, if you turn it on, a hard brake stops accepting new trades when you hit your limit. Indiscipline measured in money.",
   alternates: {
     canonical: `${SITE_URL}/en/features/disciplina/`,
     languages: hreflangDe("/features/disciplina"),
   },
   openGraph: {
     title: "Discipline — CountPips",
-    description: "The Guardian stops the mistake before it happens. Discipline that acts, not lectures.",
+    description: "A risk light and an optional hard brake. Discipline that acts, not lectures.",
     url: `${SITE_URL}/en/features/disciplina/`,
     type: "website",
     siteName: "CountPips",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Discipline — CountPips",
-    description: "The Guardian stops the mistake before it happens. Discipline that acts, not lectures.",
+    description: "A risk light and an optional hard brake. Discipline that acts, not lectures.",
   },
 };
 

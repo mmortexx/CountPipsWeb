@@ -77,12 +77,6 @@ function cssAplicado(): string {
   return soloCodigo(readFileSync(GLOBALS, "utf8"));
 }
 
-/** Cuerpo de la regla de `.bg-veil` bajo la paleta que el sitio fuerza. */
-function reglasDelVelo(): string[] {
-  return [...cssAplicado().matchAll(/\[data-palette="clasico"\][^{]*\.bg-veil[^{]*\{([^}]*)\}/g)]
-    .map(([, cuerpo]) => cuerpo);
-}
-
 describe("cero degradados", () => {
   /* Una máscara NO es un degradado de pintura: recorta, no colorea. Y el
      relleno de la pista de un `input[type=range]` tampoco, aunque use la
@@ -154,36 +148,13 @@ describe("papel, no cristal", () => {
   });
 });
 
-describe("un valor, un sitio", () => {
-  it("el velo de la paleta clásica se declara una sola vez", () => {
-    /* Se cuentan los BLOQUES que declaran fondo de `.bg-veil` bajo la
-       paleta clásica. Fueron cuatro a la vez, con valores en conflicto y
-       dos de ellos muertos por especificidad; el que ganaba se sumaba al
-       degradado del otro y el atlas acababa tapado al 97 %. */
-    const conFondo = reglasDelVelo().filter((c) => /background(-color|-image)?:/.test(c));
-    expect(conFondo.length, "el velo vuelve a declararse en varios sitios").toBe(1);
-  });
-
-  it("el velo no pinta color plano Y degradado a la vez", () => {
-    const [cuerpo = ""] = reglasDelVelo();
-    /* Dos capas translúcidas no se promedian: se multiplican. Si alguien
-       vuelve a poner un `background-color` con color junto al degradado,
-       la opacidad real deja de ser la que dice el comentario — que es
-       literalmente lo que pasó, y por eso existe esta prueba.
-
-       Se compara el VALOR, no un lookahead: `\s*(?!transparent)` casa con
-       "background-color: transparent" por retroceso del cuantificador, y
-       una prueba que da un falso positivo sobre el arreglo que vigila no
-       vigila nada. */
-    /* Se miran TODAS las declaraciones de color de la regla, no la
-       primera: dentro del mismo bloque había una al 88 % que la de abajo
-       anulaba, y una declaración muerta a tres líneas de la viva es
-       precisamente cómo empezó este lío. */
-    const colores = [...cuerpo.matchAll(/background-color:\s*([^;]+)/g)].map((m) => m[1].trim());
-    const color = colores.join(" + ");
-    const colorPlano = colores.some((c) => c !== "transparent");
-    const imagen = /background-image:\s*linear-gradient/.test(cuerpo);
-    expect(colorPlano && imagen, `el velo tiene otra vez dos capas de tinta (${color})`).toBe(false);
+describe("fondo limpio", () => {
+  it("no vuelven el atlas de fondo, las pausas de lámina ni los velos que lo compensaban", () => {
+    const css = cssAplicado();
+    for (const clase of ["tj-engraved-atlas", "tj-interlude", "tj-margin-rules", "tj-luz", "bg-veil {"]) {
+      expect(css, `vuelve \`.${clase}\` a globals.css`).not.toContain(`.${clase}`);
+    }
+    expect(css, "vuelve el grano sobre el body").not.toMatch(/body::before\s*\{/);
   });
 });
 
@@ -300,11 +271,11 @@ describe("una sola forma de decir «todavía no»", () => {
     expect(soloCodigo(src)).not.toMatch(/variant=["']warn["']/);
   });
 
-  it("el trazo del sello es discontinuo, que es donde está el significado", () => {
+  it("el sello tiene canto propio y no atenúa lo que envuelve", () => {
     const css = cssAplicado();
     const regla = /\.sello-previsto\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
-    expect(regla, "el sello ha perdido su línea de trazos").toMatch(/border:[^;]*dashed/);
-    /* Y no atenúa lo que envuelve: lo previsto no está deshabilitado. */
+    expect(regla, "el sello ha perdido su canto").toMatch(/border:/);
+    /* Lo previsto no está deshabilitado. */
     expect(regla).not.toMatch(/opacity:\s*0?\.\d/);
   });
 });

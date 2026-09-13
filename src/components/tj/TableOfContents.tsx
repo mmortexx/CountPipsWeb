@@ -48,7 +48,7 @@ export function TableOfContents() {
     // heading here would create a hydration mismatch in React.
     const allSections = Array.from(document.querySelectorAll("section"));
     // Drop the last 2 sections: FinalCTANew + the FeaturePageNav section.
-    // (FeaturePageNav has class bg-veil and contains "Sigue explorando" /
+    // (FeaturePageNav has class and contains "Sigue explorando" /
     // "Keep exploring" text — we detect it by that signature.)
     const contentSections = allSections.filter((sec) => {
       const txt = sec.textContent || "";
@@ -132,8 +132,8 @@ export function TableOfContents() {
       aria-label={es ? "Índice de la página" : "On this page"}
       className="fixed right-[22px] top-1/2 z-30 hidden -translate-y-1/2 2xl:block"
     >
-      <div className="tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] p-3.5 max-w-[200px] border border-[rgb(var(--divider)/0.1)]">
-        <span className="tnum block text-[9.5px] uppercase tracking-[0.18em] text-tertiary font-semibold mb-2.5 px-1">
+      <div className="tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] p-3.5 max-w-[200px] border border-[rgb(var(--divider)/0.1)]">
+        <span className="tnum block text-[11px] uppercase tracking-[0.08em] text-tertiary font-semibold mb-2.5 px-1">
           {es ? "En esta página" : "On this page"}
         </span>
         <ul className="flex flex-col gap-0.5">
@@ -145,7 +145,7 @@ export function TableOfContents() {
                   href={`#${item.id}`}
                   onClick={(e) => handleClick(e, item.id)}
                   aria-current={active ? "location" : undefined}
-                  className={`group flex items-start gap-2 rounded-[2px] px-2 py-1.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-1 focus-visible:ring-offset-transparent ${
+                  className={`group flex items-start gap-2 rounded-[4px] px-2 py-1.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-1 focus-visible:ring-offset-transparent ${
                     active ? "bg-[rgb(var(--divider)/0.06)]" : "hover:bg-[rgb(var(--divider)/0.03)]"
                   }`}
                 >
@@ -160,7 +160,7 @@ export function TableOfContents() {
                     }}
                   />
                   <span
-                    className={`text-[11px] leading-[1.4] transition-colors duration-150 ${
+                    className={`text-[12px] leading-[1.4] transition-colors duration-150 ${
                       active
                         ? "text-primary font-medium"
                         : "text-tertiary group-hover:text-secondary"

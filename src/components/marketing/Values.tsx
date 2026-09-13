@@ -10,28 +10,8 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
  * honesta, disciplina por encima de métricas, y hecho por alguien que
  * opera. Retícula 2×2 de filetes —no de tarjetas— con su marca, su
  * afirmación, y el sitio donde el visitante puede ir a comprobarla.
- *
- * Movimiento: las cuatro entran escalonadas y el filete de acento del
- * lateral crece al pasar por encima. Nada se levanta: una declaración de
- * principios no es un objeto que se coge.
  */
 
-/* ── FUERA EL «01 / 04» ────────────────────────────────────────────────
-   Cada asiento llevaba un contador. Un contador dice «ésta es la primera
-   de cuatro», que es exactamente lo que el lector ya está viendo: cuatro
-   bloques, uno detrás de otro. No añade nada, y encima insinúa un ORDEN
-   —primero esto, luego aquello— que aquí no existe: son cuatro ideas
-   independientes, no cuatro pasos.
-
-   Lo que sí falta en su lugar es lo que promete el pie de la sección:
-   «No son eslóganes. Son decisiones de producto.» Una decisión de
-   producto se puede ir a ver. Así que el rótulo pasa a ser DÓNDE SE
-   COMPRUEBA cada principio, con su enlace: cuatro afirmaciones y cuatro
-   sitios donde el visitante puede ir a contrastarlas.
-
-   Con eso el rótulo deja de decorar —codifica algo que el lector no
-   podía deducir— y la sección deja de ser un callejón sin salida: era la
-   penúltima de la portada y no llevaba a ninguna parte. */
 interface Value {
   titleEs: string;
   titleEn: string;
@@ -50,9 +30,9 @@ const VALUES: Value[] = [
     titleEs: "Local siempre",
     titleEn: "Local always",
     descEs:
-      "Tus operaciones son tuyas. Punto. No salen de tu equipo; la analítica de esta web sólo se activa con tu consentimiento.",
+      "Tus operaciones son tuyas. Viven en tu equipo y solo salen si activas una función que lo necesita; la analítica de esta web solo se activa con tu consentimiento.",
     descEn:
-      "Your trading data is yours. Period. It stays on your machine; this site's analytics only activates with your consent.",
+      "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it; this site's analytics only activates with your consent.",
     href: "/features/seguridad",
     pruebaEs: "Qué se guarda y dónde",
     pruebaEn: "What is stored, and where",
@@ -74,17 +54,17 @@ const VALUES: Value[] = [
     titleEs: "Disciplina > métricas",
     titleEn: "Discipline > metrics",
     descEs:
-      "Las métricas sin disciplina son ruido. El diario te frena antes de la tontería.",
+      "Las métricas sin disciplina son ruido. El Guardián te avisa antes de romper tus reglas y, si lo activas, te frena.",
     descEn:
-      "Metrics without discipline are noise. The journal stops you before the dumb trade.",
+      "Metrics without discipline are noise. The Guardian warns you before you break your rules and, if you turn it on, brakes you.",
     href: "/features/disciplina",
     pruebaEs: "Cómo frena el Guardián",
     pruebaEn: "How the Guardian brakes",
     icon: <ShieldIcon />,
   },
   {
-    titleEs: "Hecho por traders, para traders",
-    titleEn: "Made by traders, for traders",
+    titleEs: "Hecho por un trader, para traders",
+    titleEn: "Made by a trader, for traders",
     descEs:
       "No es un SaaS de Silicon Valley. Es una app de escritorio hecha por alguien que opera.",
     descEn:
@@ -101,18 +81,9 @@ export function Values() {
   const es = lang === "es";
 
   return (
-    <section id="values" className="section bg-veil relative overflow-clip scroll-mt-24">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section id="values" className="section relative overflow-clip scroll-mt-24">
 
       <div className="relative z-10 tj-container">
-        {/* Cabecera PARTIDA — titular a un lado, entradilla al otro.
-            Aquí estaba el `max-w-2xl` con todo apilado a la izquierda,
-            igual que en las otras diecisiete secciones del sitio: media
-            pantalla vacía a la derecha y la misma presentación por
-            enésima vez. Esta sección es la que mejor admite la partida
-            porque su entradilla tiene cuerpo suficiente para sostener
-            una columna propia. Ver `SectionHeader`. */}
         <SectionHeader
           composicion="partida"
           etiqueta={es ? "Principios" : "Principles"}
@@ -134,144 +105,39 @@ export function Values() {
           }
         />
 
-        {/* 2×2 grid
-            T2d — `gap-5 md:gap-6` (20px / 24px) entre tarjetas (era
-            `gap-5` 20px fijo): en móvil el Δ es nulo, en desktop sube
-            4px para que las 4 tarjetas respiren sin abrirse un hueco
-            tipográfico. El grid sigue 1-col en móvil, 2-col en md+ (que
-            es el 2×2 efectivo en lg). */}
-        {/* ── Cuatro asientos, no cuatro tarjetas ─────────────────────
-            Eran cajas de papel translúcido con sombra, esquina
-            redondeada y un salto de 4 px al pasar el ratón. Cuatro
-            afirmaciones de principios no son cuatro objetos que se
-            cogen: son las entradas de una declaración.
-
-            Pasan a una retícula de filetes, como el cuadro de cifras.
-            `gap` a 0 para que los trazos se toquen y formen cuadrícula
-            en vez de cuatro marcos sueltos; la separación la da el
-            relleno interior. */}
-        <div className="mt-10 grid md:grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
+        <div className="mt-10 grid md:grid-cols-2 border-t border-[var(--line)]">
           {VALUES.map((v, i) => (
             <Reveal key={v.href} delay={0.1 + i * 0.08} className="h-full">
-              {/* Sin `data-entra`: la entrada ya la pone el `Reveal` de
-                  arriba con su propio retardo escalonado. Este elemento
-                  era un `motion.article` SIN props de animación —sólo un
-                  envoltorio— y darle una entrada propia lo haría aparecer
-                  dos veces. */}
               <article
-                /* Sin salto al pasar por encima: una entrada de
-                   declaración no se levanta. La única respuesta al
-                   puntero es que el filo de acento del lateral se
-                   marque — ya estaba y se conserva.
-
-                   ── LA RETÍCULA NO ERA UNA RETÍCULA ─────────────────
-                   Esto se escribió para leerse «como el cuadro de
-                   cifras»: filetes que se tocan y forman cuadrícula, con
-                   la separación puesta por el relleno interior. Pero
-                   sólo llegó la mitad. Había `border-b` y nada más —sin
-                   filete vertical— y el relleno era `pr-6` con el
-                   izquierdo anulado a cero, así que entre la columna de
-                   la izquierda y la de la derecha quedaban 24 px: el
-                   párrafo de una celda terminaba casi tocando el icono
-                   de la de al lado. Cuatro declaraciones apretujadas de
-                   dos en dos, sin canal y sin cuadrícula.
-
-                   Ahora la columna par entra con su propio relleno, y
-                   entre las dos hay un canal de 80 px. El separador
-                   vertical no es un `border` nuevo: es el filo de acento
-                   que esta celda ya tenía en `left-0` — que en la
-                   columna derecha cae justo en mitad del canal y hace de
-                   filete, marcándose además al pasar el ratón.
-
-                   El relleno de la columna derecha se decide con el
-                   índice y no con `nth-child`: el hijo directo de la
-                   retícula es el `Reveal`, no este `article`, así que
-                   cualquier `:nth-child` de aquí mediría siempre 1.
-
-                   `clip` y no `hidden` por lo de siempre: recorta igual
-                   sin abrir contenedor de desplazamiento. */
-                className={`group relative h-full overflow-clip border-b border-[rgb(var(--divider)/0.14)] py-7 pr-6 transition-colors duration-300 md:py-8 md:pr-10 ${
-                  i % 2 === 1 ? "md:pl-10" : ""
+                className={`group relative h-full border-b border-[var(--line)] py-8 md:py-10 ${
+                  i % 2 === 1 ? "md:border-l md:pl-12" : "md:pr-12"
                 }`}
               >
-                {/* Accent edge — grows on hover. Scaled up from 1.25 → 1.4
-                    for a more pronounced lift; the base color is now a low
-                    alpha accent tint (20 %) instead of a neutral divider
-                    hairline so the brand reads through at rest and the rule
-                    reads as a deliberate accent stripe, not just a brighter
-                    neutral separator. Hover pushes to a 65 % accent tint. */}
-                <span
-                  aria-hidden="true"
-                  className="absolute left-0 top-6 bottom-6 w-px bg-[rgb(var(--accent-base)/0.20)] origin-center transition-[transform,background-color] duration-300 group-hover:scale-y-[1.4] group-hover:bg-[rgb(var(--accent-base)/0.65)]"
-                />
-
-                {/* El sello del principio. Iba dentro de dos
-                    envoltorios —un `flex justify-between` y otro `flex
-                    gap-3`— que sobraban: los dos tenían un único hijo y
-                    ninguno repartía nada, restos de cuando la fila
-                    llevaba algo más a la derecha.
-
-                    El anillo de acento al 18 % hace que el sello se lea
-                    como marca desde el principio, no sólo al pasar el
-                    ratón; entonces sube a 30 % y el trazo se tiñe. */}
-                <span
-                  className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[2px] border border-[rgb(var(--accent-base)/0.18)] bg-[rgb(var(--divider)/0.05)] text-tertiary transition-colors duration-300 group-hover:border-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))]"
-                  aria-hidden="true"
-                >
+                <span className="flex text-primary" aria-hidden="true">
                   {v.icon}
                 </span>
 
-                <h3 className="relative mt-5 t-h3 text-primary">
+                <h3 className="mt-6 t-h3 text-primary">
                   {es ? v.titleEs : v.titleEn}
                 </h3>
-                {/* T2d — `leading-[1.65]` + `max-w-[42em]` en la
-                    descripción (era `leading-relaxed` = 1.625 sin
-                    tope de ancho). El spec pide line-height 1.6 y
-                    max-width ~42em para legibilidad móvil; en móvil el
-                    max-width no activa (la tarjeta es <42em) pero en
-                    desktop evita que las líneas se estiren demasiado en
-                    la columna ancha. */}
-                <p className="relative mt-2.5 text-sm text-secondary leading-[1.65] max-w-[42em]">
+                <p className="mt-2.5 text-[15px] text-secondary leading-[1.65] max-w-[42em]">
                   {es ? v.descEs : v.descEn}
                 </p>
 
-                {/* Dónde se comprueba. Va DESPUÉS de la afirmación, no
-                    antes: primero se dice, luego se ofrece ir a mirar.
-                    El subrayado se declara para ratón Y teclado, y el
-                    filete crece con el mismo gesto que el del lateral.
-
-                    ── `min-h-[44px]`, y el margen bajado a compensarlo ──
-                    Es el ÚNICO control de la tarjeta, y en móvil medía
-                    20 px de alto: menos de la mitad del mínimo de 44 que
-                    pide el propio sistema de diseño. Medido tabulando y
-                    midiendo cajas a 390×844, era el peor objetivo de
-                    toque de la portada (166×20, 173×20, 170×20, 127×20).
-
-                    El margen pasa de `mt-4` a `mt-1` a propósito: con la
-                    caja a 44 px y el texto centrado en ella, 4 + 12 de
-                    centrado vuelven a dar los mismos 16 px de aire que
-                    antes. El enlace NO se mueve ni un píxel; lo que
-                    crece es la zona que responde al dedo. */}
                 <Link
                   href={v.href}
-                  className="relative mt-1 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-[rgb(var(--accent-base))] underline decoration-[rgb(var(--accent-base)/0.35)] decoration-1 underline-offset-4 outline-none transition-colors duration-200 hover:decoration-[rgb(var(--accent-base))] focus-visible:rounded-[2px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
+                  className="mt-2 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-primary outline-none transition-colors duration-200 hover:text-secondary focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                 >
                   {es ? v.pruebaEs : v.pruebaEn}
-                  <span aria-hidden="true">→</span>
+                  <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                 </Link>
               </article>
             </Reveal>
           ))}
         </div>
 
-        {/* Footer coda — divider hidden on mobile so the long ES copy
-            ("No son eslóganes. Son decisiones de producto." ~280px at
-            text-sm) doesn't overflow the 335px content box when paired
-            with the 64px divider + 12px gap. Text centers on mobile,
-            returns to the left-aligned divider+text rhythm at sm+. */}
         <Reveal delay={0.4}>
           <div className="mt-10 flex items-center gap-3 text-sm text-tertiary justify-center text-center sm:justify-start sm:text-left">
-            <span className="divider-grad w-16 hidden sm:block" aria-hidden />
             <span>
               {es
                 ? "No son eslóganes. Son decisiones de producto."
@@ -284,11 +150,6 @@ export function Values() {
   );
 }
 
-/* ---- Inline icons (stroke = currentColor, 20px) ----
-   T2d — bump 18 → 20px para acercarse al rango 24-28px del spec
-   sin saturar el container `w-9 h-9` (36px) que les deja 8px de
-   padding alrededor. Las 4 mantienen el mismo viewBox 16x16 y
-   strokeWidth 1.3 para que el peso visual sea idéntico entre sí. */
 function LockIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">

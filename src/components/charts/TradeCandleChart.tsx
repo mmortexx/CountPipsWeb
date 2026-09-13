@@ -178,7 +178,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           </div>
 
           {/* Timeframe selector */}
-          <div className="flex items-center rounded-[2px] bg-[rgb(var(--divider)/0.06)] p-0.5 border border-[rgb(var(--divider)/0.1)]">
+          <div className="flex items-center rounded-[4px] bg-[rgb(var(--divider)/0.06)] p-0.5 border border-[rgb(var(--divider)/0.1)]">
             {(["1m", "5m", "15m"] as const).map((tf) => (
               <button
                 key={tf}
@@ -203,9 +203,9 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             <button
               type="button"
               onClick={() => setShowSma(!showSma)}
-              className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[2px] border inline-flex items-center justify-center transition-colors ${
+              className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[4px] border inline-flex items-center justify-center transition-colors ${
                 showSma
-                  ? "border-[rgb(var(--accent-base)/0.4)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold"
+                  ? "border-[rgb(var(--accent-base)/0.4)] bg-[var(--chip)] text-[rgb(var(--accent-base))] font-semibold"
                   : "border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary"
               }`}
             >
@@ -214,7 +214,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             <button
               type="button"
               onClick={() => setShowVwap(!showVwap)}
-              className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[2px] border inline-flex items-center justify-center transition-colors ${
+              className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[4px] border inline-flex items-center justify-center transition-colors ${
                 showVwap
                   ? "border-[rgb(var(--pnl-pos)/0.4)] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))] font-semibold"
                   : "border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary"
@@ -233,7 +233,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               if (replayIdx >= candles.length) setReplayIdx(8);
               setIsPlaying(!isPlaying);
             }}
-            className="flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-7 px-3 sm:px-2.5 rounded-[2px] border border-[rgb(var(--accent-base)/0.3)] bg-[rgb(var(--accent-base)/0.1)] text-[rgb(var(--accent-base))] text-xs font-mono font-medium hover:bg-[rgb(var(--accent-base)/0.2)] transition-colors"
+            className="flex items-center justify-center gap-1.5 min-h-[44px] sm:min-h-0 h-10 sm:h-7 px-3 sm:px-2.5 rounded-[4px] border border-[var(--chip-line)] bg-[var(--chip)] text-[rgb(var(--accent-base))] text-xs font-mono font-medium hover:bg-[rgb(var(--accent-base)/0.2)] transition-colors"
           >
             {isPlaying ? <Pause size={12} /> : <Play size={12} />}
             <span>{isPlaying ? (es ? "Pausar" : "Pause") : (es ? "Replay" : "Replay")}</span>
@@ -246,7 +246,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               setReplayIdx(candles.length);
             }}
             aria-label={es ? "Restablecer gráfico completo" : "Reset full chart"}
-            className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 h-10 sm:h-7 w-10 sm:w-7 rounded-[2px] border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary inline-flex items-center justify-center transition-colors"
+            className="min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 h-10 sm:h-7 w-10 sm:w-7 rounded-[4px] border border-[rgb(var(--divider)/0.1)] text-tertiary hover:text-primary inline-flex items-center justify-center transition-colors"
           >
             <RotateCcw size={12} />
           </button>
@@ -254,7 +254,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
       </div>
 
       {/* SVG Interactive Candlestick Display */}
-      <div className="relative w-full aspect-[2/1] min-h-[240px] max-h-[340px] bg-[rgb(var(--divider)/0.02)] rounded-[2px] border border-[rgb(var(--divider)/0.08)]">
+      <div className="relative w-full aspect-[2/1] min-h-[240px] max-h-[340px] bg-[rgb(var(--divider)/0.02)] rounded-[4px] border border-[rgb(var(--divider)/0.08)]">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="w-full h-full select-none"
@@ -436,7 +436,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
         {/* Live Hover HUD / Crosshair Readout */}
         {hoveredCandle && (
-          <div className="absolute top-2 left-2 bg-[color-mix(in_oklab,var(--surface-1)_90%,transparent)] backdrop-blur border border-[rgb(var(--divider)/0.2)] rounded-[2px] p-2 text-[10.5px] font-mono text-secondary flex items-center gap-3">
+          <div className="absolute top-2 left-2 bg-[color-mix(in_oklab,var(--surface-1)_90%,transparent)] backdrop-blur border border-[rgb(var(--divider)/0.2)] rounded-[4px] p-2 text-[10.5px] font-mono text-secondary flex items-center gap-3">
             <span>T: <b className="text-primary">{hoveredCandle.time}</b></span>
             <span>O: <b className="text-primary">{fmtPrice(hoveredCandle.open, decimals, lang)}</b></span>
             <span>H: <b className="text-primary">{fmtPrice(hoveredCandle.high, decimals, lang)}</b></span>

@@ -8,7 +8,6 @@
     "build": "next build && node scripts/postbuild.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "fluidez": "node scripts/fluidez.mjs --serve out",
     "arranque": "node scripts/arranque.mjs --serve out --cpu 4",
     "legible": "node scripts/legible.mjs --serve out",
     "test": "vitest run",

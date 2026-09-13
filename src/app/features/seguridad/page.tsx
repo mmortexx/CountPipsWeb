@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -27,9 +26,9 @@ const breadcrumbSchema = {
 const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Tus datos, 100 % en tu máquina",
+  headline: "Tus datos, en tu equipo",
   description:
-    "Local-first, sin nube ni cuentas. CountPips es local-first: tus operaciones viven en tu Windows, cifradas en reposo.",
+    "Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y lo que se conecta a internet lo activas tú.",
   url: `${SITE_URL}/features/seguridad/`,
   mainEntityOfPage: `${SITE_URL}/features/seguridad/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -55,7 +54,7 @@ const articleSchema = {
     { "@type": "Thing", name: "local-first" },
     { "@type": "Thing", name: "data privacy" },
     { "@type": "Thing", name: "encryption" },
-    { "@type": "Thing", name: "no cloud" },
+    { "@type": "Thing", name: "offline-first" },
     { "@type": "Thing", name: "trading journal security" },
   ],
 };
@@ -66,11 +65,11 @@ export const metadata: Metadata = {
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Seguridad — CountPips" },
   description:
-    "Local-first: tus datos 100 % en tu máquina, sin nube ni cuentas. Especificaciones técnicas, integraciones con tu flujo y privacidad por diseño.",
+    "Local-first: tus operaciones en tu equipo, sin cuenta ni telemetría. Ficha técnica, la lista completa de conexiones y cómo se importan tus datos.",
   alternates: { canonical: `${SITE_URL}/features/seguridad/`, languages: hreflangDe("/features/seguridad") },
   openGraph: {
     title: "Seguridad — CountPips",
-    description: "Local-first, sin nube ni cuentas. Tus datos 100 % en tu máquina.",
+    description: "Sin cuenta, sin telemetría y sin servidores de CountPips. Tus datos, en tu equipo.",
     url: `${SITE_URL}/features/seguridad/`,
     type: "website",
     siteName: "CountPips",
@@ -83,7 +82,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Seguridad — CountPips",
-    description: "Local-first, sin nube ni cuentas. Tus datos 100 % en tu máquina.",
+    description: "Sin cuenta, sin telemetría y sin servidores de CountPips. Tus datos, en tu equipo.",
   },
 };
 
@@ -126,27 +125,23 @@ export function SeguridadBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="I·c"
         eyebrowEs="Producto"
         eyebrowEn="Product"
-        titleEs="Tus datos, 100 % en tu máquina."
-        titleEn="Your data, 100% on your machine."
-        titleHighlightEs="100 % en tu máquina."
-        titleHighlightEn="100% on your machine."
-        subtitleEs="Sin nube, sin cuentas, sin servidores. CountPips es local-first: tus operaciones viven en tu Windows, cifradas en reposo, sin tocar nunca un servidor ajeno. Privacidad por diseño, no por configuración."
-        subtitleEn="No cloud, no accounts, no servers. CountPips is local-first: your trades live on your Windows, encrypted at rest, never touching anyone else's server. Privacy by design, not by configuration."
+        titleEs="Tus datos, en tu equipo."
+        titleEn="Your data, on your machine."
+        titleHighlightEs="en tu equipo."
+        titleHighlightEn="on your machine."
+        subtitleEs="Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y lo que se conecta a internet lo activas tú."
+        subtitleEn="No account, no telemetry and no CountPips servers: your trades live on your machine and anything that goes online is something you turn on."
         breadcrumbEs="Características · Seguridad"
         breadcrumbEn="Features · Security"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <SecuritySection num="01" />
-      <DataFlowComparison num="02" />
+      <SecuritySection enPagina />
+      <DataFlowComparison />
       <TechSpecs />
 
-      <PlateInterlude index={0} />
       <Integrations />
 
-      <PlateInterlude index={1} />
       <FeaturePageNav current="seguridad" />
       <FinalCTANew />
       <TableOfContents />

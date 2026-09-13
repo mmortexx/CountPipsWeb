@@ -97,7 +97,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
          vuelve invisible (sigue existiendo para el indice y para SEO).
          Con el padding completo de `.section` eso dejaba ~145 px de
          vacio absoluto entre la regla del hero y el buscador. */
-      className={`${standalone ? "pt-10 pb-[clamp(4rem,8vw,7rem)]" : "section"} cv-auto bg-veil relative overflow-clip scroll-mt-24`}
+      className={`${standalone ? "pt-10 pb-[clamp(4rem,8vw,7rem)]" : "section"} cv-auto relative overflow-clip scroll-mt-24`}
     >
       <div className="relative z-10 tj-container">
         {/* Encabezado interno — el h2 siempre se renderiza (necesario para
@@ -153,7 +153,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={es ? "Buscar en las preguntas…" : "Search questions…"}
               aria-label={es ? "Buscar en las preguntas frecuentes" : "Search frequently asked questions"}
-              className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[2px] h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
+              className="w-full bg-[var(--surface)] border border-transparent rounded-full h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
             />
             </div>
             {/* Category Pills */}
@@ -164,10 +164,10 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   type="button"
                   aria-pressed={activeCategory === cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                  className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 py-2.5 sm:py-0 rounded-full text-[13px] font-medium inline-flex items-center justify-center transition-colors ${
                     activeCategory === cat.id
-                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
-                      : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
+                      ? "bg-[var(--ink)] text-[var(--bg)]"
+                      : "text-secondary hover:text-primary"
                   }`}
                 >
                   {es ? cat.labelEs : cat.labelEn}
@@ -187,7 +187,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               el desenfoque y lo deja en un fondo plano sin grano, que es
               justo lo que hacía que esta caja se viera apagada al lado
               de las secciones de papel de la misma página. */}
-          <div className="tj-paper relative mt-6 max-w-3xl mx-auto rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-2 md:p-3">
+          <div className="relative mt-8 max-w-3xl mx-auto border-t border-[var(--line)]">
             {noResults ? (
               /* ───── No-results panel — links to the GlossaryModal ───── */
               <div className="relative px-4 py-12 text-center">
@@ -204,7 +204,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                 <button
                   type="button"
                   onClick={() => setGlossaryOpen(true)}
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[2px]"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px]"
                 >
                   {es ? "Abrir glosario →" : "Open glossary →"}
                 </button>
@@ -241,7 +241,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           off the right edge. */}
                       <span className="min-w-0 break-words">
                         <span
-                          className="tnum mr-2.5 text-[11px] font-semibold text-tertiary"
+                          className="tnum mr-2.5 text-[12px] font-semibold text-tertiary"
                           aria-hidden
                         >
                           {String(i + 1).padStart(2, "0")}
@@ -286,7 +286,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                      enlace suelto en mitad de un párrafo, y medía 20 px
                      de alto. El relleno lateral además separa el foco
                      del texto para que el anillo no lo estrangule. */
-                  className="min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[2px]"
+                  className="min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px]"
                 >
                   {es
                     ? "¿No encuentras tu término? Consulta el glosario →"

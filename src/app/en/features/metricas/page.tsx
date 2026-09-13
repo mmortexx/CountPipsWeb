@@ -42,7 +42,7 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: { absolute: "Metrics — CountPips" },
   description:
-    "40+ institutional ratios: Sharpe, Sortino, Calmar, profit factor, expectancy in R. Risk calculator. Metrics that correlate with consistency.",
+    "40+ institutional ratios: Sharpe, Sortino, Calmar, profit factor, expectancy in R. Risk calculator. Metrics that tell whether your edge is real or a streak.",
   alternates: {
     canonical: `${SITE_URL}/en/features/metricas/`,
     languages: hreflangDe("/features/metricas"),

@@ -1,261 +1,138 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useLang } from "@/lib/i18n";
-import { Eyebrow } from "@/components/tj/Eyebrow";
-import { Reveal } from "@/components/tj/Reveal";
-import { CountUp } from "@/components/tj/CountUp";
+import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Money } from "@/components/tj/Money";
 import { METRICS, TRADES, nombreSetup, rankByExpectancy, weekdayBreakdown } from "@/lib/trading/data";
-import { fmtPct } from "@/lib/trading/format";
+import { fmtNum, fmtPct } from "@/lib/trading/format";
 
-/** Spotify Wrapped-style annual stats recap. Playful but professional. */
+/** Lo que el diario destapa: seis lecturas que el programa calcula de las operaciones de muestra. */
 export function Wrapped() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Pull "annual" highlights from the deterministic sample.
   const topSetup = rankByExpectancy(TRADES, (t) => t.setup)[0];
   const topInstrument = rankByExpectancy(TRADES, (t) => t.instrument)[0];
-  const byDay = weekdayBreakdown(TRADES);
-  const bestDay = [...byDay].sort((a, b) => b.pnl - a.pnl)[0];
+  const bestDay = [...weekdayBreakdown(TRADES)].sort((a, b) => b.pnl - a.pnl)[0];
 
-  const dayLabel: Record<string, { es: string; en: string }> = {
-    Lun: { es: "Lunes", en: "Monday" },
-    Mar: { es: "Martes", en: "Tuesday" },
-    Mié: { es: "Miércoles", en: "Wednesday" },
-    Jue: { es: "Jueves", en: "Thursday" },
-    Vie: { es: "Viernes", en: "Friday" },
-    Sáb: { es: "Sábados", en: "Saturdays" },
-    Dom: { es: "Domingos", en: "Sundays" },
+  const dias: Record<string, [string, string]> = {
+    Lun: ["Lunes", "Monday"],
+    Mar: ["Martes", "Tuesday"],
+    Mié: ["Miércoles", "Wednesday"],
+    Jue: ["Jueves", "Thursday"],
+    Vie: ["Viernes", "Friday"],
+    Sáb: ["Sábado", "Saturday"],
+    Dom: ["Domingo", "Sunday"],
   };
-  const bestDayName = dayLabel[bestDay.day]?.[lang] ?? bestDay.day;
+  const dia = dias[bestDay.day]?.[es ? 0 : 1] ?? bestDay.day;
+  const ops = (n: number) => (es ? `${n} operaciones` : `${n} trades`);
 
-  const totalOperado = TRADES.reduce((s, t) => s + Math.abs(t.grossPnl), 0);
-
-  const cards = [
-    {
-      key: "streak",
-      tone: "accent" as const,
-      label: es ? "Tu mejor racha" : "Your best streak",
-      /* La cifra va MUCHO más grande que en el resto de tarjetas, y es a
-         propósito: ésta ocupa dos filas de la rejilla, así que tiene el
-         doble de alto que sus vecinas. Con el tamaño de las pequeñas, el
-         sobrante se repartía como aire arriba y abajo y la tarjeta se leía
-         descolgada — mucho hueco vacío y un número perdido en medio, justo
-         al lado de dos tarjetas bien servidas.
-
-         Una pieza que ocupa el doble tiene que PESAR el doble; si no, no
-         hay motivo para que ocupe el doble. Los límites suben en vez de
-         subir sólo el `cqi` porque las dos columnas miden lo mismo de
-         ancho: por ancho no se distinguiría. */
-      value: (
-        <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1 min-w-0">
-          <CountUp to={METRICS.maxWinStreak} className="t-display text-[clamp(3rem,17cqi,5.5rem)] tnum text-primary whitespace-nowrap leading-none" />
-          <span className="text-[clamp(0.95rem,3cqi,1.25rem)] text-tertiary font-medium">{es ? "ganadoras seguidas" : "winners in a row"}</span>
-        </span>
-      ),
-      sub: es
-        ? "Confianza que no se confunde con suerte."
-        : "Confidence that doesn't get confused with luck.",
-    },
+  const lecturas: { key: string; label: string; value: ReactNode; detalle: ReactNode; sub: string }[] = [
     {
       key: "setup",
-      tone: "pos" as const,
-      label: es ? "Tu setup más rentable" : "Your most profitable setup",
-      value: (
-        <span className="flex flex-col gap-1 min-w-0">
-          <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-pnl-pos break-words leading-tight">{nombreSetup(topSetup.name, lang)}</span>
-          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1 tnum min-w-0">
-            {/* R27-1d — bumped text-xl→text-2xl (always 24px) so the green
-                P&L figure (text-pnl-pos #0B8B4B ≈ 4.3:1 on the tj-paper
-                card surface) clears WCAG AA in light theme. At 20px/500
-                (text-xl) it failed AA normal-text (4.5:1); at 24px/500 it
-                qualifies as WCAG "large text" (≥24px regular) which only
-                requires 3:1. Desktop was already text-2xl so no visual
-                change there. */}
-            <Money value={topSetup.totalPnl} sign compact colorizeSign className="text-2xl font-medium whitespace-nowrap" />
-            {/* R20-3b: added tnum so the `count` and `winRate` digits align
-                with the adjacent Money figure — mixed proportional /
-                tabular figures in the same baseline row looked jittery when
-                the win-rate changed. */}
-            <span className="tnum text-sm text-tertiary whitespace-nowrap">
-              {/* `toFixed` no es un formateador: escribía «54% win» con el
-                  signo pegado también en castellano, dentro de una ficha
-                  donde el importe de al lado sale de `Money`. Y «win» a
-                  secas no es ninguno de los dos idiomas: la casa llama a
-                  esto «win rate» en los dos (clave `winRate` de i18n). */}
-              {es ? `${topSetup.count} ops · ${fmtPct(topSetup.winRate, lang, 0)} win rate` : `${topSetup.count} trades · ${fmtPct(topSetup.winRate, lang, 0)} win rate`}
-            </span>
-          </span>
-        </span>
+      label: es ? "Setup con mejor expectancy" : "Setup with the best expectancy",
+      value: nombreSetup(topSetup.name, lang),
+      detalle: (
+        <>
+          <Money value={topSetup.totalPnl} sign compact colorizeSign className="font-medium" />
+          {` · ${ops(topSetup.count)} · ${fmtPct(topSetup.winRate, lang, 0)} win rate`}
+        </>
       ),
       sub: es
-        ? "El filón del año. Crécelo — o destrózalo con más datos."
-        : "The goldmine of the year. Scale it — or break it with more data.",
-    },
-    {
-      key: "day",
-      tone: "accent" as const,
-      label: es ? "Tu día más productivo" : "Your most productive day",
-      value: (
-        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1 min-w-0">
-          <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-primary whitespace-nowrap leading-tight">{bestDayName}</span>
-          {/* R27-1d — same text-xl→text-2xl bump as the setup card Money
-              above, for the same WCAG AA light-theme reason. */}
-          <Money value={bestDay.pnl} sign compact colorizeSign className="text-2xl font-medium whitespace-nowrap" />
-        </span>
-      ),
-      sub: es
-        ? "Donde el mercado más te ha dado. ¿Repetible, o azar?"
-        : "Where the market gave you most. Repeatable, or luck?",
-    },
-    {
-      key: "total",
-      tone: "accent" as const,
-      label: es ? "Total operado" : "Total traded",
-      value: (
-        <span className="flex flex-col items-start gap-1 min-w-0">
-          <Money value={totalOperado} compact colorizeSign={false} className="t-display text-[clamp(1.15rem,9cqi,2.75rem)] tnum text-primary whitespace-nowrap" />
-          <span className="text-base text-tertiary">{es ? "de volumen bruto" : "gross volume"}</span>
-        </span>
-      ),
-      sub: es
-        ? "No es el P&L — es cuánto capital pusiste en juego."
-        : "Not the P&L — how much capital you put at risk.",
-    },
-    {
-      key: "discipline",
-      tone: "warn" as const,
-      label: es ? "Coste de indisciplina" : "Cost of indiscipline",
-      value: (
-        <span className="flex items-baseline gap-2 min-w-0">
-          <Money value={METRICS.costOfIndiscipline} compact colorizeSign className="t-display text-[clamp(1.75rem,9cqi,2.75rem)] tnum text-pnl-warn whitespace-nowrap" />
-        </span>
-      ),
-      sub: es
-        ? "Lo que dejaste en la mesa por no seguir tu propio plan."
-        : "What you left on the table by not following your own plan.",
+        ? "Con su muestra al lado, para saber si es ventaja o todavía anécdota."
+        : "With its sample size next to it, so you know if it is an edge or still an anecdote.",
     },
     {
       key: "instrument",
-      tone: "pos" as const,
-      label: es ? "Instrumento top" : "Top instrument",
-      value: (
-        <span className="flex flex-col gap-1 min-w-0">
-          <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-primary break-words leading-tight">{topInstrument.name}</span>
-          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1 tnum min-w-0">
-            {/* R27-1d — same text-xl→text-2xl bump as the setup card Money
-                above, for the same WCAG AA light-theme reason. */}
-            <Money value={topInstrument.totalPnl} sign compact colorizeSign className="text-2xl font-medium whitespace-nowrap" />
-            {/* R20-3b: tnum on the count chip — same rationale as the setup
-                card above. */}
-            <span className="tnum text-sm text-tertiary whitespace-nowrap">
-              {es ? `${topInstrument.count} ops` : `${topInstrument.count} trades`}
-            </span>
-          </span>
-        </span>
+      label: es ? "Instrumento que mejor te funciona" : "Instrument that works best for you",
+      value: topInstrument.name,
+      detalle: (
+        <>
+          <Money value={topInstrument.totalPnl} sign compact colorizeSign className="font-medium" />
+          {` · ${ops(topInstrument.count)}`}
+        </>
       ),
+      sub: es ? "Y los que te restan, en la misma tabla." : "And the ones that cost you, in the same table.",
+    },
+    {
+      key: "day",
+      label: es ? "Mejor día de la semana" : "Best day of the week",
+      value: dia,
+      detalle: <Money value={bestDay.pnl} sign compact colorizeSign className="font-medium" />,
+      sub: es ? "¿Patrón repetible o casualidad? La muestra lo dice." : "A repeatable pattern or chance? The sample tells.",
+    },
+    {
+      key: "discipline",
+      label: es ? "Operaciones fuera de plan" : "Off-plan trades",
+      value: fmtPct(1 - METRICS.compliancePct, lang, 0),
+      detalle: es ? "de todas las registradas" : "of all logged trades",
       sub: es
-        ? "El activo que mejor te leyó este año."
-        : "The asset that read you best this year.",
+        ? "Separa lo que cumple tu plan de lo que no y te dice cuánto deja cada grupo."
+        : "It splits what follows your plan from what does not and tells you what each group makes.",
+    },
+    {
+      key: "pf",
+      label: "Profit factor",
+      value: fmtNum(METRICS.profitFactor, lang, 2),
+      detalle: es ? "ganancia bruta entre pérdida bruta" : "gross profit over gross loss",
+      sub: es ? "Por encima de 1, el sistema gana más de lo que pierde." : "Above 1, the system makes more than it loses.",
+    },
+    {
+      key: "streak",
+      label: es ? "Mejor racha" : "Best streak",
+      value: fmtNum(METRICS.maxWinStreak, lang, 0),
+      detalle: es ? "ganadoras seguidas" : "winners in a row",
+      sub: es
+        ? "El programa contrasta tus rachas con el azar antes de que te las creas."
+        : "The app tests your streaks against chance before you believe them.",
     },
   ];
 
   return (
-    <section className="section cv-auto relative overflow-clip bg-veil">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section className="section relative">
+      <div className="tj-container">
+        <SectionHeader
+          composicion="partida"
+          etiqueta={es ? "Lo que destapa el diario" : "What the journal uncovers"}
+          titulo={
+            es ? (
+              <>
+                Tus hábitos, <span className="text-gradient">en cifras.</span>
+              </>
+            ) : (
+              <>
+                Your habits, <span className="text-gradient">in numbers.</span>
+              </>
+            )
+          }
+          entradilla={
+            es
+              ? "No solo cuenta operaciones: cruza setup, instrumento, día y disciplina para enseñarte dónde ganas y dónde se te escapa el dinero."
+              : "It does not just count trades: it crosses setup, instrument, day and discipline to show where you win and where money slips away."
+          }
+        />
 
-      <div className="relative max-w-page mx-auto px-5 md:px-8">
-        {/* Section header */}
-        <div className="relative">
-          <Reveal className="relative max-w-3xl">
-            <Eyebrow>{es ? "Tu año, resumido" : "Your year, wrapped"}</Eyebrow>
-            <h2 className="mt-5 t-h2 text-primary">
-              {es ? (
-                <>
-                  Tu <span className="text-gradient">Wrapped</span> de trading.
-                </>
-              ) : (
-                <>
-                  Your trading <span className="text-gradient">Wrapped.</span>
-                </>
-              )}
-            </h2>
-            <p className="mt-4 text-lg text-secondary leading-relaxed">
-              {es
-                ? "El diario no solo cuenta operaciones: cuenta hábitos. Estos son los tuyos, en grande."
-                : "The journal doesn't just count trades: it counts habits. Here are yours, in big numbers."}
-            </p>
-          </Reveal>
-        </div>
+        <dl className="mt-12 grid border-t border-[var(--line-2)] sm:grid-cols-2 lg:grid-cols-3">
+          {lecturas.map((l) => (
+            <div
+              data-entra="ciclo"
+              key={l.key}
+              className="flex min-w-0 flex-col border-b border-[var(--line)] py-7 sm:px-6 sm:[&:nth-child(2n+1)]:pl-0 lg:[&:nth-child(2n+1)]:pl-6 lg:[&:nth-child(3n+1)]:pl-0"
+            >
+              <dt className="text-[13px] font-medium text-tertiary">{l.label}</dt>
+              <dd className="m-0 mt-3 t-h2 tnum text-primary break-words leading-tight">{l.value}</dd>
+              <dd className="m-0 mt-2 text-[14px] tnum text-secondary">{l.detalle}</dd>
+              <dd className="m-0 mt-4 text-[14px] leading-[1.6] text-tertiary">{l.sub}</dd>
+            </div>
+          ))}
+        </dl>
 
-        {/* Cards grid — bento layout: hero streak (col-span-3 row-span-2) on the
-            left, two col-span-3 cards stacked on the right, then a clean row of
-            three col-span-2 cards. Total cells = 6+3+3+2+2+2 = 18 = 3×6 → no gaps. */}
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-6 gap-4 auto-rows-[minmax(180px,auto)]">
-          {cards.map((c, i) => {
-            const span =
-              i === 0
-                ? "md:col-span-3 md:row-span-2"
-                : i === 1
-                ? "md:col-span-3"
-                : i === 2
-                ? "md:col-span-3"
-                /* Los tres de la fila baja eran un TERCIO del ancho ya a
-                   768 px, y ahi una cifra de P&L a 24 px —que no puede
-                   bajar de ahi sin perder el contraste que pide la
-                   norma— se salia 31 px de su fila. A la mitad hasta
-                   1024 px y a un tercio a partir de ahi, que es cuando
-                   el tercio da de si. */
-                : "md:col-span-3 lg:col-span-2";
-            const glowColor =
-              c.tone === "pos"
-                ? "rgb(var(--pnl-pos))"
-                : c.tone === "warn"
-                ? "rgb(var(--pnl-warn))"
-                : "rgb(var(--accent-base))";
-            return (
-              <article
-                data-entra="ciclo"
-                key={c.key}
-                className={`group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.35)] ${span}`}
-              >
-                <div className="relative p-6 md:p-7 flex flex-col h-full justify-between gap-4 cq-wrap min-w-0">
-                  {/* R24-1c: editorial index (01 — 06) before the eyebrow so
-                      the bento reads as a numbered sequence (magazine
-                      rhythm). tnum + tabular-nums so the indices align
-                      digit-for-digit across the grid. */}
-                  <span className="eyebrow inline-flex items-center gap-2">
-                    <span className="tnum tabular-nums" style={{ color: "rgb(var(--accent-base))", fontWeight: 600 }}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span aria-hidden className="w-px h-3" style={{ background: "rgb(var(--divider) / 0.18)" }} />
-                    <span
-                      className="w-1.5 h-1.5 rounded-[1px]"
-                      style={{
-                        background: glowColor,
-                      }}
-                    />
-                    {c.label}
-                  </span>
-
-                  <div className="flex-1 flex items-center">{c.value}</div>
-
-                  <p className="text-[13px] text-tertiary leading-relaxed">{c.sub}</p>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-
-        <Reveal delay={0.1} className="mt-8">
-          <p className="text-xs text-tertiary text-center">
-            {es
-              ? "Datos de muestra deterministas — en tu diario saldrían los tuyos."
-              : "Deterministic sample data — your journal would show your own."}
-          </p>
-        </Reveal>
+        <p className="mt-6 text-[13px] text-tertiary">
+          {es
+            ? "Cifras calculadas sobre las operaciones de muestra de la demo; en tu diario salen las tuyas."
+            : "Figures computed from the demo's sample trades; your journal shows your own."}
+        </p>
       </div>
     </section>
   );

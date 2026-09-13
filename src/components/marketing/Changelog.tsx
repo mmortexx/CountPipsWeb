@@ -42,6 +42,14 @@ export function Changelog() {
         },
         {
           version: "02",
+          title: "Programa de escritorio",
+          description:
+            "Terminado el producto mínimo: diario, métricas, riesgo, psicología, modo prop firm, módulo fiscal y terminal de Mercados. Antes de abrir la venta faltan la tienda, la firma del instalador y la licencia de uso.",
+          date: "Construido",
+          stage: "delivered",
+        },
+        {
+          version: "03",
           title: "Acceso anticipado privado",
           description:
             "Pilotos invitados para validar operativa manual y prop firms con usuarios que quieran llevar sus propios datos.",
@@ -49,21 +57,17 @@ export function Changelog() {
           stage: "pilot",
         },
         {
-          /* Iba numerada 01 · 02 · 02 · 03: el «02» estaba repetido, así
-             que la hoja de ruta se leía con un paso duplicado y otro
-             ausente. React además usa este valor como clave de la lista
-             y avisaba por consola de dos hermanos con la misma. */
-          version: "03",
+          version: "04",
           title: "Importación ampliada",
-          description: "Más formatos de bróker y migración desde otros diarios.",
+          description: "Importadores de TradeZella, Tradervue y Edgewonk, y más formatos de bróker.",
           date: "Más adelante",
           stage: "future",
         },
         {
-          version: "04",
-          title: "Modo prop firm avanzado",
+          version: "05",
+          title: "Más prop firms",
           description:
-            "Reglas de pérdida diaria, drawdown máximo y reset por cuenta.",
+            "Hoy hay plantillas de FTMO, Topstep, The5ers, FundedNext y Apex, cada una con su fecha de revisión.",
           date: "Más adelante",
           stage: "future",
         },
@@ -79,6 +83,14 @@ export function Changelog() {
         },
         {
           version: "02",
+          title: "Desktop app",
+          description:
+            "Minimum product finished: journal, metrics, risk, psychology, prop firm mode, tax module and Markets terminal. Before sales open it still needs the store, installer signing and the end-user licence.",
+          date: "Built",
+          stage: "delivered",
+        },
+        {
+          version: "03",
           title: "Private early access",
           description:
             "Invited pilots validating manual trading and prop-firm workflows with users ready to bring their own data.",
@@ -86,26 +98,24 @@ export function Changelog() {
           stage: "pilot",
         },
         {
-          // Mismo arreglo de numeración que en la versión española.
-          version: "03",
+          version: "04",
           title: "Expanded imports",
-          description: "More broker formats and migration from other journals.",
+          description: "TradeZella, Tradervue and Edgewonk importers, and more broker formats.",
           date: "Later",
           stage: "future",
         },
         {
-          version: "04",
-          title: "Advanced prop firm mode",
-          description: "Daily loss rules, max drawdown and account reset.",
+          version: "05",
+          title: "More prop firms",
+          description:
+            "Today there are templates for FTMO, Topstep, The5ers, FundedNext and Apex, each with its review date.",
           date: "Later",
           stage: "future",
         },
       ];
 
   return (
-    <section id="changelog" className="section cv-auto bg-veil relative overflow-clip scroll-mt-24">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section id="changelog" className="section cv-auto relative overflow-clip scroll-mt-24">
 
       <div className="relative z-10 tj-container">
         {/* Header */}
@@ -142,7 +152,7 @@ export function Changelog() {
         {/* `clip` y no `hidden` — misma razón que en `DemoCapabilities`:
             `hidden` abre contenedor de desplazamiento y deja sin entrada
             a los hitos de dentro (cuatro, medidos en /about). */}
-        <ol className="relative mt-14 m-0 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+        <ol className="relative mt-14 m-0 border-t border-[var(--line)] p-0">
           {entries.map((entry) => {
             const isPast = entry.stage === "delivered";
             const isPilot = entry.stage === "pilot";
@@ -155,10 +165,10 @@ export function Changelog() {
               <li
                 key={entry.version}
                 data-entra
-                className="grid gap-2 border-b border-[rgb(var(--divider)/0.08)] px-4 py-4 last:border-b-0 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-5"
+                className="grid gap-2 border-b border-[var(--line)] py-5 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-5"
               >
                 <span
-                  className="tnum text-[12px] font-semibold"
+                  className="tnum text-[13px] font-semibold"
                   style={{ color: "rgb(var(--accent-base))" }}
                 >
                   {entry.version}
@@ -167,14 +177,13 @@ export function Changelog() {
                   <h3 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
                     {entry.title}
                   </h3>
-                  <p className="mt-1 m-0 text-[12px] text-tertiary tnum">
-                    {estado}
-                    <span aria-hidden> · </span>
+                  <p className="mt-1 m-0 text-[13px] text-tertiary tnum">
+                    <span className="sr-only">{estado}: </span>
                     {entry.date}
                   </p>
                 </div>
                 <p
-                  className={`m-0 text-[13.5px] leading-[1.55] ${
+                  className={`m-0 text-[14px] leading-[1.55] ${
                     isPast || isPilot ? "text-secondary" : "text-tertiary"
                   }`}
                 >

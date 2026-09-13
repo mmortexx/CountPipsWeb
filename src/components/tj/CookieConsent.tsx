@@ -202,12 +202,12 @@ export function CookieConsent() {
             // corto para que el sheet no tape más de ~16% de la pantalla.
             //
             // En desktop (≥768px): tarjeta compacta bottom-left
-            // (w-[22rem], bottom-4 left-4, rounded-[2px]) — la versión
+            // (w-[22rem], bottom-4 left-4, rounded-[4px]) — la versión
             // original, menos intrusiva en pantalla grande.
             //
             // z-50 sobre BackToTop (z-40). safe-bottom para el home
             // indicator de iOS en el sheet móvil.
-            className="tj-entra-abajo tj-paper tj-paper-dense z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[2px] border-t border-[rgb(var(--divider)/0.14)] p-4 shadow-2xl md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[2px] md:border md:border-[rgb(var(--divider)/0.13)] md:p-5"
+            className="tj-entra-abajo tj-paper tj-paper-dense z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[2px] border-t border-[rgb(var(--divider)/0.14)] p-4 shadow-2xl md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[4px] md:border md:border-[rgb(var(--divider)/0.13)] md:p-5"
           >
             <div className="flex items-start gap-2.5 md:gap-3">
               <CookieIcon />
@@ -222,7 +222,7 @@ export function CookieConsent() {
                   almacenamiento local. Decir «cookies técnicas» era
                   cómodo pero falso, y la página que enlazamos explica
                   precisamente la diferencia. */}
-              <p className="text-[12.5px] leading-[1.5] text-secondary flex-1 md:text-[13px] md:leading-relaxed">
+              <p className="text-[13px] leading-[1.5] text-secondary flex-1 md:text-[14px] md:leading-relaxed">
                 {es
                   ? "Usamos almacenamiento local para preferencias. La analítica opcional sólo se activa si la aceptas. "
                   : "We use local storage for preferences. Optional analytics only starts if you accept it. "}
@@ -244,14 +244,14 @@ export function CookieConsent() {
               <button
                 type="button"
                 onClick={() => choose("declined")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[13px] font-medium text-secondary border border-[rgb(var(--divider)/0.22)] hover:bg-[rgb(var(--divider)/0.06)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium text-secondary border border-[rgb(var(--divider)/0.22)] hover:bg-[rgb(var(--divider)/0.06)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
               >
                 {es ? "Solo necesarias" : "Necessary only"}
               </button>
               <button
                 type="button"
                 onClick={() => choose("accepted")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[13px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
               >
                 {es ? "Aceptar analítica" : "Accept analytics"}
               </button>
@@ -267,7 +267,7 @@ export function CookieConsent() {
 function CookieIcon() {
   return (
     <span
-      className="shrink-0 mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-[2px] bg-[rgb(var(--divider)/0.05)] text-primary"
+      className="shrink-0 mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-[4px] bg-[rgb(var(--divider)/0.05)] text-primary"
       aria-hidden="true"
     >
       <svg

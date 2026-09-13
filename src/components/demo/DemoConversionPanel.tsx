@@ -1,16 +1,13 @@
 "use client";
 
-import { ArrowRight, Check, LockKeyhole, MousePointer2 } from "lucide-react";
-import { Link } from "@/components/tj/LocaleLink";
+import { Check, LockKeyhole } from "lucide-react";
 import { Reveal } from "@/components/tj/Reveal";
 import { useLang } from "@/lib/i18n";
-import { trackEvent } from "@/lib/analytics";
 
 /**
- * The conversion bridge after the interactive window. It makes the demo's
- * promise explicit, sets a truthful boundary around sample data, and gives
- * visitors two next steps without forcing a form before they understand the
- * product.
+ * The bridge after the interactive window: how to read the demo and the
+ * honest boundary around sample data. The next steps live in the closing
+ * block right below.
  */
 export function DemoConversionPanel() {
   const { lang } = useLang();
@@ -31,7 +28,7 @@ export function DemoConversionPanel() {
       ];
 
   return (
-    <section id="demo-next-step" className="section-tight bg-veil border-y border-[rgb(var(--divider)/0.1)] scroll-mt-24">
+    <section id="demo-next-step" className="section-tight border-y border-[rgb(var(--divider)/0.1)] scroll-mt-24">
       <div className="tj-container">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <Reveal>
@@ -47,7 +44,7 @@ export function DemoConversionPanel() {
             <ol className="mt-8 grid gap-5 sm:grid-cols-2">
               {steps.map(([number, title, body]) => (
                 <li key={number} className="border-t border-[rgb(var(--divider)/0.16)] pt-4">
-                  <span className="tnum text-xs font-semibold tracking-[0.16em] text-[rgb(var(--accent-base))]">{number}</span>
+                  <span className="tnum text-xs font-semibold tracking-[0.08em] text-tertiary">{number}</span>
                   <h3 className="mt-2 text-sm font-semibold text-primary">{title}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-secondary">{body}</p>
                 </li>
@@ -56,13 +53,13 @@ export function DemoConversionPanel() {
           </Reveal>
 
           <Reveal delay={0.08} className="h-full">
-            <aside className="tj-paper h-full border border-[rgb(var(--divider)/0.16)] p-6 sm:p-7">
+            <aside className="tj-paper tj-hoja h-full p-6 sm:p-8">
               <div className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center border border-[rgb(var(--accent-base)/0.28)] bg-[rgb(var(--accent-base)/0.08)] text-[rgb(var(--accent-base))]">
+                <span className="grid size-10 place-items-center rounded-[6px] bg-[var(--chip)] text-primary">
                   <LockKeyhole size={18} strokeWidth={1.6} aria-hidden />
                 </span>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-tertiary">{es ? "Límite honesto" : "Honest boundary"}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-tertiary">{es ? "Límite honesto" : "Honest boundary"}</p>
                   <h3 className="mt-1 text-lg font-semibold text-primary">{es ? "Datos de muestra, cero riesgo." : "Sample data, zero risk."}</h3>
                 </div>
               </div>
@@ -77,24 +74,6 @@ export function DemoConversionPanel() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-7 grid gap-2 sm:grid-cols-2">
-                <Link
-                  href="/pricing"
-                  onClick={() => trackEvent("demo_pricing_clicked")}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[2px] bg-[rgb(var(--accent-base))] px-4 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-                >
-                  {es ? "Ver precios" : "See pricing"}
-                  <ArrowRight size={15} aria-hidden />
-                </Link>
-                <Link
-                  href="/beta"
-                  onClick={() => trackEvent("demo_early_access_clicked")}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[2px] border border-[rgb(var(--divider)/0.2)] px-4 text-sm font-semibold text-primary transition-[background-color,transform] duration-200 hover:-translate-y-0.5 hover:bg-[rgb(var(--divider)/0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-                >
-                  <MousePointer2 size={15} aria-hidden />
-                  {es ? "Acceso anticipado" : "Early access"}
-                </Link>
-              </div>
             </aside>
           </Reveal>
         </div>

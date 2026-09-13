@@ -42,7 +42,7 @@ const TAGS: { id: Tag; labelEs: string; labelEn: string; icon: string }[] = [
   { id: "discipline", labelEs: "Disciplina", labelEn: "Discipline", icon: "shield" },
   { id: "security", labelEs: "Privacidad", labelEn: "Privacy", icon: "lock" },
   { id: "speed", labelEs: "Rapidez", labelEn: "Speed", icon: "bolt" },
-  { id: "local", labelEs: "Local-first", labelEn: "Local-first", icon: "disk" },
+  { id: "local", labelEs: "En tu equipo", labelEn: "On your machine", icon: "disk" },
   { id: "multi", labelEs: "Multi-cuenta", labelEn: "Multi-account", icon: "layers" },
   { id: "export", labelEs: "Exportar", labelEn: "Export", icon: "download" },
   { id: "psychology", labelEs: "Psicología", labelEn: "Psychology", icon: "brain" },
@@ -61,16 +61,16 @@ const FEATURES: Feature[] = [
     id: "equity",
     titleEs: "Curva de equity y drawdown",
     titleEn: "Equity curve and drawdown",
-    descEs: "Tu capital y tu peor caída en tiempo real. El drawdown se mide desde el pico, como en un fondo.",
-    descEn: "Your capital and your worst drop in real time. Drawdown measured from peak, like a fund.",
+    descEs: "Tu capital y tu peor caída, al día con cada operación. El drawdown se mide desde el pico, como en un fondo.",
+    descEn: "Your capital and your worst drop, updated with every trade. Drawdown measured from peak, like a fund.",
     tags: ["metrics", "speed"],
   },
   {
     id: "guardian",
     titleEs: "Guardián de disciplina",
     titleEn: "Discipline Guardian",
-    descEs: "Te frena antes de operar fuera de tu plan. Reglas configurables: tamaño máximo, setups prohibidos, horario.",
-    descEn: "Stops you before trading outside your plan. Configurable rules: max size, banned setups, hours.",
+    descEs: "Semáforo de riesgo al registrar y freno duro opcional. Reglas por cuenta: riesgo por operación, pérdida diaria y semanal, drawdown y operaciones al día.",
+    descEn: "Risk light when you log a trade and an optional hard brake. Rules per account: risk per trade, daily and weekly loss, drawdown and trades per day.",
     tags: ["discipline", "psychology"],
   },
   {
@@ -91,26 +91,26 @@ const FEATURES: Feature[] = [
   },
   {
     id: "local",
-    titleEs: "100 % en local",
-    titleEn: "100% local",
-    descEs: "Todo vive en tu disco. Sin servidores, sin telemetría, sin cuentas. Cifra la carpeta con BitLocker.",
-    descEn: "Everything lives on your disk. No servers, no telemetry, no accounts. Encrypt the folder with BitLocker.",
+    titleEs: "En tu equipo",
+    titleEn: "On your machine",
+    descEs: "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips. Cifrado EFS de Windows opcional.",
+    descEn: "Your trades live on your disk. No account, no telemetry and no CountPips servers. Optional Windows EFS encryption.",
     tags: ["security", "local", "speed"],
   },
   {
     id: "sqlite",
     titleEs: "Un archivo .sqlite",
     titleEn: "One .sqlite file",
-    descEs: "Una base de datos que se abre, copia y respalda como un archivo. Sin instalaciones, sin dependencias.",
-    descEn: "A database you open, copy and back up like a file. No installs, no dependencies.",
+    descEs: "Una base de datos SQLite en un único archivo, con copias automáticas verificadas y restauración a la vista.",
+    descEn: "A SQLite database in a single file, with verified automatic backups and visible restore.",
     tags: ["local", "export", "speed"],
   },
   {
     id: "multi",
     titleEs: "Multi-cuenta y multi-activo",
     titleEn: "Multi-account, multi-asset",
-    descEs: "Acciones, futuros, forex, crypto. Varias cuentas con métricas independientes y consolidadas.",
-    descEn: "Stocks, futures, forex, crypto. Multiple accounts with independent and consolidated metrics.",
+    descEs: "Acciones, futuros, forex y cripto. Varias cuentas, cada una con sus métricas: dos en Core e ilimitadas en Pro.",
+    descEn: "Stocks, futures, forex and crypto. Several accounts, each with its own metrics: two in Core, unlimited in Pro.",
     tags: ["multi", "metrics"],
   },
   {
@@ -133,21 +133,21 @@ const FEATURES: Feature[] = [
     id: "heatmap",
     titleEs: "Heatmap por día y hora",
     titleEn: "Day/hour heatmap",
-    descEs: "¿Rindes mejor en London o en NY? ¿Lunes o viernes? El heatmap te lo dice con colores.",
-    descEn: "Better in London or NY? Monday or Friday? The heatmap tells you in color.",
+    descEs: "¿Rindes mejor a primera hora o por la tarde? ¿Los lunes o los viernes? El mapa de calor cruza día y hora con tu resultado.",
+    descEn: "Better early or in the afternoon? On Mondays or Fridays? The heatmap crosses day and hour with your result.",
     tags: ["metrics"],
   },
   {
     id: "native",
     titleEs: "Nativa de Windows",
     titleEn: "Native Windows app",
-    descEs: "WinUI 3, no Electron. Arranca en menos de 1 s y ronda los 200 MB de RAM con la sesión abierta. Siente que pertenece al sistema.",
-    descEn: "WinUI 3, not Electron. Starts in under 1 s and sits around 200 MB of RAM with the session open. Feels native to the system.",
+    descEs: "WinUI 3, no Electron. Arranca en 0,7 s con 50.000 operaciones (medido) y se integra con el sistema: bandeja, instancia única y tema claro u oscuro.",
+    descEn: "WinUI 3, not Electron. Starts in 0.7 s with 50,000 trades (measured) and fits the system: tray, single instance and light or dark theme.",
     tags: ["speed", "local"],
   },
 ];
 
-export function FeatureExplorer({ num = "02" }: { num?: string }) {
+export function FeatureExplorer() {
   const { lang } = useLang();
   const es = lang === "es";
   const [selected, setSelected] = useState<Tag[]>([]);
@@ -169,15 +169,11 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
   const hasSelection = selected.length > 0;
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container">
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum" style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}>
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span className="eyebrow">
               {es ? "ÍNDICE" : "INDEX"}
             </span>
           </div>
@@ -217,15 +213,10 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
               <button
                 key={t.id}
                 onClick={() => toggle(t.id)}
-                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-[2px] text-[13px] font-medium transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="inline-flex items-center gap-2 min-h-[44px] px-3.5 rounded-full text-[14px] font-medium transition-[background-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
-                  background: active
-                    ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                    : "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-                  border: active
-                    ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 45%, transparent)"
-                    : "1px solid rgb(var(--divider) / 0.12)",
-                  color: active ? "rgb(var(--accent-base))" : "var(--ink-2)",
+                  background: active ? "var(--ink)" : "transparent",
+                  color: active ? "var(--bg)" : "var(--ink-2)",
                 }}
                 aria-pressed={active}
               >
@@ -237,8 +228,8 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
           {hasSelection && (
             <button
               onClick={() => setSelected([])}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[2px] text-[12px] font-medium transition-colors"
-              style={{ color: "var(--ink-3)", border: "1px solid rgb(var(--divider) / 0.12)" }}
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[4px] text-[13px] font-medium transition-colors"
+              style={{ color: "var(--ink-3)" }}
               aria-label={es ? "Limpiar selección" : "Clear selection"}
             >
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -253,28 +244,28 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
         {hasSelection ? (
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "En este recorte" : "In this cut"} · {topMatches.length}
               </span>
               {topMatches.length === 0 && (
-                <span className="text-[12px]" style={{ color: "var(--ink-3)" }}>
+                <span className="text-[13px]" style={{ color: "var(--ink-3)" }}>
                   {es ? "Nada en esos ejes — prueba otro." : "Nothing on those axes — try another."}
                 </span>
               )}
             </div>
-            <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+            <ul className="m-0 border-t border-[var(--line)] p-0">
               {topMatches.map((f) => (
                 <li
                   key={f.id}
-                  className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-6"
+                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-6"
                 >
-                  <h3 className="m-0 text-[14.5px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
+                  <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
                   </h3>
-                  <p className="m-0 text-[13px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+                  <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
                     {es ? f.descEs : f.descEn}
                   </p>
-                  <span className="tnum text-[11px] text-tertiary sm:justify-self-end">
+                  <span className="tnum text-[12px] text-tertiary sm:justify-self-end">
                     {f.matches.length} {es ? "ejes" : "axes"}
                   </span>
                 </li>
@@ -285,20 +276,20 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
           // Empty state — show all features as a static grid
           <div>
             <div className="mb-4">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Todas las características" : "All features"} · {FEATURES.length}
               </span>
             </div>
-            <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+            <ul className="m-0 border-t border-[var(--line)] p-0">
               {FEATURES.map((f) => (
                 <li
                   key={f.id}
-                  className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
+                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
                 >
-                  <h3 className="m-0 text-[14.5px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
+                  <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
                   </h3>
-                  <p className="m-0 text-[13px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+                  <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
                     {es ? f.descEs : f.descEn}
                   </p>
                 </li>

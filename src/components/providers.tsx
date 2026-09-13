@@ -19,8 +19,7 @@ export function Providers({ children }: { children: ReactNode }) {
        preferencia del visitante lo aplica cada bloque `@media
        (prefers-reduced-motion: reduce)` de la hoja de estilos, que
        además llega a sitios donde `MotionConfig` no llegaba nunca: el
-       fondo grabado, las entradas de sección y las transiciones entre
-       páginas.
+       las entradas de sección y las transiciones entre páginas.
 
        CON UNA EXCEPCIÓN, y esta frase estuvo mintiendo hasta que se
        midió: lo que anima framer-motion NO lo toca ningún `@media`,

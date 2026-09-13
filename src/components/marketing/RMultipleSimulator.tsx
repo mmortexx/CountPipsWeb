@@ -35,7 +35,7 @@ import { computeExpectedMaxLossStreak } from "@/lib/trading/data";
  * ── Material ──────────────────────────────────────────────────────────
  * .tj-paper + .tj-paper-glow (papel translúcido cálido, halo champagne).
  */
-export function RMultipleSimulator({ num = "03" }: { num?: string }) {
+export function RMultipleSimulator() {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -259,17 +259,15 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
   ) => (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+        <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
           {label}
         </span>
         <span
-          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
+          className="tnum inline-flex items-baseline"
           style={{
-            fontSize: 13,
-            fontWeight: 700,
-            color: "rgb(var(--accent-base))",
-            background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-            border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+            fontSize: 15,
+            fontWeight: 600,
+            color: "var(--ink)",
             transition: "color 0.18s var(--ease-suave)",
           }}
         >
@@ -300,16 +298,12 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
   );
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
-              § {num}
-            </span>
-            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
-            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
+            <span className="eyebrow">
               {es ? "SIMULADOR" : "SIMULATOR"}
             </span>
           </div>
@@ -343,8 +337,8 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               de alargar el nombre entre parentesis — es el patron que ya
               usan los presets del proyector. */}
           <div className="mb-6">
-            <span className="mb-2 block font-mono text-[10px] uppercase tracking-wider text-tertiary">
-              {es ? "Arquetipos de trading predefinidos" : "Pre-calibrated trading archetypes"}
+            <span className="mb-2 block tnum text-[12px] text-tertiary">
+              {es ? "Perfiles de ejemplo" : "Example profiles"}
             </span>
             <div className="tj-segmentado tj-segmentado-apila" role="group">
               {[
@@ -380,7 +374,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
                       <span className="flex min-h-[2.5em] items-center justify-center">
                         {preset.label}
                       </span>
-                      <span className="mt-0.5 text-[9.5px] opacity-70">{preset.nota}</span>
+                      <span className="mt-0.5 text-[11px] opacity-70">{preset.nota}</span>
                     </span>
                   </button>
                 );
@@ -394,38 +388,33 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
             {slider(es ? "Win rate" : "Win rate", winRate, 30, 75, 1, setWinRate, " %", es ? "Porcentaje de aciertos" : "Win rate")}
             {slider(es ? "Ganancia media" : "Avg win (R)", avgWinR, 0.5, 5, 0.1, setAvgWinR, " R", es ? "Ganancia media en R" : "Average win in R")}
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
-            {slider(es ? "Riesgo/op." : "Risk/trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, " %", es ? "Riesgo por operación" : "Risk per trade")}
-            {slider(es ? "Retiro mensual ($)" : "Monthly withdrawal ($)", monthlyWithdrawal, 0, 5000, 100, setMonthlyWithdrawal, " $", es ? "Retiro mensual de beneficios" : "Monthly profit withdrawal")}
-            {slider(es ? "Semilla PRNG" : "PRNG Seed", seed, 1, 50, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
+            {slider(es ? "Riesgo por operación" : "Risk per trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, " %", es ? "Riesgo por operación" : "Risk per trade")}
+            {slider(es ? "Retiro mensual" : "Monthly withdrawal", monthlyWithdrawal, 0, 5000, 100, setMonthlyWithdrawal, " $", es ? "Retiro mensual de beneficios" : "Monthly profit withdrawal")}
+            {slider(es ? "Semilla" : "Seed", seed, 1, 50, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
           </div>
 
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="mt-6 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] text-[13px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-            style={{
-              background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-              color: "rgb(var(--accent-base))",
-              border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
-            }}
+            className="mt-5 -ml-1 inline-flex items-center gap-2 min-h-[44px] px-1 text-[14px] font-medium text-primary transition-colors duration-150 hover:text-[rgb(var(--accent-base))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             aria-label={es ? "Volver a simular con otra semilla aleatoria" : "Re-simulate with a different random seed"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M2.5 8a5.5 5.5 0 019.4-3.9M13.5 8a5.5 5.5 0 01-9.4 3.9M13 2.5v3h-3M3 13.5v-3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {es ? "Volver a tirar (Semilla +1)" : "Re-roll (Seed +1)"}
+            {es ? "Otra tirada" : "Re-roll"}
           </button>
         </div>
 
         {/* Right: results card */}
         <div
           className="tj-paper tj-paper-glow relative"
-          style={{ padding: 24, borderRadius: 3, border: "1px solid rgb(var(--divider) / 0.13)" }}
+          style={{ padding: 24, borderRadius: 3, border: "1px solid transparent" }}
         >
           {/* Expectancy + runs headline */}
           <div className="mb-5 flex items-baseline justify-between flex-wrap gap-2">
             <div>
-              <div className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
                 {es ? "Expectancy" : "Expectancy"}
               </div>
               <div className="flex items-baseline gap-3 mt-1">
@@ -438,20 +427,20 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               </div>
             </div>
             <div className="text-right">
-              <div className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Simulaciones deterministas" : "Deterministic simulations"}
+              <div className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
+                {es ? "Simulación" : "Simulation"}
               </div>
-              <div className="tnum" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{SIM_RUNS} runs (seed #{seed})</div>
+              <div className="tnum" style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{es ? `${SIM_RUNS} caminos · semilla ${seed}` : `${SIM_RUNS} paths · seed ${seed}`}</div>
             </div>
           </div>
 
           {/* Fan chart SVG */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
                 {es ? "Abanico de caminos" : "Path fan"} · {trades} {es ? "ops" : "trades"}
               </span>
-              <div className="flex items-center gap-3 tnum" style={{ fontSize: 9.5, color: "var(--ink-3)" }}>
+              <div className="flex items-center gap-3 tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-1.5 rounded-[1px]" style={{ background: "rgb(var(--accent-base) / 0.12)" }} /> P5–P95</span>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-1.5 rounded-[1px]" style={{ background: "rgb(var(--accent-base) / 0.28)" }} /> P25–P75</span>
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-[2px]" style={{ background: "rgb(var(--accent-base))" }} /> {es ? "Media" : "Mean"}</span>
@@ -506,7 +495,7 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               y el importe va abreviado: «18,9 k $» en vez de «18.906 US$»,
               que no cabe en 70 px. */}
           <div
-            className="mb-4 grid grid-cols-5 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-center font-mono"
+            className="mb-4 grid grid-cols-5 overflow-clip rounded-[8px] text-center tnum"
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
           >
             {[
@@ -529,12 +518,12 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
                   />
                 )}
                 <span
-                  className="tnum block text-[9.5px] font-semibold tracking-[0.1em]"
+                  className="tnum block text-[11px] font-semibold tracking-[0.08em]"
                   style={{ color: p.ref ? "rgb(var(--accent-base))" : "var(--ink-3)" }}
                 >
                   {p.k}
                 </span>
-                <span className="mt-0.5 block text-[9.5px] leading-[1.2] text-tertiary">{p.n}</span>
+                <span className="mt-0.5 block text-[11px] leading-[1.2] text-tertiary">{p.n}</span>
                 <span
                   className="tnum cifra-sm mt-1.5 block whitespace-nowrap font-bold"
                   style={{ color: p.col }}
@@ -561,31 +550,31 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
               Filetes entre columnas en vez de separacion: son cuatro
               lecturas de la misma simulacion, no cuatro tarjetas. */}
           <div
-            className="mb-4 grid grid-cols-2 overflow-clip rounded-[2px] text-center font-mono sm:grid-cols-4"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.10)" }}
+            className="mb-4 grid grid-cols-2 overflow-clip rounded-[8px] text-center tnum sm:grid-cols-4"
+            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid transparent" }}
           >
             {[
               {
                 t: es ? "Ruina" : "Ruin",
-                sub: "Monte Carlo",
+                sub: es ? "en la simulación" : "in the simulation",
                 v: fmtPct(c.probRuin, 1),
                 col: c.probRuin > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },
               {
                 t: es ? "Ruina" : "Ruin",
-                sub: es ? "Analítica" : "Analytical",
+                sub: es ? "por fórmula" : "by formula",
                 v: fmtPct(c.analyticalRuinProb, 1),
                 col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },
               {
                 t: es ? "Racha perdedora" : "Losing streak",
-                sub: es ? `Esperada · mediana ${c.medianMaxLossStreak}` : `Expected · median ${c.medianMaxLossStreak}`,
+                sub: es ? `esperada · mediana ${c.medianMaxLossStreak}` : `expected · median ${c.medianMaxLossStreak}`,
                 v: `~${c.theoreticalMaxLossStreak}`,
                 col: "var(--ink)",
               },
               {
                 t: es ? "Peor racha" : "Worst streak",
-                sub: "P95",
+                sub: es ? "en el 5\u00a0% de caminos peores" : "in the worst 5% of paths",
                 v: `${c.p95MaxLossStreak} ${es ? "ops" : "trades"}`,
                 col: "rgb(var(--pnl-neg))",
               },
@@ -599,12 +588,12 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
                 }`}
               >
                 <span
-                  className="tnum text-[9.5px] uppercase leading-[1.25] tracking-[0.12em]"
+                  className="tnum text-[12px] leading-[1.25]"
                   style={{ color: "var(--ink-3)" }}
                 >
                   {m.t}
                 </span>
-                <span className="mt-0.5 text-[9.5px] leading-[1.25] text-tertiary [overflow-wrap:anywhere]">
+                <span className="mt-0.5 text-[11px] leading-[1.25] text-tertiary [overflow-wrap:anywhere]">
                   {m.sub}
                 </span>
                 <span
@@ -619,13 +608,12 @@ export function RMultipleSimulator({ num = "03" }: { num?: string }) {
 
           {/* Disclaimer */}
           <div
-            className="rounded-[2px] px-3 py-2.5"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.06)" }}
+            className="border-t border-[var(--line)] pt-3"
           >
-            <p className="tnum m-0 text-[11px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
+            <p className="m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
               {es
-                ? "Simulación Monte Carlo con PRNG determinista (seed " + seed + "). 300 caminos muestreados de Bernoulli(" + fmtNum(winRate, 0) + "\u00a0%). Asume payouts fijos en R y riesgo compuesto. La realidad tiene colas más pesadas: el drawdown real puede superar el P10. No es consejo financiero."
-                : "Monte Carlo simulation with deterministic PRNG (seed " + seed + "). 300 paths sampled from Bernoulli(" + fmtNum(winRate, 0) + "%). Assumes fixed R payouts and compounding risk. Reality has heavier tails: actual drawdown may exceed P10. Not financial advice."}
+                ? "300 caminos con la semilla " + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."
+                : "300 paths with seed " + seed + ": each trade wins with " + fmtNum(winRate, 0) + "% probability, with fixed R wins and losses and compounding risk. Real markets have more extreme streaks, so your drawdown can be worse than these paths. Not financial advice."}
             </p>
           </div>
         </div>

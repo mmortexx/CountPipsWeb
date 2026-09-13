@@ -15,7 +15,7 @@ import {
 
 /**
  * PricingFAQ — small, pricing-specific accordion (4 items) shown on the
- * Pricing page between Comparison and TrustStrip.
+ * Pricing page between Comparison and BetaStatus.
  *
  * Distinct from the main marketing FAQ.tsx:
  *  - Narrower scope: only questions a trader has before requesting beta access
@@ -24,13 +24,13 @@ import {
  *  - Centered institutional header above the accordion (eyebrow + headline
  *    + lead + 3 reassurance pills) — mirrors the Pricing header rhythm so
  *    the two sections read as one continuous conversion story.
- *  - Single `.tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)]` container holds the
+ *  - Single `.tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)]` container holds the
  *    accordion; each item tints with `rgb(var(--divider)/0.04)` when open
  *    and picks up a subtle accent border + glow so the active item reads as
  *    "lit".
  *
  * Institutional polish (R2-b):
- *  - `.tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)]` container with `` elevation +
+ *  - `.tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)]` container with `` elevation +
  *    `p-2 md:p-3` padding so each accordion item has breathing room.
  *  - Accordion headers `text-sm font-medium text-primary` + the shadcn
  *    chevron (rotates 180° on open via `[&[data-state=open]>svg]:rotate-180`).
@@ -66,12 +66,8 @@ export function PricingFAQ() {
     <section
       id="pricing-faq"
       aria-label={es ? "Preguntas frecuentes sobre precios" : "Pricing FAQ"}
-      className="section-tight bg-veil relative overflow-clip scroll-mt-24"
+      className="section-tight relative overflow-clip scroll-mt-24"
     >
-      {/* Opt-in 3% fractalNoise grain — matches HeroVideo / Bento /
-          Pricing so the FAQ reads as a continuation of the same premium
-          printed surface. */}
-      <div className="grain absolute inset-0 pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 tj-container">
         {/* Centered header — eyebrow + headline + lead + reassurance
@@ -107,7 +103,7 @@ export function PricingFAQ() {
               <span
                 data-entra="ciclo"
                 key={label}
-                className="inline-flex items-center gap-[0.35rem] rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-secondary border border-[rgb(var(--divider)/0.10)] tnum"
+                className="inline-flex items-center gap-2 px-1 text-[13px] text-tertiary"
               >
                 <span className="size-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" aria-hidden="true" />
                 {label}
@@ -120,7 +116,7 @@ export function PricingFAQ() {
             `max-w-3xl` keeps the line-length comfortable for reading
             the answers; `mx-auto` centers it under the header. */}
         <Reveal delay={0.1} y={28}>
-          <div className="mt-10 max-w-3xl mx-auto tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-2 md:p-3">
+          <div className="mt-10 max-w-3xl mx-auto border-t border-[var(--line)]">
             <Accordion
               type="single"
               collapsible
@@ -186,8 +182,7 @@ export function PricingFAQ() {
           data-entra="traza"
           className="mt-12 h-px max-w-md mx-auto"
           style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.4) 50%, transparent 100%)",
+            background: "var(--line)",
             transformOrigin: "left center",
           }}
         />

@@ -138,15 +138,15 @@ export function esquemasGlobales(
   const inicio = siteUrl(es ? "/" : "/en/");
 
   const descripcionApp = es
-    ? "El diario de trading profesional, nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y datos 100 % locales."
-    : "The professional trading journal, native to Windows. Explore an interactive demo with institutional metrics, discipline and 100 % local data.";
+    ? "El diario de trading profesional, nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y tus datos en tu equipo."
+    : "The professional trading journal, native to Windows. Explore an interactive demo with institutional metrics, discipline and your data on your machine.";
 
   const funciones = es
     ? [
         "Métricas institucionales (Sharpe, Profit Factor, Expectancy, R-multiple)",
-        "Curva de equity y drawdown en tiempo real",
-        "Guardián de disciplina: frenos antes de operar fuera de reglas",
-        "Datos 100 % locales, sin nube, sin suscripciones",
+        "Curva de equity y drawdown",
+        "Guardián de disciplina: semáforo de riesgo y freno opcional",
+        "Datos en tu equipo, sin cuenta y sin telemetría",
         "Playbooks y plantillas de trading",
         "Calendario de P&L y heatmap por día/hora",
         "Diario narrativo con anotaciones por operación",
@@ -155,9 +155,9 @@ export function esquemasGlobales(
       ]
     : [
         "Institutional metrics (Sharpe, Profit Factor, Expectancy, R-multiple)",
-        "Real-time equity curve and drawdown",
-        "Discipline guardian: brakes before trading outside your rules",
-        "100 % local data, no cloud, no subscriptions",
+        "Equity curve and drawdown",
+        "Discipline guardian: risk light and optional hard brake",
+        "Data on your machine, no account and no telemetry",
         "Playbooks and trading templates",
         "P&L calendar and day/hour heatmap",
         "Narrative journal with per-trade annotations",
@@ -329,11 +329,11 @@ export function esquemasTrader(
   const descripcion = {
     es: {
       manual: "Métricas, playbooks y revisión de operaciones para traders manuales.",
-      prop: "Riesgo visible, reglas y track record para traders de prop firms.",
+      prop: "Reglas de la firma, aviso de riesgo e informe de evaluación para prop firms.",
     },
     en: {
       manual: "Metrics, playbooks and trade review for manual traders.",
-      prop: "Visible risk, rules and track record for prop-firm traders.",
+      prop: "Firm rules, risk warnings and an evaluation report for prop-firm traders.",
     },
   }[lang][perfil];
 

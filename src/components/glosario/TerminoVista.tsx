@@ -41,13 +41,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
 
   return (
     <section
-      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
-         Sin superficie propia, su texto cae directamente sobre el atlas
-         grabado del fondo, que se dibuja a pantalla completa en TODAS
-         las anchuras. Medido antes de ponerlo: el fondo bajo los
-         rótulos pequeños llegaba a 1,3:1 en el peor píxel, con más de
-         un 20 % del área del texto por debajo del mínimo AA. */
-      className="section-tight bg-veil"
+      className="section-tight"
     >
       <div className="tj-container">
         <div className="mx-auto w-full max-w-[62ch]">
@@ -60,13 +54,13 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
 
           {/* Familia */}
           <Reveal delay={0.06}>
-            <div className="mt-7 flex flex-wrap items-center gap-2.5 text-[13px]">
+            <div className="mt-7 flex flex-wrap items-center gap-2.5 text-[14px]">
               <span className="text-tertiary">
                 {es ? "Familia:" : "Family:"}
               </span>
               <Link
                 href={`/glosario#${termino.category}`}
-                className="inline-flex min-h-[44px] items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.08)] px-3 font-medium text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.15)] transition-colors"
+                className="inline-flex min-h-[44px] items-center rounded-[4px] border border-[var(--chip-line)] bg-[var(--chip)] px-3 font-medium text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.15)] transition-colors"
               >
                 {es ? familia.es : familia.en}
               </Link>
@@ -79,7 +73,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           {/* Fórmula Matemática Cuantitativa (si existe para el término) */}
           {FORMULAS_GLOSARIO[termino.slug] && (
             <Reveal delay={0.08}>
-              <div className="mt-7 p-4 rounded-[2px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]">
+              <div className="mt-7 p-4 rounded-[4px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]">
                 {/* Aqui iba un sello que decia "LaTeX". Ya no describe nada:
                     la formula se escribe en notacion Unicode. */}
                 <div className="text-xs text-tertiary uppercase tracking-wider mb-2 font-mono">
@@ -100,10 +94,10 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             <Reveal delay={0.1}>
               <Link
                 href={herramienta}
-                className="tj-paper mt-8 flex items-center justify-between gap-4 rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 transition-colors hover:border-[rgb(var(--accent-base)/0.35)]"
+                className="tj-paper mt-8 flex items-center justify-between gap-4 rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-4 transition-colors hover:border-[rgb(var(--accent-base)/0.35)]"
               >
                 <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="block text-[12px] uppercase tracking-[0.08em] text-tertiary">
                     {es ? "Calcúlalo" : "Work it out"}
                   </span>
                   <span className="mt-1 block text-[15px] font-medium text-primary">
@@ -145,7 +139,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                 <p className="eyebrow m-0">
                   {es ? "De la misma familia" : "Same family"}
                 </p>
-                <ul className="mt-4 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+                <ul className="mt-4 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
                   {cercanos.map((t) => (
                     <li key={t.slug} className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
                       <Link
@@ -158,7 +152,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                         >
                           {t.term}
                         </span>
-                        <span className="line-clamp-2 text-[13px] leading-[1.5] text-secondary">
+                        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary">
                           {es ? t.es : t.en}
                         </span>
                       </Link>
@@ -181,7 +175,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   href={`/glosario/${anterior.slug}`}
                   className="group flex min-h-[44px] max-w-[46%] flex-col justify-center text-left"
                 >
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[12px] uppercase tracking-[0.08em] text-tertiary">
                     ← {es ? "Anterior" : "Previous"}
                   </span>
                   <span
@@ -199,7 +193,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   href={`/glosario/${siguiente.slug}`}
                   className="group flex min-h-[44px] max-w-[46%] flex-col justify-center text-right"
                 >
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[12px] uppercase tracking-[0.08em] text-tertiary">
                     {es ? "Siguiente" : "Next"} →
                   </span>
                   <span

@@ -53,24 +53,12 @@ export function GlosarioIndice() {
 
   return (
     <section
-      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
-         Sin superficie propia, su texto cae directamente sobre el atlas
-         grabado del fondo, que se dibuja a pantalla completa en TODAS
-         las anchuras. Medido antes de ponerlo: el fondo bajo los
-         rótulos pequeños llegaba a 1,3:1 en el peor píxel, con más de
-         un 20 % del área del texto por debajo del mínimo AA. */
-      className="section-tight bg-veil"
+      className="section-tight"
     >
       <div className="tj-container">
         {/* Buscador */}
         <Reveal>
-          {/* `max-w-2xl`, no `max-w-xl`. El ancho anterior se midió contra
-              el inglés: sus seis fichas de familia suman 459 px y entraban
-              en los 542 útiles. Las españolas suman 548 y se quedaban a
-              SEIS píxeles, así que "Psicología" caía sola a una segunda
-              línea — sólo en español, y en todas las anchuras a partir de
-              `sm`, no en un punto de ruptura concreto. */}
-          <div className="tj-paper mx-auto max-w-2xl rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-3 sm:p-4">
+          <div className="max-w-2xl">
             <label htmlFor="glos-q" className="sr-only">
               {es ? "Buscar un término" : "Search a term"}
             </label>
@@ -84,15 +72,15 @@ export function GlosarioIndice() {
                   ? "Busca por nombre o por lo que significa…"
                   : "Search by name or by what it means…"
               }
-              className="h-12 w-full rounded-[2px] border border-[rgb(var(--divider)/0.16)] bg-[rgb(var(--divider)/0.04)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.5)] focus:ring-1 focus:ring-[rgb(var(--accent-base)/0.5)]"
+              className="h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]"
             />
             {/* Category Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
+            <div className="flex flex-wrap items-center gap-1.5 mt-3.5">
               <button
                 type="button"
                 aria-pressed={activeCategory === "all"}
                 onClick={() => setActiveCategory("all")}
-                className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[4px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                   activeCategory === "all"
                     ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                     : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -108,7 +96,7 @@ export function GlosarioIndice() {
                     type="button"
                     aria-pressed={activeCategory === cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                    className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[4px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                       activeCategory === cat
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                         : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -120,7 +108,7 @@ export function GlosarioIndice() {
               })}
             </div>
 
-            <p className="mt-2.5 text-center text-[13px] text-tertiary">
+            <p className="mt-2.5 text-[14px] text-tertiary">
               {filtrados
                 ? `${filtrados.length} ${
                     filtrados.length === 1
@@ -146,7 +134,7 @@ export function GlosarioIndice() {
                   : "Nothing by that name. Try a word from the definition."}
               </p>
             ) : (
-              <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+              <ul className="m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
                 {filtrados.map((t) => (
                   <TarjetaTermino key={t.slug} termino={t} es={es} />
                 ))}
@@ -166,7 +154,7 @@ export function GlosarioIndice() {
                   <section id={cat} className="scroll-mt-28">
                     <div className="flex items-baseline gap-3">
                       <span
-                        className="tnum text-[12px] font-semibold"
+                        className="tnum text-[13px] font-semibold"
                         style={{ color: "rgb(var(--accent-base))" }}
                       >
                         {String(i + 1).padStart(2, "0")}
@@ -174,14 +162,14 @@ export function GlosarioIndice() {
                       <h2 className="m-0 text-[22px] font-semibold tracking-tight text-primary">
                         {es ? meta.es : meta.en}
                       </h2>
-                      <span className="tnum text-[13px] text-tertiary">
+                      <span className="tnum text-[14px] text-tertiary">
                         {lista.length}
                       </span>
                     </div>
                     <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-secondary">
                       {es ? meta.descEs : meta.descEn}
                     </p>
-                    <ul className="mt-6 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+                    <ul className="mt-6 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
                       {lista.map((t) => (
                         <TarjetaTermino key={t.slug} termino={t} es={es} />
                       ))}
@@ -212,11 +200,11 @@ function TarjetaTermino({
       >
         <span
           lang="en"
-          className="text-[14.5px] font-semibold tracking-tight text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
+          className="text-[15px] font-semibold tracking-tight text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
         >
           {termino.term}
         </span>
-        <span className="line-clamp-2 text-[13.5px] leading-[1.5] text-secondary">
+        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary">
           {es ? termino.es : termino.en}
         </span>
       </Link>

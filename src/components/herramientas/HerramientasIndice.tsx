@@ -31,21 +31,21 @@ export function HerramientasIndice() {
   return (
     <section className="section-tight">
       <div className="tj-container">
-        <div className="tj-paper tj-paper-dense overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)]">
+        <div className="border-t border-[var(--line)]">
           <div
-            className="hidden items-center gap-4 border-b border-[rgb(var(--divider)/0.10)] px-5 py-2.5 sm:grid sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto]"
+            className="hidden items-center gap-4 border-b border-[var(--line)] py-2.5 sm:grid sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto]"
             aria-hidden
           >
-            <span className="tnum text-[10.5px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Cód." : "Code"}
             </span>
-            <span className="tnum text-[10.5px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Instrumento" : "Instrument"}
             </span>
-            <span className="tnum text-[10.5px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Entrega" : "Output"}
             </span>
-            <span className="tnum text-[10.5px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Abrir" : "Open"}
             </span>
           </div>
@@ -55,14 +55,14 @@ export function HerramientasIndice() {
               const codigo = `H-${String(i + 1).padStart(2, "0")}`;
               const entrega = ENTREGA[h.slug];
               return (
-                <li key={h.slug} className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
+                <li key={h.slug} className="border-b border-[var(--line)]">
                   <Reveal delay={i * 0.03}>
                     <Link
                       href={`/herramientas/${h.slug}`}
-                      className="group grid min-h-[72px] grid-cols-1 items-center gap-1 px-5 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
+                      className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
                     >
                       <span
-                        className="tnum text-[11.5px] font-semibold tracking-wide"
+                        className="tnum text-[13px] font-semibold tracking-wide"
                         style={{ color: "rgb(var(--accent-base))" }}
                       >
                         {codigo}
@@ -71,16 +71,16 @@ export function HerramientasIndice() {
                         <span className="block text-[15.5px] font-semibold tracking-tight text-primary">
                           {es ? h.tituloEs : h.tituloEn}
                         </span>
-                        <span className="mt-0.5 block text-[13px] leading-[1.45] text-secondary">
+                        <span className="mt-0.5 block text-[14px] leading-[1.45] text-secondary">
                           {es ? h.resumenEs : h.resumenEn}
                         </span>
                       </span>
-                      <span className="tnum hidden text-[12.5px] text-tertiary sm:block">
+                      <span className="tnum hidden text-[13px] text-tertiary sm:block">
                         {es ? entrega?.es : entrega?.en}
                       </span>
                       <span
                         aria-hidden
-                        className="mt-1 text-[12.5px] font-medium sm:mt-0 sm:justify-self-end"
+                        className="mt-1 text-[13px] font-medium sm:mt-0 sm:justify-self-end"
                         style={{ color: "rgb(var(--accent-base))" }}
                       >
                         {es ? "Abrir →" : "Open →"}
@@ -95,10 +95,10 @@ export function HerramientasIndice() {
               <Reveal delay={HERRAMIENTAS.length * 0.03}>
                 <Link
                   href="/test"
-                  className="group grid min-h-[72px] grid-cols-1 items-center gap-1 px-5 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
+                  className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
                 >
                   <span
-                    className="tnum text-[11.5px] font-semibold tracking-wide"
+                    className="tnum text-[13px] font-semibold tracking-wide"
                     style={{ color: "rgb(var(--accent-base))" }}
                   >
                     T-01
@@ -107,18 +107,18 @@ export function HerramientasIndice() {
                     <span className="block text-[15.5px] font-semibold tracking-tight text-primary">
                       {es ? "Test de disciplina" : "Discipline test"}
                     </span>
-                    <span className="mt-0.5 block text-[13px] leading-[1.45] text-secondary">
+                    <span className="mt-0.5 block text-[14px] leading-[1.45] text-secondary">
                       {es
                         ? "Quince preguntas sobre lo que haces cuando el mercado va en contra."
                         : "Fifteen questions about what you do when the market turns against you."}
                     </span>
                   </span>
-                  <span className="tnum hidden text-[12.5px] text-tertiary sm:block">
+                  <span className="tnum hidden text-[13px] text-tertiary sm:block">
                     {es ? "Perfil en 5 ejes" : "5-axis profile"}
                   </span>
                   <span
                     aria-hidden
-                    className="mt-1 text-[12.5px] font-medium sm:mt-0 sm:justify-self-end"
+                    className="mt-1 text-[13px] font-medium sm:mt-0 sm:justify-self-end"
                     style={{ color: "rgb(var(--accent-base))" }}
                   >
                     {es ? "Abrir →" : "Open →"}
@@ -134,20 +134,19 @@ export function HerramientasIndice() {
               Esta línea dice lo que más distingue al producto —que las
               ocho herramientas no mandan nada a ningún sitio— y estaba
               puesta como una nota al pie: `text-tertiary`, el color más
-              apagado del sistema, a 13,5 px, centrada y justo sobre la
-              zona más densa del grabado. Era, literalmente, el texto
+              apagado del sistema, a 13,5 px, centrada y al final de la
+              página. Era, literalmente, el texto
               menos legible de la página, y el que más peso comercial
               tiene.
 
-              Se apoya en papel, que es el recurso que este sitio usa
-              cuando un texto tiene que ganarle al fondo, sube a tinta
+              Se apoya en una tarjeta, sube a tinta
               secundaria y se le pone delante su sello. Así se lee como
               lo que es: una garantía firmada al cierre de la sección, no
               un descargo de responsabilidad. */}
-          <div className="tj-paper mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 rounded-[2px] border border-[rgb(var(--divider)/0.13)] px-6 py-4 sm:flex-row sm:gap-5 sm:py-3.5">
+          <div className="mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 sm:flex-row sm:gap-5">
             <span
-              className="shrink-0 font-mono text-[10px] uppercase"
-              style={{ letterSpacing: "0.16em", color: "rgb(var(--sig-green))" }}
+              className="shrink-0 tnum text-[12px]"
+              style={{ color: "rgb(var(--sig-green))" }}
             >
               {es ? "Sin servidor" : "No server"}
             </span>
@@ -156,10 +155,10 @@ export function HerramientasIndice() {
               className="hidden h-4 w-px shrink-0 sm:block"
               style={{ background: "rgb(var(--divider) / 0.22)" }}
             />
-            <p className="m-0 text-center text-[13.5px] leading-relaxed text-secondary sm:text-left">
+            <p className="m-0 text-center text-[14px] leading-relaxed text-secondary sm:text-left">
               {es
-                ? "Todas funcionan en tu navegador. No se envía nada a ningún servidor, no piden correo y no hay registro."
-                : "They all run in your browser. Nothing is sent to any server, no email is asked for and there is no sign-up."}
+                ? "Todas funcionan en tu navegador: las cifras que escribes no se envían a ningún servidor, no piden correo y no hay registro."
+                : "They all run in your browser: the numbers you type are not sent to any server, no email is asked for and there is no sign-up."}
             </p>
           </div>
         </Reveal>

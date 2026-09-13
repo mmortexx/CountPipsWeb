@@ -28,53 +28,51 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   const { t, lang } = useLang();
   const es = lang === "es";
 
+  /* Los mismos niveles que `LicenseGate` y `PLAN.md` §10 del programa. */
   const coreFeatures = es
     ? [
-        // «Diario» y no «Journal»: es el nombre que el producto se da a sí
-        // mismo en el resto del sitio. Ver el commit del vocabulario.
-        "Diario completo + 40+ métricas",
-        "Calendario y curva de equity",
-        "Gestión de riesgo",
+        "Diario, 40+ métricas y calendario",
+        "Curva de equity y drawdown",
+        "Gestión de riesgo y freno duro opcional",
         "Psicología y disciplina",
-        "Importación CSV",
+        "Playbook con estadísticas en vivo",
+        "Importación CSV y exportación completa",
+        "Copias de seguridad automáticas",
+        "Informe mensual en PDF",
         "2 cuentas de trading",
-        "Playbook con stats en vivo",
-        "Informes PDF básicos",
       ]
     : [
-        "Full journal + 40+ metrics",
-        "Calendar and equity curve",
-        "Risk management",
+        "Journal, 40+ metrics and calendar",
+        "Equity curve and drawdown",
+        "Risk management and optional hard brake",
         "Psychology and discipline",
-        "CSV import",
+        "Playbook with live statistics",
+        "CSV import and full export",
+        "Automatic backups",
+        "Monthly PDF report",
         "2 trading accounts",
-        "Playbook with live stats",
-        "Basic PDF reports",
       ];
 
   const proFeatures = es
     ? [
         "Todo lo de Core",
         "Cuentas ilimitadas",
-        /* «Modo prop firm», como lo llama la tabla comparativa de esta
-           MISMA página. Estaba en inglés en la lista y en castellano en la
-           tabla, a dos scrolls de distancia. */
-        "Modo prop firm",
-        "Informes PDF avanzados",
-        "Simulador Monte Carlo",
-        "Risk of ruin",
-        "Informe de track record",
-        "Importador de rivales (5 min)",
+        "Modo prop firm e informe de evaluación en PDF",
+        "Simulador Monte Carlo y riesgo de ruina",
+        "Experimentos con validación estadística",
+        "Módulo fiscal y página Negocio",
+        "API local",
+        "Alertas de mercado, curva de tipos y fortaleza de divisas",
       ]
     : [
         "Everything in Core",
         "Unlimited accounts",
-        "Prop Firm Mode",
-        "Advanced PDF reports",
-        "Monte Carlo simulator",
-        "Risk of ruin",
-        "Track record report",
-        "Rival importer (5 min)",
+        "Prop firm mode and PDF evaluation report",
+        "Monte Carlo simulator and risk of ruin",
+        "Experiments with statistical validation",
+        "Tax module and Business page",
+        "Local API",
+        "Market alerts, yield curve and currency strength",
       ];
 
   const plans: Plan[] = [
@@ -94,8 +92,8 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
       price: PRECIO_PRO,
       popular: true,
       tagline: es
-        ? "Controles avanzados para exigencia prop y multi-cuenta."
-        : "Advanced controls for prop-firm and multi-account work.",
+        ? "Para prop firms, varias cuentas, fiscalidad y análisis avanzado."
+        : "For prop firms, multiple accounts, tax and advanced analysis.",
       features: proFeatures,
       cta: es ? "Solicitar acceso anticipado" : "Request early access",
     },
@@ -104,11 +102,8 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   return (
     <section
       id="pricing"
-      className="section cv-auto bg-veil relative overflow-clip scroll-mt-24"
+      className={`section cv-auto relative overflow-clip scroll-mt-24 ${standalone ? "!pt-[clamp(2.5rem,5vw,4rem)]" : ""}`}
     >
-      {/* Opt-in 3% fractalNoise grain — matches HeroVideo / Bento so the
-          conversion section reads as a premium printed surface. */}
-      <div className="grain absolute inset-0 pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 tj-container">
         {/* Header — centered, matches Stripe / Linear / Vercel pricing
@@ -171,7 +166,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
           </ul>
         </Reveal>
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-7 md:gap-6 max-w-4xl mx-auto items-stretch">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 max-w-[60rem] mx-auto items-stretch">
           {plans.map((plan, i) => (
             <Reveal key={plan.id} delay={0.12 + i * 0.08} y={32} className="h-full">
               <PlanCard plan={plan} es={es} />
@@ -185,14 +180,14 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             argumento de venta real del producto: los datos no salen del
             equipo. */}
         <Reveal delay={0.16}>
-          <div className="mt-12 flex items-center justify-center gap-2.5 text-sm text-tertiary">
+          <div className="mt-12 flex items-start justify-center gap-2.5 text-center text-sm text-tertiary sm:items-center">
             <span
               className="text-[rgb(var(--accent-base))] inline-flex"
               aria-hidden="true"
             >
               <ShieldIcon />
             </span>
-            <span className="inline-flex items-center gap-2">
+            <span className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
               <span className="font-medium text-secondary">
                 {es ? "Demo pública" : "Public demo"}
               </span>
@@ -214,7 +209,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             está explicado que las condiciones se publican al abrir la
             venta, que hoy es la respuesta verdadera. */}
         <Reveal delay={0.2}>
-          <p className="mt-4 text-center text-[13px] text-tertiary">
+          <p className="mt-4 text-center text-[14px] text-tertiary">
             {es ? "Son precios de lanzamiento previstos. " : "These are planned launch prices. "}
             <Link
               href="/beta"
@@ -237,245 +232,51 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   return (
     <div
       data-entra
-      /* Sin `whileHover`. Los planes se levantaban y escalaban al pasar
-         el ratón: eso es lo que hace una tarjeta que se puede coger, y
-         una columna de una tabla de tarifas no se coge. Además el
-         escalado desplazaba el precio medio píxel y lo dejaba borroso
-         durante la transición — en la cifra que decide la compra. La
-         respuesta al puntero la da ahora el filete superior. */
-      /* ── Tabla de tarifas, no tarjetas flotantes ──────────────────
-         Los dos planes eran cajas: papel translúcido, borde propio,
-         sombra de elevación, esquina redondeada y —en el Pro— un halo
-         de acento. Ese es el patrón del SaaS de consumo, y es lo que
-         hacía que la página que MÁS tiene que transmitir seriedad
-         pareciera la de una aplicación de suscripción cualquiera.
-         Cómo publica sus tarifas una institución: en columnas, con
-         filetes. El plan recomendado no se ilumina — se marca con un
-         filete superior más grueso, que es una señal y no un adorno.
-         La caja compite con lo que contiene; aquí lo que tiene que
-         mandar es el precio y lo que incluye.
-         Se retira también la elevación: una columna de tabla no flota.
-         El `isolation: isolate` se conserva porque el Pro sigue
-         necesitando su propio contexto de apilado para la marca de
-         agua. */
-      className={`relative p-6 sm:p-8 h-full flex flex-col transition-[border-color] duration-300 ease-[var(--ease-suave)] ${
-        isPro
-          ? "border-t-2 border-t-[rgb(var(--accent-base))] border-x border-b border-x-[rgb(var(--divider)/0.14)] border-b-[rgb(var(--divider)/0.14)]"
-          : "border-t-2 border-t-[rgb(var(--divider)/0.28)] border-x border-b border-x-[rgb(var(--divider)/0.14)] border-b-[rgb(var(--divider)/0.14)] hover:border-t-[rgb(var(--divider)/0.45)]"
+      className={`relative flex h-full flex-col rounded-[14px] p-7 sm:p-9 ${
+        isPro ? "bg-[var(--surface)] ring-1 ring-[var(--line-2)]" : "bg-[var(--surface)]"
       }`}
-      style={
-        isPro
-          ? {
-              // Establish a stacking context so the "PREMIUM" watermark
-              // (z-index: -1) stays trapped inside this card — paints
-              // above the liquid-glass fill but below the in-flow text content.
-              isolation: "isolate",
-            }
-          : undefined
-      }
     >
-      {isPro && (
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20">
-          {/* "Más popular" badge — accent-tinted gradient pill with a soft
-              outer glow. Replaces the prior hardcoded white-on-black chip
-              with a premium green-on-green treatment that ties to the
-              accent ring + glow already framing the Pro card, so the whole
-              Pro surface reads as a single premium object (R20-3c). */}
-          <span
-            className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] border uppercase tracking-[0.1em]"
-            style={{
-              /* Fondo de acento PLANO con la tinta que le corresponde.
-                 Antes el texto era `--accent-pressed` (#B0905A) sobre un
-                 degradado de `--accent-base` → `--accent-hover`: dorado
-                 sobre dorado, ~1.4:1 de contraste. La insignia se veía
-                 como una barra dorada maciza y SIN TEXTO.
-                 El color sale ahora de `--accent-ink` en vez de un
-                 #1A1917 fijo: ese valor solo despeja AA cuando el acento
-                 es claro, y hay dos temas (claro y estilo clásico) donde
-                 el acento es oscuro y hacía falta la tinta invertida.
-                 Cada tema declara la suya en globals.css. */
-              background: "rgb(var(--accent-base))",
-              color: "rgb(var(--accent-ink))",
-              borderColor: "rgb(var(--accent-base))",
-            }}
-          >
-            {/* ── NO DICE «MÁS POPULAR» ────────────────────────────────
-                Decía «Más popular» en un producto que no se ha vendido
-                una sola vez — tres párrafos por encima de donde la misma
-                página declara que la compra se habilita "con la entrega
-                comercial" y que los precios son "previstos". Popular
-                ¿entre quién? Era el único reclamo del sitio sin nada
-                detrás, y estaba justo en la página donde más caro sale:
-                el visitante que lo pilla deja de creerse también lo que
-                sí es verdad.
-
-                Se sustituye por una distinción que se puede comprobar
-                mirando la propia tabla: Pro es el plan que incluye todo.
-                Cuando existan ventas y uno sea de verdad el más elegido,
-                se podrá decir — y entonces será un dato, no un adorno. */}
-            {es ? "Incluye todo" : "Everything included"}
-          </span>
-        </div>
-      )}
-
-      {/* Aquí había una marca de agua: la palabra "PREMIUM" a 8 rem,
-          rotada −12°, al 4 % de opacidad, cruzando la tarjeta de Pro.
-          Se justificaba como "papelería de lujo", pero es el gesto de
-          plantilla que le quedaba al sitio: decir "premium" es
-          exactamente lo que no hace un producto que lo sea, y el resto
-          de la página lleva meses retirando adornos por ese mismo
-          criterio (el cristal, las cajas, las esquinas redondeadas).
-          Una tarjeta cuyo precio es 249 $ no necesita un sello que
-          anuncie su categoría; la anuncia la tabla de al lado. */}
-
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-xl md:text-2xl font-semibold text-primary tracking-tight min-w-0 break-words">
           {plan.name}
         </h3>
-        {/* "Para siempre" / "Forever" credential pill — Pro gets an
-            accent-tinted bg + accent border so its forever tag reads as
-            a premium credential distinct from Core's neutral pill
-            (R24-1d). text-primary kept for full WCAG-AA contrast on the
-            tinted backdrop in both themes. */}
-        <span
-          className={`inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] border shrink-0 ${
-            isPro
-              ? "bg-[rgb(var(--accent-base)/0.12)] text-primary border-[rgb(var(--accent-base)/0.32)]"
-              : "bg-[rgb(var(--divider)/0.05)] text-tertiary border-[rgb(var(--divider)/0.10)]"
-          }`}
-        >
-          {es ? "Lanzamiento" : "Launch"}
-        </span>
+        {isPro && (
+          <span className="inline-flex shrink-0 items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-2.5 py-1.5 text-[12px] font-semibold leading-none text-[rgb(var(--accent-ink))]">
+            {es ? "Incluye todo" : "Everything included"}
+          </span>
+        )}
       </div>
 
-      {/* Plan tagline — one line of positioning copy right under the name.
-          Soft secondary color + tight leading keep it readable without
-          competing with the price below. */}
-      <p className="mt-2 text-sm text-secondary leading-snug min-h-[2.6em]">
+      <p className="mt-2 text-[15px] text-secondary leading-snug min-h-[2.6em]">
         {plan.tagline}
       </p>
 
-      {/* Price — big visual anchor. `$` is set smaller and baseline-aligned
-          so it reads as a currency prefix; the bold tabular-num number is
-          the visual anchor; the `/ pago único` suffix sits inline to the
-          right at the baseline in a small tertiary label. Both cards share
-          the exact same baseline grid so Core $149 and Pro $249 sit on
-          identical vertical lines — pixel-perfect parity. The `$` uses
-          text-secondary (not the dimmest text-tertiary token) so the
-          currency mark reads as part of the price in both themes rather
-          than a stray dim glyph (R24-1d). */}
-      <div className="mt-6 flex items-baseline gap-1 min-w-0">
-        <span className="text-2xl md:text-3xl font-semibold text-secondary tnum">
-          $
-        </span>
-        {/* El precio NO se anima. Estaba con `CountUp` subiendo de 0 a
-            149 en 1,6 s, y esta misma tarjeta ya razona treinta líneas
-            más arriba por qué se le quitó el `whileHover`: "el escalado
-            desplazaba el precio medio píxel y lo dejaba borroso… en la
-            cifra que decide la compra". Un cuentakilómetros hace lo
-            mismo pero durante segundo y medio, y además obliga a leer
-            dos veces para saber cuánto cuesta. El argumento valía para
-            el hover y vale igual aquí. */}
-        <span className="text-5xl md:text-6xl font-bold text-primary tnum leading-[0.95]">
+      <div className="mt-8 flex items-baseline gap-1 min-w-0">
+        <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
+        <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
           {plan.price}
         </span>
       </div>
 
-      {/* El «/ precio previsto» era una nota al pie de la cifra, en gris
-          terciario, del tamaño de un pie de foto: la letra pequeña de lo
-          único que el visitante ha venido a leer. Pasa a ser el sello, que
-          es la misma pieza que marca todo lo demás que aún no existe en
-          este sitio — y que dice también CUÁNDO deja de estar previsto, que
-          es la pregunta que sigue. */}
       <SelloPrevisto
-        className="mt-3"
+        className="mt-4 self-start"
         es="Precio previsto"
         en="Planned price"
         detalleEs="se fija con la entrega comercial"
         detalleEn="set at commercial launch"
       />
 
-      <div className="divider-grad my-6" />
-
-      {/* Filete de acento en el canto superior de la tarjeta Pro. Era un
-          degradado de 90° que se desvanecía por los dos extremos y con las
-          esquinas redondeadas del todo (`rounded-full`): dos cosas que esta
-          dirección no hace — la densidad no se construye con transiciones y
-          el canto del sistema es de 2 px. Un filete tiene principio y
-          final, como el de una tabla. */}
-      {isPro && (
-        <div
-          aria-hidden="true"
-          className="absolute top-0 left-6 right-6 h-[2px] pointer-events-none"
-          style={{ backgroundColor: "rgb(var(--accent-base) / 0.85)" }}
-        />
-      )}
-
-      <ul className="space-y-3.5 flex-1">
-        {plan.features.map((f) => (
-          <li key={f} className="flex items-start gap-3 text-sm">
-            <span
-              className={`shrink-0 mt-0.5 ${
-                isPro
-                  ? "inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-[rgb(var(--accent-base)/0.14)] ring-1 ring-inset ring-[rgb(var(--accent-base)/0.26)] text-[rgb(var(--accent-base))]"
-                  /* Verde de SEMÁFORO, no de P&L. En oscuro `--pnl-pos`
-                     es #00F5A0, el menta de neón que aquí significa
-                     dinero ganado; un check de «el plan lo incluye» habla
-                     de estado, no de dinero. `--sig-green` (#3DAE73) dice
-                     lo mismo sin invocar la caja. */
-                  : "text-signal-green"
-              }`}
-              aria-hidden="true"
-            >
-              <CheckIcon tinta={isPro ? "rgb(var(--accent-ink))" : "rgb(var(--sig-ink))"} />
-            </span>
-            <span className="text-secondary leading-[1.6] min-w-0 break-words">{f}</span>
-          </li>
-        ))}
-      </ul>
-
-      {/* CTA — auto-width primary button (≤260px) centered under the feature
-          list. Per the P7 spec, the Pro plan's primary action uses the brand
-          gold accent fill (accent-base bg + accent-ink text) so the
-          recommended tier reads as the dominant CTA on the page; Core keeps
-          the restrained dark primary treatment so the two CTAs read as a
-          clear hierarchy (Pro = accent / Core = neutral) rather than a pair
-          of identical buttons. `h-12` keeps the tap target at 48px (≥44px
-          floor). `w-fit max-w-[260px]` makes the button auto-width on every
-          breakpoint instead of stretching as a full-width bar (the user
-          complaint) — `mx-auto` via the flex justify-center parent centers
-          it under the price column. */}
       <div
         data-entra
-        className="tj-pulsa mt-8 flex justify-center"
+        className="mt-8"
       >
-        {/* Este botón apuntaba a `href="#"` mientras no hubiera pasarela de
-            pago. La intención era correcta —no se puede cobrar todavía—,
-            pero el resultado no: es el ÚLTIMO clic del embudo. «Comprar»
-            en la barra, en la portada y en el resumen traen hasta aquí,
-            el visitante compara los dos planes, elige, pulsa... y la
-            página salta al principio sin decir nada. Se pierde justo a
-            quien ya había decidido.
-
-            La lista de espera existe, funciona y está en ESTA misma
-            página, dos secciones más abajo. Mientras no haya cobro, ese
-            es el destino: en lugar de perder al interesado, se recoge su
-            correo. `scroll-behavior: smooth` y `scroll-padding-top` ya
-            están en `html`, así que baja suave y sin quedar tapado por la
-            barra.
-
-            Cuando entre el cobro, esto pasa a ser la URL del carrito. */}
         <MagneticButton
           href="/beta"
           strength={0.18}
           className={
-            // Pro: gold accent fill + accent-ink text + accent-tinted hover
-            // (deepens to accent-hover, never drops contrast). Core: dark
-            // primary surface (txt-primary bg + bg text) with the same
-            // shadow + lift treatment for visual parity.
             isPro
-              ? "group w-full max-w-[260px] sm:w-fit sm:max-w-[260px] flex items-center justify-center gap-2 h-12 px-6 rounded-[2px] text-sm font-semibold transition-colors duration-200 bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-              : "group w-full max-w-[260px] sm:w-fit sm:max-w-[260px] flex items-center justify-center gap-2 h-12 px-6 rounded-[2px] text-sm font-medium transition-colors duration-200 bg-[rgb(var(--txt-primary))] text-[var(--bg)] hover:bg-[rgb(var(--txt-primary)/0.88)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              ? "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              : "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 bg-[var(--raised)] text-primary hover:bg-[var(--surface-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           }
         >
           {plan.cta}
@@ -497,6 +298,20 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           </svg>
         </MagneticButton>
       </div>
+
+      <p className="mt-8 pt-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+        {isPro ? (es ? "Todo lo de Core, y además" : "Everything in Core, plus") : (es ? "Incluye" : "Includes")}
+      </p>
+      <ul className="mt-4 space-y-3 flex-1">
+        {(isPro ? plan.features.slice(1) : plan.features).map((f) => (
+          <li key={f} className="flex items-start gap-3 text-[15px]">
+            <span className="shrink-0 mt-[3px] text-[rgb(var(--accent-base))]" aria-hidden="true">
+              <CheckIcon tinta="rgb(var(--accent-ink))" />
+            </span>
+            <span className="text-secondary leading-[1.55] min-w-0 break-words">{f}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

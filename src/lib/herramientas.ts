@@ -137,15 +137,15 @@ export const HERRAMIENTAS: Herramienta[] = [
     resaltaEs: "tus errores.",
     resaltaEn: "your mistakes.",
     subtituloEs:
-      "¿Cuánto dinero dejas en la mesa cuando rompes tus reglas? Calcula la brecha exacta entre tu operativa en plan y fuera de plan, y descubre tu fuga de capital anual.",
+      "¿Cuánto dinero dejas en la mesa cuando rompes tus reglas? Estima la brecha entre tu operativa en plan y fuera de plan, y descubre tu fuga de capital anual.",
     subtituloEn:
-      "How much money do you leave on the table when breaking your rules? Work out the exact gap between your in-plan and off-plan trades, and discover your annual capital leak.",
+      "How much money do you leave on the table when breaking your rules? Estimate the gap between your in-plan and off-plan trades, and discover your annual capital leak.",
     resumenEs: "La brecha real de dinero entre operar en plan o romper tus reglas.",
     resumenEn: "The real cash gap between trading your plan or breaking your rules.",
     descripcionEs:
-      "Calcula la factura exacta de tus errores operativos y la diferencia de expectancy entre tus operaciones disciplinadas y fuera de plan.",
+      "Estima lo que te cuestan tus errores operativos y la diferencia de expectancy entre tus operaciones disciplinadas y fuera de plan.",
     descripcionEn:
-      "Calculate the exact invoice of your operational mistakes and the expectancy gap between disciplined and off-plan trades.",
+      "Estimate what your operational mistakes cost you and the expectancy gap between disciplined and off-plan trades.",
   },
   {
     slug: "reloj-de-sesiones",
@@ -163,9 +163,9 @@ export const HERRAMIENTAS: Herramienta[] = [
     resumenEs: "Asia, Londres y Nueva York en hora real, con sus solapes.",
     resumenEn: "Asia, London and New York in real time, with their overlaps.",
     descripcionEs:
-      "Qué sesión de mercado está abierta ahora mismo y dónde se solapan Asia, Londres y Nueva York, que es cuando el precio más se mueve.",
+      "Qué sesión de mercado está abierta ahora mismo y dónde se solapan Asia, Londres y Nueva York, que es cuando suele haber más movimiento.",
     descripcionEn:
-      "Which market session is open right now and where Asia, London and New York overlap, which is when price moves most.",
+      "Which market session is open right now and where Asia, London and New York overlap, which is usually when there is most movement.",
   },
   {
     slug: "ahorro-vs-suscripcion",
@@ -197,13 +197,13 @@ export const HERRAMIENTAS: Herramienta[] = [
     resaltaEs: "de tu bróker.",
     resaltaEn: "your broker.",
     subtituloEs:
-      "En futuros CME y Forex, las comisiones y el deslizamiento pueden comerse hasta el 40 % de tus ganancias. Introduce tus contratos y calcula el umbral de rentabilidad real por trade.",
+      "En futuros CME y Forex, comisiones y deslizamiento se comen una parte de cada operación. Introduce tus contratos y mira cuánto necesitas ganar solo para cubrirlos.",
     subtituloEn:
-      "In CME futures and Forex, commissions and slippage can absorb up to 40% of gross profits. Enter your contracts and calculate the exact break-even threshold per trade.",
+      "In CME futures and Forex, fees and slippage eat into every trade. Enter your contracts and see how much you need to make just to cover them.",
     resumenEs: "El impacto real de las tarifas CME, spread y deslizamiento en tu cuenta.",
     resumenEn: "The real bottom-line impact of CME fees, spread and slippage on your trading.",
     descripcionEs:
-      "Calcula el drag de comisiones, el coste por deslizamiento y el umbral de break-even por trade en futuros (NQ, ES, MES, MNQ) y Forex.",
+      "Calcula lo que te cuestan comisiones y deslizamiento, y cuántos ticks necesitas por operación para cubrirlos, en futuros (NQ, ES, MES, MNQ) y Forex.",
     descripcionEn:
       "Calculate commission drag, slippage friction and the exact break-even threshold per trade in futures (NQ, ES, MES, MNQ) and Forex.",
   },

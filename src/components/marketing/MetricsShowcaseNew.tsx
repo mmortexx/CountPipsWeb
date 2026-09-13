@@ -34,17 +34,15 @@ const R_MODE_INDEX = R_BINS.findIndex((b) => b.count === R_MAX_COUNT);
  * Le siguen catálogo de métricas (4 familias) y la calculadora de
  * riesgo interactiva — esos se renderizan en sus propios componentes
  * y se montan desde la home.
- *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("04"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
  */
-export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   return (
     <section
       id="metrics"
-      className="section bg-veil relative border-t border-b border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className="section relative scroll-mt-24"
     >
       {/* T2c — `tj-container` sustituye a `max-w-[1240px] mx-auto px-5 md:px-8`
           para heredar los gutters fluidos (clamp(1.25rem, 4vw, 2.25rem))
@@ -53,26 +51,18 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
           tarjeta cuando se apilan. */}
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
         <div>
+          {!enPagina && (
           <Reveal>
             <div className="inline-flex items-center gap-3 mb-5">
-              <span
-                className="tnum"
-                style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-              >
-                § {num}
-              </span>
-              <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-              >
+              <span className="eyebrow">
                 {es ? "MÉTRICAS" : "METRICS"}
               </span>
             </div>
           </Reveal>
+          )}
           <Reveal delay={0.06}>
             <h2
-              className="font-serif m-0"
+              className={enPagina ? "sr-only" : "font-serif m-0"}
               style={{
                 fontSize: "clamp(2rem, 3.6vw, 3rem)",
                 fontWeight: 400,
@@ -89,12 +79,13 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                 </>
               ) : (
                 <>
-                  The numbers the{" "}
-                  <span style={{ color: "rgb(var(--accent-base))" }}>pros who live off this</span> use.
+                  The numbers used by{" "}
+                  <span style={{ color: "rgb(var(--accent-base))" }}>people who trade for a living</span>.
                 </>
               )}
             </h2>
           </Reveal>
+          {!enPagina && (
           <Reveal delay={0.12}>
             <p
               className="mt-5 mb-8"
@@ -106,10 +97,11 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               }}
             >
               {es
-                ? "No gráficos bonitos. Ratios que correlacionan con la consistencia a largo plazo: lo que separa un edge real de una racha."
-                : "Not pretty charts. Ratios that correlate with long-term consistency: what separates a real edge from a streak."}
+                ? "No gráficos bonitos. Ratios con su muestra y su intervalo de confianza: lo que separa un edge real de una racha."
+                : "Not pretty charts. Ratios with their sample size and confidence interval: what separates a real edge from a streak."}
             </p>
           </Reveal>
+          )}
           {/* T2c — `gap-4` (16 px) en vez de `gap-3` (12 px): las tarjetas
               2×2 ya no se pegan en móvil y el número grande (19 px / 700)
               no roza la etiqueta.
@@ -186,13 +178,13 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                     a ~170 px y la fórmula saldría cortada a media
                     integral, que se lee peor que no estar. */}
                 <span
-                  className="block text-[10px] uppercase"
-                  style={{ letterSpacing: "0.14em", color: "var(--ink-3)" }}
+                  className="block text-[11px] uppercase"
+                  style={{ letterSpacing: "0.08em", color: "var(--ink-3)" }}
                 >
                   {m.l}
                 </span>
                 <span
-                  className="mt-0.5 hidden break-words font-mono text-[10px] leading-[1.35] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
+                  className="mt-0.5 hidden break-words font-mono text-[11px] leading-[1.35] text-tertiary transition-colors duration-200 group-hover/metric:text-secondary sm:block"
                   title={m.formula}
                 >
                   {m.formula}
@@ -203,7 +195,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                 >
                   {m.v}
                 </span>
-                <span className="text-[11px] text-tertiary mt-1 block">
+                <span className="text-[12px] text-tertiary mt-1 block">
                   {es ? m.descEs : m.descEn}
                 </span>
               </li>
@@ -215,33 +207,18 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
         {/* Distribución de R */}
         <div
           data-entra
-          // T3c — distribución R-múltiplo swap a `.tj-paper`: misma tarjeta
-          // de histograma, ahora sobre papel translúcido cálido. El border
-          // + padding originales se conservan; el `box-shadow` inset se
-          // retira porque `.tj-paper` ya aporta su propio catch-light.
-          className="tj-paper relative rounded-[2px]"
-          style={{
-            padding: 24,
-            border: "1px solid rgb(var(--divider) / 0.13)",
-          }}
+          className="relative lg:pl-8"
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-8">
             <span
               className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+              style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
               {es ? "Distribución de R-múltiplo" : "R-multiple distribution"}
             </span>
             <span
               className="tnum"
-              style={{
-                fontSize: 10,
-                padding: "4px 9px",
-                borderRadius: 4,
-                background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                color: "rgb(var(--accent-base))",
-                border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
-              }}
+              style={{ fontSize: 12, color: "var(--ink-3)" }}
             >
               {/* El recuento sale de la propia muestra. Estaba fijo en
                   «60» sobre un conjunto de 200 operaciones: el rótulo que
@@ -252,32 +229,6 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                 : `${METRICS.closedCount} trades`}
             </span>
           </div>
-          {/* ── EL HISTOGRAMA, AHORA CALCULADO ───────────────────────────
-              Las nueve alturas estaban escritas a mano y el color se
-              elegía por el ÍNDICE de la barra: los cuatro primeros cubos
-              en verde y el resto en rojo. Como los cuatro primeros son
-              las PÉRDIDAS, el gráfico insignia de un diario de trading
-              pintaba las pérdidas de verde y las ganancias de rojo.
-
-              Ahora cada cubo trae su propio `losing` desde
-              `getRDistribution()`, así que el color lo decide el signo de
-              la R y no puede volver a invertirse al reordenar la lista.
-              La altura es proporcional al cubo más poblado, no a un total
-              inventado.
-
-              Los cubos vacíos (no hay operaciones entre −0,5R y +0,5R) se
-              dibujan como un muñón de 2 px sobre el eje en vez de
-              desaparecer: un hueco sin marca se lee como fallo de
-              dibujo, y con marca se lee como lo que es — esta operativa
-              o se come el stop entero o deja correr.
-
-              Las barras siguen `aria-hidden`; la fila de rótulos de abajo
-              y el resumen de debajo llevan la semántica para lectores de
-              pantalla. */}
-          {/* T2c — envoltorio `min-w-0` para que el histograma no fuerce
-              overflow horizontal en móvil (los cubos y sus huecos ya
-              cabían, pero `min-w-0` protege contra sub-pixel rounding en
-              320 px). */}
           <div className="relative min-w-0">
           <div className="flex items-end gap-1.5" style={{ height: 160 }}>
             {R_BINS.map((b, i) => {
@@ -307,16 +258,15 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
                 >
                   {i === R_MODE_INDEX && (
                     <span
-                      className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px]"
+                      className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px]"
                       style={{
-                        fontSize: 9.5,
-                        letterSpacing: "0.1em",
+                        fontSize: 11,
                         color: "rgb(var(--accent-base))",
-                        background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                        border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+                        background: "var(--chip)",
+                        border: "1px solid var(--chip-line)",
                       }}
                     >
-                      {es ? "MODA" : "MODE"}
+                      {es ? "Moda" : "Mode"}
                     </span>
                   )}
                 </div>
@@ -334,7 +284,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               <span
                 key={b.from}
                 className="tnum flex-1 text-center"
-                style={{ fontSize: 9.5, color: "var(--ink-3)" }}
+                style={{ fontSize: 11, color: "var(--ink-3)" }}
               >
                 {fmtR(b.from, lang, 1)}
               </span>
@@ -372,7 +322,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
               <div key={s.l} className="relative">
                 <div
                   className="tnum flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5"
-                  style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {/* R24-1c: tiny accent dot before each stat label so the
                       three stats read as a synchronized footer row rather
@@ -395,7 +345,7 @@ export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
             className="mt-4 pt-3 border-t"
             style={{
               borderColor: "rgb(var(--divider) / 0.06)",
-              fontSize: 11,
+              fontSize: 12,
               lineHeight: 1.5,
               color: "var(--ink-3)",
             }}

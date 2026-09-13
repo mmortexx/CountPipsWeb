@@ -5,9 +5,8 @@ import { ArrowRight, BarChart3, BookOpenCheck, ShieldCheck, Target, CheckCircle2
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Link } from "@/components/tj/LocaleLink";
-import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney, fmtPct } from "@/lib/trading/format";
+import { fmtMoney } from "@/lib/trading/format";
 
 export type TraderProfile = "manual" | "prop";
 
@@ -40,7 +39,7 @@ const DATA = {
     subtitleEn: "The demo shows a workflow for traders working with loss limits, evaluations and discipline that leaves no room for improvisation.",
     cards: [
       { icon: ShieldCheck, titleEs: "Riesgo que se ve", titleEn: "Visible risk", textEs: "Revisa drawdown, rachas y exposición antes de que una operación te saque del plan.", textEn: "Review drawdown, streaks and exposure before one trade takes you outside the plan." },
-      { icon: BarChart3, titleEs: "Track record limpio", titleEn: "Clean track record", textEs: "Separa el resultado de una sesión de la calidad de las decisiones que la construyeron.", textEn: "Separate a session's result from the quality of the decisions that built it." },
+      { icon: BarChart3, titleEs: "Informe de evaluación", titleEn: "Evaluation report", textEs: "Un PDF con el progreso al objetivo, el riesgo disponible hoy y el colchón hasta el límite de pérdida.", textEn: "A PDF with progress to target, risk available today and the buffer to the loss limit." },
       { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
     ],
     ctaEs: "Solicitar acceso anticipado",
@@ -48,10 +47,12 @@ const DATA = {
   },
 } as const;
 
+/* Los mismos valores que las plantillas del programa (`PropFirmTemplates.cs`,
+   revisadas el 22/07/2026): la variante más común de cada firma. */
 const PROP_FIRMS = [
-  { id: "ftmo" as const, name: "FTMO", typeEs: "Drawdown estático", typeEn: "Static Drawdown", dailyPct: 5, maxDDPct: 10, phase1Pct: 8, phase2Pct: 5, trailingType: "static" },
-  { id: "topstep" as const, name: "Topstep", typeEs: "Trailing EOD", typeEn: "Trailing EOD", dailyPct: 4.5, maxDDPct: 6, phase1Pct: 6, phase2Pct: 0, trailingType: "eod" },
-  { id: "fundingpips" as const, name: "FundingPips", typeEs: "Trailing relativo", typeEn: "Relative Trailing", dailyPct: 5, maxDDPct: 10, phase1Pct: 8, phase2Pct: 5, trailingType: "relative" },
+  { id: "ftmo" as const, name: "FTMO", typeEs: "Drawdown estático", typeEn: "Static drawdown", dailyPct: 5, maxDDPct: 10, phase1Pct: 10, phase2Pct: 0, trailingType: "static" },
+  { id: "topstep" as const, name: "Topstep", typeEs: "Drawdown trailing", typeEn: "Trailing drawdown", dailyPct: 2, maxDDPct: 4, phase1Pct: 6, phase2Pct: 0, trailingType: "trailing" },
+  { id: "the5ers" as const, name: "The5ers", typeEs: "Drawdown estático", typeEn: "Static drawdown", dailyPct: 5, maxDDPct: 5, phase1Pct: 8, phase2Pct: 0, trailingType: "static" },
 ];
 
 const PROP_BALANCES = [25000, 50000, 100000, 200000];
@@ -62,7 +63,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const data = DATA[profile];
 
   // Estado interactivo para prop firm
-  const [selectedFirm, setSelectedFirm] = useState<"ftmo" | "topstep" | "fundingpips">("ftmo");
+  const [selectedFirm, setSelectedFirm] = useState<"ftmo" | "topstep" | "the5ers">("ftmo");
   const [propBalance, setPropBalance] = useState(100000);
   const [currentEquity, setCurrentEquity] = useState(103500); // Simulando beneficio acumulado
   const [manualSetup, setManualSetup] = useState<"breakout" | "sweep" | "reversion">("breakout");
@@ -76,7 +77,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const phase2Target = firm.phase2Pct > 0 ? propBalance * (firm.phase2Pct / 100) : 0;
   const maxSafeRiskPerTrade = propBalance * 0.0075; // 0.75% por trade
 
-  // Umbral de liquidación dinámico
+  // Límite de pérdida total: fijo sobre el balance inicial o trailing sobre el pico
   const peakEquity = Math.max(propBalance, currentEquity);
   const liquidationThreshold = firm.trailingType === "static"
     ? propBalance - maxTrailingLoss
@@ -99,7 +100,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         breadcrumbEn={profile === "manual" ? "Manual trading" : "Prop firms"}
       />
 
-      <section className="section bg-veil">
+      <section className="section">
         <div className="tj-container">
           <SectionHeader
             composicion="partida"
@@ -107,14 +108,14 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
             entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It is which part of your process deserves repeating, and which part needs a rule before you return to the market."}
           />
-          <ul className="mt-12 m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+          <ul className="mt-12 m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
             {data.cards.map(({ titleEs, titleEn, textEs, textEn }, i) => (
               <li
                 key={titleEs}
                 className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-4 last:border-b-0 sm:grid-cols-[3rem_minmax(0,14rem)_minmax(0,1fr)] sm:items-baseline sm:gap-5"
               >
                 <span
-                  className="tnum text-[11px] font-semibold"
+                  className="tnum text-[12px] font-semibold"
                   style={{ color: "rgb(var(--accent-base))" }}
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -122,7 +123,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <h2 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
                   {es ? titleEs : titleEn}
                 </h2>
-                <p className="m-0 text-[13.5px] leading-[1.55] text-secondary">
+                <p className="m-0 text-[14px] leading-[1.55] text-secondary">
                   {es ? textEs : textEn}
                 </p>
               </li>
@@ -142,8 +143,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </h2>
               <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
                 {es
-                  ? "Selecciona tu firma de fondeo y tamaño de cuenta. CountPips monitoriza la pérdida diaria, el trailing drawdown y las fases de evaluación en tiempo real."
-                  : "Select your prop firm and account size. CountPips tracks daily loss, trailing drawdown, and evaluation phase targets in real time."}
+                  ? "Elige firma y tamaño de cuenta. El modo prop firm aplica la plantilla de la firma y sigue la pérdida diaria, el drawdown y el objetivo con cada operación que registras. Ejemplo con valores de muestra."
+                  : "Pick a firm and account size. Prop firm mode applies the firm template and tracks daily loss, drawdown and the target with every trade you log. Example with sample values."}
               </p>
             </div>
 
@@ -156,13 +157,13 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   el mismo fallo que el deslizador de 36 px de la sexta tanda:
                   una altura escrita a mano que el contenido desborda. Con el
                   mínimo, la ficha crece y las tres comparten la más alta. */}
-              <div className="flex items-stretch gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <div className="flex items-stretch gap-1 p-1 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
                 {PROP_FIRMS.map((f) => (
                   <button
                     key={f.id}
                     type="button"
                     onClick={() => setSelectedFirm(f.id)}
-                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[2px] text-xs font-semibold leading-tight text-center transition-all ${
+                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[4px] text-xs font-semibold leading-tight text-center transition-all ${
                       selectedFirm === f.id
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                         : "text-secondary hover:text-primary"
@@ -173,7 +174,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 ))}
               </div>
 
-              <div className="flex items-stretch gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <div className="flex items-stretch gap-1 p-1 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
                 {PROP_BALANCES.map((bal) => (
                   <button
                     key={bal}
@@ -182,7 +183,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                       setPropBalance(bal);
                       setCurrentEquity(bal * 1.035);
                     }}
-                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[2px] text-xs font-semibold leading-tight tnum transition-all ${
+                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[4px] text-xs font-semibold leading-tight tnum transition-all ${
                       propBalance === bal
                         ? "bg-primary text-[var(--surface)]"
                         : "text-secondary hover:text-primary"
@@ -195,25 +196,20 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             </div>
 
             {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
-            <div className="p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
+            <div className="p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
               {/* Apilado por debajo de `sm`: en una sola fila, el rotulo y la
                   cifra se metian el uno dentro del otro a 390 px. */}
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">
                 <span className="font-semibold text-primary">
-                  {es ? "Distancia al umbral de liquidación:" : "Distance to liquidation threshold:"}
+                  {es ? "Colchón hasta el límite de pérdida total" : "Buffer to the overall loss limit"}
                 </span>
-                <span className="font-mono font-bold text-[rgb(var(--accent-base))]">
-                  {/* `fmtPct`, no `toFixed`: `toFixed` escribe siempre el punto
-                      decimal inglés, así que en español esta cifra decía
-                      "135.0%" en una fila donde el importe de al lado decía
-                      "13.500,00 US$". Dos convenciones distintas en el mismo
-                      renglón. */}
-                  +{fmtMoney(distanceToLiquidation, lang)} ({fmtPct(distancePct / 100, lang)} {es ? "del colchón disponible" : "buffer left"})
+                <span className="font-mono font-bold text-primary tnum">
+                  {fmtMoney(distanceToLiquidation, lang)}
                 </span>
               </div>
-              <div className="relative h-2.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
+              <div className="relative h-2.5 rounded-[4px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
                 <div
-                  className="h-full rounded-[2px] transition-all duration-300"
+                  className="h-full rounded-[4px] transition-all duration-300"
                   style={{
                     width: `${Math.min(100, Math.max(0, distancePct))}%`,
                     background: distancePct > 50
@@ -224,16 +220,16 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   }}
                 />
               </div>
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[11px] font-mono text-tertiary">
-                <span>{es ? "Liquidación:" : "Liquidation:"} {fmtMoney(liquidationThreshold, lang)}</span>
-                <span>{es ? "Equity actual:" : "Current Equity:"} {fmtMoney(currentEquity, lang)}</span>
-                <span>{es ? "Pico máximo:" : "High-Water Mark:"} {fmtMoney(peakEquity, lang)}</span>
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[12px] font-mono text-tertiary">
+                <span>{es ? "Límite:" : "Limit:"} {fmtMoney(liquidationThreshold, lang)}</span>
+                <span>{es ? "Equity actual:" : "Current equity:"} {fmtMoney(currentEquity, lang)}</span>
+                <span>{es ? "Pico máximo:" : "High-water mark:"} {fmtMoney(peakEquity, lang)}</span>
               </div>
             </div>
 
             {/* Matriz de parámetros de prop firm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Límite diario (${firm.dailyPct}\u00a0%)` : `Daily limit (${firm.dailyPct}%)`}</span>
                   <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
@@ -242,11 +238,11 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   −{fmtMoney(dailyLossLimit, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "El Guardián bloquea nuevas entradas al alcanzar el 80 % de este umbral." : "Guardian locks further entries when reaching 80% of this ceiling."}
+                  {es ? "Aviso preventivo antes de tocarlo; con el freno duro activado, dejas de registrar operaciones nuevas." : "A preventive alert before you reach it; with the hard brake on, new trades stop being logged."}
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Max Drawdown (${firm.maxDDPct}\u00a0%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
@@ -261,7 +257,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Fase 1 (+${firm.phase1Pct}\u00a0%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}\u00a0%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
                   <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
@@ -275,20 +271,20 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   )}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Objetivos de rentabilidad auditados con control estricto de riesgo." : "Profit targets tracked with disciplined position sizing."}
+                  {es ? "Objetivo de la plantilla; ajústalo a tu desafío concreto." : "The template target; adjust it to your specific challenge."}
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? "Riesgo seguro (0,75 %)" : "Safe risk (0.75%)"}</span>
+                  <span>{es ? "Riesgo por operación (0,75\u00a0%)" : "Risk per trade (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
                 <div className="cifra-xl font-mono font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Otorga 6 pérdidas consecutivas de colchón antes de rozar el límite diario." : "Allows 6 consecutive losses buffer before daily limit."}
+                  {es ? `Deja ${Math.floor(firm.dailyPct / 0.75)} pérdidas seguidas de colchón antes del límite diario.` : `Leaves a buffer of ${Math.floor(firm.dailyPct / 0.75)} straight losses before the daily limit.`}
                 </p>
               </div>
             </div>
@@ -304,8 +300,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </h2>
               <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
                 {es
-                  ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. Compara la muestra real de tus principales setups."
-                  : "A manual trader does not fail due to technical charts, but from inconsistent execution. Compare the real sample of your key setups."}
+                  ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. El playbook compara la muestra real de cada setup; aquí, con datos de muestra."
+                  : "A manual trader does not fail due to technical charts, but from inconsistent execution. The playbook compares the real sample of each setup; shown here with sample data."}
               </p>
             </div>
 
@@ -321,7 +317,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   type="button"
                   aria-pressed={manualSetup === s.id}
                   onClick={() => setManualSetup(s.id)}
-                  className={`toque-comodo h-9 px-4 rounded-[2px] text-xs font-semibold transition-all ${
+                  className={`toque-comodo h-9 px-4 rounded-[4px] text-xs font-semibold transition-all ${
                     manualSetup === s.id
                       ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                       : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
@@ -334,13 +330,13 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
             {/* Tarjeta de métricas del setup */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   {es
-                    ? (manualSetup === "breakout" ? "+0,84 R" : manualSetup === "sweep" ? "+1,12 R" : "+0,42 R")
-                    : (manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+1.12 R" : "+0.42 R")}
+                    ? (manualSetup === "breakout" ? "+0,84 R" : manualSetup === "sweep" ? "+0,97 R" : "+0,40 R")
+                    : (manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+0.97 R" : "+0.40 R")}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
                   {manualSetup === "breakout"
@@ -351,7 +347,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
@@ -360,11 +356,13 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                     : (manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R")}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
-                  {es ? "Ventaja estadísticamente significativa" : "Statistically significant edge"}
+                  {manualSetup === "reversion"
+                    ? (es ? "Muestra aún corta para confirmar la ventaja" : "Sample still too short to confirm the edge")
+                    : (es ? "Ventaja confirmada con esta muestra" : "Edge confirmed with this sample")}
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
@@ -393,40 +391,26 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
       <section className="section">
         <div className="tj-container">
-          <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-            <div>
-              <p className="eyebrow">{es ? "Prueba antes de entrar" : "See it before you join"}</p>
-              <h2 className="mt-5 t-h2 text-primary">{es ? "Explora la app con datos de muestra." : "Explore the app with sample data."}</h2>
-              <p className="mt-4 max-w-xl text-lg leading-relaxed text-secondary">
-                {es ? "La demo es navegable y no pide registro. Recorre el flujo que más se parece a tu día y decide si merece la pena solicitar acceso." : "The demo is clickable and asks for no sign-up. Follow the workflow closest to your day and decide whether it is worth requesting access."}
-              </p>
-              <Link href="/demo" className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-[2px] border border-[rgb(var(--divider)/0.2)] px-5 text-sm font-semibold text-primary hover:bg-[rgb(var(--divider)/0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
-                {es ? "Abrir la demo" : "Open the demo"}<ArrowRight size={15} aria-hidden />
+          <div className="tj-cierre">
+            <h2 className="t-display m-0 mx-auto max-w-[20ch] text-balance">
+              {es ? "Explora la app con datos de muestra." : "Explore the app with sample data."}{" "}
+              <span className="tj-cierre-tenue">{es ? "Después, solicita tu acceso." : "Then request your access."}</span>
+            </h2>
+            <p className="mx-auto mt-6 mb-0 max-w-[34rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
+              {es ? "La demo es navegable y no pide registro. El piloto privado se concede por revisión de perfil, sin compromiso de compra." : "The demo is clickable and asks for no sign-up. The private pilot is granted by profile review, with no purchase commitment."}
+            </p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+              <Link href="/demo" className="cta cta--primario">
+                {es ? "Abrir la demo" : "Open the demo"}
+                <ArrowRight size={16} aria-hidden />
+              </Link>
+              <Link href="/beta" className="cta cta--secundario">
+                {es ? data.ctaEs : data.ctaEn}
               </Link>
             </div>
-            <div className="border-l border-[rgb(var(--accent-base)/0.35)] pl-6 sm:pl-8">
-              <p className="text-sm uppercase tracking-[0.16em] text-tertiary">{es ? "Criterio de acceso" : "Access principle"}</p>
-              <p className="mt-4 font-serif text-2xl leading-tight text-primary">{es ? "No buscamos espectadores. Buscamos traders que quieran medir una decisión concreta." : "We are not looking for spectators. We are looking for traders willing to measure one concrete decision."}</p>
-            </div>
           </div>
         </div>
       </section>
-
-      <section className="section bg-veil">
-        <div className="tj-container">
-          <div className="tj-paper border border-[rgb(var(--divider)/0.14)] p-6 sm:p-8">
-            <p className="eyebrow">{es ? "Siguiente paso" : "Next step"}</p>
-            <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="t-h3 text-primary">{es ? "Solicita acceso al piloto privado." : "Request access to the private pilot."}</h2>
-                <p className="mt-3 max-w-2xl text-secondary">{es ? "Acceso por revisión de perfil, sin compromiso de compra y con la demo disponible antes de solicitarlo." : "Access reviewed by profile, no purchase commitment, with the demo available before you request it."}</p>
-              </div>
-              <Link href="/beta" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[2px] bg-[rgb(var(--accent-base))] px-5 text-sm font-semibold text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">{es ? data.ctaEs : data.ctaEn}<ArrowRight size={15} aria-hidden /></Link>
-            </div>
-          </div>
-        </div>
-      </section>
-      <FinalCTANew />
     </>
   );
 }

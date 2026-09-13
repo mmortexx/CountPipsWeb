@@ -18,9 +18,9 @@ const breadcrumbSchema = {
 const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
-  headline: "Your data, 100% on your machine",
+  headline: "Your data, on your machine",
   description:
-    "Local-first, no cloud, no accounts. CountPips is local-first: your trades live on your Windows machine, encrypted at rest.",
+    "No account, no telemetry and no CountPips servers: your trades live on your machine and anything that goes online is something you turn on.",
   url: `${SITE_URL}/en/features/seguridad/`,
   mainEntityOfPage: `${SITE_URL}/en/features/seguridad/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -34,7 +34,7 @@ const articleSchema = {
     { "@type": "Thing", name: "local-first" },
     { "@type": "Thing", name: "data privacy" },
     { "@type": "Thing", name: "encryption" },
-    { "@type": "Thing", name: "no cloud" },
+    { "@type": "Thing", name: "offline-first" },
     { "@type": "Thing", name: "trading journal security" },
   ],
 };
@@ -42,14 +42,14 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: { absolute: "Security — CountPips" },
   description:
-    "Local-first: your data 100% on your machine, no cloud, no accounts. Technical specs, integrations with your workflow, and privacy by design.",
+    "Local-first: your trades on your machine, no account and no telemetry. Technical specs, the complete list of connections and how your data is imported.",
   alternates: {
     canonical: `${SITE_URL}/en/features/seguridad/`,
     languages: hreflangDe("/features/seguridad"),
   },
   openGraph: {
     title: "Security — CountPips",
-    description: "Local-first, no cloud, no accounts. Your data 100% on your machine.",
+    description: "No account, no telemetry and no CountPips servers. Your data, on your machine.",
     url: `${SITE_URL}/en/features/seguridad/`,
     type: "website",
     siteName: "CountPips",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Security — CountPips",
-    description: "Local-first, no cloud, no accounts. Your data 100% on your machine.",
+    description: "No account, no telemetry and no CountPips servers. Your data, on your machine.",
   },
 };
 

@@ -5,12 +5,7 @@ import { Story } from "@/components/marketing/Story";
 import { Values } from "@/components/marketing/Values";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-import { BetaStatus } from "@/components/beta/BetaStatus";
-
-// Estimated reading time (story + values + changelog + beta status).
-const READING_TIME_MIN = 4;
 
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
@@ -88,9 +83,6 @@ export const metadata: Metadata = {
 const Changelog = dynamic(
   () => import("@/components/marketing/Changelog").then((m) => m.Changelog)
 );
-const SessionClock = dynamic(
-  () => import("@/components/marketing/SessionClock").then((m) => m.SessionClock)
-);
 
 /** Exportado con nombre para que `app/en/about/page.tsx` lo reutilice.
  *  Sin el `<script>` de datos estructurados. */
@@ -99,7 +91,6 @@ export function AboutBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="II"
         eyebrowEs="Acerca de"
         eyebrowEn="About"
         titleEs="Hecho para el trader manual serio."
@@ -110,22 +101,12 @@ export function AboutBody() {
         subtitleEn="Not another SaaS. It's a native Windows app that lives on your machine, with institutional metrics and discipline measured in money."
         breadcrumbEs="Acerca de"
         breadcrumbEn="About"
-        readingTimeMin={READING_TIME_MIN}
       />
       <Story />
       <Values />
-      <SessionClock num="02" />
 
-      <PlateInterlude index={0} />
       <Changelog />
 
-      <PlateInterlude index={1} />
-      {/* `Milestones` retirado: repetía en horizontal los cinco mismos
-          hitos que el Changelog acababa de contar dos pantallas antes
-          (v1.0, Playbook, Monte Carlo, Guardián, Importador). Dos líneas
-          de tiempo distintas para los mismos datos restan credibilidad
-          en vez de sumarla. El componente sigue en el repositorio. */}
-      <BetaStatus />
       <FinalCTANew />
       <TableOfContents />
     </>

@@ -55,7 +55,7 @@ export const Histogram = memo(function Histogram({
   return (
     <div
       data-entra
-      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
+      className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       ref={containerRef}
       role="img"
       aria-label={lang === "es"
@@ -138,7 +138,7 @@ export const Histogram = memo(function Histogram({
       {/* Tooltip flotante sobre papel denso — bucket range + count */}
       {hovered && data[hovered.i] && (
         <div
-          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
+          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
           style={{
             left: `clamp(72px, ${hovered.x}px, calc(100% - 72px))`,
             top: hovered.y - 6,

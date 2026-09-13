@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -29,7 +28,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Disciplina que actúa, no que sermonea",
   description:
-    "El Guardián frena antes del error: bloquea tamaños que exceden tu riesgo, te obliga a respetar el plan y audita cada excepción.",
+    "El Guardián mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas al tocar tu límite.",
   url: `${SITE_URL}/features/disciplina/`,
   mainEntityOfPage: `${SITE_URL}/features/disciplina/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -66,11 +65,11 @@ export const metadata: Metadata = {
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Disciplina — CountPips" },
   description:
-    "El Guardián frena antes del error: bloquea tamaños sobre tu riesgo, te obliga a respetar el plan y audita cada excepción. Indisciplina medida en dinero.",
+    "El Guardián mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas al tocar tu límite. Indisciplina medida en dinero.",
   alternates: { canonical: `${SITE_URL}/features/disciplina/`, languages: hreflangDe("/features/disciplina") },
   openGraph: {
     title: "Disciplina — CountPips",
-    description: "El Guardián frena antes del error. Disciplina que actúa, no que sermonea.",
+    description: "Semáforo de riesgo y freno duro opcional. Disciplina que actúa, no que sermonea.",
     url: `${SITE_URL}/features/disciplina/`,
     type: "website",
     siteName: "CountPips",
@@ -83,7 +82,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Disciplina — CountPips",
-    description: "El Guardián frena antes del error. Disciplina que actúa, no que sermonea.",
+    description: "Semáforo de riesgo y freno duro opcional. Disciplina que actúa, no que sermonea.",
   },
 };
 
@@ -115,9 +114,6 @@ const DisciplineCost = dynamic(
 const BeforeAfter = dynamic(
   () => import("@/components/marketing/BeforeAfter").then((m) => m.BeforeAfter)
 );
-const ComparisonSlider = dynamic(
-  () => import("@/components/tj/ComparisonSlider").then((m) => m.ComparisonSlider)
-);
 const RMultipleSimulator = dynamic(
   () => import("@/components/marketing/RMultipleSimulator").then((m) => m.RMultipleSimulator)
 );
@@ -129,29 +125,23 @@ export function DisciplinaBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="I·b"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Disciplina que actúa, no que sermonea."
         titleEn="Discipline that acts, not lectures."
         titleHighlightEs="actúa."
         titleHighlightEn="acts."
-        subtitleEs="El Guardián no te dice qué hacer. Te bloquea cuando rompes tus propias reglas: tamaños que exceden tu riesgo, drawdowns diarios, operaciones fuera de plan. Cada excepción queda registrada con su motivo y su resultado."
-        subtitleEn="The Guardian doesn't tell you what to do. It blocks you when you break your own rules: sizes over your risk, daily drawdowns, off-plan trades. Every exception is logged with its reason and its outcome."
+        subtitleEs="El Guardián no te dice qué hacer: mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas cuando tocas tu límite. Saltárselo exige escribir el motivo."
+        subtitleEn="The Guardian doesn't tell you what to do: it measures every trade against your rules with a risk light and, if you turn it on, a hard brake stops accepting new trades when you hit your limit. Skipping it requires writing the reason."
         breadcrumbEs="Características · Disciplina"
         breadcrumbEn="Features · Discipline"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <GuardianNew num="01" />
-      <DisciplineCost num="02" />
+      <GuardianNew enPagina />
+      <DisciplineCost />
 
-      <PlateInterlude index={0} />
       <BeforeAfter />
 
-      <PlateInterlude index={1} />
-      <ComparisonSlider />
-
-      <RMultipleSimulator num="03" />
+      <RMultipleSimulator />
 
       {/* El diagnóstico de disciplina se mudó a `/test`, con página y
           entrada propias en el menú. Aquí estaba al final del todo, así
@@ -162,7 +152,6 @@ export function DisciplinaBody() {
           dos direcciones es contenido duplicado, y el buscador reparte
           entre ambas lo que debería ir a una. */}
 
-      <PlateInterlude index={2} />
       <FeaturePageNav current="disciplina" />
       <FinalCTANew />
       <TableOfContents />

@@ -19,7 +19,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Everything you need to trade with discipline",
   description:
-    "Features bento, app gallery, how it works and more. Metrics, discipline and security have their own focused pages.",
+    "CountPips features, real screenshots of the app and how it is used. Metrics, discipline and security each have their own page.",
   url: `${SITE_URL}/en/features/`,
   mainEntityOfPage: `${SITE_URL}/en/features/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -41,7 +41,7 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: "Features",
   description:
-    "Everything to trade with discipline: features bento, gallery, how it works and more. Metrics, discipline and security each have their own focused page.",
+    "CountPips features, real screenshots of the app and how it is used. Metrics, discipline and security each have their own page.",
   alternates: {
     canonical: `${SITE_URL}/en/features/`,
     languages: hreflangDe("/features"),
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Features — CountPips",
-    description: "40+ institutional metrics, discipline that costs money, a live playbook and 100% local.",
+    description: "40+ institutional metrics, discipline measured in money, a live playbook and your data on your machine.",
   },
 };
 

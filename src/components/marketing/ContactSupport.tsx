@@ -88,19 +88,8 @@ export function ContactSupport() {
     <section
       id="support"
       aria-label={es ? "Soporte" : "Support"}
-      // R27-1b — `bg-veil` added: this section's only backing was the
-      // 3 % fractalNoise grain overlay (transparent in hue). The eye
-      // WebGL (bright red/green fibers in light theme) was showing
-      // through, washing out the "¿No encuentras tu respuesta?"
-      // heading + subtitle + the 3 support card titles. `bg-veil`
-      // (82 % bg in light / 74 % in dark) occludes the eye while
-      // the grain overlay still paints on top. The cards themselves
-      // (`tj-paper border border-[rgb(var(--divider)/0.13)]`) have their own opaque surface and
-      // are unaffected.
-      className="section-tight relative overflow-clip bg-veil scroll-mt-24"
+      className="section-tight relative overflow-clip scroll-mt-24"
     >
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
       <div className="relative z-10 tj-container">
         <div className="max-w-3xl mx-auto text-center">
           <Reveal>
@@ -126,8 +115,8 @@ export function ContactSupport() {
           <Reveal delay={0.1}>
             <p className="mt-4 text-lg text-secondary leading-relaxed max-w-xl mx-auto">
               {es
-                ? "Tres caminos para resolver cualquier duda. Te respondemos rápido y en tu idioma."
-                : "Three ways to solve any question. We reply quickly and in your language."}
+                ? "Mira las preguntas frecuentes o escríbenos. Contesta quien lo desarrolla, en español o en inglés."
+                : "Check the FAQ or write to us. The person who builds it replies, in Spanish or English."}
             </p>
           </Reveal>
         </div>
@@ -154,18 +143,8 @@ export function ContactSupport() {
                 <a
                   href={c.href}
                   aria-label={`${title} — ${cta}`}
-                  className="group relative flex flex-col tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
+                  className="group relative flex flex-col rounded-[14px] bg-[var(--surface)] p-5 sm:p-7 h-full overflow-hidden transition-colors duration-300 hover:bg-[var(--surface-2)]"
                 >
-                  {/* Hover accent sweep */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base)) 50%, transparent 100%)",
-                    }}
-                  />
-
                   <div className="flex items-start gap-4">
                     {/* Icon container — accent-tinted on hover so the icon
                         "lights up" in the brand green when the card is
@@ -175,7 +154,7 @@ export function ContactSupport() {
                         neutral chip — the brand color is present before
                         hover, then deepens to 12 % / 30 % on hover. */}
                     <span
-                      className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[2px] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] text-primary group-hover:bg-[rgb(var(--accent-base)/0.12)] group-hover:border-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))] group-hover:shadow-[inset_0_1px_0_rgb(var(--divider)/0.10)] transition-[background-color,border-color,box-shadow,color] duration-300"
+                      className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[6px] bg-[var(--chip)] text-primary group-hover:bg-[rgb(var(--accent-base)/0.12)] group-hover:border-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))] group-hover:shadow-[inset_0_1px_0_rgb(var(--divider)/0.10)] transition-[background-color,border-color,box-shadow,color] duration-300"
                       aria-hidden="true"
                     >
                       <Icon className="size-5" />
@@ -188,7 +167,7 @@ export function ContactSupport() {
                         {desc}
                       </p>
                       {meta && (
-                        <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-primary font-semibold tnum">
+                        <p className="mt-2 text-[12px] uppercase tracking-[0.08em] text-primary font-semibold tnum">
                           {meta}
                         </p>
                       )}

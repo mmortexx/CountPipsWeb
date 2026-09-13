@@ -46,7 +46,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
   return (
     <div
       data-entra
-      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
+      className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       ref={containerRef}
       role="img"
       aria-label={lang === "es"
@@ -82,7 +82,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                   <div
                     data-entra="sello"
                     key={c}
-                    className="tj-realce h-8 rounded-[2px] flex items-center justify-center text-[9.5px] font-semibold tnum cursor-default relative overflow-hidden group"
+                    className="tj-realce h-8 rounded-[4px] flex items-center justify-center text-[9.5px] font-semibold tnum cursor-default relative overflow-hidden group"
                     style={{ backgroundColor: bg }}
                     onMouseEnter={(e) => {
                       const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -127,7 +127,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
       {/* Tooltip flotante sobre papel denso — day · hour, P&L, trade count */}
       {hovered && (
         <div
-          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
+          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
           style={{
             left: `clamp(92px, ${hovered.x}px, calc(100% - 92px))`,
             top: hovered.y - 6,

@@ -3,6 +3,7 @@
 import { memo, useMemo, useState, type CSSProperties } from "react";
 import type { Metrics } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
+import { fmtMoney } from "@/lib/trading/format";
 
 interface EquityCurveProps {
   metrics: Metrics;
@@ -129,7 +130,7 @@ export const EquityCurve = memo(function EquityCurve({
   return (
     <div
       data-entra
-      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
+      className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       style={{ transformOrigin: "center" }}
     >
       <svg
@@ -153,8 +154,8 @@ export const EquityCurve = memo(function EquityCurve({
         preserveAspectRatio="xMidYMid meet"
         role="img"
         aria-label={lang === "es"
-          ? `Curva de capital desde $${Math.round(minBal).toLocaleString()} hasta $${Math.round(maxBal).toLocaleString()}`
-          : `Equity curve from $${Math.round(minBal).toLocaleString()} to $${Math.round(maxBal).toLocaleString()}`}
+          ? `Curva de capital desde ${fmtMoney(minBal, lang, { decimals: 0 })} hasta ${fmtMoney(maxBal, lang, { decimals: 0 })}`
+          : `Equity curve from ${fmtMoney(minBal, lang, { decimals: 0 })} to ${fmtMoney(maxBal, lang, { decimals: 0 })}`}
         onMouseLeave={() => setHover(null)}
         onMouseMove={(e) => updateHover(e.clientX, e.currentTarget as SVGElement)}
         onTouchStart={(e) => {
@@ -199,7 +200,7 @@ export const EquityCurve = memo(function EquityCurve({
               const val = maxBal - t * (maxBal - minBal);
               return (
                 <text key={t} x={padL - 8} y={y + 3} textAnchor="end" className="text-[10px] tnum" fill="rgb(var(--txt-tertiary))">
-                  ${Math.round(val).toLocaleString()}
+                  {fmtMoney(val, lang, { decimals: 0 })}
                 </text>
               );
             })}
@@ -278,7 +279,7 @@ export const EquityCurve = memo(function EquityCurve({
       {/* Tooltip de detalle sobre papel denso — date, balance, P&L since start, drawdown from peak */}
       {hoverPoint && tooltipLeft !== null && (
         <div
-          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
+          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
           style={{
             left: tooltipLeft,
             top: tooltipTop,
@@ -298,19 +299,19 @@ export const EquityCurve = memo(function EquityCurve({
             })}
           </div>
           <div className="font-semibold tnum text-primary text-[13px] mt-0.5">
-            ${hoverPoint.balance.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            {fmtMoney(hoverPoint.balance, lang, { decimals: 0 })}
           </div>
           <div className="flex items-center justify-between gap-3 mt-1 text-[11px]">
             <span className="text-tertiary">{lang === "es" ? "Desde inicio" : "Since start"}</span>
             <span className={`tnum font-medium ${hoverPoint.perf >= 0 ? "text-pnl-pos" : "text-pnl-neg"}`}>
-              {hoverPoint.perf >= 0 ? "+" : "−"}${Math.abs(hoverPoint.perf).toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              {fmtMoney(hoverPoint.perf, lang, { decimals: 0, sign: true })}
             </span>
           </div>
           <div className="flex items-center justify-between gap-3 text-[11px]">
             <span className="text-tertiary">{lang === "es" ? "Desde pico" : "From peak"}</span>
             <span className={`tnum font-medium ${drawdown > 0 ? "text-pnl-neg" : "text-tertiary"}`}>
               {drawdown > 0
-                ? `−${drawdown.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+                ? fmtMoney(-drawdown, lang, { decimals: 0 })
                 : "0"}
             </span>
           </div>

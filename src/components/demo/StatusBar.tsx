@@ -16,7 +16,7 @@ import { fmtPct } from "@/lib/trading/format";
  * has three regions:
  *
  *   ┌──────────────────────────────────────────────────────────────────────┐
- *   │ ● Disciplina: 84 %        Guardado automático en tu equipo    v2.4.1 │
+ *   │ ● Disciplina: 84 %        Guardado automático en este navegador    v0.1.0 │
  *   └──────────────────────────────────────────────────────────────────────┘
  *
  *   LEFT    — discipline pip + "Disciplina: NN %" text. The
@@ -26,13 +26,13 @@ import { fmtPct } from "@/lib/trading/format";
  *             app shows (the real app's text + color are managed by
  *             RefreshRiskStatus() in code-behind; the demo uses a
  *             stable deterministic value).
- *   CENTER  — "Guardado automático en tu equipo" / "Auto-saved on your
+ *   CENTER  — "Guardado automático en este navegador" / "Auto-saved on your
  *             machine" (the real app's Status_DataNote resource,
  *             Strings/{es-ES,en-GB}/Resources.resw L31). Replaces the
  *             pre-R25-1a live mini-metrics ticker (cycling Net P&L /
  *             Win Rate / Expectancy / Trades every 4 s) — the real app
  *             doesn't have a metrics ticker in the status bar.
- *   RIGHT   — version text "v2.4.1" with tabular numerals (mirrors the
+ *   RIGHT   — version text "v0.1.0" with tabular numerals (mirrors the
  *             real app's VersionText, managed by code-behind from the
  *             assembly). Replaces the pre-R25-1a clock + data text +
  *             keyboard / fullscreen / share / reset icon buttons — the
@@ -86,15 +86,14 @@ export function StatusBar() {
         </span>
       </span>
 
-      {/* CENTRO — nota de guardado y telemetría de motor */}
+      {/* CENTRO — nota de guardado */}
       <div className="hidden sm:flex items-center gap-3 truncate ml-3">
         <span>{t("autoSaved")}</span>
-        <span className="text-[10px] opacity-60 font-mono hidden md:inline">· SQLite WAL &lt; {lang === "es" ? "0,2 ms" : "0.2ms"}</span>
       </div>
 
       {/* DERECHA — versión, en texto terciario y cifras tabulares, igual
           que el VersionText de la app. */}
-      <span className="tnum tabular-nums ml-auto shrink-0 font-mono">v2.4.1</span>
+      <span className="tnum tabular-nums ml-auto shrink-0 font-mono">v0.1.0</span>
     </div>
   );
 }

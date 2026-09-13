@@ -50,16 +50,16 @@ export function Story() {
       tag: es ? "Mes 6" : "Month 6",
       title: es ? "Romper el plan cuesta dinero" : "Breaking the plan costs money",
       desc: es
-        ? "Ves el coste de indisciplina en una cifra concreta. Cada vez que rompes tu plan, sabes cuánto te estás cobrando a ti mismo."
-        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you know exactly how much you're charging yourself.",
+        ? "Ves el coste de indisciplina en una cifra concreta. Cada vez que rompes tu plan, ves cuánto te estás cobrando a ti mismo."
+        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you see how much you're charging yourself.",
       tone: "accent",
     },
     {
       tag: es ? "Mes 12" : "Month 12",
       title: es ? "Tu operativa tiene forma" : "Your trading has shape",
       desc: es
-        ? "Tu curva de equity tiene pendiente. Tu playbook tiene muestra. Tú tienes un proceso — y eso es lo único que se sostiene en el tiempo."
-        : "Your equity curve has slope. Your playbook has sample. You have a process — and that's the only thing that holds up over time.",
+        ? "Sabes qué setups conservar y cuáles cortar. Tu playbook tiene muestra. Tienes un proceso que puedes revisar, y eso es lo único que se sostiene en el tiempo."
+        : "You know which setups to keep and which to cut. Your playbook has a sample. You have a process you can review, and that is the only thing that holds up over time.",
       tone: "pos",
     },
   ];
@@ -92,9 +92,7 @@ export function Story() {
   const quoteWords = quote.split(" ");
 
   return (
-    <section id="story" className="section bg-veil relative scroll-mt-24 overflow-clip">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section id="story" className="section relative scroll-mt-24 overflow-clip">
       <div className="relative z-10 tj-container grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-20 items-start">
         {/* LEFT — editorial pull quote (sticky + subtle parallax) */}
         {/* Sin `data-entra`, y no por casualidad: esta columna es
@@ -195,7 +193,7 @@ export function Story() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span
-                        className={`text-[10px] uppercase tracking-[0.14em] font-semibold tnum ${toneText[p.tone]}`}
+                        className={`text-[11px] uppercase tracking-[0.08em] font-semibold tnum ${toneText[p.tone]}`}
                       >
                         {p.tag}
                       </span>
@@ -204,7 +202,7 @@ export function Story() {
                           stays tertiary. The contrast reinforces "you are
                           here" vs "of N" without adding a new color token.
                           Both keep tnum for tabular alignment. */}
-                      <span className="text-[10px] text-tertiary tnum">
+                      <span className="text-[11px] text-tertiary tnum">
                         <span className="text-secondary">
                           {String(i + 1).padStart(2, "0")}
                         </span>
@@ -222,23 +220,6 @@ export function Story() {
             ))}
           </div>
 
-          {/* Coda */}
-          <Reveal delay={0.5}>
-            <div className="mt-8 pl-9">
-              <div className="flex items-center gap-2 text-sm text-primary font-medium">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path
-                    d="M3 8h9M8 4l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                {es ? "Y la curva, por fin, sube." : "And the curve, finally, goes up."}
-              </div>
-            </div>
-          </Reveal>
         </div>
       </div>
     </section>

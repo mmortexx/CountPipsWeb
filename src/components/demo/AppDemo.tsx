@@ -385,8 +385,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
 
           {/* Status bar — restructured in R25-1a to match the real app's
               status bar (MainWindow.xaml L286-331): left = discipline LED +
-              "Disciplina: NN %", center = "Guardado automático en tu equipo",
-              right = "v2.4.1". The pre-R25-1a metrics ticker + clock +
+              "Disciplina: NN %", center = "Guardado automático en este navegador",
+              right = "v0.1.0". The pre-R25-1a metrics ticker + clock +
               keyboard / fullscreen / share / reset icon buttons are gone
               (the real app doesn't have them in the status bar —
               fullscreen is via the title bar's Maximize button,

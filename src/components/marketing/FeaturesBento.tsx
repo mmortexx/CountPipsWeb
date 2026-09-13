@@ -10,11 +10,9 @@ import { fmtPct, fmtR } from "@/lib/trading/format";
  * FeaturesBento — sección `#features` del HTML. Rejilla bento con 5
  * tarjetas: calendario de P&L grande (span 7), rendimiento por hora
  * (span 5), playbooks, diario narrativo, multi-cuenta multi-activo.
- *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("03"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
  */
-export function FeaturesBento({ num = "03" }: { num?: string }) {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const cal = getCal();
@@ -22,40 +20,12 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
   return (
     <section
       id="features"
-      // R27-1b — `bg-veil` added: this section's only backing was the
-      // top-left radial halo (`color-mix(in oklab, var(--ink) 5%,
-      // transparent)` — essentially a 5 % tint, nearly transparent).
-      // The eye WebGL (bright red/green fibers in light theme) was
-      // showing through, washing out the "Todo lo que una mesa
-      // profesional espera de un diario" heading + body copy +
-      // bento card titles. `bg-veil` (82 % bg in light / 74 % in
-      // dark) occludes the eye while the top-left halo + the bento
-      // cards' own `liquid-glass` surfaces still paint on top.
-      className="section relative overflow-clip bg-veil"
+      className="section relative overflow-clip"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(70% 60% at 30% 0%, color-mix(in oklab, var(--ink) 5%, transparent), transparent 60%)",
-        }}
-      />
-      {/* P6 — `style={{ maxWidth: 1280 }}` removed: was overriding
-          tj-container's --page-w (1080px) and producing a section 200px
-          wider than every sibling on /features (PageHeader, FeatureExplorer,
-          Gallery, HowItWorks, MoreFeatures all run at 1080px). The 12-col
-          bento still breathes: col-span-7 = 621px, col-span-5 = 438px,
-          col-span-4 = 346px at 1080−gap. Unified mancha = Anthropic-grade
-          cross-section consistency. */}
       <div className="relative tj-container">
-        <div className="max-w-[760px] mb-12">
+        <div className={enPagina ? "sr-only" : "max-w-[760px] mb-12"}>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
-              § {num}
-            </span>
-            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
-            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
+            <span className="eyebrow">
               {es ? "CARACTERÍSTICAS" : "FEATURES"}
             </span>
           </div>
@@ -98,25 +68,13 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               minHeight: 360,
             }}
           >
-            {/* R25-1e — premium top-edge accent sweep. The calendar is
-                the bento's anchor (span 7); a 2px accent gradient at the
-                top edge marks it as the lead card. Same vocabulary as the
-                GuaranteeBanner + DownloadCTA + Pro pricing-card top sweep. */}
-            <div
-              aria-hidden
-              className="absolute top-0 left-0 right-0"
-              style={{
-                height: 2,
-                background: "linear-gradient(90deg, transparent, rgb(var(--accent-base) / 0.55), transparent)",
-              }}
-            />
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <CalendarDays size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Calendario de P&L" : "P&L calendar"}
               </span>
             </div>
@@ -130,20 +88,20 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             <div className="mt-4 flex items-baseline justify-between gap-3">
               <span
                 className="tnum"
-                style={{ fontSize: 11.5, letterSpacing: "0.06em", color: "var(--ink-2)", textTransform: "capitalize" }}
+                style={{ fontSize: 13, letterSpacing: "0.06em", color: "var(--ink-2)", textTransform: "capitalize" }}
               >
                 {cal.label[lang]}
               </span>
               <span
                 className="tnum"
-                style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {cal.chip[lang]}
               </span>
             </div>
             <div
               className="mt-2.5 grid grid-cols-7 gap-1.5 tnum"
-              style={{ fontSize: 9.5, letterSpacing: "0.06em", color: "var(--ink-3)" }}
+              style={{ fontSize: 11, letterSpacing: "0.06em", color: "var(--ink-3)" }}
               aria-hidden
             >
               {(es
@@ -172,8 +130,8 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                         empujaba por debajo del mínimo en tema oscuro. La
                         jerarquía entre día e importe la llevan el cuerpo y el
                         peso, que es donde no cuesta contraste. */}
-                    <span className="tnum" style={{ fontSize: 9.5, color: "var(--ink)" }}>{c.day}</span>
-                    <span className="tnum" style={{ fontSize: 9.5, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
+                    <span className="tnum" style={{ fontSize: 11, color: "var(--ink)" }}>{c.day}</span>
+                    <span className="tnum" style={{ fontSize: 11, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
                   </div>
                 );
               })}
@@ -182,7 +140,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               <div className="flex items-center gap-3">
                 <span
                   className="tnum"
-                  style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {es ? "Total mes" : "Month total"}
                 </span>
@@ -195,12 +153,12 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               </div>
               <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 {[
-                  { c: "rgb(var(--accent-base))", l: "≥ 60 $" },
-                  { c: "color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)", l: "20–60 $" },
-                  { c: "color-mix(in oklab, rgb(var(--accent-base)) 18%, transparent)", l: "0–20 $" },
-                  { c: "rgb(var(--pnl-neg) / 0.22)", l: es ? "Negativo" : "Negative" },
+                  { c: "rgb(var(--pnl-pos) / var(--cal-tint-max))", l: "≥ 60 $" },
+                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.6))", l: "20–60 $" },
+                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.35))", l: "0–20 $" },
+                  { c: "rgb(var(--pnl-neg) / var(--cal-tint-max))", l: es ? "Negativo" : "Negative" },
                 ].map((g) => (
-                  <span key={g.l} className="inline-flex items-center gap-1" style={{ fontSize: 9.5, color: "var(--ink-2)" }}>
+                  <span key={g.l} className="inline-flex items-center gap-1" style={{ fontSize: 11, color: "var(--ink-2)" }}>
                     <span className="inline-block rounded" style={{ width: 9, height: 9, background: g.c }} />
                     {g.l}
                   </span>
@@ -219,16 +177,16 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <LineChart size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Rendimiento por hora" : "Hourly performance"}
               </span>
             </div>
             <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary">
-              {es ? "Sabe cuándo rendirte y cuándo apretar" : "Knows when to push and when to back off"}
+              {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
             </h3>
             {/* Bar chart hardcoded 24 barras (horas) */}
             <div className="mt-5 flex items-end gap-[3px]" style={{ height: 100 }}>
@@ -251,7 +209,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             </div>
             <div className="mt-3 flex items-center justify-between">
               <div>
-                <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+                <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                   {es ? "Mejor ventana" : "Best window"}
                 </div>
                 <div className="tnum" style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
@@ -261,12 +219,8 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               <span
                 className="tnum"
                 style={{
-                  fontSize: 10,
-                  padding: "4px 10px",
-                  borderRadius: 4,
-                  background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                  color: "rgb(var(--accent-base))",
-                  border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
+                  fontSize: 11,
+                  color: "var(--ink-3)",
                 }}
               >
                 {es ? "+27 % sobre media" : "+27% over average"}
@@ -278,7 +232,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 gráfico, no un gráfico. */}
             <div
               className="mt-2 flex items-center justify-between tnum"
-              style={{ fontSize: 9.5, letterSpacing: "0.08em", color: "var(--ink-3)" }}
+              style={{ fontSize: 11, letterSpacing: "0.08em", color: "var(--ink-3)" }}
               aria-hidden
             >
               {["00", "06", "12", "18", "23"].map((h) => (
@@ -298,7 +252,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             >
               <div
                 className="tnum"
-                style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {es ? "Ventanas a evitar" : "Windows to avoid"}
               </div>
@@ -311,11 +265,11 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                   <li
                     key={row.w}
                     className="flex items-center justify-between gap-3 tnum"
-                    style={{ fontSize: 12 }}
+                    style={{ fontSize: 13 }}
                   >
                     <span style={{ color: "var(--ink-2)" }}>{row.w}</span>
                     <span className="flex-1 h-px" style={{ background: "rgb(var(--divider) / 0.10)" }} aria-hidden />
-                    <span style={{ color: "var(--ink-3)", fontSize: 11 }}>{row.n}</span>
+                    <span style={{ color: "var(--ink-3)", fontSize: 12 }}>{row.n}</span>
                     <span style={{ color: "rgb(var(--pnl-neg))", fontWeight: 600, minWidth: 44, textAlign: "right" }}>
                       {row.r}
                     </span>
@@ -332,11 +286,11 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <BookOpen size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Playbooks" : "Playbooks"}
               </span>
             </div>
@@ -366,19 +320,19 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))", badge: es ? "Sin ventaja" : "No edge" },
                 { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
               ].map((s) => (
-                <div key={s.k} className="p-2 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)] hover:border-[rgb(var(--accent-base)/0.3)] transition-colors">
+                <div key={s.k} className="p-2 rounded-[8px] bg-[var(--raised)]">
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-medium text-primary">
                       {nombreSetup(s.k as SetupName, lang)}
                     </span>
-                    <div className="flex items-center gap-2 font-mono text-[10px]">
+                    <div className="flex items-center gap-2 font-mono text-[11px]">
                       <span className="text-tertiary">{s.n} {es ? "ops" : "trades"}</span>
                       <span style={{ color: s.c, fontWeight: 700 }}>{fmtR(s.exp, lang, 1)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
-                      <div className="h-full rounded-[2px]" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
+                    <div className="flex-1 h-1.5 rounded-[4px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
+                      <div className="h-full rounded-[4px]" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
                     </div>
                     <span
                       className="tnum font-mono text-xs font-semibold"
@@ -399,11 +353,11 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <NotebookPen size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Diario narrativo" : "Narrative journal"}
               </span>
             </div>
@@ -411,15 +365,11 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               {es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}
             </h3>
             <div
-              className="mt-4 rounded-[2px] p-4"
-              style={{
-                background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
-                border: "1px solid rgb(var(--divider) / 0.06)",
-              }}
+              className="mt-4 border-l-2 border-[var(--line-2)] py-1 pl-4"
             >
               <p
                 className="m-0"
-                style={{ fontSize: 13, lineHeight: 1.55, color: "var(--ink-2)" }}
+                style={{ fontSize: 14, lineHeight: 1.55, color: "var(--ink-2)" }}
               >
                 {es
                   ? "“Entré en NQ por ruptura del rango NY, pero moví el stop a +1R para ‘asegurar’. Error: el plan era aguantar a 2R. Terminé saliendo en BE después de que el precio llegó al objetivo sin mí.”"
@@ -440,11 +390,11 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <Layers size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Multi-cuenta, multi-activo" : "Multi-account, multi-asset"}
               </span>
             </div>
@@ -453,21 +403,21 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             </h3>
             <div className="mt-4 space-y-2 text-xs font-mono">
               {[
-                { name: "Apex 150k (#1)", balance: "154.820 $", pnl: "+1.420 $", status: "FUNDED", pnlPos: true },
-                { name: "Topstep 50k (#2)", balance: "51.240 $", pnl: "+650 $", status: "PASSED", pnlPos: true },
-                { name: "IBKR Futures Core", balance: "84.190 $", pnl: "+2.100 $", status: "MASTER", pnlPos: true },
+                { name: "Apex 150k (#1)", balance: "154.820 $", pnl: "+1.420 $", status: es ? "En curso" : "In progress", pnlPos: true },
+                { name: "Topstep 50k (#2)", balance: "51.240 $", pnl: "+650 $", status: es ? "Aprobada" : "Passed", pnlPos: true },
+                { name: "IBKR Futures Core", balance: "84.190 $", pnl: "+2.100 $", status: es ? "Personal" : "Personal", pnlPos: true },
               ].map((acc) => (
                 <div
                   key={acc.name}
-                  className="flex items-center justify-between p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)]"
+                  className="flex items-center justify-between p-2.5 rounded-[8px] bg-[var(--raised)]"
                 >
                   <div>
-                    <div className="text-primary font-semibold text-[11px]">{acc.name}</div>
-                    <div className="text-tertiary text-[10px]">{acc.balance}</div>
+                    <div className="text-primary font-semibold text-[12px]">{acc.name}</div>
+                    <div className="text-tertiary text-[11px]">{acc.balance}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[rgb(var(--pnl-pos))] font-bold text-[11px]">{acc.pnl}</div>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold">
+                    <div className="text-[rgb(var(--pnl-pos))] font-bold text-[12px]">{acc.pnl}</div>
+                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-[var(--chip)] text-[rgb(var(--accent-base))] font-semibold">
                       {acc.status}
                     </span>
                   </div>

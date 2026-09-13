@@ -340,6 +340,7 @@ function RitualColumn({
    ============================================================ */
 
 function ComplianceRing({ pct, label }: { pct: number; label: string }) {
+  const { lang } = useLang();
   const reduce = useReducedMotion();
   const R = 52;
   const C = 2 * Math.PI * R;
@@ -417,7 +418,7 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className={`text-3xl md:text-4xl font-bold tnum ${toneClass} leading-none`}>
-          <CountUp to={pct * 100} decimals={0} suffix="%" />
+          <CountUp to={pct * 100} decimals={0} suffix={lang === "es" ? " %" : "%"} />
         </div>
         <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mt-1.5 text-center">
           {label}
@@ -951,7 +952,9 @@ export function JournalPage() {
 
   const isRealCost = costOfIndiscipline > 0;
   const headlineValue = Math.abs(costOfIndiscipline);
-  const headlinePrefix = isRealCost ? "−$" : "+$";
+  const headlineSigno = isRealCost ? "−" : "+";
+  const headlinePrefix = lang === "es" ? headlineSigno : `${headlineSigno}$`;
+  const headlineSuffix = lang === "es" ? " US$" : "";
   const headlineTone = isRealCost ? "text-pnl-neg" : "text-pnl-pos";
   const headlineShadow = isRealCost
     ? "0 0 18px rgb(var(--pnl-neg) / 0.45)"
@@ -964,26 +967,34 @@ export function JournalPage() {
   // These mirror the real app's Sleep×Result / Mental×Result / Physical×Result
   // / Plan×Result breakdowns, computed deterministically from the dataset.
   const cross = useMemo(() => {
-    const sorted = [...TRADES].sort(
-      (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
-    );
-    const mid = Math.floor(sorted.length / 2);
-    const lowHalf = sorted.slice(0, mid);
-    const highHalf = sorted.slice(mid);
+    // Sueño y estado físico se derivan de la nota del día con un desvío fijo por
+    // operación, para que cada cruce agrupe operaciones distintas.
     const avg = (arr: Trade[]) =>
       arr.length ? arr.reduce((s, t) => s + t.netPnl, 0) / arr.length : 0;
-    const withPlan = sorted.filter((t) => t.compliance === "yes");
-    const withoutPlan = sorted.filter((t) => t.compliance !== "yes");
+    const sueno = (t: Trade) => t.dayScore + ((t.id * 7) % 3) - 1;
+    const fisico = (t: Trade) => t.dayScore + ((t.id * 5) % 3) - 1;
+    const cruce = (f: (t: Trade) => number, bajo: number, alto: number) => {
+      const b = TRADES.filter((t) => f(t) <= bajo);
+      const a = TRADES.filter((t) => f(t) >= alto);
+      return { low: avg(b), high: avg(a), n: b.length + a.length };
+    };
+    const ops = (n: number) => `${n} ${lang === "es" ? "operaciones" : "trades"}`;
+    const s = cruce(sueno, 2, 4);
+    const m = cruce((t) => t.dayScore, 2, 4);
+    const f = cruce(fisico, 2, 4);
     return {
-      sleepLow: avg(lowHalf),
-      sleepHigh: avg(highHalf),
-      sleepSample: `${sorted.length} ${lang === "es" ? "días" : "days"}`,
-      mentalLow: avg(lowHalf.filter((t) => t.dayScore <= 2)) || -42.18,
-      mentalHigh: avg(highHalf.filter((t) => t.dayScore >= 4)) || 96.74,
-      physicalLow: avg(lowHalf.filter((t) => t.dayScore === 1)) || -58.4,
-      physicalHigh: avg(highHalf.filter((t) => t.dayScore === 5)) || 124.6,
-      planWith: avg(withPlan),
-      planWithout: avg(withoutPlan),
+      sleepLow: s.low,
+      sleepHigh: s.high,
+      sleepSample: ops(s.n),
+      mentalLow: m.low,
+      mentalHigh: m.high,
+      mentalSample: ops(m.n),
+      physicalLow: f.low,
+      physicalHigh: f.high,
+      physicalSample: ops(f.n),
+      planWith: avg(TRADES.filter((t) => t.compliance === "yes")),
+      planWithout: avg(TRADES.filter((t) => t.compliance !== "yes")),
+      planSample: ops(TRADES.length),
     };
   }, [lang]);
 
@@ -1123,7 +1134,7 @@ export function JournalPage() {
                   highLabel={L("Alto", "High")}
                   lowValue={cross.mentalLow}
                   highValue={cross.mentalHigh}
-                  sample={`${TRADES.length} ${L("días", "days")}`}
+                  sample={cross.mentalSample}
                 />
                 <CrossCell
                   label={L("Físico × resultado", "Physical × result")}
@@ -1131,7 +1142,7 @@ export function JournalPage() {
                   highLabel={L("Alto", "High")}
                   lowValue={cross.physicalLow}
                   highValue={cross.physicalHigh}
-                  sample={`${TRADES.length} ${L("días", "days")}`}
+                  sample={cross.physicalSample}
                 />
                 <CrossCell
                   label={L("Plan × resultado", "Plan × result")}
@@ -1139,7 +1150,7 @@ export function JournalPage() {
                   highLabel={L("Con plan", "With plan")}
                   lowValue={cross.planWithout}
                   highValue={cross.planWith}
-                  sample={`${TRADES.length} ${L("días", "days")}`}
+                  sample={cross.planSample}
                 />
               </div>
             </div>
@@ -1348,6 +1359,7 @@ export function JournalPage() {
                     to={headlineValue}
                     decimals={0}
                     prefix={headlinePrefix}
+                    suffix={headlineSuffix}
                     duration={2.4}
                   />
                 </motion.div>
@@ -1404,7 +1416,7 @@ export function JournalPage() {
                   </h3>
                 </div>
                 <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary tnum">
-                  {L("Coste en $", "Cost in $")}
+                  {L("Coste en US$", "Cost in $")}
                 </span>
               </div>
 
@@ -1416,6 +1428,7 @@ export function JournalPage() {
                   lateral propio, como ya hace la tabla de expectancy del
                   sitio. */}
               <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll">
+              <div className="min-w-[22rem] pr-12">
               {/* Table header row */}
               <div className="grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 pb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)] font-mono">
                 <div>{L("Tipo", "Type")}</div>
@@ -1497,6 +1510,7 @@ export function JournalPage() {
                   {totalMistakeCost < 0 ? "+" : "−"}
                   {fmtMoney(Math.abs(totalMistakeCost), lang, { decimals: 0 })}
                 </div>
+              </div>
               </div>
               </div>
 

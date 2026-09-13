@@ -12,8 +12,6 @@ import { OverlayHost } from "@/components/tj/OverlayHost";
 import { ScrollToTop } from "@/components/tj/ScrollToTop";
 import { TransicionPagina } from "@/components/tj/TransicionPagina";
 import { SkipLink } from "@/components/tj/SkipLink";
-import { BackgroundFX } from "@/components/tj/BackgroundFX";
-import { IntroSequence } from "@/components/tj/IntroSequence";
 import { SectionReveal } from "@/components/tj/SectionReveal";
 import { SITE_URL } from "@/lib/site";
 
@@ -172,7 +170,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CountPips — Tu operativa, medida.",
     description:
-      "El diario de trading profesional, nativo de Windows. Demo interactiva, métricas institucionales, disciplina y datos 100 % locales.",
+      "El diario de trading profesional, nativo de Windows. Demo interactiva, métricas institucionales, disciplina y tus datos en tu equipo.",
     url: SITE_URL,
     siteName: "CountPips",
     type: "website",
@@ -191,7 +189,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CountPips — Tu operativa, medida.",
     description:
-      "Diario de trading profesional, nativo de Windows. Métricas institucionales, disciplina y datos 100 % locales.",
+      "Diario de trading profesional, nativo de Windows. Métricas institucionales, disciplina y tus datos en tu equipo.",
     // `images` se omite también: src/app/twitter-image.tsx la inyecta.
   },
   robots: {
@@ -240,17 +238,6 @@ export default function RootLayout({
             // ningún bloque de tokens que lo respalde. Lo único que se
             // recuerda del visitante es si prefiere papel o tinta.
             __html: `(function(){try{var t=localStorage.getItem('tj-theme');if(t!=='dark'&&t!=='light')t='light';document.documentElement.dataset.theme=t;document.documentElement.dataset.palette='clasico';document.documentElement.classList.toggle('dark',t==='dark');}catch(e){document.documentElement.dataset.theme='light';document.documentElement.dataset.palette='clasico';}})();`,
-          }}
-        />
-        <script
-          // Intro del HTML de referencia: en la primera visita de la
-          // sesión, oculta los [data-seq] del hero ANTES del primer
-          // paint (IntroSequence los revela tras el loader).
-          // suppressHydrationWarning: lee sessionStorage, sólo existe en el
-          // navegador — mismo motivo que el script de arriba.
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(!sessionStorage.getItem('tj_intro'))document.documentElement.classList.add('tj-preload')}catch(e){}})();`,
           }}
         />
         <script
@@ -346,15 +333,6 @@ export default function RootLayout({
             razonamiento completo. */}
         <Providers>
           <div className="min-h-screen flex flex-col">
-            {/* Capa de efectos: el atlas grabado del fondo, la intro con
-                loader y la revelación por sección.
-
-                Aquí iba también `DecorFX`, el foco que seguía al cursor.
-                Se retira: escuchaba `pointermove` en el documento entero de
-                las 155 páginas para buscar tarjetas con la clase `.tj-spot`,
-                y esa clase no la aplicaba ni un componente del sitio. */}
-            <BackgroundFX />
-            <IntroSequence />
             <SectionReveal />
             <SkipLink />
             <GlobalShortcuts />

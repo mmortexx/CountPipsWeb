@@ -1,15 +1,9 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { DemoCapabilities } from "@/components/demo/DemoCapabilities";
 import { AppDemoClient } from "@/components/demo/AppDemoClient";
 import { DemoConversionPanel } from "@/components/demo/DemoConversionPanel";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
-
-// Estimated reading time (capabilities + demo + decision bridge + stats).
-// ~400 words at 220 wpm = ~2 min.
-const READING_TIME_MIN = 2;
 
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
@@ -82,9 +76,6 @@ export const metadata: Metadata = {
 //
 // Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
 
-const StatsBandNew = dynamic(
-  () => import("@/components/marketing/StatsBandNew").then((m) => m.StatsBandNew)
-);
 const FinalCTANew = dynamic(
   () => import("@/components/marketing/FinalCTANew").then((m) => m.FinalCTANew)
 );
@@ -96,7 +87,6 @@ export function DemoBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio="[ DEMO ]"
         eyebrowEs="Demo"
         eyebrowEn="Demo"
         titleEs="La app, en tu navegador."
@@ -107,25 +97,15 @@ export function DemoBody() {
         subtitleEn="Not a video or a gallery: explore CountPips' essential workflow with sample data, no sign-up and no installation."
         breadcrumbEs="Demo"
         breadcrumbEn="Demo"
-        readingTimeMin={READING_TIME_MIN}
       />
-      {/* What you can do — 6 feature cards previewing the demo */}
-      <DemoCapabilities />
-      <section id="demo" className="section bg-veil scroll-mt-16">
+      <section id="demo" className="section scroll-mt-16">
         {/* `hideHeader`: el PageHeader de arriba ya titula "La app, en tu
             navegador." y repite el mismo subtítulo, así que sin esta
             bandera el visitante leía el titular dos veces seguidas. */}
         <AppDemoClient hideHeader />
       </section>
       <DemoConversionPanel />
-      <PlateInterlude index={0} />
-      <StatsBandNew />
-      {/* Ready-to-buy CTA — catches visitors who just played with the demo */}
-      {/* `DemoReadyToBuy` retirado: era un segundo CTA idéntico pegado
-          al de cierre — mismo precio, misma promesa y casi los mismos
-          botones dos veces seguidas. FinalCTANew cierra la página. El
-          componente sigue en el repositorio. */}
-      <FinalCTANew />
+      <FinalCTANew enDemo />
     </>
   );
 }

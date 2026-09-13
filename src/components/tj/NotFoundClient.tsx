@@ -1,21 +1,11 @@
 "use client";
 
-import dynamicImport from "next/dynamic";
 import { useState } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
-
-/* El grabado de la 404 comparte módulo con `EngravedAtlas` (sus
-   primitivas de trazo), y ese trozo no debe entrar en el paquete que
-   sirven las páginas que sí existen: se trae bajo demanda, como hace
-   `BackgroundFX` con el propio atlas. */
-const Grabado404 = dynamicImport(
-  () => import("./Grabado404").then((m) => ({ default: m.Grabado404 })),
-  { ssr: false },
-);
 
 /**
  * Custom 404 — full-screen premium error page.
@@ -26,13 +16,6 @@ const Grabado404 = dynamicImport(
  * noindex` y sin la canónica que hereda el layout, que apuntaba a la
  * portada— y una directiva `"use client"` en ese fichero lo habría
  * impedido.
- *
- * Fondo: `Grabado404` — una lámina del atlas que se graba sola al
- * cargar («el folio que no está»: un registro cuyos renglones se cortan
- * y una lente que amplía el hueco). Sustituye a las velas desplazándose
- * y a la constelación de puntos con las que esta página dibujaba su
- * fondo: los dos clichés animados del sector, y el único rincón del
- * sitio que aún hablaba ese idioma en vez del papel entintado.
  *
  * Copy:
  *  - Trading-themed headline: "stopped out like a bad stop loss".
@@ -89,20 +72,8 @@ export function NotFoundClient() {
       aria-labelledby="not-found-heading"
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
-      {/* La lámina grabada — se dibuja sola al cargar, como el arranque
-          del atlas, y su bucle se para al converger. */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-        <Grabado404 />
-      </div>
 
-      {/* `tj-legible-text`: aquí el texto flota DIRECTAMENTE sobre la
-          lámina grabada, sin panel ni velo detrás — el caso exacto para
-          el que existe esa red. Sin ella, el filete vertical del registro
-          cruza por mitad del párrafo y del campo de búsqueda, y en tema
-          claro compite con la propia letra (la tinta de la lámina llega a
-          4,24:1 sobre la chapa; en oscuro, 5,31:1). La regla exime a
-          campos, botones y enlaces, así que el formulario no se toca. */}
-      <div className="tj-legible-text relative z-[2] text-center max-w-xl mx-auto">
+      <div className="relative text-center max-w-xl mx-auto">
         <div
           className="tj-alza font-semibold tracking-[-0.04em] leading-[0.9] text-gradient tnum"
           style={{ fontSize: "clamp(6rem, 18vw, 12rem)" }}
@@ -155,18 +126,18 @@ export function NotFoundClient() {
                   : "Search a feature, metric or question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              /* `rounded-[2px]` y `h-12`: el radio de control del sitio —
+              /* `rounded-[4px]` y `h-12`: el radio de control del sitio —
                  aquí convivían `rounded-md` y `rounded-[5px]` — y el alto
                  que deja al botón interior sus 44 px de objetivo táctil
                  con su propio aire (era `h-11` con un botón de 32 px). */
-              className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
+              className="w-full bg-[var(--surface)] border border-transparent rounded-full h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
             />
             <div
               className="tj-alza absolute right-1.5 top-1/2 -translate-y-1/2"
             >
               <button
                 type="submit"
-                className="inline-flex h-11 items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-4 text-xs font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
+                className="inline-flex h-11 items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-4 text-xs font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
               >
                 {es ? "Buscar" : "Search"}
               </button>
@@ -176,7 +147,7 @@ export function NotFoundClient() {
 
         <ol
           style={{ animationDelay: "0.4s" }}
-          className="tj-alza mt-7 m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0 text-left"
+          className="tj-alza mt-7 m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0 text-left"
         >
           {tiles.map((tile, i) => (
             <li
@@ -188,7 +159,7 @@ export function NotFoundClient() {
                 className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
                 <span
-                  className="tnum text-[11px] font-semibold"
+                  className="tnum text-[12px] font-semibold"
                   style={{ color: "rgb(var(--accent-base))" }}
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -233,7 +204,7 @@ export function NotFoundClient() {
                  `group-hover` sin padre `group` — nunca se movía —, y con
                  `py-2` el enlace medía ~36 px, bajo el objetivo táctil de
                  44 px que rige el resto de controles del sitio. */
-              className="group inline-flex min-h-[44px] items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
+              className="group inline-flex min-h-[44px] items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
             >
               {es ? "Volver al inicio" : "Back to home"}
               <svg

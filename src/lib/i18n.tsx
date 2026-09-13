@@ -18,8 +18,8 @@ export const STR = {
   appName: { es: "CountPips", en: "CountPips" },
   tagline: { es: "Tu operativa, medida.", en: "Your trading, measured." },
   heroLead: {
-    es: "El diario de trading profesional, nativo de Windows. Métricas institucionales, disciplina que te frena antes de la tontería y tus datos 100 % en tu máquina.",
-    en: "The professional trading journal, native to Windows. Institutional metrics, discipline that stops you before the dumb trade, and your data 100 % on your machine.",
+    es: "El diario de trading profesional, nativo de Windows. Métricas institucionales, un guardián de disciplina y tus datos en tu equipo.",
+    en: "The professional trading journal, native to Windows. Institutional metrics, a discipline guardian and your data on your machine.",
   },
   ctaPrimary: { es: "Probar la demo", en: "Try the demo" },
   ctaSecondary: { es: "Ver precios", en: "See pricing" },
@@ -38,7 +38,7 @@ export const STR = {
 
   // ---- Positioning strip ----
   posNative: { es: "Nativa de Windows", en: "Native to Windows" },
-  posLocal: { es: "100 % local", en: "100 % local" },
+  posLocal: { es: "Datos en tu equipo", en: "Data on your machine" },
   posOnce: { es: "Demo interactiva", en: "Interactive demo" },
   posBilingual: { es: "ES + EN nativo", en: "Native ES + EN" },
 
@@ -56,10 +56,10 @@ export const STR = {
   winRestore: { es: "Restaurar", en: "Restore" },
   winClose: { es: "Cerrar", en: "Close" },
   localFirst: { es: "Local-first", en: "Local-first" },
-  demoAccount: { es: "DEMO · 10.000 $", en: "DEMO · $10,000" },
+  demoAccount: { es: "DEMO · 10.000 US$", en: "DEMO · $10,000" },
   autoSaved: {
-    es: "Guardado automático en tu equipo",
-    en: "Auto-saved on your machine",
+    es: "Guardado automático en este navegador",
+    en: "Auto-saved in this browser",
   },
   demoSampleData: {
     es: "Datos de muestra · No es trading real",
@@ -90,8 +90,8 @@ export const STR = {
   // tooltip is "Local-first · sin nube" — slightly longer than the
   // visible "Local-first" text, mirrors the native WinUI tooltip.
   titleLocalFirstLed: {
-    es: "Local-first · sin nube",
-    en: "Local-first · no cloud",
+    es: "Local-first · tus datos en tu equipo",
+    en: "Local-first · your data on your machine",
   },
 
   // ---- Dashboard ----
@@ -309,8 +309,8 @@ export const STR = {
   dataDownloaded: { es: "✓ Descargado", en: "✓ Downloaded" },
   about: { es: "Acerca de", en: "About" },
   aboutHelp: {
-    es: "App nativa de Windows · datos 100 % locales · ES + EN",
-    en: "Native Windows app · 100 % local data · ES + EN",
+    es: "App nativa de Windows · tus datos en tu equipo · ES + EN",
+    en: "Native Windows app · your data on your machine · ES + EN",
   },
 
   // ---- Accent palette names ----

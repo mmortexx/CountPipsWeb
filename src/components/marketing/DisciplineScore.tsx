@@ -127,7 +127,8 @@ const MAX_OPT = 3;
  */
 const CLAVE_GUARDADO = "tj-test-disciplina-v1";
 
-export function DisciplineScore({ num = "04" }: { num?: string }) {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const [answers, setAnswers] = useState<(number | null)[]>(QUESTIONS.map(() => null));
@@ -356,19 +357,12 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
           : "rgb(var(--pnl-pos))";
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container">
         {/* ── Encabezado ─────────────────────────────────────────────── */}
-        <div className="mb-8 max-w-[46em]">
+        <div className={enPagina ? "sr-only" : "mb-8 max-w-[46em]"}>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-            >
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span className="eyebrow">
               {es ? "DIAGNÓSTICO" : "DIAGNOSIS"}
             </span>
           </div>
@@ -411,11 +405,11 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
               <div className="mb-2 flex items-center justify-between">
                 <span
                   className="tnum"
-                  style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 12, color: "var(--ink-3)" }}
                 >
                   {es ? "Progreso" : "Progress"}
                 </span>
-                <span className="tnum" style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)" }}>
+                <span className="tnum" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-2)" }}>
                   {answeredCount} / {QUESTIONS.length}
                 </span>
               </div>
@@ -441,25 +435,25 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 if (qi !== actual) return null;
                 const dim = DIMS.find((d) => d.id === q.dim);
                 return (
-                  <li key={qi} className="tj-paper rounded-[2px] p-4">
+                  <li key={qi} className="pt-2">
                     <div className="flex items-baseline gap-2 mb-1">
                       <span
                         className="tnum"
-                        style={{ fontSize: 10, fontWeight: 700, color: "rgb(var(--accent-base))" }}
+                        style={{ fontSize: 13, fontWeight: 500, color: "var(--ink-3)" }}
                       >
                         {String(qi + 1).padStart(2, "0")}
                       </span>
                       <span
                         className="tnum"
-                        style={{ fontSize: 9.5, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                        style={{ fontSize: 12, color: "var(--ink-3)" }}
                       >
                         {dim ? (es ? dim.es : dim.en) : ""}
                       </span>
                     </div>
                     <p
                       id={idPregunta(qi)}
-                      className="m-0 mb-3"
-                      style={{ fontSize: 14.5, lineHeight: 1.5, color: "var(--ink)" }}
+                      className="m-0 mb-5 text-balance"
+                      style={{ fontSize: 19, lineHeight: 1.4, fontWeight: 500, color: "var(--ink)" }}
                     >
                       {es ? q.qEs : q.qEn}
                     </p>
@@ -498,20 +492,15 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                             tabIndex={enfocable ? 0 : -1}
                             onClick={() => setAnswer(qi, oi)}
                             onKeyDown={(e) => onKeyOption(e, qi, oi, q.options.length)}
-                            className="text-left rounded-[2px] transition-[background-color,border-color,color] duration-200"
+                            className="text-left rounded-[10px] transition-[background-color,color] duration-200 hover:text-[var(--ink)]"
                             style={{
-                              minHeight: 44,
-                              padding: "10px 12px",
-                              fontSize: 13,
+                              minHeight: 48,
+                              padding: "12px 14px",
+                              fontSize: 14.5,
                               lineHeight: 1.35,
                               cursor: "pointer",
-                              color: activa ? "rgb(var(--accent-base))" : "var(--ink-2)",
-                              background: activa
-                                ? "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)"
-                                : "color-mix(in oklab, var(--surface-2) 45%, transparent)",
-                              border: activa
-                                ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 50%, transparent)"
-                                : "1px solid rgb(var(--divider) / 0.12)",
+                              color: activa ? "var(--bg)" : "var(--ink-2)",
+                              background: activa ? "var(--ink)" : "color-mix(in srgb, var(--ink) 4.5%, transparent)",
                             }}
                           >
                             {es ? o.es : o.en}
@@ -531,20 +520,19 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 marcha, y saltar solo al tocar una opción impide
                 corregir sin tener que retroceder. Se avanza cuando uno
                 decide que ha terminado con la pregunta. */}
-            <div className="mt-6 flex items-center justify-between gap-4 border-t pt-4"
-                 style={{ borderColor: "rgb(var(--divider) / 0.14)" }}>
+            <div className="mt-8 flex items-center justify-between gap-4">
               <button
                 type="button"
                 onClick={() => setActual((i) => Math.max(0, i - 1))}
                 disabled={actual === 0}
-                className="inline-flex items-center gap-2 rounded-[2px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
-                style={{ minHeight: 44, padding: "10px 16px", fontSize: 13, cursor: "pointer",
-                         color: "var(--ink-2)", border: "1px solid rgb(var(--divider) / 0.16)" }}
+                className="inline-flex items-center gap-2 rounded-[8px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
+                style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
+                         color: "var(--ink-2)", border: "1px solid transparent" }}
               >
-                ← {es ? "Anterior" : "Back"}
+                <span aria-hidden>←</span> {es ? "Anterior" : "Back"}
               </button>
 
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 13, color: "var(--ink-3)" }}>
                 {actual + 1} / {QUESTIONS.length}
               </span>
 
@@ -555,15 +543,15 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                   /* Se puede seguir sin responder: obligar a contestar
                      para avanzar convierte un diagnóstico en un peaje.
                      El resultado ya avisa de cuántas faltan. */
-                  className="inline-flex items-center gap-2 rounded-[2px] transition-colors duration-200"
-                  style={{ minHeight: 44, padding: "10px 18px", fontSize: 13, fontWeight: 600,
+                  className="inline-flex items-center gap-2 rounded-[8px] transition-colors duration-200"
+                  style={{ minHeight: 44, padding: "10px 18px", fontSize: 14, fontWeight: 600,
                            cursor: "pointer", color: "rgb(var(--accent-ink))",
                            background: "rgb(var(--accent-base))" }}
                 >
-                  {es ? "Siguiente" : "Next"} →
+                  {es ? "Siguiente" : "Next"} <span aria-hidden>→</span>
                 </button>
               ) : (
-                <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
+                <span className="tnum" style={{ fontSize: 13, color: "var(--ink-3)" }}>
                   {es ? "Última" : "Last"}
                 </span>
               )}
@@ -573,15 +561,15 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
               <button
                 type="button"
                 onClick={reset}
-                className="mt-5 inline-flex items-center gap-2 rounded-[2px]"
+                className="mt-5 inline-flex items-center gap-2 rounded-[8px]"
                 style={{
                   minHeight: 44,
                   padding: "10px 18px",
-                  fontSize: 13,
+                  fontSize: 14,
                   cursor: "pointer",
                   color: "var(--ink-2)",
                   background: "transparent",
-                  border: "1px solid rgb(var(--divider) / 0.16)",
+                  border: "1px solid transparent",
                 }}
               >
                 {es ? "Empezar de nuevo" : "Start over"}
@@ -591,10 +579,10 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
 
           {/* ── Resultado ────────────────────────────────────────────── */}
           <div className="lg:sticky lg:top-24">
-            <div className="tj-paper tj-paper-glow rounded-[2px] p-5">
+            <div className="tj-paper tj-paper-glow rounded-[8px] p-5">
               <div
                 className="tnum mb-4"
-                style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 12, color: "var(--ink-3)" }}
               >
                 {es ? "Tu perfil" : "Your profile"}
               </div>
@@ -618,12 +606,11 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 </span>
                 {level && (
                   <span
-                    className="tnum ml-auto px-2.5 py-1 rounded-[2px]"
+                    className="tnum ml-auto px-2.5 py-1 rounded-[8px]"
                     style={{
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: 700,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
+                      textTransform: "",
                       color: level.color,
                       background: `color-mix(in oklab, ${level.color} 14%, transparent)`,
                       border: `1px solid color-mix(in oklab, ${level.color} 40%, transparent)`,
@@ -633,7 +620,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                   </span>
                 )}
               </div>
-              <p className="m-0 mb-5" style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--ink-3)" }}>
+              <p className="m-0 mb-5" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--ink-3)" }}>
                 {level
                   ? es
                     ? level.resumenEs
@@ -648,11 +635,11 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 {perDim.map(({ dim, pct, respondidas }) => (
                   <div key={dim.id}>
                     <div className="flex items-baseline justify-between mb-1">
-                      <span style={{ fontSize: 12.5, color: "var(--ink-2)" }}>{es ? dim.es : dim.en}</span>
+                      <span style={{ fontSize: 13, color: "var(--ink-2)" }}>{es ? dim.es : dim.en}</span>
                       <span
                         className="tnum"
                         style={{
-                          fontSize: 12,
+                          fontSize: 13,
                           fontWeight: 600,
                           color: respondidas ? barColor(pct) : "var(--ink-3)",
                         }}
@@ -680,8 +667,8 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
               {/* Qué arreglar primero */}
               {weakest ? (
                 <>
-                  <div className="rounded-[2px] p-4 bg-[var(--surface-2)]/50 border border-[rgb(var(--divider)/0.1)]">
-                    <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-[rgb(var(--accent-base))] font-semibold">
+                  <div className="border-t border-[var(--line)] pt-4">
+                    <div className="tnum mb-2 text-[12px] text-[rgb(var(--accent-base))] font-semibold">
                       {es ? "Empieza por aquí" : "Start here"}
                     </div>
                     <p className="m-0 text-sm leading-relaxed text-secondary">
@@ -692,7 +679,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                   <button
                     type="button"
                     onClick={copyAssessment}
-                    className="mt-3.5 w-full inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-[2px] text-xs font-mono font-semibold transition-colors duration-150 border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.2)] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] cursor-pointer"
+                    className="mt-2 -ml-1 inline-flex items-center gap-2 min-h-[44px] px-1 text-[14px] font-medium transition-colors duration-150 text-primary hover:text-[rgb(var(--accent-base))] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] cursor-pointer"
                   >
                     {copied ? (
                       <>
@@ -720,7 +707,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 </p>
               )}
 
-              <p className="m-0 mt-4" style={{ fontSize: 11, lineHeight: 1.5, color: "var(--ink-3)" }}>
+              <p className="m-0 mt-4" style={{ fontSize: 12, lineHeight: 1.5, color: "var(--ink-3)" }}>
                 {es
                   ? "Autoevaluación orientativa: mide hábitos declarados, no resultados. Lo que de verdad te retrata son tus propios datos operación a operación."
                   : "Indicative self-assessment: it measures declared habits, not results. What really portrays you is your own trade-by-trade data."}

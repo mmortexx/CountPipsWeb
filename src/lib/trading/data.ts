@@ -271,8 +271,11 @@ function buildTrades(): Trade[] {
     const mfe = isWin ? +(r + rnd() * 0.8).toFixed(2) : +(rnd() * 1.2).toFixed(2);
     const mae = isWin ? +(-(rnd() * 0.5)).toFixed(2) : +(-(0.9 + rnd() * 0.6)).toFixed(2);
 
+    // Mismo sorteo, umbral según el resultado: las perdedoras rompen el plan
+    // más a menudo, como en un diario real. Media global ≈ 70 % en plan.
     const cr = rnd();
-    const compliance: Compliance = cr < 0.7 ? "yes" : cr < 0.85 ? "partial" : "no";
+    const enPlan = isWin ? 0.8 : 0.6;
+    const compliance: Compliance = cr < enPlan ? "yes" : cr < enPlan + 0.15 ? "partial" : "no";
 
     // Close timestamps aligned to the session's real UTC window:
     //   London 08:00–11:00, NY 14:00–17:00, Asia 23:00–03:00 (Tokyo open).
@@ -297,6 +300,10 @@ function buildTrades(): Trade[] {
         : 5 + Math.floor(rnd() * 180);
     const openedAt = new Date(closedAt.getTime() - durationMin * 60000);
 
+    // Nota del día 1–5: el mismo sorteo, desplazado un punto hacia el resultado.
+    const sorteo = 1 + Math.floor(rnd() * 5);
+    const dayScore = isWin ? Math.min(5, sorteo + (sorteo < 4 ? 1 : 0)) : Math.max(1, sorteo - (sorteo > 2 ? 1 : 0));
+
     trades.push({
       id: id++,
       instrument: inst.symbol,
@@ -320,8 +327,7 @@ function buildTrades(): Trade[] {
       openedAt,
       closedAt,
       durationMin,
-      // 0–10 daily discipline score (10 = flawless plan execution).
-      dayScore: Math.floor(rnd() * 11),
+      dayScore,
       entryNote: ES_NOTES[Math.floor(rnd() * ES_NOTES.length)],
       closeNote: ES_CLOSE[Math.floor(rnd() * ES_CLOSE.length)],
     });

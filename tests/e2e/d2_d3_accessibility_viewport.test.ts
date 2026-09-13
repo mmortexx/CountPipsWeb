@@ -137,17 +137,13 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 1 Feature Cov
   it("T1.4: prefers-reduced-motion is respected across animations and scroll behaviors", () => {
     const globalsCss = readSrc("src/app/globals.css");
     const countUp = readSrc("src/components/tj/CountUp.tsx");
-    const ticker = readSrc("src/components/marketing/Ticker.tsx");
-    const atlas = readSrc("src/components/tj/EngravedAtlas.tsx");
 
     // CSS reduced motion media query handles animations
     expect(globalsCss).toMatch(/@media\s*\(\s*prefers-reduced-motion:\s*reduce\s*\)/);
 
     // Lo que no puede resolver la hoja de estilos lo consulta el JS:
-    // el contador, la cinta y el fondo grabado.
+    // el contador.
     expect(countUp).toContain("prefers-reduced-motion: reduce");
-    expect(ticker).toContain("prefers-reduced-motion: reduce");
-    expect(atlas).toContain("prefers-reduced-motion: reduce");
   });
 
   it("T1.5: Skip link is the first focusable element, bilingual, and targets #main-content", () => {

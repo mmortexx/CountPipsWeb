@@ -43,13 +43,6 @@ describe("Cromo de mesa", () => {
     expect(explorer).toMatch(/En este recorte|In this cut/);
   });
 
-  it("la demo lista capacidades como índice, no como tarjetas con sombra de acento", () => {
-    const caps = sinComentarios(leer("src/components/demo/DemoCapabilities.tsx"));
-    expect(caps).toMatch(/<ol /);
-    expect(caps).not.toMatch(/hover:shadow-\[0_8px_24px_-8px_rgb\(var\(--accent-base\)/);
-    expect(caps).toMatch(/padStart\(2, "0"\)/);
-  });
-
   it("el changelog de about es un índice, no una línea de tiempo en zigzag", () => {
     const log = sinComentarios(leer("src/components/marketing/Changelog.tsx"));
     expect(log).toMatch(/<ol /);
@@ -79,9 +72,9 @@ describe("Cromo de mesa", () => {
   it("el pie y el atajo global no usan radio de consumo", () => {
     const pie = sinComentarios(leer("src/components/marketing/Footer.tsx"));
     const atajos = sinComentarios(leer("src/components/tj/GlobalShortcuts.tsx"));
-    expect(pie).toMatch(/group rounded-\[2px\] -my-2 py-2/);
+    expect(pie).toMatch(/group rounded-\[4px\] -my-2 py-2/);
     expect(pie).not.toMatch(/group rounded-md -my-2 py-2/);
-    expect(atajos).toMatch(/rounded-\[2px\] pl-3 pr-3\.5/);
+    expect(atajos).toMatch(/rounded-\[4px\] pl-3 pr-3\.5/);
     expect(atajos).not.toMatch(/rounded-full pl-3 pr-3\.5/);
   });
 
@@ -110,12 +103,9 @@ describe("Cromo de mesa", () => {
     expect(ejes).not.toMatch(/Desliza para explorar/);
   });
 
-  it("volver arriba y el comparador no llevan sombra de acento", () => {
+  it("volver arriba no lleva sombra de acento", () => {
     const top = sinComentarios(leer("src/components/tj/BackToTop.tsx"));
-    const slider = sinComentarios(leer("src/components/tj/ComparisonSlider.tsx"));
     expect(top).not.toMatch(/hover:shadow-\[0_8px_28px_rgb\(var\(--accent-base\)/);
-    expect(slider).not.toMatch(/shadow-\[0_8px_24px_-6px_rgb\(var\(--accent-base\)/);
-    expect(slider).not.toMatch(/w-11 h-11 rounded-full/);
   });
 
   it("el casco de la demo no usa radio 8/12 ni píldoras de consumo", () => {
@@ -158,7 +148,7 @@ describe("Cromo de mesa", () => {
     expect(cookies).not.toMatch(/rounded-t-\[12px\]/);
     expect(cookies).toMatch(/rounded-t-\[2px\]/);
     expect(chip).not.toMatch(/`pill /);
-    expect(chip).toMatch(/rounded-\[2px\]/);
+    expect(chip).toMatch(/rounded-\[4px\]/);
     expect(sesiones).not.toMatch(/MotionPingDot/);
     expect(sesiones).not.toMatch(/tj-ping/);
     expect(sesiones).not.toMatch(/rounded-full/);

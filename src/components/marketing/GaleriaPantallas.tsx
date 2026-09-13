@@ -37,7 +37,7 @@ import { LAMINAS_PRODUCTO, ORDEN_LAMINAS } from "@/lib/laminas";
  * Con `loading="lazy"` en las imágenes, cambiar de pestaña cuesta una
  * petición de unos 60 KB.
  */
-export function GaleriaPantallas({ num = "03" }: { num?: string }) {
+export function GaleriaPantallas() {
   const { lang } = useLang();
   const es = lang === "es";
   const idBase = useId();
@@ -62,19 +62,13 @@ export function GaleriaPantallas({ num = "03" }: { num?: string }) {
   return (
     <section
       id="galeria"
-      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
-         Sin superficie propia su texto cae directamente sobre el atlas
-         grabado, que se dibuja a pantalla completa en TODAS las
-         anchuras: el reparto a dos columnas que decía resolverlo por
-         encima de 1.280 px nunca existió (ver la nota del atlas en
-         globals.css). */
-      className="section bg-veil"
+      className="section"
       aria-labelledby={`${idBase}-titulo`}
     >
-      <div className="mx-auto w-[var(--page-w)]">
+      <div className="tj-container">
         <SectionHeader
           composicion="partida"
-          etiqueta={`§ ${num} — ${es ? "La galería" : "The gallery"}`}
+          etiqueta={es ? "La galería" : "The gallery"}
           titulo={
             <span id={`${idBase}-titulo`}>
               {es ? "Las siete pantallas, por dentro." : "The seven screens, from inside."}
@@ -90,18 +84,11 @@ export function GaleriaPantallas({ num = "03" }: { num?: string }) {
           }
         />
 
-        {/* La barra de pantallas. Se desplaza en horizontal en móvil en vez
-            de partirse en dos filas: partida deja de leerse como la barra
-            de una aplicación, que es de donde saca su sentido. */}
-        {/* `tj-fila-sigue`: la tira de pestañas se desplaza de lado y su
-            barra va oculta a propósito, así que sin el desvanecido no
-            había ningún indicio de que hubiera más. Medido a 390 px:
-            335 px de 725 escondidos en /features, y 80 a 768 px. */}
         <div
           ref={tablist}
           role="tablist"
           aria-label={es ? "Pantallas del programa" : "Application screens"}
-          className="tj-fila-sigue mt-10 mb-8 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="tj-pestanas mt-10 mb-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {ORDEN_LAMINAS.map((clave, i) => {
             const l = LAMINAS_PRODUCTO[clave];
@@ -114,24 +101,10 @@ export function GaleriaPantallas({ num = "03" }: { num?: string }) {
                 id={`${idBase}-tab-${clave}`}
                 aria-selected={seleccionada}
                 aria-controls={`${idBase}-panel`}
-                /* Sólo la activa entra en el orden del tabulador: dentro de
-                   un `tablist` se navega con flechas, y dejar las siete
-                   tabulables obliga a pasar por todas para salir. */
                 tabIndex={seleccionada ? 0 : -1}
                 onClick={() => setActiva(clave)}
                 onKeyDown={(e) => enTeclado(e, i)}
-                className="shrink-0 rounded-[2px] px-3.5 py-2 text-[13px] transition-colors min-h-[44px]"
-                style={{
-                  color: seleccionada ? "var(--ink)" : "var(--ink-3)",
-                  background: seleccionada ? "rgb(var(--divider) / 0.10)" : "transparent",
-                  boxShadow: seleccionada
-                    ? "inset 0 -2px 0 rgb(var(--accent-base) / 0.9)"
-                    : "none",
-                }}
               >
-                <span className="tnum mr-2 text-[10.5px] tracking-[0.14em]" style={{ color: "rgb(var(--accent-base))" }}>
-                  {l.roman}
-                </span>
                 {es ? l.pestanaEs : l.pestanaEn}
               </button>
             );

@@ -31,9 +31,6 @@ import { ShieldCheck, AlertTriangle, HandMetal, Timer } from "lucide-react";
  * permitido, que es exactamente lo que la sección promete que hace la
  * aplicación.
  *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("05"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
- */
 
 /** Riesgo que aporta cada contrato, en % de la cuenta. */
 const RIESGO_POR_CONTRATO = 0.5;
@@ -44,7 +41,8 @@ const CONTRATOS_AJUSTADOS = 2;
 
 type EstadoGuardian = "bloqueado" | "ajustado" | "anulado";
 
-export function GuardianNew({ num = "05" }: { num?: string }) {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -62,7 +60,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
   return (
     <section
       id="guardian"
-      className="section bg-veil relative overflow-clip border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className={`section relative overflow-clip scroll-mt-24 ${enPagina ? "" : "tj-banda"}`}
     >
       {/* P1 — contenedor unificado a `tj-container`: hereda los gutters
           fluidos (clamp(1.25rem, 4vw, 2.25rem)) y el page-w (1080px) de
@@ -82,58 +80,41 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             el resto de la home, en vez de aparecer estática. */}
         <div
           data-entra
-          // T3c — swap a `.tj-paper-dense`: contenido denso (fila de trade,
-          // checklist de 3, aviso de bloqueo, 2 CTAs) necesita más opacidad
-          // que el papel 72 % estándar para mantener WCAG AA. Sigue siendo
-          // papel translúcido cálido (86 %) — el atlas sigue filtrándose por
-          // los bordes. Estados rojo/verde (checklist + aviso bloqueo) se
-          // conservan intactos: tienen sus propios fondos teñidos.
-          className="tj-paper-dense relative rounded-[2px] p-5 sm:p-6 md:p-8"
-          style={{
-            border: "1px solid rgb(var(--divider) / 0.13)",
-            // La sombra la pone el material, no esta línea. Aquí había un
-            // `boxShadow` en NEGRO PURO al 22 %, y al ser inline ganaba
-            // siempre: anulaba la sombra que `.tj-paper` define para el
-            // tema claro, que va teñida con `--sombra` (19 29 38, el
-            // grafito del material) y no con negro. En una chapa gris
-            // clara el negro puro ensucia en vez de levantar, y esta es
-            // la sección con más exposición del sitio — sale en la
-            // portada y en /features/disciplina.
-          }}
+          className="tj-paper-dense relative rounded-[14px] p-5 sm:p-6 md:p-8 shadow-[0_1px_2px_rgb(11_15_20/0.04),0_24px_60px_-30px_rgb(11_15_20/0.25)]"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <span
               className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+              style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
-              {es ? "Comprobación previa · nueva operación" : "Pre-flight check · new trade"}
+              {es ? "Semáforo de riesgo · nueva operación" : "Risk light · new trade"}
             </span>
             <span
               className="tnum inline-flex items-center gap-1.5 self-start sm:self-auto"
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 padding: "3px 9px",
-                borderRadius: 2,
-                background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
+                borderRadius: 4,
+                background: "var(--chip)",
                 color: "rgb(var(--accent-base))",
-                border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
+                border: "1px solid var(--chip-line)",
               }}
             >
               <span
                 aria-hidden
-                className="inline-block rounded-[1px]"
+                className="inline-block rounded-full"
                 style={{
-                  width: 5,
-                  height: 5,
-                  background: "rgb(var(--accent-base))",
+                  width: 6,
+                  height: 6,
+                  background: "rgb(var(--pnl-pos))",
                 }}
               />
-              {es ? "EN VIVO" : "LIVE"}
+              {es ? "En vivo" : "Live"}
             </span>
           </div>
           {/* Fila del trade */}
           <div
-            className="rounded-[2px] p-3 mb-4"
+            className="rounded-[4px] p-3 mb-4"
             style={{
               background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
               border: "1px solid rgb(var(--divider) / 0.06)",
@@ -144,16 +125,16 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                 className="tnum inline-block"
                 style={{
                   padding: "4px 10px",
-                  borderRadius: 2,
+                  borderRadius: 4,
                   background: "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)",
                   color: "rgb(var(--pnl-pos))",
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 700,
                 }}
               >
                 NQ · LONG
               </span>
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-2)" }}>
+              <span className="tnum" style={{ fontSize: 13, color: "var(--ink-2)" }}>
                 {contratos} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
               </span>
               <span className="tnum ml-auto" style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>28 {es ? "pts" : "pts"}</span>
@@ -187,7 +168,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             ].map((c, i) => (
               <div key={i} className="flex items-start gap-2.5 py-0.5">
                 <span
-                  className="inline-grid place-items-center rounded-[2px] flex-none mt-px"
+                  className="inline-grid place-items-center rounded-[4px] flex-none mt-px"
                   style={{
                     width: 20,
                     height: 20,
@@ -202,9 +183,9 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                     border: `1px solid ${c.ok ? "rgb(var(--pnl-pos) / 0.45)" : "rgb(var(--pnl-neg) / 0.50)"}`,
                   }}
                 >
-                  <span style={{ fontSize: 11, fontWeight: 800, lineHeight: 1 }}>{c.ok ? "✓" : "✕"}</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, lineHeight: 1 }}>{c.ok ? "✓" : "✕"}</span>
                 </span>
-                <span style={{ fontSize: 13, lineHeight: 1.4, color: c.ok ? "var(--ink-2)" : "rgb(var(--pnl-neg))", fontWeight: c.ok ? 400 : 600 }}>{c.l}</span>
+                <span style={{ fontSize: 14, lineHeight: 1.4, color: c.ok ? "var(--ink-2)" : "rgb(var(--pnl-neg))", fontWeight: c.ok ? 400 : 600 }}>{c.l}</span>
               </div>
             ))}
           </div>
@@ -250,27 +231,27 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   : "rgb(var(--divider))";
             const titulo =
               tono === "neutro"
-                ? es ? "Operación anulada" : "Trade cancelled"
+                ? es ? "Registrada fuera de tu regla" : "Logged against your rule"
                 : tono === "ok"
-                  ? es ? "Operación permitida" : "Trade allowed"
-                  : es ? "Operación bloqueada" : "Trade blocked";
+                  ? es ? "Semáforo en verde" : "Green light"
+                  : es ? "Semáforo en rojo" : "Red light";
             const cuerpo =
               tono === "neutro"
                 ? es
-                  ? "No se ha registrado nada. El guardián no discute: si la anulas, se anula."
-                  : "Nothing was recorded. The guardian does not argue: cancel it and it is cancelled."
+                  ? "Queda anotada con el semáforo en rojo. Si activas el freno duro, al tocar tu pérdida diaria dejará de admitir operaciones nuevas."
+                  : "It is logged with the light on red. If you turn on the hard brake, hitting your daily loss stops new trades from being logged."
                 : tono === "ok"
                   ? es
-                    ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite. Puedes abrirla.`
-                    : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit. You can open it.`
+                    ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite.`
+                    : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit.`
                   : es
-                    ? `Reduce el tamaño a ${CONTRATOS_AJUSTADOS} contratos para dejar el riesgo en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
-                    : `Reduce size to ${CONTRATOS_AJUSTADOS} contracts to bring risk to ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
+                    ? `El riesgo supera tu máximo por operación. Con ${CONTRATOS_AJUSTADOS} contratos quedaría en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
+                    : `Risk is above your per-trade maximum. At ${CONTRATOS_AJUSTADOS} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
             return (
               <div
                 role="status"
                 aria-live="polite"
-                className="rounded-[2px] mb-3 relative overflow-hidden"
+                className="rounded-[4px] mb-3 relative overflow-hidden"
                 style={{
                   padding: "16px 18px 16px 20px",
                   background: `color-mix(in oklab, ${tinte} 10%, transparent)`,
@@ -286,7 +267,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                 <div className="flex items-center gap-2 mb-1">
                   <span
                     aria-hidden
-                    className="inline-grid place-items-center rounded-[2px]"
+                    className="inline-grid place-items-center rounded-[4px]"
                     style={{
                       width: 20,
                       height: 20,
@@ -303,12 +284,12 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   </span>
                   <span
                     className="tnum"
-                    style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color, fontWeight: 700 }}
+                    style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color, fontWeight: 700 }}
                   >
                     {titulo}
                   </span>
                 </div>
-                <p className="m-0" style={{ fontSize: 12, lineHeight: 1.5, color: "var(--ink-2)" }}>
+                <p className="m-0" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--ink-2)" }}>
                   {cuerpo}
                 </p>
               </div>
@@ -342,11 +323,11 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   onClick={() => setEstado("ajustado")}
                   className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                   style={{
-                    borderRadius: 2,
-                    background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                    color: "rgb(var(--accent-base))",
-                    border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
-                    fontSize: 12,
+                    borderRadius: 4,
+                    background: "rgb(var(--accent-base))",
+                    color: "rgb(var(--accent-ink))",
+                    border: "1px solid rgb(var(--accent-base))",
+                    fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
                   }}
@@ -360,16 +341,16 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   onClick={() => setEstado("anulado")}
                   className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                   style={{
-                    borderRadius: 2,
+                    borderRadius: 4,
                     background: "transparent",
                     color: "var(--ink-2)",
-                    border: "1px solid rgb(var(--divider) / 0.13)",
-                    fontSize: 12,
+                    border: "1px solid var(--line-2)",
+                    fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
                   }}
                 >
-                  {es ? "Anular" : "Cancel"}
+                  {es ? "Registrar igualmente" : "Log anyway"}
                 </button>
               </>
             ) : (
@@ -378,11 +359,11 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                 onClick={() => setEstado("bloqueado")}
                 className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                 style={{
-                  borderRadius: 2,
+                  borderRadius: 4,
                   background: "transparent",
                   color: "var(--ink-2)",
-                  border: "1px solid rgb(var(--divider) / 0.13)",
-                  fontSize: 12,
+                  border: "1px solid var(--line-2)",
+                  fontSize: 13,
                   fontWeight: 600,
                   cursor: "pointer",
                 }}
@@ -400,26 +381,18 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
             Antes la columna aparecía estática mientras la tarjeta izquierda
             no animaba; ahora las dos mitades se asientan a la par. */}
         <div>
+          {!enPagina && (
           <Reveal>
             <div className="inline-flex items-center gap-3 mb-5">
-              <span
-                className="tnum"
-                style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-              >
-                § {num}
-              </span>
-              <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-              >
+              <span className="eyebrow">
                 {es ? "DISCIPLINA" : "DISCIPLINE"}
               </span>
             </div>
           </Reveal>
+          )}
           <Reveal delay={0.06}>
             <h2
-              className="font-serif m-0"
+              className={enPagina ? "sr-only" : "font-serif m-0"}
               style={{
                 fontSize: "clamp(1.75rem, 3.6vw, 3rem)",
                 fontWeight: 400,
@@ -444,6 +417,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               )}
             </h2>
           </Reveal>
+          {!enPagina && (
           <Reveal delay={0.12}>
             <p
               className="mt-5 mb-8"
@@ -455,10 +429,11 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
               }}
             >
               {es
-                ? "El Guardián no te dice qué hacer. Te bloquea cuando rompes tus propias reglas."
-                : "The Guardian doesn't tell you what to do. It blocks you when you break your own rules."}
+                ? "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes."
+                : "The Guardian doesn't tell you what to do: it measures every trade against the rules you set and, if you turn it on, brakes you when you break them."}
             </p>
           </Reveal>
+          )}
           {/* T2d — `space-y-5` (20px) entre features (era `space-y-4` 16px):
               el incremento refuerza la legibilidad móvil sin abrir un
               hueco tipográfico; a desktop el Δ es apenas perceptible.
@@ -469,25 +444,21 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
           <Reveal delay={0.18}>
           <ul className="m-0 p-0 list-none space-y-5">
             {[
-              { i: ShieldCheck, t: es ? "Frena antes del error" : "Brakes before the error", d: es ? "Bloquea tamaños que excedan tu riesgo máximo por operación." : "Blocks sizes that exceed your max per-trade risk." },
-              { i: HandMetal, t: es ? "Te obliga a respetar el plan" : "Forces you to respect the plan", d: es ? "Límites de drawdown diario y total configurables." : "Daily and total drawdown limits configurable." },
-              /* Decía «Cada override queda registrado» justo debajo de un
-                 titular que a eso mismo ya lo llama EXCEPCIÓN: dos
-                 nombres para la misma cosa dentro del mismo renglón, y
-                 uno en inglés en mitad de una frase en español. */
-              { i: Timer, t: es ? "Audita tus excepciones" : "Audits your exceptions", d: es ? "Cada excepción queda registrada con su motivo y su resultado." : "Every exception is logged with its reason and its outcome." },
+              { i: ShieldCheck, t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
+              { i: HandMetal, t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
+              { i: Timer, t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
             ].map((f) => {
               const Icon = f.i;
               return (
                 <li key={f.t} className="flex items-start gap-3">
                   <span
-                    className="w-10 h-10 rounded-[2px] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex-none inline-grid place-items-center text-[rgb(var(--accent-base))]"
+                    className="w-10 h-10 rounded-[6px] bg-[var(--chip)] flex-none inline-grid place-items-center text-[rgb(var(--accent-base))]"
                   >
                     <Icon size={18} aria-hidden />
                   </span>
                   <div>
                     <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
-                    <p className="m-0 mt-1" style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
+                    <p className="m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
                   </div>
                 </li>
               );

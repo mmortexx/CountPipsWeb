@@ -62,9 +62,8 @@ export function BetaPage({ lang = "es" }: { lang?: "es" | "en" } = {}) {
         subtitleEn="The public demo shows the workflow. This early access is for people who want to bring their own data into a private pilot, by invitation and without sharing financial credentials."
         breadcrumbEs="Acceso anticipado"
         breadcrumbEn="Early access"
-        readingTimeMin={2}
       />
-      <section className="section bg-veil">
+      <section className="section">
         <div className="tj-container">
           <BetaApplication />
           <BetaApplicationNote />

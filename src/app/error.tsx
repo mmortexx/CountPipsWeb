@@ -33,7 +33,7 @@ export default function Error({
     >
       <div className="relative z-[2] text-center max-w-xl mx-auto">
         <div
-          className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[12px] text-secondary mb-7"
+          className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[4px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[13px] text-secondary mb-7"
         >
           <span className="relative flex w-1.5 h-1.5">
             <span className="relative inline-flex w-1.5 h-1.5 rounded-[1px] bg-pnl-neg" />
@@ -62,7 +62,7 @@ export default function Error({
         {error?.digest ? (
           <p
             style={{ animationDelay: "0.3s" }}
-            className="tj-alza mt-3 text-[11px] uppercase tracking-[0.15em] text-tertiary tnum"
+            className="tj-alza mt-3 text-[12px] uppercase tracking-[0.08em] text-tertiary tnum"
           >
             {es ? "Referencia" : "Reference"}: {error.digest}
           </p>
@@ -81,7 +81,7 @@ export default function Error({
                  nunca rotaba; y con `py-2` el botón medía ~36 px, por
                  debajo del objetivo táctil de 44 px que exige R2 en
                  cualquier control interactivo. */
-              className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[2px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
+              className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[4px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
             >
               <svg
                 className="mr-2 transition-transform group-hover:-rotate-45"
@@ -105,7 +105,7 @@ export default function Error({
           <div className="tj-pulsa inline-flex">
             <Link
               href="/"
-              className="tj-paper tj-paper-dense inline-flex min-h-[44px] items-center border border-[rgb(var(--divider)/0.20)] text-primary px-8 rounded-[2px] font-medium hover:bg-[rgb(var(--accent-base))] hover:text-[rgb(var(--accent-ink))] transition-[background-color,color]"
+              className="tj-paper tj-paper-dense inline-flex min-h-[44px] items-center border border-[rgb(var(--divider)/0.20)] text-primary px-8 rounded-[4px] font-medium hover:bg-[rgb(var(--accent-base))] hover:text-[rgb(var(--accent-ink))] transition-[background-color,color]"
             >
               {es ? "Volver al inicio" : "Back to home"}
             </Link>

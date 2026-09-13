@@ -42,27 +42,27 @@ export function TechSpecs() {
     {
       labelEs: "Almacenamiento",
       labelEn: "Storage",
-      valueEs: "SQLite local (~5MB por 1000 operaciones)",
-      valueEn: "Local SQLite (~5MB per 1000 trades)",
+      valueEs: "SQLite en %LOCALAPPDATA%\\CountPips",
+      valueEn: "SQLite in %LOCALAPPDATA%\\CountPips",
     },
     {
-      labelEs: "RAM",
-      labelEn: "RAM",
-      valueEs: "< 200MB en uso",
-      valueEn: "< 200MB in use",
+      labelEs: "Arranque",
+      labelEn: "Startup",
+      valueEs: "0,7 s con 50.000 operaciones (medido)",
+      valueEn: "0.7 s with 50,000 trades (measured)",
     },
     {
       labelEs: "Importación",
       labelEn: "Import",
-      valueEs: "CSV universal, mapeo de columnas",
-      valueEn: "Universal CSV, column mapping",
+      valueEs: "Cualquier CSV con mapeo de columnas · Binance en solo lectura",
+      valueEn: "Any CSV with column mapping · read-only Binance sync",
     },
 
     {
       labelEs: "Exportación",
       labelEn: "Export",
-      valueEs: "PDF, CSV, JSON",
-      valueEn: "PDF, CSV, JSON",
+      valueEs: "CSV, JSON completo, PDF y Markdown",
+      valueEn: "CSV, full JSON, PDF and Markdown",
     },
     {
       labelEs: "Idiomas",
@@ -73,19 +73,19 @@ export function TechSpecs() {
     {
       labelEs: "Actualizaciones",
       labelEn: "Updates",
-      valueEs: "Gratis en tu versión mayor",
-      valueEn: "Free within your major version",
+      valueEs: "Solo cuando las pides; nunca se instala sola",
+      valueEn: "Only when you ask; never installs by itself",
     },
     {
       labelEs: "Privacidad",
       labelEn: "Privacy",
-      valueEs: "App 100 % local, cero telemetría",
-      valueEn: "100% local app, zero telemetry",
+      valueEs: "Sin cuenta y sin telemetría",
+      valueEn: "No account and no telemetry",
     },
   ];
 
   return (
-    <section className="section bg-veil relative overflow-clip">
+    <section className="section relative overflow-clip">
       <div className="relative tj-container">
         <SectionHeader
           composicion="partida"
@@ -103,8 +103,8 @@ export function TechSpecs() {
           }
           entradilla={
             es
-              ? "La aplicación de escritorio no tiene dependencias externas, procesos en segundo plano ni telemetría. Una vez instalada, es tuya."
-              : "The desktop application has no external dependencies, no background processes, and zero telemetry. Once installed, it's yours."
+              ? "Aplicación nativa de Windows sin cuenta ni telemetría. Solo se conecta para lo que tú activas: la licencia, las actualizaciones que pidas y las funciones opcionales."
+              : "A native Windows app with no account and no telemetry. It only connects for what you turn on: the licence, the updates you ask for and the optional features."
           }
         />
         <Reveal delay={0.1} y={28} className="mt-10">
@@ -121,7 +121,7 @@ export function TechSpecs() {
                 {/* Sin el punto de acento que llevaba delante. Con el
                     acento ya acromático era un lunar gris que no decía
                     nada, y en una retícula el separador es el filete. */}
-                <dt className="text-tertiary text-[10px] uppercase tracking-[0.14em] font-semibold tnum">
+                <dt className="text-tertiary text-[11px] uppercase tracking-[0.08em] font-semibold tnum">
                   {es ? r.labelEs : r.labelEn}
                 </dt>
                 <dd className="text-primary text-sm font-medium leading-snug tnum tracking-[-0.005em]">
@@ -141,8 +141,8 @@ export function TechSpecs() {
             <Lock size={13} aria-hidden className="mt-0.5 shrink-0 text-[rgb(var(--accent-base)/0.70)]" />
             <span>
               {es
-                ? "Sin requisitos de conexión. Funciona en tu equipo aunque mañana cierren internet."
-                : "No connection requirements. Runs on your machine even if the internet shuts down tomorrow."}
+                ? "Funciona sin conexión. La licencia se revalida como mucho una vez al día y aguanta 30 días sin red; si caduca, la app pasa a solo lectura y tus datos siguen siendo tuyos."
+                : "Works offline. The licence is revalidated at most once a day and lasts 30 days without a connection; if it lapses, the app switches to read-only and your data stays yours."}
             </span>
           </p>
         </Reveal>

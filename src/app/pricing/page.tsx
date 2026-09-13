@@ -2,17 +2,10 @@ import type { Metadata } from "next";
 import { PRICING_FAQ_ES, jsonLdFaq } from "@/lib/faq";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { PRECIO_CORE } from "@/lib/precios";
 import { Pricing } from "@/components/marketing/Pricing";
 import { TableOfContents } from "@/components/tj/TableOfContents";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { BetaStatus } from "@/components/beta/BetaStatus";
-
-// Estimated reading time (pricing cards + comparison + pricing FAQ +
-// trust strip + beta status).
-// ~850 words at 220 wpm = ~4 min.
-const READING_TIME_MIN = 4;
 
 // PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
 // silently fail to render SVG OG images. See layout.tsx for the full note.
@@ -122,14 +115,8 @@ const Comparison = dynamic(
 const PricingFAQ = dynamic(
   () => import("@/components/marketing/PricingFAQ").then((m) => m.PricingFAQ)
 );
-const TrustStrip = dynamic(
-  () => import("@/components/marketing/TrustStrip").then((m) => m.TrustStrip)
-);
 // ValueTestimonials retirado: sus tres testimonios eran personas
 // inventadas. Vuelve cuando haya reseñas reales de usuarios.
-const StatsBandNew = dynamic(
-  () => import("@/components/marketing/StatsBandNew").then((m) => m.StatsBandNew)
-);
 const FinalCTANew = dynamic(
   () => import("@/components/marketing/FinalCTANew").then((m) => m.FinalCTANew)
 );
@@ -158,7 +145,6 @@ export function PricingBody() {
           haya que pedirla. */}
       <PageHeader
         tono="tarifa"
-        folio={String(PRECIO_CORE)}
         eyebrowEs="Precios"
         eyebrowEn="Pricing"
         titleEs="El precio, por escrito."
@@ -169,7 +155,6 @@ export function PricingBody() {
         subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
         breadcrumbEs="Precios"
         breadcrumbEn="Pricing"
-        readingTimeMin={READING_TIME_MIN}
       />
       <Pricing standalone />
       <Comparison />
@@ -178,11 +163,6 @@ export function PricingBody() {
       <PricingFAQ />
       <BetaStatus />
 
-      <PlateInterlude index={0} />
-      <TrustStrip />
-      <StatsBandNew />
-
-      <PlateInterlude index={1} />
       <FinalCTANew />
       <TableOfContents />
     </>

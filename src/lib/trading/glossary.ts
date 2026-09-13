@@ -87,8 +87,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Pullback",
-    es: "Retroceso temporal del precio contra la tendencia principal antes de reanudar su dirección. Es uno de los setups más fiables: entras a favor de tendencia en un punto donde el precio «descansa» y los stops quedan ajustados.",
-    en: "A temporary price retracement against the prevailing trend before it resumes its direction. One of the most reliable setups: you enter with the trend at a point where price «rests» and stops stay tight.",
+    es: "Retroceso temporal del precio contra la tendencia principal antes de reanudar su dirección. Es uno de los setups más usados: entras a favor de tendencia en un punto donde el precio «descansa» y los stops quedan ajustados.",
+    en: "A temporary price retracement against the prevailing trend before it resumes its direction. One of the most widely used setups: you enter with the trend at a point where price «rests» and stops stay tight.",
     category: "basics",
   },
   {
@@ -231,8 +231,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Win rate",
-    es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70 % de aciertos con payoff 0,5 pierde dinero; un 35 % con payoff 3 gana.",
-    en: "The percentage of winning trades out of the total. Misleading on its own: a 70% hit rate with a 0.5 payoff loses money; 35% with a 3 payoff wins.",
+    es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70 % de aciertos con payoff 0,4 pierde dinero; un 35 % con payoff 3 gana.",
+    en: "The percentage of winning trades out of the total. Misleading on its own: a 70% hit rate with a 0.4 payoff loses money; 35% with a 3 payoff wins.",
     category: "metrics",
   },
   {
@@ -353,8 +353,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "SQN (System Quality Number)",
-    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (esperanza en R / desviación típica de R). Valores superiores a 2,5 indican un sistema excelente y robusto.",
-    en: "Van Tharp metric assessing statistical system quality: SQN = √N × (expectancy in R / standard deviation of R). Values above 2.5 indicate an excellent, robust trading edge.",
+    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (esperanza en R / desviación típica de R). En su escala, a partir de 2,5 es bueno y de 3 en adelante, excelente.",
+    en: "Van Tharp metric assessing statistical system quality: SQN = √N × (expectancy in R / standard deviation of R). On his scale, 2.5 and up is good and 3 and up is excellent.",
     category: "metrics",
   },
   {
