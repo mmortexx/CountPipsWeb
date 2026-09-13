@@ -29,6 +29,7 @@ export function fmtMoney(
     minimumFractionDigits: compact && abs >= 1000 ? 0 : decimals,
     maximumFractionDigits: compact && abs >= 1000 ? 0 : decimals,
     notation: compact && abs >= 1_000_000 ? "compact" : "standard",
+    useGrouping: "always",
   }).format(abs);
   if (value < 0) return `−${formatted}`;
   if (sign && value > 0) return `+${formatted}`;

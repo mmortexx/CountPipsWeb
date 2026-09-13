@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney, fmtPct } from "@/lib/trading/format";
+import { fmtMoney } from "@/lib/trading/format";
 
 export type TraderProfile = "manual" | "prop";
 
@@ -77,7 +77,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const phase2Target = firm.phase2Pct > 0 ? propBalance * (firm.phase2Pct / 100) : 0;
   const maxSafeRiskPerTrade = propBalance * 0.0075; // 0.75% por trade
 
-  // Umbral de liquidación dinámico
+  // Límite de pérdida total: fijo sobre el balance inicial o trailing sobre el pico
   const peakEquity = Math.max(propBalance, currentEquity);
   const liquidationThreshold = firm.trailingType === "static"
     ? propBalance - maxTrailingLoss
@@ -201,15 +201,10 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   cifra se metian el uno dentro del otro a 390 px. */}
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">
                 <span className="font-semibold text-primary">
-                  {es ? "Distancia al umbral de liquidación:" : "Distance to liquidation threshold:"}
+                  {es ? "Colchón hasta el límite de pérdida total" : "Buffer to the overall loss limit"}
                 </span>
-                <span className="font-mono font-bold text-[rgb(var(--accent-base))]">
-                  {/* `fmtPct`, no `toFixed`: `toFixed` escribe siempre el punto
-                      decimal inglés, así que en español esta cifra decía
-                      "135.0%" en una fila donde el importe de al lado decía
-                      "13.500,00 US$". Dos convenciones distintas en el mismo
-                      renglón. */}
-                  +{fmtMoney(distanceToLiquidation, lang)} ({fmtPct(distancePct / 100, lang)} {es ? "del colchón disponible" : "buffer left"})
+                <span className="font-mono font-bold text-primary tnum">
+                  {fmtMoney(distanceToLiquidation, lang)}
                 </span>
               </div>
               <div className="relative h-2.5 rounded-[4px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
@@ -226,9 +221,9 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 />
               </div>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[12px] font-mono text-tertiary">
-                <span>{es ? "Liquidación:" : "Liquidation:"} {fmtMoney(liquidationThreshold, lang)}</span>
-                <span>{es ? "Equity actual:" : "Current Equity:"} {fmtMoney(currentEquity, lang)}</span>
-                <span>{es ? "Pico máximo:" : "High-Water Mark:"} {fmtMoney(peakEquity, lang)}</span>
+                <span>{es ? "Límite:" : "Limit:"} {fmtMoney(liquidationThreshold, lang)}</span>
+                <span>{es ? "Equity actual:" : "Current equity:"} {fmtMoney(currentEquity, lang)}</span>
+                <span>{es ? "Pico máximo:" : "High-water mark:"} {fmtMoney(peakEquity, lang)}</span>
               </div>
             </div>
 
@@ -282,7 +277,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? "Riesgo por operación (0,75 %)" : "Risk per trade (0.75%)"}</span>
+                  <span>{es ? "Riesgo por operación (0,75\u00a0%)" : "Risk per trade (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
                 <div className="cifra-xl font-mono font-semibold text-primary tnum">
@@ -405,12 +400,12 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 {es ? "La demo es navegable y no pide registro. El piloto privado se concede por revisión de perfil, sin compromiso de compra." : "The demo is clickable and asks for no sign-up. The private pilot is granted by profile review, with no purchase commitment."}
               </p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/beta" className="cta cta--primario">
-                  {es ? data.ctaEs : data.ctaEn}
+                <Link href="/demo" className="cta cta--primario">
+                  {es ? "Abrir la demo" : "Open the demo"}
                   <ArrowRight size={16} aria-hidden />
                 </Link>
-                <Link href="/demo" className="cta cta--secundario">
-                  {es ? "Abrir la demo" : "Open the demo"}
+                <Link href="/beta" className="cta cta--secundario">
+                  {es ? data.ctaEs : data.ctaEn}
                 </Link>
               </div>
             </div>
