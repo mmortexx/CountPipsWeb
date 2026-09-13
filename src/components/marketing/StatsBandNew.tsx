@@ -49,8 +49,8 @@ export function StatsBandNew() {
     {
       v: String(HERRAMIENTAS.length),
       l: es
-        ? "calculadoras abiertas — sin registro ni instalación"
-        : "open calculators — no sign-up, no install",
+        ? "herramientas gratis en la web — sin registro ni instalación"
+        : "free tools on the site — no sign-up, no install",
     },
   ];
   return (
