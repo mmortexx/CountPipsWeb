@@ -79,8 +79,8 @@ export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } 
                 </>
               ) : (
                 <>
-                  The numbers the{" "}
-                  <span style={{ color: "rgb(var(--accent-base))" }}>pros who live off this</span> use.
+                  The numbers used by{" "}
+                  <span style={{ color: "rgb(var(--accent-base))" }}>people who trade for a living</span>.
                 </>
               )}
             </h2>
