@@ -335,8 +335,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   {es
-                    ? (manualSetup === "breakout" ? "+0,84 R" : manualSetup === "sweep" ? "+1,12 R" : "+0,42 R")
-                    : (manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+1.12 R" : "+0.42 R")}
+                    ? (manualSetup === "breakout" ? "+0,84 R" : manualSetup === "sweep" ? "+0,97 R" : "+0,40 R")
+                    : (manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+0.97 R" : "+0.40 R")}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
                   {manualSetup === "breakout"
@@ -356,7 +356,9 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                     : (manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R")}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
-                  {es ? "Ventaja estadísticamente significativa" : "Statistically significant edge"}
+                  {manualSetup === "reversion"
+                    ? (es ? "Muestra aún corta para confirmar la ventaja" : "Sample still too short to confirm the edge")
+                    : (es ? "Ventaja confirmada con esta muestra" : "Edge confirmed with this sample")}
                 </span>
               </div>
 
