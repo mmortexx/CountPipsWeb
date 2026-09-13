@@ -39,7 +39,7 @@ const DATA = {
     subtitleEn: "The demo shows a workflow for traders working with loss limits, evaluations and discipline that leaves no room for improvisation.",
     cards: [
       { icon: ShieldCheck, titleEs: "Riesgo que se ve", titleEn: "Visible risk", textEs: "Revisa drawdown, rachas y exposición antes de que una operación te saque del plan.", textEn: "Review drawdown, streaks and exposure before one trade takes you outside the plan." },
-      { icon: BarChart3, titleEs: "Track record limpio", titleEn: "Clean track record", textEs: "Separa el resultado de una sesión de la calidad de las decisiones que la construyeron.", textEn: "Separate a session's result from the quality of the decisions that built it." },
+      { icon: BarChart3, titleEs: "Informe de evaluación", titleEn: "Evaluation report", textEs: "Un PDF con el progreso al objetivo, el riesgo disponible hoy y el colchón hasta el límite de pérdida.", textEn: "A PDF with progress to target, risk available today and the buffer to the loss limit." },
       { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
     ],
     ctaEs: "Solicitar acceso anticipado",

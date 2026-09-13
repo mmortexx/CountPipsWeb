@@ -367,7 +367,7 @@ function CellRenderer({
     );
   }
   if (cell === "yes-pro") {
-    // "Yes" + a Pro pill — used for Pro-only features (Monte Carlo, track record report).
+    // "Yes" + a Pro pill — used for Pro-only features (Monte Carlo, prop evaluation report).
     return (
       <span className="inline-flex items-center gap-1.5 flex-wrap">
         <span

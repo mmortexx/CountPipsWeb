@@ -329,11 +329,11 @@ export function esquemasTrader(
   const descripcion = {
     es: {
       manual: "Métricas, playbooks y revisión de operaciones para traders manuales.",
-      prop: "Riesgo visible, reglas y track record para traders de prop firms.",
+      prop: "Reglas de la firma, aviso de riesgo e informe de evaluación para prop firms.",
     },
     en: {
       manual: "Metrics, playbooks and trade review for manual traders.",
-      prop: "Visible risk, rules and track record for prop-firm traders.",
+      prop: "Firm rules, risk warnings and an evaluation report for prop-firm traders.",
     },
   }[lang][perfil];
 
