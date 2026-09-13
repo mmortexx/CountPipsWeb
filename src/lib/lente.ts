@@ -5,7 +5,9 @@
  * de Windows) lo admite; el resto se queda con el esmerilado de `.tj-cristal`.
  *
  * El mapa codifica en R/G el desplazamiento hacia dentro de la superficie
- * según la pendiente de un perfil squircle y la ley de Snell (n = 1,5).
+ * según la pendiente de un perfil squircle y la ley de Snell (n = 1,5). Con
+ * dispersión, rojo y azul se desplazan un poco más y un poco menos que el
+ * verde: la irisación fina que deja un vidrio grueso en el canto.
  */
 export type Lente = {
   /** Anchura del bisel curvo en px. */
@@ -17,6 +19,8 @@ export type Lente = {
   saturacion: number;
   /** Intensidad 0–1 del reflejo especular. */
   brillo: number;
+  /** Separación de canales en el bisel (0 = sin irisación). */
+  dispersion: number;
   /** Mide el `::before` en vez del elemento (la cápsula de la barra). */
   pseudo?: boolean;
   /** Propiedad CSS donde se publica el `url(#id)`. */
@@ -24,9 +28,9 @@ export type Lente = {
 };
 
 export const LENTES = {
-  panel: { bisel: 28, escala: 44, blur: 9, saturacion: 1.8, brillo: 0.9 },
-  control: { bisel: 0, escala: 34, blur: 1.2, saturacion: 1.9, brillo: 1 },
-  barra: { bisel: 20, escala: 34, blur: 7, saturacion: 1.9, brillo: 0.95, pseudo: true, propiedad: "--lente-barra" },
+  panel: { bisel: 28, escala: 44, blur: 9, saturacion: 1.8, brillo: 0.9, dispersion: 0.09 },
+  control: { bisel: 0, escala: 34, blur: 1.2, saturacion: 1.9, brillo: 1, dispersion: 0.12 },
+  barra: { bisel: 20, escala: 34, blur: 7, saturacion: 1.9, brillo: 0.95, dispersion: 0.08, pseudo: true, propiedad: "--lente-barra" },
 } satisfies Record<string, Lente>;
 
 const N = 1.5;
@@ -157,6 +161,9 @@ export function montarLente(el: HTMLElement, lente: Lente): () => void {
   contenedor().appendChild(filtro);
   let medida = "";
   let pendiente = 0;
+  /* La irisación triplica el desplazamiento: sólo con puntero fino, que en
+     la práctica es un equipo con GPU de sobremesa o portátil. */
+  const dispersa = window.matchMedia?.("(pointer: fine)").matches ?? false;
 
   const construir = () => {
     pendiente = 0;
@@ -169,10 +176,35 @@ export function montarLente(el: HTMLElement, lente: Lente): () => void {
     medida = clave;
     const { desp, luz } = mapasLente(w, h, r, lente);
     const img = { x: 0, y: 0, width: w, height: h, preserveAspectRatio: "none" };
+    const desplaza = (escala: number, result: string) =>
+      nodo("feDisplacementMap", { in: "esmerilado", in2: "mapa", scale: escala, xChannelSelector: "R", yChannelSelector: "G", result });
+    const FILAS = ["1 0 0 0 0", "0 1 0 0 0", "0 0 1 0 0"];
+    const canal = (i: number, entrada: string, result: string) =>
+      nodo("feColorMatrix", {
+        in: entrada,
+        type: "matrix",
+        values: [...FILAS.map((f, c) => (c === i ? f : "0 0 0 0 0")), "0 0 0 1 0"].join(" "),
+        result,
+      });
+    const suma = (a: string, b: string, result: string) =>
+      nodo("feComposite", { in: a, in2: b, operator: "arithmetic", k1: 0, k2: 1, k3: 1, k4: 0, result });
+    const d = dispersa ? lente.dispersion : 0;
+    const refraccion = d
+      ? [
+          desplaza(lente.escala * (1 + d), "dr"),
+          desplaza(lente.escala, "dg"),
+          desplaza(lente.escala * (1 - d), "db"),
+          canal(0, "dr", "r"),
+          canal(1, "dg", "g"),
+          canal(2, "db", "b"),
+          suma("r", "g", "rg"),
+          suma("rg", "b", "refractado"),
+        ]
+      : [desplaza(lente.escala, "refractado")];
     filtro.replaceChildren(
       nodo("feGaussianBlur", { in: "SourceGraphic", stdDeviation: lente.blur, edgeMode: "duplicate", result: "esmerilado" }),
       nodo("feImage", { ...img, href: lienzo(w, h, desp), result: "mapa" }),
-      nodo("feDisplacementMap", { in: "esmerilado", in2: "mapa", scale: lente.escala, xChannelSelector: "R", yChannelSelector: "G", result: "refractado" }),
+      ...refraccion,
       nodo("feColorMatrix", { in: "refractado", type: "saturate", values: lente.saturacion, result: "vivo" }),
       nodo("feImage", { ...img, href: lienzo(w, h, luz), result: "luz" }),
       nodo("feComposite", { in: "luz", in2: "vivo", operator: "over" }),

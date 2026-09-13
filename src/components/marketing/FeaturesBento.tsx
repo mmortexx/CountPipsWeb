@@ -295,7 +295,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
               </span>
             </div>
             <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
-              {es ? "Sólo setups que tienen edge" : "Only setups with edge"}
+              {es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don't"}
             </h3>
             <div className="mt-4 space-y-2.5">
               {/* Los cuatro nombres iban en español fijo y se pintaban
@@ -315,17 +315,17 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
                    a 197 px de 197. La tarjeta que promete «sólo setups que
                    tienen edge» enseñaba el Reversal —41 % de acierto, «Sin
                    ventaja»— con la barra roja llena de lado a lado. */
-                { k: "Breakout", wr: 0.62, exp: 1.8, n: 58, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
-                { k: "Pullback", wr: 0.58, exp: 1.4, n: 42, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
-                { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))", badge: es ? "Sin ventaja" : "No edge" },
-                { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
+                { k: "Breakout", wr: 0.62, exp: 1.8, n: 58, c: "rgb(var(--pnl-pos))" },
+                { k: "Pullback", wr: 0.58, exp: 1.4, n: 42, c: "rgb(var(--pnl-pos))" },
+                { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))" },
+                { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))" },
               ].map((s) => (
                 <div key={s.k} className="p-2 rounded-[8px] bg-[var(--raised)]">
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-medium text-primary">
                       {nombreSetup(s.k as SetupName, lang)}
                     </span>
-                    <div className="flex items-center gap-2 font-mono text-[11px]">
+                    <div className="tnum flex items-center gap-2 text-[11px]">
                       <span className="text-tertiary">{s.n} {es ? "ops" : "trades"}</span>
                       <span style={{ color: s.c, fontWeight: 700 }}>{fmtR(s.exp, lang, 1)}</span>
                     </div>
@@ -335,7 +335,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
                       <div className="h-full rounded-[4px]" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
                     </div>
                     <span
-                      className="tnum font-mono text-xs font-semibold"
+                      className="tnum text-xs font-semibold"
                       style={{ color: s.c, minWidth: 38, textAlign: "right" }}
                     >
                       {fmtPct(s.wr, lang, 0)}
@@ -401,7 +401,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
             <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
               {es ? "Una cuenta o diez, en la misma vista" : "One account or ten, in the same view"}
             </h3>
-            <div className="mt-4 space-y-2 text-xs font-mono">
+            <div className="tnum mt-4 space-y-2 text-xs">
               {[
                 { name: "Apex 150k (#1)", balance: "154.820 $", pnl: "+1.420 $", status: es ? "En curso" : "In progress", pnlPos: true },
                 { name: "Topstep 50k (#2)", balance: "51.240 $", pnl: "+650 $", status: es ? "Aprobada" : "Passed", pnlPos: true },

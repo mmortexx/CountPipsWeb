@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
+import { Escritorio } from "@/components/tj/Escritorio";
+import { useLente } from "@/components/tj/useLente";
 
 /**
  * Custom 404 — full-screen premium error page.
@@ -28,6 +30,7 @@ import { withLocale } from "@/lib/locale";
  */
 export function NotFoundClient() {
   const { lang } = useLang();
+  const lente = useLente("control");
   const es = lang === "es";
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -73,6 +76,7 @@ export function NotFoundClient() {
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
 
+      <Escritorio curva />
       <div className="relative text-center max-w-xl mx-auto">
         <div
           className="tj-alza font-semibold tracking-[-0.04em] leading-[0.9] text-gradient tnum"
@@ -100,20 +104,16 @@ export function NotFoundClient() {
             : "The URL you're after doesn't exist, has moved, or was never on your watchlist."}
         </p>
 
-        {/* Inline search suggestion — pre-fills the FAQ search on submit.
-            The border-[rgb(var(--divider)/0.13)] border brightens to the accent on hover/focus,
-            matching the keyboard-first pattern the rest of the site uses
-            (the command palette opens on `/`). */}
         <form
           style={{ animationDelay: "0.32s" }}
           onSubmit={onSubmitSearch}
-          className="tj-alza mt-7 mx-auto max-w-md"
+          className="tj-alza mt-8 mx-auto max-w-md"
           role="search"
           aria-label={es ? "Buscar en la web" : "Search the site"}
         >
-          <div className="relative">
+          <div ref={lente} className="tj-cristal relative rounded-full">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
+              className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
               aria-hidden="true"
             />
             <input
@@ -122,45 +122,33 @@ export function NotFoundClient() {
               onChange={(e) => setQ(e.target.value)}
               placeholder={
                 es
-                  ? "Busca una característica, métrica o pregunta…"
-                  : "Search a feature, metric or question…"
+                  ? "Busca una métrica o una pregunta…"
+                  : "Search a metric or a question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              /* `rounded-[4px]` y `h-12`: el radio de control del sitio —
-                 aquí convivían `rounded-md` y `rounded-[5px]` — y el alto
-                 que deja al botón interior sus 44 px de objetivo táctil
-                 con su propio aire (era `h-11` con un botón de 32 px). */
-              className="w-full bg-[var(--surface)] border border-transparent rounded-full h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
+              className="w-full h-14 rounded-full bg-transparent pl-11 pr-28 text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
             />
-            <div
-              className="tj-alza absolute right-1.5 top-1/2 -translate-y-1/2"
+            <button
+              type="submit"
+              className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-10 items-center rounded-full bg-[rgb(var(--accent-base))] px-5 text-[13px] font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
             >
-              <button
-                type="submit"
-                className="inline-flex h-11 items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-4 text-xs font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
-              >
-                {es ? "Buscar" : "Search"}
-              </button>
-            </div>
+              {es ? "Buscar" : "Search"}
+            </button>
           </div>
         </form>
 
         <ol
           style={{ animationDelay: "0.4s" }}
-          className="tj-alza mt-7 m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0 text-left"
+          className="tj-alza mt-8 m-0 list-none p-0 text-left"
         >
           {tiles.map((tile, i) => (
-            <li
-              key={tile.href}
-              className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0"
-            >
+            <li key={tile.href}>
               <Link
                 href={tile.href}
-                className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 rounded-[14px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
                 <span
-                  className="tnum text-[12px] font-semibold"
-                  style={{ color: "rgb(var(--accent-base))" }}
+                  className="tnum text-[12px] font-medium text-tertiary"
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -204,25 +192,9 @@ export function NotFoundClient() {
                  `group-hover` sin padre `group` — nunca se movía —, y con
                  `py-2` el enlace medía ~36 px, bajo el objetivo táctil de
                  44 px que rige el resto de controles del sitio. */
-              className="group inline-flex min-h-[44px] items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
+              className="group cta cta--secundario"
             >
               {es ? "Volver al inicio" : "Back to home"}
-              <svg
-                className="ml-2 transition-transform group-hover:translate-x-0.5"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M3 8h9M8 4l4 4-4 4"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
             </Link>
           </div>
         </div>

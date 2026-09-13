@@ -3187,6 +3187,11 @@ button.icon-btn:hover > svg,
   --luz-3: 186 226 208;
   --luz-alfa: 0.55;
   --curva: rgb(11 15 20 / 0.16);
+  --canto-alto: 1;
+  --canto-bajo: 0.5;
+  --brillo-radio: 520px;
+  --brillo-alfa: 0.38;
+  --brillo-alfa-vivo: 0.6;
 }
 :root:not([data-theme="light"]) {
   --cristal-tinte: 12 17 22;
@@ -3202,6 +3207,10 @@ button.icon-btn:hover > svg,
   --luz-3: 30 112 92;
   --luz-alfa: 0.34;
   --curva: rgb(236 239 242 / 0.2);
+  --canto-alto: 0.24;
+  --canto-bajo: 0.07;
+  --brillo-alfa: 0.045;
+  --brillo-alfa-vivo: 0.1;
 }
 /* `--lente` la publica `src/lib/lente.ts` en Chromium: refracción en el
    bisel y reflejo especular. No se hereda, para que un cristal dentro de
@@ -3239,6 +3248,51 @@ button.icon-btn:hover > svg,
 }
 .tj-cristal--denso {
   background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa-denso));
+}
+/* Canto y reflejo. El canto es un filo de 1 px que se enciende arriba a la
+   izquierda y se apaga hacia el lado contrario, como el borde pulido de un
+   vidrio grueso. El reflejo es una luz ancha y muy tenue: fija arriba a la
+   izquierda y, con ratón, sigue al puntero (`BrilloCristal`). Los dos van
+   por debajo del contenido y sobre el tinte. */
+.tj-cristal::before,
+.tj-cristal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.tj-cristal::before {
+  padding: 1px;
+  background: linear-gradient(
+    155deg,
+    rgb(255 255 255 / var(--canto-alto)) 0%,
+    rgb(255 255 255 / 0) 34%,
+    rgb(255 255 255 / 0) 66%,
+    rgb(255 255 255 / var(--canto-bajo)) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.tj-cristal::after {
+  background: radial-gradient(
+    var(--brillo-radio) circle at var(--brillo-x, 18%) var(--brillo-y, -12%),
+    rgb(255 255 255 / var(--brillo-alfa)),
+    rgb(255 255 255 / 0) 70%
+  );
+  transition: opacity 0.6s var(--ease-suave);
+}
+.tj-cristal[data-brillo="true"]::after {
+  background: radial-gradient(
+    var(--brillo-radio) circle at var(--brillo-x) var(--brillo-y),
+    rgb(255 255 255 / var(--brillo-alfa-vivo)),
+    rgb(255 255 255 / 0) 70%
+  );
+}
+.tj-cristal--control::after {
+  --brillo-radio: 40px;
 }
 
 /* La barra: opaca arriba del todo; al desplazar se retira y queda una

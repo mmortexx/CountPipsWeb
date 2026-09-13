@@ -2,6 +2,8 @@
 
 import { Check, LockKeyhole } from "lucide-react";
 import { Reveal } from "@/components/tj/Reveal";
+import { Escritorio } from "@/components/tj/Escritorio";
+import { useLente } from "@/components/tj/useLente";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -12,6 +14,7 @@ import { useLang } from "@/lib/i18n";
 export function DemoConversionPanel() {
   const { lang } = useLang();
   const es = lang === "es";
+  const lente = useLente("panel");
 
   const steps = es
     ? [
@@ -28,8 +31,9 @@ export function DemoConversionPanel() {
       ];
 
   return (
-    <section id="demo-next-step" className="section-tight border-y border-[rgb(var(--divider)/0.1)] scroll-mt-24">
-      <div className="tj-container">
+    <section id="demo-next-step" className="section-tight relative scroll-mt-24">
+      <Escritorio />
+      <div className="tj-container relative">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <Reveal>
             <p className="eyebrow">{es ? "Cómo leer la demo" : "How to read the demo"}</p>
@@ -52,10 +56,10 @@ export function DemoConversionPanel() {
             </ol>
           </Reveal>
 
-          <Reveal delay={0.08} className="h-full">
-            <aside className="tj-paper tj-hoja h-full p-6 sm:p-8">
+          <div className="relative">
+            <aside ref={lente} className="tj-cristal relative rounded-[22px] p-6 sm:p-8">
               <div className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-[6px] bg-[var(--chip)] text-primary">
+                <span className="grid size-10 place-items-center rounded-full bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">
                   <LockKeyhole size={18} strokeWidth={1.6} aria-hidden />
                 </span>
                 <div>
@@ -75,7 +79,7 @@ export function DemoConversionPanel() {
                 ))}
               </ul>
             </aside>
-          </Reveal>
+          </div>
         </div>
       </div>
     </section>

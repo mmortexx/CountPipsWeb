@@ -7,6 +7,7 @@ import { Navbar } from "@/components/marketing/Navbar";
 import { Footer } from "@/components/marketing/Footer";
 import { CookieConsent } from "@/components/tj/CookieConsent";
 import { BackToTop } from "@/components/tj/BackToTop";
+import { BrilloCristal } from "@/components/tj/BrilloCristal";
 import { GlobalShortcuts } from "@/components/tj/GlobalShortcuts";
 import { OverlayHost } from "@/components/tj/OverlayHost";
 import { ScrollToTop } from "@/components/tj/ScrollToTop";
@@ -367,6 +368,7 @@ export default function RootLayout({
             <Footer />
             <CookieConsent />
             <BackToTop />
+            <BrilloCristal />
           </div>
           <Toaster />
         </Providers>
