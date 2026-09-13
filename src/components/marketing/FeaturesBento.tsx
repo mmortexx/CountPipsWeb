@@ -220,11 +220,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
                 className="tnum"
                 style={{
                   fontSize: 11,
-                  padding: "4px 10px",
-                  borderRadius: 4,
-                  background: "var(--chip)",
-                  color: "rgb(var(--accent-base))",
-                  border: "1px solid var(--chip-line)",
+                  color: "var(--ink-3)",
                 }}
               >
                 {es ? "+27 % sobre media" : "+27% over average"}
@@ -324,7 +320,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
                 { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))", badge: es ? "Sin ventaja" : "No edge" },
                 { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
               ].map((s) => (
-                <div key={s.k} className="p-2 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)] hover:border-[rgb(var(--accent-base)/0.3)] transition-colors">
+                <div key={s.k} className="p-2 rounded-[8px] bg-[var(--raised)]">
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-medium text-primary">
                       {nombreSetup(s.k as SetupName, lang)}
@@ -369,11 +365,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
               {es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}
             </h3>
             <div
-              className="mt-4 rounded-[4px] p-4"
-              style={{
-                background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
-                border: "1px solid rgb(var(--divider) / 0.06)",
-              }}
+              className="mt-4 border-l-2 border-[var(--line-2)] py-1 pl-4"
             >
               <p
                 className="m-0"
@@ -417,7 +409,7 @@ export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {})
               ].map((acc) => (
                 <div
                   key={acc.name}
-                  className="flex items-center justify-between p-2.5 rounded-[4px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)]"
+                  className="flex items-center justify-between p-2.5 rounded-[8px] bg-[var(--raised)]"
                 >
                   <div>
                     <div className="text-primary font-semibold text-[12px]">{acc.name}</div>

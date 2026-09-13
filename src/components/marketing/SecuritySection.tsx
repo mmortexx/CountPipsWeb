@@ -44,7 +44,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
   return (
     <section
       id="security"
-      className="section border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className="section scroll-mt-24"
     >
       <div className="tj-container">
         <div className={enPagina ? "sr-only" : "max-w-[760px] mx-auto text-center mb-12"}>
@@ -115,7 +115,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
           })}
         </div>
 
-        <div className="mb-14 rounded-[6px] border border-[var(--line-2)] bg-[var(--raised)] p-5 sm:p-6">
+        <div className="mb-14 rounded-[12px] bg-[var(--surface)] p-5 sm:p-7">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
             <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
               {es ? "Ficha técnica del almacenamiento" : "Storage specification"}

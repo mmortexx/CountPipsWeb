@@ -3250,13 +3250,15 @@ button.icon-btn:hover > svg,
 .tj-paper-dense {
   background-color: var(--paper-dense);
 }
-.tj-hoja {
-  border: 1px solid var(--line-2);
-  border-radius: 6px;
-  transition: border-color 160ms var(--ease-suave), box-shadow 160ms var(--ease-suave);
+/* Hoja tonal: se separa del fondo por tono, no por filete. */
+.tj-hoja,
+.tj-paper.tj-hoja {
+  border-radius: 12px;
+  background-color: var(--surface);
+  transition: background-color 160ms var(--ease-suave);
 }
-.tj-hoja:hover {
-  border-color: rgb(var(--divider) / 0.28);
+.tj-pie {
+  background-image: linear-gradient(to bottom, transparent, var(--surface) 7rem);
 }
 .tj-hoja--pliego {
   box-shadow:
@@ -4129,7 +4131,7 @@ svg [data-entra="sello"] {
 .tj-cabecera {
   padding-top: clamp(7.5rem, 13vh, 9.5rem);
   padding-bottom: clamp(3rem, 6vw, 4.5rem);
-  background-color: var(--surface);
+  background-image: linear-gradient(to bottom, var(--surface) 45%, transparent);
   --medida: 62ch;
 }
 .tj-cabecera[data-tono="instrumento"] { --medida: 58ch; }

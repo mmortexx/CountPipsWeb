@@ -163,7 +163,7 @@ export function Footer() {
   // así que renombrar la clase apagaría la luz del canto superior. Mismo caso
   // que la cinta de cotizaciones.
   return (
-    <footer className="relative mt-auto border-t border-[var(--line)] bg-[var(--surface)] safe-bottom">
+    <footer className="tj-pie relative mt-auto safe-bottom">
       <div className="tj-container relative py-12 md:py-16">
         {/* Cinco columnas desde `md`, no cuatro: la legal es nueva. En
             móvil siguen siendo dos, y las cuatro de enlaces caen en dos

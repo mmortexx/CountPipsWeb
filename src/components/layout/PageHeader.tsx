@@ -50,7 +50,7 @@ export function PageHeader({
   const es = lang === "es";
 
   return (
-    <section className="tj-cabecera relative border-b border-[var(--line)]" data-tono={tono}>
+    <section className="tj-cabecera relative" data-tono={tono}>
       <div className="tj-container">
         <nav
           data-entra="1"

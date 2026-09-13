@@ -35,7 +35,7 @@ export function DataFlowComparison() {
   const send = useCallback(() => setPulses((p) => p + 1), []);
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container">
         {/* Header */}
         <div className="max-w-2xl mb-8">
@@ -76,12 +76,8 @@ export function DataFlowComparison() {
         <button
           type="button"
           onClick={send}
-          className="mb-8 inline-flex items-center justify-center gap-2 min-h-[44px] px-6 rounded-[4px] text-[14px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-          style={{
-            background: "var(--chip)",
-            color: "rgb(var(--accent-base))",
-            border: "1px solid var(--chip-line)",
-          }}
+          className="mb-8 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-full text-[14px] font-semibold transition-opacity duration-150 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+          style={{ background: "var(--ink)", color: "var(--bg)" }}
           aria-label={es ? "Añadir una operación y ver el flujo de datos" : "Add a trade and see the data flow"}
         >
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -89,7 +85,7 @@ export function DataFlowComparison() {
           </svg>
           {es ? "Añadir operación" : "Add trade"}
           {pulses > 0 && (
-            <span className="tnum ml-1 px-1.5 py-0.5 rounded-[4px] text-[11px]" style={{ background: "rgb(var(--divider) / 0.16)", color: "var(--ink-2)" }}>
+            <span className="tnum ml-1 px-1.5 py-0.5 rounded-[4px] text-[11px]" style={{ background: "color-mix(in srgb, var(--bg) 22%, transparent)", color: "var(--bg)" }}>
               {pulses}
             </span>
           )}
@@ -163,8 +159,7 @@ function FlowColumn({
 }) {
   return (
     <div
-      className="tj-paper relative rounded-[4px] p-5 sm:p-6 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5"
-      style={{ border: `1px solid color-mix(in oklab, ${color} 22%, rgb(var(--divider) / 0.10))` }}
+      className="relative rounded-[12px] bg-[var(--surface)] p-5 sm:p-7"
     >
       {/* Column header */}
       <div className="flex items-center justify-between mb-5">
@@ -172,7 +167,7 @@ function FlowColumn({
           <div className="text-[15px] font-semibold" style={{ color: "var(--ink)" }}>{title}</div>
           <div className="tnum text-[11px]" style={{ letterSpacing: "0.08em", textTransform: "uppercase", color }}>{subtitle}</div>
         </div>
-        <span aria-hidden className="inline-flex items-center justify-center w-7 h-7 rounded-[4px]" style={{ background: `color-mix(in oklab, ${color} 12%, transparent)`, border: `1px solid color-mix(in oklab, ${color} 30%, transparent)` }}>
+        <span aria-hidden className="inline-flex items-center justify-center w-7 h-7 rounded-[4px]" style={{ background: `color-mix(in oklab, ${color} 12%, transparent)` }}>
           <span className="w-2 h-2 rounded-[1px]" style={{ background: color }} />
         </span>
       </div>
@@ -189,7 +184,6 @@ function FlowColumn({
                   width: 40,
                   height: 40,
                   background: `color-mix(in oklab, ${color} 8%, transparent)`,
-                  border: `1px solid color-mix(in oklab, ${color} 22%, transparent)`,
                   color,
                 }}
               >

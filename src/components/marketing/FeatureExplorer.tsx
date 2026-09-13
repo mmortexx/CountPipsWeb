@@ -213,15 +213,10 @@ export function FeatureExplorer() {
               <button
                 key={t.id}
                 onClick={() => toggle(t.id)}
-                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-[4px] text-[14px] font-medium transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="inline-flex items-center gap-2 min-h-[44px] px-3.5 rounded-full text-[14px] font-medium transition-[background-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
-                  background: active
-                    ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                    : "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-                  border: active
-                    ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 45%, transparent)"
-                    : "1px solid rgb(var(--divider) / 0.12)",
-                  color: active ? "rgb(var(--accent-base))" : "var(--ink-2)",
+                  background: active ? "var(--ink)" : "transparent",
+                  color: active ? "var(--bg)" : "var(--ink-2)",
                 }}
                 aria-pressed={active}
               >
@@ -234,7 +229,7 @@ export function FeatureExplorer() {
             <button
               onClick={() => setSelected([])}
               className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[4px] text-[13px] font-medium transition-colors"
-              style={{ color: "var(--ink-3)", border: "1px solid rgb(var(--divider) / 0.12)" }}
+              style={{ color: "var(--ink-3)" }}
               aria-label={es ? "Limpiar selección" : "Clear selection"}
             >
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -258,11 +253,11 @@ export function FeatureExplorer() {
                 </span>
               )}
             </div>
-            <ul className="m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
+            <ul className="m-0 border-t border-[var(--line)] p-0">
               {topMatches.map((f) => (
                 <li
                   key={f.id}
-                  className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-6"
+                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-6"
                 >
                   <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
@@ -285,11 +280,11 @@ export function FeatureExplorer() {
                 {es ? "Todas las características" : "All features"} · {FEATURES.length}
               </span>
             </div>
-            <ul className="m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
+            <ul className="m-0 border-t border-[var(--line)] p-0">
               {FEATURES.map((f) => (
                 <li
                   key={f.id}
-                  className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
+                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
                 >
                   <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
