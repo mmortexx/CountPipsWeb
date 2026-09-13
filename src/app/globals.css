@@ -3031,6 +3031,25 @@ button.icon-btn:hover > svg,
 }
 
 /* ---- La captura del producto en la portada ------------------------- */
+/* Banda de fondo: el relleno no se recorta aunque toque otra sección, y la
+   siguiente vuelve a abrir su aire entero. */
+.section.tj-banda,
+.tj-banda + .section,
+.tj-banda + .section-tight {
+  padding-top: var(--ritmo-3);
+}
+.section.tj-banda {
+  padding-bottom: var(--ritmo-3);
+}
+.tj-hero::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: clamp(14rem, 34vw, 26rem);
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  pointer-events: none;
+}
 .tj-hero-producto {
   margin-inline: 0;
   border: 1px solid var(--line-2);
@@ -4184,6 +4203,7 @@ svg [data-entra="sello"] {
 .tj-cabecera {
   padding-top: clamp(7.5rem, 13vh, 9.5rem);
   padding-bottom: clamp(3rem, 6vw, 4.5rem);
+  background-color: var(--surface);
   --medida: 62ch;
 }
 .tj-cabecera[data-tono="instrumento"] { --medida: 58ch; }

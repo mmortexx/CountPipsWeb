@@ -56,7 +56,7 @@ export function StatsBandNew() {
   return (
     <section className="section-tight relative">
       <div className="tj-container">
-        <div className="grid grid-cols-1 gap-y-10 border-y border-[var(--line)] py-10 sm:grid-cols-3 sm:gap-y-0 sm:divide-x sm:divide-[var(--line)] md:py-12">
+        <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-y-0 sm:divide-x sm:divide-[var(--line)]">
           {stats.map((s, i) => (
             <Reveal key={s.v} delay={i * 0.06} y={10} className="flex flex-col sm:px-8 sm:first:pl-0 sm:last:pr-0">
               <div
@@ -70,7 +70,7 @@ export function StatsBandNew() {
               >
                 {s.v}
               </div>
-              <div className="mt-3 max-w-[22em] text-[15px] leading-snug text-secondary">{s.l}</div>
+              <div className="mt-3 max-w-[22em] text-balance text-[15px] leading-snug text-secondary">{s.l}</div>
             </Reveal>
           ))}
         </div>

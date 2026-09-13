@@ -42,7 +42,7 @@ export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } 
   return (
     <section
       id="metrics"
-      className="section relative border-t border-b border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className="section relative scroll-mt-24"
     >
       {/* T2c — `tj-container` sustituye a `max-w-[1240px] mx-auto px-5 md:px-8`
           para heredar los gutters fluidos (clamp(1.25rem, 4vw, 2.25rem))

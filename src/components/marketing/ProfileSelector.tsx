@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, BriefcaseBusiness, UserRound } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, UserRound } from "lucide-react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
@@ -48,11 +48,11 @@ export function ProfileSelector() {
   ] as const;
 
   return (
-    <section className="section-tight border-b border-[rgb(var(--divider)/0.1)]" aria-labelledby="profile-selector-title">
+    <section className="section-tight border-t border-[var(--line)]" aria-labelledby="profile-selector-title">
       <div className="tj-container">
         <div className="max-w-2xl">
           <p className="eyebrow">{es ? "Elige tu recorrido" : "Choose your path"}</p>
-          <h2 id="profile-selector-title" className="mt-4 text-3xl font-semibold tracking-tight text-primary md:text-4xl text-balance">
+          <h2 id="profile-selector-title" className="t-h2 mt-4 text-primary text-balance">
             {es ? <>Dos formas de operar. <span className="text-gradient">Una lectura mejor.</span></> : <>Two ways to trade. <span className="text-gradient">One clearer read.</span></>}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-secondary md:text-lg">
@@ -60,7 +60,7 @@ export function ProfileSelector() {
           </p>
         </div>
 
-        <div className="mt-9 grid gap-4 md:grid-cols-2">
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
           {profiles.map((profile) => {
             const Icon = profile.icon;
             return (
@@ -69,22 +69,20 @@ export function ProfileSelector() {
                 href={profile.href}
                 data-entra="ciclo"
                 onClick={() => trackEvent("profile_selected", { profile: profile.id })}
-                /* `tj-hoja`: el mismo doble filete y el mismo apoyo que la
-                   lámina de una captura. Antes era un filete al 15 % sobre
-                   una sección con velo — el contorno de una tarjeta, no una
-                   tarjeta. */
-                className="group tj-paper tj-hoja relative min-h-[250px] overflow-hidden p-6 transition-[border-color,box-shadow,background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[rgb(var(--accent-base)/0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] sm:p-8"
+                className="group tj-paper tj-hoja relative flex flex-col overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-[rgb(var(--txt-primary)/0.35)] hover:shadow-[0_12px_32px_-16px_rgb(11_15_20/0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)]"
               >
-                <div className="flex items-start justify-between gap-4">
-                  <span className="grid size-11 place-items-center rounded-[6px] bg-[var(--chip)] text-primary">
-                    <Icon size={19} strokeWidth={1.6} aria-hidden />
-                  </span>
-                  <ArrowUpRight size={18} className="text-tertiary transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[rgb(var(--accent-base))]" aria-hidden />
+                <div className="flex-1 p-7 sm:p-9">
+                  <p className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+                    <Icon size={16} strokeWidth={1.75} aria-hidden className="text-primary" />
+                    {profile.eyebrow}
+                  </p>
+                  <h3 className="mt-5 text-[clamp(1.375rem,2vw,1.625rem)] leading-tight text-primary">{profile.title}</h3>
+                  <p className="mt-3 max-w-md text-[15px] leading-relaxed text-secondary">{profile.body}</p>
                 </div>
-                <p className="mt-8 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">{profile.eyebrow}</p>
-                <h3 className="mt-2 text-xl font-semibold tracking-tight text-primary">{profile.title}</h3>
-                <p className="mt-3 max-w-md text-sm leading-relaxed text-secondary">{profile.body}</p>
-                <span className="mt-6 inline-flex text-sm font-medium text-primary underline decoration-[rgb(var(--accent-base)/0.55)] underline-offset-4">{profile.action}</span>
+                <span className="flex items-center justify-between border-t border-[var(--line)] px-7 py-4 text-[15px] font-medium text-primary sm:px-9">
+                  {profile.action}
+                  <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                </span>
               </Link>
             );
           })}

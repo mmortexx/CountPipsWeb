@@ -60,7 +60,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   return (
     <section
       id="guardian"
-      className="section relative overflow-clip border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className={`section relative overflow-clip scroll-mt-24 ${enPagina ? "" : "tj-banda border-y border-[var(--line)] bg-[var(--surface)]"}`}
     >
       {/* P1 — contenedor unificado a `tj-container`: hereda los gutters
           fluidos (clamp(1.25rem, 4vw, 2.25rem)) y el page-w (1080px) de

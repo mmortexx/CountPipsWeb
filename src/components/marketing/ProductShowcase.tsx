@@ -66,7 +66,7 @@ export function ProductShowcase() {
   return (
     <section
       id="producto"
-      className="section relative overflow-clip border-y border-[var(--line)] bg-[var(--surface)]"
+      className="section tj-banda relative overflow-clip border-y border-[var(--line)] bg-[var(--surface)]"
       aria-labelledby="producto-titulo"
     >
       <div className="tj-container">
