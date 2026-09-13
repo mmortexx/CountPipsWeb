@@ -28,53 +28,51 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   const { t, lang } = useLang();
   const es = lang === "es";
 
+  /* Los mismos niveles que `LicenseGate` y `PLAN.md` §10 del programa. */
   const coreFeatures = es
     ? [
-        // «Diario» y no «Journal»: es el nombre que el producto se da a sí
-        // mismo en el resto del sitio. Ver el commit del vocabulario.
-        "Diario completo + 40+ métricas",
-        "Calendario y curva de equity",
-        "Gestión de riesgo",
+        "Diario, 40+ métricas y calendario",
+        "Curva de equity y drawdown",
+        "Gestión de riesgo y freno duro opcional",
         "Psicología y disciplina",
-        "Importación CSV",
+        "Playbook con estadísticas en vivo",
+        "Importación CSV y exportación completa",
+        "Copias de seguridad automáticas",
+        "Informe mensual en PDF",
         "2 cuentas de trading",
-        "Playbook con stats en vivo",
-        "Informes PDF básicos",
       ]
     : [
-        "Full journal + 40+ metrics",
-        "Calendar and equity curve",
-        "Risk management",
+        "Journal, 40+ metrics and calendar",
+        "Equity curve and drawdown",
+        "Risk management and optional hard brake",
         "Psychology and discipline",
-        "CSV import",
+        "Playbook with live statistics",
+        "CSV import and full export",
+        "Automatic backups",
+        "Monthly PDF report",
         "2 trading accounts",
-        "Playbook with live stats",
-        "Basic PDF reports",
       ];
 
   const proFeatures = es
     ? [
         "Todo lo de Core",
         "Cuentas ilimitadas",
-        /* «Modo prop firm», como lo llama la tabla comparativa de esta
-           MISMA página. Estaba en inglés en la lista y en castellano en la
-           tabla, a dos scrolls de distancia. */
-        "Modo prop firm",
-        "Informes PDF avanzados",
-        "Simulador Monte Carlo",
-        "Risk of ruin",
-        "Informe de track record",
-        "Importador de rivales (5 min)",
+        "Modo prop firm e informe de evaluación en PDF",
+        "Simulador Monte Carlo y riesgo de ruina",
+        "Experimentos con validación estadística",
+        "Módulo fiscal y página Negocio",
+        "API local",
+        "Alertas y análisis institucional de Mercados",
       ]
     : [
         "Everything in Core",
         "Unlimited accounts",
-        "Prop Firm Mode",
-        "Advanced PDF reports",
-        "Monte Carlo simulator",
-        "Risk of ruin",
-        "Track record report",
-        "Rival importer (5 min)",
+        "Prop firm mode and PDF evaluation report",
+        "Monte Carlo simulator and risk of ruin",
+        "Experiments with statistical validation",
+        "Tax module and Business page",
+        "Local API",
+        "Markets alerts and institutional analysis",
       ];
 
   const plans: Plan[] = [
@@ -94,8 +92,8 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
       price: PRECIO_PRO,
       popular: true,
       tagline: es
-        ? "Controles avanzados para exigencia prop y multi-cuenta."
-        : "Advanced controls for prop-firm and multi-account work.",
+        ? "Para prop firms, varias cuentas, fiscalidad y análisis avanzado."
+        : "For prop firms, multiple accounts, tax and advanced analysis.",
       features: proFeatures,
       cta: es ? "Solicitar acceso anticipado" : "Request early access",
     },

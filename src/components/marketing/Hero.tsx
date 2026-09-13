@@ -15,14 +15,14 @@ export function Hero() {
   const es = lang === "es";
 
   const datos = es
-    ? ["Windows 10 · 11", "Datos 100 % en tu equipo", "Demo sin registro"]
-    : ["Windows 10 · 11", "Data 100 % on your machine", "Demo without sign-up"];
+    ? ["Windows 10 y 11", "Tus datos en tu equipo", "Demo sin registro"]
+    : ["Windows 10 and 11", "Your data on your machine", "Demo without sign-up"];
 
   const alt = es
     ? "Pantalla de analítica de CountPips: resultados por periodo, P&L total, win rate, expectancy, profit factor, drawdown máximo, Sharpe y Sortino calculados sobre 200 operaciones de muestra."
     : "CountPips analytics screen: results by period, total P&L, win rate, expectancy, profit factor, max drawdown, Sharpe and Sortino computed on 200 sample trades.";
 
-  const compatibles = ["Interactive Brokers", "MetaTrader 5", "NinjaTrader", "TradingView", "Binance", "OANDA"];
+  const compatibles = ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"];
 
   return (
     <section id="top" className="tj-hero relative">
@@ -37,8 +37,8 @@ export function Hero() {
 
         <p className="mx-auto mt-7 max-w-[40rem] text-[clamp(1.125rem,1.5vw,1.3125rem)] leading-[1.55] text-secondary">
           {es
-            ? "40+ métricas de riesgo y rendimiento, un guardián que te frena antes del error y tus datos siempre en tu máquina."
-            : "40+ risk and performance metrics, a guardian that stops you before the mistake, and your data always on your machine."}
+            ? "40+ métricas de riesgo y rendimiento, un guardián que te avisa antes de romper tus reglas y tus datos en tu equipo."
+            : "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine."}
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -88,7 +88,7 @@ export function Hero() {
 
         <div className="flex flex-col items-center gap-4 py-[clamp(2.5rem,5vw,3.5rem)] text-center md:flex-row md:justify-between md:text-left">
           <p className="m-0 text-[13px] text-tertiary">
-            {es ? "Importa el CSV de tu plataforma" : "Import the CSV from your platform"}
+            {es ? "Plantillas de importación CSV para" : "CSV import templates for"}
           </p>
           <ul className="m-0 grid grid-cols-2 gap-x-8 gap-y-2 p-0 text-[15px] font-semibold tracking-[-0.01em] text-secondary sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             {compatibles.map((c) => (

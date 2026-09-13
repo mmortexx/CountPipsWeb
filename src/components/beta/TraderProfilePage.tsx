@@ -47,10 +47,12 @@ const DATA = {
   },
 } as const;
 
+/* Los mismos valores que las plantillas del programa (`PropFirmTemplates.cs`,
+   revisadas el 22/07/2026): la variante más común de cada firma. */
 const PROP_FIRMS = [
-  { id: "ftmo" as const, name: "FTMO", typeEs: "Drawdown estático", typeEn: "Static Drawdown", dailyPct: 5, maxDDPct: 10, phase1Pct: 8, phase2Pct: 5, trailingType: "static" },
-  { id: "topstep" as const, name: "Topstep", typeEs: "Trailing EOD", typeEn: "Trailing EOD", dailyPct: 4.5, maxDDPct: 6, phase1Pct: 6, phase2Pct: 0, trailingType: "eod" },
-  { id: "fundingpips" as const, name: "FundingPips", typeEs: "Trailing relativo", typeEn: "Relative Trailing", dailyPct: 5, maxDDPct: 10, phase1Pct: 8, phase2Pct: 5, trailingType: "relative" },
+  { id: "ftmo" as const, name: "FTMO", typeEs: "Drawdown estático", typeEn: "Static drawdown", dailyPct: 5, maxDDPct: 10, phase1Pct: 10, phase2Pct: 0, trailingType: "static" },
+  { id: "topstep" as const, name: "Topstep", typeEs: "Drawdown trailing", typeEn: "Trailing drawdown", dailyPct: 2, maxDDPct: 4, phase1Pct: 6, phase2Pct: 0, trailingType: "trailing" },
+  { id: "the5ers" as const, name: "The5ers", typeEs: "Drawdown estático", typeEn: "Static drawdown", dailyPct: 5, maxDDPct: 5, phase1Pct: 8, phase2Pct: 0, trailingType: "static" },
 ];
 
 const PROP_BALANCES = [25000, 50000, 100000, 200000];
@@ -61,7 +63,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const data = DATA[profile];
 
   // Estado interactivo para prop firm
-  const [selectedFirm, setSelectedFirm] = useState<"ftmo" | "topstep" | "fundingpips">("ftmo");
+  const [selectedFirm, setSelectedFirm] = useState<"ftmo" | "topstep" | "the5ers">("ftmo");
   const [propBalance, setPropBalance] = useState(100000);
   const [currentEquity, setCurrentEquity] = useState(103500); // Simulando beneficio acumulado
   const [manualSetup, setManualSetup] = useState<"breakout" | "sweep" | "reversion">("breakout");
@@ -141,8 +143,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </h2>
               <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
                 {es
-                  ? "Selecciona tu firma de fondeo y tamaño de cuenta. CountPips monitoriza la pérdida diaria, el trailing drawdown y las fases de evaluación en tiempo real."
-                  : "Select your prop firm and account size. CountPips tracks daily loss, trailing drawdown, and evaluation phase targets in real time."}
+                  ? "Elige firma y tamaño de cuenta. El modo prop firm aplica la plantilla de la firma y sigue la pérdida diaria, el drawdown y el objetivo con cada operación que registras. Ejemplo con valores de muestra."
+                  : "Pick a firm and account size. Prop firm mode applies the firm template and tracks daily loss, drawdown and the target with every trade you log. Example with sample values."}
               </p>
             </div>
 
@@ -241,7 +243,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   −{fmtMoney(dailyLossLimit, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "El Guardián bloquea nuevas entradas al alcanzar el 80 % de este umbral." : "Guardian locks further entries when reaching 80% of this ceiling."}
+                  {es ? "Aviso preventivo antes de tocarlo; con el freno duro activado, dejas de registrar operaciones nuevas." : "A preventive alert before you reach it; with the hard brake on, new trades stop being logged."}
                 </p>
               </div>
 
@@ -274,20 +276,20 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   )}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Objetivos de rentabilidad auditados con control estricto de riesgo." : "Profit targets tracked with disciplined position sizing."}
+                  {es ? "Objetivo de la plantilla; ajústalo a tu desafío concreto." : "The template target; adjust it to your specific challenge."}
                 </p>
               </div>
 
               <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? "Riesgo seguro (0,75 %)" : "Safe risk (0.75%)"}</span>
+                  <span>{es ? "Riesgo por operación (0,75 %)" : "Risk per trade (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
                 <div className="cifra-xl font-mono font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Otorga 6 pérdidas consecutivas de colchón antes de rozar el límite diario." : "Allows 6 consecutive losses buffer before daily limit."}
+                  {es ? `Deja ${Math.floor(firm.dailyPct / 0.75)} pérdidas seguidas de colchón antes del límite diario.` : `Leaves a buffer of ${Math.floor(firm.dailyPct / 0.75)} straight losses before the daily limit.`}
                 </p>
               </div>
             </div>
@@ -303,8 +305,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </h2>
               <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
                 {es
-                  ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. Compara la muestra real de tus principales setups."
-                  : "A manual trader does not fail due to technical charts, but from inconsistent execution. Compare the real sample of your key setups."}
+                  ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. El playbook compara la muestra real de cada setup; aquí, con datos de muestra."
+                  : "A manual trader does not fail due to technical charts, but from inconsistent execution. The playbook compares the real sample of each setup; shown here with sample data."}
               </p>
             </div>
 

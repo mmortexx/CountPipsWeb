@@ -8,29 +8,21 @@ interface Broker {
   name: string;
   /** Two-letter monogram for the logo placeholder chip. */
   mark: string;
+  via: string;
 }
 
 /**
- * Estos NO son integraciones directas: son plataformas cuyo fichero CSV se
- * ha comprobado que entra. El subtítulo de la sección ya lo dice, y es
- * importante que lo siga diciendo — un muro de logotipos se lee como
- * «conecta tu cuenta» aunque el texto de al lado diga otra cosa.
- *
- * Fuera TD Ameritrade: la marca dejó de existir al integrarse en Schwab, y
- * un logotipo de una casa que ya no opera envejece la lista entera. Entra
- * Charles Schwab, que es donde fueron a parar esas cuentas.
+ * Las plantillas de importación que trae el programa (`BrokerTemplates.cs`)
+ * y la única sincronización que existe (Binance, solo lectura). Son
+ * plantillas de mejor esfuerzo: el asistente corrige cualquier columna y
+ * guarda la receta. Cualquier otro CSV entra con mapeo manual.
  */
 const BROKERS: Broker[] = [
-  { name: "Interactive Brokers", mark: "IB" },
-  { name: "MetaTrader 4", mark: "M4" },
-  { name: "MetaTrader 5", mark: "M5" },
-  { name: "NinjaTrader", mark: "NT" },
-  { name: "TradingView", mark: "TV" },
-  { name: "Binance", mark: "BN" },
-  { name: "Coinbase", mark: "CB" },
-  { name: "OANDA", mark: "OA" },
-  { name: "IG", mark: "IG" },
-  { name: "Charles Schwab", mark: "CS" },
+  { name: "Interactive Brokers", mark: "IB", via: "CSV · Flex Query" },
+  { name: "MetaTrader 4/5", mark: "MT", via: "CSV" },
+  { name: "TradingView", mark: "TV", via: "CSV" },
+  { name: "Binance", mark: "BN", via: "CSV · API" },
+  { name: "Bybit", mark: "BY", via: "CSV" },
 ];
 
 /** Logo wall of broker / import integrations. Bilingual. */
@@ -46,35 +38,20 @@ export function Integrations() {
           etiqueta={es ? "Integraciones" : "Integrations"}
           titulo={es ? (
               <>
-                Importa de <span className="text-gradient">cualquier broker.</span>
+                Importa desde <span className="text-gradient">tu plataforma.</span>
               </>
             ) : (
               <>
-                Import from <span className="text-gradient">any broker.</span>
+                Import from <span className="text-gradient">your platform.</span>
               </>
             )}
           entradilla={es
-              ? "CSV universal. Mapea columnas una sola vez y olvídate."
-              : "Universal CSV. Map columns once and forget."}
+              ? "Plantillas para las plataformas más habituales y cualquier otro CSV con mapeo de columnas. La receta se guarda y la próxima vez no hay que mapear nada."
+              : "Templates for the most common platforms and any other CSV with column mapping. The recipe is saved, so next time there is nothing to map."}
         />
 
-        {/* ── Muro de brókers en retícula ──────────────────────────────
-            Eran diez cajas separadas por hueco, cada una levantándose al
-            pasar el ratón. Pero esto es una lista de compatibilidad —
-            qué entra y qué no—, y una lista de compatibilidad se publica
-            como cuadro, no como diez objetos sueltos.
-
-            Se retira el paso intermedio de 3 columnas: 10 no es
-            divisible por 3 y dejaba la última fila con una sola celda,
-            con el trazo colgando sobre el hueco. 2 y 5 sí dividen a 10,
-            así que ambas retículas cierran exactas.
-
-            Filete izquierdo en todas las celdas y −1 px en la rejilla:
-            el trazo de la primera columna se sale del contenedor y se
-            recorta, sin encadenar reglas `nth-child` por cada punto de
-            ruptura. */}
         <div className="mt-10 overflow-clip border-t border-[rgb(var(--divider)/0.14)]">
-          <div className="-ml-px grid grid-cols-2 lg:grid-cols-5">
+          <div className="-ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
           {BROKERS.map((b) => (
             <div
               data-entra="ciclo"
@@ -90,8 +67,8 @@ export function Integrations() {
                 >
                   {b.mark}
                 </span>
-                <span className="inline-flex items-center rounded-[4px] px-[0.55rem] py-[0.15rem] bg-[var(--chip)] text-[rgb(var(--accent-base))] border border-[var(--chip-line)] text-[11px] font-semibold uppercase tracking-[0.08em]">
-                  CSV
+                <span className="inline-flex items-center rounded-[4px] px-[0.55rem] py-[0.15rem] bg-[var(--chip)] text-[rgb(var(--accent-base))] border border-[var(--chip-line)] text-[11px] font-semibold tracking-[0.02em]">
+                  {b.via}
                 </span>
               </div>
 
@@ -112,19 +89,19 @@ export function Integrations() {
           <p className="text-sm text-tertiary leading-[1.6]">
             {es ? (
               <>
-                ¿Tu broker no está en la lista?{" "}
+                ¿Tu plataforma no está en la lista?{" "}
                 <span className="text-secondary font-medium">
-                  Si exporta a CSV, este diario lo importa.
+                  Si exporta a CSV, el asistente la importa.
                 </span>{" "}
-                Mapea las columnas una sola vez y el perfil queda guardado para siempre.
+                Mapeas las columnas una vez y la receta queda guardada. Binance puede además sincronizarse en solo lectura con tus propias claves.
               </>
             ) : (
               <>
-                Your broker not on the list?{" "}
+                Your platform not on the list?{" "}
                 <span className="text-secondary font-medium">
-                  If it exports to CSV, this journal imports it.
+                  If it exports to CSV, the wizard imports it.
                 </span>{" "}
-                Map the columns once and the profile is saved forever.
+                Map the columns once and the recipe is saved. Binance can also sync in read-only mode with your own keys.
               </>
             )}
           </p>

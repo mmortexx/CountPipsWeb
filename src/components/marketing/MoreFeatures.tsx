@@ -12,45 +12,45 @@ export function MoreFeatures() {
   const features: { icon: ReactNode; title: string; desc: string }[] = [
     {
       icon: <PdfIcon />,
-      title: es ? "Exportación PDF" : "PDF export",
+      title: es ? "Informes en PDF" : "PDF reports",
       desc: es
-        ? "Informes de operaciones y mensuales con tu branding, listos para enviar."
-        : "Trade and monthly reports with your branding, ready to send.",
+        ? "Informe mensual, ficha de rendimiento, extracto de cuenta e informe de disciplina."
+        : "Monthly report, performance factsheet, account statement and discipline report.",
     },
     {
       icon: <MonteCarloIcon />,
       title: "Monte Carlo",
       desc: es
-        ? "Simula 1.000 permutaciones de tu secuencia para estimar el drawdown realista."
-        : "Simulate 1,000 permutations of your sequence to estimate realistic drawdown.",
+        ? "Remuestrea tu propio histórico y dibuja el abanico de balances y caídas posibles. Pro."
+        : "Resamples your own history and draws the fan of possible balances and drawdowns. Pro.",
     },
     {
       icon: <RiskOfRuinIcon />,
-      title: es ? "Risk of ruin" : "Risk of ruin",
+      title: es ? "Riesgo de ruina" : "Risk of ruin",
       desc: es
-        ? "Probabilidad de quebrar tu cuenta en función de win rate, payoff y riesgo %."
-        : "Probability of blowing your account based on win rate, payoff and risk %.",
+        ? "La probabilidad de quebrar la cuenta, simulada con tus propias operaciones. Pro."
+        : "The probability of blowing the account, simulated from your own trades. Pro.",
     },
     {
       icon: <PropFirmIcon />,
       title: es ? "Modo Prop Firm" : "Prop firm mode",
       desc: es
-        ? "Reglas de daily loss, max drawdown y objetivos de fase — cumplidas o alertadas."
-        : "Daily loss, max drawdown and phase goal rules — tracked or alerted.",
+        ? "Plantillas de FTMO, Topstep, The5ers, FundedNext y Apex, panel de evaluación e informe en PDF. Pro."
+        : "FTMO, Topstep, The5ers, FundedNext and Apex templates, an evaluation panel and a PDF report. Pro.",
     },
     {
       icon: <TrackRecordIcon />,
-      title: es ? "Informe de track record" : "Track record report",
+      title: es ? "Módulo fiscal" : "Tax module",
       desc: es
-        ? "Exporta tu historial en PDF con curva de equity, métricas y distribuciones."
-        : "Export your history as PDF with equity curve, metrics and distributions.",
+        ? "Lotes, resumen del año e informe para tu asesor (España). No calcula la cuota a pagar. Pro."
+        : "Lots, yearly summary and a report for your tax adviser (Spain). It never computes the tax due. Pro.",
     },
     {
       icon: <MultiAccountIcon />,
       title: es ? "Múltiples cuentas" : "Multiple accounts",
       desc: es
-        ? "Lleva tu cuenta personal, fondeos y desafíos prop en un solo archivo local."
-        : "Manage personal, funded and prop challenge accounts in one local file.",
+        ? "Cuenta personal, fondeos y desafíos prop en un solo archivo local: 2 en Core, ilimitadas en Pro."
+        : "Personal, funded and prop challenge accounts in one local file: 2 in Core, unlimited in Pro.",
     },
     {
       icon: <MaeMfeIcon />,
@@ -88,8 +88,8 @@ export function MoreFeatures() {
               </>
             )}
           entradilla={es
-              ? "Cada una existe porque un trader la pidió para tomar mejores decisiones — no para llenar la landing."
-              : "Each one exists because a trader asked for it to make better decisions — not to fill up the landing."}
+              ? "Cada una responde a una decisión concreta de quien opera, no a una casilla que rellenar."
+              : "Each one answers a concrete trading decision, not a box to tick."}
         />
 
         {/* ── Ocho entradas de un índice, no ocho tarjetas ─────────────

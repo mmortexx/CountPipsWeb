@@ -13,17 +13,34 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
   const { lang } = useLang();
   const es = lang === "es";
   const cards = [
-    { i: Database, t: es ? "100 % en local" : "100% local", d: es ? "Todo vive en tu disco. Ni telemetría, ni cuentas, ni servidores." : "Everything lives on your disk. No telemetry, no accounts, no servers." },
-    { i: FileLock2, t: es ? "Un solo archivo" : "One single file", d: es ? "Una base de datos SQLite que se abre, se copia y se respalda como un archivo cualquiera." : "One SQLite database you can open, copy and back up like any file." },
-    { i: KeyRound, t: es ? "Export e import" : "Export & import", d: es ? "CSV, JSON y PDF. Sin perder el formato, sin bloqueos por nubes." : "CSV, JSON and PDF. Without losing format, without cloud lock-in." },
+    { i: Database, t: es ? "En tu equipo" : "On your machine", d: es ? "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips." : "Your trades live on your disk. No account, no telemetry and no CountPips servers." },
+    { i: FileLock2, t: es ? "Un solo archivo" : "One single file", d: es ? "Una base de datos SQLite con copias automáticas verificadas y restauración a la vista." : "One SQLite database with verified automatic backups and visible restore." },
+    { i: KeyRound, t: es ? "Export e import" : "Export & import", d: es ? "Exporta a CSV, JSON completo y PDF, e importa cualquier CSV con mapeo de columnas." : "Export to CSV, full JSON and PDF, and import any CSV with column mapping." },
   ];
-  const compare = [
+  const compare: { l: string; tj: string | boolean; cloud: string | boolean; bueno?: boolean }[] = [
     { l: es ? "Dónde viven los datos" : "Where data lives", tj: es ? "Tu disco" : "Your disk", cloud: es ? "Servidores del proveedor" : "Vendor servers" },
-    { l: es ? "Modelo actual" : "Current model", tj: es ? "Demo + piloto privado" : "Demo + private pilot", cloud: es ? "Suscripción mensual" : "Monthly subscription" },
-    { l: es ? "Funciona sin internet" : "Works offline", tj: true, cloud: false },
-    { l: es ? "Cifrado en reposo" : "Encrypted at rest", tj: true, cloud: false },
-    { l: es ? "Bloqueo por proveedor" : "Vendor lock-in", tj: false, cloud: true },
+    { l: es ? "Modelo" : "Model", tj: es ? "Pago único previsto" : "Planned one-time payment", cloud: es ? "Suscripción mensual" : "Monthly subscription" },
+    { l: es ? "Funciona sin internet" : "Works offline", tj: true, cloud: false, bueno: true },
+    { l: es ? "Necesita crear una cuenta" : "Requires an account", tj: false, cloud: true, bueno: false },
+    { l: es ? "Tu historial depende de seguir pagando" : "Your history depends on paying", tj: false, cloud: true, bueno: false },
   ];
+  const conexiones = es
+    ? [
+        ["Licencia", "La clave y el nombre del equipo, como mucho una vez al día"],
+        ["Actualizaciones", "Solo cuando las pides"],
+        ["Mercados", "Datos públicos (BCE, Tesoro de EE. UU., CFTC, SEC, FMI, Kraken) al pulsar Actualizar"],
+        ["Binance", "Tu histórico en solo lectura, si configuras la sincronización"],
+        ["Webhooks", "Un aviso a la dirección que tú pongas, si los activas"],
+        ["Nube", "Una copia cifrada en tu propia carpeta de nube, si la activas"],
+      ]
+    : [
+        ["Licence", "The key and the computer name, at most once a day"],
+        ["Updates", "Only when you ask for them"],
+        ["Markets", "Public data (ECB, US Treasury, CFTC, SEC, IMF, Kraken) when you press Refresh"],
+        ["Binance", "Your history in read-only mode, if you set up the sync"],
+        ["Webhooks", "An alert to the address you choose, if you turn them on"],
+        ["Cloud", "An encrypted copy in your own cloud folder, if you turn it on"],
+      ];
   return (
     <section
       id="security"
@@ -49,11 +66,11 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
           >
             {es ? (
               <>
-                Tus datos <span style={{ color: "rgb(var(--accent-base))" }}>no salen</span> de tu equipo. Nunca.
+                Tus datos <span style={{ color: "rgb(var(--accent-base))" }}>no salen</span> de tu equipo si tú no lo decides.
               </>
             ) : (
               <>
-                Your data <span style={{ color: "rgb(var(--accent-base))" }}>never leaves</span> your machine.
+                Your data <span style={{ color: "rgb(var(--accent-base))" }}>stays</span> on your machine unless you decide otherwise.
               </>
             )}
           </h2>
@@ -68,8 +85,8 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
             }}
           >
             {es
-              ? "Una app nativa de Windows que escribe una base de datos SQLite en tu disco. Eso es todo. Ni más ni menos."
-              : "A native Windows app that writes a SQLite database to your disk. That's it. Nothing more, nothing less."}
+              ? "Una app nativa de Windows que guarda tus operaciones en una base de datos SQLite de tu disco. Lo que sale del equipo está escrito abajo, conexión por conexión."
+              : "A native Windows app that stores your trades in a SQLite database on your disk. What leaves the machine is listed below, connection by connection."}
           </p>
         </div>
         {/* 3 tarjetas */}
@@ -108,16 +125,16 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
           <dl className="mt-4 grid grid-cols-1 gap-5 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
             {(es
               ? [
-                  ["Carpeta de datos", "%LOCALAPPDATA%\\CountPips"],
+                  ["Carpeta de datos", "%LOCALAPPDATA%\CountPips"],
                   ["Base de datos", "SQLite, un único archivo"],
-                  ["Copias de seguridad", "AES-256-GCM · PBKDF2 600.000"],
-                  ["Credenciales de bróker", "DPAPI de Windows"],
+                  ["Cifrado en reposo", "EFS de Windows, opcional"],
+                  ["Nube, opcional", "AES-256-GCM · PBKDF2 600.000"],
                 ]
               : [
-                  ["Data folder", "%LOCALAPPDATA%\\CountPips"],
+                  ["Data folder", "%LOCALAPPDATA%\CountPips"],
                   ["Database", "SQLite, a single file"],
-                  ["Backups", "AES-256-GCM · PBKDF2 600,000"],
-                  ["Broker credentials", "Windows DPAPI"],
+                  ["Encryption at rest", "Windows EFS, optional"],
+                  ["Cloud, optional", "AES-256-GCM · PBKDF2 600,000"],
                 ]
             ).map(([k, v]) => (
               <div key={k}>
@@ -126,6 +143,22 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               </div>
             ))}
           </dl>
+          <div className="mt-6 border-t border-[var(--line)] pt-5">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+              {es ? "Todo lo que se conecta a internet" : "Everything that goes online"}
+            </p>
+            <dl className="mt-3 divide-y divide-[var(--line)] text-[14px]">
+              {conexiones.map(([k, v]) => (
+                <div key={k} className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                  <dt className="font-medium text-primary">{k}</dt>
+                  <dd className="m-0 text-secondary">{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <p className="mt-3 text-[13px] text-tertiary">
+              {es ? "Nada más. Las copias locales cifradas y Windows Hello están construidos pero apagados hasta tener su flujo completo." : "Nothing else. Encrypted local backups and Windows Hello are built but switched off until their flow is complete."}
+            </p>
+          </div>
         </div>
 
         {/* Tabla comparativa — mobile: horizontal scroll inside the card. */}
@@ -234,10 +267,10 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                       className="border-l-2 border-[var(--chip-line)]"
                       style={{ padding: "14px 8px 14px 10px", fontSize: 14, color: "var(--ink)" }}
                     >
-                      {typeof row.tj === "boolean" ? sello(row.tj, row.tj) : row.tj}
+                      {typeof row.tj === "boolean" ? sello(row.tj, row.tj === (row.bueno ?? true)) : row.tj}
                     </td>
                     <td style={{ padding: "14px 18px 14px 0", fontSize: 14, color: "var(--ink-2)" }}>
-                      {typeof row.cloud === "boolean" ? sello(row.cloud, !row.cloud) : row.cloud}
+                      {typeof row.cloud === "boolean" ? sello(row.cloud, row.cloud === (row.bueno ?? true)) : row.cloud}
                     </td>
                   </tr>
                 );

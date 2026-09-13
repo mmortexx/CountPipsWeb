@@ -28,7 +28,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Disciplina que actúa, no que sermonea",
   description:
-    "El Guardián frena antes del error: bloquea tamaños que exceden tu riesgo, te obliga a respetar el plan y audita cada excepción.",
+    "El Guardián mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas al tocar tu límite.",
   url: `${SITE_URL}/features/disciplina/`,
   mainEntityOfPage: `${SITE_URL}/features/disciplina/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -65,11 +65,11 @@ export const metadata: Metadata = {
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Disciplina — CountPips" },
   description:
-    "El Guardián frena antes del error: bloquea tamaños sobre tu riesgo, te obliga a respetar el plan y audita cada excepción. Indisciplina medida en dinero.",
+    "El Guardián mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas al tocar tu límite. Indisciplina medida en dinero.",
   alternates: { canonical: `${SITE_URL}/features/disciplina/`, languages: hreflangDe("/features/disciplina") },
   openGraph: {
     title: "Disciplina — CountPips",
-    description: "El Guardián frena antes del error. Disciplina que actúa, no que sermonea.",
+    description: "Semáforo de riesgo y freno duro opcional. Disciplina que actúa, no que sermonea.",
     url: `${SITE_URL}/features/disciplina/`,
     type: "website",
     siteName: "CountPips",
@@ -82,7 +82,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Disciplina — CountPips",
-    description: "El Guardián frena antes del error. Disciplina que actúa, no que sermonea.",
+    description: "Semáforo de riesgo y freno duro opcional. Disciplina que actúa, no que sermonea.",
   },
 };
 
@@ -134,8 +134,8 @@ export function DisciplinaBody() {
         titleEn="Discipline that acts, not lectures."
         titleHighlightEs="actúa."
         titleHighlightEn="acts."
-        subtitleEs="El Guardián no te dice qué hacer. Te bloquea cuando rompes tus propias reglas: tamaños que exceden tu riesgo, drawdowns diarios, operaciones fuera de plan. Cada excepción queda registrada con su motivo y su resultado."
-        subtitleEn="The Guardian doesn't tell you what to do. It blocks you when you break your own rules: sizes over your risk, daily drawdowns, off-plan trades. Every exception is logged with its reason and its outcome."
+        subtitleEs="El Guardián no te dice qué hacer: mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas cuando tocas tu límite. Saltárselo exige escribir el motivo."
+        subtitleEn="The Guardian doesn't tell you what to do: it measures every trade against your rules with a risk light and, if you turn it on, a hard brake stops accepting new trades when you hit your limit. Skipping it requires writing the reason."
         breadcrumbEs="Características · Disciplina"
         breadcrumbEn="Features · Discipline"
       />

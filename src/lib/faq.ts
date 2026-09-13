@@ -29,19 +29,19 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Mis datos están seguros?",
-    a: "Tus datos viven en un único archivo .sqlite dentro de tu equipo. Nunca se suben a ningún servidor: no hay servidor. Puedes cifrar la carpeta con BitLocker/VeraCrypt para una capa extra de seguridad.",
+    a: "Tus operaciones viven en una base de datos SQLite dentro de tu equipo. No hay cuenta ni telemetría, y CountPips no tiene servidores donde guardarlas. Puedes activar el cifrado EFS de Windows sobre la carpeta de datos. Solo sale algo del equipo si activas una función que lo necesita, como la copia cifrada en tu propia carpeta de nube; la lista completa está en la página de seguridad.",
   },
   {
     q: "¿Puedo exportar mis datos?",
-    a: "Sí. Puedes exportar todo tu diario a CSV (para Excel o Google Sheets), PDF (informes listos para compartir) y JSON (backup completo y reimportable). Tus datos son tuyos: puedes llevártelos cuando quieras, sin API que cerrar ni servidor que apagar.",
+    a: "Sí. Puedes exportar tus posiciones a CSV (para Excel o Google Sheets), la cuenta completa a JSON e informes a PDF. Leer y exportar tus datos nunca depende de la licencia: si caduca, la app pasa a solo lectura y todo sigue siendo tuyo.",
   },
   {
     q: "¿Funciona en Mac o Linux?",
-    a: "CountPips es una app nativa de Windows (WinUI 3). En Mac o Linux puedes ejecutarla a través de una máquina virtual con Windows o Parallels. Estamos explorando activamente una versión local-first para Mac y Linux: si quieres entrar en el acceso anticipado, escríbenos.",
+    a: "No. CountPips es una app nativa de Windows (WinUI 3) para Windows 10 y 11 de 64 bits. Una versión para macOS está planificada como app hermana solo después de validar las ventas en Windows; Linux no está en el plan.",
   },
   {
     q: "¿Puedo importar de otro diario?",
-    a: "Sí. Aceptamos importación desde CSV (formato flexible con mapeo de columnas) y un importador dedicado para los diarios más conocidos. Si el tuyo exporta a CSV, lo tienes en tu CountPips en menos de 5 minutos.",
+    a: "Sí, si exporta a CSV: el asistente de importación mapea las columnas y guarda la receta para la próxima vez. Trae plantillas para Interactive Brokers, MetaTrader 4 y 5, TradingView, Binance y Bybit, y Binance puede sincronizarse en solo lectura. Los importadores dedicados de TradeZella, Tradervue y Edgewonk todavía no existen.",
   },
   {
     q: "¿Cómo se selecciona el acceso anticipado?",
@@ -61,7 +61,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
-    a: "Core incluye el diario completo, 40+ métricas, 2 cuentas de trading, gestión de riesgo, disciplina e informes PDF básicos. Pro desbloquea además: cuentas ilimitadas, modo prop firm, simulador Monte Carlo, informe de track record, risk of ruin, informes PDF avanzados y el importador de rivales que migra tu diario anterior en 5 minutos.",
+    a: "Core incluye el diario, las métricas, el calendario y la curva de equity, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y 2 cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y las alertas y el análisis institucional del terminal de Mercados.",
   },
   {
     q: "¿Cómo funcionará la privacidad de mis datos?",
@@ -84,19 +84,19 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "Are my data safe?",
-    a: "Your data lives in a single .sqlite file on your machine. It never gets uploaded to any server: there is no server. You can encrypt the folder with BitLocker/VeraCrypt for an extra layer of security.",
+    a: "Your trades live in a SQLite database on your machine. There is no account and no telemetry, and CountPips has no servers to store them. You can turn on Windows EFS encryption for the data folder. Something only leaves your machine if you turn on a feature that needs it, such as the encrypted copy in your own cloud folder; the full list is on the security page.",
   },
   {
     q: "Can I export my data?",
-    a: "Yes. You can export your entire journal to CSV (for Excel or Google Sheets), PDF (ready-to-share reports), and JSON (full, re-importable backup). Your data is yours: take it with you whenever you want — no API to shut down, no server to turn off.",
+    a: "Yes. You can export your positions to CSV (for Excel or Google Sheets), the full account to JSON and reports to PDF. Reading and exporting your data never depends on the licence: if it lapses, the app switches to read-only and everything stays yours.",
   },
   {
     q: "Does it work on Mac or Linux?",
-    a: "CountPips is a native Windows app (WinUI 3). On Mac or Linux you can run it through a Windows virtual machine or Parallels. We're actively exploring a local-first version for Mac and Linux — if you'd like early access, drop us a line.",
+    a: "No. CountPips is a native Windows app (WinUI 3) for 64-bit Windows 10 and 11. A macOS version is planned as a sister app only after sales are validated on Windows; Linux is not on the plan.",
   },
   {
     q: "Can I import from another journal?",
-    a: "Yes. We support CSV import (flexible format with column mapping) and a dedicated importer for popular journals. If your current journal exports to CSV, you'll have it in your CountPips in less than 5 minutes.",
+    a: "Yes, if it exports to CSV: the import wizard maps the columns and saves the recipe for next time. It ships templates for Interactive Brokers, MetaTrader 4 and 5, TradingView, Binance and Bybit, and Binance can sync in read-only mode. Dedicated importers for TradeZella, Tradervue and Edgewonk do not exist yet.",
   },
   {
     q: "How is early access selected?",
@@ -116,7 +116,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What's the difference between Core and Pro?",
-    a: "Core includes the full journal, 40+ metrics, 2 trading accounts, risk management, discipline, and basic PDF reports. Pro additionally unlocks unlimited accounts, prop firm mode, the Monte Carlo simulator, track record report, risk of ruin, advanced PDF reports, and the rival importer that migrates your old journal in 5 minutes.",
+    a: "Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and 2 trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API, and the Markets terminal alerts and institutional analysis.",
   },
   {
     q: "How will my data stay private?",

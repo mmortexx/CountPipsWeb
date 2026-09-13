@@ -30,9 +30,9 @@ const VALUES: Value[] = [
     titleEs: "Local siempre",
     titleEn: "Local always",
     descEs:
-      "Tus operaciones son tuyas. Punto. No salen de tu equipo; la analítica de esta web sólo se activa con tu consentimiento.",
+      "Tus operaciones son tuyas. Viven en tu equipo y solo salen si activas una función que lo necesita; la analítica de esta web solo se activa con tu consentimiento.",
     descEn:
-      "Your trading data is yours. Period. It stays on your machine; this site's analytics only activates with your consent.",
+      "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it; this site's analytics only activates with your consent.",
     href: "/features/seguridad",
     pruebaEs: "Qué se guarda y dónde",
     pruebaEn: "What is stored, and where",
@@ -54,17 +54,17 @@ const VALUES: Value[] = [
     titleEs: "Disciplina > métricas",
     titleEn: "Discipline > metrics",
     descEs:
-      "Las métricas sin disciplina son ruido. El diario te frena antes de la tontería.",
+      "Las métricas sin disciplina son ruido. El Guardián te avisa antes de romper tus reglas y, si lo activas, te frena.",
     descEn:
-      "Metrics without discipline are noise. The journal stops you before the dumb trade.",
+      "Metrics without discipline are noise. The Guardian warns you before you break your rules and, if you turn it on, brakes you.",
     href: "/features/disciplina",
     pruebaEs: "Cómo frena el Guardián",
     pruebaEn: "How the Guardian brakes",
     icon: <ShieldIcon />,
   },
   {
-    titleEs: "Hecho por traders, para traders",
-    titleEn: "Made by traders, for traders",
+    titleEs: "Hecho por un trader, para traders",
+    titleEn: "Made by a trader, for traders",
     descEs:
       "No es un SaaS de Silicon Valley. Es una app de escritorio hecha por alguien que opera.",
     descEn:

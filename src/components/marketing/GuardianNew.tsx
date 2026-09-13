@@ -98,7 +98,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               className="tnum"
               style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
-              {es ? "Comprobación previa · nueva operación" : "Pre-flight check · new trade"}
+              {es ? "Semáforo de riesgo · nueva operación" : "Risk light · new trade"}
             </span>
             <span
               className="tnum inline-flex items-center gap-1.5 self-start sm:self-auto"
@@ -242,22 +242,22 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   : "rgb(var(--divider))";
             const titulo =
               tono === "neutro"
-                ? es ? "Operación anulada" : "Trade cancelled"
+                ? es ? "Registrada fuera de tu regla" : "Logged against your rule"
                 : tono === "ok"
-                  ? es ? "Operación permitida" : "Trade allowed"
-                  : es ? "Operación bloqueada" : "Trade blocked";
+                  ? es ? "Semáforo en verde" : "Green light"
+                  : es ? "Semáforo en rojo" : "Red light";
             const cuerpo =
               tono === "neutro"
                 ? es
-                  ? "No se ha registrado nada. El guardián no discute: si la anulas, se anula."
-                  : "Nothing was recorded. The guardian does not argue: cancel it and it is cancelled."
+                  ? "Queda anotada con el semáforo en rojo. Si activas el freno duro, al tocar tu pérdida diaria dejará de admitir operaciones nuevas."
+                  : "It is logged with the light on red. If you turn on the hard brake, hitting your daily loss stops new trades from being logged."
                 : tono === "ok"
                   ? es
-                    ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite. Puedes abrirla.`
-                    : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit. You can open it.`
+                    ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite.`
+                    : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit.`
                   : es
-                    ? `Reduce el tamaño a ${CONTRATOS_AJUSTADOS} contratos para dejar el riesgo en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
-                    : `Reduce size to ${CONTRATOS_AJUSTADOS} contracts to bring risk to ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
+                    ? `El riesgo supera tu máximo por operación. Con ${CONTRATOS_AJUSTADOS} contratos quedaría en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
+                    : `Risk is above your per-trade maximum. At ${CONTRATOS_AJUSTADOS} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
             return (
               <div
                 role="status"
@@ -361,7 +361,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     cursor: "pointer",
                   }}
                 >
-                  {es ? "Anular" : "Cancel"}
+                  {es ? "Registrar igualmente" : "Log anyway"}
                 </button>
               </>
             ) : (
@@ -440,8 +440,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               }}
             >
               {es
-                ? "El Guardián no te dice qué hacer. Te bloquea cuando rompes tus propias reglas."
-                : "The Guardian doesn't tell you what to do. It blocks you when you break your own rules."}
+                ? "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes."
+                : "The Guardian doesn't tell you what to do: it measures every trade against the rules you set and, if you turn it on, brakes you when you break them."}
             </p>
           </Reveal>
           )}
@@ -455,13 +455,9 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           <Reveal delay={0.18}>
           <ul className="m-0 p-0 list-none space-y-5">
             {[
-              { i: ShieldCheck, t: es ? "Frena antes del error" : "Brakes before the error", d: es ? "Bloquea tamaños que excedan tu riesgo máximo por operación." : "Blocks sizes that exceed your max per-trade risk." },
-              { i: HandMetal, t: es ? "Te obliga a respetar el plan" : "Forces you to respect the plan", d: es ? "Límites de drawdown diario y total configurables." : "Daily and total drawdown limits configurable." },
-              /* Decía «Cada override queda registrado» justo debajo de un
-                 titular que a eso mismo ya lo llama EXCEPCIÓN: dos
-                 nombres para la misma cosa dentro del mismo renglón, y
-                 uno en inglés en mitad de una frase en español. */
-              { i: Timer, t: es ? "Audita tus excepciones" : "Audits your exceptions", d: es ? "Cada excepción queda registrada con su motivo y su resultado." : "Every exception is logged with its reason and its outcome." },
+              { i: ShieldCheck, t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
+              { i: HandMetal, t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
+              { i: Timer, t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
             ].map((f) => {
               const Icon = f.i;
               return (

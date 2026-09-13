@@ -133,8 +133,8 @@ const PRODUCT_ITEMS: {
     href: "/features/disciplina",
     labelEs: "Disciplina",
     labelEn: "Discipline",
-    descEs: "El Guardián frena antes del error",
-    descEn: "The Guardian brakes before the error",
+    descEs: "Semáforo de riesgo y freno duro",
+    descEn: "Risk light and hard brake",
     grupo: "producto",
     icon: (
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -146,8 +146,8 @@ const PRODUCT_ITEMS: {
     href: "/features/seguridad",
     labelEs: "Seguridad",
     labelEn: "Security",
-    descEs: "Local-first, sin nube ni cuentas",
-    descEn: "Local-first, no cloud, no accounts",
+    descEs: "Tus datos en tu equipo, sin cuenta",
+    descEn: "Your data on your machine, no account",
     grupo: "producto",
     icon: (
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>

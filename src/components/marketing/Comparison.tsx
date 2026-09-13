@@ -20,61 +20,60 @@ type Row = { labelEs: string; labelEn: string; cells: [Cell, Cell, Cell] };
 
 const ROWS: Row[] = [
   {
-    labelEs: "Privacidad",
-    labelEn: "Privacy",
+    labelEs: "Dónde viven tus datos",
+    labelEn: "Where your data lives",
     cells: [
-      /* TJ */ { es: "Local · tu equipo", en: "Local · your machine" },
-      /* cloud */ { es: "Servidor ajeno", en: "Someone else's server" },
-      /* excel */ { es: "Local · tu equipo", en: "Local · your machine" },
+      /* TJ */ { es: "Tu equipo", en: "Your machine" },
+      /* cloud */ { es: "Servidor del proveedor", en: "The vendor's server" },
+      /* excel */ { es: "Tu equipo", en: "Your machine" },
     ],
   },
   {
-    labelEs: "Precio",
-    labelEn: "Pricing",
+    labelEs: "Modelo de pago",
+    labelEn: "Payment model",
     cells: [
-      { es: "Core $149 · Pro $249", en: "Core $149 · Pro $249" },
+      { es: "Pago único previsto", en: "Planned one-time payment" },
       { es: "Suscripción mensual", en: "Monthly subscription" },
-      { es: "Gratis", en: "Free" },
+      { es: "Sin coste añadido", en: "No extra cost" },
     ],
   },
   {
-    labelEs: "Métricas",
-    labelEn: "Metrics",
+    labelEs: "Métricas calculadas solas",
+    labelEn: "Metrics computed for you",
     cells: [
       { es: "40+ institucionales", en: "40+ institutional" },
-      { es: "10–20 básicas", en: "10–20 basic" },
-      { es: "Manual / fórmulas", en: "Manual / formulas" },
+      "yes",
+      { es: "A mano, con fórmulas", en: "By hand, with formulas" },
     ],
   },
   {
-    labelEs: "Disciplina",
-    labelEn: "Discipline",
-    cells: ["yes", "no", "no"],
+    labelEs: "Funciona sin internet",
+    labelEn: "Works offline",
+    cells: ["yes", "no", "yes"],
   },
   {
-    labelEs: "Playbook en vivo",
-    labelEn: "Live playbook",
-    cells: ["yes", "no", "no"],
+    labelEs: "Tu historial si dejas de pagar",
+    labelEn: "Your history if you stop paying",
+    cells: [
+      { es: "Siempre legible y exportable", en: "Always readable and exportable" },
+      { es: "Depende del proveedor", en: "Up to the vendor" },
+      { es: "Tuyo", en: "Yours" },
+    ],
   },
   {
-    labelEs: "Sin servidor",
-    labelEn: "No server needed",
+    labelEs: "Español nativo",
+    labelEn: "Native Spanish",
+    cells: ["yes", "partial", "yes"],
+  },
+  {
+    labelEs: "Sin crear una cuenta",
+    labelEn: "No account to create",
     cells: ["yes", "no", "yes"],
   },
   {
     labelEs: "Modo prop firm",
     labelEn: "Prop firm mode",
-    cells: ["yes", "partial", "no"],
-  },
-  {
-    labelEs: "Simulador Monte Carlo",
-    labelEn: "Monte Carlo simulator",
     cells: ["yes-pro", "partial", "no"],
-  },
-  {
-    labelEs: "Informe de track record",
-    labelEn: "Track record report",
-    cells: ["yes-pro", "no", "no"],
   },
 ];
 
@@ -88,7 +87,7 @@ export function Comparison() {
     // «Diarios» y no «Journals»: es el mismo objeto que la columna de al
     // lado, y esa se llama por su nombre español en todo el sitio.
     { key: "cloud", label: es ? "Diarios en la nube" : "Cloud journals", sub: es ? "Suscripción" : "Subscription", highlight: false },
-    { key: "excel", label: es ? "Excel / Sheets" : "Excel / Sheets", sub: es ? "Gratis" : "Free", highlight: false },
+    { key: "excel", label: es ? "Excel / Sheets" : "Excel / Sheets", sub: es ? "Hoja de cálculo" : "Spreadsheet", highlight: false },
   ];
 
   return (
@@ -336,8 +335,8 @@ export function Comparison() {
         <Reveal delay={0.12} className="mt-6">
           <p className="text-xs text-tertiary text-center max-w-2xl mx-auto">
             {es
-              ? "Comparamos con la media de los diarios web más conocidos y con Excel/Sheets sin plantillas avanzadas. Cada caso es distinto; este es el nuestro."
-              : "We compare against the average of popular web journals and against Excel/Sheets without advanced templates. Each case is different; this is ours."}
+              ? "Diarios en la nube: TradeZella, TraderSync, TradesViz y Tradervue, según sus webs en julio de 2026. Hoja de cálculo sin plantillas avanzadas."
+              : "Cloud journals: TradeZella, TraderSync, TradesViz and Tradervue, as published on their websites in July 2026. Spreadsheet without advanced templates."}
           </p>
         </Reveal>
       </div>

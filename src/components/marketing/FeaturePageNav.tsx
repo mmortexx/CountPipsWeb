@@ -40,15 +40,15 @@ const AXES: Record<
     href: "/features/disciplina",
     labelEs: "Disciplina",
     labelEn: "Discipline",
-    descEs: "El Guardián frena antes del error",
-    descEn: "The Guardian brakes before the error",
+    descEs: "Semáforo de riesgo y freno duro",
+    descEn: "Risk light and hard brake",
   },
   seguridad: {
     href: "/features/seguridad",
     labelEs: "Seguridad",
     labelEn: "Security",
-    descEs: "Local-first, sin nube ni cuentas",
-    descEn: "Local-first, no cloud, no accounts",
+    descEs: "Tus datos en tu equipo, sin cuenta",
+    descEn: "Your data on your machine, no account",
   },
 };
 

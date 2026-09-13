@@ -35,7 +35,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Todo lo que necesitas para operar con disciplina",
   description:
-    "Bento de características, galería de la app, cómo funciona y más. Métricas, disciplina y seguridad tienen sus propias páginas enfocadas.",
+    "Las funciones de CountPips, capturas reales del programa y cómo se usa. Métricas, disciplina y seguridad tienen su propia página.",
   url: `${SITE_URL}/features/`,
   mainEntityOfPage: `${SITE_URL}/features/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -66,7 +66,7 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: "Características",
   description:
-    "Todo para operar con disciplina: bento de características, galería, cómo funciona y más. Métricas, disciplina y seguridad tienen su propia página enfocada.",
+    "Las funciones de CountPips, capturas reales del programa y cómo se usa. Métricas, disciplina y seguridad tienen su propia página.",
   alternates: { canonical: `${SITE_URL}/features/`, languages: hreflangDe("/features") },
   openGraph: {
     title: "Características — CountPips",
@@ -80,7 +80,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Características — CountPips",
-    description: "40+ métricas institucionales, disciplina que cuesta dinero, playbook en vivo y 100 % local.",
+    description: "40+ métricas institucionales, disciplina medida en dinero, playbook en vivo y tus datos en tu equipo.",
   },
 };
 
@@ -141,8 +141,8 @@ export function FeaturesBody() {
         titleEn="Everything you need to trade with discipline."
         titleHighlightEs="operar con disciplina."
         titleHighlightEn="trade with discipline."
-        subtitleEs="Métricas institucionales, un guardián que te frena antes de la tontería, y tus datos 100 % en tu máquina. No es otro diario con las mismas 30 métricas. Profundiza en cada eje en su propia página."
-        subtitleEn="Institutional metrics, a guardian that stops you before the dumb trade, and your data 100% on your machine. Not another journal with the same 30 metrics. Dive into each axis on its own page."
+        subtitleEs="Métricas institucionales, un guardián de disciplina con semáforo de riesgo y freno opcional, y tus datos en tu equipo. Cada eje tiene su propia página."
+        subtitleEn="Institutional metrics, a discipline guardian with a risk light and an optional hard brake, and your data on your machine. Each axis has its own page."
         breadcrumbEs="Características"
         breadcrumbEn="Features"
       />

@@ -31,8 +31,8 @@ export function StatsBandNew() {
   const { lang } = useLang();
   const es = lang === "es";
   const stats = [
-    { v: "40+", l: es ? "métricas institucionales calculadas en tiempo real" : "institutional metrics computed in real time" },
-    { v: "0 bytes", l: es ? "enviados a la nube — todo vive en tu equipo" : "sent to the cloud — everything stays on your machine" },
+    { v: "40+", l: es ? "métricas institucionales calculadas con cada operación" : "institutional metrics computed with every trade" },
+    { v: "0", l: es ? "servidores de CountPips con tus operaciones: viven en tu equipo" : "CountPips servers holding your trades: they live on your machine" },
     /* ── LA TERCERA CIFRA ERA UNA FLECHA ──────────────────────────────
        La cuarta estadística era «30 días de garantía» y se retiró bien:
        ya no se ofrecen reembolsos. Pero el hueco se tapó con el glifo

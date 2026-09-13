@@ -283,8 +283,8 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: `Todo lo anterior habla de la WEB. ${TITULAR.nombreComercial}, el programa, funciona en tu ordenador y guarda tus operaciones en un archivo local de tu propio disco. Tus datos de trading no se envían a ningún servidor, ni al nuestro ni al de nadie: no existe una cuenta en la nube donde pudieran estar.`,
-          en: `Everything above is about the WEBSITE. ${TITULAR.nombreComercial}, the software, runs on your computer and stores your trades in a local file on your own disk. Your trading data is not sent to any server, ours or anyone else's: there is no cloud account where it could live.`,
+          es: `Todo lo anterior habla de la WEB. ${TITULAR.nombreComercial}, el programa, funciona en tu ordenador y guarda tus operaciones en un archivo local de tu propio disco. No pide cuenta, no envía telemetría y nosotros no tenemos servidores donde guardar tus datos de trading. Solo sale información del equipo cuando tú activas una función que lo necesita: la copia cifrada en tu propia carpeta de nube, la sincronización de solo lectura con tu bróker, los avisos por webhook a la dirección que elijas o la descarga de datos públicos de mercado. Para validar la licencia se envían la clave y el nombre del equipo al proveedor de licencias.`,
+          en: `Everything above is about the WEBSITE. ${TITULAR.nombreComercial}, the software, runs on your computer and stores your trades in a local file on your own disk. It asks for no account, sends no telemetry, and we have no servers to store your trading data. Information only leaves your machine when you turn on a feature that needs it: the encrypted copy in your own cloud folder, the read-only sync with your broker, webhook alerts to the address you choose, or downloading public market data. To validate the licence, the key and the computer name are sent to the licensing provider.`,
         },
       ],
     },

@@ -184,8 +184,8 @@ export const SEGUIR_LEYENDO: Record<
   },
   risk: {
     href: "/features/disciplina",
-    es: "El guardián que te frena antes de romper tu propio límite",
-    en: "The guardian that stops you before you break your own limit",
+    es: "El guardián que mide cada operación contra tu propio límite",
+    en: "The guardian that measures every trade against your own limit",
   },
   metrics: {
     href: "/features/metricas",

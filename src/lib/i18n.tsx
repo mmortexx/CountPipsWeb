@@ -18,8 +18,8 @@ export const STR = {
   appName: { es: "CountPips", en: "CountPips" },
   tagline: { es: "Tu operativa, medida.", en: "Your trading, measured." },
   heroLead: {
-    es: "El diario de trading profesional, nativo de Windows. Métricas institucionales, disciplina que te frena antes de la tontería y tus datos 100 % en tu máquina.",
-    en: "The professional trading journal, native to Windows. Institutional metrics, discipline that stops you before the dumb trade, and your data 100 % on your machine.",
+    es: "El diario de trading profesional, nativo de Windows. Métricas institucionales, un guardián de disciplina y tus datos en tu equipo.",
+    en: "The professional trading journal, native to Windows. Institutional metrics, a discipline guardian and your data on your machine.",
   },
   ctaPrimary: { es: "Probar la demo", en: "Try the demo" },
   ctaSecondary: { es: "Ver precios", en: "See pricing" },
