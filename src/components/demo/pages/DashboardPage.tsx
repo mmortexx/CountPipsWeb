@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { useLang } from "@/lib/i18n";
+import { langDatos, useLang } from "@/lib/i18n";
 import {
   TRADES,
   METRICS,
@@ -706,7 +706,7 @@ export function DashboardPage() {
                       >
                         {SETUP_NAMES.map((s) => (
                           <option key={s} value={s}>
-                            {nombreSetup(s, lang)}
+                            {nombreSetup(s, langDatos(lang))}
                           </option>
                         ))}
                       </select>
@@ -882,7 +882,7 @@ export function DashboardPage() {
           {/* Mobile: horizontal-scroll strip with min-w cells (so the 7 KPIs
               stay readable instead of collapsing to ~25px each inside the
               316px panel). Desktop: same 7-col grid as before, no scroll. */}
-          <div className="tj-fila-sigue tj-fila-sigue--solo-movil flex md:grid md:grid-cols-[repeat(7,minmax(5.5rem,1fr))] gap-x-4 px-1 py-2 overflow-x-auto custom-scroll">
+          <div className="flex md:grid md:grid-cols-[repeat(7,minmax(5.5rem,1fr))] gap-x-4 px-1 py-2 overflow-x-auto custom-scroll">
             <KpiCell
               label={t("pnlTotal")}
               value={
@@ -1145,7 +1145,7 @@ export function DashboardPage() {
                       <DirectionChip direction={tr.direction} t={t} />
                     </div>
                     <div className="hidden md:block text-xs text-tertiary truncate flex-1 min-w-0">
-                      {nombreSetup(tr.setup, lang)}
+                      {nombreSetup(tr.setup, langDatos(lang))}
                     </div>
                     <div
                       className={`text-xs tnum font-medium shrink-0 w-12 text-right ${
@@ -1219,22 +1219,7 @@ function KpiCell({
       {/* La celda es su propio contenedor de medida: «+6807,72 US$»
           a `text-lg` fijo se salia 15 px a 768 px, que es donde esta
           reticula pasa a varias columnas. */}
-      {/* `w-full` NO es decorativo: `caja-cifra` declara
-          `container-type: inline-size`, y un contenedor de medida sobre una
-          caja que se dimensiona por su CONTENIDO —esta lo hace, porque su
-          padre es `flex flex-col items-center`— colapsa a cero. Con ancho
-          cero, `11cqi` vale cero y `break-words` parte la cifra en un
-          caracter por renglon: a 390 px «+6807,72 US$» se pintaba en
-          vertical, letra a letra, en la PRIMERA pantalla de la demo. Es la
-          trampa que la septima tanda dejo escrita: esa utilidad solo sirve
-          cuando el ancho lo pone el padre.
-
-          Y `whitespace-nowrap` en vez de `break-words`: el valor llega con
-          `text-lg` propio, que gana a `cifra-lg`, asi que la consulta de
-          contenedor NO puede encogerlo y a cualquier ancho acabaria
-          partiendo «US$» por la mitad. La tira ya se desplaza de lado
-          (`overflow-x-auto`), que es justo para lo que se puso. */}
-      <div className="caja-cifra w-full min-w-0 whitespace-nowrap [&>*]:cifra-lg [&>*]:font-semibold [&>span]:tnum">{value}</div>
+      <div className="caja-cifra min-w-0 break-words [&>*]:cifra-lg [&>*]:font-semibold [&>span]:tnum">{value}</div>
     </div>
   );
 }

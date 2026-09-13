@@ -1,10 +1,9 @@
 "use client";
 
 import { CalendarDays, BookOpen, LineChart, NotebookPen, Layers } from "lucide-react";
-import { useLang } from "@/lib/i18n";
+import { langDatos, useLang } from "@/lib/i18n";
 import { getCal } from "@/lib/trading/fixtures";
 import { nombreSetup, type SetupName } from "@/lib/trading/data";
-import { fmtPct, fmtR } from "@/lib/trading/format";
 
 /**
  * FeaturesBento — sección `#features` del HTML. Rejilla bento con 5
@@ -304,9 +303,9 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               </div>
               <ul className="mt-2.5 flex flex-col gap-2">
                 {[
-                  { w: "14:00 – 15:00", n: es ? "18 ops" : "18 trades", r: fmtR(-0.8, lang, 1) },
-                  { w: "17:00 – 18:00", n: es ? "11 ops" : "11 trades", r: fmtR(-1.2, lang, 1) },
-                  { w: "21:00 – 22:00", n: es ? "7 ops" : "7 trades", r: fmtR(-0.4, lang, 1) },
+                  { w: "14:00 – 15:00", n: es ? "18 ops" : "18 trades", r: "−0,8 R" },
+                  { w: "17:00 – 18:00", n: es ? "11 ops" : "11 trades", r: "−1,2 R" },
+                  { w: "21:00 – 22:00", n: es ? "7 ops" : "7 trades", r: "−0,4 R" },
                 ].map((row) => (
                   <li
                     key={row.w}
@@ -352,39 +351,30 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                   la maqueta, no los de `TRADES`: esta tarjeta ilustra la
                   forma de la vista, no publica un resultado. */}
               {[
-                /* El acierto va como NÚMERO y no como texto, y no es un
-                   capricho: el mismo campo servía de rótulo («62 %») y de
-                   ancho de la barra (`width: s.w`). «62 %», con el espacio
-                   que pide la ortografía castellana, no es una medida CSS
-                   válida, así que el navegador la descartaba y las CUATRO
-                   barras se pintaban enteras. Medido a 1440 px: las cuatro
-                   a 197 px de 197. La tarjeta que promete «sólo setups que
-                   tienen edge» enseñaba el Reversal —41 % de acierto, «Sin
-                   ventaja»— con la barra roja llena de lado a lado. */
-                { k: "Breakout", wr: 0.62, exp: 1.8, n: 58, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
-                { k: "Pullback", wr: 0.58, exp: 1.4, n: 42, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
-                { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))", badge: es ? "Sin ventaja" : "No edge" },
-                { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
+                { k: "Breakout", w: "62 %", exp: "+1.8R", n: "58 ops", c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
+                { k: "Pullback", w: "58 %", exp: "+1.4R", n: "42 ops", c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
+                { k: "Reversal", w: "41 %", exp: "−0.3R", n: "30 ops", c: "rgb(var(--pnl-neg))", badge: es ? "Sin ventaja" : "No edge" },
+                { k: "Trend", w: "55 %", exp: "+2.1R", n: "70 ops", c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
               ].map((s) => (
                 <div key={s.k} className="p-2 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)] hover:border-[rgb(var(--accent-base)/0.3)] transition-colors">
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-medium text-primary">
-                      {nombreSetup(s.k as SetupName, lang)}
+                      {nombreSetup(s.k as SetupName, langDatos(lang))}
                     </span>
                     <div className="flex items-center gap-2 font-mono text-[10px]">
-                      <span className="text-tertiary">{s.n} {es ? "ops" : "trades"}</span>
-                      <span style={{ color: s.c, fontWeight: 700 }}>{fmtR(s.exp, lang, 1)}</span>
+                      <span className="text-tertiary">{s.n}</span>
+                      <span style={{ color: s.c, fontWeight: 700 }}>{s.exp}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 h-1.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
-                      <div className="h-full rounded-[2px]" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
+                      <div className="h-full rounded-[2px]" style={{ width: s.w, background: s.c }} />
                     </div>
                     <span
                       className="tnum font-mono text-xs font-semibold"
                       style={{ color: s.c, minWidth: 38, textAlign: "right" }}
                     >
-                      {fmtPct(s.wr, lang, 0)}
+                      {s.w}
                     </span>
                   </div>
                 </div>
