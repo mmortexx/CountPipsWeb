@@ -128,7 +128,6 @@ export function DisciplinaBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="I·b"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Disciplina que actúa, no que sermonea."
@@ -139,16 +138,15 @@ export function DisciplinaBody() {
         subtitleEn="The Guardian doesn't tell you what to do. It blocks you when you break your own rules: sizes over your risk, daily drawdowns, off-plan trades. Every exception is logged with its reason and its outcome."
         breadcrumbEs="Características · Disciplina"
         breadcrumbEn="Features · Discipline"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <GuardianNew num="01" />
-      <DisciplineCost num="02" />
+      <GuardianNew />
+      <DisciplineCost />
 
       <BeforeAfter />
 
       <ComparisonSlider />
 
-      <RMultipleSimulator num="03" />
+      <RMultipleSimulator />
 
       {/* El diagnóstico de disciplina se mudó a `/test`, con página y
           entrada propias en el menú. Aquí estaba al final del todo, así

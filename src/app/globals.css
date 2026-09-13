@@ -1110,48 +1110,6 @@
     container-type: inline-size;
   }
 
-  /* .page-header-scrim — velo de las cabeceras de subpágina.
-     ------------------------------------------------------------------
-     POR QUÉ ESTO SIGUE SIENDO UN DEGRADADO, si la regla del estilo es
-     que no haya ninguno: porque no pinta densidad, protege una lectura.
-     La regla apunta contra el ornamento —halos, auroras, barridos,
-     marcos que se desvanecen, titulares con el color en transición—, y
-     todo eso se ha ido. Un velo que tiene que estar donde hay texto y
-     no estar donde hay dibujo necesita un sitio donde dejar de estar; el
-     corte duro se vería como una costura vertical en mitad de la
-     cabecera. Es el mismo criterio por el que las máscaras se quedan.
-
-     RECALIBRADO. Los valores de antes (88 % hasta media anchura) se
-     eligieron contra el ojo WebGL que había de fondo, cuyas fibras rojas
-     y verdes hacían oscilar la luminancia bajo una misma línea de texto
-     entre 87 y 245. Ese fondo ya no existe: hoy detrás hay lápiz fino a
-     0,62 de opacidad, que no ilumina ni satura. Manteniendo el 88 % se
-     tapaba el grabado en la cabecera de las 150 páginas que la llevan
-     —el mismo error que cometía el velo de sección—, así que el tramo
-     protegido baja al 84 %, que es el valor del sistema (`--velo`) y el
-     que sostiene la cuenta de contraste del texto terciario, y se abre
-     antes para que la lámina entre en la cabecera. */
-  .page-header-scrim {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--bg) 84%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 84%, transparent) 45%,
-      color-mix(in srgb, var(--bg) 46%, transparent) 62%,
-      transparent 82%
-    );
-  }
-  :root[data-theme="light"] .page-header-scrim {
-    background: linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--bg) 88%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 88%, transparent) 45%,
-      color-mix(in srgb, var(--bg) 54%, transparent) 62%,
-      transparent 85%
-    );
-  }
 
 
   /* ── EN MÓVIL EL VELO NO PUEDE SER LATERAL ─────────────────────────
@@ -2564,15 +2522,7 @@ button.icon-btn:hover > svg,
    La regla global de `prefers-reduced-motion` de más arriba ya
    colapsa duración y retardo a 0,01 ms, así que quien pide menos
    movimiento ve el titular entero de golpe. */
-@keyframes tj-char-in {
-  from { opacity: 0; transform: translateX(-18px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.tj-char {
-  display: inline-block;
-  animation: tj-char-in 420ms var(--ease-suave) backwards;
-  animation-delay: var(--tj-char-delay, 0ms);
-}
+
 
 /* ── Aquí estaban el «sheen» y el «spotlight» ─────────────────────
    `.tj-cta-sheen`: un barrido de luz blanca al 60 % cruzando el botón
@@ -3334,11 +3284,9 @@ button.icon-btn:hover > svg,
   align-items: baseline;
   gap: 0.5em;
   padding: 4px 9px;
-  border: 1px dashed rgb(var(--divider) / 0.34);
-  border-radius: 2px;
-  /* Sin fondo: el marco tiene que dejar ver el papel o el grabado que hay
-     detrás, igual que la línea de trazos de un plano no tapa la hoja. */
-  background: none;
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  background: var(--surface);
   color: var(--ink-3);
   vertical-align: middle;
 }
@@ -4217,222 +4165,18 @@ svg [data-entra="sello"] {
   }
 }
 
-/* ============================================================
-   FILETE QUE SE DIBUJA
-   ============================================================
-   Una regla horizontal que aparece de golpe es una línea; una que se
-   traza de izquierda a derecha conforme subes es un gesto, y cuesta lo
-   mismo. Se usa en los separadores de sección y bajo los epígrafes.
-
-   `scaleX` sobre un elemento de 1 px de alto: el compositor lo resuelve
-   sin repintar, a diferencia de animar `width`, que reflowea la línea
-   en cada fotograma.
-
-   Y ese 1 px de alto es justo lo que hacía que el filete NO se trazara
-   nunca. El rango iba en `entry`, que se mide en unidades del propio
-   elemento: `entry 10% → 60%` sobre una línea de 1 px son **medio
-   píxel** de scroll. La regla existía, la animación estaba registrada y
-   el gesto no ocurría jamás — el caso más extremo del problema que se
-   explica en el bloque de `[data-entra]`. En `cover` el mismo gesto
-   dura unos 235 px. */
-.tj-filete {
-  height: 1px;
-  width: 100%;
-  background: rgb(var(--divider) / 0.22);
-  transform-origin: left center;
-}
-@supports (animation-timeline: view()) {
-  .tj-filete {
-    animation: tj-traza linear both;
-    animation-timeline: view(block);
-    animation-range: entry 12% entry 51%;
-  }
-}
-@keyframes tj-traza {
-  from {
-    transform: scaleX(0);
-    opacity: 0.4;
-  }
-  to {
-    transform: scaleX(1);
-    opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tj-filete {
-    animation: none;
-    transform: none;
-  }
-}
-
-/* ============================================================
-   EL RITMO DE CADA PÁGINA
-   ============================================================
-   Las nueve páginas interiores compartían cabecera exacta: mismo aire
-   arriba, mismo filete, misma medida. Y no son la misma clase de cosa —
-   un capítulo se lee seguido, una calculadora se usa, un índice se
-   consulta, una tarifa se compara y un texto legal se archiva. Una
-   cabecera idéntica en las cinco le dice al visitante que da igual
-   dónde esté.
-
-   Cada tono cambia TRES cosas y ninguna más:
-
-     · **El folio** — la marca grande del margen. Cambia de tipografía y
-       de tamaño, y su significado depende del tono (ordinal, referencia,
-       recuento, cifra).
-     · **El filete** — el ancho y el peso de la línea bajo el epígrafe.
-     · **La medida** — cuántos caracteres por línea admite el subtítulo.
-
-   La retícula, los colores y las familias tipográficas NO cambian. Lo
-   que se busca es que cada página tenga carácter dentro del mismo
-   libro, no que parezca de otro sitio. */
-
+/* ---- Cabecera de página interior ---------------------------------- */
 .tj-cabecera {
-  padding-top: 8rem;
-  padding-bottom: 4rem;
-  --medida: 62ch;
-  --filete-ancho: 4rem;
-}
-@media (min-width: 768px) {
-  .tj-cabecera {
-    padding-top: 10rem;
-    padding-bottom: 5rem;
-  }
-}
-
-/* El filete de la cabecera no ocupa todo el ancho: es una marca, no un
-   separador. Su longitud es la seña del tono. */
-.tj-filete-cabecera {
-  width: var(--filete-ancho);
-}
-
-/* ── El folio ─────────────────────────────────────────────────────────
-   Posicionado en la marginalia izquierda, fuera de la mancha, y sólo a
-   partir de 1.280 px: por debajo no hay margen que le sobre a la
-   página, y un folio encima del texto es ruido. */
-.tj-folio {
-  display: none;
-}
-@media (min-width: 1280px) {
-  .tj-folio {
-    display: block;
-    position: absolute;
-    top: 0.5rem;
-    right: 100%;
-    margin-right: 2.5rem;
-    line-height: 0.82;
-    color: rgb(var(--ink-rgb, var(--divider)) / 0.13);
-    user-select: none;
-    white-space: nowrap;
-  }
-  /* Que el folio entre DESPUÉS que el titular: es la marca del margen,
-     no el asunto. Aparece cuando la cabecera ya se está leyendo. */
-  @supports (animation-timeline: view()) {
-    .tj-folio {
-      animation: tj-entra-folio linear both;
-      animation-timeline: view(block);
-      animation-range: entry 12% entry 50%;
-    }
-  }
-}
-@keyframes tj-entra-folio {
-  from {
-    opacity: 0;
-    transform: translate3d(10px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* CAPÍTULO — desarrolla una idea. El folio es un ordinal romano en la
-   serif del display, del tamaño de un titular: la página se abre como
-   se abre un capítulo. */
-.tj-cabecera[data-tono="capitulo"] {
-  --filete-ancho: 4rem;
+  padding-top: clamp(7.5rem, 13vh, 9.5rem);
+  padding-bottom: clamp(3rem, 6vw, 4.5rem);
   --medida: 62ch;
 }
-.tj-cabecera[data-tono="capitulo"] .tj-folio {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(3rem, 5vw, 5.5rem);
-  letter-spacing: -0.03em;
-}
-
-/* INSTRUMENTO — se usa, no se lee. El folio va monoespaciado y entre
-   corchetes, como la referencia de una pieza en un despiece, y el
-   filete es más largo y más marcado: una herramienta se presenta con
-   su regla al lado. */
-.tj-cabecera[data-tono="instrumento"] {
-  --filete-ancho: 7rem;
-  --medida: 58ch;
-}
-.tj-cabecera[data-tono="instrumento"] .tj-filete-cabecera {
-  height: 2px;
-  background: rgb(var(--accent-base) / 0.3);
-}
-.tj-cabecera[data-tono="instrumento"] .tj-folio {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: clamp(1.1rem, 1.5vw, 1.5rem);
-  letter-spacing: 0.1em;
-}
-
-/* REGISTRO — se consulta por entradas. El folio es el RECUENTO de lo
-   que hay dentro («51», «7»), en cifras tabulares y grande: lo primero
-   que quiere saber quien llega a un índice es cuánto abarca. El filete
-   se dobla, como el encabezado de una tabla. */
-.tj-cabecera[data-tono="registro"] {
-  --filete-ancho: 5rem;
-  --medida: 60ch;
-}
-.tj-cabecera[data-tono="registro"] .tj-filete-cabecera {
-  height: 3px;
-  background: linear-gradient(
-    to bottom,
-    rgb(var(--divider) / 0.28) 0 1px,
-    transparent 1px 2px,
-    rgb(var(--divider) / 0.28) 2px 3px
-  );
-}
-.tj-cabecera[data-tono="registro"] .tj-folio {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(2.5rem, 4vw, 4rem);
-  font-weight: 500;
-}
-
-/* TARIFA — se compara. El folio es una cifra del mismo palo que los
-   precios de la tabla, para que la página entera hable en números
-   desde el margen. */
-.tj-cabecera[data-tono="tarifa"] {
-  --filete-ancho: 3rem;
-  --medida: 56ch;
-}
-.tj-cabecera[data-tono="tarifa"] .tj-folio {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
-  font-size: clamp(2.2rem, 3.4vw, 3.4rem);
-  letter-spacing: -0.02em;
-}
-
-/* DOCUMENTO — se archiva. Sin folio, con menos aire arriba y la medida
-   más estrecha del sitio. Un texto legal no necesita presentación: lo
-   único que se le pide es que se lea sin cansar y que se encuentre el
-   párrafo que se busca. */
+.tj-cabecera[data-tono="instrumento"] { --medida: 58ch; }
+.tj-cabecera[data-tono="registro"] { --medida: 60ch; }
+.tj-cabecera[data-tono="tarifa"] { --medida: 56ch; }
 .tj-cabecera[data-tono="documento"] {
-  --filete-ancho: 2rem;
-  --medida: 52ch;
-  padding-top: 6.5rem;
+  --medida: 56ch;
   padding-bottom: 2.5rem;
-}
-@media (min-width: 768px) {
-  .tj-cabecera[data-tono="documento"] {
-    padding-top: 8rem;
-    padding-bottom: 3rem;
-  }
-}
-.tj-cabecera[data-tono="documento"] .tj-filete-cabecera {
-  opacity: 0.6;
 }
 
 /* ============================================================

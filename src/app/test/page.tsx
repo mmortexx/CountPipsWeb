@@ -120,7 +120,6 @@ export function TestBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio="[ TEST ]"
         eyebrowEs="Diagnóstico"
         eyebrowEn="Diagnosis"
         titleEs="¿Qué tipo de trader eres?"
@@ -131,9 +130,8 @@ export function TestBody() {
         subtitleEn="Not a personality quiz: fifteen questions about what you actually do when the market turns. At the end, your profile across five axes and the one worth fixing first."
         breadcrumbEs="Test"
         breadcrumbEn="Quiz"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <DisciplineScore num="01" />
+      <DisciplineScore />
 
       <FinalCTANew />
     </>

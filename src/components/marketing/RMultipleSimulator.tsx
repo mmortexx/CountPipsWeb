@@ -35,7 +35,7 @@ import { computeExpectedMaxLossStreak } from "@/lib/trading/data";
  * ── Material ──────────────────────────────────────────────────────────
  * .tj-paper + .tj-paper-glow (papel translúcido cálido, halo champagne).
  */
-export function RMultipleSimulator({ num = "03" }: { num?: string }) {
+export function RMultipleSimulator() {
   const { lang } = useLang();
   const es = lang === "es";
 

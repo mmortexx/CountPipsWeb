@@ -34,11 +34,8 @@ const R_MODE_INDEX = R_BINS.findIndex((b) => b.count === R_MAX_COUNT);
  * Le siguen catálogo de métricas (4 familias) y la calculadora de
  * riesgo interactiva — esos se renderizan en sus propios componentes
  * y se montan desde la home.
- *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("04"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
  */
-export function MetricsShowcaseNew({ num = "04" }: { num?: string }) {
+export function MetricsShowcaseNew() {
   const { lang } = useLang();
   const es = lang === "es";
   return (

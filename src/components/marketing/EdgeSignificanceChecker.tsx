@@ -34,7 +34,7 @@ export { normalCdf };
  * ── Material ──────────────────────────────────────────────────────────
  * .tj-paper + .tj-paper-glow. Touch targets ≥44px. Sin overflow mobile.
  */
-export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
+export function EdgeSignificanceChecker() {
   const { lang } = useLang();
   const es = lang === "es";
   /* Espacio DURO antes del signo en espanol, pegado en ingles: la misma

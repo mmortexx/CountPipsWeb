@@ -10,11 +10,8 @@ import { fmtPct, fmtR } from "@/lib/trading/format";
  * FeaturesBento — sección `#features` del HTML. Rejilla bento con 5
  * tarjetas: calendario de P&L grande (span 7), rendimiento por hora
  * (span 5), playbooks, diario narrativo, multi-cuenta multi-activo.
- *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("03"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
  */
-export function FeaturesBento({ num = "03" }: { num?: string }) {
+export function FeaturesBento() {
   const { lang } = useLang();
   const es = lang === "es";
   const cal = getCal();

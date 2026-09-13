@@ -147,7 +147,7 @@ const FEATURES: Feature[] = [
   },
 ];
 
-export function FeatureExplorer({ num = "02" }: { num?: string }) {
+export function FeatureExplorer() {
   const { lang } = useLang();
   const es = lang === "es";
   const [selected, setSelected] = useState<Tag[]>([]);

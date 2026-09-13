@@ -98,7 +98,6 @@ export function AboutBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="II"
         eyebrowEs="Acerca de"
         eyebrowEn="About"
         titleEs="Hecho para el trader manual serio."
@@ -109,11 +108,10 @@ export function AboutBody() {
         subtitleEn="Not another SaaS. It's a native Windows app that lives on your machine, with institutional metrics and discipline measured in money."
         breadcrumbEs="Acerca de"
         breadcrumbEn="About"
-        readingTimeMin={READING_TIME_MIN}
       />
       <Story />
       <Values />
-      <SessionClock num="02" />
+      <SessionClock />
 
       <Changelog />
 

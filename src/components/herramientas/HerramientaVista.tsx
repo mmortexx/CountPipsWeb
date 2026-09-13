@@ -58,7 +58,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
 
   return (
     <>
-      <Componente num="01" />
+      <Componente />
 
       {/* Cinta de Acceso Rápido entre las 8 Herramientas */}
       <section className="border-t border-[rgb(var(--divider)/0.10)] py-4">

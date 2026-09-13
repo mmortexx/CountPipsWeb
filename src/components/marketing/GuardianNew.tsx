@@ -31,9 +31,6 @@ import { ShieldCheck, AlertTriangle, HandMetal, Timer } from "lucide-react";
  * permitido, que es exactamente lo que la sección promete que hace la
  * aplicación.
  *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("05"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
- */
 
 /** Riesgo que aporta cada contrato, en % de la cuenta. */
 const RIESGO_POR_CONTRATO = 0.5;
@@ -44,7 +41,7 @@ const CONTRATOS_AJUSTADOS = 2;
 
 type EstadoGuardian = "bloqueado" | "ajustado" | "anulado";
 
-export function GuardianNew({ num = "05" }: { num?: string }) {
+export function GuardianNew() {
   const { lang } = useLang();
   const es = lang === "es";
 

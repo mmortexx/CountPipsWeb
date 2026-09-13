@@ -271,11 +271,11 @@ describe("una sola forma de decir «todavía no»", () => {
     expect(soloCodigo(src)).not.toMatch(/variant=["']warn["']/);
   });
 
-  it("el trazo del sello es discontinuo, que es donde está el significado", () => {
+  it("el sello tiene canto propio y no atenúa lo que envuelve", () => {
     const css = cssAplicado();
     const regla = /\.sello-previsto\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
-    expect(regla, "el sello ha perdido su línea de trazos").toMatch(/border:[^;]*dashed/);
-    /* Y no atenúa lo que envuelve: lo previsto no está deshabilitado. */
+    expect(regla, "el sello ha perdido su canto").toMatch(/border:/);
+    /* Lo previsto no está deshabilitado. */
     expect(regla).not.toMatch(/opacity:\s*0?\.\d/);
   });
 });

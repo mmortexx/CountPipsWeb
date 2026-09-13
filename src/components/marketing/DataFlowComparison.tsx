@@ -25,7 +25,7 @@ import { useLang } from "@/lib/i18n";
  * ── Material ──────────────────────────────────────────────────────────
  * .tj-paper. Touch targets ≥44px. Sin overflow mobile.
  */
-export function DataFlowComparison({ num = "02" }: { num?: string }) {
+export function DataFlowComparison() {
   const { lang } = useLang();
   const es = lang === "es";
 

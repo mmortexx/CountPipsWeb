@@ -130,7 +130,6 @@ export function MetricasBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="I·a"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Métricas que separan un edge real de una racha."
@@ -141,11 +140,10 @@ export function MetricasBody() {
         subtitleEn="40+ institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R. Not pretty charts: numbers that correlate with long-term consistency."
         breadcrumbEs="Características · Métricas"
         breadcrumbEn="Features · Metrics"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <MetricsShowcaseNew num="01" />
-      <RiskCalculator num="02" />
-      <EquityProjector num="03" />
+      <MetricsShowcaseNew />
+      <RiskCalculator />
+      <EquityProjector />
 
       <Wrapped />
 

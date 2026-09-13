@@ -127,7 +127,7 @@ const MAX_OPT = 3;
  */
 const CLAVE_GUARDADO = "tj-test-disciplina-v1";
 
-export function DisciplineScore({ num = "04" }: { num?: string }) {
+export function DisciplineScore() {
   const { lang } = useLang();
   const es = lang === "es";
   const [answers, setAnswers] = useState<(number | null)[]>(QUESTIONS.map(() => null));

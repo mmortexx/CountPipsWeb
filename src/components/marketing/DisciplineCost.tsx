@@ -48,7 +48,7 @@ const PRESETS = [
  * Muestra la brecha entre operar en plan y fuera de plan, la factura
  * mensual desglosada por tipología de fallo y la fuga anual de capital.
  */
-export function DisciplineCost({ num = "05·b" }: { num?: string }) {
+export function DisciplineCost() {
   const { lang } = useLang();
   const es = lang === "es";
 

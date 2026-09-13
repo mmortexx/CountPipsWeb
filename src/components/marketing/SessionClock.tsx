@@ -67,7 +67,7 @@ const KILLZONES: Killzone[] = [
 
 type TimezoneMode = "local" | "utc" | "est" | "cet";
 
-export function SessionClock({ num = "02" }: { num?: string }) {
+export function SessionClock() {
   const { lang } = useLang();
   const es = lang === "es";
 

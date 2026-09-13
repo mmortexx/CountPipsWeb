@@ -7,11 +7,8 @@ import { Database, FileLock2, KeyRound, Check, X } from "lucide-react";
  * SecuritySection — sección `#security` del HTML. Local-first:
  * 3 tarjetas (100 % en local, archivo .sqlite, export/import)
  * + tabla comparativa "Diario en la nube vs CountPips".
- *
- * `num` — ordinal del eyebrow. Por defecto el de la home ("06"); las
- * páginas internas pasan el suyo para mantener su propia secuencia.
  */
-export function SecuritySection({ num = "06" }: { num?: string }) {
+export function SecuritySection() {
   const { lang } = useLang();
   const es = lang === "es";
   const cards = [

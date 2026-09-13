@@ -75,20 +75,14 @@ export function GlosarioBody() {
     <>
       <PageHeader
         tono="registro"
-        /* El folio de un registro es lo que contiene, y sale de la
-           lista, no de la memoria de quien lo escribió: si mañana entra
-           un término, el margen lo dice solo. */
-        folio={String(TERMINOS.length)}
         eyebrowEs="Referencia"
         eyebrowEn="Reference"
         titleEs="Glosario de trading."
         titleEn="Trading glossary."
         titleHighlightEs="de trading."
         titleHighlightEn="glossary."
-        /* La cifra sale de la lista por el mismo motivo que el folio de
-           arriba: escrita a mano decía "cincuenta y un" con cincuenta y
-           siete términos en la página, y el contador de la caja de
-           búsqueda la desmentía dos palmos más abajo. */
+        /* La cifra sale de la lista: escrita a mano llegó a contradecir
+           al contador de la caja de búsqueda. */
         subtitleEs={`${TERMINOS.length} términos, definidos como los usa alguien que opera y no como los define un diccionario. El nombre se queda en inglés a propósito: es como aparecen en tu plataforma y en cualquier comunidad.`}
         subtitleEn={`${TERMINOS.length} terms, defined the way someone who trades uses them rather than the way a dictionary does. The name stays in English on purpose: that is how they appear on your platform and in any community.`}
         breadcrumbEs="Glosario"

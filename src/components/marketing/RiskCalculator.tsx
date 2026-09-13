@@ -39,7 +39,7 @@ export const FUTURES_CONTRACTS: FuturesContract[] = [
 
 type ForexLotType = "standard" | "mini" | "micro";
 
-export function RiskCalculator({ num = "04·c" }: { num?: string }) {
+export function RiskCalculator() {
   const { lang } = useLang();
   /* Espacio duro antes del signo en espanol, pegado en ingles: la regla
      de la casa, escrita en `PCT_SEP` de lib/trading/format.ts. */

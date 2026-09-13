@@ -96,7 +96,7 @@ const CAPITAL_CHIPS = [
 
 const HORIZON_CHIPS = [1, 2, 3, 5, 10];
 
-export function EquityProjector({ num = "03" }: { num?: string }) {
+export function EquityProjector() {
   const { lang } = useLang();
   const es = lang === "es";
 

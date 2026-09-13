@@ -95,7 +95,6 @@ export function DemoBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio="[ DEMO ]"
         eyebrowEs="Demo"
         eyebrowEn="Demo"
         titleEs="La app, en tu navegador."
@@ -106,7 +105,6 @@ export function DemoBody() {
         subtitleEn="Not a video or a gallery: explore CountPips' essential workflow with sample data, no sign-up and no installation."
         breadcrumbEs="Demo"
         breadcrumbEn="Demo"
-        readingTimeMin={READING_TIME_MIN}
       />
       {/* What you can do — 6 feature cards previewing the demo */}
       <DemoCapabilities />

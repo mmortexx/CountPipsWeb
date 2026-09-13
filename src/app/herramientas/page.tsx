@@ -81,7 +81,6 @@ export function HerramientasBody() {
     <>
       <PageHeader
         tono="instrumento"
-        folio={`[ ${HERRAMIENTAS.length + 1} ]`}
         eyebrowEs="Gratis"
         eyebrowEn="Free"
         titleEs="Herramientas que hacen la cuenta por ti."

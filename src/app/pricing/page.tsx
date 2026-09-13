@@ -157,7 +157,6 @@ export function PricingBody() {
           haya que pedirla. */}
       <PageHeader
         tono="tarifa"
-        folio={String(PRECIO_CORE)}
         eyebrowEs="Precios"
         eyebrowEn="Pricing"
         titleEs="El precio, por escrito."
@@ -168,7 +167,6 @@ export function PricingBody() {
         subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
         breadcrumbEs="Precios"
         breadcrumbEn="Pricing"
-        readingTimeMin={READING_TIME_MIN}
       />
       <Pricing standalone />
       <Comparison />

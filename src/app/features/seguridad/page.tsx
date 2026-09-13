@@ -125,7 +125,6 @@ export function SeguridadBody() {
     <>
       <PageHeader
         tono="capitulo"
-        folio="I·c"
         eyebrowEs="Producto"
         eyebrowEn="Product"
         titleEs="Tus datos, 100 % en tu máquina."
@@ -136,10 +135,9 @@ export function SeguridadBody() {
         subtitleEn="No cloud, no accounts, no servers. CountPips is local-first: your trades live on your Windows, encrypted at rest, never touching anyone else's server. Privacy by design, not by configuration."
         breadcrumbEs="Características · Seguridad"
         breadcrumbEn="Features · Security"
-        readingTimeMin={READING_TIME_MIN}
       />
-      <SecuritySection num="01" />
-      <DataFlowComparison num="02" />
+      <SecuritySection />
+      <DataFlowComparison />
       <TechSpecs />
 
       <Integrations />

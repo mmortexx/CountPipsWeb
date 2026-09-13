@@ -128,10 +128,9 @@ export function FaqBody() {
         subtitleEn="Everything you need to know before trying CountPips or requesting early access. Can't find your answer? Browse the glossary or write to us."
         breadcrumbEs="FAQ"
         breadcrumbEn="FAQ"
-        readingTimeMin={READING_TIME_MIN}
       />
       <FAQ standalone />
-      <EdgeSignificanceChecker num="01" />
+      <EdgeSignificanceChecker />
       {/* `StillHaveQuestions` retirado: la página encadenaba CUATRO
           bloques seguidos diciendo lo mismo ("¿aún tienes dudas?",
           "¿no encuentras tu respuesta?", el formulario y el cierre).

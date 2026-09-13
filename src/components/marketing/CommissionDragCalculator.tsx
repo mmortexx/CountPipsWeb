@@ -130,7 +130,7 @@ const INSTRUMENT_SPECS: InstrumentConfig[] = [
   },
 ];
 
-export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
+export function CommissionDragCalculator() {
   const { lang } = useLang();
   const es = lang === "es";
 
