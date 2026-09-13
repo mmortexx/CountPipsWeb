@@ -36,16 +36,16 @@ export function HerramientasIndice() {
             className="hidden items-center gap-4 border-b border-[var(--line)] py-2.5 sm:grid sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto]"
             aria-hidden
           >
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Cód." : "Code"}
             </span>
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Instrumento" : "Instrument"}
             </span>
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Entrega" : "Output"}
             </span>
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Abrir" : "Open"}
             </span>
           </div>
@@ -145,8 +145,8 @@ export function HerramientasIndice() {
               un descargo de responsabilidad. */}
           <div className="mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 sm:flex-row sm:gap-5">
             <span
-              className="shrink-0 font-mono text-[11px] uppercase"
-              style={{ letterSpacing: "0.08em", color: "rgb(var(--sig-green))" }}
+              className="shrink-0 tnum text-[12px]"
+              style={{ color: "rgb(var(--sig-green))" }}
             >
               {es ? "Sin servidor" : "No server"}
             </span>

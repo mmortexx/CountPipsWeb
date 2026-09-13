@@ -73,7 +73,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
               animación de la banda y se desplazaba sola hasta sacarse de
               la vista. Ver el comentario del bloque en globals.css. */}
           <div className="tj-fila-sigue flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-            <span className="text-[12px] font-mono text-tertiary uppercase tracking-wider whitespace-nowrap pr-2">
+            <span className="text-[12px] tnum text-tertiary whitespace-nowrap pr-2">
               {es ? "Herramientas:" : "Tools:"}
             </span>
             {HERRAMIENTAS.map((h, i) => {

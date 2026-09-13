@@ -62,7 +62,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         "Experimentos con validación estadística",
         "Módulo fiscal y página Negocio",
         "API local",
-        "Alertas y análisis institucional de Mercados",
+        "Alertas de mercado, curva de tipos y fortaleza de divisas",
       ]
     : [
         "Everything in Core",
@@ -72,7 +72,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         "Experiments with statistical validation",
         "Tax module and Business page",
         "Local API",
-        "Markets alerts and institutional analysis",
+        "Market alerts, yield curve and currency strength",
       ];
 
   const plans: Plan[] = [

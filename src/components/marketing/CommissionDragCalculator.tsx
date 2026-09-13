@@ -200,12 +200,12 @@ export function CommissionDragCalculator() {
       : 40;
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.08)]">
+    <section className="section-tight">
       <div className="tj-container">
         {/* Cabecera */}
         <div className="inline-flex items-center gap-3 mb-5">
           <span className="eyebrow">
-            {es ? "ANÁLISIS CUANTITATIVO DE COSTES" : "QUANTITATIVE COST ANALYSIS"}
+            {es ? "Calculadora de costes" : "Cost calculator"}
           </span>
         </div>
 
@@ -215,23 +215,23 @@ export function CommissionDragCalculator() {
             <h2 className="font-serif text-3xl md:text-4xl text-primary font-normal tracking-tight">
               {es ? (
                 <>
-                  La factura oculta de tus <span className="text-[rgb(var(--accent-base))]">comisiones</span>.
+                  Lo que se queda <span className="text-gradient">por el camino.</span>
                 </>
               ) : (
                 <>
-                  The hidden drag of your <span className="text-[rgb(var(--accent-base))]">commissions</span>.
+                  What stays <span className="text-gradient">along the way.</span>
                 </>
               )}
             </h2>
             <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed max-w-xl">
               {es
-                ? "En scalping e intradía, las comisiones de la CME y el deslizamiento pueden absorber entre el 15 % y el 40 % de tus ganancias brutas. Selecciona tu instrumento y comprueba el impacto exacto en tu balance anual."
-                : "In scalping and intraday trading, CME fees and slippage can absorb between 15% and 40% of gross profits. Select your instrument and check the exact impact on your annual bottom line."}
+                ? "En scalping e intradía, comisiones y deslizamiento se llevan una parte de cada operación. Elige tu instrumento y mira cuánto suman en un año."
+                : "In scalping and intraday trading, fees and slippage take a share of every trade. Pick your instrument and see what they add up to in a year."}
             </p>
 
             {/* Selector de Instrumentos */}
             <div className="mt-6">
-              <label className="block text-xs uppercase tracking-wider text-tertiary mb-2 font-mono">
+              <label className="block text-[12px] text-tertiary mb-2 tnum">
                 {es ? "Instrumento de operativa" : "Trading instrument"}
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -240,14 +240,15 @@ export function CommissionDragCalculator() {
                     key={item.id}
                     type="button"
                     onClick={() => handleSelectInstrument(item.id)}
-                    className={`h-10 px-3 rounded-[4px] text-xs font-semibold transition-all text-left flex items-center justify-between border ${
+                    aria-pressed={selectedInstId === item.id}
+                    className={`h-10 px-3 rounded-[10px] text-[13px] font-semibold transition-colors text-left flex items-center justify-between ${
                       selectedInstId === item.id
-                        ? "border-[rgb(var(--accent-base))] bg-[var(--chip)] text-primary"
-                        : "border-[rgb(var(--divider)/0.15)] bg-[var(--surface-1)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
+                        ? "bg-[var(--ink)] text-[var(--bg)]"
+                        : "bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"
                     }`}
                   >
-                    <span className="font-mono">{item.id}</span>
-                    <span className="text-[11px] text-tertiary">{item.category}</span>
+                    <span className="tnum">{item.id}</span>
+                    <span className={`text-[12px] font-normal ${selectedInstId === item.id ? "opacity-75" : "text-tertiary"}`}>{item.category}</span>
                   </button>
                 ))}
               </div>
@@ -255,12 +256,12 @@ export function CommissionDragCalculator() {
 
             {/* Sliders de Entrada */}
             <div className="mt-6 space-y-4">
-              <div className="tj-paper p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] space-y-3">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-secondary font-medium">
-                    {es ? "Contratos / Lotes por trade:" : "Contracts / Lots per trade:"}
+                    {es ? "Contratos o lotes por operación" : "Contracts or lots per trade"}
                   </span>
-                  <span className="font-mono font-bold text-primary tnum">{contracts}</span>
+                  <span className="tnum font-bold text-primary">{contracts}</span>
                 </div>
                 <input
                   type="range"
@@ -275,12 +276,12 @@ export function CommissionDragCalculator() {
                 />
               </div>
 
-              <div className="tj-paper p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] space-y-3">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-secondary font-medium">
-                    {es ? "Operaciones al mes:" : "Trades per month:"}
+                    {es ? "Operaciones al mes" : "Trades per month"}
                   </span>
-                  <span className="font-mono font-bold text-primary tnum">{monthlyTrades} trades</span>
+                  <span className="tnum font-semibold text-primary">{monthlyTrades}</span>
                 </div>
                 <input
                   type="range"
@@ -297,14 +298,14 @@ export function CommissionDragCalculator() {
 
               {/* Los limites del recorrido salen a variables porque ahora
                   los usa tambien `--pct`, el relleno de la pista. */}
-              <div className="tj-paper p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] space-y-3">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-secondary font-medium">
                     {es
-                      ? `Ganancia media esperada (${inst.unitNameEs}):`
-                      : `Expected average gain (${inst.unitNameEn}):`}
+                      ? `Ganancia media esperada (${inst.unitNameEs})`
+                      : `Expected average gain (${inst.unitNameEn})`}
                   </span>
-                  <span className="font-mono font-bold text-primary tnum">
+                  <span className="tnum font-bold text-primary">
                     +{targetUnits} {es ? inst.unitNameEs : inst.unitNameEn}
                   </span>
                 </div>
@@ -326,26 +327,26 @@ export function CommissionDragCalculator() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
+                <div className="rounded-[10px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
                   <span className="text-[12px] text-tertiary block mb-1">
-                    {es ? "Comisión Round-Turn ($):" : "Round-Turn Fee ($):"}
+                    {es ? "Comisión ida y vuelta" : "Round-turn fee"}
                   </span>
                   <div className="flex items-center gap-1">
-                    <span className="text-sm font-mono text-secondary">$</span>
+                    <span className="text-sm tnum text-secondary">$</span>
                     <input
                       type="number"
                       step="0.05"
                       min="0"
                       value={customCommission}
                       onChange={(e) => setCustomCommission(Math.max(0, Number(e.target.value)))}
-                      className="w-full bg-transparent font-mono text-sm text-primary font-semibold outline-none"
+                      className="w-full bg-transparent tnum text-sm text-primary font-semibold outline-none"
                     />
                   </div>
                 </div>
 
-                <div className="p-3 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
+                <div className="rounded-[10px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
                   <span className="text-[12px] text-tertiary block mb-1">
-                    {es ? "Deslizamiento (Ticks medio):" : "Slippage (Avg ticks):"}
+                    {es ? "Deslizamiento medio" : "Average slippage"}
                   </span>
                   <div className="flex items-center gap-1">
                     <input
@@ -355,9 +356,9 @@ export function CommissionDragCalculator() {
                       max="10"
                       value={slippageTicks}
                       onChange={(e) => setSlippageTicks(Math.max(0, Number(e.target.value)))}
-                      className="w-full bg-transparent font-mono text-sm text-primary font-semibold outline-none"
+                      className="w-full bg-transparent tnum text-sm text-primary font-semibold outline-none"
                     />
-                    <span className="text-xs font-mono text-tertiary">ticks</span>
+                    <span className="text-xs tnum text-tertiary">ticks</span>
                   </div>
                 </div>
               </div>
@@ -365,60 +366,60 @@ export function CommissionDragCalculator() {
           </div>
 
           {/* Columna Derecha: Tarjeta de Resultados */}
-          <div className="tj-paper p-6 sm:p-7 rounded-[4px] border border-[rgb(var(--divider)/0.16)] bg-[var(--surface-1)] sticky top-24">
-            <span className="text-xs font-mono uppercase tracking-wider text-tertiary block mb-3">
-              {es ? "DESGLOSE FINANCIERO ANUAL" : "ANNUAL FINANCIAL BREAKDOWN"}
+          <div className="rounded-[16px] bg-[var(--surface)] p-6 sm:p-7 lg:sticky lg:top-24">
+            <span className="text-[13px] font-medium text-secondary block mb-4">
+              {es ? "En un año" : "Over a year"}
             </span>
 
             {/* P&L Neto vs Bruto */}
-            <div className="space-y-3 pb-5 border-b border-[rgb(var(--divider)/0.12)]">
+            <div className="space-y-3 pb-5 border-b border-[var(--line)]">
               <div>
-                <span className="text-xs text-secondary">{es ? "P&L Bruto Anual:" : "Annual Gross P&L:"}</span>
-                <div className="text-xl font-mono text-primary font-medium tnum">
+                <span className="text-xs text-secondary">{es ? "Resultado bruto" : "Gross P&L"}</span>
+                <div className="text-xl tnum text-primary font-medium">
                   +{fmtMoney(grossAnnual, lang, { decimals: 0 })}
                 </div>
               </div>
 
               <div>
-                <span className="text-xs text-secondary font-semibold">
-                  {es ? "P&L Neto Real en Cuenta:" : "Real Net P&L in Account:"}
+                <span className="text-xs text-secondary">
+                  {es ? "Lo que queda en la cuenta" : "What stays in the account"}
                 </span>
-                <div className="text-3xl font-mono font-bold text-[rgb(var(--pnl-pos))] tnum">
+                <div className="text-3xl tnum font-semibold text-[rgb(var(--pnl-pos))]">
                   +{fmtMoney(netAnnual, lang, { decimals: 0 })}
                 </div>
               </div>
             </div>
 
             {/* Matriz de Fuga por Costes */}
-            <div className="py-4 space-y-2.5 border-b border-[rgb(var(--divider)/0.12)] text-xs">
+            <div className="py-4 space-y-2.5 border-b border-[var(--line)] text-xs">
               <div className="flex items-center justify-between">
-                <span className="text-secondary">{es ? "Comisiones CME / Bróker (año):" : "CME / Broker Fees (yr):"}</span>
-                <span className="font-mono font-semibold text-[rgb(var(--pnl-neg))] tnum">
+                <span className="text-secondary">{es ? "Comisiones" : "Fees"}</span>
+                <span className="tnum font-semibold text-[rgb(var(--pnl-neg))]">
                   −{fmtMoney(totalCommissionsMonthly * 12, lang, { decimals: 0 })}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-secondary">{es ? "Coste por Deslizamiento (año):" : "Slippage Friction (yr):"}</span>
-                <span className="font-mono font-semibold text-[rgb(var(--pnl-neg))] tnum">
+                <span className="text-secondary">{es ? "Deslizamiento" : "Slippage"}</span>
+                <span className="tnum font-semibold text-[rgb(var(--pnl-neg))]">
                   −{fmtMoney(totalSlippageMonthly * 12, lang, { decimals: 0 })}
                 </span>
               </div>
-              <div className="flex items-center justify-between pt-1 border-t border-[rgb(var(--divider)/0.08)]">
-                <span className="font-semibold text-primary">{es ? "Fricción Total Anual:" : "Total Annual Drag:"}</span>
-                <span className="font-mono font-bold text-[rgb(var(--pnl-neg))] tnum">
+              <div className="flex items-center justify-between pt-2 border-t border-[var(--line)]">
+                <span className="font-semibold text-primary">{es ? "Coste total" : "Total cost"}</span>
+                <span className="tnum font-bold text-[rgb(var(--pnl-neg))]">
                   −{fmtMoney(totalCostAnnual, lang, { decimals: 0 })}
                 </span>
               </div>
             </div>
 
             {/* Indicadores Clave: Drag %, Break-Even Ticks y Win Rate Exigido */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-4">
-              <div className="p-2.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 pt-4">
+              <div className="border-t border-[var(--line)] pt-3 sm:border-t-0 sm:pt-0">
                 <span className="text-[12px] text-tertiary block mb-1">
-                  {es ? "Arrastre de Costes:" : "Fee Drag %:"}
+                  {es ? "Parte de la ganancia" : "Share of profit"}
                 </span>
                 <span
-                  className={`text-base font-mono font-bold tnum ${
+                  className={`text-base tnum font-bold ${
                     costDragPct > 30
                       ? "text-[rgb(var(--pnl-neg))]"
                       : costDragPct > 15
@@ -433,23 +434,23 @@ export function CommissionDragCalculator() {
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+              <div className="border-t border-[var(--line)] pt-3 sm:border-t-0 sm:pt-0">
                 <span className="text-[12px] text-tertiary block mb-1">
-                  {es ? "Break-even Ticks:" : "Break-even Ticks:"}
+                  {es ? "Ticks para cubrir costes" : "Ticks to cover costs"}
                 </span>
-                <span className="text-base font-mono font-bold text-primary tnum">
+                <span className="text-base tnum font-bold text-primary">
                   {fmtNum(breakEvenTicksPerTrade, lang, 2)}
                 </span>
-                <span className="text-[11px] text-tertiary block mt-0.5 font-mono">
+                <span className="text-[11px] text-tertiary block mt-0.5 tnum">
                   {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn}
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+              <div className="border-t border-[var(--line)] pt-3 sm:border-t-0 sm:pt-0">
                 <span className="text-[12px] text-tertiary block mb-1">
-                  {es ? "Win Rate Exigido:" : "Required BE Win Rate:"}
+                  {es ? "Win rate para no perder" : "Break-even win rate"}
                 </span>
-                <span className="text-base font-mono font-bold text-[rgb(var(--accent-base))] tnum">
+                <span className="text-base tnum font-bold text-primary">
                   {fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
                 <span className="text-[11px] text-tertiary block mt-0.5">
@@ -459,7 +460,7 @@ export function CommissionDragCalculator() {
             </div>
 
             {/* Diagnóstico Institucional */}
-            <div className="mt-5 p-3.5 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-2)]">
+            <div className="mt-5 pt-4 border-t border-[var(--line)]">
               <div className="flex items-start gap-2">
                 {costDragPct > 25 ? (
                   <AlertTriangle size={16} className="text-[rgb(var(--pnl-neg))] shrink-0 mt-0.5" />
@@ -469,11 +470,11 @@ export function CommissionDragCalculator() {
                 <p className="text-[13px] text-secondary leading-relaxed m-0">
                   {costDragPct > 25
                     ? es
-                      ? "Alerta de micro-drag: Estás cediendo más del 25 % de tu ganancia al bróker. Considera ampliar tu target en múltiplos de R o escalar a contratos mini para reducir el ratio comisiones/beneficio."
-                      : "Micro-drag alert: You are yielding over 25% of gross profit to fees. Consider widening your target in R-multiples or scaling to mini contracts to improve fee efficiency."
+                      ? "Más del 25 % de tu ganancia bruta se va en costes. Con este objetivo por operación, comisiones y deslizamiento pesan tanto como parte de tu ventaja."
+                      : "Over 25% of your gross profit goes to costs. With this target per trade, fees and slippage weigh as much as part of your edge."
                     : es
-                    ? "Estructura de costes saludable: Tu ganancia por operación absorbe cómodamente las tarifas de intercambio y el deslizamiento sin erosionar tu ventaja estadística."
-                    : "Healthy cost structure: Your average gain comfortably absorbs exchange fees and slippage without eroding your statistical edge."}
+                    ? "Con estos números, la ganancia por operación cubre comisiones y deslizamiento con margen."
+                    : "With these numbers, the gain per trade covers fees and slippage with room to spare."}
                 </p>
               </div>
             </div>

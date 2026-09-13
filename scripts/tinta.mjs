@@ -202,7 +202,7 @@ for (const tema of ["dark", "light"]) {
   await p.goto(base + "/herramientas/proyector-de-capital/", { waitUntil: "domcontentloaded" });
   await p.waitForTimeout(2500);
   await fijaTema();
-  const copiar = p.locator("button").filter({ hasText: /Copiar Resumen/ }).first();
+  const copiar = p.locator("button").filter({ hasText: /Copiar resumen/ }).first();
   await copiar.scrollIntoViewIfNeeded().catch(() => {});
   await copiar.click().catch(() => {});
   await p.waitForTimeout(500);

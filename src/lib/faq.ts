@@ -61,7 +61,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
-    a: "Core incluye el diario, las métricas, el calendario y la curva de equity, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y 2 cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y las alertas y el análisis institucional del terminal de Mercados.",
+    a: "Core incluye el diario, las métricas, el calendario y la curva de equity, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y 2 cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.",
   },
   {
     q: "¿Cómo funcionará la privacidad de mis datos?",
@@ -116,7 +116,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What's the difference between Core and Pro?",
-    a: "Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and 2 trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API, and the Markets terminal alerts and institutional analysis.",
+    a: "Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and 2 trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.",
   },
   {
     q: "How will my data stay private?",

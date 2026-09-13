@@ -1888,93 +1888,66 @@ textarea:focus-visible,
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  border: 1px solid rgb(var(--divider) / 0.18);
-  border-radius: 2px;
-  overflow-clip-margin: 0;
-  overflow: clip;
-  background: color-mix(in srgb, var(--raised) 45%, transparent);
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ink) 5.5%, transparent);
 }
 .tj-segmentado > * {
-  /* 32 px de alto: por encima del mínimo de 24 que pide la norma para un
-     objetivo, y a la altura del resto de controles de la ficha. */
-  min-height: 32px;
+  min-height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  padding: 0 0.5rem;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  line-height: 1.1;
+  padding: 0 0.625rem;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
   color: var(--ink-2);
   cursor: pointer;
   text-align: center;
   transition: background-color 0.16s var(--ease-suave),
-              color 0.16s var(--ease-suave);
-}
-.tj-segmentado > * + * {
-  border-left: 1px solid rgb(var(--divider) / 0.18);
+              color 0.16s var(--ease-suave),
+              box-shadow 0.16s var(--ease-suave);
 }
 
-/* ── CON EL DEDO, 44 PX ───────────────────────────────────────────────
-   Los 32 px de arriba son la altura correcta con un ratón: pasan el
-   mínimo de 24 px de la norma y mantienen la densidad de una ficha de
-   herramienta. Con un dedo no bastan, y estos grupos están en las
-   calculadoras, que es justo donde se toca más.
-
-   La pregunta es `pointer: coarse` y no el ancho de la ventana: lo que
-   decide si hacen falta 44 px es quién apunta, no cuánto mide la
-   pantalla. Es el mismo criterio que `.toque-comodo`, y arreglado aquí
-   vale para los cuarenta y un controles de las tres calculadoras a la
-   vez en lugar de componente por componente. */
+/* Con el dedo, 44 px: decide quién apunta, no el ancho de pantalla. */
 @media (pointer: coarse) {
   .tj-segmentado > * {
     min-height: 44px;
   }
 }
 
-/* ── VARIANTE APILADA ────────────────────────────────────────────────
-   Para los grupos cuyas etiquetas son frases —«Acciones / Cripto»,
-   «Conservador · 0,50 %»— y no caben en fila en un móvil. Con
-   `flex-wrap`, que es lo que había, el último se quedaba solo en una
-   segunda fila y con otro ancho: tres opciones que son lo mismo se
-   veían como dos cosas y una suelta.
-
-   Apiladas, cada opción ocupa el ancho completo y el filete que las
-   separa pasa de vertical a horizontal. De `sm` para arriba vuelven a
-   la fila, donde sí caben. */
+/* Etiquetas largas: apiladas en móvil, en fila desde sm. */
 .tj-segmentado-apila {
   grid-auto-flow: row;
-}
-.tj-segmentado-apila > * + * {
-  border-left: none;
-  border-top: 1px solid rgb(var(--divider) / 0.18);
 }
 @media (min-width: 640px) {
   .tj-segmentado-apila {
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
   }
-  .tj-segmentado-apila > * + * {
-    border-top: none;
-    border-left: 1px solid rgb(var(--divider) / 0.18);
-  }
 }
 .tj-segmentado > *:hover:not([aria-pressed="true"]):not([data-activo="true"]) {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
   color: var(--ink);
 }
 .tj-segmentado > *:focus-visible {
   outline: none;
-  /* Por dentro, para que el foco no se coma el filete del vecino. */
   box-shadow: inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
   color: var(--ink);
 }
 .tj-segmentado > [aria-pressed="true"],
 .tj-segmentado > [data-activo="true"] {
-  background: var(--ink);
-  color: var(--raised);
-  font-weight: 600;
+  background: var(--raised);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(11, 15, 20, 0.08), 0 0 0 0.5px rgba(11, 15, 20, 0.06);
+}
+.dark .tj-segmentado > [aria-pressed="true"],
+.dark .tj-segmentado > [data-activo="true"] {
+  background: color-mix(in srgb, var(--ink) 14%, var(--raised));
+  box-shadow: none;
 }
 
 /* ============================================================

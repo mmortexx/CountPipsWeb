@@ -181,7 +181,7 @@ export function DisciplineCost() {
 
             {/* Presets rápidos */}
             <div className="mb-6">
-              <span className="block text-[12px] uppercase tracking-[0.08em] text-tertiary mb-2">
+              <span className="block text-[12px] text-tertiary mb-2">
                 {es ? "Escenarios rápidos" : "Quick scenarios"}
               </span>
               <div className="flex flex-wrap gap-2">
@@ -193,10 +193,10 @@ export function DisciplineCost() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => aplicarPreset(p)}
-                      className={`toque-comodo h-8 px-3 rounded-[4px] text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                      className={`toque-comodo h-8 px-3 rounded-[8px] text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                         active
                           ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold shadow-sm"
-                          : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-secondary hover:text-primary"
+                          : "border border-transparent bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-secondary hover:text-primary"
                       }`}
                     >
                       {es ? p.nameEs : p.nameEn}
@@ -272,7 +272,7 @@ export function DisciplineCost() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[rgb(var(--divider)/0.08)]">
                 <div>
-                  <label htmlFor="disc-inplan" className="block text-[12px] uppercase tracking-wider text-tertiary mb-1">
+                  <label htmlFor="disc-inplan" className="block text-[12px] text-tertiary mb-1">
                     {es ? "Ganancia media en plan ($/op.)" : "Avg win in-plan ($/trade)"}
                   </label>
                   <div className="relative">
@@ -290,7 +290,7 @@ export function DisciplineCost() {
                 </div>
 
                 <div>
-                  <label htmlFor="disc-offplan" className="block text-[12px] uppercase tracking-wider text-tertiary mb-1">
+                  <label htmlFor="disc-offplan" className="block text-[12px] text-tertiary mb-1">
                     {es ? "Resultado medio fuera de plan ($)" : "Avg result off-plan ($)"}
                   </label>
                   <div className="relative">
@@ -315,10 +315,10 @@ export function DisciplineCost() {
             >
               <div className="overflow-x-auto custom-scroll">
                 <div className="grid grid-cols-4 min-w-[400px] border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
-                  <span className="tnum text-[11px] uppercase tracking-[0.08em]">{es ? "Modo" : "Mode"}</span>
-                  <span className="tnum text-right text-[11px] uppercase tracking-[0.08em]">{es ? "Ops" : "Trades"}</span>
-                  <span className="tnum text-right text-[11px] uppercase tracking-[0.08em]">{es ? "Expectancy" : "Expectancy"}</span>
-                  <span className="tnum text-right text-[11px] uppercase tracking-[0.08em]">{es ? "Neto" : "Net P&L"}</span>
+                  <span className="tnum text-[12px]">{es ? "Modo" : "Mode"}</span>
+                  <span className="tnum text-right text-[12px]">{es ? "Ops" : "Trades"}</span>
+                  <span className="tnum text-right text-[12px]">{es ? "Expectancy" : "Expectancy"}</span>
+                  <span className="tnum text-right text-[12px]">{es ? "Neto" : "Net P&L"}</span>
                 </div>
 
                 {/* Fila En Plan */}
@@ -375,7 +375,7 @@ export function DisciplineCost() {
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.08)]">
               <div>
-                <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary block">
+                <span className="tnum text-[12px] font-semibold text-tertiary block">
                   {es ? "Factura de indisciplina" : "Indiscipline invoice"}
                 </span>
                 <span className="text-xs text-secondary">
@@ -383,7 +383,7 @@ export function DisciplineCost() {
                 </span>
               </div>
               <span
-                className="text-[12px] px-2.5 py-1 rounded-[4px] bg-[var(--chip)] text-secondary border border-[var(--chip-line)] self-start sm:self-auto"
+                className="text-[12px] px-2.5 py-1 rounded-[8px] bg-[var(--chip)] text-secondary border border-transparent self-start sm:self-auto"
               >
                 {es ? "Estimación" : "Estimate"}
               </span>
@@ -439,9 +439,9 @@ export function DisciplineCost() {
               {/* El total. El rotulo es la unica columna elastica y la
                   cifra lleva `clamp`, asi que a 320 px encoge en vez de
                   salirse: era un `text-2xl` fijo y se iba 16 px fuera. */}
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[4px] bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_5%,transparent)] p-3">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[8px] bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_5%,transparent)] p-3">
                 <div className="min-w-0">
-                  <span className="block text-xs font-semibold uppercase leading-[1.25] tracking-wider text-[rgb(var(--pnl-neg))] [overflow-wrap:anywhere]">
+                  <span className="block text-[12px] font-semibold leading-[1.25] text-[rgb(var(--pnl-neg))] [overflow-wrap:anywhere]">
                     {es ? "Fuga mensual total" : "Total monthly leak"}
                   </span>
                   <span className="block text-[13px] leading-[1.3] text-tertiary [overflow-wrap:anywhere]">
@@ -449,7 +449,7 @@ export function DisciplineCost() {
                   </span>
                 </div>
                 <span
-                  className="tnum whitespace-nowrap font-mono font-semibold text-[rgb(var(--pnl-neg))]"
+                  className="tnum whitespace-nowrap font-semibold text-[rgb(var(--pnl-neg))]"
                   style={{ fontSize: "clamp(1.05rem, 4.6vw, 1.5rem)" }}
                 >
                   −{fmtMoney(totalLeakMonthly, lang)}
@@ -468,14 +468,14 @@ export function DisciplineCost() {
                     - cuerpo con `clamp`, que encoge antes que desbordar.
                   El parentesis del rotulo pasa a segunda linea: era parte
                   del titular y lo partia en cualquier ancho estrecho. */}
-              <div className="rounded-[4px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)] p-3">
-                <span className="block text-xs font-semibold uppercase tracking-wider text-primary">
+              <div className="rounded-[8px] border border-transparent bg-[rgb(var(--divider)/0.03)] p-3">
+                <span className="block text-[12px] font-semibold text-primary">
                   {es ? "Capital fugado acumulado" : "Cumulative leaked capital"}
                 </span>
                 <span className="mb-2.5 block text-[12px] text-tertiary">
                   {es ? "Supuesto: reinvertido al 8 % anual" : "Assumption: reinvested at 8 % p.a."}
                 </span>
-                <div className="grid grid-cols-3 gap-2 text-center font-mono">
+                <div className="grid grid-cols-3 gap-2 text-center tnum">
                   {([1, 3, 5] as const).map((yr) => {
                     const months = yr * 12;
                     const rMonthly = 0.08 / 12;
@@ -507,12 +507,12 @@ export function DisciplineCost() {
 
             {/* Plan de Recuperación con el Guardián */}
             {totalLeakMonthly > 0 && (
-              <div className="mt-4 p-3.5 rounded-[4px] border border-[var(--chip-line)] bg-[rgb(var(--accent-base)/0.04)]">
+              <div className="mt-4 p-3.5 rounded-[8px] border border-transparent bg-[rgb(var(--accent-base)/0.04)]">
                 <div className="flex items-center justify-between gap-2 mb-2">
-                  <span className="text-xs font-semibold text-[rgb(var(--accent-base))] uppercase tracking-wider">
+                  <span className="text-[12px] font-semibold text-[rgb(var(--accent-base))]">
                     {es ? "Si evitaras parte de la fuga" : "If you avoided part of the leak"}
                   </span>
-                  <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[4px] bg-[var(--chip)] text-[rgb(var(--accent-base))]">
+                  <span className="text-[11px] tnum font-bold px-2 py-0.5 rounded-[8px] bg-[var(--chip)] text-[rgb(var(--accent-base))]">
                     {es ? "Escenario" : "Scenario"}
                   </span>
                 </div>
@@ -524,14 +524,14 @@ export function DisciplineCost() {
                 {/* Mismo tratamiento que la proyeccion: el «al mes» baja a
                     su propia linea en vez de alargar una cifra que ya no
                     cabia a 320 px. */}
-                <div className="grid grid-cols-2 gap-2 text-center font-mono">
+                <div className="grid grid-cols-2 gap-2 text-center tnum">
                   {[0.5, 0.8].map((f) => (
                     <div
                       key={f}
                       title={`+${fmtMoney(totalLeakMonthly * f, lang)}`}
                       className="caja-cifra min-w-0 rounded-[8px] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
                     >
-                      <span className="block text-[11px] uppercase text-tertiary">
+                      <span className="block text-[12px] text-tertiary">
                         {es ? `Evitando el ${f * 100} %` : `Avoiding ${f * 100}%`}
                       </span>
                       <span
@@ -540,7 +540,7 @@ export function DisciplineCost() {
                       >
                         +{corto(totalLeakMonthly * f).replace("−", "")}
                       </span>
-                      <span className="block text-[11px] uppercase tracking-wider text-tertiary">
+                      <span className="block text-[12px] text-tertiary">
                         {es ? "al mes" : "per month"}
                       </span>
                     </div>
@@ -563,7 +563,7 @@ export function DisciplineCost() {
                 {copied ? (es ? "¡Resumen copiado!" : "Summary copied!") : (es ? "Copiar este desglose" : "Copy breakdown")}
               </button>
 
-              <span className="text-[12px] text-tertiary font-mono">
+              <span className="text-[12px] text-tertiary tnum">
                 {es ? "100 % privado en tu navegador" : "100% private in browser"}
               </span>
             </div>
