@@ -72,18 +72,18 @@ export function GlosarioIndice() {
                   ? "Busca por nombre o por lo que significa…"
                   : "Search by name or by what it means…"
               }
-              className="h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]"
+              className="h-12 w-full rounded-full border border-transparent bg-[var(--surface)] px-5 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[var(--line-2)] focus:bg-[var(--bg)]"
             />
             {/* Category Pills */}
-            <div className="flex flex-wrap items-center gap-1.5 mt-3.5">
+            <div className="flex flex-wrap items-center gap-1 mt-4">
               <button
                 type="button"
                 aria-pressed={activeCategory === "all"}
                 onClick={() => setActiveCategory("all")}
-                className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[4px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 py-2.5 sm:py-0 rounded-full text-[13px] font-medium inline-flex items-center justify-center transition-all ${
                   activeCategory === "all"
-                    ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
-                    : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
+                    ? "bg-[var(--ink)] text-[var(--bg)]"
+                    : "text-secondary hover:text-primary"
                 }`}
               >
                 {es ? "Todas las familias" : "All families"}
@@ -96,10 +96,10 @@ export function GlosarioIndice() {
                     type="button"
                     aria-pressed={activeCategory === cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[4px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                    className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 py-2.5 sm:py-0 rounded-full text-[13px] font-medium inline-flex items-center justify-center transition-all ${
                       activeCategory === cat
-                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
-                        : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
+                        ? "bg-[var(--ink)] text-[var(--bg)]"
+                        : "text-secondary hover:text-primary"
                     }`}
                   >
                     {es ? meta.es : meta.en}
@@ -134,7 +134,7 @@ export function GlosarioIndice() {
                   : "Nothing by that name. Try a word from the definition."}
               </p>
             ) : (
-              <ul className="m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
+              <ul className="m-0 border-t border-[var(--line)] p-0">
                 {filtrados.map((t) => (
                   <TarjetaTermino key={t.slug} termino={t} es={es} />
                 ))}
@@ -154,8 +154,7 @@ export function GlosarioIndice() {
                   <section id={cat} className="scroll-mt-28">
                     <div className="flex items-baseline gap-3">
                       <span
-                        className="tnum text-[13px] font-semibold"
-                        style={{ color: "rgb(var(--accent-base))" }}
+                        className="tnum text-[13px] text-tertiary"
                       >
                         {String(i + 1).padStart(2, "0")}
                       </span>
@@ -169,7 +168,7 @@ export function GlosarioIndice() {
                     <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-secondary">
                       {es ? meta.descEs : meta.descEn}
                     </p>
-                    <ul className="mt-6 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
+                    <ul className="mt-6 border-t border-[var(--line)] p-0">
                       {lista.map((t) => (
                         <TarjetaTermino key={t.slug} termino={t} es={es} />
                       ))}
@@ -193,18 +192,18 @@ function TarjetaTermino({
   es: boolean;
 }) {
   return (
-    <li className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
+    <li className="border-b border-[var(--line)]">
       <Link
         href={`/glosario/${termino.slug}`}
-        className="group grid min-h-[56px] grid-cols-1 items-baseline gap-1 px-4 py-3.5 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6"
+        className="group grid min-h-[56px] grid-cols-1 items-baseline gap-1 py-4 transition-colors duration-150 focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6"
       >
         <span
           lang="en"
-          className="text-[15px] font-semibold tracking-tight text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
+          className="text-[15px] font-semibold tracking-tight text-primary"
         >
           {termino.term}
         </span>
-        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary">
+        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary transition-colors group-hover:text-primary">
           {es ? termino.es : termino.en}
         </span>
       </Link>

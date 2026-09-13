@@ -8,11 +8,13 @@ import { sinPrefijoEn } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { ANIO_PUBLICACION } from "@/lib/publicacion";
+import { useLente } from "@/components/tj/useLente";
 
 /**
  * Navbar — barra edge-to-edge con material de papel translúcido (e-reader).
  *
- * La barra y el cajón usan `.tj-paper-dense` (opaca, color de fondo).
+ * La barra es opaca arriba y cristal (`.tj-barra`) al desplazar; el menú de
+ * «Producto» flota en cristal y el cajón móvil sigue opaco.
  * Al hacer scroll la barra NO cambia de altura (ver `ALTURA_BARRA`).
  *
  * R28 — reescritura de la barra. Los tres problemas estructurales que
@@ -369,6 +371,8 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const lenteBarra = useLente("barra");
+  const lenteMenu = useLente("panel");
   const [mobileOpen, setMobileOpen] = useState(false);
   /* El cajón no existe hasta que alguien lo abre por primera vez, y a
      partir de ahí se queda montado para siempre.
@@ -686,17 +690,10 @@ export function Navbar() {
       <header data-navbar-root className="fixed inset-x-0 top-0 z-50">
       <nav
         aria-label={es ? "Principal" : "Main"}
-        // Superficie opaca: la altura es fija (`ALTURA_BARRA`) y al desplazar sólo cambia el canto.
-        className="tj-paper tj-paper-dense relative flex w-full items-center border-b"
-        style={{
-          height: ALTURA_BARRA,
-          borderColor: scrolled ? "var(--line)" : "transparent",
-          boxShadow: scrolled
-            ? "0 8px 24px -20px rgb(11 15 20 / 0.35)"
-            : "none",
-          transition:
-            "box-shadow 0.3s var(--ease-suave), border-color 0.3s var(--ease-suave)",
-        }}
+        ref={lenteBarra}
+        className="tj-barra relative flex w-full items-center"
+        data-cristal={scrolled ? "true" : "false"}
+        style={{ height: ALTURA_BARRA }}
       >
         {/* Rejilla de tres zonas: la navegación queda ópticamente
             centrada en la página con independencia de lo que midan la
@@ -847,6 +844,7 @@ export function Navbar() {
                   biblioteca de animación a las 155 páginas del sitio. */}
               {megaOpen && (
                   <div
+                    ref={lenteMenu}
                     role="menu"
                     aria-labelledby="navbar-producto-trigger"
                     /* Navegación con flechas. Un menú abierto tiene que
@@ -882,59 +880,17 @@ export function Navbar() {
                           actual <= 0 ? opciones.length - 1 : actual - 1;
                       opciones[siguiente]?.focus();
                     }}
-                    // T3b — el panel flota como una hoja de papel cálido
-                    // translúcida (72% surface, blur 10px, grano SVG) con
-                    // un halo champagne muy tenue en el borde superior
-                    // (.tj-paper-glow ::before). Más translúcido que el
-                    // navbar a propósito: aquí el texto es grande y el
-                    // contraste AA se preserva incluso a 72%. Se retira
-                    // el background/backdropFilter inline (mandaba el
-                    // 96% opaco previo) para que el material luzca.
-                    //
-                    // P8 — `position: "absolute"` inline es NO NEGOCIABLE.
-                    // `.tj-paper` en globals.css declara `position: relative`
-                    // (linea 3298) para que su `::before` (.tj-paper-glow)
-                    // y sus inset box-shadows se anclen al propio elemento.
-                    // Esa regla tiene la misma especificidad que la utilidad
-                    // `absolute` de Tailwind, pero cae MÁS TARDE en el
-                    // cascade (globals.css se importa después de
-                    // @tailwindcss), así que la hereda y el panel acaba
-                    // renderizándose en flujo normal — ocupando el espacio
-                    // debajo del botón en vez de flotar. El panel medía
-                    // y=-18..123 (solapando el navbar 0..56) en lugar de
-                    // y=70..211 (flotando debajo). Inline style gana a
-                    // cualquier regla externa sin `!important`, así que
-                    // este es el fix mínimo y estable: ni tocar globals.css
-                    // ni añadir `!absolute` (que rompería el patrón si
-                    // Tailwind v4 cambiara el modificador).
-                    /* `tj-paper-dense` —el papel OPACO— y no `tj-paper` a
-                       secas: este panel se abre sobre los titulares de la
-                       portada, que son de los elementos más grandes y
-                       contrastados del sitio, y a través del papel
-                       corriente se leían enteros por debajo de sus
-                       entradas. Un menú se pone delante de la página; si
-                       la deja ver, las dos compiten por el mismo sitio. */
-                    className="tj-cae tj-paper tj-paper-dense tj-paper-glow absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[4px] border p-0"
+                    // Cristal: la página se ve difuminada detrás. `position` en línea porque
+                    // una regla posterior de globals.css pisaría la utilidad `absolute`.
+                    className="tj-cae tj-cristal tj-cristal--denso absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[16px] p-0"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
                       translate: "-50% 0",
-                      borderColor: "rgb(var(--divider) / 0.14)",
-                      boxShadow:
-                        "0 1px 2px rgb(0 0 0 / 0.5), 0 20px 48px -15px rgb(0 0 0 / 0.65)",
-                      contain: "layout paint",
+                      contain: "layout",
                       willChange: "transform, opacity",
                     }}
                   >
-                    {/* Punta que ancla el panel a su disparador */}
-                    <span
-                      aria-hidden
-                      className="absolute left-1/2 -top-[6px] h-[11px] w-[11px] -translate-x-1/2 rotate-45 rounded-[4px] border-l border-t"
-                      style={{
-                        borderColor: "rgb(var(--divider) / 0.14)",
-                        background: "var(--paper-dense)",
-                      }}
-                    />
                     {(() => {
                       const fila = (item: (typeof productItems)[number]) => (
                         <Link

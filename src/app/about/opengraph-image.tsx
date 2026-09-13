@@ -1,14 +1,16 @@
-// Tarjeta Open Graph de esta ruta. El diseño se reutiliza desde la raíz.
-//
-// Las dos constantes de abajo se declaran LITERALES en cada fichero y no se
-// re-exportan con el resto: Next.js las lee del texto antes de compilar y no
-// sabe seguir una re-exportación. Estaban re-exportadas en los dieciséis
-// ficheros de tarjeta y tumbaban las dos compilaciones, oculto todo detrás
-// del error de tipos que paraba el flujo antes de llegar hasta aquí.
-//
-// `force-static` es obligatorio porque el sitio se publica como export
-// estático: sin ella, Next no sabe que la imagen puede generarse una vez
-// durante la compilación y aborta al recopilar las páginas.
+import { tarjetaSocial } from "@/lib/tarjeta-social";
+
+// Literales en cada fichero: Next las lee del texto y no sigue reexportaciones.
 export const runtime = "nodejs";
 export const dynamic = "force-static";
-export { default, alt, size, contentType } from "../opengraph-image";
+export const alt = "Acerca de — CountPips";
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+
+export default function Image() {
+  return tarjetaSocial({
+    antetitulo: "Acerca de",
+    titulo: "Hecho para el trader manual serio.",
+    subtitulo: "Por qué existe CountPips, para quién es y cómo evoluciona.",
+  });
+}

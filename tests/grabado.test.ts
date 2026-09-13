@@ -271,10 +271,12 @@ describe("una sola forma de decir «todavía no»", () => {
     expect(soloCodigo(src)).not.toMatch(/variant=["']warn["']/);
   });
 
-  it("el sello tiene canto propio y no atenúa lo que envuelve", () => {
+  it("el sello tiene tinta propia y no atenúa lo que envuelve", () => {
+    /* Desde el rediseño sin recuadros el sello es texto, no una placa: se
+       distingue por su tinta y su detalle, no por un marco. */
     const css = cssAplicado();
     const regla = /\.sello-previsto\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
-    expect(regla, "el sello ha perdido su canto").toMatch(/border:/);
+    expect(regla, "el sello ha perdido su tinta").toMatch(/color:/);
     /* Lo previsto no está deshabilitado. */
     expect(regla).not.toMatch(/opacity:\s*0?\.\d/);
   });

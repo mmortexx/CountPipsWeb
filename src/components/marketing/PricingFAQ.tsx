@@ -94,22 +94,7 @@ export function PricingFAQ() {
               : "Four quick answers about the demo, scope and early access. If anything is still unclear, email us."}
           </p>
 
-          {/* Compact reassurance row — three pills summarizing the
-              local-first, one-time payment and no-subscription promises.
-              Centered so they read as a single horizontal credential
-              strip directly under the lead. */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            {pills.map((label) => (
-              <span
-                data-entra="ciclo"
-                key={label}
-                className="inline-flex items-center gap-2 px-1 text-[13px] text-tertiary"
-              >
-                <span className="size-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" aria-hidden="true" />
-                {label}
-              </span>
-            ))}
-          </div>
+          <p className="mt-6 mb-0 text-[13px] text-tertiary">{pills.join(" · ")}</p>
         </Reveal>
 
         {/* Accordion — single tj-paper container holds all 5 items.
@@ -130,9 +115,9 @@ export function PricingFAQ() {
                   /* Mismo motivo que en FAQ.tsx: el raíl de acento es un
                      `border-left` real y no una sombra interior, que se
                      dibujaba encima del texto de la pregunta abierta. */
-                  className="border-b border-l-2 border-l-transparent border-b-[rgb(var(--divider)/0.10)] last:border-b-0 px-4 md:px-5 transition-[border-color,background-color] duration-300 data-[state=closed]:hover:bg-[rgb(var(--divider)/0.03)] data-[state=open]:border-l-[rgb(var(--accent-base))] data-[state=open]:bg-[rgb(var(--divider)/0.04)]"
+                  className="border-b border-[var(--line)]"
                 >
-                  <AccordionTrigger className="text-left text-sm font-medium text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:!text-[rgb(var(--accent-base))] [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)] data-[state=open]:text-[rgb(var(--accent-base))]">
+                  <AccordionTrigger className="text-left text-[15px] font-medium text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
                     {/* Wrap the question in a min-w-0 span so the flex
                         trigger (shadcn AccordionTrigger uses
                         flex justify-between) can wrap long questions
@@ -177,15 +162,6 @@ export function PricingFAQ() {
             desactiva todos los `[data-entra]`, así que la excepción ya
             no puede quedarse desincronizada con la animación —que es lo
             que pasaba cuando ambas se escribían por separado. */}
-        <div
-          aria-hidden="true"
-          data-entra="traza"
-          className="mt-12 h-px max-w-md mx-auto"
-          style={{
-            background: "var(--line)",
-            transformOrigin: "left center",
-          }}
-        />
       </div>
     </section>
   );

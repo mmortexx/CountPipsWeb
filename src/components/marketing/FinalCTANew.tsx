@@ -4,20 +4,24 @@ import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
+import { Escritorio } from "@/components/tj/Escritorio";
+import { useLente } from "@/components/tj/useLente";
 
-/** Cierre de página: titular grande sobre el fondo, una llamada y un enlace.
+/** Cierre de página: una lámina de cristal sobre luz difusa con el titular, una llamada y un enlace.
  *  En /demo la llamada principal pasa a ser el acceso: ya se está en la demo. */
 export function FinalCTANew({ enDemo = false }: { enDemo?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
+  const lente = useLente("panel");
   const garantias = es
     ? ["Datos de muestra", "Sin registro", "Tus datos en tu equipo"]
     : ["Sample data", "No sign-up", "Your data on your machine"];
 
   return (
     <section className="section relative">
-      <div className="tj-container">
-        <div className="tj-cierre">
+      <Escritorio curva />
+      <div className="tj-container relative">
+        <div ref={lente} className="tj-cierre tj-cristal">
           <h2 data-entra className="t-display m-0 mx-auto max-w-[18ch] text-balance">
             {es ? "Deja de operar a ciegas." : "Stop trading blind."}{" "}
             <span className="tj-cierre-tenue">{es ? "Mira cómo se mide." : "See how it is measured."}</span>
