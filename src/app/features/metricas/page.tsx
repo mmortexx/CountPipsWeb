@@ -141,7 +141,7 @@ export function MetricasBody() {
         breadcrumbEs="Características · Métricas"
         breadcrumbEn="Features · Metrics"
       />
-      <MetricsShowcaseNew />
+      <MetricsShowcaseNew enPagina />
       <RiskCalculator />
       <EquityProjector />
 

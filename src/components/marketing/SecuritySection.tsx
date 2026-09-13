@@ -8,7 +8,8 @@ import { Database, FileLock2, KeyRound, Check, X } from "lucide-react";
  * 3 tarjetas (100 % en local, archivo .sqlite, export/import)
  * + tabla comparativa "Diario en la nube vs CountPips".
  */
-export function SecuritySection() {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const cards = [
@@ -28,8 +29,8 @@ export function SecuritySection() {
       id="security"
       className="section border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
     >
-      <div className="tj-container" style={{ maxWidth: 1240 }}>
-        <div className="max-w-[760px] mx-auto text-center mb-12">
+      <div className="tj-container">
+        <div className={enPagina ? "sr-only" : "max-w-[760px] mx-auto text-center mb-12"}>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
               {es ? "SEGURIDAD" : "SECURITY"}
@@ -97,38 +98,34 @@ export function SecuritySection() {
           })}
         </div>
 
-        {/* Console de Telemetría SQLite Local */}
-        <div className="mb-14 rounded-[3px] border border-[rgb(var(--divider)/0.18)] bg-[rgb(var(--divider)/0.03)] p-5 sm:p-6 font-mono text-xs">
-          <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgb(var(--divider)/0.12)]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-[1px] bg-[rgb(var(--pnl-pos))]" aria-hidden="true" />
-              <span className="font-bold text-primary text-[12px] uppercase tracking-wider">
-                {es ? "AUDITORÍA DE INTEGRIDAD SQLite NATIVA" : "NATIVE SQLite INTEGRITY AUDIT"}
-              </span>
-            </div>
-            <span className="text-[11px] text-tertiary">
-              PRAGMA quick_check = <b className="text-[rgb(var(--pnl-pos))]">ok</b>
+        <div className="mb-14 rounded-[6px] border border-[var(--line-2)] bg-[var(--raised)] p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
+            <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+              {es ? "Ficha técnica del almacenamiento" : "Storage specification"}
             </span>
+            <span className="text-[12px] text-tertiary">{es ? "Según el código del programa" : "As implemented in the app"}</span>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-4 text-[12px]">
-            <div>
-              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Almacén en Disco" : "Disk Storage"}</span>
-              <span className="block break-all font-semibold text-primary">%LOCALAPPDATA%\CountPips\countpips.sqlite</span>
-            </div>
-            <div>
-              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Modo de Registro" : "Journal Mode"}</span>
-              <span className="text-primary font-semibold">WAL (Write-Ahead Logging 2.0)</span>
-            </div>
-            <div>
-              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Cifrado en Reposo" : "At-Rest Encryption"}</span>
-              <span className="text-primary font-semibold">AES-256-GCM + Argon2id</span>
-            </div>
-            <div>
-              <span className="text-tertiary block text-[11px] uppercase tracking-wider mb-1">{es ? "Fuga Externa" : "External Egress"}</span>
-              <span className="text-[rgb(var(--pnl-pos))] font-bold">{es ? "0,00 KB (Zero Sockets)" : "0.00 KB (Zero Sockets)"}</span>
-            </div>
-          </div>
+          <dl className="mt-4 grid grid-cols-1 gap-5 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
+            {(es
+              ? [
+                  ["Carpeta de datos", "%LOCALAPPDATA%\\CountPips"],
+                  ["Base de datos", "SQLite, un único archivo"],
+                  ["Copias de seguridad", "AES-256-GCM · PBKDF2 600.000"],
+                  ["Credenciales de bróker", "DPAPI de Windows"],
+                ]
+              : [
+                  ["Data folder", "%LOCALAPPDATA%\\CountPips"],
+                  ["Database", "SQLite, a single file"],
+                  ["Backups", "AES-256-GCM · PBKDF2 600,000"],
+                  ["Broker credentials", "Windows DPAPI"],
+                ]
+            ).map(([k, v]) => (
+              <div key={k}>
+                <dt className="mb-1 text-[12px] text-tertiary">{k}</dt>
+                <dd className="m-0 break-all font-mono text-[13px] font-medium text-primary">{v}</dd>
+              </div>
+            ))}
+          </dl>
         </div>
 
         {/* Tabla comparativa — mobile: horizontal scroll inside the card. */}

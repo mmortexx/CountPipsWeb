@@ -127,7 +127,8 @@ const MAX_OPT = 3;
  */
 const CLAVE_GUARDADO = "tj-test-disciplina-v1";
 
-export function DisciplineScore() {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const [answers, setAnswers] = useState<(number | null)[]>(QUESTIONS.map(() => null));
@@ -359,7 +360,7 @@ export function DisciplineScore() {
     <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container">
         {/* ── Encabezado ─────────────────────────────────────────────── */}
-        <div className="mb-8 max-w-[46em]">
+        <div className={enPagina ? "sr-only" : "mb-8 max-w-[46em]"}>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
               {es ? "DIAGNÓSTICO" : "DIAGNOSIS"}

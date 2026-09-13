@@ -139,7 +139,7 @@ export function DisciplinaBody() {
         breadcrumbEs="Características · Disciplina"
         breadcrumbEn="Features · Discipline"
       />
-      <GuardianNew />
+      <GuardianNew enPagina />
       <DisciplineCost />
 
       <BeforeAfter />

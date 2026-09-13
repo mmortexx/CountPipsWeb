@@ -41,7 +41,8 @@ const CONTRATOS_AJUSTADOS = 2;
 
 type EstadoGuardian = "bloqueado" | "ajustado" | "anulado";
 
-export function GuardianNew() {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -391,6 +392,7 @@ export function GuardianNew() {
             Antes la columna aparecía estática mientras la tarjeta izquierda
             no animaba; ahora las dos mitades se asientan a la par. */}
         <div>
+          {!enPagina && (
           <Reveal>
             <div className="inline-flex items-center gap-3 mb-5">
               <span className="eyebrow">
@@ -398,9 +400,10 @@ export function GuardianNew() {
               </span>
             </div>
           </Reveal>
+          )}
           <Reveal delay={0.06}>
             <h2
-              className="font-serif m-0"
+              className={enPagina ? "sr-only" : "font-serif m-0"}
               style={{
                 fontSize: "clamp(1.75rem, 3.6vw, 3rem)",
                 fontWeight: 400,
@@ -425,6 +428,7 @@ export function GuardianNew() {
               )}
             </h2>
           </Reveal>
+          {!enPagina && (
           <Reveal delay={0.12}>
             <p
               className="mt-5 mb-8"
@@ -440,6 +444,7 @@ export function GuardianNew() {
                 : "The Guardian doesn't tell you what to do. It blocks you when you break your own rules."}
             </p>
           </Reveal>
+          )}
           {/* T2d — `space-y-5` (20px) entre features (era `space-y-4` 16px):
               el incremento refuerza la legibilidad móvil sin abrir un
               hueco tipográfico; a desktop el Δ es apenas perceptible.

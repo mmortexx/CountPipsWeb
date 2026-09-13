@@ -35,7 +35,8 @@ const R_MODE_INDEX = R_BINS.findIndex((b) => b.count === R_MAX_COUNT);
  * riesgo interactiva — esos se renderizan en sus propios componentes
  * y se montan desde la home.
  */
-export function MetricsShowcaseNew() {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   return (
@@ -50,6 +51,7 @@ export function MetricsShowcaseNew() {
           tarjeta cuando se apilan. */}
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
         <div>
+          {!enPagina && (
           <Reveal>
             <div className="inline-flex items-center gap-3 mb-5">
               <span className="eyebrow">
@@ -57,9 +59,10 @@ export function MetricsShowcaseNew() {
               </span>
             </div>
           </Reveal>
+          )}
           <Reveal delay={0.06}>
             <h2
-              className="font-serif m-0"
+              className={enPagina ? "sr-only" : "font-serif m-0"}
               style={{
                 fontSize: "clamp(2rem, 3.6vw, 3rem)",
                 fontWeight: 400,
@@ -82,6 +85,7 @@ export function MetricsShowcaseNew() {
               )}
             </h2>
           </Reveal>
+          {!enPagina && (
           <Reveal delay={0.12}>
             <p
               className="mt-5 mb-8"
@@ -97,6 +101,7 @@ export function MetricsShowcaseNew() {
                 : "Not pretty charts. Ratios that correlate with long-term consistency: what separates a real edge from a streak."}
             </p>
           </Reveal>
+          )}
           {/* T2c — `gap-4` (16 px) en vez de `gap-3` (12 px): las tarjetas
               2×2 ya no se pegan en móvil y el número grande (19 px / 700)
               no roza la etiqueta.

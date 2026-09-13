@@ -1082,6 +1082,12 @@
   .section-tight + .section-tight {
     padding-top: calc(var(--ritmo-2) * 0.5);
   }
+  /* Tras la cabecera de página ya hay filete y aire: la primera sección no
+     vuelve a abrir el hueco entero. */
+  .tj-cabecera + .section,
+  .tj-cabecera + .section-tight {
+    padding-top: clamp(3rem, 6vw, 4.5rem);
+  }
 
   /* Container-query wrapper — establece un contexto de contenedor
      inline-size para que los hijos puedan escalar (font-size, etc.)

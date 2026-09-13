@@ -148,7 +148,7 @@ export function FeaturesBody() {
       />
       {/* Overview sections — broad strokes. Deep dives moved to
           /features/metricas, /features/disciplina, /features/seguridad. */}
-      <FeaturesBento />
+      <FeaturesBento enPagina />
       <FeatureExplorer />
 
       {/* La galería que esta página lleva prometiendo desde su primer

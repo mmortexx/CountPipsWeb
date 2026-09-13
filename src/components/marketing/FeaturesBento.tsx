@@ -11,7 +11,8 @@ import { fmtPct, fmtR } from "@/lib/trading/format";
  * tarjetas: calendario de P&L grande (span 7), rendimiento por hora
  * (span 5), playbooks, diario narrativo, multi-cuenta multi-activo.
  */
-export function FeaturesBento() {
+/** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
+export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const cal = getCal();
@@ -21,15 +22,8 @@ export function FeaturesBento() {
       id="features"
       className="section relative overflow-clip"
     >
-      {/* P6 — `style={{ maxWidth: 1280 }}` removed: was overriding
-          tj-container's --page-w (1080px) and producing a section 200px
-          wider than every sibling on /features (PageHeader, FeatureExplorer,
-          Gallery, HowItWorks, MoreFeatures all run at 1080px). The 12-col
-          bento still breathes: col-span-7 = 621px, col-span-5 = 438px,
-          col-span-4 = 346px at 1080−gap. Unified mancha = Anthropic-grade
-          cross-section consistency. */}
       <div className="relative tj-container">
-        <div className="max-w-[760px] mb-12">
+        <div className={enPagina ? "sr-only" : "max-w-[760px] mb-12"}>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
               {es ? "CARACTERÍSTICAS" : "FEATURES"}

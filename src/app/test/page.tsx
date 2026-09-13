@@ -127,7 +127,7 @@ export function TestBody() {
         breadcrumbEs="Test"
         breadcrumbEn="Quiz"
       />
-      <DisciplineScore />
+      <DisciplineScore enPagina />
 
       <FinalCTANew />
     </>

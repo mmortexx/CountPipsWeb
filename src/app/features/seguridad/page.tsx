@@ -136,7 +136,7 @@ export function SeguridadBody() {
         breadcrumbEs="Características · Seguridad"
         breadcrumbEn="Features · Security"
       />
-      <SecuritySection />
+      <SecuritySection enPagina />
       <DataFlowComparison />
       <TechSpecs />
 
