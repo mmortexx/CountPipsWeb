@@ -38,7 +38,7 @@ export const STR = {
 
   // ---- Positioning strip ----
   posNative: { es: "Nativa de Windows", en: "Native to Windows" },
-  posLocal: { es: "100 % local", en: "100 % local" },
+  posLocal: { es: "Datos en tu equipo", en: "Data on your machine" },
   posOnce: { es: "Demo interactiva", en: "Interactive demo" },
   posBilingual: { es: "ES + EN nativo", en: "Native ES + EN" },
 
@@ -309,8 +309,8 @@ export const STR = {
   dataDownloaded: { es: "✓ Descargado", en: "✓ Downloaded" },
   about: { es: "Acerca de", en: "About" },
   aboutHelp: {
-    es: "App nativa de Windows · datos 100 % locales · ES + EN",
-    en: "Native Windows app · 100 % local data · ES + EN",
+    es: "App nativa de Windows · tus datos en tu equipo · ES + EN",
+    en: "Native Windows app · your data on your machine · ES + EN",
   },
 
   // ---- Accent palette names ----

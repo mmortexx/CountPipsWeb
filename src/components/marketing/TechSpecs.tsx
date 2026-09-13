@@ -42,8 +42,8 @@ export function TechSpecs() {
     {
       labelEs: "Almacenamiento",
       labelEn: "Storage",
-      valueEs: "SQLite en %LOCALAPPDATA%\CountPips",
-      valueEn: "SQLite in %LOCALAPPDATA%\CountPips",
+      valueEs: "SQLite en %LOCALAPPDATA%\\CountPips",
+      valueEn: "SQLite in %LOCALAPPDATA%\\CountPips",
     },
     {
       labelEs: "Arranque",

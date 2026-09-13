@@ -100,7 +100,7 @@ export function DataFlowComparison() {
           {/* ─── CountPips (local) ─── */}
           <FlowColumn
             title="CountPips"
-            subtitle={es ? "100 % local" : "100% local"}
+            subtitle={es ? "En tu equipo" : "On your machine"}
             color="rgb(var(--accent-base))"
             steps={[
               { label: es ? "Tu operación" : "Your trade", icon: "form" },
@@ -131,8 +131,8 @@ export function DataFlowComparison() {
         {/* Footer note */}
         <p className="mt-6 text-[13px] leading-[1.55] max-w-2xl" style={{ color: "var(--ink-3)" }}>
           {es
-            ? "Cada punto es una operación. En CountPips nunca sale de tu equipo: el flujo local no depende de exponer tu historial a un servidor. Tu historial es tuyo."
-            : "Each dot is a trade. In CountPips it stays on your machine: the local-first workflow does not depend on exposing your history to a server. Your history is yours."}
+            ? "Cada punto es una operación. En CountPips se queda en tu equipo: solo sale si activas una función que lo necesita, como la copia cifrada en tu propia nube. Tu historial es tuyo."
+            : "Each dot is a trade. In CountPips it stays on your machine: it only leaves if you turn on a feature that needs it, such as the encrypted copy in your own cloud. Your history is yours."}
         </p>
       </div>
     </section>

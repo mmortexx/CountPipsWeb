@@ -15,7 +15,7 @@ import { SUPPORT_EMAIL } from "@/lib/forms";
  * compartido ven ANTES de que se ejecute una sola línea de React.
  */
 const PAGE_DESCRIPTION =
-  "Windows-native trading journal. Explore an interactive demo with institutional metrics, discipline and 100% local data.";
+  "Windows-native trading journal. Explore an interactive demo with institutional metrics, discipline and your data on your machine.";
 
 export const metadata: Metadata = {
   title: { absolute: "CountPips — Trade like an institutional desk." },

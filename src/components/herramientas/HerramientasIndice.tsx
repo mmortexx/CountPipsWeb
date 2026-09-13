@@ -157,8 +157,8 @@ export function HerramientasIndice() {
             />
             <p className="m-0 text-center text-[14px] leading-relaxed text-secondary sm:text-left">
               {es
-                ? "Todas funcionan en tu navegador. No se envía nada a ningún servidor, no piden correo y no hay registro."
-                : "They all run in your browser. Nothing is sent to any server, no email is asked for and there is no sign-up."}
+                ? "Todas funcionan en tu navegador: las cifras que escribes no se envían a ningún servidor, no piden correo y no hay registro."
+                : "They all run in your browser: the numbers you type are not sent to any server, no email is asked for and there is no sign-up."}
             </p>
           </div>
         </Reveal>

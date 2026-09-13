@@ -68,7 +68,7 @@ export const metadata: Metadata = {
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Métricas — CountPips" },
   description:
-    "40+ ratios institucionales: Sharpe, Sortino, Calmar, profit factor, expectancy en R. Calculadora de riesgo. Métricas que correlacionan con la consistencia.",
+    "40+ ratios institucionales: Sharpe, Sortino, Calmar, profit factor, expectancy en R. Calculadora de riesgo. Métricas que dicen si tu ventaja es real o una racha.",
   alternates: { canonical: `${SITE_URL}/features/metricas/`, languages: hreflangDe("/features/metricas") },
   openGraph: {
     title: "Métricas — CountPips",
@@ -136,8 +136,8 @@ export function MetricasBody() {
         titleEn="Metrics that separate a real edge from a streak."
         titleHighlightEs="edge real."
         titleHighlightEn="real edge."
-        subtitleEs="40+ ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R. No gráficos bonitos: números que correlacionan con la consistencia a largo plazo."
-        subtitleEn="40+ institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R. Not pretty charts: numbers that correlate with long-term consistency."
+        subtitleEs="40+ ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R. No gráficos bonitos: números con su muestra y su intervalo de confianza."
+        subtitleEn="40+ institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R. Not pretty charts: numbers with their sample size and confidence interval."
         breadcrumbEs="Características · Métricas"
         breadcrumbEn="Features · Metrics"
       />

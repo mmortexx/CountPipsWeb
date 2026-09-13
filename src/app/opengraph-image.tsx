@@ -95,7 +95,7 @@ export default async function Image() {
             color: "#58616b",
           }}
         >
-          Demo interactiva · sin registro · datos 100 % locales
+          Demo interactiva · sin registro · tus datos en tu equipo
         </div>
       </div>
     ),

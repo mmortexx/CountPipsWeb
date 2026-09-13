@@ -16,16 +16,16 @@ export function HowItWorks() {
         ? "Entra el instrumento, dirección, entrada, stop y objetivo. Arrastra capturas del gráfico. Todo se guarda en tu equipo, al instante."
         : "Enter instrument, direction, entry, stop and target. Drop chart screenshots. Everything is saved on your machine, instantly.",
       icon: <CaptureIcon />,
-      kbd: es ? "Ctrl + N" : "Ctrl + N",
+      kbd: "Ctrl + Enter",
     },
     {
       n: "02",
       title: es ? "Analiza tus métricas" : "Analyze your metrics",
       desc: es
-        ? "Más de 40 métricas institucionales recalculadas en vivo: expectancy, profit factor, Sharpe, drawdown, win rate por setup."
-        : "Over 40 institutional metrics recalculated live: expectancy, profit factor, Sharpe, drawdown, win rate by setup.",
+        ? "Más de 40 métricas institucionales recalculadas con cada operación: expectancy, profit factor, Sharpe, drawdown, win rate por setup."
+        : "Over 40 institutional metrics recalculated with every trade: expectancy, profit factor, Sharpe, drawdown, win rate by setup.",
       icon: <AnalyzeIcon />,
-      kbd: es ? "Tab + A" : "Tab + A",
+      kbd: "Ctrl + 3",
     },
     {
       n: "03",
@@ -34,7 +34,7 @@ export function HowItWorks() {
         ? "El ritual pre/post mercado y el coste de indisciplina te muestran lo que tu comportamiento te cuesta — en dinero real."
         : "The pre/post-market ritual and the cost-of-indiscipline metric show what your behavior costs you — in real money.",
       icon: <ImproveIcon />,
-      kbd: es ? "Tab + J" : "Tab + J",
+      kbd: "Ctrl + 4",
     },
   ];
 

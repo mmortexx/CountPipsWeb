@@ -125,13 +125,13 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
           <dl className="mt-4 grid grid-cols-1 gap-5 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
             {(es
               ? [
-                  ["Carpeta de datos", "%LOCALAPPDATA%\CountPips"],
+                  ["Carpeta de datos", "%LOCALAPPDATA%\\CountPips"],
                   ["Base de datos", "SQLite, un único archivo"],
                   ["Cifrado en reposo", "EFS de Windows, opcional"],
                   ["Nube, opcional", "AES-256-GCM · PBKDF2 600.000"],
                 ]
               : [
-                  ["Data folder", "%LOCALAPPDATA%\CountPips"],
+                  ["Data folder", "%LOCALAPPDATA%\\CountPips"],
                   ["Database", "SQLite, a single file"],
                   ["Encryption at rest", "Windows EFS, optional"],
                   ["Cloud, optional", "AES-256-GCM · PBKDF2 600,000"],

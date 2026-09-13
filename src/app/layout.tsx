@@ -170,7 +170,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CountPips — Tu operativa, medida.",
     description:
-      "El diario de trading profesional, nativo de Windows. Demo interactiva, métricas institucionales, disciplina y datos 100 % locales.",
+      "El diario de trading profesional, nativo de Windows. Demo interactiva, métricas institucionales, disciplina y tus datos en tu equipo.",
     url: SITE_URL,
     siteName: "CountPips",
     type: "website",
@@ -189,7 +189,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CountPips — Tu operativa, medida.",
     description:
-      "Diario de trading profesional, nativo de Windows. Métricas institucionales, disciplina y datos 100 % locales.",
+      "Diario de trading profesional, nativo de Windows. Métricas institucionales, disciplina y tus datos en tu equipo.",
     // `images` se omite también: src/app/twitter-image.tsx la inyecta.
   },
   robots: {

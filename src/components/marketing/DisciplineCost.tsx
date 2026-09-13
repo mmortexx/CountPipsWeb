@@ -176,8 +176,8 @@ export function DisciplineCost() {
               }}
             >
               {es
-                ? "Cuando operas tu plan ganas. Cuando improvisas o violas tus reglas, regalas capital. Ajusta tus cifras y calcula el dinero exacto que dejas en la mesa cada mes y cada año."
-                : "When you trade your plan, you win. When you improvise or break your rules, you bleed capital. Adjust your numbers and discover the exact money left on the table each month and year."}
+                ? "Cuando operas tu plan ganas. Cuando improvisas o violas tus reglas, regalas capital. Ajusta tus cifras y estima el dinero que dejas en la mesa cada mes y cada año."
+                : "When you trade your plan, you win. When you improvise or break your rules, you bleed capital. Adjust your numbers and estimate the money left on the table each month and year."}
             </p>
 
             {/* Presets rápidos */}
@@ -474,7 +474,7 @@ export function DisciplineCost() {
                   {es ? "Capital fugado acumulado" : "Cumulative leaked capital"}
                 </span>
                 <span className="mb-2.5 block text-[12px] text-tertiary">
-                  {es ? "Reinvertido al 8 % anual" : "Reinvested at 8 % p.a."}
+                  {es ? "Supuesto: reinvertido al 8 % anual" : "Assumption: reinvested at 8 % p.a."}
                 </span>
                 <div className="grid grid-cols-3 gap-2 text-center font-mono">
                   {([1, 3, 5] as const).map((yr) => {
@@ -511,16 +511,16 @@ export function DisciplineCost() {
               <div className="mt-4 p-3.5 rounded-[4px] border border-[var(--chip-line)] bg-[rgb(var(--accent-base)/0.04)]">
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-xs font-semibold text-[rgb(var(--accent-base))] uppercase tracking-wider">
-                    {es ? "Plan de Recuperación con Guardián" : "Guardian Recovery Plan"}
+                    {es ? "Si evitaras parte de la fuga" : "If you avoided part of the leak"}
                   </span>
                   <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[4px] bg-[var(--chip)] text-[rgb(var(--accent-base))]">
-                    {es ? "ROI Inmediato" : "Immediate ROI"}
+                    {es ? "Escenario" : "Scenario"}
                   </span>
                 </div>
                 <p className="text-xs text-secondary leading-relaxed mb-3">
                   {es
-                    ? `Frenando el 60\u00a0% de tus operaciones fuera de plan recuperas +${fmtMoney(totalLeakMonthly * 0.6, lang)} al mes. La licencia Core ($149) se amortiza sola en ${Math.max(1, Math.round(149 / ((totalLeakMonthly * 0.6) / 30)))} días de operativa.`
-                    : `Stopping 60% of your off-plan trades recovers +${fmtMoney(totalLeakMonthly * 0.6, lang)} each month. The Core license ($149) pays for itself in ${Math.max(1, Math.round(149 / ((totalLeakMonthly * 0.6) / 30)))} trading days.`}
+                    ? `Si evitaras el 60\u00a0% de tus operaciones fuera de plan, dejarías de perder unos +${fmtMoney(totalLeakMonthly * 0.6, lang)} al mes. Es una estimación con tus cifras, no una promesa de resultado.`
+                    : `If you avoided 60% of your off-plan trades, you would stop losing about +${fmtMoney(totalLeakMonthly * 0.6, lang)} a month. It is an estimate from your numbers, not a promise of results.`}
                 </p>
                 {/* Mismo tratamiento que la proyeccion: el «al mes» baja a
                     su propia linea en vez de alargar una cifra que ya no
@@ -533,7 +533,7 @@ export function DisciplineCost() {
                       className="caja-cifra min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
                     >
                       <span className="block text-[11px] uppercase text-tertiary">
-                        {es ? `Ahorro al ${f * 100} %` : `${f * 100}% savings`}
+                        {es ? `Evitando el ${f * 100} %` : `Avoiding ${f * 100}%`}
                       </span>
                       <span
                         className="tnum cifra-sm block whitespace-nowrap font-bold text-[rgb(var(--pnl-pos))]"

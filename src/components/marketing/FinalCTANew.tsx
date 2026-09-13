@@ -11,8 +11,8 @@ export function FinalCTANew({ enDemo = false }: { enDemo?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const garantias = es
-    ? ["Datos de muestra", "Sin registro para explorar", "Acceso anticipado privado", "100 % local"]
-    : ["Sample data", "No sign-up to explore", "Private early access", "100 % local"];
+    ? ["Datos de muestra", "Sin registro para explorar", "Acceso anticipado privado", "Tus datos en tu equipo"]
+    : ["Sample data", "No sign-up to explore", "Private early access", "Your data on your machine"];
 
   return (
     <section className="section relative">

@@ -97,8 +97,8 @@ export function MetricsShowcaseNew({ enPagina = false }: { enPagina?: boolean } 
               }}
             >
               {es
-                ? "No gráficos bonitos. Ratios que correlacionan con la consistencia a largo plazo: lo que separa un edge real de una racha."
-                : "Not pretty charts. Ratios that correlate with long-term consistency: what separates a real edge from a streak."}
+                ? "No gráficos bonitos. Ratios con su muestra y su intervalo de confianza: lo que separa un edge real de una racha."
+                : "Not pretty charts. Ratios with their sample size and confidence interval: what separates a real edge from a streak."}
             </p>
           </Reveal>
           )}
