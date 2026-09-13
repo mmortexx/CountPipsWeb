@@ -31,9 +31,9 @@ export function HerramientasIndice() {
   return (
     <section className="section-tight">
       <div className="tj-container">
-        <div className="tj-paper tj-paper-dense overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)]">
+        <div className="border-t border-[var(--line)]">
           <div
-            className="hidden items-center gap-4 border-b border-[rgb(var(--divider)/0.10)] px-5 py-2.5 sm:grid sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto]"
+            className="hidden items-center gap-4 border-b border-[var(--line)] py-2.5 sm:grid sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto]"
             aria-hidden
           >
             <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
@@ -55,11 +55,11 @@ export function HerramientasIndice() {
               const codigo = `H-${String(i + 1).padStart(2, "0")}`;
               const entrega = ENTREGA[h.slug];
               return (
-                <li key={h.slug} className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
+                <li key={h.slug} className="border-b border-[var(--line)]">
                   <Reveal delay={i * 0.03}>
                     <Link
                       href={`/herramientas/${h.slug}`}
-                      className="group grid min-h-[72px] grid-cols-1 items-center gap-1 px-5 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
+                      className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
                     >
                       <span
                         className="tnum text-[13px] font-semibold tracking-wide"
@@ -95,7 +95,7 @@ export function HerramientasIndice() {
               <Reveal delay={HERRAMIENTAS.length * 0.03}>
                 <Link
                   href="/test"
-                  className="group grid min-h-[72px] grid-cols-1 items-center gap-1 px-5 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
+                  className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto] sm:gap-4 sm:py-0"
                 >
                   <span
                     className="tnum text-[13px] font-semibold tracking-wide"
@@ -143,7 +143,7 @@ export function HerramientasIndice() {
               secundaria y se le pone delante su sello. Así se lee como
               lo que es: una garantía firmada al cierre de la sección, no
               un descargo de responsabilidad. */}
-          <div className="tj-paper mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 rounded-[4px] border border-[rgb(var(--divider)/0.13)] px-6 py-4 sm:flex-row sm:gap-5 sm:py-3.5">
+          <div className="mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 sm:flex-row sm:gap-5">
             <span
               className="shrink-0 font-mono text-[11px] uppercase"
               style={{ letterSpacing: "0.08em", color: "rgb(var(--sig-green))" }}

@@ -133,7 +133,7 @@ export function DisciplineCost() {
   };
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="max-w-[1240px] mx-auto px-5 md:px-8">
         {/* Cabecera de sección */}
         <div className="inline-flex items-center gap-3 mb-5">
@@ -207,7 +207,7 @@ export function DisciplineCost() {
             </div>
 
             {/* Controles interactivos */}
-            <div className="rounded-[4px] border border-[rgb(var(--divider)/0.13)] bg-[color-mix(in_oklab,var(--surface)_70%,transparent)] p-5 backdrop-blur-md mb-6 space-y-4">
+            <div className="rounded-[14px] bg-[var(--surface)] p-5 mb-6 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -283,7 +283,7 @@ export function DisciplineCost() {
                       min={0}
                       value={inPlanExp}
                       onChange={(e) => setInPlanExp(Number(e.target.value))}
-                      className="w-full h-9 rounded-[4px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-primary tnum outline-none focus:border-[rgb(var(--accent-base))]"
+                      className="w-full h-9 rounded-[8px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-primary tnum outline-none focus:border-[rgb(var(--accent-base))]"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
                   </div>
@@ -301,7 +301,7 @@ export function DisciplineCost() {
                       max={0}
                       value={offPlanExp}
                       onChange={(e) => setOffPlanExp(Number(e.target.value))}
-                      className="w-full h-9 rounded-[4px] border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-[rgb(var(--pnl-neg))] tnum outline-none focus:border-[rgb(var(--pnl-neg))]"
+                      className="w-full h-9 rounded-[8px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-[rgb(var(--pnl-neg))] tnum outline-none focus:border-[rgb(var(--pnl-neg))]"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
                   </div>
@@ -311,7 +311,7 @@ export function DisciplineCost() {
 
             {/* Tabla Expectancy interactiva */}
             <div
-              className="rounded-[4px] overflow-hidden border border-[rgb(var(--divider)/0.13)] bg-[color-mix(in_oklab,var(--surface)_70%,transparent)] backdrop-blur-md"
+              className="rounded-[14px] overflow-hidden bg-[var(--surface)]"
             >
               <div className="overflow-x-auto custom-scroll">
                 <div className="grid grid-cols-4 min-w-[400px] border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
@@ -371,7 +371,7 @@ export function DisciplineCost() {
 
           {/* Factura Dinámica */}
           <div
-            className="relative p-6 rounded-[3px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface)_75%,transparent)] backdrop-blur-sm shadow-xl"
+            className="relative p-6 rounded-[14px] bg-[var(--surface)]"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.08)]">
               <div>
@@ -439,7 +439,7 @@ export function DisciplineCost() {
               {/* El total. El rotulo es la unica columna elastica y la
                   cifra lleva `clamp`, asi que a 320 px encoge en vez de
                   salirse: era un `text-2xl` fijo y se iba 16 px fuera. */}
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[4px] border border-[rgb(var(--pnl-neg)/0.15)] bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_5%,transparent)] p-3">
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[4px] bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_5%,transparent)] p-3">
                 <div className="min-w-0">
                   <span className="block text-xs font-semibold uppercase leading-[1.25] tracking-wider text-[rgb(var(--pnl-neg))] [overflow-wrap:anywhere]">
                     {es ? "Fuga mensual total" : "Total monthly leak"}
@@ -487,7 +487,7 @@ export function DisciplineCost() {
                       <div
                         key={yr}
                         title={`−${fmtMoney(fv, lang)}`}
-                        className="caja-cifra min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
+                        className="caja-cifra min-w-0 rounded-[8px] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
                       >
                         <span className="block text-[11px] text-tertiary">
                           {yr} {yr === 1 ? (es ? "año" : "year") : (es ? "años" : "years")}
@@ -529,7 +529,7 @@ export function DisciplineCost() {
                     <div
                       key={f}
                       title={`+${fmtMoney(totalLeakMonthly * f, lang)}`}
-                      className="caja-cifra min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
+                      className="caja-cifra min-w-0 rounded-[8px] bg-[rgb(var(--divider)/0.04)] px-1.5 py-2"
                     >
                       <span className="block text-[11px] uppercase text-tertiary">
                         {es ? `Evitando el ${f * 100} %` : `Avoiding ${f * 100}%`}

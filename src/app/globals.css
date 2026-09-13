@@ -3202,7 +3202,6 @@ button.icon-btn:hover > svg,
   background-color: rgb(26 23 20 / 0.38);
 }
 :root[data-palette="clasico"] .shadow-2xl,
-:root[data-palette="clasico"] .shadow-xl,
 :root[data-palette="clasico"] .shadow-lg {
   box-shadow:
     0 1px 0 rgb(var(--divider) / 0.1),
@@ -3257,6 +3256,13 @@ button.icon-btn:hover > svg,
   border-radius: 12px;
   background-color: var(--surface);
   transition: background-color 160ms var(--ease-suave);
+}
+/* Paneles de resultado de las calculadoras: tono, no filete. El
+   `!important` gana a los bordes en línea que traen algunos widgets. */
+.tj-paper-glow {
+  background-color: var(--surface) !important;
+  border-color: transparent !important;
+  border-radius: 14px !important;
 }
 .tj-pie {
   background-image: linear-gradient(to bottom, transparent, var(--surface) 7rem);

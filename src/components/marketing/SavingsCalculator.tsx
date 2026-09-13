@@ -119,7 +119,7 @@ export function SavingsCalculator() {
     }`;
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
         {/* Left: intro + inputs */}
         <div>
@@ -372,7 +372,7 @@ export function SavingsCalculator() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
+      className="group/result relative min-w-0 rounded-[8px] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
       <div className="tnum relative" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>

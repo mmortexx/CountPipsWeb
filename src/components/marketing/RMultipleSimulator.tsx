@@ -300,7 +300,7 @@ export function RMultipleSimulator() {
   );
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Left: intro + inputs */}
         <div>
@@ -502,7 +502,7 @@ export function RMultipleSimulator() {
               y el importe va abreviado: «18,9 k $» en vez de «18.906 US$»,
               que no cabe en 70 px. */}
           <div
-            className="mb-4 grid grid-cols-5 overflow-clip rounded-[4px] border border-[rgb(var(--divider)/0.12)] text-center font-mono"
+            className="mb-4 grid grid-cols-5 overflow-clip rounded-[8px] text-center font-mono"
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
           >
             {[

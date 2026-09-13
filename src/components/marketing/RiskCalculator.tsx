@@ -303,7 +303,7 @@ export function RiskCalculator() {
   }, [c, balance, riskPct, entry, stop, target, assetMode, es, fmtUsd, fmtNum]);
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
@@ -359,7 +359,7 @@ export function RiskCalculator() {
 
           {/* Subselector para futuros */}
           {assetMode === "futures" && (
-            <div className="mb-5 p-3 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+            <div className="mb-5 p-3 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
               <span className="block text-[11px] uppercase tracking-wider text-tertiary mb-2">
                 {es ? "Contrato de futuros" : "Futures contract"}
               </span>
@@ -384,7 +384,7 @@ export function RiskCalculator() {
 
           {/* Subselector para Forex */}
           {assetMode === "forex" && (
-            <div className="mb-5 p-3 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+            <div className="mb-5 p-3 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
               <span className="block text-[11px] uppercase tracking-wider text-tertiary mb-2">
                 {es ? "Tipo de lote Forex" : "Forex lot sizing"}
               </span>
@@ -412,7 +412,7 @@ export function RiskCalculator() {
           )}
 
           {/* Control de Fricción de Ejecución */}
-          <div className="mb-5 p-3 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] flex items-center justify-between">
+          <div className="mb-5 p-3 rounded-[8px] bg-[rgb(var(--divider)/0.03)] flex items-center justify-between">
             <div>
               <span className="block text-xs font-medium text-primary">
                 {es ? "Deducir fricción de ejecución" : "Deduct execution friction"}
@@ -477,7 +477,7 @@ export function RiskCalculator() {
 
         {/* Tarjeta calculadora */}
         <div
-          className="tj-paper tj-paper-glow relative p-6 rounded-[3px] border border-[rgb(var(--divider)/0.13)]"
+          className="tj-paper tj-paper-glow relative p-6 rounded-[8px]"
         >
           {/* Slider de riesgo */}
           <div className="mb-5">
@@ -675,7 +675,7 @@ export function RiskCalculator() {
                Tailwind no compone una clase propia dentro de un variante
                arbitrario y ahi no llegaba a generar regla ninguna —
                comprobado en la hoja construida. */
-            className="mb-5 grid grid-cols-2 gap-2.5 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)] p-3 sm:grid-cols-4"
+            className="mb-5 grid grid-cols-2 gap-2.5 rounded-[8px] bg-[rgb(var(--divider)/0.03)] p-3 sm:grid-cols-4"
           >
             <div className="caja-cifra">
               <div className="tnum text-[11px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
@@ -796,7 +796,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
        esta calculadora vive en la columna estrecha de /features/metricas.
        Una cifra rota en dos lineas deja de leerse como un dato. */
     <div
-      className="caja-cifra group/result relative min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.08)] px-4 py-3.5 transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]"
+      className="caja-cifra group/result relative min-w-0 rounded-[8px] px-4 py-3.5 transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]"
     >
       <div
         className="tnum text-[11px] uppercase tracking-[0.08em] text-tertiary"

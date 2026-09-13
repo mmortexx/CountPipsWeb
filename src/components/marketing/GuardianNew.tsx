@@ -80,18 +80,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             el resto de la home, en vez de aparecer estática. */}
         <div
           data-entra
-          className="tj-paper-dense relative rounded-[4px] p-5 sm:p-6 md:p-8"
-          style={{
-            border: "1px solid var(--line-2)",
-            // La sombra la pone el material, no esta línea. Aquí había un
-            // `boxShadow` en NEGRO PURO al 22 %, y al ser inline ganaba
-            // siempre: anulaba la sombra que `.tj-paper` define para el
-            // tema claro, que va teñida con `--sombra` (19 29 38, el
-            // grafito del material) y no con negro. En una chapa gris
-            // clara el negro puro ensucia en vez de levantar, y esta es
-            // la sección con más exposición del sitio — sale en la
-            // portada y en /features/disciplina.
-          }}
+          className="tj-paper-dense relative rounded-[14px] p-5 sm:p-6 md:p-8 shadow-[0_1px_2px_rgb(11_15_20/0.04),0_24px_60px_-30px_rgb(11_15_20/0.25)]"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <span

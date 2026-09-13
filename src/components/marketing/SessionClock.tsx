@@ -183,7 +183,7 @@ export function SessionClock() {
   const hourPct = (h: number) => (h / 24) * 100;
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container">
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
@@ -292,7 +292,7 @@ export function SessionClock() {
         </div>
 
         {/* Panel de Killzones Institucionales */}
-        <div className="mb-6 p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+        <div className="mb-6 p-4 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[12px] uppercase tracking-wider text-tertiary font-mono">
               {es ? "Ventanas Institucionales (Killzones)" : "Institutional Killzones"}

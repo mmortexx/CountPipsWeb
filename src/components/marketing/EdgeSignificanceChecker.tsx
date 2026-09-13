@@ -209,7 +209,7 @@ export function EdgeSignificanceChecker() {
           };
 
   return (
-    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Left: intro + inputs */}
         <div>
@@ -243,7 +243,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Detector de sobreajuste / Grados de libertad del setup */}
-          <div className="mt-5 p-3.5 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+          <div className="mt-5 p-3.5 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum text-[12px] uppercase tracking-wider text-tertiary">
                 {es ? "Parámetros / Reglas del Setup" : "Setup Parameters / Rules"}
@@ -337,7 +337,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Matriz de Muestra Mínima */}
-          <div className="mb-4 p-3 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]">
+          <div className="mb-4 p-3 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
             <span className="block text-[11px] uppercase tracking-wider text-tertiary mb-2">
               {es ? `Muestra requerida según confianza (margen ±5${PCT})` : "Required sample by confidence (margin ±5%)"}
             </span>
@@ -440,7 +440,7 @@ export function EdgeSignificanceChecker() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
+      className="group/result relative min-w-0 rounded-[8px] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
       {/* «EXPECTANCY» en versalitas con 0,12em de espaciado mide mas que

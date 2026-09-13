@@ -644,28 +644,20 @@ export function EquityProjector() {
             }}
           >
             {es
-              ? "Modela con precisión milimétrica la trayectoria de tu capital considerando frecuencia operativa, fricción real de mercado, interés compuesto y el cono de dispersión estocástica."
-              : "Model high-precision equity trajectories factoring in trading frequency, market friction, geometric compounding, and stochastic variance cones."}
+              ? "Proyecta tu capital a partir de tu expectancy, tu frecuencia, la fricción del mercado y el interés compuesto, con el margen de variación que cabe esperar. Es aritmética, no una promesa."
+              : "Project your capital from your expectancy, trading frequency, market friction and compounding, with the range of variation to expect. It is arithmetic, not a promise."}
           </p>
         </div>
 
         {/* ══════════ COCKPIT INSTITUCIONAL ENCLOSURE ══════════ */}
         <div
-          className="w-full rounded-[4px] border overflow-hidden shadow-xl"
-          style={{
-            borderColor: "rgb(var(--divider) / 0.18)",
-            background: "var(--surface-1)",
-            boxShadow: "0 15px 35px -10px rgba(0,0,0,0.12)",
-          }}
+          className="w-full rounded-[16px] overflow-hidden bg-[var(--surface)]"
         >
           {/* Cabecera de la herramienta. NO es la barra de titulo de
               una ventana: esto no es una pantalla del programa. */}
           <div
             className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b"
-            style={{
-              borderColor: "rgb(var(--divider) / 0.15)",
-              background: "color-mix(in oklab, var(--surface-2) 80%, transparent)",
-            }}
+            style={{ borderColor: "var(--line)" }}
           >
             {/* ── ESTA HERRAMIENTA NO ES UNA PANTALLA DEL PROGRAMA ────
                 Aqui habia una insignia «WINUI3» junto al rotulo «MOTOR
@@ -1191,7 +1183,7 @@ export function EquityProjector() {
                 <div className="space-y-2">
                   {/* Tooltip Dinámico Scrubber */}
                   <div
-                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-[4px] border border-[rgb(var(--divider)/0.15)] font-mono text-xs shadow-sm"
+                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-[8px] font-mono text-xs shadow-sm"
                     style={{ background: "color-mix(in oklab, var(--surface-2) 90%, transparent)" }}
                   >
                     <div className="flex items-center gap-2">
@@ -1409,7 +1401,7 @@ export function EquityProjector() {
                      es justo lo que la herramienta quiere enseñar.
                    · Los años van en versalitas de tinta, no en acento:
                      el color se reserva para el signo del resultado. */
-                <div className="overflow-x-auto rounded-[4px] border border-[rgb(var(--divider)/0.14)]">
+                <div className="overflow-x-auto rounded-[8px]">
                   <table className="w-full text-left font-mono text-xs tnum">
                     <thead>
                       <tr className="text-[11px] uppercase tracking-wider text-[var(--ink-3)]">
@@ -1495,7 +1487,7 @@ export function EquityProjector() {
                   fondo del contenedor; por eso las celdas necesitan
                   fondo OPACO, o el trazo se les veria por debajo. */}
               <div
-                className="grid grid-cols-2 gap-px overflow-clip rounded-[4px] border border-[rgb(var(--divider)/0.14)] sm:grid-cols-3"
+                className="grid grid-cols-2 gap-px overflow-clip rounded-[8px] sm:grid-cols-3"
                 style={{ background: "rgb(var(--divider) / 0.14)" }}
               >
                 <div

@@ -61,7 +61,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
       <Componente />
 
       {/* Cinta de Acceso Rápido entre las 8 Herramientas */}
-      <section className="border-t border-[rgb(var(--divider)/0.10)] py-4">
+      <section className="py-4">
         <div className="tj-container">
           {/* `tj-fila-sigue` añade la pista de que la fila sigue: sin ella
               la última herramienta quedaba partida contra el canto en las
@@ -82,10 +82,8 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                 <Link
                   key={h.slug}
                   href={`/herramientas/${h.slug}`}
-                  className={`min-h-[44px] px-3.5 rounded-[4px] text-xs font-mono transition-all inline-flex items-center gap-1.5 whitespace-nowrap ${
-                    active
-                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold shadow-sm"
-                      : "border border-[rgb(var(--divider)/0.15)] bg-[var(--surface-1)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
+                  className={`min-h-[44px] px-3.5 rounded-full text-[13px] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap ${
+                    active ? "bg-[var(--ink)] text-[var(--bg)] font-medium" : "text-secondary hover:text-primary"
                   }`}
                 >
                   <span className="opacity-60">{String(i + 1).padStart(2, "0")}.</span>
@@ -128,12 +126,12 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                 <p className="eyebrow m-0">
                   {es ? "Otras herramientas" : "Other tools"}
                 </p>
-                <ul className="mt-4 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
+                <ul className="mt-4 border-t border-[var(--line)] p-0">
                   {otras.map((h) => (
-                    <li key={h.slug} className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
+                    <li key={h.slug} className="border-b border-[var(--line)]">
                       <Link
                         href={`/herramientas/${h.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 gap-1 px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5"
+                        className="group grid min-h-[52px] grid-cols-1 gap-1 py-3.5 transition-colors sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5"
                       >
                         <span className="text-[14px] font-semibold text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]">
                           {es ? h.tituloEs : h.tituloEn}
