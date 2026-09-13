@@ -256,7 +256,7 @@ export function BetaApplication() {
 
   if (status === "success") {
     return (
-      <div ref={exitoRef} tabIndex={-1} className="tj-paper tj-paper-glow border border-[rgb(var(--divider)/0.14)] p-7 sm:p-10 outline-none" role="status">
+      <div ref={exitoRef} tabIndex={-1} className="rounded-[16px] bg-[var(--surface)] p-7 sm:p-10 outline-none" role="status">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
           <span className="grid size-14 place-items-center rounded-[4px] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
             <Check size={26} aria-hidden />
@@ -267,9 +267,8 @@ export function BetaApplication() {
               ? "Revisaremos las solicitudes por perfil y fase del producto. Te escribiremos sólo si encaja con el piloto privado; no necesitas tarjeta."
               : "We review applications by profile and product phase. We will write only if you fit the private pilot; no card is required."}
           </p>
-          <Link href="/demo" className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-[rgb(var(--divider)/0.2)] px-5 text-sm font-semibold text-primary hover:bg-[rgb(var(--divider)/0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
+          <Link href="/demo" className="cta cta--secundario mt-6 hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
             {es ? "Mientras tanto, ver la demo" : "In the meantime, see the demo"}
-            <ArrowRight size={15} aria-hidden />
           </Link>
         </div>
       </div>
@@ -286,7 +285,7 @@ export function BetaApplication() {
         }
       }}
       noValidate
-      className="tj-paper tj-paper-glow border border-[rgb(var(--divider)/0.14)] p-5 sm:p-8"
+      className="rounded-[16px] bg-[var(--surface)] p-5 sm:p-9"
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>
@@ -318,7 +317,7 @@ export function BetaApplication() {
               {(["manual", "prop"] as const).map((value) => {
                 const active = profile === value;
                 return (
-                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 border px-3.5 text-sm transition-colors ${active ? "border-[rgb(var(--accent-base)/0.62)] bg-[var(--chip)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-[rgb(var(--divider)/0.18)] text-secondary hover:border-[rgb(var(--divider)/0.35)]"}`}>
+                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[8px] border px-3.5 text-sm transition-colors ${active ? "border-[var(--ink)] bg-[var(--raised)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-transparent bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"}`}>
                     <input ref={value === "manual" ? profileRef : undefined} type="radio" name="profile" value={value} checked={active} onChange={() => { setProfile(value); trackEvent("beta_profile_selected", { profile: value }); }} className="accent-[rgb(var(--accent-base))]" />
                     {value === "manual" ? es ? "Operativa manual" : "Manual trading" : es ? "Prop firm / evaluación" : "Prop firm / evaluation"}
                   </label>

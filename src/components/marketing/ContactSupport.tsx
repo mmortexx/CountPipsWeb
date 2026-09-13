@@ -143,7 +143,7 @@ export function ContactSupport() {
                 <a
                   href={c.href}
                   aria-label={`${title} — ${cta}`}
-                  className="group relative flex flex-col tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
+                  className="group relative flex flex-col rounded-[14px] bg-[var(--surface)] p-5 sm:p-7 h-full overflow-hidden transition-colors duration-300 hover:bg-[var(--surface-2)]"
                 >
                   <div className="flex items-start gap-4">
                     {/* Icon container — accent-tinted on hover so the icon

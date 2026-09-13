@@ -232,10 +232,8 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   return (
     <div
       data-entra
-      className={`relative flex h-full flex-col rounded-[8px] border p-7 sm:p-9 ${
-        isPro
-          ? "border-[rgb(var(--txt-primary))] bg-[var(--raised)] shadow-[0_1px_2px_rgb(11_15_20/0.06),0_12px_32px_-12px_rgb(11_15_20/0.18)]"
-          : "border-[var(--line-2)] bg-[var(--raised)]"
+      className={`relative flex h-full flex-col rounded-[14px] p-7 sm:p-9 ${
+        isPro ? "bg-[var(--surface)] ring-1 ring-[var(--line-2)]" : "bg-[var(--surface)]"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
@@ -278,7 +276,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           className={
             isPro
               ? "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-              : "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 border border-[var(--line-2)] text-primary hover:bg-[var(--surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              : "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 bg-[var(--raised)] text-primary hover:bg-[var(--surface-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           }
         >
           {plan.cta}
@@ -301,7 +299,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         </MagneticButton>
       </div>
 
-      <p className="mt-8 border-t border-[var(--line)] pt-6 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+      <p className="mt-8 pt-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
         {isPro ? (es ? "Todo lo de Core, y además" : "Everything in Core, plus") : (es ? "Incluye" : "Includes")}
       </p>
       <ul className="mt-4 space-y-3 flex-1">

@@ -103,7 +103,7 @@ export function PricingFAQ() {
               <span
                 data-entra="ciclo"
                 key={label}
-                className="inline-flex items-center gap-[0.35rem] rounded-[4px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-secondary border border-[rgb(var(--divider)/0.10)] tnum"
+                className="inline-flex items-center gap-2 px-1 text-[13px] text-tertiary"
               >
                 <span className="size-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" aria-hidden="true" />
                 {label}
@@ -116,7 +116,7 @@ export function PricingFAQ() {
             `max-w-3xl` keeps the line-length comfortable for reading
             the answers; `mx-auto` centers it under the header. */}
         <Reveal delay={0.1} y={28}>
-          <div className="mt-10 max-w-3xl mx-auto tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-2 md:p-3">
+          <div className="mt-10 max-w-3xl mx-auto border-t border-[var(--line)]">
             <Accordion
               type="single"
               collapsible

@@ -801,10 +801,11 @@
   input[type="password"],
   textarea,
   select {
-    background-color: var(--raised);
-    border: 1px solid var(--line-2);
-    border-radius: 4px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    /* Relleno tenue en vez de filete: funciona sobre cualquier fondo. */
+    background-color: color-mix(in srgb, var(--ink) 4.5%, transparent);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   }
   input:focus,
   textarea:focus,
