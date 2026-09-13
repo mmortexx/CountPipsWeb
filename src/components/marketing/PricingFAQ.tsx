@@ -15,7 +15,7 @@ import {
 
 /**
  * PricingFAQ — small, pricing-specific accordion (4 items) shown on the
- * Pricing page between Comparison and TrustStrip.
+ * Pricing page between Comparison and BetaStatus.
  *
  * Distinct from the main marketing FAQ.tsx:
  *  - Narrower scope: only questions a trader has before requesting beta access

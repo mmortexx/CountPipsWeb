@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { DemoCapabilities } from "@/components/demo/DemoCapabilities";
 import { AppDemoClient } from "@/components/demo/AppDemoClient";
 import { DemoConversionPanel } from "@/components/demo/DemoConversionPanel";
 import { SITE_URL, hreflangDe } from "@/lib/site";
@@ -77,9 +76,6 @@ export const metadata: Metadata = {
 //
 // Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
 
-const StatsBandNew = dynamic(
-  () => import("@/components/marketing/StatsBandNew").then((m) => m.StatsBandNew)
-);
 const FinalCTANew = dynamic(
   () => import("@/components/marketing/FinalCTANew").then((m) => m.FinalCTANew)
 );
@@ -102,8 +98,6 @@ export function DemoBody() {
         breadcrumbEs="Demo"
         breadcrumbEn="Demo"
       />
-      {/* What you can do — 6 feature cards previewing the demo */}
-      <DemoCapabilities />
       <section id="demo" className="section scroll-mt-16">
         {/* `hideHeader`: el PageHeader de arriba ya titula "La app, en tu
             navegador." y repite el mismo subtítulo, así que sin esta
@@ -111,13 +105,7 @@ export function DemoBody() {
         <AppDemoClient hideHeader />
       </section>
       <DemoConversionPanel />
-      <StatsBandNew />
-      {/* Ready-to-buy CTA — catches visitors who just played with the demo */}
-      {/* `DemoReadyToBuy` retirado: era un segundo CTA idéntico pegado
-          al de cierre — mismo precio, misma promesa y casi los mismos
-          botones dos veces seguidas. FinalCTANew cierra la página. El
-          componente sigue en el repositorio. */}
-      <FinalCTANew />
+      <FinalCTANew enDemo />
     </>
   );
 }

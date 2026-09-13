@@ -190,7 +190,7 @@ PORTADA — SECCIONES EN ORDEN:
 - GuardianNew — Disciplina que frena antes del error
 - Values — 4 principios del producto
 - FinalCTANew — cierre en bloque de tinta `.tj-cierre`
-(TrustStrip sigue en /pricing.)
+(TrustStrip retirado del sitio: repetía sellos técnicos sin verificar.)
 
 FOOTER (27 KB, 515 líneas — Footer.tsx):
 - Material liquid-glass a sangre completa (sin rounded-t-xl)

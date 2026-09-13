@@ -115,14 +115,8 @@ const Comparison = dynamic(
 const PricingFAQ = dynamic(
   () => import("@/components/marketing/PricingFAQ").then((m) => m.PricingFAQ)
 );
-const TrustStrip = dynamic(
-  () => import("@/components/marketing/TrustStrip").then((m) => m.TrustStrip)
-);
 // ValueTestimonials retirado: sus tres testimonios eran personas
 // inventadas. Vuelve cuando haya reseñas reales de usuarios.
-const StatsBandNew = dynamic(
-  () => import("@/components/marketing/StatsBandNew").then((m) => m.StatsBandNew)
-);
 const FinalCTANew = dynamic(
   () => import("@/components/marketing/FinalCTANew").then((m) => m.FinalCTANew)
 );
@@ -168,9 +162,6 @@ export function PricingBody() {
           multi-computer and lost license. */}
       <PricingFAQ />
       <BetaStatus />
-
-      <TrustStrip />
-      <StatsBandNew />
 
       <FinalCTANew />
       <TableOfContents />

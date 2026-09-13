@@ -3,9 +3,11 @@
 import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight, Check } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { trackEvent } from "@/lib/analytics";
 
-/** Cierre de página: un único bloque de tinta con la llamada principal. */
-export function FinalCTANew() {
+/** Cierre de página: un único bloque de tinta con la llamada principal.
+ *  En /demo la llamada principal pasa a ser el acceso: ya se está en la demo. */
+export function FinalCTANew({ enDemo = false }: { enDemo?: boolean } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const garantias = es
@@ -27,11 +29,19 @@ export function FinalCTANew() {
                 : "40+ metrics, a discipline guardian, and your data on your machine. Explore the sample-data demo and decide with clarity."}
             </p>
             <div data-entra="3" className="flex flex-wrap gap-3">
-              <Link href="/demo" className="cta cta--primario">
-                {es ? "Ver la demo" : "See the demo"}
+              <Link
+                href={enDemo ? "/beta" : "/demo"}
+                onClick={enDemo ? () => trackEvent("demo_early_access_clicked") : undefined}
+                className="cta cta--primario"
+              >
+                {enDemo ? (es ? "Solicitar acceso" : "Request access") : es ? "Ver la demo" : "See the demo"}
                 <ArrowRight size={16} aria-hidden />
               </Link>
-              <Link href="/pricing" className="cta cta--secundario">
+              <Link
+                href="/pricing"
+                onClick={enDemo ? () => trackEvent("demo_pricing_clicked") : undefined}
+                className="cta cta--secundario"
+              >
                 {es ? "Ver precios" : "See pricing"}
               </Link>
             </div>
