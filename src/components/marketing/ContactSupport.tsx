@@ -115,8 +115,8 @@ export function ContactSupport() {
           <Reveal delay={0.1}>
             <p className="mt-4 text-lg text-secondary leading-relaxed max-w-xl mx-auto">
               {es
-                ? "Tres caminos para resolver cualquier duda. Te respondemos rápido y en tu idioma."
-                : "Three ways to solve any question. We reply quickly and in your language."}
+                ? "Mira las preguntas frecuentes o escríbenos. Contesta quien lo desarrolla, en español o en inglés."
+                : "Check the FAQ or write to us. The person who builds it replies, in Spanish or English."}
             </p>
           </Reveal>
         </div>

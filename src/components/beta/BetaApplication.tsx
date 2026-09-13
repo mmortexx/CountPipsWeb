@@ -298,7 +298,7 @@ export function BetaApplication() {
               : "We are building a small, useful private pilot. You do not need an account or to share performance or financial data."}
           </p>
           <div className="mt-6 space-y-3 text-sm text-secondary">
-            {[es ? "Piloto privado, por invitación" : "Private pilot, invite only", es ? "Datos de trading siempre locales" : "Trading data stays local", es ? "Sin spam ni newsletter por defecto" : "No spam or newsletter by default"].map((item) => (
+            {[es ? "Piloto privado, por invitación" : "Private pilot, invite only", es ? "Tus operaciones, en tu equipo" : "Your trades, on your machine", es ? "Sin spam ni newsletter por defecto" : "No spam or newsletter by default"].map((item) => (
               <div key={item} className="flex items-start gap-2.5">
                 <Check size={16} className="mt-0.5 shrink-0 text-[rgb(var(--pnl-pos))]" aria-hidden />
                 <span>{item}</span>

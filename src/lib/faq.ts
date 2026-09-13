@@ -73,7 +73,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué ocurre si cambio de ordenador durante el piloto?",
-    a: "El equipo de CountPips te indicará el procedimiento para mover tu entorno. No pediremos credenciales ni datos financieros para hacerlo.",
+    a: "Tus datos viven en un único archivo: crea una copia de seguridad desde el programa y restáurala en el ordenador nuevo. No pediremos credenciales ni datos financieros para hacerlo.",
   },
 ];
 
@@ -128,7 +128,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What if I change computers during the pilot?",
-    a: "The CountPips team will provide the procedure to move your environment. We will not ask for credentials or financial data to do it.",
+    a: "Your data lives in a single file: create a backup from the app and restore it on the new computer. We will not ask for credentials or financial data to do it.",
   },
 ];
 
