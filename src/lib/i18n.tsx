@@ -9,46 +9,38 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { sinPrefijoIdioma } from "@/lib/locale";
+import { sinPrefijoEn } from "@/lib/locale";
 
-export type Lang = "es" | "en" | "fr" | "de" | "pt" | "it";
+export type Lang = "es" | "en";
 
 export const STR = {
   // ---- Brand / global ----
-  appName: { es: "CountPips", en: "CountPips", fr: "CountPips", de: "CountPips", pt: "CountPips", it: "CountPips" },
-  tagline: { es: "Tu operativa, medida.", en: "Your trading, measured.", fr: "Votre trading, mesuré.", de: "Ihr Trading, gemessen.", pt: "Seu trading, medido.", it: "Il tuo trading, misurato." },
+  appName: { es: "CountPips", en: "CountPips" },
+  tagline: { es: "Tu operativa, medida.", en: "Your trading, measured." },
   heroLead: {
     es: "El diario de trading profesional, nativo de Windows. Métricas institucionales, disciplina que te frena antes de la tontería y tus datos 100 % en tu máquina.",
     en: "The professional trading journal, native to Windows. Institutional metrics, discipline that stops you before the dumb trade, and your data 100 % on your machine.",
-    fr: "Le journal de trading professionnel, natif Windows. Métriques institutionnelles, discipline qui vous arrête avant l'erreur, et vos données 100 % sur votre machine.",
-    de: "Das professionelle Trading-Tagebuch, nativ für Windows. Institutionelle Metriken, Disziplin, die Sie vor dem Fehltrade stoppt, und Ihre Daten 100 % auf Ihrem Rechner.",
-    pt: "O diário de trading profissional, nativo do Windows. Métricas institucionais, disciplina que te freia antes do erro e seus dados 100 % na sua máquina.",
-    it: "Il diario di trading professionale, nativo di Windows. Metriche istituzionali, disciplina che ti ferma prima dell'errore e i tuoi dati al 100 % sulla tua macchina.",
   },
-  ctaPrimary: { es: "Probar la demo", en: "Try the demo", fr: "Essayer la démo", de: "Demo testen", pt: "Testar a demo", it: "Prova la demo" },
-  ctaSecondary: { es: "Ver precios", en: "See pricing", fr: "Voir les prix", de: "Preise ansehen", pt: "Ver preços", it: "Vedi i prezzi" },
-  buyNow: { es: "Solicitar acceso anticipado", en: "Request early access", fr: "Demander un accès anticipé", de: "Frühzugang anfordern", pt: "Solicitar acesso antecipado", it: "Richiedi accesso anticipato" },
+  ctaPrimary: { es: "Probar la demo", en: "Try the demo" },
+  ctaSecondary: { es: "Ver precios", en: "See pricing" },
+  buyNow: { es: "Solicitar acceso anticipado", en: "Request early access" },
 
   // ---- Nav ----
-  navProduct: { es: "Producto", en: "Product", fr: "Produit", de: "Produkt", pt: "Produto", it: "Prodotto" },
-  navDemo: { es: "Demo", en: "Demo", fr: "Démo", de: "Demo", pt: "Demo", it: "Demo" },
-  navFeatures: { es: "Características", en: "Features", fr: "Fonctionnalités", de: "Funktionen", pt: "Recursos", it: "Funzionalità" },
-  navPricing: { es: "Precios", en: "Pricing", fr: "Prix", de: "Preise", pt: "Preços", it: "Prezzi" },
-  navFaq: { es: "FAQ", en: "FAQ", fr: "FAQ", de: "FAQ", pt: "FAQ", it: "FAQ" },
+  navProduct: { es: "Producto", en: "Product" },
+  navDemo: { es: "Demo", en: "Demo" },
+  navFeatures: { es: "Características", en: "Features" },
+  navPricing: { es: "Precios", en: "Pricing" },
+  navFaq: { es: "FAQ", en: "FAQ" },
   navShortcuts: {
     es: "Atajos de teclado (?)",
     en: "Keyboard shortcuts (?)",
-    fr: "Raccourcis clavier (?)",
-    de: "Tastenkürzel (?)",
-    pt: "Atalhos de teclado (?)",
-    it: "Scorciatoie da tastiera (?)",
   },
 
   // ---- Positioning strip ----
-  posNative: { es: "Nativa de Windows", en: "Native to Windows", fr: "Native Windows", de: "Nativ für Windows", pt: "Nativo do Windows", it: "Nativa di Windows" },
-  posLocal: { es: "100 % local", en: "100 % local", fr: "100 % local", de: "100 % lokal", pt: "100 % local", it: "100 % locale" },
-  posOnce: { es: "Demo interactiva", en: "Interactive demo", fr: "Démo interactive", de: "Interaktive Demo", pt: "Demo interativa", it: "Demo interattiva" },
-  posBilingual: { es: "ES + EN nativo", en: "Native ES + EN", fr: "ES + EN natif", de: "ES + EN nativ", pt: "ES + EN nativo", it: "ES + EN nativo" },
+  posNative: { es: "Nativa de Windows", en: "Native to Windows" },
+  posLocal: { es: "100 % local", en: "100 % local" },
+  posOnce: { es: "Demo interactiva", en: "Interactive demo" },
+  posBilingual: { es: "ES + EN nativo", en: "Native ES + EN" },
 
   // ---- Demo ----
   demoTitle: { es: "Demo en vivo", en: "Live demo" },
@@ -382,30 +374,16 @@ export const STR = {
 
 export type StrKey = keyof typeof STR;
 
-/**
- * El idioma de los DATOS, que no son seis sino dos.
- *
- * El motor de la demo y la biblioteca cuantitativa (nombres de setup,
- * días de la semana, meses, etiquetas de R) están escritos en español e
- * inglés y sólo en esos dos. Los idiomas nuevos traducen la web, no el
- * contenido de muestra del simulador.
- *
- * Antes que inventar traducciones que nadie ha escrito, el resto de
- * idiomas leen esos datos en inglés: es el idioma franco del oficio y
- * lo que un francés o un alemán espera ver en una tabla de operaciones.
- */
-export type LangDatos = "es" | "en";
-export function langDatos(lang: Lang): LangDatos {
-  return lang === "es" ? "es" : "en";
-}
-
 export function t(key: StrKey, lang: Lang): string {
-  const v = STR[key] as Record<Lang, string>;
+  const v = STR[key] as { es: string; en: string };
   return v[lang];
 }
 
 export function tf(key: StrKey, lang: Lang, n: number): string {
-  const v = STR[key] as unknown as Record<Lang, (n: number) => string>;
+  const v = STR[key] as unknown as {
+    es: (n: number) => string;
+    en: (n: number) => string;
+  };
   return v[lang](n);
 }
 
@@ -419,12 +397,9 @@ interface LangCtx {
 
 const Ctx = createContext<LangCtx | null>(null);
 
-/** Detecta el idioma a partir de la ruta. Español va en la raíz, el resto lleva `/{código}`. */
+/** `/en` o `/en/lo-que-sea` → inglés. Cualquier otra cosa → español. */
 function langDeRuta(pathname: string): Lang {
-  for (const l of ["en", "fr", "de", "pt", "it"] as const) {
-    if (pathname === `/${l}` || pathname.startsWith(`/${l}/`)) return l;
-  }
-  return "es";
+  return pathname === "/en" || pathname.startsWith("/en/") ? "en" : "es";
 }
 
 /**
@@ -474,12 +449,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const irA = useCallback(
     (destino: Lang) => {
       if (destino === lang) return;
-      const base = sinPrefijoIdioma(pathname);
+      const base = sinPrefijoEn(pathname);
       const sufijo =
         typeof window !== "undefined" ? window.location.search + window.location.hash : "";
-      const ruta = destino === "es"
-        ? base
-        : (base === "/" ? `/${destino}` : `/${destino}${base}`);
+      const ruta = destino === "en" ? (base === "/" ? "/en" : `/en${base}`) : base;
       router.push(`${ruta}${sufijo}`);
     },
     [lang, pathname, router]

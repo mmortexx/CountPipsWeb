@@ -1,13 +1,6 @@
 import type { Lang } from "@/lib/i18n";
 
-const LOCALE: Record<Lang, string> = {
-  es: "es-ES",
-  en: "en-US",
-  fr: "fr-FR",
-  de: "de-DE",
-  pt: "pt-BR",
-  it: "it-IT",
-};
+const LOCALE: Record<Lang, string> = { es: "es-ES", en: "en-US" };
 
 /** Format a USD money value with sign-aware coloring support.
  *
@@ -60,15 +53,7 @@ export function fmtNum(
  *  que el signo nunca se quede solo al principio de la línea siguiente:
  *  con un espacio normal, una columna estrecha puede partir "10" y "%"
  *  en dos renglones, que es peor que no separarlos. */
-const PCT_SEP: Record<Lang, string> = {
-  es: " %",
-  en: "%",
-  // Francés, alemán y portugués separan; el italiano y el inglés pegan.
-  fr: " %",
-  de: " %",
-  pt: " %",
-  it: "%",
-};
+const PCT_SEP: Record<Lang, string> = { es: " %", en: "%" };
 
 /** Format a percentage. `value` is a ratio (0.5 = 50 %).
  *

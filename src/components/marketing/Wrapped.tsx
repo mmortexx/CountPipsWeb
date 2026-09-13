@@ -1,11 +1,12 @@
 "use client";
 
-import { langDatos, useLang } from "@/lib/i18n";
+import { useLang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { CountUp } from "@/components/tj/CountUp";
 import { Money } from "@/components/tj/Money";
 import { METRICS, TRADES, nombreSetup, rankByExpectancy, weekdayBreakdown } from "@/lib/trading/data";
+import { fmtPct } from "@/lib/trading/format";
 
 /** Spotify Wrapped-style annual stats recap. Playful but professional. */
 export function Wrapped() {
@@ -63,7 +64,7 @@ export function Wrapped() {
       label: es ? "Tu setup más rentable" : "Your most profitable setup",
       value: (
         <span className="flex flex-col gap-1 min-w-0">
-          <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-pnl-pos break-words leading-tight">{nombreSetup(topSetup.name, langDatos(lang))}</span>
+          <span className="t-display text-[clamp(1.5rem,7cqi,2.25rem)] text-pnl-pos break-words leading-tight">{nombreSetup(topSetup.name, lang)}</span>
           <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1 tnum min-w-0">
             {/* R27-1d — bumped text-xl→text-2xl (always 24px) so the green
                 P&L figure (text-pnl-pos #0B8B4B ≈ 4.3:1 on the tj-paper
@@ -78,7 +79,12 @@ export function Wrapped() {
                 tabular figures in the same baseline row looked jittery when
                 the win-rate changed. */}
             <span className="tnum text-sm text-tertiary whitespace-nowrap">
-              {es ? `${topSetup.count} ops · ${(topSetup.winRate * 100).toFixed(0)}% win` : `${topSetup.count} trades · ${(topSetup.winRate * 100).toFixed(0)}% win`}
+              {/* `toFixed` no es un formateador: escribía «54% win» con el
+                  signo pegado también en castellano, dentro de una ficha
+                  donde el importe de al lado sale de `Money`. Y «win» a
+                  secas no es ninguno de los dos idiomas: la casa llama a
+                  esto «win rate» en los dos (clave `winRate` de i18n). */}
+              {es ? `${topSetup.count} ops · ${fmtPct(topSetup.winRate, lang, 0)} win rate` : `${topSetup.count} trades · ${fmtPct(topSetup.winRate, lang, 0)} win rate`}
             </span>
           </span>
         </span>

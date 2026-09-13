@@ -1,6 +1,6 @@
 "use client";
 
-import { langDatos, useLang } from "@/lib/i18n";
+import { useLang } from "@/lib/i18n";
 import { type Trade, nombreSetup } from "@/lib/trading/data";
 import { fmtPrice, fmtDuration, fmtDateTime } from "@/lib/trading/format";
 import { Chip } from "@/components/tj/Chip";
@@ -68,7 +68,7 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
                 </span>
               </div>
               <div className="text-[11px] text-tertiary">
-                {nombreSetup(tradeA.setup, langDatos(lang))} · {fmtDateTime(tradeA.closedAt, lang)}
+                {nombreSetup(tradeA.setup, lang)} · {fmtDateTime(tradeA.closedAt, lang)}
               </div>
             </div>
 
@@ -87,7 +87,7 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
                 </span>
               </div>
               <div className="text-[11px] text-tertiary">
-                {nombreSetup(tradeB.setup, langDatos(lang))} · {fmtDateTime(tradeB.closedAt, lang)}
+                {nombreSetup(tradeB.setup, lang)} · {fmtDateTime(tradeB.closedAt, lang)}
               </div>
             </div>
           </div>
