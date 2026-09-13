@@ -84,9 +84,6 @@ export const metadata: Metadata = {
 const Changelog = dynamic(
   () => import("@/components/marketing/Changelog").then((m) => m.Changelog)
 );
-const SessionClock = dynamic(
-  () => import("@/components/marketing/SessionClock").then((m) => m.SessionClock)
-);
 
 /** Exportado con nombre para que `app/en/about/page.tsx` lo reutilice.
  *  Sin el `<script>` de datos estructurados. */
@@ -108,7 +105,6 @@ export function AboutBody() {
       />
       <Story />
       <Values />
-      <SessionClock />
 
       <Changelog />
 

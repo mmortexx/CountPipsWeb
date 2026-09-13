@@ -58,13 +58,7 @@ export function GlosarioIndice() {
       <div className="tj-container">
         {/* Buscador */}
         <Reveal>
-          {/* `max-w-2xl`, no `max-w-xl`. El ancho anterior se midió contra
-              el inglés: sus seis fichas de familia suman 459 px y entraban
-              en los 542 útiles. Las españolas suman 548 y se quedaban a
-              SEIS píxeles, así que "Psicología" caía sola a una segunda
-              línea — sólo en español, y en todas las anchuras a partir de
-              `sm`, no en un punto de ruptura concreto. */}
-          <div className="tj-paper mx-auto max-w-2xl rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-3 sm:p-4">
+          <div className="max-w-2xl">
             <label htmlFor="glos-q" className="sr-only">
               {es ? "Buscar un término" : "Search a term"}
             </label>
@@ -78,10 +72,10 @@ export function GlosarioIndice() {
                   ? "Busca por nombre o por lo que significa…"
                   : "Search by name or by what it means…"
               }
-              className="h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.5)] focus:ring-1 focus:ring-[rgb(var(--accent-base)/0.5)]"
+              className="h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]"
             />
             {/* Category Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
+            <div className="flex flex-wrap items-center gap-1.5 mt-3.5">
               <button
                 type="button"
                 aria-pressed={activeCategory === "all"}
@@ -114,7 +108,7 @@ export function GlosarioIndice() {
               })}
             </div>
 
-            <p className="mt-2.5 text-center text-[14px] text-tertiary">
+            <p className="mt-2.5 text-[14px] text-tertiary">
               {filtrados
                 ? `${filtrados.length} ${
                     filtrados.length === 1

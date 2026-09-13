@@ -163,23 +163,12 @@ export function Footer() {
   // así que renombrar la clase apagaría la luz del canto superior. Mismo caso
   // que la cinta de cotizaciones.
   return (
-    <footer className="relative mt-auto border-t border-[var(--line)] bg-[var(--bg)] safe-bottom">
-      {/* `tj-container` (T2a's fluid gutter system: clamp(1.25rem, 4vw, 2.25rem))
-          — same fluid gutter rhythm as Hero, StatsBand, MetricsShowcase, etc.
-          so the footer's left/right inset reads as one with the page above it
-          rather than a separate px-5/md:px-8 silo. `py-12 md:py-16` preserved
-          for vertical breath. */}
+    <footer className="relative mt-auto border-t border-[var(--line)] bg-[var(--surface)] safe-bottom">
       <div className="tj-container relative py-12 md:py-16">
         {/* Cinco columnas desde `md`, no cuatro: la legal es nueva. En
             móvil siguen siendo dos, y las cuatro de enlaces caen en dos
             filas de dos, que es lo que cabe en 376 px sin apretar. */}
         <div className="grid grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] gap-8 md:gap-10">
-          {/* Brand column — candlestick mark + wordmark lockup (mirrors
-              Navbar.BrandMark exactly), tagline, "100 % local" inline
-              pill, and the 5 social icons. The lockup matches the
-              navbar's so the brand reads as one product across the
-              chrome — same `text-[15px] font-semibold tracking-tight`
-              wordmark ratio (Stripe / Linear / Vercel product-mark). */}
           <div className="col-span-2 md:col-span-1">
             {/* `-my-2 py-2` es un truco con un motivo: el bloque medía 28 px
                 de alto, y un dedo no acierta 28 px. El relleno lo lleva a
@@ -200,21 +189,11 @@ export function Footer() {
             <p className="mt-4 text-sm text-secondary max-w-xs leading-relaxed">
               {t("tagline")}
             </p>
+            <p className="mt-2 text-[13px] text-tertiary max-w-xs leading-relaxed">
+              {lang === "es" ? "Diario de trading para Windows 10 y 11." : "Trading journal for Windows 10 and 11."}
+            </p>
 
 
-            {/* Social links — icon-only buttons at the WCAG 2.5.5 (AAA)
-                44 px tap target. P4 fix: this was `h-9 w-9` (36 px) which
-                reads as a refined chip but is below the 44 px threshold
-                the rest of the chrome holds (footer link rows, cookie
-                buttons, BackToTop). Bumped to `h-11 w-11` (44 px) so the
-                footer's social row is consistent with the rest of the
-                site's touch language; the 14 px SVGs now sit with ~15 px
-                of optical padding, which reads as deliberately generous
-                (Stripe / Linear pattern) rather than cramped. `gap-2.5`
-                (10 px) gives the row a touch more breathing room than
-                the previous `gap-2` (8 px) — same premium-editorial
-                rhythm the eyebrow column headers use. MagneticButton
-                preserves the magnetic pull on fine-pointer devices. */}
             <div className="mt-4 -ml-3 flex items-center gap-1">
               {SOCIAL_LINKS.map(({ label, href, Icon }) => (
                 <MagneticButton
