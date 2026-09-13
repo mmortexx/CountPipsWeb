@@ -62,13 +62,7 @@ export function GaleriaPantallas({ num = "03" }: { num?: string }) {
   return (
     <section
       id="galeria"
-      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
-         Sin superficie propia su texto cae directamente sobre el atlas
-         grabado, que se dibuja a pantalla completa en TODAS las
-         anchuras: el reparto a dos columnas que decía resolverlo por
-         encima de 1.280 px nunca existió (ver la nota del atlas en
-         globals.css). */
-      className="section bg-veil"
+      className="section"
       aria-labelledby={`${idBase}-titulo`}
     >
       <div className="mx-auto w-[var(--page-w)]">

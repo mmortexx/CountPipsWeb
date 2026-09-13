@@ -64,7 +64,7 @@ export function BetaPage({ lang = "es" }: { lang?: "es" | "en" } = {}) {
         breadcrumbEn="Early access"
         readingTimeMin={2}
       />
-      <section className="section bg-veil">
+      <section className="section">
         <div className="tj-container">
           <BetaApplication />
           <BetaApplicationNote />

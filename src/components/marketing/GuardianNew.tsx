@@ -62,7 +62,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
   return (
     <section
       id="guardian"
-      className="section bg-veil relative overflow-clip border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
+      className="section relative overflow-clip border-t border-[rgb(var(--divider)/0.06)] scroll-mt-24"
     >
       {/* P1 — contenedor unificado a `tj-container`: hereda los gutters
           fluidos (clamp(1.25rem, 4vw, 2.25rem)) y el page-w (1080px) de

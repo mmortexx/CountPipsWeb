@@ -200,7 +200,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
       : 40;
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.08)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.08)]">
       <div className="tj-container">
         {/* Cabecera */}
         <div className="inline-flex items-center gap-3 mb-5">

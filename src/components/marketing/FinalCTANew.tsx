@@ -35,22 +35,7 @@ export function FinalCTANew() {
   const es = lang === "es";
   return (
     <section
-      // R27-1b — `bg-veil` added: the closing CTA's heading "Deja de
-      // operar a ciegas. Empieza a medir." + body copy were floating
-      // directly over the eye WebGL background. The section's only
-      // backings were the two radial accent halos (12 % and 22 %
-      // accent, both heavy blurred) + a bottom radial vignette fading
-      // to `var(--bg)` — none of these occlude the eye's bright
-      // red/green fibers in light theme, so VLM flagged the text as
-      // washed out. `bg-veil` (82 % bg in light / 74 % in dark) sits
-      // UNDER the decorative halos (they're absolute inset-0 divs that
-      // paint on top of the section's background) — so the halos still
-      // bloom visibly while the eye is occluded. The text container
-      // below also carries `tj-legible-text` so the heading keeps a
-      // theme-aware halo in the area where the bright inner halo
-      // (22 % accent at 50 % 50 %) sits directly behind "Empieza a
-      // medir.".
-      className="section relative overflow-clip bg-veil border-t border-[rgb(var(--divider)/0.06)]"
+      className="section relative overflow-clip border-t border-[rgb(var(--divider)/0.06)]"
     >
       {/* Halo "núcleo + corona" retirado (rediseño institucional). Eran
           DOS discos de acento difuminados y superpuestos detrás del

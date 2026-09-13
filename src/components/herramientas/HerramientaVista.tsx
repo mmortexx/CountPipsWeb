@@ -61,7 +61,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
       <Componente num="01" />
 
       {/* Cinta de Acceso Rápido entre las 8 Herramientas */}
-      <section className="border-t border-[rgb(var(--divider)/0.10)] bg-veil py-4">
+      <section className="border-t border-[rgb(var(--divider)/0.10)] py-4">
         <div className="tj-container">
           {/* `tj-fila-sigue` añade la pista de que la fila sigue: sin ella
               la última herramienta quedaba partida contra el canto en las
@@ -102,13 +102,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
           nada más. Sin esta línea, una herramienta que dice «arriesga
           este tamaño» se puede leer como una recomendación. */}
       <section
-      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos.
-         Sin superficie propia, su texto cae directamente sobre el atlas
-         grabado del fondo, que se dibuja a pantalla completa en TODAS
-         las anchuras. Medido antes de ponerlo: el fondo bajo los
-         rótulos pequeños llegaba a 1,3:1 en el peor píxel, con más de
-         un 20 % del área del texto por debajo del mínimo AA. */
-        className="section-tight bg-veil"
+        className="section-tight"
       >
         <div className="tj-container">
           <div className="mx-auto max-w-[62ch]">

@@ -31,7 +31,7 @@ export function DemoConversionPanel() {
       ];
 
   return (
-    <section id="demo-next-step" className="section-tight bg-veil border-y border-[rgb(var(--divider)/0.1)] scroll-mt-24">
+    <section id="demo-next-step" className="section-tight border-y border-[rgb(var(--divider)/0.1)] scroll-mt-24">
       <div className="tj-container">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <Reveal>

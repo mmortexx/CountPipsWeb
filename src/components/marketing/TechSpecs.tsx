@@ -85,7 +85,7 @@ export function TechSpecs() {
   ];
 
   return (
-    <section className="section bg-veil relative overflow-clip">
+    <section className="section relative overflow-clip">
       <div className="relative tj-container">
         <SectionHeader
           composicion="partida"

@@ -209,7 +209,7 @@ export function EdgeSignificanceChecker({ num = "01" }: { num?: string }) {
           };
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Left: intro + inputs */}
         <div>

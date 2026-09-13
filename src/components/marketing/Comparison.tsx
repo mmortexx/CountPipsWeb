@@ -92,7 +92,7 @@ export function Comparison() {
   ];
 
   return (
-    <section className="section cv-auto relative overflow-clip bg-veil">
+    <section className="section cv-auto relative overflow-clip">
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="partida"

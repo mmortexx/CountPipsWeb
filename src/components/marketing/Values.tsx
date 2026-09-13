@@ -101,9 +101,7 @@ export function Values() {
   const es = lang === "es";
 
   return (
-    <section id="values" className="section bg-veil relative overflow-clip scroll-mt-24">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section id="values" className="section relative overflow-clip scroll-mt-24">
 
       <div className="relative z-10 tj-container">
         {/* Cabecera PARTIDA — titular a un lado, entradilla al otro.

@@ -245,7 +245,7 @@ export function ComparisonSlider() {
   );
 
   return (
-    <section className="section bg-veil">
+    <section className="section">
       <div className="tj-container">
         <Reveal className="text-center max-w-2xl mx-auto">
           <Eyebrow className="justify-center">

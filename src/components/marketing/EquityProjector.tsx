@@ -595,7 +595,7 @@ export function EquityProjector({ num = "03" }: { num?: string }) {
   );
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.08)] relative overflow-hidden">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.08)] relative overflow-hidden">
       <div className="tj-container">
         
         {/* Cabecera Editorial */}

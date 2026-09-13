@@ -92,9 +92,7 @@ export function Story() {
   const quoteWords = quote.split(" ");
 
   return (
-    <section id="story" className="section bg-veil relative scroll-mt-24 overflow-clip">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section id="story" className="section relative scroll-mt-24 overflow-clip">
       <div className="relative z-10 tj-container grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-20 items-start">
         {/* LEFT — editorial pull quote (sticky + subtle parallax) */}
         {/* Sin `data-entra`, y no por casualidad: esta columna es

@@ -35,7 +35,7 @@ export function DataFlowComparison({ num = "02" }: { num?: string }) {
   const send = useCallback(() => setPulses((p) => p + 1), []);
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container">
         {/* Header */}
         <div className="max-w-2xl mb-8">

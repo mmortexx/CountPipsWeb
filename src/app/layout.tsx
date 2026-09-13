@@ -12,7 +12,6 @@ import { OverlayHost } from "@/components/tj/OverlayHost";
 import { ScrollToTop } from "@/components/tj/ScrollToTop";
 import { TransicionPagina } from "@/components/tj/TransicionPagina";
 import { SkipLink } from "@/components/tj/SkipLink";
-import { BackgroundFX } from "@/components/tj/BackgroundFX";
 import { IntroSequence } from "@/components/tj/IntroSequence";
 import { SectionReveal } from "@/components/tj/SectionReveal";
 import { SITE_URL } from "@/lib/site";
@@ -346,14 +345,6 @@ export default function RootLayout({
             razonamiento completo. */}
         <Providers>
           <div className="min-h-screen flex flex-col">
-            {/* Capa de efectos: el atlas grabado del fondo, la intro con
-                loader y la revelación por sección.
-
-                Aquí iba también `DecorFX`, el foco que seguía al cursor.
-                Se retira: escuchaba `pointermove` en el documento entero de
-                las 155 páginas para buscar tarjetas con la clase `.tj-spot`,
-                y esa clase no la aplicaba ni un componente del sitio. */}
-            <BackgroundFX />
             <IntroSequence />
             <SectionReveal />
             <SkipLink />

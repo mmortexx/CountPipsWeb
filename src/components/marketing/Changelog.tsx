@@ -103,9 +103,7 @@ export function Changelog() {
       ];
 
   return (
-    <section id="changelog" className="section cv-auto bg-veil relative overflow-clip scroll-mt-24">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section id="changelog" className="section cv-auto relative overflow-clip scroll-mt-24">
 
       <div className="relative z-10 tj-container">
         {/* Header */}

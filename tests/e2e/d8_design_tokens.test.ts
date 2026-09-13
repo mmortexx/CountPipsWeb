@@ -112,7 +112,7 @@ describe("Dimension D8: Design System Tokens (Tier 1 Feature Coverage)", () => {
     expect(globalsCss).toContain(':root[data-theme="light"][data-palette="grafito"]');
   });
 
-  it("T1.4: Surface classes (.tj-paper, .tj-paper-dense, .tj-range, .bg-veil) map to design tokens", () => {
+  it("T1.4: Surface classes (.tj-paper, .tj-paper-dense, .tj-range) map to design tokens", () => {
     // .tj-paper class definitions
     expect(globalsCss).toContain(".tj-paper {");
     expect(globalsCss).toContain(':root[data-theme="light"] .tj-paper {');
@@ -122,8 +122,6 @@ describe("Dimension D8: Design System Tokens (Tier 1 Feature Coverage)", () => {
     // .tj-range slider class
     expect(globalsCss).toContain(".tj-range {");
 
-    // .bg-veil translucent section background
-    expect(globalsCss).toContain(".bg-veil {");
   });
 
   it("T1.5: Theme module contracts and types are consistent", () => {

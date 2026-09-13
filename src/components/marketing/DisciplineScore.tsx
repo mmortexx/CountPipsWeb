@@ -356,7 +356,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
           : "rgb(var(--pnl-pos))";
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container">
         {/* ── Encabezado ─────────────────────────────────────────────── */}
         <div className="mb-8 max-w-[46em]">

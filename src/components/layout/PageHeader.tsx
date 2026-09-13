@@ -128,10 +128,6 @@ export function PageHeader({
             "linear-gradient(180deg, transparent, color-mix(in srgb, var(--bg) 52%, transparent))",
         }}
       />
-      {/* Section grain — opt-in 3 % fractalNoise overlay so the page
-          header reads as the same machined surface as the sections below
-          it rather than a flat black void. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
 
       <div className="relative z-10 tj-container">
         {/* El folio. Va en la marginalia, en grande y muy tenue: es la

@@ -169,7 +169,7 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
   const hasSelection = selected.length > 0;
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container">
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">

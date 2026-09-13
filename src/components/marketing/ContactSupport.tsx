@@ -88,19 +88,8 @@ export function ContactSupport() {
     <section
       id="support"
       aria-label={es ? "Soporte" : "Support"}
-      // R27-1b — `bg-veil` added: this section's only backing was the
-      // 3 % fractalNoise grain overlay (transparent in hue). The eye
-      // WebGL (bright red/green fibers in light theme) was showing
-      // through, washing out the "¿No encuentras tu respuesta?"
-      // heading + subtitle + the 3 support card titles. `bg-veil`
-      // (82 % bg in light / 74 % in dark) occludes the eye while
-      // the grain overlay still paints on top. The cards themselves
-      // (`tj-paper border border-[rgb(var(--divider)/0.13)]`) have their own opaque surface and
-      // are unaffected.
-      className="section-tight relative overflow-clip bg-veil scroll-mt-24"
+      className="section-tight relative overflow-clip scroll-mt-24"
     >
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
       <div className="relative z-10 tj-container">
         <div className="max-w-3xl mx-auto text-center">
           <Reveal>

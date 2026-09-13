@@ -157,13 +157,8 @@ export function ContactForm() {
     <section
       id="contacto"
       aria-label={es ? "Formulario de contacto" : "Contact form"}
-      /* `bg-veil` — esta sección se quedó fuera de la pasada de velos:
-         el eyebrow, el titular y el subtítulo caían sobre el punto más
-         brillante del iris y el subtítulo resultaba casi ilegible. */
-      className="section-tight relative overflow-clip bg-veil scroll-mt-24"
+      className="section-tight relative overflow-clip scroll-mt-24"
     >
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
       <div className="relative tj-container">
         <div className="max-w-xl mx-auto">
           <Reveal>

@@ -39,9 +39,7 @@ export function HowItWorks() {
   ];
 
   return (
-    <section className="section bg-veil relative overflow-clip">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section className="section relative overflow-clip">
       <div className="relative z-10 tj-container">
         {/* Header */}
         <SectionHeader

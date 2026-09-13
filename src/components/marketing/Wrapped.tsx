@@ -156,9 +156,7 @@ export function Wrapped() {
   ];
 
   return (
-    <section className="section cv-auto relative overflow-clip bg-veil">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section className="section cv-auto relative overflow-clip">
 
       <div className="relative max-w-page mx-auto px-5 md:px-8">
         {/* Section header */}

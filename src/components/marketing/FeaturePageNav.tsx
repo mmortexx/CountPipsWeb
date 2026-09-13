@@ -109,7 +109,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
   };
 
   return (
-    <section className="section-tight bg-veil relative overflow-clip border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight relative overflow-clip border-t border-[rgb(var(--divider)/0.06)]">
       <div className="relative tj-container">
         {/* Share button — top-right */}
         <Reveal className="flex justify-center mb-10">

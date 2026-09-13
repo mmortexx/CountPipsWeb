@@ -46,14 +46,7 @@ export function TrustStrip() {
   return (
     <section
       aria-label={es ? "Confianza" : "Trust"}
-      // R27-1b — `bg-veil` added: this thin trust band had no
-      // background — the eye WebGL (bright red/green fibers in light
-      // theme) was showing through between the icons + labels,
-      // washing out the small `t-caption text-secondary` labels.
-      // `bg-veil` (82 % bg in light / 74 % in dark) occludes the eye
-      // while the top accent gradient hairline still paints on top
-      // for the precision-machined top edge.
-      className="section-tight relative overflow-clip bg-veil"
+      className="section-tight relative overflow-clip"
     >
       {/* Accent gradient line that sweeps across the strip on view */}
       <div

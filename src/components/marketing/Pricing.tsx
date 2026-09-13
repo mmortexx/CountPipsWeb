@@ -104,11 +104,8 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   return (
     <section
       id="pricing"
-      className="section cv-auto bg-veil relative overflow-clip scroll-mt-24"
+      className="section cv-auto relative overflow-clip scroll-mt-24"
     >
-      {/* Opt-in 3% fractalNoise grain — matches HeroVideo / Bento so the
-          conversion section reads as a premium printed surface. */}
-      <div className="grain absolute inset-0 pointer-events-none" aria-hidden="true" />
 
       <div className="relative z-10 tj-container">
         {/* Header — centered, matches Stripe / Linear / Vercel pricing

@@ -48,7 +48,7 @@ export function ProfileSelector() {
   ] as const;
 
   return (
-    <section className="section-tight border-b border-[rgb(var(--divider)/0.1)] bg-veil" aria-labelledby="profile-selector-title">
+    <section className="section-tight border-b border-[rgb(var(--divider)/0.1)]" aria-labelledby="profile-selector-title">
       <div className="tj-container">
         <div className="max-w-2xl">
           <p className="eyebrow">{es ? "Elige tu recorrido" : "Choose your path"}</p>

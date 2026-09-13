@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -143,10 +142,8 @@ export function SeguridadBody() {
       <DataFlowComparison num="02" />
       <TechSpecs />
 
-      <PlateInterlude index={0} />
       <Integrations />
 
-      <PlateInterlude index={1} />
       <FeaturePageNav current="seguridad" />
       <FinalCTANew />
       <TableOfContents />

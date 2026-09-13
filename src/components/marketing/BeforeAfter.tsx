@@ -60,7 +60,7 @@ export function BeforeAfter() {
       ];
 
   return (
-    <section className="section bg-veil relative overflow-clip">
+    <section className="section relative overflow-clip">
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="centrada"

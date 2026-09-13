@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Ticker } from "@/components/marketing/Ticker";
 import { Hero } from "@/components/marketing/Hero";
 import { ProfileSelector } from "@/components/marketing/ProfileSelector";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
 import { SUPPORT_EMAIL } from "@/lib/forms";
@@ -178,21 +177,13 @@ export function HomeBody() {
           no llega más abajo. */}
       <ProductShowcase />
 
-      <PlateInterlude index={0} />
-
       <MetricsShowcaseNew />
       <Ticker />
 
-      <PlateInterlude index={1} />
-
       <GuardianNew />
-
-      <PlateInterlude index={2} />
 
       <Values />
       <TrustStrip />
-
-      <PlateInterlude index={3} />
 
       <FinalCTANew />
     </>

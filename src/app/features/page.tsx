@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -160,13 +159,10 @@ export function FeaturesBody() {
           lista de nombres, y lo siguiente que necesita es ver la cosa. */}
       <GaleriaPantallas num="03" />
 
-      <PlateInterlude index={0} />
       <HowItWorks />
 
-      <PlateInterlude index={2} />
       <MoreFeatures />
 
-      <PlateInterlude index={3} />
       <FinalCTANew />
       <TableOfContents />
     </>

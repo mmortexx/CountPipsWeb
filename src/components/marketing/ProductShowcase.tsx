@@ -79,7 +79,7 @@ export function ProductShowcase() {
          `hidden` la captura aparecía puesta, sin gesto — lo detecta
          `scripts/humo.mjs`. Está escrito en globals.css: las secciones
          de este sitio recortan con `clip`. */
-      className="section border-b border-[rgb(var(--divider)/0.1)] relative overflow-clip bg-veil"
+      className="section border-b border-[rgb(var(--divider)/0.1)] relative overflow-clip"
       aria-labelledby="producto-titulo"
     >
       <div className="mx-auto w-[var(--page-w)]">

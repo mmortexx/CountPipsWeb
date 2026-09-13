@@ -99,7 +99,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         breadcrumbEn={profile === "manual" ? "Manual trading" : "Prop firms"}
       />
 
-      <section className="section bg-veil">
+      <section className="section">
         <div className="tj-container">
           <SectionHeader
             composicion="partida"
@@ -412,7 +412,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         </div>
       </section>
 
-      <section className="section bg-veil">
+      <section className="section">
         <div className="tj-container">
           <div className="tj-paper border border-[rgb(var(--divider)/0.14)] p-6 sm:p-8">
             <p className="eyebrow">{es ? "Siguiente paso" : "Next step"}</p>

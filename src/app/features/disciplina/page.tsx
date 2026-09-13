@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -145,10 +144,8 @@ export function DisciplinaBody() {
       <GuardianNew num="01" />
       <DisciplineCost num="02" />
 
-      <PlateInterlude index={0} />
       <BeforeAfter />
 
-      <PlateInterlude index={1} />
       <ComparisonSlider />
 
       <RMultipleSimulator num="03" />
@@ -162,7 +159,6 @@ export function DisciplinaBody() {
           dos direcciones es contenido duplicado, y el buscador reparte
           entre ambas lo que debería ir a una. */}
 
-      <PlateInterlude index={2} />
       <FeaturePageNav current="disciplina" />
       <FinalCTANew />
       <TableOfContents />

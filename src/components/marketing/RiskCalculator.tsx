@@ -303,7 +303,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
   }, [c, balance, riskPct, entry, stop, target, assetMode, es, fmtUsd, fmtNum]);
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         <div>
           <div className="inline-flex items-center gap-3 mb-5">

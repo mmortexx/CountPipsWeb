@@ -55,14 +55,7 @@ export function StatsBandNew() {
   ];
   return (
     <section
-      // R27-1b — `bg-veil` added: this 4-column stats band had no
-      // background — the eye WebGL (bright red/green fibers in light
-      // theme) was showing through between the stats, washing out
-      // the `text-[13.5px] text-tertiary` descriptions under each
-      // big number. `bg-veil` (82 % bg in light / 74 % in dark)
-      // occludes the eye; the `border-b` bottom hairline is
-      // preserved for the section's lower edge.
-      className="section-tight border-b border-[rgb(var(--divider)/0.10)] relative overflow-clip bg-veil"
+      className="section-tight border-b border-[rgb(var(--divider)/0.10)] relative overflow-clip"
     >
       {/* T2c — `tj-container` hereda los gutters fluidos (clamp(1.25rem,
           4vw, 2.25rem)) definidos por T2a en globals.css, sustituyendo al

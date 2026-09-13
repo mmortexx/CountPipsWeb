@@ -5,7 +5,6 @@ import { Story } from "@/components/marketing/Story";
 import { Values } from "@/components/marketing/Values";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { BetaStatus } from "@/components/beta/BetaStatus";
 
@@ -116,10 +115,8 @@ export function AboutBody() {
       <Values />
       <SessionClock num="02" />
 
-      <PlateInterlude index={0} />
       <Changelog />
 
-      <PlateInterlude index={1} />
       {/* `Milestones` retirado: repetía en horizontal los cinco mismos
           hitos que el Changelog acababa de contar dos pantallas antes
           (v1.0, Playbook, Monte Carlo, Guardián, Importador). Dos líneas

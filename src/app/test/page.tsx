@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { QUESTIONS } from "@/lib/trading/disciplineQuestions";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -136,7 +135,6 @@ export function TestBody() {
       />
       <DisciplineScore num="01" />
 
-      <PlateInterlude index={0} />
       <FinalCTANew />
     </>
   );

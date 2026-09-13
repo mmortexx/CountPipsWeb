@@ -48,7 +48,7 @@ export function TableOfContents() {
     // heading here would create a hydration mismatch in React.
     const allSections = Array.from(document.querySelectorAll("section"));
     // Drop the last 2 sections: FinalCTANew + the FeaturePageNav section.
-    // (FeaturePageNav has class bg-veil and contains "Sigue explorando" /
+    // (FeaturePageNav has class and contains "Sigue explorando" /
     // "Keep exploring" text — we detect it by that signature.)
     const contentSections = allSections.filter((sec) => {
       const txt = sec.textContent || "";

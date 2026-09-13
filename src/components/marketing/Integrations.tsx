@@ -39,9 +39,7 @@ export function Integrations() {
   const es = lang === "es";
 
   return (
-    <section className="section bg-veil relative overflow-clip">
-      {/* Section grain — opt-in 3 % fractalNoise overlay. */}
-      <div aria-hidden="true" className="grain absolute inset-0 pointer-events-none" />
+    <section className="section relative overflow-clip">
       <div className="relative tj-container">
         <SectionHeader
           composicion="apilada"

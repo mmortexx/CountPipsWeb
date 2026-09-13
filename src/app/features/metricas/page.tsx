@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -148,13 +147,10 @@ export function MetricasBody() {
       <RiskCalculator num="02" />
       <EquityProjector num="03" />
 
-      <PlateInterlude index={0} />
       <Wrapped />
 
-      <PlateInterlude index={1} />
       <FeaturePageNav current="metricas" />
 
-      <PlateInterlude index={2} />
       <FinalCTANew />
       <TableOfContents />
     </>

@@ -5,7 +5,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { PRECIO_CORE } from "@/lib/precios";
 import { Pricing } from "@/components/marketing/Pricing";
 import { TableOfContents } from "@/components/tj/TableOfContents";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { BetaStatus } from "@/components/beta/BetaStatus";
 
@@ -178,11 +177,9 @@ export function PricingBody() {
       <PricingFAQ />
       <BetaStatus />
 
-      <PlateInterlude index={0} />
       <TrustStrip />
       <StatsBandNew />
 
-      <PlateInterlude index={1} />
       <FinalCTANew />
       <TableOfContents />
     </>

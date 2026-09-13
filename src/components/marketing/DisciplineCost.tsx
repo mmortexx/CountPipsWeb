@@ -134,7 +134,7 @@ export function DisciplineCost({ num = "05·b" }: { num?: string }) {
   };
 
   return (
-    <section className="section-tight bg-veil border-t border-[rgb(var(--divider)/0.06)]">
+    <section className="section-tight border-t border-[rgb(var(--divider)/0.06)]">
       <div className="max-w-[1240px] mx-auto px-5 md:px-8">
         {/* Cabecera de sección */}
         <div className="inline-flex items-center gap-3 mb-5">

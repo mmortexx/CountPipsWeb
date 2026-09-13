@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { GlosarioIndice } from "@/components/glosario/GlosarioIndice";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { PlateInterlude } from "@/components/tj/PlateInterlude";
 import { TERMINOS } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -96,7 +95,6 @@ export function GlosarioBody() {
         breadcrumbEn="Glossary"
       />
       <GlosarioIndice />
-      <PlateInterlude index={0} />
       <FinalCTANew />
     </>
   );

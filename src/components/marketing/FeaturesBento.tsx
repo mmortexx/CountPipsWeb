@@ -21,16 +21,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
   return (
     <section
       id="features"
-      // R27-1b — `bg-veil` added: this section's only backing was the
-      // top-left radial halo (`color-mix(in oklab, var(--ink) 5%,
-      // transparent)` — essentially a 5 % tint, nearly transparent).
-      // The eye WebGL (bright red/green fibers in light theme) was
-      // showing through, washing out the "Todo lo que una mesa
-      // profesional espera de un diario" heading + body copy +
-      // bento card titles. `bg-veil` (82 % bg in light / 74 % in
-      // dark) occludes the eye while the top-left halo + the bento
-      // cards' own `liquid-glass` surfaces still paint on top.
-      className="section relative overflow-clip bg-veil"
+      className="section relative overflow-clip"
     >
       <div
         aria-hidden
