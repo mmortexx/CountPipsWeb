@@ -130,7 +130,7 @@ export function NotFoundClient() {
                  aquí convivían `rounded-md` y `rounded-[5px]` — y el alto
                  que deja al botón interior sus 44 px de objetivo táctil
                  con su propio aire (era `h-11` con un botón de 32 px). */
-              className="w-full bg-[var(--raised)] border border-[var(--line-2)] rounded-[4px] h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
+              className="w-full bg-[var(--surface)] border border-transparent rounded-full h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
             />
             <div
               className="tj-alza absolute right-1.5 top-1/2 -translate-y-1/2"
