@@ -41,12 +41,25 @@ Robinhood Legend, Two Sigma, Bridgewater.
   es el tramo del titular en tono terciario. Sin numeración «§ 02» ni romanos.
 - **Superficies**: `.tj-paper` opaca, `.tj-hoja` con canto de 1 px y radio
   6 px, sin doble filete ni escuadras. Radios: 3/4/6/6/8 px.
-- **Portada**: Hero con captura real a tamaño completo → cifras → recorridos →
-  pantallas (pestañas segmentadas `.tj-pestanas`) → métricas → guardián →
-  principios → cierre en bloque de tinta (`.tj-cierre`). CTA: `.cta`.
+- **Portada**: Hero centrado con la captura a caballo sobre banda `--surface`
+  (`.tj-hero::before`) y fila de plataformas cuyo CSV entra → cifras →
+  recorridos → pantallas (`.tj-pestanas`) → métricas → guardián → principios →
+  cierre (`.tj-cierre`). Bandas grises con `.tj-banda`. CTA: `.cta`.
+- **Sistema de piezas**: etiquetas y cajas de icono con `--chip`/`--chip-line`
+  (nunca tintes del acento, que ahora es tinta y ensucia a gris); rótulos en
+  mayúsculas a 0,08 em; campos blancos con filete `--line-2`.
+- **Una idea por pantalla**: las secciones que viven bajo un `PageHeader`
+  reciben `enPagina` y no repiten titular; cada página cierra con una sola
+  llamada (`FinalCTANew enDemo` en /demo; cierre propio en los perfiles).
+- **Afirmaciones técnicas**: la ficha de almacenamiento de /features/seguridad
+  sólo dice lo comprobado en el código del programa (SQLite, `%LOCALAPPDATA%`,
+  copias AES-256-GCM con PBKDF2 600.000, DPAPI para credenciales).
 - **Pendiente de decidir por el dueño**: el logotipo de puntos se ve borroso a
   tamaño de barra; la captura oscura de «Resumen» no deja ver la curva; las
-  capturas sólo existen en español.
+  capturas sólo existen en español; «0 bytes enviados a la nube», «sin
+  servidores» y «cifrado en reposo» chocan con lo que hace el programa
+  (datos de mercado, licencias y sincronización opcional; no se encontró
+  cifrado de la base viva).
 
 ## Dónde estaba antes del rediseño (2026-09-10)
 
