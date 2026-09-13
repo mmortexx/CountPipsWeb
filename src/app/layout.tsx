@@ -357,13 +357,11 @@ export default function RootLayout({
                 un elemento consigo mismo — el resultado es un parpadeo
                 de lo que debería quedarse quieto. Lo que se mueve es lo
                 que cambia. Quien dispara la transición es
-                `TransicionPagina`; la coreografía está en
+                `TransicionPagina`, que pone el nombre sólo mientras dura
+                —un `view-transition-name` fijo impide al cristal leer lo
+                que tiene detrás—; la coreografía está en
                 `::view-transition-*` (globals.css). */}
-            <main
-              id="main-content"
-              className="flex-1"
-              style={{ viewTransitionName: "pagina" }}
-            >
+            <main id="main-content" className="flex-1">
               {children}
             </main>
             <Footer />

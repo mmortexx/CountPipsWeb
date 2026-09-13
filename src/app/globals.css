@@ -1107,6 +1107,10 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 500px;
   }
+  /* El cristal necesita ver lo que tiene detrás; la contención se lo corta. */
+  .cv-auto:has(.tj-cristal) {
+    content-visibility: visible;
+  }
 
   /* ============================================================
      OBJETIVO DE TOQUE — 44 px, pero SÓLO donde hay dedos
@@ -3204,6 +3208,7 @@ button.icon-btn:hover > svg,
   --cristal-tinte: 246 248 250;
   --cristal-alfa: 0.58;
   --cristal-alfa-denso: 0.8;
+  --barra-alfa: 0.78;
   --cristal-blur: 30px;
   --cristal-saturacion: 175%;
   --cristal-filo: rgb(255 255 255 / 0.85);
@@ -3220,6 +3225,7 @@ button.icon-btn:hover > svg,
   --cristal-tinte: 12 17 22;
   --cristal-alfa: 0.55;
   --cristal-alfa-denso: 0.78;
+  --barra-alfa: 0.7;
   --cristal-saturacion: 150%;
   --cristal-filo: rgb(255 255 255 / 0.075);
   --cristal-canto: rgb(255 255 255 / 0.045);
@@ -3230,12 +3236,32 @@ button.icon-btn:hover > svg,
   --luz-alfa: 0.34;
   --curva: rgb(236 239 242 / 0.2);
 }
+/* `--lente` la publica `src/lib/lente.ts` en Chromium: refracción en el
+   bisel y reflejo especular. No se hereda, para que un cristal dentro de
+   otro no use el filtro de su padre. */
+@property --lente {
+  syntax: "*";
+  inherits: false;
+}
 .tj-cristal,
 .tj-barra[data-cristal="true"]::before {
   background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa));
   background-image: var(--cristal-grano);
   -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
-  backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
+  backdrop-filter: var(--lente, blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)));
+}
+.tj-barra[data-cristal="true"]::before {
+  backdrop-filter: var(--lente-barra, blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)));
+}
+.tj-cristal[data-lente="true"] {
+  background-image: none;
+}
+.tj-cristal--control[data-lente="true"] {
+  background-color: rgb(var(--cristal-tinte) / 0.16);
+  box-shadow:
+    inset 0 1px 0 var(--cristal-filo),
+    inset 0 0 0 1px var(--cristal-canto),
+    0 10px 28px -12px rgb(11 15 20 / 0.35);
 }
 .tj-cristal {
   isolation: isolate;
@@ -3248,22 +3274,35 @@ button.icon-btn:hover > svg,
   background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa-denso));
 }
 
-/* La barra: opaca arriba del todo, cristal en cuanto la página pasa por
-   debajo. El material va en `::before` para que la barra no se vuelva
-   raíz de difuminado y el menú que cuelga de ella siga viendo la página. */
+/* La barra: opaca arriba del todo; al desplazar se retira y queda una
+   cápsula de cristal líquido flotando sobre la página. El material va en
+   `::before` para que la barra no sea raíz de difuminado y el menú que
+   cuelga de ella siga viendo lo de detrás. */
 .tj-barra {
   isolation: isolate;
+  background-color: var(--bg);
+  transition: background-color 0.3s var(--ease-suave);
+}
+.tj-barra[data-cristal="true"] {
+  background-color: transparent;
 }
 .tj-barra::before {
   content: "";
   position: absolute;
-  inset: 0;
   z-index: -1;
-  background-color: var(--bg);
-  transition: background-color 0.3s var(--ease-suave);
+  inset: 8px max(8px, calc((100% - 1232px) / 2));
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease-suave);
+  box-shadow:
+    inset 0 1px 0 var(--cristal-filo),
+    inset 0 0 0 1px var(--cristal-canto),
+    0 14px 34px -20px rgb(11 15 20 / 0.5);
 }
 .tj-barra[data-cristal="true"]::before {
-  background-color: rgb(var(--cristal-tinte) / 0.72);
+  opacity: 1;
+  background-color: rgb(var(--cristal-tinte) / var(--barra-alfa));
 }
 
 /* El fondo de escritorio: tres luces frías y difusas que se funden con la
@@ -3516,7 +3555,9 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 
    El respaldo para quien no lo soporte sigue en `SectionReveal.tsx`. */
 @supports (animation-timeline: view()) {
-  #main-content section:not(#top):not(section section) {
+  /* Las secciones con cristal no entran animadas: una opacidad animada en
+     un ancestro corta lo que el cristal ve detrás y lo deja transparente. */
+  #main-content section:not(#top):not(section section):not(:has(.tj-cristal)) {
     animation: tj-entra-seccion linear both;
     animation-timeline: view(block);
     /* Empieza en cuanto asoma y termina cuando ha entrado un tercio: el
@@ -4218,6 +4259,9 @@ svg [data-entra="sello"] {
    acelera hacia fuera, que es lo contrario de todo lo demás en esta
    hoja. Una página que se va debe quitarse de en medio; sólo ocurre
    aquí, así que no se asciende a token. */
+:root[data-transicion] #main-content {
+  view-transition-name: pagina;
+}
 ::view-transition-old(pagina) {
   animation:
     tj-vt-sale 200ms cubic-bezier(0.4, 0, 1, 1) both;

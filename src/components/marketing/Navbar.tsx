@@ -8,6 +8,7 @@ import { sinPrefijoEn } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { ANIO_PUBLICACION } from "@/lib/publicacion";
+import { useLente } from "@/components/tj/useLente";
 
 /**
  * Navbar — barra edge-to-edge con material de papel translúcido (e-reader).
@@ -370,6 +371,8 @@ export function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const lenteBarra = useLente("barra");
+  const lenteMenu = useLente("panel");
   const [mobileOpen, setMobileOpen] = useState(false);
   /* El cajón no existe hasta que alguien lo abre por primera vez, y a
      partir de ahí se queda montado para siempre.
@@ -687,17 +690,10 @@ export function Navbar() {
       <header data-navbar-root className="fixed inset-x-0 top-0 z-50">
       <nav
         aria-label={es ? "Principal" : "Main"}
-        className="tj-barra relative flex w-full items-center border-b"
+        ref={lenteBarra}
+        className="tj-barra relative flex w-full items-center"
         data-cristal={scrolled ? "true" : "false"}
-        style={{
-          height: ALTURA_BARRA,
-          borderColor: scrolled ? "var(--line)" : "transparent",
-          boxShadow: scrolled
-            ? "0 10px 30px -24px rgb(11 15 20 / 0.3)"
-            : "none",
-          transition:
-            "box-shadow 0.3s var(--ease-suave), border-color 0.3s var(--ease-suave)",
-        }}
+        style={{ height: ALTURA_BARRA }}
       >
         {/* Rejilla de tres zonas: la navegación queda ópticamente
             centrada en la página con independencia de lo que midan la
@@ -848,6 +844,7 @@ export function Navbar() {
                   biblioteca de animación a las 155 páginas del sitio. */}
               {megaOpen && (
                   <div
+                    ref={lenteMenu}
                     role="menu"
                     aria-labelledby="navbar-producto-trigger"
                     /* Navegación con flechas. Un menú abierto tiene que

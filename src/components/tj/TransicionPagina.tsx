@@ -117,6 +117,8 @@ export function TransicionPagina() {
          veía porque ahí el prefijo es vacío y quitarlo no cambia nada:
          solo fallaba lo que estaba publicado. */
       const ruta = rutaDeRouter(destino.pathname) + destino.search + destino.hash;
+      const raiz = doc.documentElement;
+      raiz.dataset.transicion = "";
       doc.startViewTransition(
         () =>
           new Promise<void>((resolver) => {
@@ -134,7 +136,7 @@ export function TransicionPagina() {
             pendiente.current = acabar;
             router.push(ruta);
           }),
-      );
+      ).finished.finally(() => delete raiz.dataset.transicion);
     };
 
     // En captura: así se llega antes que el manejador de `<Link>`, que
