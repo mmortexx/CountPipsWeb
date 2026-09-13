@@ -3880,49 +3880,6 @@ svg [data-entra="sello"] {
   transform-origin: center;
 }
 
-/* ── EL COMPARADOR «ANTES / DESPUÉS» ──────────────────────────────────
-   Una sola cifra manda en este componente: dónde está el tirador, de 0 a
-   100. De ella salen el recorte del panel «después» y la posición del
-   propio tirador. Iba en un `useMotionValue` de framer-motion con dos
-   `useTransform` colgando.
-
-   Ahora es una propiedad personalizada, y eso vale por tres cosas:
-
-     · las dos derivadas se calculan en CSS con `calc()`, sin pasar por
-       React ni provocar renders durante el arrastre;
-     · el `@property` de abajo la DECLARA como número, y una propiedad
-       declarada se puede animar — sin él, el navegador la trata como
-       texto opaco y la animación de bienvenida saltaría de 50 a 12 sin
-       recorrido;
-     · el arrastre sólo escribe la variable, así que el tirador sigue al
-       dedo sin animación de por medio.
-
-   La bienvenida (50 → 12 → 50) enseña hacia la IZQUIERDA porque ése es
-   el lado que descubre el «después»: el gesto tiene que enseñar lo que
-   se gana. */
-@property --tj-cmp {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 50;
-}
-.tj-cmp-saluda {
-  animation: tj-cmp-bienvenida 1.55s var(--ease-suave, ease) both;
-}
-/* La bienvenida BAJA, porque abajo es donde está la mejora: enseña lo
-   que se gana, no lo que ya se sufre. Los valores caen en bordes de fila
-   (0, 25, 50, 75, 100) para que coincida con el salto del tirador. */
-@keyframes tj-cmp-bienvenida {
-  0% { --tj-cmp: 50; }
-  32% { --tj-cmp: 100; }
-  55% { --tj-cmp: 100; }
-  100% { --tj-cmp: 50; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tj-cmp-saluda {
-    animation: none;
-  }
-}
-
 /* ── EL PULSO QUE RECORRE LA CADENA DE DATOS ──────────────────────────
    En la comparación «tus datos en tu equipo / tus datos en su nube», un
    punto de luz viaja por los nodos al pulsar el botón. Era un

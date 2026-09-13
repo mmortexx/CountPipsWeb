@@ -103,12 +103,9 @@ describe("Cromo de mesa", () => {
     expect(ejes).not.toMatch(/Desliza para explorar/);
   });
 
-  it("volver arriba y el comparador no llevan sombra de acento", () => {
+  it("volver arriba no lleva sombra de acento", () => {
     const top = sinComentarios(leer("src/components/tj/BackToTop.tsx"));
-    const slider = sinComentarios(leer("src/components/tj/ComparisonSlider.tsx"));
     expect(top).not.toMatch(/hover:shadow-\[0_8px_28px_rgb\(var\(--accent-base\)/);
-    expect(slider).not.toMatch(/shadow-\[0_8px_24px_-6px_rgb\(var\(--accent-base\)/);
-    expect(slider).not.toMatch(/w-11 h-11 rounded-full/);
   });
 
   it("el casco de la demo no usa radio 8/12 ni píldoras de consumo", () => {

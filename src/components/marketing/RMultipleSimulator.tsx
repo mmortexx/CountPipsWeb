@@ -392,7 +392,7 @@ export function RMultipleSimulator() {
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
             {slider(es ? "Riesgo/op." : "Risk/trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, " %", es ? "Riesgo por operación" : "Risk per trade")}
             {slider(es ? "Retiro mensual ($)" : "Monthly withdrawal ($)", monthlyWithdrawal, 0, 5000, 100, setMonthlyWithdrawal, " $", es ? "Retiro mensual de beneficios" : "Monthly profit withdrawal")}
-            {slider(es ? "Semilla PRNG" : "PRNG Seed", seed, 1, 50, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
+            {slider(es ? "Semilla" : "Seed", seed, 1, 50, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
           </div>
 
           <button
@@ -409,7 +409,7 @@ export function RMultipleSimulator() {
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M2.5 8a5.5 5.5 0 019.4-3.9M13.5 8a5.5 5.5 0 01-9.4 3.9M13 2.5v3h-3M3 13.5v-3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {es ? "Volver a tirar (Semilla +1)" : "Re-roll (Seed +1)"}
+            {es ? "Otra tirada" : "Re-roll"}
           </button>
         </div>
 
@@ -437,7 +437,7 @@ export function RMultipleSimulator() {
               <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Simulaciones deterministas" : "Deterministic simulations"}
               </div>
-              <div className="tnum" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{SIM_RUNS} runs (seed #{seed})</div>
+              <div className="tnum" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{es ? `${SIM_RUNS} caminos · semilla ${seed}` : `${SIM_RUNS} paths · seed ${seed}`}</div>
             </div>
           </div>
 

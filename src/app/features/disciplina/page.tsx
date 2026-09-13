@@ -114,9 +114,6 @@ const DisciplineCost = dynamic(
 const BeforeAfter = dynamic(
   () => import("@/components/marketing/BeforeAfter").then((m) => m.BeforeAfter)
 );
-const ComparisonSlider = dynamic(
-  () => import("@/components/tj/ComparisonSlider").then((m) => m.ComparisonSlider)
-);
 const RMultipleSimulator = dynamic(
   () => import("@/components/marketing/RMultipleSimulator").then((m) => m.RMultipleSimulator)
 );
@@ -143,8 +140,6 @@ export function DisciplinaBody() {
       <DisciplineCost />
 
       <BeforeAfter />
-
-      <ComparisonSlider />
 
       <RMultipleSimulator />
 

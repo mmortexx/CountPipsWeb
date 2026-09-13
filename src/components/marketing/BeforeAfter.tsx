@@ -46,17 +46,17 @@ export function BeforeAfter() {
   const after = es
     ? [
         "Cada operación tiene un plan",
-        "Sabes exactamente qué funcionó y qué no",
+        "Sabes qué funcionó y qué no",
         "Tu disciplina se mide en dinero",
         "Conoces tu expectancy por setup",
-        "Mejoras cada semana, medido",
+        "Revisas cada semana con datos",
       ]
     : [
         "Every trade has a plan",
-        "You know exactly what worked and what didn't",
+        "You know what worked and what didn't",
         "Your discipline is measured in money",
         "You know your expectancy per setup",
-        "You improve every week, measured",
+        "You review every week with data",
       ];
 
   return (
