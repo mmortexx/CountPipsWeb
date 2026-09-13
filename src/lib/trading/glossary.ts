@@ -69,8 +69,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Track record",
-    es: "Historial auditado de resultados reales de un trader a lo largo del tiempo. Es la única prueba objetiva de una ventaja estadística y la base para conseguir financiación.",
-    en: "An audited history of a trader's real results over time. It is the only objective proof of a statistical edge and the basis for securing funding.",
+    es: "Historial de resultados reales de un trader a lo largo del tiempo, operación a operación. Cuanto más largo y verificable es, más peso tiene como evidencia de una ventaja: unas pocas semanas buenas no lo son.",
+    en: "A history of a trader's real results over time, trade by trade. The longer and more verifiable it is, the more weight it carries as evidence of an edge: a few good weeks are not.",
     category: "basics",
   },
   {
@@ -99,8 +99,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Trend",
-    es: "Dirección dominante del precio en un periodo: alcista (máximos y mínimos crecientes), bajista (decrecientes) o lateral. Operar a favor de la tendencia mejora la probabilidad de acierto.",
-    en: "The dominant price direction over a period: up (rising highs and lows), down (falling highs and lows), or sideways. Trading with the trend improves the probability of success.",
+    es: "Dirección dominante del precio en un periodo: alcista (máximos y mínimos crecientes), bajista (decrecientes) o lateral. Muchas estrategias operan a su favor; si eso mejora tus resultados es algo que se comprueba en tu propio historial, no se da por hecho.",
+    en: "The dominant price direction over a period: up (rising highs and lows), down (falling highs and lows), or sideways. Many strategies trade in its direction; whether that improves your results is something to check in your own history, not to assume.",
     category: "basics",
   },
   {
@@ -111,8 +111,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Edge",
-    es: "Ventaja estadística demostrable: una estrategia con expectancy positiva sostenida en el tiempo y en distintos regímenes de mercado. Sin edge, operar es azar puro; con edge, el resultado a largo plazo es ganador.",
-    en: "A demonstrable statistical advantage: a strategy with sustained positive expectancy over time and across market regimes. Without an edge, trading is pure chance; with one, the long-run result is profitable.",
+    es: "Ventaja estadística demostrable: una estrategia con expectancy positiva sostenida en el tiempo y en distintos regímenes de mercado. Sin edge, el resultado lo decide el azar menos los costes; con edge, la ventaja solo aflora con muestra suficiente y un riesgo que permita aguantar la varianza.",
+    en: "A demonstrable statistical advantage: a strategy with sustained positive expectancy over time and across market regimes. Without an edge, results are chance minus costs; with one, the advantage only shows with a large enough sample and risk small enough to survive the variance.",
     category: "basics",
   },
 
@@ -137,8 +137,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Position sizing",
-    es: "Regla que determina cuántas unidades o cuánto capital arriesgar en cada operación. Es el motor del control de riesgo: con un sizing correcto nunca te arruinas.",
-    en: "The rule that determines how many units or how much capital to risk on each trade. It is the engine of risk control: with correct sizing, you never go bust.",
+    es: "Regla que determina cuántas unidades o cuánto capital arriesgar en cada operación. Es el motor del control de riesgo: limita lo que puede costar cada operación y hace mucho menos probable que una racha de pérdidas hunda la cuenta.",
+    en: "The rule that determines how many units or how much capital to risk on each trade. It is the engine of risk control: it caps what each trade can cost and makes it far less likely that a losing streak sinks the account.",
     category: "risk",
   },
   {
@@ -161,8 +161,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Max drawdown",
-    es: "Mayor caída porcentual del capital desde un máximo histórico hasta el mínimo siguiente dentro de un periodo. Es la métrica que mejor mide el sufrimiento real de un trader y la viabilidad psicológica de una estrategia.",
-    en: "The largest percentage drop in equity from a historical peak to the subsequent trough within a period. It is the metric that best measures a trader's real suffering and the psychological viability of a strategy.",
+    es: "Mayor caída porcentual del capital desde un máximo histórico hasta el mínimo siguiente dentro de un periodo. Es de las métricas que mejor reflejan lo que cuesta aguantar una estrategia, en dinero y en temple.",
+    en: "The largest percentage drop in equity from a historical peak to the subsequent trough within a period. It is among the metrics that best reflect what it takes to stick with a strategy, in money and in nerve.",
     category: "risk",
   },
 
@@ -187,8 +187,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Discipline",
-    es: "Capacidad de seguir el plan de trading de forma consistente: entrar solo en setups definidos, respetar el stop y el objetivo, y no operar fuera del horario planificado. Es lo que separa al profesional del aficionado.",
-    en: "The ability to follow the trading plan consistently: entering only defined setups, respecting the stop and target, and not trading outside the planned hours. It is what separates the professional from the amateur.",
+    es: "Capacidad de seguir el plan de trading de forma consistente: entrar solo en setups definidos, respetar el stop y el objetivo, y no operar fuera del horario planificado. Sin ella, las métricas miden impulsos y no la estrategia.",
+    en: "The ability to follow the trading plan consistently: entering only defined setups, respecting the stop and target, and not trading outside the planned hours. Without it, the metrics measure impulses, not the strategy.",
     category: "psychology",
   },
 
@@ -201,8 +201,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Profit factor",
-    es: "Cociente entre el beneficio bruto de las operaciones ganadoras y la pérdida bruta de las perdedoras. Un valor superior a 1,5 es sólido; por encima de 2 es excelente.",
-    en: "The ratio of gross profit from winning trades to gross loss from losing trades. A value above 1.5 is solid; above 2 is excellent.",
+    es: "Cociente entre el beneficio bruto de las operaciones ganadoras y la pérdida bruta de las perdedoras. Por encima de 1 la estrategia gana dinero; como referencia habitual, 1,5 se considera sólido y 2 muy bueno, siempre con una muestra suficiente.",
+    en: "The ratio of gross profit from winning trades to gross loss from losing trades. Above 1 the strategy makes money; as a common rule of thumb, 1.5 is considered solid and 2 very good, always with a large enough sample.",
     category: "metrics",
   },
   {
@@ -329,26 +329,26 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "London session",
-    es: "Sesión europea: 07:00–16:00 UTC (open Londres). Concentra el mayor volumen institucional junto con NY, especialmente activa en FX y índices europeos (DAX, FTSE).",
-    en: "European session: 07:00–16:00 UTC (London open). Concentrates the largest institutional volume alongside NY, especially active in FX and European indices (DAX, FTSE).",
+    es: "Sesión europea: de 08:00 a 16:30, hora de Londres. Junto con Nueva York concentra buena parte del volumen de divisas, y es especialmente activa en índices europeos (DAX, FTSE).",
+    en: "European session: 08:00 to 16:30, London time. Together with New York it carries much of the FX volume, and it is especially active in European indices (DAX, FTSE).",
     category: "execution",
   },
   {
     term: "NY session",
-    es: "Sesión americana: 13:00–22:00 UTC (open Nueva York). La más líquida del día; coincide con Londres de 13:00 a 16:00 UTC, ventana donde se mueve la mayor parte del rango diario en ES, NQ y EURUSD.",
-    en: "American session: 13:00–22:00 UTC (New York open). The most liquid session of the day; overlaps with London from 13:00 to 16:00 UTC, the window where most of the daily range in ES, NQ and EURUSD is printed.",
+    es: "Sesión americana: de 09:30 a 16:00, hora de Nueva York. Coincide con Londres hasta las 11:30 de Nueva York, una ventana que suele concentrar mucho del movimiento del día en ES, NQ y EURUSD.",
+    en: "American session: 09:30 to 16:00, New York time. It overlaps with London until 11:30 New York time, a window that often carries much of the day's movement in ES, NQ and EURUSD.",
     category: "execution",
   },
   {
     term: "Asia session",
-    es: "Sesión asiática: 23:00–08:00 UTC (open Tokio). Menor volatilidad y volumen que Londres/NY, pero suele definir el rango overnight que Londres rompe a la apertura.",
-    en: "Asian session: 23:00–08:00 UTC (Tokyo open). Lower volatility and volume than London/NY, but usually defines the overnight range that London breaks on its open.",
+    es: "Sesión asiática: de 08:00 a 17:00, hora de Tokio. Menos volatilidad y volumen que Londres o Nueva York; a menudo marca el rango nocturno que se pone a prueba en la apertura de Londres.",
+    en: "Asian session: 08:00 to 17:00, Tokyo time. Less volatility and volume than London or New York; it often sets the overnight range that gets tested at the London open.",
     category: "execution",
   },
   {
     term: "Kill zone",
-    es: "Ventana temporal de alta probabilidad dentro de una sesión donde los setups del trader históricamente funcionan mejor (p. ej. kill zone de apertura de Londres 08:00–10:00 UTC, kill zone AM de NY 13:30–15:30 UTC). Filtrar operaciones por kill zone suele elevar la expectancy de forma notable.",
-    en: "High-probability time window within a session where the trader's setups historically work best (e.g. London open kill zone 08:00–10:00 UTC, NY AM kill zone 13:30–15:30 UTC). Filtering trades by kill zone usually raises expectancy notably.",
+    es: "Ventana dentro de una sesión en la que los setups de un trader han funcionado mejor en su historial (p. ej. la apertura de Londres, de 08:00 a 11:00 hora de Londres, o la de Nueva York, de 09:30 a 11:30 hora de Nueva York). Si filtrar por ella mejora tu expectancy se comprueba con tus propias operaciones.",
+    en: "A window within a session where a trader's setups have worked best in their history (e.g. the London open, 08:00 to 11:00 London time, or the New York open, 09:30 to 11:30 New York time). Whether filtering by it improves your expectancy is checked against your own trades.",
     category: "execution",
   },
   {

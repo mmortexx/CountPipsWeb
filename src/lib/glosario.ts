@@ -328,13 +328,13 @@ export const FORMULAS_GLOSARIO: Record<
        HWM, que ademas es como lo llama el resto del producto. */
     formulaEs: "DDₜ = (HWMₜ − Xₜ) / HWMₜ",
     formulaEn: "DDₜ = (HWMₜ − Xₜ) / HWMₜ",
-    variablesEs: "Xₜ: valor de la cuenta en el momento t, HWMₜ: pico histórico mas alto alcanzado hasta t (high-water mark)",
+    variablesEs: "Xₜ: valor de la cuenta en el momento t, HWMₜ: pico histórico más alto alcanzado hasta t (high-water mark)",
     variablesEn: "Xₜ: equity at time t, HWMₜ: highest historical peak reached up to t (high-water mark)",
   },
   "max-drawdown": {
     formulaEs: "MaxDD = máx [ (HWMₜ − Xₜ) / HWMₜ ]  para todo t",
     formulaEn: "MaxDD = max [ (HWMₜ − Xₜ) / HWMₜ ]  over all t",
-    variablesEs: "El mayor retroceso porcentual registrado en toda la serie. HWMₜ: pico historico mas alto hasta t",
+    variablesEs: "El mayor retroceso porcentual registrado en toda la serie. HWMₜ: pico histórico más alto hasta t",
     variablesEn: "Largest peak-to-trough percentage decline across the full series. HWMₜ: highest historical peak up to t",
   },
   "kelly-criterion": {

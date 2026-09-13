@@ -36,6 +36,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
   const familia = CATEGORIAS[termino.category];
   const seguir = SEGUIR_LEYENDO[termino.category];
   const herramienta = HERRAMIENTA_DE[termino.slug];
+  const formula = FORMULAS_GLOSARIO[termino.slug];
   const cercanos = relacionados(termino.slug);
   const { anterior, siguiente } = vecinos(termino.slug);
 
@@ -54,38 +55,31 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
 
           {/* Familia */}
           <Reveal delay={0.06}>
-            <div className="mt-7 flex flex-wrap items-center gap-2.5 text-[14px]">
-              <span className="text-tertiary">
-                {es ? "Familia:" : "Family:"}
-              </span>
+            <p className="m-0 mt-6 text-[14px] leading-relaxed text-tertiary">
+              {es ? "Familia " : "Family "}
               <Link
                 href={`/glosario#${termino.category}`}
-                className="inline-flex min-h-[44px] items-center rounded-[4px] border border-[var(--chip-line)] bg-[var(--chip)] px-3 font-medium text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.15)] transition-colors"
+                className="link-underline-host -my-2 inline-flex py-2 font-medium text-primary"
               >
-                {es ? familia.es : familia.en}
+                <span className="link-underline">{es ? familia.es : familia.en}</span>
               </Link>
-              <span className="text-tertiary">
-                — {es ? familia.descEs : familia.descEn}
-              </span>
-            </div>
+              {" — "}
+              {es ? familia.descEs : familia.descEn}
+            </p>
           </Reveal>
 
-          {/* Fórmula Matemática Cuantitativa (si existe para el término) */}
-          {FORMULAS_GLOSARIO[termino.slug] && (
+          {/* Fórmula, cuando el término es cuantitativo */}
+          {formula && (
             <Reveal delay={0.08}>
-              <div className="mt-7 p-4 rounded-[4px] border border-[rgb(var(--divider)/0.14)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]">
-                {/* Aqui iba un sello que decia "LaTeX". Ya no describe nada:
-                    la formula se escribe en notacion Unicode. */}
-                <div className="text-xs text-tertiary uppercase tracking-wider mb-2 font-mono">
-                  {es ? "Fórmula Cuantitativa" : "Quantitative Formula"}
-                </div>
-                <div className="py-2 text-base md:text-lg font-mono font-bold text-primary tracking-wide text-center bg-[rgb(var(--divider)/0.03)] rounded border border-[rgb(var(--divider)/0.08)] mb-2">
-                  {es ? FORMULAS_GLOSARIO[termino.slug].formulaEs : FORMULAS_GLOSARIO[termino.slug].formulaEn}
-                </div>
-                <p className="text-xs text-tertiary leading-relaxed m-0">
-                  <strong className="text-secondary">{es ? "Variables:" : "Variables:"}</strong> {es ? FORMULAS_GLOSARIO[termino.slug].variablesEs : FORMULAS_GLOSARIO[termino.slug].variablesEn}
+              <figure className="m-0 mt-9 rounded-[18px] bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] px-5 py-6 sm:px-7">
+                <p className="eyebrow m-0">{es ? "Fórmula" : "Formula"}</p>
+                <p className="m-0 mt-4 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary sm:text-[17px]">
+                  {es ? formula.formulaEs : formula.formulaEn}
                 </p>
-              </div>
+                <figcaption className="mt-4 text-[13px] leading-[1.6] text-secondary">
+                  {es ? formula.variablesEs : formula.variablesEn}
+                </figcaption>
+              </figure>
             </Reveal>
           )}
 
@@ -94,7 +88,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             <Reveal delay={0.1}>
               <Link
                 href={herramienta}
-                className="tj-paper mt-8 flex items-center justify-between gap-4 rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-4 transition-colors hover:border-[rgb(var(--accent-base)/0.35)]"
+                className="group -mx-4 mt-6 flex items-center justify-between gap-4 rounded-[14px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
                 <span className="min-w-0">
                   <span className="block text-[12px] uppercase tracking-[0.08em] text-tertiary">
@@ -108,8 +102,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                 </span>
                 <span
                   aria-hidden
-                  className="shrink-0 text-[18px]"
-                  style={{ color: "rgb(var(--accent-base))" }}
+                  className="shrink-0 text-[18px] text-tertiary transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-primary"
                 >
                   →
                 </span>
@@ -139,16 +132,16 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                 <p className="eyebrow m-0">
                   {es ? "De la misma familia" : "Same family"}
                 </p>
-                <ul className="mt-4 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
+                <ul className="-mx-4 mt-3 list-none p-0">
                   {cercanos.map((t) => (
-                    <li key={t.slug} className="border-b border-[rgb(var(--divider)/0.08)] last:border-b-0">
+                    <li key={t.slug}>
                       <Link
                         href={`/glosario/${t.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
+                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[14px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
                       >
                         <span
                           lang="en"
-                          className="text-[14px] font-semibold text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
+                          className="text-[14px] font-semibold text-primary"
                         >
                           {t.term}
                         </span>
@@ -167,8 +160,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           <Reveal delay={0.22}>
             <nav
               aria-label={es ? "Recorrer el glosario" : "Browse the glossary"}
-              className="mt-12 flex items-stretch justify-between gap-3 border-t pt-6"
-              style={{ borderColor: "rgb(var(--divider) / 0.12)" }}
+              className="mt-12 flex items-stretch justify-between gap-3 border-t border-[rgb(var(--divider)/0.1)] pt-6"
             >
               {anterior ? (
                 <Link
