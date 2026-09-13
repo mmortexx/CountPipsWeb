@@ -18,7 +18,7 @@ import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { fmtNum, fmtPct } from "@/lib/trading/format";
+import { fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -1148,7 +1148,7 @@ export function DashboardPage() {
                       {nombreSetup(tr.setup, lang)}
                     </div>
                     <div
-                      className={`text-xs tnum font-medium shrink-0 w-12 text-right ${
+                      className={`text-xs tnum font-medium shrink-0 w-14 text-right ${
                         tr.rMultiple > 0
                           ? "text-pnl-pos"
                           : tr.rMultiple < 0
@@ -1156,7 +1156,7 @@ export function DashboardPage() {
                           : "text-tertiary"
                       }`}
                     >
-                      {fmtNum(tr.rMultiple, lang, 2)}R
+                      {fmtR(tr.rMultiple, lang, 2)}
                     </div>
                     {/* `ml-auto` sólo en móvil: es lo que manda el resultado al
                         canto derecho de la segunda línea cuando la fila
