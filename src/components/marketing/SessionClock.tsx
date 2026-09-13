@@ -3,61 +3,30 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 
+import { PLAZAS, estaAbierta, horaLocal, proximaApertura, ventanaUtc, type Plaza } from "@/lib/sesiones";
+
 /**
- * Reloj de sesiones: qué plazas están abiertas ahora, dónde se solapan y
- * una banda de 24 h. Cada plaza se define en SU hora local y se pasa a UTC
- * con Intl en la fecha de hoy, así el cambio de hora de Londres, Nueva York
- * y Sídney queda aplicado sin tablas. Todo en el navegador, sin red.
+ * Reloj de sesiones con los horarios locales de la app de escritorio: cada plaza
+ * se evalúa en su zona, con cambio de hora, y cierra en fin de semana.
  */
-type Plaza = {
-  id: "sydney" | "tokyo" | "london" | "ny";
-  es: string;
-  en: string;
-  tz: string;
-  abre: number;
-  cierra: number;
-  color: string;
+const COLOR: Record<Plaza["id"], string> = {
+  sydney: "rgb(var(--sig-purple, 168 85 247))",
+  tokyo: "rgb(var(--sig-amber))",
+  london: "rgb(var(--accent-base))",
+  newyork: "rgb(var(--pnl-pos))",
 };
 
-type Ventana = { id: string; es: string; en: string; tz: string; desde: number; hasta: number; notaEs: string; notaEn: string };
-
-const PLAZAS: Plaza[] = [
-  { id: "sydney", es: "Sídney", en: "Sydney", tz: "Australia/Sydney", abre: 7, cierra: 16, color: "rgb(var(--sig-purple, 168 85 247))" },
-  { id: "tokyo", es: "Tokio", en: "Tokyo", tz: "Asia/Tokyo", abre: 9, cierra: 18, color: "rgb(var(--sig-amber))" },
-  { id: "london", es: "Londres", en: "London", tz: "Europe/London", abre: 8, cierra: 17, color: "rgb(var(--accent-base))" },
-  { id: "ny", es: "Nueva York", en: "New York", tz: "America/New_York", abre: 8, cierra: 17, color: "rgb(var(--pnl-pos))" },
-];
+type Ventana = { id: string; es: string; en: string; tz: string; abre: number; cierra: number; notaEs: string; notaEn: string };
 
 const VENTANAS: Ventana[] = [
-  { id: "london_open", es: "Apertura de Londres", en: "London open", tz: "Europe/London", desde: 8, hasta: 11, notaEs: "Arranca la sesión europea.", notaEn: "The European session starts." },
-  { id: "ny_open", es: "Apertura de Nueva York", en: "New York open", tz: "America/New_York", desde: 8, hasta: 11, notaEs: "Coincide con Londres abierta.", notaEn: "Overlaps with London still open." },
-  { id: "london_close", es: "Cierre de Londres", en: "London close", tz: "Europe/London", desde: 16, hasta: 17.5, notaEs: "Última hora y media de Europa.", notaEn: "Europe's last hour and a half." },
+  { id: "london_open", es: "Apertura de Londres", en: "London open", tz: "Europe/London", abre: 8 * 60, cierra: 11 * 60, notaEs: "Arranca la sesión europea.", notaEn: "The European session starts." },
+  { id: "ny_open", es: "Apertura de Nueva York", en: "New York open", tz: "America/New_York", abre: 9 * 60 + 30, cierra: 11 * 60 + 30, notaEs: "Coincide con Londres abierta.", notaEn: "Overlaps with London still open." },
+  { id: "london_close", es: "Cierre de Londres", en: "London close", tz: "Europe/London", abre: 15 * 60, cierra: 16 * 60 + 30, notaEs: "Última hora y media de Europa.", notaEn: "Europe's last hour and a half." },
 ];
 
 type Referencia = "local" | "utc" | "ny" | "madrid";
 
-/** Desfase en horas de una zona respecto a UTC en un instante dado. */
-function desfase(tz: string, fecha: Date): number {
-  try {
-    const partes = new Intl.DateTimeFormat("en-US", {
-      timeZone: tz,
-      hourCycle: "h23",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).formatToParts(fecha);
-    const v = (t: string) => Number(partes.find((p) => p.type === t)?.value ?? 0);
-    const comoUtc = Date.UTC(v("year"), v("month") - 1, v("day"), v("hour"), v("minute"));
-    return Math.round((comoUtc - fecha.getTime()) / 900_000) / 4;
-  } catch {
-    return 0;
-  }
-}
-
 const norm = (h: number) => ((h % 24) + 24) % 24;
-const dentro = (h: number, a: number, b: number) => (a <= b ? h >= a && h < b : h >= a || h < b);
 
 export function SessionClock() {
   const { lang } = useLang();
@@ -89,6 +58,7 @@ export function SessionClock() {
 
   const utc = ahora ? ahora.getUTCHours() + ahora.getUTCMinutes() / 60 + ahora.getUTCSeconds() / 3600 : null;
   const minuto = ahora ? Math.floor(ahora.getTime() / 60_000) : 0;
+  const listo = ahora !== null;
   const zonaLocal = useMemo(() => {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
@@ -97,44 +67,36 @@ export function SessionClock() {
     }
   }, []);
 
-  const plazas = useMemo(() => {
+  const estado = useMemo(() => {
     const fecha = new Date(minuto * 60_000);
-    return PLAZAS.map((p) => {
-      const d = desfase(p.tz, fecha);
-      return { ...p, desdeUtc: norm(p.abre - d), hastaUtc: norm(p.cierra - d) };
+    const plazas = PLAZAS.map((p) => {
+      const v = ventanaUtc(p, fecha);
+      return { ...p, color: COLOR[p.id], desdeUtc: v.desde / 60, hastaUtc: v.hasta / 60, abierta: listo && estaAbierta(p, fecha) };
     });
-  }, [minuto]);
-
-  const ventanas = useMemo(() => {
-    const fecha = new Date(minuto * 60_000);
-    return VENTANAS.map((v) => {
-      const d = desfase(v.tz, fecha);
-      return { ...v, desdeUtc: norm(v.desde - d), hastaUtc: norm(v.hasta - d) };
+    const ventanas = VENTANAS.map((v) => {
+      const { minuto: m, dia, desfase } = horaLocal(v.tz, fecha);
+      return {
+        ...v,
+        desdeUtc: norm((v.abre - desfase) / 60),
+        hastaUtc: norm((v.cierra - desfase) / 60),
+        activa: listo && dia >= 1 && dia <= 5 && m >= v.abre && m < v.cierra,
+      };
     });
-  }, [minuto]);
+    const proxima = listo ? proximaApertura(fecha) : null;
+    return { plazas, ventanas, proxima };
+  }, [minuto, listo]);
+  const { plazas, ventanas, proxima } = estado;
 
   const desfaseRef = useMemo(() => {
     const fecha = new Date(minuto * 60_000);
     if (ref === "utc") return 0;
-    if (ref === "ny") return desfase("America/New_York", fecha);
-    if (ref === "madrid") return desfase("Europe/Madrid", fecha);
+    if (ref === "ny") return horaLocal("America/New_York", fecha).desfase / 60;
+    if (ref === "madrid") return horaLocal("Europe/Madrid", fecha).desfase / 60;
     return ahora ? -ahora.getTimezoneOffset() / 60 : 0;
   }, [ref, minuto, ahora]);
 
-  const abierta = (p: { desdeUtc: number; hastaUtc: number }) => utc !== null && dentro(utc, p.desdeUtc, p.hastaUtc);
-  const abiertas = plazas.filter(abierta);
+  const abiertas = plazas.filter((p) => p.abierta);
   const nombre = (x: { es: string; en: string }) => (es ? x.es : x.en);
-
-  const proxima = useMemo(() => {
-    if (utc === null) return null;
-    let mejor: { nombre: string; horas: number } | null = null;
-    for (const p of plazas) {
-      if (dentro(utc, p.desdeUtc, p.hastaUtc)) continue;
-      const h = norm(p.desdeUtc - utc);
-      if (!mejor || h < mejor.horas) mejor = { nombre: es ? p.es : p.en, horas: h };
-    }
-    return mejor;
-  }, [plazas, utc, es]);
 
   const hora = (h: number) => {
     const t = Math.round(norm(h) * 60);
@@ -143,8 +105,10 @@ export function SessionClock() {
   const enRef = (h: number) => hora(h + desfaseRef);
   const falta = (h: number) => {
     const t = Math.round(h * 60);
-    const hh = Math.floor(t / 60);
+    const dd = Math.floor(t / 1440);
+    const hh = Math.floor((t % 1440) / 60);
     const mm = t % 60;
+    if (dd > 0) return `${dd} d ${hh} h`;
     return hh > 0 ? `${hh} h ${mm} min` : `${mm} min`;
   };
   const etiquetaDesfase = `UTC${desfaseRef >= 0 ? "+" : "−"}${Math.abs(desfaseRef)}`;
@@ -206,7 +170,7 @@ export function SessionClock() {
 
         <ul className="m-0 mb-10 grid list-none grid-cols-1 p-0 sm:grid-cols-2 lg:grid-cols-4">
           {plazas.map((p) => {
-            const open = abierta(p);
+            const open = p.abierta;
             return (
               <li key={p.id} className="border-t border-[var(--line)] py-4 sm:pr-6">
                 <div className="flex items-center gap-2 text-[13px]" style={{ color: open ? "var(--ink)" : "var(--ink-3)" }}>
@@ -229,8 +193,8 @@ export function SessionClock() {
             </span>
             {proxima && (
               <span className="tnum text-tertiary">
-                {es ? "Próxima apertura:" : "Next open:"} <span className="font-medium text-primary">{proxima.nombre}</span>{" "}
-                {es ? "en" : "in"} {falta(proxima.horas)}
+                {es ? "Próxima apertura:" : "Next open:"} <span className="font-medium text-primary">{nombre(proxima.plaza)}</span>{" "}
+                {es ? "en" : "in"} {falta(proxima.minutos / 60)}
               </span>
             )}
           </div>
@@ -240,7 +204,7 @@ export function SessionClock() {
               <div key={h} aria-hidden className="absolute top-0 bottom-0 w-px" style={{ left: `${pct(h)}%`, background: "var(--line)" }} />
             ))}
             {plazas.map((p, i) => {
-              const open = abierta(p);
+              const open = p.abierta;
               const ts = tramos(norm(p.desdeUtc + desfaseRef), norm(p.hastaUtc + desfaseRef));
               const principal = ts.length > 1 && ts[1][1] - ts[1][0] > ts[0][1] - ts[0][0] ? 1 : 0;
               return ts.map(([a, b], k) => (
@@ -293,7 +257,7 @@ export function SessionClock() {
         <div className="mb-3 text-[13px] font-medium text-secondary">{es ? "Aperturas y cierres vigilados" : "Watched opens and closes"}</div>
         <ul className="m-0 grid list-none grid-cols-1 p-0 md:grid-cols-3">
           {ventanas.map((v) => {
-            const activa = utc !== null && dentro(utc, v.desdeUtc, v.hastaUtc);
+            const activa = v.activa;
             return (
               <li key={v.id} className="border-t border-[var(--line)] py-4 md:pr-6">
                 <div className="flex items-baseline justify-between gap-3">
@@ -313,8 +277,8 @@ export function SessionClock() {
 
         <p className="mt-6 mb-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
           {es
-            ? "Horario de referencia de cada plaza en su hora local: 7:00–16:00 en Sídney, 9:00–18:00 en Tokio y 8:00–17:00 en Londres y Nueva York. No es el horario de un mercado ni de un bróker concreto."
-            : "Reference hours for each market in its local time: 7:00–16:00 in Sydney, 9:00–18:00 in Tokyo and 8:00–17:00 in London and New York. Not the schedule of any specific exchange or broker."}
+            ? "Horario de cada plaza en su hora local, el mismo que usa la app: 7:00–17:00 en Sídney, 8:00–17:00 en Tokio, 8:00–16:30 en Londres y 9:30–16:00 en Nueva York, de lunes a viernes. No es el horario de un bróker concreto."
+            : "Each market's hours in its local time, the same the app uses: 7:00–17:00 in Sydney, 8:00–17:00 in Tokyo, 8:00–16:30 in London and 9:30–16:00 in New York, Monday to Friday. Not the schedule of any specific broker."}
         </p>
       </div>
     </section>

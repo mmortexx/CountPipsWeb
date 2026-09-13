@@ -879,67 +879,6 @@
     color: rgb(var(--txt-tertiary));
   }
 
-  /* ------------------------------------------------------------
-     .terms-bar — placa de condiciones: pares etiqueta/valor
-     separados por filete, como la ficha técnica de un contrato.
-
-     Sustituye al conmutador falso "Pago único / Suscripción" de la
-     página de precios. La retícula es `1fr` por columna en escritorio
-     y una columna apilada en móvil; los filetes son bordes reales
-     (no pseudo-elementos posicionados) para que colapsen solos al
-     cambiar de eje sin necesidad de media queries duplicadas.
-     ------------------------------------------------------------ */
-  .terms-bar {
-    display: grid;
-    grid-template-columns: 1fr;
-    margin-inline: auto;
-    max-width: 60rem;
-    list-style: none;
-    padding: 0;
-    border-block: 1px solid var(--line);
-    overflow: hidden;
-  }
-  .terms-bar__item {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 0.3rem;
-    padding: 1rem 0;
-    text-align: left;
-    border-top: 1px solid var(--line);
-  }
-  .terms-bar__item:first-child {
-    border-top: 0;
-  }
-  .terms-bar__key {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: rgb(var(--txt-tertiary));
-  }
-  .terms-bar__value {
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    color: rgb(var(--txt-primary));
-    font-variant-numeric: tabular-nums;
-  }
-  @media (min-width: 640px) {
-    .terms-bar {
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .terms-bar__item {
-      border-top: 0;
-      border-left: 1px solid var(--line);
-      padding: 1.125rem 1.5rem;
-    }
-    .terms-bar__item:first-child {
-      border-left: 0;
-      padding-left: 0;
-    }
-  }
 
 }
 
@@ -3267,36 +3206,22 @@ button.icon-btn:hover > svg,
 .sello-previsto {
   display: inline-flex;
   align-items: baseline;
-  gap: 0.5em;
-  padding: 4px 9px;
-  border: 1px solid var(--chip-line);
-  border-radius: 4px;
-  background: var(--chip);
+  gap: 0.4em;
   color: var(--ink-2);
-  vertical-align: middle;
+  font-size: 13px;
+  line-height: 1.3;
+  vertical-align: baseline;
 }
 .sello-previsto-texto {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 1.2;
+  font-weight: 500;
   white-space: nowrap;
 }
 .sello-previsto-detalle {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  letter-spacing: 0.02em;
-  text-transform: none;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
 }
-@media (prefers-contrast: more) {
-  /* Un trazo discontinuo al 34 % puede desaparecer en pantallas con poco
-     contraste o para quien pide más. El SIGNIFICADO va en que sea
-     discontinuo, no en que sea tenue. */
-  .sello-previsto { border-color: rgb(var(--divider) / 0.6); }
+.sello-previsto-detalle::before {
+  content: "· ";
 }
 
 /* ============================================================

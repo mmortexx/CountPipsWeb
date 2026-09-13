@@ -4,48 +4,11 @@ import { useSyncExternalStore } from "react";
 import { useLang } from "@/lib/i18n";
 import { useDemo } from "./DemoContext";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
+import { PLAZAS, avance, estaAbierta, horaLocal } from "@/lib/sesiones";
 
 /* ------------------------------------------------------------------ */
 /* Reloj de mercado                                                    */
 /* ------------------------------------------------------------------ */
-
-/*
- * Las cuatro plazas, con su apertura y cierre en minutos desde la
- * medianoche UTC. Mismos valores que el control MarketClock de la app
- * (Controls/MarketClock.xaml) y que @/components/tj/MarketClock; se
- * duplican aquí a propósito para no arrastrar al chrome de la demo —
- * que está montado siempre — el bundle del control grande, que además
- * pinta un canvas.
- */
-const SESSIONS = [
-  // `offset` = minutos respecto a UTC, para pintar la hora local de cada
-  // plaza junto a su nombre igual que hace la app.
-  { id: "sydney", nameEs: "Sídney", nameEn: "Sydney", open: 21 * 60, close: 6 * 60, offset: 600 },
-  { id: "tokyo", nameEs: "Tokio", nameEn: "Tokyo", open: 23 * 60, close: 8 * 60, offset: 540 },
-  { id: "london", nameEs: "Londres", nameEn: "London", open: 8 * 60, close: 16 * 60 + 30, offset: 60 },
-  {
-    id: "newyork",
-    nameEs: "Nueva York",
-    nameEn: "New York",
-    open: 13 * 60 + 30,
-    close: 20 * 60,
-    offset: -240,
-  },
-] as const;
-
-function sessionIsOpen(open: number, close: number, utcMin: number): boolean {
-  if (open < close) return utcMin >= open && utcMin < close;
-  // Sesión que cruza la medianoche UTC.
-  return utcMin >= open || utcMin < close;
-}
-
-/** Avance 0–100 de la ventana de mercado — la barrita bajo cada plaza. */
-function sessionProgress(open: number, close: number, utcMin: number): number {
-  const span = open < close ? close - open : 1440 - open + close;
-  if (span <= 0) return 0;
-  const elapsed = open < close ? utcMin - open : (utcMin - open + 1440) % 1440;
-  return Math.max(0, Math.min(100, (elapsed / span) * 100));
-}
 
 function pad2(n: number): string {
   return n < 10 ? `0${n}` : String(n);
@@ -127,7 +90,6 @@ function MarketClock() {
   if (epochSeconds === 0) return <div className="hidden md:block" aria-hidden="true" />;
   const now = new Date(epochSeconds * 1000);
 
-  const utcMin = now.getUTCHours() * 60 + now.getUTCMinutes();
   const utcTime = `${pad2(now.getUTCHours())}:${pad2(now.getUTCMinutes())}:${pad2(
     now.getUTCSeconds()
   )}`;
@@ -161,10 +123,10 @@ function MarketClock() {
       />
 
       <div className="hidden xl:flex items-center gap-3.5">
-        {SESSIONS.map((s) => {
-          const open = sessionIsOpen(s.open, s.close, utcMin);
-          const name = es ? s.nameEs : s.nameEn;
-          const localMin = (((utcMin + s.offset) % 1440) + 1440) % 1440;
+        {PLAZAS.map((s) => {
+          const open = estaAbierta(s, now);
+          const name = es ? s.es : s.en;
+          const localMin = horaLocal(s.tz, now).minuto;
           const localTime = `${pad2(Math.floor(localMin / 60))}:${pad2(localMin % 60)}`;
           return (
             <div
@@ -193,7 +155,7 @@ function MarketClock() {
                   className="h-full"
                   style={{
                     width: open
-                      ? `${sessionProgress(s.open, s.close, utcMin)}%`
+                      ? `${avance(s, now)}%`
                       : "0%",
                     background: "rgb(var(--accent-base))",
                   }}
