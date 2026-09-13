@@ -44,6 +44,7 @@ export function fmtNum(
   return new Intl.NumberFormat(LOCALE[lang], {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
+    useGrouping: "always",
   }).format(value);
 }
 

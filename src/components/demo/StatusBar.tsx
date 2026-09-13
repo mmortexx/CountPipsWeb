@@ -86,10 +86,9 @@ export function StatusBar() {
         </span>
       </span>
 
-      {/* CENTRO — nota de guardado y telemetría de motor */}
+      {/* CENTRO — nota de guardado */}
       <div className="hidden sm:flex items-center gap-3 truncate ml-3">
         <span>{t("autoSaved")}</span>
-        <span className="text-[10px] opacity-60 font-mono hidden md:inline">· SQLite WAL</span>
       </div>
 
       {/* DERECHA — versión, en texto terciario y cifras tabulares, igual
