@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { ANIO_PUBLICACION } from "@/lib/publicacion";
 import { fmtMoney, fmtNum } from "@/lib/trading/format";
 
 interface MistakeItem {
@@ -139,7 +138,7 @@ export function DisciplineCost() {
         {/* Cabecera de sección */}
         <div className="inline-flex items-center gap-3 mb-5">
           <span className="eyebrow">
-            {es ? "COSTE REAL E INTERACTIVO" : "REAL & INTERACTIVE COST"}
+            {es ? "Calculadora de indisciplina" : "Indiscipline calculator"}
           </span>
         </div>
 
@@ -176,8 +175,8 @@ export function DisciplineCost() {
               }}
             >
               {es
-                ? "Cuando operas tu plan ganas. Cuando improvisas o violas tus reglas, regalas capital. Ajusta tus cifras y estima el dinero que dejas en la mesa cada mes y cada año."
-                : "When you trade your plan, you win. When you improvise or break your rules, you bleed capital. Adjust your numbers and estimate the money left on the table each month and year."}
+                ? "Pon tu resultado medio en plan y fuera de plan, y cuántas operaciones rompen tus reglas. La calculadora estima el dinero que dejas en la mesa cada mes y cada año."
+                : "Enter your average result in plan and off plan, and how many trades break your rules. The calculator estimates the money left on the table each month and year."}
             </p>
 
             {/* Presets rápidos */}
@@ -384,9 +383,9 @@ export function DisciplineCost() {
                 </span>
               </div>
               <span
-                className="tnum text-[11px] px-2.5 py-1 rounded-[4px] bg-[rgb(var(--pnl-neg)/0.14)] text-[rgb(var(--pnl-neg))] border border-[rgb(var(--pnl-neg)/0.28)] font-mono self-start sm:self-auto"
+                className="text-[12px] px-2.5 py-1 rounded-[4px] bg-[var(--chip)] text-secondary border border-[var(--chip-line)] self-start sm:self-auto"
               >
-                #LEAK-{ANIO_PUBLICACION}
+                {es ? "Estimación" : "Estimate"}
               </span>
             </div>
 
