@@ -104,3 +104,6 @@ export const BRAND_GLYPH_SVG = (size = 22) =>
     : "") +
   `<path d="${MOTIVO}" fill="none" stroke="rgb(var(--accent-base))" ` +
   `stroke-width="${GROSOR}" stroke-linecap="round"/></svg>`;
+
+/** Trazo y grosor del logotipo, para las tarjetas que se dibujan fuera del DOM. */
+export { MOTIVO as MOTIVO_MARCA, GROSOR as GROSOR_MARCA };
