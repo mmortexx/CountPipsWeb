@@ -620,13 +620,6 @@
        the second line optically even (R26-2b). */
     text-wrap: balance;
   }
-  .t-label {
-    font-size: 0.75rem;
-    line-height: 1.4;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
 
   /* Balanced text wrapping for every heading — prevents orphan
      words on the last line and produces more even line breaks in
