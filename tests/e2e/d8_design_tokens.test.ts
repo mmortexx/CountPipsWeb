@@ -114,10 +114,8 @@ describe("Dimension D8: Design System Tokens (Tier 1 Feature Coverage)", () => {
 
   it("T1.4: Surface classes (.tj-paper, .tj-paper-dense, .tj-range) map to design tokens", () => {
     // .tj-paper class definitions
-    expect(globalsCss).toContain(".tj-paper {");
-    expect(globalsCss).toContain(':root[data-theme="light"] .tj-paper {');
-    expect(globalsCss).toContain(".tj-paper-dense {");
-    expect(globalsCss).toContain(':root[data-theme="light"] .tj-paper-dense {');
+    expect(globalsCss).toMatch(/\.tj-paper \{\s*background-color: var\(--raised\);/);
+    expect(globalsCss).toMatch(/\.tj-paper-dense \{\s*background-color: var\(--paper-dense\);/);
 
     // .tj-range slider class
     expect(globalsCss).toContain(".tj-range {");

@@ -177,7 +177,7 @@ export function ContactSupport() {
                         {desc}
                       </p>
                       {meta && (
-                        <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-primary font-semibold tnum">
+                        <p className="mt-2 text-[12px] uppercase tracking-[0.14em] text-primary font-semibold tnum">
                           {meta}
                         </p>
                       )}

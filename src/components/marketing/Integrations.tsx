@@ -84,13 +84,13 @@ export function Integrations() {
               {/* Row: monogram mark (left) + CSV chip (right). */}
               <div className="relative flex items-center justify-between">
                 <span
-                  className="w-10 h-10 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex items-center justify-center text-primary text-[12px] font-bold tracking-tight"
+                  className="w-10 h-10 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex items-center justify-center text-primary text-[13px] font-bold tracking-tight"
                   style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
                   aria-hidden="true"
                 >
                   {b.mark}
                 </span>
-                <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] bg-[rgb(var(--accent-base)/0.08)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.20)] text-[10px] font-semibold uppercase tracking-[0.14em]">
+                <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] bg-[rgb(var(--accent-base)/0.08)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.20)] text-[11px] font-semibold uppercase tracking-[0.14em]">
                   CSV
                 </span>
               </div>

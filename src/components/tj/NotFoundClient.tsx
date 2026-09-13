@@ -188,7 +188,7 @@ export function NotFoundClient() {
                 className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
                 <span
-                  className="tnum text-[11px] font-semibold"
+                  className="tnum text-[12px] font-semibold"
                   style={{ color: "rgb(var(--accent-base))" }}
                 >
                   {String(i + 1).padStart(2, "0")}

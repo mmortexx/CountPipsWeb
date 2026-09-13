@@ -12,7 +12,6 @@ import { OverlayHost } from "@/components/tj/OverlayHost";
 import { ScrollToTop } from "@/components/tj/ScrollToTop";
 import { TransicionPagina } from "@/components/tj/TransicionPagina";
 import { SkipLink } from "@/components/tj/SkipLink";
-import { IntroSequence } from "@/components/tj/IntroSequence";
 import { SectionReveal } from "@/components/tj/SectionReveal";
 import { SITE_URL } from "@/lib/site";
 
@@ -242,17 +241,6 @@ export default function RootLayout({
           }}
         />
         <script
-          // Intro del HTML de referencia: en la primera visita de la
-          // sesión, oculta los [data-seq] del hero ANTES del primer
-          // paint (IntroSequence los revela tras el loader).
-          // suppressHydrationWarning: lee sessionStorage, sólo existe en el
-          // navegador — mismo motivo que el script de arriba.
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(!sessionStorage.getItem('tj_intro'))document.documentElement.classList.add('tj-preload')}catch(e){}})();`,
-          }}
-        />
-        <script
           // Corrige `lang` antes de pintar en las páginas bajo `/en`.
           // `location.pathname` SÍ lleva el prefijo de GitHub Pages
           // (`/CountPipsWeb/en/...`), a diferencia del `usePathname()` de
@@ -345,7 +333,6 @@ export default function RootLayout({
             razonamiento completo. */}
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <IntroSequence />
             <SectionReveal />
             <SkipLink />
             <GlobalShortcuts />

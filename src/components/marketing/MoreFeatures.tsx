@@ -127,7 +127,7 @@ export function MoreFeatures() {
                 </div>
                 <h3 className="t-h4 text-primary">{f.title}</h3>
                 {/* T2h: leading-relaxed (1.625) → leading-[1.6] per spec. */}
-                <p className="mt-1.5 text-[13px] text-secondary leading-[1.6]">{f.desc}</p>
+                <p className="mt-1.5 text-[14px] text-secondary leading-[1.6]">{f.desc}</p>
               </article>
             ))}
           </div>

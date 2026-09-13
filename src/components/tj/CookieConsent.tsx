@@ -222,7 +222,7 @@ export function CookieConsent() {
                   almacenamiento local. Decir «cookies técnicas» era
                   cómodo pero falso, y la página que enlazamos explica
                   precisamente la diferencia. */}
-              <p className="text-[12.5px] leading-[1.5] text-secondary flex-1 md:text-[13px] md:leading-relaxed">
+              <p className="text-[13px] leading-[1.5] text-secondary flex-1 md:text-[14px] md:leading-relaxed">
                 {es
                   ? "Usamos almacenamiento local para preferencias. La analítica opcional sólo se activa si la aceptas. "
                   : "We use local storage for preferences. Optional analytics only starts if you accept it. "}
@@ -244,14 +244,14 @@ export function CookieConsent() {
               <button
                 type="button"
                 onClick={() => choose("declined")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[13px] font-medium text-secondary border border-[rgb(var(--divider)/0.22)] hover:bg-[rgb(var(--divider)/0.06)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[14px] font-medium text-secondary border border-[rgb(var(--divider)/0.22)] hover:bg-[rgb(var(--divider)/0.06)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
               >
                 {es ? "Solo necesarias" : "Necessary only"}
               </button>
               <button
                 type="button"
                 onClick={() => choose("accepted")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[13px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[2px] text-[14px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
               >
                 {es ? "Aceptar analítica" : "Accept analytics"}
               </button>

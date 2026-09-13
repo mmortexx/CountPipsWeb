@@ -54,7 +54,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
 
           {/* Familia */}
           <Reveal delay={0.06}>
-            <div className="mt-7 flex flex-wrap items-center gap-2.5 text-[13px]">
+            <div className="mt-7 flex flex-wrap items-center gap-2.5 text-[14px]">
               <span className="text-tertiary">
                 {es ? "Familia:" : "Family:"}
               </span>
@@ -97,7 +97,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                 className="tj-paper mt-8 flex items-center justify-between gap-4 rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 transition-colors hover:border-[rgb(var(--accent-base)/0.35)]"
               >
                 <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="block text-[12px] uppercase tracking-[0.14em] text-tertiary">
                     {es ? "Calcúlalo" : "Work it out"}
                   </span>
                   <span className="mt-1 block text-[15px] font-medium text-primary">
@@ -152,7 +152,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                         >
                           {t.term}
                         </span>
-                        <span className="line-clamp-2 text-[13px] leading-[1.5] text-secondary">
+                        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary">
                           {es ? t.es : t.en}
                         </span>
                       </Link>
@@ -175,7 +175,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   href={`/glosario/${anterior.slug}`}
                   className="group flex min-h-[44px] max-w-[46%] flex-col justify-center text-left"
                 >
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[12px] uppercase tracking-[0.14em] text-tertiary">
                     ← {es ? "Anterior" : "Previous"}
                   </span>
                   <span
@@ -193,7 +193,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   href={`/glosario/${siguiente.slug}`}
                   className="group flex min-h-[44px] max-w-[46%] flex-col justify-center text-right"
                 >
-                  <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary">
+                  <span className="text-[12px] uppercase tracking-[0.14em] text-tertiary">
                     {es ? "Siguiente" : "Next"} →
                   </span>
                   <span

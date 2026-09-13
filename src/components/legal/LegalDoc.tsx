@@ -55,7 +55,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
             <p className="m-0 text-[17px] leading-relaxed text-secondary">
               {es ? doc.entradaEs : doc.entradaEn}
             </p>
-            <p className="mt-4 text-[13px] text-tertiary">
+            <p className="mt-4 text-[14px] text-tertiary">
               {es ? "Última revisión: " : "Last reviewed: "}
               <time dateTime={LEGAL_ACTUALIZADO}>{fecha}</time>
             </p>
@@ -70,7 +70,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
                   background: "color-mix(in oklab, rgb(var(--sig-amber)) 8%, transparent)",
                 }}
               >
-                <p className="m-0 text-[13.5px] leading-relaxed text-secondary">
+                <p className="m-0 text-[14px] leading-relaxed text-secondary">
                   <strong className="text-primary">
                     {es ? "Documento en preparación. " : "Draft document. "}
                   </strong>
@@ -101,7 +101,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
                       className="link-underline-host flex min-h-[44px] items-center gap-2.5 text-[14px] text-secondary transition-colors hover:text-primary"
                     >
                       <span
-                        className="tnum shrink-0 text-[12px] font-semibold"
+                        className="tnum shrink-0 text-[13px] font-semibold"
                         style={{ color: "rgb(var(--accent-base))" }}
                       >
                         {String(i + 1).padStart(2, "0")}
@@ -122,7 +122,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
               <section key={s.id} id={s.id} className="scroll-mt-28">
                 <h2 className="m-0 flex items-baseline gap-3 text-[20px] font-semibold tracking-tight text-primary">
                   <span
-                    className="tnum text-[12px] font-semibold"
+                    className="tnum text-[13px] font-semibold"
                     style={{ color: "rgb(var(--accent-base))" }}
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -191,7 +191,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
               <th
                 key={c}
                 scope="col"
-                className="border-b px-3 py-2.5 align-bottom text-[11px] font-semibold uppercase tracking-[0.1em] text-tertiary"
+                className="border-b px-3 py-2.5 align-bottom text-[12px] font-semibold uppercase tracking-[0.1em] text-tertiary"
                 style={{ borderColor: "rgb(var(--divider) / 0.16)" }}
               >
                 {c}

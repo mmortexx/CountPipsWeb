@@ -242,7 +242,7 @@ export function Comparison() {
                           </span>
                           {c.highlight && (
                             <span
-                              className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] border text-[10px] font-semibold leading-[1.4] uppercase tracking-[0.1em]"
+                              className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] border text-[11px] font-semibold leading-[1.4] uppercase tracking-[0.1em]"
                               style={{
                                 background: "rgb(var(--accent-base) / 0.14)",
                                 color: "rgb(var(--accent-base))",
@@ -325,7 +325,7 @@ export function Comparison() {
           {/* Mobile-only scroll hint — tiny eyebrow-style label with
               bidirectional arrows. Sits below the table so it doesn't
               compete with the table header for vertical space. */}
-          <div className="md:hidden mt-3 flex items-center justify-center gap-2 text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold">
+          <div className="md:hidden mt-3 flex items-center justify-center gap-2 text-[12px] uppercase tracking-[0.14em] text-tertiary font-semibold">
             <span aria-hidden="true">←</span>
             <span>{es ? "Desliza para comparar" : "Swipe to compare"}</span>
             <span aria-hidden="true">→</span>
@@ -363,7 +363,7 @@ function CellRenderer({
         >
           <CheckIcon />
         </span>
-        <span className="text-[13px] font-medium text-signal-green">{es ? "Sí" : "Yes"}</span>
+        <span className="text-[14px] font-medium text-signal-green">{es ? "Sí" : "Yes"}</span>
       </span>
     );
   }
@@ -377,8 +377,8 @@ function CellRenderer({
         >
           <CheckIcon />
         </span>
-        <span className="text-[13px] font-medium text-signal-green">{es ? "Sí" : "Yes"}</span>
-        <span className="inline-flex items-center rounded-[2px] px-1.5 py-0 bg-[rgb(var(--divider)/0.05)] text-primary border border-[rgb(var(--divider)/0.20)] text-[10px] font-semibold leading-[1.4] uppercase tracking-[0.1em]">
+        <span className="text-[14px] font-medium text-signal-green">{es ? "Sí" : "Yes"}</span>
+        <span className="inline-flex items-center rounded-[2px] px-1.5 py-0 bg-[rgb(var(--divider)/0.05)] text-primary border border-[rgb(var(--divider)/0.20)] text-[11px] font-semibold leading-[1.4] uppercase tracking-[0.1em]">
           Pro
         </span>
       </span>
@@ -393,7 +393,7 @@ function CellRenderer({
         >
           <CrossIcon />
         </span>
-        <span className="text-[13px] text-tertiary">{es ? "No" : "No"}</span>
+        <span className="text-[14px] text-tertiary">{es ? "No" : "No"}</span>
       </span>
     );
   }
@@ -406,13 +406,13 @@ function CellRenderer({
         >
           <PartialIcon />
         </span>
-        <span className="text-[13px] text-pnl-warn">{es ? "Parcial" : "Partial"}</span>
+        <span className="text-[14px] text-pnl-warn">{es ? "Parcial" : "Partial"}</span>
       </span>
     );
   }
   // Texto libre, en el idioma de la página.
   return (
-    <span className={`text-[13px] tnum ${highlight ? "text-primary font-medium" : "text-secondary"}`}>
+    <span className={`text-[14px] tnum ${highlight ? "text-primary font-medium" : "text-secondary"}`}>
       {es ? cell.es : cell.en}
     </span>
   );

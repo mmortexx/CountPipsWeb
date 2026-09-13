@@ -121,7 +121,7 @@ export function TechSpecs() {
                 {/* Sin el punto de acento que llevaba delante. Con el
                     acento ya acromático era un lunar gris que no decía
                     nada, y en una retícula el separador es el filete. */}
-                <dt className="text-tertiary text-[10px] uppercase tracking-[0.14em] font-semibold tnum">
+                <dt className="text-tertiary text-[11px] uppercase tracking-[0.14em] font-semibold tnum">
                   {es ? r.labelEs : r.labelEn}
                 </dt>
                 <dd className="text-primary text-sm font-medium leading-snug tnum tracking-[-0.005em]">

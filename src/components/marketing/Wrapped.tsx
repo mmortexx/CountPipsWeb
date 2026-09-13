@@ -240,7 +240,7 @@ export function Wrapped() {
 
                   <div className="flex-1 flex items-center">{c.value}</div>
 
-                  <p className="text-[13px] text-tertiary leading-relaxed">{c.sub}</p>
+                  <p className="text-[14px] text-tertiary leading-relaxed">{c.sub}</p>
                 </div>
               </article>
             );

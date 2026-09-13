@@ -204,11 +204,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
       <div className="tj-container">
         {/* Cabecera */}
         <div className="inline-flex items-center gap-3 mb-5">
-          <span className="tnum font-mono text-xs font-semibold text-[rgb(var(--accent-base))]">
-            § {num}
-          </span>
-          <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.15)]" />
-          <span className="tnum font-mono text-[11px] tracking-[0.2em] text-tertiary uppercase">
+          <span className="eyebrow">
             {es ? "ANÁLISIS CUANTITATIVO DE COSTES" : "QUANTITATIVE COST ANALYSIS"}
           </span>
         </div>
@@ -251,7 +247,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                     }`}
                   >
                     <span className="font-mono">{item.id}</span>
-                    <span className="text-[10px] text-tertiary">{item.category}</span>
+                    <span className="text-[11px] text-tertiary">{item.category}</span>
                   </button>
                 ))}
               </div>
@@ -331,7 +327,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
-                  <span className="text-[11px] text-tertiary block mb-1">
+                  <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Comisión Round-Turn ($):" : "Round-Turn Fee ($):"}
                   </span>
                   <div className="flex items-center gap-1">
@@ -348,7 +344,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                 </div>
 
                 <div className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
-                  <span className="text-[11px] text-tertiary block mb-1">
+                  <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Deslizamiento (Ticks medio):" : "Slippage (Avg ticks):"}
                   </span>
                   <div className="flex items-center gap-1">
@@ -418,7 +414,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
             {/* Indicadores Clave: Drag %, Break-Even Ticks y Win Rate Exigido */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-4">
               <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
-                <span className="text-[10.5px] text-tertiary block mb-1">
+                <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Arrastre de Costes:" : "Fee Drag %:"}
                 </span>
                 <span
@@ -432,31 +428,31 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                 >
                   {fmtPct(costDragPct / 100, lang)}
                 </span>
-                <span className="text-[9.5px] text-tertiary block mt-0.5">
+                <span className="text-[11px] text-tertiary block mt-0.5">
                   {es ? "del beneficio" : "of profit"}
                 </span>
               </div>
 
               <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
-                <span className="text-[10.5px] text-tertiary block mb-1">
+                <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Break-even Ticks:" : "Break-even Ticks:"}
                 </span>
                 <span className="text-base font-mono font-bold text-primary tnum">
                   {fmtNum(breakEvenTicksPerTrade, lang, 2)}
                 </span>
-                <span className="text-[9.5px] text-tertiary block mt-0.5 font-mono">
+                <span className="text-[11px] text-tertiary block mt-0.5 font-mono">
                   {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn}
                 </span>
               </div>
 
               <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
-                <span className="text-[10.5px] text-tertiary block mb-1">
+                <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Win Rate Exigido:" : "Required BE Win Rate:"}
                 </span>
                 <span className="text-base font-mono font-bold text-[rgb(var(--accent-base))] tnum">
                   {fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
-                <span className="text-[9.5px] text-tertiary block mt-0.5">
+                <span className="text-[11px] text-tertiary block mt-0.5">
                   {es ? "a 1,5:1 R:R" : "at 1.5:1 R:R"}
                 </span>
               </div>
@@ -470,7 +466,7 @@ export function CommissionDragCalculator({ num = "08" }: { num?: string }) {
                 ) : (
                   <ShieldCheck size={16} className="text-[rgb(var(--accent-base))] shrink-0 mt-0.5" />
                 )}
-                <p className="text-[12px] text-secondary leading-relaxed m-0">
+                <p className="text-[13px] text-secondary leading-relaxed m-0">
                   {costDragPct > 25
                     ? es
                       ? "Alerta de micro-drag: Estás cediendo más del 25 % de tu ganancia al bróker. Considera ampliar tu target en múltiplos de R o escalar a contratos mini para reducir el ratio comisiones/beneficio."

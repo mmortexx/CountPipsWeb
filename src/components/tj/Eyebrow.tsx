@@ -22,7 +22,7 @@ interface EyebrowProps {
  * a whisper, not a rule. Mark variants let callers swap to a dot or omit
  * the mark without losing the consistent typography.
  */
-export function Eyebrow({ children, className = "", mark = "line" }: EyebrowProps) {
+export function Eyebrow({ children, className = "", mark = "none" }: EyebrowProps) {
   return (
     <div className={`eyebrow inline-flex items-center gap-2 ${className}`}>
       {mark === "line" && (

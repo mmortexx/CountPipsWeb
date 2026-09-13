@@ -377,7 +377,7 @@ export function ContactForm() {
                           : es ? "Enviar" : "Send"}
                       </button>
 
-                      <p className="text-[11px] text-tertiary text-center">
+                      <p className="text-[12px] text-tertiary text-center">
                         {es
                           ? "No compartimos tu email. Solo te respondemos."
                           : "We never share your email. We only reply to you."}
@@ -406,7 +406,7 @@ function Field({
     <div className="group flex flex-col gap-1.5">
       <label
         htmlFor={htmlFor}
-        className="text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold transition-colors duration-200 group-focus-within:text-[rgb(var(--accent-base))]"
+        className="text-[12px] uppercase tracking-[0.14em] text-tertiary font-semibold transition-colors duration-200 group-focus-within:text-[rgb(var(--accent-base))]"
       >
         {label}
       </label>

@@ -114,7 +114,7 @@ export function GlosarioIndice() {
               })}
             </div>
 
-            <p className="mt-2.5 text-center text-[13px] text-tertiary">
+            <p className="mt-2.5 text-center text-[14px] text-tertiary">
               {filtrados
                 ? `${filtrados.length} ${
                     filtrados.length === 1
@@ -160,7 +160,7 @@ export function GlosarioIndice() {
                   <section id={cat} className="scroll-mt-28">
                     <div className="flex items-baseline gap-3">
                       <span
-                        className="tnum text-[12px] font-semibold"
+                        className="tnum text-[13px] font-semibold"
                         style={{ color: "rgb(var(--accent-base))" }}
                       >
                         {String(i + 1).padStart(2, "0")}
@@ -168,7 +168,7 @@ export function GlosarioIndice() {
                       <h2 className="m-0 text-[22px] font-semibold tracking-tight text-primary">
                         {es ? meta.es : meta.en}
                       </h2>
-                      <span className="tnum text-[13px] text-tertiary">
+                      <span className="tnum text-[14px] text-tertiary">
                         {lista.length}
                       </span>
                     </div>
@@ -206,11 +206,11 @@ function TarjetaTermino({
       >
         <span
           lang="en"
-          className="text-[14.5px] font-semibold tracking-tight text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
+          className="text-[15px] font-semibold tracking-tight text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]"
         >
           {termino.term}
         </span>
-        <span className="line-clamp-2 text-[13.5px] leading-[1.5] text-secondary">
+        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary">
           {es ? termino.es : termino.en}
         </span>
       </Link>

@@ -211,7 +211,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             está explicado que las condiciones se publican al abrir la
             venta, que hoy es la respuesta verdadera. */}
         <Reveal delay={0.2}>
-          <p className="mt-4 text-center text-[13px] text-tertiary">
+          <p className="mt-4 text-center text-[14px] text-tertiary">
             {es ? "Son precios de lanzamiento previstos. " : "These are planned launch prices. "}
             <Link
               href="/beta"

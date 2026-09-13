@@ -131,7 +131,7 @@ export function HowItWorks() {
                 {/* Title + kbd */}
                 <div className="flex items-center gap-2 mb-2">
                   <h3 className="t-h3 text-primary">{s.title}</h3>
-                  <kbd className="hidden md:inline-flex items-center px-1.5 h-5 rounded-[2px] text-[10px] font-mono text-[rgb(var(--accent-base)/0.85)] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.20)]">
+                  <kbd className="hidden md:inline-flex items-center px-1.5 h-5 rounded-[2px] text-[11px] font-mono text-[rgb(var(--accent-base)/0.85)] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.20)]">
                     {s.kbd}
                   </kbd>
                 </div>

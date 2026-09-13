@@ -241,7 +241,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           off the right edge. */}
                       <span className="min-w-0 break-words">
                         <span
-                          className="tnum mr-2.5 text-[11px] font-semibold text-tertiary"
+                          className="tnum mr-2.5 text-[12px] font-semibold text-tertiary"
                           aria-hidden
                         >
                           {String(i + 1).padStart(2, "0")}

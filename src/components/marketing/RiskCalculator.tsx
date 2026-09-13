@@ -253,7 +253,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
   const numInput = (label: string, value: number, onChange: (n: number) => void, ariaLabel: string) => (
     <label className="block min-w-0">
-      <span className="tnum block text-[10px] uppercase tracking-[0.12em] text-tertiary mb-1">
+      <span className="tnum block text-[11px] uppercase tracking-[0.12em] text-tertiary mb-1">
         {label}
       </span>
       <input
@@ -307,11 +307,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
-              § {num}
-            </span>
-            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
-            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
+            <span className="eyebrow">
               {es ? "CALCULADORA DE RIESGO" : "RISK CALCULATOR"}
             </span>
           </div>
@@ -336,7 +332,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Selector de clase de activo */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
+            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Mercado / Instrumento" : "Market / Instrument"}
             </div>
             {/* Conmutador, no tres botones sueltos: con `flex-wrap` el
@@ -364,7 +360,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
           {/* Subselector para futuros */}
           {assetMode === "futures" && (
             <div className="mb-5 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
-              <span className="block text-[10px] uppercase tracking-wider text-tertiary mb-2">
+              <span className="block text-[11px] uppercase tracking-wider text-tertiary mb-2">
                 {es ? "Contrato de futuros" : "Futures contract"}
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -389,7 +385,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
           {/* Subselector para Forex */}
           {assetMode === "forex" && (
             <div className="mb-5 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
-              <span className="block text-[10px] uppercase tracking-wider text-tertiary mb-2">
+              <span className="block text-[11px] uppercase tracking-wider text-tertiary mb-2">
                 {es ? "Tipo de lote Forex" : "Forex lot sizing"}
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -421,7 +417,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               <span className="block text-xs font-medium text-primary">
                 {es ? "Deducir fricción de ejecución" : "Deduct execution friction"}
               </span>
-              <span className="block text-[11px] text-tertiary">
+              <span className="block text-[12px] text-tertiary">
                 {es ? "Comisiones estimadas + 1 tick de slippage" : "Estimated commissions + 1 tick slippage"}
               </span>
             </div>
@@ -440,7 +436,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Chips de plantilla */}
           <div className="mb-4">
-            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
+            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Plantilla de riesgo" : "Risk preset"}
             </div>
             <div className="tj-segmentado tj-segmentado-apila" role="group">
@@ -459,7 +455,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
 
           {/* Chips de balance */}
           <div>
-            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
+            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Balance de cuenta" : "Account balance"}
             </div>
             {/* Aqui no hace falta apilar: son cuatro etiquetas de cuatro
@@ -488,7 +484,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             <div className="flex items-center justify-between mb-2">
               <span
                 className="tnum"
-                style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {es ? "Riesgo por operación" : "Risk per trade"}
               </span>
@@ -526,7 +522,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 } as CSSProperties
               }
             />
-            <div className="flex justify-between mt-1 text-[9.5px] text-tertiary font-mono">
+            <div className="flex justify-between mt-1 text-[11px] text-tertiary font-mono">
               {/* `0.25%` con punto ingles, en una lista donde la cifra de al
                   lado dice `3,00%`. La marca salia del numero crudo de
                   JavaScript, que siempre lleva punto decimal. */}
@@ -555,12 +551,12 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               <button
                 type="button"
                 onClick={() => setShowKelly((v) => !v)}
-                className="text-[11px] font-mono uppercase tracking-wider text-secondary hover:text-primary flex items-center gap-1.5 transition-colors"
+                className="text-[12px] font-mono uppercase tracking-wider text-secondary hover:text-primary flex items-center gap-1.5 transition-colors"
               >
                 <span>{showKelly ? "▼" : "▶"}</span>
                 <span>{es ? "Criterio de Kelly (Dimensionamiento)" : "Kelly Criterion Sizing Engine"}</span>
               </button>
-              <span className="text-[10px] font-mono text-tertiary">
+              <span className="text-[11px] font-mono text-tertiary">
                 {es ? "Medio Kelly: " : "Half-Kelly: "}
                 <strong className="text-primary font-bold">{fmtNum(c.halfKellyPct)}{PCT}</strong>
               </span>
@@ -582,7 +578,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
                   className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-[2px] appearance-none"
                 />
-                <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-mono">
+                <div className="grid grid-cols-3 gap-2 text-center text-[11px] font-mono">
                   <div className="p-1.5 rounded bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.08)]">
                     <div className="text-tertiary">{es ? "Kelly Puro" : "Full Kelly"}</div>
                     <div className="font-bold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}{PCT}</div>
@@ -600,7 +596,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                   type="button"
                   disabled={c.halfKellyPct <= 0}
                   onClick={() => c.halfKellyPct > 0 && setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
-                  className="w-full py-1.5 text-[11px] font-mono font-semibold rounded bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.25)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="w-full py-1.5 text-[12px] font-mono font-semibold rounded bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.25)] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {c.halfKellyPct <= 0
                     ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
@@ -613,7 +609,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
           {/* Aviso de validación + dirección */}
           {!c.valid ? (
             <div
-              className="mb-4 rounded-[2px] px-3 py-2.5 text-[12px] leading-[1.5]"
+              className="mb-4 rounded-[2px] px-3 py-2.5 text-[13px] leading-[1.5]"
               style={{
                 background: "color-mix(in oklab, rgb(var(--pnl-neg)) 10%, transparent)",
                 border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 30%, transparent)",
@@ -627,11 +623,11 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             </div>
           ) : (
             <div
-              className="mb-4 flex items-center gap-2 text-[11px] tnum text-secondary"
+              className="mb-4 flex items-center gap-2 text-[12px] tnum text-secondary"
             >
               <span
                 aria-hidden
-                className="inline-flex items-center justify-center rounded-[2px] w-4 h-4 font-bold text-[10px]"
+                className="inline-flex items-center justify-center rounded-[2px] w-4 h-4 font-bold text-[11px]"
                 style={{
                   background: c.direction === "short"
                     ? "color-mix(in oklab, rgb(var(--pnl-neg)) 16%, transparent)"
@@ -682,7 +678,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             className="mb-5 grid grid-cols-2 gap-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)] p-3 sm:grid-cols-4"
           >
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
+              <div className="tnum text-[11px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "Valor nocional" : "Notional value"}
               </div>
               <div className="tnum cifra-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
@@ -690,7 +686,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
+              <div className="tnum text-[11px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "Apalancamiento" : "Leverage"}
               </div>
               <div
@@ -703,7 +699,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
+              <div className="tnum text-[11px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "VaR 95 % (1-Trade)" : "95% VaR (1-Trade)"}
               </div>
               <div className="tnum cifra-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
@@ -711,7 +707,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
               </div>
             </div>
             <div className="caja-cifra">
-              <div className="tnum text-[10px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
+              <div className="tnum text-[11px] uppercase leading-[1.3] tracking-wider text-tertiary [hyphens:auto] break-words">
                 {es ? "Riesgo de Ruina" : "Risk of Ruin (50%)"}
               </div>
               <div
@@ -754,7 +750,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
                 className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px bg-white/40"
               />
             </div>
-            <div className="mt-2 flex items-center justify-between tnum text-[11px] text-secondary">
+            <div className="mt-2 flex items-center justify-between tnum text-[12px] text-secondary">
               <span>{fmtUsd(c.riskUsd)}</span>
               <span className="text-tertiary">{fmtNum(c.profitPct, 1)}{PCT} {es ? "del balance" : "of balance"}</span>
               <span>{fmtUsd(c.profit)}</span>
@@ -766,7 +762,7 @@ export function RiskCalculator({ num = "04·c" }: { num?: string }) {
             type="button"
             onClick={copyPlan}
             disabled={!c.valid}
-            className="mt-5 w-full sm:w-fit inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] text-[13px] font-semibold transition-colors duration-150 border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.2)] disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            className="mt-5 w-full sm:w-fit inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] text-[14px] font-semibold transition-colors duration-150 border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.2)] disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
           >
             {copied ? (
               <>
@@ -803,7 +799,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       className="caja-cifra group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.08)] px-4 py-3.5 transition-[transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)] bg-[color-mix(in_oklab,var(--surface-2)_50%,transparent)]"
     >
       <div
-        className="tnum text-[10px] uppercase tracking-[0.12em] text-tertiary"
+        className="tnum text-[11px] uppercase tracking-[0.12em] text-tertiary"
       >
         {label}
       </div>

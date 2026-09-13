@@ -126,8 +126,8 @@ describe("globals.css se analiza como CSS, no como prosa", () => {
    */
   it("una hoja con un comentario cerrado en falso no es la misma hoja", () => {
     const roto = CSS.replace(
-      "── UN CIERRE DE COMENTARIO DE MÁS DEJÓ AL PAPEL SIN MATERIAL ─────",
-      "── UN `*" + "/` DE MÁS DEJÓ AL PAPEL SIN MATERIAL ────────────────",
+      "── CON EL DEDO, 44 PX ───────────────────────────────────────────────",
+      "── CON EL DEDO, `*" + "/` 44 PX ──────────────────────────────────────",
     );
     expect(
       roto,

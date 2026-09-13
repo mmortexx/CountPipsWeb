@@ -124,11 +124,7 @@ export function SavingsCalculator() {
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
-              §
-            </span>
-            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
-            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
+            <span className="eyebrow">
               {es ? "ESCENARIO" : "SCENARIO"}
             </span>
           </div>
@@ -151,7 +147,7 @@ export function SavingsCalculator() {
 
           {/* Plan CountPips */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
+            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Referencia prevista" : "Planned reference"}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -172,7 +168,7 @@ export function SavingsCalculator() {
 
           {/* Alternativa suscripción */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary">
+            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-tertiary">
               {es ? "Alternativa por suscripción ($/mes)" : "Subscription alternative ($/mo)"}
             </div>
             <div className="flex flex-wrap gap-2 mb-3">
@@ -191,13 +187,13 @@ export function SavingsCalculator() {
             </div>
             {/* Slider fino para el precio mensual — unified pill style */}
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Precio mensual" : "Monthly price"}
               </span>
               <span
                 className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
                 style={{
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: 700,
                   color: "rgb(var(--accent-base))",
                   background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
@@ -230,21 +226,21 @@ export function SavingsCalculator() {
               aria-valuenow={altMonthly}
             />
             <div className="flex items-center justify-between mt-1">
-              <span className="tnum" style={{ fontSize: 9.5, color: "var(--ink-3)" }}>5 $</span>
-              <span className="tnum" style={{ fontSize: 9.5, color: "var(--ink-3)" }}>50 $</span>
+              <span className="tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>5 $</span>
+              <span className="tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>50 $</span>
             </div>
           </div>
 
           {/* Años de uso — unified pill style */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Años de uso" : "Years of use"}
               </span>
               <span
                 className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
                 style={{
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: 700,
                   color: "rgb(var(--accent-base))",
                   background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
@@ -286,7 +282,7 @@ export function SavingsCalculator() {
         >
           {/* Headline savings */}
           <div className="mb-5">
-            <div className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
               {es ? "Diferencia ilustrativa" : "Illustrative difference"}
             </div>
             <div className="flex items-baseline gap-3 mt-1">
@@ -302,7 +298,7 @@ export function SavingsCalculator() {
           {/* Comparison bar chart SVG */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Coste acumulado de referencia" : "Cumulative reference cost"} · {years} {es ? "años" : "yrs"}
               </span>
             </div>
@@ -329,7 +325,7 @@ export function SavingsCalculator() {
               {/* start baseline */}
               <line x1={padX} y1={svgH - padY} x2={svgW - padX} y2={svgH - padY} stroke="rgb(var(--divider) / 0.16)" strokeWidth="1" />
             </svg>
-            <div className="flex items-center gap-4 mt-2 tnum" style={{ fontSize: 10, color: "var(--ink-3)" }}>
+            <div className="flex items-center gap-4 mt-2 tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>
               <span className="inline-flex items-center gap-1.5">
                 <span aria-hidden className="inline-block w-2.5 h-[2px]" style={{ background: "rgb(var(--pnl-neg))" }} />
                 {es ? "Alternativa mensual" : "Monthly alternative"}: {fmtUsd(c.altTotal)}
@@ -361,7 +357,7 @@ export function SavingsCalculator() {
                 {c.breakEvenMonths} {c.breakEvenMonths === 1 ? (es ? "mes" : "month") : (es ? "meses" : "months")}
               </span>
             </div>
-            <p className="tnum m-0 text-[11.5px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
+            <p className="tnum m-0 text-[13px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
               {es
                 ? `En solo ${c.breakEvenMonths} meses el coste de la alternativa SaaS supera el pago único perpetuo. A ${years} años, reinvertir el dinero ahorrado al 8\u00a0% genera ${fmtUsd(c.compoundAdvantage)} netos adicionales.`
                 : `In just ${c.breakEvenMonths} months the SaaS alternative exceeds the one-time perpetual license. Over ${years} years, reinvesting saved fees at 8% yields +${fmtUsd(c.compoundAdvantage)} in net capital.`}
@@ -379,7 +375,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
-      <div className="tnum relative" style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+      <div className="tnum relative" style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
         {label}
       </div>
       <div

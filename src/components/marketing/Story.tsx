@@ -193,7 +193,7 @@ export function Story() {
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span
-                        className={`text-[10px] uppercase tracking-[0.14em] font-semibold tnum ${toneText[p.tone]}`}
+                        className={`text-[11px] uppercase tracking-[0.14em] font-semibold tnum ${toneText[p.tone]}`}
                       >
                         {p.tag}
                       </span>
@@ -202,7 +202,7 @@ export function Story() {
                           stays tertiary. The contrast reinforces "you are
                           here" vs "of N" without adding a new color token.
                           Both keep tnum for tabular alignment. */}
-                      <span className="text-[10px] text-tertiary tnum">
+                      <span className="text-[11px] text-tertiary tnum">
                         <span className="text-secondary">
                           {String(i + 1).padStart(2, "0")}
                         </span>

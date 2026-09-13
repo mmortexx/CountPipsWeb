@@ -104,14 +104,14 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <span
               className="tnum"
-              style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+              style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
               {es ? "Comprobación previa · nueva operación" : "Pre-flight check · new trade"}
             </span>
             <span
               className="tnum inline-flex items-center gap-1.5 self-start sm:self-auto"
               style={{
-                fontSize: 10,
+                fontSize: 11,
                 padding: "3px 9px",
                 borderRadius: 2,
                 background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
@@ -147,13 +147,13 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   borderRadius: 2,
                   background: "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)",
                   color: "rgb(var(--pnl-pos))",
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 700,
                 }}
               >
                 NQ · LONG
               </span>
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-2)" }}>
+              <span className="tnum" style={{ fontSize: 13, color: "var(--ink-2)" }}>
                 {contratos} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
               </span>
               <span className="tnum ml-auto" style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>28 {es ? "pts" : "pts"}</span>
@@ -202,9 +202,9 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                     border: `1px solid ${c.ok ? "rgb(var(--pnl-pos) / 0.45)" : "rgb(var(--pnl-neg) / 0.50)"}`,
                   }}
                 >
-                  <span style={{ fontSize: 11, fontWeight: 800, lineHeight: 1 }}>{c.ok ? "✓" : "✕"}</span>
+                  <span style={{ fontSize: 12, fontWeight: 800, lineHeight: 1 }}>{c.ok ? "✓" : "✕"}</span>
                 </span>
-                <span style={{ fontSize: 13, lineHeight: 1.4, color: c.ok ? "var(--ink-2)" : "rgb(var(--pnl-neg))", fontWeight: c.ok ? 400 : 600 }}>{c.l}</span>
+                <span style={{ fontSize: 14, lineHeight: 1.4, color: c.ok ? "var(--ink-2)" : "rgb(var(--pnl-neg))", fontWeight: c.ok ? 400 : 600 }}>{c.l}</span>
               </div>
             ))}
           </div>
@@ -303,12 +303,12 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   </span>
                   <span
                     className="tnum"
-                    style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color, fontWeight: 700 }}
+                    style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color, fontWeight: 700 }}
                   >
                     {titulo}
                   </span>
                 </div>
-                <p className="m-0" style={{ fontSize: 12, lineHeight: 1.5, color: "var(--ink-2)" }}>
+                <p className="m-0" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--ink-2)" }}>
                   {cuerpo}
                 </p>
               </div>
@@ -346,7 +346,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                     background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
                     color: "rgb(var(--accent-base))",
                     border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
                   }}
@@ -364,7 +364,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                     background: "transparent",
                     color: "var(--ink-2)",
                     border: "1px solid rgb(var(--divider) / 0.13)",
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
                   }}
@@ -382,7 +382,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   background: "transparent",
                   color: "var(--ink-2)",
                   border: "1px solid rgb(var(--divider) / 0.13)",
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: 600,
                   cursor: "pointer",
                 }}
@@ -402,17 +402,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
         <div>
           <Reveal>
             <div className="inline-flex items-center gap-3 mb-5">
-              <span
-                className="tnum"
-                style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-              >
-                § {num}
-              </span>
-              <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}
-              >
+              <span className="eyebrow">
                 {es ? "DISCIPLINA" : "DISCIPLINE"}
               </span>
             </div>
@@ -487,7 +477,7 @@ export function GuardianNew({ num = "05" }: { num?: string }) {
                   </span>
                   <div>
                     <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
-                    <p className="m-0 mt-1" style={{ fontSize: 13.5, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
+                    <p className="m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
                   </div>
                 </li>
               );

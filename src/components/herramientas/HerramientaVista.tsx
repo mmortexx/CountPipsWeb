@@ -73,7 +73,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
               animación de la banda y se desplazaba sola hasta sacarse de
               la vista. Ver el comentario del bloque en globals.css. */}
           <div className="tj-fila-sigue flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-            <span className="text-[11px] font-mono text-tertiary uppercase tracking-wider whitespace-nowrap pr-2">
+            <span className="text-[12px] font-mono text-tertiary uppercase tracking-wider whitespace-nowrap pr-2">
               {es ? "Herramientas:" : "Tools:"}
             </span>
             {HERRAMIENTAS.map((h, i) => {
@@ -107,7 +107,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
         <div className="tj-container">
           <div className="mx-auto max-w-[62ch]">
             <Reveal>
-              <p className="m-0 text-[13.5px] leading-relaxed text-tertiary">
+              <p className="m-0 text-[14px] leading-relaxed text-tertiary">
                 {es
                   ? "Esta herramienta calcula a partir de lo que tú escribes. No es asesoramiento financiero ni una recomendación de operar: "
                   : "This tool computes from what you type. It is not financial advice or a recommendation to trade: "}
@@ -138,14 +138,14 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                         <span className="text-[14px] font-semibold text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]">
                           {es ? h.tituloEs : h.tituloEn}
                         </span>
-                        <span className="text-[12.5px] leading-[1.5] text-secondary">
+                        <span className="text-[13px] leading-[1.5] text-secondary">
                           {es ? h.resumenEs : h.resumenEn}
                         </span>
                       </Link>
                     </li>
                   ))}
                 </ul>
-                <p className="mt-5 text-[13.5px]">
+                <p className="mt-5 text-[14px]">
                   {/* `-my-3 py-3` y no `-my-2 py-2`: con el relleno menor
                       la zona tocable se quedaba en 36 px de alto. El
                       margen negativo devuelve lo que suma el relleno, así

@@ -52,7 +52,7 @@ export default async function Image() {
             </div>
             <span style={{ fontSize: 26, fontWeight: 600, letterSpacing: "-0.01em" }}>CountPips</span>
           </div>
-          <span style={{ fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase", color: "#8a9096", fontWeight: 600 }}>
+          <span style={{ fontSize: 14, letterSpacing: "0.18em", textTransform: "uppercase", color: "#8a9096", fontWeight: 600 }}>
             Diario de trading · Windows
           </span>
         </div>
@@ -83,7 +83,7 @@ export default async function Image() {
             ].map((k) => (
               <div key={k.l} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <div style={{ fontSize: 38, fontWeight: 700, color: "#CDD9E4", lineHeight: 1 }}>{k.v}</div>
-                <div style={{ fontSize: 12, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8a9096", fontWeight: 600 }}>{k.l}</div>
+                <div style={{ fontSize: 13, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8a9096", fontWeight: 600 }}>{k.l}</div>
               </div>
             ))}
           </div>

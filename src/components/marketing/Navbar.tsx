@@ -704,7 +704,7 @@ export function Navbar() {
         // través del papel. `will-change: backdrop-filter` y
         // `translateZ(0)` vienen heredados de `.tj-paper`
         // (globals.css).
-        className="tj-paper tj-paper-dense relative flex w-full items-center border-b px-5 md:px-8"
+        className="tj-paper tj-paper-dense relative flex w-full items-center border-b"
         style={{
           height: ALTURA_BARRA,
           borderColor: "rgb(var(--divider) / 0.1)",
@@ -777,19 +777,19 @@ export function Navbar() {
             deja 80 px de holgura real y sigue muy dentro de los 1.376
             disponibles a 1.440. Por debajo de 1.180 no cambia nada,
             porque manda el ancho de la ventana. */}
-        <div className="mx-auto grid w-full max-w-[1180px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 min-[1120px]:grid-cols-[auto_minmax(0,1fr)_auto]">
+        <div className="tj-container grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 min-[1120px]:grid-cols-[auto_minmax(0,1fr)_auto]">
           {/* ZONA 1 — Marca. min-h-[44px] garantiza el suelo táctil en
               móvil (el glifo + texto solos medían 32 px). */}
           <Link
             href="/"
-            className="flex min-h-[44px] min-w-0 items-center gap-[11px] justify-self-start rounded-[2px] px-1 outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            className="flex min-h-[44px] min-w-0 items-center gap-2.5 justify-self-start rounded-[2px] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             style={{ color: "var(--ink)" }}
             aria-label={t("appName")}
           >
             <BrandMark />
             <span
-              className="truncate font-serif"
-              style={{ fontSize: 19, fontWeight: 500, letterSpacing: "-0.01em" }}
+              className="truncate"
+              style={{ fontSize: 17, fontWeight: 650, letterSpacing: "-0.02em" }}
             >
               {t("appName")}
             </span>
@@ -984,11 +984,11 @@ export function Navbar() {
                             {item.icon}
                           </span>
                           <span>
-                            <span className="block text-[13px] font-semibold">
+                            <span className="block text-[14px] font-semibold">
                               {es ? item.labelEs : item.labelEn}
                             </span>
                             <span
-                              className="mt-0.5 block text-[11.5px] leading-[1.4]"
+                              className="mt-0.5 block text-[13px] leading-[1.4]"
                               style={{ color: "var(--ink-2)" }}
                             >
                               {es ? item.descEs : item.descEn}
@@ -1000,20 +1000,20 @@ export function Navbar() {
                         <>
                           <div className="relative grid grid-cols-2 divide-x divide-[rgb(var(--divider)/0.10)] p-2">
                             <div className="pr-2">
-                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-tertiary">
                                 {es ? "Producto" : "Product"}
                               </p>
                               {productItems.filter((i) => i.grupo === "producto").map(fila)}
                             </div>
                             <div className="pl-2">
-                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-tertiary">
                                 {es ? "Laboratorio" : "Lab"}
                               </p>
                               {productItems.filter((i) => i.grupo === "laboratorio").map(fila)}
                             </div>
                           </div>
                           <div className="flex items-center justify-between border-t border-[rgb(var(--divider)/0.10)] px-4 py-2.5">
-                            <span className="tnum text-[11px] text-tertiary">
+                            <span className="tnum text-[12px] text-tertiary">
                               {es
                                 ? "Todo el producto, en una vista"
                                 : "The whole product, in one view"}
@@ -1022,7 +1022,7 @@ export function Navbar() {
                               href="/demo"
                               role="menuitem"
                               onClick={() => setMegaOpen(false)}
-                              className="tnum text-[11.5px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                              className="tnum text-[13px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                               style={{ color: "rgb(var(--accent-base))" }}
                             >
                               {es ? "Abrir la demo →" : "Open the demo →"}
@@ -1252,7 +1252,7 @@ export function Navbar() {
                       />
                     )}
                     <span
-                      className={`block px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] ${gi === 0 ? "" : "pt-2.5"}`}
+                      className={`block px-3 pb-1.5 text-[12px] font-semibold uppercase tracking-[0.14em] ${gi === 0 ? "" : "pt-2.5"}`}
                       style={{ color: "var(--ink-3)" }}
                     >
                       {es ? grupo.es : grupo.en}
@@ -1334,7 +1334,7 @@ export function Navbar() {
                   style={{ background: "rgb(var(--divider) / 0.08)" }}
                 />
                 <span
-                  className="px-3 pb-2 pt-4 text-[10.5px] font-semibold uppercase tracking-[0.14em]"
+                  className="px-3 pb-2 pt-4 text-[12px] font-semibold uppercase tracking-[0.14em]"
                   style={{ color: "var(--ink-3)" }}
                 >
                   {es ? "Preferencias" : "Preferences"}
@@ -1347,7 +1347,7 @@ export function Navbar() {
                     aria-label={es ? "Cambiar tema" : "Toggle theme"}
                     title={es ? "Cambiar tema" : "Toggle theme"}
                     data-theme-toggle
-                    className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[2px] border bg-transparent px-2.5 text-[11px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                    className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[2px] border bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   >
                     <span
                       key={theme}
@@ -1405,11 +1405,11 @@ export function Navbar() {
                 <div className="mt-4 flex items-center gap-2 border-t border-[rgb(var(--divider)/0.06)] pt-3">
                   <BrandMark />
                   <div className="flex min-w-0 flex-col leading-tight">
-                    <span className="font-serif text-[12.5px] font-medium text-[var(--ink)]">
+                    <span className="font-serif text-[13px] font-medium text-[var(--ink)]">
                       {t("appName")}
                     </span>
                     <span
-                      className="tnum text-[10.5px]"
+                      className="tnum text-[12px]"
                       style={{ color: "var(--ink-3)" }}
                     >
                       {/* El año lo fija la compilación, no el reloj del
@@ -1533,7 +1533,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
         aria-expanded={open}
         aria-label={es ? "Cambiar idioma" : "Change language"}
         title={es ? "Cambiar idioma" : "Change language"}
-        className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[2px] border bg-transparent px-2.5 text-[11px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
+        className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[2px] border bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 border-[rgb(var(--divider)/0.14)] hover:border-[rgb(var(--divider)/0.24)] hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
       >
         <GlobeIcon />
         <span className="tnum">{actual.code2}</span>
@@ -1588,13 +1588,13 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
                   style={{ fontFamily: "inherit" }}
                 >
                   <span
-                    className="tnum w-6 shrink-0 text-[11px] font-semibold tracking-wide"
+                    className="tnum w-6 shrink-0 text-[12px] font-semibold tracking-wide"
                     style={{ color: activo ? "rgb(var(--accent-base))" : "var(--ink-3)" }}
                   >
                     {l.code2}
                   </span>
                   <span
-                    className="flex-1 text-[13px]"
+                    className="flex-1 text-[14px]"
                     style={{ color: activo ? "var(--ink)" : "var(--ink-2)" }}
                   >
                     {l.native}
@@ -1631,36 +1631,9 @@ function GlobeIcon() {
   );
 }
 
-/**
- * BrandMark — el logotipo sobre un cuadrado de vidrio (32 px, blur +
- * hairline + inset highlight).
- *
- * `BrandGlyph` dibuja la marca vigente —la curva de capital en retícula
- * de puntos; ver su cabecera— con la tinta del acento, así que hereda el
- * tema sin más.
- *
- * La placa de vidrio se conserva — es el material de la web y hace de
- * encuadre. A 22 px el glifo dibuja su variante reducida, pensada
- * exactamente para este rango; la placa no cambia de tamaño, así que la
- * barra no se mueve.
- */
+/** BrandMark — el glifo de la marca, sin placa. */
 function BrandMark() {
-  return (
-    <span
-      className="relative grid shrink-0 place-items-center overflow-hidden rounded-[2px] border"
-      style={{
-        width: 32,
-        height: 32,
-        borderColor: "rgb(var(--divider) / 0.13)",
-        background: "color-mix(in srgb, var(--surface) 66%, transparent)",
-        WebkitBackdropFilter: "blur(18px) saturate(1.4)",
-        backdropFilter: "blur(18px) saturate(1.4)",
-        boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.06)",
-      }}
-    >
-      <BrandGlyph size={22} />
-    </span>
-  );
+  return <BrandGlyph size={26} className="shrink-0" />;
 }
 
 const FOCUSABLE_SELECTOR = [

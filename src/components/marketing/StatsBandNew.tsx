@@ -54,45 +54,23 @@ export function StatsBandNew() {
     },
   ];
   return (
-    <section
-      className="section-tight border-b border-[rgb(var(--divider)/0.10)] relative overflow-clip"
-    >
-      {/* T2c — `tj-container` hereda los gutters fluidos (clamp(1.25rem,
-          4vw, 2.25rem)) definidos por T2a en globals.css, sustituyendo al
-          `px-5 md:px-8` hardcodeado que dejaba 20 px fijos en móvil. La
-          rejilla pasa a `gap-y-10` en móvil (era 8) para que las tres
-          cifras apiladas respiren; el divider vertical sigue solo en sm+. */}
+    <section className="section-tight relative">
       <div className="tj-container">
-        {/* Filete superior + divisores verticales. La banda eran tres
-            cifras sueltas flotando en el aire, sin tarjeta ni estructura:
-            se leía como el hueco entre dos secciones y no como el bloque
-            de credenciales que es. Los divisores son bordes reales, así
-            que desaparecen solos al apilarse en móvil. */}
-        <div className="h-px w-full bg-[rgb(var(--divider)/0.12)]" aria-hidden="true" />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-10 pt-10 sm:gap-y-0 sm:pt-10 sm:divide-x sm:divide-[rgb(var(--divider)/0.10)]">
+        <div className="grid grid-cols-1 gap-y-10 border-y border-[var(--line)] py-10 sm:grid-cols-3 sm:gap-y-0 sm:divide-x sm:divide-[var(--line)] md:py-12">
           {stats.map((s, i) => (
-            <Reveal key={s.v} delay={i * 0.08} y={14} className="flex flex-col sm:px-7 md:px-9 sm:first:pl-0 sm:last:pr-0">
-              {/* Accent dot — small credential marker above the number,
-                  ties the band to the accent palette used across the
-                  rest of the pricing page (R24-1d). */}
-              <span
-                className="mb-3.5 inline-block h-[5px] w-[5px] bg-[rgb(var(--accent-base))]"
-                aria-hidden="true"
-              />
+            <Reveal key={s.v} delay={i * 0.06} y={10} className="flex flex-col sm:px-8 sm:first:pl-0 sm:last:pr-0">
               <div
-                className="font-serif tnum text-primary"
+                className="tnum text-primary"
                 style={{
-                  fontSize: "clamp(2.4rem, 3.6vw, 3.4rem)",
-                  fontWeight: 400,
-                  letterSpacing: "-0.02em",
+                  fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
+                  fontWeight: 500,
+                  letterSpacing: "-0.035em",
                   lineHeight: 1,
                 }}
               >
                 {s.v}
               </div>
-              <div className="mt-2.5 text-[13.5px] text-secondary leading-snug" style={{ maxWidth: "22em" }}>
-                {s.l}
-              </div>
+              <div className="mt-3 max-w-[22em] text-[15px] leading-snug text-secondary">{s.l}</div>
             </Reveal>
           ))}
         </div>

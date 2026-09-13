@@ -118,7 +118,7 @@ export function ProductPlate({
 }) {
   const { lang } = useLang();
   const es = lang === "es";
-  const { archivo, ancho, alto, roman, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
+  const { archivo, ancho, alto, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
   const alt = es ? altEs : altEn;
 
   /* Los cuatro ficheros de cada lámina: pantalla y detalle, en los dos
@@ -179,20 +179,8 @@ export function ProductPlate({
         </div>
       </div>
       <figcaption className="tj-lamina-pie">
-        <div aria-hidden className="tj-interlude-rule" />
-        {/* NO lleva número de lámina. Lo llevaba, y la portada acababa con
-            dos «Lámina I»: ésta y la primera figura grabada del atlas, que
-            numera aparte. El rótulo dice de qué serie es —una pantalla del
-            programa, no una figura dibujada—, que además es la distinción
-            que importa aquí: una es la cosa y la otra su ilustración. */}
-        <span className="tj-lamina-num">
-          {es ? `Pantalla ${roman}` : `Screen ${roman}`}
-        </span>
         <h3 className="tj-lamina-titulo">{es ? tituloEs : tituloEn}</h3>
         <p className="tj-lamina-nota">{es ? notaEs : notaEn}</p>
-        {/* Sólo se ve donde de verdad se está enseñando el recorte. Va con
-            el mismo interruptor de ancho que el `<picture>` de arriba: si
-            uno cambia y el otro no, el pie miente. */}
         <p className="tj-lamina-detalle">
           {es ? `Detalle: ${lamina.detalleEs}.` : `Detail: ${lamina.detalleEn}.`}
         </p>

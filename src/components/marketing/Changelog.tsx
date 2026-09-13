@@ -156,7 +156,7 @@ export function Changelog() {
                 className="grid gap-2 border-b border-[rgb(var(--divider)/0.08)] px-4 py-4 last:border-b-0 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-5"
               >
                 <span
-                  className="tnum text-[12px] font-semibold"
+                  className="tnum text-[13px] font-semibold"
                   style={{ color: "rgb(var(--accent-base))" }}
                 >
                   {entry.version}
@@ -165,14 +165,14 @@ export function Changelog() {
                   <h3 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
                     {entry.title}
                   </h3>
-                  <p className="mt-1 m-0 text-[12px] text-tertiary tnum">
+                  <p className="mt-1 m-0 text-[13px] text-tertiary tnum">
                     {estado}
                     <span aria-hidden> · </span>
                     {entry.date}
                   </p>
                 </div>
                 <p
-                  className={`m-0 text-[13.5px] leading-[1.55] ${
+                  className={`m-0 text-[14px] leading-[1.55] ${
                     isPast || isPilot ? "text-secondary" : "text-tertiary"
                   }`}
                 >

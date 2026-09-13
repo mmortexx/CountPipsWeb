@@ -361,14 +361,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
         {/* ── Encabezado ─────────────────────────────────────────────── */}
         <div className="mb-8 max-w-[46em]">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}
-            >
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span className="eyebrow">
               {es ? "DIAGNÓSTICO" : "DIAGNOSIS"}
             </span>
           </div>
@@ -411,11 +404,11 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
               <div className="mb-2 flex items-center justify-between">
                 <span
                   className="tnum"
-                  style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {es ? "Progreso" : "Progress"}
                 </span>
-                <span className="tnum" style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-2)" }}>
+                <span className="tnum" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-2)" }}>
                   {answeredCount} / {QUESTIONS.length}
                 </span>
               </div>
@@ -445,13 +438,13 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                     <div className="flex items-baseline gap-2 mb-1">
                       <span
                         className="tnum"
-                        style={{ fontSize: 10, fontWeight: 700, color: "rgb(var(--accent-base))" }}
+                        style={{ fontSize: 11, fontWeight: 700, color: "rgb(var(--accent-base))" }}
                       >
                         {String(qi + 1).padStart(2, "0")}
                       </span>
                       <span
                         className="tnum"
-                        style={{ fontSize: 9.5, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                        style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
                       >
                         {dim ? (es ? dim.es : dim.en) : ""}
                       </span>
@@ -459,7 +452,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                     <p
                       id={idPregunta(qi)}
                       className="m-0 mb-3"
-                      style={{ fontSize: 14.5, lineHeight: 1.5, color: "var(--ink)" }}
+                      style={{ fontSize: 15, lineHeight: 1.5, color: "var(--ink)" }}
                     >
                       {es ? q.qEs : q.qEn}
                     </p>
@@ -502,7 +495,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                             style={{
                               minHeight: 44,
                               padding: "10px 12px",
-                              fontSize: 13,
+                              fontSize: 14,
                               lineHeight: 1.35,
                               cursor: "pointer",
                               color: activa ? "rgb(var(--accent-base))" : "var(--ink-2)",
@@ -538,13 +531,13 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 onClick={() => setActual((i) => Math.max(0, i - 1))}
                 disabled={actual === 0}
                 className="inline-flex items-center gap-2 rounded-[2px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
-                style={{ minHeight: 44, padding: "10px 16px", fontSize: 13, cursor: "pointer",
+                style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
                          color: "var(--ink-2)", border: "1px solid rgb(var(--divider) / 0.16)" }}
               >
                 ← {es ? "Anterior" : "Back"}
               </button>
 
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 13, color: "var(--ink-3)" }}>
                 {actual + 1} / {QUESTIONS.length}
               </span>
 
@@ -556,14 +549,14 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                      para avanzar convierte un diagnóstico en un peaje.
                      El resultado ya avisa de cuántas faltan. */
                   className="inline-flex items-center gap-2 rounded-[2px] transition-colors duration-200"
-                  style={{ minHeight: 44, padding: "10px 18px", fontSize: 13, fontWeight: 600,
+                  style={{ minHeight: 44, padding: "10px 18px", fontSize: 14, fontWeight: 600,
                            cursor: "pointer", color: "rgb(var(--accent-ink))",
                            background: "rgb(var(--accent-base))" }}
                 >
                   {es ? "Siguiente" : "Next"} →
                 </button>
               ) : (
-                <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
+                <span className="tnum" style={{ fontSize: 13, color: "var(--ink-3)" }}>
                   {es ? "Última" : "Last"}
                 </span>
               )}
@@ -577,7 +570,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 style={{
                   minHeight: 44,
                   padding: "10px 18px",
-                  fontSize: 13,
+                  fontSize: 14,
                   cursor: "pointer",
                   color: "var(--ink-2)",
                   background: "transparent",
@@ -594,7 +587,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
             <div className="tj-paper tj-paper-glow rounded-[2px] p-5">
               <div
                 className="tnum mb-4"
-                style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {es ? "Tu perfil" : "Your profile"}
               </div>
@@ -620,7 +613,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                   <span
                     className="tnum ml-auto px-2.5 py-1 rounded-[2px]"
                     style={{
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: 700,
                       letterSpacing: "0.06em",
                       textTransform: "uppercase",
@@ -633,7 +626,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                   </span>
                 )}
               </div>
-              <p className="m-0 mb-5" style={{ fontSize: 12.5, lineHeight: 1.5, color: "var(--ink-3)" }}>
+              <p className="m-0 mb-5" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--ink-3)" }}>
                 {level
                   ? es
                     ? level.resumenEs
@@ -648,11 +641,11 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 {perDim.map(({ dim, pct, respondidas }) => (
                   <div key={dim.id}>
                     <div className="flex items-baseline justify-between mb-1">
-                      <span style={{ fontSize: 12.5, color: "var(--ink-2)" }}>{es ? dim.es : dim.en}</span>
+                      <span style={{ fontSize: 13, color: "var(--ink-2)" }}>{es ? dim.es : dim.en}</span>
                       <span
                         className="tnum"
                         style={{
-                          fontSize: 12,
+                          fontSize: 13,
                           fontWeight: 600,
                           color: respondidas ? barColor(pct) : "var(--ink-3)",
                         }}
@@ -681,7 +674,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
               {weakest ? (
                 <>
                   <div className="rounded-[2px] p-4 bg-[var(--surface-2)]/50 border border-[rgb(var(--divider)/0.1)]">
-                    <div className="tnum mb-2 text-[10px] uppercase tracking-[0.14em] text-[rgb(var(--accent-base))] font-semibold">
+                    <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-[rgb(var(--accent-base))] font-semibold">
                       {es ? "Empieza por aquí" : "Start here"}
                     </div>
                     <p className="m-0 text-sm leading-relaxed text-secondary">
@@ -720,7 +713,7 @@ export function DisciplineScore({ num = "04" }: { num?: string }) {
                 </p>
               )}
 
-              <p className="m-0 mt-4" style={{ fontSize: 11, lineHeight: 1.5, color: "var(--ink-3)" }}>
+              <p className="m-0 mt-4" style={{ fontSize: 12, lineHeight: 1.5, color: "var(--ink-3)" }}>
                 {es
                   ? "Autoevaluación orientativa: mide hábitos declarados, no resultados. Lo que de verdad te retrata son tus propios datos operación a operación."
                   : "Indicative self-assessment: it measures declared habits, not results. What really portrays you is your own trade-by-trade data."}

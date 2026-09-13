@@ -173,11 +173,7 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
       <div className="tj-container">
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum" style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em", color: "rgb(var(--accent-base))" }}>
-              § {num}
-            </span>
-            <span aria-hidden style={{ width: 22, height: 1, background: "rgb(var(--divider) / 0.13)" }} />
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--ink-3)" }}>
+            <span className="eyebrow">
               {es ? "ÍNDICE" : "INDEX"}
             </span>
           </div>
@@ -217,7 +213,7 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
               <button
                 key={t.id}
                 onClick={() => toggle(t.id)}
-                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-[2px] text-[13px] font-medium transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-[2px] text-[14px] font-medium transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
                   background: active
                     ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
@@ -237,7 +233,7 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
           {hasSelection && (
             <button
               onClick={() => setSelected([])}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[2px] text-[12px] font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[2px] text-[13px] font-medium transition-colors"
               style={{ color: "var(--ink-3)", border: "1px solid rgb(var(--divider) / 0.12)" }}
               aria-label={es ? "Limpiar selección" : "Clear selection"}
             >
@@ -253,11 +249,11 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
         {hasSelection ? (
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "En este recorte" : "In this cut"} · {topMatches.length}
               </span>
               {topMatches.length === 0 && (
-                <span className="text-[12px]" style={{ color: "var(--ink-3)" }}>
+                <span className="text-[13px]" style={{ color: "var(--ink-3)" }}>
                   {es ? "Nada en esos ejes — prueba otro." : "Nothing on those axes — try another."}
                 </span>
               )}
@@ -268,13 +264,13 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
                   key={f.id}
                   className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-6"
                 >
-                  <h3 className="m-0 text-[14.5px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
+                  <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
                   </h3>
-                  <p className="m-0 text-[13px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+                  <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
                     {es ? f.descEs : f.descEn}
                   </p>
-                  <span className="tnum text-[11px] text-tertiary sm:justify-self-end">
+                  <span className="tnum text-[12px] text-tertiary sm:justify-self-end">
                     {f.matches.length} {es ? "ejes" : "axes"}
                   </span>
                 </li>
@@ -285,7 +281,7 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
           // Empty state — show all features as a static grid
           <div>
             <div className="mb-4">
-              <span className="tnum" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Todas las características" : "All features"} · {FEATURES.length}
               </span>
             </div>
@@ -295,10 +291,10 @@ export function FeatureExplorer({ num = "02" }: { num?: string }) {
                   key={f.id}
                   className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-3.5 last:border-b-0 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
                 >
-                  <h3 className="m-0 text-[14.5px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
+                  <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
                   </h3>
-                  <p className="m-0 text-[13px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+                  <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
                     {es ? f.descEs : f.descEn}
                   </p>
                 </li>

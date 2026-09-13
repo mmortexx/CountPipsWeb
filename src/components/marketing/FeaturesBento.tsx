@@ -42,11 +42,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
       <div className="relative tj-container">
         <div className="max-w-[760px] mb-12">
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="tnum text-xs font-medium tracking-wide text-[rgb(var(--accent-base))]">
-              § {num}
-            </span>
-            <span aria-hidden className="w-[22px] h-px bg-[rgb(var(--divider)/0.13)]" />
-            <span className="tnum text-[11px] tracking-[0.2em] uppercase text-tertiary">
+            <span className="eyebrow">
               {es ? "CARACTERÍSTICAS" : "FEATURES"}
             </span>
           </div>
@@ -107,7 +103,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               >
                 <CalendarDays size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Calendario de P&L" : "P&L calendar"}
               </span>
             </div>
@@ -121,20 +117,20 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             <div className="mt-4 flex items-baseline justify-between gap-3">
               <span
                 className="tnum"
-                style={{ fontSize: 11.5, letterSpacing: "0.06em", color: "var(--ink-2)", textTransform: "capitalize" }}
+                style={{ fontSize: 13, letterSpacing: "0.06em", color: "var(--ink-2)", textTransform: "capitalize" }}
               >
                 {cal.label[lang]}
               </span>
               <span
                 className="tnum"
-                style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {cal.chip[lang]}
               </span>
             </div>
             <div
               className="mt-2.5 grid grid-cols-7 gap-1.5 tnum"
-              style={{ fontSize: 9.5, letterSpacing: "0.06em", color: "var(--ink-3)" }}
+              style={{ fontSize: 11, letterSpacing: "0.06em", color: "var(--ink-3)" }}
               aria-hidden
             >
               {(es
@@ -163,8 +159,8 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                         empujaba por debajo del mínimo en tema oscuro. La
                         jerarquía entre día e importe la llevan el cuerpo y el
                         peso, que es donde no cuesta contraste. */}
-                    <span className="tnum" style={{ fontSize: 9.5, color: "var(--ink)" }}>{c.day}</span>
-                    <span className="tnum" style={{ fontSize: 9.5, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
+                    <span className="tnum" style={{ fontSize: 11, color: "var(--ink)" }}>{c.day}</span>
+                    <span className="tnum" style={{ fontSize: 11, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
                   </div>
                 );
               })}
@@ -173,7 +169,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               <div className="flex items-center gap-3">
                 <span
                   className="tnum"
-                  style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {es ? "Total mes" : "Month total"}
                 </span>
@@ -191,7 +187,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                   { c: "color-mix(in oklab, rgb(var(--accent-base)) 18%, transparent)", l: "0–20 $" },
                   { c: "rgb(var(--pnl-neg) / 0.22)", l: es ? "Negativo" : "Negative" },
                 ].map((g) => (
-                  <span key={g.l} className="inline-flex items-center gap-1" style={{ fontSize: 9.5, color: "var(--ink-2)" }}>
+                  <span key={g.l} className="inline-flex items-center gap-1" style={{ fontSize: 11, color: "var(--ink-2)" }}>
                     <span className="inline-block rounded" style={{ width: 9, height: 9, background: g.c }} />
                     {g.l}
                   </span>
@@ -214,7 +210,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               >
                 <LineChart size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Rendimiento por hora" : "Hourly performance"}
               </span>
             </div>
@@ -242,7 +238,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             </div>
             <div className="mt-3 flex items-center justify-between">
               <div>
-                <div className="tnum" style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+                <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                   {es ? "Mejor ventana" : "Best window"}
                 </div>
                 <div className="tnum" style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
@@ -252,7 +248,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               <span
                 className="tnum"
                 style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   padding: "4px 10px",
                   borderRadius: 4,
                   background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
@@ -269,7 +265,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                 gráfico, no un gráfico. */}
             <div
               className="mt-2 flex items-center justify-between tnum"
-              style={{ fontSize: 9.5, letterSpacing: "0.08em", color: "var(--ink-3)" }}
+              style={{ fontSize: 11, letterSpacing: "0.08em", color: "var(--ink-3)" }}
               aria-hidden
             >
               {["00", "06", "12", "18", "23"].map((h) => (
@@ -289,7 +285,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             >
               <div
                 className="tnum"
-                style={{ fontSize: 9.5, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {es ? "Ventanas a evitar" : "Windows to avoid"}
               </div>
@@ -302,11 +298,11 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                   <li
                     key={row.w}
                     className="flex items-center justify-between gap-3 tnum"
-                    style={{ fontSize: 12 }}
+                    style={{ fontSize: 13 }}
                   >
                     <span style={{ color: "var(--ink-2)" }}>{row.w}</span>
                     <span className="flex-1 h-px" style={{ background: "rgb(var(--divider) / 0.10)" }} aria-hidden />
-                    <span style={{ color: "var(--ink-3)", fontSize: 11 }}>{row.n}</span>
+                    <span style={{ color: "var(--ink-3)", fontSize: 12 }}>{row.n}</span>
                     <span style={{ color: "rgb(var(--pnl-neg))", fontWeight: 600, minWidth: 44, textAlign: "right" }}>
                       {row.r}
                     </span>
@@ -327,7 +323,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               >
                 <BookOpen size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Playbooks" : "Playbooks"}
               </span>
             </div>
@@ -362,7 +358,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                     <span className="font-medium text-primary">
                       {nombreSetup(s.k as SetupName, lang)}
                     </span>
-                    <div className="flex items-center gap-2 font-mono text-[10px]">
+                    <div className="flex items-center gap-2 font-mono text-[11px]">
                       <span className="text-tertiary">{s.n} {es ? "ops" : "trades"}</span>
                       <span style={{ color: s.c, fontWeight: 700 }}>{fmtR(s.exp, lang, 1)}</span>
                     </div>
@@ -394,7 +390,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               >
                 <NotebookPen size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Diario narrativo" : "Narrative journal"}
               </span>
             </div>
@@ -410,7 +406,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
             >
               <p
                 className="m-0"
-                style={{ fontSize: 13, lineHeight: 1.55, color: "var(--ink-2)" }}
+                style={{ fontSize: 14, lineHeight: 1.55, color: "var(--ink-2)" }}
               >
                 {es
                   ? "“Entré en NQ por ruptura del rango NY, pero moví el stop a +1R para ‘asegurar’. Error: el plan era aguantar a 2R. Terminé saliendo en BE después de que el precio llegó al objetivo sin mí.”"
@@ -435,7 +431,7 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
               >
                 <Layers size={15} aria-hidden />
               </span>
-              <span className="tnum text-[11px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
                 {es ? "Multi-cuenta, multi-activo" : "Multi-account, multi-asset"}
               </span>
             </div>
@@ -453,12 +449,12 @@ export function FeaturesBento({ num = "03" }: { num?: string }) {
                   className="flex items-center justify-between p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)]"
                 >
                   <div>
-                    <div className="text-primary font-semibold text-[11px]">{acc.name}</div>
-                    <div className="text-tertiary text-[10px]">{acc.balance}</div>
+                    <div className="text-primary font-semibold text-[12px]">{acc.name}</div>
+                    <div className="text-tertiary text-[11px]">{acc.balance}</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[rgb(var(--pnl-pos))] font-bold text-[11px]">{acc.pnl}</div>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold">
+                    <div className="text-[rgb(var(--pnl-pos))] font-bold text-[12px]">{acc.pnl}</div>
+                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold">
                       {acc.status}
                     </span>
                   </div>

@@ -33,7 +33,7 @@ export default function Error({
     >
       <div className="relative z-[2] text-center max-w-xl mx-auto">
         <div
-          className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[12px] text-secondary mb-7"
+          className="tj-alza inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[2px] tj-paper tj-paper-dense border border-[rgb(var(--divider)/0.16)] text-[13px] text-secondary mb-7"
         >
           <span className="relative flex w-1.5 h-1.5">
             <span className="relative inline-flex w-1.5 h-1.5 rounded-[1px] bg-pnl-neg" />
@@ -62,7 +62,7 @@ export default function Error({
         {error?.digest ? (
           <p
             style={{ animationDelay: "0.3s" }}
-            className="tj-alza mt-3 text-[11px] uppercase tracking-[0.15em] text-tertiary tnum"
+            className="tj-alza mt-3 text-[12px] uppercase tracking-[0.15em] text-tertiary tnum"
           >
             {es ? "Referencia" : "Reference"}: {error.digest}
           </p>

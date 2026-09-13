@@ -156,7 +156,7 @@ export function BeforeAfter() {
             delay={0.1}
             className="flex lg:flex-col items-center justify-center gap-3 lg:py-6"
           >
-            <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary font-semibold whitespace-nowrap">
+            <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold whitespace-nowrap">
               {es ? "La transformación" : "The transformation"}
             </span>
             <span

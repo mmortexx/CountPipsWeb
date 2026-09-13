@@ -114,7 +114,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-4 last:border-b-0 sm:grid-cols-[3rem_minmax(0,14rem)_minmax(0,1fr)] sm:items-baseline sm:gap-5"
               >
                 <span
-                  className="tnum text-[11px] font-semibold"
+                  className="tnum text-[12px] font-semibold"
                   style={{ color: "rgb(var(--accent-base))" }}
                 >
                   {String(i + 1).padStart(2, "0")}
@@ -122,7 +122,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <h2 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
                   {es ? titleEs : titleEn}
                 </h2>
-                <p className="m-0 text-[13.5px] leading-[1.55] text-secondary">
+                <p className="m-0 text-[14px] leading-[1.55] text-secondary">
                   {es ? textEs : textEn}
                 </p>
               </li>
@@ -224,7 +224,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   }}
                 />
               </div>
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[11px] font-mono text-tertiary">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[12px] font-mono text-tertiary">
                 <span>{es ? "Liquidación:" : "Liquidation:"} {fmtMoney(liquidationThreshold, lang)}</span>
                 <span>{es ? "Equity actual:" : "Current Equity:"} {fmtMoney(currentEquity, lang)}</span>
                 <span>{es ? "Pico máximo:" : "High-Water Mark:"} {fmtMoney(peakEquity, lang)}</span>

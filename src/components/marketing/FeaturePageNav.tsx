@@ -158,7 +158,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                   {/* R24-1c: kbd hint now wears a hairline accent border +
                       accent dot before so the keyboard shortcut reads as a
                       real key rather than floating tertiary text. */}
-                  <span className="block text-[10px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
+                  <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
                     <span aria-hidden className="inline-block w-1 h-1 rounded-[1px] mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
                     {es ? "Anterior" : "Previous"}
                     <kbd className="kbd ml-1.5" style={{ borderColor: "rgb(var(--accent-base) / 0.30)" }}>Alt ←</kbd>
@@ -183,7 +183,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                   <ArrowRight size={18} />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-[10px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
+                  <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
                     <span aria-hidden className="inline-block w-1 h-1 rounded-[1px] mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
                     {es ? "Siguiente" : "Next"}
                     <kbd className="kbd ml-1.5" style={{ borderColor: "rgb(var(--accent-base) / 0.30)" }}>Alt →</kbd>
@@ -231,7 +231,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                   }`}
                 >
                   <span
-                    className="tnum text-[11px] font-semibold"
+                    className="tnum text-[12px] font-semibold"
                     style={{ color: "rgb(var(--accent-base))" }}
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -245,7 +245,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                     </span>
                   </span>
                   {isActive ? (
-                    <span className="tnum shrink-0 text-[10px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--accent-base))]">
+                    <span className="tnum shrink-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--accent-base))]">
                       {es ? "Aquí" : "Here"}
                     </span>
                   ) : (
