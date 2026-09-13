@@ -82,7 +82,7 @@ export function SecuritySection() {
                 className="tj-paper tj-hoja p-6 sm:p-7"
               >
                 <span
-                  className="w-10 h-10 rounded-[2px] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
+                  className="w-10 h-10 rounded-[6px] bg-[var(--chip)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
                 >
                   <Icon size={18} aria-hidden />
                 </span>
@@ -171,21 +171,21 @@ export function SecuritySection() {
                 <th
                   scope="col"
                   className="tnum w-[33%]"
-                  style={{ padding: "12px 0 12px 18px", fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                  style={{ padding: "12px 0 12px 18px", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
                 >
                   <span className="sr-only">{es ? "Característica" : "Feature"}</span>
                 </th>
                 <th
                   scope="col"
-                  className="tnum w-[33%] border-l-2 border-[rgb(var(--accent-base)/0.30)]"
-                  style={{ padding: "12px 8px 12px 10px", fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "rgb(var(--accent-base))", fontWeight: 600 }}
+                  className="tnum w-[33%] border-l-2 border-[var(--chip-line)]"
+                  style={{ padding: "12px 8px 12px 10px", fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgb(var(--accent-base))", fontWeight: 600 }}
                 >
                   CountPips
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[34%]"
-                  style={{ padding: "12px 18px 12px 0", fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                  style={{ padding: "12px 18px 12px 0", fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
                 >
                   {es ? "Diario en la nube" : "Cloud-based journal"}
                 </th>
@@ -205,7 +205,7 @@ export function SecuritySection() {
                   <span className="inline-flex items-center gap-2">
                     <span
                       aria-hidden
-                      className="inline-flex items-center justify-center rounded-[2px]"
+                      className="inline-flex items-center justify-center rounded-[4px]"
                       style={{
                         width: 20,
                         height: 20,
@@ -234,7 +234,7 @@ export function SecuritySection() {
                       {row.l}
                     </th>
                     <td
-                      className="border-l-2 border-[rgb(var(--accent-base)/0.30)]"
+                      className="border-l-2 border-[var(--chip-line)]"
                       style={{ padding: "14px 8px 14px 10px", fontSize: 14, color: "var(--ink)" }}
                     >
                       {typeof row.tj === "boolean" ? sello(row.tj, row.tj) : row.tj}
@@ -258,7 +258,7 @@ export function SecuritySection() {
             />
           </div>
           {/* Mobile-only scroll hint. */}
-          <div className="md:hidden py-2 px-4 text-[12px] uppercase tracking-[0.14em] text-tertiary font-semibold text-center">
+          <div className="md:hidden py-2 px-4 text-[12px] uppercase tracking-[0.08em] text-tertiary font-semibold text-center">
             <span aria-hidden>←</span>{" "}{es ? "Desliza para comparar" : "Swipe to compare"}{" "}<span aria-hidden>→</span>
           </div>
         </div>

@@ -64,7 +64,7 @@ export function GlosarioIndice() {
               SEIS píxeles, así que "Psicología" caía sola a una segunda
               línea — sólo en español, y en todas las anchuras a partir de
               `sm`, no en un punto de ruptura concreto. */}
-          <div className="tj-paper mx-auto max-w-2xl rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-3 sm:p-4">
+          <div className="tj-paper mx-auto max-w-2xl rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-3 sm:p-4">
             <label htmlFor="glos-q" className="sr-only">
               {es ? "Buscar un término" : "Search a term"}
             </label>
@@ -78,7 +78,7 @@ export function GlosarioIndice() {
                   ? "Busca por nombre o por lo que significa…"
                   : "Search by name or by what it means…"
               }
-              className="h-12 w-full rounded-[2px] border border-[rgb(var(--divider)/0.16)] bg-[rgb(var(--divider)/0.04)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.5)] focus:ring-1 focus:ring-[rgb(var(--accent-base)/0.5)]"
+              className="h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-4 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.5)] focus:ring-1 focus:ring-[rgb(var(--accent-base)/0.5)]"
             />
             {/* Category Pills */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
@@ -86,7 +86,7 @@ export function GlosarioIndice() {
                 type="button"
                 aria-pressed={activeCategory === "all"}
                 onClick={() => setActiveCategory("all")}
-                className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[4px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                   activeCategory === "all"
                     ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                     : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -102,7 +102,7 @@ export function GlosarioIndice() {
                     type="button"
                     aria-pressed={activeCategory === cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                    className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[4px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                       activeCategory === cat
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                         : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -140,7 +140,7 @@ export function GlosarioIndice() {
                   : "Nothing by that name. Try a word from the definition."}
               </p>
             ) : (
-              <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+              <ul className="m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
                 {filtrados.map((t) => (
                   <TarjetaTermino key={t.slug} termino={t} es={es} />
                 ))}
@@ -175,7 +175,7 @@ export function GlosarioIndice() {
                     <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-secondary">
                       {es ? meta.descEs : meta.descEn}
                     </p>
-                    <ul className="mt-6 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+                    <ul className="mt-6 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
                       {lista.map((t) => (
                         <TarjetaTermino key={t.slug} termino={t} es={es} />
                       ))}

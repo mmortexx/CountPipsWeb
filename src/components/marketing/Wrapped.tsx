@@ -217,7 +217,7 @@ export function Wrapped() {
               <article
                 data-entra="ciclo"
                 key={c.key}
-                className={`group relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.35)] ${span}`}
+                className={`group relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.35)] ${span}`}
               >
                 <div className="relative p-6 md:p-7 flex flex-col h-full justify-between gap-4 cq-wrap min-w-0">
                   {/* R24-1c: editorial index (01 — 06) before the eyebrow so

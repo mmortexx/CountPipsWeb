@@ -191,7 +191,7 @@ export function Comparison() {
                   <tr className="border-b border-[rgb(var(--divider)/0.15)]">
                     <th
                       scope="col"
-                      className="text-left p-5 md:p-6 text-xs uppercase tracking-[0.12em] font-semibold text-tertiary h-14 md:h-16 align-bottom sticky left-0 z-20"
+                      className="text-left p-5 md:p-6 text-xs uppercase tracking-[0.08em] font-semibold text-tertiary h-14 md:h-16 align-bottom sticky left-0 z-20"
                       // T2h: opaque background via color-mix (works for both
                       // hex and RGB-component --bg values across all themes).
                       // The original bg-[rgb(var(--bg))] was invalid CSS when
@@ -242,7 +242,7 @@ export function Comparison() {
                           </span>
                           {c.highlight && (
                             <span
-                              className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] border text-[11px] font-semibold leading-[1.4] uppercase tracking-[0.1em]"
+                              className="inline-flex items-center rounded-[4px] px-[0.55rem] py-[0.15rem] border text-[11px] font-semibold leading-[1.4] uppercase tracking-[0.08em]"
                               style={{
                                 background: "rgb(var(--accent-base) / 0.14)",
                                 color: "rgb(var(--accent-base))",
@@ -325,7 +325,7 @@ export function Comparison() {
           {/* Mobile-only scroll hint — tiny eyebrow-style label with
               bidirectional arrows. Sits below the table so it doesn't
               compete with the table header for vertical space. */}
-          <div className="md:hidden mt-3 flex items-center justify-center gap-2 text-[12px] uppercase tracking-[0.14em] text-tertiary font-semibold">
+          <div className="md:hidden mt-3 flex items-center justify-center gap-2 text-[12px] uppercase tracking-[0.08em] text-tertiary font-semibold">
             <span aria-hidden="true">←</span>
             <span>{es ? "Desliza para comparar" : "Swipe to compare"}</span>
             <span aria-hidden="true">→</span>
@@ -378,7 +378,7 @@ function CellRenderer({
           <CheckIcon />
         </span>
         <span className="text-[14px] font-medium text-signal-green">{es ? "Sí" : "Yes"}</span>
-        <span className="inline-flex items-center rounded-[2px] px-1.5 py-0 bg-[rgb(var(--divider)/0.05)] text-primary border border-[rgb(var(--divider)/0.20)] text-[11px] font-semibold leading-[1.4] uppercase tracking-[0.1em]">
+        <span className="inline-flex items-center rounded-[4px] px-1.5 py-0 bg-[rgb(var(--divider)/0.05)] text-primary border border-[rgb(var(--divider)/0.20)] text-[11px] font-semibold leading-[1.4] uppercase tracking-[0.08em]">
           Pro
         </span>
       </span>
@@ -433,7 +433,7 @@ function CheckIcon() {
        el mismo verde apagado e institucional. En tema claro los dos
        tokens valen lo mismo (#1E7A4C), así que el cambio sólo se ve en
        oscuro — que es justo donde el neón desentonaba. */
-    <span className="inline-flex w-5 h-5 rounded-[2px] bg-signal-green/20 ring-1 ring-inset ring-signal-green/15 items-center justify-center">
+    <span className="inline-flex w-5 h-5 rounded-[4px] bg-signal-green/20 ring-1 ring-inset ring-signal-green/15 items-center justify-center">
       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--sig-green))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
@@ -443,7 +443,7 @@ function CheckIcon() {
 
 function CrossIcon() {
   return (
-    <span className="inline-flex w-5 h-5 rounded-[2px] bg-pnl-neg/20 ring-1 ring-inset ring-pnl-neg/15 items-center justify-center">
+    <span className="inline-flex w-5 h-5 rounded-[4px] bg-pnl-neg/20 ring-1 ring-inset ring-pnl-neg/15 items-center justify-center">
       <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
       </svg>
@@ -453,7 +453,7 @@ function CrossIcon() {
 
 function PartialIcon() {
   return (
-    <span className="inline-flex w-5 h-5 rounded-[2px] bg-pnl-warn/20 ring-1 ring-inset ring-pnl-warn/15 items-center justify-center">
+    <span className="inline-flex w-5 h-5 rounded-[4px] bg-pnl-warn/20 ring-1 ring-inset ring-pnl-warn/15 items-center justify-center">
       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
         <path d="M2 6h8" stroke="rgb(var(--pnl-warn))" strokeWidth="2" strokeLinecap="round" />
       </svg>

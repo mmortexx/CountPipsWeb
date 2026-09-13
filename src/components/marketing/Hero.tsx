@@ -23,7 +23,7 @@ export function Hero() {
     : "CountPips analytics screen: results by period, total P&L, win rate, expectancy, profit factor, max drawdown, Sharpe and Sortino computed on 200 sample trades.";
 
   return (
-    <section id="top" className="relative overflow-clip">
+    <section id="top" className="relative">
       <div className="tj-container pt-[clamp(8rem,15vh,10.5rem)]">
         <div className="max-w-[48rem]">
           <p className="eyebrow">

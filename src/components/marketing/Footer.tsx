@@ -189,7 +189,7 @@ export function Footer() {
                 habría empujado el resto de la columna. */}
             <Link
               href="/"
-              className="flex items-center gap-2.5 group rounded-[2px] -my-2 py-2"
+              className="flex items-center gap-2.5 group rounded-[4px] -my-2 py-2"
               aria-label={t("appName")}
             >
               <BrandMark />
@@ -280,7 +280,7 @@ export function Footer() {
                       <GlossaryLauncher>
                         <button
                           type="button"
-                          className="link-underline-host inline-flex items-center min-h-[44px] w-full text-left text-sm text-secondary hover:text-primary transition-colors duration-200"
+                          className="link-underline-host inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-left text-sm text-secondary hover:text-primary transition-colors duration-200"
                         >
                           <span className="link-underline">{l.label}</span>
                         </button>
@@ -288,7 +288,7 @@ export function Footer() {
                     ) : (
                       <Link
                         href={l.href}
-                        className="inline-flex items-center min-h-[44px] w-full text-sm text-secondary hover:text-primary transition-colors duration-200"
+                        className="inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-sm text-secondary hover:text-primary transition-colors duration-200"
                       >
                         <span className="link-underline">{l.label}</span>
                       </Link>

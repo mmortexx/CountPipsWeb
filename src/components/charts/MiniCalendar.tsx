@@ -62,7 +62,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
   return (
     <div
       data-entra
-      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-4 md:p-5 ${className}`}
+      className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-4 md:p-5 ${className}`}
       ref={containerRef}
       style={{ transformOrigin: "center" }}
     >
@@ -76,14 +76,14 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
         <div className="flex gap-1">
           <button
             onClick={() => setOffset((o) => o - 1)}
-            className="w-11 h-11 sm:w-7 sm:h-7 rounded-[2px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+            className="w-11 h-11 sm:w-7 sm:h-7 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
             aria-label={lang === "es" ? "Mes anterior" : "Previous month"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M10 4L6 8l4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </button>
           <button
             onClick={() => setOffset((o) => o + 1)}
-            className="w-11 h-11 sm:w-7 sm:h-7 rounded-[2px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+            className="w-11 h-11 sm:w-7 sm:h-7 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
             aria-label={lang === "es" ? "Mes siguiente" : "Next month"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
@@ -112,7 +112,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
             <div
               data-entra="sello"
               key={i}
-              className="tj-realce aspect-square rounded-[2px] flex flex-col items-center justify-center text-[10px] tnum cursor-default relative group"
+              className="tj-realce aspect-square rounded-[4px] flex flex-col items-center justify-center text-[10px] tnum cursor-default relative group"
               style={{ backgroundColor: bg, border: pnl !== undefined ? "1px solid rgb(var(--divider) / 0.06)" : "1px solid transparent" }}
               onMouseEnter={(e) => {
                 const cell = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -150,7 +150,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
       {/* Tooltip flotante sobre papel denso above the day cell */}
       {hovered && (
         <div
-          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
+          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
           style={{
             left: `clamp(80px, ${hovered.x}px, calc(100% - 80px))`,
             top: hovered.y - 6,

@@ -112,9 +112,9 @@ export function SavingsCalculator() {
   const cpLineY = Math.max(padY, Math.min(svgH - padY, cpY));
 
   const chipStyle = (active: boolean) =>
-    `min-h-[44px] px-4 py-2.5 text-xs rounded-[2px] transition-all font-mono ${
+    `min-h-[44px] px-4 py-2.5 text-xs rounded-[4px] transition-all font-mono ${
       active
-        ? "bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.5)] font-semibold shadow-sm"
+        ? "bg-[var(--chip)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.5)] font-semibold shadow-sm"
         : "bg-[var(--surface-2)]/40 text-secondary border border-[rgb(var(--divider)/0.13)] hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
     }`;
 
@@ -147,7 +147,7 @@ export function SavingsCalculator() {
 
           {/* Plan CountPips */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-tertiary">
+            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.08em] text-tertiary">
               {es ? "Referencia prevista" : "Planned reference"}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -168,7 +168,7 @@ export function SavingsCalculator() {
 
           {/* Alternativa suscripción */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-tertiary">
+            <div className="tnum mb-2 text-[11px] uppercase tracking-[0.08em] text-tertiary">
               {es ? "Alternativa por suscripción ($/mes)" : "Subscription alternative ($/mo)"}
             </div>
             <div className="flex flex-wrap gap-2 mb-3">
@@ -187,17 +187,17 @@ export function SavingsCalculator() {
             </div>
             {/* Slider fino para el precio mensual — unified pill style */}
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Precio mensual" : "Monthly price"}
               </span>
               <span
-                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
+                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[4px]"
                 style={{
                   fontSize: 14,
                   fontWeight: 700,
                   color: "rgb(var(--accent-base))",
-                  background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-                  border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+                  background: "var(--chip)",
+                  border: "1px solid var(--chip-line)",
                   transition: "color 0.18s var(--ease-suave)",
                 }}
               >
@@ -234,17 +234,17 @@ export function SavingsCalculator() {
           {/* Años de uso — unified pill style */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Años de uso" : "Years of use"}
               </span>
               <span
-                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
+                className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[4px]"
                 style={{
                   fontSize: 14,
                   fontWeight: 700,
                   color: "rgb(var(--accent-base))",
-                  background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-                  border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+                  background: "var(--chip)",
+                  border: "1px solid var(--chip-line)",
                   transition: "color 0.18s var(--ease-suave)",
                 }}
               >
@@ -282,7 +282,7 @@ export function SavingsCalculator() {
         >
           {/* Headline savings */}
           <div className="mb-5">
-            <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
               {es ? "Diferencia ilustrativa" : "Illustrative difference"}
             </div>
             <div className="flex items-baseline gap-3 mt-1">
@@ -298,7 +298,7 @@ export function SavingsCalculator() {
           {/* Comparison bar chart SVG */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Coste acumulado de referencia" : "Cumulative reference cost"} · {years} {es ? "años" : "yrs"}
               </span>
             </div>
@@ -347,7 +347,7 @@ export function SavingsCalculator() {
 
           {/* Break-even note */}
           <div
-            className="rounded-[2px] px-3.5 py-3 border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)]"
+            className="rounded-[4px] px-3.5 py-3 border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)]"
           >
             <div className="flex items-center justify-between text-xs mb-1">
               <span className="font-semibold text-primary">
@@ -372,10 +372,10 @@ export function SavingsCalculator() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
+      className="group/result relative min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
-      <div className="tnum relative" style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+      <div className="tnum relative" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
         {label}
       </div>
       <div

@@ -79,9 +79,9 @@ describe("Cromo de mesa", () => {
   it("el pie y el atajo global no usan radio de consumo", () => {
     const pie = sinComentarios(leer("src/components/marketing/Footer.tsx"));
     const atajos = sinComentarios(leer("src/components/tj/GlobalShortcuts.tsx"));
-    expect(pie).toMatch(/group rounded-\[2px\] -my-2 py-2/);
+    expect(pie).toMatch(/group rounded-\[4px\] -my-2 py-2/);
     expect(pie).not.toMatch(/group rounded-md -my-2 py-2/);
-    expect(atajos).toMatch(/rounded-\[2px\] pl-3 pr-3\.5/);
+    expect(atajos).toMatch(/rounded-\[4px\] pl-3 pr-3\.5/);
     expect(atajos).not.toMatch(/rounded-full pl-3 pr-3\.5/);
   });
 
@@ -158,7 +158,7 @@ describe("Cromo de mesa", () => {
     expect(cookies).not.toMatch(/rounded-t-\[12px\]/);
     expect(cookies).toMatch(/rounded-t-\[2px\]/);
     expect(chip).not.toMatch(/`pill /);
-    expect(chip).toMatch(/rounded-\[2px\]/);
+    expect(chip).toMatch(/rounded-\[4px\]/);
     expect(sesiones).not.toMatch(/MotionPingDot/);
     expect(sesiones).not.toMatch(/tj-ping/);
     expect(sesiones).not.toMatch(/rounded-full/);

@@ -213,7 +213,7 @@ export function FeatureExplorer() {
               <button
                 key={t.id}
                 onClick={() => toggle(t.id)}
-                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-[2px] text-[14px] font-medium transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-[4px] text-[14px] font-medium transition-[background,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
                   background: active
                     ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
@@ -233,7 +233,7 @@ export function FeatureExplorer() {
           {hasSelection && (
             <button
               onClick={() => setSelected([])}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[2px] text-[13px] font-medium transition-colors"
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[4px] text-[13px] font-medium transition-colors"
               style={{ color: "var(--ink-3)", border: "1px solid rgb(var(--divider) / 0.12)" }}
               aria-label={es ? "Limpiar selección" : "Clear selection"}
             >
@@ -249,7 +249,7 @@ export function FeatureExplorer() {
         {hasSelection ? (
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "En este recorte" : "In this cut"} · {topMatches.length}
               </span>
               {topMatches.length === 0 && (
@@ -258,7 +258,7 @@ export function FeatureExplorer() {
                 </span>
               )}
             </div>
-            <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+            <ul className="m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
               {topMatches.map((f) => (
                 <li
                   key={f.id}
@@ -281,11 +281,11 @@ export function FeatureExplorer() {
           // Empty state — show all features as a static grid
           <div>
             <div className="mb-4">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Todas las características" : "All features"} · {FEATURES.length}
               </span>
             </div>
-            <ul className="m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+            <ul className="m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
               {FEATURES.map((f) => (
                 <li
                   key={f.id}

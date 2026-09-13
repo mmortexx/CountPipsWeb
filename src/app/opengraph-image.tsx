@@ -45,7 +45,7 @@ export default async function Image() {
               marginTop: 72,
               fontSize: 15,
               fontWeight: 600,
-              letterSpacing: "0.1em",
+              letterSpacing: "0.08em",
               textTransform: "uppercase",
               color: "#58616b",
             }}

@@ -545,7 +545,7 @@ export function EquityProjector() {
           </span>
           {badgeHint && (
             <span
-              className="text-[11px] font-mono px-1.5 py-0.2 rounded-[2px]"
+              className="text-[11px] font-mono px-1.5 py-0.2 rounded-[4px]"
               style={{
                 background: "color-mix(in oklab, var(--surface-2) 80%, transparent)",
                 color: "var(--ink-3)",
@@ -557,11 +557,11 @@ export function EquityProjector() {
           )}
         </div>
         <span
-          className="tnum font-mono text-[13px] font-bold px-1.5 py-0.2 rounded-[2px] shadow-sm"
+          className="tnum font-mono text-[13px] font-bold px-1.5 py-0.2 rounded-[4px] shadow-sm"
           style={{
             color: "rgb(var(--accent-base))",
-            background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-            border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 25%, transparent)",
+            background: "var(--chip)",
+            border: "1px solid var(--chip-line)",
           }}
         >
           {fmtNum(value, Number.isInteger(step) ? 0 : 2)}
@@ -700,7 +700,7 @@ export function EquityProjector() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => applyPreset(p.id)}
-                    className="toque-comodo px-2.5 py-1 rounded-[2px] text-[12px] font-mono transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+                    className="toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] font-mono transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
                     style={{
                       background: active
                         ? "rgb(var(--accent-base))"
@@ -731,7 +731,7 @@ export function EquityProjector() {
                 type="button"
                 aria-pressed={selectedPreset === "custom"}
                 onClick={() => setSelectedPreset("custom")}
-                className="toque-comodo px-2.5 py-1 rounded-[2px] text-[12px] font-mono transition-all cursor-pointer whitespace-nowrap"
+                className="toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] font-mono transition-all cursor-pointer whitespace-nowrap"
                 style={{
                   background:
                     selectedPreset === "custom"
@@ -856,7 +856,7 @@ export function EquityProjector() {
                     02 · {es ? "EDGE Y ESTADÍSTICA DE OPERATIVA" : "EDGE & TRADE STATISTICS"}
                   </span>
                   <span
-                    className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[2px] shadow-sm"
+                    className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-[4px] shadow-sm"
                     style={{
                       color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                       background: c.hasEdge
@@ -980,7 +980,7 @@ export function EquityProjector() {
                     <button
                       type="button"
                       onClick={() => setReinvestMode("compound")}
-                      className="p-2.5 text-left rounded-[2px] transition-all cursor-pointer"
+                      className="p-2.5 text-left rounded-[4px] transition-all cursor-pointer"
                       style={{
                         background:
                           reinvestMode === "compound"
@@ -1015,7 +1015,7 @@ export function EquityProjector() {
                     <button
                       type="button"
                       onClick={() => setReinvestMode("linear")}
-                      className="p-2.5 text-left rounded-[2px] transition-all cursor-pointer"
+                      className="p-2.5 text-left rounded-[4px] transition-all cursor-pointer"
                       style={{
                         background:
                           reinvestMode === "linear"
@@ -1081,7 +1081,7 @@ export function EquityProjector() {
                 {/* Badge de Convicción */}
                 <div className="text-left sm:text-right">
                   <div
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[2px] text-[12px] font-mono font-semibold shadow-sm"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-[12px] font-mono font-semibold shadow-sm"
                     style={{
                       background: c.hasEdge
                         ? "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)"
@@ -1113,7 +1113,7 @@ export function EquityProjector() {
               {/* Alerta si no hay edge */}
               {!c.hasEdge && (
                 <div
-                  className="p-3 rounded-[2px] text-xs font-mono leading-relaxed"
+                  className="p-3 rounded-[4px] text-xs font-mono leading-relaxed"
                   style={{
                     background: "color-mix(in oklab, rgb(var(--pnl-neg)) 14%, transparent)",
                     border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 40%, transparent)",
@@ -1130,11 +1130,11 @@ export function EquityProjector() {
 
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                <div className="flex items-center gap-1 p-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.10)] border border-[rgb(var(--divider)/0.12)]">
+                <div className="flex items-center gap-1 p-0.5 rounded-[4px] bg-[rgb(var(--divider)/0.10)] border border-[rgb(var(--divider)/0.12)]">
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}
-                    className="toque-comodo px-3 py-1 rounded-[2px] text-[12px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo px-3 py-1 rounded-[4px] text-[12px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "chart" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "chart" ? "var(--ink)" : "var(--ink-3)",
@@ -1148,7 +1148,7 @@ export function EquityProjector() {
                   <button
                     type="button"
                     onClick={() => setViewTab("table")}
-                    className="toque-comodo px-3 py-1 rounded-[2px] text-[12px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo px-3 py-1 rounded-[4px] text-[12px] font-mono transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "table" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "table" ? "var(--ink)" : "var(--ink-3)",
@@ -1165,7 +1165,7 @@ export function EquityProjector() {
                   <button
                     type="button"
                     onClick={() => setShowConfidenceCone(!showConfidenceCone)}
-                    className="toque-comodo text-[12px] font-mono px-2.5 py-1 rounded-[2px] transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo text-[12px] font-mono px-2.5 py-1 rounded-[4px] transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: showConfidenceCone
                         ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
@@ -1191,7 +1191,7 @@ export function EquityProjector() {
                 <div className="space-y-2">
                   {/* Tooltip Dinámico Scrubber */}
                   <div
-                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.15)] font-mono text-xs shadow-sm"
+                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-[4px] border border-[rgb(var(--divider)/0.15)] font-mono text-xs shadow-sm"
                     style={{ background: "color-mix(in oklab, var(--surface-2) 90%, transparent)" }}
                   >
                     <div className="flex items-center gap-2">
@@ -1230,7 +1230,7 @@ export function EquityProjector() {
 
                   {/* SVG Chart con Renderizado Preciso */}
                   <div
-                    className="relative cursor-crosshair touch-none select-none rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.14)]"
+                    className="relative cursor-crosshair touch-none select-none rounded-[4px] overflow-hidden border border-[rgb(var(--divider)/0.14)]"
                     style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
                     onMouseMove={(e) => handleSvgMove(e.clientX)}
                     onTouchMove={(e) => {
@@ -1409,7 +1409,7 @@ export function EquityProjector() {
                      es justo lo que la herramienta quiere enseñar.
                    · Los años van en versalitas de tinta, no en acento:
                      el color se reserva para el signo del resultado. */
-                <div className="overflow-x-auto rounded-[2px] border border-[rgb(var(--divider)/0.14)]">
+                <div className="overflow-x-auto rounded-[4px] border border-[rgb(var(--divider)/0.14)]">
                   <table className="w-full text-left font-mono text-xs tnum">
                     <thead>
                       <tr className="text-[11px] uppercase tracking-wider text-[var(--ink-3)]">
@@ -1495,7 +1495,7 @@ export function EquityProjector() {
                   fondo del contenedor; por eso las celdas necesitan
                   fondo OPACO, o el trazo se les veria por debajo. */}
               <div
-                className="grid grid-cols-2 gap-px overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.14)] sm:grid-cols-3"
+                className="grid grid-cols-2 gap-px overflow-clip rounded-[4px] border border-[rgb(var(--divider)/0.14)] sm:grid-cols-3"
                 style={{ background: "rgb(var(--divider) / 0.14)" }}
               >
                 <div
@@ -1631,7 +1631,7 @@ export function EquityProjector() {
                 <button
                   type="button"
                   onClick={copySummary}
-                  className="toque-comodo px-4 py-2 rounded-[2px] text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                  className="toque-comodo px-4 py-2 rounded-[4px] text-xs font-mono font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                   style={{
                     background: copied
                       ? "rgb(var(--pnl-pos))"
@@ -1657,7 +1657,7 @@ export function EquityProjector() {
 
               {/* Disclaimer */}
               <div
-                className="p-2.5 rounded-[2px]"
+                className="p-2.5 rounded-[4px]"
                 style={{
                   background: "color-mix(in oklab, var(--surface-2) 40%, transparent)",
                   border: "1px solid rgb(var(--divider) / 0.10)",

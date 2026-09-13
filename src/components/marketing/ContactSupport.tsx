@@ -143,7 +143,7 @@ export function ContactSupport() {
                 <a
                   href={c.href}
                   aria-label={`${title} — ${cta}`}
-                  className="group relative flex flex-col tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
+                  className="group relative flex flex-col tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
                 >
                   <div className="flex items-start gap-4">
                     {/* Icon container — accent-tinted on hover so the icon
@@ -154,7 +154,7 @@ export function ContactSupport() {
                         neutral chip — the brand color is present before
                         hover, then deepens to 12 % / 30 % on hover. */}
                     <span
-                      className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[2px] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] text-primary group-hover:bg-[rgb(var(--accent-base)/0.12)] group-hover:border-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))] group-hover:shadow-[inset_0_1px_0_rgb(var(--divider)/0.10)] transition-[background-color,border-color,box-shadow,color] duration-300"
+                      className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[6px] bg-[var(--chip)] text-primary group-hover:bg-[rgb(var(--accent-base)/0.12)] group-hover:border-[rgb(var(--accent-base)/0.30)] group-hover:text-[rgb(var(--accent-base))] group-hover:shadow-[inset_0_1px_0_rgb(var(--divider)/0.10)] transition-[background-color,border-color,box-shadow,color] duration-300"
                       aria-hidden="true"
                     >
                       <Icon className="size-5" />
@@ -167,7 +167,7 @@ export function ContactSupport() {
                         {desc}
                       </p>
                       {meta && (
-                        <p className="mt-2 text-[12px] uppercase tracking-[0.14em] text-primary font-semibold tnum">
+                        <p className="mt-2 text-[12px] uppercase tracking-[0.08em] text-primary font-semibold tnum">
                           {meta}
                         </p>
                       )}

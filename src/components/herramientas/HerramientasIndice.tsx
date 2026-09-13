@@ -31,21 +31,21 @@ export function HerramientasIndice() {
   return (
     <section className="section-tight">
       <div className="tj-container">
-        <div className="tj-paper tj-paper-dense overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)]">
+        <div className="tj-paper tj-paper-dense overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)]">
           <div
             className="hidden items-center gap-4 border-b border-[rgb(var(--divider)/0.10)] px-5 py-2.5 sm:grid sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_auto]"
             aria-hidden
           >
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
               {es ? "Cód." : "Code"}
             </span>
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
               {es ? "Instrumento" : "Instrument"}
             </span>
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
               {es ? "Entrega" : "Output"}
             </span>
-            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.16em] text-tertiary">
+            <span className="tnum text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
               {es ? "Abrir" : "Open"}
             </span>
           </div>
@@ -143,10 +143,10 @@ export function HerramientasIndice() {
               secundaria y se le pone delante su sello. Así se lee como
               lo que es: una garantía firmada al cierre de la sección, no
               un descargo de responsabilidad. */}
-          <div className="tj-paper mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 rounded-[2px] border border-[rgb(var(--divider)/0.13)] px-6 py-4 sm:flex-row sm:gap-5 sm:py-3.5">
+          <div className="tj-paper mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 rounded-[4px] border border-[rgb(var(--divider)/0.13)] px-6 py-4 sm:flex-row sm:gap-5 sm:py-3.5">
             <span
               className="shrink-0 font-mono text-[11px] uppercase"
-              style={{ letterSpacing: "0.16em", color: "rgb(var(--sig-green))" }}
+              style={{ letterSpacing: "0.08em", color: "rgb(var(--sig-green))" }}
             >
               {es ? "Sin servidor" : "No server"}
             </span>

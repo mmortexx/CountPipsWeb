@@ -107,7 +107,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
             entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It is which part of your process deserves repeating, and which part needs a rule before you return to the market."}
           />
-          <ul className="mt-12 m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+          <ul className="mt-12 m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
             {data.cards.map(({ titleEs, titleEn, textEs, textEn }, i) => (
               <li
                 key={titleEs}
@@ -156,13 +156,13 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   el mismo fallo que el deslizador de 36 px de la sexta tanda:
                   una altura escrita a mano que el contenido desborda. Con el
                   mínimo, la ficha crece y las tres comparten la más alta. */}
-              <div className="flex items-stretch gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <div className="flex items-stretch gap-1 p-1 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
                 {PROP_FIRMS.map((f) => (
                   <button
                     key={f.id}
                     type="button"
                     onClick={() => setSelectedFirm(f.id)}
-                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[2px] text-xs font-semibold leading-tight text-center transition-all ${
+                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[4px] text-xs font-semibold leading-tight text-center transition-all ${
                       selectedFirm === f.id
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                         : "text-secondary hover:text-primary"
@@ -173,7 +173,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 ))}
               </div>
 
-              <div className="flex items-stretch gap-1 p-1 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <div className="flex items-stretch gap-1 p-1 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
                 {PROP_BALANCES.map((bal) => (
                   <button
                     key={bal}
@@ -182,7 +182,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                       setPropBalance(bal);
                       setCurrentEquity(bal * 1.035);
                     }}
-                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[2px] text-xs font-semibold leading-tight tnum transition-all ${
+                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[4px] text-xs font-semibold leading-tight tnum transition-all ${
                       propBalance === bal
                         ? "bg-primary text-[var(--surface)]"
                         : "text-secondary hover:text-primary"
@@ -195,7 +195,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             </div>
 
             {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
-            <div className="p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
+            <div className="p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
               {/* Apilado por debajo de `sm`: en una sola fila, el rotulo y la
                   cifra se metian el uno dentro del otro a 390 px. */}
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">
@@ -211,9 +211,9 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   +{fmtMoney(distanceToLiquidation, lang)} ({fmtPct(distancePct / 100, lang)} {es ? "del colchón disponible" : "buffer left"})
                 </span>
               </div>
-              <div className="relative h-2.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
+              <div className="relative h-2.5 rounded-[4px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
                 <div
-                  className="h-full rounded-[2px] transition-all duration-300"
+                  className="h-full rounded-[4px] transition-all duration-300"
                   style={{
                     width: `${Math.min(100, Math.max(0, distancePct))}%`,
                     background: distancePct > 50
@@ -233,7 +233,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
             {/* Matriz de parámetros de prop firm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Límite diario (${firm.dailyPct}\u00a0%)` : `Daily limit (${firm.dailyPct}%)`}</span>
                   <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
@@ -246,7 +246,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Max Drawdown (${firm.maxDDPct}\u00a0%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
@@ -261,7 +261,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Fase 1 (+${firm.phase1Pct}\u00a0%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}\u00a0%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
                   <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
@@ -279,7 +279,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? "Riesgo seguro (0,75 %)" : "Safe risk (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
@@ -321,7 +321,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   type="button"
                   aria-pressed={manualSetup === s.id}
                   onClick={() => setManualSetup(s.id)}
-                  className={`toque-comodo h-9 px-4 rounded-[2px] text-xs font-semibold transition-all ${
+                  className={`toque-comodo h-9 px-4 rounded-[4px] text-xs font-semibold transition-all ${
                     manualSetup === s.id
                       ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
                       : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
@@ -334,7 +334,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
             {/* Tarjeta de métricas del setup */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
@@ -351,7 +351,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
@@ -364,7 +364,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
@@ -400,12 +400,12 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               <p className="mt-4 max-w-xl text-lg leading-relaxed text-secondary">
                 {es ? "La demo es navegable y no pide registro. Recorre el flujo que más se parece a tu día y decide si merece la pena solicitar acceso." : "The demo is clickable and asks for no sign-up. Follow the workflow closest to your day and decide whether it is worth requesting access."}
               </p>
-              <Link href="/demo" className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-[2px] border border-[rgb(var(--divider)/0.2)] px-5 text-sm font-semibold text-primary hover:bg-[rgb(var(--divider)/0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
+              <Link href="/demo" className="mt-7 inline-flex min-h-12 items-center gap-2 rounded-[4px] border border-[rgb(var(--divider)/0.2)] px-5 text-sm font-semibold text-primary hover:bg-[rgb(var(--divider)/0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
                 {es ? "Abrir la demo" : "Open the demo"}<ArrowRight size={15} aria-hidden />
               </Link>
             </div>
-            <div className="border-l border-[rgb(var(--accent-base)/0.35)] pl-6 sm:pl-8">
-              <p className="text-sm uppercase tracking-[0.16em] text-tertiary">{es ? "Criterio de acceso" : "Access principle"}</p>
+            <div className="border-l border-[var(--chip-line)] pl-6 sm:pl-8">
+              <p className="text-sm uppercase tracking-[0.08em] text-tertiary">{es ? "Criterio de acceso" : "Access principle"}</p>
               <p className="mt-4 font-serif text-2xl leading-tight text-primary">{es ? "No buscamos espectadores. Buscamos traders que quieran medir una decisión concreta." : "We are not looking for spectators. We are looking for traders willing to measure one concrete decision."}</p>
             </div>
           </div>
@@ -421,7 +421,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <h2 className="t-h3 text-primary">{es ? "Solicita acceso al piloto privado." : "Request access to the private pilot."}</h2>
                 <p className="mt-3 max-w-2xl text-secondary">{es ? "Acceso por revisión de perfil, sin compromiso de compra y con la demo disponible antes de solicitarlo." : "Access reviewed by profile, no purchase commitment, with the demo available before you request it."}</p>
               </div>
-              <Link href="/beta" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[2px] bg-[rgb(var(--accent-base))] px-5 text-sm font-semibold text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">{es ? data.ctaEs : data.ctaEn}<ArrowRight size={15} aria-hidden /></Link>
+              <Link href="/beta" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-[4px] bg-[rgb(var(--accent-base))] px-5 text-sm font-semibold text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">{es ? data.ctaEs : data.ctaEn}<ArrowRight size={15} aria-hidden /></Link>
             </div>
           </div>
         </div>

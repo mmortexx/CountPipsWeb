@@ -216,7 +216,7 @@ export function ComparisonSlider() {
   const Fila = ({ texto, bueno }: { texto: string; bueno: boolean }) => (
     <li className="flex items-center gap-3 px-5 sm:px-8">
       <span
-        className={`inline-flex shrink-0 w-5 h-5 items-center justify-center rounded-[2px] ring-1 ${
+        className={`inline-flex shrink-0 w-5 h-5 items-center justify-center rounded-[4px] ring-1 ${
           bueno
             ? "bg-pnl-pos/15 ring-pnl-pos/40"
             : "bg-pnl-neg/15 ring-pnl-neg/35"
@@ -273,7 +273,7 @@ export function ComparisonSlider() {
           <div className="mt-10 max-w-3xl mx-auto">
             {/* Leyenda fuera de la caja: dentro chocaría con las filas y
                 obligaría a descuadrar una de las dos capas. */}
-            <div className="tnum mb-3 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.18em]">
+            <div className="tnum mb-3 flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em]">
               <span className="text-pnl-pos">
                 {es ? "Convertidos" : "Converted"} · {hechos}/{FILAS}
               </span>
@@ -284,7 +284,7 @@ export function ComparisonSlider() {
 
             <div
               ref={montarCaja}
-              className={`tj-paper relative select-none overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.16)] ${
+              className={`tj-paper relative select-none overflow-clip rounded-[4px] border border-[rgb(var(--divider)/0.16)] ${
                 saludando ? "tj-cmp-saluda" : ""
               }`}
               style={
@@ -390,7 +390,7 @@ export function ComparisonSlider() {
                 />
                 <span
                   aria-hidden="true"
-                  className="tj-paper absolute left-1/2 top-1/2 inline-flex h-11 w-11 items-center justify-center rounded-[2px] border border-[rgb(var(--divider)/0.28)] text-primary"
+                  className="tj-paper absolute left-1/2 top-1/2 inline-flex h-11 w-11 items-center justify-center rounded-[4px] border border-[rgb(var(--divider)/0.28)] text-primary"
                   style={{ transform: "translateZ(0) translate(-50%, -50%)" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">

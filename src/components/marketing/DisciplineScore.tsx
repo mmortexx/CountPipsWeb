@@ -404,7 +404,7 @@ export function DisciplineScore() {
               <div className="mb-2 flex items-center justify-between">
                 <span
                   className="tnum"
-                  style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {es ? "Progreso" : "Progress"}
                 </span>
@@ -434,7 +434,7 @@ export function DisciplineScore() {
                 if (qi !== actual) return null;
                 const dim = DIMS.find((d) => d.id === q.dim);
                 return (
-                  <li key={qi} className="tj-paper rounded-[2px] p-4">
+                  <li key={qi} className="tj-paper rounded-[4px] p-4">
                     <div className="flex items-baseline gap-2 mb-1">
                       <span
                         className="tnum"
@@ -444,7 +444,7 @@ export function DisciplineScore() {
                       </span>
                       <span
                         className="tnum"
-                        style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                        style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
                       >
                         {dim ? (es ? dim.es : dim.en) : ""}
                       </span>
@@ -491,7 +491,7 @@ export function DisciplineScore() {
                             tabIndex={enfocable ? 0 : -1}
                             onClick={() => setAnswer(qi, oi)}
                             onKeyDown={(e) => onKeyOption(e, qi, oi, q.options.length)}
-                            className="text-left rounded-[2px] transition-[background-color,border-color,color] duration-200"
+                            className="text-left rounded-[4px] transition-[background-color,border-color,color] duration-200"
                             style={{
                               minHeight: 44,
                               padding: "10px 12px",
@@ -530,7 +530,7 @@ export function DisciplineScore() {
                 type="button"
                 onClick={() => setActual((i) => Math.max(0, i - 1))}
                 disabled={actual === 0}
-                className="inline-flex items-center gap-2 rounded-[2px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
                 style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
                          color: "var(--ink-2)", border: "1px solid rgb(var(--divider) / 0.16)" }}
               >
@@ -548,7 +548,7 @@ export function DisciplineScore() {
                   /* Se puede seguir sin responder: obligar a contestar
                      para avanzar convierte un diagnóstico en un peaje.
                      El resultado ya avisa de cuántas faltan. */
-                  className="inline-flex items-center gap-2 rounded-[2px] transition-colors duration-200"
+                  className="inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200"
                   style={{ minHeight: 44, padding: "10px 18px", fontSize: 14, fontWeight: 600,
                            cursor: "pointer", color: "rgb(var(--accent-ink))",
                            background: "rgb(var(--accent-base))" }}
@@ -566,7 +566,7 @@ export function DisciplineScore() {
               <button
                 type="button"
                 onClick={reset}
-                className="mt-5 inline-flex items-center gap-2 rounded-[2px]"
+                className="mt-5 inline-flex items-center gap-2 rounded-[4px]"
                 style={{
                   minHeight: 44,
                   padding: "10px 18px",
@@ -584,10 +584,10 @@ export function DisciplineScore() {
 
           {/* ── Resultado ────────────────────────────────────────────── */}
           <div className="lg:sticky lg:top-24">
-            <div className="tj-paper tj-paper-glow rounded-[2px] p-5">
+            <div className="tj-paper tj-paper-glow rounded-[4px] p-5">
               <div
                 className="tnum mb-4"
-                style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {es ? "Tu perfil" : "Your profile"}
               </div>
@@ -611,7 +611,7 @@ export function DisciplineScore() {
                 </span>
                 {level && (
                   <span
-                    className="tnum ml-auto px-2.5 py-1 rounded-[2px]"
+                    className="tnum ml-auto px-2.5 py-1 rounded-[4px]"
                     style={{
                       fontSize: 12,
                       fontWeight: 700,
@@ -673,8 +673,8 @@ export function DisciplineScore() {
               {/* Qué arreglar primero */}
               {weakest ? (
                 <>
-                  <div className="rounded-[2px] p-4 bg-[var(--surface-2)]/50 border border-[rgb(var(--divider)/0.1)]">
-                    <div className="tnum mb-2 text-[11px] uppercase tracking-[0.14em] text-[rgb(var(--accent-base))] font-semibold">
+                  <div className="rounded-[4px] p-4 bg-[var(--surface-2)]/50 border border-[rgb(var(--divider)/0.1)]">
+                    <div className="tnum mb-2 text-[11px] uppercase tracking-[0.08em] text-[rgb(var(--accent-base))] font-semibold">
                       {es ? "Empieza por aquí" : "Start here"}
                     </div>
                     <p className="m-0 text-sm leading-relaxed text-secondary">
@@ -685,7 +685,7 @@ export function DisciplineScore() {
                   <button
                     type="button"
                     onClick={copyAssessment}
-                    className="mt-3.5 w-full inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-[2px] text-xs font-mono font-semibold transition-colors duration-150 border border-[rgb(var(--accent-base)/0.35)] bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.2)] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] cursor-pointer"
+                    className="mt-3.5 w-full inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-[4px] text-xs font-mono font-semibold transition-colors duration-150 border border-[var(--chip-line)] bg-[var(--chip)] text-[rgb(var(--accent-base))] hover:bg-[rgb(var(--accent-base)/0.2)] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] cursor-pointer"
                   >
                     {copied ? (
                       <>

@@ -39,7 +39,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
    De 640 px para arriba vuelve a 14 px, que es la densidad que pide un
    formulario largo en escritorio. */
 const inputClass =
-  "mt-2 min-h-12 w-full rounded-[2px] border border-[rgb(var(--divider)/0.18)] bg-[rgb(var(--divider)/0.05)] px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--accent-base)/0.62)] focus:ring-2 focus:ring-[rgb(var(--accent-base)/0.14)]";
+  "mt-2 min-h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]";
 
 /* WCAG 3.3.1 (identificación de errores): el resumen general en
    role="alert" dice que "algo falta", pero no cuál — quien usa lector de
@@ -258,7 +258,7 @@ export function BetaApplication() {
     return (
       <div ref={exitoRef} tabIndex={-1} className="tj-paper tj-paper-glow border border-[rgb(var(--divider)/0.14)] p-7 sm:p-10 outline-none" role="status">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-          <span className="grid size-14 place-items-center rounded-[2px] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
+          <span className="grid size-14 place-items-center rounded-[4px] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
             <Check size={26} aria-hidden />
           </span>
           <h2 className="mt-5 t-h3 text-primary">{es ? "Solicitud recibida." : "Application received."}</h2>
@@ -267,7 +267,7 @@ export function BetaApplication() {
               ? "Revisaremos las solicitudes por perfil y fase del producto. Te escribiremos sólo si encaja con el piloto privado; no necesitas tarjeta."
               : "We review applications by profile and product phase. We will write only if you fit the private pilot; no card is required."}
           </p>
-          <Link href="/demo" className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-[2px] border border-[rgb(var(--divider)/0.2)] px-5 text-sm font-semibold text-primary hover:bg-[rgb(var(--divider)/0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
+          <Link href="/demo" className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-[rgb(var(--divider)/0.2)] px-5 text-sm font-semibold text-primary hover:bg-[rgb(var(--divider)/0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">
             {es ? "Mientras tanto, ver la demo" : "In the meantime, see the demo"}
             <ArrowRight size={15} aria-hidden />
           </Link>
@@ -318,7 +318,7 @@ export function BetaApplication() {
               {(["manual", "prop"] as const).map((value) => {
                 const active = profile === value;
                 return (
-                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 border px-3.5 text-sm transition-colors ${active ? "border-[rgb(var(--accent-base)/0.62)] bg-[rgb(var(--accent-base)/0.1)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-[rgb(var(--divider)/0.18)] text-secondary hover:border-[rgb(var(--divider)/0.35)]"}`}>
+                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 border px-3.5 text-sm transition-colors ${active ? "border-[rgb(var(--accent-base)/0.62)] bg-[var(--chip)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-[rgb(var(--divider)/0.18)] text-secondary hover:border-[rgb(var(--divider)/0.35)]"}`}>
                     <input ref={value === "manual" ? profileRef : undefined} type="radio" name="profile" value={value} checked={active} onChange={() => { setProfile(value); trackEvent("beta_profile_selected", { profile: value }); }} className="accent-[rgb(var(--accent-base))]" />
                     {value === "manual" ? es ? "Operativa manual" : "Manual trading" : es ? "Prop firm / evaluación" : "Prop firm / evaluation"}
                   </label>
@@ -407,7 +407,7 @@ export function BetaApplication() {
           )}
 
           {error && (<p ref={errorRef} tabIndex={-1} className="text-sm text-pnl-neg outline-none" role="alert">{error}</p>)}
-          <button type="submit" disabled={!ready || status === "sending"} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[2px] bg-[rgb(var(--accent-base))] px-5 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] disabled:cursor-not-allowed disabled:opacity-60">
+          <button type="submit" disabled={!ready || status === "sending"} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[4px] bg-[rgb(var(--accent-base))] px-5 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] disabled:cursor-not-allowed disabled:opacity-60">
             {status === "sending" ? es ? "Enviando…" : "Sending…" : es ? "Solicitar acceso" : "Request access"}
             {status !== "sending" && <ArrowRight size={15} aria-hidden />}
           </button>

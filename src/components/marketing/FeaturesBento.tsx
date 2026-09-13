@@ -76,11 +76,11 @@ export function FeaturesBento() {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <CalendarDays size={15} aria-hidden />
               </span>
-              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Calendario de P&L" : "P&L calendar"}
               </span>
             </div>
@@ -100,7 +100,7 @@ export function FeaturesBento() {
               </span>
               <span
                 className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {cal.chip[lang]}
               </span>
@@ -146,7 +146,7 @@ export function FeaturesBento() {
               <div className="flex items-center gap-3">
                 <span
                   className="tnum"
-                  style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {es ? "Total mes" : "Month total"}
                 </span>
@@ -159,10 +159,10 @@ export function FeaturesBento() {
               </div>
               <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 {[
-                  { c: "rgb(var(--accent-base))", l: "≥ 60 $" },
-                  { c: "color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)", l: "20–60 $" },
-                  { c: "color-mix(in oklab, rgb(var(--accent-base)) 18%, transparent)", l: "0–20 $" },
-                  { c: "rgb(var(--pnl-neg) / 0.22)", l: es ? "Negativo" : "Negative" },
+                  { c: "rgb(var(--pnl-pos) / var(--cal-tint-max))", l: "≥ 60 $" },
+                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.6))", l: "20–60 $" },
+                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.35))", l: "0–20 $" },
+                  { c: "rgb(var(--pnl-neg) / var(--cal-tint-max))", l: es ? "Negativo" : "Negative" },
                 ].map((g) => (
                   <span key={g.l} className="inline-flex items-center gap-1" style={{ fontSize: 11, color: "var(--ink-2)" }}>
                     <span className="inline-block rounded" style={{ width: 9, height: 9, background: g.c }} />
@@ -183,11 +183,11 @@ export function FeaturesBento() {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <LineChart size={15} aria-hidden />
               </span>
-              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Rendimiento por hora" : "Hourly performance"}
               </span>
             </div>
@@ -215,7 +215,7 @@ export function FeaturesBento() {
             </div>
             <div className="mt-3 flex items-center justify-between">
               <div>
-                <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+                <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                   {es ? "Mejor ventana" : "Best window"}
                 </div>
                 <div className="tnum" style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
@@ -228,9 +228,9 @@ export function FeaturesBento() {
                   fontSize: 11,
                   padding: "4px 10px",
                   borderRadius: 4,
-                  background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
+                  background: "var(--chip)",
                   color: "rgb(var(--accent-base))",
-                  border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
+                  border: "1px solid var(--chip-line)",
                 }}
               >
                 {es ? "+27 % sobre media" : "+27% over average"}
@@ -262,7 +262,7 @@ export function FeaturesBento() {
             >
               <div
                 className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
               >
                 {es ? "Ventanas a evitar" : "Windows to avoid"}
               </div>
@@ -296,11 +296,11 @@ export function FeaturesBento() {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <BookOpen size={15} aria-hidden />
               </span>
-              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Playbooks" : "Playbooks"}
               </span>
             </div>
@@ -330,7 +330,7 @@ export function FeaturesBento() {
                 { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))", badge: es ? "Sin ventaja" : "No edge" },
                 { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))", badge: es ? "Edge probado" : "Proven edge" },
               ].map((s) => (
-                <div key={s.k} className="p-2 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)] hover:border-[rgb(var(--accent-base)/0.3)] transition-colors">
+                <div key={s.k} className="p-2 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.02)] hover:border-[rgb(var(--accent-base)/0.3)] transition-colors">
                   <div className="flex items-center justify-between text-xs mb-1.5">
                     <span className="font-medium text-primary">
                       {nombreSetup(s.k as SetupName, lang)}
@@ -341,8 +341,8 @@ export function FeaturesBento() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
-                      <div className="h-full rounded-[2px]" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
+                    <div className="flex-1 h-1.5 rounded-[4px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
+                      <div className="h-full rounded-[4px]" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
                     </div>
                     <span
                       className="tnum font-mono text-xs font-semibold"
@@ -363,11 +363,11 @@ export function FeaturesBento() {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <NotebookPen size={15} aria-hidden />
               </span>
-              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Diario narrativo" : "Narrative journal"}
               </span>
             </div>
@@ -375,7 +375,7 @@ export function FeaturesBento() {
               {es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}
             </h3>
             <div
-              className="mt-4 rounded-[2px] p-4"
+              className="mt-4 rounded-[4px] p-4"
               style={{
                 background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
                 border: "1px solid rgb(var(--divider) / 0.06)",
@@ -404,11 +404,11 @@ export function FeaturesBento() {
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <Layers size={15} aria-hidden />
               </span>
-              <span className="tnum text-[12px] tracking-[0.14em] uppercase text-tertiary">
+              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
                 {es ? "Multi-cuenta, multi-activo" : "Multi-account, multi-asset"}
               </span>
             </div>
@@ -423,7 +423,7 @@ export function FeaturesBento() {
               ].map((acc) => (
                 <div
                   key={acc.name}
-                  className="flex items-center justify-between p-2.5 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)]"
+                  className="flex items-center justify-between p-2.5 rounded-[4px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)]"
                 >
                   <div>
                     <div className="text-primary font-semibold text-[12px]">{acc.name}</div>
@@ -431,7 +431,7 @@ export function FeaturesBento() {
                   </div>
                   <div className="text-right">
                     <div className="text-[rgb(var(--pnl-pos))] font-bold text-[12px]">{acc.pnl}</div>
-                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-[rgb(var(--accent-base)/0.12)] text-[rgb(var(--accent-base))] font-semibold">
+                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-[var(--chip)] text-[rgb(var(--accent-base))] font-semibold">
                       {acc.status}
                     </span>
                   </div>

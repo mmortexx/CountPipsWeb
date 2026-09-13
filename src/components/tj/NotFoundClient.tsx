@@ -126,18 +126,18 @@ export function NotFoundClient() {
                   : "Search a feature, metric or question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              /* `rounded-[2px]` y `h-12`: el radio de control del sitio —
+              /* `rounded-[4px]` y `h-12`: el radio de control del sitio —
                  aquí convivían `rounded-md` y `rounded-[5px]` — y el alto
                  que deja al botón interior sus 44 px de objetivo táctil
                  con su propio aire (era `h-11` con un botón de 32 px). */
-              className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
+              className="w-full bg-[var(--raised)] border border-[var(--line-2)] rounded-[4px] h-12 pl-10 pr-28 text-sm text-primary placeholder:text-tertiary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.3)]"
             />
             <div
               className="tj-alza absolute right-1.5 top-1/2 -translate-y-1/2"
             >
               <button
                 type="submit"
-                className="inline-flex h-11 items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-4 text-xs font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
+                className="inline-flex h-11 items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-4 text-xs font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
               >
                 {es ? "Buscar" : "Search"}
               </button>
@@ -147,7 +147,7 @@ export function NotFoundClient() {
 
         <ol
           style={{ animationDelay: "0.4s" }}
-          className="tj-alza mt-7 m-0 overflow-hidden rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0 text-left"
+          className="tj-alza mt-7 m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0 text-left"
         >
           {tiles.map((tile, i) => (
             <li
@@ -204,7 +204,7 @@ export function NotFoundClient() {
                  `group-hover` sin padre `group` — nunca se movía —, y con
                  `py-2` el enlace medía ~36 px, bajo el objetivo táctil de
                  44 px que rige el resto de controles del sitio. */
-              className="group inline-flex min-h-[44px] items-center rounded-[2px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
+              className="group inline-flex min-h-[44px] items-center rounded-[4px] bg-[rgb(var(--accent-base))] px-6 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))]"
             >
               {es ? "Volver al inicio" : "Back to home"}
               <svg

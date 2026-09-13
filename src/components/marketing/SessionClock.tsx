@@ -233,7 +233,7 @@ export function SessionClock() {
                 key={tz.id}
                 type="button"
                 onClick={() => setTzMode(tz.id)}
-                className={`toque-comodo min-h-[32px] px-3 rounded-[2px] text-xs font-mono transition-colors ${
+                className={`toque-comodo min-h-[32px] px-3 rounded-[4px] text-xs font-mono transition-colors ${
                   tzMode === tz.id
                     ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                     : "bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary"
@@ -252,7 +252,7 @@ export function SessionClock() {
             return (
               <div
                 key={s.id}
-                className="tj-paper rounded-[2px] p-4 transition-[border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5"
+                className="tj-paper rounded-[4px] p-4 transition-[border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5"
                 style={{
                   border: `1px solid color-mix(in oklab, ${open ? s.color : "rgb(var(--divider))"} ${open ? "40%" : "14%"}, transparent)`,
                 }}
@@ -267,7 +267,7 @@ export function SessionClock() {
                     </div>
                   </div>
                   <span
-                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[2px] text-[11px] font-bold uppercase tracking-[0.1em]"
+                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded-[4px] text-[11px] font-bold uppercase tracking-[0.08em]"
                     style={{
                       background: open ? `color-mix(in oklab, ${s.color} 14%, transparent)` : "color-mix(in oklab, rgb(var(--divider)) 8%, transparent)",
                       color: open ? s.color : "var(--ink-3)",
@@ -292,13 +292,13 @@ export function SessionClock() {
         </div>
 
         {/* Panel de Killzones Institucionales */}
-        <div className="mb-6 p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+        <div className="mb-6 p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[12px] uppercase tracking-wider text-tertiary font-mono">
               {es ? "Ventanas Institucionales (Killzones)" : "Institutional Killzones"}
             </span>
             {activeKillzones.length > 0 ? (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[2px] text-xs font-mono font-bold bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))] border border-[rgb(var(--accent-base)/0.3)]">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-[4px] text-xs font-mono font-bold bg-[var(--chip)] text-[rgb(var(--accent-base))] border border-[var(--chip-line)]">
                 <span className="w-2 h-2 rounded-[1px] bg-[rgb(var(--accent-base))]" />
                 {activeKillzones.map((k) => (es ? k.nameEs : k.nameEn)).join(", ")}
               </span>
@@ -314,7 +314,7 @@ export function SessionClock() {
               return (
                 <div
                   key={kz.id}
-                  className={`p-3 rounded-[2px] border transition-colors ${
+                  className={`p-3 rounded-[4px] border transition-colors ${
                     active
                       ? "bg-[color-mix(in_oklab,rgb(var(--accent-base))_8%,transparent)] border-[rgb(var(--accent-base)/0.4)]"
                       : "bg-[rgb(var(--divider)/0.02)] border-[rgb(var(--divider)/0.08)]"
@@ -335,16 +335,16 @@ export function SessionClock() {
 
         {/* 24h band */}
         <div
-          className="tj-paper tj-paper-glow rounded-[2px] p-5 mb-4"
+          className="tj-paper tj-paper-glow rounded-[4px] p-5 mb-4"
           style={{ border: "1px solid rgb(var(--divider) / 0.13)" }}
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
               {es ? `Banda 24h (${tzMode.toUpperCase()} offset ${tzOffset >= 0 ? "+" : ""}${tzOffset}h)` : `24h band (${tzMode.toUpperCase()} offset ${tzOffset >= 0 ? "+" : ""}${tzOffset}h)`}
             </span>
             <div className="flex items-center gap-3">
               {nextSession && (
-                <span className="tnum text-[12px] px-2 py-0.5 rounded-[2px] bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.1)] text-tertiary">
+                <span className="tnum text-[12px] px-2 py-0.5 rounded-[4px] bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.1)] text-tertiary">
                   {es ? "Próxima apertura" : "Next open"}: <span className="font-semibold text-primary">{es ? nextSession.session.nameEs : nextSession.session.nameEn}</span> {es ? "en" : "in"} {fmtHour(nextSession.hoursUntil)}h
                 </span>
               )}
@@ -357,7 +357,7 @@ export function SessionClock() {
           </div>
 
           {/* Track */}
-          <div className="relative h-10 rounded-[2px] overflow-hidden" style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}>
+          <div className="relative h-10 rounded-[4px] overflow-hidden" style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}>
             {/* Hour gridlines every 6h */}
             {[0, 6, 12, 18, 24].map((h) => (
               <div
@@ -377,7 +377,7 @@ export function SessionClock() {
               return (
                 <div
                   key={s.id}
-                  className="absolute top-1 bottom-1 rounded-[2px]"
+                  className="absolute top-1 bottom-1 rounded-[4px]"
                   style={{
                     left: `${hourPct(isCrossing ? 0 : start)}%`,
                     width: `${hourPct(isCrossing ? 24 : end - start)}%`,
@@ -420,7 +420,7 @@ export function SessionClock() {
           {/* Overlap alert */}
           {overlaps.length > 0 && (
             <div
-              className="mt-4 rounded-[2px] px-3 py-2.5 flex items-start gap-2"
+              className="mt-4 rounded-[4px] px-3 py-2.5 flex items-start gap-2"
               style={{
                 background: "color-mix(in oklab, rgb(var(--pnl-pos)) 8%, transparent)",
                 border: "1px solid color-mix(in oklab, rgb(var(--pnl-pos)) 26%, transparent)",

@@ -628,7 +628,7 @@
   .t-label {
     font-size: 0.75rem;
     line-height: 1.4;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     font-weight: 600;
   }
@@ -813,35 +813,17 @@
   input[type="password"],
   textarea,
   select {
-    background-color: rgb(255 255 255 / 0.04);
-    border: 1px solid rgb(var(--divider) / 0.1);
-    border-radius: 3px;
-    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: var(--raised);
+    border: 1px solid var(--line-2);
+    border-radius: 4px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
   input:focus,
   textarea:focus,
   select:focus {
-    border-color: rgb(var(--accent-base) / 0.5);
-    background-color: rgb(255 255 255 / 0.06);
-    box-shadow: 0 0 0 3px rgb(var(--accent-base) / 0.12);
+    border-color: rgb(var(--txt-primary) / 0.6);
+    box-shadow: 0 0 0 3px rgb(var(--txt-primary) / 0.08);
     outline: none;
-  }
-  :root[data-theme="light"] input[type="text"],
-  :root[data-theme="light"] input[type="email"],
-  :root[data-theme="light"] input[type="number"],
-  :root[data-theme="light"] input[type="search"],
-  :root[data-theme="light"] input[type="tel"],
-  :root[data-theme="light"] input[type="url"],
-  :root[data-theme="light"] input[type="password"],
-  :root[data-theme="light"] textarea,
-  :root[data-theme="light"] select {
-    background-color: rgb(255 255 255 / 0.6);
-    border-color: rgb(var(--divider) / 0.18);
-  }
-  :root[data-theme="light"] input:focus,
-  :root[data-theme="light"] textarea:focus,
-  :root[data-theme="light"] select:focus {
-    background-color: rgb(255 255 255 / 0.85);
   }
 
   /* ── CASILLAS Y RADIOS A LA ESCALA DEL FORMULARIO ─────────────────
@@ -901,7 +883,7 @@
 
   .eyebrow {
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     font-size: 0.75rem;
     line-height: 1.4;
     font-weight: 600;
@@ -922,23 +904,21 @@
     display: grid;
     grid-template-columns: 1fr;
     margin-inline: auto;
-    max-width: 46rem;
+    max-width: 60rem;
     list-style: none;
     padding: 0;
-    border: 1px solid rgb(var(--divider) / 0.12);
-    border-radius: 3px;
-    background: rgb(var(--divider) / 0.03);
+    border-block: 1px solid var(--line);
     overflow: hidden;
   }
   .terms-bar__item {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     gap: 0.3rem;
-    padding: 0.95rem 1.25rem;
-    text-align: center;
-    border-top: 1px solid rgb(var(--divider) / 0.09);
+    padding: 1rem 0;
+    text-align: left;
+    border-top: 1px solid var(--line);
   }
   .terms-bar__item:first-child {
     border-top: 0;
@@ -947,12 +927,12 @@
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.08em;
     color: rgb(var(--txt-tertiary));
   }
   .terms-bar__value {
-    font-size: 0.9375rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 500;
     letter-spacing: -0.01em;
     color: rgb(var(--txt-primary));
     font-variant-numeric: tabular-nums;
@@ -963,10 +943,12 @@
     }
     .terms-bar__item {
       border-top: 0;
-      border-left: 1px solid rgb(var(--divider) / 0.09);
+      border-left: 1px solid var(--line);
+      padding: 1.125rem 1.5rem;
     }
     .terms-bar__item:first-child {
       border-left: 0;
+      padding-left: 0;
     }
   }
 
@@ -2473,6 +2455,8 @@ button.icon-btn:hover > svg,
   --ink-3: #818588;
   --line: rgba(255, 255, 255, 0.06);
   --line-2: rgba(255, 255, 255, 0.13);
+  --chip: rgba(236, 239, 242, 0.07);
+  --chip-line: rgba(236, 239, 242, 0.1);
 }
 :root[data-theme="light"] {
   --bg: #f3f2ec;
@@ -2484,6 +2468,8 @@ button.icon-btn:hover > svg,
   --ink-3: #3f4448; /* R27-1a — darkened from #565b5e to match new --txt-tertiary darkness (~7:1 on white) so small ink-3 labels / footer text clear WCAG AA on bg-veil */
   --line: rgba(20, 21, 23, 0.1);
   --line-2: rgba(20, 21, 23, 0.19);
+  --chip: #f1f3f5;
+  --chip-line: rgba(11, 15, 20, 0.07);
 }
 
 /* ============================================================
@@ -2738,6 +2724,8 @@ button.icon-btn:hover > svg,
   --ink-3: rgb(var(--txt-tertiary));
   --line: rgba(236, 239, 242, 0.08);
   --line-2: rgba(236, 239, 242, 0.15);
+  --chip: rgba(236, 239, 242, 0.07);
+  --chip-line: rgba(236, 239, 242, 0.1);
 
   --background: #0a0c0f;
   --foreground: #eceff2;
@@ -2806,6 +2794,8 @@ button.icon-btn:hover > svg,
   --ink-3: rgb(var(--txt-tertiary));
   --line: rgba(11, 15, 20, 0.08);
   --line-2: rgba(11, 15, 20, 0.15);
+  --chip: #f1f3f5;
+  --chip-line: rgba(11, 15, 20, 0.07);
 
   --background: #ffffff;
   --foreground: #0b0f14;
@@ -3018,6 +3008,10 @@ button.icon-btn:hover > svg,
   background: #0b0f14;
   color: #ffffff;
 }
+:root:not([data-theme="light"]) .tj-cierre {
+  background: #141920;
+  box-shadow: inset 0 0 0 1px rgba(236, 239, 242, 0.08);
+}
 .tj-cierre h2 {
   color: #ffffff;
 }
@@ -3044,10 +3038,27 @@ button.icon-btn:hover > svg,
 :root:not([data-theme="light"]) .tj-hero-producto {
   box-shadow: 0 24px 64px -24px rgb(0 0 0 / 0.7);
 }
-.tj-hero-producto img {
+/* Las capturas traen el filo de la ventana de Windows: se recorta bajo el
+   marco para que no haya dos bordes. */
+.tj-hero-producto img,
+.tj-lamina-ventana img {
   display: block;
   width: 100%;
   height: auto;
+}
+@media (min-width: 641px) {
+  .tj-hero-producto img {
+    width: calc(100% + 4px);
+    max-width: none;
+    margin: 0 -2px -8px;
+  }
+}
+@media (min-width: 768px) {
+  .tj-lamina-ventana img {
+    width: calc(100% + 4px);
+    max-width: none;
+    margin: 0 -2px -8px;
+  }
 }
 
 /* ---- La lámina del producto -----------------------------------------
@@ -3078,11 +3089,7 @@ button.icon-btn:hover > svg,
 .tj-lamina-ventana {
   line-height: 0;
 }
-.tj-lamina-ventana img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
+
 /* LA CAPTURA SIGUE AL TEMA DE LA PÁGINA.
    Aquí se enseñaba siempre la captura clara: en modo oscuro, una lámina
    blanca de 1576 px en mitad de una página casi negra — y encima
@@ -3286,17 +3293,17 @@ button.icon-btn:hover > svg,
   align-items: baseline;
   gap: 0.5em;
   padding: 4px 9px;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--chip-line);
   border-radius: 4px;
-  background: var(--surface);
-  color: var(--ink-3);
+  background: var(--chip);
+  color: var(--ink-2);
   vertical-align: middle;
 }
 .sello-previsto-texto {
   font-family: var(--font-sans);
   font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   line-height: 1.2;
   white-space: nowrap;

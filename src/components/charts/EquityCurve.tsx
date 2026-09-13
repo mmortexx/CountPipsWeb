@@ -129,7 +129,7 @@ export const EquityCurve = memo(function EquityCurve({
   return (
     <div
       data-entra
-      className={`tj-realce relative tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] ${className}`}
+      className={`tj-realce relative tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] ${className}`}
       style={{ transformOrigin: "center" }}
     >
       <svg
@@ -278,7 +278,7 @@ export const EquityCurve = memo(function EquityCurve({
       {/* Tooltip de detalle sobre papel denso — date, balance, P&L since start, drawdown from peak */}
       {hoverPoint && tooltipLeft !== null && (
         <div
-          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
+          className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"
           style={{
             left: tooltipLeft,
             top: tooltipTop,

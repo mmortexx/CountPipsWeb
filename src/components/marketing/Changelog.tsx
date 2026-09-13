@@ -140,7 +140,7 @@ export function Changelog() {
         {/* `clip` y no `hidden` — misma razón que en `DemoCapabilities`:
             `hidden` abre contenedor de desplazamiento y deja sin entrada
             a los hitos de dentro (cuatro, medidos en /about). */}
-        <ol className="relative mt-14 m-0 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+        <ol className="relative mt-14 m-0 overflow-clip rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
           {entries.map((entry) => {
             const isPast = entry.stage === "delivered";
             const isPilot = entry.stage === "pilot";

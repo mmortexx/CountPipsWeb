@@ -135,17 +135,17 @@ export function EdgeSignificanceChecker() {
   ) => (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+        <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
           {label}
         </span>
         <span
-          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
+          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[4px]"
           style={{
             fontSize: 14,
             fontWeight: 700,
             color: "rgb(var(--accent-base))",
-            background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-            border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+            background: "var(--chip)",
+            border: "1px solid var(--chip-line)",
             transition: "color 0.18s var(--ease-suave)",
           }}
         >
@@ -243,7 +243,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Detector de sobreajuste / Grados de libertad del setup */}
-          <div className="mt-5 p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+          <div className="mt-5 p-3.5 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum text-[12px] uppercase tracking-wider text-tertiary">
                 {es ? "Parámetros / Reglas del Setup" : "Setup Parameters / Rules"}
@@ -295,19 +295,19 @@ export function EdgeSignificanceChecker() {
         >
           {/* Verdict headline */}
           <div className="mb-5">
-            <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+            <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
               {es ? "Veredicto" : "Verdict"}
             </div>
             <div className="flex items-baseline gap-3 mt-1 mb-2">
               <span
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px]"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px]"
                 style={{
                   background: `color-mix(in oklab, ${verdict.color} 12%, transparent)`,
                   border: `1px solid color-mix(in oklab, ${verdict.color} 35%, transparent)`,
                 }}
               >
                 <span aria-hidden className="w-1.5 h-1.5 rounded-[1px]" style={{ background: verdict.color }} />
-                <span className="tnum" style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: verdict.color }}>
+                <span className="tnum" style={{ fontSize: 14, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: verdict.color }}>
                   {verdict.label}
                 </span>
               </span>
@@ -318,7 +318,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Gaussian Bell Curve Distribution Chart */}
-          <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.02)]">
+          <div className="mb-4 p-3 rounded-[4px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.02)]">
             <div className="flex items-center justify-between text-[11px] font-mono text-tertiary uppercase tracking-wider mb-1">
               <span>{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
               <span>
@@ -337,7 +337,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Matriz de Muestra Mínima */}
-          <div className="mb-4 p-3 rounded-[2px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]">
+          <div className="mb-4 p-3 rounded-[4px] border border-[rgb(var(--divider)/0.08)] bg-[rgb(var(--divider)/0.03)]">
             <span className="block text-[11px] uppercase tracking-wider text-tertiary mb-2">
               {es ? `Muestra requerida según confianza (margen ±5${PCT})` : "Required sample by confidence (margin ±5%)"}
             </span>
@@ -348,7 +348,7 @@ export function EdgeSignificanceChecker() {
                   {c.minSample90} ops
                 </span>
               </div>
-              <div className="p-1.5 rounded bg-[rgb(var(--accent-base)/0.08)] border border-[rgb(var(--accent-base)/0.2)]">
+              <div className="p-1.5 rounded bg-[var(--chip)] border border-[var(--chip-line)]">
                 <span className="block text-[11px] text-[rgb(var(--accent-base))] font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
                 <span className={`font-bold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
                   {c.minSample95} ops
@@ -366,16 +366,16 @@ export function EdgeSignificanceChecker() {
           {/* Sample-size adequacy bar */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Muestra vs. necesaria" : "Sample vs. needed"}
               </span>
               <span className="tnum" style={{ fontSize: 12, fontWeight: 600, color: c.sampleAdequate ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}>
                 {trades} / {c.minSample}
               </span>
             </div>
-            <div className="relative h-2 rounded-[2px] overflow-hidden" style={{ background: "rgb(var(--divider) / 0.13)" }}>
+            <div className="relative h-2 rounded-[4px] overflow-hidden" style={{ background: "rgb(var(--divider) / 0.13)" }}>
               <div
-                className="absolute left-0 top-0 h-full rounded-[2px]"
+                className="absolute left-0 top-0 h-full rounded-[4px]"
                 style={{
                   width: `${Math.min(100, (trades / c.minSample) * 100)}%`,
                   background: c.sampleAdequate
@@ -440,7 +440,7 @@ export function EdgeSignificanceChecker() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[2px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
+      className="group/result relative min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.06)] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
       {/* «EXPECTANCY» en versalitas con 0,12em de espaciado mide mas que

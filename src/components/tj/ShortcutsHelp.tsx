@@ -335,7 +335,7 @@ export function ShortcutsHelp({
                desplazamiento. Los diez últimos atajos no se podían leer.
                Con tope y la lista en su propio desplazamiento, el panel
                nunca pasa de lo que queda de ventana bajo ese `pt`. */
-            className={`relative flex max-h-[calc(85svh-2rem)] w-full max-w-md flex-col tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
+            className={`relative flex max-h-[calc(85svh-2rem)] w-full max-w-md flex-col tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
               saliendo ? "tj-panel-sale" : "tj-panel-entra"
             }`}
           >
@@ -358,7 +358,7 @@ export function ShortcutsHelp({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={es ? "Cerrar" : "Close"}
-                className="icon-btn shrink-0 w-8 h-8 rounded-[2px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+                className="icon-btn shrink-0 w-8 h-8 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
               >
                 <svg
                   width="14"
@@ -382,7 +382,7 @@ export function ShortcutsHelp({
               {shortcuts.map((s, i) => (
                 <li
                   key={i}
-                  className="flex items-center justify-between gap-4 px-2 py-2 rounded-[2px] hover:bg-[rgb(var(--divider)/0.03)] transition-colors"
+                  className="flex items-center justify-between gap-4 px-2 py-2 rounded-[4px] hover:bg-[rgb(var(--divider)/0.03)] transition-colors"
                 >
                   <span className="text-sm text-secondary">{s.label}</span>
                   <span className="flex items-center gap-1 shrink-0">

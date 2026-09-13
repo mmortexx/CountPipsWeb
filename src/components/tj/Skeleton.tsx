@@ -25,7 +25,7 @@ export function Skeleton({ className = "", shimmer = false, style }: SkeletonPro
       <div
         aria-hidden="true"
         style={style}
-        className={`animate-pulse rounded-[2px] bg-[rgb(var(--divider)/0.05)] ${className}`}
+        className={`animate-pulse rounded-[4px] bg-[rgb(var(--divider)/0.05)] ${className}`}
       />
     );
   }
@@ -33,7 +33,7 @@ export function Skeleton({ className = "", shimmer = false, style }: SkeletonPro
     <div
       aria-hidden="true"
       style={style}
-      className={`relative overflow-hidden rounded-[2px] bg-[rgb(var(--divider)/0.05)] animate-pulse ${className}`}
+      className={`relative overflow-hidden rounded-[4px] bg-[rgb(var(--divider)/0.05)] animate-pulse ${className}`}
     >
       <div className="tj-shimmer absolute inset-0" />
     </div>
@@ -88,7 +88,7 @@ export function SkeletonCard({
   showChart = true,
 }: SkeletonCardProps) {
   return (
-    <div className={`tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 ${className}`} aria-hidden="true">
+    <div className={`tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-5 ${className}`} aria-hidden="true">
       {children ?? (
         <>
           {showTitle && <Skeleton shimmer className="h-4 w-1/3 mb-4" />}

@@ -117,7 +117,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
             onClick={handleShare}
             // T2h: bumped h-10 → min-h-[44px] (h-11 = 44px) so the
             // share control meets the ≥44px touch-target spec on mobile.
-            className="inline-flex items-center gap-2 min-h-[44px] bg-[rgb(var(--divider)/0.04)] px-5 rounded-[2px] text-sm font-medium text-primary border border-[rgb(var(--divider)/0.15)] hover:bg-[rgb(var(--divider)/0.06)] transition-colors duration-200"
+            className="inline-flex items-center gap-2 min-h-[44px] bg-[rgb(var(--divider)/0.04)] px-5 rounded-[4px] text-sm font-medium text-primary border border-[rgb(var(--divider)/0.15)] hover:bg-[rgb(var(--divider)/0.06)] transition-colors duration-200"
             aria-label={es ? "Compartir esta página" : "Share this page"}
           >
             {copied ? (
@@ -145,20 +145,20 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                 // the ≥44px touch target on mobile regardless of label
                 // height. Icon container bumped w-10 h-10 → w-11 h-11 (44px)
                 // so the circular tap zone is comfortably tappable too.
-                className="group tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 min-h-[44px] flex items-center gap-4 transition-[background-color,border-color,box-shadow,transform] duration-300 hover:border-[rgb(var(--accent-base)/0.30)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                className="group tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-5 min-h-[44px] flex items-center gap-4 transition-[background-color,border-color,box-shadow,transform] duration-300 hover:border-[rgb(var(--accent-base)/0.30)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
                 {/* R24-1c: arrow icon container shifts on hover from neutral
                     divider bg + tertiary text to accent-tinted bg + accent
                     text, so the icon reads as the tap target rather than a
                     decorative bullet. */}
-                <span className="grid place-items-center w-11 h-11 rounded-[2px] bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
+                <span className="grid place-items-center w-11 h-11 rounded-[4px] bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
                   <ArrowLeft size={18} />
                 </span>
                 <span className="min-w-0">
                   {/* R24-1c: kbd hint now wears a hairline accent border +
                       accent dot before so the keyboard shortcut reads as a
                       real key rather than floating tertiary text. */}
-                  <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
+                  <span className="block text-[11px] uppercase tracking-[0.08em] text-tertiary font-semibold mb-1">
                     <span aria-hidden className="inline-block w-1 h-1 rounded-[1px] mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
                     {es ? "Anterior" : "Previous"}
                     <kbd className="kbd ml-1.5" style={{ borderColor: "rgb(var(--accent-base) / 0.30)" }}>Alt ←</kbd>
@@ -176,14 +176,14 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
             <Reveal delay={0.06}>
               <Link
                 href={AXES[next].href}
-                className="group tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 min-h-[44px] flex items-center gap-4 transition-[background-color,border-color,box-shadow,transform] duration-300 hover:border-[rgb(var(--accent-base)/0.30)] md:flex-row-reverse md:text-right focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                className="group tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-5 min-h-[44px] flex items-center gap-4 transition-[background-color,border-color,box-shadow,transform] duration-300 hover:border-[rgb(var(--accent-base)/0.30)] md:flex-row-reverse md:text-right focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
               >
                 {/* R24-1c: mirror of the prev card’s icon-container polish. */}
-                <span className="grid place-items-center w-11 h-11 rounded-[2px] bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
+                <span className="grid place-items-center w-11 h-11 rounded-[4px] bg-[rgb(var(--divider)/0.06)] text-tertiary group-hover:text-[rgb(var(--accent-base))] group-hover:bg-[rgb(var(--accent-base)/0.12)] transition-[background-color,color] duration-300 flex-none">
                   <ArrowRight size={18} />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold mb-1">
+                  <span className="block text-[11px] uppercase tracking-[0.08em] text-tertiary font-semibold mb-1">
                     <span aria-hidden className="inline-block w-1 h-1 rounded-[1px] mr-1.5 align-middle" style={{ background: "rgb(var(--accent-base))" }} />
                     {es ? "Siguiente" : "Next"}
                     <kbd className="kbd ml-1.5" style={{ borderColor: "rgb(var(--accent-base) / 0.30)" }}>Alt →</kbd>
@@ -212,7 +212,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
             recortadas del sitio: `hidden` abriría contenedor de
             desplazamiento y anularía en silencio la entrada de las
             piezas que se le añadan aquí dentro. */}
-        <ol className="m-0 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-0">
+        <ol className="m-0 overflow-clip rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
           {ORDER.map((axis, i) => {
             const isActive = axis === current;
             const a = AXES[axis];
@@ -245,7 +245,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                     </span>
                   </span>
                   {isActive ? (
-                    <span className="tnum shrink-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[rgb(var(--accent-base))]">
+                    <span className="tnum shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em] text-[rgb(var(--accent-base))]">
                       {es ? "Aquí" : "Here"}
                     </span>
                   ) : (

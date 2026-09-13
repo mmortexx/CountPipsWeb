@@ -85,8 +85,8 @@ export function BeforeAfter() {
           {/* ───────── BEFORE — muted, desaturated, red ✗ ───────── */}
           <Reveal className="h-full flex flex-col">
             {/* Tinted header pill */}
-            <div className="mb-3 self-start inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-pnl-neg/10 border border-pnl-neg/25">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-pnl-neg/15 text-pnl-neg">
+            <div className="mb-3 self-start inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-pnl-neg/10 border border-pnl-neg/25">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-[4px] bg-pnl-neg/15 text-pnl-neg">
                 <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                 </svg>
@@ -114,7 +114,7 @@ export function BeforeAfter() {
                 dinero y nada más lo usa. */}
             <div
               data-entra
-              className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-clip border border-pnl-neg/30"
+              className="tj-paper relative flex-1 min-w-0 rounded-[4px] overflow-clip border border-pnl-neg/30"
             >
               <ul className="relative p-6 md:p-7 space-y-4">
                 {before.map((line, i) => (
@@ -127,7 +127,7 @@ export function BeforeAfter() {
                         so the disc reads as a stamped seal against the
                         desaturated Before card (the bg-pnl-neg/15 fill alone
                         was barely distinguishable from the red wash behind it). */}
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-pnl-neg/15 ring-1 ring-pnl-neg/35 items-center justify-center mt-0.5">
+                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[4px] bg-pnl-neg/15 ring-1 ring-pnl-neg/35 items-center justify-center mt-0.5">
                       <svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                         <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
                       </svg>
@@ -147,12 +147,12 @@ export function BeforeAfter() {
             delay={0.1}
             className="flex lg:flex-col items-center justify-center gap-3 lg:py-6"
           >
-            <span className="text-[11px] uppercase tracking-[0.14em] text-tertiary font-semibold whitespace-nowrap">
+            <span className="text-[11px] uppercase tracking-[0.08em] text-tertiary font-semibold whitespace-nowrap">
               {es ? "La transformación" : "The transformation"}
             </span>
             <span
               data-entra="sello"
-              className="relative inline-flex items-center justify-center w-10 h-10 rounded-[2px] bg-[rgb(var(--divider)/0.08)] text-primary ring-1 ring-[rgb(var(--divider)/0.25)]"
+              className="relative inline-flex items-center justify-center w-10 h-10 rounded-[4px] bg-[rgb(var(--divider)/0.08)] text-primary ring-1 ring-[rgb(var(--divider)/0.25)]"
               aria-hidden="true"
             >
               {/* ↓ arrow — mobile */}
@@ -169,8 +169,8 @@ export function BeforeAfter() {
           {/* ───────── AFTER — vibrant, accent glow, ✓, slightly larger ───────── */}
           <Reveal delay={0.2} className="h-full flex flex-col">
             {/* Tinted header pill */}
-            <div className="mb-3 self-start inline-flex items-center gap-2 px-3 py-1.5 rounded-[2px] bg-[rgb(var(--accent-base)/0.1)] border border-[rgb(var(--accent-base)/0.3)]">
-              <span className="inline-flex items-center justify-center w-5 h-5 rounded-[2px] bg-[rgb(var(--accent-base)/0.15)] text-[rgb(var(--accent-base))]">
+            <div className="mb-3 self-start inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-[var(--chip)] border border-[var(--chip-line)]">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-[4px] bg-[var(--chip)] text-[rgb(var(--accent-base))]">
                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                   <path d="M2 6.5l2.5 2.5L10 3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -189,7 +189,7 @@ export function BeforeAfter() {
                 sostiene precisamente en que estén al mismo nivel. */}
             <div
               data-entra="4"
-              className="tj-paper relative flex-1 min-w-0 rounded-[2px] overflow-clip border border-[rgb(var(--accent-base)/0.28)]"
+              className="tj-paper relative flex-1 min-w-0 rounded-[4px] overflow-clip border border-[var(--chip-line)]"
             >
               <ul className="relative p-7 md:p-8 space-y-4">
                 {after.map((line, i) => (
@@ -203,7 +203,7 @@ export function BeforeAfter() {
                         estado confirmado y no como un tinte plano.
                         El verde es el del SEMÁFORO (`--sig-green`), no el del
                         P&L: esto dice «sí, lo tiene», no «esto dio dinero». */}
-                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[2px] bg-signal-green/15 ring-1 ring-signal-green/40 items-center justify-center mt-0.5">
+                    <span className="inline-flex shrink-0 w-5 h-5 rounded-[4px] bg-signal-green/15 ring-1 ring-signal-green/40 items-center justify-center mt-0.5">
                       <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true">
                         <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--sig-green))" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>

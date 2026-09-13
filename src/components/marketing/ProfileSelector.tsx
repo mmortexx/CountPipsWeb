@@ -76,12 +76,12 @@ export function ProfileSelector() {
                 className="group tj-paper tj-hoja relative min-h-[250px] overflow-hidden p-6 transition-[border-color,box-shadow,background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[rgb(var(--accent-base)/0.04)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] sm:p-8"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <span className="grid size-11 place-items-center border border-[rgb(var(--accent-base)/0.28)] bg-[rgb(var(--accent-base)/0.08)] text-[rgb(var(--accent-base))]">
+                  <span className="grid size-11 place-items-center rounded-[6px] bg-[var(--chip)] text-primary">
                     <Icon size={19} strokeWidth={1.6} aria-hidden />
                   </span>
                   <ArrowUpRight size={18} className="text-tertiary transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-[rgb(var(--accent-base))]" aria-hidden />
                 </div>
-                <p className="mt-8 text-[12px] font-semibold uppercase tracking-[0.16em] text-tertiary">{profile.eyebrow}</p>
+                <p className="mt-8 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">{profile.eyebrow}</p>
                 <h3 className="mt-2 text-xl font-semibold tracking-tight text-primary">{profile.title}</h3>
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-secondary">{profile.body}</p>
                 <span className="mt-6 inline-flex text-sm font-medium text-primary underline decoration-[rgb(var(--accent-base)/0.55)] underline-offset-4">{profile.action}</span>

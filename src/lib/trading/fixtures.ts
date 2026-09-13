@@ -99,13 +99,11 @@ function buildCal() {
     // distingue ganancia de pérdida.
     const bg =
       pnl === 0
-        ? "rgb(var(--divider) / 0.07)"
+        ? "rgb(var(--divider) / 0.045)"
         : isPos
-          ? `rgb(var(--accent-base) / calc(var(--cal-tint-max) * ${factor}))`
+          ? `rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * ${factor}))`
           : `rgb(var(--pnl-neg) / calc(var(--cal-tint-max) * ${factor}))`;
-    // 2 px, el canto del sistema: los 5 px de antes eran el único radio de
-    // ese tamaño que quedaba en la página.
-    const style = `background:${bg};border-radius:2px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px`;
+    const style = `background:${bg};border-radius:4px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px`;
     return {
       day: String(dayNum),
       val: pnl === 0 ? "·" : `${pnl >= 0 ? "+" : "−"}${fmtNum(Math.abs(pnl), "es", 0)}`,

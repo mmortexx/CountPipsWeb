@@ -240,9 +240,9 @@ export function CommissionDragCalculator() {
                     key={item.id}
                     type="button"
                     onClick={() => handleSelectInstrument(item.id)}
-                    className={`h-10 px-3 rounded-[2px] text-xs font-semibold transition-all text-left flex items-center justify-between border ${
+                    className={`h-10 px-3 rounded-[4px] text-xs font-semibold transition-all text-left flex items-center justify-between border ${
                       selectedInstId === item.id
-                        ? "border-[rgb(var(--accent-base))] bg-[rgb(var(--accent-base)/0.12)] text-primary"
+                        ? "border-[rgb(var(--accent-base))] bg-[var(--chip)] text-primary"
                         : "border-[rgb(var(--divider)/0.15)] bg-[var(--surface-1)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
                     }`}
                   >
@@ -255,7 +255,7 @@ export function CommissionDragCalculator() {
 
             {/* Sliders de Entrada */}
             <div className="mt-6 space-y-4">
-              <div className="tj-paper p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] space-y-3">
+              <div className="tj-paper p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-secondary font-medium">
                     {es ? "Contratos / Lotes por trade:" : "Contracts / Lots per trade:"}
@@ -275,7 +275,7 @@ export function CommissionDragCalculator() {
                 />
               </div>
 
-              <div className="tj-paper p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] space-y-3">
+              <div className="tj-paper p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-secondary font-medium">
                     {es ? "Operaciones al mes:" : "Trades per month:"}
@@ -297,7 +297,7 @@ export function CommissionDragCalculator() {
 
               {/* Los limites del recorrido salen a variables porque ahora
                   los usa tambien `--pct`, el relleno de la pista. */}
-              <div className="tj-paper p-4 rounded-[2px] border border-[rgb(var(--divider)/0.12)] space-y-3">
+              <div className="tj-paper p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-secondary font-medium">
                     {es
@@ -326,7 +326,7 @@ export function CommissionDragCalculator() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
+                <div className="p-3 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
                   <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Comisión Round-Turn ($):" : "Round-Turn Fee ($):"}
                   </span>
@@ -343,7 +343,7 @@ export function CommissionDragCalculator() {
                   </div>
                 </div>
 
-                <div className="p-3 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
+                <div className="p-3 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-1)]">
                   <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Deslizamiento (Ticks medio):" : "Slippage (Avg ticks):"}
                   </span>
@@ -365,7 +365,7 @@ export function CommissionDragCalculator() {
           </div>
 
           {/* Columna Derecha: Tarjeta de Resultados */}
-          <div className="tj-paper p-6 sm:p-7 rounded-[2px] border border-[rgb(var(--divider)/0.16)] bg-[var(--surface-1)] sticky top-24">
+          <div className="tj-paper p-6 sm:p-7 rounded-[4px] border border-[rgb(var(--divider)/0.16)] bg-[var(--surface-1)] sticky top-24">
             <span className="text-xs font-mono uppercase tracking-wider text-tertiary block mb-3">
               {es ? "DESGLOSE FINANCIERO ANUAL" : "ANNUAL FINANCIAL BREAKDOWN"}
             </span>
@@ -413,7 +413,7 @@ export function CommissionDragCalculator() {
 
             {/* Indicadores Clave: Drag %, Break-Even Ticks y Win Rate Exigido */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-4">
-              <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+              <div className="p-2.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
                 <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Arrastre de Costes:" : "Fee Drag %:"}
                 </span>
@@ -433,7 +433,7 @@ export function CommissionDragCalculator() {
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+              <div className="p-2.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
                 <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Break-even Ticks:" : "Break-even Ticks:"}
                 </span>
@@ -445,7 +445,7 @@ export function CommissionDragCalculator() {
                 </span>
               </div>
 
-              <div className="p-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
+              <div className="p-2.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.10)]">
                 <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Win Rate Exigido:" : "Required BE Win Rate:"}
                 </span>
@@ -459,7 +459,7 @@ export function CommissionDragCalculator() {
             </div>
 
             {/* Diagnóstico Institucional */}
-            <div className="mt-5 p-3.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-2)]">
+            <div className="mt-5 p-3.5 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[var(--surface-2)]">
               <div className="flex items-start gap-2">
                 {costDragPct > 25 ? (
                   <AlertTriangle size={16} className="text-[rgb(var(--pnl-neg))] shrink-0 mt-0.5" />

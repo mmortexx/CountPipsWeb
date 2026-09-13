@@ -64,7 +64,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           {titularIncompleto && (
             <Reveal delay={0.05}>
               <div
-                className="mt-6 rounded-[2px] border p-4"
+                className="mt-6 rounded-[4px] border p-4"
                 style={{
                   borderColor: "rgb(var(--sig-amber) / 0.35)",
                   background: "color-mix(in oklab, rgb(var(--sig-amber)) 8%, transparent)",
@@ -86,7 +86,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           <Reveal delay={0.1}>
             <nav
               aria-label={es ? "Índice del documento" : "Document contents"}
-              className="mt-10 rounded-[2px] border p-5"
+              className="mt-10 rounded-[4px] border p-5"
               style={{ borderColor: "rgb(var(--divider) / 0.12)" }}
             >
               <p className="eyebrow m-0">{es ? "Contenido" : "Contents"}</p>
@@ -191,7 +191,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
               <th
                 key={c}
                 scope="col"
-                className="border-b px-3 py-2.5 align-bottom text-[12px] font-semibold uppercase tracking-[0.1em] text-tertiary"
+                className="border-b px-3 py-2.5 align-bottom text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary"
                 style={{ borderColor: "rgb(var(--divider) / 0.16)" }}
               >
                 {c}

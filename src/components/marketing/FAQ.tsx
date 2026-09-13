@@ -153,7 +153,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={es ? "Buscar en las preguntas…" : "Search questions…"}
               aria-label={es ? "Buscar en las preguntas frecuentes" : "Search frequently asked questions"}
-              className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[2px] h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
+              className="w-full bg-[var(--raised)] border border-[var(--line-2)] rounded-[4px] h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
             />
             </div>
             {/* Category Pills */}
@@ -164,7 +164,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   type="button"
                   aria-pressed={activeCategory === cat.id}
                   onClick={() => setActiveCategory(cat.id)}
-                  className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[2px] text-xs font-medium inline-flex items-center justify-center transition-all ${
+                  className={`min-h-[44px] sm:min-h-0 sm:h-7 px-3.5 sm:px-3 py-2.5 sm:py-0 rounded-[4px] text-xs font-medium inline-flex items-center justify-center transition-all ${
                     activeCategory === cat.id
                       ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                       : "border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)] hover:bg-[rgb(var(--divider)/0.06)]"
@@ -187,7 +187,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               el desenfoque y lo deja en un fondo plano sin grano, que es
               justo lo que hacía que esta caja se viera apagada al lado
               de las secciones de papel de la misma página. */}
-          <div className="tj-paper relative mt-6 max-w-3xl mx-auto rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-2 md:p-3">
+          <div className="tj-paper relative mt-6 max-w-3xl mx-auto rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-2 md:p-3">
             {noResults ? (
               /* ───── No-results panel — links to the GlossaryModal ───── */
               <div className="relative px-4 py-12 text-center">
@@ -204,7 +204,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                 <button
                   type="button"
                   onClick={() => setGlossaryOpen(true)}
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[2px]"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px]"
                 >
                   {es ? "Abrir glosario →" : "Open glossary →"}
                 </button>
@@ -286,7 +286,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                      enlace suelto en mitad de un párrafo, y medía 20 px
                      de alto. El relleno lateral además separa el foco
                      del texto para que el anillo no lo estrangule. */
-                  className="min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[2px]"
+                  className="min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px]"
                 >
                   {es
                     ? "¿No encuentras tu término? Consulta el glosario →"

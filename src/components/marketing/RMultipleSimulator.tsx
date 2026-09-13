@@ -259,17 +259,17 @@ export function RMultipleSimulator() {
   ) => (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+        <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
           {label}
         </span>
         <span
-          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[2px]"
+          className="tnum inline-flex items-baseline px-2.5 py-0.5 rounded-[4px]"
           style={{
             fontSize: 14,
             fontWeight: 700,
             color: "rgb(var(--accent-base))",
-            background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
-            border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+            background: "var(--chip)",
+            border: "1px solid var(--chip-line)",
             transition: "color 0.18s var(--ease-suave)",
           }}
         >
@@ -398,11 +398,11 @@ export function RMultipleSimulator() {
           <button
             type="button"
             onClick={() => setSeed((s) => s + 1)}
-            className="mt-6 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[2px] text-[14px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            className="mt-6 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[4px] text-[14px] font-semibold transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             style={{
-              background: "color-mix(in oklab, rgb(var(--accent-base)) 12%, transparent)",
+              background: "var(--chip)",
               color: "rgb(var(--accent-base))",
-              border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
+              border: "1px solid var(--chip-line)",
             }}
             aria-label={es ? "Volver a simular con otra semilla aleatoria" : "Re-simulate with a different random seed"}
           >
@@ -421,7 +421,7 @@ export function RMultipleSimulator() {
           {/* Expectancy + runs headline */}
           <div className="mb-5 flex items-baseline justify-between flex-wrap gap-2">
             <div>
-              <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Expectancy" : "Expectancy"}
               </div>
               <div className="flex items-baseline gap-3 mt-1">
@@ -434,7 +434,7 @@ export function RMultipleSimulator() {
               </div>
             </div>
             <div className="text-right">
-              <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Simulaciones deterministas" : "Deterministic simulations"}
               </div>
               <div className="tnum" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{SIM_RUNS} runs (seed #{seed})</div>
@@ -444,7 +444,7 @@ export function RMultipleSimulator() {
           {/* Fan chart SVG */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
                 {es ? "Abanico de caminos" : "Path fan"} · {trades} {es ? "ops" : "trades"}
               </span>
               <div className="flex items-center gap-3 tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>
@@ -502,7 +502,7 @@ export function RMultipleSimulator() {
               y el importe va abreviado: «18,9 k $» en vez de «18.906 US$»,
               que no cabe en 70 px. */}
           <div
-            className="mb-4 grid grid-cols-5 overflow-clip rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-center font-mono"
+            className="mb-4 grid grid-cols-5 overflow-clip rounded-[4px] border border-[rgb(var(--divider)/0.12)] text-center font-mono"
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
           >
             {[
@@ -525,7 +525,7 @@ export function RMultipleSimulator() {
                   />
                 )}
                 <span
-                  className="tnum block text-[11px] font-semibold tracking-[0.1em]"
+                  className="tnum block text-[11px] font-semibold tracking-[0.08em]"
                   style={{ color: p.ref ? "rgb(var(--accent-base))" : "var(--ink-3)" }}
                 >
                   {p.k}
@@ -557,7 +557,7 @@ export function RMultipleSimulator() {
               Filetes entre columnas en vez de separacion: son cuatro
               lecturas de la misma simulacion, no cuatro tarjetas. */}
           <div
-            className="mb-4 grid grid-cols-2 overflow-clip rounded-[2px] text-center font-mono sm:grid-cols-4"
+            className="mb-4 grid grid-cols-2 overflow-clip rounded-[4px] text-center font-mono sm:grid-cols-4"
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.10)" }}
           >
             {[
@@ -595,7 +595,7 @@ export function RMultipleSimulator() {
                 }`}
               >
                 <span
-                  className="tnum text-[11px] uppercase leading-[1.25] tracking-[0.12em]"
+                  className="tnum text-[11px] uppercase leading-[1.25] tracking-[0.08em]"
                   style={{ color: "var(--ink-3)" }}
                 >
                   {m.t}
@@ -615,7 +615,7 @@ export function RMultipleSimulator() {
 
           {/* Disclaimer */}
           <div
-            className="rounded-[2px] px-3 py-2.5"
+            className="rounded-[4px] px-3 py-2.5"
             style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid rgb(var(--divider) / 0.06)" }}
           >
             <p className="tnum m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>

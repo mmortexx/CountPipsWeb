@@ -174,7 +174,7 @@ export function MetricsShowcaseNew() {
                     integral, que se lee peor que no estar. */}
                 <span
                   className="block text-[11px] uppercase"
-                  style={{ letterSpacing: "0.14em", color: "var(--ink-3)" }}
+                  style={{ letterSpacing: "0.08em", color: "var(--ink-3)" }}
                 >
                   {m.l}
                 </span>
@@ -202,20 +202,16 @@ export function MetricsShowcaseNew() {
         {/* Distribución de R */}
         <div
           data-entra
-          // T3c — distribución R-múltiplo swap a `.tj-paper`: misma tarjeta
-          // de histograma, ahora sobre papel translúcido cálido. El border
-          // + padding originales se conservan; el `box-shadow` inset se
-          // retira porque `.tj-paper` ya aporta su propio catch-light.
-          className="tj-paper relative rounded-[2px]"
+          className="tj-paper relative rounded-[4px]"
           style={{
             padding: 24,
-            border: "1px solid rgb(var(--divider) / 0.13)",
+            border: "1px solid var(--line-2)",
           }}
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-8">
             <span
               className="tnum"
-              style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+              style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
               {es ? "Distribución de R-múltiplo" : "R-multiple distribution"}
             </span>
@@ -225,9 +221,9 @@ export function MetricsShowcaseNew() {
                 fontSize: 11,
                 padding: "4px 9px",
                 borderRadius: 4,
-                background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
+                background: "var(--chip)",
                 color: "rgb(var(--accent-base))",
-                border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
+                border: "1px solid var(--chip-line)",
               }}
             >
               {/* El recuento sale de la propia muestra. Estaba fijo en
@@ -239,32 +235,6 @@ export function MetricsShowcaseNew() {
                 : `${METRICS.closedCount} trades`}
             </span>
           </div>
-          {/* ── EL HISTOGRAMA, AHORA CALCULADO ───────────────────────────
-              Las nueve alturas estaban escritas a mano y el color se
-              elegía por el ÍNDICE de la barra: los cuatro primeros cubos
-              en verde y el resto en rojo. Como los cuatro primeros son
-              las PÉRDIDAS, el gráfico insignia de un diario de trading
-              pintaba las pérdidas de verde y las ganancias de rojo.
-
-              Ahora cada cubo trae su propio `losing` desde
-              `getRDistribution()`, así que el color lo decide el signo de
-              la R y no puede volver a invertirse al reordenar la lista.
-              La altura es proporcional al cubo más poblado, no a un total
-              inventado.
-
-              Los cubos vacíos (no hay operaciones entre −0,5R y +0,5R) se
-              dibujan como un muñón de 2 px sobre el eje en vez de
-              desaparecer: un hueco sin marca se lee como fallo de
-              dibujo, y con marca se lee como lo que es — esta operativa
-              o se come el stop entero o deja correr.
-
-              Las barras siguen `aria-hidden`; la fila de rótulos de abajo
-              y el resumen de debajo llevan la semántica para lectores de
-              pantalla. */}
-          {/* T2c — envoltorio `min-w-0` para que el histograma no fuerce
-              overflow horizontal en móvil (los cubos y sus huecos ya
-              cabían, pero `min-w-0` protege contra sub-pixel rounding en
-              320 px). */}
           <div className="relative min-w-0">
           <div className="flex items-end gap-1.5" style={{ height: 160 }}>
             {R_BINS.map((b, i) => {
@@ -294,16 +264,15 @@ export function MetricsShowcaseNew() {
                 >
                   {i === R_MODE_INDEX && (
                     <span
-                      className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[2px]"
+                      className="tnum absolute -top-5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-[4px]"
                       style={{
                         fontSize: 11,
-                        letterSpacing: "0.1em",
                         color: "rgb(var(--accent-base))",
-                        background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                        border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+                        background: "var(--chip)",
+                        border: "1px solid var(--chip-line)",
                       }}
                     >
-                      {es ? "MODA" : "MODE"}
+                      {es ? "Moda" : "Mode"}
                     </span>
                   )}
                 </div>
@@ -359,7 +328,7 @@ export function MetricsShowcaseNew() {
               <div key={s.l} className="relative">
                 <div
                   className="tnum flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5"
-                  style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)" }}
+                  style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
                 >
                   {/* R24-1c: tiny accent dot before each stat label so the
                       three stats read as a synchronized footer row rather

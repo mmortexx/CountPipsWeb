@@ -79,9 +79,9 @@ export function GuardianNew() {
             el resto de la home, en vez de aparecer estática. */}
         <div
           data-entra
-          className="tj-paper-dense relative rounded-[2px] p-5 sm:p-6 md:p-8"
+          className="tj-paper-dense relative rounded-[4px] p-5 sm:p-6 md:p-8"
           style={{
-            border: "1px solid rgb(var(--divider) / 0.13)",
+            border: "1px solid var(--line-2)",
             // La sombra la pone el material, no esta línea. Aquí había un
             // `boxShadow` en NEGRO PURO al 22 %, y al ser inline ganaba
             // siempre: anulaba la sombra que `.tj-paper` define para el
@@ -95,7 +95,7 @@ export function GuardianNew() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <span
               className="tnum"
-              style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)" }}
+              style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
             >
               {es ? "Comprobación previa · nueva operación" : "Pre-flight check · new trade"}
             </span>
@@ -104,27 +104,27 @@ export function GuardianNew() {
               style={{
                 fontSize: 11,
                 padding: "3px 9px",
-                borderRadius: 2,
-                background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
+                borderRadius: 4,
+                background: "var(--chip)",
                 color: "rgb(var(--accent-base))",
-                border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)",
+                border: "1px solid var(--chip-line)",
               }}
             >
               <span
                 aria-hidden
-                className="inline-block rounded-[1px]"
+                className="inline-block rounded-full"
                 style={{
-                  width: 5,
-                  height: 5,
-                  background: "rgb(var(--accent-base))",
+                  width: 6,
+                  height: 6,
+                  background: "rgb(var(--pnl-pos))",
                 }}
               />
-              {es ? "EN VIVO" : "LIVE"}
+              {es ? "En vivo" : "Live"}
             </span>
           </div>
           {/* Fila del trade */}
           <div
-            className="rounded-[2px] p-3 mb-4"
+            className="rounded-[4px] p-3 mb-4"
             style={{
               background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
               border: "1px solid rgb(var(--divider) / 0.06)",
@@ -135,7 +135,7 @@ export function GuardianNew() {
                 className="tnum inline-block"
                 style={{
                   padding: "4px 10px",
-                  borderRadius: 2,
+                  borderRadius: 4,
                   background: "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)",
                   color: "rgb(var(--pnl-pos))",
                   fontSize: 12,
@@ -178,7 +178,7 @@ export function GuardianNew() {
             ].map((c, i) => (
               <div key={i} className="flex items-start gap-2.5 py-0.5">
                 <span
-                  className="inline-grid place-items-center rounded-[2px] flex-none mt-px"
+                  className="inline-grid place-items-center rounded-[4px] flex-none mt-px"
                   style={{
                     width: 20,
                     height: 20,
@@ -261,7 +261,7 @@ export function GuardianNew() {
               <div
                 role="status"
                 aria-live="polite"
-                className="rounded-[2px] mb-3 relative overflow-hidden"
+                className="rounded-[4px] mb-3 relative overflow-hidden"
                 style={{
                   padding: "16px 18px 16px 20px",
                   background: `color-mix(in oklab, ${tinte} 10%, transparent)`,
@@ -277,7 +277,7 @@ export function GuardianNew() {
                 <div className="flex items-center gap-2 mb-1">
                   <span
                     aria-hidden
-                    className="inline-grid place-items-center rounded-[2px]"
+                    className="inline-grid place-items-center rounded-[4px]"
                     style={{
                       width: 20,
                       height: 20,
@@ -294,7 +294,7 @@ export function GuardianNew() {
                   </span>
                   <span
                     className="tnum"
-                    style={{ fontSize: 12, letterSpacing: "0.14em", textTransform: "uppercase", color, fontWeight: 700 }}
+                    style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color, fontWeight: 700 }}
                   >
                     {titulo}
                   </span>
@@ -333,10 +333,10 @@ export function GuardianNew() {
                   onClick={() => setEstado("ajustado")}
                   className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                   style={{
-                    borderRadius: 2,
-                    background: "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)",
-                    color: "rgb(var(--accent-base))",
-                    border: "1px solid color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)",
+                    borderRadius: 4,
+                    background: "rgb(var(--accent-base))",
+                    color: "rgb(var(--accent-ink))",
+                    border: "1px solid rgb(var(--accent-base))",
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
@@ -351,10 +351,10 @@ export function GuardianNew() {
                   onClick={() => setEstado("anulado")}
                   className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                   style={{
-                    borderRadius: 2,
+                    borderRadius: 4,
                     background: "transparent",
                     color: "var(--ink-2)",
-                    border: "1px solid rgb(var(--divider) / 0.13)",
+                    border: "1px solid var(--line-2)",
                     fontSize: 13,
                     fontWeight: 600,
                     cursor: "pointer",
@@ -369,10 +369,10 @@ export function GuardianNew() {
                 onClick={() => setEstado("bloqueado")}
                 className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-0"
                 style={{
-                  borderRadius: 2,
+                  borderRadius: 4,
                   background: "transparent",
                   color: "var(--ink-2)",
-                  border: "1px solid rgb(var(--divider) / 0.13)",
+                  border: "1px solid var(--line-2)",
                   fontSize: 13,
                   fontWeight: 600,
                   cursor: "pointer",
@@ -462,7 +462,7 @@ export function GuardianNew() {
               return (
                 <li key={f.t} className="flex items-start gap-3">
                   <span
-                    className="w-10 h-10 rounded-[2px] bg-[rgb(var(--accent-base)/0.06)] border border-[rgb(var(--accent-base)/0.15)] shadow-[inset_0_1px_0_rgb(var(--divider)/0.08)] flex-none inline-grid place-items-center text-[rgb(var(--accent-base))]"
+                    className="w-10 h-10 rounded-[6px] bg-[var(--chip)] flex-none inline-grid place-items-center text-[rgb(var(--accent-base))]"
                   >
                     <Icon size={18} aria-hidden />
                   </span>

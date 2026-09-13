@@ -24,13 +24,13 @@ import {
  *  - Centered institutional header above the accordion (eyebrow + headline
  *    + lead + 3 reassurance pills) — mirrors the Pricing header rhythm so
  *    the two sections read as one continuous conversion story.
- *  - Single `.tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)]` container holds the
+ *  - Single `.tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)]` container holds the
  *    accordion; each item tints with `rgb(var(--divider)/0.04)` when open
  *    and picks up a subtle accent border + glow so the active item reads as
  *    "lit".
  *
  * Institutional polish (R2-b):
- *  - `.tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)]` container with `` elevation +
+ *  - `.tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)]` container with `` elevation +
  *    `p-2 md:p-3` padding so each accordion item has breathing room.
  *  - Accordion headers `text-sm font-medium text-primary` + the shadcn
  *    chevron (rotates 180° on open via `[&[data-state=open]>svg]:rotate-180`).
@@ -103,7 +103,7 @@ export function PricingFAQ() {
               <span
                 data-entra="ciclo"
                 key={label}
-                className="inline-flex items-center gap-[0.35rem] rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-secondary border border-[rgb(var(--divider)/0.10)] tnum"
+                className="inline-flex items-center gap-[0.35rem] rounded-[4px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-secondary border border-[rgb(var(--divider)/0.10)] tnum"
               >
                 <span className="size-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" aria-hidden="true" />
                 {label}
@@ -116,7 +116,7 @@ export function PricingFAQ() {
             `max-w-3xl` keeps the line-length comfortable for reading
             the answers; `mx-auto` centers it under the header. */}
         <Reveal delay={0.1} y={28}>
-          <div className="mt-10 max-w-3xl mx-auto tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-2 md:p-3">
+          <div className="mt-10 max-w-3xl mx-auto tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-2 md:p-3">
             <Accordion
               type="single"
               collapsible
