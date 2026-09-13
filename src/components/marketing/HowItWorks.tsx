@@ -75,7 +75,7 @@ export function HowItWorks() {
           <div
             aria-hidden
             className="hidden md:block absolute top-[72px] left-[16.66%] right-[16.66%] h-px pointer-events-none"
-            style={{ background: "linear-gradient(90deg, transparent, rgb(var(--accent-base) / 0.30) 15%, rgb(var(--accent-base) / 0.30) 85%, transparent)" }}
+            style={{ background: "var(--line-2)" }}
           />
           <ol className="grid md:grid-cols-3 gap-6">
             {steps.map((s) => (

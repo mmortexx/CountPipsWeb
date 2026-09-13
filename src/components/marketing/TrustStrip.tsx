@@ -54,12 +54,7 @@ export function TrustStrip() {
         data-entra="traza"
         className="absolute left-0 right-0 top-0 h-px pointer-events-none"
         style={{
-          /* El 0,9 de opacidad final que declaraba el `whileInView` vive
-             ahora en el propio color. La animación de la traza va de 0 a
-             1, así que sin esto el filete acabaría un 10 % más encendido
-             de lo que estaba. */
-          background:
-            "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.9) 50%, transparent 100%)",
+          background: "var(--line)",
           transformOrigin: "left center",
         }}
       />

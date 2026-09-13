@@ -145,16 +145,6 @@ export function ContactSupport() {
                   aria-label={`${title} — ${cta}`}
                   className="group relative flex flex-col tj-paper rounded-[2px] border border-[rgb(var(--divider)/0.13)] p-5 sm:p-6 h-full overflow-hidden transition-[background-color,border-color,box-shadow,transform] duration-300 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
                 >
-                  {/* Hover accent sweep */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base)) 50%, transparent 100%)",
-                    }}
-                  />
-
                   <div className="flex items-start gap-4">
                     {/* Icon container — accent-tinted on hover so the icon
                         "lights up" in the brand green when the card is

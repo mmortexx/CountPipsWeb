@@ -182,8 +182,7 @@ export function PricingFAQ() {
           data-entra="traza"
           className="mt-12 h-px max-w-md mx-auto"
           style={{
-            background:
-              "linear-gradient(90deg, transparent 0%, rgb(var(--accent-base) / 0.4) 50%, transparent 100%)",
+            background: "var(--line)",
             transformOrigin: "left center",
           }}
         />

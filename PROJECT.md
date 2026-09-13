@@ -1644,7 +1644,6 @@ Antes de dar por terminado un cambio visible, correr lo que aplique:
 npm run build                       # compila a /out
 node scripts/humo.mjs --serve out   # contraste, láminas, velo, entradas, menú…
 node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (28 rutas)
-node scripts/fondos.mjs --serve out   # que cada sección dibuje un fondo distinto
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
 node scripts/deep_audit.mjs             # códigos 200, lang, canonical, hreflang
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas

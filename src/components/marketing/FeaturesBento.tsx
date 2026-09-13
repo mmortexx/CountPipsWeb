@@ -21,14 +21,6 @@ export function FeaturesBento() {
       id="features"
       className="section relative overflow-clip"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(70% 60% at 30% 0%, color-mix(in oklab, var(--ink) 5%, transparent), transparent 60%)",
-        }}
-      />
       {/* P6 — `style={{ maxWidth: 1280 }}` removed: was overriding
           tj-container's --page-w (1080px) and producing a section 200px
           wider than every sibling on /features (PageHeader, FeatureExplorer,
@@ -82,18 +74,6 @@ export function FeaturesBento() {
               minHeight: 360,
             }}
           >
-            {/* R25-1e — premium top-edge accent sweep. The calendar is
-                the bento's anchor (span 7); a 2px accent gradient at the
-                top edge marks it as the lead card. Same vocabulary as the
-                GuaranteeBanner + DownloadCTA + Pro pricing-card top sweep. */}
-            <div
-              aria-hidden
-              className="absolute top-0 left-0 right-0"
-              style={{
-                height: 2,
-                background: "linear-gradient(90deg, transparent, rgb(var(--accent-base) / 0.55), transparent)",
-              }}
-            />
             <div className="flex items-center gap-2 mb-2">
               <span
                 className="inline-grid place-items-center rounded-[2px] border border-[rgb(var(--accent-base)/0.20)] w-[30px] h-[30px] bg-[rgb(var(--accent-base)/0.14)] text-[rgb(var(--accent-base))]"
