@@ -126,13 +126,13 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
             {(es
               ? [
                   ["Carpeta de datos", "%LOCALAPPDATA%\\CountPips"],
-                  ["Base de datos", "SQLite, un único archivo"],
+                  ["Base de datos", "SQLite en modo WAL, un único archivo"],
                   ["Cifrado en reposo", "EFS de Windows, opcional"],
                   ["Nube, opcional", "AES-256-GCM · PBKDF2 600.000"],
                 ]
               : [
                   ["Data folder", "%LOCALAPPDATA%\\CountPips"],
-                  ["Database", "SQLite, a single file"],
+                  ["Database", "SQLite in WAL mode, a single file"],
                   ["Encryption at rest", "Windows EFS, optional"],
                   ["Cloud, optional", "AES-256-GCM · PBKDF2 600,000"],
                 ]

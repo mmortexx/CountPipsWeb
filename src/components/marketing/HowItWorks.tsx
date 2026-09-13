@@ -48,17 +48,17 @@ export function HowItWorks() {
           titulo={es ? (
               <>
                 Registrar. Medir. Frenar{" "}
-                <span className="text-gradient">antes del error.</span>
+                <span className="text-gradient">a tiempo.</span>
               </>
             ) : (
               <>
                 Log. Measure. Brake{" "}
-                <span className="text-gradient">before the error.</span>
+                <span className="text-gradient">in time.</span>
               </>
             )}
           entradilla={es
-              ? "El mismo ritual de una mesa: anotar la operación, leer las métricas y dejar que el Guardián corte lo que el plan no permite."
-              : "The same desk ritual: log the trade, read the metrics, and let the Guardian cut what the plan does not allow."}
+              ? "El mismo ritual de una mesa: anotar la operación, leer las métricas y dejar que el Guardián avise, o frene si lo activas, cuando el plan no lo permite."
+              : "The same desk ritual: log the trade, read the metrics, and let the Guardian warn you, or brake you if you turn it on, when the plan does not allow it."}
         />
 
         <ol className="mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
