@@ -49,7 +49,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
       className="section-tight"
     >
       <div className="tj-container">
-        <div className="mx-auto w-full max-w-[68ch]">
+        <div className="w-full max-w-[68ch]">
           {/* Entradilla — lo que hay que saber sin leer el documento. */}
           <Reveal>
             <p className="m-0 text-[17px] leading-relaxed text-secondary">
@@ -64,11 +64,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           {titularIncompleto && (
             <Reveal delay={0.05}>
               <div
-                className="mt-6 rounded-[4px] border p-4"
-                style={{
-                  borderColor: "rgb(var(--sig-amber) / 0.35)",
-                  background: "color-mix(in oklab, rgb(var(--sig-amber)) 8%, transparent)",
-                }}
+                className="mt-6 rounded-[4px] border border-[var(--line)] bg-[rgb(var(--divider)/0.04)] p-4"
               >
                 <p className="m-0 text-[14px] leading-relaxed text-secondary">
                   <strong className="text-primary">
@@ -129,7 +125,8 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
                   </span>
                   {es ? s.tituloEs : s.tituloEn}
                 </h2>
-                <div className="mt-4 flex flex-col gap-4">
+                <div className="mt-4 flex flex-col gap-4"
+              >
                   {s.bloques.map((b, j) => (
                     <BloqueLegal key={j} bloque={b} es={es} />
                   ))}

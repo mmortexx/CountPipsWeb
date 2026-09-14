@@ -128,8 +128,8 @@ export function SessionClock() {
       <div className="tj-container">
         <div className="mb-10 grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div className="max-w-2xl">
-            <span className="eyebrow">{es ? "Sesiones de mercado" : "Market sessions"}</span>
-            <h2
+            <span className="eyebrow" data-titular-herramienta>{es ? "Sesiones de mercado" : "Market sessions"}</span>
+            <h2 data-titular-herramienta
               className="font-serif m-0 mt-5"
               style={{
                 fontSize: "clamp(1.85rem, 3.3vw, 2.8rem)",

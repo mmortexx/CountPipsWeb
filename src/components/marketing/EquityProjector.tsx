@@ -591,7 +591,7 @@ export function EquityProjector() {
         {/* Cabecera Editorial */}
         <div className="max-w-3xl mb-8">
           <div className="inline-flex items-center gap-3 mb-3">
-            <span className="eyebrow">
+            <span className="eyebrow" data-titular-herramienta>
               {/* Decia «TERMINAL CUANTITATIVO · SIMULADOR DE CAPITAL».
                   «Terminal» vuelve a sugerir una pieza de producto, y
                   «Simulador» es peor que vago: es el nombre de una
@@ -603,7 +603,7 @@ export function EquityProjector() {
             </span>
           </div>
 
-          <h2
+          <h2 data-titular-herramienta
             className="font-serif m-0 text-primary"
             style={{
               fontSize: "clamp(2.1rem, 4vw, 3.4rem)",

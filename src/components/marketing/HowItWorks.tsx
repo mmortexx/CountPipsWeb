@@ -97,18 +97,18 @@ function CaptureIcon() {
       <rect x="50.2" y="16.4" width="3.2" height="3.2" stroke="rgb(var(--accent-base))" strokeWidth="1.1" />
       <path d="M56.2 16.4l3.2 3.2M59.4 16.4l-3.2 3.2" stroke="rgb(var(--accent-base))" strokeWidth="1.1" strokeLinecap="round" />
       {/* Candlesticks */}
-      <g stroke="rgb(var(--pnl-pos))" strokeWidth="1.4" strokeLinecap="round">
+      <g stroke="rgb(var(--accent-base))" strokeWidth="1.4" strokeLinecap="round">
         <path d="M22 36v-6M22 42v4" />
       </g>
-      <rect x="20" y="30" width="4" height="12" fill="rgb(var(--pnl-pos))" opacity="0.25" stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" />
-      <g stroke="rgb(var(--pnl-neg))" strokeWidth="1.4" strokeLinecap="round">
+      <rect x="20" y="30" width="4" height="12" fill="rgb(var(--accent-base))" opacity="0.25" stroke="rgb(var(--accent-base))" strokeWidth="1.2" />
+      <g stroke="rgb(var(--accent-base))" strokeWidth="1.4" strokeLinecap="round">
         <path d="M32 34v-4M32 44v2" />
       </g>
-      <rect x="30" y="30" width="4" height="14" fill="rgb(var(--pnl-neg))" opacity="0.25" stroke="rgb(var(--pnl-neg))" strokeWidth="1.2" />
-      <g stroke="rgb(var(--pnl-pos))" strokeWidth="1.4" strokeLinecap="round">
+      <rect x="30" y="30" width="4" height="14" fill="none" stroke="rgb(var(--accent-base))" strokeWidth="1.2" />
+      <g stroke="rgb(var(--accent-base))" strokeWidth="1.4" strokeLinecap="round">
         <path d="M42 38v-4M42 44v2" />
       </g>
-      <rect x="40" y="34" width="4" height="12" fill="rgb(var(--pnl-pos))" opacity="0.25" stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" />
+      <rect x="40" y="34" width="4" height="12" fill="rgb(var(--accent-base))" opacity="0.25" stroke="rgb(var(--accent-base))" strokeWidth="1.2" />
       {/* Plus badge */}
       <rect x="44" y="38" width="12" height="12" fill="rgb(var(--accent-base))" />
       <path d="M50 41v6M47 44h6" stroke="rgb(var(--accent-ink))" strokeWidth="1.6" strokeLinecap="round" />
@@ -127,10 +127,10 @@ function AnalyzeIcon() {
         <rect x="46" y="28" width="8" height="26" rx="1.5" fill="rgb(var(--accent-base))" />
       </g>
       {/* Trend line */}
-      <path d="M14 36 L26 26 L38 20 L50 30" stroke="rgb(var(--pnl-pos))" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 36 L26 26 L38 20 L50 30" stroke="rgb(var(--accent-base))" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round" />
       {/* Dot */}
-      <circle cx="38" cy="20" r="2.5" fill="rgb(var(--pnl-pos))" />
-      <circle cx="38" cy="20" r="5" fill="none" stroke="rgb(var(--pnl-pos))" strokeWidth="1" opacity="0.5" />
+      <circle cx="38" cy="20" r="2.5" fill="rgb(var(--accent-base))" />
+      <circle cx="38" cy="20" r="5" fill="none" stroke="rgb(var(--accent-base))" strokeWidth="1" opacity="0.5" />
     </svg>
   );
 }
@@ -146,12 +146,12 @@ function ImproveIcon() {
         <path d="M32 10v4M32 50v4M10 32h4M50 32h4" />
       </g>
       {/* Needle */}
-      <path d="M32 32 L46 22" stroke="rgb(var(--pnl-pos))" strokeWidth="2" strokeLinecap="round" />
-      <path d="M32 32 L24 44" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinecap="round" />
+      <path d="M32 32 L46 22" stroke="rgb(var(--accent-base))" strokeWidth="2" strokeLinecap="round" />
+      <path d="M32 32 L24 44" opacity="0.4" stroke="rgb(var(--accent-base))" strokeWidth="2" strokeLinecap="round" />
       <circle cx="32" cy="32" r="3" fill="rgb(var(--accent-base))" />
       {/* Up arrow badge */}
-      <circle cx="48" cy="48" r="7" fill="rgb(var(--pnl-pos))" opacity="0.15" stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" />
-      <path d="M44 50 L48 46 L52 50" stroke="rgb(var(--pnl-pos))" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="48" cy="48" r="7" fill="rgb(var(--accent-base))" opacity="0.15" stroke="rgb(var(--accent-base))" strokeWidth="1.2" />
+      <path d="M44 50 L48 46 L52 50" stroke="rgb(var(--accent-base))" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

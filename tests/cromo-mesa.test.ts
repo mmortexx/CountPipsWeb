@@ -56,7 +56,8 @@ describe("Cromo de mesa", () => {
     );
     expect(traders).toMatch(/data\.cards\.map/);
     expect(traders).not.toMatch(/<article key=\{titleEs\}/);
-    expect(traders).toMatch(/sm:grid-cols-\[3rem_minmax\(0,14rem\)_minmax\(0,1fr\)\]/);
+    expect(traders).toMatch(/md:grid-cols-\[2\.75rem_minmax\(0,16rem\)_minmax\(0,1fr\)\]/);
+    expect(traders).not.toMatch(/<ul className="[^"]*rounded-\[4px\] border /);
   });
 
   it("el test de disciplina y el éxito de beta no usan píldoras redondas", () => {

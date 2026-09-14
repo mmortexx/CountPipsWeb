@@ -304,11 +304,11 @@ export function RMultipleSimulator() {
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="eyebrow">
+            <span className="eyebrow" data-titular-herramienta>
               {es ? "SIMULADOR" : "SIMULATOR"}
             </span>
           </div>
-          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
+          <h2 data-titular-herramienta className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
             {es ? (
               <>
                 El edge existe. <span className="text-[rgb(var(--accent-base))]">La varianza</span>, también.

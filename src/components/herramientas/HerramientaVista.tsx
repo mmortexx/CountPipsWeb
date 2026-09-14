@@ -58,7 +58,10 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
 
   return (
     <>
-      <Componente />
+      {/* La cabecera de la página ya titula: la de la calculadora queda solo para lectores de pantalla. */}
+      <div className="tj-en-herramienta contents">
+        <Componente />
+      </div>
 
       {/* Cinta de Acceso Rápido entre las 8 Herramientas */}
       <section className="py-4">
@@ -103,7 +106,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
         className="section-tight"
       >
         <div className="tj-container">
-          <div className="mx-auto max-w-[62ch]">
+          <div className="max-w-[62ch]">
             <Reveal>
               <p className="m-0 text-[14px] leading-relaxed text-tertiary">
                 {es

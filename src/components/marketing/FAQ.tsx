@@ -141,7 +141,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
         {/* Search input — filters FAQ items in real time */}
         <Reveal delay={0.1} y={24}>
-          <div className="mt-8 max-w-3xl mx-auto">
+          <div className={`mt-8 max-w-3xl ${standalone ? "" : "mx-auto"}`}>
             <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
@@ -157,7 +157,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
             />
             </div>
             {/* Category Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 mt-3.5">
+            <div className={`flex flex-wrap items-center gap-1.5 mt-3.5 ${standalone ? "" : "justify-center"}`}>
               {categories.map((cat) => (
                 <button
                   key={cat.id}
@@ -187,7 +187,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               el desenfoque y lo deja en un fondo plano sin grano, que es
               justo lo que hacía que esta caja se viera apagada al lado
               de las secciones de papel de la misma página. */}
-          <div className="relative mt-8 max-w-3xl mx-auto border-t border-[var(--line)]">
+          <div className={`relative mt-8 max-w-3xl border-t border-[var(--line)] ${standalone ? "" : "mx-auto"}`}>
             {noResults ? (
               /* ───── No-results panel — links to the GlossaryModal ───── */
               <div className="relative px-4 py-12 text-center">

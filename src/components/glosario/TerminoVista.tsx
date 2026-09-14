@@ -45,7 +45,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
       className="section-tight"
     >
       <div className="tj-container">
-        <div className="mx-auto w-full max-w-[62ch]">
+        <div className="w-full max-w-[62ch]">
           {/* Definición */}
           <Reveal>
             <p className="m-0 text-[19px] leading-[1.65] text-primary">

@@ -139,14 +139,14 @@ export function DisciplineCost() {
       <div className="tj-container">
         {/* Cabecera de sección */}
         <div className="inline-flex items-center gap-3 mb-5">
-          <span className="eyebrow">
+          <span className="eyebrow" data-titular-herramienta>
             {es ? "Calculadora de indisciplina" : "Indiscipline calculator"}
           </span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 items-start">
           <div>
-            <h2
+            <h2 data-titular-herramienta
               className="font-serif m-0"
               style={{
                 fontSize: "clamp(2rem, 3.6vw, 3rem)",

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, BarChart3, BookOpenCheck, ShieldCheck, Target, CheckCircle2, AlertTriangle } from "lucide-react";
+import { BarChart3, BookOpenCheck, ShieldCheck, Target, CheckCircle2, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
-import { Link } from "@/components/tj/LocaleLink";
+import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/trading/format";
 
@@ -25,8 +25,6 @@ const DATA = {
       { icon: BookOpenCheck, titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con un edge.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
       { icon: Target, titleEs: "Revisión sin excusas", titleEn: "No-excuse review", textEs: "Anota el plan, la gestión y el cierre para ver dónde se rompe tu proceso.", textEn: "Capture plan, management and exit so you can see where your process breaks." },
     ],
-    ctaEs: "Solicitar acceso anticipado",
-    ctaEn: "Request early access",
   },
   prop: {
     eyebrowEs: "Para prop firms",
@@ -42,8 +40,6 @@ const DATA = {
       { icon: BarChart3, titleEs: "Informe de evaluación", titleEn: "Evaluation report", textEs: "Un PDF con el progreso al objetivo, el riesgo disponible hoy y el colchón hasta el límite de pérdida.", textEn: "A PDF with progress to target, risk available today and the buffer to the loss limit." },
       { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
     ],
-    ctaEs: "Solicitar acceso anticipado",
-    ctaEn: "Request early access",
   },
 } as const;
 
@@ -108,11 +104,11 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
             entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It is which part of your process deserves repeating, and which part needs a rule before you return to the market."}
           />
-          <ul className="mt-12 m-0 overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.13)] p-0">
+          <ol className="mt-12 m-0 border-t border-[var(--line)] p-0">
             {data.cards.map(({ titleEs, titleEn, textEs, textEn }, i) => (
               <li
                 key={titleEs}
-                className="grid gap-1 border-b border-[rgb(var(--divider)/0.08)] px-4 py-4 last:border-b-0 sm:grid-cols-[3rem_minmax(0,14rem)_minmax(0,1fr)] sm:items-baseline sm:gap-5"
+                className="grid grid-cols-[2.75rem_minmax(0,1fr)] gap-x-3 gap-y-1 border-b border-[var(--line)] py-5 md:grid-cols-[2.75rem_minmax(0,16rem)_minmax(0,1fr)] md:items-baseline md:gap-x-6"
               >
                 <span
                   className="tnum text-[12px] font-semibold"
@@ -120,33 +116,28 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <h2 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
+                <h3 className="m-0 text-[clamp(1.125rem,1.6vw,1.375rem)] font-medium text-primary">
                   {es ? titleEs : titleEn}
-                </h2>
-                <p className="m-0 text-[14px] leading-[1.55] text-secondary">
+                </h3>
+                <p className="col-start-2 m-0 text-[15px] leading-[1.6] text-secondary md:col-start-3">
                   {es ? textEs : textEn}
                 </p>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       </section>
 
       {/* SECCIÓN INTERACTIVA ESPECÍFICA POR PERFIL */}
       {profile === "prop" ? (
-        <section className="section border-y border-[rgb(var(--divider)/0.08)]">
+        <section className="section">
           <div className="tj-container">
-            <div className="max-w-3xl mb-8">
-              <p className="eyebrow">{es ? "Reglas de evaluación y fondeo" : "Evaluation & funding rules"}</p>
-              <h2 className="mt-3 text-2xl md:text-3xl font-semibold text-primary">
-                {es ? "El Guardián calibrado para tu firma y cuenta." : "The Guardian calibrated for your firm and account."}
-              </h2>
-              <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
-                {es
-                  ? "Elige firma y tamaño de cuenta. El modo prop firm aplica la plantilla de la firma y sigue la pérdida diaria, el drawdown y el objetivo con cada operación que registras. Ejemplo con valores de muestra."
-                  : "Pick a firm and account size. Prop firm mode applies the firm template and tracks daily loss, drawdown and the target with every trade you log. Example with sample values."}
-              </p>
-            </div>
+            <SectionHeader
+              etiqueta={es ? "Reglas de evaluación y fondeo" : "Evaluation & funding rules"}
+              titulo={es ? "El Guardián calibrado para tu firma y cuenta." : "The Guardian calibrated for your firm and account."}
+              entradilla={es ? "Elige firma y tamaño de cuenta. El modo prop firm aplica la plantilla de la firma y sigue la pérdida diaria, el drawdown y el objetivo con cada operación que registras. Ejemplo con valores de muestra." : "Pick a firm and account size. Prop firm mode applies the firm template and tracks daily loss, drawdown and the target with every trade you log. Example with sample values."}
+              className="mb-10"
+            />
 
             {/* Selectores: Firma y Balance */}
             <div className="flex flex-wrap items-center gap-4 mb-6">
@@ -189,7 +180,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                         : "text-secondary hover:text-primary"
                     }`}
                   >
-                    ${(bal / 1000).toFixed(0)}k
+                    {es ? `${bal / 1000}\u00a0k $` : `$${bal / 1000}k`}
                   </button>
                 ))}
               </div>
@@ -291,19 +282,14 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
           </div>
         </section>
       ) : (
-        <section className="section border-y border-[rgb(var(--divider)/0.08)]">
+        <section className="section">
           <div className="tj-container">
-            <div className="max-w-3xl mb-8">
-              <p className="eyebrow">{es ? "Playbooks en vivo" : "Live playbooks"}</p>
-              <h2 className="mt-3 text-2xl md:text-3xl font-semibold text-primary">
-                {es ? "Separa tus patrones ganadores de tus impulsos." : "Separate your winning patterns from your impulses."}
-              </h2>
-              <p className="mt-3 text-secondary text-sm md:text-base leading-relaxed">
-                {es
-                  ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. El playbook compara la muestra real de cada setup; aquí, con datos de muestra."
-                  : "A manual trader does not fail due to technical charts, but from inconsistent execution. The playbook compares the real sample of each setup; shown here with sample data."}
-              </p>
-            </div>
+            <SectionHeader
+              etiqueta={es ? "Playbooks en vivo" : "Live playbooks"}
+              titulo={es ? "Separa tus patrones ganadores de tus impulsos." : "Separate your winning patterns from your impulses."}
+              entradilla={es ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. El playbook compara la muestra real de cada setup; aquí, con datos de muestra." : "A manual trader does not fail due to technical charts, but from inconsistent execution. The playbook compares the real sample of each setup; shown here with sample data."}
+              className="mb-10"
+            />
 
             {/* Selector de setup manual */}
             <div className="flex flex-wrap gap-2 mb-6">
@@ -352,7 +338,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
                   {es
-                    ? (manualSetup === "breakout" ? "54 % · 1:2,4 R:R" : manualSetup === "sweep" ? "48 % · 1:3,1 R:R" : "61 % · 1:1,3 R:R")
+                    ? (manualSetup === "breakout" ? "54\u00a0% · 1:2,4 R:R" : manualSetup === "sweep" ? "48\u00a0% · 1:3,1 R:R" : "61\u00a0% · 1:1,3 R:R")
                     : (manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R")}
                 </span>
                 <span className="text-xs text-secondary block mt-2">
@@ -366,7 +352,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-mono font-semibold text-primary tnum">
-                  {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? " %" : "%")}
+                  {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? "\u00a0%" : "%")}
                 </span>
                 {/* El color seguia al rotulo y no al mensaje: estaba fijo en
                     rojo mientras el texto cambia de aviso a elogio segun el
@@ -389,28 +375,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         </section>
       )}
 
-      <section className="section">
-        <div className="tj-container">
-          <div className="tj-cierre">
-            <h2 className="t-display m-0 mx-auto max-w-[20ch] text-balance">
-              {es ? "Explora la app con datos de muestra." : "Explore the app with sample data."}{" "}
-              <span className="tj-cierre-tenue">{es ? "Después, solicita tu acceso." : "Then request your access."}</span>
-            </h2>
-            <p className="mx-auto mt-6 mb-0 max-w-[34rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
-              {es ? "La demo es navegable y no pide registro. El piloto privado se concede por revisión de perfil, sin compromiso de compra." : "The demo is clickable and asks for no sign-up. The private pilot is granted by profile review, with no purchase commitment."}
-            </p>
-            <div className="mt-9 flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
-              <Link href="/demo" className="cta cta--primario">
-                {es ? "Abrir la demo" : "Open the demo"}
-                <ArrowRight size={16} aria-hidden />
-              </Link>
-              <Link href="/beta" className="cta cta--secundario">
-                {es ? data.ctaEs : data.ctaEn}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <FinalCTANew />
     </>
   );
 }

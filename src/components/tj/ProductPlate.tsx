@@ -139,38 +139,25 @@ export function ProductPlate({
               `images.unoptimized`, así que next/image no optimizaría nada
               y sí añadiría envoltorio.
 
-              DOS CAPTURAS, UNA POR TEMA. La página enseñaba la captura
-              CLARA también en modo oscuro: una lámina blanca de 1576 px
-              en mitad de una página casi negra, que además contradecía lo
-              que la propia app hace cuando la abres de noche. No se puede
-              resolver con `<picture>` y `prefers-color-scheme` porque el
-              tema de este sitio no lo decide el sistema, lo decide
-              `data-theme` en el `:root` (hay interruptor propio). Así que
-              van las dos y el CSS enseña la que toca — con `lazy` en la
-              que no se ve, que es lo que evita que el navegador se baje
-              las dos. */}
-          {(
-            [
-              { clase: "tj-captura--oscura", sufijo: "-oscuro", movil: "-oscuro-movil" },
-              { clase: "tj-captura--clara", sufijo: "", movil: "-movil" },
-            ] as const
-          ).map(({ clase, sufijo, movil }) => (
-            <picture key={clase} className={clase}>
-              <source
-                media={`(max-width: ${CORTE_MOVIL_PX}px)`}
-                srcSet={asset(`/img/${variante(movil)}`)}
-              />
-              <img
-                src={asset(`/img/${variante(sufijo)}`)}
-                alt={alt}
-                width={ancho}
-                height={alto}
-                loading={priority ? "eager" : "lazy"}
-                decoding="async"
-                fetchPriority={priority ? "high" : "auto"}
-              />
-            </picture>
-          ))}
+              UNA SOLA CAPTURA, LA CLARA, EN LOS DOS TEMAS. La oscura de la
+              app pierde casi todo su contraste al reducirse a lámina y se
+              leía como un rectángulo apagado; en tema oscuro la clara va
+              dentro de un marco oscuro (globals.css, `.tj-lamina-marco`). */}
+          <picture>
+            <source
+              media={`(max-width: ${CORTE_MOVIL_PX}px)`}
+              srcSet={asset(`/img/${variante("-movil")}`)}
+            />
+            <img
+              src={asset(`/img/${archivo}`)}
+              alt={alt}
+              width={ancho}
+              height={alto}
+              loading={priority ? "eager" : "lazy"}
+              decoding="async"
+              fetchPriority={priority ? "high" : "auto"}
+            />
+          </picture>
         </div>
       </div>
       <figcaption className="tj-lamina-pie">

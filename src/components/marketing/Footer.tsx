@@ -112,7 +112,7 @@ export function Footer() {
         { label: es ? "Prop firms" : "Prop firms", href: "/traders/prop-firms" },
         { label: es ? "Acceso anticipado" : "Early access", href: "/beta" },
         { label: es ? "Precios" : "Pricing", href: "/pricing" },
-        { label: "Changelog", href: "/about#changelog" },
+        { label: es ? "Novedades" : "Changelog", href: "/about#changelog" },
       ],
     },
     {

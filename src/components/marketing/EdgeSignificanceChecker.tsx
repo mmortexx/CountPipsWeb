@@ -212,11 +212,11 @@ export function EdgeSignificanceChecker() {
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
-            <span className="eyebrow">
+            <span className="eyebrow" data-titular-herramienta>
               {es ? "TEST ESTADÍSTICO" : "STATISTICAL TEST"}
             </span>
           </div>
-          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.1] text-primary text-balance">
+          <h2 data-titular-herramienta className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.1] text-primary text-balance">
             {es ? (
               <>
                 ¿Tu win rate es <span className="text-[rgb(var(--accent-base))]">real</span> o es suerte?

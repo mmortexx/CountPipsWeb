@@ -38,8 +38,8 @@ export function NotFoundClient() {
       href: "/features",
       label: es ? "Características" : "Features",
       desc: es
-        ? "Métricas, disciplina y local-first."
-        : "Metrics, discipline and local-first.",
+        ? "Métricas, disciplina y datos en tu equipo."
+        : "Metrics, discipline and data on your machine.",
     },
     {
       href: "/demo",
