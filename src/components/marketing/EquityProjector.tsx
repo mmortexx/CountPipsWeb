@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useRef } from "react";
 import { useLang } from "@/lib/i18n";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
+import { formatoUsd } from "@/lib/trading/format";
 
 /**
  * EquityProjector — Proyector de curva de capital de alta resolución.
@@ -334,16 +335,13 @@ export function EquityProjector() {
          pone detras. Ahora cada idioma abrevia como escribe. */
       if (compact && Math.abs(n) >= 1_000_000) {
         const cifra = (n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
-        return es ? `${cifra}\u00a0M US$` : `$${cifra}M`;
+        return es ? `${cifra}\u00a0M $` : `$${cifra}M`;
       }
       if (compact && Math.abs(n) >= 10_000) {
         const cifra = (n / 1_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        return es ? `${cifra}\u00a0k US$` : `$${cifra}k`;
+        return es ? `${cifra}\u00a0k $` : `$${cifra}k`;
       }
-      return new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0,
+      return formatoUsd(locale, { maximumFractionDigits: 0,
       }).format(n);
     },
     [es],
@@ -772,7 +770,7 @@ export function EquityProjector() {
                             setStartBalance(chip.v);
                           }}
                         >
-                          {chip.label}
+                          {es ? `${chip.v / 1000}\u00a0k $` : chip.label}
                         </button>
                       );
                     })}
@@ -823,7 +821,7 @@ export function EquityProjector() {
                             setMonthlyContribution(amt);
                           }}
                         >
-                          {amt === 0 ? (es ? "Sin aporte" : "None") : `+$${amt}`}
+                          {amt === 0 ? (es ? "Sin aporte" : "None") : es ? `+${amt}\u00a0$` : `+$${amt}`}
                         </button>
                       );
                     })}

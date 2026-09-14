@@ -5,7 +5,9 @@ const LOCALE: Record<Lang, string> = { es: "es-ES", en: "en-US" };
 /** Format a USD money value with sign-aware coloring support.
  *
  *  Locale rules (both produced by `Intl.NumberFormat` with `currency: USD`):
- *   - es-ES → "1.234,56 $"  (number then currency, comma decimal, dot thousands)
+ *   - es-ES → "1.234,56 $"  (number then currency, comma decimal, dot thousands;
+ *     Intl writes "US$" here, so it is swapped for "$" — as MoneyFormat.cs
+ *     does in the desktop app)
  *   - en-US → "$1,234.56"   (currency then number, dot decimal, comma thousands)
  *
  *  `sign: true` prefixes a `+` to positive values (winners) and a `−`
@@ -30,10 +32,17 @@ export function fmtMoney(
     maximumFractionDigits: compact && abs >= 1000 ? 0 : decimals,
     notation: compact && abs >= 1_000_000 ? "compact" : "standard",
     useGrouping: "always",
-  }).format(abs);
+  }).format(abs).replace("US$", "$");
   if (value < 0) return `−${formatted}`;
   if (sign && value > 0) return `+${formatted}`;
   return formatted;
+}
+
+/** `Intl.NumberFormat` de dólares con el símbolo de la app: «1.234 $» en
+ *  español (Intl pondría «US$») y «$1,234» en inglés. */
+export function formatoUsd(locale: string, opts: Intl.NumberFormatOptions = {}) {
+  const f = new Intl.NumberFormat(locale, { ...opts, style: "currency", currency: "USD" });
+  return { format: (n: number) => f.format(n).replace("US$", "$") };
 }
 
 export function fmtNum(

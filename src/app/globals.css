@@ -2842,7 +2842,7 @@ button.icon-btn:hover > svg,
 }
 /* La secundaria no compite: es texto con flecha, sin caja. */
 .cta--secundario {
-  padding: 0 0.25rem;
+  padding: 0;
   border: 0;
   color: var(--ink);
   background: transparent;
@@ -2902,8 +2902,6 @@ button.icon-btn:hover > svg,
 /* ---- Bloque de cierre: sobre el propio fondo, con un halo que lo funde - */
 .tj-cierre {
   position: relative;
-  max-width: 68rem;
-  margin-inline: auto;
   padding: clamp(3rem, 7vw, 5.5rem) clamp(1.25rem, 5vw, 4rem);
   border-radius: 12px;
   text-align: center;
@@ -3261,11 +3259,15 @@ button.icon-btn:hover > svg,
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
 }
+/* La curva sólo vive detrás del cristal: a todo el ancho asomaba nítida
+   por los lados del panel y se leía como un trazo suelto. Su ancho es el
+   del panel que tiene delante (`--curva-ancho`). */
 .tj-escritorio-curva {
+  --curva-ancho: calc(min(var(--page-w, 1080px), 100%) - 2 * clamp(1.25rem, 4vw, 2.25rem));
   position: absolute;
   top: 26%;
-  left: 0;
-  width: 100%;
+  left: calc((100% - var(--curva-ancho)) / 2);
+  width: var(--curva-ancho);
   height: 54%;
 }
 .tj-escritorio-curva path {

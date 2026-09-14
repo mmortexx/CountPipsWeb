@@ -296,7 +296,8 @@ describe("el precio es el mismo en todas partes", () => {
       // explicación para ponerse en verde.
       const lineas = sinComentarios(leer(rel)).split("\n");
       lineas.forEach((linea, i) => {
-        for (const m of linea.matchAll(/\$(\d{3})\b/g)) {
+        // «$154,820» es una cifra con miles, no un precio de tres dígitos.
+        for (const m of linea.matchAll(/\$(\d{3})\b(?![,.]\d)/g)) {
           if (!permitidos.has(m[1])) sueltas.push(`${rel}:${i + 1} → $${m[1]}`);
         }
       });

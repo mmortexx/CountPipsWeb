@@ -75,7 +75,7 @@ export function NotFoundClient() {
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
 
-      <Escritorio curva />
+      <Escritorio />
       <div className="relative text-center max-w-xl mx-auto">
         <div
           className="tj-alza font-semibold tracking-[-0.04em] leading-[0.9] text-gradient tnum"

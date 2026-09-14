@@ -148,14 +148,14 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
                   className="tnum"
                   style={{ fontSize: 22, fontWeight: 700, color: cal.pnlColor }}
                 >
-                  {cal.pnl}
+                  {cal.pnl[lang]}
                 </span>
               </div>
               <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
                 {[
-                  { c: "rgb(var(--pnl-pos) / var(--cal-tint-max))", l: "≥ 60 $" },
-                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.6))", l: "20–60 $" },
-                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.35))", l: "0–20 $" },
+                  { c: "rgb(var(--pnl-pos) / var(--cal-tint-max))", l: es ? "≥ 60 $" : "≥ $60" },
+                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.6))", l: es ? "20–60 $" : "$20–60" },
+                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.35))", l: es ? "0–20 $" : "$0–20" },
                   { c: "rgb(var(--pnl-neg) / var(--cal-tint-max))", l: es ? "Negativo" : "Negative" },
                 ].map((g) => (
                   <span key={g.l} className="inline-flex items-center gap-1" style={{ fontSize: 11, color: "var(--ink-2)" }}>
@@ -403,9 +403,9 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
             </h3>
             <div className="tnum mt-4 space-y-2 text-xs">
               {[
-                { name: "Apex 150k (#1)", balance: "154.820 $", pnl: "+1.420 $", status: es ? "En curso" : "In progress", pnlPos: true },
-                { name: "Topstep 50k (#2)", balance: "51.240 $", pnl: "+650 $", status: es ? "Aprobada" : "Passed", pnlPos: true },
-                { name: "IBKR Futures Core", balance: "84.190 $", pnl: "+2.100 $", status: es ? "Personal" : "Personal", pnlPos: true },
+                { name: "Apex 150k (#1)", balance: es ? "154.820 $" : "$154,820", pnl: es ? "+1.420 $" : "+$1,420", status: es ? "En curso" : "In progress", pnlPos: true },
+                { name: "Topstep 50k (#2)", balance: es ? "51.240 $" : "$51,240", pnl: es ? "+1.240 $" : "+$1,240", status: es ? "Aprobada" : "Passed", pnlPos: true },
+                { name: "IBKR Futures Core", balance: es ? "84.190 $" : "$84,190", pnl: es ? "+2.100 $" : "+$2,100", status: es ? "Personal" : "Personal", pnlPos: true },
               ].map((acc) => (
                 <div
                   key={acc.name}

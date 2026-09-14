@@ -121,7 +121,10 @@ function buildCal() {
        y elige quien pinta. */
     label: { es: "julio 2026", en: "July 2026" } satisfies Bilingue,
     chip: { es: "Mes en curso", en: "Current month" } satisfies Bilingue,
-    pnl: `${total >= 0 ? "+" : "−"}${fmtNum(Math.abs(total))} $`,
+    pnl: {
+      es: `${total >= 0 ? "+" : "−"}${fmtMoney(Math.abs(total), "es")}`,
+      en: `${total >= 0 ? "+" : "−"}${fmtMoney(Math.abs(total), "en")}`,
+    } satisfies Bilingue,
     pnlColor: total >= 0 ? "var(--pos)" : "var(--neg)",
     cells,
   };

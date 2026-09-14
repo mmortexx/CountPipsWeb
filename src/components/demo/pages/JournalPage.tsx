@@ -954,7 +954,7 @@ export function JournalPage() {
   const headlineValue = Math.abs(costOfIndiscipline);
   const headlineSigno = isRealCost ? "−" : "+";
   const headlinePrefix = lang === "es" ? headlineSigno : `${headlineSigno}$`;
-  const headlineSuffix = lang === "es" ? " US$" : "";
+  const headlineSuffix = lang === "es" ? "\u00a0$" : "";
   const headlineTone = isRealCost ? "text-pnl-neg" : "text-pnl-pos";
   const headlineShadow = isRealCost
     ? "0 0 18px rgb(var(--pnl-neg) / 0.45)"
@@ -1416,7 +1416,7 @@ export function JournalPage() {
                   </h3>
                 </div>
                 <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary tnum">
-                  {L("Coste en US$", "Cost in $")}
+                  {L("Coste en $", "Cost in $")}
                 </span>
               </div>
 

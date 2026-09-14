@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
+import { formatoUsd } from "@/lib/trading/format";
 
 /**
  * RMultipleSimulator — simulador Monte Carlo de distribución de R.
@@ -167,8 +168,8 @@ export function RMultipleSimulator() {
 
   const fmtUsd = (n: number) =>
     es
-      ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n)
-      : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+      ? formatoUsd("es-ES", { maximumFractionDigits: 0 }).format(n)
+      : formatoUsd("en-US", { maximumFractionDigits: 0 }).format(n);
 
   /* Importe corto para las cinco celdas de percentil, que a 320 px miden
      poco mas de 70 px. A mano y no con `notation: "compact"` de Intl:
@@ -176,8 +177,8 @@ export function RMultipleSimulator() {
   const fmtUsdCorto = (n: number) => {
     const a = Math.abs(n);
     const signo = n < 0 ? "−" : "";
-    if (a >= 1_000_000) return `${signo}${fmtNum(a / 1_000_000, 2)} M $`;
-    if (a >= 10_000) return `${signo}${fmtNum(a / 1_000, 0)} k $`;
+    if (a >= 1_000_000) return es ? `${signo}${fmtNum(a / 1_000_000, 2)}\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000, 2)}M`;
+    if (a >= 10_000) return es ? `${signo}${fmtNum(a / 1_000, 0)}\u00a0k $` : `${signo}$${fmtNum(a / 1_000, 0)}k`;
     return fmtUsd(n);
   };
 

@@ -543,10 +543,7 @@ function HeatmapLegend({ trades }: { trades: Trade[] }) {
     return m || 1;
   }, [trades]);
 
-  const maxLabel =
-    maxAbs >= 1000
-      ? `$${(maxAbs / 1000).toFixed(1)}k`
-      : `$${Math.round(maxAbs)}`;
+  const maxLabel = fmtMoney(maxAbs, lang, { decimals: 0 });
 
   const swatches = Array.from({ length: 9 }, (_, i) => {
     const t = i / 8;

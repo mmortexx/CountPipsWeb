@@ -6,7 +6,11 @@ import { irArriba } from "@/lib/scroll";
 import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
 
 /**
- * BackToTop — circular floating button with a scroll-progress ring.
+ * BackToTop — botón flotante cuadrado (4 px, como el resto de controles).
+ *
+ * - En pantallas donde no cabe en el margen (< 1280 px) tapaba el final de
+ *   las líneas mientras se leía. Ahí sólo aparece al desplazarse HACIA
+ *   ARRIBA —que es cuando alguien quiere volver— o cerca del final.
  *
  * - Hidden until the user scrolls more than 400 px down. (Lowered from the
  *   original 600 px threshold so the affordance appears earlier on the
@@ -36,10 +40,6 @@ import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
  *   `max(footerShift, cookieShift)` so whichever constraint is binding
  *   wins; if neither applies the button sits at its natural position
  *   (env + 1.5 rem from the bottom).
- * - An SVG ring around the arrow fills clockwise as the user scrolls
- *   down, reaching 100% at the bottom of the page. The ring is
- *   `rgb(var(--accent-base))` so it reads as a quiet brand-colored
- *   progress cue layered on top of the liquid-glass button.
  * - Al pulsarlo sube a la cabecera con `irArriba()` (src/lib/scroll.ts):
  *   salta hasta un palmo del destino y anima sólo ese tramo, en vez de
  *   recorrer las diez pantallas que puede haber de por medio.
@@ -96,8 +96,12 @@ const SHIFT_LIFT_PX = SHIFT_LIFT_REM * 16;
  *  enough to read as "above" rather than "touching" without leaving a
  *  large dead band. */
 const COOKIE_GAP_PX = 8;
-const RING_RADIUS = 18; // px — matches the 44px button with 4px padding
-const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
+/** Desde este ancho el botón cae en el margen, fuera del texto. */
+const ANCHO_CON_MARGEN = 1280;
+/** Píxeles de subida seguidos que cuentan como «quiere volver arriba». */
+const UMBRAL_SUBIDA = 6;
+/** A esta distancia del final se muestra siempre: se acabó la lectura. */
+const CERCA_DEL_FINAL = 640;
 
 export function BackToTop() {
   const { lang } = useLang();
@@ -120,25 +124,24 @@ export function BackToTop() {
      de las 155 páginas para alguien que a lo mejor no baja nunca —
      mismo patrón, y mismo motivo, que el cajón de navegación. */
   const [montado, setMontado] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [shifted, setShifted] = useState(false);
   const [cookieLift, setCookieLift] = useState(0);
 
   useEffect(() => {
     let ticking = false;
+    let ultimoY = window.scrollY;
+    let subiendo = false;
     const update = () => {
       const scrollTop = window.scrollY;
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-      /* Redondeado a entero A PROPÓSITO. Con decimales, el porcentaje
-         cambia en cada fotograma de scroll y cada cambio vuelve a
-         renderizar este componente: a 165 Hz son 165 renders por segundo
-         para mover un anillo de progreso una centésima de grado, que no
-         se ve. Al entero, React sólo trabaja cuando el número cambia de
-         verdad — unas cien veces en todo el recorrido de la página en vez
-         de en cada fotograma— y el anillo se dibuja idéntico. */
-      const pct = scrollable > 0 ? Math.min(100, Math.max(0, (scrollTop / scrollable) * 100)) : 0;
-      setProgress(Math.round(pct));
-      const debeVerse = scrollTop > SHOW_AFTER;
+      const delta = scrollTop - ultimoY;
+      if (Math.abs(delta) >= UMBRAL_SUBIDA) {
+        subiendo = delta < 0;
+        ultimoY = scrollTop;
+      }
+      const libre =
+        window.innerWidth >= ANCHO_CON_MARGEN || subiendo || scrollable - scrollTop < CERCA_DEL_FINAL;
+      const debeVerse = scrollTop > SHOW_AFTER && libre;
       if (debeVerse) setMontado(true);
       setVisible(debeVerse);
       // Lift the button when within SHIFT_THRESHOLD px of the bottom so it
@@ -222,9 +225,6 @@ export function BackToTop() {
      mira ella. */
   const scrollToTop = () => irArriba();
 
-  // Ring dash: the filled portion = progress% of the circumference.
-  const dashOffset = RING_CIRCUMFERENCE * (1 - progress / 100);
-
   // Combined lift: max of footer-shift and cookie-avoidance. Whichever is
   // binding wins; if neither applies, lift = 0 and the button sits at its
   // natural position (env + 1.5 rem from the bottom).
@@ -258,49 +258,8 @@ export function BackToTop() {
           aria-label={es ? "Volver arriba" : "Back to top"}
           data-visible={visible ? "true" : "false"}
           tabIndex={visible ? 0 : -1}
-          className="tj-emerge tj-subir pointer-events-auto relative w-11 h-11 rounded-full tj-cristal tj-cristal--denso flex items-center justify-center text-primary"
+          className="tj-emerge tj-subir pointer-events-auto relative w-10 h-10 rounded-[4px] tj-cristal tj-cristal--denso flex items-center justify-center text-primary"
         >
-              {/* Scroll-progress ring — SVG circle with a dash that fills
-                  clockwise as the user scrolls. Rotated -90deg so 0% starts
-                  at 12 o'clock. Sits behind the arrow. */}
-              <svg
-                className="absolute inset-0 -rotate-90"
-                width="44"
-                height="44"
-                viewBox="0 0 44 44"
-                fill="none"
-                aria-hidden="true"
-              >
-                {/* Track — faint full circle */}
-                <circle
-                  cx="22"
-                  cy="22"
-                  r={RING_RADIUS}
-                  stroke="rgb(var(--divider) / 0.15)"
-                  strokeWidth="1.5"
-                  fill="none"
-                />
-                {/* Progress — accent, dashoffset = (1 - pct) * circumference.
-                    A subtle drop-shadow glow on the progress arc makes it
-                    read as "active" against the liquid-glass button surface.
-                    The glow intensifies on hover via the parent button's
-                    group-hover. */}
-                <circle
-                  cx="22"
-                  cy="22"
-                  r={RING_RADIUS}
-                  stroke="rgb(var(--accent-base))"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  fill="none"
-                  strokeDasharray={RING_CIRCUMFERENCE}
-                  strokeDashoffset={dashOffset}
-                  style={{
-                    transition: "stroke-dashoffset 0.1s linear",
-                  }}
-                />
-              </svg>
-              {/* Arrow icon — sits above the ring */}
               <svg
                 className="relative"
                 width="16"

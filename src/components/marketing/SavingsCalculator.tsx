@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
+import { formatoUsd } from "@/lib/trading/format";
 
 /**
  * SavingsCalculator — illustrative post-beta cost scenario.
@@ -87,8 +88,8 @@ export function SavingsCalculator() {
 
   const fmtUsd = (n: number) =>
     es
-      ? new Intl.NumberFormat("es-ES", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n)
-      : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+      ? formatoUsd("es-ES", { maximumFractionDigits: 0 }).format(n)
+      : formatoUsd("en-US", { maximumFractionDigits: 0 }).format(n);
 
   const fmtNum = (n: number, dec = 0) =>
     es
@@ -224,8 +225,8 @@ export function SavingsCalculator() {
               aria-valuenow={altMonthly}
             />
             <div className="flex items-center justify-between mt-1">
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>5 $</span>
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>50 $</span>
+              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>{es ? "5\u00a0$" : "$5"}</span>
+              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>{es ? "50\u00a0$" : "$50"}</span>
             </div>
           </div>
 

@@ -1306,8 +1306,8 @@ export function TradesPage() {
             <CountUp
               to={Math.abs(totalPnl)}
               decimals={2}
-              prefix={totalPnl < 0 ? "−" : "+"}
-              suffix=" US$"
+              prefix={`${totalPnl < 0 ? "−" : "+"}${lang === "es" ? "" : "$"}`}
+              suffix={lang === "es" ? "\u00a0$" : ""}
               tone={totalPnl > 0 ? "pos" : totalPnl < 0 ? "neg" : "neutral"}
             />
           </KpiStripCell>

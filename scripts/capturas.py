@@ -113,6 +113,21 @@ REGIONES_MOVIL = {
 }
 
 
+# La barra de desplazamiento del programa quedaba capturada: dos columnas a
+# 6-7 px del borde derecho que en la web se leían como una raya suelta junto
+# al marco. Se tapan con la columna de fondo que tienen a su izquierda; la
+# imagen conserva sus medidas.
+BARRA_DESPLAZAMIENTO = (7, 6)   # distancia al borde derecho
+COLUMNA_FONDO = 10
+
+
+def borra_barra_desplazamiento(img: Image.Image) -> None:
+    ancho, alto = img.size
+    fondo = img.crop((ancho - COLUMNA_FONDO, 0, ancho - COLUMNA_FONDO + 1, alto))
+    for d in BARRA_DESPLAZAMIENTO:
+        img.paste(fondo, (ancho - d, 0))
+
+
 def recorta(img: Image.Image, caja: tuple[int, int, int, int]) -> Image.Image:
     x, y, w, h = caja
     return img.crop((x, y, x + w, y + h))
@@ -163,6 +178,7 @@ def main() -> int:
         nombre = ruta.stem
         with Image.open(ruta) as img:
             img = img.convert("RGB")
+            borra_barra_desplazamiento(img)
             ancho, alto = img.size
 
             # 1) La captura sin cromo de ventana.

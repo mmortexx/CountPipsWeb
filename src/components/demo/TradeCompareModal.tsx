@@ -2,7 +2,7 @@
 
 import { useLang } from "@/lib/i18n";
 import { type Trade, nombreSetup } from "@/lib/trading/data";
-import { fmtPrice, fmtDuration, fmtDateTime } from "@/lib/trading/format";
+import { fmtMoney, fmtPrice, fmtDuration, fmtDateTime } from "@/lib/trading/format";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
 import { X } from "lucide-react";
@@ -108,8 +108,8 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
               },
               {
                 label: es ? "Riesgo en $ (1R)" : "Risk $ (1R)",
-                valA: `$${tradeA.riskUsd.toFixed(2)}`,
-                valB: `$${tradeB.riskUsd.toFixed(2)}`,
+                valA: fmtMoney(tradeA.riskUsd, lang),
+                valB: fmtMoney(tradeB.riskUsd, lang),
               },
               {
                 label: es ? "Riesgo : Recompensa Planificado" : "Planned Risk : Reward",

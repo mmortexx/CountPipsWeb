@@ -57,7 +57,7 @@ export const STR = {
   winRestore: { es: "Restaurar", en: "Restore" },
   winClose: { es: "Cerrar", en: "Close" },
   localFirst: { es: "Local-first", en: "Local-first" },
-  demoAccount: { es: "DEMO · 10.000 US$", en: "DEMO · $10,000" },
+  demoAccount: { es: "DEMO · 10.000 $", en: "DEMO · $10,000" },
   autoSaved: {
     es: "Guardado automático en este navegador",
     en: "Auto-saved in this browser",

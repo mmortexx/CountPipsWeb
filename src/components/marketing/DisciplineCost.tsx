@@ -98,9 +98,11 @@ export function DisciplineCost() {
          contenido a 320 px y los dos caracteres de mas eran justo lo que
          no cabia. El importe completo, con su divisa, esta en el `title`
          de la ficha y en el resumen que se copia. */
-      if (a >= 1_000_000) return `${signo}${fmtNum(a / 1_000_000, lang, 1)} M $`;
-      if (a >= 10_000) return `${signo}${fmtNum(a / 1_000, lang, 0)} k $`;
-      return `${signo}${fmtNum(a, lang, 0)} $`;
+      const corto = (cifra: string, sufijo: string) =>
+        lang === "es" ? `${signo}${cifra}${sufijo ? `\u00a0${sufijo}` : ""}\u00a0$` : `${signo}$${cifra}${sufijo}`;
+      if (a >= 1_000_000) return corto(fmtNum(a / 1_000_000, lang, 1), "M");
+      if (a >= 10_000) return corto(fmtNum(a / 1_000, lang, 0), "k");
+      return corto(fmtNum(a, lang, 0), "");
     },
     [lang],
   );
@@ -134,7 +136,7 @@ export function DisciplineCost() {
 
   return (
     <section className="section-tight">
-      <div className="max-w-[1240px] mx-auto px-5 md:px-8">
+      <div className="tj-container">
         {/* Cabecera de sección */}
         <div className="inline-flex items-center gap-3 mb-5">
           <span className="eyebrow">

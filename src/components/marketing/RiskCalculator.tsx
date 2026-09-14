@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR } from "@/lib/trading/estadistica";
-import { fmtPct } from "@/lib/trading/format";
+import { fmtPct, formatoUsd } from "@/lib/trading/format";
 
 /**
  * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
@@ -52,10 +52,10 @@ export function RiskCalculator() {
     { label: es ? "Agresivo" : "Aggressive", pct: 2.0 },
   ];
   const balances = [
-    { label: "10k $", v: 10000 },
-    { label: "25k $", v: 25000 },
-    { label: "50k $", v: 50000 },
-    { label: "100k $", v: 100000 },
+    { label: es ? "10\u00a0k $" : "$10k", v: 10000 },
+    { label: es ? "25\u00a0k $" : "$25k", v: 25000 },
+    { label: es ? "50\u00a0k $" : "$50k", v: 50000 },
+    { label: es ? "100\u00a0k $" : "$100k", v: 100000 },
   ];
 
   // ── Estado editable: la operación del usuario ─────────────────────
@@ -179,9 +179,7 @@ export function RiskCalculator() {
   const nf = useMemo(() => {
     const locale = es ? "es-ES" : "en-US";
     return {
-      usd: new Intl.NumberFormat(locale, {
-        style: "currency", currency: "USD",
-        minimumFractionDigits: 2, maximumFractionDigits: 2,
+      usd: formatoUsd(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2,
       }),
       dec1: new Intl.NumberFormat(locale, {
         minimumFractionDigits: 1, maximumFractionDigits: 1,
