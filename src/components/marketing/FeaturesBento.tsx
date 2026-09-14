@@ -2,8 +2,8 @@
 
 import { CalendarDays, BookOpen, LineChart, NotebookPen, Layers } from "lucide-react";
 import { useLang } from "@/lib/i18n";
-import { getCal } from "@/lib/trading/fixtures";
-import { nombreSetup, type SetupName } from "@/lib/trading/data";
+import type { getCal } from "@/lib/trading/fixtures";
+import { nombreSetup, type SetupName } from "@/lib/trading/setups";
 import { fmtPct, fmtR } from "@/lib/trading/format";
 
 /**
@@ -12,10 +12,10 @@ import { fmtPct, fmtR } from "@/lib/trading/format";
  * (span 5), playbooks, diario narrativo, multi-cuenta multi-activo.
  */
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
-export function FeaturesBento({ enPagina = false }: { enPagina?: boolean } = {}) {
+/** `cal`: el mes de muestra, calculado al construir para no generar las operaciones en el navegador. */
+export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeof getCal>; enPagina?: boolean }) {
   const { lang } = useLang();
   const es = lang === "es";
-  const cal = getCal();
 
   return (
     <section

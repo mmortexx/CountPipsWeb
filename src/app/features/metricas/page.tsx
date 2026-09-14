@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { cifrasMuestra } from "@/lib/trading/cifras-muestra";
+import { cifrasMuestra, lecturasMuestra } from "@/lib/trading/cifras-muestra";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
@@ -146,7 +146,7 @@ export function MetricasBody() {
       <RiskCalculator />
       <EquityProjector />
 
-      <Wrapped />
+      <Wrapped datos={lecturasMuestra()} />
 
       <FeaturePageNav current="metricas" />
 

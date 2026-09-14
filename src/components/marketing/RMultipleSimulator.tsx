@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
-import { computeExpectedMaxLossStreak } from "@/lib/trading/data";
+import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
 
 /**
  * RMultipleSimulator — simulador Monte Carlo de distribución de R.

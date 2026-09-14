@@ -1,4 +1,4 @@
-import { INITIAL_BALANCE_CONST, METRICS } from "@/lib/trading/data";
+import { INITIAL_BALANCE_CONST, METRICS, TRADES, rankByExpectancy, weekdayBreakdown } from "@/lib/trading/data";
 import { getRDistribution, type RBin } from "@/lib/trading/fixtures";
 
 /** Lo que el panel de cifras necesita de la operativa de muestra. Se calcula
@@ -22,5 +22,29 @@ export function cifrasMuestra(): CifrasMuestra {
     fechas: [null, ...METRICS.equityCurve.map((e) => e.date.getTime())],
     bins: getRDistribution(),
     m: { sharpe, sortino, omega, calmar, expectancyR, maxDrawdownPct, winRate, payoff, closedCount },
+  };
+}
+
+/** Las seis lecturas de «Lo que destapa el diario», ya calculadas. */
+export type LecturasMuestra = {
+  setup: { name: string; totalPnl: number; count: number; winRate: number };
+  instrumento: { name: string; totalPnl: number; count: number };
+  dia: { day: string; pnl: number };
+  compliancePct: number;
+  profitFactor: number;
+  maxWinStreak: number;
+};
+
+export function lecturasMuestra(): LecturasMuestra {
+  const s = rankByExpectancy(TRADES, (t) => t.setup)[0];
+  const i = rankByExpectancy(TRADES, (t) => t.instrument)[0];
+  const d = [...weekdayBreakdown(TRADES)].sort((a, b) => b.pnl - a.pnl)[0];
+  return {
+    setup: { name: s.name, totalPnl: s.totalPnl, count: s.count, winRate: s.winRate },
+    instrumento: { name: i.name, totalPnl: i.totalPnl, count: i.count },
+    dia: { day: d.day, pnl: d.pnl },
+    compliancePct: METRICS.compliancePct,
+    profitFactor: METRICS.profitFactor,
+    maxWinStreak: METRICS.maxWinStreak,
   };
 }

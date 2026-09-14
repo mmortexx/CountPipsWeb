@@ -4,17 +4,16 @@ import type { ReactNode } from "react";
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Money } from "@/components/tj/Money";
-import { METRICS, TRADES, nombreSetup, rankByExpectancy, weekdayBreakdown } from "@/lib/trading/data";
+import { nombreSetup } from "@/lib/trading/setups";
+import type { LecturasMuestra } from "@/lib/trading/cifras-muestra";
 import { fmtNum, fmtPct } from "@/lib/trading/format";
 
 /** Lo que el diario destapa: seis lecturas que el programa calcula de las operaciones de muestra. */
-export function Wrapped() {
+export function Wrapped({ datos }: { datos: LecturasMuestra }) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  const topSetup = rankByExpectancy(TRADES, (t) => t.setup)[0];
-  const topInstrument = rankByExpectancy(TRADES, (t) => t.instrument)[0];
-  const bestDay = [...weekdayBreakdown(TRADES)].sort((a, b) => b.pnl - a.pnl)[0];
+  const { setup: topSetup, instrumento: topInstrument, dia: bestDay } = datos;
 
   const dias: Record<string, [string, string]> = {
     Lun: ["Lunes", "Monday"],
@@ -65,7 +64,7 @@ export function Wrapped() {
     {
       key: "discipline",
       label: es ? "Operaciones fuera de plan" : "Off-plan trades",
-      value: fmtPct(1 - METRICS.compliancePct, lang, 0),
+      value: fmtPct(1 - datos.compliancePct, lang, 0),
       detalle: es ? "de todas las registradas" : "of all logged trades",
       sub: es
         ? "Separa lo que cumple tu plan de lo que no y te dice cuánto deja cada grupo."
@@ -74,14 +73,14 @@ export function Wrapped() {
     {
       key: "pf",
       label: "Profit factor",
-      value: fmtNum(METRICS.profitFactor, lang, 2),
+      value: fmtNum(datos.profitFactor, lang, 2),
       detalle: es ? "ganancia bruta entre pérdida bruta" : "gross profit over gross loss",
       sub: es ? "Por encima de 1, el sistema gana más de lo que pierde." : "Above 1, the system makes more than it loses.",
     },
     {
       key: "streak",
       label: es ? "Mejor racha" : "Best streak",
-      value: fmtNum(METRICS.maxWinStreak, lang, 0),
+      value: fmtNum(datos.maxWinStreak, lang, 0),
       detalle: es ? "ganadoras seguidas" : "winners in a row",
       sub: es
         ? "El programa contrasta tus rachas con el azar antes de que te las creas."

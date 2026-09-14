@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { computeRiskOfRuin, computeParametricVaR } from "@/lib/trading/data";
+import { computeRiskOfRuin, computeParametricVaR } from "@/lib/trading/estadistica";
 import { fmtPct } from "@/lib/trading/format";
 
 /**

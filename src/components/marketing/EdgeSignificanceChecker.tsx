@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
-import { computeStatisticalPower, normalCdf } from "@/lib/trading/data";
+import { computeStatisticalPower, normalCdf } from "@/lib/trading/estadistica";
 
 export { normalCdf };
 
