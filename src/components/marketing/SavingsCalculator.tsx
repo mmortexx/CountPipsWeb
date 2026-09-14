@@ -142,7 +142,7 @@ export function SavingsCalculator() {
           </h2>
           <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
-              ? "Core $149 y Pro $249 son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial."
+              ? "Core 149\u00a0$ y Pro 249\u00a0$ son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial."
               : "Core $149 and Pro $249 are planned launch references. Compare a monthly cost scenario without treating the result as a commercial promise."}
           </p>
 

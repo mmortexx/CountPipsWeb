@@ -25,7 +25,7 @@ export type QA = { q: string; a: string };
 export const FAQ_ES: QA[] = [
   {
     q: "¿Cuál es el estado de compra?",
-    a: "La demo es pública y no pide registro ni tarjeta. Core $149 y Pro $249 son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
+    a: "La demo es pública y no pide registro ni tarjeta. Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
   },
   {
     q: "¿Mis datos están seguros?",
@@ -148,7 +148,7 @@ export const PRICING_FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué incluyen los precios de lanzamiento?",
-    a: "Core está previsto en $149 y Pro en $249. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
+    a: "Core está previsto en 149\u00a0$ y Pro en 249\u00a0$. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
   },
   {
     q: "¿Qué datos no se solicitan?",

@@ -471,7 +471,7 @@ const terminos: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "La demo es pública y funciona con datos de muestra. El acceso anticipado se asigna por perfil y no es una compra ni una preventa. Los precios Core $149 y Pro $249 son referencias de lanzamiento y pueden cambiar antes de abrir la venta.",
+          es: "La demo es pública y funciona con datos de muestra. El acceso anticipado se asigna por perfil y no es una compra ni una preventa. Los precios Core 149\u00a0$ y Pro 249\u00a0$ son referencias de lanzamiento y pueden cambiar antes de abrir la venta.",
           en: "The demo is public and uses sample data. Early access is assigned by profile and is not a purchase or pre-order. Core $149 and Pro $249 are planned launch references and may change before sales open.",
         },
         {

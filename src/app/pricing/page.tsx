@@ -69,14 +69,14 @@ const productSchema = {
 export const metadata: Metadata = {
   title: "Precios",
   description:
-    "Demo interactiva sin registro. Precios de lanzamiento previstos: Core $149 · Pro $249.",
+    "Demo interactiva sin registro. Precios de lanzamiento previstos: Core 149\u00a0$ · Pro 249\u00a0$.",
   alternates: {
     canonical: `${SITE_URL}/pricing/`,
     languages: hreflangDe("/pricing"),
   },
   openGraph: {
     title: "Precios — CountPips",
-    description: "Demo interactiva sin registro. Precios de lanzamiento previstos: Core $149 · Pro $249.",
+    description: "Demo interactiva sin registro. Precios de lanzamiento previstos: Core 149\u00a0$ · Pro 249\u00a0$.",
     url: `${SITE_URL}/pricing/`,
     type: "website",
     siteName: "CountPips",
@@ -86,7 +86,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Precios — CountPips",
-    description: "Demo interactiva sin registro. Core $149 · Pro $249 como precios de lanzamiento previstos.",
+    description: "Demo interactiva sin registro. Core 149\u00a0$ · Pro 249\u00a0$ como precios de lanzamiento previstos.",
   },
 };
 
@@ -151,7 +151,7 @@ export function PricingBody() {
         titleEn="The price, in writing."
         titleHighlightEs="por escrito."
         titleHighlightEn="in writing."
-        subtitleEs="Core $149 y Pro $249 son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."
+        subtitleEs="Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."
         subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
         breadcrumbEs="Precios"
         breadcrumbEn="Pricing"

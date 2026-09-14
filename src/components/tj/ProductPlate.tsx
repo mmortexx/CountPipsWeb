@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef, useState } from "react";
+import { Maximize2, X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { asset } from "@/lib/asset";
 
@@ -121,6 +123,17 @@ export function ProductPlate({
      `tests/capturas.test.ts`; aquí sólo se derivan. */
   const variante = (sufijo: string) => archivo.replace(/\.webp$/, `${sufijo}.webp`);
 
+  /* Visor: la captura entera a su tamaño, en un `<dialog>` nativo (foco,
+     Escape y capa superior los pone el navegador). La imagen grande solo se
+     pide al abrir. */
+  const visor = useRef<HTMLDialogElement>(null);
+  const [abierto, setAbierto] = useState(false);
+  const abrir = () => {
+    setAbierto(true);
+    visor.current?.showModal();
+  };
+  const cerrar = () => visor.current?.close();
+
   return (
     /* ── LA LÁMINA TAMBIÉN ENTRA ──────────────────────────────────────
        Todo lo que la rodea —la etiqueta, el titular, la entradilla, el
@@ -134,7 +147,12 @@ export function ProductPlate({
        de qué va, y entonces aparece. */
     <figure className="tj-lamina-producto" data-entra="2">
       <div className="tj-lamina-marco">
-        <div className="tj-lamina-ventana">
+        <button
+          type="button"
+          className="tj-lamina-ventana tj-lamina-ampliable"
+          onClick={abrir}
+          aria-label={es ? `Ampliar captura: ${tituloEs}` : `Enlarge screenshot: ${tituloEn}`}
+        >
           {/* `img` y no `next/image`: el build es `output: "export"` con
               `images.unoptimized`, así que next/image no optimizaría nada
               y sí añadiría envoltorio.
@@ -158,8 +176,34 @@ export function ProductPlate({
               fetchPriority={priority ? "high" : "auto"}
             />
           </picture>
-        </div>
+          <span className="tj-lamina-lupa tj-cristal tj-cristal--denso" aria-hidden>
+            <Maximize2 size={15} />
+          </span>
+        </button>
       </div>
+      <dialog
+        ref={visor}
+        className="tj-visor"
+        aria-label={es ? tituloEs : tituloEn}
+        onClose={() => setAbierto(false)}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) cerrar();
+        }}
+      >
+        {abierto && (
+          <div className="tj-visor-lienzo" onClick={cerrar}>
+            <img src={asset(`/img/${archivo}`)} alt={alt} width={ancho} height={alto} decoding="async" />
+          </div>
+        )}
+        <button
+          type="button"
+          className="tj-visor-cerrar tj-cristal tj-cristal--denso"
+          onClick={cerrar}
+          aria-label={es ? "Cerrar" : "Close"}
+        >
+          <X size={18} aria-hidden />
+        </button>
+      </dialog>
       <figcaption className="tj-lamina-pie">
         <h3 className="tj-lamina-titulo">{es ? tituloEs : tituloEn}</h3>
         <p className="tj-lamina-nota">{es ? notaEs : notaEn}</p>

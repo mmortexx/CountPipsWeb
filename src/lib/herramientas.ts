@@ -177,7 +177,7 @@ export const HERRAMIENTAS: Herramienta[] = [
     resaltaEs: "no una oferta.",
     resaltaEn: "not an offer.",
     subtituloEs:
-      "Core $149 y Pro $249 son precios previstos de lanzamiento. Introduce una alternativa mensual para comparar escenarios, sin que el resultado sea una oferta de compra.",
+      "Core 149\u00a0$ y Pro 249\u00a0$ son precios previstos de lanzamiento. Introduce una alternativa mensual para comparar escenarios, sin que el resultado sea una oferta de compra.",
     subtituloEn:
       "Core $149 and Pro $249 are planned launch prices. Enter a monthly alternative to compare scenarios; the result is not a purchase offer.",
     resumenEs: "Cómo cambia un escenario mensual frente a una referencia futura.",

@@ -2979,6 +2979,92 @@ button.icon-btn:hover > svg,
   overflow: hidden;
   border-radius: 5px 5px 0 0;
 }
+.tj-lamina-ampliable {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.tj-lamina-ampliable:focus-visible {
+  outline: 2px solid rgb(var(--accent-base) / 0.6);
+  outline-offset: -2px;
+}
+.tj-lamina-lupa {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 4px;
+  color: var(--ink);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.tj-lamina-ampliable:hover .tj-lamina-lupa,
+.tj-lamina-ampliable:focus-visible .tj-lamina-lupa {
+  opacity: 1;
+}
+@media (hover: none) {
+  .tj-lamina-lupa { opacity: 1; }
+}
+.tj-visor {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+.tj-visor::backdrop {
+  background: rgb(8 10 14 / 0.86);
+}
+.tj-visor[open] {
+  display: grid;
+  place-items: center;
+}
+.tj-visor-lienzo {
+  max-width: 100%;
+  max-height: 100%;
+  padding: clamp(0.75rem, 3vw, 2.5rem);
+  overflow: auto;
+  cursor: zoom-out;
+}
+.tj-visor-lienzo img {
+  display: block;
+  width: auto;
+  max-width: min(1576px, 100%);
+  max-height: calc(100dvh - 2 * clamp(0.75rem, 3vw, 2.5rem));
+  border-radius: 6px;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 0.5);
+}
+/* En pantalla estrecha la captura se ve a un tamaño legible y se recorre con el dedo. */
+@media (max-width: 767px) {
+  .tj-visor[open] { place-items: center start; }
+  .tj-visor-lienzo { max-height: 100dvh; }
+  .tj-visor-lienzo img { max-width: none; width: 1100px; max-height: none; }
+}
+.tj-visor-cerrar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  color: var(--ink);
+}
+html:has(.tj-visor[open]) {
+  overflow: hidden;
+}
 .tj-lamina-pie {
   display: grid;
   gap: 0.5rem;

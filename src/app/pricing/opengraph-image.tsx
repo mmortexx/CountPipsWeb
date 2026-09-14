@@ -11,6 +11,6 @@ export default function Image() {
   return tarjetaSocial({
     antetitulo: "Precios",
     titulo: "Dos planes: Core y Pro.",
-    subtitulo: "Precios de lanzamiento previstos: Core $149 · Pro $249.",
+    subtitulo: "Precios de lanzamiento previstos: Core 149\u00a0$ · Pro 249\u00a0$.",
   });
 }

@@ -25,3 +25,12 @@ export const PRECIO_PRO = 249;
 
 /** Moneda en la que están expresados los dos. */
 export const MONEDA = "$";
+
+/**
+ * Dólares por euro del tipo de referencia del BCE, para la equivalencia
+ * aproximada que se enseña en español. Es orientativa: se revisa a mano.
+ */
+export const USD_POR_EUR = 1.1551;
+export const FECHA_TIPO_EUR = "2026-09-14";
+
+export const aproxEur = (usd: number) => Math.round(usd / USD_POR_EUR);

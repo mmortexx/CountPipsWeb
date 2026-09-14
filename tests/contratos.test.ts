@@ -300,6 +300,10 @@ describe("el precio es el mismo en todas partes", () => {
         for (const m of linea.matchAll(/\$(\d{3})\b(?![,.]\d)/g)) {
           if (!permitidos.has(m[1])) sueltas.push(`${rel}:${i + 1} → $${m[1]}`);
         }
+        // En español el símbolo va detrás: «149 $».
+        for (const m of linea.matchAll(/(?<![\d.,])(\d{3})(?:\s|\\u00a0)\$(?![{/])/g)) {
+          if (!permitidos.has(m[1])) sueltas.push(`${rel}:${i + 1} → ${m[1]} $`);
+        }
       });
     }
     expect(

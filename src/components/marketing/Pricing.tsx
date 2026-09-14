@@ -7,7 +7,7 @@ import { Reveal } from "@/components/tj/Reveal";
 import { Escritorio } from "@/components/tj/Escritorio";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
-import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { PRECIO_CORE, PRECIO_PRO, FECHA_TIPO_EUR, aproxEur } from "@/lib/precios";
 
 type Plan = {
   id: "core" | "pro";
@@ -182,6 +182,12 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   );
 }
 
+const fechaTipo = new Date(FECHA_TIPO_EUR).toLocaleDateString("es-ES", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
 function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   const isPro = plan.popular;
 
@@ -200,12 +206,17 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         {plan.tagline}
       </p>
 
-      <div className="mt-8 flex items-baseline gap-1 min-w-0">
+      <div className={`mt-8 flex items-baseline min-w-0 ${es ? "flex-row-reverse justify-end gap-2" : "gap-1"}`}>
         <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
         <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
           {plan.price}
         </span>
       </div>
+      {es && (
+        <p className="mt-3 mb-0 text-[14px] text-tertiary tnum">
+          <span className="whitespace-nowrap">{`≈\u00a0${aproxEur(plan.price)}\u00a0€`}</span> al cambio de {fechaTipo}
+        </p>
+      )}
 
       <SelloPrevisto
         className="mt-4 self-start"
