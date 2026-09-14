@@ -13,7 +13,8 @@ import { TERMINOS, tituloDeTermino, LARGO_MAXIMO_TITULO } from "@/lib/glosario";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { DOCUMENTOS_LEGALES } from "@/lib/legal/documentos";
 import { FAQ_ES, FAQ_EN, PRICING_FAQ_ES, PRICING_FAQ_EN, jsonLdFaq } from "@/lib/faq";
-import { LOCALIZED_PATHS, sinPrefijoEn, tieneVersionEn } from "@/lib/locale";
+import { sinPrefijoEn, tieneVersionEn } from "@/lib/locale";
+import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
 

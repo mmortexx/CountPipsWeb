@@ -5,7 +5,8 @@ import { TERMINOS, CATEGORIAS, slugTermino } from "@/lib/glosario";
 import { HERRAMIENTAS, type Herramienta } from "@/lib/herramientas";
 import { FAQ_ES, FAQ_EN, PRICING_FAQ_ES, PRICING_FAQ_EN, type QA } from "@/lib/faq";
 import { DOCUMENTOS_LEGALES, documentoPorSlug, type DocumentoLegal, type Seccion, type Bloque } from "@/lib/legal/documentos";
-import { LOCALIZED_PATHS, sinPrefijoEn, tieneVersionEn, withLocale } from "@/lib/locale";
+import { sinPrefijoEn, tieneVersionEn, withLocale } from "@/lib/locale";
+import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 
 /**
  * Dimension D4: Bilingual Parity (ES / EN)

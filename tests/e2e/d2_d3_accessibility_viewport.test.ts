@@ -3,7 +3,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
 import { STR } from "@/lib/i18n";
-import { LOCALIZED_PATHS, withLocale } from "@/lib/locale";
+import { withLocale } from "@/lib/locale";
+import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 
 /**
  * Dimension D2 & D3: WCAG 2.1 AA Accessibility & Mobile Viewport 390x844

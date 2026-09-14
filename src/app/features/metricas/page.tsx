@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { cifrasMuestra } from "@/lib/trading/cifras-muestra";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
@@ -141,7 +142,7 @@ export function MetricasBody() {
         breadcrumbEs="Características · Métricas"
         breadcrumbEn="Features · Metrics"
       />
-      <MetricsShowcaseNew enPagina />
+      <MetricsShowcaseNew cifras={cifrasMuestra()} enPagina />
       <RiskCalculator />
       <EquityProjector />
 

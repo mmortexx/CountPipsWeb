@@ -2,7 +2,8 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { STR } from "@/lib/i18n";
-import { LOCALIZED_PATHS } from "@/lib/locale";
+import { LOCALIZED_PATHS } from "@/lib/rutas-en";
+import { tieneVersionEn } from "@/lib/locale";
 
 /**
  * Contratos que atraviesan varios ficheros y que ninguna comprobación de
@@ -111,6 +112,13 @@ describe("rutas declaradas frente a rutas reales", () => {
     );
     const ausentes = fijas.filter((p) => !reales.has(p === "/" ? "/" : p));
     expect(ausentes).toEqual([]);
+  });
+
+  it("el enlace inglés reconoce toda ruta de la lista completa, y nada más", () => {
+    expect(LOCALIZED_PATHS.filter((p) => !tieneVersionEn(p))).toEqual([]);
+    expect(tieneVersionEn("/glosario/")).toBe(false);
+    expect(tieneVersionEn("/glosario/drawdown/extra")).toBe(false);
+    expect(tieneVersionEn("/traders/no-existe")).toBe(false);
   });
 
   it("toda ruta fija declarada tiene su carpeta bajo /en", () => {

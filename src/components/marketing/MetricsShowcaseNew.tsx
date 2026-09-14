@@ -1,56 +1,59 @@
 "use client";
 
-import { useId, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n";
 import { Escritorio } from "@/components/tj/Escritorio";
-import { INITIAL_BALANCE_CONST, METRICS } from "@/lib/trading/data";
-import { getRDistribution } from "@/lib/trading/fixtures";
+import type { CifrasMuestra } from "@/lib/trading/cifras-muestra";
 import { fmtDate, fmtMoney, fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
 
-/* Toda cifra sale de `METRICS` y `getRDistribution()`, calculados sobre las
+/* Toda cifra sale de `cifrasMuestra()`, calculada al construir sobre las
    mismas operaciones deterministas de /demo. Nada escrito a mano. */
 
-const BINS = getRDistribution();
-const TOTAL_BINS = Math.max(1, BINS.reduce((s, b) => s + b.count, 0));
-const MAX_BIN = Math.max(1, ...BINS.map((b) => b.count));
-const MODA = BINS.findIndex((b) => b.count === MAX_BIN);
-const R_LO = BINS[0]?.from ?? 0;
-const R_HI = BINS[BINS.length - 1]?.to ?? 1;
-const enR = (r: number) => Math.min(100, Math.max(0, ((r - R_LO) / (R_HI - R_LO || 1)) * 100));
-
-const INICIAL = INITIAL_BALANCE_CONST;
-const SALDOS = [INICIAL, ...METRICS.equityCurve.map((e) => e.balance)];
-const TECHOS = [INICIAL, ...METRICS.drawdownCeiling];
-const FECHAS: (Date | null)[] = [null, ...METRICS.equityCurve.map((e) => e.date)];
-const N = SALDOS.length;
-const S_MIN = Math.min(...SALDOS);
-const S_MAX = Math.max(...SALDOS);
-const MARGEN = (S_MAX - S_MIN || 1) * 0.1;
-const Y_MIN = S_MIN - MARGEN;
-const Y_MAX = S_MAX + MARGEN;
 const W = 1000;
 const H = 300;
-const px = (i: number) => (N > 1 ? (i / (N - 1)) * W : 0);
-const py = (v: number) => (1 - (v - Y_MIN) / (Y_MAX - Y_MIN)) * H;
-const puntos = (serie: number[]) => serie.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`);
-const LINEA = `M${puntos(SALDOS).join("L")}`;
-const AREA = `${LINEA}L${W},${H}L0,${H}Z`;
-const BAJO_AGUA = `M${puntos(TECHOS).join("L")}L${puntos(SALDOS).reverse().join("L")}Z`;
 
-const { VALLE, CIMA } = (() => {
-  let valle = 0;
+function preparar(c: CifrasMuestra) {
+  const BINS = c.bins;
+  const TOTAL_BINS = Math.max(1, BINS.reduce((s, b) => s + b.count, 0));
+  const MAX_BIN = Math.max(1, ...BINS.map((b) => b.count));
+  const MODA = BINS.findIndex((b) => b.count === MAX_BIN);
+  const R_LO = BINS[0]?.from ?? 0;
+  const R_HI = BINS[BINS.length - 1]?.to ?? 1;
+  const enR = (r: number) => Math.min(100, Math.max(0, ((r - R_LO) / (R_HI - R_LO || 1)) * 100));
+
+  const INICIAL = c.inicial;
+  const SALDOS = c.saldos;
+  const TECHOS = c.techos;
+  const FECHAS = c.fechas.map((t) => (t === null ? null : new Date(t)));
+  const N = SALDOS.length;
+  const S_MIN = Math.min(...SALDOS);
+  const S_MAX = Math.max(...SALDOS);
+  const MARGEN = (S_MAX - S_MIN || 1) * 0.1;
+  const Y_MIN = S_MIN - MARGEN;
+  const Y_MAX = S_MAX + MARGEN;
+  const px = (i: number) => (N > 1 ? (i / (N - 1)) * W : 0);
+  const py = (v: number) => (1 - (v - Y_MIN) / (Y_MAX - Y_MIN)) * H;
+  const puntos = (serie: number[]) => serie.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`);
+  const LINEA = `M${puntos(SALDOS).join("L")}`;
+  const AREA = `${LINEA}L${W},${H}L0,${H}Z`;
+  const BAJO_AGUA = `M${puntos(TECHOS).join("L")}L${puntos(SALDOS).reverse().join("L")}Z`;
+
+  let VALLE = 0;
   let peor = 0;
   for (let i = 0; i < N; i++) {
     if (TECHOS[i] - SALDOS[i] > peor) {
       peor = TECHOS[i] - SALDOS[i];
-      valle = i;
+      VALLE = i;
     }
   }
-  let cima = valle;
-  while (cima > 0 && SALDOS[cima] < TECHOS[valle] - 1e-6) cima--;
-  return { VALLE: valle, CIMA: cima };
-})();
+  let CIMA = VALLE;
+  while (CIMA > 0 && SALDOS[CIMA] < TECHOS[VALLE] - 1e-6) CIMA--;
+
+  return { BINS, TOTAL_BINS, MAX_BIN, MODA, R_LO, enR, INICIAL, SALDOS, TECHOS, FECHAS, N, px, py, LINEA, AREA, BAJO_AGUA, VALLE, CIMA, METRICS: c.m };
+}
+
+type Grafico = ReturnType<typeof preparar>;
 
 type Vista = "curva" | "dist";
 type Enfoque = "maxDd" | "expectancy" | "winRate" | null;
@@ -89,7 +92,8 @@ function Lectura({ rotulo, cifra, detalle, tono }: { rotulo: string; cifra: stri
   );
 }
 
-function Curva({ lang, es, enfoque }: { lang: Lang; es: boolean; enfoque: Enfoque }) {
+function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; enfoque: Enfoque }) {
+  const { INICIAL, SALDOS, TECHOS, FECHAS, N, px, py, LINEA, AREA, BAJO_AGUA, VALLE, CIMA, METRICS } = g;
   const [i, setI] = useState<number | null>(null);
   const k = i ?? N - 1;
   const saldo = SALDOS[k];
@@ -188,7 +192,8 @@ function Curva({ lang, es, enfoque }: { lang: Lang; es: boolean; enfoque: Enfoqu
   );
 }
 
-function Distribucion({ lang, es, enfoque }: { lang: Lang; es: boolean; enfoque: Enfoque }) {
+function Distribucion({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; enfoque: Enfoque }) {
+  const { BINS, TOTAL_BINS, MAX_BIN, MODA, R_LO, enR, METRICS } = g;
   const [i, setI] = useState<number | null>(null);
   const b = i === null ? null : BINS[i];
   const acumulado = i === null ? 0 : BINS.slice(0, i + 1).reduce((s, x) => s + x.count, 0);
@@ -281,7 +286,9 @@ function Distribucion({ lang, es, enfoque }: { lang: Lang; es: boolean; enfoque:
  * `enPortada`: va dentro del hero, sin sección propia.
  * `enPagina`: bajo un PageHeader que ya titula, el título queda para lectores de pantalla.
  */
-export function MetricsShowcaseNew({ enPagina = false, enPortada = false }: { enPagina?: boolean; enPortada?: boolean } = {}) {
+export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false }: { cifras: CifrasMuestra; enPagina?: boolean; enPortada?: boolean }) {
+  const g = useMemo(() => preparar(cifras), [cifras]);
+  const { METRICS } = g;
   const { lang } = useLang();
   const es = lang === "es";
   const [vista, setVista] = useState<Vista>("curva");
@@ -376,7 +383,7 @@ export function MetricsShowcaseNew({ enPagina = false, enPortada = false }: { en
         </div>
 
         <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${vista}`} className="tj-metricas-vista" key={vista}>
-          {vista === "curva" ? <Curva lang={lang} es={es} enfoque={enfoque} /> : <Distribucion lang={lang} es={es} enfoque={enfoque} />}
+          {vista === "curva" ? <Curva g={g} lang={lang} es={es} enfoque={enfoque} /> : <Distribucion g={g} lang={lang} es={es} enfoque={enfoque} />}
         </div>
 
         <ul className="tj-metricas-ratios">

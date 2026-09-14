@@ -3,7 +3,7 @@ import { SITE_URL, hreflangDe } from "@/lib/site";
 import { TERMINOS } from "@/lib/glosario";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { ULTIMA_ACTUALIZACION } from "@/lib/fechas";
-import { LOCALIZED_PATHS } from "@/lib/locale";
+import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 
 export const dynamic = "force-static";
 

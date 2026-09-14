@@ -1,6 +1,4 @@
 import type { Lang } from "@/lib/i18n";
-import { TERMINOS } from "@/lib/glosario";
-import { HERRAMIENTAS } from "@/lib/herramientas";
 
 /**
  * Las rutas que existen en inglés, y la única lista de la que dependen
@@ -25,12 +23,17 @@ import { HERRAMIENTAS } from "@/lib/herramientas";
  * sitio y `app/en/**` crecen con él sin que nadie tenga que acordarse de
  * tocar tres sitios a la vez.
  *
+ * La lista completa vive en `rutas-en.ts`, no aquí: este módulo lo carga
+ * cada página (barra, enlaces) y derivarla aquí metía el glosario entero
+ * en el JavaScript de todas. Aquí basta con saber que toda ficha de
+ * glosario o herramienta tiene su versión inglesa.
+ *
  * Mientras tanto, un enlace hacia una ruta que NO está en esta lista se
  * queda en español aunque se pulse desde una página en inglés — es la
  * `/faq` real, no una `/en/faq` que no existe. Volver a la sesión en
  * español al tocar algo aún no traducido es preferible a un 404.
  */
-export const LOCALIZED_PATHS: readonly string[] = [
+export const RUTAS_FIJAS_EN: readonly string[] = [
   "/",
   "/features",
   "/features/metricas",
@@ -49,16 +52,18 @@ export const LOCALIZED_PATHS: readonly string[] = [
   "/terminos",
   "/aviso-legal",
   "/glosario",
-  ...TERMINOS.map((t) => `/glosario/${t.slug}`),
   "/herramientas",
-  ...HERRAMIENTAS.map((h) => `/herramientas/${h.slug}`),
 ];
 
-const LOCALIZED_SET = new Set(LOCALIZED_PATHS);
+const LOCALIZED_SET = new Set(RUTAS_FIJAS_EN);
+const FAMILIAS_EN = ["/glosario/", "/herramientas/"];
 
 /** ¿Existe una versión en inglés de esta ruta (sin query ni hash)? */
 export function tieneVersionEn(pathnameLimpio: string): boolean {
-  return LOCALIZED_SET.has(pathnameLimpio);
+  if (LOCALIZED_SET.has(pathnameLimpio)) return true;
+  return FAMILIAS_EN.some(
+    (f) => pathnameLimpio.length > f.length && pathnameLimpio.startsWith(f) && !pathnameLimpio.includes("/", f.length),
+  );
 }
 
 /**

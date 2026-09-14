@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { GLOSSARY, GLOSSARY_CATEGORIES } from "@/lib/trading/glossary";
-import { withLocale, LOCALIZED_PATHS } from "@/lib/locale";
+import { withLocale } from "@/lib/locale";
+import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
 
 /**

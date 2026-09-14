@@ -2,7 +2,6 @@
 
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
-import { HERRAMIENTAS } from "@/lib/herramientas";
 
 /**
  * StatsBandNew — la banda de credenciales de la home: tres cifras que
@@ -27,7 +26,7 @@ import { HERRAMIENTAS } from "@/lib/herramientas";
  * página (mismo patrón que los dots de reassurance pills en
  * PricingFAQ y los dots de value chip en ValueTestimonials).
  */
-export function StatsBandNew() {
+export function StatsBandNew({ herramientas }: { herramientas: number }) {
   const { lang } = useLang();
   const es = lang === "es";
   const stats = [
@@ -44,10 +43,10 @@ export function StatsBandNew() {
 
        Se sustituye por un número REAL y comprobable: las calculadoras
        abiertas que hay en la web, ahora mismo, sin registrarse. Sale de
-       `HERRAMIENTAS`, así que si mañana se añade o se quita una, la
+       `HERRAMIENTAS` (lo pasa la página al construir), así que si mañana se añade o se quita una, la
        cifra cambia sola en vez de quedarse mintiendo. */
     {
-      v: String(HERRAMIENTAS.length),
+      v: String(herramientas),
       l: es
         ? "herramientas gratis en la web — sin registro ni instalación"
         : "free tools on the site — no sign-up, no install",

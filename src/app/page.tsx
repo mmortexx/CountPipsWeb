@@ -4,6 +4,8 @@ import { Hero } from "@/components/marketing/Hero";
 import { ProfileSelector } from "@/components/marketing/ProfileSelector";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { MetricsShowcaseNew } from "@/components/marketing/MetricsShowcaseNew";
+import { cifrasMuestra } from "@/lib/trading/cifras-muestra";
+import { HERRAMIENTAS } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
 import { SUPPORT_EMAIL } from "@/lib/forms";
 
@@ -80,8 +82,8 @@ const FinalCTANew = dynamic(
 export function HomeBody() {
   return (
     <>
-      <Hero producto={<MetricsShowcaseNew enPortada />} />
-      <StatsBandNew />
+      <Hero producto={<MetricsShowcaseNew cifras={cifrasMuestra()} enPortada />} />
+      <StatsBandNew herramientas={HERRAMIENTAS.length} />
       <ProfileSelector />
       <ProductShowcase />
       <GuardianNew />
