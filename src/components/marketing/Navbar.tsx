@@ -176,8 +176,8 @@ const PRODUCT_ITEMS: {
     href: "/herramientas",
     labelEs: "Herramientas",
     labelEn: "Tools",
-    descEs: "Siete calculadoras, gratis y sin registro",
-    descEn: "Seven calculators, free and with no sign-up",
+    descEs: "Ocho calculadoras, gratis y sin registro",
+    descEn: "Eight calculators, free and with no sign-up",
     grupo: "laboratorio",
     icon: (
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -194,8 +194,8 @@ const PRODUCT_ITEMS: {
     href: "/glosario",
     labelEs: "Glosario",
     labelEn: "Glossary",
-    descEs: "51 términos explicados sin rodeos",
-    descEn: "51 terms explained without waffle",
+    descEs: "57 términos explicados sin rodeos",
+    descEn: "57 terms explained without waffle",
     grupo: "laboratorio",
     icon: (
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>

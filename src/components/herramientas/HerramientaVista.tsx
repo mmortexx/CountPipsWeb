@@ -82,7 +82,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                 <Link
                   key={h.slug}
                   href={`/herramientas/${h.slug}`}
-                  className={`min-h-[44px] px-3.5 rounded-full text-[13px] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap ${
+                  className={`min-h-[44px] px-3.5 rounded-[4px] text-[13px] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap ${
                     active ? "bg-[var(--ink)] text-[var(--bg)] font-medium" : "text-secondary hover:text-primary"
                   }`}
                 >

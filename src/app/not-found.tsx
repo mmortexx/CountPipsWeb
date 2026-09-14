@@ -40,6 +40,9 @@ export const metadata: Metadata = {
     "Esta página no existe, se ha movido o nunca estuvo publicada.",
   robots: { index: false, follow: true },
   alternates: { canonical: undefined },
+  /* Idioma con el que se compila `404.html`: lo lee `LanguageProvider` al
+     hidratar. Va en <head> porque el cuerpo aún puede estar a medio leer. */
+  other: { "tj-idioma-compilado": "es" },
   openGraph: {
     title: "Página no encontrada — CountPips",
     description: "Esta dirección no existe, se ha movido o nunca estuvo publicada.",

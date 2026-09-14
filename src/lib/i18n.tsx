@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -402,6 +403,19 @@ function langDeRuta(pathname: string): Lang {
   return pathname === "/en" || pathname.startsWith("/en/") ? "en" : "es";
 }
 
+const sinSuscripcion = () => () => {};
+
+/* La 404 es un único `404.html`, compilado en español, que GitHub Pages
+   sirve también bajo `/en/…`. Hidratarlo con el idioma de la URL no
+   casaba con el HTML y React tiraba el árbol entero (error #418). Se
+   hidrata con el idioma con el que se compiló —la meta que declara
+   `not-found.tsx`— y justo después pasa al de la dirección. */
+function langHidratacion(deRuta: Lang): Lang {
+  if (typeof document === "undefined") return deRuta;
+  const marca = document.querySelector<HTMLMetaElement>('meta[name="tj-idioma-compilado"]')?.content;
+  return marca === "es" || marca === "en" ? marca : deRuta;
+}
+
 /**
  * LanguageProvider — el idioma ya NO es un interruptor en memoria, es la
  * dirección.
@@ -433,7 +447,8 @@ function langDeRuta(pathname: string): Lang {
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const lang = langDeRuta(pathname);
+  const deRuta = langDeRuta(pathname);
+  const lang = useSyncExternalStore(sinSuscripcion, () => deRuta, () => langHidratacion(deRuta));
 
   // Mantiene sincronizado el `lang` del documento para lectores de
   // pantalla y buscadores. El script embebido en `layout.tsx` ya fija el

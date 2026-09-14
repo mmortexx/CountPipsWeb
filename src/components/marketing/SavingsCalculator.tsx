@@ -112,7 +112,7 @@ export function SavingsCalculator() {
   const cpLineY = Math.max(padY, Math.min(svgH - padY, cpY));
 
   const chipStyle = (active: boolean) =>
-    `min-h-[44px] px-4 py-2.5 text-[13px] rounded-full transition-colors tnum ${
+    `min-h-[44px] px-4 py-2.5 text-[13px] rounded-[4px] transition-colors tnum ${
       active
         ? "bg-[var(--ink)] text-[var(--bg)] font-semibold"
         : "bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"

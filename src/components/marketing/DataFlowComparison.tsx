@@ -76,7 +76,7 @@ export function DataFlowComparison() {
         <button
           type="button"
           onClick={send}
-          className="mb-8 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-full text-[14px] font-semibold transition-opacity duration-150 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+          className="mb-8 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[4px] text-[14px] font-semibold transition-opacity duration-150 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
           style={{ background: "var(--ink)", color: "var(--bg)" }}
           aria-label={es ? "Añadir una operación y ver el flujo de datos" : "Add a trade and see the data flow"}
         >

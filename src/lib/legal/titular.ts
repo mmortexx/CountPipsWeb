@@ -32,6 +32,8 @@ export type DatosTitular = {
   nombreComercial: string;
   /** Jurisdicción cuyos tribunales conocen de los conflictos. */
   jurisdiccion: string;
+  /** La misma jurisdicción, nombrada en inglés. */
+  jurisdiccionEn: string;
 };
 
 export const TITULAR: DatosTitular = {
@@ -40,6 +42,7 @@ export const TITULAR: DatosTitular = {
   domicilio: "",
   nombreComercial: "CountPips",
   jurisdiccion: "España",
+  jurisdiccionEn: "Spain",
 };
 
 /** `true` cuando faltan datos obligatorios para poder vender. */

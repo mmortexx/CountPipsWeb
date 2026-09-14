@@ -543,7 +543,7 @@ const terminos: DocumentoLegal = {
         {
           tipo: "parrafo",
           es: `Estas condiciones se rigen por la legislación de ${TITULAR.jurisdiccion}. Si eres consumidor, conservas los derechos que te reconozca la normativa de tu lugar de residencia.`,
-          en: `These conditions are governed by the laws of ${TITULAR.jurisdiccion}. If you are a consumer, you keep the rights granted to you by the rules of your place of residence.`,
+          en: `These conditions are governed by the laws of ${TITULAR.jurisdiccionEn}. If you are a consumer, you keep the rights granted to you by the rules of your place of residence.`,
         },
       ],
     },
@@ -622,7 +622,7 @@ const avisoLegal: DocumentoLegal = {
         {
           tipo: "parrafo",
           es: `Se aplica la legislación de ${TITULAR.jurisdiccion}. Para cualquier controversia serán competentes los juzgados que correspondan conforme a la normativa vigente, respetando el fuero que la ley reconozca a los consumidores.`,
-          en: `The laws of ${TITULAR.jurisdiccion} apply. Any dispute will be heard by the courts designated under the applicable rules, respecting the venue the law grants to consumers.`,
+          en: `The laws of ${TITULAR.jurisdiccionEn} apply. Any dispute will be heard by the courts designated under the applicable rules, respecting the venue the law grants to consumers.`,
         },
       ],
     },

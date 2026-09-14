@@ -5068,3 +5068,18 @@ svg [data-entra="sello"] {
     --divider: 0 0 0 !important;
   }
 }
+
+/* ── La 404 bajo /en/ no enseña su español compilado ─────────────────
+   `404.html` sale en español; bajo `/en/…` React lo pasa a inglés justo
+   tras hidratar (ver `langHidratacion` en i18n.tsx). Mientras tanto la
+   página no se pinta. Si el JavaScript no llega, se muestra igual al
+   segundo y medio. */
+html[lang="en"]:has([data-tj-404="es"]) body {
+  visibility: hidden;
+  animation: tj-404-espera 0s 1.5s forwards;
+}
+@keyframes tj-404-espera {
+  to {
+    visibility: visible;
+  }
+}

@@ -71,6 +71,7 @@ export function NotFoundClient() {
   return (
     <section
       aria-labelledby="not-found-heading"
+      data-tj-404={lang}
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
     >
 

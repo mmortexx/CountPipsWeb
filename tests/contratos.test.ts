@@ -514,3 +514,27 @@ describe("el logotipo y su generador dibujan lo mismo", () => {
     ).toEqual([]);
   });
 });
+
+describe("el menú cuenta lo que hay", () => {
+  /* El menú decía «Siete calculadoras» con ocho publicadas y «51 términos»
+     con 57. El menú es de cliente y no importa los datos a propósito (no
+     viajan al navegador), así que la cifra va escrita y aquí se ata. */
+  const NUMEROS: Record<string, number> = { siete: 7, ocho: 8, nueve: 9, diez: 10, seven: 7, eight: 8, nine: 9, ten: 10 };
+  const navbar = leer("src/components/marketing/Navbar.tsx");
+  const cifra = (re: RegExp) =>
+    [...navbar.matchAll(re)].map((m) => (/^\d+$/.test(m[1]) ? Number(m[1]) : NUMEROS[m[1].toLowerCase()]));
+
+  it("calculadoras", async () => {
+    const { HERRAMIENTAS } = await import("@/lib/herramientas");
+    const vistas = cifra(/"(\w+) (?:calculadoras|calculators)\b/g);
+    expect(vistas.length).toBe(2);
+    for (const n of vistas) expect(n).toBe(HERRAMIENTAS.length);
+  });
+
+  it("términos del glosario", async () => {
+    const { TERMINOS } = await import("@/lib/glosario");
+    const vistas = cifra(/"(\d+) (?:términos|terms)\b/g);
+    expect(vistas.length).toBe(2);
+    for (const n of vistas) expect(n).toBe(TERMINOS.length);
+  });
+});

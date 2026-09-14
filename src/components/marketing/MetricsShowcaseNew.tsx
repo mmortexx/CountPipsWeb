@@ -303,7 +303,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
   const ratios: { id: string; l: string; v: string; f: string; d: string; c?: string; enlaza?: Enfoque }[] = [
     { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), f: "μ / σ", d: es ? "Retorno por unidad de volatilidad." : "Return per unit of volatility." },
     { id: "sortino", l: "Sortino", v: fmtNum(METRICS.sortino, lang, 2), f: "μ / σ↓", d: es ? "Sólo penaliza la volatilidad bajista." : "Penalizes downside volatility only." },
-    { id: "omega", l: "Omega", v: fmtNum(METRICS.omega, lang, 2), f: "Σ ganancias / Σ pérdidas", d: es ? "Pondera la distribución entera." : "Weighs the whole distribution." },
+    { id: "omega", l: "Omega", v: fmtNum(METRICS.omega, lang, 2), f: es ? "Σ ganancias / Σ pérdidas" : "Σ gains / Σ losses", d: es ? "Pondera la distribución entera." : "Weighs the whole distribution." },
     { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst fall." },
     {
       id: "expectancy",
