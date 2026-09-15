@@ -136,15 +136,6 @@ export function Values() {
           ))}
         </div>
 
-        <Reveal delay={0.4}>
-          <div className="mt-10 flex items-center gap-3 text-sm text-tertiary justify-center text-center sm:justify-start sm:text-left">
-            <span>
-              {es
-                ? "No son eslóganes. Son decisiones de producto."
-                : "Not slogans. Product decisions."}
-            </span>
-          </div>
-        </Reveal>
       </div>
     </section>
   );

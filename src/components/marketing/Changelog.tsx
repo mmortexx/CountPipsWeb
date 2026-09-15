@@ -1,8 +1,7 @@
 "use client";
 
 import { useLang } from "@/lib/i18n";
-import { Eyebrow } from "@/components/tj/Eyebrow";
-import { Reveal } from "@/components/tj/Reveal";
+import { SectionHeader } from "@/components/layout/SectionHeader";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 
 /**
@@ -118,36 +117,18 @@ export function Changelog() {
     <section id="changelog" className="section cv-auto relative overflow-clip scroll-mt-24">
 
       <div className="relative z-10 tj-container">
-        {/* Header */}
-        <div className="relative max-w-3xl mx-auto text-center">
-          <Reveal>
-            <div className="relative flex justify-center">
-              <Eyebrow>{es ? "Estado del producto" : "Product status"}</Eyebrow>
-            </div>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2
-              className="relative mt-5 t-h2 text-primary"
-            >
-              {es ? (
-                <>
-                  Qué está listo, <span className="text-gradient">qué validamos y qué sigue.</span>
-                </>
-              ) : (
-                <>
-                  What is ready, <span className="text-gradient">what we validate and what follows.</span>
-                </>
-              )}
-            </h2>
-          </Reveal>
-          <Reveal delay={0.12}>
-            <p className="relative mt-4 text-lg text-secondary max-w-xl mx-auto leading-[1.6]">
-              {es
-                ? "Separado entre entregado, acceso anticipado y futuro. Sin testimonios ni fechas inventadas: actualizamos esta página cuando haya evidencia."
-                : "Separated into delivered, early access and future. No invented testimonials or dates: we update this page when there is evidence."}
-            </p>
-          </Reveal>
-        </div>
+        <SectionHeader
+          composicion="partida"
+          etiqueta={es ? "Estado del producto" : "Product status"}
+          titulo={es ? (
+            <>Qué está listo, <span className="text-gradient">qué validamos y qué sigue.</span></>
+          ) : (
+            <>What is ready, <span className="text-gradient">what we validate and what follows.</span></>
+          )}
+          entradilla={es
+            ? "Separado entre entregado, acceso anticipado y futuro. Sin testimonios ni fechas inventadas: actualizamos esta página cuando haya evidencia."
+            : "Separated into delivered, early access and future. No invented testimonials or dates: we update this page when there is evidence."}
+        />
 
         {/* `clip` y no `hidden` — misma razón que en `DemoCapabilities`:
             `hidden` abre contenedor de desplazamiento y deja sin entrada
@@ -201,18 +182,6 @@ export function Changelog() {
           })}
         </ol>
 
-        {/* Footer line */}
-        <Reveal delay={0.1}>
-          <div className="mt-14 flex flex-col items-center gap-3 text-center">
-            <div className="divider-grad w-40" aria-hidden />
-            <p className="text-sm text-secondary">
-              <span className="text-[rgb(var(--sig-green))] font-medium">✓</span>{" "}
-              {es
-                ? "El acceso anticipado se abre con usuarios reales. Publicamos cambios cuando están validados."
-                : "Early access opens with real users. We publish changes once they are validated."}
-            </p>
-          </div>
-        </Reveal>
       </div>
     </section>
   );

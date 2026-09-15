@@ -75,8 +75,9 @@ const FinalCTANew = dynamic(
 
 /**
  * Portada: promesa y cifras de la muestra en la primera pantalla, lo que
- * la sostiene, los dos recorridos, las pantallas reales y, después, cómo
- * frena y en qué cree. Una idea por sección y un solo cierre.
+ * la sostiene, las pantallas reales y cómo frena; después, para quién es
+ * (los dos recorridos) y en qué cree. Primero qué es, luego si es para ti.
+ * Una idea por sección y un solo cierre.
  * `app/en/page.tsx` reutiliza este cuerpo; cada sección lee `useLang()`.
  */
 export function HomeBody() {
@@ -84,9 +85,9 @@ export function HomeBody() {
     <>
       <Hero producto={<MetricsShowcaseNew cifras={cifrasMuestra()} enPortada />} />
       <StatsBandNew herramientas={HERRAMIENTAS.length} />
-      <ProfileSelector />
       <ProductShowcase />
       <GuardianNew />
+      <ProfileSelector />
       <Values />
       <FinalCTANew />
     </>
