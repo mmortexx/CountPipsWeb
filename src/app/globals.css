@@ -3246,14 +3246,13 @@ html:has(.tj-visor[open]) {
   --barra-alfa: 0.78;
   --cristal-blur: 20px;
   --cristal-saturacion: 175%;
-  --cristal-filo: rgb(255 255 255 / 0.85);
-  --cristal-canto: rgb(11 15 20 / 0.055);
+  --cristal-filo: rgb(255 255 255 / 0.95);
+  --cristal-canto: rgb(11 15 20 / 0.05);
+  --cristal-pie: rgb(11 15 20 / 0.09);
   --cristal-sombra: 0 1px 2px rgb(11 15 20 / 0.04), 0 28px 64px -36px rgb(11 15 20 / 0.3);
   --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  --luz-1: 173 199 227;
-  --luz-2: 208 196 236;
-  --luz-3: 186 226 208;
-  --luz-alfa: 0.55;
+  --luz: 255 255 255;
+  --luz-alfa: 0.95;
   --curva: rgb(11 15 20 / 0.16);
 }
 :root:not([data-theme="light"]) {
@@ -3262,13 +3261,12 @@ html:has(.tj-visor[open]) {
   --cristal-alfa-denso: 0.78;
   --barra-alfa: 0.7;
   --cristal-saturacion: 150%;
-  --cristal-filo: rgb(255 255 255 / 0.075);
-  --cristal-canto: rgb(255 255 255 / 0.045);
+  --cristal-filo: rgb(255 255 255 / 0.17);
+  --cristal-canto: rgb(255 255 255 / 0.05);
+  --cristal-pie: rgb(255 255 255 / 0.03);
   --cristal-sombra: 0 30px 70px -38px rgb(0 0 0 / 0.9);
-  --luz-1: 52 88 138;
-  --luz-2: 92 68 150;
-  --luz-3: 30 112 92;
-  --luz-alfa: 0.34;
+  --luz: 236 240 244;
+  --luz-alfa: 0.075;
   --curva: rgb(236 239 242 / 0.2);
 }
 .tj-cristal,
@@ -3279,10 +3277,23 @@ html:has(.tj-visor[open]) {
   backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
 }
 .tj-cristal {
-  box-shadow:
-    inset 0 1px 0 var(--cristal-filo),
-    inset 0 0 0 1px var(--cristal-canto),
-    var(--cristal-sombra);
+  box-shadow: var(--cristal-sombra);
+}
+/* El canto: un filo de 1 px que recibe la luz desde arriba — claro en el
+   borde superior, casi nada en los lados y un poco de sombra al pie. Es lo
+   que separa una lámina de vidrio de un rectángulo con borde. Estático:
+   ni reflejos que sigan al puntero ni refracción. */
+.tj-cristal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, var(--cristal-filo), var(--cristal-canto) 38%, var(--cristal-canto) 72%, var(--cristal-pie));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 .tj-cristal--denso {
   background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa-denso));
@@ -3314,18 +3325,16 @@ html:has(.tj-visor[open]) {
   background-color: rgb(var(--cristal-tinte) / var(--barra-alfa));
 }
 
-/* El fondo de escritorio: tres luces frías y difusas que se funden con la
-   página arriba y abajo, y una curva de capital opcional. */
+/* El fondo de escritorio: una sola luz blanca, sin tinte, cenital y difusa,
+   que se funde con la página arriba y abajo; y una curva de capital
+   opcional. Sin color: el cristal debe leerse como material, no como adorno. */
 .tj-escritorio {
   position: absolute;
   inset: 0;
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
-  background:
-    radial-gradient(38% 58% at 18% 48%, rgb(var(--luz-1) / var(--luz-alfa)), transparent 70%),
-    radial-gradient(34% 52% at 82% 56%, rgb(var(--luz-2) / var(--luz-alfa)), transparent 70%),
-    radial-gradient(28% 40% at 52% 22%, rgb(var(--luz-3) / calc(var(--luz-alfa) * 0.8)), transparent 72%);
+  background: radial-gradient(56% 64% at 50% 34%, rgb(var(--luz) / var(--luz-alfa)), transparent 72%);
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
 }

@@ -202,7 +202,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         </h3>
       </div>
 
-      <p className="mt-2 text-[15px] text-secondary leading-snug min-h-[2.6em]">
+      <p className="mt-2 text-[15px] text-secondary leading-snug min-h-[2.75em]">
         {plan.tagline}
       </p>
 

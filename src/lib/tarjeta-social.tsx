@@ -75,9 +75,15 @@ const CURVA = (() => {
 const BINS = getRDistribution();
 const BIN_MAX = Math.max(1, ...BINS.map((b) => b.count));
 
-export type Tarjeta = { antetitulo: string; titulo: string; subtitulo: string };
+export type Tarjeta = { antetitulo: string; titulo: string; subtitulo: string; lang?: "es" | "en" };
 
-export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
+const ROTULOS = {
+  es: { pie: "Windows 10 y 11 · demo sin registro · tus datos en tu equipo", curva: "Curva de capital", muestra: "Datos de muestra", distribucion: "Distribución de R", metricas: "40+ métricas" },
+  en: { pie: "Windows 10 and 11 · demo without sign-up · your data on your machine", curva: "Equity curve", muestra: "Sample data", distribucion: "R distribution", metricas: "40+ metrics" },
+};
+
+export function tarjetaSocial({ antetitulo, titulo, subtitulo, lang = "es" }: Tarjeta) {
+  const r = ROTULOS[lang];
   return new ImageResponse(
     (
       <div
@@ -88,7 +94,7 @@ export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
           position: "relative",
           backgroundColor: "#0A0C0F",
           backgroundImage:
-            "radial-gradient(circle at 14% 16%, rgba(112,142,184,0.3) 0%, rgba(112,142,184,0) 44%), radial-gradient(circle at 74% 38%, rgba(96,150,196,0.24) 0%, rgba(96,150,196,0) 34%), radial-gradient(circle at 92% 90%, rgba(150,128,206,0.28) 0%, rgba(150,128,206,0) 46%), radial-gradient(circle at 60% 78%, rgba(78,160,148,0.14) 0%, rgba(78,160,148,0) 34%)",
+            "radial-gradient(circle at 30% 18%, rgba(236,240,244,0.09) 0%, rgba(236,240,244,0) 58%)",
           fontFamily: "Instrument Sans",
           color: TINTA,
           overflow: "hidden",
@@ -121,7 +127,7 @@ export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
             <div style={{ display: "flex", marginTop: 24, maxWidth: 500, fontSize: 22, lineHeight: 1.45, color: TINTA_2, textWrap: "balance" }}>{subtitulo}</div>
           </div>
 
-          <div style={{ display: "flex", fontSize: 16, color: TINTA_3 }}>Windows 10 y 11 · demo sin registro · tus datos en tu equipo</div>
+          <div style={{ display: "flex", fontSize: 16, color: TINTA_3 }}>{r.pie}</div>
         </div>
 
         <div
@@ -133,7 +139,7 @@ export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
             top: 118,
             width: 472,
             padding: "26px 24px 24px",
-            borderRadius: 28,
+            borderRadius: 14,
             border: "1px solid rgba(255,255,255,0.11)",
             backgroundImage: "linear-gradient(165deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.035) 45%, rgba(255,255,255,0.02) 100%)",
             boxShadow: "0 50px 90px -40px rgba(0,0,0,0.75)",
@@ -151,12 +157,12 @@ export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
             }}
           />
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", fontSize: 15, color: TINTA_2 }}>Curva de capital</div>
+            <div style={{ display: "flex", fontSize: 15, color: TINTA_2 }}>{r.curva}</div>
             <div
               style={{
                 display: "flex",
                 padding: "4px 11px",
-                borderRadius: 999,
+                borderRadius: 4,
                 fontSize: 12,
                 letterSpacing: "0.04em",
                 color: TINTA_2,
@@ -164,7 +170,7 @@ export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
                 border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
-              Datos de muestra
+              {r.muestra}
             </div>
           </div>
 
@@ -174,7 +180,7 @@ export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
 
           <div style={{ display: "flex", marginTop: 18, justifyContent: "space-between", alignItems: "flex-end" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", fontSize: 13, color: TINTA_3 }}>Distribución de R</div>
+              <div style={{ display: "flex", fontSize: 13, color: TINTA_3 }}>{r.distribucion}</div>
               <div style={{ display: "flex", alignItems: "flex-end", height: 44, marginTop: 10 }}>
                 {BINS.map((b) => (
                   <div
@@ -192,7 +198,7 @@ export function tarjetaSocial({ antetitulo, titulo, subtitulo }: Tarjeta) {
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-              <div style={{ display: "flex", fontSize: 13, color: TINTA_3 }}>40+ métricas</div>
+              <div style={{ display: "flex", fontSize: 13, color: TINTA_3 }}>{r.metricas}</div>
               <div style={{ display: "flex", marginTop: 8, fontSize: 16, color: TINTA }}>Sharpe · Sortino · Calmar</div>
               <div style={{ display: "flex", marginTop: 4, fontSize: 16, color: TINTA_2 }}>Expectancy · Max DD</div>
             </div>
