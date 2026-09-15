@@ -91,7 +91,7 @@ export function PricingFAQ() {
           <p className="mt-4 text-base md:text-lg text-secondary leading-relaxed">
             {es
               ? "Cuatro respuestas rápidas sobre la demo, el alcance y el acceso anticipado. Si te queda alguna duda, escríbenos."
-              : "Four quick answers about the demo, scope and early access. If anything is still unclear, email us."}
+              : "Four quick answers about the demo, scope and early access. If anything is still unclear, write to us."}
           </p>
 
           <p className="mt-6 mb-0 text-[13px] text-tertiary">{pills.join(" · ")}</p>

@@ -285,7 +285,6 @@ export function GlossaryModal({
                     type="button"
                     onClick={() => setActiveCat(c.id)}
                     aria-pressed={active}
-                    className="transition-transform active:scale-95"
                   >
                     <Chip variant={active ? "accent" : "neutral"}>
                       {es ? c.es : c.en}
@@ -372,7 +371,6 @@ export function GlossaryModal({
                       trackRecent(g.term);
                       setExpanded((prev) => new Set(prev).add(g.term));
                     }}
-                    className="transition-transform active:scale-95"
                     aria-label={es ? `Abrir ${g.term}` : `Open ${g.term}`}
                   >
                     <Chip variant="accent">{g.term}</Chip>

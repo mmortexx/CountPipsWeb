@@ -435,7 +435,7 @@ export function EdgeSignificanceChecker() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[8px] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:-translate-y-0.5 hover:border-[rgb(var(--accent-base)/0.30)]"
+      className="group/result relative min-w-0 rounded-[8px] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
       style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
     >
       {/* «EXPECTANCY» en versalitas con 0,12em de espaciado mide mas que

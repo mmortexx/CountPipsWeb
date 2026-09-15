@@ -58,9 +58,9 @@ export type DocumentoLegal = {
 };
 
 const CONTACTO_ES =
-  "Puedes ejercerlos escribiendo al buzón de soporte que aparece en la página de contacto. Te responderemos en el plazo que marca la ley.";
+  "Puedes ejercerlos escribiendo desde el formulario de contacto de la página de preguntas frecuentes. Te responderemos en el plazo que marca la ley.";
 const CONTACTO_EN =
-  "You can exercise them by writing to the support mailbox shown on the contact page. We will reply within the period the law allows.";
+  "You can exercise them by writing through the contact form on the FAQ page. We will reply within the period the law allows.";
 
 /* ════════════════════════════════════════════════════════════════════
    PRIVACIDAD
@@ -91,8 +91,8 @@ const privacidad: DocumentoLegal = {
              vacíos a propósito hasta que exista la entrega comercial (ver
              `titular.ts`). Mandar al lector a buscar un dato que no está es
              peor que decirle que todavía no está. */
-          es: `El responsable del tratamiento es el titular de ${TITULAR.nombreComercial}. Los datos identificativos completos se publicarán en el aviso legal cuando se abra la entrega comercial; mientras tanto, el contacto es el buzón de soporte.`,
-          en: `The data controller is the owner of ${TITULAR.nombreComercial}. Full identifying details will be published in the legal notice when commercial delivery opens; until then, the contact is the support mailbox.`,
+          es: `El responsable del tratamiento es el titular de ${TITULAR.nombreComercial}. Los datos identificativos completos se publicarán en el aviso legal cuando se abra la entrega comercial; mientras tanto, el contacto es el formulario de contacto de la página de preguntas frecuentes.`,
+          en: `The data controller is the owner of ${TITULAR.nombreComercial}. Full identifying details will be published in the legal notice when commercial delivery opens; until then, the contact is the contact form on the FAQ page.`,
         },
       ],
     },
@@ -127,12 +127,12 @@ const privacidad: DocumentoLegal = {
               es: [
                 "Contacto",
                 "Tu nombre, tu correo y tu mensaje",
-                "Web3Forms, que lo reenvía al buzón de soporte",
+                "Web3Forms, que lo reenvía al correo del titular",
               ],
               en: [
                 "Contact",
                 "Your name, your email and your message",
-                "Web3Forms, which forwards it to the support mailbox",
+                "Web3Forms, which forwards it to the owner's email",
               ],
             },
           ],
@@ -212,13 +212,13 @@ const privacidad: DocumentoLegal = {
             "Endpoint de admisión — recibe y deduplica solicitudes para el equipo de selección.",
             "Cloudflare Turnstile — valida que la solicitud procede de una persona cuando el control está activado.",
             "PostHog EU — recibe eventos técnicos sólo tras consentimiento analítico.",
-            "Web3Forms — recibe el formulario de contacto y lo reenvía al buzón de soporte.",
+            "Web3Forms — recibe el formulario de contacto y lo reenvía al correo del titular.",
           ],
           en: [
             "Admission endpoint — receives and deduplicates applications for the selection team.",
             "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
             "EU PostHog — receives technical events only after analytics consent.",
-            "Web3Forms — receives the contact form and forwards it to the support mailbox.",
+            "Web3Forms — receives the contact form and forwards it to the owner's email.",
           ],
         },
         {

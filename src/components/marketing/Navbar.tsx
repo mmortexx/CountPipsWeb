@@ -956,10 +956,11 @@ export function Navbar() {
                               href="/demo"
                               role="menuitem"
                               onClick={() => setMegaOpen(false)}
-                              className="tnum text-[13px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                              className="group inline-flex items-center gap-1.5 text-[13px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                               style={{ color: "rgb(var(--accent-base))" }}
                             >
-                              {es ? "Abrir la demo →" : "Open the demo →"}
+                              {es ? "Abrir la demo" : "Open the demo"}
+                              <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                             </Link>
                           </div>
                         </>
