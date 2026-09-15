@@ -889,7 +889,8 @@ for (const pantalla of PANTALLAS) {
       if (pantalla.nombre === "escritorio" && ruta === "/features") {
         const entradas = await pagina.evaluate(async () => {
           const esperar = () => new Promise((r) => setTimeout(r, 200));
-          const todos = [...document.querySelectorAll("[data-entra]")];
+          // Con JavaScript las entradas las lleva `Aparecer.tsx` (`data-tj-ap`); sin él, `data-entra`.
+          const todos = [...document.querySelectorAll("[data-entra], [data-tj-ap]")];
           const vistos = new Set();
           const alto = document.documentElement.scrollHeight;
           for (let y = 0; y < alto; y += Math.round(window.innerHeight / 3)) {

@@ -3487,6 +3487,10 @@ html:has(.tj-visor[open]) {
   width: 100%;
   height: 100%;
   animation: tj-metricas-trazo 1.6s var(--ease-suave) both;
+  /* Capa propia: sin ella el recorte repinta el SVG entero bajo el cristal
+     en cada fotograma y el primer desplazamiento da un tirón de 0,1-0,2 s. */
+  will-change: transform, clip-path;
+  contain: strict;
 }
 .tj-metricas-linea {
   fill: none;
@@ -4121,7 +4125,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 @keyframes tj-entra-seccion {
   from {
     opacity: 0;
-    transform: translate3d(0, 20px, 0);
+    transform: translate3d(0, 44px, 0);
   }
   to {
     opacity: 1;
@@ -4244,7 +4248,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 @keyframes tj-entra-pieza {
   from {
     opacity: 0;
-    transform: translate3d(0, 14px, 0);
+    transform: translate3d(0, 30px, 0);
   }
   to {
     opacity: 1;
@@ -5119,7 +5123,7 @@ svg [data-entra="sello"] {
 /* Entrada de un desplegable anclado a su disparador: micro-elevación institucional
    y desvanecimiento acelerado por hardware (GPU 165Hz/120Hz/60Hz). */
 .tj-cae {
-  animation: tj-menu-dropdown-in 0.16s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: tj-menu-dropdown-in 0.34s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
   will-change: transform, opacity;
   transform-origin: top center;
   backface-visibility: hidden;
@@ -5127,7 +5131,7 @@ svg [data-entra="sello"] {
 @keyframes tj-menu-dropdown-in {
   from {
     opacity: 0;
-    transform: translate3d(0, -6px, 0) scale(0.985);
+    transform: translate3d(0, -10px, 0) scale(0.96);
   }
   to {
     opacity: 1;
@@ -5351,7 +5355,7 @@ html[lang="en"]:has([data-tj-404="es"]) body {
     #main-content :is(ul, ol, dl, [data-orden]):has(> :nth-child(3)):not(:has(> [data-entra])):not(.demo-window *) > * {
       animation: tj-entra-pieza linear both;
       animation-timeline: view(block);
-      animation-range: cover calc(var(--orden, 0) * 1.6%) cover calc(18% + var(--orden, 0) * 1.6%);
+      animation-range: cover calc(var(--orden, 0) * 2.4%) cover calc(24% + var(--orden, 0) * 2.4%);
     }
     #main-content :is(ul, ol, dl, [data-orden]) > :nth-child(2) { --orden: 1; }
     #main-content :is(ul, ol, dl, [data-orden]) > :nth-child(3) { --orden: 2; }
@@ -5362,7 +5366,7 @@ html[lang="en"]:has([data-tj-404="es"]) body {
     #main-content h2.t-h2 {
       animation: tj-enfoca linear both;
       animation-timeline: view(block);
-      animation-range: cover 0% cover 24%;
+      animation-range: cover 0% cover 30%;
     }
 
     .tj-escritorio {
@@ -5376,7 +5380,7 @@ html[lang="en"]:has([data-tj-404="es"]) body {
       animation-range: cover 0% cover 100%;
     }
 
-    #main-content .tj-cristal:not(.tj-cristal--denso) {
+    #main-content .tj-cristal:not(.tj-cristal--denso):not(#top *) {
       animation: tj-asienta linear both;
       animation-timeline: view(block);
       animation-range: cover 0% cover 22%;
@@ -5385,12 +5389,12 @@ html[lang="en"]:has([data-tj-404="es"]) body {
 }
 @keyframes tj-enfoca {
   from {
-    filter: blur(6px);
-    opacity: 0.35;
+    opacity: 0.1;
+    transform: translate3d(0, 22px, 0);
   }
   to {
-    filter: none;
     opacity: 1;
+    transform: none;
   }
 }
 @keyframes tj-deriva {
@@ -5411,7 +5415,7 @@ html[lang="en"]:has([data-tj-404="es"]) body {
 }
 @keyframes tj-asienta {
   from {
-    transform: translate3d(0, 28px, 0) scale(0.985);
+    transform: translate3d(0, 56px, 0) scale(0.97);
   }
   to {
     transform: none;
@@ -5456,5 +5460,150 @@ html[lang="en"]:has([data-tj-404="es"]) body {
   }
   to {
     --cuenta: var(--hasta);
+  }
+}
+
+/* ── LA PRIMERA PANTALLA SE COMPONE AL ABRIR ──────────────────────────
+   Lo que está a la vista al cargar no tiene scroll que lo anime: con
+   `view()` nace ya colocado. Aquí entra por tiempo, en cascada: etiqueta,
+   titular, entradilla, llamadas y panel. El panel de cristal sólo se
+   desplaza (una opacidad en un ancestro le quitaría el esmerilado). */
+@media (prefers-reduced-motion: no-preference) {
+  .tj-hero > .tj-container:first-child > *,
+  .tj-cabecera .tj-container > * {
+    animation: tj-carga 1.05s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-timeline: auto;
+    animation-range: normal;
+  }
+  .tj-hero > .tj-container:first-child > :nth-child(2),
+  .tj-cabecera .tj-container > :nth-child(2) { animation-delay: 0.09s; }
+  .tj-hero > .tj-container:first-child > :nth-child(3),
+  .tj-cabecera .tj-container > :nth-child(3) { animation-delay: 0.2s; }
+  .tj-hero > .tj-container:first-child > :nth-child(4),
+  .tj-cabecera .tj-container > :nth-child(4) { animation-delay: 0.31s; }
+  .tj-hero > .tj-container:first-child > :nth-child(n + 5) { animation-delay: 0.4s; }
+  .tj-hero > .tj-container:nth-child(2) {
+    animation: tj-carga-panel 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.36s both;
+    will-change: transform;
+  }
+
+  /* Los enlaces del desplegable llegan uno detrás de otro. */
+  .tj-cae [role="menuitem"] {
+    animation: tj-cae-fila 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .tj-cae [role="menuitem"]:nth-child(3) { animation-delay: 0.04s; }
+  .tj-cae [role="menuitem"]:nth-child(4) { animation-delay: 0.08s; }
+  .tj-cae [role="menuitem"]:nth-child(n + 5) { animation-delay: 0.12s; }
+
+  /* El cajón móvil: los grupos entran detrás del cajón. */
+  .tj-cajon[data-visible="true"] .tj-cajon-lista > * {
+    animation: tj-cae-fila 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+  }
+  .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(2) { animation-delay: 0.14s; }
+  .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(n + 3) { animation-delay: 0.2s; }
+
+  /* La flecha de la llamada principal empuja al pasar el ratón. */
+  .cta--primario svg {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cta--primario:hover svg {
+    transform: translateX(4px);
+  }
+  .cta--secundario::after {
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .cta--secundario:hover::after {
+    transform: translateX(5px);
+  }
+}
+@keyframes tj-carga {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 34px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes tj-carga-panel {
+  from {
+    transform: translate3d(0, 70px, 0) scale(0.965);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes tj-cae-fila {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── LA PÁGINA SE COMPONE AL DESPLAZAR (Aparecer.tsx) ─────────────────
+   Con JavaScript manda este sistema por tiempo; las entradas atadas al
+   scroll de más arriba se retiran para no animar dos veces lo mismo.
+   Sólo transform y opacity: lo mueve la tarjeta gráfica. */
+html.tj-mov #main-content section:not(#top),
+html.tj-mov [data-entra]:not(.tj-cabecera *),
+html.tj-mov #main-content :is(ul, ol, dl, [data-orden]) > *,
+html.tj-mov #main-content h2.t-h2,
+html.tj-mov #main-content .tj-cristal:not(#top *) {
+  animation: none;
+}
+[data-tj-ap="0"],
+[data-tj-ap="1"] {
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--tj-retardo, 0s),
+    transform 1.15s cubic-bezier(0.16, 1, 0.3, 1) var(--tj-retardo, 0s);
+}
+[data-tj-ap="0"] {
+  opacity: 0;
+  transform: translate3d(0, 56px, 0);
+}
+[data-tj-ap="0"][data-tj-nivel="2"] {
+  transform: translate3d(0, 32px, 0);
+}
+[data-tj-ap="0"][data-tj-solo="mueve"] {
+  opacity: 1;
+  transform: translate3d(0, 80px, 0) scale(0.96);
+}
+[data-tj-paso="1"] { --tj-retardo: 0.07s; }
+[data-tj-paso="2"] { --tj-retardo: 0.14s; }
+[data-tj-paso="3"] { --tj-retardo: 0.21s; }
+[data-tj-paso="4"] { --tj-retardo: 0.28s; }
+[data-tj-paso="5"] { --tj-retardo: 0.35s; }
+[data-tj-paso="6"] { --tj-retardo: 0.42s; }
+[data-tj-paso="7"] { --tj-retardo: 0.49s; }
+[data-tj-paso="8"] { --tj-retardo: 0.56s; }
+/* Animación nueva, no la de scroll reutilizada: Chrome deja el reloj en
+   negativo al pasar una animación de `view()` a tiempo y no llega a contar. */
+html.tj-mov .tj-cifra-cuenta {
+  animation: none;
+}
+html.tj-mov [data-tj-ap="0"] .tj-cifra-cuenta {
+  --cuenta: 0;
+}
+html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
+  animation: tj-cuenta-tiempo 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+}
+@keyframes tj-cuenta-tiempo {
+  from {
+    --cuenta: 0;
+  }
+  to {
+    --cuenta: var(--hasta);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tj-ap] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
   }
 }

@@ -242,9 +242,18 @@ export function EquityProjector() {
         ? Math.pow(finalBalance / startBalance, 1 / years) - 1
         : -1;
 
-    // Drawdown estimado al 99% de confianza
-    const maxConsecLosses = lr > 0 && lr < 1 ? Math.log(0.01) / Math.log(lr) : 0;
-    const estMaxDDpct = maxConsecLosses * avgLossR * (riskPct / 100) * 100;
+    // Peor racha al 99 % en todo el horizonte: P(racha >= r en N ops) ~ 1 - e^(-N·p·q^r).
+    // La caída sale de esa racha, compuesta si se reinvierte; es un suelo, no el máximo.
+    const totalTrades = tradesPerYear * years;
+    const maxConsecLosses =
+      lr > 0 && lr < 1 && wr > 0 && totalTrades > 0
+        ? Math.max(1, Math.log(-Math.log(0.99) / (totalTrades * wr)) / Math.log(lr))
+        : 0;
+    const perdidaPorOp = Math.min(0.99, avgLossR * (riskPct / 100));
+    const estMaxDDpct =
+      reinvestMode === "compound"
+        ? (1 - Math.pow(1 - perdidaPorOp, maxConsecLosses)) * 100
+        : Math.min(100, maxConsecLosses * perdidaPorOp * 100);
 
     // Tiempo para duplicar capital
     let monthsToDouble: number | null = null;
@@ -626,8 +635,8 @@ export function EquityProjector() {
             }}
           >
             {es
-              ? "Proyecta tu capital a partir de tu expectancy, tu frecuencia, la fricción del mercado y el interés compuesto, con el margen de variación que cabe esperar. Es aritmética, no una promesa."
-              : "Project your capital from your expectancy, trading frequency, market friction and compounding, with the range of variation to expect. It is arithmetic, not a promise."}
+              ? "Proyecta tu capital a partir de tu expectancy, tu frecuencia, la fricción del mercado y el interés compuesto, con el margen de variación que cabe esperar. Es un cálculo, no una promesa."
+              : "Project your capital from your expectancy, trading frequency, market friction and compounding, with the range of variation to expect. It is a calculation, not a promise."}
           </p>
         </div>
 
@@ -1590,7 +1599,9 @@ export function EquityProjector() {
               {/* Botón de Copiar Resumen y Footer */}
               <div className="pt-3 border-t border-[rgb(var(--divider)/0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span className="text-[12px] tnum text-[var(--ink-3)]">
-                  {es ? "Proyección aritmética con banda de varianza del 80\u00a0%. No es una promesa." : "Arithmetic projection with an 80% variance band. Not a promise."}
+                  {es
+                    ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"} y banda de varianza del 80\u00a0%. No es una promesa.`
+                    : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection with an 80% variance band. Not a promise.`}
                 </span>
 
                 <button
