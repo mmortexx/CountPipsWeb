@@ -186,7 +186,7 @@ export function DisciplineCost() {
                       type="button"
                       aria-pressed={active}
                       onClick={() => aplicarPreset(p)}
-                      className={`toque-comodo h-8 px-3 rounded-[8px] text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                      className={`toque-comodo h-8 px-3 rounded-[4px] text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                         active
                           ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold shadow-sm"
                           : "border border-transparent bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-secondary hover:text-primary"
@@ -200,7 +200,7 @@ export function DisciplineCost() {
             </div>
 
             {/* Controles interactivos */}
-            <div className="rounded-[14px] bg-[var(--surface)] p-5 mb-6 space-y-4">
+            <div className="rounded-[12px] bg-[var(--surface)] p-5 mb-6 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
@@ -276,7 +276,7 @@ export function DisciplineCost() {
                       min={0}
                       value={inPlanExp}
                       onChange={(e) => setInPlanExp(Number(e.target.value))}
-                      className="w-full h-9 rounded-[8px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-primary tnum outline-none focus:border-[rgb(var(--accent-base))]"
+                      className="w-full h-9 rounded-[4px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-primary tnum outline-none focus:border-[rgb(var(--accent-base))]"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
                   </div>
@@ -294,7 +294,7 @@ export function DisciplineCost() {
                       max={0}
                       value={offPlanExp}
                       onChange={(e) => setOffPlanExp(Number(e.target.value))}
-                      className="w-full h-9 rounded-[8px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-[rgb(var(--pnl-neg))] tnum outline-none focus:border-[rgb(var(--pnl-neg))]"
+                      className="w-full h-9 rounded-[4px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-[rgb(var(--pnl-neg))] tnum outline-none focus:border-[rgb(var(--pnl-neg))]"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
                   </div>
@@ -304,7 +304,7 @@ export function DisciplineCost() {
 
             {/* Tabla Expectancy interactiva */}
             <div
-              className="rounded-[14px] overflow-hidden bg-[var(--surface)]"
+              className="rounded-[12px] overflow-hidden bg-[var(--surface)]"
             >
               <div className="overflow-x-auto custom-scroll">
                 <div className="grid grid-cols-4 min-w-[400px] border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
@@ -364,7 +364,7 @@ export function DisciplineCost() {
 
           {/* Factura Dinámica */}
           <div
-            className="relative p-6 rounded-[14px] bg-[var(--surface)]"
+            className="relative p-6 rounded-[12px] bg-[var(--surface)]"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.08)]">
               <div>
@@ -376,7 +376,7 @@ export function DisciplineCost() {
                 </span>
               </div>
               <span
-                className="text-[12px] px-2.5 py-1 rounded-[8px] bg-[var(--chip)] text-secondary border border-transparent self-start sm:self-auto"
+                className="text-[12px] px-2.5 py-1 rounded-[4px] bg-[var(--chip)] text-secondary border border-transparent self-start sm:self-auto"
               >
                 {es ? "Estimación" : "Estimate"}
               </span>
@@ -505,7 +505,7 @@ export function DisciplineCost() {
                   <span className="text-[12px] font-semibold text-[rgb(var(--accent-base))]">
                     {es ? "Si evitaras parte de la fuga" : "If you avoided part of the leak"}
                   </span>
-                  <span className="text-[11px] tnum font-bold px-2 py-0.5 rounded-[8px] bg-[var(--chip)] text-[rgb(var(--accent-base))]">
+                  <span className="text-[11px] tnum font-bold px-2 py-0.5 rounded-[4px] bg-[var(--chip)] text-[rgb(var(--accent-base))]">
                     {es ? "Escenario" : "Scenario"}
                   </span>
                 </div>

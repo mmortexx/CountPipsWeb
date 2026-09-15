@@ -265,7 +265,7 @@ export function RiskCalculator() {
           onChange(Number.isFinite(v) ? v : 0);
         }}
         aria-label={ariaLabel}
-        className="tnum w-full min-h-[44px] rounded-[8px] px-3 text-base font-semibold text-primary bg-[var(--raised)] border border-transparent focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] transition-colors outline-none"
+        className="tnum w-full min-h-[44px] rounded-[4px] px-3 text-base font-semibold text-primary bg-[var(--raised)] border border-transparent focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] transition-colors outline-none"
       />
     </label>
   );
@@ -367,7 +367,7 @@ export function RiskCalculator() {
                     key={fc.id}
                     type="button"
                     onClick={() => handleFuturesChange(fc.id)}
-                    className={`h-7 px-2.5 rounded-[8px] text-xs tnum transition-all ${
+                    className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
                       futuresContractId === fc.id
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                         : "bg-[rgb(var(--divider)/0.04)] border border-transparent text-secondary hover:text-primary"
@@ -396,7 +396,7 @@ export function RiskCalculator() {
                     key={lot.id}
                     type="button"
                     onClick={() => setForexLotType(lot.id)}
-                    className={`h-7 px-2.5 rounded-[8px] text-xs tnum transition-all ${
+                    className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
                       forexLotType === lot.id
                         ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                         : "bg-[rgb(var(--divider)/0.04)] border border-transparent text-secondary hover:text-primary"
@@ -481,7 +481,7 @@ export function RiskCalculator() {
 
         {/* Tarjeta calculadora */}
         <div
-          className="tj-paper tj-paper-glow relative p-6 rounded-[8px]"
+          className="tj-paper tj-paper-glow relative p-6 rounded-[12px]"
         >
           {/* Slider de riesgo */}
           <div className="mb-5">
@@ -595,7 +595,7 @@ export function RiskCalculator() {
                   type="button"
                   disabled={c.halfKellyPct <= 0}
                   onClick={() => c.halfKellyPct > 0 && setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
-                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium rounded-[8px] bg-[var(--raised)] text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium rounded-[4px] bg-[var(--raised)] text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {c.halfKellyPct <= 0
                     ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
@@ -626,7 +626,7 @@ export function RiskCalculator() {
             >
               <span
                 aria-hidden
-                className="inline-flex items-center justify-center rounded-[8px] w-4 h-4 font-bold text-[11px]"
+                className="inline-flex items-center justify-center rounded-[2px] w-4 h-4 font-bold text-[11px]"
                 style={{
                   background: c.direction === "short"
                     ? "color-mix(in oklab, rgb(var(--pnl-neg)) 16%, transparent)"

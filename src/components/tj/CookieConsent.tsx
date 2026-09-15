@@ -207,7 +207,7 @@ export function CookieConsent() {
             //
             // z-50 sobre BackToTop (z-40). safe-bottom para el home
             // indicator de iOS en el sheet móvil.
-            className="tj-entra-abajo tj-cristal tj-cristal--denso z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[4px] p-4 md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[8px] md:p-5"
+            className="tj-entra-abajo tj-cristal tj-cristal--denso z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[4px] p-4 md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[12px] md:p-5"
           >
             <div className="flex items-start gap-2.5 md:gap-3">
               <CookieIcon />
@@ -244,14 +244,14 @@ export function CookieConsent() {
               <button
                 type="button"
                 onClick={() => choose("declined")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-[10px] text-[14px] font-medium text-secondary bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:bg-[color-mix(in_srgb,var(--ink)_10%,transparent)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium text-secondary bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:bg-[color-mix(in_srgb,var(--ink)_10%,transparent)] hover:text-primary active:scale-[0.98] transition-[background,color,transform] duration-150"
               >
                 {es ? "Solo necesarias" : "Necessary only"}
               </button>
               <button
                 type="button"
                 onClick={() => choose("accepted")}
-                className="min-h-[44px] w-full px-3 py-2 rounded-[10px] text-[14px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
+                className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 active:scale-[0.98] transition-[filter,transform] duration-150"
               >
                 {es ? "Aceptar analítica" : "Accept analytics"}
               </button>

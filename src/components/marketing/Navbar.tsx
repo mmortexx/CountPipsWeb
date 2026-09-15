@@ -877,7 +877,7 @@ export function Navbar() {
                     }}
                     // Cristal: la página se ve difuminada detrás. `position` en línea porque
                     // una regla posterior de globals.css pisaría la utilidad `absolute`.
-                    className="tj-cae tj-cristal tj-cristal--denso absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[8px] p-0"
+                    className="tj-cae tj-cristal tj-cristal--denso absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[12px] p-0"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",

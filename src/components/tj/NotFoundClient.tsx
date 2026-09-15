@@ -125,7 +125,7 @@ export function NotFoundClient() {
                   : "Search a metric or a question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              className="w-full h-14 rounded-[8px] bg-transparent pl-11 pr-28 text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
+              className="w-full h-14 rounded-[4px] bg-transparent pl-11 pr-28 text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
             />
             <button
               type="submit"

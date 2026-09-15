@@ -70,7 +70,7 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <CalendarDays size={15} aria-hidden />
               </span>
@@ -177,7 +177,7 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <LineChart size={15} aria-hidden />
               </span>
@@ -286,7 +286,7 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <BookOpen size={15} aria-hidden />
               </span>
@@ -353,7 +353,7 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <NotebookPen size={15} aria-hidden />
               </span>
@@ -390,7 +390,7 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
           >
             <div className="flex items-center gap-2 mb-2">
               <span
-                className="inline-grid place-items-center rounded-[6px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
+                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
               >
                 <Layers size={15} aria-hidden />
               </span>

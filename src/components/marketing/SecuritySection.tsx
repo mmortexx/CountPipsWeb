@@ -100,7 +100,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                 className="tj-paper tj-hoja p-6 sm:p-7"
               >
                 <span
-                  className="w-10 h-10 rounded-[6px] bg-[var(--chip)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
+                  className="w-10 h-10 rounded-[4px] bg-[var(--chip)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
                 >
                   <Icon size={18} aria-hidden />
                 </span>

@@ -256,7 +256,7 @@ export function BetaApplication() {
 
   if (status === "success") {
     return (
-      <div ref={exitoRef} tabIndex={-1} className="rounded-[16px] bg-[var(--surface)] p-7 sm:p-10 outline-none" role="status">
+      <div ref={exitoRef} tabIndex={-1} className="rounded-[12px] bg-[var(--surface)] p-7 sm:p-10 outline-none" role="status">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
           <span className="grid size-14 place-items-center rounded-[4px] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
             <Check size={26} aria-hidden />
@@ -285,7 +285,7 @@ export function BetaApplication() {
         }
       }}
       noValidate
-      className="rounded-[16px] bg-[var(--surface)] p-5 sm:p-9"
+      className="rounded-[12px] bg-[var(--surface)] p-5 sm:p-9"
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>
@@ -317,7 +317,7 @@ export function BetaApplication() {
               {(["manual", "prop"] as const).map((value) => {
                 const active = profile === value;
                 return (
-                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[8px] border px-3.5 text-sm transition-colors ${active ? "border-[var(--ink)] bg-[var(--raised)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-transparent bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"}`}>
+                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[4px] border px-3.5 text-sm transition-colors ${active ? "border-[var(--ink)] bg-[var(--raised)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-transparent bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"}`}>
                     <input ref={value === "manual" ? profileRef : undefined} type="radio" name="profile" value={value} checked={active} onChange={() => { setProfile(value); trackEvent("beta_profile_selected", { profile: value }); }} className="accent-[rgb(var(--accent-base))]" />
                     {value === "manual" ? es ? "Operativa manual" : "Manual trading" : es ? "Prop firm / evaluación" : "Prop firm / evaluation"}
                   </label>

@@ -241,7 +241,7 @@ export function CommissionDragCalculator() {
                     type="button"
                     onClick={() => handleSelectInstrument(item.id)}
                     aria-pressed={selectedInstId === item.id}
-                    className={`h-10 px-3 rounded-[10px] text-[13px] font-semibold transition-colors text-left flex items-center justify-between ${
+                    className={`h-10 px-3 rounded-[4px] text-[13px] font-semibold transition-colors text-left flex items-center justify-between ${
                       selectedInstId === item.id
                         ? "bg-[var(--ink)] text-[var(--bg)]"
                         : "bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"
@@ -327,7 +327,7 @@ export function CommissionDragCalculator() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-[10px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
+                <div className="rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
                   <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Comisión ida y vuelta" : "Round-turn fee"}
                   </span>
@@ -344,7 +344,7 @@ export function CommissionDragCalculator() {
                   </div>
                 </div>
 
-                <div className="rounded-[10px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
+                <div className="rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
                   <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Deslizamiento medio" : "Average slippage"}
                   </span>
@@ -366,7 +366,7 @@ export function CommissionDragCalculator() {
           </div>
 
           {/* Columna Derecha: Tarjeta de Resultados */}
-          <div className="rounded-[16px] bg-[var(--surface)] p-6 sm:p-7 lg:sticky lg:top-24">
+          <div className="rounded-[12px] bg-[var(--surface)] p-6 sm:p-7 lg:sticky lg:top-24">
             <span className="text-[13px] font-medium text-secondary block mb-4">
               {es ? "En un año" : "Over a year"}
             </span>

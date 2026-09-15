@@ -298,7 +298,7 @@ export function EdgeSignificanceChecker() {
             </div>
             <div className="flex items-baseline gap-3 mt-1 mb-2">
               <span
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-full"
+                className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px]"
                 style={{ background: `color-mix(in oklab, ${verdict.color} 11%, transparent)` }}
               >
                 <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: verdict.color }} />

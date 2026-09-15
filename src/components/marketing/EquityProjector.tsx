@@ -633,7 +633,7 @@ export function EquityProjector() {
 
         {/* ══════════ COCKPIT INSTITUCIONAL ENCLOSURE ══════════ */}
         <div
-          className="w-full rounded-[16px] overflow-hidden bg-[var(--surface)]"
+          className="w-full rounded-[12px] overflow-hidden bg-[var(--surface)]"
         >
           {/* Cabecera de la herramienta. NO es la barra de titulo de
               una ventana: esto no es una pantalla del programa. */}
@@ -674,7 +674,7 @@ export function EquityProjector() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => applyPreset(p.id)}
-                    className="toque-comodo px-2.5 py-1 rounded-[8px] text-[12px] tnum transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
+                    className="toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] tnum transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
                     style={{
                       background: active
                         ? "rgb(var(--accent-base))"
@@ -705,7 +705,7 @@ export function EquityProjector() {
                 type="button"
                 aria-pressed={selectedPreset === "custom"}
                 onClick={() => setSelectedPreset("custom")}
-                className="toque-comodo px-2.5 py-1 rounded-[8px] text-[12px] tnum transition-all cursor-pointer whitespace-nowrap"
+                className="toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] tnum transition-all cursor-pointer whitespace-nowrap"
                 style={{
                   background:
                     selectedPreset === "custom"
@@ -828,7 +828,7 @@ export function EquityProjector() {
                     <span className="tnum text-tertiary font-normal">02</span> {es ? "Ventaja" : "Edge"}
                   </span>
                   <span
-                    className="text-[11px] tnum font-bold px-2 py-0.5 rounded-[8px] shadow-sm"
+                    className="text-[11px] tnum font-bold px-2 py-0.5 rounded-[4px] shadow-sm"
                     style={{
                       color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                       background: c.hasEdge
@@ -1049,7 +1049,7 @@ export function EquityProjector() {
                 {/* Badge de Convicción */}
                 <div className="text-left sm:text-right">
                   <div
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-[12px] font-medium"
                     style={{
                       background: c.hasEdge
                         ? "color-mix(in oklab, rgb(var(--pnl-pos)) 11%, transparent)"
@@ -1095,11 +1095,11 @@ export function EquityProjector() {
 
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                <div className="flex items-center gap-1 p-0.5 rounded-[8px] bg-[rgb(var(--divider)/0.10)] border border-transparent">
+                <div className="flex items-center gap-1 p-0.5 rounded-[6px] bg-[rgb(var(--divider)/0.10)] border border-transparent">
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}
-                    className="toque-comodo px-3 py-1 rounded-[8px] text-[12px] tnum transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo px-3 py-1 rounded-[4px] text-[12px] tnum transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "chart" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "chart" ? "var(--ink)" : "var(--ink-3)",
@@ -1113,7 +1113,7 @@ export function EquityProjector() {
                   <button
                     type="button"
                     onClick={() => setViewTab("table")}
-                    className="toque-comodo px-3 py-1 rounded-[8px] text-[12px] tnum transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo px-3 py-1 rounded-[4px] text-[12px] tnum transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: viewTab === "table" ? "var(--surface-2)" : "transparent",
                       color: viewTab === "table" ? "var(--ink)" : "var(--ink-3)",
@@ -1130,7 +1130,7 @@ export function EquityProjector() {
                   <button
                     type="button"
                     onClick={() => setShowConfidenceCone(!showConfidenceCone)}
-                    className="toque-comodo text-[12px] tnum px-2.5 py-1 rounded-[8px] transition-all flex items-center gap-1.5 cursor-pointer"
+                    className="toque-comodo text-[12px] tnum px-2.5 py-1 rounded-[4px] transition-all flex items-center gap-1.5 cursor-pointer"
                     style={{
                       background: showConfidenceCone
                         ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"

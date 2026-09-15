@@ -1836,7 +1836,7 @@ textarea:focus-visible,
   grid-auto-columns: 1fr;
   gap: 2px;
   padding: 3px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: color-mix(in srgb, var(--ink) 5.5%, transparent);
 }
 .tj-segmentado > * {
@@ -1846,7 +1846,7 @@ textarea:focus-visible,
   justify-content: center;
   gap: 0.35rem;
   padding: 0 0.625rem;
-  border-radius: 7px;
+  border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.15;
@@ -3242,7 +3242,7 @@ html:has(.tj-visor[open]) {
 .tj-paper-glow {
   background-color: var(--surface) !important;
   border-color: transparent !important;
-  border-radius: 14px !important;
+  border-radius: 12px !important;
 }
 .tj-pie {
   background-image: linear-gradient(to bottom, transparent, var(--surface) 7rem);
@@ -3813,7 +3813,7 @@ html:has(.tj-visor[open]) {
 .tj-metricas-ratio {
   min-width: 0;
   padding: 0.875rem;
-  border-radius: 14px;
+  border-radius: 8px;
   transition: background-color 0.3s var(--ease-suave);
 }
 .tj-metricas-ratio:hover,
@@ -5314,4 +5314,8 @@ html[lang="en"]:has([data-tj-404="es"]) body {
 }
 .tj-en-herramienta span[data-titular-herramienta] { display: none; }
 .tj-en-herramienta :has(> span[data-titular-herramienta]:only-child) { display: none; }
-.tj-en-herramienta h2[data-titular-herramienta] + p { margin-top: 0; }
+/* La cabecera de la página ya dice lo que hace la herramienta: la entradilla
+   de la calculadora repetía lo mismo con otras palabras. */
+.tj-en-herramienta h2[data-titular-herramienta] + p { display: none; }
+/* Un envoltorio que solo contenía titular y entradilla ya no ocupa su celda. */
+.tj-en-herramienta :has(> h2[data-titular-herramienta]):not(:has(> :not(h2, p, span))) { display: contents; }

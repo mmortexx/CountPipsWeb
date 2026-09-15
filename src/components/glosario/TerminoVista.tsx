@@ -71,7 +71,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           {/* Fórmula, cuando el término es cuantitativo */}
           {formula && (
             <Reveal delay={0.08}>
-              <figure className="m-0 mt-9 rounded-[18px] bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] px-5 py-6 sm:px-7">
+              <figure className="m-0 mt-9 rounded-[12px] bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] px-5 py-6 sm:px-7">
                 <p className="eyebrow m-0">{es ? "Fórmula" : "Formula"}</p>
                 <p className="m-0 mt-4 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary sm:text-[17px]">
                   {es ? formula.formulaEs : formula.formulaEn}
@@ -88,7 +88,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             <Reveal delay={0.1}>
               <Link
                 href={herramienta}
-                className="group -mx-4 mt-6 flex items-center justify-between gap-4 rounded-[14px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                className="group -mx-4 mt-6 flex items-center justify-between gap-4 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
                 <span className="min-w-0">
                   <span className="block text-[12px] uppercase tracking-[0.08em] text-tertiary">
@@ -137,7 +137,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                     <li key={t.slug}>
                       <Link
                         href={`/glosario/${t.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[14px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
+                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
                       >
                         <span
                           lang="en"

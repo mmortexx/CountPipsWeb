@@ -147,7 +147,7 @@ export function SessionClock() {
                 : "The four reference sessions of the currency market, their overlaps and the most watched opens, with daylight saving already applied."}
             </p>
           </div>
-          <div>
+          <div className="justify-self-start">
             <div className="mb-2 text-[12px] text-tertiary">{es ? "Ver horas en" : "Show times in"}</div>
             <div className="tj-segmentado" role="group" aria-label={es ? "Referencia horaria" : "Time reference"}>
               {referencias.map((r) => (

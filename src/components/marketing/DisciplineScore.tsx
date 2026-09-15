@@ -492,7 +492,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                             tabIndex={enfocable ? 0 : -1}
                             onClick={() => setAnswer(qi, oi)}
                             onKeyDown={(e) => onKeyOption(e, qi, oi, q.options.length)}
-                            className="text-left rounded-[10px] transition-[background-color,color] duration-200 hover:text-[var(--ink)]"
+                            className="text-left rounded-[4px] transition-[background-color,color] duration-200 hover:text-[var(--ink)]"
                             style={{
                               minHeight: 48,
                               padding: "12px 14px",
@@ -525,7 +525,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 type="button"
                 onClick={() => setActual((i) => Math.max(0, i - 1))}
                 disabled={actual === 0}
-                className="inline-flex items-center gap-2 rounded-[8px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
                 style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
                          color: "var(--ink-2)", border: "1px solid transparent" }}
               >
@@ -543,7 +543,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   /* Se puede seguir sin responder: obligar a contestar
                      para avanzar convierte un diagnóstico en un peaje.
                      El resultado ya avisa de cuántas faltan. */
-                  className="inline-flex items-center gap-2 rounded-[8px] transition-colors duration-200"
+                  className="inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200"
                   style={{ minHeight: 44, padding: "10px 18px", fontSize: 14, fontWeight: 600,
                            cursor: "pointer", color: "rgb(var(--accent-ink))",
                            background: "rgb(var(--accent-base))" }}
@@ -561,7 +561,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               <button
                 type="button"
                 onClick={reset}
-                className="mt-5 inline-flex items-center gap-2 rounded-[8px]"
+                className="mt-5 inline-flex items-center gap-2 rounded-[4px]"
                 style={{
                   minHeight: 44,
                   padding: "10px 18px",
@@ -579,7 +579,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
 
           {/* ── Resultado ────────────────────────────────────────────── */}
           <div className="lg:sticky lg:top-24">
-            <div className="tj-paper tj-paper-glow rounded-[8px] p-5">
+            <div className="tj-paper tj-paper-glow rounded-[12px] p-5">
               <div
                 className="tnum mb-4"
                 style={{ fontSize: 12, color: "var(--ink-3)" }}
@@ -606,7 +606,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 </span>
                 {level && (
                   <span
-                    className="tnum ml-auto px-2.5 py-1 rounded-[8px]"
+                    className="tnum ml-auto px-2.5 py-1 rounded-[4px]"
                     style={{
                       fontSize: 12,
                       fontWeight: 700,
