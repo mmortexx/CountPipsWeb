@@ -341,7 +341,7 @@ export function RMultipleSimulator() {
             <span className="mb-2 block tnum text-[12px] text-tertiary">
               {es ? "Perfiles de ejemplo" : "Example profiles"}
             </span>
-            <div className="tj-segmentado tj-segmentado-apila" role="group">
+            <div className="tj-segmentado tj-segmentado-rejilla" role="group">
               {[
                 { label: es ? "Evaluación Prop" : "Prop Challenge", nota: es ? "0,75 % riesgo" : "0.75% risk", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
                 { label: es ? "Seguimiento de tendencia" : "Trend Following", nota: es ? "42 % acierto · 3,2 R" : "42% hit · 3.2R", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },

@@ -1876,6 +1876,18 @@ textarea:focus-visible,
     grid-auto-columns: 1fr;
   }
 }
+.tj-segmentado-rejilla {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.tj-segmentado-rejilla > * {
+  padding-block: 0.375rem;
+}
+@media (min-width: 640px) {
+  .tj-segmentado-rejilla {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
 .tj-segmentado > *:hover:not([aria-pressed="true"]):not([data-activo="true"]) {
   color: var(--ink);
 }
