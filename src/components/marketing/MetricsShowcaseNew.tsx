@@ -5,7 +5,7 @@ import type { Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n";
 import { Escritorio } from "@/components/tj/Escritorio";
 import type { CifrasMuestra } from "@/lib/trading/cifras-muestra";
-import { fmtDate, fmtMoney, fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
+import { fmtDate, fmtDiaMes, fmtMoney, fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
 
 /* Toda cifra sale de `cifrasMuestra()`, calculada al construir sobre las
    mismas operaciones deterministas de /demo. Nada escrito a mano. */
@@ -27,17 +27,10 @@ function preparar(c: CifrasMuestra) {
   const TECHOS = c.techos;
   const FECHAS = c.fechas.map((t) => (t === null ? null : new Date(t)));
   const N = SALDOS.length;
-  const S_MIN = Math.min(...SALDOS);
-  const S_MAX = Math.max(...SALDOS);
-  const MARGEN = (S_MAX - S_MIN || 1) * 0.1;
-  const Y_MIN = S_MIN - MARGEN;
-  const Y_MAX = S_MAX + MARGEN;
-  const px = (i: number) => (N > 1 ? (i / (N - 1)) * W : 0);
-  const py = (v: number) => (1 - (v - Y_MIN) / (Y_MAX - Y_MIN)) * H;
-  const puntos = (serie: number[]) => serie.map((v, i) => `${px(i).toFixed(1)},${py(v).toFixed(1)}`);
-  const LINEA = `M${puntos(SALDOS).join("L")}`;
-  const AREA = `${LINEA}L${W},${H}L0,${H}Z`;
-  const BAJO_AGUA = `M${puntos(TECHOS).join("L")}L${puntos(SALDOS).reverse().join("L")}Z`;
+  /* El eje X es de fechas, como en la app: el punto inicial toma la fecha de la primera operación. */
+  const T = c.fechas.map((t, i) => t ?? c.fechas.find((x, j) => j > i && x !== null) ?? 0);
+  const REND = SALDOS.map((v) => v - INICIAL);
+  const TECHO_REND = TECHOS.map((v) => v - INICIAL);
 
   let VALLE = 0;
   let peor = 0;
@@ -50,7 +43,7 @@ function preparar(c: CifrasMuestra) {
   let CIMA = VALLE;
   while (CIMA > 0 && SALDOS[CIMA] < TECHOS[VALLE] - 1e-6) CIMA--;
 
-  return { BINS, TOTAL_BINS, MAX_BIN, MODA, R_LO, enR, INICIAL, SALDOS, TECHOS, FECHAS, N, px, py, LINEA, AREA, BAJO_AGUA, VALLE, CIMA, METRICS: c.m };
+  return { BINS, TOTAL_BINS, MAX_BIN, MODA, R_LO, enR, INICIAL, SALDOS, TECHOS, FECHAS, N, T, REND, TECHO_REND, VALLE, CIMA, METRICS: c.m };
 }
 
 type Grafico = ReturnType<typeof preparar>;
@@ -92,14 +85,76 @@ function Lectura({ rotulo, cifra, detalle, tono }: { rotulo: string; cifra: stri
   );
 }
 
+/** Marcas «redondas» del eje de dinero: pasos de 1, 2, 2,5 o 5 por potencia de diez. */
+function marcasDinero(lo: number, hi: number, objetivo = 4) {
+  const bruto = (hi - lo) / objetivo || 1;
+  const mag = 10 ** Math.floor(Math.log10(bruto));
+  const paso = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((x) => x >= bruto) ?? bruto;
+  const out: number[] = [];
+  for (let v = Math.ceil(lo / paso) * paso; v <= hi + paso * 1e-6; v += paso) out.push(Math.round(v * 100) / 100);
+  return out;
+}
+
+/** Día 1 y 15 de cada mes, como el eje de la app; si no caben, solo el día 1. */
+function marcasFecha(t0: number, t1: number) {
+  const out: number[] = [];
+  const d = new Date(t0);
+  for (let y = d.getUTCFullYear(), m = d.getUTCMonth(); Date.UTC(y, m, 1) <= t1; m++) {
+    for (const dia of [1, 15]) {
+      const t = Date.UTC(y, m, dia);
+      if (t >= t0 && t <= t1) out.push(t);
+    }
+  }
+  return out.length > 14 ? out.filter((t) => new Date(t).getUTCDate() === 1) : out;
+}
+
+type Series = { rend: boolean; balance: boolean };
+
+/**
+ * La curva del Resumen de la app: rendimiento acumulado desde 0 con halo y
+ * punto final, balance en azul discontinuo, la caída sombreada en rojo, ejes
+ * en «L» con dinero y fechas, rejilla solo horizontal y una casilla por serie.
+ */
 function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; enfoque: Enfoque }) {
-  const { INICIAL, SALDOS, TECHOS, FECHAS, N, px, py, LINEA, AREA, BAJO_AGUA, VALLE, CIMA, METRICS } = g;
+  const { INICIAL, SALDOS, TECHOS, FECHAS, N, T, REND, TECHO_REND, VALLE, CIMA, METRICS } = g;
   const [i, setI] = useState<number | null>(null);
+  const [series, setSeries] = useState<Series>({ rend: true, balance: true });
   const k = i ?? N - 1;
   const saldo = SALDOS[k];
   const pnl = saldo - INICIAL;
   const dd = TECHOS[k] > 0 ? (TECHOS[k] - saldo) / TECHOS[k] : 0;
   const fecha = FECHAS[k];
+
+  const geo = useMemo(() => {
+    const visibles = [...(series.rend ? REND : []), ...(series.balance ? SALDOS : [])];
+    const lo = Math.min(...visibles);
+    const hi = Math.max(...visibles);
+    const margen = (hi - lo || 1) * 0.06;
+    const yMin = lo - margen;
+    const yMax = hi + margen;
+    const t0 = T[0];
+    const t1 = T[N - 1];
+    const px = (j: number) => (t1 > t0 ? ((T[j] - t0) / (t1 - t0)) * W : (j / Math.max(1, N - 1)) * W);
+    const py = (v: number) => (1 - (v - yMin) / (yMax - yMin)) * H;
+    const traza = (serie: number[]) => serie.map((v, j) => `${px(j).toFixed(1)},${py(v).toFixed(1)}`);
+    return {
+      px,
+      py,
+      rend: `M${traza(REND).join("L")}`,
+      balance: `M${traza(SALDOS).join("L")}`,
+      caida: `M${traza(TECHO_REND).join("L")}L${traza(REND).reverse().join("L")}Z`,
+      marcasY: marcasDinero(yMin, yMax).filter((v) => v >= yMin && v <= yMax),
+      marcasX: marcasFecha(t0, t1)
+        .map((t) => ({ t, x: t1 > t0 ? ((t - t0) / (t1 - t0)) * 100 : 0 }))
+        .filter(({ x }) => x <= 97),
+    };
+  }, [series, REND, SALDOS, TECHO_REND, T, N]);
+
+  const alternar = (clave: keyof Series) =>
+    setSeries((s) => {
+      const siguiente = { ...s, [clave]: !s[clave] };
+      return siguiente.rend || siguiente.balance ? siguiente : s;
+    });
 
   const rotulo =
     i === null
@@ -117,76 +172,100 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
       ? es
         ? "Punto de partida"
         : "Starting point"
-      : `${fmtMoney(pnl, lang, { sign: true, compact: true })} · ${pnl >= 0 ? "+" : ""}${fmtPct(pnl / INICIAL, lang, 1)}${
+      : `${es ? "Rendimiento" : "Performance"} ${fmtMoney(pnl, lang, { sign: true, compact: true })} · ${pnl >= 0 ? "+" : ""}${fmtPct(pnl / INICIAL, lang, 1)}${
           dd > 0.0005 ? ` · DD −${fmtPct(dd, lang, 1)}` : es ? " · en máximos" : " · at highs"
         }`;
 
   const mover = (e: PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
-    setI(Math.round(acotar((e.clientX - r.left) / r.width, 1) * (N - 1)));
+    const x = acotar((e.clientX - r.left) / r.width, 1) * W;
+    let mejor = 0;
+    for (let j = 1; j < N; j++) if (Math.abs(geo.px(j) - x) < Math.abs(geo.px(mejor) - x)) mejor = j;
+    setI(mejor);
   };
 
-  const inicialY = (py(INICIAL) / H) * 100;
   const verDd = enfoque === "maxDd";
+  const xPct = (j: number) => `${(geo.px(j) / W) * 100}%`;
+  const yPct = (v: number) => `${(geo.py(v) / H) * 100}%`;
+  const leyenda: { clave: keyof Series; l: string }[] = [
+    { clave: "rend", l: es ? "Rendimiento" : "Performance" },
+    { clave: "balance", l: "Balance" },
+  ];
 
   return (
     <>
-      <Lectura rotulo={rotulo} cifra={fmtMoney(saldo, lang, { compact: true })} detalle={detalle} tono={pnl < 0 ? "rgb(var(--pnl-neg))" : undefined} />
-      <div
-        className="tj-metricas-lienzo"
-        tabIndex={0}
-        role="group"
-        aria-label={
-          es
-            ? `Curva de capital de ${N - 1} operaciones de muestra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa las flechas para recorrerla.`
-            : `Equity curve of ${N - 1} sample trades: from ${fmtMoney(INICIAL, lang, { compact: true })} to ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, max drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use the arrow keys to explore.`
-        }
-        data-activo={i !== null ? "true" : undefined}
-        onPointerMove={mover}
-        onPointerDown={mover}
-        onPointerLeave={() => setI(null)}
-        onKeyDown={(e) => teclado(e, i, N - 1, setI)}
-        onBlur={() => setI(null)}
-      >
-        <div
-          aria-hidden
-          className="tj-metricas-banda"
-          data-visible={verDd ? "true" : undefined}
-          style={{ left: `${(px(CIMA) / W) * 100}%`, width: `${((px(VALLE) - px(CIMA)) / W) * 100}%` }}
-        >
-          <span className="tnum">
-            {es ? "Drawdown máx." : "Max drawdown"} −{fmtPct(METRICS.maxDrawdownPct, lang, 1)}
-          </span>
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <Lectura rotulo={rotulo} cifra={fmtMoney(saldo, lang, { compact: true })} detalle={detalle} tono={pnl < 0 ? "rgb(var(--pnl-neg))" : undefined} />
+        <div className="tj-curva-leyenda" role="group" aria-label={es ? "Series del gráfico" : "Chart series"}>
+          {leyenda.map(({ clave, l }) => (
+            <label key={clave} data-serie={clave}>
+              <input type="checkbox" checked={series[clave]} onChange={() => alternar(clave)} />
+              <span className="tj-curva-muestra" aria-hidden />
+              {l}
+            </label>
+          ))}
         </div>
-        <div aria-hidden className="tj-metricas-base" style={{ top: `${inicialY}%` }}>
-          <span className="tnum">{fmtMoney(INICIAL, lang, { compact: true })}</span>
-        </div>
-        <svg aria-hidden className="tj-metricas-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="tj-metricas-relleno" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" className="tj-metricas-relleno-alto" />
-              <stop offset="1" className="tj-metricas-relleno-bajo" />
-            </linearGradient>
-          </defs>
-          <path d={AREA} className="tj-metricas-area" />
-          <path d={BAJO_AGUA} className="tj-metricas-agua" data-visible={verDd ? "true" : undefined} />
-          <path d={LINEA} className="tj-metricas-linea" vectorEffect="non-scaling-stroke" />
-        </svg>
-        <span
-          aria-hidden
-          className="tj-metricas-guia"
-          style={{ left: `${(px(k) / W) * 100}%` }}
-          data-visible={i !== null ? "true" : undefined}
-        />
-        <span
-          aria-hidden
-          className="tj-metricas-punto"
-          style={{ left: `${(px(k) / W) * 100}%`, top: `${(py(saldo) / H) * 100}%` }}
-        />
       </div>
-      <div aria-hidden className="tj-metricas-eje tnum justify-between">
-        <span>{FECHAS[1] ? fmtDate(FECHAS[1], lang) : ""}</span>
-        <span>{FECHAS[N - 1] ? fmtDate(FECHAS[N - 1] as Date, lang) : ""}</span>
+      <div className="tj-curva">
+        <div aria-hidden className="tj-curva-eje-y tnum">
+          {geo.marcasY.map((v) => (
+            <span key={v} style={{ top: yPct(v) }}>
+              {fmtMoney(v, lang, { decimals: 0 })}
+            </span>
+          ))}
+        </div>
+        <div
+          className="tj-metricas-lienzo tj-curva-lienzo"
+          tabIndex={0}
+          role="group"
+          aria-label={
+            es
+              ? `Curva de rendimiento y balance de ${N - 1} operaciones de muestra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa las flechas para recorrerla.`
+              : `Performance and balance curve of ${N - 1} sample trades: from ${fmtMoney(INICIAL, lang, { compact: true })} to ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, max drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use the arrow keys to explore.`
+          }
+          data-activo={i !== null ? "true" : undefined}
+          onPointerMove={mover}
+          onPointerDown={mover}
+          onPointerLeave={() => setI(null)}
+          onKeyDown={(e) => teclado(e, i, N - 1, setI)}
+          onBlur={() => setI(null)}
+        >
+          {geo.marcasY.map((v) => (
+            <span key={v} aria-hidden className="tj-curva-rejilla" style={{ top: yPct(v) }} />
+          ))}
+          <div
+            aria-hidden
+            className="tj-metricas-banda"
+            data-visible={verDd && series.rend ? "true" : undefined}
+            style={{ left: xPct(CIMA), width: `${((geo.px(VALLE) - geo.px(CIMA)) / W) * 100}%` }}
+          >
+            <span className="tnum">
+              {es ? "Drawdown máx." : "Max drawdown"} −{fmtPct(METRICS.maxDrawdownPct, lang, 1)}
+            </span>
+          </div>
+          <svg aria-hidden className="tj-metricas-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+            {series.rend && (
+              <>
+                <path d={geo.caida} className="tj-metricas-agua" data-visible={verDd ? "true" : undefined} />
+                <path d={geo.rend} className="tj-curva-halo" vectorEffect="non-scaling-stroke" />
+                <path d={geo.rend} className="tj-metricas-linea" vectorEffect="non-scaling-stroke" />
+              </>
+            )}
+            {series.balance && <path d={geo.balance} className="tj-curva-balance" vectorEffect="non-scaling-stroke" />}
+          </svg>
+          <span aria-hidden className="tj-metricas-guia" style={{ left: xPct(k) }} data-visible={i !== null ? "true" : undefined} />
+          {series.rend && <span aria-hidden className="tj-metricas-punto" style={{ left: xPct(k), top: yPct(REND[k]) }} />}
+          {series.balance && (i !== null || !series.rend) && (
+            <span aria-hidden className="tj-metricas-punto tj-curva-punto-balance" style={{ left: xPct(k), top: yPct(SALDOS[k]) }} />
+          )}
+        </div>
+        <div aria-hidden className="tj-curva-eje-x tnum">
+          {geo.marcasX.map(({ t, x }) => (
+            <span key={t} style={{ left: `${x}%` }}>
+              {fmtDiaMes(new Date(t), lang)}
+            </span>
+          ))}
+        </div>
       </div>
     </>
   );

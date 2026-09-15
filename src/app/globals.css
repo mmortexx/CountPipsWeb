@@ -3353,12 +3353,16 @@ html:has(.tj-visor[open]) {
 /* ---- Panel de cifras ------------------------------------------------ */
 .tj-metricas {
   --pulgar: #fff;
+  --serie-balance: #2a78d6;
+  --pulgar-marca: #fff;
   border-radius: 12px;
   padding: clamp(1.25rem, 2.8vw, 2.25rem);
   text-align: left;
 }
 :root:not([data-theme="light"]) .tj-metricas {
   --pulgar: color-mix(in srgb, var(--ink) 14%, transparent);
+  --serie-balance: #3987e5;
+  --pulgar-marca: #0b0c0d;
 }
 .tj-segmento {
   position: relative;
@@ -3436,41 +3440,17 @@ html:has(.tj-visor[open]) {
 .tj-metricas-linea {
   fill: none;
   stroke: var(--ink);
-  stroke-width: 1.75;
+  stroke-width: 2;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
-.tj-metricas-area {
-  fill: url(#tj-metricas-relleno);
-}
-.tj-metricas-relleno-alto {
-  stop-color: var(--ink);
-  stop-opacity: 0.11;
-}
-.tj-metricas-relleno-bajo {
-  stop-color: var(--ink);
-  stop-opacity: 0;
-}
 .tj-metricas-agua {
   fill: rgb(var(--pnl-neg));
-  opacity: 0.12;
+  opacity: 0.16;
   transition: opacity 0.35s var(--ease-suave);
 }
 .tj-metricas-agua[data-visible] {
   opacity: 0.3;
-}
-.tj-metricas-base {
-  position: absolute;
-  inset-inline: 0;
-  border-top: 1px dashed rgb(var(--divider) / 0.26);
-  pointer-events: none;
-}
-.tj-metricas-base span {
-  position: absolute;
-  right: 0;
-  bottom: 5px;
-  font-size: 11px;
-  color: var(--ink-3);
 }
 .tj-metricas-banda {
   position: absolute;
@@ -3520,6 +3500,140 @@ html:has(.tj-visor[open]) {
   pointer-events: none;
   transition: left 0.08s linear, top 0.08s linear;
   animation: tj-metricas-aparece 0.6s 1.2s var(--ease-suave) both;
+}
+/* La curva del Resumen de la app: ejes en «L», rejilla solo horizontal,
+   rendimiento con halo y balance azul discontinuo. */
+.tj-curva {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 0.625rem;
+  margin-top: 0.75rem;
+}
+.tj-curva-eje-y {
+  position: relative;
+  min-width: 3.25rem;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.tj-curva-eje-y span {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+.tj-curva-lienzo {
+  margin-top: 0;
+  border-radius: 0;
+  border-left: 1px solid color-mix(in srgb, var(--ink-3) 40%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--ink-3) 40%, transparent);
+}
+.tj-curva-rejilla {
+  position: absolute;
+  inset-inline: 0;
+  border-top: 1px solid rgb(var(--divider) / 0.08);
+  pointer-events: none;
+}
+.tj-curva-halo {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 6;
+  stroke-opacity: 0.18;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.tj-curva-balance {
+  fill: none;
+  stroke: var(--serie-balance);
+  stroke-width: 1.25;
+  stroke-dasharray: 5 4;
+  stroke-linejoin: round;
+}
+.tj-curva-punto-balance {
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--serie-balance);
+  box-shadow: 0 0 0 3px rgb(var(--cristal-tinte) / 0.85);
+  animation: none;
+}
+.tj-curva-eje-x {
+  grid-column: 2;
+  position: relative;
+  height: 1.625rem;
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.tj-curva-eje-x span {
+  position: absolute;
+  top: 8px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.tj-curva-eje-x span::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 1px;
+  height: 4px;
+  background: color-mix(in srgb, var(--ink-3) 50%, transparent);
+}
+@media (max-width: 899px) {
+  .tj-curva-eje-x span:nth-child(even) {
+    visibility: hidden;
+  }
+}
+.tj-curva-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  font-size: 13px;
+  color: var(--ink);
+}
+.tj-curva-leyenda label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+  cursor: pointer;
+}
+.tj-curva-leyenda input {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--ink) 40%, transparent);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.tj-curva-leyenda input:checked {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+.tj-curva-leyenda input:checked::after {
+  content: "";
+  width: 9px;
+  height: 5px;
+  border-bottom: 2px solid var(--pulgar-marca);
+  border-left: 2px solid var(--pulgar-marca);
+  transform: translateY(-1px) rotate(-45deg);
+}
+.tj-curva-leyenda input:focus-visible {
+  outline: 2px solid rgb(var(--accent-base) / 0.6);
+  outline-offset: 2px;
+}
+.tj-curva-muestra {
+  width: 14px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--ink);
+}
+.tj-curva-leyenda [data-serie="balance"] .tj-curva-muestra {
+  background: var(--serie-balance);
 }
 .tj-metricas-eje {
   display: flex;

@@ -145,6 +145,13 @@ export function fmtDate(date: Date, lang: Lang = "es"): string {
   }).format(date);
 }
 
+/** Rótulo corto de eje de fechas, como el de la app: «15 feb» / «Feb 15». */
+export function fmtDiaMes(date: Date, lang: Lang = "es"): string {
+  return new Intl.DateTimeFormat(LOCALE[lang], { day: "numeric", month: "short", timeZone: "UTC" })
+    .format(date)
+    .replace(".", "");
+}
+
 export function fmtDateTime(date: Date, lang: Lang = "es"): string {
   return new Intl.DateTimeFormat(LOCALE[lang], {
     day: "2-digit",
