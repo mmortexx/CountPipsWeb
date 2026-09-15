@@ -3257,20 +3257,21 @@ html:has(.tj-visor[open]) {
    difuminar el cristal no se nota: por eso va sobre `.tj-escritorio`
    o sobre la página que pasa bajo la barra. */
 :root {
-  --cristal-tinte: 246 248 250;
-  --cristal-alfa: 0.58;
+  --cristal-tinte: 255 255 255;
+  --cristal-alfa: 0.52;
   --cristal-alfa-denso: 0.8;
   --barra-alfa: 0.78;
-  --cristal-blur: 20px;
-  --cristal-saturacion: 175%;
-  --cristal-filo: rgb(255 255 255 / 0.95);
-  --cristal-canto: rgb(11 15 20 / 0.05);
-  --cristal-pie: rgb(11 15 20 / 0.09);
-  --cristal-sombra: 0 1px 2px rgb(11 15 20 / 0.04), 0 28px 64px -36px rgb(11 15 20 / 0.3);
+  --cristal-blur: 22px;
+  --cristal-saturacion: 160%;
+  --cristal-filo: rgb(255 255 255 / 1);
+  --cristal-canto: rgb(11 15 20 / 0.07);
+  --cristal-pie: rgb(11 15 20 / 0.12);
+  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 44%);
+  --cristal-sombra: 0 1px 2px rgb(11 15 20 / 0.05), 0 30px 70px -34px rgb(11 15 20 / 0.34);
   --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  --luz: 255 255 255;
-  --luz-alfa: 0.95;
-  --curva: rgb(11 15 20 / 0.16);
+  --luz: 17 24 32;
+  --luz-alfa: 0.095;
+  --curva: rgb(11 15 20 / 0.42);
 }
 :root:not([data-theme="light"]) {
   --cristal-tinte: 12 17 22;
@@ -3281,6 +3282,7 @@ html:has(.tj-visor[open]) {
   --cristal-filo: rgb(255 255 255 / 0.17);
   --cristal-canto: rgb(255 255 255 / 0.05);
   --cristal-pie: rgb(255 255 255 / 0.03);
+  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0) 44%);
   --cristal-sombra: 0 30px 70px -38px rgb(0 0 0 / 0.9);
   --luz: 236 240 244;
   --luz-alfa: 0.075;
@@ -3289,7 +3291,7 @@ html:has(.tj-visor[open]) {
 .tj-cristal,
 .tj-barra[data-cristal="true"]::before {
   background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa));
-  background-image: var(--cristal-grano);
+  background-image: var(--cristal-brillo), var(--cristal-grano);
   -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
   backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
 }
@@ -3342,9 +3344,10 @@ html:has(.tj-visor[open]) {
   background-color: rgb(var(--cristal-tinte) / var(--barra-alfa));
 }
 
-/* El fondo de escritorio: una sola luz blanca, sin tinte, cenital y difusa,
-   que se funde con la página arriba y abajo; y una curva de capital
-   opcional. Sin color: el cristal debe leerse como material, no como adorno. */
+/* El fondo de escritorio: una sola mancha difusa y neutra que se funde con
+   la página arriba y abajo —en claro, una sombra gris sobre el blanco; en
+   oscuro, una luz tenue—, y una curva de capital opcional. Sin color: el
+   cristal se lee como material porque tiene algo que difuminar detrás. */
 .tj-escritorio {
   position: absolute;
   inset: 0;
@@ -3369,7 +3372,7 @@ html:has(.tj-visor[open]) {
 .tj-escritorio-curva path {
   fill: none;
   stroke: var(--curva);
-  stroke-width: 1.5;
+  stroke-width: 3;
   stroke-linejoin: round;
 }
 .tj-escritorio--ancho {
