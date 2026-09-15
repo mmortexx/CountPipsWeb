@@ -3025,10 +3025,24 @@ button.icon-btn:hover > svg,
 }
 .tj-visor::backdrop {
   background: rgb(8 10 14 / 0.86);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 .tj-visor[open] {
   display: grid;
   place-items: center;
+}
+/* Abre como se levanta una hoja: el velo funde y la captura llega desde un
+   punto más pequeña. Sólo al abrir; al cerrar desaparece sin esperar. */
+@media (prefers-reduced-motion: no-preference) {
+  .tj-visor[open]::backdrop {
+    transition: opacity 0.24s var(--ease-suave);
+    @starting-style { opacity: 0; }
+  }
+  .tj-visor[open] .tj-visor-lienzo img {
+    transition: opacity 0.28s var(--ease-suave), transform 0.36s var(--ease-suave);
+    @starting-style { opacity: 0; transform: scale(0.975); }
+  }
 }
 .tj-visor-lienzo {
   max-width: 100%;

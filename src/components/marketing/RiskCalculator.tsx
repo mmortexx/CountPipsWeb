@@ -107,7 +107,7 @@ export function RiskCalculator() {
     if (valid) {
       if (assetMode === "equities") {
         size = riskUsd / riskPerShare;
-        sizeLabel = es ? "acciones / u" : "shares / u";
+        sizeLabel = es ? "unidades" : "units";
         positionValue = size * entry;
         pipValue = size * 0.01;
       } else if (assetMode === "forex") {
