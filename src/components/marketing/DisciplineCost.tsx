@@ -307,7 +307,7 @@ export function DisciplineCost() {
               className="rounded-[12px] overflow-hidden bg-[var(--surface)]"
             >
               <div className="overflow-x-auto custom-scroll">
-                <div className="grid grid-cols-4 min-w-[400px] border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
+                <div className="grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
                   <span className="tnum text-[12px]">{es ? "Modo" : "Mode"}</span>
                   <span className="tnum text-right text-[12px]">{es ? "Ops" : "Trades"}</span>
                   <span className="tnum text-right text-[12px]">{es ? "Expectancy" : "Expectancy"}</span>
@@ -315,7 +315,7 @@ export function DisciplineCost() {
                 </div>
 
                 {/* Fila En Plan */}
-                <div className="grid min-w-[400px] grid-cols-4 items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                <div className="grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
                   <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[rgb(var(--accent-base))]" />
                   <span className="font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</span>
                   <span className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</span>
@@ -328,7 +328,7 @@ export function DisciplineCost() {
                 </div>
 
                 {/* Fila Fuera de Plan */}
-                <div className="grid min-w-[400px] grid-cols-4 items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                <div className="grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
                   <span className="absolute left-0 top-0 bottom-0 w-[2px] bg-[rgb(var(--pnl-neg))]" />
                   <span className="font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</span>
                   <span className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</span>
@@ -341,7 +341,7 @@ export function DisciplineCost() {
                 </div>
 
                 {/* Fila Gap */}
-                <div className="relative grid min-w-[400px] grid-cols-4 items-center bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_6%,transparent)] px-2.5 py-3.5 text-sm">
+                <div className="relative grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap items-center bg-[color-mix(in_oklab,rgb(var(--pnl-neg))_6%,transparent)] px-2.5 py-3.5 text-sm">
                   <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-[rgb(var(--pnl-neg))]" />
                   <span className="font-bold text-primary text-[14px]">GAP</span>
                   <span className="tnum text-right text-secondary text-[14px]">—</span>

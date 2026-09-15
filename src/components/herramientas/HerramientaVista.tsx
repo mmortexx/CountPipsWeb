@@ -119,11 +119,12 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                       que crece la zona y no se mueve la línea. */}
                   <Link
                     href="/herramientas"
-                    className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
+                    className="link-underline-host group -my-3 inline-flex items-center gap-1.5 py-3 text-secondary transition-colors hover:text-primary"
                   >
                     <span className="link-underline">
                       {es ? "Ver todas las herramientas" : "See all tools"}
                     </span>
+                    <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                   </Link>
                 </p>
               </div>

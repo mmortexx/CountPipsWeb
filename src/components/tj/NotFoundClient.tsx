@@ -72,13 +72,13 @@ export function NotFoundClient() {
     <section
       aria-labelledby="not-found-heading"
       data-tj-404={lang}
-      className="relative min-h-screen flex items-center justify-center overflow-clip px-5 py-20"
+      className="relative min-h-screen flex items-center justify-center overflow-clip px-5 pt-28 pb-20 md:pt-32"
     >
 
       <Escritorio />
       <div className="relative text-center max-w-xl mx-auto">
         <div
-          className="tj-alza font-semibold tracking-[-0.04em] leading-[0.9] text-gradient tnum"
+          className="tj-alza font-serif font-normal tracking-[-0.03em] leading-[0.9] text-gradient [font-variant-numeric:lining-nums]"
           style={{ fontSize: "clamp(6rem, 18vw, 12rem)" }}
         >
           404
@@ -121,8 +121,8 @@ export function NotFoundClient() {
               onChange={(e) => setQ(e.target.value)}
               placeholder={
                 es
-                  ? "Busca una métrica o una pregunta…"
-                  : "Search a metric or a question…"
+                  ? "Una métrica o una pregunta…"
+                  : "A metric or a question…"
               }
               aria-label={es ? "Buscar" : "Search"}
               className="w-full h-14 rounded-[4px] bg-transparent pl-11 pr-28 text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
