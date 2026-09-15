@@ -91,7 +91,7 @@ export function SectionHeader({
         </Reveal>
       ) : null}
       <Reveal delay={etiqueta ? 0.06 : 0}>
-        <Titulo className={`${etiqueta ? "mt-5" : ""} t-h2 text-primary max-w-[24ch]`}>
+        <Titulo className={`${etiqueta ? "mt-5" : ""} t-h2 text-primary max-w-[24ch] ${esCentrada ? "mx-auto" : ""}`}>
           {titulo}
         </Titulo>
       </Reveal>

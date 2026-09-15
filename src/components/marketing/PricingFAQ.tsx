@@ -2,7 +2,7 @@
 
 import { PRICING_FAQ_ES, PRICING_FAQ_EN, type QA } from "@/lib/faq";
 import { useLang } from "@/lib/i18n";
-import { Eyebrow } from "@/components/tj/Eyebrow";
+import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Reveal } from "@/components/tj/Reveal";
 import { asset } from "@/lib/asset";
 import { withLocale } from "@/lib/locale";
@@ -13,54 +13,15 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 
-/**
- * PricingFAQ — small, pricing-specific accordion (4 items) shown on the
- * Pricing page between Comparison and BetaStatus.
- *
- * Distinct from the main marketing FAQ.tsx:
- *  - Narrower scope: only questions a trader has before requesting beta access
- *    (what happens now, data, future pricing and invitation).
- *  - No search bar (the set is small enough that a search would feel heavy).
- *  - Centered institutional header above the accordion (eyebrow + headline
- *    + lead + 3 reassurance pills) — mirrors the Pricing header rhythm so
- *    the two sections read as one continuous conversion story.
- *  - Single `.tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)]` container holds the
- *    accordion; each item tints with `rgb(var(--divider)/0.04)` when open
- *    and picks up a subtle accent border + glow so the active item reads as
- *    "lit".
- *
- * Institutional polish (R2-b):
- *  - `.tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.13)]` container with `` elevation +
- *    `p-2 md:p-3` padding so each accordion item has breathing room.
- *  - Accordion headers `text-sm font-medium text-primary` + the shadcn
- *    chevron (rotates 180° on open via `[&[data-state=open]>svg]:rotate-180`).
- *  - Smooth open animation via Radix's built-in height transition.
- *  - `rgb(var(--divider)/0.04)` tint + `rgb(var(--accent-base)/0.30)` border +
- *    accent glow on the open item so the active question reads as lifted.
- *    Open state also gains a 3 px inset accent rail on the left edge so the
- *    "lit" item reads as a focused institutional FAQ row (R20-3c).
- *  - Centered header above the accordion — eyebrow + headline with
- *    `.text-gradient` highlight + lead + 3 reassurance pills.
- *  - Subtle radial accent glow + `.grain` texture layer over the
- *    section so it shares the premium printed surface with Pricing /
- *    FinalCTA.
- */
+/** Las cuatro dudas de compra, en la página de precios, entre la comparativa y el estado del producto. */
 
 export function PricingFAQ() {
   const { lang } = useLang();
   const es = lang === "es";
 
-
   /* Las cuatro preguntas viven en `src/lib/faq.ts`, compartidas con el
      dato estructurado de la pagina, para que no puedan divergir. */
   const items: QA[] = es ? PRICING_FAQ_ES : PRICING_FAQ_EN;
-
-  /* Reassurance signals describe the current commercial path honestly. */
-  const pills = [
-    es ? "Demo sin registro" : "No-sign-up demo",
-    es ? "Datos de muestra" : "Sample data",
-    es ? "Acceso anticipado privado" : "Private early access",
-  ];
 
   return (
     <section
@@ -70,36 +31,19 @@ export function PricingFAQ() {
     >
 
       <div className="relative z-10 tj-container">
-        {/* Centered header — eyebrow + headline + lead + reassurance
-            pills. Mirrors the Pricing section's header rhythm so the
-            two sections read as one continuous conversion story. */}
-        <Reveal className="text-center max-w-2xl mx-auto">
-          <Eyebrow className="justify-center">
-            {es ? "Antes de decidir" : "Before you decide"}
-          </Eyebrow>
-          <h2 className="mt-5 text-3xl md:text-4xl font-semibold tracking-tight text-primary text-balance">
-            {es ? (
-              <>
-                Lo que casi todos <span className="text-gradient">quieren saber.</span>
-              </>
-            ) : (
-              <>
-                What almost everyone <span className="text-gradient">wants to know.</span>
-              </>
-            )}
-          </h2>
-          <p className="mt-4 text-base md:text-lg text-secondary leading-relaxed">
-            {es
-              ? "Cuatro respuestas rápidas sobre la demo, el alcance y el acceso anticipado. Si te queda alguna duda, escríbenos."
-              : "Four quick answers about the demo, scope and early access. If anything is still unclear, write to us."}
-          </p>
+        <SectionHeader
+          composicion="centrada"
+          etiqueta={es ? "Antes de decidir" : "Before you decide"}
+          titulo={es ? (
+            <>Lo que casi todos <span className="text-gradient">quieren saber.</span></>
+          ) : (
+            <>What almost everyone <span className="text-gradient">wants to know.</span></>
+          )}
+          entradilla={es
+            ? "Cuatro respuestas rápidas sobre la demo, el alcance y el acceso anticipado."
+            : "Four quick answers about the demo, scope and early access."}
+        />
 
-          <p className="mt-6 mb-0 text-[13px] text-tertiary">{pills.join(" · ")}</p>
-        </Reveal>
-
-        {/* Accordion — single tj-paper container holds all 5 items.
-            `max-w-3xl` keeps the line-length comfortable for reading
-            the answers; `mx-auto` centers it under the header. */}
         <Reveal delay={0.1} y={28}>
           <div className="mt-10 max-w-3xl mx-auto border-t border-[var(--line)]">
             <Accordion
@@ -156,12 +100,6 @@ export function PricingFAQ() {
           </p>
         </Reveal>
 
-        {/* Filete de acento bajo la sección. «Respeta reducir
-            movimiento» ya no hace falta decirlo aquí: la regla
-            `@media (prefers-reduced-motion: reduce)` de globals.css
-            desactiva todos los `[data-entra]`, así que la excepción ya
-            no puede quedarse desincronizada con la animación —que es lo
-            que pasaba cuando ambas se escribían por separado. */}
       </div>
     </section>
   );

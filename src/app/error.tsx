@@ -44,7 +44,7 @@ export default function Error({
         <h1
           id="error-heading"
           style={{ animationDelay: "0.1s" }}
-          className="tj-alza text-3xl md:text-4xl font-semibold tracking-tight text-primary text-balance"
+          className="tj-alza t-h2 text-primary"
         >
           {es ? "Algo salió mal" : "Something went wrong"}
         </h1>

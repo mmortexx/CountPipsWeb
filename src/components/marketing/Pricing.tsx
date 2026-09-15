@@ -121,7 +121,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             className={
               standalone
                 ? "sr-only"
-                : "text-3xl md:text-4xl font-semibold tracking-tight text-primary text-balance mt-5"
+                : "t-h2 text-primary mt-5 max-w-[24ch] mx-auto"
             }
           >
             {es ? (

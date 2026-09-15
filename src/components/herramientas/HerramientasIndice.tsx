@@ -128,40 +128,6 @@ export function HerramientasIndice() {
             </li>
           </ul>
         </div>
-
-        <Reveal delay={0.3}>
-          {/* ── EL ARGUMENTO DE PRIVACIDAD NO ES UN PIE DE PÁGINA ──────
-              Esta línea dice lo que más distingue al producto —que las
-              ocho herramientas no mandan nada a ningún sitio— y estaba
-              puesta como una nota al pie: `text-tertiary`, el color más
-              apagado del sistema, a 13,5 px, centrada y al final de la
-              página. Era, literalmente, el texto
-              menos legible de la página, y el que más peso comercial
-              tiene.
-
-              Se apoya en una tarjeta, sube a tinta
-              secundaria y se le pone delante su sello. Así se lee como
-              lo que es: una garantía firmada al cierre de la sección, no
-              un descargo de responsabilidad. */}
-          <div className="mx-auto mt-12 flex max-w-[46rem] flex-col items-center gap-3 sm:flex-row sm:gap-5">
-            <span
-              className="shrink-0 tnum text-[12px]"
-              style={{ color: "rgb(var(--sig-green))" }}
-            >
-              {es ? "Sin servidor" : "No server"}
-            </span>
-            <span
-              aria-hidden
-              className="hidden h-4 w-px shrink-0 sm:block"
-              style={{ background: "rgb(var(--divider) / 0.22)" }}
-            />
-            <p className="m-0 text-center text-[14px] leading-relaxed text-secondary sm:text-left">
-              {es
-                ? "Todas funcionan en tu navegador: las cifras que escribes no se envían a ningún servidor, no piden correo y no hay registro."
-                : "They all run in your browser: the numbers you type are not sent to any server, no email is asked for and there is no sign-up."}
-            </p>
-          </div>
-        </Reveal>
       </div>
     </section>
   );
