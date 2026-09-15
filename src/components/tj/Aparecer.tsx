@@ -25,14 +25,22 @@ export function Aparecer() {
     const main = document.getElementById("main-content");
     if (!main || typeof IntersectionObserver === "undefined") return;
     document.documentElement.classList.add("tj-mov");
+    // Lo que depende de hidratar sólo entra si hidrata pronto: tarde sería un parpadeo.
+    if (performance.now() < 1500) document.documentElement.classList.add("tj-mov-pronto");
 
+    // El escalonado se reparte entre lo que asoma a la vez, en orden de
+    // lectura (fila y luego columna): cada fila nueva empieza de cero.
     const io = new IntersectionObserver(
       (entradas) => {
-        for (const e of entradas) {
-          if (!e.isIntersecting) continue;
-          (e.target as HTMLElement).dataset.tjAp = "1";
-          io.unobserve(e.target);
-        }
+        const lote = entradas
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => Math.round(a.boundingClientRect.top / 24) - Math.round(b.boundingClientRect.top / 24) || a.boundingClientRect.left - b.boundingClientRect.left);
+        lote.forEach((e, i) => {
+          const el = e.target as HTMLElement;
+          el.dataset.tjPaso = String(Math.min(i, 8));
+          el.dataset.tjAp = "1";
+          io.unobserve(el);
+        });
       },
       { rootMargin: "0px 0px -8% 0px", threshold: 0 },
     );
@@ -45,7 +53,7 @@ export function Aparecer() {
       return el.offsetHeight > 0;
     };
 
-    const marcar = (el: HTMLElement, nivel: 1 | 2, paso: number) => {
+    const marcar = (el: HTMLElement, nivel: 1 | 2) => {
       const r = el.getBoundingClientRect();
       if (r.top < innerHeight * 0.9) {
         el.dataset.tjAp = "ya";
@@ -53,8 +61,8 @@ export function Aparecer() {
       }
       el.dataset.tjAp = "0";
       el.dataset.tjNivel = String(nivel);
-      el.dataset.tjPaso = String(Math.min(paso, 8));
       if (el.matches(".tj-cristal") || el.querySelector(".tj-cristal")) el.dataset.tjSolo = "mueve";
+      else if (el.matches(".tj-lamina-marco, figure") || el.querySelector(".tj-lamina-marco")) el.dataset.tjTipo = "lamina";
       io.observe(el);
     };
 
@@ -63,15 +71,15 @@ export function Aparecer() {
         if (s.id === "top" || s.classList.contains("tj-cabecera") || s.parentElement?.closest("section") || s.closest(".demo-window")) continue;
         const raiz = s.querySelector(":scope > .tj-container") ?? s;
         const bloques = [...raiz.children].filter(valido);
-        bloques.forEach((b, i) => {
-          marcar(b, 1, i);
+        bloques.forEach((b) => {
+          marcar(b, 1);
           const contenedores = [...(b.matches(LISTAS) ? [b] : []), ...b.querySelectorAll<HTMLElement>(LISTAS)].filter(
             (c) => c === b || !c.parentElement?.closest(LISTAS) || !b.contains(c.parentElement.closest(LISTAS)),
           );
           for (const c of contenedores) {
             const hijas = [...c.children].filter(valido);
             if (hijas.length < 3 || hijas.length > 40) continue;
-            hijas.forEach((h, j) => marcar(h, 2, i + j + 1));
+            hijas.forEach((h) => marcar(h, 2));
           }
         });
       }
