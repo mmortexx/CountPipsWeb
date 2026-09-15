@@ -58,14 +58,12 @@ export function TechSpecs() {
       labelEn: "Database",
       valueEs: "SQLite en modo WAL, un único archivo",
       valueEn: "SQLite in WAL mode, a single file",
-      mono: true,
     },
     {
       labelEs: "Cifrado en reposo",
       labelEn: "Encryption at rest",
       valueEs: "EFS de Windows, opcional",
       valueEn: "Windows EFS, optional",
-      mono: true,
     },
     {
       labelEs: "Copia en la nube",

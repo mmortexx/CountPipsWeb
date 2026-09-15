@@ -4,28 +4,7 @@ import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 
-/**
- * FeatureExplorer — explorador interactivo de características.
- *
- * El visitante marca qué le importa (métricas, disciplina, seguridad,
- * velocidad, multi-cuenta, local-first…) y el componente filtra y
- * destaca las características de CountPips que coinciden, mostrando un
- * "match score" y un CTA contextual.
- *
- * ── Por qué en /features ──────────────────────────────────────────────
- * /features lista todo lo que hace la app en un bento estático. El
- * explorador convierte esa lista en una conversación: "¿qué buscas?" →
- * "esto es lo que tenemos para ti". Ayuda a quien llega con una
- * necesidad concreta a no tener que escanear 40 features a mano.
- *
- * ── Lógica ────────────────────────────────────────────────────────────
- * Cada feature tiene un conjunto de tags. El usuario togglea tags.
- * El match score = (tags coincidentes / tags del usuario) · 100.
- * Se ordenan por score y se muestran las top matches destacadas.
- *
- * ── Material ──────────────────────────────────────────────────────────
- * .tj-paper + .tj-paper-glow. Touch targets ≥44px. Sin overflow mobile.
- */
+/** Índice de funciones de /features: se filtra por ejes y marca lo que es exclusivo de Pro. */
 
 type Tag = "metrics" | "discipline" | "security" | "speed" | "local" | "multi" | "export" | "psychology";
 
@@ -36,6 +15,7 @@ type Feature = {
   descEs: string;
   descEn: string;
   tags: Tag[];
+  pro?: boolean;
 };
 
 const TAGS: { id: Tag; labelEs: string; labelEn: string; icon: string }[] = [
@@ -134,17 +114,19 @@ const FEATURES: Feature[] = [
     id: "montecarlo",
     titleEs: "Monte Carlo",
     titleEn: "Monte Carlo",
-    descEs: "Remuestrea tu propio histórico y dibuja el abanico de balances y caídas posibles. Pro.",
-    descEn: "Resamples your own history and draws the fan of possible balances and drawdowns. Pro.",
+    descEs: "Remuestrea tu propio histórico y dibuja el abanico de balances y caídas posibles.",
+    descEn: "Resamples your own history and draws the fan of possible balances and drawdowns.",
     tags: ["metrics"],
+    pro: true,
   },
   {
     id: "ruina",
     titleEs: "Riesgo de ruina",
     titleEn: "Risk of ruin",
-    descEs: "La probabilidad de quebrar la cuenta, simulada con tus propias operaciones. Pro.",
-    descEn: "The probability of blowing the account, simulated from your own trades. Pro.",
+    descEs: "La probabilidad de quebrar la cuenta, simulada con tus propias operaciones.",
+    descEn: "The probability of blowing the account, simulated from your own trades.",
     tags: ["metrics", "discipline"],
+    pro: true,
   },
   {
     id: "tags",
@@ -158,9 +140,10 @@ const FEATURES: Feature[] = [
     id: "prop",
     titleEs: "Modo prop firm",
     titleEn: "Prop firm mode",
-    descEs: "Plantillas de FTMO, Topstep, The5ers, FundedNext y Apex, panel de evaluación e informe en PDF. Pro.",
-    descEn: "FTMO, Topstep, The5ers, FundedNext and Apex templates, an evaluation panel and a PDF report. Pro.",
+    descEs: "Plantillas de FTMO, Topstep, The5ers, FundedNext y Apex, panel de evaluación e informe en PDF.",
+    descEn: "FTMO, Topstep, The5ers, FundedNext and Apex templates, an evaluation panel and a PDF report.",
     tags: ["multi", "discipline"],
+    pro: true,
   },
   {
     id: "informes",
@@ -174,9 +157,10 @@ const FEATURES: Feature[] = [
     id: "fiscal",
     titleEs: "Módulo fiscal",
     titleEn: "Tax module",
-    descEs: "Lotes, resumen del año e informe para tu asesor (España). No calcula la cuota a pagar. Pro.",
-    descEn: "Lots, yearly summary and a report for your tax adviser (Spain). It never computes the tax due. Pro.",
+    descEs: "Lotes, resumen del año e informe para tu asesor (España). No calcula la cuota a pagar.",
+    descEn: "Lots, yearly summary and a report for your tax adviser (Spain). It never computes the tax due.",
     tags: ["export"],
+    pro: true,
   },
   {
     id: "calendar",
@@ -249,9 +233,10 @@ export function FeatureExplorer() {
               <button
                 key={t.id}
                 onClick={() => toggle(t.id)}
-                className="inline-flex items-center gap-2 min-h-[44px] px-3.5 rounded-[4px] text-[14px] font-medium transition-[background-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="inline-flex items-center gap-2 min-h-[44px] px-3.5 rounded-[4px] border text-[14px] font-medium transition-[background-color,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
                   background: active ? "var(--ink)" : "transparent",
+                  borderColor: active ? "var(--ink)" : "var(--line-2)",
                   color: active ? "var(--bg)" : "var(--ink-2)",
                 }}
                 aria-pressed={active}
@@ -289,21 +274,7 @@ export function FeatureExplorer() {
                 </span>
               )}
             </div>
-            <ul className="m-0 border-t border-[var(--line)] p-0">
-              {topMatches.map((f) => (
-                <li
-                  key={f.id}
-                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
-                >
-                  <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
-                    {es ? f.titleEs : f.titleEn}
-                  </h3>
-                  <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
-                    {es ? f.descEs : f.descEn}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <ListaFunciones items={topMatches} es={es} />
           </div>
         ) : (
           // Empty state — show all features as a static grid
@@ -313,25 +284,36 @@ export function FeatureExplorer() {
                 {es ? "Todas las características" : "All features"} · {FEATURES.length}
               </span>
             </div>
-            <ul className="m-0 border-t border-[var(--line)] p-0">
-              {FEATURES.map((f) => (
-                <li
-                  key={f.id}
-                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
-                >
-                  <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
-                    {es ? f.titleEs : f.titleEn}
-                  </h3>
-                  <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
-                    {es ? f.descEs : f.descEn}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <ListaFunciones items={FEATURES} es={es} />
           </div>
         )}
       </div>
     </section>
+  );
+}
+
+function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
+  return (
+    <ul className="m-0 border-t border-[var(--line)] p-0">
+      {items.map((f) => (
+        <li
+          key={f.id}
+          className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
+        >
+          <h3 className="m-0 flex items-baseline gap-2.5 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
+            {es ? f.titleEs : f.titleEn}
+            {f.pro && (
+              <span className="relative -top-px rounded-[4px] border border-[var(--line-2)] px-1.5 py-px text-[10px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+                Pro
+              </span>
+            )}
+          </h3>
+          <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+            {es ? f.descEs : f.descEn}
+          </p>
+        </li>
+      ))}
+    </ul>
   );
 }
 
