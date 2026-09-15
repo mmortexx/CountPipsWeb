@@ -73,8 +73,6 @@ export const metadata: Metadata = {
   },
 };
 
-// `StillHaveQuestions` retirado de esta página (ver el comentario junto
-// a <ContactSupport /> más abajo).
 // LAS SECCIONES PESADAS SIGUEN EN SU PROPIO TROZO DE JAVASCRIPT, PERO YA
 // NO LLEVAN `loading`.
 //
@@ -94,12 +92,6 @@ export const metadata: Metadata = {
 //
 // Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
 
-const ContactSupport = dynamic(
-  () => import("@/components/marketing/ContactSupport").then((m) => m.ContactSupport)
-);
-const EdgeSignificanceChecker = dynamic(
-  () => import("@/components/marketing/EdgeSignificanceChecker").then((m) => m.EdgeSignificanceChecker)
-);
 const ContactForm = dynamic(
   () => import("@/components/marketing/ContactForm").then((m) => m.ContactForm)
 );
@@ -126,15 +118,8 @@ export function FaqBody() {
         breadcrumbEn="FAQ"
       />
       <FAQ standalone />
-      <EdgeSignificanceChecker />
-      {/* `StillHaveQuestions` retirado: la página encadenaba CUATRO
-          bloques seguidos diciendo lo mismo ("¿aún tienes dudas?",
-          "¿no encuentras tu respuesta?", el formulario y el cierre).
-          Aquel banner era además una caja de cristal a todo ancho con
-          una sola frase centrada, sin icono ni acción. El componente
-          sigue en el repositorio por si hace falta en otra página. */}
-      <ContactSupport />
-
+      {/* Preguntas, un único bloque de contacto y el cierre. La calculadora
+          de significancia vive en Herramientas. */}
       <ContactForm />
 
       <FinalCTANew />

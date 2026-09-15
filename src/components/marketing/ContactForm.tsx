@@ -3,7 +3,7 @@
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import { useLang } from "@/lib/i18n";
-import { Eyebrow } from "@/components/tj/Eyebrow";
+import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Reveal } from "@/components/tj/Reveal";
 import { submitForm, SUPPORT_EMAIL, type SubmitFailure } from "@/lib/forms";
 import { useHydrated } from "@/hooks/use-hydrated";
@@ -43,8 +43,8 @@ function failureCopy(reason: SubmitFailure, es: boolean): string {
     case "unconfigured":
     case "rejected":
       return es
-        ? "El envío ha fallado por un problema nuestro. Escríbenos directamente:"
-        : "The send failed on our side. Email us directly:";
+        ? SUPPORT_EMAIL ? "El envío ha fallado por un problema nuestro. Escríbenos directamente:" : "El envío ha fallado por un problema nuestro. Inténtalo de nuevo en unos minutos."
+        : SUPPORT_EMAIL ? "The send failed on our side. Email us directly:" : "The send failed on our side. Please try again in a few minutes.";
   }
 }
 
@@ -160,42 +160,21 @@ export function ContactForm() {
       className="section-tight relative overflow-clip scroll-mt-24"
     >
       <div className="relative tj-container">
-        <div className="max-w-xl mx-auto">
-          <Reveal>
-            <div className="flex justify-center">
-              <Eyebrow>{es ? "Escríbenos" : "Send a message"}</Eyebrow>
-            </div>
-          </Reveal>
-          <Reveal delay={0.06}>
-            <h2
-              className="mt-5 text-center t-h2 text-primary"
-            >
-              {es ? (
-                <>
-                  Envía un <span className="text-gradient">mensaje</span>
-                </>
-              ) : (
-                <>
-                  Send a <span className="text-gradient">message</span>
-                </>
-              )}
-            </h2>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <p className="mt-3 text-center text-secondary text-sm leading-relaxed">
-              {es
-                ? "Cuéntanos qué necesitas. Contesta quien lo desarrolla."
-                : "Tell us what you need. The person who builds it replies."}
-            </p>
-          </Reveal>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <SectionHeader
+            etiqueta={es ? "Contacto" : "Contact"}
+            titulo={es ? (
+              <>¿No encuentras tu <span className="text-gradient">respuesta?</span></>
+            ) : (
+              <>Can&apos;t find your <span className="text-gradient">answer?</span></>
+            )}
+            entradilla={es
+              ? "Escríbenos. Contesta quien desarrolla CountPips, en español o en inglés."
+              : "Write to us. The person who builds CountPips replies, in Spanish or English."}
+          />
 
           <Reveal delay={0.14} y={20}>
-            {/* El formulario se apoya en una lámina de papel: es un objeto que
-                se rellena, no un dato tabular, así que conserva material
-                propio. */}
-            <div className="rounded-[16px] bg-[var(--surface)] p-6 sm:p-9 relative overflow-hidden mt-8">
-              {/* min-height keeps layout stable when the form swaps to the
-                  success state, so the card doesn't collapse on submit. */}
+            <div className="rounded-[12px] bg-[var(--surface)] p-6 sm:p-9 relative overflow-hidden">
               <div className="min-h-[360px] flex flex-col justify-center">
                 {/* AQUÍ HABÍA UN `AnimatePresence`, Y LO QUE HACÍA SE
                     CONSERVA MENOS UNA COSA.
@@ -279,7 +258,7 @@ export function ContactForm() {
                           aria-invalid={invalidos.name || undefined}
                           aria-describedby={error ? "cf-error" : undefined}
                           required
-                          className="w-full bg-[var(--raised)] border border-transparent rounded-[8px] h-11 px-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
+                          className="w-full bg-[var(--raised)] border border-[var(--line-2)] rounded-[4px] h-11 px-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
                         />
                       </Field>
                       <Field label={es ? "Email" : "Email"} htmlFor="cf-email">
@@ -296,7 +275,7 @@ export function ContactForm() {
                           aria-invalid={invalidos.email || undefined}
                           aria-describedby={error ? "cf-error" : undefined}
                           required
-                          className="w-full bg-[var(--raised)] border border-transparent rounded-[8px] h-11 px-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
+                          className="w-full bg-[var(--raised)] border border-[var(--line-2)] rounded-[4px] h-11 px-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
                         />
                       </Field>
                       <Field label={es ? "Mensaje" : "Message"} htmlFor="cf-msg">
@@ -311,7 +290,7 @@ export function ContactForm() {
                           aria-describedby={error ? "cf-error" : undefined}
                           required
                           rows={4}
-                          className="w-full bg-[var(--raised)] border border-transparent rounded-[8px] px-3 py-2.5 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 resize-y min-h-[112px] aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
+                          className="w-full bg-[var(--raised)] border border-[var(--line-2)] rounded-[4px] px-3 py-2.5 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 resize-y min-h-[112px] aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
                         />
                       </Field>
 
@@ -340,7 +319,7 @@ export function ContactForm() {
                             role="alert"
                           >
                             {error}
-                            {showFallback && (
+                            {showFallback && SUPPORT_EMAIL && (
                               <>
                                 {" "}
                                 <a
@@ -370,14 +349,14 @@ export function ContactForm() {
                            ink on the medium-lightness gold accent fill — clears
                            AA in both themes; matches the Waitlist + Download CTA
                            treatment). */
-                        className="w-full sm:w-fit sm:min-w-[180px] inline-flex items-center justify-center gap-2 min-h-[44px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 py-2.5 rounded-[4px] text-sm font-semibold transition-[background-color,transform,opacity] duration-200 hover:bg-[rgb(var(--accent-hover))] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                        className="w-full sm:w-fit sm:min-w-[180px] inline-flex items-center justify-center gap-2 min-h-[44px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 py-2.5 rounded-[4px] text-sm font-semibold transition-[background-color,opacity] duration-200 hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {sending
                           ? es ? "Enviando…" : "Sending…"
                           : es ? "Enviar" : "Send"}
                       </button>
 
-                      <p className="text-[12px] text-tertiary text-center">
+                      <p className="text-[12px] text-tertiary">
                         {es
                           ? "No compartimos tu email. Solo te respondemos."
                           : "We never share your email. We only reply to you."}
@@ -406,7 +385,7 @@ function Field({
     <div className="group flex flex-col gap-1.5">
       <label
         htmlFor={htmlFor}
-        className="text-[12px] uppercase tracking-[0.08em] text-tertiary font-semibold transition-colors duration-200 group-focus-within:text-[rgb(var(--accent-base))]"
+        className="text-[13px] font-medium text-secondary transition-colors duration-200 group-focus-within:text-primary"
       >
         {label}
       </label>

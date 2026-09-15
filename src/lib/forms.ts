@@ -63,14 +63,12 @@ export const betaConfigured = BETA_API_URL.length > 0;
  * constante — media web centralizada y media duplicada, que es como
  * empiezan estas cosas.
  *
- * OJO, sigue con el dominio ANTERIOR al renombrado. Es deliberado, por el
- * mismo motivo que la dirección canónica del sitio: `countpips.com` aún no
- * está comprado, y un buzón que no existe pierde los correos en silencio,
- * que es peor que uno con el nombre viejo. Cuando el dominio esté
- * registrado y con buzón, se cambia AQUÍ y queda cambiado en las cinco
- * pantallas donde aparece.
+ * Hoy no hay buzón: la web enseñaba una dirección que no existía y los
+ * correos se perdían en silencio. Mientras sea `null`, el único canal es
+ * el formulario (que sí llega) y ninguna pantalla muestra una dirección.
+ * Cuando exista el buzón, se escribe AQUÍ y vuelve a aparecer solo.
  */
-export const SUPPORT_EMAIL = "soporte@tradingjournal.app";
+export const SUPPORT_EMAIL: string | null = null;
 
 export type SubmitFailure =
   /** No hay access key en el build: es un fallo de configuración, no del usuario. */

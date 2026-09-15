@@ -132,7 +132,7 @@ export function hreflangDe(path: string): {
  */
 export function esquemasGlobales(
   lang: "es" | "en",
-  { soporte }: { soporte: string },
+  { soporte }: { soporte: string | null },
 ): Record<string, unknown>[] {
   const es = lang === "es";
   const inicio = siteUrl(es ? "/" : "/en/");
@@ -226,12 +226,14 @@ export function esquemasGlobales(
       /* Faltaba, y es lo que permite que un buscador sepa a dónde
          escribir. La dirección sale de la misma constante que usan el
          formulario y las cinco pantallas donde aparece. */
-      contactPoint: {
-        "@type": "ContactPoint",
-        contactType: "customer support",
-        email: soporte,
-        availableLanguage: ["Spanish", "English"],
-      },
+      ...(soporte && {
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          email: soporte,
+          availableLanguage: ["Spanish", "English"],
+        },
+      }),
     },
     {
       "@context": "https://schema.org",

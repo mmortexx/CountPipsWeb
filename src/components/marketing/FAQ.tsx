@@ -4,7 +4,6 @@ import * as React from "react";
 import { Search } from "lucide-react";
 
 import { useLang } from "@/lib/i18n";
-import { SUPPORT_EMAIL } from "@/lib/forms";
 import { FAQ_ES, FAQ_EN, type QA } from "@/lib/faq";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
@@ -259,23 +258,11 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           </div>
         </Reveal>
 
-        <Reveal delay={0.2}>
-          <p className="mt-6 text-center text-sm text-tertiary">
-            {es ? "¿No encuentras tu respuesta?" : "Didn't find your answer?"}{" "}
-            <a
-              href={`mailto:${SUPPORT_EMAIL}`}
-              className="link-underline text-primary hover:text-[rgb(var(--accent-hover))] font-medium transition-colors"
-            >
-              {es ? "Escríbenos" : "Email us"}
-            </a>
-            .
-          </p>
-        </Reveal>
 
         {/* Glossary trigger — reinforces the frozen-glossary philosophy.
             Same controlled instance powers the "no results" link above. */}
         <Reveal delay={0.26}>
-          <div className="mt-4 text-center">
+          <div className={`mt-6 ${standalone ? "-ml-3" : "text-center"}`}>
             <GlossaryModal
               open={glossaryOpen}
               onOpenChange={setGlossaryOpen}

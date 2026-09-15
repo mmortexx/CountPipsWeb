@@ -68,8 +68,8 @@ function failureCopy(reason: SubmitFailure, es: boolean) {
       : "We couldn't connect. Check your connection and try again.";
   }
   return es
-    ? `La solicitud no se ha podido guardar. Escríbenos a ${SUPPORT_EMAIL}.`
-    : `The application could not be saved. Email ${SUPPORT_EMAIL}.`;
+    ? `La solicitud no se ha podido guardar. ${SUPPORT_EMAIL ? `Escríbenos a ${SUPPORT_EMAIL}.` : "Inténtalo de nuevo en unos minutos."}`
+    : `The application could not be saved. ${SUPPORT_EMAIL ? `Email ${SUPPORT_EMAIL}.` : "Please try again in a few minutes."}`;
 }
 
 export function BetaApplication() {
