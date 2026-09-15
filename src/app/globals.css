@@ -1737,7 +1737,10 @@ textarea:focus-visible,
 }
 
 @supports (animation-timeline: scroll()) {
+  /* Sin nada que desplazar la línea de tiempo queda inactiva y la animación
+     no se aplica: el valor base (0) apaga el aviso donde la fila cabe. */
   .tj-fila-sigue::after {
+    opacity: 0;
     animation: tj-pista-fin linear both;
     animation-timeline: scroll(nearest inline);
   }

@@ -11,6 +11,7 @@ interface SpecRow {
   labelEn: string;
   valueEs: string;
   valueEn: string;
+  mono?: boolean;
 }
 
 /**
@@ -36,14 +37,8 @@ export function TechSpecs() {
     {
       labelEs: "Plataforma",
       labelEn: "Platform",
-      valueEs: "Windows 10/11 (64-bit)",
-      valueEn: "Windows 10/11 (64-bit)",
-    },
-    {
-      labelEs: "Almacenamiento",
-      labelEn: "Storage",
-      valueEs: "SQLite en %LOCALAPPDATA%\\CountPips",
-      valueEn: "SQLite in %LOCALAPPDATA%\\CountPips",
+      valueEs: "Windows 10/11 (64-bit), nativa: WinUI 3",
+      valueEn: "Windows 10/11 (64-bit), native: WinUI 3",
     },
     {
       labelEs: "Arranque",
@@ -52,12 +47,33 @@ export function TechSpecs() {
       valueEn: "0.7 s with 50,000 trades (measured)",
     },
     {
-      labelEs: "Importación",
-      labelEn: "Import",
-      valueEs: "Cualquier CSV con mapeo de columnas · Binance en solo lectura",
-      valueEn: "Any CSV with column mapping · read-only Binance sync",
+      labelEs: "Carpeta de datos",
+      labelEn: "Data folder",
+      valueEs: "%LOCALAPPDATA%\\CountPips",
+      valueEn: "%LOCALAPPDATA%\\CountPips",
+      mono: true,
     },
-
+    {
+      labelEs: "Base de datos",
+      labelEn: "Database",
+      valueEs: "SQLite en modo WAL, un único archivo",
+      valueEn: "SQLite in WAL mode, a single file",
+      mono: true,
+    },
+    {
+      labelEs: "Cifrado en reposo",
+      labelEn: "Encryption at rest",
+      valueEs: "EFS de Windows, opcional",
+      valueEn: "Windows EFS, optional",
+      mono: true,
+    },
+    {
+      labelEs: "Copia en la nube",
+      labelEn: "Cloud copy",
+      valueEs: "AES-256-GCM · PBKDF2 600.000, opcional",
+      valueEn: "AES-256-GCM · PBKDF2 600,000, optional",
+      mono: true,
+    },
     {
       labelEs: "Exportación",
       labelEn: "Export",
@@ -67,20 +83,8 @@ export function TechSpecs() {
     {
       labelEs: "Idiomas",
       labelEn: "Languages",
-      valueEs: "Español + Inglés",
-      valueEn: "Spanish + English",
-    },
-    {
-      labelEs: "Actualizaciones",
-      labelEn: "Updates",
-      valueEs: "Solo cuando las pides; nunca se instala sola",
-      valueEn: "Only when you ask; never installs by itself",
-    },
-    {
-      labelEs: "Privacidad",
-      labelEn: "Privacy",
-      valueEs: "Sin cuenta y sin telemetría",
-      valueEn: "No account and no telemetry",
+      valueEs: "Español e inglés",
+      valueEn: "Spanish and English",
     },
   ];
 
@@ -121,10 +125,10 @@ export function TechSpecs() {
                 {/* Sin el punto de acento que llevaba delante. Con el
                     acento ya acromático era un lunar gris que no decía
                     nada, y en una retícula el separador es el filete. */}
-                <dt className="text-tertiary text-[11px] uppercase tracking-[0.08em] font-semibold tnum">
+                <dt className="text-tertiary text-[12px]">
                   {es ? r.labelEs : r.labelEn}
                 </dt>
-                <dd className="text-primary text-sm font-medium leading-snug tnum tracking-[-0.005em]">
+                <dd className={`m-0 text-primary font-medium leading-snug [overflow-wrap:anywhere] ${r.mono ? "font-mono text-[13px]" : "text-sm tnum tracking-[-0.005em]"}`}>
                   {es ? r.valueEs : r.valueEn}
                 </dd>
               </dl>

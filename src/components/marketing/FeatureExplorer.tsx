@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
+import { SectionHeader } from "@/components/layout/SectionHeader";
 
 /**
  * FeatureExplorer — explorador interactivo de características.
@@ -122,6 +123,62 @@ const FEATURES: Feature[] = [
     tags: ["export", "local", "security"],
   },
   {
+    id: "mae-mfe",
+    titleEs: "MAE / MFE",
+    titleEn: "MAE / MFE",
+    descEs: "Maximum Adverse y Favorable Excursion: detecta si sales pronto o tarde de forma sistemática.",
+    descEn: "Maximum Adverse and Favorable Excursion: detect if you exit early or late, systematically.",
+    tags: ["metrics"],
+  },
+  {
+    id: "montecarlo",
+    titleEs: "Monte Carlo",
+    titleEn: "Monte Carlo",
+    descEs: "Remuestrea tu propio histórico y dibuja el abanico de balances y caídas posibles. Pro.",
+    descEn: "Resamples your own history and draws the fan of possible balances and drawdowns. Pro.",
+    tags: ["metrics"],
+  },
+  {
+    id: "ruina",
+    titleEs: "Riesgo de ruina",
+    titleEn: "Risk of ruin",
+    descEs: "La probabilidad de quebrar la cuenta, simulada con tus propias operaciones. Pro.",
+    descEn: "The probability of blowing the account, simulated from your own trades. Pro.",
+    tags: ["metrics", "discipline"],
+  },
+  {
+    id: "tags",
+    titleEs: "Etiquetas propias",
+    titleEn: "Custom tags",
+    descEs: "Etiqueta operaciones por sesión, estado emocional, régimen de mercado o lo que necesites.",
+    descEn: "Tag trades by session, emotional state, market regime or whatever you need.",
+    tags: ["psychology", "metrics"],
+  },
+  {
+    id: "prop",
+    titleEs: "Modo prop firm",
+    titleEn: "Prop firm mode",
+    descEs: "Plantillas de FTMO, Topstep, The5ers, FundedNext y Apex, panel de evaluación e informe en PDF. Pro.",
+    descEn: "FTMO, Topstep, The5ers, FundedNext and Apex templates, an evaluation panel and a PDF report. Pro.",
+    tags: ["multi", "discipline"],
+  },
+  {
+    id: "informes",
+    titleEs: "Informes en PDF",
+    titleEn: "PDF reports",
+    descEs: "Informe mensual, ficha de rendimiento, extracto de cuenta e informe de disciplina.",
+    descEn: "Monthly report, performance factsheet, account statement and discipline report.",
+    tags: ["export", "metrics"],
+  },
+  {
+    id: "fiscal",
+    titleEs: "Módulo fiscal",
+    titleEn: "Tax module",
+    descEs: "Lotes, resumen del año e informe para tu asesor (España). No calcula la cuota a pagar. Pro.",
+    descEn: "Lots, yearly summary and a report for your tax adviser (Spain). It never computes the tax due. Pro.",
+    tags: ["export"],
+  },
+  {
     id: "calendar",
     titleEs: "Calendario de P&L",
     titleEn: "P&L calendar",
@@ -165,45 +222,24 @@ export function FeatureExplorer() {
     }).sort((a, b) => b.score - a.score);
   }, [selected]);
 
-  const topMatches = scored.filter((f) => f.score > 0).slice(0, 4);
+  const topMatches = scored.filter((f) => f.score > 0);
   const hasSelection = selected.length > 0;
 
   return (
     <section className="section-tight">
       <div className="tj-container">
-        <div className="max-w-2xl mb-8">
-          <div className="inline-flex items-center gap-3 mb-5">
-            <span className="eyebrow">
-              {es ? "ÍNDICE" : "INDEX"}
-            </span>
-          </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.85rem, 3.3vw, 2.8rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.1,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
-            {es ? (
-              <>
-                Elige el eje. <span style={{ color: "rgb(var(--accent-base))" }}>Sale lo que encaja.</span>
-              </>
-            ) : (
-              <>
-                Pick the axis. <span style={{ color: "rgb(var(--accent-base))" }}>What fits comes up.</span>
-              </>
-            )}
-          </h2>
-          <p className="mt-4" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
-            {es
-              ? "Marca uno o varios ejes. El índice se recorta a lo que el producto hace de verdad en ese terreno."
-              : "Mark one or more axes. The index trims to what the product actually does in that ground."}
-          </p>
-        </div>
+        <SectionHeader
+          className="mb-8"
+          etiqueta={es ? "Índice" : "Index"}
+          titulo={es ? (
+            <>Elige el eje. <span className="text-gradient">Sale lo que encaja.</span></>
+          ) : (
+            <>Pick the axis. <span className="text-gradient">What fits comes up.</span></>
+          )}
+          entradilla={es
+            ? "Todo lo que hace el programa. Marca uno o varios ejes y la lista se recorta a lo que hace de verdad en ese terreno."
+            : "Everything the program does. Mark one or more axes and the list trims to what it actually does in that ground."}
+        />
 
         {/* Tag chips */}
         <div className="flex flex-wrap gap-2 mb-8">
@@ -257,7 +293,7 @@ export function FeatureExplorer() {
               {topMatches.map((f) => (
                 <li
                   key={f.id}
-                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-6"
+                  className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
                 >
                   <h3 className="m-0 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
                     {es ? f.titleEs : f.titleEn}
@@ -265,9 +301,6 @@ export function FeatureExplorer() {
                   <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
                     {es ? f.descEs : f.descEn}
                   </p>
-                  <span className="tnum text-[12px] text-tertiary sm:justify-self-end">
-                    {f.matches.length} {es ? "ejes" : "axes"}
-                  </span>
                 </li>
               ))}
             </ul>

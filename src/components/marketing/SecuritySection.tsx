@@ -115,39 +115,12 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
           })}
         </div>
 
-        <div className="mb-14 rounded-[12px] bg-[var(--surface)] p-5 sm:p-7">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] pb-4">
-            <span className="text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
-              {es ? "Ficha técnica del almacenamiento" : "Storage specification"}
-            </span>
-            <span className="text-[12px] text-tertiary">{es ? "Según el código del programa" : "As implemented in the app"}</span>
-          </div>
-          <dl className="mt-4 grid grid-cols-1 gap-5 text-[14px] sm:grid-cols-2 lg:grid-cols-4">
-            {(es
-              ? [
-                  ["Carpeta de datos", "%LOCALAPPDATA%\\CountPips"],
-                  ["Base de datos", "SQLite en modo WAL, un único archivo"],
-                  ["Cifrado en reposo", "EFS de Windows, opcional"],
-                  ["Nube, opcional", "AES-256-GCM · PBKDF2 600.000"],
-                ]
-              : [
-                  ["Data folder", "%LOCALAPPDATA%\\CountPips"],
-                  ["Database", "SQLite in WAL mode, a single file"],
-                  ["Encryption at rest", "Windows EFS, optional"],
-                  ["Cloud, optional", "AES-256-GCM · PBKDF2 600,000"],
-                ]
-            ).map(([k, v]) => (
-              <div key={k}>
-                <dt className="mb-1 text-[12px] text-tertiary">{k}</dt>
-                <dd className="m-0 [overflow-wrap:anywhere] font-mono text-[13px] font-medium text-primary">{v}</dd>
-              </div>
-            ))}
-          </dl>
-          <div className="mt-6 border-t border-[var(--line)] pt-5">
+        <div className="mb-14">
+          <div>
             <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
               {es ? "Todo lo que se conecta a internet" : "Everything that goes online"}
             </p>
-            <dl className="mt-3 divide-y divide-[var(--line)] text-[14px]">
+            <dl className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)] text-[14px]">
               {conexiones.map(([k, v]) => (
                 <div key={k} className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr] sm:gap-6">
                   <dt className="font-medium text-primary">{k}</dt>

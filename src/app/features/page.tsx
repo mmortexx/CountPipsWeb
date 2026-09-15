@@ -26,7 +26,7 @@ const breadcrumbSchema = {
 };
 
 // Article schema — overview page that aggregates the feature deep dives
-// (FeaturesBento + HowItWorks + MoreFeatures). Tells search
+// (FeaturesBento + HowItWorks + FeatureExplorer). Tells search
 // engines this is an in-depth product overview article (not just a nav
 // page), with a headline, description, and reading time. Mirrors the
 // Article schema pattern used by /features/metricas, /features/disciplina
@@ -119,9 +119,6 @@ const GaleriaPantallas = dynamic(
 const HowItWorks = dynamic(
   () => import("@/components/marketing/HowItWorks").then((m) => m.HowItWorks)
 );
-const MoreFeatures = dynamic(
-  () => import("@/components/marketing/MoreFeatures").then((m) => m.MoreFeatures)
-);
 
 /**
  * Exportado con nombre para que `app/en/features/page.tsx` lo reutilice.
@@ -150,17 +147,13 @@ export function FeaturesBody() {
       {/* Overview sections — broad strokes. Deep dives moved to
           /features/metricas, /features/disciplina, /features/seguridad. */}
       <FeaturesBento cal={getCal()} enPagina />
-      <FeatureExplorer />
 
-      {/* La galería que esta página lleva prometiendo desde su primer
-          `articleSchema` y no existía. Va aquí, después del explorador:
-          el visitante acaba de marcar lo que le importa y de leer una
-          lista de nombres, y lo siguiente que necesita es ver la cosa. */}
+      {/* Resumen → verlo → cómo se usa → el índice completo como referencia. */}
       <GaleriaPantallas />
 
       <HowItWorks />
 
-      <MoreFeatures />
+      <FeatureExplorer />
 
       <FinalCTANew />
       <TableOfContents />
