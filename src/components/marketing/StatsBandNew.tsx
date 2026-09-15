@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 
@@ -67,7 +68,12 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
                   lineHeight: 1,
                 }}
               >
-                {s.v}
+                <span
+                  className="tj-cifra-cuenta"
+                  style={{ "--hasta": parseInt(s.v, 10) || 0, "--sufijo": `"${s.v.replace(/^\d+/, "")}"` } as CSSProperties}
+                >
+                  <span className="tj-cifra-real">{s.v}</span>
+                </span>
               </div>
               <div className="mt-3 max-w-[22em] text-balance text-[15px] leading-snug text-secondary">{s.l}</div>
             </Reveal>

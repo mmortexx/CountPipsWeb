@@ -5417,3 +5417,44 @@ html[lang="en"]:has([data-tj-404="es"]) body {
     transform: none;
   }
 }
+
+/* ── LAS CIFRAS QUE CUENTAN ───────────────────────────────────────────
+   La franja de datos cuenta de 0 a su valor mientras entra. El número real
+   sigue en el documento (lectores de pantalla, sin soporte, movimiento
+   reducido); la cuenta es un contador generado con texto alternativo
+   vacío para que no se lea dos veces. */
+@property --cuenta {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .tj-cifra-cuenta {
+      --cuenta: var(--hasta);
+      counter-reset: cifra var(--cuenta);
+      animation: tj-cuenta cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-timeline: view(block);
+      animation-range: cover 4% cover 34%;
+    }
+    .tj-cifra-cuenta::before {
+      content: counter(cifra) var(--sufijo) / "";
+    }
+    .tj-cifra-cuenta > .tj-cifra-real {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+}
+@keyframes tj-cuenta {
+  from {
+    --cuenta: 0;
+  }
+  to {
+    --cuenta: var(--hasta);
+  }
+}
