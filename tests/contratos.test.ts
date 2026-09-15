@@ -543,3 +543,21 @@ describe("el menú cuenta lo que hay", () => {
     for (const n of vistas) expect(n).toBe(TERMINOS.length);
   });
 });
+
+describe("los escapes de JavaScript no llegan a pantalla", () => {
+  /* En un atributo JSX entre comillas («subtitleEs="…"») no se interpretan
+     los escapes: «barra u 00a0» se pinta tal cual. Pasó en la cabecera de Precios. */
+  it("ningún atributo JSX con comillas lleva un escape unicode", () => {
+    const fuentes: string[] = [];
+    const recorrer = (dir: string) => {
+      for (const entrada of readdirSync(join(RAIZ, dir))) {
+        const rel = `${dir}/${entrada}`;
+        if (statSync(join(RAIZ, rel)).isDirectory()) recorrer(rel);
+        else if (entrada.endsWith(".tsx")) fuentes.push(rel);
+      }
+    };
+    recorrer("src");
+    const malos = fuentes.filter((rel) => /[A-Za-z]="[^"]*\\u[0-9a-fA-F]{4}/.test(leer(rel)));
+    expect(malos).toEqual([]);
+  });
+});

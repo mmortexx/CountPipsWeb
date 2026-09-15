@@ -151,7 +151,7 @@ export function PricingBody() {
         titleEn="The price, in writing."
         titleHighlightEs="por escrito."
         titleHighlightEn="in writing."
-        subtitleEs="Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."
+        subtitleEs={"Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."}
         subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
         breadcrumbEs="Precios"
         breadcrumbEn="Pricing"
