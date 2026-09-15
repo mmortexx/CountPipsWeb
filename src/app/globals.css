@@ -3279,19 +3279,19 @@ html:has(.tj-visor[open]) {
    o sobre la página que pasa bajo la barra. */
 :root {
   --cristal-tinte: 255 255 255;
-  --cristal-alfa: 0.52;
-  --cristal-alfa-denso: 0.8;
-  --barra-alfa: 0.78;
-  --cristal-blur: 22px;
-  --cristal-saturacion: 160%;
+  --cristal-alfa: 0.4;
+  --cristal-alfa-denso: 0.74;
+  --barra-alfa: 0.62;
+  --cristal-blur: 24px;
+  --cristal-saturacion: 180%;
   --cristal-filo: rgb(255 255 255 / 1);
-  --cristal-canto: rgb(11 15 20 / 0.07);
-  --cristal-pie: rgb(11 15 20 / 0.12);
-  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.6), rgb(255 255 255 / 0) 44%);
-  --cristal-sombra: 0 1px 2px rgb(11 15 20 / 0.05), 0 30px 70px -34px rgb(11 15 20 / 0.34);
-  --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --cristal-canto: rgb(11 15 20 / 0.1);
+  --cristal-pie: rgb(11 15 20 / 0.17);
+  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.18) 28%, rgb(255 255 255 / 0) 58%);
+  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.95), inset 0 0 0 1px rgb(255 255 255 / 0.35), 0 1px 2px rgb(11 15 20 / 0.06), 0 14px 28px -16px rgb(11 15 20 / 0.14), 0 44px 90px -44px rgb(11 15 20 / 0.34);
+  --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   --luz: 17 24 32;
-  --luz-alfa: 0.095;
+  --luz-alfa: 0.17;
   --curva: rgb(11 15 20 / 0.42);
 }
 :root:not([data-theme="light"]) {
@@ -3300,14 +3300,15 @@ html:has(.tj-visor[open]) {
   --cristal-alfa-denso: 0.78;
   --barra-alfa: 0.7;
   --cristal-saturacion: 150%;
-  --cristal-filo: rgb(255 255 255 / 0.17);
+  --cristal-filo: rgb(255 255 255 / 0.22);
   --cristal-canto: rgb(255 255 255 / 0.05);
   --cristal-pie: rgb(255 255 255 / 0.03);
-  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0) 44%);
-  --cristal-sombra: 0 30px 70px -38px rgb(0 0 0 / 0.9);
+  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.045), rgb(255 255 255 / 0.01) 30%, rgb(255 255 255 / 0) 56%);
+  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 32px -18px rgb(0 0 0 / 0.55), 0 44px 90px -40px rgb(0 0 0 / 0.9);
+  --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   --luz: 236 240 244;
-  --luz-alfa: 0.075;
-  --curva: rgb(236 239 242 / 0.2);
+  --luz-alfa: 0.095;
+  --curva: rgb(236 239 242 / 0.34);
 }
 .tj-cristal,
 .tj-barra[data-cristal="true"]::before {
@@ -5331,3 +5332,88 @@ html[lang="en"]:has([data-tj-404="es"]) body {
 .tj-en-herramienta h2[data-titular-herramienta] + p { display: none; }
 /* Un envoltorio que solo contenía titular y entradilla ya no ocupa su celda. */
 .tj-en-herramienta :has(> h2[data-titular-herramienta]):not(:has(> :not(h2, p, span))) { display: contents; }
+
+/* ── COMPOSICIÓN AL DESPLAZAR ─────────────────────────────────────────
+   Cuatro gestos atados al scroll, sin JavaScript y sólo con transform,
+   opacity y un desenfoque corto en los titulares:
+   · las listas y rejillas se ordenan pieza a pieza (`--orden` desplaza
+     el rango de cada hija; en vertical cada fila entra además cuando le
+     toca, así que el escalonado sólo se nota entre hermanas en fila);
+   · los titulares se enfocan al entrar;
+   · el fondo de escritorio deriva detrás del cristal, que así se lee
+     translúcido en movimiento y no sólo en reposo;
+   · los paneles de cristal se asientan con transform, nunca con opacidad
+     (una opacidad en el panel o en un ancestro le corta lo que ve detrás).
+   Rango en `cover`, no en `entry`: una fila de 40 px con `entry`
+   entraría en 15 px de scroll, que se ve como un salto. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    #main-content :is(ul, ol, dl, [data-orden]):has(> :nth-child(3)):not(:has(> [data-entra])):not(.demo-window *) > * {
+      animation: tj-entra-pieza linear both;
+      animation-timeline: view(block);
+      animation-range: cover calc(var(--orden, 0) * 1.6%) cover calc(18% + var(--orden, 0) * 1.6%);
+    }
+    #main-content :is(ul, ol, dl, [data-orden]) > :nth-child(2) { --orden: 1; }
+    #main-content :is(ul, ol, dl, [data-orden]) > :nth-child(3) { --orden: 2; }
+    #main-content :is(ul, ol, dl, [data-orden]) > :nth-child(4) { --orden: 3; }
+    #main-content :is(ul, ol, dl, [data-orden]) > :nth-child(5) { --orden: 4; }
+    #main-content :is(ul, ol, dl, [data-orden]) > :nth-child(n + 6) { --orden: 5; }
+
+    #main-content h2.t-h2 {
+      animation: tj-enfoca linear both;
+      animation-timeline: view(block);
+      animation-range: cover 0% cover 24%;
+    }
+
+    .tj-escritorio {
+      animation: tj-deriva linear both;
+      animation-timeline: view(block);
+      animation-range: cover 0% cover 100%;
+    }
+    .tj-escritorio-curva {
+      animation: tj-deriva-curva linear both;
+      animation-timeline: view(block);
+      animation-range: cover 0% cover 100%;
+    }
+
+    #main-content .tj-cristal:not(.tj-cristal--denso) {
+      animation: tj-asienta linear both;
+      animation-timeline: view(block);
+      animation-range: cover 0% cover 22%;
+    }
+  }
+}
+@keyframes tj-enfoca {
+  from {
+    filter: blur(6px);
+    opacity: 0.35;
+  }
+  to {
+    filter: none;
+    opacity: 1;
+  }
+}
+@keyframes tj-deriva {
+  from {
+    transform: translate3d(0, 6%, 0);
+  }
+  to {
+    transform: translate3d(0, -6%, 0);
+  }
+}
+@keyframes tj-deriva-curva {
+  from {
+    transform: translate3d(0, 14%, 0) scaleY(0.9);
+  }
+  to {
+    transform: translate3d(0, -14%, 0) scaleY(1.06);
+  }
+}
+@keyframes tj-asienta {
+  from {
+    transform: translate3d(0, 28px, 0) scale(0.985);
+  }
+  to {
+    transform: none;
+  }
+}

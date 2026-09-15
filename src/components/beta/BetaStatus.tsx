@@ -25,7 +25,7 @@ export function ProductStatus() {
             <p className="eyebrow">{es ? "Estado del producto" : "Product status"}</p>
             <h2 className="mt-5 t-h2 text-primary">{es ? "Lo que está listo. Y lo que aún estamos comprobando." : "What is ready. And what we are still validating."}</h2>
           </div>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div data-orden className="grid gap-3 sm:grid-cols-3">
             {rows.map(({ icon: Icon, tone, title, text }) => (
               <div key={title} className="border-t border-[rgb(var(--divider)/0.18)] pt-4">
                 {/* Caja de alto fijo para la marca. El icono mide 17 px y el
