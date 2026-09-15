@@ -146,24 +146,15 @@ export function DisciplineCost() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 items-start">
           <div>
-            <h2 data-titular-herramienta
-              className="font-serif m-0"
-              style={{
-                fontSize: "clamp(2rem, 3.6vw, 3rem)",
-                fontWeight: 400,
-                letterSpacing: "-0.022em",
-                lineHeight: 1.08,
-                color: "var(--ink)",
-                textWrap: "balance",
-              }}
+            <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]"
             >
               {es ? (
                 <>
-                  Lo que tu <span style={{ color: "rgb(var(--accent-base))" }}>indisciplina</span> te cuesta.
+                  Lo que tu <span className="text-gradient">indisciplina</span> te cuesta.
                 </>
               ) : (
                 <>
-                  What your <span style={{ color: "rgb(var(--accent-base))" }}>indiscipline</span> costs you.
+                  What your <span className="text-gradient">indiscipline</span> costs you.
                 </>
               )}
             </h2>

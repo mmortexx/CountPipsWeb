@@ -310,7 +310,7 @@ export function RiskCalculator() {
             </span>
           </div>
 
-          <h2 data-titular-herramienta className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
+          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
                 Calcula tu riesgo <span className="text-[rgb(var(--accent-base))]">antes</span> de operar.

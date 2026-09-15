@@ -35,7 +35,7 @@ export function DemoConversionPanel() {
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <Reveal>
             <p className="eyebrow">{es ? "Cómo leer la demo" : "How to read the demo"}</p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-primary md:text-4xl text-balance">
+            <h2 className="mt-5 t-h2 text-primary max-w-[24ch]">
               {es ? <>Una visita corta. <span className="text-gradient">Una decisión más clara.</span></> : <>A short visit. <span className="text-gradient">A clearer decision.</span></>}
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-secondary md:text-lg">

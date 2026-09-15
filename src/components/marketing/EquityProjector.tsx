@@ -603,23 +603,15 @@ export function EquityProjector() {
             </span>
           </div>
 
-          <h2 data-titular-herramienta
-            className="font-serif m-0 text-primary"
-            style={{
-              fontSize: "clamp(2.1rem, 4vw, 3.4rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.025em",
-              lineHeight: 1.05,
-              textWrap: "balance",
-            }}
+          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]"
           >
             {es ? (
               <>
-                Tu edge, <span style={{ color: "rgb(var(--accent-base))" }}>compuesto</span> con rigor institucional.
+                Tu edge, <span className="text-gradient">compuesto</span> con rigor institucional.
               </>
             ) : (
               <>
-                Your edge, <span style={{ color: "rgb(var(--accent-base))" }}>compounded</span> with institutional rigor.
+                Your edge, <span className="text-gradient">compounded</span> with institutional rigor.
               </>
             )}
           </h2>

@@ -54,7 +54,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
   const es = lang === "es";
 
   const Componente = COMPONENTES[herramienta.componente];
-  const otras = HERRAMIENTAS.filter((h) => h.slug !== herramienta.slug).slice(0, 3);
+  const otras = HERRAMIENTAS.filter((h) => h.slug !== herramienta.slug);
 
   return (
     <>
@@ -63,40 +63,6 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
         <Componente />
       </div>
 
-      {/* Cinta de Acceso Rápido entre las 8 Herramientas */}
-      <section className="py-4">
-        <div className="tj-container">
-          {/* `tj-fila-sigue` añade la pista de que la fila sigue: sin ella
-              la última herramienta quedaba partida contra el canto en las
-              ocho páginas, y eso no se lee como «hay más» sino como un
-              texto cortado.
-
-              Se llamaba `tj-cinta`, que es la clase de la banda de
-              símbolos de la portada. Con ese nombre esta fila heredaba la
-              animación de la banda y se desplazaba sola hasta sacarse de
-              la vista. Ver el comentario del bloque en globals.css. */}
-          <div className="tj-fila-sigue flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-            <span className="text-[12px] tnum text-tertiary whitespace-nowrap pr-2">
-              {es ? "Herramientas:" : "Tools:"}
-            </span>
-            {HERRAMIENTAS.map((h, i) => {
-              const active = h.slug === herramienta.slug;
-              return (
-                <Link
-                  key={h.slug}
-                  href={`/herramientas/${h.slug}`}
-                  className={`min-h-[44px] px-3.5 rounded-[4px] text-[13px] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap ${
-                    active ? "bg-[var(--ink)] text-[var(--bg)] font-medium" : "text-secondary hover:text-primary"
-                  }`}
-                >
-                  <span className="opacity-60">{String(i + 1).padStart(2, "0")}.</span>
-                  <span>{es ? h.tituloEs : h.tituloEn}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* Aviso obligado en una web de trading: estas calculadoras devuelven
           lo que se deduce de los números que introduce el visitante, y

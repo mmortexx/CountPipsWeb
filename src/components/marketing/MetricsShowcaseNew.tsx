@@ -420,9 +420,14 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     <div className="relative">
       <Escritorio className="tj-escritorio--ancho" />
       <div className="tj-cristal tj-metricas relative">
-        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className={`flex flex-col gap-5 md:flex-row md:justify-between ${enPagina ? "md:items-center" : "md:items-end"}`}>
           <div className={enPagina ? "" : "max-w-[46rem]"}>
             {titulo}
+            {enPagina && (
+              <p className="m-0 text-[13px] font-medium text-tertiary">
+                {es ? "Muestra de la demo · curva, reparto de R y ratios" : "Demo sample · curve, R distribution and ratios"}
+              </p>
+            )}
             {!enPagina && (
               <p className="m-0 mt-2 text-[14px] leading-[1.55] text-secondary">
                 {es ? "Ratios con su muestra, no gráficos bonitos. " : "Ratios with their sample, not pretty charts. "}

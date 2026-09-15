@@ -212,7 +212,7 @@ export function CommissionDragCalculator() {
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
           {/* Columna Izquierda: Configuración */}
           <div>
-            <h2 data-titular-herramienta className="font-serif text-3xl md:text-4xl text-primary font-normal tracking-tight">
+            <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
               {es ? (
                 <>
                   Lo que se queda <span className="text-gradient">por el camino.</span>

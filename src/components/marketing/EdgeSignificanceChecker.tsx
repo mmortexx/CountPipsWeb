@@ -216,7 +216,7 @@ export function EdgeSignificanceChecker() {
               {es ? "TEST ESTADÍSTICO" : "STATISTICAL TEST"}
             </span>
           </div>
-          <h2 data-titular-herramienta className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.1] text-primary text-balance">
+          <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
                 ¿Tu win rate es <span className="text-[rgb(var(--accent-base))]">real</span> o es suerte?
