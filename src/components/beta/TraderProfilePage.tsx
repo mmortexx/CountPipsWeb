@@ -187,14 +187,14 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             </div>
 
             {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
-            <div className="p-4 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
+            <div className="p-4 rounded-[8px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
               {/* Apilado por debajo de `sm`: en una sola fila, el rotulo y la
                   cifra se metian el uno dentro del otro a 390 px. */}
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">
                 <span className="font-semibold text-primary">
                   {es ? "Colchón hasta el límite de pérdida total" : "Buffer to the overall loss limit"}
                 </span>
-                <span className="font-mono font-bold text-primary tnum">
+                <span className="font-bold text-primary tnum">
                   {fmtMoney(distanceToLiquidation, lang)}
                 </span>
               </div>
@@ -211,7 +211,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   }}
                 />
               </div>
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[12px] font-mono text-tertiary">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[12px] tnum text-tertiary">
                 <span>{es ? "Límite:" : "Limit:"} {fmtMoney(liquidationThreshold, lang)}</span>
                 <span>{es ? "Equity actual:" : "Current equity:"} {fmtMoney(currentEquity, lang)}</span>
                 <span>{es ? "Pico máximo:" : "High-water mark:"} {fmtMoney(peakEquity, lang)}</span>
@@ -220,12 +220,12 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
             {/* Matriz de parámetros de prop firm */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Límite diario (${firm.dailyPct}\u00a0%)` : `Daily limit (${firm.dailyPct}%)`}</span>
                   <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
                 </div>
-                <div className="cifra-xl font-mono font-semibold text-[rgb(var(--pnl-neg))] tnum">
+                <div className="cifra-xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(dailyLossLimit, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -233,12 +233,12 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Max Drawdown (${firm.maxDDPct}\u00a0%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
-                <div className="cifra-xl font-mono font-semibold text-primary tnum">
+                <div className="cifra-xl font-semibold text-primary tnum">
                   −{fmtMoney(maxTrailingLoss, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -248,12 +248,12 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Fase 1 (+${firm.phase1Pct}\u00a0%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}\u00a0%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
                   <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
                 </div>
-                <div className="cifra-xl font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
+                <div className="cifra-xl font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   +{fmtMoney(phase1Target, lang)}{" "}
                   {firm.phase2Pct > 0 && (
                     <span className="block text-sm font-normal text-secondary">
@@ -266,12 +266,12 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? "Riesgo por operación (0,75\u00a0%)" : "Risk per trade (0.75%)"}</span>
                   <Target size={14} className="text-[rgb(var(--accent-base))]" />
                 </div>
-                <div className="cifra-xl font-mono font-semibold text-primary tnum">
+                <div className="cifra-xl font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -292,22 +292,18 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             />
 
             {/* Selector de setup manual */}
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="tj-segmentado tj-segmentado-apila mb-6 sm:max-w-xl" role="group">
               {[
-                { id: "breakout" as const, labelEs: "Ruptura de Rango (Breakout)", labelEn: "Range Breakout" },
-                { id: "sweep" as const, labelEs: "Barrido de Liquidez (Sweep)", labelEn: "Liquidity Sweep" },
-                { id: "reversion" as const, labelEs: "Reversión a la Media (Mean Reversion)", labelEn: "Mean Reversion" },
+                { id: "breakout" as const, labelEs: "Ruptura de rango", labelEn: "Range Breakout" },
+                { id: "sweep" as const, labelEs: "Barrido de liquidez", labelEn: "Liquidity Sweep" },
+                { id: "reversion" as const, labelEs: "Reversión a la media", labelEn: "Mean Reversion" },
               ].map((s) => (
                 <button
                   key={s.id}
                   type="button"
                   aria-pressed={manualSetup === s.id}
                   onClick={() => setManualSetup(s.id)}
-                  className={`toque-comodo h-9 px-4 rounded-[4px] text-xs font-semibold transition-all ${
-                    manualSetup === s.id
-                      ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
-                      : "border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)]"
-                  }`}
+                  className="toque-comodo"
                 >
                   {es ? s.labelEs : s.labelEn}
                 </button>
@@ -316,10 +312,10 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
             {/* Tarjeta de métricas del setup */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
-                  className="whitespace-nowrap font-mono font-semibold text-[rgb(var(--pnl-pos))] tnum">
+                  className="whitespace-nowrap font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   {es
                     ? (manualSetup === "breakout" ? "+0,84 R" : manualSetup === "sweep" ? "+0,97 R" : "+0,40 R")
                     : (manualSetup === "breakout" ? "+0.84 R" : manualSetup === "sweep" ? "+0.97 R" : "+0.40 R")}
@@ -333,10 +329,10 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
-                  className="whitespace-nowrap font-mono font-semibold text-primary tnum">
+                  className="whitespace-nowrap font-semibold text-primary tnum">
                   {es
                     ? (manualSetup === "breakout" ? "54\u00a0% · 1:2,4 R:R" : manualSetup === "sweep" ? "48\u00a0% · 1:3,1 R:R" : "61\u00a0% · 1:1,3 R:R")
                     : (manualSetup === "breakout" ? "54% · 1:2.4 R:R" : manualSetup === "sweep" ? "48% · 1:3.1 R:R" : "61% · 1:1.3 R:R")}
@@ -348,10 +344,10 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[4px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
-                  className="whitespace-nowrap font-mono font-semibold text-primary tnum">
+                  className="whitespace-nowrap font-semibold text-primary tnum">
                   {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? "\u00a0%" : "%")}
                 </span>
                 {/* El color seguia al rotulo y no al mensaje: estaba fijo en
