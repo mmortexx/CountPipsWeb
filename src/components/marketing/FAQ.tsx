@@ -138,9 +138,29 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           </Reveal>
         </div>
 
+        {/* En `/faq` el bloque entero medía 768 px y se quedaba pegado al
+            margen izquierdo: a 1.440 px la mitad derecha de la página
+            estaba vacía mientras el formulario de contacto de más abajo
+            sí ocupaba las dos columnas. Desde `lg` el buscador, los
+            filtros y el enlace al glosario se van a un raíl estrecho a la
+            izquierda y las preguntas ocupan el resto. La
+            colocación se hace por rejilla para no duplicar el JSX: en el
+            documento el orden sigue siendo buscador → lista → glosario,
+            que es como se lee sin CSS y como se tabula. */}
+        <div
+          className={
+            standalone
+              ? "grid gap-x-14 lg:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] lg:grid-rows-[auto_minmax(0,1fr)] lg:items-start"
+              : "contents"
+          }
+        >
         {/* Search input — filters FAQ items in real time */}
-        <Reveal delay={0.1} y={24}>
-          <div className={`mt-8 max-w-3xl ${standalone ? "" : "mx-auto"}`}>
+        <Reveal
+          delay={0.1}
+          y={24}
+          className={standalone ? "lg:col-start-1 lg:row-start-1" : undefined}
+        >
+          <div className={`mt-8 max-w-3xl ${standalone ? "lg:max-w-none" : "mx-auto"}`}>
             <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
@@ -156,7 +176,13 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
             />
             </div>
             {/* Category Pills */}
-            <div className={`flex flex-wrap items-center gap-1.5 mt-3.5 ${standalone ? "" : "justify-center"}`}>
+            <div
+              className={`flex flex-wrap items-center gap-1.5 mt-3.5 ${
+                standalone
+                  ? "lg:mt-3 lg:flex-col lg:items-stretch lg:gap-0 lg:border-t lg:border-[var(--line)]"
+                  : "justify-center"
+              }`}
+            >
               {categories.map((cat) => (
                 <button
                   key={cat.id}
@@ -164,8 +190,14 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   aria-pressed={activeCategory === cat.id}
                   onClick={() => setActiveCategory(cat.id)}
                   className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 py-2.5 sm:py-0 rounded-[4px] text-[13px] font-medium inline-flex items-center justify-center transition-colors ${
+                    standalone
+                      ? "lg:h-auto lg:min-h-[40px] lg:justify-start lg:rounded-none lg:border-b lg:border-b-[var(--line)] lg:border-l-2 lg:border-l-transparent lg:pr-0 lg:pl-3 lg:py-2.5 lg:text-left"
+                      : ""
+                  } ${
                     activeCategory === cat.id
-                      ? "bg-[var(--ink)] text-[var(--bg)]"
+                      ? standalone
+                        ? "bg-[var(--ink)] text-[var(--bg)] lg:bg-transparent lg:text-primary lg:font-semibold lg:border-l-[rgb(var(--accent-base))]"
+                        : "bg-[var(--ink)] text-[var(--bg)]"
                       : "text-secondary hover:text-primary"
                   }`}
                 >
@@ -176,7 +208,11 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           </div>
         </Reveal>
 
-        <Reveal delay={0.12} y={32}>
+        <Reveal
+          delay={0.12}
+          y={32}
+          className={standalone ? "lg:col-start-2 lg:row-start-1 lg:row-span-2" : undefined}
+        >
           {/* Pasa de cristal a papel, pero NO a retícula: dentro hay un
               acordeón de trece preguntas que se abren y se cierran, y una
               superficie es lo que dice «aquí se actúa». Una retícula
@@ -186,7 +222,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               el desenfoque y lo deja en un fondo plano sin grano, que es
               justo lo que hacía que esta caja se viera apagada al lado
               de las secciones de papel de la misma página. */}
-          <div className={`relative mt-8 max-w-3xl border-t border-[var(--line)] ${standalone ? "" : "mx-auto"}`}>
+          <div className={`relative mt-8 max-w-3xl border-t border-[var(--line)] ${standalone ? "lg:max-w-none" : "mx-auto"}`}>
             {noResults ? (
               /* ───── No-results panel — links to the GlossaryModal ───── */
               <div className="relative px-4 py-12 text-center">
@@ -238,17 +274,21 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           like "What's the difference between Core and Pro?"
                           on a 375px viewport without pushing the chevron
                           off the right edge. */}
-                      <span className="min-w-0 break-words">
+                      {/* Sangría francesa: el número en su propia celda y la
+                          pregunta en la suya. Con los dos en el mismo flujo
+                          en línea, la segunda línea de una pregunta larga
+                          volvía al margen y se metía debajo del número. */}
+                      <span className="flex min-w-0 items-baseline gap-2.5">
                         <span
-                          className="tnum mr-2.5 text-[12px] font-semibold text-tertiary"
+                          className="tnum shrink-0 text-[12px] font-semibold text-tertiary"
                           aria-hidden
                         >
                           {String(i + 1).padStart(2, "0")}
                         </span>
-                        {item.q}
+                        <span className="min-w-0 break-words">{item.q}</span>
                       </span>
                     </AccordionTrigger>
-                    <AccordionContent className="text-secondary leading-relaxed text-[0.95rem] pb-5">
+                    <AccordionContent className="max-w-[68ch] text-secondary leading-relaxed text-[0.95rem] pb-5">
                       {item.a}
                     </AccordionContent>
                   </AccordionItem>
@@ -261,8 +301,11 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
         {/* Glossary trigger — reinforces the frozen-glossary philosophy.
             Same controlled instance powers the "no results" link above. */}
-        <Reveal delay={0.26}>
-          <div className={`mt-6 ${standalone ? "-ml-3" : "text-center"}`}>
+        <Reveal
+          delay={0.26}
+          className={standalone ? "lg:col-start-1 lg:row-start-2 lg:self-start" : undefined}
+        >
+          <div className={`mt-6 ${standalone ? "-ml-3 lg:ml-0 lg:mt-4" : "text-center"}`}>
             <GlossaryModal
               open={glossaryOpen}
               onOpenChange={setGlossaryOpen}
@@ -273,7 +316,9 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                      enlace suelto en mitad de un párrafo, y medía 20 px
                      de alto. El relleno lateral además separa el foco
                      del texto para que el anillo no lo estrangule. */
-                  className="min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px]"
+                  className={`min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px] ${
+                    standalone ? "text-left" : ""
+                  }`}
                 >
                   {es
                     ? "¿No encuentras tu término? Consulta el glosario →"
@@ -283,6 +328,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
             />
           </div>
         </Reveal>
+        </div>
       </div>
     </section>
   );

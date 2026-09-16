@@ -112,8 +112,8 @@ export function FaqBody() {
         titleEn="Frequently asked questions."
         titleHighlightEs="frecuentes."
         titleHighlightEn="questions."
-        subtitleEs="Todo lo que necesitas saber antes de probar CountPips o solicitar acceso anticipado. ¿No encuentras tu respuesta? Consulta el glosario o escríbenos."
-        subtitleEn="Everything you need to know before trying CountPips or requesting early access. Can't find your answer? Browse the glossary or write to us."
+        subtitleEs="Todo lo que necesitas saber antes de probar CountPips o solicitar acceso anticipado."
+        subtitleEn="Everything you need to know before trying CountPips or requesting early access."
         breadcrumbEs="FAQ"
         breadcrumbEn="FAQ"
       />

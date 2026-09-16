@@ -139,46 +139,38 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               className="mb-10"
             />
 
-            {/* Selectores: Firma y Balance */}
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-              {/* `items-stretch` y `min-h-8`, no `items-center` y `h-8`. Con
-                  alto FIJO, "FTMO (Drawdown estático)" envolvía a tres líneas
-                  a 390 px y la tercera —"estático)"— se salía por debajo del
-                  fondo de su propia ficha, encima de la fila de importes. Es
-                  el mismo fallo que el deslizador de 36 px de la sexta tanda:
-                  una altura escrita a mano que el contenido desborda. Con el
-                  mínimo, la ficha crece y las tres comparten la más alta. */}
-              <div className="flex items-stretch gap-1 p-1 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+            {/* Selectores: Firma y Balance. Los dos son ya el conmutador
+                segmentado del sitio —el mismo que el selector de setups de
+                más abajo y los del proyector—. Eran dos fichas hechas a
+                mano que ni siquiera coincidían entre sí puestas una al lado
+                de la otra: la de firma pintaba el elegido con el acento y
+                la de importe con la tinta. */}
+            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:flex-wrap sm:items-start sm:gap-4">
+              <div className="tj-segmentado tj-segmentado-apila sm:max-w-2xl sm:flex-1" role="group">
                 {PROP_FIRMS.map((f) => (
                   <button
                     key={f.id}
                     type="button"
+                    aria-pressed={selectedFirm === f.id}
                     onClick={() => setSelectedFirm(f.id)}
-                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[4px] text-xs font-semibold leading-tight text-center transition-all ${
-                      selectedFirm === f.id
-                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))]"
-                        : "text-secondary hover:text-primary"
-                    }`}
+                    className="toque-comodo"
                   >
                     {f.name} ({es ? f.typeEs : f.typeEn})
                   </button>
                 ))}
               </div>
 
-              <div className="flex items-stretch gap-1 p-1 rounded-[4px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)]">
+              <div className="tj-segmentado" role="group">
                 {PROP_BALANCES.map((bal) => (
                   <button
                     key={bal}
                     type="button"
+                    aria-pressed={propBalance === bal}
                     onClick={() => {
                       setPropBalance(bal);
                       setCurrentEquity(bal * 1.035);
                     }}
-                    className={`toque-comodo min-h-8 px-3 py-1.5 rounded-[4px] text-xs font-semibold leading-tight tnum transition-all ${
-                      propBalance === bal
-                        ? "bg-primary text-[var(--surface)]"
-                        : "text-secondary hover:text-primary"
-                    }`}
+                    className="toque-comodo"
                   >
                     {es ? `${bal / 1000}\u00a0k $` : `$${bal / 1000}k`}
                   </button>

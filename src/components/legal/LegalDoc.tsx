@@ -19,9 +19,11 @@ import { titularIncompleto } from "@/lib/legal/titular";
  *   renglón al volver. Es la única razón del `max-w`.
  * · Cada sección lleva su ancla propia, para poder enlazar una cláusula
  *   concreta desde un correo o desde el aviso de cookies.
- * · El índice va arriba y no en una columna lateral fija: en móvil una
- *   columna lateral se convierte en un bloque enorme antes del contenido,
- *   y estos documentos ya son largos de por sí.
+ * · El índice va a un raíl lateral SÓLO desde `lg`. En móvil una columna
+ *   lateral se convierte en un bloque enorme antes del contenido, y estos
+ *   documentos ya son largos de por sí, así que ahí sigue arriba; en
+ *   escritorio, donde sobraba media pantalla a la derecha, acompaña al
+ *   desplazamiento y sirve para saltar de cláusula a cláusula.
  *
  * ── El aviso de borrador ──────────────────────────────────────────────
  * Sale mientras falten los datos fiscales del titular. No es decorativo:
@@ -49,7 +51,15 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
       className="section-tight"
     >
       <div className="tj-container">
-        <div className="w-full max-w-[68ch]">
+        {/* A 1.440 px el documento entero medía 68 caracteres pegados al
+            margen izquierdo y la mitad derecha de la página quedaba en
+            blanco. Desde `lg` el índice se va a un raíl que acompaña al
+            desplazamiento —así sirve para lo que existe, saltar de
+            cláusula a cláusula en un texto largo— y el cuerpo conserva su
+            medida. Por debajo de `lg` no cambia nada: el índice sigue
+            arriba, entre la entradilla y la primera sección. */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,68ch)_minmax(0,15rem)] lg:items-start lg:gap-x-14">
+        <div className="w-full max-w-[68ch] lg:col-start-1 lg:row-start-1">
           {/* Entradilla — lo que hay que saber sin leer el documento. */}
           <Reveal>
             <p className="m-0 text-[17px] leading-relaxed text-secondary">
@@ -78,11 +88,16 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
             </Reveal>
           )}
 
+        </div>
+
           {/* Índice */}
-          <Reveal delay={0.1}>
+          <Reveal
+            delay={0.1}
+            className="lg:sticky lg:top-28 lg:col-start-2 lg:row-start-1 lg:row-span-2"
+          >
             <nav
               aria-label={es ? "Índice del documento" : "Document contents"}
-              className="mt-10 rounded-[4px] border p-5"
+              className="mt-10 rounded-[4px] border p-5 lg:mt-0 lg:border-0 lg:p-0"
               style={{ borderColor: "rgb(var(--divider) / 0.12)" }}
             >
               <p className="eyebrow m-0">{es ? "Contenido" : "Contents"}</p>
@@ -94,7 +109,11 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
                   <li key={s.id}>
                     <a
                       href={`#${s.id}`}
-                      className="link-underline-host flex min-h-[44px] items-center gap-2.5 text-[14px] text-secondary transition-colors hover:text-primary"
+                      /* `items-baseline`, no `items-center`: con un
+                         título de dos líneas el número se quedaba
+                         flotando entre las dos en vez de junto a la
+                         primera. */
+                      className="link-underline-host flex min-h-[44px] items-baseline gap-2.5 py-2 text-[14px] text-secondary transition-colors hover:text-primary"
                     >
                       <span
                         className="tnum shrink-0 text-[13px] font-semibold"
@@ -113,7 +132,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           </Reveal>
 
           {/* Secciones */}
-          <div className="mt-12 flex flex-col gap-11">
+          <div className="mt-12 flex w-full max-w-[68ch] flex-col gap-11 lg:col-start-1 lg:row-start-2">
             {doc.secciones.map((s, i) => (
               <section key={s.id} id={s.id} className="scroll-mt-28">
                 <h2 className="m-0 flex items-baseline gap-3 text-[20px] font-semibold tracking-tight text-primary">

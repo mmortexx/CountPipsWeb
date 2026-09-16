@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowRight, Check, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ShieldCheck } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
@@ -38,8 +38,23 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
    De 640 px para arriba vuelve a 14 px, que es la densidad que pide un
    formulario largo en escritorio. */
-const inputClass =
-  "mt-2 min-h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]";
+const campoBase =
+  "min-h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]";
+
+const inputClass = `mt-2 ${campoBase}`;
+
+/* Los tres desplegables llevaban la flecha del sistema operativo al lado
+   de campos con el borde y el foco del sitio: dos lenguajes distintos en
+   la misma fila. Con `appearance-none` y el galon propio quedan como el
+   resto —y como los desplegables de la demo y del glosario, que ya lo
+   hacian asi—. */
+const selectClass = `${campoBase} appearance-none cursor-pointer pr-10`;
+const galonSelect = (
+  <ChevronDown
+    className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-tertiary"
+    aria-hidden="true"
+  />
+);
 
 /* WCAG 3.3.1 (identificación de errores): el resumen general en
    role="alert" dice que "algo falta", pero no cuál — quien usa lector de
@@ -336,12 +351,15 @@ export function BetaApplication() {
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-medium text-primary">
               {es ? "Experiencia" : "Experience"}
-              <select ref={experienceRef} className={`${inputClass} ${fieldBorderClass(experienceInvalid)}`} value={experience} onChange={(e) => setExperience(e.target.value)} required aria-invalid={experienceInvalid} aria-describedby={experienceInvalid ? "experience-error" : undefined}>
+              <span className="relative mt-2 block">
+                <select ref={experienceRef} className={`${selectClass} ${fieldBorderClass(experienceInvalid)}`} value={experience} onChange={(e) => setExperience(e.target.value)} required aria-invalid={experienceInvalid} aria-describedby={experienceInvalid ? "experience-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
                 <option value="under-1">{es ? "Menos de 1 año" : "Under 1 year"}</option>
                 <option value="1-3">1–3 {es ? "años" : "years"}</option>
                 <option value="3-plus">3+ {es ? "años" : "years"}</option>
               </select>
+                {galonSelect}
+              </span>
               <FieldError id="experience-error" show={experienceInvalid} message={es ? "Selecciona tu experiencia." : "Select your experience."} />
             </label>
             <label className="block text-sm font-medium text-primary">
@@ -354,24 +372,30 @@ export function BetaApplication() {
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-medium text-primary">
               {es ? "Cómo llevas hoy tu diario" : "How you journal today"}
-              <select ref={workflowRef} className={`${inputClass} ${fieldBorderClass(workflowInvalid)}`} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
+              <span className="relative mt-2 block">
+                <select ref={workflowRef} className={`${selectClass} ${fieldBorderClass(workflowInvalid)}`} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
                 <option value="spreadsheet">{es ? "Excel / Sheets" : "Excel / Sheets"}</option>
                 <option value="journal">{es ? "Otro diario" : "Another journal"}</option>
                 <option value="notes">{es ? "Notas sueltas" : "Loose notes"}</option>
                 <option value="nothing">{es ? "Todavía no" : "Not yet"}</option>
               </select>
+                {galonSelect}
+              </span>
               <FieldError id="workflow-error" show={workflowInvalid} message={es ? "Selecciona una opción." : "Select an option."} />
             </label>
             <label className="block text-sm font-medium text-primary">
               {es ? "Qué quieres mejorar primero" : "What you want to improve first"}
-              <select ref={goalRef} className={`${inputClass} ${fieldBorderClass(goalInvalid)}`} value={goal} onChange={(e) => setGoal(e.target.value)} required aria-invalid={goalInvalid} aria-describedby={goalInvalid ? "goal-error" : undefined}>
+              <span className="relative mt-2 block">
+                <select ref={goalRef} className={`${selectClass} ${fieldBorderClass(goalInvalid)}`} value={goal} onChange={(e) => setGoal(e.target.value)} required aria-invalid={goalInvalid} aria-describedby={goalInvalid ? "goal-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
                 <option value="metrics">{es ? "Métricas y edge" : "Metrics and edge"}</option>
                 <option value="discipline">{es ? "Disciplina" : "Discipline"}</option>
                 <option value="risk">{es ? "Riesgo y reglas" : "Risk and rules"}</option>
                 <option value="review">{es ? "Revisión de operaciones" : "Trade review"}</option>
               </select>
+                {galonSelect}
+              </span>
               <FieldError id="goal-error" show={goalInvalid} message={es ? "Selecciona una opción." : "Select an option."} />
             </label>
           </div>

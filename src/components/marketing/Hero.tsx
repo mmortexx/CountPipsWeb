@@ -64,7 +64,10 @@ export function Hero({ producto }: { producto?: ReactNode }) {
           <p className="m-0 text-[13px] text-tertiary">
             {es ? "Plantillas de importación CSV para" : "CSV import templates for"}
           </p>
-          <ul className="m-0 grid grid-cols-2 gap-x-8 gap-y-2 p-0 text-[15px] font-semibold tracking-[-0.01em] text-secondary sm:flex sm:flex-wrap sm:items-center sm:justify-center">
+          {/* Cinco nombres en dos columnas dejan uno suelto, y suelto en su
+              columna se centra a la izquierda del bloque: parecía
+              descolocado. El último ocupa las dos y se centra de verdad. */}
+          <ul className="m-0 grid grid-cols-2 gap-x-8 gap-y-2 p-0 text-[15px] font-semibold tracking-[-0.01em] text-secondary [&>li:last-child:nth-child(odd)]:col-span-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             {compatibles.map((c) => (
               <li key={c}>{c}</li>
             ))}

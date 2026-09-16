@@ -171,8 +171,10 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
               href="/beta"
               className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
             >
+              {/* No repite la etiqueta de los dos botones que tiene justo
+                  encima: dice a dónde lleva, que es otra cosa. */}
               <span className="link-underline">
-                {es ? "Solicitar acceso anticipado" : "Request early access"}
+                {es ? "Cómo funciona el acceso anticipado" : "How early access works"}
               </span>
             </Link>
           </p>

@@ -45,9 +45,9 @@ export function HerramientasIndice() {
             <span className="tnum text-[12px] font-semibold text-tertiary">
               {es ? "Entrega" : "Output"}
             </span>
-            <span className="tnum text-[12px] font-semibold text-tertiary">
-              {es ? "Abrir" : "Open"}
-            </span>
+            {/* La cuarta columna no lleva rótulo: decía «Abrir» encima de
+                nueve celdas que ya dicen «Abrir →». */}
+            <span />
           </div>
 
           <ul className="m-0 list-none p-0">

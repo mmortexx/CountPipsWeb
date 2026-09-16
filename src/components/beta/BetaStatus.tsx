@@ -23,7 +23,21 @@ export function ProductStatus() {
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <p className="eyebrow">{es ? "Estado del producto" : "Product status"}</p>
-            <h2 className="mt-5 t-h2 text-primary">{es ? "Lo que está listo. Y lo que aún estamos comprobando." : "What is ready. And what we are still validating."}</h2>
+            {/* La segunda frase abre línea: seguida, el salto dejaba la
+                «Y» sola al final del primer renglón. */}
+            <h2 className="mt-5 t-h2 text-primary">
+              {es ? (
+                <>
+                  Lo que está listo.{" "}
+                  <span className="block">Y lo que aún estamos comprobando.</span>
+                </>
+              ) : (
+                <>
+                  What is ready.{" "}
+                  <span className="block">And what we are still validating.</span>
+                </>
+              )}
+            </h2>
           </div>
           <div data-orden className="grid gap-3 sm:grid-cols-3">
             {rows.map(({ icon: Icon, tone, title, text }) => (

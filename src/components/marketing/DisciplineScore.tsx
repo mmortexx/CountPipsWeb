@@ -407,7 +407,11 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   className="tnum"
                   style={{ fontSize: 12, color: "var(--ink-3)" }}
                 >
-                  {es ? "Progreso" : "Progress"}
+                  {/* «Respondidas», no «Progreso»: justo debajo hay otro
+                      contador con el mismo formato —la pregunta en curso— y
+                      los dos juntos, «0 / 15» y «1 / 15», se leían como una
+                      contradiccion. */}
+                  {es ? "Respondidas" : "Answered"}
                 </span>
                 <span className="tnum" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-2)" }}>
                   {answeredCount} / {QUESTIONS.length}
@@ -533,7 +537,9 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               </button>
 
               <span className="tnum" style={{ fontSize: 13, color: "var(--ink-3)" }}>
-                {actual + 1} / {QUESTIONS.length}
+                {es
+                  ? `Pregunta ${actual + 1} de ${QUESTIONS.length}`
+                  : `Question ${actual + 1} of ${QUESTIONS.length}`}
               </span>
 
               {actual < QUESTIONS.length - 1 ? (
