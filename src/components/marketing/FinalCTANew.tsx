@@ -22,7 +22,7 @@ export function FinalCTANew({ enDemo = false }: { enDemo?: boolean } = {}) {
         <div className="tj-cierre tj-cristal">
           <h2 data-entra className="t-display m-0 mx-auto max-w-[18ch] text-balance">
             {es ? "Deja de operar a ciegas." : "Stop trading blind."}{" "}
-            <span className="tj-cierre-tenue">{es ? "Mira cómo se mide." : "See how it is measured."}</span>
+            <span className="tj-cierre-tenue tj-frase-nueva">{es ? "Mira cómo se mide." : "See how it is measured."}</span>
           </h2>
           <p data-entra="2" className="mx-auto mt-6 mb-0 max-w-[34rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
             {es

@@ -84,7 +84,7 @@ export function GlosarioBody() {
         /* La cifra sale de la lista: escrita a mano llegó a contradecir
            al contador de la caja de búsqueda. */
         subtitleEs={`${TERMINOS.length} términos, definidos como los usa alguien que opera y no como los define un diccionario. El nombre se queda en inglés a propósito: es como aparecen en tu plataforma y en cualquier comunidad.`}
-        subtitleEn={`${TERMINOS.length} terms, defined the way someone who trades uses them rather than the way a dictionary does. The name stays in English on purpose: that is how they appear on your platform and in any community.`}
+        subtitleEn={`${TERMINOS.length} terms, defined the way someone who trades uses them rather than the way a dictionary does. Grouped into five families, each one written to be read in under a minute.`}
         breadcrumbEs="Glosario"
         breadcrumbEn="Glossary"
       />

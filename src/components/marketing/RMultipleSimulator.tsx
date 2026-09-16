@@ -311,11 +311,11 @@ export function RMultipleSimulator() {
           <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
-                El edge existe. <span className="text-[rgb(var(--accent-base))]">La varianza</span>, también.
+                El edge existe. <span className="text-gradient tj-frase-nueva">La varianza, también.</span>
               </>
             ) : (
               <>
-                The edge is real. <span className="text-[rgb(var(--accent-base))]">So is variance.</span>
+                The edge is real. <span className="text-gradient tj-frase-nueva">So is variance.</span>
               </>
             )}
           </h2>

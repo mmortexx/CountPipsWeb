@@ -112,7 +112,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "Can I see the product before requesting access?",
-    a: "Yes. Explore the live demo with deterministic data, no signup and nothing to download. The desktop installer is delivered only to invited private-pilot participants.",
+    a: "Yes. Explore the live demo with deterministic data, no sign-up and nothing to download. The desktop installer is delivered only to invited private-pilot participants.",
   },
   {
     q: "What's the difference between Core and Pro?",

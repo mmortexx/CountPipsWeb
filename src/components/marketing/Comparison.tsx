@@ -43,7 +43,7 @@ const ROWS: Row[] = [
       { es: "Tuyo", en: "Yours" },
     ],
   },
-  { labelEs: "Español nativo", labelEn: "Native Spanish", cells: ["yes", "partial", "yes"] },
+  { labelEs: "Español nativo", labelEn: "Native Spanish and English", cells: ["yes", "partial", "yes"] },
   { labelEs: "Sin crear una cuenta", labelEn: "No account to create", cells: ["yes", "no", "yes"] },
   { labelEs: "Modo prop firm", labelEn: "Prop firm mode", cells: ["yes-pro", "partial", "no"] },
 ];

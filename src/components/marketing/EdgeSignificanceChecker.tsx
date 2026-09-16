@@ -219,11 +219,11 @@ export function EdgeSignificanceChecker() {
           <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
-                ¿Tu win rate es <span className="text-[rgb(var(--accent-base))]">real</span> o es suerte?
+                ¿Tu win rate es <span className="text-gradient">real</span> o es suerte?
               </>
             ) : (
               <>
-                Is your win rate <span className="text-[rgb(var(--accent-base))]">real</span> or luck?
+                Is your win rate <span className="text-gradient">real</span> or luck?
               </>
             )}
           </h2>

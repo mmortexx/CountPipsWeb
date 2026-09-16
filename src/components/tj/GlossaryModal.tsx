@@ -246,12 +246,12 @@ export function GlossaryModal({
           >
             {es
               ? "Términos de trading, sin traducir"
-              : "Trading terms, untranslated"}
+              : "Trading terms, in plain words"}
           </DialogTitle>
           <p className="text-sm text-secondary leading-relaxed">
             {es
               ? "Los términos se mantienen en inglés aunque la app esté en español: es la lengua franca de los mercados. Solo la definición cambia de idioma."
-              : "Terms stay in English even when the app is in Spanish: it is the lingua franca of the markets. Only the definition changes language."}
+              : "Every term the app uses, defined the way someone who trades uses it rather than the way a dictionary does."}
           </p>
         </DialogHeader>
 

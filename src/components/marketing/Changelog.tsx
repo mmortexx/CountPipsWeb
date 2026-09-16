@@ -76,7 +76,7 @@ export function Changelog() {
           version: "01",
           title: "Public demo",
           description:
-            "An interactive, deterministic walkthrough to understand the product with no signup or install.",
+            "An interactive, deterministic walkthrough to understand the product with no sign-up or install.",
           date: "Delivered",
           stage: "delivered",
         },
@@ -84,7 +84,7 @@ export function Changelog() {
           version: "02",
           title: "Desktop app",
           description:
-            "Minimum product finished: journal, metrics, risk, psychology, prop firm mode, tax module and Markets terminal. Before sales open it still needs the store, installer signing and the end-user licence.",
+            "The minimum product is finished: journal, metrics, risk, psychology, prop firm mode, tax module and Markets terminal. Before sales open it still needs the store, installer signing and the end-user licence.",
           date: "Built",
           stage: "delivered",
         },

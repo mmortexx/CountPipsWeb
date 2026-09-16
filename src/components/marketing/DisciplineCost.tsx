@@ -275,7 +275,7 @@ export function DisciplineCost() {
                       min={0}
                       value={inPlanExp}
                       onChange={(e) => setInPlanExp(Number(e.target.value))}
-                      className="w-full h-9 rounded-[4px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-primary tnum outline-none focus:border-[rgb(var(--accent-base))]"
+                      className="w-full h-11 sm:h-9 rounded-[4px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-primary tnum outline-none focus:border-[rgb(var(--accent-base))]"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
                   </div>
@@ -293,7 +293,7 @@ export function DisciplineCost() {
                       max={0}
                       value={offPlanExp}
                       onChange={(e) => setOffPlanExp(Number(e.target.value))}
-                      className="w-full h-9 rounded-[4px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-[rgb(var(--pnl-neg))] tnum outline-none focus:border-[rgb(var(--pnl-neg))]"
+                      className="w-full h-11 sm:h-9 rounded-[4px] bg-[rgb(var(--divider)/0.04)] px-3 text-sm text-[rgb(var(--pnl-neg))] tnum outline-none focus:border-[rgb(var(--pnl-neg))]"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
                   </div>
