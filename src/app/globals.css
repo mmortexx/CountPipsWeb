@@ -1159,6 +1159,21 @@
     }
   }
 
+  /* El mismo listón donde el control NO puede crecer. Un interruptor de
+     40 × 24 px es del tamaño que es —estirarlo a 44 lo convierte en otra
+     cosa—, así que lo que crece es la zona que recoge el dedo, con un
+     pseudoelemento que no se ve ni ocupa sitio en el flujo. */
+  @media (pointer: coarse) {
+    .toque-halo {
+      position: relative;
+    }
+    .toque-halo::after {
+      content: "";
+      position: absolute;
+      inset: -10px;
+    }
+  }
+
   /* ============================================================
      UNA CIFRA NO PUEDE EMPUJAR SU CELDA
      ============================================================
@@ -3594,6 +3609,14 @@ html:has(.tj-visor[open]) {
 .tj-segmento button[aria-selected="true"] {
   color: var(--ink);
 }
+/* Con el dedo, 44 px — lo mismo que hace `.tj-segmentado`. Este otro
+   conmutador se había quedado fuera: medido a 390 px, «Curva de capital»
+   y «Distribución de R» daban 34 px de alto. */
+@media (pointer: coarse) {
+  .tj-segmento button {
+    min-height: 44px;
+  }
+}
 .tj-metricas-vista {
   margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
 }
@@ -3782,6 +3805,13 @@ html:has(.tj-visor[open]) {
   gap: 0.5rem;
   min-height: 2rem;
   cursor: pointer;
+}
+/* Con el dedo, 44 px. La casilla mide 18 y su etiqueta daba 32: son las
+   dos series del gráfico de la portada, y se tocan en un móvil. */
+@media (pointer: coarse) {
+  .tj-curva-leyenda label {
+    min-height: 44px;
+  }
 }
 .tj-curva-leyenda input {
   appearance: none;

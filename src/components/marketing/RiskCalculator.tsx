@@ -425,7 +425,7 @@ export function RiskCalculator() {
               role="switch"
               aria-checked={includeFriction}
               aria-label={es ? "Deducir fricción de ejecución" : "Deduct execution friction"}
-              className={`relative h-6 w-10 shrink-0 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+              className={`toque-halo relative h-6 w-10 shrink-0 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                 includeFriction ? "bg-[var(--ink)]" : "bg-[color-mix(in_srgb,var(--ink)_14%,transparent)]"
               }`}
             >

@@ -78,7 +78,11 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
                 {es ? "Calendario de P&L" : "P&L calendar"}
               </span>
             </div>
-            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary">
+            {/* Las dos tarjetas van a la par y sus titulares medían una
+                línea y dos: todo lo que colgaba debajo quedaba desfasado
+                unos 27 px entre una y otra. Con el alto de dos líneas
+                reservado, las dos empiezan a contar a la misma altura. */}
+            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary md:min-h-[2.4em] md:[text-wrap:balance]">
               {es ? "Cada día, en un vistazo" : "Every day, at a glance"}
             </h3>
             {/* Mes + iniciales de los días. `cal.label` y `cal.chip` se
@@ -185,7 +189,7 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
                 {es ? "Rendimiento por hora" : "Hourly performance"}
               </span>
             </div>
-            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary">
+            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary md:min-h-[2.4em] md:[text-wrap:balance]">
               {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
             </h3>
             {/* Bar chart hardcoded 24 barras (horas) */}

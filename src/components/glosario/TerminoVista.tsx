@@ -45,6 +45,13 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
       className="section-tight"
     >
       <div className="tj-container">
+        {/* A 1.440 px la ficha medía 62 caracteres pegados al margen y
+            dejaba vacía la mitad derecha de la página. Desde `lg` los
+            términos vecinos se van a un raíl a la derecha: la medida de
+            lectura se conserva, la página se equilibra y lo que antes
+            había que buscar al final queda a la vista junto a la
+            definición. Por debajo de `lg` no cambia nada. */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,62ch)_minmax(0,17rem)] lg:items-start lg:gap-x-14">
         <div className="w-full max-w-[62ch]">
           {/* Definición */}
           <Reveal>
@@ -125,10 +132,12 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             </p>
           </Reveal>
 
+        </div>
+
           {/* Vecinos de familia */}
           {cercanos.length > 0 && (
-            <Reveal delay={0.18}>
-              <div className="mt-12">
+            <Reveal delay={0.18} className="lg:col-start-2 lg:row-start-1">
+              <div className="mt-12 lg:mt-0">
                 <p className="eyebrow m-0">
                   {es ? "De la misma familia" : "Same family"}
                 </p>
@@ -137,7 +146,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                     <li key={t.slug}>
                       <Link
                         href={`/glosario/${t.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5"
+                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:grid-cols-1 lg:gap-1"
                       >
                         <span
                           lang="en"
@@ -157,7 +166,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           )}
 
           {/* Hojear el glosario entero */}
-          <Reveal delay={0.22}>
+          <Reveal delay={0.22} className="lg:col-start-1 lg:row-start-2 lg:max-w-[62ch]">
             <nav
               aria-label={es ? "Recorrer el glosario" : "Browse the glossary"}
               className="mt-12 flex items-stretch justify-between gap-3 border-t border-[rgb(var(--divider)/0.1)] pt-6"
