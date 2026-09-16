@@ -44,24 +44,14 @@ export function DataFlowComparison() {
               {es ? "FLUJO DE DATOS" : "DATA FLOW"}
             </span>
           </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.85rem, 3.3vw, 2.8rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.1,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="t-h2 m-0 text-primary">
             {es ? (
               <>
-                Añade una operación. <span style={{ color: "rgb(var(--accent-base))" }}>Mira a dónde va.</span>
+                Añade una operación. <span className="text-gradient">Mira a dónde va.</span>
               </>
             ) : (
               <>
-                Add a trade. <span style={{ color: "rgb(var(--accent-base))" }}>Watch where it goes.</span>
+                Add a trade. <span className="text-gradient">Watch where it goes.</span>
               </>
             )}
           </h2>

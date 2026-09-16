@@ -408,6 +408,9 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
 
   const pista: Record<Exclude<Enfoque, null>, Vista> = { maxDd: "curva", expectancy: "dist", winRate: "dist" };
 
+  /* 32 px y no `t-h2` (48): esto titula un panel dentro de la portada, no una
+     sección, y al tamaño de sección competiría con el titular del hero. Es la
+     única excepción a la escala en toda la web de marketing. */
   const titulo = (
     <h2
       className={enPagina ? "sr-only" : "m-0 font-serif text-[clamp(1.5rem,2.4vw,2rem)] font-normal leading-[1.12] tracking-[-0.02em] text-primary text-balance"}

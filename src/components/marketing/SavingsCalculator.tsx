@@ -121,7 +121,7 @@ export function SavingsCalculator() {
 
   return (
     <section className="section-tight">
-      <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:items-start">
         {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">

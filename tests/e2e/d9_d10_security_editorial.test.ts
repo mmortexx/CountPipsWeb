@@ -303,9 +303,10 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
       const vistaCode = leer("src/components/herramientas/HerramientaVista.tsx");
 
       // Verify explicit disclaimer in HerramientaVista
-      expect(vistaCode).toContain("Esta herramienta calcula a partir de lo que tú escribes");
+      // Se comprueba la parte que obliga la ley, no la redacción entera: el
+      // texto de alrededor puede reescribirse y esta prueba sólo debe caer si
+      // desaparece el descargo.
       expect(vistaCode).toContain("No es asesoramiento financiero");
-      expect(vistaCode).toContain("This tool computes from what you type");
       expect(vistaCode).toContain("It is not financial advice");
       expect(vistaCode).toContain("/terminos#no-advice");
     });

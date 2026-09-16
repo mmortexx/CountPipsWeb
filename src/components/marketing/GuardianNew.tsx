@@ -390,25 +390,17 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           )}
           <Reveal delay={0.06}>
             <h2
-              className={enPagina ? "sr-only" : "font-serif m-0"}
-              style={{
-                fontSize: "clamp(1.75rem, 3.6vw, 3rem)",
-                fontWeight: 400,
-                letterSpacing: "-0.022em",
-                lineHeight: 1.08,
-                color: "var(--ink)",
-                textWrap: "balance",
-              }}
+              className={enPagina ? "sr-only" : "t-h2 m-0 text-primary"}
             >
               {es ? (
                 <>
-                  Disciplina que <span style={{ color: "rgb(var(--accent-base))" }}>actúa</span>,
+                  Disciplina que <span className="text-gradient">actúa</span>,
                   <br className="hidden sm:block" />
                   {" "}no que sermonea.
                 </>
               ) : (
                 <>
-                  Discipline that <span style={{ color: "rgb(var(--accent-base))" }}>acts</span>,
+                  Discipline that <span className="text-gradient">acts</span>,
                   <br className="hidden sm:block" />
                   {" "}not lectures.
                 </>

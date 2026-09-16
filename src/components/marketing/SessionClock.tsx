@@ -9,11 +9,17 @@ import { PLAZAS, estaAbierta, horaLocal, proximaApertura, ventanaUtc, type Plaza
  * Reloj de sesiones con los horarios locales de la app de escritorio: cada plaza
  * se evalúa en su zona, con cambio de hora, y cierra en fin de semana.
  */
-const COLOR: Record<Plaza["id"], string> = {
-  sydney: "rgb(var(--sig-purple, 168 85 247))",
-  tokyo: "rgb(var(--sig-amber))",
-  london: "rgb(var(--accent-base))",
-  newyork: "rgb(var(--pnl-pos))",
+/* Cuatro plazas NO son cuatro categorías que haga falta colorear: el morado,
+   el ámbar y el verde que había aquí eran los únicos de su color en todo el
+   sitio, y dos de ellos ya significan otra cosa —el ámbar avisa y el verde es
+   dinero ganado—. Lo único que el lector necesita distinguir es abierta de
+   cerrada, y eso se dice con la intensidad de la tinta. Las bandas siguen
+   siendo separables porque cada una va en su fila y lleva su nombre dentro. */
+const TINTA_CERRADA: Record<Plaza["id"], number> = {
+  sydney: 14,
+  tokyo: 18,
+  london: 22,
+  newyork: 26,
 };
 
 type Ventana = { id: string; es: string; en: string; tz: string; abre: number; cierra: number; notaEs: string; notaEn: string };
@@ -71,7 +77,7 @@ export function SessionClock() {
     const fecha = new Date(minuto * 60_000);
     const plazas = PLAZAS.map((p) => {
       const v = ventanaUtc(p, fecha);
-      return { ...p, color: COLOR[p.id], desdeUtc: v.desde / 60, hastaUtc: v.hasta / 60, abierta: listo && estaAbierta(p, fecha) };
+      return { ...p, tintaCerrada: TINTA_CERRADA[p.id], desdeUtc: v.desde / 60, hastaUtc: v.hasta / 60, abierta: listo && estaAbierta(p, fecha) };
     });
     const ventanas = VENTANAS.map((v) => {
       const { minuto: m, dia, desfase } = horaLocal(v.tz, fecha);
@@ -165,7 +171,7 @@ export function SessionClock() {
             return (
               <li key={p.id} className="border-t border-[var(--line)] py-4 sm:pr-6">
                 <div className="flex items-center gap-2 text-[13px]" style={{ color: open ? "var(--ink)" : "var(--ink-3)" }}>
-                  <span aria-hidden className="h-2 w-2 rounded-[2px]" style={{ background: open ? p.color : "color-mix(in srgb, var(--ink) 20%, transparent)" }} />
+                  <span aria-hidden className="h-2 w-2 rounded-[2px]" style={{ background: open ? "var(--ink)" : "color-mix(in srgb, var(--ink) 20%, transparent)" }} />
                   {open ? (es ? "Abierta" : "Open") : (es ? "Cerrada" : "Closed")}
                 </div>
                 <div className="mt-2 text-[20px] font-semibold tracking-[-0.01em] text-primary">{nombre(p)}</div>
@@ -206,7 +212,7 @@ export function SessionClock() {
                     top: 4 + i * 22,
                     left: `${pct(a)}%`,
                     width: `${pct(b - a)}%`,
-                    background: `color-mix(in oklab, ${p.color} ${open ? "55%" : "22%"}, transparent)`,
+                    background: `color-mix(in oklab, var(--ink) ${open ? 55 : p.tintaCerrada}%, transparent)`,
                   }}
                   aria-label={k === principal ? `${nombre(p)} ${enRef(p.desdeUtc)}–${enRef(p.hastaUtc)}` : undefined}
                   aria-hidden={k !== principal || undefined}
@@ -254,7 +260,7 @@ export function SessionClock() {
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-[15px] font-medium text-primary">
                     {nombre(v)}
-                    {activa && <span className="ml-2 text-[12px] font-normal text-[rgb(var(--pnl-pos))]">{es ? "ahora" : "now"}</span>}
+                    {activa && <span className="ml-2 text-[12px] font-normal text-[rgb(var(--accent-base))]">{es ? "ahora" : "now"}</span>}
                   </span>
                   <span className="tnum text-[13px] text-tertiary">
                     {enRef(v.desdeUtc)}–{enRef(v.hastaUtc)}
@@ -266,7 +272,7 @@ export function SessionClock() {
           })}
         </ul>
 
-        <p className="mt-6 mb-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
+        <p className="mt-6 mb-0 max-w-[92ch] text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
           {es
             ? "Horario de cada plaza en su hora local, el mismo que usa la app: 7:00–17:00 en Sídney, 8:00–17:00 en Tokio, 8:00–16:30 en Londres y 9:30–16:00 en Nueva York, de lunes a viernes. No es el horario de un bróker concreto."
             : "Each market's hours in its local time, the same the app uses: 7:00–17:00 in Sydney, 8:00–17:00 in Tokyo, 8:00–16:30 in London and 9:30–16:00 in New York, Monday to Friday. Not the schedule of any specific broker."}

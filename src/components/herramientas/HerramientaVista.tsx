@@ -72,12 +72,12 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
         className="section-tight"
       >
         <div className="tj-container">
-          <div className="max-w-[62ch]">
+          <div>
             <Reveal>
-              <p className="m-0 text-[14px] leading-relaxed text-tertiary">
+              <p className="m-0 max-w-[62ch] text-[14px] leading-relaxed text-tertiary">
                 {es
-                  ? "Esta herramienta calcula a partir de lo que tú escribes. No es asesoramiento financiero ni una recomendación de operar: "
-                  : "This tool computes from what you type. It is not financial advice or a recommendation to trade: "}
+                  ? "Lo que calcula esta herramienta es orientativo. No es asesoramiento financiero ni una recomendación de operar: "
+                  : "What this tool computes is indicative. It is not financial advice or a recommendation to trade: "}
                 <Link
                   href="/terminos#no-advice"
                   className="link-underline-host -my-2 inline-flex py-2 text-secondary transition-colors hover:text-primary"
@@ -95,12 +95,12 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                 <p className="eyebrow m-0">
                   {es ? "Otras herramientas" : "Other tools"}
                 </p>
-                <ul className="mt-4 border-t border-[var(--line)] p-0">
+                <ul className="mt-4 grid list-none border-t border-[var(--line)] p-0 lg:grid-cols-2 lg:gap-x-14">
                   {otras.map((h) => (
                     <li key={h.slug} className="border-b border-[var(--line)]">
                       <Link
                         href={`/herramientas/${h.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 gap-1 py-3.5 transition-colors sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5"
+                        className="group grid min-h-[52px] grid-cols-1 gap-1 py-3.5 transition-colors sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5 lg:grid-cols-1 lg:gap-1"
                       >
                         <span className="text-[14px] font-semibold text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]">
                           {es ? h.tituloEs : h.tituloEn}

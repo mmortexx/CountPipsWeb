@@ -366,24 +366,14 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               {es ? "DIAGNÓSTICO" : "DIAGNOSIS"}
             </span>
           </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(1.95rem, 3.5vw, 3rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.08,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="t-h2 m-0 text-primary">
             {es ? (
               <>
-                Mídete. <span style={{ color: "rgb(var(--accent-base))" }}>Por dónde flojeas.</span>
+                Mídete. <span className="text-gradient">Por dónde flojeas.</span>
               </>
             ) : (
               <>
-                Measure yourself. <span style={{ color: "rgb(var(--accent-base))" }}>Where you're weak.</span>
+                Measure yourself. <span className="text-gradient">Where you're weak.</span>
               </>
             )}
           </h2>
