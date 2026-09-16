@@ -53,7 +53,7 @@ export function ProfileSelector() {
         <div className="max-w-2xl">
           <p className="eyebrow">{es ? "Elige tu recorrido" : "Choose your path"}</p>
           <h2 id="profile-selector-title" className="t-h2 mt-4 text-primary text-balance">
-            {es ? <>Dos formas de operar. <span className="text-gradient">Una lectura mejor.</span></> : <>Two ways to trade. <span className="text-gradient">One clearer read.</span></>}
+            {es ? <>Dos formas de operar. <span className="text-gradient tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="text-gradient tj-frase-nueva">One clearer read.</span></>}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-secondary md:text-lg">
             {es ? "Selecciona el contexto que más se parece al tuyo y adapta la demostración a las decisiones que realmente tomas." : "Select the context closest to yours and adapt the demonstration to the decisions you actually make."}

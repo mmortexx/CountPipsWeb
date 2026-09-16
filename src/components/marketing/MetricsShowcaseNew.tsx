@@ -499,7 +499,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
           })}
         </ul>
       </div>
-      <p className="relative m-0 mt-4 text-center text-[12px] leading-[1.5] text-tertiary">
+      <p className="relative m-0 mt-4 mx-auto max-w-[80ch] text-center text-[12px] leading-[1.5] text-tertiary">
         {es
           ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
           : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualized.`}

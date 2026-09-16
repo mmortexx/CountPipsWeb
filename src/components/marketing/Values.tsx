@@ -51,8 +51,12 @@ const VALUES: Value[] = [
     icon: <CoinIcon />,
   },
   {
-    titleEs: "Disciplina > métricas",
-    titleEn: "Discipline > metrics",
+    /* Se escribía «Disciplina > métricas». Entre tres titulares que son
+       frases —«Local siempre», «Demo honesta, sin atajos», «Hecho por un
+       trader, para traders»— un operador suelto se lee como código a
+       medio escribir, no como un principio. */
+    titleEs: "Disciplina antes que métricas",
+    titleEn: "Discipline before metrics",
     descEs:
       "Las métricas sin disciplina son ruido. El Guardián te avisa antes de romper tus reglas y, si lo activas, te frena.",
     descEn:
@@ -109,7 +113,7 @@ export function Values() {
           {VALUES.map((v, i) => (
             <Reveal key={v.href} delay={0.1 + i * 0.08} className="h-full">
               <article
-                className={`group relative h-full border-b border-[var(--line)] py-8 md:py-10 ${
+                className={`group relative flex h-full flex-col border-b border-[var(--line)] py-8 md:py-10 ${
                   i % 2 === 1 ? "md:border-l md:pl-12" : "md:pr-12"
                 }`}
               >
@@ -124,9 +128,13 @@ export function Values() {
                   {es ? v.descEs : v.descEn}
                 </p>
 
+                {/* `mt-auto`: los cuerpos miden dos o tres líneas, así que
+                    las dos flechas de una misma fila se quedaban a
+                    distinta altura. Pegadas al fondo de la celda, la
+                    rejilla vuelve a tener renglones. */}
                 <Link
                   href={v.href}
-                  className="mt-2 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-primary outline-none transition-colors duration-200 hover:text-secondary focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
+                  className="mt-auto pt-2 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-primary outline-none transition-colors duration-200 hover:text-secondary focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                 >
                   {es ? v.pruebaEs : v.pruebaEn}
                   <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>

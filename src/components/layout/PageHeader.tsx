@@ -59,7 +59,7 @@ export function PageHeader({
         >
           <Link
             href="/"
-            className="-my-2 inline-flex min-h-[44px] items-center rounded-[3px] py-2 pr-1 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            className="-my-2 inline-flex min-h-[44px] items-center rounded-[4px] py-2 pr-1 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
           >
             {es ? "Inicio" : "Home"}
           </Link>

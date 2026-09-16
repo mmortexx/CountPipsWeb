@@ -23,18 +23,16 @@ export function ProductStatus() {
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
             <p className="eyebrow">{es ? "Estado del producto" : "Product status"}</p>
-            {/* La segunda frase abre línea: seguida, el salto dejaba la
-                «Y» sola al final del primer renglón. */}
             <h2 className="mt-5 t-h2 text-primary">
               {es ? (
                 <>
                   Lo que está listo.{" "}
-                  <span className="block">Y lo que aún estamos comprobando.</span>
+                  <span className="tj-frase-nueva">Y lo que aún estamos comprobando.</span>
                 </>
               ) : (
                 <>
                   What is ready.{" "}
-                  <span className="block">And what we are still validating.</span>
+                  <span className="tj-frase-nueva">And what we are still validating.</span>
                 </>
               )}
             </h2>

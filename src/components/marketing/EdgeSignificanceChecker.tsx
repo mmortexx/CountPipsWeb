@@ -337,19 +337,19 @@ export function EdgeSignificanceChecker() {
               {es ? `Muestra requerida según confianza (margen ±5${PCT})` : "Required sample by confidence (margin ±5%)"}
             </span>
             <div className="grid grid-cols-3 gap-2 text-center text-xs tnum">
-              <div className="p-1.5 rounded-[6px] bg-[rgb(var(--divider)/0.04)]">
+              <div className="p-1.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)]">
                 <span className="block text-[11px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
                 <span className={`font-bold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample90} ops
                 </span>
               </div>
-              <div className="p-1.5 rounded-[6px] bg-[var(--chip)] border border-transparent">
+              <div className="p-1.5 rounded-[4px] bg-[var(--chip)] border border-transparent">
                 <span className="block text-[11px] text-[rgb(var(--accent-base))] font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
                 <span className={`font-bold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
                   {c.minSample95} ops
                 </span>
               </div>
-              <div className="p-1.5 rounded-[6px] bg-[rgb(var(--divider)/0.04)]">
+              <div className="p-1.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)]">
                 <span className="block text-[11px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
                 <span className={`font-bold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample99} ops

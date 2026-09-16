@@ -737,6 +737,20 @@
     }
   }
 
+  /* Titular de dos frases: la segunda abre línea.
+     Media docena de titulares del sitio son «Frase una. Frase dos.»,
+     con la segunda resaltada. Corriendo detrás de la primera, el salto
+     caía DENTRO de la segunda y dejaba su primera palabra huérfana al
+     final del primer renglón: «El mismo trader. Otra / forma de
+     mirarse.», «Una visita corta. Una / decisión más clara.»
+     `text-wrap: balance` —que estos titulares ya llevan— no lo arregla:
+     reparte por anchura de línea y no sabe dónde acaba una frase, así
+     que las dos particiones le parecen igual de buenas. Esto se lo
+     dice. */
+  .tj-frase-nueva {
+    display: block;
+  }
+
   /* Medida de lectura. Una línea de texto deja de leerse cómoda
      pasados unos 75 caracteres: el ojo pierde el renglón al volver
      al margen. En pantallas anchas los párrafos del sitio corrían
@@ -1842,7 +1856,9 @@ textarea:focus-visible,
   grid-auto-columns: 1fr;
   gap: 2px;
   padding: 3px;
-  border-radius: 6px;
+  /* 8, no 6: la pista es una caja anidada —lleva segmentos de 4 px
+     dentro— y la escala del sitio es 4 / 8 / 12. */
+  border-radius: 8px;
   background: color-mix(in srgb, var(--ink) 5.5%, transparent);
 }
 .tj-segmentado > * {
@@ -2981,7 +2997,7 @@ button.icon-btn:hover > svg,
 }
 .tj-lamina-marco {
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 12px;
   box-shadow: 0 0 0 1px var(--line);
   -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
@@ -3086,7 +3102,7 @@ button.icon-btn:hover > svg,
   width: auto;
   max-width: min(1576px, 100%);
   max-height: calc(100dvh - 2 * clamp(0.75rem, 3vw, 2.5rem));
-  border-radius: 6px;
+  border-radius: 8px;
   box-shadow: 0 24px 80px rgb(0 0 0 / 0.5);
 }
 /* En pantalla estrecha la captura se ve a un tamaño legible y se recorre con el dedo. */
@@ -3537,7 +3553,7 @@ html:has(.tj-visor[open]) {
   grid-template-columns: 1fr 1fr;
   align-self: flex-start;
   padding: 3px;
-  border-radius: 6px;
+  border-radius: 8px;
   background: color-mix(in srgb, var(--ink) 6%, transparent);
 }
 @media (min-width: 768px) {

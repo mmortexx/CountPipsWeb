@@ -86,7 +86,7 @@ export function Integrations() {
 
         {/* Universal-CSV reminder line. */}
         <Reveal delay={0.15} className="mt-8">
-          <p className="text-sm text-tertiary leading-[1.6]">
+          <p className="max-w-[78ch] text-sm text-tertiary leading-[1.6]">
             {es ? (
               <>
                 ¿Tu plataforma no está en la lista?{" "}

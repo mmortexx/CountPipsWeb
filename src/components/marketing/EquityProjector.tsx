@@ -1104,7 +1104,7 @@ export function EquityProjector() {
 
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                <div className="flex items-center gap-1 p-0.5 rounded-[6px] bg-[rgb(var(--divider)/0.10)] border border-transparent">
+                <div className="flex items-center gap-1 p-0.5 rounded-[8px] bg-[rgb(var(--divider)/0.10)] border border-transparent">
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}

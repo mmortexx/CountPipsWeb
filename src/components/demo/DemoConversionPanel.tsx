@@ -36,11 +36,7 @@ export function DemoConversionPanel() {
           <Reveal>
             <p className="eyebrow">{es ? "Cómo leer la demo" : "How to read the demo"}</p>
             <h2 className="mt-5 t-h2 text-primary max-w-[24ch]">
-              {/* La segunda frase abre línea. Corriendo detrás de la
-                  primera, el salto caía dentro de ella —«Una visita
-                  corta. Una / decisión más clara.»— y dejaba un «Una»
-                  huérfano al final del primer renglón. */}
-              {es ? <>Una visita corta. <span className="text-gradient block">Una decisión más clara.</span></> : <>A short visit. <span className="text-gradient block">A clearer decision.</span></>}
+              {es ? <>Una visita corta. <span className="text-gradient tj-frase-nueva">Una decisión más clara.</span></> : <>A short visit. <span className="text-gradient tj-frase-nueva">A clearer decision.</span></>}
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-secondary md:text-lg">
               {es
@@ -61,7 +57,7 @@ export function DemoConversionPanel() {
           <div className="relative">
             <aside className="tj-cristal relative rounded-[12px] p-6 sm:p-8">
               <div className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-[6px] bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">
+                <span className="grid size-10 place-items-center rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">
                   <LockKeyhole size={18} strokeWidth={1.6} aria-hidden />
                 </span>
                 <div>

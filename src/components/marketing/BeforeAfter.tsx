@@ -34,11 +34,11 @@ export function BeforeAfter() {
           titulo={
             es ? (
               <>
-                El mismo trader. <span className="text-gradient">Otra forma de mirarse.</span>
+                El mismo trader. <span className="text-gradient tj-frase-nueva">Otra forma de mirarse.</span>
               </>
             ) : (
               <>
-                The same trader. <span className="text-gradient">A different way to look.</span>
+                The same trader. <span className="text-gradient tj-frase-nueva">A different way to look.</span>
               </>
             )
           }

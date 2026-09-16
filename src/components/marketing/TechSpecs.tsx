@@ -139,7 +139,7 @@ export function TechSpecs() {
           {/* R25-1e — Lock icon prefix promotes the footnote from fine
               print to a deliberate "offline / privacy" callout. The
               accent-tinted icon ties to the section's accent palette. */}
-          <p className="text-xs text-tertiary leading-[1.6] flex items-start gap-1.5">
+          <p className="max-w-[86ch] text-xs text-tertiary leading-[1.6] flex items-start gap-1.5">
             <Lock size={13} aria-hidden className="mt-0.5 shrink-0 text-[rgb(var(--accent-base)/0.70)]" />
             <span>
               {es

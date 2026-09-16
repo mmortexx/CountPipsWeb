@@ -216,9 +216,9 @@ export function FeatureExplorer() {
           className="mb-8"
           etiqueta={es ? "Índice" : "Index"}
           titulo={es ? (
-            <>Elige el eje. <span className="text-gradient">Sale lo que encaja.</span></>
+            <>Elige el eje. <span className="text-gradient tj-frase-nueva">Sale lo que encaja.</span></>
           ) : (
-            <>Pick the axis. <span className="text-gradient">What fits comes up.</span></>
+            <>Pick the axis. <span className="text-gradient tj-frase-nueva">What fits comes up.</span></>
           )}
           entradilla={es
             ? "Todo lo que hace el programa. Marca uno o varios ejes y la lista se recorta a lo que hace de verdad en ese terreno."
@@ -298,7 +298,11 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
       {items.map((f) => (
         <li
           key={f.id}
-          className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.8fr)] sm:items-baseline sm:gap-6"
+          /* La descripción se acota en caracteres, no en fracciones: con
+             `1.8fr` corría hasta el final del contenedor y las líneas
+             pasaban de cien caracteres, que es donde el ojo ya pierde el
+             renglón al volver. */
+          className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,72ch)] sm:items-baseline sm:gap-10"
         >
           <h3 className="m-0 flex items-baseline gap-2.5 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
             {es ? f.titleEs : f.titleEn}
