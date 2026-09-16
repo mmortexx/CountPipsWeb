@@ -110,7 +110,7 @@ export function NotFoundClient() {
           role="search"
           aria-label={es ? "Buscar en la web" : "Search the site"}
         >
-          <div className="tj-cristal relative rounded-[4px]">
+          <div className="tj-cristal tj-cristal--campo relative rounded-[4px]">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
               aria-hidden="true"

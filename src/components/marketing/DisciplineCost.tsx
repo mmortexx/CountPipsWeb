@@ -177,25 +177,24 @@ export function DisciplineCost() {
               <span className="block text-[12px] text-tertiary mb-2">
                 {es ? "Escenarios rápidos" : "Quick scenarios"}
               </span>
-              <div className="flex flex-wrap gap-2">
-                {PRESETS.map((p) => {
-                  const active = activePreset === p.id;
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() => aplicarPreset(p)}
-                      className={`toque-comodo h-8 px-3 rounded-[4px] text-[13px] font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
-                        active
-                          ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold shadow-sm"
-                          : "border border-transparent bg-[rgb(var(--divider)/0.03)] hover:bg-[rgb(var(--divider)/0.08)] hover:border-[rgb(var(--accent-base)/0.4)] text-secondary hover:text-primary"
-                      }`}
-                    >
-                      {es ? p.nameEs : p.nameEn}
-                    </button>
-                  );
-                })}
+              {/* Elegir entre tres escenarios es elegir uno de tres, y eso
+                  en este sitio es el conmutador segmentado —el mismo de la
+                  calculadora de riesgo y del proyector—. Eran tres botones
+                  sueltos con hueco entre ellos, que es lo que se usa para
+                  tres acciones distintas, no para tres opciones de lo
+                  mismo. */}
+              <div className="tj-segmentado tj-segmentado-apila" role="group">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    aria-pressed={activePreset === p.id}
+                    onClick={() => aplicarPreset(p)}
+                    className="toque-comodo"
+                  >
+                    {es ? p.nameEs : p.nameEn}
+                  </button>
+                ))}
               </div>
             </div>
 

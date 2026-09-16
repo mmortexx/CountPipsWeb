@@ -204,30 +204,28 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                    («envía tus datos fuera») es una MALA noticia, y por eso
                    allí se pinta en rojo. Se pasa explícito para que el
                    color y la palabra no puedan divergir. */
-                const sello = (valor: boolean, positivo: boolean) => (
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      aria-hidden
-                      className="inline-flex items-center justify-center rounded-[4px]"
-                      style={{
-                        width: 20,
-                        height: 20,
-                        background: positivo
-                          ? "rgb(var(--pnl-pos) / 0.15)"
-                          : "rgb(var(--pnl-neg) / 0.15)",
-                      }}
-                    >
+                /* Mismo sello que la comparativa de /pricing: el glifo
+                   desnudo y el veredicto EN TEXTO, a la vista. Aquí el
+                   icono vivía dentro de una ficha de color con la
+                   palabra en `sr-only`, así que las dos tablas
+                   comparativas del sitio —que dicen lo mismo— se leían
+                   como dos componentes de sitios distintos, y esta
+                   obligaba a deducir el veredicto del color. */
+                const sello = (valor: boolean, positivo: boolean) => {
+                  const tinta = positivo ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
+                  return (
+                    <span className="inline-flex items-center gap-2">
                       {valor ? (
-                        <Check size={12} style={{ color: positivo ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
+                        <Check size={14} strokeWidth={2.2} aria-hidden style={{ color: tinta }} />
                       ) : (
-                        <X size={12} style={{ color: positivo ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
+                        <X size={13} strokeWidth={2} aria-hidden style={{ color: tinta }} />
                       )}
+                      <span style={{ fontSize: 14, color: "var(--ink-2)" }}>
+                        {valor ? (es ? "Sí" : "Yes") : "No"}
+                      </span>
                     </span>
-                    <span className="sr-only">
-                      {valor ? (es ? "Sí" : "Yes") : es ? "No" : "No"}
-                    </span>
-                  </span>
-                );
+                  );
+                };
                 return (
                   <tr key={row.l} style={{ borderBottom: borde }}>
                     <th
