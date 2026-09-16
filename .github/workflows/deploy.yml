@@ -65,7 +65,7 @@ jobs:
       NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -74,7 +74,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -204,9 +204,15 @@ jobs:
         run: touch out/.nojekyll
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
+        # `include-hidden-files` NO es opcional aquí. Desde la v4 esta
+        # acción empaqueta con `--exclude=.[^/]*`, y eso se lleva por
+        # delante el `.nojekyll` que acaba de crear el paso anterior.
+        # Sin él, Pages pasa el sitio por Jekyll, Jekyll ignora `_next/`
+        # y la web se publica —en verde— sin una sola hoja de estilos.
         with:
           path: ./out
+          include-hidden-files: true
 
   deploy:
     needs: build
@@ -218,4 +224,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
