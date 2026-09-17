@@ -4111,6 +4111,81 @@ html:has(.tj-visor[open]) {
 }
 
 /* ============================================================
+   CONTRASTE ALTO
+   ============================================================
+   Quien pide más contraste en su sistema no pide otro diseño: pide que
+   deje de haber grises intermedios. La escala de tinta de este sitio ya
+   va de 7:1 a 12,6:1 —AAA en los tres niveles—, así que aquí no hay que
+   subir nada: hay que APLANAR. Los tres niveles se vuelven uno, los
+   filetes dejan de ser insinuaciones y el cristal deja de difuminar lo
+   que tiene detrás, porque un fondo movido es lo contrario del contraste.
+   ============================================================ */
+@media (prefers-contrast: more) {
+  /* Un solo nivel de tinta: el secundario y el terciario existen para
+     jerarquizar, y la jerarquía se sostiene igual con el cuerpo y el peso
+     de la letra. Se aplana en los TOKENS y no en las clases, porque medio
+     sitio pide la tinta por variable —`.eyebrow`, los valores arbitrarios
+     de Tailwind y los `style` en línea— y una regla por clase se deja
+     fuera justo esos. */
+  /* Los dos selectores: el tema claro vive en `:root[data-theme="light"]`,
+     que tiene más especificidad que `:root` y se quedaría con sus grises. */
+  :root,
+  :root[data-theme="light"] {
+    --line: rgb(var(--divider) / 0.55);
+    --txt-secondary: var(--txt-primary);
+    --txt-tertiary: var(--txt-primary);
+    --ink-2: var(--ink);
+    --ink-3: var(--ink);
+  }
+  /* Y por clase además de por token, porque sobre papel y sobre cristal
+     `.text-secondary` recibe un tono contextual con más especificidad que
+     la variable: sin el `!important` esos dos siguen en gris. Es el único
+     sitio del proyecto donde se usa, y se usa porque aquí la petición del
+     usuario manda sobre cualquier matiz de la hoja. */
+  .text-secondary,
+  .text-tertiary,
+  .text-gradient,
+  .eyebrow {
+    color: rgb(var(--txt-primary)) !important;
+  }
+  /* El aro del foco, más grueso y sin transparencia. */
+  *:focus-visible {
+    outline: 3px solid rgb(var(--accent-base));
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .tj-segmentado > *:focus-visible,
+  .tj-segmentado > [aria-pressed="true"]:focus-visible,
+  .tj-segmentado > [data-activo="true"]:focus-visible {
+    outline: 3px solid rgb(var(--accent-base));
+    outline-offset: -3px;
+    box-shadow: none;
+  }
+  /* Cristal opaco: el desenfoque del fondo baja el contraste del texto
+     que va encima, que es justo lo que no se quiere aquí. */
+  .tj-cristal,
+  .tj-barra[data-cristal="true"]::before {
+    background-color: var(--raised);
+    background-image: none;
+  }
+  .tj-cristal {
+    box-shadow: var(--cristal-sombra);
+  }
+  .tj-cristal::before {
+    display: none;
+  }
+  .tj-barra[data-cristal="true"]::before {
+    background-color: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  /* Y la retícula de detrás, que es decorativa, estorba. */
+  .tj-escritorio {
+    display: none;
+  }
+}
+
+/* ============================================================
    EL SELLO DE «PREVISTO»
    ============================================================
    La única forma que tiene este sitio de decir, en dibujo, que algo
