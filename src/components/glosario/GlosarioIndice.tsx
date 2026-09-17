@@ -58,7 +58,7 @@ export function GlosarioIndice() {
       <div className="tj-container">
         {/* Buscador */}
         <Reveal>
-          <div className="max-w-2xl">
+          <div className="tj-no-print max-w-2xl">
             <label htmlFor="glos-q" className="sr-only">
               {es ? "Buscar un término" : "Search a term"}
             </label>

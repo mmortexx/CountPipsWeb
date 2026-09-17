@@ -2222,7 +2222,27 @@ button.icon-btn:hover > svg,
   [class*="ScrollProgress"],
   #mobile-nav-drawer,
   canvas,
+  /* Un botón no hace nada en papel, y la retícula de detrás sólo gasta
+     tinta: las dos son decorado de pantalla. */
+  .cta,
+  .tj-escritorio,
   .tj-no-print {
+    display: none !important;
+  }
+
+  /* LAS RESPUESTAS PLEGADAS SE ABREN. En pantalla la FAQ es un acordeón y
+     sólo hay una respuesta a la vista; en papel no hay dónde pulsar, así
+     que un folio con trece preguntas y una sola respuesta no sirve de
+     nada. El contenido ya está montado —`forceMount` en accordion.tsx—,
+     así que basta con devolverle la visibilidad. Y el galón del
+     desplegable se va: en papel no significa nada. */
+  [data-slot="accordion-content"] {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    animation: none !important;
+  }
+  [data-slot="accordion-trigger"] > svg {
     display: none !important;
   }
 

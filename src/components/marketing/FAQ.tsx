@@ -160,7 +160,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           y={24}
           className={standalone ? "lg:col-start-1 lg:row-start-1" : undefined}
         >
-          <div className={`mt-8 max-w-3xl ${standalone ? "lg:max-w-none" : "mx-auto"}`}>
+          <div className={`tj-no-print mt-8 max-w-3xl ${standalone ? "lg:max-w-none" : "mx-auto"}`}>
             <div className="relative">
             <Search
               className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
