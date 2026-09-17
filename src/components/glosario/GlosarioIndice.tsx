@@ -128,11 +128,28 @@ export function GlosarioIndice() {
         {filtrados && (
           <div className="mt-10">
             {filtrados.length === 0 ? (
-              <p className="text-center text-[15px] text-secondary">
-                {es
-                  ? "Nada con ese nombre. Prueba con una palabra de la definición."
-                  : "Nothing by that name. Try a word from the definition."}
-              </p>
+              /* Alineado a la izquierda, bajo los controles que lo han
+                 provocado, y con la salida a mano: centrado en un contenedor
+                 vacío se quedaba flotando lejos del buscador. */
+              <div className="border-t border-[var(--line)] pt-6">
+                <p className="m-0 text-[15px] text-secondary">
+                  {es
+                    ? "Nada con ese nombre. Prueba con una palabra de la definición."
+                    : "Nothing by that name. Try a word from the definition."}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setQ("");
+                    setActiveCategory("all");
+                  }}
+                  className="link-underline-host -my-2 mt-2 inline-flex py-2 text-[14px] text-secondary transition-colors hover:text-primary"
+                >
+                  <span className="link-underline">
+                    {es ? `Ver los ${TERMINOS.length} términos` : `See all ${TERMINOS.length} terms`}
+                  </span>
+                </button>
+              </div>
             ) : (
               <ul className="m-0 border-t border-[var(--line)] p-0">
                 {filtrados.map((t) => (
