@@ -203,7 +203,7 @@ function TarjetaTermino({
         >
           {termino.term}
         </span>
-        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary transition-colors group-hover:text-primary">
+        <span className="text-[14px] leading-[1.5] text-secondary transition-colors group-hover:text-primary">
           {es ? termino.es : termino.en}
         </span>
       </Link>

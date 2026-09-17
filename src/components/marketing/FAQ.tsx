@@ -305,7 +305,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           delay={0.26}
           className={standalone ? "lg:col-start-1 lg:row-start-2 lg:self-start" : undefined}
         >
-          <div className={`mt-6 ${standalone ? "-ml-3 lg:ml-0 lg:mt-4" : "text-center"}`}>
+          <div className={`mt-6 ${standalone ? "-ml-3 lg:ml-0 lg:mt-6 lg:border-t lg:border-[var(--line)] lg:pt-5" : "text-center"}`}>
             <GlossaryModal
               open={glossaryOpen}
               onOpenChange={setGlossaryOpen}

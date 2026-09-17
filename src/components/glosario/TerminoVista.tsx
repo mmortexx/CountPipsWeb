@@ -146,7 +146,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                     <li key={t.slug}>
                       <Link
                         href={`/glosario/${t.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:grid-cols-1 lg:gap-1"
+                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:min-h-0 lg:grid-cols-1 lg:gap-1 lg:py-2"
                       >
                         <span
                           lang="en"
@@ -154,7 +154,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                         >
                           {t.term}
                         </span>
-                        <span className="line-clamp-2 text-[14px] leading-[1.5] text-secondary">
+                        <span className="text-[14px] leading-[1.5] text-secondary lg:hidden">
                           {es ? t.es : t.en}
                         </span>
                       </Link>
