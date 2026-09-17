@@ -85,7 +85,7 @@ export function ProductShowcase() {
           ref={tablist}
           role="tablist"
           aria-label={es ? "Pantallas del programa" : "Application screens"}
-          className="tj-pestanas mb-6 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="tj-pestanas -m-1 mb-5 p-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {PANTALLAS_PORTADA.map((clave, i) => {
             const l = LAMINAS_PRODUCTO[clave];

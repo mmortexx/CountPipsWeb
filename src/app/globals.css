@@ -1944,6 +1944,23 @@ textarea:focus-visible,
   background: color-mix(in srgb, var(--ink) 14%, var(--raised));
   box-shadow: none;
 }
+/* El segmento seleccionado traía su propia sombra con la misma especificidad
+   que la del foco, y ganaba por ir después: al tabular dentro del control,
+   justo donde cae el foco —el elemento activo— no se marcaba nada, y el
+   `outline: none` de arriba tampoco dejaba el aro del navegador. Aquí se
+   pintan las dos cosas, y con un selector más específico no depende del
+   orden. */
+.tj-segmentado > [aria-pressed="true"]:focus-visible,
+.tj-segmentado > [data-activo="true"]:focus-visible {
+  box-shadow:
+    inset 0 0 0 2px rgb(var(--accent-base) / 0.55),
+    0 1px 2px rgba(11, 15, 20, 0.08),
+    0 0 0 0.5px rgba(11, 15, 20, 0.06);
+}
+.dark .tj-segmentado > [aria-pressed="true"]:focus-visible,
+.dark .tj-segmentado > [data-activo="true"]:focus-visible {
+  box-shadow: inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
+}
 
 /* ============================================================
    PAGE-ENTER — subtle fade + slide-up that re-runs on every
@@ -1999,7 +2016,12 @@ textarea:focus-visible,
   transition: transform 0.3s var(--ease-suave);
 }
 .link-underline:hover::after,
-.link-underline:focus-visible::after {
+.link-underline:focus-visible::after,
+/* El filete se dibuja en un `span` que no es focalizable: quien recibe el
+   foco es el enlace de fuera, así que `:focus-visible` sobre el `span` no
+   se cumple nunca. El aro del navegador sí sale, pero el barrido que promete
+   el comentario de arriba no llegaba al teclado hasta esta línea. */
+.link-underline-host:focus-visible .link-underline::after {
   transform: scaleX(1);
 }
 @media (prefers-reduced-motion: reduce) {
