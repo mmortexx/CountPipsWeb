@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { computeRiskOfRuin, computeParametricVaR } from "@/lib/trading/estadistica";
+import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio } from "@/lib/trading/estadistica";
 import { fmtPct, formatoUsd } from "@/lib/trading/format";
 
 /**
@@ -197,9 +197,7 @@ export function RiskCalculator() {
     [nf],
   );
 
-  const max = Math.max(c.riskUsd, c.profit, 1);
-  const riskW = (c.riskUsd / max) * 100;
-  const profitW = (c.profit / max) * 100;
+  const tramos = tramosRiesgoBeneficio(c.riskUsd, c.profit);
 
   const handleAssetChange = useCallback((mode: AssetMode) => {
     setAssetMode(mode);
@@ -736,13 +734,17 @@ export function RiskCalculator() {
               </span>
             </div>
             <div className="relative h-2 rounded-[8px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
+              {/* Los dos tramos crecen desde el centro, cada uno hacia su
+                  lado, y por eso miden la mitad: anclados a los bordes, el
+                  mayor de los dos se iba al 100 % del carril y tapaba al
+                  otro entero —con 3:1 la parte roja desaparecía—. */}
               <div
-                className="absolute left-0 top-0 h-full bg-[rgb(var(--pnl-neg))]"
-                style={{ width: `${riskW}%` }}
+                className="absolute top-0 h-full bg-[rgb(var(--pnl-neg))]"
+                style={{ right: "50%", width: `${tramos.riesgo}%` }}
               />
               <div
-                className="absolute right-0 top-0 h-full bg-[rgb(var(--pnl-pos))]"
-                style={{ width: `${profitW}%` }}
+                className="absolute top-0 h-full bg-[rgb(var(--pnl-pos))]"
+                style={{ left: "50%", width: `${tramos.beneficio}%` }}
               />
               <span
                 aria-hidden

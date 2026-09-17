@@ -12,6 +12,24 @@
  * Si E <= 0 -> Ruina matemática inevitable (100%).
  * Si E > 0  -> P(ruina) = e^( -2 * E * U / σ_R^2 ) * 100
  */
+/**
+ * Los dos tramos de la barra riesgo/beneficio crecen desde el CENTRO del
+ * carril, cada uno hacia su lado, así que ninguno puede pasar del 50 %.
+ *
+ * Anclados a los bordes con la escala entera —que es como estaba— el mayor
+ * de los dos se iba al 100 % del carril y tapaba al otro por completo: con
+ * un 3:1 la parte roja no se veía.
+ */
+export function tramosRiesgoBeneficio(
+  riesgo: number,
+  beneficio: number
+): { riesgo: number; beneficio: number } {
+  const r = Number.isFinite(riesgo) ? Math.max(0, riesgo) : 0;
+  const b = Number.isFinite(beneficio) ? Math.max(0, beneficio) : 0;
+  const max = Math.max(r, b, 1);
+  return { riesgo: (r / max) * 50, beneficio: (b / max) * 50 };
+}
+
 export function computeRiskOfRuin(
   winRate: number,
   payoff: number,
