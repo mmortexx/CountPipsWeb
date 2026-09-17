@@ -30,3 +30,14 @@
  */
 export const ANIO_PUBLICACION: string =
   process.env.NEXT_PUBLIC_ANIO_PUBLICACION || "2026";
+
+/**
+ * La fecha completa de la misma compilación, en ISO (`2026-09-17`).
+ *
+ * Aquí el respaldo es la CADENA VACÍA, al revés que en el año: un aviso de
+ * copyright sin año se ve roto, pero un «actualizado el …» con una fecha
+ * inventada es peor que no decir nada — afirma algo que nadie ha
+ * comprobado. Sin git, el pie se queda sin esa línea y ya está.
+ */
+export const FECHA_PUBLICACION: string =
+  process.env.NEXT_PUBLIC_FECHA_PUBLICACION || "";

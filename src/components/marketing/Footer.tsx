@@ -7,7 +7,7 @@ import { GlossaryLauncher } from "@/components/tj/GlossaryLauncher";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { reopenConsent } from "@/lib/consent";
-import { ANIO_PUBLICACION } from "@/lib/publicacion";
+import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
 
 /**
  * Social link definition — icon + accessible label.
@@ -326,6 +326,29 @@ export function Footer() {
                 Se quedan los de la columna y desaparecen éstos: un mismo
                 destino repetido dos veces en el mismo pie no da acceso,
                 da ruido — y el que se retira era justo el inservible. */}
+            {/* CUÁNDO SE PUBLICÓ ESTO. Un producto que todavía no se
+                descarga sólo puede demostrar que está vivo con fechas, y
+                ésta sale de la fecha del último commit, no del reloj de
+                quien mira —ver `publicacion.ts`—. No vuelve la versión
+                «v1.4.2» que se retiró: eso declaraba una versión de un
+                programa que no se puede tener, y esto declara un hecho
+                comprobable sobre el sitio. Sin git no sale la línea. */}
+            {FECHA_PUBLICACION && (
+              <>
+                <span>
+                  {es ? "Sitio actualizado el " : "Site updated "}
+                  <time dateTime={FECHA_PUBLICACION}>
+                    {new Date(FECHA_PUBLICACION).toLocaleDateString(es ? "es-ES" : "en-GB", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      timeZone: "UTC",
+                    })}
+                  </time>
+                </span>
+                <span aria-hidden className="opacity-40">·</span>
+              </>
+            )}
             <span>ES + EN</span>
             <span aria-hidden className="opacity-40">·</span>
             {/* ── RETIRAR EL CONSENTIMIENTO ────────────────────────────

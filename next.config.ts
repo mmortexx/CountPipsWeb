@@ -36,6 +36,25 @@ function anioDePublicacion(): string {
   return String(new Date().getUTCFullYear());
 }
 
+/* La fecha COMPLETA de la misma compilación, en ISO, para el «actualizado
+   el …» del pie. Mismo camino que el año y por el mismo motivo: el reloj
+   del visitante no sabe cuándo se publicó esto, y leerlo de ahí rompe la
+   hidratación en cuanto cambia el día. */
+function fechaDePublicacion(): string {
+  try {
+    const iso = execFileSync("git", ["log", "-1", "--format=%cI"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 5_000,
+    }).trim();
+    const d = new Date(iso);
+    if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+  } catch {
+    /* Sin git se compila igual; el pie se queda sin la línea. */
+  }
+  return "";
+}
+
 /* ── DÓNDE CUELGA EL SITIO ─────────────────────────────────────────────
    El mismo código se publica en dos destinos que no sirven las páginas
    desde el mismo sitio:
@@ -85,6 +104,8 @@ const nextConfig: NextConfig = {
     // Ver `anioDePublicacion()` arriba: el año del aviso de copyright,
     // fijado en la compilación y no leído del reloj del visitante.
     NEXT_PUBLIC_ANIO_PUBLICACION: anioDePublicacion(),
+    // Y la fecha completa, para el «actualizado el …» del pie.
+    NEXT_PUBLIC_FECHA_PUBLICACION: fechaDePublicacion(),
     // Dirección pública del sitio (ver src/lib/site.ts). Se declara aquí
     // por el mismo motivo que las de abajo: sin declararla, la expresión
     // `process.env.X` sobrevive al empaquetado y revienta en el navegador.
