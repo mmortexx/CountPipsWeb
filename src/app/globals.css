@@ -3431,7 +3431,8 @@ html:has(.tj-visor[open]) {
   border-color: var(--line-2);
 }
 .tj-campo:focus,
-.tj-campo:focus-visible {
+.tj-campo:focus-visible,
+.tj-campo:has(input:focus-visible) {
   outline: none;
   border-color: var(--ink-3);
   box-shadow: 0 0 0 3px rgb(var(--accent-base) / 0.2);
@@ -3737,22 +3738,6 @@ select.tj-campo:invalid {
 :root:not([data-theme="light"]) .tj-cristal--denso {
   --cristal-halo: inset 0 0 10px -4px rgb(255 255 255 / 0.12);
 }
-/* Un campo tampoco es un panel. El buscador de la 404 mide 56 px de alto
-   y 448 de ancho: el canto de 22 px juntaba sus dos mitades en el centro,
-   y la banda especular —que se mide sobre la diagonal del elemento— le
-   cruzaba la caja entera. El campo se veía como una loncha encendida en
-   vez de como algo donde escribir. Aquí el canto es un filo y el reflejo
-   se queda en el lavado de ambiente, que es el que ya tenía. */
-.tj-cristal--campo {
-  --cristal-lente: 5px;
-  --cristal-especular: none;
-  --cristal-halo: inset 0 0 6px -2px rgb(255 255 255 / 0.4);
-}
-:root:not([data-theme="light"]) .tj-cristal--campo {
-  --cristal-especular: none;
-  --cristal-halo: inset 0 0 7px -3px rgb(255 255 255 / 0.1);
-}
-
 /* ── EN OSCURO, EL PANEL SE SEPARA POR TONO Y NO POR LUZ ─────────────────
    Los tres efectos de arriba están pensados para el claro, donde van hacia
    dentro: el canto oscurece un poco y el reflejo casi no se ve sobre
@@ -3764,7 +3749,7 @@ select.tj-campo:invalid {
    Aquí el panel queda un escalón más claro que el fondo, sin halo, sin
    anillo y sin reflejos, con un filo de 1 px casi igual en los cuatro
    lados: el mismo vidrio esmerilado plano que en claro. Va después de
-   todos los ajustes por variante (`--denso`, `--campo`) para que ninguno
+   todos los ajustes por variante (`--denso`) para que ninguno
    devuelva el halo. */
 :root:not([data-theme="light"]) {
   --cristal-tinte: 20 24 30;
@@ -3780,8 +3765,7 @@ select.tj-campo:invalid {
   --cristal-especular: none;
   --cristal-halo: 0 0 #0000;
 }
-:root:not([data-theme="light"]) .tj-cristal--denso,
-:root:not([data-theme="light"]) .tj-cristal--campo {
+:root:not([data-theme="light"]) .tj-cristal--denso {
   --cristal-halo: 0 0 #0000;
 }
 

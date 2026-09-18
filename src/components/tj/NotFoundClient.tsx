@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
-import { Escritorio } from "@/components/tj/Escritorio";
 
 /**
  * Custom 404 — full-screen premium error page.
@@ -74,8 +73,6 @@ export function NotFoundClient() {
       data-tj-404={lang}
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 pt-28 pb-20 md:pt-32"
     >
-
-      <Escritorio />
       <div className="relative text-center max-w-xl mx-auto">
         <div
           className="tj-alza font-serif font-normal tracking-[-0.03em] leading-[0.9] text-gradient [font-variant-numeric:lining-nums]"
@@ -110,7 +107,7 @@ export function NotFoundClient() {
           role="search"
           aria-label={es ? "Buscar en la web" : "Search the site"}
         >
-          <div className="tj-cristal tj-cristal--campo relative rounded-[4px]">
+          <div className="tj-campo relative">
             <Search
               className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-tertiary pointer-events-none"
               aria-hidden="true"
