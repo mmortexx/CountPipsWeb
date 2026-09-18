@@ -3436,6 +3436,11 @@ html:has(.tj-visor[open]) {
   border-color: var(--ink-3);
   box-shadow: 0 0 0 3px rgb(var(--accent-base) / 0.2);
 }
+/* Desplegable sin elegir (`required` con valor vacío es `:invalid`):
+   «Selecciona» se lee como marcador, igual que en los campos de texto. */
+select.tj-campo:invalid {
+  color: rgb(var(--txt-tertiary));
+}
 .tj-pie {
   background-image: linear-gradient(to bottom, transparent, var(--surface) 7rem);
 }

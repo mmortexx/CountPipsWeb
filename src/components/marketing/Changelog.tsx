@@ -146,7 +146,7 @@ export function Changelog() {
               <li
                 key={entry.version}
                 data-entra
-                className="grid gap-2 border-b border-[var(--line)] py-5 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_auto] sm:items-baseline sm:gap-5"
+                className="grid gap-2 border-b border-[var(--line)] py-5 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_6rem] sm:items-baseline sm:gap-5"
               >
                 <span
                   className="tnum text-[13px] font-semibold"

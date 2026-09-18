@@ -273,9 +273,7 @@ export function BetaApplication() {
     return (
       <div ref={exitoRef} tabIndex={-1} className="tj-ficha p-7 sm:p-10 outline-none" role="status">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-          <span className="grid size-14 place-items-center rounded-[4px] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
-            <Check size={26} aria-hidden />
-          </span>
+          <Check size={28} strokeWidth={1.6} className="text-[rgb(var(--pnl-pos))]" aria-hidden />
           <h2 className="mt-5 t-h3 text-primary">{es ? "Solicitud recibida." : "Application received."}</h2>
           <p className="mt-3 text-secondary leading-relaxed">
             {es
@@ -332,7 +330,7 @@ export function BetaApplication() {
               {(["manual", "prop"] as const).map((value) => {
                 const active = profile === value;
                 return (
-                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[4px] border px-3.5 text-sm transition-colors ${active ? "border-[var(--ink)] bg-[var(--raised)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-transparent bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"}`}>
+                  <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[4px] border px-3.5 text-sm transition-colors ${active ? "border-[var(--ink-3)] bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-[var(--ficha-filo)] text-secondary hover:border-[var(--line-2)] hover:text-primary"}`}>
                     <input ref={value === "manual" ? profileRef : undefined} type="radio" name="profile" value={value} checked={active} onChange={() => { setProfile(value); trackEvent("beta_profile_selected", { profile: value }); }} className="accent-[rgb(var(--accent-base))]" />
                     {value === "manual" ? es ? "Operativa manual" : "Manual trading" : es ? "Prop firm / evaluación" : "Prop firm / evaluation"}
                   </label>

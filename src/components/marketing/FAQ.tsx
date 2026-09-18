@@ -256,16 +256,10 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   <AccordionItem
                     key={item.q}
                     value={`item-${i}`}
-                    /* El raíl de acento del elemento abierto es un
-                       `border-left`, no un `box-shadow: inset`. La sombra
-                       interior se dibuja DENTRO de la caja, encima del
-                       texto: la pregunta abierta quedaba pegada al raíl y
-                       en la respuesta se comía la primera letra. Un borde
-                       ocupa espacio de verdad, así que empuja el
-                       contenido en vez de invadirlo. Se declara
-                       transparente en reposo para que abrir y cerrar no
-                       desplace nada horizontalmente. */
-                    className="border-b border-l-2 border-l-transparent border-b-[rgb(var(--divider)/0.08)] last:border-b-0 px-4 md:px-5 transition-[border-color,background-color] duration-300 data-[state=closed]:hover:bg-[rgb(var(--divider)/0.04)] data-[state=open]:border-l-[rgb(var(--accent-base))] data-[state=open]:bg-[rgb(var(--divider)/0.05)]"
+                    /* Abierta, la pregunta no cambia de caja: sin raíl
+                       lateral ni relleno. La marca es la propia respuesta
+                       y el chevrón girado. */
+                    className="border-b border-b-[var(--ficha-division)] last:border-b-0 px-4 md:px-5"
                   >
                     <AccordionTrigger className="text-left text-base md:text-[1.05rem] font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:!text-[rgb(var(--accent-base))] [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)] data-[state=open]:text-[rgb(var(--accent-base))]">
                       {/* Wrap the question in a min-w-0 span so the flex

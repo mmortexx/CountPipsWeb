@@ -64,25 +64,22 @@ export function Story() {
     },
   ];
 
+  // La progresión se cuenta en tinta, no en un arcoíris de cinco colores:
+  // las etapas tempranas en terciario y la última, a la que se llega, en
+  // tinta plena.
   const toneDot: Record<Phase["tone"], string> = {
-    neg: "bg-pnl-neg",
-    warn: "bg-pnl-warn",
-    neutral: "bg-[rgb(var(--divider)/0.40)]",
-    pos: "bg-pnl-pos",
-    accent: "bg-[rgb(var(--accent-base))]",
+    neg: "bg-[var(--ink-3)]",
+    warn: "bg-[var(--ink-3)]",
+    neutral: "bg-[var(--ink-3)]",
+    accent: "bg-[var(--ink-2)]",
+    pos: "bg-[var(--ink)]",
   };
-  // toneText maps each phase tone to a design-system text token so the tag
-  // color shifts correctly when the theme flips to light. `neutral` uses the
-  // tertiary text token (gray-400 on dark); `accent` uses primary (white on
-  // dark) so the tag sits at the same chroma as the headline. Previously
-  // these were raw `text-gray-400` / `text-white` which would not respond
-  // to theme changes and read as out-of-system chrome.
   const toneText: Record<Phase["tone"], string> = {
-    neg: "text-pnl-neg",
-    warn: "text-pnl-warn",
+    neg: "text-tertiary",
+    warn: "text-tertiary",
     neutral: "text-tertiary",
-    pos: "text-pnl-pos",
-    accent: "text-primary",
+    accent: "text-secondary",
+    pos: "text-primary",
   };
 
   // Pull-quote split into words for staggered word-by-word reveal.
@@ -184,7 +181,7 @@ export function Story() {
                 <div className="relative pl-9">
                   <span
                     data-entra="sello"
-                    className={`absolute left-0 top-2 h-[7px] w-[7px] ${toneDot[p.tone]}`}
+                    className={`absolute left-[4px] top-2 h-[7px] w-[7px] ${toneDot[p.tone]}`}
                     aria-hidden="true"
                   />
                   <div
