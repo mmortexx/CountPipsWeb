@@ -2917,14 +2917,27 @@ button.icon-btn:hover > svg,
   font-family: var(--font-sans), system-ui, sans-serif !important;
 }
 
-/* Antetítulos en versalitas anchas — la marca de sección de un libro.
-   Ya eran mayúsculas; aquí se les abre el tracking y se les baja el
-   peso para que acompañen a la serif en vez de competir con ella. */
+/* Los `h3` —títulos de tarjeta y de apartado— van en la sans, en caja
+   normal y con el tracking algo cerrado: la serif queda para los
+   titulares de sección y de página. */
 :root[data-palette="clasico"] h3 {
   font-family: var(--font-sans), system-ui, sans-serif !important;
   font-weight: 600 !important;
   text-transform: none !important;
   letter-spacing: -0.015em !important;
+}
+
+/* EN OSCURO, LOS TITULARES PESAN UN GRADO MENOS. El texto claro sobre
+   fondo negro se lee más grueso de lo que es —la luz se derrama sobre el
+   borde de la letra—, así que el mismo 500 que en claro es firme, en
+   oscuro parecía negrita. Las dos familias son variables, así que se
+   compensa con 40 unidades en vez de saltar a otro peso. */
+:root[data-palette="clasico"]:not([data-theme="light"]) h1,
+:root[data-palette="clasico"]:not([data-theme="light"]) h2 {
+  font-weight: 460 !important;
+}
+:root[data-palette="clasico"]:not([data-theme="light"]) h3 {
+  font-weight: 560 !important;
 }
 
 /* ---- Radios: el papel no tiene esquinas redondeadas ------------------
@@ -3131,6 +3144,11 @@ button.icon-btn:hover > svg,
 :root:not([data-theme="light"]) .tj-lamina-ventana img {
   margin: 0;
   width: 100%;
+  /* Mientras no haya capturas en oscuro, la clara se atenúa un punto: a
+     brillo completo era lo más luminoso de la página y se llevaba la
+     vista antes que el titular. Se ve igual de entera; la ampliación
+     sigue enseñándola sin tocar. */
+  filter: brightness(0.86);
 }
 .tj-lamina-ampliable {
   position: relative;
@@ -3396,6 +3414,17 @@ html:has(.tj-visor[open]) {
 :root:not([data-theme="light"]) .tj-hoja--pliego {
   box-shadow: 0 18px 44px -28px rgb(0 0 0 / 0.8);
 }
+/* Tarjeta opaca que se posa sobre una banda. En claro es blanco sobre el
+   gris de la banda con su sombra, y se separa sola. En oscuro la sombra no
+   se ve, y el color de la página la dejaba MÁS oscura que la banda: un
+   agujero en vez de una lámina. Aquí sube un escalón de tono y lleva el
+   filo de 1 px que en claro hace la sombra. */
+:root:not([data-theme="light"]) .tj-lamina {
+  background-color: var(--surface-2);
+  box-shadow:
+    inset 0 0 0 1px rgb(236 239 242 / 0.075),
+    0 18px 40px -22px rgb(0 0 0 / 0.7);
+}
 
 /* ============================================================
    CRISTAL — el acrílico de la app de escritorio
@@ -3576,6 +3605,38 @@ html:has(.tj-visor[open]) {
 :root:not([data-theme="light"]) .tj-cristal--campo {
   --cristal-especular: none;
   --cristal-halo: inset 0 0 7px -3px rgb(255 255 255 / 0.1);
+}
+
+/* ── EN OSCURO, EL PANEL SE SEPARA POR TONO Y NO POR LUZ ─────────────────
+   Los tres efectos de arriba están pensados para el claro, donde van hacia
+   dentro: el canto oscurece un poco y el reflejo casi no se ve sobre
+   blanco. Sobre negro los tres empujan hacia fuera —halo blanco interior,
+   un anillo de 22 px con el brillo a ×1,2 y dos bandas diagonales— y
+   juntos dibujan un marco luminoso alrededor de cada recuadro. Además el
+   tinte #0C1116 con el fondo oscurecido a 0,86 dejaba el panel del mismo
+   tono que la página, así que ese marco era lo único que lo separaba.
+   Aquí el panel queda un escalón más claro que el fondo, sin halo, sin
+   anillo y sin reflejos, con un filo de 1 px casi igual en los cuatro
+   lados: el mismo vidrio esmerilado plano que en claro. Va después de
+   todos los ajustes por variante (`--denso`, `--campo`) para que ninguno
+   devuelva el halo. */
+:root:not([data-theme="light"]) {
+  --cristal-tinte: 20 24 30;
+  --cristal-alfa: 0.66;
+  --cristal-alfa-denso: 0.86;
+  --cristal-filo: rgb(236 239 242 / 0.13);
+  --cristal-canto: rgb(236 239 242 / 0.075);
+  --cristal-pie: rgb(236 239 242 / 0.06);
+  --cristal-brillo: linear-gradient(to bottom, rgb(236 239 242 / 0.025), rgb(236 239 242 / 0) 40%);
+  --cristal-sombra: 0 1px 2px rgb(0 0 0 / 0.35), 0 18px 40px -22px rgb(0 0 0 / 0.7);
+  --cristal-lente-luz: 1;
+  --cristal-lente-color: 1;
+  --cristal-especular: none;
+  --cristal-halo: 0 0 #0000;
+}
+:root:not([data-theme="light"]) .tj-cristal--denso,
+:root:not([data-theme="light"]) .tj-cristal--campo {
+  --cristal-halo: 0 0 #0000;
 }
 
 /* La barra: opaca arriba del todo y translúcida al desplazar, de lado a
@@ -6006,5 +6067,7 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   --cristal-luz: 1.06;
 }
 :root:not([data-theme="light"]) {
-  --cristal-luz: 0.86;
+  /* Era 0,86: oscurecía lo de detrás hasta que el panel quedaba del tono
+     de la página. Ver «EN OSCURO, EL PANEL SE SEPARA POR TONO». */
+  --cristal-luz: 0.94;
 }

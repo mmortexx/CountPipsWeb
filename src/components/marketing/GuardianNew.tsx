@@ -80,7 +80,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             el resto de la home, en vez de aparecer estática. */}
         <div
           data-entra
-          className="tj-paper-dense relative rounded-[12px] p-5 sm:p-6 md:p-8 shadow-[0_1px_2px_rgb(11_15_20/0.04),0_24px_60px_-30px_rgb(11_15_20/0.25)]"
+          className="tj-paper tj-lamina relative rounded-[12px] p-5 sm:p-6 md:p-8 shadow-[0_1px_2px_rgb(11_15_20/0.04),0_24px_60px_-30px_rgb(11_15_20/0.25)]"
         >
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
             <span
