@@ -148,33 +148,29 @@ function FlowColumn({
   travelMs: number;
 }) {
   return (
-    <div
-      className="relative rounded-[12px] bg-[var(--surface)] p-5 sm:p-7"
-    >
-      {/* Column header */}
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <div className="text-[15px] font-semibold" style={{ color: "var(--ink)" }}>{title}</div>
-          <div className="tnum text-[11px]" style={{ letterSpacing: "0.08em", textTransform: "uppercase", color }}>{subtitle}</div>
-        </div>
-        <span aria-hidden className="inline-flex items-center justify-center w-7 h-7 rounded-[4px]" style={{ background: `color-mix(in oklab, ${color} 12%, transparent)` }}>
-          <span className="w-2 h-2 rounded-[1px]" style={{ background: color }} />
+    <div className="tj-ficha">
+      {/* La barra lleva el nombre y dónde acaba el dato; el color, sólo en
+          el punto que lo marca. */}
+      <p className="tj-ficha-barra">
+        <span className="text-primary">{title}</span>
+        <span className="inline-flex items-center gap-2">
+          <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: color }} />
+          {subtitle}
         </span>
-      </div>
+      </p>
 
       {/* Steps with animated dot */}
-      <div className="relative">
+      <div className="tj-ficha-cuerpo relative">
         {steps.map((step, i) => (
           <div key={i} data-entra="ciclo" className="relative flex items-start gap-3" style={{ marginBottom: i < steps.length - 1 ? 28 : 0 }}>
             {/* Node */}
             <div className="relative shrink-0">
               <div
-                className="flex items-center justify-center rounded-[4px]"
+                className="flex items-center justify-center rounded-[4px] text-secondary"
                 style={{
                   width: 40,
                   height: 40,
-                  background: `color-mix(in oklab, ${color} 8%, transparent)`,
-                  color,
+                  boxShadow: "inset 0 0 0 1px var(--ficha-filo)",
                 }}
               >
                 <StepIcon name={step.icon} />
@@ -202,7 +198,7 @@ function FlowColumn({
                   top: 40,
                   width: 1,
                   height: 28,
-                  background: `linear-gradient(180deg, color-mix(in oklab, ${color} 30%, transparent), color-mix(in oklab, ${color} 12%, transparent))`,
+                  background: "var(--ficha-filo)",
                 }}
               />
             )}

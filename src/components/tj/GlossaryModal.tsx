@@ -268,7 +268,7 @@ export function GlossaryModal({
               onChange={(e) => setQuery(e.target.value)}
               placeholder={es ? "Buscar término…" : "Search term…"}
               aria-label={es ? "Buscar término" : "Search term"}
-              className="pl-9 bg-[rgb(var(--divider)/0.03)] border-[rgb(var(--divider)/0.10)]"
+              className="tj-campo pl-9"
             />
           </div>
         </div>
@@ -302,7 +302,7 @@ export function GlossaryModal({
                   setActiveCat(e.target.value as GlossaryCategory | "all")
                 }
                 aria-label={es ? "Filtrar por categoría" : "Filter by category"}
-                className="appearance-none bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.10)] rounded-[4px] h-9 pl-3 pr-8 text-sm text-secondary outline-none transition-colors hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--divider)/0.30)] cursor-pointer"
+                className="tj-campo appearance-none h-9 pl-3 pr-8 text-sm text-secondary outline-none cursor-pointer"
               >
                 {GLOSSARY_CATEGORIES.map((c) => (
                   <option key={c.id} value={c.id} className="bg-background text-primary">
@@ -420,7 +420,7 @@ export function GlossaryModal({
                          en vez de con sus puntos suspensivos. */
                       "tj-paper tj-paper-dense min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.16)] p-4 transition-[border-color,box-shadow,background-color] cursor-pointer",
                       isActive
-                        ? "border-[rgb(var(--divider)/0.30)] ring-1 ring-[rgb(var(--divider)/0.20)] bg-[rgb(var(--divider)/0.06)] shadow-[0_0_28px_-8px_rgb(var(--divider)/0.18)]"
+                        ? "border-[var(--line-2)] bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
                         : "hover:border-[rgb(var(--divider)/0.25)]",
                     ].join(" ")}
                     onClick={() => toggleExpanded(g.term)}

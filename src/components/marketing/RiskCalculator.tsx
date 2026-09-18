@@ -263,7 +263,7 @@ export function RiskCalculator() {
           onChange(Number.isFinite(v) ? v : 0);
         }}
         aria-label={ariaLabel}
-        className="tnum w-full min-h-[44px] rounded-[4px] px-3 text-base font-semibold text-primary bg-[var(--raised)] border border-transparent focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] transition-colors outline-none"
+        className="tj-campo tnum w-full min-h-[44px] px-3 text-base font-medium text-primary"
       />
     </label>
   );
@@ -355,7 +355,7 @@ export function RiskCalculator() {
 
           {/* Subselector para futuros */}
           {assetMode === "futures" && (
-            <div className="mb-5 p-3 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
+            <div className="mb-5 border-y border-[var(--ficha-division)] py-3">
               <span className="block text-[12px] text-tertiary mb-2">
                 {es ? "Contrato de futuros" : "Futures contract"}
               </span>
@@ -367,8 +367,8 @@ export function RiskCalculator() {
                     onClick={() => handleFuturesChange(fc.id)}
                     className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
                       futuresContractId === fc.id
-                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
-                        : "bg-[rgb(var(--divider)/0.04)] border border-transparent text-secondary hover:text-primary"
+                        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
+                        : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
                     }`}
                   >
                     {fc.name}
@@ -380,7 +380,7 @@ export function RiskCalculator() {
 
           {/* Subselector para Forex */}
           {assetMode === "forex" && (
-            <div className="mb-5 p-3 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
+            <div className="mb-5 border-y border-[var(--ficha-division)] py-3">
               <span className="block text-[12px] text-tertiary mb-2">
                 {es ? "Tipo de lote Forex" : "Forex lot sizing"}
               </span>
@@ -396,8 +396,8 @@ export function RiskCalculator() {
                     onClick={() => setForexLotType(lot.id)}
                     className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
                       forexLotType === lot.id
-                        ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
-                        : "bg-[rgb(var(--divider)/0.04)] border border-transparent text-secondary hover:text-primary"
+                        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
+                        : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
                     }`}
                   >
                     {es ? lot.labelEs : lot.labelEn}
@@ -555,7 +555,7 @@ export function RiskCalculator() {
               </button>
               <span className="text-[12px] tnum text-tertiary">
                 {es ? "Medio Kelly: " : "Half-Kelly: "}
-                <strong className="text-primary font-bold">{fmtNum(c.halfKellyPct)}{PCT}</strong>
+                <strong className="text-primary font-semibold">{fmtNum(c.halfKellyPct)}{PCT}</strong>
               </span>
             </div>
 
@@ -563,7 +563,7 @@ export function RiskCalculator() {
               <div className="mt-3 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-tertiary">{es ? "Win Rate histórico estimado:" : "Estimated historical Win Rate:"}</span>
-                  <span className="tnum font-bold text-primary">{kellyWinRate}{PCT}</span>
+                  <span className="tnum font-semibold text-primary">{kellyWinRate}{PCT}</span>
                 </div>
                 <input
                   type="range"
@@ -573,27 +573,30 @@ export function RiskCalculator() {
                   value={kellyWinRate}
                   onChange={(e) => setKellyWinRate(parseInt(e.target.value, 10))}
                   aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
-                  className="w-full accent-[rgb(var(--accent-base))] cursor-pointer h-1.5 bg-[rgb(var(--divider)/0.15)] rounded-[8px] appearance-none"
+                  /* `.tj-range` como el resto: con `appearance-none` y sin
+                     regla de bolita, en WebKit no se veía la agarradera. */
+                  className="tj-range w-full"
+                  style={{ "--pct": `${((kellyWinRate - 35) / 40) * 100}%` } as CSSProperties}
                 />
                 <div className="grid grid-cols-3 gap-2 text-center text-[12px] tnum">
                   <div className="py-1">
                     <div className="text-tertiary">{es ? "Kelly completo" : "Full Kelly"}</div>
-                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}{PCT}</div>
+                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}{PCT}</div>
                   </div>
                   <div className="py-1">
                     <div className="text-[rgb(var(--accent-base))] font-semibold">{es ? "Medio Kelly" : "Half Kelly"}</div>
-                    <div className="font-bold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}{PCT}</div>
+                    <div className="font-semibold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}{PCT}</div>
                   </div>
                   <div className="py-1">
                     <div className="text-tertiary">{es ? "Cuarto de Kelly" : "Quarter Kelly"}</div>
-                    <div className="font-bold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}{PCT}</div>
+                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}{PCT}</div>
                   </div>
                 </div>
                 <button
                   type="button"
                   disabled={c.halfKellyPct <= 0}
                   onClick={() => c.halfKellyPct > 0 && setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
-                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium rounded-[4px] bg-[var(--raised)] text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium tj-campo text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {c.halfKellyPct <= 0
                     ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
@@ -606,12 +609,8 @@ export function RiskCalculator() {
           {/* Aviso de validación + dirección */}
           {!c.valid ? (
             <div
-              className="mb-4 rounded-[8px] px-3 py-2.5 text-[13px] leading-[1.5]"
-              style={{
-                background: "color-mix(in oklab, rgb(var(--pnl-neg)) 10%, transparent)",
-                border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 30%, transparent)",
-                color: "rgb(var(--pnl-neg))",
-              }}
+              className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
+              style={{ color: "rgb(var(--pnl-neg))" }}
               role="alert"
             >
               {es
@@ -624,7 +623,7 @@ export function RiskCalculator() {
             >
               <span
                 aria-hidden
-                className="inline-flex items-center justify-center rounded-[2px] w-4 h-4 font-bold text-[11px]"
+                className="inline-flex items-center justify-center rounded-[2px] w-4 h-4 font-semibold text-[11px]"
                 style={{
                   background: c.direction === "short"
                     ? "color-mix(in oklab, rgb(var(--pnl-neg)) 16%, transparent)"
@@ -725,7 +724,7 @@ export function RiskCalculator() {
                 <span aria-hidden className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--pnl-neg))]" />
                 {es ? "Riesgo" : "Risk"}
               </span>
-              <span className="tnum font-bold text-[rgb(var(--accent-base))]">
+              <span className="tnum font-semibold text-[rgb(var(--accent-base))]">
                 {fmtNum(c.rr, 2)} : 1 R:R
               </span>
               <span className="tnum inline-flex items-center gap-1.5 text-tertiary">

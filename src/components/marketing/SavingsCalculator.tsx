@@ -115,8 +115,8 @@ export function SavingsCalculator() {
   const chipStyle = (active: boolean) =>
     `min-h-[44px] px-4 py-2.5 text-[13px] rounded-[4px] transition-colors tnum ${
       active
-        ? "bg-[var(--ink)] text-[var(--bg)] font-semibold"
-        : "bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"
+        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary shadow-[inset_0_0_0_1px_var(--line-2)] font-semibold"
+        : "shadow-[inset_0_0_0_1px_var(--ficha-filo)] text-secondary hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
     }`;
 
   return (
@@ -283,7 +283,7 @@ export function SavingsCalculator() {
               {es ? "Diferencia ilustrativa" : "Illustrative difference"}
             </div>
             <div className="flex items-baseline gap-3 mt-1">
-              <span className="tnum" style={{ fontSize: 34, fontWeight: 700, color: savingsColor }}>
+              <span className="tnum" style={{ fontSize: 34, fontWeight: 600, color: savingsColor }}>
                 {fmtUsd(c.savings)}
               </span>
               <span className="tnum" style={{ fontSize: 16, fontWeight: 600, color: savingsColor }}>

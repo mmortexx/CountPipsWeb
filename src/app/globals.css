@@ -1814,7 +1814,6 @@ textarea:focus-visible,
    y deja de pisarla donde la hay. */
 @layer components {
   .tj-paper,
-  .tj-hoja,
   .demo-card {
     position: relative;
   }
@@ -1866,34 +1865,48 @@ textarea:focus-visible,
    igual, sin abrir contenedor de desplazamiento.
    ============================================================ */
 .tj-segmentado {
+  /* Los filetes internos: cada segmento dibuja el de su izquierda y el de
+     arriba con una sombra desplazada, y el recorte del bloque se come los
+     del borde. Así vale igual en fila, apilado o en rejilla. Está en una
+     variable porque cada estado (elegido, foco) tiene que volver a
+     declararlo junto a su propia sombra. */
+  --seg-filos: -1px 0 0 var(--ficha-division), 0 -1px 0 var(--ficha-division);
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
-  gap: 2px;
-  padding: 3px;
-  /* 8, no 6: la pista es una caja anidada —lleva segmentos de 4 px
-     dentro— y la escala del sitio es 4 / 8 / 12. */
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--ink) 5.5%, transparent);
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--ficha-filo);
+  border-radius: 4px;
+  background: transparent;
+  overflow: clip;
 }
 .tj-segmentado > * {
-  min-height: 30px;
+  min-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
   padding: 0 0.625rem;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
-  color: var(--ink-2);
+  color: var(--ink-3);
   cursor: pointer;
   text-align: center;
+  box-shadow: var(--seg-filos);
   transition: background-color 0.16s var(--ease-suave),
-              color 0.16s var(--ease-suave),
-              box-shadow 0.16s var(--ease-suave);
+              color 0.16s var(--ease-suave);
+}
+
+/* A 390 px seis opciones dejan ~50 px por celda: con el relleno de
+   escritorio «10 k $» se partía en dos líneas. */
+@media (max-width: 639px) {
+  .tj-segmentado > * {
+    padding-inline: 0.25rem;
+  }
 }
 
 /* Con el dedo, 44 px: decide quién apunta, no el ancho de pantalla. */
@@ -1927,39 +1940,26 @@ textarea:focus-visible,
 }
 .tj-segmentado > *:hover:not([aria-pressed="true"]):not([data-activo="true"]) {
   color: var(--ink);
+  background-color: color-mix(in srgb, var(--ink) 3.5%, transparent);
 }
-.tj-segmentado > *:focus-visible {
-  outline: none;
-  box-shadow: inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
-  color: var(--ink);
-}
+/* El elegido: un tono de tinta y el texto a plena tinta. Ni pulgar
+   flotante con sombra ni relleno pleno: en el proyector hay cinco grupos
+   uno debajo de otro, y cinco bloques blancos gritarían. */
 .tj-segmentado > [aria-pressed="true"],
 .tj-segmentado > [data-activo="true"] {
-  background: var(--raised);
+  background-color: color-mix(in srgb, var(--ink) 9%, transparent);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgba(11, 15, 20, 0.08), 0 0 0 0.5px rgba(11, 15, 20, 0.06);
+  font-weight: 600;
 }
-.dark .tj-segmentado > [aria-pressed="true"],
-.dark .tj-segmentado > [data-activo="true"] {
-  background: color-mix(in srgb, var(--ink) 14%, var(--raised));
-  box-shadow: none;
-}
-/* El segmento seleccionado traía su propia sombra con la misma especificidad
-   que la del foco, y ganaba por ir después: al tabular dentro del control,
-   justo donde cae el foco —el elemento activo— no se marcaba nada, y el
-   `outline: none` de arriba tampoco dejaba el aro del navegador. Aquí se
-   pintan las dos cosas, y con un selector más específico no depende del
-   orden. */
+/* Foco: el aro va por dentro y conserva los filetes. El selector del
+   elegido con foco es más específico a propósito, para no depender del
+   orden de las reglas. */
+.tj-segmentado > *:focus-visible,
 .tj-segmentado > [aria-pressed="true"]:focus-visible,
 .tj-segmentado > [data-activo="true"]:focus-visible {
-  box-shadow:
-    inset 0 0 0 2px rgb(var(--accent-base) / 0.55),
-    0 1px 2px rgba(11, 15, 20, 0.08),
-    0 0 0 0.5px rgba(11, 15, 20, 0.06);
-}
-.dark .tj-segmentado > [aria-pressed="true"]:focus-visible,
-.dark .tj-segmentado > [data-activo="true"]:focus-visible {
-  box-shadow: inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
+  outline: none;
+  color: var(--ink);
+  box-shadow: var(--seg-filos), inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
 }
 
 /* ============================================================
@@ -3056,12 +3056,31 @@ button.icon-btn:hover > svg,
   }
 }
 
-/* ---- Bloque de cierre: sobre el propio fondo, con un halo que lo funde - */
+/* ---- Cierre de página: filete, titular y acciones, sin recuadro ------ */
 .tj-cierre {
-  position: relative;
-  padding: clamp(3rem, 7vw, 5.5rem) clamp(1.25rem, 5vw, 4rem);
-  border-radius: 12px;
-  text-align: center;
+  display: grid;
+  gap: clamp(2rem, 4vw, 3rem);
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--line-2);
+}
+@media (min-width: 1024px) {
+  .tj-cierre {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: end;
+    column-gap: clamp(3rem, 6vw, 6rem);
+  }
+  .tj-cierre-titular {
+    grid-column: 1 / -1;
+  }
+  .tj-cierre .tj-cierre-acciones {
+    justify-items: end;
+    text-align: right;
+  }
+}
+.tj-cierre-acciones {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
 }
 .tj-cierre-tenue {
   color: var(--ink-2);
@@ -3378,8 +3397,8 @@ html:has(.tj-visor[open]) {
    la punta se quedó al 72 % cuando el panel dejó de estarlo. */
 /* ---- Superficies: tarjeta y barra ----------------------------------
    `.tj-paper` es la tarjeta (opaca, sobre el fondo), `.tj-paper-dense`
-   lo que flota sobre contenido (barra, cajón, menús) y `.tj-hoja` le
-   pone canto. Sin grano, sin doble filete y sin escuadras. */
+   lo que flota sobre contenido (barra, cajón, menús). Sin grano, sin
+   doble filete y sin escuadras; los paneles son `.tj-ficha`. */
 :root {
   --paper-dense: var(--bg);
 }
@@ -3389,41 +3408,163 @@ html:has(.tj-visor[open]) {
 .tj-paper-dense {
   background-color: var(--paper-dense);
 }
-/* Hoja tonal: se separa del fondo por tono, no por filete. */
-.tj-hoja,
-.tj-paper.tj-hoja {
-  border-radius: 12px;
-  background-color: var(--surface);
-  transition: background-color 160ms var(--ease-suave);
-}
-/* Paneles de resultado de las calculadoras: tono, no filete. El
-   `!important` gana a los bordes en línea que traen algunos widgets. */
+/* Paneles de resultado de las calculadoras: la misma ficha que el resto
+   del sitio —fondo, filete y sombra de `.tj-ficha`— en vez de un bloque
+   de tono sin borde. El `!important` gana a los bordes en línea que
+   traen algunos widgets. */
 .tj-paper-glow {
-  background-color: var(--surface) !important;
+  background-color: var(--ficha-fondo) !important;
   border-color: transparent !important;
   border-radius: 12px !important;
+  box-shadow: 0 0 0 1px var(--ficha-filo), var(--ficha-sombra);
+}
+/* CAMPO: filete fino y fondo transparente, no un rectángulo relleno.
+   Sin clase de capa, así que gana a las utilidades de fondo y borde que
+   cada formulario traía escritas a mano. */
+.tj-campo {
+  background-color: transparent;
+  border: 1px solid var(--ficha-filo);
+  border-radius: 4px;
+  transition: border-color 0.16s var(--ease-suave), box-shadow 0.16s var(--ease-suave);
+}
+.tj-campo:hover {
+  border-color: var(--line-2);
+}
+.tj-campo:focus,
+.tj-campo:focus-visible {
+  outline: none;
+  border-color: var(--ink-3);
+  box-shadow: 0 0 0 3px rgb(var(--accent-base) / 0.2);
 }
 .tj-pie {
   background-image: linear-gradient(to bottom, transparent, var(--surface) 7rem);
 }
-.tj-hoja--pliego {
-  box-shadow:
-    0 1px 2px rgb(11 15 20 / 0.04),
-    0 18px 44px -28px rgb(11 15 20 / 0.28);
+/* ============================================================
+   FICHA — el panel como documento, no como tarjeta
+   ============================================================
+   Un panel del sitio se compone como la ficha de un informe: una barra de
+   cabecera con su rótulo, el cuerpo, y —si hace falta— una barra de pie.
+   Dentro, las divisiones son filetes de 1 px, nunca cajas rellenas dentro
+   de cajas: una caja gris dentro de otra caja es lo primero que delata una
+   plantilla. Las cifras van en `.tj-matriz`, una retícula con filetes
+   entre celdas como la de una hoja de datos.
+
+   `.tj-ficha` es el marco opaco (para paneles sobre una banda o sobre el
+   fondo liso). Los de cristal —sobre `.tj-escritorio`— usan `.tj-cristal`
+   como material y las mismas barras y matriz por dentro.
+
+   En oscuro la ficha es un escalón MÁS CLARA que la banda que la lleva:
+   con el color de la página quedaba más oscura que su fondo, un agujero
+   en vez de una lámina. */
+:root {
+  --ficha-fondo: #ffffff;
+  --ficha-filo: rgb(11 15 20 / 0.1);
+  --ficha-division: rgb(11 15 20 / 0.075);
+  --ficha-sombra: 0 1px 2px rgb(11 15 20 / 0.03), 0 28px 56px -40px rgb(11 15 20 / 0.28);
+  --ficha-pad: clamp(1.25rem, 2.4vw, 2rem);
 }
-:root:not([data-theme="light"]) .tj-hoja--pliego {
-  box-shadow: 0 18px 44px -28px rgb(0 0 0 / 0.8);
+:root:not([data-theme="light"]) {
+  --ficha-fondo: #13171c;
+  --ficha-filo: rgb(236 239 242 / 0.1);
+  --ficha-division: rgb(236 239 242 / 0.07);
+  --ficha-sombra: 0 28px 56px -36px rgb(0 0 0 / 0.75);
 }
-/* Tarjeta opaca que se posa sobre una banda. En claro es blanco sobre el
-   gris de la banda con su sombra, y se separa sola. En oscuro la sombra no
-   se ve, y el color de la página la dejaba MÁS oscura que la banda: un
-   agujero en vez de una lámina. Aquí sube un escalón de tono y lleva el
-   filo de 1 px que en claro hace la sombra. */
-:root:not([data-theme="light"]) .tj-lamina {
-  background-color: var(--surface-2);
-  box-shadow:
-    inset 0 0 0 1px rgb(236 239 242 / 0.075),
-    0 18px 40px -22px rgb(0 0 0 / 0.7);
+/* Sin `position`: esta regla no va en capa y ganaría a un `lg:sticky`
+   de Tailwind —los paneles de resultado de las calculadoras lo llevan—.
+   Quien necesite `relative` lo pone en el marcado. */
+.tj-ficha {
+  border-radius: 12px;
+  background-color: var(--ficha-fondo);
+  box-shadow: 0 0 0 1px var(--ficha-filo), var(--ficha-sombra);
+}
+/* Barra de cabecera: rótulo a la izquierda, dato o control a la derecha,
+   filete debajo. Es lo que convierte un rectángulo en un instrumento. */
+.tj-ficha-barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.25rem;
+  flex-wrap: wrap;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0.625rem var(--ficha-pad);
+  border-bottom: 1px solid var(--ficha-division);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.tj-ficha-barra--pie {
+  border-top: 1px solid var(--ficha-division);
+  border-bottom: 0;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.tj-ficha-cuerpo {
+  padding: var(--ficha-pad);
+}
+/* Fila de una ficha: separada de la siguiente por un filete, sin relleno. */
+.tj-ficha-fila {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding-block: 0.75rem;
+  border-bottom: 1px solid var(--ficha-division);
+}
+.tj-ficha-fila:last-child {
+  border-bottom: 0;
+}
+/* Estado en texto, alineado a la derecha: «Cumple», «Excede». */
+.tj-ficha-estado {
+  margin-left: auto;
+  flex: none;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+/* Punto de estado («En vivo»): un punto y texto, sin chapa alrededor. */
+.tj-ficha-vivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.tj-ficha-vivo::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgb(var(--pnl-pos));
+}
+
+/* MATRIZ: celdas separadas por filetes de 1 px, con cualquier número de
+   columnas. Cada celda dibuja su filete izquierdo y el de arriba con una
+   sombra desplazada; los de la primera columna y la primera fila caen
+   fuera de la matriz y el `overflow` los recorta. Así no hay que saber
+   cuántas columnas hay en cada ancho para quitar el filete del borde. */
+.tj-matriz {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+  border-top: 1px solid var(--ficha-division);
+}
+.tj-matriz > * {
+  min-width: 0;
+  box-shadow: -1px 0 0 var(--ficha-division), 0 -1px 0 var(--ficha-division);
+}
+/* En una tabla comparativa, la columna propia se distingue con un tono
+   apenas más denso de arriba abajo, como la columna resaltada de una
+   hoja de datos. Antes era una franja de 2 px a su izquierda. */
+.tj-columna-propia {
+  background-color: color-mix(in srgb, var(--ink) 3.5%, transparent);
 }
 
 /* ============================================================
@@ -3702,73 +3843,12 @@ html:has(.tj-visor[open]) {
 
 /* ---- Panel de cifras ------------------------------------------------ */
 .tj-metricas {
-  --pulgar: #fff;
   --serie-balance: #2a78d6;
-  --pulgar-marca: #fff;
   border-radius: 12px;
-  padding: clamp(1.25rem, 2.8vw, 2.25rem);
   text-align: left;
 }
 :root:not([data-theme="light"]) .tj-metricas {
-  --pulgar: color-mix(in srgb, var(--ink) 14%, transparent);
   --serie-balance: #3987e5;
-  --pulgar-marca: #0b0c0d;
-}
-.tj-segmento {
-  position: relative;
-  display: inline-grid;
-  flex-shrink: 0;
-  grid-template-columns: 1fr 1fr;
-  align-self: flex-start;
-  padding: 3px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-}
-@media (min-width: 768px) {
-  .tj-segmento {
-    align-self: auto;
-  }
-}
-.tj-segmento::before {
-  content: "";
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: 3px;
-  width: calc(50% - 3px);
-  border-radius: 4px;
-  background: var(--pulgar);
-  box-shadow: 0 1px 2px rgb(11 15 20 / 0.08), 0 0 0 0.5px rgb(var(--divider) / 0.16);
-  transition: transform 0.5s var(--ease-suave);
-}
-.tj-segmento[data-lado="2"]::before {
-  transform: translateX(100%);
-}
-.tj-segmento button {
-  position: relative;
-  z-index: 1;
-  padding: 0.45rem 1rem;
-  border: 0;
-  border-radius: 4px;
-  background: none;
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-  color: var(--ink-3);
-  cursor: pointer;
-  transition: color 0.25s;
-}
-.tj-segmento button:hover,
-.tj-segmento button[aria-selected="true"] {
-  color: var(--ink);
-}
-/* Con el dedo, 44 px — lo mismo que hace `.tj-segmentado`. Este otro
-   conmutador se había quedado fuera: medido a 390 px, «Curva de capital»
-   y «Distribución de R» daban 34 px de alto. */
-@media (pointer: coarse) {
-  .tj-segmento button {
-    min-height: 44px;
-  }
 }
 .tj-metricas-vista {
   margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
@@ -3966,43 +4046,47 @@ html:has(.tj-visor[open]) {
     min-height: 44px;
   }
 }
+/* La leyenda ES el interruptor, como en un terminal: la muestra de la
+   línea y su nombre; la serie apagada se queda en gris y con la muestra
+   hueca. La casilla nativa sigue ahí para el teclado y el lector de
+   pantalla, pero no se dibuja: una casilla blanca rellena por serie leía
+   como un formulario, no como un gráfico. */
+.tj-curva-leyenda label {
+  position: relative;
+  color: var(--ink);
+  transition: color 0.2s;
+}
+.tj-curva-leyenda label:has(input:not(:checked)) {
+  color: var(--ink-3);
+}
 .tj-curva-leyenda input {
-  appearance: none;
-  display: grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   margin: 0;
-  border: 1px solid color-mix(in srgb, var(--ink) 40%, transparent);
-  border-radius: 4px;
-  background: transparent;
+  opacity: 0;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
 }
-.tj-curva-leyenda input:checked {
-  border-color: var(--ink);
-  background: var(--ink);
-}
-.tj-curva-leyenda input:checked::after {
-  content: "";
-  width: 9px;
-  height: 5px;
-  border-bottom: 2px solid var(--pulgar-marca);
-  border-left: 2px solid var(--pulgar-marca);
-  transform: translateY(-1px) rotate(-45deg);
-}
-.tj-curva-leyenda input:focus-visible {
+.tj-curva-leyenda label:has(input:focus-visible) {
   outline: 2px solid rgb(var(--accent-base) / 0.6);
-  outline-offset: 2px;
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 .tj-curva-muestra {
-  width: 14px;
+  width: 16px;
   height: 2px;
   border-radius: 1px;
   background: var(--ink);
+  transition: opacity 0.2s;
 }
 .tj-curva-leyenda [data-serie="balance"] .tj-curva-muestra {
-  background: var(--serie-balance);
+  height: 0;
+  background: none;
+  border-top: 2px dashed var(--serie-balance);
+}
+.tj-curva-leyenda label:has(input:not(:checked)) .tj-curva-muestra {
+  opacity: 0.35;
 }
 .tj-metricas-eje {
   display: flex;
@@ -4127,14 +4211,10 @@ html:has(.tj-visor[open]) {
   font-size: 11px;
   color: var(--ink-2);
 }
+/* Los ocho ratios, en matriz (`.tj-matriz`): una hoja de datos con
+   filetes entre celdas, de borde a borde del panel. */
 .tj-metricas-ratios {
-  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.25rem;
-  margin: clamp(1.5rem, 3vw, 2.25rem) -0.875rem 0;
-  padding: clamp(0.75rem, 1.6vw, 1.25rem) 0 0;
-  list-style: none;
-  border-top: 1px solid rgb(var(--divider) / 0.12);
 }
 @media (min-width: 768px) {
   .tj-metricas-ratios {
@@ -4142,15 +4222,21 @@ html:has(.tj-visor[open]) {
   }
 }
 .tj-metricas-ratio {
-  min-width: 0;
-  padding: 0.875rem;
-  border-radius: 8px;
+  padding: clamp(1rem, 1.8vw, 1.375rem) var(--ficha-pad);
   transition: background-color 0.3s var(--ease-suave);
+  outline: none;
 }
 .tj-metricas-ratio:hover,
 .tj-metricas-ratio:focus-visible,
 .tj-metricas-ratio[data-enfoque] {
-  background-color: color-mix(in srgb, var(--ink) 4.5%, transparent);
+  background-color: color-mix(in srgb, var(--ink) 3.5%, transparent);
+}
+/* Foco por dentro: la matriz recorta lo que sale de ella. */
+.tj-metricas-ratio:focus-visible {
+  box-shadow:
+    -1px 0 0 var(--ficha-division),
+    0 -1px 0 var(--ficha-division),
+    inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
 }
 /* La fórmula sustituye a la descripción al pasar por encima; en táctil
    se queda la descripción. */
@@ -5454,11 +5540,7 @@ svg [data-entra="sello"] {
   transition-duration: 0.3s;
   transition-timing-function: var(--ease-suave, ease);
 }
-.tj-realce:hover {
-  transform: translateY(-3px);
-}
 @media (prefers-reduced-motion: reduce) {
-  .tj-realce:hover,
   .tj-pulsa:active {
     transform: none;
   }
@@ -5646,13 +5728,6 @@ svg [data-entra="sello"] {
   .tj-realza:active {
     transition: none;
     transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tj-hoja,
-  .tj-hoja:hover {
-    transition: none;
   }
 }
 

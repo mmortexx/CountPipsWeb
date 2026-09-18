@@ -1,15 +1,19 @@
 "use client";
 
-import { CalendarDays, BookOpen, LineChart, NotebookPen, Layers } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import type { getCal } from "@/lib/trading/fixtures";
 import { nombreSetup, type SetupName } from "@/lib/trading/setups";
 import { fmtPct, fmtR } from "@/lib/trading/format";
 
 /**
- * FeaturesBento — sección `#features` del HTML. Rejilla bento con 5
- * tarjetas: calendario de P&L grande (span 7), rendimiento por hora
- * (span 5), playbooks, diario narrativo, multi-cuenta multi-activo.
+ * FeaturesBento — sección `#features`. Cinco fichas: calendario de P&L
+ * (span 7), rendimiento por hora (span 5), playbooks, diario narrativo y
+ * multi-cuenta.
+ *
+ * Cada una es una `.tj-ficha`: barra con el rótulo y su dato, cuerpo, y
+ * por dentro filetes en vez de cajas. Antes llevaban un icono en un
+ * cuadradito gris, filas en cajas rellenas, estados en chapa de color y
+ * se levantaban al pasar el ratón: el vocabulario de una plantilla.
  */
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
 /** `cal`: el mes de muestra, calculado al construir para no generar las operaciones en el navegador. */
@@ -17,418 +21,235 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
   const { lang } = useLang();
   const es = lang === "es";
 
+  const rotulo = "text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary tnum";
+  const titulo = "m-0 text-[clamp(1.25rem,1.8vw,1.5rem)] leading-[1.25] text-primary [text-wrap:balance]";
+  const division = "border-[var(--ficha-division)]";
+
   return (
-    <section
-      id="features"
-      className="section relative overflow-clip"
-    >
+    <section id="features" className="section relative overflow-clip">
       <div className="relative tj-container">
         <div className={enPagina ? "sr-only" : "max-w-[760px] mb-12"}>
-          <div className="inline-flex items-center gap-3 mb-5">
-            <span className="eyebrow">
-              {es ? "CARACTERÍSTICAS" : "FEATURES"}
-            </span>
-          </div>
-          <h2 className="font-serif m-0 text-3xl sm:text-4xl lg:text-5xl font-normal tracking-[-0.022em] leading-[1.08] text-primary text-balance">
+          <p className="eyebrow m-0 mb-5">{es ? "Características" : "Features"}</p>
+          <h2 className="t-h2 m-0 text-primary text-balance">
             {es ? (
               <>
-                Todo lo que una mesa profesional
-                <br />
-                espera de un <span className="text-[rgb(var(--accent-base))]">diario</span>.
+                Todo lo que una mesa profesional espera de un <span className="text-gradient">diario</span>.
               </>
             ) : (
               <>
-                Everything a professional desk
-                <br />
-                expects from a <span className="text-[rgb(var(--accent-base))]">journal</span>.
+                Everything a professional desk expects from a <span className="text-gradient">journal</span>.
               </>
             )}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          {/* Calendario grande (span 7) */}
-          <div
-            data-entra
-            // R25-1e — snappy hover lift (separate transition from the
-            // entrance so hover doesn't feel laggy). All 5 bento cards
-            // share this treatment for a coordinated hover rhythm.
-            // R26-1b — added an absolute inset accent-glow div so the
-            // bento cards match the canonical “lift + accent border
-            // glow” hover vocabulary used by Integrations / TestimonialsWall
-            // / ValueTestimonials / Story / Milestones / ContactSupport.
-            // T2h — card padding now responsive: 20px on mobile (p-5),
-            // 24px from sm. Original was flat `padding: 24` which felt
-            // tight against the edge on 320–390px viewports.
-            // T3c — swap a `.tj-paper`: papel translúcido cálido en vez de
-            // glass frío. Border, rounded, hover lift, padding y minHeight
-            // intactos. El sweep de acento del top-edge se conserva.
-            className="tj-realce tj-paper tj-hoja tj-hoja--pliego group lg:col-span-7 min-w-0 relative overflow-hidden p-6 sm:p-7"
-            style={{
-              minHeight: 360,
-            }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
-              >
-                <CalendarDays size={15} aria-hidden />
-              </span>
-              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
-                {es ? "Calendario de P&L" : "P&L calendar"}
-              </span>
-            </div>
-            {/* Las dos tarjetas van a la par y sus titulares medían una
-                línea y dos: todo lo que colgaba debajo quedaba desfasado
-                unos 27 px entre una y otra. Con el alto de dos líneas
-                reservado, las dos empiezan a contar a la misma altura. */}
-            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary md:min-h-[2.4em] md:[text-wrap:balance]">
-              {es ? "Cada día, en un vistazo" : "Every day, at a glance"}
-            </h3>
-            {/* Mes + iniciales de los días. `cal.label` y `cal.chip` se
-                calculaban en las fixtures pero no se pintaban en ninguna
-                parte: sin mes ni cabecera de semana, el desfase del
-                primer día era un hueco sin explicación. */}
-            <div className="mt-4 flex items-baseline justify-between gap-3">
-              <span
-                className="tnum"
-                style={{ fontSize: 13, letterSpacing: "0.06em", color: "var(--ink-2)", textTransform: "capitalize" }}
-              >
-                {cal.label[lang]}
-              </span>
-              <span
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
-                {cal.chip[lang]}
-              </span>
-            </div>
-            <div
-              className="mt-2.5 grid grid-cols-7 gap-1.5 tnum"
-              style={{ fontSize: 11, letterSpacing: "0.06em", color: "var(--ink-3)" }}
-              aria-hidden
-            >
-              {(es
-                ? ["L", "M", "X", "J", "V", "S", "D"]
-                : ["M", "T", "W", "T", "F", "S", "S"]
-              ).map((d, i) => (
-                <span key={i} className="text-center">
-                  {d}
-                </span>
-              ))}
-            </div>
-            <div
-              className="mt-1.5 grid grid-cols-7 gap-1.5"
-            >
-              {cal.cells.map((c, i) => {
-                const cellStyle = c.style
-                  ? { ...parseInlineStyle(c.style), padding: "4px" }
-                  : { padding: "4px" };
-                return (
-                  <div key={i} style={cellStyle}>
-                    {/* Tinta explícita en vez de opacidad. El número del día
-                        iba al 75 % de opacidad y eso lo dejaba en 4,19:1
-                        sobre la celda teñida.
-                        Va en la MISMA tinta que el importe, no en una más
-                        apagada: sobre una celda ya teñida, atenuar el día lo
-                        empujaba por debajo del mínimo en tema oscuro. La
-                        jerarquía entre día e importe la llevan el cuerpo y el
-                        peso, que es donde no cuesta contraste. */}
-                    <span className="tnum" style={{ fontSize: 11, color: "var(--ink)" }}>{c.day}</span>
-                    <span className="tnum" style={{ fontSize: 11, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
-                  </div>
-                );
-              })}
-            </div>
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-              <div className="flex items-center gap-3">
-                <span
-                  className="tnum"
-                  style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
-                >
-                  {es ? "Total mes" : "Month total"}
-                </span>
-                <span
-                  className="tnum"
-                  style={{ fontSize: 22, fontWeight: 700, color: cal.pnlColor }}
-                >
-                  {cal.pnl[lang]}
-                </span>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-                {[
-                  { c: "rgb(var(--pnl-pos) / var(--cal-tint-max))", l: es ? "≥ 60 $" : "≥ $60" },
-                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.6))", l: es ? "20–60 $" : "$20–60" },
-                  { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.35))", l: es ? "0–20 $" : "$0–20" },
-                  { c: "rgb(var(--pnl-neg) / var(--cal-tint-max))", l: es ? "Negativo" : "Negative" },
-                ].map((g) => (
-                  <span key={g.l} className="inline-flex items-center gap-1" style={{ fontSize: 11, color: "var(--ink-2)" }}>
-                    <span className="inline-block rounded" style={{ width: 9, height: 9, background: g.c }} />
-                    {g.l}
+          {/* Calendario (span 7) */}
+          <article data-entra className="tj-ficha lg:col-span-7 min-w-0 flex flex-col">
+            <p className="tj-ficha-barra">
+              <span>{es ? "Calendario de P&L" : "P&L calendar"}</span>
+              <span>{cal.label[lang]}</span>
+            </p>
+            <div className="tj-ficha-cuerpo flex-1 flex flex-col">
+              {/* Las dos fichas de arriba van a la par: con el alto de dos
+                  líneas reservado en el titular, lo de debajo empieza a la
+                  misma altura en las dos. */}
+              <h3 className={`${titulo} md:min-h-[2.5em]`}>{es ? "Cada día, en un vistazo" : "Every day, at a glance"}</h3>
+              <div className="mt-4 grid grid-cols-7 gap-1.5 tnum text-[11px] tracking-[0.06em] text-tertiary" aria-hidden>
+                {(es ? ["L", "M", "X", "J", "V", "S", "D"] : ["M", "T", "W", "T", "F", "S", "S"]).map((d, i) => (
+                  <span key={i} className="text-center">
+                    {d}
                   </span>
                 ))}
               </div>
+              <div className="mt-1.5 grid grid-cols-7 gap-1.5">
+                {cal.cells.map((c, i) => {
+                  const cellStyle = c.style ? { ...parseInlineStyle(c.style), padding: "4px" } : { padding: "4px" };
+                  return (
+                    <div key={i} style={cellStyle}>
+                      {/* Tinta explícita, no opacidad: atenuado, el día bajaba
+                          de 4,5:1 sobre la celda teñida. La jerarquía entre día
+                          e importe la llevan el cuerpo y el peso. */}
+                      <span className="tnum" style={{ fontSize: 11, color: "var(--ink)" }}>{c.day}</span>
+                      <span className="tnum" style={{ fontSize: 11, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className={`mt-auto pt-5`}>
+                <div className={`flex flex-wrap items-end justify-between gap-x-4 gap-y-3 border-t ${division} pt-4`}>
+                <div>
+                  <p className={`${rotulo} m-0`}>{es ? "Total del mes" : "Month total"}</p>
+                  <p className="tnum m-0 mt-1 text-[22px] font-medium leading-none tracking-[-0.02em]" style={{ color: cal.pnlColor }}>
+                    {cal.pnl[lang]}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                  {[
+                    { c: "rgb(var(--pnl-pos) / var(--cal-tint-max))", l: es ? "≥ 60 $" : "≥ $60" },
+                    { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.6))", l: es ? "20–60 $" : "$20–60" },
+                    { c: "rgb(var(--pnl-pos) / calc(var(--cal-tint-max) * 0.35))", l: es ? "0–20 $" : "$0–20" },
+                    { c: "rgb(var(--pnl-neg) / var(--cal-tint-max))", l: es ? "Negativo" : "Negative" },
+                  ].map((g) => (
+                    <span key={g.l} className="inline-flex items-center gap-1.5 tnum text-[11px] text-secondary">
+                      <span className="inline-block rounded-[2px]" style={{ width: 9, height: 9, background: g.c }} />
+                      {g.l}
+                    </span>
+                  ))}
+                </div>
+                </div>
+              </div>
             </div>
-          </div>
+          </article>
 
           {/* Rendimiento por hora (span 5) */}
-          <div
-            data-entra="2"
-            className="tj-realce tj-paper tj-hoja group lg:col-span-5 min-w-0 relative overflow-hidden p-6 sm:p-7"
-            style={{
-              minHeight: 360,
-            }}
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
-              >
-                <LineChart size={15} aria-hidden />
-              </span>
-              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
-                {es ? "Rendimiento por hora" : "Hourly performance"}
-              </span>
-            </div>
-            <h3 className="font-serif m-0 text-2xl sm:text-3xl font-normal tracking-[-0.02em] text-primary md:min-h-[2.4em] md:[text-wrap:balance]">
-              {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
-            </h3>
-            {/* Bar chart hardcoded 24 barras (horas) */}
-            <div className="mt-5 flex items-end gap-[3px]" style={{ height: 100 }}>
-              {[
-                6, 8, 12, 18, 24, 32, 38, 44, 52, 60, 58, 50, 56, 68, 72, 64, 48, 38, 30, 22, 18, 14, 10, 8,
-              ].map((h, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t"
-                  style={{
-                    height: `${h}%`,
-                    background:
-                      i === 9
-                        ? "rgb(var(--accent-base))"
-                        : "color-mix(in oklab, rgb(var(--accent-base)) 40%, transparent)",
-                  }}
-                  aria-hidden
-                />
-              ))}
-            </div>
-            <div className="mt-3 flex items-center justify-between">
-              <div>
-                <div className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                  {es ? "Mejor ventana" : "Best window"}
-                </div>
-                <div className="tnum" style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
-                  10:00 – 11:30
-                </div>
+          <article data-entra="2" className="tj-ficha lg:col-span-5 min-w-0 flex flex-col">
+            <p className="tj-ficha-barra">
+              <span>{es ? "Rendimiento por hora" : "Hourly performance"}</span>
+              <span>24 h</span>
+            </p>
+            <div className="tj-ficha-cuerpo flex-1">
+              <h3 className={`${titulo} md:min-h-[2.5em]`}>
+                {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
+              </h3>
+              <div className="mt-5 flex items-end gap-[3px]" style={{ height: 100 }}>
+                {[6, 8, 12, 18, 24, 32, 38, 44, 52, 60, 58, 50, 56, 68, 72, 64, 48, 38, 30, 22, 18, 14, 10, 8].map((h, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 rounded-t-[1px]"
+                    style={{
+                      height: `${h}%`,
+                      background: i === 9 ? "rgb(var(--accent-base))" : "color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
+                    }}
+                    aria-hidden
+                  />
+                ))}
               </div>
-              <span
-                className="tnum"
-                style={{
-                  fontSize: 11,
-                  color: "var(--ink-3)",
-                }}
-              >
-                {es ? "+27 % sobre media" : "+27% over average"}
-              </span>
-            </div>
-
-            {/* Eje de horas. Sin él, 24 barras sin etiquetar no dicen a
-                qué hora corresponde el pico: era un adorno con forma de
-                gráfico, no un gráfico. */}
-            <div
-              className="mt-2 flex items-center justify-between tnum"
-              style={{ fontSize: 11, letterSpacing: "0.08em", color: "var(--ink-3)" }}
-              aria-hidden
-            >
-              {["00", "06", "12", "18", "23"].map((h) => (
-                <span key={h}>{h}</span>
-              ))}
-            </div>
-
-            {/* Las peores ventanas. Esta tarjeta terminaba aquí y el
-                `minHeight: 360` que la iguala con el calendario dejaba
-                ~390 px de vacío absoluto debajo del chip: al lado de una
-                tarjeta densa se leía como un bloque a medio hacer. La
-                otra cara del dato —cuándo NO operar— es justo lo que
-                promete el titular y llena el hueco con información. */}
-            <div
-              className="mt-5 pt-4 border-t"
-              style={{ borderColor: "rgb(var(--divider) / 0.12)" }}
-            >
-              <div
-                className="tnum"
-                style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
-              >
-                {es ? "Ventanas a evitar" : "Windows to avoid"}
+              {/* Eje de horas: sin él, 24 barras no dicen a qué hora cae el pico. */}
+              <div className={`flex items-center justify-between border-t ${division} pt-1.5 tnum text-[11px] tracking-[0.06em] text-tertiary`} aria-hidden>
+                {["00", "06", "12", "18", "23"].map((h) => (
+                  <span key={h}>{h}</span>
+                ))}
               </div>
-              <ul className="mt-2.5 flex flex-col gap-2">
+              <div className="mt-5 flex items-end justify-between gap-3">
+                <div>
+                  <p className={`${rotulo} m-0`}>{es ? "Mejor ventana" : "Best window"}</p>
+                  <p className="tnum m-0 mt-1 text-[17px] font-medium text-primary">10:00 – 11:30</p>
+                </div>
+                <span className="tnum text-[12px] text-tertiary">{es ? "+27 % sobre media" : "+27% over average"}</span>
+              </div>
+              {/* La otra cara del dato —cuándo NO operar— es la que promete
+                  el titular, y equilibra el alto con el calendario. */}
+              <p className={`${rotulo} m-0 mt-6`}>{es ? "Ventanas a evitar" : "Windows to avoid"}</p>
+              <ul className="m-0 mt-1 p-0 list-none">
                 {[
                   { w: "14:00 – 15:00", n: es ? "18 ops" : "18 trades", r: fmtR(-0.8, lang, 1) },
                   { w: "17:00 – 18:00", n: es ? "11 ops" : "11 trades", r: fmtR(-1.2, lang, 1) },
                   { w: "21:00 – 22:00", n: es ? "7 ops" : "7 trades", r: fmtR(-0.4, lang, 1) },
                 ].map((row) => (
-                  <li
-                    key={row.w}
-                    className="flex items-center justify-between gap-3 tnum"
-                    style={{ fontSize: 13 }}
-                  >
-                    <span style={{ color: "var(--ink-2)" }}>{row.w}</span>
-                    <span className="flex-1 h-px" style={{ background: "rgb(var(--divider) / 0.10)" }} aria-hidden />
-                    <span style={{ color: "var(--ink-3)", fontSize: 12 }}>{row.n}</span>
-                    <span style={{ color: "rgb(var(--pnl-neg))", fontWeight: 600, minWidth: 44, textAlign: "right" }}>
-                      {row.r}
-                    </span>
+                  <li key={row.w} className="tj-ficha-fila tnum text-[13px]">
+                    <span className="text-secondary">{row.w}</span>
+                    <span className="ml-auto text-[12px] text-tertiary">{row.n}</span>
+                    <span className="min-w-[44px] text-right font-medium text-[rgb(var(--pnl-neg))]">{row.r}</span>
                   </li>
                 ))}
               </ul>
             </div>
-          </div>
+          </article>
 
           {/* Playbooks (span 4) */}
-          <div
-            data-entra="2"
-            className="tj-realce tj-paper tj-hoja group lg:col-span-4 min-w-0 relative overflow-hidden p-6 sm:p-7"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
-              >
-                <BookOpen size={15} aria-hidden />
-              </span>
-              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
-                {es ? "Playbooks" : "Playbooks"}
-              </span>
-            </div>
-            <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
-              {es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don't"}
-            </h3>
-            <div className="mt-4 space-y-2.5">
-              {/* Los cuatro nombres iban en español fijo y se pintaban
-                  igual en `/en/features`. Salen del mismo catálogo que la
-                  demo (`SETUP_NAMES`), así que el visitante inglés lee
-                  «Breakout» aquí y «Breakout» en el diario, y el español
-                  «Ruptura» en los dos sitios. Los porcentajes son los de
-                  la maqueta, no los de `TRADES`: esta tarjeta ilustra la
-                  forma de la vista, no publica un resultado. */}
-              {[
-                /* El acierto va como NÚMERO y no como texto, y no es un
-                   capricho: el mismo campo servía de rótulo («62 %») y de
-                   ancho de la barra (`width: s.w`). «62 %», con el espacio
-                   que pide la ortografía castellana, no es una medida CSS
-                   válida, así que el navegador la descartaba y las CUATRO
-                   barras se pintaban enteras. Medido a 1440 px: las cuatro
-                   a 197 px de 197. La tarjeta que promete «sólo setups que
-                   tienen edge» enseñaba el Reversal —41 % de acierto, «Sin
-                   ventaja»— con la barra roja llena de lado a lado. */
-                { k: "Breakout", wr: 0.62, exp: 1.8, n: 58, c: "rgb(var(--pnl-pos))" },
-                { k: "Pullback", wr: 0.58, exp: 1.4, n: 42, c: "rgb(var(--pnl-pos))" },
-                { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))" },
-                { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))" },
-              ].map((s) => (
-                <div key={s.k} className="p-2 rounded-[8px] bg-[var(--raised)]">
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    <span className="font-medium text-primary">
-                      {nombreSetup(s.k as SetupName, lang)}
-                    </span>
-                    <div className="tnum flex items-center gap-2 text-[11px]">
-                      <span className="text-tertiary">{s.n} {es ? "ops" : "trades"}</span>
-                      <span style={{ color: s.c, fontWeight: 700 }}>{fmtR(s.exp, lang, 1)}</span>
+          <article data-entra="2" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
+            <p className="tj-ficha-barra">
+              <span>Playbooks</span>
+              <span>4 setups</span>
+            </p>
+            <div className="tj-ficha-cuerpo flex-1">
+              <h3 className={titulo}>{es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don't"}</h3>
+              {/* Los nombres salen del mismo catálogo que la demo; los
+                  porcentajes son los de la maqueta: esta ficha ilustra la
+                  forma de la vista, no publica un resultado. El acierto va
+                  como NÚMERO porque también es el ancho de la barra: «62 %»
+                  con su espacio no es una medida CSS válida. */}
+              <ul className="m-0 mt-3 p-0 list-none">
+                {[
+                  { k: "Breakout", wr: 0.62, exp: 1.8, n: 58, c: "rgb(var(--pnl-pos))" },
+                  { k: "Pullback", wr: 0.58, exp: 1.4, n: 42, c: "rgb(var(--pnl-pos))" },
+                  { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))" },
+                  { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))" },
+                ].map((s) => (
+                  <li key={s.k} className={`border-b ${division} py-3 last:border-b-0`}>
+                    <div className="flex items-baseline gap-3 tnum text-[13px]">
+                      <span className="font-medium text-primary">{nombreSetup(s.k as SetupName, lang)}</span>
+                      <span className="ml-auto text-[12px] text-tertiary">
+                        {s.n} {es ? "ops" : "trades"}
+                      </span>
+                      <span className="min-w-[40px] text-right font-medium" style={{ color: s.c }}>
+                        {fmtR(s.exp, lang, 1)}
+                      </span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-[4px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
-                      <div className="h-full rounded-[4px]" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
+                    <div className="mt-2 flex items-center gap-3">
+                      <div className="h-[3px] flex-1 overflow-hidden rounded-[1px] bg-[var(--ficha-division)]">
+                        <div className="h-full" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
+                      </div>
+                      <span className="tnum min-w-[34px] text-right text-[12px] text-secondary">{fmtPct(s.wr, lang, 0)}</span>
                     </div>
-                    <span
-                      className="tnum text-xs font-semibold"
-                      style={{ color: s.c, minWidth: 38, textAlign: "right" }}
-                    >
-                      {fmtPct(s.wr, lang, 0)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
+          </article>
 
           {/* Diario narrativo (span 4) */}
-          <div
-            data-entra="3"
-            className="tj-realce tj-paper tj-hoja group lg:col-span-4 min-w-0 relative overflow-hidden p-6 sm:p-7"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
-              >
-                <NotebookPen size={15} aria-hidden />
-              </span>
-              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
-                {es ? "Diario narrativo" : "Narrative journal"}
-              </span>
-            </div>
-            <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
-              {es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}
-            </h3>
-            <div
-              className="mt-4 border-l-2 border-[var(--line-2)] py-1 pl-4"
-            >
-              <p
-                className="m-0"
-                style={{ fontSize: 14, lineHeight: 1.55, color: "var(--ink-2)" }}
-              >
+          <article data-entra="3" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
+            <p className="tj-ficha-barra">
+              <span>{es ? "Diario narrativo" : "Narrative journal"}</span>
+              <span className="tnum">2026-07-22</span>
+            </p>
+            <div className="tj-ficha-cuerpo flex-1 flex flex-col">
+              <h3 className={titulo}>{es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}</h3>
+              {/* Una nota del diario se compone como una cita impresa: en la
+                  cursiva de la serif, sin franja de color al lado. */}
+              <blockquote className="m-0 mt-4 font-serif text-[17px] italic leading-[1.5] text-secondary">
                 {es
                   ? "“Entré en NQ por ruptura del rango NY, pero moví el stop a +1R para ‘asegurar’. Error: el plan era aguantar a 2R. Terminé saliendo en BE después de que el precio llegó al objetivo sin mí.”"
                   : "“Entered NQ on NY range break, but moved stop to +1R to ‘be safe’. Mistake: the plan was to hold to 2R. I ended up exiting at BE after price hit the target without me.”"}
-              </p>
-              <div className="mt-3 flex items-center gap-2 text-xs" style={{ color: "var(--ink-3)" }}>
-                <span className="tnum">2026-07-22 · 14:42</span>
+              </blockquote>
+              <p className={`mt-auto mb-0 pt-5 flex items-center gap-2 border-t ${division} text-[12px] text-tertiary`}>
+                <span className="tnum">14:42</span>
                 <span aria-hidden>·</span>
                 <span>{es ? "Nota post-trade" : "Post-trade note"}</span>
-              </div>
+              </p>
             </div>
-          </div>
+          </article>
 
-          {/* Multi-cuenta multi-activo (span 4) */}
-          <div
-            data-entra="4"
-            className="tj-realce tj-paper tj-hoja group lg:col-span-4 min-w-0 relative overflow-hidden p-6 sm:p-7"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="inline-grid place-items-center rounded-[4px] w-[30px] h-[30px] bg-[var(--chip)] text-[rgb(var(--accent-base))]"
-              >
-                <Layers size={15} aria-hidden />
-              </span>
-              <span className="tnum text-[12px] tracking-[0.08em] uppercase text-tertiary">
-                {es ? "Multi-cuenta, multi-activo" : "Multi-account, multi-asset"}
-              </span>
+          {/* Multi-cuenta (span 4) */}
+          <article data-entra="4" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
+            <p className="tj-ficha-barra">
+              <span>{es ? "Multi-cuenta, multi-activo" : "Multi-account, multi-asset"}</span>
+              <span>{es ? "3 cuentas" : "3 accounts"}</span>
+            </p>
+            <div className="tj-ficha-cuerpo flex-1">
+              <h3 className={titulo}>{es ? "Una cuenta o diez, en la misma vista" : "One account or ten, in the same view"}</h3>
+              <ul className="m-0 mt-3 p-0 list-none tnum">
+                {[
+                  { name: "Apex 150k (#1)", balance: es ? "154.820 $" : "$154,820", pnl: es ? "+1.420 $" : "+$1,420", status: es ? "En curso" : "In progress" },
+                  { name: "Topstep 50k (#2)", balance: es ? "51.240 $" : "$51,240", pnl: es ? "+1.240 $" : "+$1,240", status: es ? "Aprobada" : "Passed" },
+                  { name: "IBKR Futures Core", balance: es ? "84.190 $" : "$84,190", pnl: es ? "+2.100 $" : "+$2,100", status: es ? "Personal" : "Personal" },
+                ].map((acc) => (
+                  <li key={acc.name} className={`flex items-start justify-between gap-3 border-b ${division} py-3 last:border-b-0`}>
+                    <div className="min-w-0">
+                      <p className="m-0 truncate text-[13px] font-medium text-primary">{acc.name}</p>
+                      <p className="m-0 mt-0.5 text-[12px] text-tertiary">{acc.balance}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="m-0 text-[13px] font-medium text-[rgb(var(--pnl-pos))]">{acc.pnl}</p>
+                      <p className="m-0 mt-0.5 text-[10.5px] font-medium uppercase tracking-[0.1em] text-tertiary">{acc.status}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <h3 className="font-serif m-0 text-xl sm:text-2xl font-normal tracking-[-0.02em] text-primary">
-              {es ? "Una cuenta o diez, en la misma vista" : "One account or ten, in the same view"}
-            </h3>
-            <div className="tnum mt-4 space-y-2 text-xs">
-              {[
-                { name: "Apex 150k (#1)", balance: es ? "154.820 $" : "$154,820", pnl: es ? "+1.420 $" : "+$1,420", status: es ? "En curso" : "In progress", pnlPos: true },
-                { name: "Topstep 50k (#2)", balance: es ? "51.240 $" : "$51,240", pnl: es ? "+1.240 $" : "+$1,240", status: es ? "Aprobada" : "Passed", pnlPos: true },
-                { name: "IBKR Futures Core", balance: es ? "84.190 $" : "$84,190", pnl: es ? "+2.100 $" : "+$2,100", status: es ? "Personal" : "Personal", pnlPos: true },
-              ].map((acc) => (
-                <div
-                  key={acc.name}
-                  className="flex items-center justify-between p-2.5 rounded-[8px] bg-[var(--raised)]"
-                >
-                  <div>
-                    <div className="text-primary font-semibold text-[12px]">{acc.name}</div>
-                    <div className="text-tertiary text-[11px]">{acc.balance}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[rgb(var(--pnl-pos))] font-bold text-[12px]">{acc.pnl}</div>
-                    <span className="text-[11px] px-1.5 py-0.5 rounded bg-[var(--chip)] text-[rgb(var(--accent-base))] font-semibold">
-                      {acc.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          </article>
         </div>
       </div>
     </section>

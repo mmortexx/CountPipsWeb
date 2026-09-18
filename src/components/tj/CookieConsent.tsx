@@ -267,7 +267,7 @@ export function CookieConsent() {
 function CookieIcon() {
   return (
     <span
-      className="shrink-0 mt-0.5 inline-flex items-center justify-center w-7 h-7 rounded-[4px] bg-[rgb(var(--divider)/0.05)] text-primary"
+      className="shrink-0 mt-0.5 inline-flex items-center justify-center w-7 h-7 text-secondary"
       aria-hidden="true"
     >
       <svg

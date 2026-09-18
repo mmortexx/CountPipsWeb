@@ -67,308 +67,117 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           globals.css, sustituyendo al `max-w-[1240px] mx-auto px-5 md:px-8`
           hardcodeado. Paridad con StatsBandNew, MetricsShowcaseNew y Values. */}
       <div className="relative tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
-        {/* Mockup tarjeta "Comprobación previa"
-            R20-3b / T2d — padding lateral y vertical escalado por
-            breakpoint (p-5 20px · sm:p-6 24px · md:p-8 32px) para que la
-            tarjeta respire en móvil y se sienta generosa en desktop.
-            Antes era un `padding: 20` fijo en inline-style: en 390px eso
-            dejaba ~247px de contenido útil dentro de la tarjeta y el
-            texto se leía claustrofóbico. Moverlo a utility classes
-            permite subir a 32px en desktop sin tocar móvil.
-            P1 — envoltorio `motion.div` con `whileInView` para que la
-            tarjeta entre en escena con el mismo gesto de soft-settle que
-            el resto de la home, en vez de aparecer estática. */}
-        <div
-          data-entra
-          className="tj-paper tj-lamina relative rounded-[12px] p-5 sm:p-6 md:p-8 shadow-[0_1px_2px_rgb(11_15_20/0.04),0_24px_60px_-30px_rgb(11_15_20/0.25)]"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-            <span
-              className="tnum"
-              style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}
-            >
-              {es ? "Semáforo de riesgo · nueva operación" : "Risk light · new trade"}
+        {/* La comprobación previa como ficha de auditoría: barra con el
+            rótulo, la línea de la operación, las reglas en filas con su
+            estado en texto, y el veredicto. Divisiones con filetes, sin
+            cajas rellenas dentro de la tarjeta ni sellos de color: el
+            color queda para lo que lo necesita —la regla que falla y el
+            veredicto—. */}
+        <div data-entra className="tj-ficha">
+          <p className="tj-ficha-barra">
+            <span>
+              {es ? "Semáforo de riesgo" : "Risk light"}
+              <span className="hidden sm:inline">{es ? " · nueva operación" : " · new trade"}</span>
             </span>
-            <span
-              className="tnum inline-flex items-center gap-1.5 self-start sm:self-auto"
-              style={{
-                fontSize: 11,
-                padding: "3px 9px",
-                borderRadius: 4,
-                background: "var(--chip)",
-                color: "rgb(var(--accent-base))",
-                border: "1px solid var(--chip-line)",
-              }}
-            >
-              <span
-                aria-hidden
-                className="inline-block rounded-full"
-                style={{
-                  width: 6,
-                  height: 6,
-                  background: "rgb(var(--pnl-pos))",
-                }}
-              />
-              {es ? "En vivo" : "Live"}
-            </span>
-          </div>
-          {/* Fila del trade */}
-          <div
-            className="rounded-[4px] p-3 mb-4"
-            style={{
-              background: "color-mix(in oklab, var(--surface-2) 50%, transparent)",
-              border: "1px solid rgb(var(--divider) / 0.06)",
-            }}
-          >
-            <div className="flex items-center gap-3">
-              <span
-                className="tnum inline-block"
-                style={{
-                  padding: "4px 10px",
-                  borderRadius: 4,
-                  background: "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)",
-                  color: "rgb(var(--pnl-pos))",
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
-              >
-                NQ · LONG
+            <span className="tj-ficha-vivo">{es ? "En vivo" : "Live"}</span>
+          </p>
+          <div className="tj-ficha-cuerpo">
+            <div className="tnum flex items-baseline gap-x-3 pb-4 border-b border-[var(--ficha-division)]">
+              <span className="text-[17px] font-semibold tracking-[-0.01em] text-primary">NQ</span>
+              <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[rgb(var(--pnl-pos))]">
+                Long
               </span>
-              <span className="tnum" style={{ fontSize: 13, color: "var(--ink-2)" }}>
+              <span className="text-[13px] text-secondary">
                 {contratos} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
               </span>
-              <span className="tnum ml-auto" style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>28 {es ? "pts" : "pts"}</span>
+              <span className="ml-auto text-[13px] text-secondary">28 pts</span>
             </div>
-          </div>
-          {/* Checklist — R20-3b: widened row spacing (space-y-2 → 2.5) +
-              py-0.5 per row so each audit line breathes; added a faint
-              inset divider tone via row padding to read as a true audit
-              list rather than a stacked label.
-              P1 — `space-y-2.5` (10 px) → `space-y-3` (12 px): las tres
-              filas del checklist leen como auditoría sin apretarse, y el
-              espacio separa mejor el sello ✓/✕ del texto cuando este
-              envuelve a dos líneas en móvil estrecho. */}
-          <div className="space-y-3 mb-4">
-            {[
-              { ok: true, l: es ? "Setup Apto: ruptura NY" : "Setup valid: NY break" },
-              { ok: true, l: es ? "R:R ≥ 1,5" : "R:R ≥ 1.5" },
-              {
-                // El texto y el sello salen del cálculo, no de una
-                // constante: el riesgo es el tamaño por el riesgo unitario,
-                // y el veredicto, compararlo con el límite.
-                ok: dentroDelLimite,
-                l: dentroDelLimite
-                  ? es
-                    ? `Riesgo ${pct(riesgo)} — dentro de tu límite de ${pct(LIMITE_RIESGO)}`
-                    : `Risk ${pct(riesgo)} — within your ${pct(LIMITE_RIESGO)} limit`
-                  : es
-                    ? `Riesgo ${pct(riesgo)} — supera tu límite de ${pct(LIMITE_RIESGO)}`
-                    : `Risk ${pct(riesgo)} — over your ${pct(LIMITE_RIESGO)} limit`,
-              },
-            ].map((c, i) => (
-              <div key={i} className="flex items-start gap-2.5 py-0.5">
-                <span
-                  className="inline-grid place-items-center rounded-[4px] flex-none mt-px"
-                  style={{
-                    width: 20,
-                    height: 20,
-                    background: c.ok
-                      ? "color-mix(in oklab, rgb(var(--pnl-pos)) 18%, transparent)"
-                      : "color-mix(in oklab, rgb(var(--pnl-neg)) 18%, transparent)",
-                    color: c.ok ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                    // Sello del ✓/✕: borde sólido de 1px del color pnl
-                    // correspondiente. Se retiró el anillo/glow por
-                    // box-shadow (rule 2 — sin sombras de color); el borde
-                    // real cumple la misma función de "sello".
-                    border: `1px solid ${c.ok ? "rgb(var(--pnl-pos) / 0.45)" : "rgb(var(--pnl-neg) / 0.50)"}`,
-                  }}
-                >
-                  <span style={{ fontSize: 12, fontWeight: 800, lineHeight: 1 }}>{c.ok ? "✓" : "✕"}</span>
-                </span>
-                <span style={{ fontSize: 14, lineHeight: 1.4, color: c.ok ? "var(--ink-2)" : "rgb(var(--pnl-neg))", fontWeight: c.ok ? 400 : 600 }}>{c.l}</span>
-              </div>
-            ))}
-          </div>
-          {/* Aviso bloqueo — R20-3b: 3px solid pnl-neg left rail (reads as
-              a “blocked / hard stop” signal even on a quick glance),
-              asymmetric horizontal padding (12px / 14px) so the rail
-              breathes against the icon, plus a soft inset highlight so
-              the box reads as a stamped alert rather than a flat tint.
-              R24-1c: added an outer pnl-neg glow ring + AlertTriangle is
-              now wrapped in a stamped circular container so the icon +
-              the OPERACIÓN BLOQUEADA label read as a single stamped seal
-              rather than a floating icon + text.
-              T2d — padding lateral subido a 14px 16px 14px 18px (era
-              12px 14px 12px 16px) para garantizar ≥16px de respiro
-              horizontal entre el texto del aviso y el borde del box,
-              cumpliendo el spec “el texto rojo no toca los bordes” en
-              móviles estrechos (320px) donde antes se apretaba.
-              P1 — padding subido a `16px 18px 16px 20px`: el spec pide
-              ≥20 px de respiro en check-cards. El texto rojo del aviso
-              de bloqueo ahora tiene 20 px de separación del rail izquierdo
-              (era 18 px) y 18 px del borde derecho (era 16 px). El
-              padding vertical pasa de 14 a 16 px para que la etiqueta
-              SUPERIOR "OPERACIÓN BLOQUEADA" + el cuerpo de texto respiren
-              sin pegarse a los bordes superior/inferior del box. */}
-          {(() => {
-            /* El aviso cambia con el estado, y se anuncia. `aria-live`
-               es imprescindible aquí: al pulsar «Ajustar», lo que cambia
-               está en OTRA parte de la tarjeta, así que sin anuncio un
-               lector de pantalla no se entera de que la operación ha
-               pasado de bloqueada a permitida. */
-            const tono = estado === "anulado" ? "neutro" : dentroDelLimite ? "ok" : "mal";
-            const color =
-              tono === "ok"
-                ? "rgb(var(--pnl-pos))"
-                : tono === "mal"
-                  ? "rgb(var(--pnl-neg))"
-                  : "var(--ink-3)";
-            const tinte =
-              tono === "ok"
-                ? "rgb(var(--pnl-pos))"
-                : tono === "mal"
-                  ? "rgb(var(--pnl-neg))"
-                  : "rgb(var(--divider))";
-            const titulo =
-              tono === "neutro"
-                ? es ? "Registrada fuera de tu regla" : "Logged against your rule"
-                : tono === "ok"
-                  ? es ? "Semáforo en verde" : "Green light"
-                  : es ? "Semáforo en rojo" : "Red light";
-            const cuerpo =
-              tono === "neutro"
-                ? es
-                  ? "Queda anotada con el semáforo en rojo. Si activas el freno duro, al tocar tu pérdida diaria dejará de admitir operaciones nuevas."
-                  : "It is logged with the light on red. If you turn on the hard brake, hitting your daily loss stops new trades from being logged."
-                : tono === "ok"
-                  ? es
-                    ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite.`
-                    : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit.`
-                  : es
-                    ? `El riesgo supera tu máximo por operación. Con ${CONTRATOS_AJUSTADOS} contratos quedaría en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
-                    : `Risk is above your per-trade maximum. At ${CONTRATOS_AJUSTADOS} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
-            return (
-              <div
-                role="status"
-                aria-live="polite"
-                className="rounded-[4px] mb-3 relative overflow-hidden"
-                style={{
-                  padding: "16px 18px 16px 20px",
-                  background: `color-mix(in oklab, ${tinte} 10%, transparent)`,
-                  border: `1px solid color-mix(in oklab, ${tinte} 28%, transparent)`,
-                  boxShadow: "inset 0 1px 0 rgb(255 255 255 / 0.06)",
-                }}
-              >
-                <span
-                  aria-hidden
-                  className="absolute left-0 top-0 bottom-0"
-                  style={{ width: 3, background: tinte }}
-                />
-                <div className="flex items-center gap-2 mb-1">
+            <ul className="m-0 p-0 list-none">
+              {[
+                { ok: true, l: es ? "Setup apto: ruptura NY" : "Valid setup: NY break" },
+                { ok: true, l: es ? "R:R ≥ 1,5" : "R:R ≥ 1.5" },
+                {
+                  // El texto y el estado salen del cálculo, no de una
+                  // constante: el riesgo es el tamaño por el riesgo
+                  // unitario, y el veredicto, compararlo con el límite.
+                  ok: dentroDelLimite,
+                  l: es
+                    ? `Riesgo ${pct(riesgo)} · límite ${pct(LIMITE_RIESGO)}`
+                    : `Risk ${pct(riesgo)} · limit ${pct(LIMITE_RIESGO)}`,
+                },
+              ].map((c) => (
+                <li key={c.l} className="tj-ficha-fila tnum">
                   <span
                     aria-hidden
-                    className="inline-grid place-items-center rounded-[4px]"
-                    style={{
-                      width: 20,
-                      height: 20,
-                      background: `color-mix(in oklab, ${tinte} 18%, transparent)`,
-                      color,
-                      border: `1px solid color-mix(in oklab, ${tinte} 45%, transparent)`,
-                    }}
+                    className="w-4 flex-none text-[13px] font-semibold"
+                    style={{ color: c.ok ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
-                    {tono === "ok" ? (
-                      <ShieldCheck size={12} strokeWidth={2.4} style={{ color }} />
-                    ) : (
-                      <AlertTriangle size={12} strokeWidth={2.4} style={{ color }} />
-                    )}
+                    {c.ok ? "✓" : "✕"}
                   </span>
-                  <span
-                    className="tnum"
-                    style={{ fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color, fontWeight: 700 }}
-                  >
+                  <span className={`text-[14px] ${c.ok ? "text-secondary" : "text-primary"}`}>{c.l}</span>
+                  <span className="tj-ficha-estado" style={c.ok ? undefined : { color: "rgb(var(--pnl-neg))" }}>
+                    {c.ok ? (es ? "Cumple" : "Pass") : es ? "Excede" : "Over"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            {(() => {
+              /* El veredicto cambia con el estado, y se anuncia. `aria-live`
+                 es imprescindible: al pulsar «Ajustar», lo que cambia está
+                 en OTRA parte de la tarjeta, y sin anuncio un lector de
+                 pantalla no se entera de que la operación ha pasado de
+                 bloqueada a permitida. */
+              const tono = estado === "anulado" ? "neutro" : dentroDelLimite ? "ok" : "mal";
+              const color =
+                tono === "ok" ? "rgb(var(--pnl-pos))" : tono === "mal" ? "rgb(var(--pnl-neg))" : "var(--ink-3)";
+              const titulo =
+                tono === "neutro"
+                  ? es ? "Registrada fuera de tu regla" : "Logged against your rule"
+                  : tono === "ok"
+                    ? es ? "Semáforo en verde" : "Green light"
+                    : es ? "Semáforo en rojo" : "Red light";
+              const cuerpo =
+                tono === "neutro"
+                  ? es
+                    ? "Queda anotada con el semáforo en rojo. Si activas el freno duro, al tocar tu pérdida diaria dejará de admitir operaciones nuevas."
+                    : "It is logged with the light on red. If you turn on the hard brake, hitting your daily loss stops new trades from being logged."
+                  : tono === "ok"
+                    ? es
+                      ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite.`
+                      : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit.`
+                    : es
+                      ? `El riesgo supera tu máximo por operación. Con ${CONTRATOS_AJUSTADOS} contratos quedaría en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
+                      : `Risk is above your per-trade maximum. At ${CONTRATOS_AJUSTADOS} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
+              const Icono = tono === "ok" ? ShieldCheck : AlertTriangle;
+              return (
+                <div role="status" aria-live="polite" className="mt-1 pt-5 border-t border-[var(--ficha-division)]">
+                  <p className="m-0 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color }}>
+                    <Icono size={14} strokeWidth={2} aria-hidden />
                     {titulo}
-                  </span>
+                  </p>
+                  <p className="m-0 mt-2 max-w-[46ch] text-[14px] leading-[1.55] text-secondary">{cuerpo}</p>
                 </div>
-                <p className="m-0" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--ink-2)" }}>
-                  {cuerpo}
-                </p>
-              </div>
-            );
-          })()}
-          {/* R21-3b: action buttons stack vertically on mobile (flex-col sm:flex-row)
-              so the longest label "Ajustar a 2 contratos" / "Adjust to 2 contracts"
-              (≈147px at 12px/600) fits without overflowing the ≈115px inner half-width
-              on a 375px viewport. At sm+ the buttons resume their side-by-side layout.
-              T2d — `height: 36` en inline-style era silenciado por `flex-1` (que
-              expande `flex-basis: 0%`, cuyo valor NO-auto ignora la propiedad
-              `height` en el eje principal del flex container). Resultado: los
-              botones se renderizaban a 20px de alto (la altura del texto), muy
-              por debajo del umbral táctil de 44px. Reemplazado por `min-h-[44px]`
-              (que SÍ se respeta independientemente de flex-basis) + `px-4` para
-              más respiro horizontal. Es un fix de accesibilidad real, no
-              cosmético: los dos botones del mockup son los únicos CTAs visibles
-              de la sección y deben ser tocables con el pulgar en móvil.
-              P1 — `min-h-[44px]` → `min-h-[48px]`: subimos 4 px el umbral táctil
-              de los dos botones del mockup para reforzar la lectura "tocable".
-              Al pasar por encima cambian de tono, no se levantan: es el
-              lenguaje de interacción del resto de botones del sitio. */}
-          {/* Los botones cambian con el estado y HACEN lo que dicen. */}
-          <div className="flex flex-col sm:flex-row gap-2.5">
-            {estado === "bloqueado" ? (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setEstado("ajustado")}
-                  className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
-                  style={{
-                    borderRadius: 4,
-                    background: "rgb(var(--accent-base))",
-                    color: "rgb(var(--accent-ink))",
-                    border: "1px solid rgb(var(--accent-base))",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  {es
-                    ? `Ajustar a ${CONTRATOS_AJUSTADOS} contratos`
-                    : `Adjust to ${CONTRATOS_AJUSTADOS} contracts`}
+              );
+            })()}
+            {/* Los botones cambian con el estado y HACEN lo que dicen. Son
+                los del resto del sitio: la acción principal rellena y la
+                otra en texto con flecha, sin caja que compita. */}
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+              {estado === "bloqueado" ? (
+                <>
+                  <button type="button" onClick={() => setEstado("ajustado")} className="cta cta--primario tnum">
+                    {es ? `Ajustar a ${CONTRATOS_AJUSTADOS} contratos` : `Adjust to ${CONTRATOS_AJUSTADOS} contracts`}
+                  </button>
+                  <button type="button" onClick={() => setEstado("anulado")} className="cta cta--secundario">
+                    {es ? "Registrar igualmente" : "Log anyway"}
+                  </button>
+                </>
+              ) : (
+                <button type="button" onClick={() => setEstado("bloqueado")} className="cta cta--secundario">
+                  {es ? "Volver al estado inicial" : "Back to the initial state"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setEstado("anulado")}
-                  className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
-                  style={{
-                    borderRadius: 4,
-                    background: "transparent",
-                    color: "var(--ink-2)",
-                    border: "1px solid var(--line-2)",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  {es ? "Registrar igualmente" : "Log anyway"}
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setEstado("bloqueado")}
-                className="tnum flex-1 min-w-0 min-h-[48px] px-4 inline-flex items-center justify-center outline-none transition-[background-color,border-color,transform] duration-200 ease-[var(--ease-suave)] hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
-                style={{
-                  borderRadius: 4,
-                  background: "transparent",
-                  color: "var(--ink-2)",
-                  border: "1px solid var(--line-2)",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                {es ? "Volver al estado inicial" : "Back to the initial state"}
-              </button>
-            )}
+              )}
+            </div>
           </div>
         </div>
 
@@ -432,7 +241,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               P1 — envoltorio Reveal delay 0.18 para que las 3 features
               entren como bloque coordinado tras el titular. */}
           <Reveal delay={0.18}>
-          <ul className="m-0 p-0 list-none space-y-5">
+          <ul className="m-0 p-0 list-none border-b border-[var(--line)]">
             {[
               { i: ShieldCheck, t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
               { i: HandMetal, t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
@@ -440,12 +249,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             ].map((f) => {
               const Icon = f.i;
               return (
-                <li key={f.t} className="flex items-start gap-3">
-                  <span
-                    className="w-10 h-10 rounded-[4px] bg-[var(--chip)] flex-none inline-grid place-items-center text-[rgb(var(--accent-base))]"
-                  >
-                    <Icon size={18} aria-hidden />
-                  </span>
+                <li key={f.t} className="flex items-start gap-4 border-t border-[var(--line)] py-5">
+                  <Icon size={18} strokeWidth={1.6} aria-hidden className="mt-0.5 flex-none text-tertiary" />
                   <div>
                     <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
                     <p className="m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>

@@ -53,24 +53,14 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               {es ? "SEGURIDAD" : "SECURITY"}
             </span>
           </div>
-          <h2
-            className="font-serif m-0"
-            style={{
-              fontSize: "clamp(2rem, 3.6vw, 3rem)",
-              fontWeight: 400,
-              letterSpacing: "-0.022em",
-              lineHeight: 1.08,
-              color: "var(--ink)",
-              textWrap: "balance",
-            }}
-          >
+          <h2 className="t-h2 m-0 text-primary text-balance">
             {es ? (
               <>
-                Tus datos <span style={{ color: "rgb(var(--accent-base))" }}>no salen</span> de tu equipo si tú no lo decides.
+                Tus datos <span className="text-gradient">no salen</span> de tu equipo si tú no lo decides.
               </>
             ) : (
               <>
-                Your data <span style={{ color: "rgb(var(--accent-base))" }}>stays</span> on your machine unless you decide otherwise.
+                Your data <span className="text-gradient">stays</span> on your machine unless you decide otherwise.
               </>
             )}
           </h2>
@@ -89,25 +79,21 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               : "A native Windows app that stores your trades in a SQLite database on your disk. What leaves the machine is listed below, connection by connection."}
           </p>
         </div>
-        {/* 3 tarjetas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14">
+        {/* Tres principios en columnas con filete arriba, como los
+            apartados de un informe: sin caja alrededor ni icono en un
+            cuadradito, que es el vocabulario de una plantilla. */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-8 mb-14">
           {cards.map((c) => {
             const Icon = c.i;
             return (
               <div
                 key={c.t}
                 data-entra="ciclo"
-                className="tj-paper tj-hoja p-6 sm:p-7"
+                className="border-t border-[var(--line-2)] pt-5"
               >
-                <span
-                  className="w-10 h-10 rounded-[4px] bg-[var(--chip)] inline-grid place-items-center text-[rgb(var(--accent-base))]"
-                >
-                  <Icon size={18} aria-hidden />
-                </span>
-                <h3 className="mt-3 mb-1 font-serif" style={{ fontSize: 20, fontWeight: 400, color: "var(--ink)", letterSpacing: "-0.02em" }}>
-                  {c.t}
-                </h3>
-                <p className="m-0" style={{ fontSize: 14, lineHeight: 1.55, color: "var(--ink-2)" }}>
+                <Icon size={18} strokeWidth={1.6} aria-hidden className="text-tertiary" />
+                <h3 className="mt-4 mb-1.5 text-[17px] text-primary">{c.t}</h3>
+                <p className="m-0" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>
                   {c.d}
                 </p>
               </div>
@@ -135,9 +121,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
         </div>
 
         {/* Tabla comparativa — mobile: horizontal scroll inside the card. */}
-        <div
-          className="tj-paper-dense tj-hoja tj-hoja--sangre relative overflow-hidden"
-        >
+        <div className="tj-ficha relative overflow-hidden">
           {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.
                 Sin aviso, la ultima entrada queda partida contra el canto
                 y eso no se lee como «hay mas a la derecha» sino como un
@@ -165,12 +149,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                 : "CountPips compared with a cloud-based trading journal"}
             </caption>
             <thead>
-              <tr
-                style={{
-                  borderBottom: "1px solid rgb(var(--divider) / 0.06)",
-                  background: "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-                }}
-              >
+              <tr style={{ borderBottom: "1px solid var(--ficha-division)" }}>
                 <th
                   scope="col"
                   className="tnum w-[33%]"
@@ -180,15 +159,15 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                 </th>
                 <th
                   scope="col"
-                  className="tnum w-[33%] border-l-2 border-[var(--chip-line)]"
-                  style={{ padding: "12px 8px 12px 10px", fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "rgb(var(--accent-base))", fontWeight: 600 }}
+                  className="tnum w-[33%] tj-columna-propia"
+                  style={{ padding: "14px 12px", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink)", fontWeight: 600 }}
                 >
                   CountPips
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[34%]"
-                  style={{ padding: "12px 18px 12px 0", fontSize: 12, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                  style={{ padding: "14px 18px 14px 12px", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 500 }}
                 >
                   {es ? "Diario en la nube" : "Cloud-based journal"}
                 </th>
@@ -197,7 +176,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
             <tbody>
               {compare.map((row, i) => {
                 const borde =
-                  i < compare.length - 1 ? "1px solid rgb(var(--divider) / 0.06)" : undefined;
+                  i < compare.length - 1 ? "1px solid var(--ficha-division)" : undefined;
                 /* El sello: icono decorativo + veredicto en texto para
                    quien no lo ve. `positivo` no es lo mismo que el valor
                    de la celda — en la columna de la nube, un `true`
@@ -234,13 +213,10 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                     >
                       {row.l}
                     </th>
-                    <td
-                      className="border-l-2 border-[var(--chip-line)]"
-                      style={{ padding: "14px 8px 14px 10px", fontSize: 14, color: "var(--ink)" }}
-                    >
+                    <td className="tj-columna-propia" style={{ padding: "14px 12px", fontSize: 14, color: "var(--ink)" }}>
                       {typeof row.tj === "boolean" ? sello(row.tj, row.tj === (row.bueno ?? true)) : row.tj}
                     </td>
-                    <td style={{ padding: "14px 18px 14px 0", fontSize: 14, color: "var(--ink-2)" }}>
+                    <td style={{ padding: "14px 18px 14px 12px", fontSize: 14, color: "var(--ink-2)" }}>
                       {typeof row.cloud === "boolean" ? sello(row.cloud, row.cloud === (row.bueno ?? true)) : row.cloud}
                     </td>
                   </tr>
@@ -254,7 +230,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               aria-hidden="true"
               className="pointer-events-none absolute right-0 top-0 bottom-0 w-10 md:hidden"
               style={{
-                background: "linear-gradient(to left, rgb(var(--bg) / 0.92), transparent)",
+                background: "linear-gradient(to left, var(--ficha-fondo), transparent)",
               }}
             />
           </div>

@@ -66,6 +66,17 @@ export function Aparecer() {
       io.observe(el);
     };
 
+    // Dentro de algo que recorta, el desplazamiento previo puede sacar la
+    // pieza entera del recorte: el observador la ve con intersección cero
+    // y no aparece nunca. Esas piezas entran con su bloque.
+    const recortada = (el: HTMLElement, bloque: HTMLElement) => {
+      for (let p = el.parentElement; p && p !== bloque.parentElement; p = p.parentElement) {
+        const cs = getComputedStyle(p);
+        if (cs.overflowX !== "visible" || cs.overflowY !== "visible") return true;
+      }
+      return false;
+    };
+
     const recorrer = () => {
       for (const s of main.querySelectorAll("section")) {
         if (s.id === "top" || s.classList.contains("tj-cabecera") || s.parentElement?.closest("section") || s.closest(".demo-window")) continue;
@@ -79,7 +90,10 @@ export function Aparecer() {
           for (const c of contenedores) {
             const hijas = [...c.children].filter(valido);
             if (hijas.length < 3 || hijas.length > 40) continue;
-            hijas.forEach((h) => marcar(h, 2));
+            hijas.forEach((h) => {
+              if (recortada(h, b)) h.dataset.tjAp = "ya";
+              else marcar(h, 2);
+            });
           }
         });
       }

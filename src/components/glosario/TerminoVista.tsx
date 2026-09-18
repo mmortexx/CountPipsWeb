@@ -78,14 +78,16 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           {/* Fórmula, cuando el término es cuantitativo */}
           {formula && (
             <Reveal delay={0.08}>
-              <figure className="m-0 mt-9 rounded-[12px] bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] px-5 py-6 sm:px-7">
-                <p className="eyebrow m-0">{es ? "Fórmula" : "Formula"}</p>
-                <p className="m-0 mt-4 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary sm:text-[17px]">
+              <figure className="tj-ficha m-0 mt-9">
+                <p className="tj-ficha-barra m-0">{es ? "Fórmula" : "Formula"}</p>
+                <div className="tj-ficha-cuerpo">
+                <p className="m-0 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary sm:text-[17px]">
                   {es ? formula.formulaEs : formula.formulaEn}
                 </p>
                 <figcaption className="mt-4 text-[13px] leading-[1.6] text-secondary">
                   {es ? formula.variablesEs : formula.variablesEn}
                 </figcaption>
+                </div>
               </figure>
             </Reveal>
           )}

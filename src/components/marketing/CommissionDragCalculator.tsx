@@ -243,8 +243,8 @@ export function CommissionDragCalculator() {
                     aria-pressed={selectedInstId === item.id}
                     className={`h-10 px-3 rounded-[4px] text-[13px] font-semibold transition-colors text-left flex items-center justify-between ${
                       selectedInstId === item.id
-                        ? "bg-[var(--ink)] text-[var(--bg)]"
-                        : "bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] text-secondary hover:text-primary"
+                        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary shadow-[inset_0_0_0_1px_var(--line-2)]"
+                        : "shadow-[inset_0_0_0_1px_var(--ficha-filo)] text-secondary hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
                     }`}
                   >
                     <span className="tnum">{item.id}</span>
@@ -261,7 +261,7 @@ export function CommissionDragCalculator() {
                   <span className="text-secondary font-medium">
                     {es ? "Contratos o lotes por operación" : "Contracts or lots per trade"}
                   </span>
-                  <span className="tnum font-bold text-primary">{contracts}</span>
+                  <span className="tnum font-semibold text-primary">{contracts}</span>
                 </div>
                 <input
                   type="range"
@@ -305,7 +305,7 @@ export function CommissionDragCalculator() {
                       ? `Ganancia media esperada (${inst.unitNameEs})`
                       : `Expected average gain (${inst.unitNameEn})`}
                   </span>
-                  <span className="tnum font-bold text-primary">
+                  <span className="tnum font-semibold text-primary">
                     +{targetUnits} {es ? inst.unitNameEs : inst.unitNameEn}
                   </span>
                 </div>
@@ -327,7 +327,7 @@ export function CommissionDragCalculator() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
+                <div className="tj-campo px-3 py-2.5">
                   <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Comisión ida y vuelta" : "Round-turn fee"}
                   </span>
@@ -344,7 +344,7 @@ export function CommissionDragCalculator() {
                   </div>
                 </div>
 
-                <div className="rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_4.5%,transparent)] px-3 py-2.5">
+                <div className="tj-campo px-3 py-2.5">
                   <span className="text-[12px] text-tertiary block mb-1">
                     {es ? "Deslizamiento medio" : "Average slippage"}
                   </span>
@@ -366,7 +366,7 @@ export function CommissionDragCalculator() {
           </div>
 
           {/* Columna Derecha: Tarjeta de Resultados */}
-          <div className="rounded-[12px] bg-[var(--surface)] p-6 sm:p-7 lg:sticky lg:top-24">
+          <div className="tj-ficha p-6 sm:p-7 lg:sticky lg:top-24">
             <span className="text-[13px] font-medium text-secondary block mb-4">
               {es ? "En un año" : "Over a year"}
             </span>
@@ -406,7 +406,7 @@ export function CommissionDragCalculator() {
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-[var(--line)]">
                 <span className="font-semibold text-primary">{es ? "Coste total" : "Total cost"}</span>
-                <span className="tnum font-bold text-[rgb(var(--pnl-neg))]">
+                <span className="tnum font-semibold text-[rgb(var(--pnl-neg))]">
                   −{fmtMoney(totalCostAnnual, lang, { decimals: 0 })}
                 </span>
               </div>
@@ -419,7 +419,7 @@ export function CommissionDragCalculator() {
                   {es ? "Parte de la ganancia" : "Share of profit"}
                 </span>
                 <span
-                  className={`text-base tnum font-bold ${
+                  className={`text-base tnum font-semibold ${
                     costDragPct > 30
                       ? "text-[rgb(var(--pnl-neg))]"
                       : costDragPct > 15
@@ -438,7 +438,7 @@ export function CommissionDragCalculator() {
                 <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Ticks para cubrir costes" : "Ticks to cover costs"}
                 </span>
-                <span className="text-base tnum font-bold text-primary">
+                <span className="text-base tnum font-semibold text-primary">
                   {fmtNum(breakEvenTicksPerTrade, lang, 2)}
                 </span>
                 <span className="text-[11px] text-tertiary block mt-0.5 tnum">
@@ -450,7 +450,7 @@ export function CommissionDragCalculator() {
                 <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Win rate para no perder" : "Break-even win rate"}
                 </span>
-                <span className="text-base tnum font-bold text-primary">
+                <span className="text-base tnum font-semibold text-primary">
                   {fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
                 <span className="text-[11px] text-tertiary block mt-0.5">

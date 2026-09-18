@@ -179,20 +179,20 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             </div>
 
             {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
-            <div className="p-4 rounded-[8px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.02)] mb-6">
+            <div className="mb-6 border-y border-[var(--ficha-division)] py-4">
               {/* Apilado por debajo de `sm`: en una sola fila, el rotulo y la
                   cifra se metian el uno dentro del otro a 390 px. */}
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">
                 <span className="font-semibold text-primary">
                   {es ? "Colchón hasta el límite de pérdida total" : "Buffer to the overall loss limit"}
                 </span>
-                <span className="font-bold text-primary tnum">
+                <span className="font-semibold text-primary tnum">
                   {fmtMoney(distanceToLiquidation, lang)}
                 </span>
               </div>
-              <div className="relative h-2.5 rounded-[4px] overflow-hidden bg-[rgb(var(--divider)/0.12)]">
+              <div className="relative h-[3px] rounded-[1px] overflow-hidden bg-[var(--ficha-division)]">
                 <div
-                  className="h-full rounded-[4px] transition-all duration-300"
+                  className="h-full transition-[width] duration-300"
                   style={{
                     width: `${Math.min(100, Math.max(0, distancePct))}%`,
                     background: distancePct > 50
@@ -211,11 +211,11 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             </div>
 
             {/* Matriz de parámetros de prop firm */}
-            <div data-orden className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
+            <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] sm:grid-cols-2 lg:grid-cols-4">
+              <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Límite diario (${firm.dailyPct}\u00a0%)` : `Daily limit (${firm.dailyPct}%)`}</span>
-                  <AlertTriangle size={14} className="text-[rgb(var(--pnl-neg))]" />
+                  <AlertTriangle size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(dailyLossLimit, lang)}
@@ -225,10 +225,10 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Max Drawdown (${firm.maxDDPct}\u00a0%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
-                  <ShieldCheck size={14} className="text-[rgb(var(--accent-base))]" />
+                  <ShieldCheck size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-primary tnum">
                   −{fmtMoney(maxTrailingLoss, lang)}
@@ -240,10 +240,10 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Fase 1 (+${firm.phase1Pct}\u00a0%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}\u00a0%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
-                  <CheckCircle2 size={14} className="text-[rgb(var(--pnl-pos))]" />
+                  <CheckCircle2 size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   +{fmtMoney(phase1Target, lang)}{" "}
@@ -258,10 +258,10 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
                   <span>{es ? "Riesgo por operación (0,75\u00a0%)" : "Risk per trade (0.75%)"}</span>
-                  <Target size={14} className="text-[rgb(var(--accent-base))]" />
+                  <Target size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
@@ -303,8 +303,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             </div>
 
             {/* Tarjeta de métricas del setup */}
-            <div data-orden className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
+            <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] md:grid-cols-3">
+              <div className="caja-cifra p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-semibold text-[rgb(var(--pnl-pos))] tnum">
@@ -321,7 +321,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-semibold text-primary tnum">
@@ -336,7 +336,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
               </div>
 
-              <div className="caja-cifra tj-paper rounded-[8px] border border-[rgb(var(--divider)/0.14)] p-5">
+              <div className="caja-cifra p-5">
                 <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-semibold text-primary tnum">

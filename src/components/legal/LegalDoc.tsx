@@ -74,7 +74,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           {titularIncompleto && (
             <Reveal delay={0.05}>
               <div
-                className="mt-6 rounded-[4px] border border-[var(--line)] bg-[rgb(var(--divider)/0.04)] p-4"
+                className="mt-6 border-y border-[var(--line-2)] py-4"
               >
                 <p className="m-0 text-[14px] leading-relaxed text-secondary">
                   <strong className="text-primary">

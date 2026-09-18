@@ -72,7 +72,7 @@ export function GlosarioIndice() {
                   ? "Busca por nombre o por lo que significa…"
                   : "Search by name or by what it means…"
               }
-              className="h-12 w-full rounded-[4px] border border-transparent bg-[var(--surface)] px-5 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[var(--line-2)] focus:bg-[var(--bg)]"
+              className="h-12 w-full tj-campo px-5 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[var(--line-2)] focus:bg-[var(--bg)]"
             />
             {/* Category Pills */}
             <div className="flex flex-wrap items-center gap-1 mt-4">

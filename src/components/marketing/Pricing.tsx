@@ -196,8 +196,11 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   return (
     <div
       data-entra
-      className="tj-cristal relative flex h-full flex-col rounded-[12px] p-7 sm:p-9"
+      className="tj-cristal relative flex h-full flex-col rounded-[12px]"
     >
+      {/* Dos zonas, como una ficha: arriba el nivel, el precio y la
+          acción; debajo, tras un filete de borde a borde, lo que incluye. */}
+      <div className="p-7 sm:p-9">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-xl md:text-2xl font-semibold text-primary tracking-tight min-w-0 break-words">
           {plan.name}
@@ -238,7 +241,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           className={
             isPro
               ? "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-              : "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 bg-[var(--raised)] text-primary hover:bg-[var(--surface-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+              : "group flex w-full items-center justify-center gap-2 h-12 px-6 rounded-[4px] text-[15px] font-semibold transition-colors duration-200 bg-transparent text-primary shadow-[inset_0_0_0_1px_var(--line-2)] hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
           }
         >
           {plan.cta}
@@ -261,10 +264,12 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         </MagneticButton>
       </div>
 
-      <p className="mt-8 pt-2 text-[13px] font-medium text-tertiary">
+      </div>
+      <div className="flex-1 border-t border-[var(--ficha-division)] px-7 pt-6 pb-7 sm:px-9 sm:pb-9">
+      <p className="m-0 text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary">
         {isPro ? (es ? "Todo lo de Core, y además" : "Everything in Core, plus") : (es ? "Incluye" : "Includes")}
       </p>
-      <ul className="mt-4 space-y-3 flex-1">
+      <ul className="mt-4 space-y-3">
         {(isPro ? plan.features.slice(1) : plan.features).map((f) => (
           <li key={f} className="flex items-start gap-3 text-[15px]">
             <span className="shrink-0 mt-[4px] text-primary" aria-hidden="true">
@@ -274,6 +279,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           </li>
         ))}
       </ul>
+      </div>
     </div>
   );
 }

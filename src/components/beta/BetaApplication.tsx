@@ -39,7 +39,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
    De 640 px para arriba vuelve a 14 px, que es la densidad que pide un
    formulario largo en escritorio. */
 const campoBase =
-  "min-h-12 w-full rounded-[4px] border border-[var(--line-2)] bg-[var(--raised)] px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]";
+  "tj-campo min-h-12 w-full px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]";
 
 const inputClass = `mt-2 ${campoBase}`;
 
@@ -271,7 +271,7 @@ export function BetaApplication() {
 
   if (status === "success") {
     return (
-      <div ref={exitoRef} tabIndex={-1} className="rounded-[12px] bg-[var(--surface)] p-7 sm:p-10 outline-none" role="status">
+      <div ref={exitoRef} tabIndex={-1} className="tj-ficha p-7 sm:p-10 outline-none" role="status">
         <div className="mx-auto flex max-w-xl flex-col items-center text-center">
           <span className="grid size-14 place-items-center rounded-[4px] bg-[rgb(var(--pnl-pos)/0.12)] text-[rgb(var(--pnl-pos))]">
             <Check size={26} aria-hidden />
@@ -300,7 +300,7 @@ export function BetaApplication() {
         }
       }}
       noValidate
-      className="rounded-[12px] bg-[var(--surface)] p-5 sm:p-9"
+      className="tj-ficha p-5 sm:p-9"
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>

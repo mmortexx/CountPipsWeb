@@ -421,7 +421,7 @@ export function RMultipleSimulator() {
               <div className="flex items-baseline gap-3 mt-1">
                 <span
                   className="tnum"
-                  style={{ fontSize: 26, fontWeight: 700, color: c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
+                  style={{ fontSize: 26, fontWeight: 600, color: c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                 >
                   {c.expectancyR >= 0 ? "+" : ""}{fmtNum(c.expectancyR, 3)} R
                 </span>
@@ -495,21 +495,18 @@ export function RMultipleSimulator() {
               Cada columna es su propio contenedor de medida (`caja-cifra`)
               y el importe va abreviado: «18,9 k $» en vez de «18.906 US$»,
               que no cabe en 70 px. */}
-          <div
-            className="mb-4 grid grid-cols-5 overflow-clip rounded-[8px] text-center tnum"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
-          >
+          <div className="tj-matriz mb-4 grid-cols-5 border-b border-[var(--ficha-division)] text-center tnum">
             {[
               { k: "P5", n: es ? "Cola 5 %" : "Bottom 5%", v: c.finalP5, col: "rgb(var(--pnl-neg))", ref: false },
               { k: "P25", n: "Q1", v: c.finalP25, col: "var(--ink-2)", ref: false },
               { k: "P50", n: es ? "Mediana" : "Median", v: c.finalP50, col: "rgb(var(--accent-base))", ref: true },
               { k: "P75", n: "Q3", v: c.finalP75, col: "var(--ink-2)", ref: false },
               { k: "P95", n: es ? "Cima 5 %" : "Top 5%", v: c.finalP95, col: "rgb(var(--pnl-pos))", ref: false },
-            ].map((p, i) => (
+            ].map((p) => (
               <div
                 key={p.k}
                 title={fmtUsd(p.v)}
-                className={`caja-cifra relative min-w-0 px-1 py-2.5 ${i > 0 ? "border-l border-[rgb(var(--divider)/0.10)]" : ""}`}
+                className="caja-cifra relative min-w-0 px-1 py-2.5"
               >
                 {p.ref && (
                   <span
@@ -526,7 +523,7 @@ export function RMultipleSimulator() {
                 </span>
                 <span className="mt-0.5 block text-[11px] leading-[1.2] text-tertiary">{p.n}</span>
                 <span
-                  className="tnum cifra-sm mt-1.5 block whitespace-nowrap font-bold"
+                  className="tnum cifra-sm mt-1.5 block whitespace-nowrap font-semibold"
                   style={{ color: p.col }}
                 >
                   {fmtUsdCorto(p.v)}
@@ -550,10 +547,7 @@ export function RMultipleSimulator() {
 
               Filetes entre columnas en vez de separacion: son cuatro
               lecturas de la misma simulacion, no cuatro tarjetas. */}
-          <div
-            className="mb-4 grid grid-cols-2 overflow-clip rounded-[8px] text-center tnum sm:grid-cols-4"
-            style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)", border: "1px solid transparent" }}
-          >
+          <div className="tj-matriz mb-4 grid-cols-2 border-b border-[var(--ficha-division)] text-center tnum sm:grid-cols-4">
             {[
               {
                 t: es ? "Ruina" : "Ruin",
@@ -579,14 +573,10 @@ export function RMultipleSimulator() {
                 v: `${c.p95MaxLossStreak} ${es ? "ops" : "trades"}`,
                 col: "rgb(var(--pnl-neg))",
               },
-            ].map((m, i) => (
+            ].map((m) => (
               <div
                 key={m.t + m.sub}
-                className={`caja-cifra grid min-w-0 grid-rows-[auto_auto_1fr] px-2 py-3 ${
-                  i % 2 === 1 ? "border-l border-[rgb(var(--divider)/0.10)]" : ""
-                } ${i >= 2 ? "border-t border-[rgb(var(--divider)/0.10)] sm:border-t-0" : ""} ${
-                  i === 2 ? "sm:border-l sm:border-[rgb(var(--divider)/0.10)]" : ""
-                }`}
+                className="caja-cifra grid min-w-0 grid-rows-[auto_auto_1fr] px-2 py-3"
               >
                 <span
                   className="tnum text-[12px] leading-[1.25]"
@@ -598,7 +588,7 @@ export function RMultipleSimulator() {
                   {m.sub}
                 </span>
                 <span
-                  className="tnum cifra-sm mt-1.5 self-end whitespace-nowrap font-bold"
+                  className="tnum cifra-sm mt-1.5 self-end whitespace-nowrap font-semibold"
                   style={{ color: m.col }}
                 >
                   {m.v}

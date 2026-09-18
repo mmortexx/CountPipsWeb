@@ -988,12 +988,29 @@ for (const pantalla of PANTALLAS) {
            pierde el gesto de entrada — molesto, no grave, y por eso va
            como aviso y no tumba el guardián. */
         const apagadas = presas.filter(([p]) => Number(getComputedStyle(p).opacity) < 0.98);
+        /* Lo mismo con `Aparecer.tsx`, que no usa `view()` sino un
+           IntersectionObserver: tras recorrer la página entera, una pieza
+           que sigue en `data-tj-ap="0"` no ha asomado nunca. Pasó con las
+           cifras de una matriz que recorta: el desplazamiento previo de
+           32 px las sacaba enteras del recorte, el observador las veía
+           con intersección cero y se quedaban invisibles para siempre. */
+        const atascadas = [...document.querySelectorAll('[data-tj-ap="0"]')]
+          .filter((e) => e.offsetHeight > 0)
+          .map((e) => `${e.tagName.toLowerCase()}.${(e.className || "").toString().split(/\s+/).filter(Boolean).slice(0, 3).join(".")} «${e.textContent.trim().slice(0, 30)}»`);
         return {
+          atascadas: atascadas.slice(0, 4),
+          nAtascadas: atascadas.length,
           apagadas: apagadas.map(nombre).slice(0, 4),
           sinGesto: presas.length - apagadas.length,
           ejemploSinGesto: presas.length > apagadas.length ? nombre(presas.find(([p]) => Number(getComputedStyle(p).opacity) >= 0.98)) : null,
         };
       });
+      if (enjauladas.nAtascadas) {
+        fallos.push(
+          `${etiqueta}: ${enjauladas.nAtascadas} pieza(s) no llegan a aparecer tras recorrer ` +
+            `la página entera (\`data-tj-ap="0"\`): el visitante no las ve — ${enjauladas.atascadas.join("; ")}`
+        );
+      }
       if (enjauladas.apagadas.length) {
         fallos.push(
           `${etiqueta}: ${enjauladas.apagadas.length} pieza(s) con \`data-entra\` se quedan ` +

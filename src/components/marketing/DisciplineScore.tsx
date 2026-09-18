@@ -494,7 +494,10 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                               lineHeight: 1.35,
                               cursor: "pointer",
                               color: activa ? "var(--bg)" : "var(--ink-2)",
-                              background: activa ? "var(--ink)" : "color-mix(in srgb, var(--ink) 4.5%, transparent)",
+                              /* Opción con filete, no una pastilla gris: la
+                                 elegida se rellena de tinta. */
+                              background: activa ? "var(--ink)" : "transparent",
+                              boxShadow: activa ? "none" : "inset 0 0 0 1px var(--ficha-filo)",
                             }}
                           >
                             {es ? o.es : o.en}
@@ -575,13 +578,12 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
 
           {/* ── Resultado ────────────────────────────────────────────── */}
           <div className="lg:sticky lg:top-24">
-            <div className="tj-paper tj-paper-glow rounded-[12px] p-5">
-              <div
-                className="tnum mb-4"
-                style={{ fontSize: 12, color: "var(--ink-3)" }}
-              >
-                {es ? "Tu perfil" : "Your profile"}
-              </div>
+            <div className="tj-ficha">
+              <p className="tj-ficha-barra">
+                <span>{es ? "Tu perfil" : "Your profile"}</span>
+                <span>{es ? "5 ejes" : "5 axes"}</span>
+              </p>
+              <div className="tj-ficha-cuerpo">
 
               {/* Cifra global */}
               <div className="flex items-end gap-3 mb-1">
@@ -589,7 +591,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   className="tnum"
                   style={{
                     fontSize: 46,
-                    fontWeight: 700,
+                    fontWeight: 500,
+                    letterSpacing: "-0.03em",
                     lineHeight: 1,
                     color: level ? level.color : "var(--ink-3)",
                     transition: "color 0.25s ease",
@@ -602,14 +605,13 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 </span>
                 {level && (
                   <span
-                    className="tnum ml-auto px-2.5 py-1 rounded-[4px]"
+                    className="tnum ml-auto pb-1"
                     style={{
-                      fontSize: 12,
-                      fontWeight: 700,
-                      textTransform: "",
+                      fontSize: 11,
+                      fontWeight: 600,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
                       color: level.color,
-                      background: `color-mix(in oklab, ${level.color} 14%, transparent)`,
-                      border: `1px solid color-mix(in oklab, ${level.color} 40%, transparent)`,
                     }}
                   >
                     {level.label}
@@ -663,8 +665,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               {/* Qué arreglar primero */}
               {weakest ? (
                 <>
-                  <div className="border-t border-[var(--line)] pt-4">
-                    <div className="tnum mb-2 text-[12px] text-[rgb(var(--accent-base))] font-semibold">
+                  <div className="border-t border-[var(--ficha-division)] pt-4">
+                    <div className="tnum mb-2 text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary">
                       {es ? "Empieza por aquí" : "Start here"}
                     </div>
                     <p className="m-0 text-sm leading-relaxed text-secondary">
@@ -703,7 +705,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 </p>
               )}
 
-              <p className="m-0 mt-4" style={{ fontSize: 12, lineHeight: 1.5, color: "var(--ink-3)" }}>
+              </div>
+              <p className="tj-ficha-barra tj-ficha-barra--pie">
                 {es
                   ? "Autoevaluación orientativa: mide hábitos declarados, no resultados. Lo que de verdad te retrata son tus propios datos operación a operación."
                   : "Indicative self-assessment: it measures declared habits, not results. What really portrays you is your own trade-by-trade data."}

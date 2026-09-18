@@ -642,14 +642,11 @@ export function EquityProjector() {
 
         {/* ══════════ COCKPIT INSTITUCIONAL ENCLOSURE ══════════ */}
         <div
-          className="w-full rounded-[12px] overflow-hidden bg-[var(--surface)]"
+          className="w-full tj-ficha overflow-hidden"
         >
           {/* Cabecera de la herramienta. NO es la barra de titulo de
               una ventana: esto no es una pantalla del programa. */}
-          <div
-            className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b"
-            style={{ borderColor: "var(--line)" }}
-          >
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-[var(--ficha-division)]">
             {/* ── ESTA HERRAMIENTA NO ES UNA PANTALLA DEL PROGRAMA ────
                 Aqui habia una insignia «WINUI3» junto al rotulo «MOTOR
                 CUANTITATIVO DE CAPITAL», y las dos cosas juntas se leian
@@ -665,8 +662,8 @@ export function EquityProjector() {
                 programa. El marco se queda —es la caja de la herramienta—
                 pero el rotulo la nombra por su nombre real, el mismo que
                 usa `src/lib/herramientas.ts` para esta entrada. */}
-            <span className="tnum text-[12px] font-semibold tracking-wider text-[var(--ink)]">
-              COUNTPIPS · {es ? "PROYECTOR DE CAPITAL" : "EQUITY PROJECTOR"}
+            <span className="tnum text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--ink-3)]">
+              CountPips · {es ? "Proyector de capital" : "Equity projector"}
             </span>
 
             {/* Presets Toolbar en la Barra Superior */}
@@ -683,27 +680,14 @@ export function EquityProjector() {
                     type="button"
                     aria-pressed={active}
                     onClick={() => applyPreset(p.id)}
-                    className="toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] tnum transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5"
-                    style={{
-                      background: active
-                        ? "rgb(var(--accent-base))"
-                        : "color-mix(in oklab, var(--surface-1) 70%, transparent)",
-                      color: active ? "rgb(var(--accent-ink))" : "var(--ink-2)",
-                      border: active
-                        ? "1px solid rgb(var(--accent-base))"
-                        : "1px solid rgb(var(--divider) / 0.14)",
-                      fontWeight: active ? 700 : 500,
-                    }}
+                    className={`toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] tnum transition-colors cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+                      active
+                        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-[var(--ink)] font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
+                        : "text-[var(--ink-2)] font-medium shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-[var(--ink)] hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
+                    }`}
                   >
                     <span>{es ? p.labelEs : p.labelEn}</span>
-                    <span
-                      className="text-[11px] opacity-75 font-normal px-1 rounded-[1px]"
-                      style={{
-                        background: active
-                          ? "color-mix(in oklab, rgb(var(--accent-ink)) 15%, transparent)"
-                          : "rgb(var(--divider) / 0.10)",
-                      }}
-                    >
+                    <span className="text-[11px] font-normal text-[var(--ink-3)]">
                       {es ? p.tagEs : p.tagEn}
                     </span>
                   </button>
@@ -714,19 +698,11 @@ export function EquityProjector() {
                 type="button"
                 aria-pressed={selectedPreset === "custom"}
                 onClick={() => setSelectedPreset("custom")}
-                className="toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] tnum transition-all cursor-pointer whitespace-nowrap"
-                style={{
-                  background:
-                    selectedPreset === "custom"
-                      ? "rgb(var(--accent-base))"
-                      : "transparent",
-                  color: selectedPreset === "custom" ? "rgb(var(--accent-ink))" : "var(--ink-3)",
-                  border:
-                    selectedPreset === "custom"
-                      ? "1px solid rgb(var(--accent-base))"
-                      : "1px dashed rgb(var(--divider) / 0.22)",
-                  fontWeight: selectedPreset === "custom" ? 700 : 400,
-                }}
+                className={`toque-comodo px-2.5 py-1 rounded-[4px] text-[12px] tnum transition-colors cursor-pointer whitespace-nowrap ${
+                  selectedPreset === "custom"
+                    ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-[var(--ink)] font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
+                    : "text-[var(--ink-3)] shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-[var(--ink)]"
+                }`}
               >
                 {es ? "Manual" : "Custom"}
               </button>
@@ -734,10 +710,10 @@ export function EquityProjector() {
           </div>
 
           {/* Cuadrícula Principal: Entradas vs Cockpit */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 divide-y lg:divide-y-0 lg:divide-x divide-[rgb(var(--divider)/0.14)] items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 divide-y lg:divide-y-0 lg:divide-x divide-[var(--ficha-division)] items-stretch">
             
             {/* ══════════ PANEL IZQUIERDO: PARÁMETROS (5 cols) ══════════ */}
-            <div className="lg:col-span-5 p-5 sm:p-6 space-y-5 flex flex-col justify-between" style={{ background: "color-mix(in oklab, var(--surface-1) 60%, transparent)" }}>
+            <div className="lg:col-span-5 p-5 sm:p-6 space-y-5 flex flex-col justify-between">
               
               {/* Sección 1: Capital */}
               <div className="space-y-3.5">
@@ -745,7 +721,7 @@ export function EquityProjector() {
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
                     <span className="tnum text-tertiary font-normal">01</span> {es ? "Capital y frecuencia" : "Capital and frequency"}
                   </span>
-                  <span className="text-[13px] tnum text-[var(--ink)] font-bold">
+                  <span className="text-[13px] tnum text-[var(--ink)] font-semibold">
                     {fmtUsd(startBalance)}
                   </span>
                 </div>
@@ -805,7 +781,7 @@ export function EquityProjector() {
                     <span className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
                       {es ? "Aporte mensual" : "Monthly deposit"}
                     </span>
-                    <span className="text-[12px] tnum text-[rgb(var(--accent-base))] font-bold">
+                    <span className="text-[12px] tnum text-[rgb(var(--accent-base))] font-semibold">
                       +{fmtUsd(monthlyContribution)} / {es ? "mes" : "mo"}
                     </span>
                   </div>
@@ -837,13 +813,8 @@ export function EquityProjector() {
                     <span className="tnum text-tertiary font-normal">02</span> {es ? "Ventaja" : "Edge"}
                   </span>
                   <span
-                    className="text-[11px] tnum font-bold px-2 py-0.5 rounded-[4px] shadow-sm"
-                    style={{
-                      color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                      background: c.hasEdge
-                        ? "color-mix(in oklab, rgb(var(--pnl-pos)) 14%, transparent)"
-                        : "color-mix(in oklab, rgb(var(--pnl-neg)) 14%, transparent)",
-                    }}
+                    className="text-[12px] tnum font-semibold"
+                    style={{ color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
                     PF {fmtNum(c.profitFactor, 2)}
                   </span>
@@ -913,7 +884,7 @@ export function EquityProjector() {
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
                     <span className="tnum text-tertiary font-normal">03</span> {es ? "Riesgo y horizonte" : "Risk and horizon"}
                   </span>
-                  <span className="text-[12px] tnum text-[var(--ink)] font-bold">
+                  <span className="text-[12px] tnum text-[var(--ink)] font-semibold">
                     {years} {es ? (years === 1 ? "año" : "años") : (years === 1 ? "year" : "years")}
                   </span>
                 </div>
@@ -957,26 +928,15 @@ export function EquityProjector() {
                     <button
                       type="button"
                       onClick={() => setReinvestMode("compound")}
-                      className="p-2.5 text-left rounded-[8px] transition-all cursor-pointer"
-                      style={{
-                        background:
-                          reinvestMode === "compound"
-                            ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                            : "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-                        border:
-                          reinvestMode === "compound"
-                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 55%, transparent)"
-                            : "1px solid rgb(var(--divider) / 0.12)",
-                      }}
+                      className={`toque-comodo p-2.5 text-left rounded-[4px] transition-colors cursor-pointer ${
+                        reinvestMode === "compound"
+                          ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] shadow-[inset_0_0_0_1px_var(--line-2)]"
+                          : "shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
+                      }`}
                     >
-                      <div
-                        className="text-[13px] tnum font-semibold flex items-center justify-between"
-                        style={{
-                          color: reinvestMode === "compound" ? "rgb(var(--accent-base))" : "var(--ink)",
-                        }}
-                      >
+                      <div className="text-[13px] tnum font-semibold flex items-center justify-between text-[var(--ink)]">
                         <span>{es ? "Interés compuesto" : "Compounding"}</span>
-                        {reinvestMode === "compound" && <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />}
+                        {reinvestMode === "compound" && <Check aria-hidden className="w-3.5 h-3.5 text-[var(--ink-2)]" />}
                       </div>
                       {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
                             opcion, sobre su propia superficie, que es mas
@@ -992,26 +952,15 @@ export function EquityProjector() {
                     <button
                       type="button"
                       onClick={() => setReinvestMode("linear")}
-                      className="p-2.5 text-left rounded-[8px] transition-all cursor-pointer"
-                      style={{
-                        background:
-                          reinvestMode === "linear"
-                            ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                            : "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-                        border:
-                          reinvestMode === "linear"
-                            ? "1px solid color-mix(in oklab, rgb(var(--accent-base)) 55%, transparent)"
-                            : "1px solid rgb(var(--divider) / 0.12)",
-                      }}
+                      className={`toque-comodo p-2.5 text-left rounded-[4px] transition-colors cursor-pointer ${
+                        reinvestMode === "linear"
+                          ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] shadow-[inset_0_0_0_1px_var(--line-2)]"
+                          : "shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
+                      }`}
                     >
-                      <div
-                        className="text-[13px] tnum font-semibold flex items-center justify-between"
-                        style={{
-                          color: reinvestMode === "linear" ? "rgb(var(--accent-base))" : "var(--ink)",
-                        }}
-                      >
+                      <div className="text-[13px] tnum font-semibold flex items-center justify-between text-[var(--ink)]">
                         <span>{es ? "Retiro fijo" : "Fixed / withdrawal"}</span>
-                        {reinvestMode === "linear" && <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />}
+                        {reinvestMode === "linear" && <Check aria-hidden className="w-3.5 h-3.5 text-[var(--ink-2)]" />}
                       </div>
                       {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
                             opcion, sobre su propia superficie, que es mas
@@ -1029,18 +978,17 @@ export function EquityProjector() {
             </div>
 
             {/* ══════════ PANEL DERECHO: RESULTADOS (7 cols) ══════════ */}
-            <div className="lg:col-span-7 p-5 sm:p-6 space-y-5 flex flex-col justify-between" style={{ background: "color-mix(in oklab, var(--surface-1) 40%, transparent)" }}>
+            <div className="lg:col-span-7 p-5 sm:p-6 space-y-5 flex flex-col justify-between">
               
               {/* Encabezado: Expectancy & Live Status */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[rgb(var(--divider)/0.12)]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--ficha-division)]">
                 <div className="min-w-0">
-                  <div className="tnum flex items-center gap-2 text-[12px] font-semibold text-[var(--ink-3)]">
-                    <span>{es ? "EXPECTANCY NETA POR OPERACIÓN" : "NET EXPECTANCY PER TRADE"}</span>
-                    <span className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--accent-base))]" />
+                  <div className="tnum text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--ink-3)]">
+                    {es ? "Expectancy neta por operación" : "Net expectancy per trade"}
                   </div>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span
-                      className="tnum text-3xl sm:text-4xl font-bold tracking-tight whitespace-nowrap"
+                      className="tnum text-3xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap"
                       style={{
                         color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                         textShadow: "none",
@@ -1058,13 +1006,8 @@ export function EquityProjector() {
                 {/* Badge de Convicción */}
                 <div className="text-left sm:text-right">
                   <div
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-[12px] font-medium"
-                    style={{
-                      background: c.hasEdge
-                        ? "color-mix(in oklab, rgb(var(--pnl-pos)) 11%, transparent)"
-                        : "color-mix(in oklab, rgb(var(--pnl-neg)) 11%, transparent)",
-                      color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
-                    }}
+                    className="inline-flex items-center gap-1.5 text-[12px] font-medium"
+                    style={{ color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
                     <span className="w-1.5 h-1.5 rounded-[1px]" style={{ background: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
                     <span>
@@ -1079,7 +1022,7 @@ export function EquityProjector() {
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-1">
                     {es ? "Primer año, en teoría:" : "First year, in theory:"}{" "}
-                    <span className="text-[var(--ink)] font-bold">{fmtUsd(c.yearlyUsdInitial)}</span>
+                    <span className="text-[var(--ink)] font-semibold">{fmtUsd(c.yearlyUsdInitial)}</span>
                   </div>
                 </div>
               </div>
@@ -1087,12 +1030,8 @@ export function EquityProjector() {
               {/* Alerta si no hay edge */}
               {!c.hasEdge && (
                 <div
-                  className="p-3 rounded-[8px] text-xs tnum leading-relaxed"
-                  style={{
-                    background: "color-mix(in oklab, rgb(var(--pnl-neg)) 14%, transparent)",
-                    border: "1px solid color-mix(in oklab, rgb(var(--pnl-neg)) 40%, transparent)",
-                    color: "rgb(var(--pnl-neg))",
-                  }}
+                  className="border-y border-[var(--ficha-division)] py-3 text-xs tnum leading-relaxed"
+                  style={{ color: "rgb(var(--pnl-neg))" }}
                   role="alert"
                 >
                   ⚠{" "}
@@ -1104,17 +1043,12 @@ export function EquityProjector() {
 
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                <div className="flex items-center gap-1 p-0.5 rounded-[8px] bg-[rgb(var(--divider)/0.10)] border border-transparent">
+                <div className="tj-segmentado" role="group">
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}
-                    className="toque-comodo px-3 py-1 rounded-[4px] text-[12px] tnum transition-all flex items-center gap-1.5 cursor-pointer"
-                    style={{
-                      background: viewTab === "chart" ? "var(--surface-2)" : "transparent",
-                      color: viewTab === "chart" ? "var(--ink)" : "var(--ink-3)",
-                      fontWeight: viewTab === "chart" ? 600 : 400,
-                      boxShadow: viewTab === "chart" ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
-                    }}
+                    aria-pressed={viewTab === "chart"}
+                    className="px-3 text-[12px] tnum flex items-center gap-1.5 cursor-pointer"
                   >
                     <LineChart className="w-3.5 h-3.5" />
                     <span>{es ? "Curva" : "Curve"}</span>
@@ -1122,13 +1056,8 @@ export function EquityProjector() {
                   <button
                     type="button"
                     onClick={() => setViewTab("table")}
-                    className="toque-comodo px-3 py-1 rounded-[4px] text-[12px] tnum transition-all flex items-center gap-1.5 cursor-pointer"
-                    style={{
-                      background: viewTab === "table" ? "var(--surface-2)" : "transparent",
-                      color: viewTab === "table" ? "var(--ink)" : "var(--ink-3)",
-                      fontWeight: viewTab === "table" ? 600 : 400,
-                      boxShadow: viewTab === "table" ? "0 1px 3px rgba(0,0,0,0.12)" : "none",
-                    }}
+                    aria-pressed={viewTab === "table"}
+                    className="px-3 text-[12px] tnum flex items-center gap-1.5 cursor-pointer"
                   >
                     <Table className="w-3.5 h-3.5" />
                     <span>{es ? "Por años" : "By year"}</span>
@@ -1140,13 +1069,8 @@ export function EquityProjector() {
                     type="button"
                     onClick={() => setShowConfidenceCone(!showConfidenceCone)}
                     className="toque-comodo text-[12px] tnum px-2.5 py-1 rounded-[4px] transition-all flex items-center gap-1.5 cursor-pointer"
-                    style={{
-                      background: showConfidenceCone
-                        ? "color-mix(in oklab, rgb(var(--accent-base)) 14%, transparent)"
-                        : "transparent",
-                      color: showConfidenceCone ? "rgb(var(--accent-base))" : "var(--ink-3)",
-                      border: "1px solid transparent",
-                    }}
+                    aria-pressed={showConfidenceCone}
+                    style={{ color: showConfidenceCone ? "var(--ink)" : "var(--ink-3)" }}
                   >
                     <span
                       className="w-2 h-2 rounded-[1px]"
@@ -1165,14 +1089,13 @@ export function EquityProjector() {
                 <div className="space-y-2">
                   {/* Tooltip Dinámico Scrubber */}
                   <div
-                    className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-[8px] tnum text-xs shadow-sm"
-                    style={{ background: "color-mix(in oklab, var(--surface-2) 90%, transparent)" }}
+                    className="flex flex-wrap items-center justify-between gap-2 border-y border-[var(--ficha-division)] py-2.5 tnum text-xs"
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-[var(--ink-3)] text-[12px] font-semibold">
                         {es ? "Punto:" : "Point:"}
                       </span>
-                      <span className="font-bold text-[rgb(var(--accent-base))] text-xs">
+                      <span className="font-semibold text-[rgb(var(--accent-base))] text-xs">
                         {activePoint.year === 0
                           ? es
                             ? "Inicio (Año 0)"
@@ -1184,12 +1107,12 @@ export function EquityProjector() {
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <div>
                         <span className="text-[var(--ink-3)] text-[11px] mr-1">{es ? "Capital:" : "Equity:"}</span>
-                        <span className="font-bold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
+                        <span className="font-semibold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
                       </div>
                       <div>
                         <span className="text-[var(--ink-3)] text-[11px] mr-1">PnL:</span>
                         <span
-                          className="font-bold"
+                          className="font-semibold"
                           style={{
                             color:
                               activePoint.netProfit >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
@@ -1204,8 +1127,8 @@ export function EquityProjector() {
 
                   {/* SVG Chart con Renderizado Preciso */}
                   <div
-                    className="relative cursor-crosshair touch-none select-none rounded-[8px] overflow-hidden border border-transparent"
-                    style={{ background: "color-mix(in oklab, var(--surface-2) 40%, transparent)" }}
+                    className="relative cursor-crosshair touch-none select-none rounded-[8px] overflow-hidden"
+                    style={{ boxShadow: "inset 0 0 0 1px var(--ficha-division)" }}
                     onMouseMove={(e) => handleSvgMove(e.clientX)}
                     onTouchMove={(e) => {
                       if (e.touches.length > 0) {
@@ -1463,27 +1386,21 @@ export function EquityProjector() {
                   sombra cada una: seis objetos que por casualidad estan
                   juntos. Son las seis lecturas de UNA proyeccion, y se
                   presentan como tales — el mismo cuadro de filetes que
-                  usa la portada para sus metricas.
-
-                  Los filetes son el `gap` de un pixel dejando ver el
-                  fondo del contenedor; por eso las celdas necesitan
-                  fondo OPACO, o el trazo se les veria por debajo. */}
+                  usa la portada para sus metricas (`.tj-matriz`). */}
               <div
-                className="grid grid-cols-2 gap-px overflow-clip rounded-[8px] sm:grid-cols-3"
-                style={{ background: "rgb(var(--divider) / 0.14)" }}
+                className="tj-matriz grid-cols-2 border-b border-[var(--ficha-division)] sm:grid-cols-3"
               >
                 <div
                   /* Cada casilla es el contenedor contra el que se mide
                      su propia cifra: «2.182.131 US$» a cuerpo fijo se
                      salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
-                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold flex items-center justify-between">
                     <span>{es ? "Balance proyectado" : "Projected balance"}</span>
                     <ArrowUpRight className="w-3 h-3 text-[rgb(var(--accent-base))]" />
                   </div>
-                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-bold text-[rgb(var(--accent-base))]">
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--accent-base))]">
                     {fmtUsd(c.finalBalance, true)}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
@@ -1496,13 +1413,12 @@ export function EquityProjector() {
                      su propia cifra: «2.182.131 US$» a cuerpo fijo se
                      salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
-                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
                     CAGR ({es ? "tasa anual" : "annual rate"})
                   </div>
                   <div
-                    className="tnum text-lg sm:text-xl font-bold mt-1"
+                    className="tnum text-lg sm:text-xl font-semibold mt-1"
                     style={{ color: c.cagr >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
                     {fmtPct(c.cagr * 100, 1)}
@@ -1517,13 +1433,12 @@ export function EquityProjector() {
                      su propia cifra: «2.182.131 US$» a cuerpo fijo se
                      salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
-                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
                     {es ? "Retorno total" : "Total return"}
                   </div>
                   <div
-                    className="tnum text-lg sm:text-xl font-bold mt-1"
+                    className="tnum text-lg sm:text-xl font-semibold mt-1"
                     style={{
                       color: c.totalReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                     }}
@@ -1542,12 +1457,11 @@ export function EquityProjector() {
                      su propia cifra: «2.182.131 US$» a cuerpo fijo se
                      salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
-                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
                     {es ? "Drawdown máx. est. (99\u00a0%)" : "Est. max DD (99%)"}
                   </div>
-                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-bold text-[rgb(var(--pnl-neg))]">
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--pnl-neg))]">
                     −{fmtPct(c.estMaxDDpct, 1)}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
@@ -1560,12 +1474,11 @@ export function EquityProjector() {
                      su propia cifra: «2.182.131 US$» a cuerpo fijo se
                      salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
-                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
                     {es ? "Tiempo para duplicar" : "Time to double"}
                   </div>
-                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-bold text-[var(--ink)]">
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[var(--ink)]">
                     {c.monthsToDouble !== null
                       ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "mo"}`
                       : "—"}
@@ -1582,12 +1495,11 @@ export function EquityProjector() {
                      su propia cifra: «2.182.131 US$» a cuerpo fijo se
                      salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
-                  style={{ background: "var(--surface-2)" }}
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
                     Profit factor
                   </div>
-                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-bold text-[var(--ink)]">
+                  <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[var(--ink)]">
                     {fmtNum(c.profitFactor, 2)}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
@@ -1597,7 +1509,7 @@ export function EquityProjector() {
               </div>
 
               {/* Botón de Copiar Resumen y Footer */}
-              <div className="pt-3 border-t border-[rgb(var(--divider)/0.12)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span className="text-[12px] tnum text-[var(--ink-3)]">
                   {es
                     ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"} y banda de varianza del 80\u00a0%. No es una promesa.`
@@ -1623,13 +1535,7 @@ export function EquityProjector() {
               </div>
 
               {/* Disclaimer */}
-              <div
-                className="p-2.5 rounded-[8px]"
-                style={{
-                  background: "color-mix(in oklab, var(--surface-2) 40%, transparent)",
-                  border: "1px solid transparent",
-                }}
-              >
+              <div className="border-t border-[var(--ficha-division)] pt-3">
                 <p className="tnum m-0 text-[11px] leading-relaxed text-[var(--ink-3)]">
                   {es
                     ? "Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al 99 % de confianza estadística."

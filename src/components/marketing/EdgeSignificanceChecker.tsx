@@ -241,12 +241,12 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Detector de sobreajuste / Grados de libertad del setup */}
-          <div className="mt-5 p-3.5 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
+          <div className="mt-6 border-t border-[var(--ficha-division)] pt-5">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum text-[12px] text-tertiary">
                 {es ? "Parámetros / Reglas del Setup" : "Setup Parameters / Rules"}
               </span>
-              <span className="tnum font-bold text-primary">{parametersCount}</span>
+              <span className="tnum font-semibold text-primary">{parametersCount}</span>
             </div>
             <input
               type="range"
@@ -297,10 +297,7 @@ export function EdgeSignificanceChecker() {
               {es ? "Veredicto" : "Verdict"}
             </div>
             <div className="flex items-baseline gap-3 mt-1 mb-2">
-              <span
-                className="inline-flex items-center gap-2 px-3 py-1 rounded-[4px]"
-                style={{ background: `color-mix(in oklab, ${verdict.color} 11%, transparent)` }}
-              >
+              <span className="inline-flex items-center gap-2">
                 <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: verdict.color }} />
                 <span style={{ fontSize: 14, fontWeight: 600, color: verdict.color }}>
                   {verdict.label}
@@ -313,7 +310,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Gaussian Bell Curve Distribution Chart */}
-          <div className="mb-4 p-3 rounded-[8px] border border-transparent bg-[rgb(var(--divider)/0.02)]">
+          <div className="mb-5 border-y border-[var(--ficha-division)] py-3">
             <div className="flex items-center justify-between text-[12px] tnum text-tertiary mb-1">
               <span>{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
               <span>
@@ -324,7 +321,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Stats grid */}
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="tj-matriz grid-cols-2 mb-5">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? `p-valor (H₀: 50${PCT})` : `p-value (H₀: 50%)`} value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? "Potencia (1 - β)" : "Statistical Power"} value={`${fmtNum(c.power, 1)}${PCT}`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
@@ -332,26 +329,26 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Matriz de Muestra Mínima */}
-          <div className="mb-4 p-3 rounded-[8px] bg-[rgb(var(--divider)/0.03)]">
+          <div className="mb-5">
             <span className="block text-[12px] text-tertiary mb-2">
               {es ? `Muestra requerida según confianza (margen ±5${PCT})` : "Required sample by confidence (margin ±5%)"}
             </span>
-            <div className="grid grid-cols-3 gap-2 text-center text-xs tnum">
-              <div className="p-1.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)]">
+            <div className="tj-matriz grid-cols-3 text-center text-xs tnum">
+              <div className="py-2.5">
                 <span className="block text-[11px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
-                <span className={`font-bold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
+                <span className={`font-semibold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample90} ops
                 </span>
               </div>
-              <div className="p-1.5 rounded-[4px] bg-[var(--chip)] border border-transparent">
-                <span className="block text-[11px] text-[rgb(var(--accent-base))] font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
-                <span className={`font-bold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
+              <div className="tj-columna-propia py-2.5">
+                <span className="block text-[11px] text-primary font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
+                <span className={`font-semibold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
                   {c.minSample95} ops
                 </span>
               </div>
-              <div className="p-1.5 rounded-[4px] bg-[rgb(var(--divider)/0.04)]">
+              <div className="py-2.5">
                 <span className="block text-[11px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
-                <span className={`font-bold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
+                <span className={`font-semibold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample99} ops
                 </span>
               </div>
@@ -368,9 +365,9 @@ export function EdgeSignificanceChecker() {
                 {trades} / {c.minSample}
               </span>
             </div>
-            <div className="relative h-2 rounded-[8px] overflow-hidden" style={{ background: "rgb(var(--divider) / 0.13)" }}>
+            <div className="relative h-[3px] rounded-[1px] overflow-hidden" style={{ background: "var(--ficha-division)" }}>
               <div
-                className="absolute left-0 top-0 h-full rounded-[8px]"
+                className="absolute left-0 top-0 h-full"
                 style={{
                   width: `${Math.min(100, (trades / c.minSample) * 100)}%`,
                   background: c.sampleAdequate
@@ -435,8 +432,7 @@ export function EdgeSignificanceChecker() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="group/result relative min-w-0 rounded-[8px] px-4 py-4 transition-[transform,border-color] duration-200 ease-[var(--ease-suave)] hover:border-[rgb(var(--accent-base)/0.30)]"
-      style={{ background: "color-mix(in oklab, var(--surface-2) 50%, transparent)" }}
+      className="relative min-w-0 px-4 py-4"
     >
       {/* «EXPECTANCY» en versalitas con 0,12em de espaciado mide mas que
           la celda a 320 px: se recortaba. Con el espaciado a cero cuando
@@ -449,7 +445,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
       </div>
       <div
         className="tnum min-w-0 break-words relative"
-        style={{ fontSize: 18, fontWeight: 700, marginTop: 4, color, transition: "color 0.18s var(--ease-suave)" }}
+        style={{ fontSize: 18, fontWeight: 600, marginTop: 4, color, transition: "color 0.18s var(--ease-suave)" }}
       >
         {value}
       </div>

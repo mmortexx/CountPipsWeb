@@ -76,7 +76,7 @@ function Lectura({ rotulo, cifra, detalle, tono }: { rotulo: string; cifra: stri
     <div className="tj-metricas-lectura" aria-live="polite">
       <span className="block truncate text-[12px] text-tertiary">{rotulo}</span>
       <span className="tnum mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-        <span className="text-[clamp(1.5rem,2.6vw,2rem)] font-semibold leading-none tracking-[-0.03em] text-primary">{cifra}</span>
+        <span className="text-[clamp(1.5rem,2.6vw,2rem)] font-medium leading-none tracking-[-0.03em] text-primary">{cifra}</span>
         <span className="text-[13px] leading-tight" style={{ color: tono ?? "var(--ink-3)" }}>
           {detalle}
         </span>
@@ -423,6 +423,13 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     <div className="relative">
       <Escritorio className="tj-escritorio--ancho" />
       <div className="tj-cristal tj-metricas relative">
+        <p className="tj-ficha-barra">
+          <span>{es ? "Operativa de muestra" : "Sample track record"}</span>
+          <span className="tnum">
+            {es ? `${METRICS.closedCount} operaciones · USD` : `${METRICS.closedCount} trades · USD`}
+          </span>
+        </p>
+        <div className="tj-ficha-cuerpo">
         <div className={`flex flex-col gap-5 md:flex-row md:justify-between ${enPagina ? "md:items-center" : "md:items-end"}`}>
           <div className={enPagina ? "" : "max-w-[46rem]"}>
             {titulo}
@@ -443,7 +450,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
               </p>
             )}
           </div>
-          <div role="tablist" aria-label={es ? "Vista del gráfico" : "Chart view"} className="tj-segmento" data-lado={vista === "dist" ? "2" : "1"}>
+          <div role="tablist" aria-label={es ? "Vista del gráfico" : "Chart view"} className="tj-pestanas flex-none">
             {vistas.map((v) => (
               <button
                 key={v.id}
@@ -472,8 +479,9 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
         <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${vista}`} className="tj-metricas-vista" key={vista}>
           {vista === "curva" ? <Curva g={g} lang={lang} es={es} enfoque={enfoque} /> : <Distribucion g={g} lang={lang} es={es} enfoque={enfoque} />}
         </div>
+        </div>
 
-        <ul className="tj-metricas-ratios">
+        <ul className="tj-metricas-ratios tj-matriz">
           {ratios.map((m) => {
             const activa = m.enlaza && enfoque === m.enlaza && pista[m.enlaza] === vista;
             return (
@@ -488,7 +496,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
                 onBlur={() => m.enlaza && setEnfoque(null)}
               >
                 <span className="block truncate text-[11px] uppercase tracking-[0.08em] text-tertiary">{m.l}</span>
-                <span className="tnum mt-1.5 block text-[clamp(1.25rem,1.9vw,1.5rem)] font-semibold leading-none tracking-[-0.02em]" style={{ color: m.c ?? "var(--ink)" }}>
+                <span className="tnum mt-1.5 block text-[clamp(1.25rem,1.9vw,1.5rem)] font-medium leading-none tracking-[-0.02em]" style={{ color: m.c ?? "var(--ink)" }}>
                   {m.v}
                 </span>
                 <span className="tj-metricas-pie mt-1.5 text-[12px] leading-snug text-tertiary">
@@ -501,12 +509,12 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
             );
           })}
         </ul>
+        <p className="tj-ficha-barra tj-ficha-barra--pie">
+          {es
+            ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
+            : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualized.`}
+        </p>
       </div>
-      <p className="relative m-0 mt-4 mx-auto max-w-[80ch] text-center text-[12px] leading-[1.5] text-tertiary">
-        {es
-          ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
-          : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualized.`}
-      </p>
     </div>
   );
 
