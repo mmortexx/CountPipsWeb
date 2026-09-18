@@ -4,6 +4,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { useLang } from "@/lib/i18n";
 import { usePresencia } from "@/hooks/use-presencia";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
+import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
 
 /**
  * ShortcutsHelp — keyboard shortcuts overlay.
@@ -122,177 +123,72 @@ export function ShortcutsHelp({
     };
   }, [open]);
 
-  const shortcuts: { keys: ReactNode; label: string }[] = [
+  /* Los atajos van AGRUPADOS y no en una lista seguida: son veintidós, y
+     quince de ellos son saltos de navegación. En plano el lector leía
+     «Ir a» quince veces y tenía que recorrer veintidós renglones iguales
+     para encontrar el suyo. El prefijo vive ahora en el título del grupo
+     y cada renglón dice sólo su destino. */
+  const grupos: {
+    titulo: string;
+    filas: { keys: ReactNode; label: string }[];
+  }[] = [
     {
-      keys: (
-        <>
-          {/* La tecla real de este teclado, no «⌘/Ctrl» para los dos: la
-              ayuda de atajos es justo donde peor sienta hacer elegir al
-              lector. Ver `useTeclaMando`. */}
-          <Kbd>{mando}</Kbd>
-          <Kbd>G</Kbd>
-        </>
-      ),
-      label: es ? "Abrir el glosario" : "Open the glossary",
+      titulo: "General",
+      filas: [
+        {
+          keys: (
+            <>
+              {/* La tecla real de este teclado, no «⌘/Ctrl» para los dos: la
+                  ayuda de atajos es justo donde peor sienta hacer elegir al
+                  lector. Ver `useTeclaMando`. */}
+              <Kbd>{mando}</Kbd>
+              <Kbd>G</Kbd>
+            </>
+          ),
+          label: es ? "Abrir el glosario" : "Open the glossary",
+        },
+        {
+          keys: <Kbd>?</Kbd>,
+          label: es ? "Mostrar esta ayuda" : "Show this help",
+        },
+        {
+          keys: <Kbd>T</Kbd>,
+          label: es ? "Cambiar tema" : "Toggle theme",
+        },
+        {
+          keys: <Kbd>L</Kbd>,
+          label: es ? "Cambiar idioma" : "Toggle language",
+        },
+        {
+          keys: <Kbd>Esc</Kbd>,
+          label: es ? "Cerrar" : "Close",
+        },
+      ],
     },
     {
-      keys: <Kbd>?</Kbd>,
-      label: es ? "Mostrar esta ayuda" : "Show this help",
+      titulo: "Demo",
+      filas: [
+        {
+          keys: <Kbd>1–6</Kbd>,
+          label: es ? "Cambiar de pestaña" : "Switch tab",
+        },
+        {
+          keys: <Kbd>F</Kbd>,
+          label: es ? "Pantalla completa" : "Toggle fullscreen",
+        },
+      ],
     },
     {
-      keys: <Kbd>1–6</Kbd>,
-      label: es ? "Cambiar pestaña de demo" : "Switch demo tab",
-    },
-    {
-      keys: <Kbd>F</Kbd>,
-      label: es ? "Pantalla completa (demo)" : "Toggle fullscreen (demo)",
-    },
-    {
-      keys: <Kbd>Esc</Kbd>,
-      label: es ? "Cerrar" : "Close",
-    },
-    {
-      keys: <Kbd>T</Kbd>,
-      label: es ? "Cambiar tema" : "Toggle theme",
-    },
-    {
-      keys: <Kbd>L</Kbd>,
-      label: es ? "Cambiar idioma" : "Toggle language",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>h</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Inicio" : "Go to Home",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>f</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Características" : "Go to Features",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>m</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Métricas" : "Go to Metrics",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>d</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Disciplina" : "Go to Discipline",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>s</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Seguridad" : "Go to Security",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>p</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Precios" : "Go to Pricing",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>e</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Demo" : "Go to Demo",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>a</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Acerca de" : "Go to About",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>q</Kbd>
-        </>
-      ),
-      label: es ? "Ir a FAQ" : "Go to FAQ",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>t</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Test de disciplina" : "Go to Discipline test",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>c</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Herramientas" : "Go to Tools",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>o</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Glosario" : "Go to Glossary",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>b</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Acceso anticipado (Beta)" : "Go to Early access (Beta)",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>u</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Operativa manual" : "Go to Manual trading",
-    },
-    {
-      keys: (
-        <>
-          <Kbd>g</Kbd>
-          <Kbd>r</Kbd>
-        </>
-      ),
-      label: es ? "Ir a Prop firms" : "Go to Prop firms",
+      titulo: es ? "Ir a" : "Go to",
+      filas: SALTOS_TECLADO.map((s) => ({
+        keys: (
+          <>
+            <Kbd>g</Kbd>
+            <Kbd>{s.tecla}</Kbd>
+          </>
+        ),
+        label: es ? s.es : s.en,
+      })),
     },
   ];
 
@@ -304,7 +200,7 @@ export function ShortcutsHelp({
            `tj-velo-sale` / `tj-panel-sale`. El plazo del hook y la
            duración de esas clases tienen que seguir coincidiendo. */
         <div
-          className="fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[15vh]"
+          className="tj-hoja-atajos fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[15vh]"
           role="dialog"
           aria-modal="true"
           /* El nombre accesible SALE DEL TITULO VISIBLE, no de un
@@ -316,7 +212,7 @@ export function ShortcutsHelp({
         >
           {/* Backdrop — subtle blur + fade-in */}
           <div
-            className={`absolute inset-0 bg-black/50 backdrop-blur-md backdrop-saturate-150 ${
+            className={`tj-no-print absolute inset-0 bg-black/50 backdrop-blur-md backdrop-saturate-150 ${
               saliendo ? "tj-velo-sale" : "tj-velo-entra"
             }`}
             onClick={() => setOpen(false)}
@@ -335,7 +231,7 @@ export function ShortcutsHelp({
                desplazamiento. Los diez últimos atajos no se podían leer.
                Con tope y la lista en su propio desplazamiento, el panel
                nunca pasa de lo que queda de ventana bajo ese `pt`. */
-            className={`relative flex max-h-[calc(85svh-2rem)] w-full max-w-md flex-col tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
+            className={`tj-hoja-atajos-hoja relative flex max-h-[calc(85svh-2rem)] w-full max-w-md flex-col tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
               saliendo ? "tj-panel-sale" : "tj-panel-entra"
             }`}
           >
@@ -353,12 +249,18 @@ export function ShortcutsHelp({
                     ? "Muévete más rápido por la app."
                     : "Move faster through the app."}
                 </p>
+                {/* En pantalla sobra —la marca está en la barra de arriba—,
+                    pero una hoja impresa que sólo dice «Atajos de teclado»
+                    no dice de qué. */}
+                <p className="tj-solo-papel hidden mt-1 text-[11px] text-tertiary">
+                  CountPips
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={es ? "Cerrar" : "Close"}
-                className="icon-btn shrink-0 w-8 h-8 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+                className="tj-no-print icon-btn shrink-0 w-8 h-8 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
               >
                 <svg
                   width="14"
@@ -378,23 +280,38 @@ export function ShortcutsHelp({
             </div>
 
             {/* List */}
-            <ul className="min-h-0 flex-1 overflow-y-auto custom-scroll px-2 py-2">
-              {shortcuts.map((s, i) => (
-                <li
-                  key={i}
-                  className="flex items-center justify-between gap-4 px-2 py-2 rounded-[4px] hover:bg-[rgb(var(--divider)/0.03)] transition-colors"
-                >
-                  <span className="text-sm text-secondary">{s.label}</span>
-                  <span className="flex items-center gap-1 shrink-0">
-                    {s.keys}
-                  </span>
-                </li>
+            <div className="min-h-0 flex-1 overflow-y-auto custom-scroll px-2 py-2">
+              {grupos.map((g, n) => (
+                <section key={g.titulo} className="mt-4 first:mt-0">
+                  {/* Un `<p>` que nombra la lista, no un `<h3>`: la paleta
+                      clásica fuerza en todo `h3` minúsculas y tracking
+                      cerrado con `!important`, y esto es un antetítulo. */}
+                  <p
+                    id={`tj-atajos-g${n}`}
+                    className="eyebrow px-2 pb-1.5 text-[11px]"
+                  >
+                    {g.titulo}
+                  </p>
+                  <ul aria-labelledby={`tj-atajos-g${n}`}>
+                    {g.filas.map((s, i) => (
+                      <li
+                        key={i}
+                        className="flex items-center justify-between gap-4 px-2 py-2 rounded-[4px] hover:bg-[rgb(var(--divider)/0.03)] transition-colors"
+                      >
+                        <span className="text-sm text-secondary">{s.label}</span>
+                        <span className="flex items-center gap-1 shrink-0">
+                          {s.keys}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               ))}
-            </ul>
+            </div>
 
             {/* Footer hint */}
             <div
-              className="flex items-center justify-between gap-2 px-3 py-2 border-t  text-[12px] text-tertiary"
+              className="tj-no-print flex items-center justify-between gap-2 px-3 py-2 border-t  text-[12px] text-tertiary"
               aria-hidden="true"
             >
               <span className="flex items-center gap-1.5">

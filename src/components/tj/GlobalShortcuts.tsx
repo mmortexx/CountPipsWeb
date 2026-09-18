@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { openShortcutsHelp } from "@/lib/overlays";
+import { G_NAV_MAP } from "@/lib/saltos-teclado";
 
 /**
  * GlobalShortcuts — invisible global keyboard shortcut router.
@@ -46,23 +47,8 @@ import { openShortcutsHelp } from "@/lib/overlays";
 
 const G_PREFIX_TIMEOUT = 1000; // ms — how long the `g` prefix stays active
 
-const G_NAV_MAP: Record<string, string> = {
-  h: "/",
-  f: "/features",
-  m: "/features/metricas",
-  d: "/features/disciplina",
-  s: "/features/seguridad",
-  p: "/pricing",
-  e: "/demo",
-  a: "/about",
-  q: "/faq",
-  t: "/test",
-  c: "/herramientas",
-  o: "/glosario",
-  b: "/beta",
-  u: "/traders/manual",
-  r: "/traders/prop-firms",
-};
+/* `G_NAV_MAP` vive en `@/lib/saltos-teclado` junto a los nombres que
+   enseña la ayuda de atajos: eran dos tablas paralelas y ahora es una. */
 
 export function GlobalShortcuts() {
   const { lang, toggle: toggleLang } = useLang();

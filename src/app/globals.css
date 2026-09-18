@@ -2246,6 +2246,56 @@ button.icon-btn:hover > svg,
     display: none !important;
   }
 
+  /* LA AYUDA DE ATAJOS SE IMPRIME, y es la única ventana del sitio que lo
+     hace: veintidós atajos al lado del teclado es justo lo que alguien
+     quiere en papel. Con la ayuda abierta, el `Ctrl+P` del navegador saca
+     la hoja sola —la página de detrás se va— y el panel deja de ser una
+     ventana flotante: sin velo, sin tope de alto y sin desplazamiento
+     interno.
+     El interruptor es el `data-shortcuts-help-open` que ShortcutsHelp ya
+     ponía en el `body`, así que nada de esto se activa por su cuenta. La
+     regla lleva dos clases para ganarle por especificidad —no por orden—
+     al `display: none` de `.fixed` y `[role="dialog"]` de arriba. */
+  body[data-shortcuts-help-open="true"] main {
+    display: none !important;
+  }
+  body[data-shortcuts-help-open="true"] .tj-hoja-atajos {
+    display: block !important;
+    position: static !important;
+    padding: 0 !important;
+  }
+  body[data-shortcuts-help-open="true"] .tj-hoja-atajos-hoja {
+    /* No a todo el folio: con 18 cm entre el nombre y su tecla, el ojo
+       se pierde de renglón al cruzar. */
+    max-width: 120mm !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    contain: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  body[data-shortcuts-help-open="true"] .tj-hoja-atajos .custom-scroll {
+    overflow: visible !important;
+  }
+  body[data-shortcuts-help-open="true"] .tj-hoja-atajos section {
+    break-inside: avoid;
+  }
+  /* El recorte general de bordes dejaba las teclas como letras sueltas
+     («g h»); en una hoja de atajos la tecla dibujada es el contenido. */
+  body[data-shortcuts-help-open="true"] .tj-hoja-atajos kbd {
+    border: 0.75pt solid #8a8a8a !important;
+    border-radius: 3px !important;
+  }
+
+  /* Gemelo de `.tj-no-print`: lo que sólo existe en papel. Va con `hidden`
+     de Tailwind en el marcado, y aquí gana por `!important`. */
+  .tj-solo-papel {
+    display: block !important;
+  }
+
   /* 5. Expand content to full width — strip every page-width
         constraint so printed text uses the full paper width. */
   .max-w-page,
