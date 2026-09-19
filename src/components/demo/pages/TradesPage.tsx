@@ -492,7 +492,7 @@ function KpiStripCell({
         <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-tertiary [overflow-wrap:anywhere]">
           {label}
         </div>
-        <div className="font-bold text-lg sm:text-xl md:text-2xl tnum text-primary leading-none">
+        <div className="font-semibold text-lg sm:text-xl md:text-2xl tnum text-primary leading-none">
           <span key={filterSig}>{children}</span>
         </div>
       </div>
@@ -547,7 +547,7 @@ function BulkActionBar({
           <button
             type="button"
             onClick={onCompare}
-            className="flex items-center gap-1.5 h-7 px-3 rounded-[2px] border border-[rgb(var(--accent-base)/0.4)] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-mono text-xs font-bold hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-sm"
+            className="flex items-center gap-1.5 h-7 px-3 rounded-[2px] border border-[rgb(var(--accent-base)/0.4)] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-mono text-xs font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-sm"
           >
             <span>{lang === "es" ? "Comparar 2 operaciones" : "Compare 2 trades"}</span>
           </button>
@@ -987,7 +987,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             filters.instrument === "all" && filters.direction === "all" && filters.compliance === "all" && outcome === "all" && setupSel === "all"
-              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold border-transparent"
+              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1002,7 +1002,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             outcome === "win"
-              ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1017,7 +1017,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             outcome === "loss"
-              ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1033,7 +1033,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             filters.compliance === "no"
-              ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1049,7 +1049,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             filters.compliance === "yes"
-              ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-bold border-transparent"
+              ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1065,7 +1065,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             filters.instrument === "NQ"
-              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold border-transparent"
+              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1081,7 +1081,7 @@ export function TradesPage() {
           }}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
             filters.instrument === "ES"
-              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold border-transparent"
+              ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
@@ -1526,11 +1526,11 @@ export function TradesPage() {
                         value={totalPnl}
                         colorizeSign
                         sign
-                        className="text-sm font-bold"
+                        className="text-sm font-semibold"
                       />
                     </td>
                     <td
-                      className={`px-3 py-3 text-right tnum font-bold ${
+                      className={`px-3 py-3 text-right tnum font-semibold ${
                         totalR > 0 ? "text-pnl-pos" : totalR < 0 ? "text-pnl-neg" : "text-secondary"
                       }`}
                     >

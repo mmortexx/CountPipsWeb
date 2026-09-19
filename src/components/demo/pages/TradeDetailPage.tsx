@@ -264,7 +264,7 @@ function HeroStat({
     <div
       className={`relative px-5 first:pl-0 ${
         divider
-          ? "before:absolute before:left-0 before:top-2 before:bottom-2 before:w-px before:bg-gradient-to-b before:from-transparent before:via-[rgb(var(--divider)/0.18)] before:to-transparent"
+          ? "before:absolute before:left-0 before:top-2 before:bottom-2 before:w-px before:bg-[rgb(var(--divider)/0.12)]"
           : ""
       }`}
     >
@@ -633,13 +633,13 @@ export function TradeDetailPage() {
                   suffix={lang === "es" ? "\u00a0$" : ""}
                   tone={tone}
                   duration={1.6}
-                  className="text-3xl md:text-4xl font-bold tracking-tight"
+                  className="text-3xl md:text-4xl font-semibold tracking-tight"
                 />
               </div>
             </HeroStat>
             <HeroStat label={lang === "es" ? "R múltiplo" : "R multiple"} divider>
               <span
-                className={`text-2xl md:text-3xl font-bold tnum ${
+                className={`text-2xl md:text-3xl font-semibold tnum ${
                   trade.rMultiple >= 0 ? "text-pnl-pos" : "text-pnl-neg"
                 }`}
               >
