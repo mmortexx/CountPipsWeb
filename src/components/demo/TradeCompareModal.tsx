@@ -22,17 +22,17 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
       role="dialog"
       aria-modal="true"
       aria-labelledby="compare-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-3xl overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.2)] bg-[var(--surface-1)] shadow-2xl transition-all"
+        className="w-full max-w-3xl overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.2)] bg-[var(--surface-1)] shadow-[var(--ficha-sombra)] transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[rgb(var(--divider)/0.12)] px-5 py-3.5 bg-[color-mix(in_oklab,var(--surface-2)_60%,transparent)]">
           <div className="flex items-center gap-2.5">
-            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[rgb(var(--accent-base))]">
+            <span className="text-xs font-mono font-semibold uppercase tracking-wider text-[rgb(var(--accent-base))]">
               {es ? "COMPARATIVA DE EJECUCIONES" : "TRADE EXECUTION COMPARISON"}
             </span>
             <span className="text-xs text-tertiary">
@@ -56,13 +56,13 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
             {/* Trade A Header */}
             <div className="p-4 rounded-[3px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-bold text-primary">{tradeA.instrument}</span>
+                <span className="text-xs font-mono font-semibold text-primary">{tradeA.instrument}</span>
                 <Chip variant={tradeA.direction === "long" ? "pos" : "neg"}>
                   {tradeA.direction.toUpperCase()}
                 </Chip>
               </div>
               <div className="flex items-baseline gap-2">
-                <Money value={tradeA.netPnl} sign colorizeSign className="text-xl font-bold font-mono" />
+                <Money value={tradeA.netPnl} sign colorizeSign className="text-xl font-semibold font-mono" />
                 <span className={`text-sm font-mono font-semibold ${tradeA.rMultiple >= 0 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--pnl-neg))]"}`}>
                   ({tradeA.rMultiple >= 0 ? "+" : ""}{tradeA.rMultiple}R)
                 </span>
@@ -75,13 +75,13 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
             {/* Trade B Header */}
             <div className="p-4 rounded-[3px] border border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-bold text-primary">{tradeB.instrument}</span>
+                <span className="text-xs font-mono font-semibold text-primary">{tradeB.instrument}</span>
                 <Chip variant={tradeB.direction === "long" ? "pos" : "neg"}>
                   {tradeB.direction.toUpperCase()}
                 </Chip>
               </div>
               <div className="flex items-baseline gap-2">
-                <Money value={tradeB.netPnl} sign colorizeSign className="text-xl font-bold font-mono" />
+                <Money value={tradeB.netPnl} sign colorizeSign className="text-xl font-semibold font-mono" />
                 <span className={`text-sm font-mono font-semibold ${tradeB.rMultiple >= 0 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--pnl-neg))]"}`}>
                   ({tradeB.rMultiple >= 0 ? "+" : ""}{tradeB.rMultiple}R)
                 </span>
@@ -96,8 +96,8 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
           <div className="border border-[rgb(var(--divider)/0.12)] rounded-[3px] overflow-hidden text-xs font-mono">
             <div className="grid grid-cols-[1fr_1fr_1fr] bg-[rgb(var(--divider)/0.06)] px-3 py-2 text-[10px] uppercase tracking-wider text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
               <div>{es ? "MÉTRICA DE EJECUCIÓN" : "EXECUTION METRIC"}</div>
-              <div className="text-center font-bold text-primary">#{tradeA.id} ({tradeA.instrument})</div>
-              <div className="text-center font-bold text-primary">#{tradeB.id} ({tradeB.instrument})</div>
+              <div className="text-center font-semibold text-primary">#{tradeA.id} ({tradeA.instrument})</div>
+              <div className="text-center font-semibold text-primary">#{tradeB.id} ({tradeB.instrument})</div>
             </div>
 
             {[

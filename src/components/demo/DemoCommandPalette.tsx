@@ -314,7 +314,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
         >
           {/* Backdrop — subtle blur + fade-in. Click anywhere to close. */}
           <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-md backdrop-saturate-150"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden="true"
           />
@@ -323,7 +323,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
           <motion.div
             ref={rootRef}
             style={{ contain: "layout paint", willChange: "transform, opacity" }}
-            className="relative w-full max-w-lg tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden"
+            className="relative w-full max-w-lg tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-[var(--ficha-sombra)] overflow-hidden"
             initial={{ opacity: 0, scale: 0.985, y: -6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.985, y: -4 }}
