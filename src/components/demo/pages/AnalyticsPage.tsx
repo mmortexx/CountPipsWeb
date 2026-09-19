@@ -125,7 +125,7 @@ function KpiStripCell({
       </div>
       {showHairline && (
         <div
-          className="self-stretch w-px shrink-0 my-1 bg-gradient-to-b from-transparent via-[rgb(var(--divider)/0.18)] to-transparent"
+          className="self-stretch w-px shrink-0 my-1 bg-[rgb(var(--divider)/0.12)]"
           aria-hidden="true"
         />
       )}
@@ -190,7 +190,7 @@ function WinnersDonut({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className="text-2xl font-bold tnum text-pnl-pos leading-none">
+        <div className="text-2xl font-semibold tnum text-pnl-pos leading-none">
           <CountUp
             key={`donut-pct-${reKey}`}
             to={winFrac * 100}
