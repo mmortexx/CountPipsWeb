@@ -915,7 +915,7 @@ export function EquityProjector() {
                             setYears(y);
                           }}
                         >
-                          {y} {es ? (y === 1 ? "año" : "años") : (y === 1 ? "yr" : "yrs")}
+                          {y}{" "}{es ? (y === 1 ? "año" : "años") : (y === 1 ? "yr" : "yrs")}
                         </button>
                       );
                     })}
