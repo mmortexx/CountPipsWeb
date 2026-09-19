@@ -173,7 +173,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.1)]">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1">
-            <span className="font-bold text-sm text-primary font-mono">{trade.instrument}</span>
+            <span className="font-semibold text-sm text-primary font-mono">{trade.instrument}</span>
             <span className="text-xs text-tertiary font-mono">· {trade.direction.toUpperCase()}</span>
           </div>
 
@@ -189,7 +189,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                 }}
                 className={`min-h-[44px] sm:min-h-0 min-w-[44px] sm:min-w-0 px-2 sm:px-2 py-2 sm:py-0.5 text-xs sm:text-[10px] font-mono uppercase rounded-[1px] inline-flex items-center justify-center transition-colors ${
                   timeframe === tf
-                    ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-bold"
+                    ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold"
                     : "text-tertiary hover:text-primary"
                 }`}
               >

@@ -417,7 +417,7 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <div className={`text-3xl md:text-4xl font-bold tnum ${toneClass} leading-none`}>
+        <div className={`text-3xl md:text-4xl font-semibold tnum ${toneClass} leading-none`}>
           <CountUp to={pct * 100} decimals={0} suffix={lang === "es" ? " %" : "%"} />
         </div>
         <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mt-1.5 text-center">
@@ -1176,7 +1176,7 @@ export function JournalPage() {
                     <span className="text-[10px] uppercase tracking-[0.12em] text-secondary">
                       {L("Actual", "Current")}
                     </span>
-                    <span className="text-sm font-bold tnum text-primary leading-none">
+                    <span className="text-sm font-semibold tnum text-primary leading-none">
                       {currentStreak}
                     </span>
                     <span className="text-[10px] text-secondary">
@@ -1188,7 +1188,7 @@ export function JournalPage() {
                     <span className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                       {L("Mejor", "Best")}
                     </span>
-                    <span className="text-sm font-bold tnum text-primary leading-none">
+                    <span className="text-sm font-semibold tnum text-primary leading-none">
                       {bestStreak}
                     </span>
                     <span className="text-[10px] text-tertiary">
@@ -1260,7 +1260,7 @@ export function JournalPage() {
               className="md:hidden col-span-full -my-1"
               aria-hidden="true"
             >
-              <div className="h-px bg-gradient-to-r from-transparent via-[rgb(var(--divider)/0.18)] to-transparent" />
+              <div className="h-px bg-[rgb(var(--divider)/0.12)]" />
             </div>
 
             <RitualColumn
@@ -1283,7 +1283,7 @@ export function JournalPage() {
               className="hidden md:block absolute left-1/2 top-0 bottom-0 -translate-x-1/2 pointer-events-none"
               aria-hidden="true"
             >
-              <div className="h-full w-px bg-gradient-to-b from-transparent via-[rgb(var(--divider)/0.18)] to-transparent" />
+              <div className="h-full w-px bg-[rgb(var(--divider)/0.12)]" />
             </div>
           </div>
         </div>
@@ -1348,7 +1348,7 @@ export function JournalPage() {
                   </span>
                 </div>
                 <motion.div
-                  className={`relative font-bold tracking-tight text-4xl md:text-5xl tnum ${headlineTone}`}
+                  className={`relative font-semibold tracking-tight text-4xl md:text-5xl tnum ${headlineTone}`}
                   initial={reduce ? undefined : { opacity: 0.55, scale: 0.94 }}
                   whileInView={reduce ? undefined : { opacity: 1, scale: 1 }}
                   viewport={{ once: true, margin: "-40px" }}
@@ -1380,7 +1380,7 @@ export function JournalPage() {
                     <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expInPlan")}
                     </div>
-                    <div className="mt-1 break-words font-bold tnum text-pnl-pos text-base sm:text-lg">
+                    <div className="mt-1 break-words font-semibold tnum text-pnl-pos text-base sm:text-lg">
                       <Money value={expInPlan} sign compact colorizeSign />
                     </div>
                   </div>
@@ -1388,7 +1388,7 @@ export function JournalPage() {
                     <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expOutPlan")}
                     </div>
-                    <div className="mt-1 break-words font-bold tnum text-pnl-neg text-base sm:text-lg">
+                    <div className="mt-1 break-words font-semibold tnum text-pnl-neg text-base sm:text-lg">
                       <Money value={expOutPlan} sign compact colorizeSign />
                     </div>
                   </div>
@@ -1492,18 +1492,18 @@ export function JournalPage() {
               {/* Total row */}
               <div className="grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-3 items-center mt-1 border-t-2 border-[rgb(var(--divider)/0.15)] font-mono">
                 <div
-                  className={`text-[11px] uppercase tracking-[0.15em] font-bold ${
+                  className={`text-[11px] uppercase tracking-[0.15em] font-semibold ${
                     totalMistakeCost < 0 ? "text-pnl-pos" : "text-pnl-neg"
                   }`}
                 >
                   {L("Total", "Total")}
                 </div>
-                <div className="text-right tnum font-bold text-primary">
+                <div className="text-right tnum font-semibold text-primary">
                   {fmtInt(totalMistakeCount, lang)}
                 </div>
                 <div className="text-right tnum text-tertiary">{lang === "es" ? "100 %" : "100%"}</div>
                 <div
-                  className={`text-right tnum font-bold ${
+                  className={`text-right tnum font-semibold ${
                     totalMistakeCost < 0 ? "text-pnl-pos" : "text-pnl-neg"
                   }`}
                 >
@@ -1726,7 +1726,7 @@ export function JournalPage() {
                             )
                             .replace(".", "")}
                         </div>
-                        <div className="text-lg font-bold tnum text-primary leading-none mt-0.5">
+                        <div className="text-lg font-semibold tnum text-primary leading-none mt-0.5">
                           {entry.date.getUTCDate()}
                         </div>
                       </div>
@@ -1768,7 +1768,7 @@ export function JournalPage() {
                     <div className="flex items-center gap-2 w-full justify-between sm:w-auto sm:justify-start shrink-0">
                       <Chip variant={complianceVariant}>{complianceLabel}</Chip>
                       <div
-                        className={`break-words font-bold tnum text-sm sm:text-base md:text-lg ${
+                        className={`break-words font-semibold tnum text-sm sm:text-base md:text-lg ${
                           tone === "pos"
                             ? "text-pnl-pos"
                             : tone === "neg"
