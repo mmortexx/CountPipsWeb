@@ -102,6 +102,13 @@ async function levantarServidor(raiz) {
   const servidor = createServer(async (req, res) => {
     const fichero = await resolver(req.url || "/");
     if (!fichero) {
+      /* Como GitHub Pages: una página que no existe recibe `404.html`. */
+      const pagina404 = extname((req.url || "").split("?")[0]) ? null : await resolver("/404.html");
+      if (pagina404) {
+        res.writeHead(404, { "content-type": TIPOS[".html"] });
+        createReadStream(pagina404).pipe(res);
+        return;
+      }
       res.writeHead(404, { "content-type": "text/plain" });
       res.end("404");
       return;
@@ -1799,6 +1806,47 @@ for (const { ruta } of RUTAS) {
 }
 await sinJs.close();
 
+/* ── LA 404 EN LOS DOS IDIOMAS ──────────────────────────────────────
+   GitHub Pages sirve un único `404.html`, compilado en español, para
+   cualquier dirección que no exista, también bajo `/en/`. Si el
+   proveedor de idioma hidrata con el de la URL en vez del compilado,
+   React no casa el HTML (error #418) y rehace el árbol entero. Sólo se
+   mira sobre el export: `next dev` pinta la 404 por su cuenta y ahí el
+   error sale aunque la web publicada esté bien. */
+const NO_EXISTE = [
+  { ruta: "/ruta-que-no-existe-humo", lang: "es", texto: /se detuvo/ },
+  { ruta: "/en/ruta-que-no-existe-humo", lang: "en", texto: /stopped out/ },
+];
+let cuatrocientoscuatro = 0;
+if (SERVIR) {
+  const ctx404 = await navegador.newContext({ viewport: { width: 390, height: 844 } });
+  for (const { ruta, lang, texto } of NO_EXISTE) {
+    const pagina = await ctx404.newPage();
+    const errores = [];
+    pagina.on("pageerror", (e) => errores.push(String(e).split("\n")[0]));
+    pagina.on("console", (m) => {
+      if (m.type() === "error" && !/Failed to load resource/i.test(m.text())) errores.push(m.text());
+    });
+    try {
+      const resp = await pagina.goto(`${BASE}${ruta}`, { waitUntil: "networkidle", timeout: 30000 });
+      if (resp?.status() !== 404) fallos.push(`404 ${ruta}: respondió ${resp?.status()} en vez de 404`);
+      await pagina.waitForTimeout(800);
+      const { h1, idioma } = await pagina.evaluate(() => ({
+        h1: document.querySelector("h1")?.textContent ?? "",
+        idioma: document.documentElement.lang,
+      }));
+      if (!texto.test(h1)) fallos.push(`404 ${ruta}: el titular no está en ${lang} («${h1}»)`);
+      if (idioma !== lang) fallos.push(`404 ${ruta}: <html lang="${idioma}">, se esperaba "${lang}"`);
+      if (errores.length) fallos.push(`404 ${ruta}: ${errores.slice(0, 2).join(" | ")}`);
+      else cuatrocientoscuatro++;
+    } catch (e) {
+      fallos.push(`404 ${ruta}: ${String(e).split("\n")[0]}`);
+    }
+    await pagina.close();
+  }
+  await ctx404.close();
+}
+
 await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
@@ -1938,6 +1986,12 @@ if (presupuestosBarra.length) {
   );
 } else {
   console.warn("  aviso  no se midió la holgura de la barra superior");
+}
+
+if (SERVIR) {
+  console.log(`[humo] 404 — ${cuatrocientoscuatro} de ${NO_EXISTE.length} idiomas hidratan sin error`);
+} else {
+  console.warn("  aviso  la 404 sólo se comprueba sobre el export (--serve)");
 }
 
 console.log(

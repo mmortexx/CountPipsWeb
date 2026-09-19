@@ -305,8 +305,13 @@ export function DisciplineCost() {
             <div
               className="tj-ficha overflow-hidden"
             >
+              {/* Una sola rejilla con filas en subgrid: las columnas se miden
+                  con la cifra más ancha de todas las filas, así que un importe
+                  grande ensancha la tabla (y se desliza) en vez de pisar la
+                  columna vecina. */}
               <div className="overflow-x-auto custom-scroll">
-                <div className="grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
+                <div className="grid w-max min-w-full grid-cols-[minmax(max-content,1.25fr)_minmax(max-content,2.25rem)_minmax(max-content,1fr)_minmax(max-content,1.15fr)]">
+                <div className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
                   <span className="tnum text-[12px]">{es ? "Modo" : "Mode"}</span>
                   <span className="tnum text-right text-[12px]">{es ? "Ops" : "Trades"}</span>
                   <span className="tnum text-right text-[12px]">{es ? "Expectancy" : "Expectancy"}</span>
@@ -314,7 +319,7 @@ export function DisciplineCost() {
                 </div>
 
                 {/* Fila En Plan */}
-                <div className="grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                <div className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
                   <span className="font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</span>
                   <span className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
@@ -326,19 +331,19 @@ export function DisciplineCost() {
                 </div>
 
                 {/* Fila Fuera de Plan */}
-                <div className="grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                <div className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
                   <span className="font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</span>
                   <span className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    {fmtNum(offPlanExp, lang, 2)} $
+                    {offPlanExp < 0 ? "−" : ""}{fmtNum(Math.abs(offPlanExp), lang, 2)} $
                   </span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    {fmtNum(offPlanTotal, lang, 2)} $
+                    {offPlanTotal < 0 ? "−" : ""}{fmtNum(Math.abs(offPlanTotal), lang, 2)} $
                   </span>
                 </div>
 
                 {/* Fila Gap */}
-                <div className="relative grid min-w-[340px] grid-cols-[minmax(0,1.25fr)_2.25rem_minmax(0,1fr)_minmax(0,1.15fr)] gap-x-3 whitespace-nowrap items-center px-2.5 py-3.5 text-sm">
+                <div className="relative col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center px-2.5 py-3.5 text-sm">
                   <span className="font-semibold text-primary text-[14px]">GAP</span>
                   <span className="tnum text-right text-secondary text-[14px]">—</span>
                   <span className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[14px]">
@@ -347,6 +352,7 @@ export function DisciplineCost() {
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
                     −{fmtNum(totalLeakMonthly, lang, 2)} $
                   </span>
+                </div>
                 </div>
               </div>
             </div>

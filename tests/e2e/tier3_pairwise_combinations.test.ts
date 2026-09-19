@@ -341,12 +341,11 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     const discCost = readSrc("src/components/marketing/DisciplineCost.tsx");
     const globalsCss = readSrc("src/app/globals.css");
 
-    /* La tabla declara un ancho minimo para DESPLAZARSE de lado en vez
-       de aplastar sus cuatro columnas. Se comprueba que ese ancho existe
-       y no un numero concreto: estaba en 320 px y sus propias celdas no
-       cabian —el importe del GAP se recortaba a 320 px de ventana—, asi
-       que subio. Lo que no puede desaparecer es la declaracion. */
-    expect(discCost).toMatch(/min-w-\[(\d{3,4})px\]/);
+    /* Una sola rejilla con filas en subgrid y columnas que no bajan de su
+       cifra mas ancha: un importe grande ensancha la tabla y se desliza,
+       no pisa la columna vecina. */
+    expect(discCost).toMatch(/grid w-max min-w-full grid-cols-\[(minmax\(max-content,[^)]+\)_?){4}\]/);
+    expect(discCost).toContain("grid-cols-subgrid");
     expect(discCost).toContain("overflow-x-auto");
     expect(globalsCss).toContain(".custom-scroll");
   });
