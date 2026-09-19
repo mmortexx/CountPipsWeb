@@ -483,16 +483,15 @@ function KpiStripCell({
   showHairline: boolean;
 }) {
   return (
-    <div className="flex items-stretch flex-1 min-w-[5.5rem] sm:min-w-[6rem] md:min-w-0 shrink-0 md:shrink">
-      <div className="flex-1 min-w-0 flex flex-col gap-1.5 px-2 sm:px-3">
-        {/* Se parte en dos lineas en vez de truncarse: «Expectancy R»
-            con 0,15em de espaciado pide 97 px y la celda mide 88, asi que
-            a 320 px se cortaba SIEMPRE. Un rotulo de dos lineas se lee;
-            uno cortado, no. */}
-        <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-tertiary [overflow-wrap:anywhere]">
+    <div className="flex items-stretch flex-none md:flex-1 md:min-w-0 md:shrink">
+      <div className="flex-1 md:min-w-0 flex flex-col gap-1.5 px-2 sm:px-3">
+        {/* En móvil cada celda mide lo que su cifra y la franja se
+            desliza: con un mínimo fijo de 88 px «+6.739,19 $» invadía la
+            celda vecina y «Operaciones» se partía a media palabra. */}
+        <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-tertiary whitespace-nowrap md:whitespace-normal">
           {label}
         </div>
-        <div className="font-semibold text-lg sm:text-xl md:text-2xl tnum text-primary leading-none">
+        <div className="font-semibold text-lg sm:text-xl md:text-2xl tnum text-primary leading-none whitespace-nowrap">
           <span key={filterSig}>{children}</span>
         </div>
       </div>

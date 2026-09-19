@@ -1420,18 +1420,15 @@ export function JournalPage() {
                 </span>
               </div>
 
-              {/* ── LA TABLA SE DESPLAZA, NO SE APLASTA ──────────────
-                  Cuatro columnas de ancho fijo suman 212 px antes de
-                  repartir nada, y a 320 px la tarjeta deja 240: la ultima
-                  —el coste, que es el dato de la tabla— se salia 77 px. Se
-                  declara el ancho que necesita y se le da desplazamiento
-                  lateral propio, como ya hace la tabla de expectancy del
-                  sitio. */}
-              <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll">
-              <div className="min-w-[22rem] pr-12">
+              {/* En móvil el tipo ocupa su propia línea y las tres cifras
+                  van debajo: con cuatro columnas la tabla tenía que
+                  deslizarse, el tipo salía recortado («Stop lej…») y el
+                  coste —el dato de la tabla— quedaba fuera de la vista. */}
+              <div>
+              <div>
               {/* Table header row */}
-              <div className="grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 pb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)] font-mono">
-                <div>{L("Tipo", "Type")}</div>
+              <div className="grid grid-cols-[2.5rem_3rem_minmax(0,1fr)] sm:grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 pb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)] font-mono">
+                <div className="hidden sm:block">{L("Tipo", "Type")}</div>
                 <div className="text-right">#</div>
                 <div className="text-right">%</div>
                 <div className="text-right">{L("Coste", "Cost")}</div>
@@ -1455,11 +1452,11 @@ export function JournalPage() {
                         delay: i * 0.05,
                         ease: EASE,
                       }}
-                      className={`grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-2.5 items-center text-sm border-b border-dashed border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.025)] transition-colors font-mono ${
+                      className={`grid grid-cols-[2.5rem_3rem_minmax(0,1fr)] sm:grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-2.5 items-center text-sm border-b border-dashed border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.025)] transition-colors font-mono ${
                         i % 2 === 1 ? "bg-[rgb(var(--divider)/0.012)]" : ""
                       }`}
                     >
-                      <div className="text-secondary min-w-0 truncate flex items-center gap-2">
+                      <div className="col-span-3 sm:col-span-1 mb-1 sm:mb-0 text-secondary min-w-0 flex items-center gap-2">
                         <span
                           aria-hidden
                           className={`inline-block w-1 h-1 rounded-[1px] ${
@@ -1490,9 +1487,9 @@ export function JournalPage() {
               </div>
 
               {/* Total row */}
-              <div className="grid min-w-[19rem] grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-3 items-center mt-1 border-t-2 border-[rgb(var(--divider)/0.15)] font-mono">
+              <div className="grid grid-cols-[2.5rem_3rem_minmax(0,1fr)] sm:grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-3 items-center mt-1 border-t-2 border-[rgb(var(--divider)/0.15)] font-mono">
                 <div
-                  className={`text-[11px] uppercase tracking-[0.15em] font-semibold ${
+                  className={`col-span-3 sm:col-span-1 mb-1 sm:mb-0 text-[11px] uppercase tracking-[0.15em] font-semibold ${
                     totalMistakeCost < 0 ? "text-pnl-pos" : "text-pnl-neg"
                   }`}
                 >
