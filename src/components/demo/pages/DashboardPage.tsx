@@ -288,7 +288,7 @@ export function DashboardPage() {
                 aria-live="polite"
                 /* En la tira apilada la cifra va a 22 px y sin margen
                    superior, porque comparte linea con su rotulo. */
-                className="text-[22px] font-bold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
+                className="text-[22px] font-semibold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
               >
                 <Money value={riskUsdLive} />
               </motion.div>
@@ -370,7 +370,6 @@ export function DashboardPage() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       aria-hidden="true"
-                      className="group-hover:scale-110 transition-transform"
                     >
                       <rect x="3" y="3" width="18" height="18" rx="2" />
                       <circle cx="9" cy="9" r="2" />
@@ -419,9 +418,9 @@ export function DashboardPage() {
                           className="text-lg font-semibold text-primary"
                         />
                       </div>
-                      {/* Vertical hairline — full height with subtle gradient */}
+                      {/* Vertical hairline — full height */}
                       <div
-                        className="self-stretch w-px bg-gradient-to-b from-transparent via-[rgb(var(--divider)/0.18)] to-transparent"
+                        className="self-stretch w-px bg-[rgb(var(--divider)/0.12)]"
                         aria-hidden="true"
                       />
                       {/* R:R planned */}
@@ -443,7 +442,7 @@ export function DashboardPage() {
                       </div>
                       {/* Vertical hairline */}
                       <div
-                        className="self-stretch w-px bg-gradient-to-b from-transparent via-[rgb(var(--divider)/0.18)] to-transparent"
+                        className="self-stretch w-px bg-[rgb(var(--divider)/0.12)]"
                         aria-hidden="true"
                       />
                       {/* % of account */}
@@ -1014,7 +1013,7 @@ export function DashboardPage() {
                       <Money
                         value={METRICS.finalBalance}
                         compact
-                        className="text-2xl font-bold text-primary"
+                        className="text-2xl font-semibold text-primary"
                       />
                       <span
                         className={`text-xs tnum ${
@@ -1424,7 +1423,7 @@ function KpiDivider() {
       // leaves exactly 7 grid children (one per KpiCell) so the strip
       // stays a single row; the `gap-x-4` provides the optical separation
       // the dividers were painting on mobile.
-      className="self-stretch w-px shrink-0 justify-self-center bg-gradient-to-b from-transparent via-[rgb(var(--divider)/0.18)] to-transparent md:hidden"
+      className="self-stretch w-px shrink-0 justify-self-center bg-[rgb(var(--divider)/0.12)] md:hidden"
       aria-hidden="true"
     />
   );
