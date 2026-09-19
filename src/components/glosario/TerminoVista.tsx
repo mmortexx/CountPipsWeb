@@ -183,7 +183,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   </span>
                   <span
                     lang="en"
-                    className="truncate text-[14px] font-medium text-secondary transition-colors group-hover:text-primary"
+                    className="text-balance text-[14px] font-medium text-secondary transition-colors group-hover:text-primary"
                   >
                     {anterior.term}
                   </span>
@@ -201,7 +201,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   </span>
                   <span
                     lang="en"
-                    className="truncate text-[14px] font-medium text-secondary transition-colors group-hover:text-primary"
+                    className="text-balance text-[14px] font-medium text-secondary transition-colors group-hover:text-primary"
                   >
                     {siguiente.term}
                   </span>

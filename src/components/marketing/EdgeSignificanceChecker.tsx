@@ -310,11 +310,11 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Gaussian Bell Curve Distribution Chart */}
-          <div className="mb-5 border-y border-[var(--ficha-division)] py-3">
-            <div className="flex items-center justify-between text-[12px] tnum text-tertiary mb-1">
-              <span>{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
-              <span>
-                {es ? "Región crítica: |z| ≥ 1,96" : "Critical zone: |z| ≥ 1.96"}
+          <div className="mb-5 border-t border-[var(--ficha-division)] pt-3">
+            <div className="flex flex-wrap justify-between gap-x-4 text-[12px] tnum text-tertiary mb-1">
+              <span className="whitespace-nowrap">{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
+              <span className="whitespace-nowrap">
+                {es ? "Región crítica: |z| ≥ 1,96" : "Critical zone: |z| ≥ 1.96"}
               </span>
             </div>
             <GaussianBellCurve z={c.z} isSignificant={c.significant} />
@@ -325,7 +325,7 @@ export function EdgeSignificanceChecker() {
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? `p-valor (H₀: 50${PCT})` : `p-value (H₀: 50%)`} value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? "Potencia (1 - β)" : "Statistical Power"} value={`${fmtNum(c.power, 1)}${PCT}`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
-            <Result label={es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"} value={`[${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]`} color="var(--ink)" />
+            <Result label={es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"} value={`${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`} color="var(--ink)" />
           </div>
 
           {/* Matriz de Muestra Mínima */}
@@ -395,7 +395,7 @@ export function EdgeSignificanceChecker() {
           </div>
 
           {/* Exportar informe */}
-          <div className="mt-4 pt-3 border-t border-[rgb(var(--divider)/0.08)] flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-[rgb(var(--divider)/0.08)] flex flex-wrap items-center justify-between gap-x-4">
             <button
               type="button"
               onClick={() => {
@@ -410,7 +410,7 @@ export function EdgeSignificanceChecker() {
                   });
                 }
               }}
-              className="toque-comodo inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+              className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />

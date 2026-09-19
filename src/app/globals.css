@@ -1926,6 +1926,19 @@ textarea:focus-visible,
     grid-auto-columns: 1fr;
   }
 }
+/* Seis cifras cortas: tres por fila en móvil, las seis en fila desde sm. */
+.tj-segmentado-seis {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.tj-segmentado-seis > * {
+  white-space: nowrap;
+}
+@media (min-width: 640px) {
+  .tj-segmentado-seis {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
 .tj-segmentado-rejilla {
   grid-auto-flow: row;
   grid-template-columns: repeat(2, minmax(0, 1fr));

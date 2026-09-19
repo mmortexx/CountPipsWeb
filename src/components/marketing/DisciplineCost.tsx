@@ -538,11 +538,11 @@ export function DisciplineCost() {
             )}
 
             {/* Acción: Copiar resumen */}
-            <div className="mt-5 pt-3 border-t border-[rgb(var(--divider)/0.06)] flex items-center justify-between">
+            <div className="mt-5 pt-3 border-t border-[rgb(var(--divider)/0.06)] flex flex-wrap items-center justify-between gap-x-4">
               <button
                 type="button"
                 onClick={copiarResumen}
-                className="toque-comodo inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
               >
                 <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />

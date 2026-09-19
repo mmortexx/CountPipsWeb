@@ -315,8 +315,8 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   }`}
                 >
                   {es
-                    ? "¿No encuentras tu término? Consulta el glosario →"
-                    : "Can't find your term? Browse the glossary →"}
+                    ? "¿No encuentras tu término? Consulta el glosario →"
+                    : "Can't find your term? Browse the glossary →"}
                 </button>
               }
             />

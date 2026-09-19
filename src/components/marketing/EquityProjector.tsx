@@ -734,7 +734,7 @@ export function EquityProjector() {
                     un píxel, que es como este sitio separa las celdas de
                     sus cuadros de cifras. Ver `.tj-segmentado`. */}
                 <div>
-                  <div className="tj-segmentado" role="group">
+                  <div className="tj-segmentado tj-segmentado-seis" role="group">
                     {CAPITAL_CHIPS.map((chip) => {
                       const active = startBalance === chip.v;
                       return (
@@ -747,7 +747,7 @@ export function EquityProjector() {
                             setStartBalance(chip.v);
                           }}
                         >
-                          {es ? `${chip.v / 1000}\u00a0k $` : chip.label}
+                          {es ? `${chip.v / 1000}\u00a0k\u00a0$` : chip.label}
                         </button>
                       );
                     })}
