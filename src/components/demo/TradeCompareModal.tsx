@@ -26,7 +26,7 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
       onClick={onClose}
     >
       <div
-        className="w-full max-w-3xl overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.2)] bg-[var(--surface-1)] shadow-[var(--ficha-sombra)] transition-all"
+        className="w-full max-w-3xl overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.2)] tj-paper-dense shadow-[var(--ficha-sombra)] transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

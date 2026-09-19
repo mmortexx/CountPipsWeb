@@ -59,9 +59,9 @@ function buildKpis() {
   return {
     pnl: {
       v: fmtMoney(METRICS.netPnl, "es", { sign: true }),
-      color: "var(--pos)",
+      color: "rgb(var(--pnl-pos))",
       delta: `${fmtPct(METRICS.roiPct, "es", 1)} ROI`,
-      deltaColor: "var(--pos)",
+      deltaColor: "rgb(var(--pnl-pos))",
     },
   };
 }
@@ -125,7 +125,7 @@ function buildCal() {
       es: `${total >= 0 ? "+" : "−"}${fmtMoney(Math.abs(total), "es")}`,
       en: `${total >= 0 ? "+" : "−"}${fmtMoney(Math.abs(total), "en")}`,
     } satisfies Bilingue,
-    pnlColor: total >= 0 ? "var(--pos)" : "var(--neg)",
+    pnlColor: total >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
     cells,
   };
 }

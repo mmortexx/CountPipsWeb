@@ -1265,7 +1265,7 @@ export function EquityProjector() {
                             cy={activeCoord.y}
                             r="6"
                             fill="rgb(var(--accent-base))"
-                            stroke="var(--surface-1)"
+                            stroke="var(--ficha-fondo)"
                             strokeWidth="2.5"
                             filter="url(#eq-glow)"
                           />
