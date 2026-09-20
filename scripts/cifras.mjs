@@ -137,6 +137,20 @@ for await (const f of htmls(RAIZ)) {
        coló en la definición de «pullback» del glosario y salía en cinco
        páginas inglesas, porque esa ficha la citan otras cuatro. */
     anota("comillas angulares en la web inglesa", /[«»]/g, ctx);
+    /* «OPERAR» NO SE DICE «OPERATE».
+       En inglés de mercados el verbo es «trade»; «operate» se lee como
+       «manejar una máquina» o «funcionar». Es el calco que más veces
+       apareció al leer el sitio —una tarjeta de la portada decía «For
+       operating under rules that matter» y el glosario, «The trader
+       operates with the firm's money»— y no lo caza ninguna revisión
+       ortográfica, porque las dos frases están perfectamente escritas.
+       El patrón va acotado a quien opera, para no acusar a un «operating
+       system» ni a un programa que «operates» correctamente. */
+    anota(
+      "«operar» traducido como «operate» en la web inglesa",
+      /\b(?:trader|traders|you|we|they)\s+operates?\b|\boperating\s+(?:under|with|in)\b/gi,
+      ctx,
+    );
   } else {
     anota("% pegado en español", /\d%/g, ctx);
     /* El lookbehind evita el falso positivo de una fila de importes

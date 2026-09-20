@@ -64,7 +64,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Prop firm",
     es: "Empresa que aporta capital a traders que superan una evaluación. El trader opera con dinero de la firma y se reparte un porcentaje de los beneficios.",
-    en: "A firm that provides capital to traders who pass an evaluation. The trader operates with the firm's money and shares a percentage of the profits.",
+    en: "A firm that provides capital to traders who pass an evaluation. The trader trades the firm's money and shares a percentage of the profits.",
     category: "basics",
   },
   {

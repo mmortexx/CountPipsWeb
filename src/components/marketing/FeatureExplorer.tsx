@@ -175,7 +175,11 @@ const FEATURES: Feature[] = [
     titleEs: "Heatmap por día y hora",
     titleEn: "Day/hour heatmap",
     descEs: "¿Rindes mejor a primera hora o por la tarde? ¿Los lunes o los viernes? El mapa de calor cruza día y hora con tu resultado.",
-    descEn: "Better early or in the afternoon? On Mondays or Fridays? The heatmap crosses day and hour with your result.",
+    /* El español pregunta «¿Rindes mejor…?» y el inglés se había dejado
+       el verbo por el camino: «Better early or in the afternoon?» no
+       dice quién rinde ni qué se compara, y «early» a secas no tiene
+       contra qué. */
+    descEn: "Do you perform better first thing or in the afternoon? On Mondays or Fridays? The heatmap crosses day and hour with your result.",
     tags: ["metrics"],
   },
   {
@@ -222,7 +226,10 @@ export function FeatureExplorer() {
           )}
           entradilla={es
             ? "Todo lo que hace el programa. Marca uno o varios ejes y la lista se recorta a lo que hace de verdad en ese terreno."
-            : "Everything the program does. Mark one or more axes and the list trims to what it actually does in that ground."}
+            /* «in that ground» es «en ese terreno» traducido palabra por
+               palabra; en inglés no significa nada. Y «the list trims
+               to» tampoco se dice: una lista «narrows», no «trims». */
+            : "Everything the program does. Mark one or more axes and the list narrows to what it actually does there."}
         />
 
         {/* Tag chips */}

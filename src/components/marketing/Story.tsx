@@ -42,8 +42,14 @@ export function Story() {
       tag: es ? "Mes 3" : "Month 3",
       title: es ? "Descubres lo que no sabías" : "You discover what you didn't know",
       desc: es
-        ? "Tu setup 'estrella' apenas tiene expectancy positivo. Tu mejor hora no es la que creías. Tu sesión perdedora es siempre la misma."
-        : "Your 'star' setup barely has positive expectancy. Your best hour isn't the one you thought. Your losing session is always the same one.",
+        /* Las comillas rectas son de máquina de escribir, y el sitio no
+           las usa en ninguna otra parte: el español entrecomilla con
+           «…» —así lo hacen las otras cinco del primer nivel— y el
+           inglés con “…”, como el aviso de cookies y la cita del diario
+           de `/features`. Esta frase era la única que se salía, en los
+           dos idiomas a la vez. */
+        ? "Tu setup «estrella» apenas tiene expectancy positivo. Tu mejor hora no es la que creías. Tu sesión perdedora es siempre la misma."
+        : "Your “star” setup barely has positive expectancy. Your best hour isn't the one you thought. Your losing session is always the same one.",
       tone: "neutral",
     },
     {
