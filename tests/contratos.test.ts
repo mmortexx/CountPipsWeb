@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { STR } from "@/lib/i18n";
 import { LOCALIZED_PATHS } from "@/lib/rutas-en";
-import { tieneVersionEn } from "@/lib/locale";
+import { tieneVersionEn, withLocale } from "@/lib/locale";
 
 /**
  * Contratos que atraviesan varios ficheros y que ninguna comprobación de
@@ -116,9 +116,27 @@ describe("rutas declaradas frente a rutas reales", () => {
 
   it("el enlace inglés reconoce toda ruta de la lista completa, y nada más", () => {
     expect(LOCALIZED_PATHS.filter((p) => !tieneVersionEn(p))).toEqual([]);
-    expect(tieneVersionEn("/glosario/")).toBe(false);
     expect(tieneVersionEn("/glosario/drawdown/extra")).toBe(false);
     expect(tieneVersionEn("/traders/no-existe")).toBe(false);
+  });
+
+  /* Esta prueba decía que `/glosario/` NO tenía versión inglesa, y la
+     tenía: `out/en/glosario/index.html` existe desde el principio. Lo
+     que estaba escrito aquí no era el contrato, era el fallo — la lista
+     se escribe sin barra final y la comparación era de texto, así que
+     cualquier enlace escrito con barra se quedaba en español. Pasó de
+     verdad en «More questions?» de la página de precios inglesa. */
+  it("la barra final no decide el idioma", () => {
+    for (const ruta of ["/faq", "/glosario", "/herramientas", "/pricing", "/beta"]) {
+      expect(tieneVersionEn(ruta), ruta).toBe(true);
+      expect(tieneVersionEn(`${ruta}/`), `${ruta}/`).toBe(true);
+    }
+    expect(withLocale("/faq/", "en")).toBe("/en/faq/");
+    expect(withLocale("/faq", "en")).toBe("/en/faq");
+    // La raíz no se ve afectada por la normalización.
+    expect(withLocale("/", "en")).toBe("/en");
+    // Y una ruta sin versión inglesa sigue sin prefijarse, lleve barra o no.
+    expect(withLocale("/traders/no-existe/", "en")).toBe("/traders/no-existe/");
   });
 
   it("toda ruta fija declarada tiene su carpeta bajo /en", () => {

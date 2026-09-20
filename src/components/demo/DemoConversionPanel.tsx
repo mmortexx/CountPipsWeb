@@ -55,7 +55,7 @@ export function DemoConversionPanel() {
           </Reveal>
 
           <div className="relative">
-            <aside className="tj-cristal relative rounded-[12px] p-6 sm:p-8">
+            <aside className="tj-cristal relative rounded-[8px] p-6 sm:p-8">
               <div className="flex items-center gap-3">
                 <span className="grid size-10 place-items-center rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">
                   <LockKeyhole size={18} strokeWidth={1.6} aria-hidden />

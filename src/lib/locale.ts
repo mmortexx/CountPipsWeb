@@ -58,11 +58,25 @@ export const RUTAS_FIJAS_EN: readonly string[] = [
 const LOCALIZED_SET = new Set(RUTAS_FIJAS_EN);
 const FAMILIAS_EN = ["/glosario/", "/herramientas/"];
 
-/** ¿Existe una versión en inglés de esta ruta (sin query ni hash)? */
+/**
+ * ¿Existe una versión en inglés de esta ruta (sin query ni hash)?
+ *
+ * LA BARRA FINAL NO PUEDE DECIDIR EL IDIOMA. Esta lista está escrita sin
+ * ella —«/faq»—, y la comparación es de texto, así que un enlace escrito
+ * «/faq/» no encajaba y se quedaba en español: el visitante inglés que
+ * pulsaba «More questions?» en la página de precios acababa en la FAQ
+ * española. Un solo carácter, en la página que más importa vender.
+ *
+ * El arreglo va aquí y no en el enlace porque el que falla es este
+ * criterio: mientras compare cadenas, cualquiera que mañana escriba la
+ * barra volverá a caer igual y en silencio. `scripts/enlaces.mjs` recorre
+ * el sitio compilado y lo caza si vuelve a pasar.
+ */
 export function tieneVersionEn(pathnameLimpio: string): boolean {
-  if (LOCALIZED_SET.has(pathnameLimpio)) return true;
+  const ruta = pathnameLimpio.length > 1 ? pathnameLimpio.replace(/\/+$/, "") || "/" : pathnameLimpio;
+  if (LOCALIZED_SET.has(ruta)) return true;
   return FAMILIAS_EN.some(
-    (f) => pathnameLimpio.length > f.length && pathnameLimpio.startsWith(f) && !pathnameLimpio.includes("/", f.length),
+    (f) => ruta.length > f.length && ruta.startsWith(f) && !ruta.includes("/", f.length),
   );
 }
 

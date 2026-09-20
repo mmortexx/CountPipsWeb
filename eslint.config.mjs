@@ -130,6 +130,13 @@ const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, {
        encima entraban en el informe con errores que no se pueden arreglar
        porque el fichero se regenera. */
     "**/.wrangler/**",
+    /* Copias de trabajo de la herramienta: `.claude/worktrees/**` es un
+       clon entero del repositorio, así que ESLint lo recorría y devolvía
+       el proyecto por duplicado —8.127 problemas de golpe, ninguno real—
+       tapando los de verdad. `.claude` ya está en `.gitignore`, así que el
+       despliegue nunca lo vio y esto sólo rompía la comprobación local,
+       que es justo donde uno se fía de que el lint dice la verdad. */
+    ".claude/**",
   ],
 }];
 

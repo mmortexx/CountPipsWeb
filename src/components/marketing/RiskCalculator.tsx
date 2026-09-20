@@ -479,7 +479,7 @@ export function RiskCalculator() {
 
         {/* Tarjeta calculadora */}
         <div
-          className="tj-paper tj-paper-glow relative p-6 rounded-[12px]"
+          className="tj-paper tj-paper-glow relative p-6 rounded-[8px]"
         >
           {/* Slider de riesgo */}
           <div className="mb-5">

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, readdirSync } from "node:fs";
+import { join, relative, sep } from "node:path";
 
 /**
  * EL COMENTARIO QUE EXPLICA LOS RADIOS TIENE QUE DECIR LOS RADIOS QUE HAY.
@@ -64,5 +64,47 @@ describe("escala de radios", () => {
     for (const [clave, valor] of Object.entries(radiosDeLaPaleta())) {
       expect(Number(valor), `--radius-${clave}`).toBeLessThanOrEqual(8);
     }
+  });
+
+  /**
+   * EL TOPE TAMBIÉN VALE PARA LO QUE SE ESCRIBE A MANO.
+   *
+   * Las cuatro pruebas de arriba miran las VARIABLES, y por eso no vieron
+   * cinco superficies con `rounded-[12px]` puesto directamente en el JSX
+   * —la tarjeta de precio, el megamenú, el aviso de cookies, el panel de
+   * conversión y la calculadora de riesgo—: pasaban por encima del tope
+   * sin tocar ningún token. Una prueba que sólo mira la declaración deja
+   * fuera justo el sitio por donde se escapa.
+   *
+   * Sólo se vigila el TOPE, no la escala entera: los cantos de 1 y 2 px
+   * de la demo son deliberados —replican la ventana de la app de
+   * escritorio— y afilar por debajo del sistema nunca fue el problema.
+   */
+  it("ningún canto escrito a mano en el JSX pasa de 8px", () => {
+    const raizSrc = join(import.meta.dirname, "..", "src");
+    const excesos: string[] = [];
+
+    const recorrer = (dir: string) => {
+      for (const e of readdirSync(dir, { withFileTypes: true })) {
+        const p = join(dir, e.name);
+        if (e.isDirectory()) recorrer(p);
+        else if (p.endsWith(".tsx") || p.endsWith(".ts")) {
+          const texto = readFileSync(p, "utf8");
+          texto.split("\n").forEach((linea, i) => {
+            for (const m of linea.matchAll(/rounded(?:-[a-z]+)?-\[([0-9.]+)px\]/g)) {
+              if (Number(m[1]) > 8) {
+                excesos.push(`${relative(raizSrc, p).split(sep).join("/")}:${i + 1} → ${m[0]}`);
+              }
+            }
+          });
+        }
+      }
+    };
+    recorrer(raizSrc);
+
+    expect(
+      excesos,
+      `El sistema declara 8px como tope. Estos cantos se lo saltan a mano:\n  ${excesos.join("\n  ")}`,
+    ).toEqual([]);
   });
 });

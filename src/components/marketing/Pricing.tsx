@@ -196,7 +196,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   return (
     <div
       data-entra
-      className="tj-cristal relative flex h-full flex-col rounded-[12px]"
+      className="tj-cristal relative flex h-full flex-col rounded-[8px]"
     >
       {/* Dos zonas, como una ficha: arriba el nivel, el precio y la
           acción; debajo, tras un filete de borde a borde, lo que incluye. */}
