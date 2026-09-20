@@ -534,9 +534,9 @@ function BulkActionBar({
         className="absolute left-0 top-0 bottom-0 w-[3px] bg-[rgb(var(--accent-base))]"
       />
       <div className="flex flex-wrap items-center gap-3">
-        <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] tnum text-[11px] font-semibold leading-[1.4] bg-[rgb(var(--accent-base)/0.15)] text-primary border border-[rgb(var(--accent-base)/0.35)]">
+        <Chip variant="selection" size="sm" rounded="sm" className="tnum">
           {count}
-        </span>
+        </Chip>
         <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary hidden sm:inline">
           {lang === "es" ? "seleccionadas" : "selected"}
         </span>

@@ -2,8 +2,14 @@ import type { ReactNode } from "react";
 
 interface ChipProps {
   children: ReactNode;
-  variant?: "default" | "pos" | "neg" | "warn" | "accent" | "neutral";
+  variant?: "default" | "pos" | "neg" | "warn" | "accent" | "neutral" | "stat" | "count" | "selection";
   className?: string;
+  /** Tamaño del texto. `"default"` (0.72rem) es el histórico; `sm`/`xs`
+   *  cubren las etiquetas más pequeñas de las páginas de demo. */
+  size?: "default" | "sm" | "xs";
+  /** Radio de esquina. `"default"` (4px) es el histórico; `sm` (2px)
+   *  replica el canto de la ventana de la app de escritorio. */
+  rounded?: "default" | "sm";
   /**
    * When `as="button"`, the chip renders as a `<button>` with the same
    * etiqueta styling, a 44px minimum touch target, and focus-visible ring —
@@ -30,6 +36,8 @@ export function Chip({
   children,
   variant = "default",
   className = "",
+  size = "default",
+  rounded = "default",
   as = "span",
   onClick,
   pressed,
@@ -44,8 +52,23 @@ export function Chip({
     warn: "bg-pnl-warn/15 text-pnl-warn border border-pnl-warn/25",
     accent: "bg-[rgb(var(--divider)/0.08)] text-primary border border-[rgb(var(--divider)/0.20)]",
     neutral: "bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.08)]",
+    // Tonos usados solo en páginas de demo (AnalyticsPage, JournalPage,
+    // TradeDetailPage, TradesPage): opacidades ligeramente distintas de
+    // "default"/"neutral"/"accent" que ya existían ahí antes de centralizar.
+    stat: "bg-[rgb(var(--divider)/0.08)] text-tertiary border border-[rgb(var(--divider)/0.12)]",
+    count: "bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)]",
+    selection: "bg-[rgb(var(--accent-base)/0.15)] text-primary border border-[rgb(var(--accent-base)/0.35)]",
   };
-  const cls = `inline-flex items-center gap-[0.35rem] rounded-[4px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] ${styles[variant]} ${className}`;
+  const sizes: Record<string, string> = {
+    default: "text-[0.72rem]",
+    sm: "text-[11px]",
+    xs: "text-[10px]",
+  };
+  const radii: Record<string, string> = {
+    default: "rounded-[4px]",
+    sm: "rounded-[2px]",
+  };
+  const cls = `inline-flex items-center gap-[0.35rem] ${radii[rounded]} px-[0.55rem] py-[0.15rem] ${sizes[size]} font-semibold leading-[1.4] ${styles[variant]} ${className}`;
 
   if (as === "button") {
     return (

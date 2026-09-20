@@ -773,9 +773,9 @@ export function TradeDetailPage() {
               <Eyebrow>
                 {lang === "es" ? "Anatomía" : "Anatomy"}
               </Eyebrow>
-              <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[10px] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)] tnum">
+              <Chip variant="count" size="xs" rounded="sm" className="tnum">
                 {fills.length} {lang === "es" ? "fills" : "fills"}
-              </span>
+              </Chip>
             </div>
             {/* Table header — wrapped in overflow-x-auto so the fixed
                 column widths (3.5rem + 1fr + 3.5rem + 4rem + 3rem + 3.5rem

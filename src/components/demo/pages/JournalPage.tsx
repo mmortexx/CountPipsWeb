@@ -287,9 +287,9 @@ function RitualColumn({
           />
           <h3 className="font-medium text-primary">{title}</h3>
         </div>
-        <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)] tnum">
+        <Chip variant="count" rounded="sm" className="tnum">
           {checkedCount}/{items.length}
-        </span>
+        </Chip>
       </div>
 
       <ul className="space-y-2.5">
@@ -1234,9 +1234,9 @@ export function JournalPage() {
                 {t("ritualTitle")}
               </h2>
             </div>
-            <span className="inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] text-[0.72rem] font-semibold leading-[1.4] bg-[rgb(var(--divider)/0.08)] text-primary border border-[rgb(var(--divider)/0.2)] shrink-0">
+            <Chip variant="accent" rounded="sm" className="shrink-0">
               {L("Hoy", "Today")}
-            </span>
+            </Chip>
           </div>
 
           <div className="relative grid md:grid-cols-2 gap-6 md:gap-8">
