@@ -1371,6 +1371,19 @@ textarea:focus-visible,
   border-radius: 4px;
 }
 
+/* La excepción: el destino del enlace «Saltar al contenido».
+   Lleva `tabindex="-1"` para que el salto funcione también en WebKit, y
+   la regla de arriba le dibujaría un contorno alrededor de la página
+   entera. Eso no comunica nada —quien acaba de pulsar el enlace ya sabe
+   dónde está, y el siguiente tabulador cae en un control con su propio
+   anillo— y además parece un fallo de maquetación. No incumple el
+   criterio de foco visible: un contenedor con −1 no está en el orden de
+   tabulación, así que nadie llega a él tabulando. */
+#main-content:focus,
+#main-content:focus-visible {
+  outline: none;
+}
+
 /* Remove default outline only when not keyboard-focused */
 :focus:not(:focus-visible) {
   outline: none;

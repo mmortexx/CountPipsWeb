@@ -408,7 +408,19 @@ export default function RootLayout({
                 —un `view-transition-name` fijo impide al cristal leer lo
                 que tiene detrás—; la coreografía está en
                 `::view-transition-*` (globals.css). */}
-            <main id="main-content" className="flex-1">
+            {/* `tabIndex={-1}` es lo que hace fiable el enlace «Saltar al
+                contenido» FUERA de Chromium. Chromium y Firefox mueven el
+                punto de partida del tabulador al destino de un fragmento
+                aunque el destino no sea enfocable —comprobado: tras usar
+                el enlace, el siguiente tabulador cae en «Ver la demo
+                interactiva», dentro de esta etiqueta—, pero WebKit no lo
+                hace, y ahí el salto no sirve de nada: el tabulador vuelve
+                a empezar por la navegación que se quería saltar. El −1 no
+                mete este `<main>` en el orden de tabulación; sólo permite
+                enfocarlo por programa. Su anillo de foco se apaga en
+                `globals.css`: un contorno alrededor de la página entera no
+                dice nada que el enlace recién pulsado no haya dicho ya. */}
+            <main id="main-content" tabIndex={-1} className="flex-1">
               {children}
             </main>
             <Footer />
