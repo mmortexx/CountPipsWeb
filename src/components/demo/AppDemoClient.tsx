@@ -66,7 +66,9 @@ const AppDemo = dynamic(
 function DemoSkeleton() {
   return (
     <div
-      className="rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[0_4px_10px_rgb(0_0_0/0.26),0_18px_40px_rgb(0_0_0/0.3),0_24px_80px_-12px_rgb(0_0_0/0.6)] h-[678px] sm:h-[674px] md:h-[754px]"
+      // Sombra desde --sombra, no negro puro: mismo token que la ventana real,
+      // para que el esqueleto no se vea más duro que lo que sustituye.
+      className="rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[0_4px_10px_rgb(var(--sombra)/0.26),0_18px_40px_rgb(var(--sombra)/0.3),0_24px_80px_-12px_rgb(var(--sombra)/0.6)] h-[678px] sm:h-[674px] md:h-[754px]"
       aria-hidden="true"
     >
       <div className="tj-paper tj-paper-dense rounded-[2px] overflow-hidden h-full flex flex-col">

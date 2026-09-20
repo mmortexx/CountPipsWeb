@@ -524,7 +524,10 @@ export function DashboardPage() {
                                     ? d === "long"
                                       ? "0 0 8px 1px rgb(var(--pnl-pos) / 0.6)"
                                       : "0 0 8px 1px rgb(var(--pnl-neg) / 0.6)"
-                                    : "0 0 0px 0px rgb(0 0 0 / 0)",
+                                    // Transparente desde --sombra, no negro puro: algunos
+                                    // navegadores tiñen de gris el paso intermedio del
+                                    // degradado hacia "negro transparente".
+                                    : "0 0 0px 0px rgb(var(--sombra) / 0)",
                                 }}
                                 transition={{ duration: 0.25 }}
                                 className={`inline-block w-2 h-2 rounded-[1px] ${
