@@ -32,7 +32,7 @@ export function BetaApplicationNote() {
   const { lang } = useLang();
   const es = lang === "es";
   return (
-    <p className="mx-auto mt-5 max-w-2xl text-center text-xs leading-relaxed text-tertiary">
+    <p className="medida mx-auto mt-5 text-center text-xs leading-relaxed text-tertiary">
       {es
         ? "La solicitud no es una compra ni garantiza una invitación. Se revisa por perfil y fase del producto; puedes pedir la eliminación de tus datos en cualquier momento."
         : "The application is not a purchase and does not guarantee an invitation. We review by profile and product phase; you can request deletion of your data at any time."}

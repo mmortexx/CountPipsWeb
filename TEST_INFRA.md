@@ -42,6 +42,7 @@
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
 | `metricas.test.ts` | El motor de métricas y la distribución de R de la portada |
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
+| `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |
 | `tipografias.test.ts` | El build no depende de que Google Fonts responda |
 | `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma |
 

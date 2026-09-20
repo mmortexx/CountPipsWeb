@@ -164,7 +164,7 @@ export function Changelog() {
                   </p>
                 </div>
                 <p
-                  className={`m-0 text-[14px] leading-[1.55] ${
+                  className={`medida m-0 text-[14px] leading-[1.55] ${
                     isPast || isPilot ? "text-secondary" : "text-tertiary"
                   }`}
                 >

@@ -55,7 +55,7 @@ export function DataFlowComparison() {
               </>
             )}
           </h2>
-          <p className="mt-4" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
+          <p className="medida mt-4" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
             {es
               ? "Pulsa el botón. En CountPips la operación viaja a tu archivo local. En una herramienta en la nube, sale de tu equipo, cruza internet y llega a un servidor ajeno."
               : "Press the button. In CountPips the trade travels to your local file. In a cloud tool, it leaves your machine, crosses the internet, and reaches someone else's server."}
@@ -115,7 +115,7 @@ export function DataFlowComparison() {
         </div>
 
         {/* Footer note */}
-        <p className="mt-6 text-[13px] leading-[1.55] max-w-2xl" style={{ color: "var(--ink-3)" }}>
+        <p className="medida mt-6 text-[13px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
           {es
             ? "Cada punto es una operación. En CountPips se queda en tu equipo: solo sale si activas una función que lo necesita, como la copia cifrada en tu propia nube. Tu historial es tuyo."
             : "Each dot is a trade. In CountPips it stays on your machine: it only leaves if you turn on a feature that needs it, such as the encrypted copy in your own cloud. Your history is yours."}

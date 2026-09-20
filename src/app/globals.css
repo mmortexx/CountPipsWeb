@@ -32,13 +32,19 @@
      coherencia, es un error.
 
      ⚠ ESTA ES LA ESCALA BASE, PERO NO LA QUE MANDA EN PANTALLA. Debajo,
-     `:root[data-palette="clasico"]` colapsa los cinco a 2 px, y como esa
-     es la paleta que el sitio fuerza siempre, 2 px es lo que se ve. Aquí
-     había además un TERCER bloque —4/8/8/8 px, de la fase anterior— que
-     seguía escrito más abajo en este mismo `@theme` y ganaba por orden;
-     se ha retirado. Antes de tocar un radio: los valores conviven en dos
-     sitios y el que gana es el de la paleta, así que compruébalo
-     computado en el navegador, no leyendo esta lista. */
+     `:root[data-palette="clasico"]` la redefine entera, y como esa es la
+     paleta que el sitio fuerza siempre, LA DE LA PALETA ES LA QUE SE VE:
+
+         sm 3px · md 4px · lg 6px · xl 6px · 2xl 8px
+
+     medidos en el navegador, no leídos del fichero. `tests/radios.test.ts`
+     vigila que esa lista y el bloque de la paleta no se separen: este
+     comentario decía «2 px» mucho después de que dejara de ser cierto, y
+     un comentario que miente sobre un token es peor que no tenerlo.
+
+     Aquí había además un TERCER bloque —4/8/8/8 px, de la fase anterior—
+     que seguía escrito más abajo en este mismo `@theme` y ganaba por
+     orden; se ha retirado. */
   --radius-sm: 1px;
   --radius-md: 2px;
   --radius-lg: 3px;
@@ -2930,6 +2936,21 @@ button.icon-btn:hover > svg,
   font-family: var(--font-sans), system-ui, sans-serif !important;
 }
 
+/* LA CURSIVA DE LA SERIF, QUE VIVE EN SU PROPIO FICHERO.
+   `--font-serif` ya no la incluye: son 143 KB y se componen en un solo
+   sitio del sitio entero (la cita del diario en el bento de /features),
+   así que viajaban precargados en las 171 páginas para nada. La familia
+   cursiva se declara aparte en `layout.tsx` con `preload: false` y se
+   aplica sólo aquí, de modo que el navegador la pide cuando encuentra el
+   elemento que la usa y no antes.
+
+   `font-style: italic` va explícito: sin él la familia cursiva se
+   compondría en su caja recta y la cita perdería el registro de cita. */
+.font-cursiva {
+  font-family: var(--font-serif-cursiva), Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
 /* Los `h3` —títulos de tarjeta y de apartado— van en la sans, en caja
    normal y con el tracking algo cerrado: la serif queda para los
    titulares de sección y de página. */
@@ -3297,6 +3318,9 @@ html:has(.tj-visor[open]) {
   font-size: 15px;
   line-height: 1.65;
   color: var(--ink-2);
+  /* El pie de la lámina corría los 1.128 px de la caja: 107 caracteres
+     medidos. Ver la nota de `.medida`. */
+  max-width: calc(75ch / 1.35);
 }
 /* «Detalle: el calendario del mes.» Sólo aparece donde de verdad se está
    sirviendo el recorte, y el umbral es EL MISMO que el del `<picture>` de
@@ -3314,6 +3338,61 @@ html:has(.tj-visor[open]) {
   .tj-lamina-detalle {
     display: block;
   }
+}
+
+/* ============================================================
+   LA MEDIDA DEL TEXTO CORRIDO
+   ============================================================
+   El renglón cómodo tiene entre 45 y 75 caracteres. Por encima de ~80 el
+   ojo pierde el salto de línea y tiene que rastrear el margen izquierdo
+   para encontrar dónde sigue. Medido el 2026-09-20 sobre el sitio
+   compilado, contando carácter a carácter y agrupando por línea real:
+   180 textos pasaban de 80 caracteres y los peores llegaban a 132.
+
+   ⚠ POR QUÉ NO BASTABA CON EL `max-w-[68ch]` QUE YA HABÍA. La unidad `ch`
+   vale el ancho del «0» DE LA TIPOGRAFÍA DEL ELEMENTO QUE LA ESCRIBE. Los
+   límites estaban puestos en los CONTENEDORES —el `div` del documento
+   legal, la celda de rejilla del glosario—, y esos contenedores heredan
+   el tamaño base del sitio, no el del párrafo que llevan dentro. Así,
+   `68ch` medidos sobre 20 px daban 110 caracteres de un texto de 15 px.
+   El límite decía 68 y la página mostraba 110: el comentario del legal
+   incluso lo afirmaba, y era falso.
+
+   LA REGLA, ENTONCES: la medida se declara SIEMPRE en el elemento que
+   lleva el `font-size` del texto, nunca en su contenedor. Esta clase
+   existe para que sea un solo sitio y no quince valores que se separan.
+
+   ⚠ Y `ch` TAMPOCO SON CARACTERES. `1ch` es el ancho del glifo «0», y el
+   cero de una fuente proporcional es de los glifos más anchos que tiene:
+   las minúsculas estrechas y los espacios de un texto real ocupan bastante
+   menos. Medido sobre Instrument Sans con frases del propio sitio, en toda
+   la escala de 11 a 20 px, el factor es constante:
+
+       1 ch = 1,35 caracteres de texto
+
+   Por eso el `--medida: 62ch` de las cabeceras daba 84–93 caracteres
+   medidos, y por eso aquí la medida se escribe como una división: el
+   número que se lee es el de caracteres que se quieren, y el 1,35 es la
+   conversión. Si algún día cambia la tipografía del cuerpo, se vuelve a
+   medir ese factor con `scripts/medida.mjs` y se cambia en un sitio.
+
+   68 y no 75: el 1,35 es la MEDIA de varias frases, y un texto con muchas
+   palabras cortas —«de», «la», «y»— mete más caracteres en el mismo ancho
+   que la media. Con 75 el texto corriente quedaba en 68 caracteres pero el
+   peor caso se iba a 92. Con 68 el corriente queda en torno a 62 y el peor
+   caso no pasa de 85, que es donde está el umbral de la guarda. Tampoco se
+   baja a 55: el sitio compone fichas y rejillas donde una medida corta
+   dejaría huecos grandes a la derecha.
+
+   Las referencias medidas el mismo día, para situarlo: Stripe compone
+   entre 39 y 56 caracteres; Linear, hasta 77.
+
+   `scripts/medida.mjs` vigila que no vuelva a subir: recorre el sitio
+   compilado, cuenta carácter a carácter agrupando por línea real y falla
+   si algún texto DE DOS LÍNEAS O MÁS pasa de 85 caracteres por línea. Una
+   sola línea larga no cansa, porque no hay renglón siguiente que buscar. */
+.medida {
+  max-width: calc(68ch / 1.35);
 }
 
 /* Caja de la página: una sola medida para todo el contenido. */
@@ -3524,6 +3603,12 @@ select.tj-campo:invalid {
   letter-spacing: 0;
   text-transform: none;
 }
+/* El pie de ficha NO lleva medida a propósito. Mide 102 caracteres, pero
+   EN UNA SOLA LÍNEA: el renglón largo sólo cansa cuando hay que volver al
+   margen izquierdo a buscar el siguiente, y aquí no hay siguiente. Cortarlo
+   además acortaría el filete, que es lo que separa el pie del cuerpo de la
+   ficha. `scripts/medida.mjs` sólo cuenta textos de dos líneas o más por
+   este mismo motivo. */
 .tj-ficha-cuerpo {
   padding: var(--ficha-pad);
 }
@@ -5255,13 +5340,18 @@ svg [data-entra="sello"] {
   padding-top: clamp(7.5rem, 13vh, 9.5rem);
   padding-bottom: clamp(3rem, 6vw, 4.5rem);
   background-image: linear-gradient(to bottom, var(--surface) 45%, transparent);
-  --medida: 62ch;
+  /* La entradilla de la cabecera, en caracteres de verdad. Estaba escrita
+     en `ch` —62, 58, 60, 56— y daba 84 a 93 caracteres medidos, porque el
+     `ch` vale 1,35 caracteres reales; ver la nota larga de `.medida`. Los
+     cuatro tonos conservan su relación entre sí: el titular de una
+     herramienta respira menos que el de una sección. */
+  --medida: calc(72ch / 1.35);
 }
-.tj-cabecera[data-tono="instrumento"] { --medida: 58ch; }
-.tj-cabecera[data-tono="registro"] { --medida: 60ch; }
-.tj-cabecera[data-tono="tarifa"] { --medida: 56ch; }
+.tj-cabecera[data-tono="instrumento"] { --medida: calc(68ch / 1.35); }
+.tj-cabecera[data-tono="registro"] { --medida: calc(70ch / 1.35); }
+.tj-cabecera[data-tono="tarifa"] { --medida: calc(66ch / 1.35); }
 .tj-cabecera[data-tono="documento"] {
-  --medida: 56ch;
+  --medida: calc(66ch / 1.35);
   padding-bottom: 2.5rem;
 }
 
@@ -5784,6 +5874,37 @@ svg [data-entra="sello"] {
     --txt-secondary: 51 51 51 !important;
     --txt-tertiary: 102 102 102 !important;
     --divider: 0 0 0 !important;
+  }
+
+  /* ── LO QUE NO SE HABÍA ASOMADO, NO SE IMPRIMÍA ────────────────────
+     Y esto es lo peor que puede pasarle a un documento legal.
+
+     El sistema de aparición deja cada pieza en `opacity: 0` hasta que
+     entra en el viewport. Al imprimir, el navegador NO recorre la página:
+     compone el documento tal y como está en ese instante. Todo lo que el
+     visitante no hubiera bajado a ver salía en blanco — y salía como un
+     HUECO del tamaño del bloque, que es peor que no salir, porque el
+     papel parece completo.
+
+     Medido emulando `print` sobre /privacidad recién cargada: las listas
+     de «Qué NO se recoge» y «Quién más los ve» —cinco y cuatro puntos,
+     los que dicen qué hace y qué no hace la web con tus datos— se
+     imprimían vacías. Quien guarde el PDF de la política se lleva un
+     documento al que le faltan cláusulas enteras.
+
+     `[data-tj-ap]` cubre el sistema de revelado por scroll; `[data-entra]`
+     y `.page-enter`, la secuencia de entrada de cada página. Los tres con
+     `!important` porque las reglas originales también lo llevan, y al
+     final del fichero para que nada los pise. */
+  [data-tj-ap],
+  [data-entra],
+  .page-enter,
+  .page-enter * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    visibility: visible !important;
   }
 }
 

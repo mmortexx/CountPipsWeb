@@ -1661,7 +1661,9 @@ node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, C
 node scripts/deep_audit.mjs             # códigos 200, lang, canonical, hreflang
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
 node scripts/corrobora-menus.mjs        # navegación y menús, escritorio + móvil
-npx vitest run                          # 24 suites, ~284 tests
+node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
+node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
+npx vitest run                          # 29 suites, 319 tests
 npx tsc --noEmit && npx eslint .
 ```
 

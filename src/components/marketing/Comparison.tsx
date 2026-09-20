@@ -149,7 +149,7 @@ export function Comparison() {
         </Reveal>
 
         <Reveal delay={0.12} className="mt-6">
-          <p className="mx-auto max-w-2xl text-center text-xs text-tertiary">
+          <p className="medida mx-auto text-center text-xs text-tertiary">
             {es
               ? "Diarios en la nube: TradeZella, TraderSync, TradesViz y Tradervue, según sus webs en julio de 2026. Hoja de cálculo sin plantillas avanzadas."
               : "Cloud journals: TradeZella, TraderSync, TradesViz and Tradervue, as published on their websites in July 2026. Spreadsheet without advanced templates."}

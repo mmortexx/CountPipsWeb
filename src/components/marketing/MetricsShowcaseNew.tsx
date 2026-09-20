@@ -397,12 +397,12 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
       id: "maxDd",
       l: "Max drawdown",
       v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
-      f: "(pico − valle) / pico",
+      f: es ? "(pico − valle) / pico" : "(peak − trough) / peak",
       d: es ? "La peor caída de pico a valle." : "The worst peak-to-trough fall.",
       c: "rgb(var(--pnl-neg))",
       enlaza: "maxDd",
     },
-    { id: "winRate", l: es ? "Ganadoras" : "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: "G / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed in profit.", enlaza: "winRate" },
+    { id: "winRate", l: es ? "Ganadoras" : "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed in profit.", enlaza: "winRate" },
     { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: es ? "Ganancia media frente a pérdida media." : "Average win against average loss." },
   ];
 

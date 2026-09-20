@@ -74,7 +74,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
         <div className="tj-container">
           <div>
             <Reveal>
-              <p className="m-0 max-w-[62ch] text-[14px] leading-relaxed text-tertiary">
+              <p className="medida m-0 text-[14px] leading-relaxed text-tertiary">
                 {es
                   ? "Lo que calcula esta herramienta es orientativo. No es asesoramiento financiero ni una recomendación de operar: "
                   : "What this tool computes is indicative. It is not financial advice or a recommendation to trade: "}

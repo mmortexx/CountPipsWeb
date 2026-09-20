@@ -601,7 +601,7 @@ export function RMultipleSimulator() {
           <div
             className="border-t border-[var(--line)] pt-3"
           >
-            <p className="m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
+            <p className="medida m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
               {es
                 ? "300 caminos con la semilla " + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."
                 : "300 paths with seed " + seed + ": each trade wins with " + fmtNum(winRate, 0) + "% probability, with fixed R wins and losses and compounding risk. Real markets have more extreme streaks, so your drawdown can be worse than these paths. Not financial advice."}

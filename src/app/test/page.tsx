@@ -129,7 +129,7 @@ export function TestBody() {
       />
       <DisciplineScore enPagina />
 
-      <FinalCTANew />
+      <FinalCTANew variante="herramienta" />
     </>
   );
 }

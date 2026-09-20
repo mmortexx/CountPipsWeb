@@ -156,7 +156,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                         >
                           {t.term}
                         </span>
-                        <span className="text-[14px] leading-[1.5] text-secondary lg:hidden">
+                        <span className="medida block text-[14px] leading-[1.5] text-secondary lg:hidden">
                           {es ? t.es : t.en}
                         </span>
                       </Link>

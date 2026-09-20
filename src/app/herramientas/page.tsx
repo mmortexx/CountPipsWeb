@@ -93,7 +93,7 @@ export function HerramientasBody() {
         breadcrumbEn="Tools"
       />
       <HerramientasIndice />
-      <FinalCTANew />
+      <FinalCTANew variante="herramienta" />
     </>
   );
 }

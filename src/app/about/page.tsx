@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Story } from "@/components/marketing/Story";
-import { Values } from "@/components/marketing/Values";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { SITE_URL, hreflangDe } from "@/lib/site";
@@ -103,7 +102,14 @@ export function AboutBody() {
         breadcrumbEn="About"
       />
       <Story />
-      <Values />
+      {/* `Values` se retiró de aquí, no de la portada. Los cuatro principios
+          son idénticos en las dos páginas —el mismo componente—, y de los dos
+          sitios éste es donde menos aportan: uno de ellos es «Hecho por un
+          trader, para traders» con un enlace «Quién hay detrás» que, en la
+          página que responde justo a eso, apunta a sí misma. En la portada
+          sí deciden: quien aún está valorando el producto los lee como
+          argumento. Aquí el argumento ya lo dan la historia y el estado real
+          del producto, que son propios de esta página. */}
 
       <Changelog />
 

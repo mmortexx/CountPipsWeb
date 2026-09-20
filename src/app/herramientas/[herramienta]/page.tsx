@@ -109,7 +109,7 @@ export default async function HerramientaPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema) }}
       />
       <HerramientaVista herramienta={h} />
-      <FinalCTANew />
+      <FinalCTANew variante="herramienta" />
     </>
   );
 }

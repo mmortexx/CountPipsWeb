@@ -114,7 +114,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                 </div>
               ))}
             </dl>
-            <p className="mt-3 max-w-[78ch] text-[13px] text-tertiary">
+            <p className="medida mt-3 text-[13px] text-tertiary">
               {es ? "Nada más. Las copias locales cifradas y Windows Hello están construidos pero apagados hasta tener su flujo completo." : "Nothing else. Encrypted local backups and Windows Hello are built but switched off until their flow is complete."}
             </p>
           </div>

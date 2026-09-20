@@ -294,15 +294,19 @@ export function FeatureExplorer() {
 
 function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
   return (
-    <ul className="m-0 border-t border-[var(--line)] p-0">
+    <ul className="m-0 max-w-[52rem] border-t border-[var(--line)] p-0">
       {items.map((f) => (
         <li
           key={f.id}
           /* La descripción se acota en caracteres, no en fracciones: con
-             `1.8fr` corría hasta el final del contenedor y las líneas
-             pasaban de cien caracteres, que es donde el ojo ya pierde el
-             renglón al volver. */
-          className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,72ch)] sm:items-baseline sm:gap-10"
+             `1.8fr` corría hasta el final del contenedor.
+
+             El `72ch` que había aquí no servía: estaba en la CELDA, y `ch`
+             se mide con la tipografía del elemento que lo escribe, no con
+             la del párrafo de 14 px que lleva dentro. Medido: 122
+             caracteres, más de los cien que este comentario decía evitar.
+             La medida la pone ahora `.medida` en el propio párrafo. */
+          className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10"
         >
           <h3 className="m-0 flex items-baseline gap-2.5 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
             {es ? f.titleEs : f.titleEn}
@@ -312,7 +316,7 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
               </span>
             )}
           </h3>
-          <p className="m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+          <p className="medida m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
             {es ? f.descEs : f.descEn}
           </p>
         </li>

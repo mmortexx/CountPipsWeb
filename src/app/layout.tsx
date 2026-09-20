@@ -115,16 +115,33 @@ const instrumentSans = localFont({
    La lista de respaldo de globals.css ya nombraba Newsreader antes que
    Georgia, así que la intención estaba escrita; esto la hace efectiva. */
 const newsreader = localFont({
-  src: [
-    { path: "./fonts/Newsreader.woff2", weight: "200 800", style: "normal" },
-    {
-      path: "./fonts/Newsreader-Italic.woff2",
-      weight: "200 800",
-      style: "italic",
-    },
-  ],
+  src: [{ path: "./fonts/Newsreader.woff2", weight: "200 800", style: "normal" }],
   variable: "--font-serif",
   display: "swap",
+});
+
+/* LA CURSIVA VIAJA APARTE, Y SIN PRECARGA.
+   Estaba dentro de la declaración de arriba, y `next/font` precarga el
+   conjunto entero: las 171 páginas del sitio pedían los 143 KB de la
+   cursiva antes de pintar nada. La cursiva se compone en UN sitio —la cita
+   del bento de /features—, así que esos 143 KB eran el 23 % del peso de la
+   primera visita a cambio de una frase que la mayoría de visitantes no
+   llega a ver.
+
+   Separada, la redonda —que sí sostiene todos los titulares del sitio—
+   conserva su precarga, y la cursiva se descarga sólo cuando el navegador
+   encuentra un elemento que la compone. `preload: false` es lo que quita
+   el `<link rel="preload">`; sin él, separarlas no habría servido de nada.
+
+   NO se retira la cursiva ni se finge con una oblicua sintética: inclinar
+   una serif por cálculo emborrona el trazo, que es justo el motivo por el
+   que Instrument Serif se descartó en su día. La cita se compone con
+   `font-cursiva`, la utilidad que aplica esta variable. */
+const newsreaderItalic = localFont({
+  src: [{ path: "./fonts/Newsreader-Italic.woff2", weight: "200 800", style: "italic" }],
+  variable: "--font-serif-cursiva",
+  display: "swap",
+  preload: false,
 });
 
 // LA TARJETA PARA COMPARTIR YA NO ES UN FICHERO QUE SE MANTENGA A MANO.
@@ -319,7 +336,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistMono.variable} ${instrumentSans.variable} ${newsreader.variable} antialiased`}
+        className={`${geistMono.variable} ${instrumentSans.variable} ${newsreader.variable} ${newsreaderItalic.variable} antialiased`}
       >
         {/* Aquí iban los tres datos estructurados del SITIO
             —`SoftwareApplication`, `Organization` y `WebSite`—, y de aquí

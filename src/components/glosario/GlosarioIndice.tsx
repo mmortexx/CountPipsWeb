@@ -151,7 +151,7 @@ export function GlosarioIndice() {
                 </button>
               </div>
             ) : (
-              <ul className="m-0 border-t border-[var(--line)] p-0">
+              <ul className="m-0 max-w-[46rem] border-t border-[var(--line)] p-0">
                 {filtrados.map((t) => (
                   <TarjetaTermino key={t.slug} termino={t} es={es} />
                 ))}
@@ -185,7 +185,7 @@ export function GlosarioIndice() {
                     <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-secondary">
                       {es ? meta.descEs : meta.descEn}
                     </p>
-                    <ul className="mt-6 border-t border-[var(--line)] p-0">
+                    <ul className="mt-6 max-w-[46rem] border-t border-[var(--line)] p-0">
                       {lista.map((t) => (
                         <TarjetaTermino key={t.slug} termino={t} es={es} />
                       ))}
@@ -212,7 +212,11 @@ function TarjetaTermino({
     <li className="border-b border-[var(--line)]">
       <Link
         href={`/glosario/${termino.slug}`}
-        className="group grid min-h-[56px] grid-cols-1 items-baseline gap-1 py-4 transition-colors duration-150 focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,66ch)] sm:gap-6"
+        /* Los `66ch` de la columna se miden con la tipografía de ESTE enlace,
+           no con la del texto de 14 px que lleva dentro: daban 119 caracteres
+           de definición. La columna pasa a repartir ancho y punto; la medida
+           del texto la pone `.medida` en el `span`. Ver la nota en globals.css. */
+        className="group grid min-h-[56px] grid-cols-1 items-baseline gap-1 py-4 transition-colors duration-150 focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6"
       >
         <span
           lang="en"
@@ -220,7 +224,7 @@ function TarjetaTermino({
         >
           {termino.term}
         </span>
-        <span className="text-[14px] leading-[1.5] text-secondary transition-colors group-hover:text-primary">
+        <span className="medida block text-[14px] leading-[1.5] text-secondary transition-colors group-hover:text-primary">
           {es ? termino.es : termino.en}
         </span>
       </Link>

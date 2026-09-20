@@ -14,9 +14,12 @@ import { titularIncompleto } from "@/lib/legal/titular";
  * cuatro maquetaciones paralelas sería garantizar que se separen.
  *
  * ── Decisiones de lectura ─────────────────────────────────────────────
- * · Ancho de línea limitado a ~68 caracteres. Un texto legal a todo lo
- *   ancho de una pantalla de escritorio no se lee: el ojo pierde el
- *   renglón al volver. Es la única razón del `max-w`.
+ * · Ancho de línea limitado por la clase `.medida`, en cada bloque de
+ *   texto. Un texto legal a todo lo ancho de una pantalla de escritorio no
+ *   se lee: el ojo pierde el renglón al volver. Aquí llegó a componer 115
+ *   caracteres por línea, medidos, con un `max-w-[68ch]` puesto en el
+ *   contenedor que no medía lo que su nombre decía — ver la nota de abajo
+ *   y la larga de `globals.css`.
  * · Cada sección lleva su ancla propia, para poder enlazar una cláusula
  *   concreta desde un correo o desde el aviso de cookies.
  * · El índice va a un raíl lateral SÓLO desde `lg`. En móvil una columna
@@ -51,18 +54,29 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
       className="section-tight"
     >
       <div className="tj-container">
-        {/* A 1.440 px el documento entero medía 68 caracteres pegados al
-            margen izquierdo y la mitad derecha de la página quedaba en
-            blanco. Desde `lg` el índice se va a un raíl que acompaña al
-            desplazamiento —así sirve para lo que existe, saltar de
-            cláusula a cláusula en un texto largo— y el cuerpo conserva su
-            medida. Por debajo de `lg` no cambia nada: el índice sigue
-            arriba, entre la entradilla y la primera sección. */}
-        <div className="lg:grid lg:grid-cols-[minmax(0,68ch)_minmax(0,15rem)] lg:items-start lg:gap-x-14">
-        <div className="w-full max-w-[68ch] lg:col-start-1 lg:row-start-1">
+        {/* A 1.440 px el documento entero quedaba pegado al margen izquierdo
+            y la mitad derecha de la página en blanco. Desde `lg` el índice
+            se va a un raíl que acompaña al desplazamiento —así sirve para
+            lo que existe, saltar de cláusula a cláusula en un texto largo—
+            y el cuerpo conserva su medida. Por debajo de `lg` no cambia
+            nada: el índice sigue arriba, entre la entradilla y la primera
+            sección.
+
+            ⚠ AQUÍ HABÍA UN `68ch` Y NO MEDÍA 68 CARACTERES. `ch` se
+            resuelve con la tipografía del elemento que lo escribe, y el
+            elemento era este `div`, que hereda el tamaño base del sitio: 68
+            de sus caracteres daban 110 de los del párrafo de 15 px que
+            lleva dentro. La medida de verdad la pone ahora `.medida` en
+            cada bloque de texto; estas columnas sólo reparten el ancho
+            entre cuerpo e índice, y por eso van en `rem`, que no depende de
+            la tipografía. `justify-between` las separa a los dos extremos:
+            con el cuerpo ya en su medida, sin esto quedaba un vacío grande
+            entre el texto y el índice en lugar de márgenes. */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,44rem)_minmax(0,15rem)] lg:items-start lg:justify-between lg:gap-x-14">
+        <div className="w-full max-w-[44rem] lg:col-start-1 lg:row-start-1">
           {/* Entradilla — lo que hay que saber sin leer el documento. */}
           <Reveal>
-            <p className="m-0 text-[17px] leading-relaxed text-secondary">
+            <p className="medida m-0 text-[17px] leading-relaxed text-secondary">
               {es ? doc.entradaEs : doc.entradaEn}
             </p>
             <p className="mt-4 text-[14px] text-tertiary">
@@ -76,7 +90,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
               <div
                 className="mt-6 border-y border-[var(--line-2)] py-4"
               >
-                <p className="m-0 text-[14px] leading-relaxed text-secondary">
+                <p className="medida m-0 text-[14px] leading-relaxed text-secondary">
                   <strong className="text-primary">
                     {es ? "Documento en preparación. " : "Draft document. "}
                   </strong>
@@ -132,7 +146,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           </Reveal>
 
           {/* Secciones */}
-          <div className="mt-12 flex w-full max-w-[68ch] flex-col gap-11 lg:col-start-1 lg:row-start-2">
+          <div className="mt-12 flex w-full max-w-[44rem] flex-col gap-11 lg:col-start-1 lg:row-start-2">
             {doc.secciones.map((s, i) => (
               <section key={s.id} id={s.id} className="scroll-mt-28">
                 <h2 className="m-0 flex items-baseline gap-3 text-[20px] font-semibold tracking-tight text-primary">
@@ -162,7 +176,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
 function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
   if (bloque.tipo === "parrafo") {
     return (
-      <p className="m-0 text-[15px] leading-[1.7] text-secondary">
+      <p className="medida m-0 text-[15px] leading-[1.7] text-secondary">
         {es ? bloque.es : bloque.en}
       </p>
     );
@@ -173,7 +187,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
     return (
       <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
         {items.map((t, i) => (
-          <li key={i} className="flex gap-3 text-[15px] leading-[1.7] text-secondary">
+          <li key={i} className="medida flex gap-3 text-[15px] leading-[1.7] text-secondary">
             {/* El punto va como elemento propio y no como viñeta del
                 navegador: así se alinea con la primera línea del texto y
                 no se descuelga cuando el elemento ocupa varias líneas. */}

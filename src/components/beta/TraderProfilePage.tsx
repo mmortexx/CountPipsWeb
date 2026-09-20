@@ -119,7 +119,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <h3 className="m-0 text-[clamp(1.125rem,1.6vw,1.375rem)] font-medium text-primary">
                   {es ? titleEs : titleEn}
                 </h3>
-                <p className="col-start-2 m-0 text-[15px] leading-[1.6] text-secondary md:col-start-3">
+                <p className="medida col-start-2 m-0 text-[15px] leading-[1.6] text-secondary md:col-start-3">
                   {es ? textEs : textEn}
                 </p>
               </li>

@@ -126,7 +126,7 @@ export default async function TerminoPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(terminoSchema) }}
       />
       <TerminoVista termino={t} />
-      <FinalCTANew />
+      <FinalCTANew variante="herramienta" />
     </>
   );
 }

@@ -357,7 +357,7 @@ export function DisciplineCost() {
               </div>
             </div>
 
-            <p className="mt-3 text-[13px] text-tertiary leading-relaxed">
+            <p className="medida mt-3 text-[13px] text-tertiary leading-relaxed">
               {es
                 ? "El GAP es el dinero que dejas de ganar en cada operación que rompe las reglas frente a haberla ejecutado con disciplina."
                 : "The GAP is the cash lost on every off-plan trade compared to executing cleanly inside your rules."}

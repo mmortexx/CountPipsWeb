@@ -626,12 +626,11 @@ export function EquityProjector() {
           </h2>
 
           <p
-            className="mt-3.5 mb-0"
+            className="medida mt-3.5 mb-0"
             style={{
               fontSize: "clamp(0.95rem, 1.25vw, 1.08rem)",
               lineHeight: 1.6,
               color: "var(--ink-2)",
-              maxWidth: "44em",
             }}
           >
             {es
@@ -1536,7 +1535,7 @@ export function EquityProjector() {
 
               {/* Disclaimer */}
               <div className="border-t border-[var(--ficha-division)] pt-3">
-                <p className="tnum m-0 text-[11px] leading-relaxed text-[var(--ink-3)]">
+                <p className="medida tnum m-0 text-[11px] leading-relaxed text-[var(--ink-3)]">
                   {es
                     ? "Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al 99 % de confianza estadística."
                     : "Statistical note: This projection assumes constant mathematical expectancy. In live trading, regimes shift and drawdowns may be larger. Estimated max drawdown models streaks at 99% confidence."}

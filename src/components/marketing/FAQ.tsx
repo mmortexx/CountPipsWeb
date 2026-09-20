@@ -282,7 +282,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                         <span className="min-w-0 break-words">{item.q}</span>
                       </span>
                     </AccordionTrigger>
-                    <AccordionContent className="max-w-[68ch] text-secondary leading-relaxed text-[0.95rem] pb-5">
+                    <AccordionContent className="medida text-secondary leading-relaxed text-[0.95rem] pb-5">
                       {item.a}
                     </AccordionContent>
                   </AccordionItem>
