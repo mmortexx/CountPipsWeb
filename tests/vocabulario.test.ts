@@ -44,7 +44,7 @@ const RAIZ = process.cwd();
 const SALIDA = join(RAIZ, "out");
 
 /** Palabras que en el texto español del sitio no deben aparecer, y su porqué. */
-const PROHIBIDAS: { palabra: RegExp; motivo: string }[] = [
+const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string }[] = [
   {
     palabra: /\bjournals?\b/i,
     motivo:
@@ -61,7 +61,26 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string }[] = [
     palabra: /\bcommand palette\b/i,
     motivo: "en español es «la paleta de comandos»",
   },
+  {
+    /* Sólo con mayúscula inicial, que es como se escribe una ETIQUETA de
+       métrica. «tu esperanza matemática», en minúscula y dentro de una
+       frase, es español correcto y se deja: el lookahead lo excluye
+       también cuando va en mayúscula al empezar una oración. */
+    palabra: /\bEsperanza\b(?!\s+matem)/,
+    nombre: "Esperanza, como etiqueta de métrica",
+    motivo:
+      "la métrica se llama «Expectancy» también en español — así la nombran " +
+      "otras dieciséis páginas y así se titula su ficha del glosario. La " +
+      "rejilla de métricas de la portada era el único sitio que la llamaba " +
+      "«Esperanza», y quien la leía ahí no la encontraba luego en el glosario",
+  },
 ];
+
+/* NO se prohíbe «Drawdown máx.»: la calculadora de capital lo usa para el
+   drawdown ESTIMADO a 99 %, que es otra métrica y lleva su propio rótulo
+   descriptivo. Lo que se arregló fue la portada, que llamaba «Drawdown
+   máx.» y «Max drawdown» a la MISMA cifra con treinta píxeles de
+   diferencia; eso no lo caza una lista de palabras, sino leerlo. */
 
 function paginasEspanolas(dir: string, acc: string[] = []): string[] {
   for (const n of readdirSync(dir)) {
@@ -95,8 +114,12 @@ describe.skipIf(!existsSync(SALIDA))(
       ).toBeGreaterThan(50);
     });
 
-    for (const { palabra, motivo } of PROHIBIDAS) {
-      const nombre = palabra.source.replace(/\\b|\?/g, "");
+    for (const { palabra, motivo, nombre: puesto } of PROHIBIDAS) {
+      /* El título es lo que lee quien rompa esto dentro de un año, así que
+         la entrada puede traer su propio `nombre`: derivarlo del patrón
+         funciona para «journal», pero un patrón con lookahead se imprimía
+         como «Esperanza(!\s+matem)», que no dice nada. */
+      const nombre = puesto ?? palabra.source.replace(/\\b|\?/g, "");
       it(`ninguna página en español dice «${nombre}» — ${motivo}`, () => {
         const encontrados: string[] = [];
         for (const ruta of paginasEspanolas(SALIDA)) {

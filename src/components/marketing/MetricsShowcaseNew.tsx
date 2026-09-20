@@ -240,7 +240,12 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
             style={{ left: xPct(CIMA), width: `${((geo.px(VALLE) - geo.px(CIMA)) / W) * 100}%` }}
           >
             <span className="tnum">
-              {es ? "Drawdown máx." : "Max drawdown"} −{fmtPct(METRICS.maxDrawdownPct, lang, 1)}
+              {/* «Max drawdown» en los dos idiomas: es como lo titula su
+                  ficha del glosario, y es la etiqueta que usa la rejilla de
+                  métricas de esta misma pantalla. Decía «Drawdown máx.»
+                  aquí y «Max drawdown» treinta píxeles más abajo, para la
+                  misma cifra. */}
+              Max drawdown −{fmtPct(METRICS.maxDrawdownPct, lang, 1)}
             </span>
           </div>
           <svg aria-hidden className="tj-metricas-svg" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
@@ -287,7 +292,7 @@ function Distribucion({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: bo
         tono: undefined,
       }
     : {
-        rotulo: es ? "Esperanza por operación" : "Expectancy per trade",
+        rotulo: es ? "Expectancy por operación" : "Expectancy per trade",
         cifra: fmtR(METRICS.expectancyR, lang, 2),
         detalle: `${es ? "Moda de" : "Mode"} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
         tono: undefined,
@@ -386,7 +391,12 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst fall." },
     {
       id: "expectancy",
-      l: es ? "Esperanza" : "Expectancy",
+      /* «Expectancy» también en español: es como la nombran las otras
+         dieciséis páginas del sitio y como se titula su ficha del
+         glosario. Decía «Esperanza», y era el único sitio que lo hacía:
+         quien la leía aquí y luego la buscaba en el glosario no la
+         encontraba con ese nombre. */
+      l: "Expectancy",
       v: fmtR(METRICS.expectancyR, lang, 2),
       f: "WR·W̄ − (1−WR)·L̄",
       d: es ? "Lo que deja cada operación, en R." : "What each trade leaves, in R.",
@@ -402,7 +412,12 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
       c: "rgb(var(--pnl-neg))",
       enlaza: "maxDd",
     },
-    { id: "winRate", l: es ? "Ganadoras" : "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed in profit.", enlaza: "winRate" },
+    /* «Win rate» también en español, por lo mismo que «Expectancy» de
+       arriba: así se titula su ficha del glosario y así la nombran otras
+       quince páginas. Decía «Ganadoras», sólo aquí.
+       La FÓRMULA sí se traduce («G / N»), igual que «Σ ganancias / Σ
+       pérdidas» en Omega: eso son letras, no el nombre de la métrica. */
+    { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed in profit.", enlaza: "winRate" },
     { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: es ? "Ganancia media frente a pérdida media." : "Average win against average loss." },
   ];
 
