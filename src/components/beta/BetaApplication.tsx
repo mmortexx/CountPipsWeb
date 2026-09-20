@@ -403,8 +403,12 @@ export function BetaApplication() {
             <textarea className={`${inputClass} min-h-24 resize-y py-3`} value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={800} />
           </label>
 
-          <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
-            <label htmlFor="beta-botcheck">{es ? "No rellenar" : "Do not fill"}<input id="beta-botcheck" tabIndex={-1} autoComplete="off" value={botcheck} onChange={(e) => setBotcheck(e.target.value)} /></label>
+          {/* Honeypot antispam: sin aria-hidden, porque esconder de la accesibilidad
+              un campo enfocable es justo lo que marcan las auditorías (WCAG 4.1.2).
+              La etiqueta la lee un lector de pantalla y le dice a la persona que lo
+              deje vacío; un robot lo rellena igual, que es lo que importa. */}
+          <div className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+            <label htmlFor="beta-botcheck">{es ? "No rellenar" : "Leave this field blank"}<input id="beta-botcheck" tabIndex={-1} autoComplete="off" value={botcheck} onChange={(e) => setBotcheck(e.target.value)} /></label>
           </div>
 
           <div>

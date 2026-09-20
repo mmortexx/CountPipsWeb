@@ -296,10 +296,15 @@ export function ContactForm() {
 
                       {/* Honeypot — invisible para personas, tentador para bots.
                           Si llega relleno, Web3Forms descarta el envío. No usa
-                          `display:none` porque algunos bots ignoran esos campos. */}
-                      <div aria-hidden="true" className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
+                          `display:none` porque algunos bots ignoran esos campos.
+                          Tampoco usa `aria-hidden`: esconder de la accesibilidad
+                          un campo enfocable es justo lo que marcan las auditorías
+                          (WCAG 4.1.2). La etiqueta la lee un lector de pantalla y
+                          le dice a la persona que lo deje vacío; un robot lo
+                          rellena igual, que es lo que importa. */}
+                      <div className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
                         <label htmlFor="cf-botcheck">
-                          {es ? "No rellenar" : "Do not fill"}
+                          {es ? "No rellenar" : "Leave this field blank"}
                           <input
                             id="cf-botcheck"
                             type="text"
