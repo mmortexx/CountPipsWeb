@@ -318,55 +318,68 @@ export function DisciplineCost() {
             <div
               className="tj-ficha overflow-hidden"
             >
-              {/* Una sola rejilla con filas en subgrid: las columnas se miden
-                  con la cifra más ancha de todas las filas, así que un importe
-                  grande ensancha la tabla (y se desliza) en vez de pisar la
-                  columna vecina. */}
+              {/* Es una <table> real con display:grid, no una rejilla de <div>:
+                  un lector de pantalla necesita asociar cada cifra con su
+                  columna («Neto») y con su fila («GAP»), cosa que una rejilla
+                  de <div> no ofrece por más ARIA que se le ponga. `display:
+                  grid` sobre <table>/<tr> es la técnica estándar para
+                  conservar `subgrid` sin perder esa semántica: el navegador
+                  sustituye el algoritmo de layout de tabla por el de rejilla,
+                  pero <thead>/<tbody> deben quedar en `contents` para que los
+                  <tr> sigan siendo hijos directos de la rejilla y el subgrid
+                  encuentre las columnas del padre. Las columnas, como antes,
+                  se miden con la cifra más ancha de todas las filas, así que
+                  un importe grande ensancha la tabla (y se desliza) en vez de
+                  pisar la columna vecina. */}
               <div className="overflow-x-auto custom-scroll">
-                <div className="grid w-max min-w-full grid-cols-[minmax(max-content,1.25fr)_minmax(max-content,2.25rem)_minmax(max-content,1fr)_minmax(max-content,1.15fr)]">
-                <div className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
-                  <span className="tnum text-[12px]">{es ? "Modo" : "Mode"}</span>
-                  <span className="tnum text-right text-[12px]">{es ? "Ops" : "Trades"}</span>
-                  <span className="tnum text-right text-[12px]">{es ? "Expectancy" : "Expectancy"}</span>
-                  <span className="tnum text-right text-[12px]">{es ? "Neto" : "Net P&L"}</span>
-                </div>
+                <table className="grid w-max min-w-full grid-cols-[minmax(max-content,1.25fr)_minmax(max-content,2.25rem)_minmax(max-content,1fr)_minmax(max-content,1.15fr)] border-collapse">
+                <thead className="contents">
+                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
+                  <th scope="col" className="tnum text-left text-[12px] font-normal">{es ? "Modo" : "Mode"}</th>
+                  <th scope="col" className="tnum text-right text-[12px] font-normal">{es ? "Ops" : "Trades"}</th>
+                  <th scope="col" className="tnum text-right text-[12px] font-normal">{es ? "Expectancy" : "Expectancy"}</th>
+                  <th scope="col" className="tnum text-right text-[12px] font-normal">{es ? "Neto" : "Net P&L"}</th>
+                </tr>
+                </thead>
+                <tbody className="contents">
 
                 {/* Fila En Plan */}
-                <div className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
-                  <span className="font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</span>
-                  <span className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</span>
-                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
+                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                  <th scope="row" className="text-left font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</th>
+                  <td className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</td>
+                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
                     {usd("+", inPlanExp)}
-                  </span>
-                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
+                  </td>
+                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
                     {usd("+", inPlanTotal)}
-                  </span>
-                </div>
+                  </td>
+                </tr>
 
                 {/* Fila Fuera de Plan */}
-                <div className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
-                  <span className="font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</span>
-                  <span className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</span>
-                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
+                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                  <th scope="row" className="text-left font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</th>
+                  <td className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</td>
+                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
                     {usd(offPlanExp < 0 ? "−" : "", Math.abs(offPlanExp))}
-                  </span>
-                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
+                  </td>
+                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
                     {usd(offPlanTotal < 0 ? "−" : "", Math.abs(offPlanTotal))}
-                  </span>
-                </div>
+                  </td>
+                </tr>
 
                 {/* Fila Gap */}
-                <div className="relative col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center px-2.5 py-3.5 text-sm">
-                  <span className="font-semibold text-primary text-[14px]">GAP</span>
-                  <span className="tnum text-right text-secondary text-[14px]">—</span>
-                  <span className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[14px]">
+                <tr className="relative col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center px-2.5 py-3.5 text-sm">
+                  <th scope="row" className="text-left font-semibold text-primary text-[14px]">GAP</th>
+                  <td className="tnum text-right text-secondary text-[14px]">—</td>
+                  <td className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[14px]">
                     {usd("−", gap)}
-                  </span>
-                  <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
+                  </td>
+                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
                     {usd("−", totalLeakMonthly)}
-                  </span>
-                </div>
-                </div>
+                  </td>
+                </tr>
+                </tbody>
+                </table>
               </div>
             </div>
 
