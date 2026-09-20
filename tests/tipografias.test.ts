@@ -84,3 +84,89 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
       expect(layout).toContain(`variable: "${variable}"`);
   });
 });
+
+/**
+ * LA ESCALA DE CUERPO ESTÁ ESCRITA EN EL COMENTARIO DE `@theme` DE
+ * `globals.css` — 10 · 11 · 12 · 13 · 14 · 15 px— y esa lista es la que
+ * manda, no la memoria de quien la escribió. Sin una prueba que lea el
+ * código, nada impide que aparezca un séptimo escalón la próxima vez que
+ * un texto se ve «un pelín pequeño» y alguien teclea un número nuevo.
+ *
+ * EXCEPCIONES: cada entrada de abajo es un `{fichero, valor}` puntual, no
+ * un permiso genérico para ese tamaño en cualquier sitio — un
+ * `text-[17px]` nuevo en un fichero que no está en la lista sigue
+ * rompiendo esta prueba, y también lo hace un `text-[17px]` DE MÁS en un
+ * fichero que ya tenía uno permitido, porque se compara ocurrencia a
+ * ocurrencia, no sólo por fichero.
+ *
+ *  · 22px y 28px (DashboardPage, GlosarioIndice, FeaturesBento): tamaños
+ *    de TITULAR, no de cuerpo — la cifra protagonista de la demo y algún
+ *    rótulo grande. Bajarlos a 15px cambiaría la jerarquía de esas
+ *    pantallas; es una decisión tomada, no un olvido.
+ *  · 17px en `legal/LegalDoc.tsx`: la entradilla del documento legal.
+ *    Comparte estilo (sin negrita, `text-secondary`) con el párrafo de
+ *    cuerpo que viene después en la misma página; bajarla a 15px la
+ *    haría indistinguible de ese párrafo y borraría la única señal de
+ *    que es la entradilla. Se decidió no tocarla.
+ *  · El resto — 17px en FeaturesBento/GuardianNew/Navbar/SecuritySection
+ *    y 20px en SessionClock —: huérfanos ya localizados que quedan fuera
+ *    del alcance de la tanda que escribió esta prueba (sólo tocaba
+ *    `legal/LegalDoc.tsx` y `glosario/TerminoVista.tsx`). Siguen
+ *    pendientes de que otra tanda decida su escalón; quitar una fila de
+ *    aquí sin arreglar antes el fichero vuelve a poner la prueba en rojo,
+ *    que es la señal correcta.
+ */
+const ESCALA_CUERPO = [10, 11, 12, 13, 14, 15];
+
+const EXCEPCIONES: Array<{ fichero: string; valor: number }> = [
+  { fichero: "components/demo/pages/DashboardPage.tsx", valor: 28 },
+  { fichero: "components/demo/pages/DashboardPage.tsx", valor: 22 },
+  { fichero: "components/demo/pages/DashboardPage.tsx", valor: 28 },
+  { fichero: "components/glosario/GlosarioIndice.tsx", valor: 22 },
+  { fichero: "components/legal/LegalDoc.tsx", valor: 17 },
+  { fichero: "components/marketing/FeaturesBento.tsx", valor: 22 },
+  { fichero: "components/marketing/FeaturesBento.tsx", valor: 17 },
+  { fichero: "components/marketing/FeaturesBento.tsx", valor: 17 },
+  { fichero: "components/marketing/GuardianNew.tsx", valor: 17 },
+  { fichero: "components/marketing/Navbar.tsx", valor: 17 },
+  { fichero: "components/marketing/SecuritySection.tsx", valor: 17 },
+  { fichero: "components/marketing/SessionClock.tsx", valor: 20 },
+];
+
+/** Todos los `.tsx` de `src/`, recorridos a mano igual que `fuentesDelProyecto`. */
+function tsxDelProyecto(dir: string, acc: string[] = []): string[] {
+  for (const entrada of readdirSync(dir)) {
+    const ruta = join(dir, entrada);
+    if (statSync(ruta).isDirectory()) tsxDelProyecto(ruta, acc);
+    else if (entrada.endsWith(".tsx")) acc.push(ruta);
+  }
+  return acc;
+}
+
+/** Cada `text-[Npx]` fuera de la escala, como `"N px en fichero"`, en el
+ *  mismo orden en que aparece — así una lista y otra se pueden comparar
+ *  ocurrencia a ocurrencia y no sólo por conjunto. */
+function huerfanosDelCuerpo(): string[] {
+  const huerfanos: string[] = [];
+  for (const fichero of tsxDelProyecto(join(RAIZ, "src"))) {
+    const rel = fichero.slice(RAIZ.length + 1).replace(/\\/g, "/").replace(/^src\//, "");
+    const contenido = readFileSync(fichero, "utf8");
+    for (const m of contenido.matchAll(/text-\[(\d+)px\]/g)) {
+      const valor = Number(m[1]);
+      if (!ESCALA_CUERPO.includes(valor)) huerfanos.push(`${valor}px en ${rel}`);
+    }
+  }
+  return huerfanos.sort();
+}
+
+describe("la escala de cuerpo no gana escalones por sorpresa", () => {
+  it("todo text-[Npx] fuera de 10·11·12·13·14·15 está en la lista de excepciones conocida", () => {
+    const esperados = EXCEPCIONES.map((e) => `${e.valor}px en ${e.fichero}`).sort();
+    expect(
+      huerfanosDelCuerpo(),
+      "Escala de cuerpo documentada en el comentario de @theme de globals.css " +
+        "(10·11·12·13·14·15 px). Un valor nuevo aquí es un tamaño inventado sin " +
+        "decidirlo: añádelo a la escala a propósito o corrígelo al escalón más cercano."
+    ).toEqual(esperados);
+  });
+});

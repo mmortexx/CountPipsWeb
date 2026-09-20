@@ -55,7 +55,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
         <div className="w-full max-w-[62ch]">
           {/* Definición */}
           <Reveal>
-            <p className="m-0 text-[19px] leading-[1.65] text-primary">
+            <p className="m-0 text-[15px] leading-[1.65] text-primary">
               {es ? termino.es : termino.en}
             </p>
           </Reveal>
@@ -81,7 +81,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
               <figure className="tj-ficha m-0 mt-9">
                 <p className="tj-ficha-barra m-0">{es ? "Fórmula" : "Formula"}</p>
                 <div className="tj-ficha-cuerpo">
-                <p className="m-0 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary sm:text-[17px]">
+                <p className="m-0 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary">
                   {es ? formula.formulaEs : formula.formulaEn}
                 </p>
                 <figcaption className="mt-4 text-[13px] leading-[1.6] text-secondary">
@@ -111,7 +111,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                 </span>
                 <span
                   aria-hidden
-                  className="shrink-0 text-[18px] text-tertiary transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-primary"
+                  className="shrink-0 text-[15px] text-tertiary transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-primary"
                 >
                   →
                 </span>
