@@ -1666,6 +1666,7 @@ node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin hueco
 node scripts/cifras.mjs out             # convención de idioma: % , $ , menos, y nada de español en /en
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 5 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace saca al visitante de su idioma
+node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 npx vitest run                          # 29 suites, 319 tests
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```

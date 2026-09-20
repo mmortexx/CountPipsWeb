@@ -115,7 +115,23 @@ const instrumentSans = localFont({
    La lista de respaldo de globals.css ya nombraba Newsreader antes que
    Georgia, así que la intención estaba escrita; esto la hace efectiva. */
 const newsreader = localFont({
-  src: [{ path: "./fonts/Newsreader.woff2", weight: "200 800", style: "normal" }],
+  /* EL EJE DE GROSOR VA RECORTADO A 400–500, QUE ES LO QUE EL SITIO USA.
+     El fichero original traía 200–800 continuo, y una fuente variable paga
+     por cada tramo del eje aunque nadie lo pise: medido en el navegador
+     sobre trece rutas, los 104 elementos con esta serif piden 500 (los
+     titulares, por la regla de la paleta) y 2 piden 400 (las comillas
+     decorativas de «about»). Ni uno solo fuera de ahí. Recortarlo bajó el
+     fichero de 128,9 kB a 86,1 kB —42,8 kB menos en CADA primera visita de
+     las 171 páginas— sin que cambie un píxel.
+
+     El eje ÓPTICO se queda entero: `font-optical-sizing: auto` está
+     declarado a propósito en globals.css, y es lo que hace que el titular
+     de 84 px y el de 18 px no lleven el mismo grosor de asta.
+
+     Este rango y el fichero tienen que decir lo mismo: si alguien pide
+     aquí un peso que la fuente ya no trae, el navegador lo finge — negrita
+     falsa, y en silencio. `scripts/pesos.mjs` lo vigila. */
+  src: [{ path: "./fonts/Newsreader.woff2", weight: "400 500", style: "normal" }],
   variable: "--font-serif",
   display: "swap",
 });
@@ -138,7 +154,12 @@ const newsreader = localFont({
    que Instrument Serif se descartó en su día. La cita se compone con
    `font-cursiva`, la utilidad que aplica esta variable. */
 const newsreaderItalic = localFont({
-  src: [{ path: "./fonts/Newsreader-Italic.woff2", weight: "200 800", style: "italic" }],
+  /* La cursiva va FIJADA a 400: es el único peso con el que aparece —dos
+     elementos, la cita de «features»—, así que su eje de grosor entero era
+     peso muerto. De 143,4 kB a 62,3 kB, 81,2 kB menos en la página que la
+     carga. Igual que arriba, `scripts/pesos.mjs` vigila que nadie le pida
+     un grosor que ya no tiene. */
+  src: [{ path: "./fonts/Newsreader-Italic.woff2", weight: "400", style: "italic" }],
   variable: "--font-serif-cursiva",
   display: "swap",
   preload: false,
