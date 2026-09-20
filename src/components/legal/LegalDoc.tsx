@@ -149,7 +149,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           <div className="mt-12 flex w-full max-w-[44rem] flex-col gap-11 lg:col-start-1 lg:row-start-2">
             {doc.secciones.map((s, i) => (
               <section key={s.id} id={s.id} className="scroll-mt-28">
-                <h2 className="m-0 flex items-baseline gap-3 text-[20px] font-semibold tracking-tight text-primary">
+                <h2 className="m-0 flex items-baseline gap-3 text-[15px] font-semibold tracking-tight text-primary">
                   <span
                     className="tnum text-[13px] font-semibold"
                     style={{ color: "rgb(var(--accent-base))" }}

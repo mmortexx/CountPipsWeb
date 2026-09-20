@@ -51,6 +51,33 @@
   --radius-xl: 4px;
   --radius-2xl: 5px;
 
+  /* ══════════════════════════════════════════════════════════════
+     LA ESCALA DE CUERPO YA EXISTÍA, SOLO HABÍA QUE ESCRIBIRLA
+     ══════════════════════════════════════════════════════════════
+     El CUERPO del texto del sitio usa seis escalones, medidos en el
+     código y no decididos aquí:
+
+         10 px · 11 px · 12 px · 13 px · 14 px · 15 px
+
+     Es lo que ya usan 512 de los 528 `text-[Npx]` de `src/`. Esta
+     escala NO se ha reducido a propósito: las webs de referencia del
+     sector —terminales y paneles financieros— también usan muchos
+     tamaños de cuerpo, y lo que distingue a una tipografía bien hecha
+     no es tener pocos escalones sino no inventarse uno nuevo cada vez
+     que hace falta un texto un pixel más grande o más pequeño.
+     Unificar esos 528 usos a un puñado de tamaños sería un cambio de
+     gran superficie con riesgo visual y beneficio discutible: se
+     midió y se descartó.
+
+     Los titulares van por otra vía —las clases `.t-display` / `.t-h1`
+     … `.t-h4`— y no se mezclan con esta escala de cuerpo: una cosa es
+     el texto que se lee, otra el que anuncia.
+
+     `tests/tipografias.test.ts` es quien vigila que no aparezca un
+     séptimo escalón: cualquier `text-[Npx]` de `src/` fuera de esta
+     lista rompe la prueba en rojo, con el valor y el fichero donde
+     apareció. */
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   /* Tailwind v4 reads `--font-sans` / `--font-serif` / `--font-mono` here
