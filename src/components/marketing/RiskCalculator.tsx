@@ -275,8 +275,8 @@ export function RiskCalculator() {
       "─".repeat(28),
       `${es ? "Activo" : "Asset"}: ${assetMode.toUpperCase()}`,
       `${es ? "Balance" : "Balance"}: ${fmtUsd(balance)}`,
-      `${es ? "Riesgo nominal" : "Nominal risk"}: ${fmtNum(riskPct)} % (${fmtUsd(c.riskUsd)})`,
-      `${es ? "Fricción estimada" : "Estimated friction"}: -${fmtUsd(c.estimatedFriction)}`,
+      `${es ? "Riesgo nominal" : "Nominal risk"}: ${fmtNum(riskPct)}${pctSep(lang)} (${fmtUsd(c.riskUsd)})`,
+      `${es ? "Fricción estimada" : "Estimated friction"}: −${fmtUsd(c.estimatedFriction)}`,
       `${es ? "Riesgo total" : "Total risk"}: ${fmtUsd(c.totalRiskUsd)}`,
       `${es ? "Entrada" : "Entry"}: ${fmtNum(entry)}`,
       `${es ? "Stop" : "Stop"}: ${fmtNum(stop)}`,
@@ -286,7 +286,7 @@ export function RiskCalculator() {
       `${es ? "Tamaño" : "Size"}: ${fmtNum(c.size, 2)} ${c.sizeLabel}`,
       `${es ? "Valor pip/punto" : "Pip/Point value"}: ${fmtUsd(c.pipValue)}`,
       `${es ? "R:R" : "R:R"}: ${fmtNum(c.rr, 2)} : 1`,
-      `${es ? "Beneficio neto estimado" : "Estimated net profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)} %)`,
+      `${es ? "Beneficio neto estimado" : "Estimated net profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)}${pctSep(lang)})`,
       `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.positionValue)}`,
     ];
     try {
@@ -296,7 +296,7 @@ export function RiskCalculator() {
     } catch {
       // clipboard fallback
     }
-  }, [c, balance, riskPct, entry, stop, target, assetMode, es, fmtUsd, fmtNum]);
+  }, [c, balance, riskPct, entry, stop, target, assetMode, es, lang, fmtUsd, fmtNum]);
 
   return (
     <section className="section-tight">

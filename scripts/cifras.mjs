@@ -77,7 +77,7 @@ function soloTexto(html) {
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(EN_LINEA, "")
     .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
+    .replace(/&nbsp;/g, "\u00a0")
     .replace(/&amp;/g, "&")
     .replace(/&#x27;/g, "'")
     .replace(/[ \t]+/g, " ");
@@ -120,8 +120,8 @@ for await (const f of htmls(RAIZ)) {
 
   if (en) {
     // inglés: nada de espacio antes del %, nada de dólar detrás
-    anota("% con espacio en inglés", /\d[  ]%/g, ctx);
-    anota("dólar detrás en inglés", /\d[\d.,]*[  ]\$(?!\d)/g, ctx);
+    anota("% con espacio en inglés", /\d[ \u00a0]%/g, ctx);
+    anota("dólar detrás en inglés", /\d[\d.,]*[ \u00a0]\$(?!\d)/g, ctx);
     anota("palabra española en la web inglesa", RE_ES, ctx);
   } else {
     anota("% pegado en español", /\d%/g, ctx);
@@ -130,7 +130,7 @@ for await (const f of htmls(RAIZ)) {
        va DETRÁS de cada cifra, pero visto de izquierda a derecha parece ir
        delante de la siguiente. Sólo se acusa un «$» que no venga precedido
        de una cifra o de su abreviatura de escala. */
-    anota("dólar delante en español", /(?<![\dkM][  ])\$[  ]?\d/g, ctx);
+    anota("dólar delante en español", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
   }
   // en los dos: el menos de las cifras es el tipográfico
   anota("menos de teclado en una cifra", /[\s(>]-\d[\d.,]*/g, ctx);

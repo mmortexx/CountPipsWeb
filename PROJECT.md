@@ -1664,8 +1664,9 @@ node scripts/corrobora-menus.mjs        # navegación y menús, escritorio + mó
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
 node scripts/cifras.mjs out             # convención de idioma: % , $ , menos, y nada de español en /en
+node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 5 botones «Copiar»
 npx vitest run                          # 29 suites, 319 tests
-npx tsc --noEmit && npx eslint .
+npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 
 Cada script explica en su propia cabecera qué mide y por qué existe — son la

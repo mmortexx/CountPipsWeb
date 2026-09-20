@@ -490,10 +490,10 @@ export function EquityProjector() {
       "─".repeat(38),
       `${es ? "Ventaja" : "Edge Stats"}:`,
       `  • Win Rate: ${fmtNum(winRate, 1)}${pctSep(lang)}`,
-      `  • Ratio Ganancia / Pérdida: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
-      `  • Expectancy Neta: ${c.netExpectancyR >= 0 ? "+" : ""}${fmtNum(c.netExpectancyR, 3)} R`,
+      `  • ${es ? "Ratio Ganancia / Pérdida" : "Win / Loss Ratio"}: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
+      `  • ${es ? "Expectancy Neta" : "Net Expectancy"}: ${c.netExpectancyR >= 0 ? "+" : ""}${fmtNum(c.netExpectancyR, 3)} R`,
       `  • Profit Factor: ${fmtNum(c.profitFactor, 2)}`,
-      `  • Riesgo / Op: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
+      `  • ${es ? "Riesgo / Op" : "Risk / Trade"}: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
       "─".repeat(38),
       `${es ? "Resultados proyectados" : "Projected Results"}:`,
       `  • ${es ? "Balance final" : "Final Balance"}: ${fmtUsd(c.finalBalance)}`,
@@ -514,6 +514,7 @@ export function EquityProjector() {
     }
   }, [
     es,
+    lang,
     selectedPreset,
     startBalance,
     monthlyContribution,
