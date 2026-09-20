@@ -218,7 +218,7 @@ export function FeatureExplorer() {
           titulo={es ? (
             <>Elige el eje. <span className="text-gradient tj-frase-nueva">Sale lo que encaja.</span></>
           ) : (
-            <>Pick the axis. <span className="text-gradient tj-frase-nueva">What fits comes up.</span></>
+            <>Pick an axis. <span className="text-gradient tj-frase-nueva">See what fits.</span></>
           )}
           entradilla={es
             ? "Todo lo que hace el programa. Marca uno o varios ejes y la lista se recorta a lo que hace de verdad en ese terreno."

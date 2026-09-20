@@ -71,7 +71,7 @@ export function GaleriaPantallas() {
           etiqueta={es ? "La galería" : "The gallery"}
           titulo={
             <span id={`${idBase}-titulo`}>
-              {es ? "Las siete pantallas, por dentro." : "The seven screens, from inside."}
+              {es ? "Las siete pantallas, por dentro." : "The seven screens, from the inside."}
             </span>
           }
           entradilla={
