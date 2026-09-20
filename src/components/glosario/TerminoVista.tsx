@@ -53,9 +53,19 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             definición. Por debajo de `lg` no cambia nada. */}
         <div className="lg:grid lg:grid-cols-[minmax(0,62ch)_minmax(0,17rem)] lg:items-start lg:gap-x-14">
         <div className="w-full max-w-[62ch]">
-          {/* Definición */}
+          {/* LA DEFINICIÓN ES LA VOZ PRINCIPAL DE ESTA PÁGINA, Y VA A 19 px.
+              Bajarla a los 15 px del cuerpo la iguala con todo lo demás y
+              deja la única cosa que el visitante vino a leer distinguida
+              sólo por el color. Es el mismo criterio por el que la
+              entradilla de los documentos legales se queda en 17 px: no es
+              cuerpo, es la entrada del documento. Ambas están escritas como
+              excepción en `tests/tipografias.test.ts`.
+
+              A 19 px el renglón cabe; a 15 px se iba a 92 caracteres —lo
+              cazó `scripts/medida.mjs`—, porque cuanta menos letra, más
+              texto entra en el mismo ancho. */}
           <Reveal>
-            <p className="m-0 text-[15px] leading-[1.65] text-primary">
+            <p className="m-0 text-[19px] leading-[1.65] text-primary">
               {es ? termino.es : termino.en}
             </p>
           </Reveal>

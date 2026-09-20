@@ -103,6 +103,12 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
  *    de TITULAR, no de cuerpo — la cifra protagonista de la demo y algún
  *    rótulo grande. Bajarlos a 15px cambiaría la jerarquía de esas
  *    pantallas; es una decisión tomada, no un olvido.
+ *  · 19px en `glosario/TerminoVista.tsx`: la definición del término. Es
+ *    la voz principal de esa página —lo único que el visitante vino a
+ *    leer—; a 15px queda igualada con el resto y distinguida sólo por el
+ *    color. Se bajó una vez y `scripts/medida.mjs` lo cazó por otro lado:
+ *    al encoger la letra el renglón se fue a 92 caracteres, por encima
+ *    del tope de 85. Mismo criterio que la entradilla legal de abajo.
  *  · 17px en `legal/LegalDoc.tsx`: la entradilla del documento legal.
  *    Comparte estilo (sin negrita, `text-secondary`) con el párrafo de
  *    cuerpo que viene después en la misma página; bajarla a 15px la
@@ -123,6 +129,7 @@ const EXCEPCIONES: Array<{ fichero: string; valor: number }> = [
   { fichero: "components/demo/pages/DashboardPage.tsx", valor: 22 },
   { fichero: "components/demo/pages/DashboardPage.tsx", valor: 28 },
   { fichero: "components/glosario/GlosarioIndice.tsx", valor: 22 },
+  { fichero: "components/glosario/TerminoVista.tsx", valor: 19 },
   { fichero: "components/legal/LegalDoc.tsx", valor: 17 },
   { fichero: "components/marketing/FeaturesBento.tsx", valor: 22 },
   { fichero: "components/marketing/FeaturesBento.tsx", valor: 17 },
