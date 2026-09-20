@@ -325,7 +325,10 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
             de hoy», la fila de métricas entera— se quedaban a opacidad 0
             para siempre. No es que no entraran con gracia: es que no se
             veían. Medido en el navegador antes y después. */}
-        <div className="rounded-[2px] overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[0_2px_8px_rgb(0_0_0/0.28),0_18px_50px_-12px_rgb(0_0_0/0.55)]">
+        {/* Sombra desde --sombra, no negro puro: en tema claro un negro
+            fijo pesa más de lo que pide la paleta, y si el sitio ajusta
+            la profundidad algún día, esta ventana la sigue sin tocarla. */}
+        <div className="rounded-[2px] overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[0_2px_8px_rgb(var(--sombra)/0.28),0_18px_50px_-12px_rgb(var(--sombra)/0.55)]">
         <div className="demo-window rounded-[2px] overflow-clip">
           <WindowChrome />
           <TopNav />
