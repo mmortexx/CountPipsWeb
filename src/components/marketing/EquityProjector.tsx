@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback, useRef } from "react";
 import { useLang } from "@/lib/i18n";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
 import { formatoUsd, pctSep } from "@/lib/trading/format";
 
@@ -617,6 +618,16 @@ export function EquityProjector() {
 
   return (
     <section className="section-tight relative overflow-hidden">
+      {/* Dónde acaba el capital y a costa de qué: sin el drawdown, la
+          cifra final sola es la mitad de la historia y la mitad
+          optimista. */}
+      <ResultadoAnunciado
+        texto={
+          es
+            ? `Capital final: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Drawdown máximo estimado: ${fmtPct(c.estMaxDDpct, 1)}.`
+            : `Final balance: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Estimated max drawdown: ${fmtPct(c.estMaxDDpct, 1)}.`
+        }
+      />
       <div className="tj-container">
         
         {/* Cabecera Editorial */}

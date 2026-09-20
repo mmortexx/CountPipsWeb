@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio } from "@/lib/trading/estadistica";
 import { fmtPct, formatoUsd, pctSep } from "@/lib/trading/format";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 
 /**
  * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
@@ -606,6 +607,21 @@ export function RiskCalculator() {
               </div>
             )}
           </div>
+
+          {/* Lo que se ha venido a saber, en una frase, para quien no ve
+              la pantalla: el panel son doce líneas y leerlas todas en
+              cada tecla sería ruido. Cuando la entrada no es válida no
+              se dice nada — de eso ya avisa el `role="alert"` de abajo,
+              y dos anuncios a la vez se pisan. */}
+          <ResultadoAnunciado
+            texto={
+              !c.valid
+                ? ""
+                : es
+                  ? `Tamaño: ${fmtNum(c.size)} ${c.sizeLabel}. Riesgo: ${fmtUsd(c.totalRiskUsd)}. Beneficio en el objetivo: ${fmtUsd(c.profit)}. Ratio ${fmtNum(c.rr, 1)} a 1.`
+                  : `Size: ${fmtNum(c.size)} ${c.sizeLabel}. Risk: ${fmtUsd(c.totalRiskUsd)}. Profit at target: ${fmtUsd(c.profit)}. Ratio ${fmtNum(c.rr, 1)} to 1.`
+            }
+          />
 
           {/* Aviso de validación + dirección */}
           {!c.valid ? (

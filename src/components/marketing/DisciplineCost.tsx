@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { fmtMoney, fmtNum, pctSep } from "@/lib/trading/format";
 
 interface MistakeItem {
@@ -149,6 +150,15 @@ export function DisciplineCost() {
 
   return (
     <section className="section-tight">
+      {/* La factura, en el mismo vocabulario que usa el resumen que se
+          copia al portapapeles: «fuga mensual» y «fuga anual». */}
+      <ResultadoAnunciado
+        texto={
+          es
+            ? `Fuga mensual: ${fmtMoney(-totalLeakMonthly, lang, { sign: true })}. Fuga anual proyectada: ${fmtMoney(-totalLeakAnnual, lang, { sign: true })}.`
+            : `Monthly leak: ${fmtMoney(-totalLeakMonthly, lang, { sign: true })}. Projected annual leak: ${fmtMoney(-totalLeakAnnual, lang, { sign: true })}.`
+        }
+      />
       <div className="tj-container">
         {/* Cabecera de sección */}
         <div className="inline-flex items-center gap-3 mb-5">

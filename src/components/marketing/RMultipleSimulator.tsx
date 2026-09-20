@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
 import { formatoUsd, pctSep } from "@/lib/trading/format";
 
@@ -306,6 +307,16 @@ export function RMultipleSimulator() {
 
   return (
     <section className="section-tight">
+      {/* Las tres cifras por las que se viene a una simulación, para quien
+          no ve la pantalla: dónde acaba la mitad de las veces, cómo es el
+          mal escenario, y qué probabilidad hay de quedarse sin cuenta. */}
+      <ResultadoAnunciado
+        texto={
+          es
+            ? `Mediana: ${fmtUsd(c.finalP50)}. Cola del 5 %: ${fmtUsd(c.finalP5)}. Probabilidad de ruina: ${fmtPct(c.probRuin, 1)}.`
+            : `Median: ${fmtUsd(c.finalP50)}. Bottom 5%: ${fmtUsd(c.finalP5)}. Probability of ruin: ${fmtPct(c.probRuin, 1)}.`
+        }
+      />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Left: intro + inputs */}
         <div>

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { pctSep } from "@/lib/trading/format";
 import { computeStatisticalPower, normalCdf } from "@/lib/trading/estadistica";
 
@@ -209,6 +210,17 @@ export function EdgeSignificanceChecker() {
 
   return (
     <section className="section-tight">
+      {/* El veredicto, para quien no ve la pantalla. Se reutiliza el
+          rótulo que ya compone la herramienta en vez de inventar otro
+          vocabulario, y se acompaña de las dos cifras que lo sostienen:
+          el resto del panel sigue disponible leyéndolo. */}
+      <ResultadoAnunciado
+        texto={
+          es
+            ? `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R en ${trades} operaciones.`
+            : `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R over ${trades} trades.`
+        }
+      />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
         {/* Left: intro + inputs */}
         <div>

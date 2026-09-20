@@ -1669,6 +1669,7 @@ node scripts/enlaces.mjs out            # ningún enlace roto, y ninguno que saq
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
+node scripts/anuncios.mjs --serve out   # las 5 herramientas dicen su resultado a quien no ve la pantalla
 npx vitest run                          # 29 suites, 319 tests
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
