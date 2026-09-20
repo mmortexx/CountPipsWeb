@@ -218,8 +218,29 @@ async function renombrarTarjetas(dir) {
 
 const tarjetas = await renombrarTarjetas(OUT);
 
-/* La imagen del sitio, que es la que hereda quien no tiene la suya. */
-const RUTA_IMAGEN_SITIO = `${PREFIJO}/opengraph-image.png`;
+/* LA IMAGEN QUE HEREDA QUIEN NO TIENE LA SUYA, Y HAY UNA POR IDIOMA.
+   Antes era una sola —la española— y se la llevaban también las páginas
+   inglesas: 74 de ellas anunciaban al compartirse una tarjeta que dice
+   «Opera como una mesa institucional» y «tus datos en tu equipo». La
+   versión inglesa existía desde siempre y no la usaba nadie. */
+const IMAGEN_POR_IDIOMA = {
+  es: `${PREFIJO}/opengraph-image.png`,
+  en: `${PREFIJO}/en/opengraph-image.png`,
+};
+
+/* Si una de las dos no está compilada, el reparto de abajo repartiría un
+   404 a decenas de páginas y sólo se vería al pegar un enlace en un
+   chat. Se para aquí. */
+for (const [idioma, rutaImagen] of Object.entries(IMAGEN_POR_IDIOMA)) {
+  const enDisco = join(OUT, rutaImagen.slice(PREFIJO.length).replace(/^\//, ""));
+  try {
+    await stat(enDisco);
+  } catch {
+    console.error(`[postbuild] falta la tarjeta social de «${idioma}»: ${enDisco}`);
+    console.error("[postbuild] sin ella, las páginas de ese idioma heredarían un enlace roto");
+    process.exit(1);
+  }
+}
 
 const htmls = await ficheros(OUT, (n) => n.endsWith(".html"));
 let conExtension = 0;
@@ -238,7 +259,13 @@ for (const ruta of htmls) {
   const faltaOg = !/property="og:image"/.test(html);
   const faltaTw = !/name="twitter:image"/.test(html);
   if (faltaOg || faltaTw) {
-    const imagen = `${origenDe(html)}${RUTA_IMAGEN_SITIO}`;
+    /* El idioma sale de la RUTA del fichero, no del `<html lang>`: el
+       `lang` de las páginas inglesas lo arregla este mismo script más
+       arriba, y depender de él ataría dos pasos que no tienen por qué ir
+       en ese orden. */
+    const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
+    const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");
+    const imagen = `${origenDe(html)}${IMAGEN_POR_IDIOMA[esIngles ? "en" : "es"]}`;
     const etiquetas =
       (faltaOg
         ? `<meta property="og:image" content="${imagen}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/>`
@@ -266,6 +293,30 @@ for (const ruta of htmls) {
   } else if (/(og:image|twitter:image)" content="\//.test(html)) {
     /* Relativa: las redes no la resuelven, la descartan. */
     sinImagen.push(`${ruta} — imagen social con URL relativa`);
+  } else {
+    /* LA TARJETA TIENE QUE HABLAR EL IDIOMA DE SU PÁGINA.
+       Este es el fallo que se arregló el 2026-09-20 y que nadie habría
+       visto abriendo el sitio: se ve al pegar el enlace en un chat, y
+       sólo si eres el que lo pega. Una página inglesa no puede anunciar
+       la tarjeta de raíz, que está en español. */
+    const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
+    const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");
+    const m = html.match(/property="og:image" content="([^"]+)"/);
+    if (m) {
+      const camino = m[1].split("?")[0].replace(/^https?:\/\/[^/]+/, "");
+      /* Se busca el segmento `/en/` en cualquier posición y NO
+         `${PREFIJO}/en/`: el prefijo del entorno está vacío en la
+         compilación local mientras las URLs ya lo llevan puesto desde
+         `SITE_URL`, así que compararlos daba por equivocadas las diez
+         tarjetas inglesas que estaban bien. Ninguna ruta española lleva
+         ese segmento, de modo que basta. */
+      const bajoEn = /\/en\//.test(camino);
+      if (esIngles !== bajoEn) {
+        sinImagen.push(
+          `${ruta} — tarjeta en el idioma equivocado: la página es ${esIngles ? "inglesa" : "española"} y anuncia ${camino}`,
+        );
+      }
+    }
   }
 }
 if (sinImagen.length) {
