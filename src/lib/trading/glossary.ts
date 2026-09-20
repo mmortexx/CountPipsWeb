@@ -88,7 +88,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Pullback",
     es: "Retroceso temporal del precio contra la tendencia principal antes de reanudar su dirección. Es uno de los setups más usados: entras a favor de tendencia en un punto donde el precio «descansa» y los stops quedan ajustados.",
-    en: "A temporary price retracement against the prevailing trend before it resumes its direction. One of the most widely used setups: you enter with the trend at a point where price «rests» and stops stay tight.",
+    en: "A temporary price retracement against the prevailing trend before it resumes its direction. One of the most widely used setups: you enter with the trend at a point where price “rests” and stops stay tight.",
     category: "basics",
   },
   {

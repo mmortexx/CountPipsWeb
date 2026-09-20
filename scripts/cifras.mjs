@@ -133,6 +133,10 @@ for await (const f of htmls(RAIZ)) {
     anota("% con espacio en inglés", /\d[ \u00a0]%/g, ctx);
     anota("dólar detrás en inglés", /\d[\d.,]*[ \u00a0]\$(?!\d)/g, ctx);
     anota("palabra española en la web inglesa", RE_ES, ctx);
+    /* Las comillas angulares son españolas: en inglés no existen. Una se
+       coló en la definición de «pullback» del glosario y salía en cinco
+       páginas inglesas, porque esa ficha la citan otras cuatro. */
+    anota("comillas angulares en la web inglesa", /[«»]/g, ctx);
   } else {
     anota("% pegado en español", /\d%/g, ctx);
     /* El lookbehind evita el falso positivo de una fila de importes

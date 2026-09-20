@@ -39,7 +39,12 @@ export function ProfileSelector() {
       href: "/traders/prop-firms",
       icon: BriefcaseBusiness,
       eyebrow: "Prop firms",
-      title: es ? "Para operar con reglas que importan" : "For operating under rules that matter",
+      /* «For operating under rules» era calco doble. En inglés de
+         mercados el verbo es «trade», no «operate» —«operating» se lee
+         como «funcionar»—, y además rompía el paralelismo con la tarjeta
+         hermana de aquí arriba, que dice «To read your process clearly».
+         Las dos son ahora «To + verbo», que es como se leen juntas. */
+      title: es ? "Para operar con reglas que importan" : "To trade under rules that matter",
       body: es
         ? "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar."
         : "Control limits, consistency and risk by account when an evaluation leaves no room for improvisation.",
@@ -56,7 +61,12 @@ export function ProfileSelector() {
             {es ? <>Dos formas de operar. <span className="text-gradient tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="text-gradient tj-frase-nueva">One clearer read.</span></>}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-secondary md:text-lg">
-            {es ? "Selecciona el contexto que más se parece al tuyo y adapta la demostración a las decisiones que realmente tomas." : "Select the context closest to yours and adapt the demonstration to the decisions you actually make."}
+            {/* «the demonstration» es la palabra del diccionario, no la
+                que usa nadie: en inglés esto se llama «the demo», y así
+                lo llama el resto del sitio —el botón principal dice «See
+                the demo»—. Decirlo de dos maneras en la misma página es
+                lo que delata una traducción. */}
+            {es ? "Selecciona el contexto que más se parece al tuyo y adapta la demostración a las decisiones que realmente tomas." : "Select the context closest to yours and tailor the demo to the decisions you actually make."}
           </p>
         </div>
 

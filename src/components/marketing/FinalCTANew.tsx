@@ -57,7 +57,11 @@ export function FinalCTANew({
                   : "Now run your own."
                 : es
                   ? "Mira cómo se mide."
-                  : "See how it is measured."}
+                  /* Sin contracción, «See how it is measured» suena a
+                     manual técnico justo al lado de «Stop trading
+                     blind», que es directo y hablado. Los dos trozos de
+                     la misma frase tienen que sonar a la misma voz. */
+                  : "See how it's measured."}
             </span>
           </h2>
           <p data-entra="2" className="m-0 max-w-[34rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
