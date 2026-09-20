@@ -167,7 +167,7 @@ export const PRICING_FAQ_EN: QA[] = [
   },
   {
     q: "What do the launch prices include?",
-    a: "Core is planned at $149 and Pro at $249. They are launch references until commercial delivery, licensing and support are open.",
+    a: "Core is planned at $149 and Pro at $249. Both are indicative launch prices until commercial delivery, licensing and support go live.",
   },
   {
     q: "What data do you not request?",

@@ -14,7 +14,7 @@ export function BetaDetails() {
         <article className="border-t border-[rgb(var(--divider)/0.18)] pt-5">
           <p className="eyebrow">{es ? "Precios de lanzamiento" : "Launch pricing"}</p>
           <h2 className="mt-4 t-h3 text-primary">{es ? "Core 149\u00a0$ · Pro 249\u00a0$" : "Core $149 · Pro $249"}</h2>
-          <p className="mt-3 text-secondary">{es ? "Son referencias de lanzamiento. La compra se abrirá cuando la entrega comercial, la licencia y el soporte estén listos; este formulario no es una preventa." : "These are launch references. Purchase opens when commercial delivery, licensing and support are ready; this form is not a pre-order."}</p>
+          <p className="mt-3 text-secondary">{es ? "Son referencias de lanzamiento. La compra se abrirá cuando la entrega comercial, la licencia y el soporte estén listos; este formulario no es una preventa." : "These are indicative launch prices. Purchase opens when commercial delivery, licensing and support are ready; this form is not a pre-order."}</p>
           <Link href="/pricing" className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-primary underline underline-offset-4">{es ? "Ver el detalle previsto" : "See planned details"}</Link>
         </article>
         <article className="border-t border-[rgb(var(--divider)/0.18)] pt-5">
