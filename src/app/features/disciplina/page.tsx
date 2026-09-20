@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Disciplina — CountPips" },
   description:
-    "El Guardián mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas al tocar tu límite. Indisciplina medida en dinero.",
+    "El Guardián mide cada operación contra tus reglas: semáforo de riesgo y, si lo activas, un freno duro al tocar tu límite. Indisciplina medida en dinero.",
   alternates: { canonical: `${SITE_URL}/features/disciplina/`, languages: hreflangDe("/features/disciplina") },
   openGraph: {
     title: "Disciplina — CountPips",

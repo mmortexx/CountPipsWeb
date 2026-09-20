@@ -38,10 +38,18 @@
  *
  * Uso:  node scripts/enlaces.mjs [out]
  */
+import { existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
-const RAIZ = process.argv[2] || "out";
+/* Acepta tanto `out` como `--serve out`: seis de estas guardas usan la
+   segunda forma y confundirlas reventaba con una traza de Node sobre un
+   directorio llamado «--serve». */
+const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
+if (!existsSync(RAIZ)) {
+  console.log(`[enlaces] no encuentro el directorio «${RAIZ}». ¿Falta compilar el sitio con \`npm run build\`?`);
+  process.exit(1);
+}
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 async function* htmls(dir) {
@@ -102,6 +110,18 @@ for await (const f of htmls(RAIZ)) {
 
   for (const h of enlacesInternos(html)) {
     enlaces++;
+    /* UN ENLACE QUE NO LLEVA A NINGUNA PARTE.
+       Esto no lo vigilaba nadie. `deep_audit.mjs` prometía en su cabecera
+       «inexistencia de enlaces rotos internos» y no seguía ni un enlace:
+       pedía sus 64 rutas escritas a mano y comprobaba que respondieran.
+       Un `href` mal escrito en una página que su lista no incluía —o a un
+       destino que se renombró— daba 404 al visitante y verde en la
+       auditoría. Aquí se comprueba contra los ficheros de `out/`, que es
+       lo que se publica. */
+    if (!(await existe(h))) {
+      fallos.push({ ruta, regla: "enlace que no lleva a ninguna parte", detalle: `${h} — no hay página compilada ahí` });
+      continue;
+    }
     if (en) {
       if (h === "/en" || h.startsWith("/en/")) continue; // ya está en inglés
       /* Sólo es un fallo si la versión inglesa EXISTE. Un enlace a una
@@ -131,4 +151,4 @@ if (fallos.length) {
   console.log("[enlaces] el prefijo `/en` lo pone `withLocale(href, lang)`, en `src/lib/locale.ts`");
   process.exit(1);
 }
-console.log("[enlaces] correcto — ningún enlace cambia de idioma por su cuenta");
+console.log("[enlaces] correcto — todos llevan a una página que existe, y ninguno cambia de idioma por su cuenta");

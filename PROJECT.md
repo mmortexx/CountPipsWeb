@@ -1658,14 +1658,14 @@ npm run build                       # compila a /out
 node scripts/humo.mjs --serve out   # contraste, láminas, velo, entradas, menú…
 node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (28 rutas)
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
-node scripts/deep_audit.mjs             # códigos 200, lang, canonical, hreflang
+node scripts/metadatos.mjs out          # título, descripción, canónico, hreflang, lang y ld+json de las 170
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
 node scripts/corrobora-menus.mjs        # navegación y menús, escritorio + móvil
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
-node scripts/cifras.mjs out             # convención de idioma: % , $ , menos, y nada de español en /en
+node scripts/cifras.mjs out             # convención de idioma, y restos de plantilla («undefined», «NaN») a la vista
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 5 botones «Copiar»
-node scripts/enlaces.mjs out            # ningún enlace saca al visitante de su idioma
+node scripts/enlaces.mjs out            # ningún enlace roto, y ninguno que saque al visitante de su idioma
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 npx vitest run                          # 29 suites, 319 tests
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
@@ -1673,6 +1673,22 @@ npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — inclu
 
 Cada script explica en su propia cabecera qué mide y por qué existe — son la
 fuente de verdad, no este documento.
+
+> **`deep_audit.mjs` se retiró el 2026-09-20.** Su cabecera prometía cuatro
+> cosas que su código no hacía: canónicos, `hreflang`, enlaces rotos y texto
+> sin traducir. No había ni una comprobación de ninguna de las cuatro. Además
+> su única comprobación de idioma llevaba `&& !url.includes("localhost")` y
+> este documento la invocaba contra `localhost:3000`, así que **nunca llegaba
+> a ejecutarse**; y miraba 64 rutas escritas a mano de las 170 que existen.
+> Daba verde sin mirar. Lo que sí hacía quedó repartido donde se comprueba de
+> verdad: los metadatos en `metadatos.mjs`, los enlaces rotos en `enlaces.mjs`
+> y los restos de plantilla en `cifras.mjs`, los tres contra `out/` y sobre
+> todas las páginas. Vuelve con `git checkout <commit> -- scripts/deep_audit.mjs`.
+>
+> Por eso, las dos menciones de más arriba a que «`deep_audit` pasó limpio»
+> (secciones de las tandas anteriores) valen menos de lo que parecen: decían
+> que 64 rutas tenían título y descripción, no que los canónicos, el idioma
+> ni los enlaces estuvieran bien.
 
 ## Contratos de interfaz (siguen vigentes)
 

@@ -40,10 +40,20 @@
  *
  * Uso:  node scripts/cifras.mjs [out]
  */
+import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
-const RAIZ = process.argv[2] || "out";
+/* Seis de estas guardas levantan un servidor y se invocan `--serve out`;
+   ésta lee los ficheros directamente y se invoca `out`. Confundirlas daba
+   una traza de Node de doce líneas sobre un directorio llamado
+   «--serve», así que acepta las dos formas y, si el directorio no está,
+   lo dice con una frase. */
+const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
+if (!existsSync(RAIZ)) {
+  console.log(`[cifras] no encuentro el directorio «${RAIZ}». ¿Falta compilar el sitio con \`npm run build\`?`);
+  process.exit(1);
+}
 
 async function* htmls(dir) {
   for (const e of await readdir(dir, { withFileTypes: true })) {
@@ -134,6 +144,18 @@ for await (const f of htmls(RAIZ)) {
   }
   // en los dos: el menos de las cifras es el tipográfico
   anota("menos de teclado en una cifra", /[\s(>]-\d[\d.,]*/g, ctx);
+
+  /* RESTOS DE PLANTILLA EN EL TEXTO QUE SE LEE.
+     Un dato que no llegó deja su hueco escrito con todas las letras:
+     «undefined», «NaN», «[object Object]» o «Invalid Date» pintados en
+     medio de una frase. No rompen nada, no salen en consola y nadie los
+     busca, pero el visitante los lee.
+
+     Esto lo vigilaba `deep_audit.mjs`, que exigía `class="undefined"`
+     —es decir, sólo cazaba el caso en el que el resto cae dentro de un
+     atributo, nunca el de una frase— y sólo en 64 rutas escritas a mano.
+     Aquí se mira el texto visible de las 168, que es donde se ve. */
+  anota("resto de plantilla a la vista", /\b(?:undefined|NaN|Invalid Date)\b|\[object [A-Z]\w*\]/g, ctx);
 }
 
 const porRegla = {};

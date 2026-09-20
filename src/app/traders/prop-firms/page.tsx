@@ -4,11 +4,11 @@ import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Prop firms — evaluaciones y cuentas fondeadas",
-  description: "Las reglas de la firma medidas con cada operación que registras, aviso antes de romperlas y un informe de evaluación en PDF. Pensado para quien opera cuenta fondeada.",
+  description: "Las reglas de la firma medidas con cada operación, aviso antes de romperlas e informe de evaluación en PDF. Para quien opera cuenta fondeada.",
   alternates: { canonical: `${SITE_URL}/traders/prop-firms/`, languages: hreflangDe("/traders/prop-firms") },
   openGraph: {
     title: "Prop firms — CountPips",
-    description: "Las reglas de la firma medidas con cada operación que registras, aviso antes de romperlas y un informe de evaluación en PDF. Pensado para quien opera cuenta fondeada.",
+    description: "Las reglas de la firma medidas con cada operación, aviso antes de romperlas e informe de evaluación en PDF. Para quien opera cuenta fondeada.",
     url: `${SITE_URL}/traders/prop-firms/`,
     type: "website",
     siteName: "CountPips",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Prop firms — CountPips",
-    description: "Las reglas de la firma medidas con cada operación que registras, aviso antes de romperlas y un informe de evaluación en PDF. Pensado para quien opera cuenta fondeada.",
+    description: "Las reglas de la firma medidas con cada operación, aviso antes de romperlas e informe de evaluación en PDF. Para quien opera cuenta fondeada.",
   },
 };
 

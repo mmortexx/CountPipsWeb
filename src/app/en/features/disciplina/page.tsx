@@ -42,7 +42,7 @@ const articleSchema = {
 export const metadata: Metadata = {
   title: { absolute: "Discipline — CountPips" },
   description:
-    "The Guardian measures every trade against your rules with a risk light and, if you turn it on, a hard brake stops accepting new trades when you hit your limit. Indiscipline measured in money.",
+    "The Guardian measures every trade against your rules: a risk light and, if you turn it on, a hard brake at your limit. Indiscipline measured in money.",
   alternates: {
     canonical: `${SITE_URL}/en/features/disciplina/`,
     languages: hreflangDe("/features/disciplina"),

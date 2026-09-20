@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Métricas — CountPips" },
   description:
-    "40+ ratios institucionales: Sharpe, Sortino, Calmar, profit factor, expectancy en R. Calculadora de riesgo. Métricas que dicen si tu ventaja es real o una racha.",
+    "40+ ratios institucionales: Sharpe, Sortino, Calmar, profit factor, expectancy en R. Métricas que dicen si tu ventaja es real o una racha.",
   alternates: { canonical: `${SITE_URL}/features/metricas/`, languages: hreflangDe("/features/metricas") },
   openGraph: {
     title: "Métricas — CountPips",
