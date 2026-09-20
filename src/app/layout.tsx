@@ -276,7 +276,14 @@ export default function RootLayout({
             // puede aplicarse al <html> y dejar el primer paint sin
             // ningún bloque de tokens que lo respalde. Lo único que se
             // recuerda del visitante es si prefiere papel o tinta.
-            __html: `(function(){try{var t=localStorage.getItem('tj-theme');if(t!=='dark'&&t!=='light')t='light';document.documentElement.dataset.theme=t;document.documentElement.dataset.palette='clasico';document.documentElement.classList.toggle('dark',t==='dark');}catch(e){document.documentElement.dataset.theme='light';document.documentElement.dataset.palette='clasico';}})();`,
+            //
+            // El orden es el mismo que explica `src/lib/theme.tsx`: lo
+            // que el visitante eligió, y sólo si no ha elegido nunca, lo
+            // que pida su sistema. Tiene que resolverse AQUÍ, antes del
+            // primer paint: decidirlo ya montado en React significaría
+            // un fogonazo blanco a quien tiene el sistema en oscuro,
+            // justo a quien se está intentando no deslumbrar.
+            __html: `(function(){try{var t=localStorage.getItem('tj-theme');if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.dataset.theme=t;document.documentElement.dataset.palette='clasico';document.documentElement.classList.toggle('dark',t==='dark');}catch(e){document.documentElement.dataset.theme='light';document.documentElement.dataset.palette='clasico';}})();`,
           }}
         />
         <script

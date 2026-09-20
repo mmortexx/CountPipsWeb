@@ -518,19 +518,26 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 marcha, y saltar solo al tocar una opción impide
                 corregir sin tener que retroceder. Se avanza cuando uno
                 decide que ha terminado con la pregunta. */}
-            <div className="mt-8 flex items-center justify-between gap-4">
+            {/* A 320 px —un móvil pequeño, o un portátil con el zoom al
+                400 %, que es el criterio de accesibilidad— los tres no
+                caben en una línea: «Siguiente →» se salía 14 px y
+                empujaba la página entera de lado. En inglés cabía, así
+                que sólo se rompía en español. Por debajo de `sm` el
+                contador se lleva su propia línea y los dos botones se
+                reparten la de abajo; de `sm` en adelante, nada cambia. */}
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
               <button
                 type="button"
                 onClick={() => setActual((i) => Math.max(0, i - 1))}
                 disabled={actual === 0}
-                className="inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed"
+                className="order-2 inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed sm:order-none"
                 style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
                          color: "var(--ink-2)", border: "1px solid transparent" }}
               >
                 <span aria-hidden>←</span> {es ? "Anterior" : "Back"}
               </button>
 
-              <span className="tnum" style={{ fontSize: 13, color: "var(--ink-3)" }}>
+              <span className="tnum order-1 w-full text-center sm:order-none sm:w-auto sm:text-left" style={{ fontSize: 13, color: "var(--ink-3)" }}>
                 {es
                   ? `Pregunta ${actual + 1} de ${QUESTIONS.length}`
                   : `Question ${actual + 1} of ${QUESTIONS.length}`}
@@ -543,7 +550,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   /* Se puede seguir sin responder: obligar a contestar
                      para avanzar convierte un diagnóstico en un peaje.
                      El resultado ya avisa de cuántas faltan. */
-                  className="inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200"
+                  className="order-3 inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 sm:order-none"
                   style={{ minHeight: 44, padding: "10px 18px", fontSize: 14, fontWeight: 600,
                            cursor: "pointer", color: "rgb(var(--accent-ink))",
                            background: "rgb(var(--accent-base))" }}
@@ -551,7 +558,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   {es ? "Siguiente" : "Next"} <span aria-hidden>→</span>
                 </button>
               ) : (
-                <span className="tnum" style={{ fontSize: 13, color: "var(--ink-3)" }}>
+                <span className="tnum order-3 sm:order-none" style={{ fontSize: 13, color: "var(--ink-3)" }}>
                   {es ? "Última" : "Last"}
                 </span>
               )}

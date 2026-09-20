@@ -2,6 +2,7 @@
 
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -48,18 +49,51 @@ interface ThemeCtx {
 
 const Ctx = createContext<ThemeCtx | null>(null);
 
-/* El papel es el estado natural de este estilo, así que el tema por
-   defecto es el CLARO. Antes era oscuro porque el estilo anterior nacía
-   de una terminal; la primera visita debe abrir en el material que
-   define la marca, no en su variante nocturna. */
-function readSavedTheme(): Theme {
-  if (typeof window === "undefined") return "light";
+/* QUIÉN DECIDE EL TEMA, Y EN QUÉ ORDEN.
+ *
+ * 1. Lo que el visitante eligió con el interruptor. Manda siempre, y se
+ *    guarda; si eligió papel teniendo el sistema en oscuro, es porque
+ *    quería papel.
+ * 2. Si no ha elegido nunca, lo que pida su sistema operativo.
+ * 3. Y si su sistema no dice nada, el papel: es el estado natural de
+ *    este estilo, y la primera visita debe abrir en el material que
+ *    define la marca, no en su variante nocturna.
+ *
+ * El paso 2 es nuevo. Antes se abría en claro pasara lo que pasara, con
+ * el argumento de la marca. Pero el sitio atiende a rajatabla la otra
+ * preferencia del sistema —«reducir movimiento», que `globals.css`
+ * respeta en todas sus reglas— y no hay motivo para tratar ésta de otro
+ * modo: quien pone el sistema en oscuro suele hacerlo por la vista, no
+ * por gusto, y recibía un fogonazo blanco. Con el sistema en claro —la
+ * mayoría— no cambia nada.
+ *
+ * La clave `tj-theme` pasa a significar «esto lo eligió una persona».
+ * Antes se reescribía en cada carga, así que bastaba una primera visita
+ * para que el sistema no volviera a contar nunca; por eso el `setItem`
+ * ya no vive en el efecto de sincronización, sino en el interruptor. */
+const CLAVE_TEMA = "tj-theme";
+
+function temaDelSistema(): Theme {
   try {
-    const saved = localStorage.getItem("tj-theme");
-    return saved === "dark" || saved === "light" ? saved : "light";
+    return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   } catch {
     return "light";
   }
+}
+
+function temaElegido(): Theme | null {
+  try {
+    const saved = localStorage.getItem(CLAVE_TEMA);
+    return saved === "dark" || saved === "light" ? saved : null;
+  } catch {
+    /* Navegación privada o almacenamiento bloqueado: nadie ha elegido. */
+    return null;
+  }
+}
+
+function readSavedTheme(): Theme {
+  if (typeof window === "undefined") return "light";
+  return temaElegido() ?? temaDelSistema();
 }
 function readSavedPalette(): PaletteName {
   // Estilo único. Se sigue escribiendo en el DOM y en localStorage para
@@ -133,13 +167,27 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.dataset.theme = theme;
-    try {
-      localStorage.setItem("tj-theme", theme);
-    } catch {
-      // Storage unavailable or quota exceeded
-    }
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme, mounted]);
+
+  /* Mientras el visitante no haya elegido, el tema sigue a su sistema
+     también EN VIVO: quien tiene el cambio automático al anochecer ve la
+     página cambiar con el resto de su escritorio, sin recargar. En
+     cuanto toca el interruptor, esto deja de mandar. */
+  useEffect(() => {
+    if (!mounted) return;
+    let mq: MediaQueryList;
+    try {
+      mq = matchMedia("(prefers-color-scheme: dark)");
+    } catch {
+      return;
+    }
+    const alCambiar = () => {
+      if (temaElegido() === null) setTheme(temaDelSistema());
+    };
+    mq.addEventListener("change", alCambiar);
+    return () => mq.removeEventListener("change", alCambiar);
+  }, [mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -151,18 +199,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   }, [palette, mounted]);
 
+  /* Tocar el interruptor es lo ÚNICO que escribe la preferencia. Mientras
+     nadie lo toque, la clave no existe y el sistema sigue mandando. */
+  const elegir = useCallback((t: Theme) => {
+    try {
+      localStorage.setItem(CLAVE_TEMA, t);
+    } catch {
+      /* Sin almacenamiento la elección vale para esta pestaña y ya. */
+    }
+    cambiarTemaConFundido(t, () => setTheme(t));
+  }, []);
+
   const value = useMemo<ThemeCtx>(
     () => ({
       theme,
-      setTheme: (t) => cambiarTemaConFundido(t, () => setTheme(t)),
-      toggleTheme: () => {
-        const next: Theme = theme === "dark" ? "light" : "dark";
-        cambiarTemaConFundido(next, () => setTheme(next));
-      },
+      setTheme: elegir,
+      toggleTheme: () => elegir(theme === "dark" ? "light" : "dark"),
       palette,
       setPalette,
     }),
-    [theme, palette]
+    [theme, palette, elegir]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
