@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney, fmtNum } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, pctSep } from "@/lib/trading/format";
 
 interface MistakeItem {
   id: string;
@@ -105,6 +105,19 @@ export function DisciplineCost() {
       return corto(fmtNum(a, lang, 0), "");
     },
     [lang],
+  );
+
+  /* La divisa cambia de sitio con el idioma: «29,73 $» en español y
+     «$29.73» en inglés. Las seis celdas de esta tabla lo escribían a mano
+     con el sufijo « $» fijo, así que la versión inglesa componía
+     «29.73 $» — la forma española del símbolo en una página en inglés.
+     El signo se pasa aparte porque estas celdas fuerzan «+» o «−» con
+     independencia del valor: la fila de fuera de plan es negativa por
+     definición aunque la cifra que la alimenta sea positiva. */
+  const usd = useCallback(
+    (signo: string, v: number) =>
+      es ? `${signo}${fmtNum(v, lang, 2)}\u00a0$` : `${signo}$${fmtNum(v, lang, 2)}`,
+    [es, lang],
   );
 
   const aplicarPreset = (p: typeof PRESETS[0]) => {
@@ -234,9 +247,9 @@ export function DisciplineCost() {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label htmlFor="disc-breach" className="text-xs font-medium text-secondary">
-                      {es ? "% fuera de plan (fallos)" : "% off-plan (breaches)"}
+                      {es ? "Fuera de plan (fallos)" : "Off-plan (breaches)"}
                     </label>
-                    <span className="tnum text-xs font-semibold text-[rgb(var(--pnl-neg))]">{breachPct} %</span>
+                    <span className="tnum text-xs font-semibold text-[rgb(var(--pnl-neg))]">{breachPct}{pctSep(lang)}</span>
                   </div>
                   <input
                     id="disc-breach"
@@ -323,10 +336,10 @@ export function DisciplineCost() {
                   <span className="font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</span>
                   <span className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
-                    +{fmtNum(inPlanExp, lang, 2)} $
+                    {usd("+", inPlanExp)}
                   </span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
-                    +{fmtNum(inPlanTotal, lang, 2)} $
+                    {usd("+", inPlanTotal)}
                   </span>
                 </div>
 
@@ -335,10 +348,10 @@ export function DisciplineCost() {
                   <span className="font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</span>
                   <span className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    {offPlanExp < 0 ? "−" : ""}{fmtNum(Math.abs(offPlanExp), lang, 2)} $
+                    {usd(offPlanExp < 0 ? "−" : "", Math.abs(offPlanExp))}
                   </span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    {offPlanTotal < 0 ? "−" : ""}{fmtNum(Math.abs(offPlanTotal), lang, 2)} $
+                    {usd(offPlanTotal < 0 ? "−" : "", Math.abs(offPlanTotal))}
                   </span>
                 </div>
 
@@ -347,10 +360,10 @@ export function DisciplineCost() {
                   <span className="font-semibold text-primary text-[14px]">GAP</span>
                   <span className="tnum text-right text-secondary text-[14px]">—</span>
                   <span className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[14px]">
-                    −{fmtNum(gap, lang, 2)} $
+                    {usd("−", gap)}
                   </span>
                   <span className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    −{fmtNum(totalLeakMonthly, lang, 2)} $
+                    {usd("−", totalLeakMonthly)}
                   </span>
                 </div>
                 </div>
@@ -402,13 +415,14 @@ export function DisciplineCost() {
                         {es ? row.labelEs : row.labelEn}
                       </span>
                       <span className="tnum whitespace-nowrap text-[12px] text-tertiary">
-                        {row.pct} %
+                        {row.pct}
+                        {pctSep(lang)}
                       </span>
                       {/* Ancho mínimo común: los cinco importes acaban en
                           la misma vertical y la columna no baila cuando
                           cambian las cifras. */}
                       <span className="tnum min-w-[4.5rem] whitespace-nowrap text-right font-semibold text-[rgb(var(--pnl-neg))]">
-                        −{fmtNum(mistakeCost, lang, 0)} $
+                        {es ? `−${fmtNum(mistakeCost, lang, 0)}\u00a0$` : `−$${fmtNum(mistakeCost, lang, 0)}`}
                       </span>
                     </div>
                     <div className="relative mt-1.5 h-[3px] overflow-hidden bg-[rgb(var(--divider)/0.10)]">
@@ -461,7 +475,7 @@ export function DisciplineCost() {
                   {es ? "Capital fugado acumulado" : "Cumulative leaked capital"}
                 </span>
                 <span className="mb-2.5 block text-[12px] text-tertiary">
-                  {es ? "Supuesto: reinvertido al 8 % anual" : "Assumption: reinvested at 8 % p.a."}
+                  {es ? "Supuesto: reinvertido al 8 % anual" : "Assumption: reinvested at 8% p.a."}
                 </span>
                 <div className="tj-matriz grid-cols-3 text-center tnum">
                   {([1, 3, 5] as const).map((yr) => {

@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
-import { formatoUsd } from "@/lib/trading/format";
+import { formatoUsd, pctSep } from "@/lib/trading/format";
 
 /**
  * RMultipleSimulator — simulador Monte Carlo de distribución de R.
@@ -187,7 +187,7 @@ export function RMultipleSimulator() {
       ? new Intl.NumberFormat("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n)
       : new Intl.NumberFormat("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
 
-  const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)} %`;
+  const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)}${pctSep(lang)}`;
 
   // ── SVG paths para el abanico P5-P95, P25-P75 + media + mediana ──────────
   const svgW = 540;
@@ -272,7 +272,13 @@ export function RMultipleSimulator() {
             transition: "color 0.18s var(--ease-suave)",
           }}
         >
-          {fmtNum(value, Number.isInteger(step) ? 0 : 2)}{suffix}
+          {/* El dólar cambia de sitio con el idioma: «10.000 $» en español,
+              «$10,000» en inglés. Con el sufijo fijo `" $"` la web inglesa
+              componía «10,000 $», la forma española en una página inglesa.
+              Las demás unidades —%, R, operaciones— van siempre detrás. */}
+          {suffix === " $" && !es
+            ? `$${fmtNum(value, 0)}`
+            : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`}
         </span>
       </div>
       <input
@@ -386,10 +392,10 @@ export function RMultipleSimulator() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {slider(es ? "Balance inicial" : "Starting balance", startBalance, 1000, 100000, 500, setStartBalance, " $", es ? "Balance inicial" : "Starting balance")}
             {slider(es ? "Operaciones" : "Trades", trades, 20, 300, 10, setTrades, "", es ? "Número de operaciones a simular" : "Number of trades to simulate")}
-            {slider(es ? "Win rate" : "Win rate", winRate, 30, 75, 1, setWinRate, " %", es ? "Porcentaje de aciertos" : "Win rate")}
+            {slider(es ? "Win rate" : "Win rate", winRate, 30, 75, 1, setWinRate, pctSep(lang), es ? "Porcentaje de aciertos" : "Win rate")}
             {slider(es ? "Ganancia media" : "Avg win (R)", avgWinR, 0.5, 5, 0.1, setAvgWinR, " R", es ? "Ganancia media en R" : "Average win in R")}
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
-            {slider(es ? "Riesgo por operación" : "Risk per trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, " %", es ? "Riesgo por operación" : "Risk per trade")}
+            {slider(es ? "Riesgo por operación" : "Risk per trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, pctSep(lang), es ? "Riesgo por operación" : "Risk per trade")}
             {slider(es ? "Retiro mensual" : "Monthly withdrawal", monthlyWithdrawal, 0, 5000, 100, setMonthlyWithdrawal, " $", es ? "Retiro mensual de beneficios" : "Monthly profit withdrawal")}
             {slider(es ? "Semilla" : "Seed", seed, 1, 50, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
           </div>

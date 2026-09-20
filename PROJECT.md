@@ -1663,6 +1663,7 @@ node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los
 node scripts/corrobora-menus.mjs        # navegación y menús, escritorio + móvil
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
+node scripts/cifras.mjs out             # convención de idioma: % , $ , menos, y nada de español en /en
 npx vitest run                          # 29 suites, 319 tests
 npx tsc --noEmit && npx eslint .
 ```

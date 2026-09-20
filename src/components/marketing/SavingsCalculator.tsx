@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
-import { formatoUsd } from "@/lib/trading/format";
+import { formatoUsd, pctSep } from "@/lib/trading/format";
 
 /**
  * SavingsCalculator — illustrative post-beta cost scenario.
@@ -287,7 +287,8 @@ export function SavingsCalculator() {
                 {fmtUsd(c.savings)}
               </span>
               <span className="tnum" style={{ fontSize: 16, fontWeight: 600, color: savingsColor }}>
-                {fmtNum(c.savingsPct, 0)} %
+                {fmtNum(c.savingsPct, 0)}
+                {pctSep(lang)}
               </span>
             </div>
           </div>

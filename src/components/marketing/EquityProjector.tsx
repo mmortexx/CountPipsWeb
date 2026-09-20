@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useRef } from "react";
 import { useLang } from "@/lib/i18n";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
-import { formatoUsd } from "@/lib/trading/format";
+import { formatoUsd, pctSep } from "@/lib/trading/format";
 
 /**
  * EquityProjector — Proyector de curva de capital de alta resolución.
@@ -489,11 +489,11 @@ export function EquityProjector() {
       `${es ? "Reinversión" : "Compounding Mode"}: ${reinvestMode === "compound" ? (es ? "Interés compuesto" : "Compounding") : (es ? "Retiro fijo" : "Fixed")}`,
       "─".repeat(38),
       `${es ? "Ventaja" : "Edge Stats"}:`,
-      `  • Win Rate: ${fmtNum(winRate, 1)} %`,
+      `  • Win Rate: ${fmtNum(winRate, 1)}${pctSep(lang)}`,
       `  • Ratio Ganancia / Pérdida: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
       `  • Expectancy Neta: ${c.netExpectancyR >= 0 ? "+" : ""}${fmtNum(c.netExpectancyR, 3)} R`,
       `  • Profit Factor: ${fmtNum(c.profitFactor, 2)}`,
-      `  • Riesgo / Op: ${fmtNum(riskPct, 2)} %`,
+      `  • Riesgo / Op: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
       "─".repeat(38),
       `${es ? "Resultados proyectados" : "Projected Results"}:`,
       `  • ${es ? "Balance final" : "Final Balance"}: ${fmtUsd(c.finalBalance)}`,
@@ -563,8 +563,29 @@ export function EquityProjector() {
           className="tnum text-[14px] font-semibold"
           style={{ color: "var(--ink)" }}
         >
-          {fmtNum(value, Number.isInteger(step) ? 0 : 2)}
-          <span className="opacity-75 ml-0.5 text-[11px] font-normal">{suffix}</span>
+          {/* El dólar cambia de sitio con el idioma: «10.000 $» en español,
+              «$10,000» en inglés. Con el sufijo fijo `" $"` la web inglesa
+              componía «10,000 $», que es la forma española del símbolo en
+              una página en inglés. Las demás unidades —ops, %, R— sí van
+              siempre detrás, así que sólo se bifurca el dinero. */}
+          {suffix === " $" ? (
+            es ? (
+              <>
+                {fmtNum(value, 0)}
+                <span className="opacity-75 ml-0.5 text-[11px] font-normal"> $</span>
+              </>
+            ) : (
+              <>
+                <span className="opacity-75 mr-0.5 text-[11px] font-normal">$</span>
+                {fmtNum(value, 0)}
+              </>
+            )
+          ) : (
+            <>
+              {fmtNum(value, Number.isInteger(step) ? 0 : 2)}
+              <span className="opacity-75 ml-0.5 text-[11px] font-normal">{suffix}</span>
+            </>
+          )}
         </span>
       </div>
       <input
@@ -826,7 +847,7 @@ export function EquityProjector() {
                   80,
                   1,
                   setWinRate,
-                  " %",
+                  pctSep(lang),
                   winRate >= 50 ? (es ? "Por encima del 50\u00a0%" : "Above 50%") : (es ? "Necesita R:R alto" : "Needs a high R:R")
                 )}
 
@@ -895,7 +916,7 @@ export function EquityProjector() {
                   3.0,
                   0.05,
                   setRiskPct,
-                  " %",
+                  pctSep(lang),
                   `Kelly 1/2: ${fmtPct(c.halfKellyPct, 1)}`
                 )}
 
@@ -1403,7 +1424,9 @@ export function EquityProjector() {
                     {fmtUsd(c.finalBalance, true)}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
-                    {startBalance > 0 ? `${fmtNum(c.finalBalance / startBalance, 1)}x capital inicial` : ""}
+                    {startBalance > 0
+                      ? `${fmtNum(c.finalBalance / startBalance, 1)}x ${es ? "capital inicial" : "starting capital"}`
+                      : ""}
                   </div>
                 </div>
 

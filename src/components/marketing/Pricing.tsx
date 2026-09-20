@@ -211,11 +211,30 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         {plan.tagline}
       </p>
 
-      <div className={`mt-8 flex items-baseline min-w-0 ${es ? "flex-row-reverse justify-end gap-2" : "gap-1"}`}>
-        <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
-        <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
-          {plan.price}
-        </span>
+      {/* EL ORDEN LO PONE EL DOM, NO `flex-row-reverse`.
+          En español el símbolo va detrás («149 $») y en inglés delante
+          («$149»), y eso se conseguía invirtiendo la fila con CSS: en
+          pantalla salía bien, pero en el documento el símbolo seguía
+          delante. Un lector de pantalla leía «dólar, ciento cuarenta y
+          nueve» en la página española, y quien copiara el precio se
+          llevaba «$149». El orden visual y el orden leído tienen que ser
+          el mismo. */}
+      <div className="mt-8 flex items-baseline min-w-0 gap-1">
+        {es ? (
+          <>
+            <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
+              {plan.price}
+            </span>
+            <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
+          </>
+        ) : (
+          <>
+            <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
+            <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
+              {plan.price}
+            </span>
+          </>
+        )}
       </div>
       {es && (
         <p className="mt-3 mb-0 text-[14px] text-tertiary tnum">

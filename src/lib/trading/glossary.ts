@@ -225,8 +225,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "R-multiple",
-    es: "Resultado de una operación expresado en múltiplos del riesgo inicial (R). +2R significa ganar el doble de lo arriesgado; -1R es perder justo el stop. Permite comparar operaciones de cualquier tamaño.",
-    en: "A trade's result expressed as multiples of initial risk (R). +2R means winning twice what was risked; -1R is losing exactly the stop. It lets you compare trades of any size.",
+    es: "Resultado de una operación expresado en múltiplos del riesgo inicial (R). +2R significa ganar el doble de lo arriesgado; −1R es perder justo el stop. Permite comparar operaciones de cualquier tamaño.",
+    en: "A trade's result expressed as multiples of initial risk (R). +2R means winning twice what was risked; −1R is losing exactly the stop. It lets you compare trades of any size.",
     category: "metrics",
   },
   {
@@ -317,7 +317,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Leverage",
-    es: "Relación entre el tamaño de la posición y el capital depositado. Un apalancamiento 10:1 mueve $10 por cada $1 de margen: multiplica ganancias y pérdidas por igual y amplifica el riesgo de ruin.",
+    es: "Relación entre el tamaño de la posición y el capital depositado. Un apalancamiento 10:1 mueve 10 $ por cada 1 $ de margen: multiplica ganancias y pérdidas por igual y amplifica el riesgo de ruin.",
     en: "The ratio between position size and deposited capital. 10:1 leverage moves $10 for every $1 of margin: it multiplies gains and losses equally and amplifies the risk of ruin.",
     category: "execution",
   },

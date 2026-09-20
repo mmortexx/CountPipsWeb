@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useId, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
+import { pctSep } from "@/lib/trading/format";
 import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
 
 /**
@@ -642,7 +643,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                           color: respondidas ? barColor(pct) : "var(--ink-3)",
                         }}
                       >
-                        {respondidas ? `${pct} %` : "—"}
+                        {respondidas ? `${pct}${pctSep(lang)}` : "—"}
                       </span>
                     </div>
                     <div

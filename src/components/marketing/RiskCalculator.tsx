@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio } from "@/lib/trading/estadistica";
-import { fmtPct, formatoUsd } from "@/lib/trading/format";
+import { fmtPct, formatoUsd, pctSep } from "@/lib/trading/format";
 
 /**
  * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
@@ -449,7 +449,7 @@ export function RiskCalculator() {
                   onClick={() => setRiskPct(p.pct)}
                   aria-pressed={riskPct === p.pct}
                 >
-                  {p.label} · {fmtNum(p.pct)} %
+                  {p.label} · {fmtNum(p.pct)}{pctSep(lang)}
                 </button>
               ))}
             </div>
@@ -498,7 +498,8 @@ export function RiskCalculator() {
                   color: "var(--ink)",
                 }}
               >
-                {fmtNum(riskPct)} %
+                {fmtNum(riskPct)}
+                {pctSep(lang)}
               </span>
             </div>
             <input

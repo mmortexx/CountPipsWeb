@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
+import { pctSep } from "@/lib/trading/format";
 import { computeStatisticalPower, normalCdf } from "@/lib/trading/estadistica";
 
 export { normalCdf };
@@ -235,7 +236,7 @@ export function EdgeSignificanceChecker() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {slider(es ? "Operaciones (N)" : "Trades (N)", trades, 5, 500, 5, setTrades, "", es ? "Número de operaciones" : "Number of trades")}
-            {slider(es ? "Win rate" : "Win rate", winRate, 35, 75, 1, setWinRate, " %", es ? "Porcentaje de aciertos" : "Win rate percentage")}
+            {slider(es ? "Win rate" : "Win rate", winRate, 35, 75, 1, setWinRate, pctSep(lang), es ? "Porcentaje de aciertos" : "Win rate percentage")}
             {slider(es ? "Ganancia media" : "Avg win (R)", avgWinR, 0.5, 5, 0.1, setAvgWinR, " R", es ? "Ganancia media en R" : "Average win in R")}
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
           </div>

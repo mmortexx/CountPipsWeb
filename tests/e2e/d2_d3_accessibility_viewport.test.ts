@@ -264,9 +264,12 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 2 Boundary & 
     expect(riskCalc).toContain('c.direction === "short"');
     expect(riskCalc).toContain("Operación en corto detectada");
 
-    // DisciplineCost uses explicit + and - prefix signs for P&L values
-    expect(discCost).toContain("+{fmtNum(inPlanExp");
-    expect(discCost).toContain("−{fmtNum(gap");
+    // DisciplineCost uses explicit + and - prefix signs for P&L values.
+    // El signo es el PRIMER argumento de `usd`, que lo antepone a la cifra;
+    // si alguien lo vacia, la fila solo se distingue por el color.
+    expect(discCost).toContain('usd("+", inPlanExp)');
+    expect(discCost).toContain('usd("−", gap)');
+    expect(discCost).toMatch(/const usd = useCallback\(\s*\(signo: string/);
 
     // EdgeSignificanceChecker includes textual verdicts and badge indicators
     expect(edgeChecker).toContain("verdict.label");

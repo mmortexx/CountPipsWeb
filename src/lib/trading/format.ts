@@ -66,6 +66,18 @@ export function fmtNum(
  *  en dos renglones, que es peor que no separarlos. */
 const PCT_SEP: Record<Lang, string> = { es: " %", en: "%" };
 
+/** El separador anterior, para los sitios que componen el porcentaje a mano
+ *  porque la cifra ya viene en escala de 0 a 100 y `fmtPct` la multiplicaría.
+ *
+ *  Existe porque diez puntos del sitio escribían `{cifra} %` directamente en
+ *  el JSX: espacio normal —que deja el signo colgando solo al principio de
+ *  una línea en columna estrecha— y el mismo espacio en inglés, donde la
+ *  convención es pegarlo. Una web inglesa que escribe «32 %» se lee como
+ *  traducida del español, que es justo lo que no puede parecer. */
+export function pctSep(lang: Lang): string {
+  return PCT_SEP[lang];
+}
+
 /** Format a percentage. `value` is a ratio (0.5 = 50 %).
  *
  *  Negative-zero guard: a value like -0.0001 that rounds to "0,0 %"
