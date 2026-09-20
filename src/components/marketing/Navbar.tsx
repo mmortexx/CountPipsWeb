@@ -479,13 +479,33 @@ export function Navbar() {
   // Focus trap del drawer móvil (maquinaria a11y intacta).
   useEffect(() => {
     if (!mobileOpen) return;
-    const raf = requestAnimationFrame(() => {
+    /* EL FOCO ENTRABA EN UN CAJÓN QUE TODAVÍA ERA INVISIBLE.
+       `.tj-cajon` nace con `visibility: hidden` y sólo se vuelve visible
+       cuando el navegador aplica `data-visible="true"`. Un `focus()`
+       sobre un elemento invisible NO hace nada y NO da error, así que
+       esto fallaba en silencio: medido en el navegador, el cajón se
+       abría, quedaba visible y no inerte, y `document.activeElement`
+       seguía siendo el botón de hamburguesa, fuera del diálogo. Quien lo
+       abría con el teclado no aterrizaba dentro y un lector de pantalla
+       no anunciaba el menú.
+       Un solo `requestAnimationFrame` no basta porque se ejecuta ANTES
+       del recálculo de estilo de ese fotograma. Se reintenta, y la
+       condición de parada es el propio efecto conseguido —el foco dentro
+       del cajón—, no un número de fotogramas adivinado. */
+    let cancelado = false;
+    let raf = 0;
+    const entrar = (intentosRestantes: number) => {
+      if (cancelado) return;
       const drawer = drawerRef.current;
       if (!drawer) return;
       const focusables = getFocusables(drawer);
       const target = focusables[0] ?? drawer;
       target.focus();
-    });
+      if (!drawer.contains(document.activeElement) && intentosRestantes > 0) {
+        raf = requestAnimationFrame(() => entrar(intentosRestantes - 1));
+      }
+    };
+    raf = requestAnimationFrame(() => entrar(5));
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
@@ -519,6 +539,7 @@ export function Navbar() {
     };
     window.addEventListener("keydown", onKey);
     return () => {
+      cancelado = true;
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKey);
       /* La regla `exhaustive-deps` avisa de leer `.current` en la limpieza y
