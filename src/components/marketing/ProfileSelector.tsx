@@ -28,7 +28,7 @@ export function ProfileSelector() {
       href: "/traders/manual",
       icon: UserRound,
       eyebrow: es ? "Operativa manual" : "Manual trading",
-      title: es ? "Para leer tu proceso con claridad" : "For reading your process clearly",
+      title: es ? "Para leer tu proceso con claridad" : "To read your process clearly",
       body: es
         ? "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo."
         : "Review context, execution and discipline without turning every session into a spreadsheet.",
