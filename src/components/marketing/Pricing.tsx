@@ -143,7 +143,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
           )}
         </Reveal>
 
-        <div className="relative mt-10">
+        <div className={`relative ${standalone ? "" : "mt-10"}`}>
           <Escritorio className="tj-escritorio--ancho" />
           <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 max-w-[60rem] mx-auto items-stretch">
           {plans.map((plan) => (

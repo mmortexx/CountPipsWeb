@@ -54,7 +54,10 @@ export function ProfileSelector() {
 
   return (
     <section className="section-tight" aria-labelledby="profile-selector-title">
-      <div className="tj-container">
+      {/* En escritorio, cabecera a la izquierda y los dos recorridos
+          apilados a la derecha: con la cabecera encima, media anchura se
+          quedaba en blanco y la sección pedía dos pantallas de scroll. */}
+      <div className="tj-container lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-16 xl:gap-x-24">
         <div className="max-w-2xl">
           <p className="eyebrow">{es ? "Elige tu recorrido" : "Choose your path"}</p>
           <h2 id="profile-selector-title" className="t-h2 mt-4 text-primary text-balance">
@@ -70,7 +73,7 @@ export function ProfileSelector() {
           </p>
         </div>
 
-        <div className="mt-12 grid md:grid-cols-2">
+        <div className="mt-12 grid md:grid-cols-2 lg:mt-0 lg:grid-cols-1 lg:border-b lg:border-[var(--line)]">
           {profiles.map((profile, i) => {
             const Icon = profile.icon;
             return (
@@ -80,7 +83,9 @@ export function ProfileSelector() {
                 data-entra="ciclo"
                 onClick={() => trackEvent("profile_selected", { profile: profile.id })}
                 className={`group relative flex flex-col py-8 outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] ${
-                  i === 0 ? "md:pr-12" : "border-t border-[var(--line)] md:border-t-0 md:border-l md:pl-12"
+                  i === 0
+                    ? "md:pr-12 lg:pr-0 lg:border-t lg:border-[var(--line)]"
+                    : "border-t border-[var(--line)] md:border-t-0 md:border-l md:pl-12 lg:border-l-0 lg:border-t lg:pl-0"
                 }`}
               >
                 <p className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">

@@ -69,16 +69,25 @@ export function ProductShowcase() {
       aria-labelledby="producto-titulo"
     >
       <div className="tj-container">
-        <div className="mb-10 max-w-[40rem]">
-          <p className="eyebrow">{es ? "El programa" : "The application"}</p>
-          <h2 id="producto-titulo" className="t-h2 mt-5 text-primary">
-            {es ? "Esto es lo que abres cada mañana." : "This is what you open every morning."}
-          </h2>
-          <p className="mt-4 text-lg leading-relaxed text-secondary">
-            {es
-              ? "Capturas reales del programa con datos de muestra. Elige una pantalla."
-              : "Real screenshots of the application with sample data. Pick a screen."}
-          </p>
+        <div className="mb-10 grid gap-y-6 lg:grid-cols-2 lg:items-end lg:gap-x-16 xl:gap-x-24">
+          <div>
+            <p className="eyebrow">{es ? "El programa" : "The application"}</p>
+            <h2 id="producto-titulo" className="t-h2 mt-5 max-w-[16ch] text-primary">
+              {es ? "Esto es lo que abres cada mañana." : "This is what you open every morning."}
+            </h2>
+          </div>
+          <div className="lg:pb-1">
+            <p className="max-w-[46ch] text-lg leading-relaxed text-secondary">
+              {es
+                ? "Capturas reales del programa con datos de muestra. Elige una pantalla."
+                : "Real screenshots of the application with sample data. Pick a screen."}
+            </p>
+            <div className="mt-5">
+              <Link href="/demo" className="cta cta--secundario">
+                {es ? "Recorrer la demo sin registro" : "Explore the demo, no sign-up"}
+              </Link>
+            </div>
+          </div>
         </div>
 
         <div
@@ -112,12 +121,6 @@ export function ProductShowcase() {
           <div key={activa} className="tj-lamina-cambia">
             <ProductPlate lamina={lamina} priority={activa === PANTALLAS_PORTADA[0]} />
           </div>
-        </div>
-
-        <div className="mt-10">
-          <Link href="/demo" className="cta cta--secundario">
-            {es ? "Recorrer la demo sin registro" : "Explore the demo, no sign-up"}
-          </Link>
         </div>
       </div>
     </section>
