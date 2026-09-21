@@ -102,7 +102,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             composicion="partida"
             etiqueta={es ? "Un flujo pensado para tu contexto" : "A workflow shaped for your context"}
             titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
-            entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It is which part of your process deserves repeating, and which part needs a rule before you return to the market."}
+            entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It's which part of your process is worth repeating, and which part needs a rule before you go back to the market."}
           />
           <ol className="mt-12 m-0 border-t border-[var(--line)] p-0">
             {data.cards.map(({ titleEs, titleEn, textEs, textEn }, i) => (

@@ -140,8 +140,10 @@ export const HERRAMIENTAS: Herramienta[] = [
       "¿Cuánto dinero dejas en la mesa cuando rompes tus reglas? Estima la brecha entre tu operativa en plan y fuera de plan, y descubre tu fuga de capital anual.",
     subtituloEn:
       "How much money do you leave on the table when breaking your rules? Estimate the gap between your in-plan and off-plan trades, and discover your annual capital leak.",
-    resumenEs: "La brecha real de dinero entre operar en plan o romper tus reglas.",
-    resumenEn: "The real cash gap between trading your plan or breaking your rules.",
+    /* «Entre A o B» es un error en los dos idiomas —es «entre A y B» y
+       «between A and B»—; nació en el español y la traducción lo copió. */
+    resumenEs: "La brecha real de dinero entre operar según tu plan y romper tus reglas.",
+    resumenEn: "The real cash gap between trading your plan and breaking your rules.",
     descripcionEs:
       "Estima lo que te cuestan tus errores operativos y la diferencia de expectancy entre tus operaciones disciplinadas y fuera de plan.",
     descripcionEn:
@@ -180,12 +182,12 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Core 149\u00a0$ y Pro 249\u00a0$ son precios previstos de lanzamiento. Introduce una alternativa mensual para comparar escenarios, sin que el resultado sea una oferta de compra.",
     subtituloEn:
       "Core $149 and Pro $249 are planned launch prices. Enter a monthly alternative to compare scenarios; the result is not a purchase offer.",
-    resumenEs: "Cómo cambia un escenario mensual frente a una referencia futura.",
-    resumenEn: "How a monthly scenario compares with a future reference.",
+    resumenEs: "Cómo se compara un coste mensual con los precios previstos de lanzamiento.",
+    resumenEn: "How a monthly cost compares with the planned launch prices.",
     descripcionEs:
-      "Compara un coste mensual con las referencias de lanzamiento de CountPips, sin convertir el resultado en una promesa de compra.",
+      "Compara un coste mensual con los precios previstos de lanzamiento de CountPips, sin convertir el resultado en una oferta de compra.",
     descripcionEn:
-      "Compare a monthly cost against CountPips' indicative launch prices; the result is not a purchase offer.",
+      "Compare a monthly cost with CountPips' planned launch prices; the result is not a purchase offer.",
   },
   {
     slug: "impacto-de-comisiones",
