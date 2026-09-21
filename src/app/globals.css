@@ -2968,6 +2968,12 @@ button.icon-btn:hover > svg,
 :root[data-palette="clasico"] h1 {
   line-height: 1.06 !important;
   letter-spacing: -0.022em !important;
+  /* A tamaño de cartel el titular principal baja a 420: es el registro de
+     las serif de las gestoras más cuidadas (Citadel 400, Addepar Light,
+     Robinhood 400; ver docs/analisis-referentes.md). A 84 px la serif
+     aguanta ese peso sin volverse frágil; los h2, más pequeños, siguen
+     en 500. */
+  font-weight: 420 !important;
 }
 
 /* Las cifras y las etiquetas NO pasan a serif: son datos, y los datos se
@@ -3009,9 +3015,13 @@ button.icon-btn:hover > svg,
    borde de la letra—, así que el mismo 500 que en claro es firme, en
    oscuro parecía negrita. Las dos familias son variables, así que se
    compensa con 40 unidades en vez de saltar a otro peso. */
-:root[data-palette="clasico"]:not([data-theme="light"]) h1,
 :root[data-palette="clasico"]:not([data-theme="light"]) h2 {
   font-weight: 460 !important;
+}
+:root[data-palette="clasico"]:not([data-theme="light"]) h1 {
+  /* 400 es el suelo: el eje de Newsreader va recortado a 400–500
+     (layout.tsx; lo vigila scripts/pesos.mjs). */
+  font-weight: 400 !important;
 }
 :root[data-palette="clasico"]:not([data-theme="light"]) h3 {
   font-weight: 560 !important;
@@ -3131,6 +3141,59 @@ button.icon-btn:hover > svg,
   .tj-pestanas > [role="tab"] {
     min-height: 44px;
   }
+}
+
+/* Mientras el aviso de consentimiento está abierto en móvil, la página
+   gana por abajo lo que él ocupa (lo mide CookieConsent). */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: var(--alto-aviso, 0px);
+  }
+}
+
+/* ---- Llamadas y notas de una cifra ----------------------------------
+   La cifra lleva su número volado y, debajo del cuadro, la nota con la
+   fuente y la fecha de corte, en el cuerpo más pequeño de la escala. */
+.tj-llamada {
+  margin-left: 0.12em;
+  font-size: 0.3em;
+  font-weight: 500;
+  letter-spacing: 0;
+  vertical-align: 1.45em;
+  line-height: 0;
+  color: var(--ink-3);
+}
+.tj-notas-cifras {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+.tj-notas-cifras ol {
+  display: grid;
+  gap: 0.35rem 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 1024px) {
+  .tj-notas-cifras ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.tj-notas-cifras li {
+  display: flex;
+  gap: 0.5rem;
+}
+.tj-notas-num {
+  flex: none;
+  min-width: 0.75em;
+  font-variant-numeric: tabular-nums;
+}
+.tj-notas-cifras p {
+  margin: 0.75rem 0 0;
 }
 
 /* ---- Cierre de página: filete, titular y acciones, sin recuadro ------ */
@@ -4378,6 +4441,37 @@ select.tj-campo:invalid {
 @media (min-width: 768px) {
   .tj-metricas-ratios {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+/* Cuatro cifras en móvil; las otras cuatro, a un toque. El botón sólo
+   existe por debajo de 768 px: por encima caben las ocho en dos filas.
+   Se condiciona a `data-js`, que lo pone el script del <head> antes de
+   pintar: sin JavaScript el botón no haría nada, así que entonces no se
+   recoge nada y el botón no aparece. */
+.tj-metricas-todas {
+  display: none;
+}
+@media (max-width: 767px) {
+  :root[data-js] .tj-metricas-ratios[data-recogidas] > [data-secundaria] {
+    display: none;
+  }
+  :root[data-js] .tj-metricas-todas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    border: 0;
+    border-top: 1px solid var(--ficha-division);
+    background: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .tj-metricas-todas:focus-visible {
+    outline: 2px solid rgb(var(--accent-base) / 0.6);
+    outline-offset: -2px;
   }
 }
 .tj-metricas-ratio {
@@ -6313,6 +6407,18 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 .tj-barra[data-cristal="true"]::before {
   -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
   backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
+}
+/* EL PANEL DE CIFRAS NO DESENFOCA. Detrás sólo tiene la luz lisa del
+   escritorio, y desenfocar algo liso no cambia nada: medido, 3/255 de
+   diferencia media en claro y menos de 1 en oscuro. Lo que sí cambiaba era
+   el coste: un desenfoque de 1.100 × 800 px recalculado en cada fotograma
+   del scroll. En la portada, con CPU ×4, la media por fotograma bajó de
+   18,6–19,8 ms a 16,8–17,2 y el p95 de 33 a 17 ms (tres pasadas cada uno).
+   El cristal se queda donde hay algo que desenfocar: la barra y los
+   botones flotantes. */
+.tj-metricas.tj-cristal {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 :root {
   --cristal-luz: 1.06;

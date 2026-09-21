@@ -113,7 +113,7 @@ export function Values() {
           {VALUES.map((v, i) => (
             <Reveal key={v.href} delay={0.1 + i * 0.08} className="h-full">
               <article
-                className={`group relative flex h-full flex-col border-b border-[var(--line)] py-8 md:py-10 ${
+                className={`group relative flex h-full flex-col border-b border-[var(--line)] py-6 md:py-10 ${
                   i % 2 === 1 ? "md:border-l md:pl-12" : "md:pr-12"
                 }`}
               >
@@ -121,7 +121,7 @@ export function Values() {
                   {v.icon}
                 </span>
 
-                <h3 className="mt-6 t-h3 text-primary">
+                <h3 className="mt-4 t-h3 text-primary md:mt-6">
                   {es ? v.titleEs : v.titleEn}
                 </h3>
                 <p className="mt-2.5 text-[15px] text-secondary leading-[1.65] max-w-[42em]">

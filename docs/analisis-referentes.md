@@ -72,6 +72,21 @@ Esto no se toca; como mucho, se subraya.
 Cada una dice qué hacer, por qué (con la evidencia) y cómo hacerlo **a tu manera**: el principio, no el
 diseño de otro.
 
+**Estado a 21 de septiembre de 2026:**
+
+| # | Recomendación | Estado |
+|---|---|---|
+| 1 | Fuente y fecha de corte en las cifras | Aplicada en la franja de cifras de la portada: llamadas numeradas, tres notas y «Cifras a {mes y año de la publicación}». Precios ya llevaba la fecha del cambio a euros. |
+| 2 | Pago único, sin nube y demo sin registro juntos arriba | Aplicada: son las tres marcas bajo los botones de la portada. «Previsto» porque la venta no está abierta. |
+| 3 | Acortar el móvil | Aplicada: el panel enseña cuatro cifras y «Ver las ocho cifras» (sin JavaScript se ven las ocho), y la franja de cifras va en filas. |
+| 4 | Ficha de dónde viven tus datos | **Ya existía** (ver la corrección en la recomendación 4). |
+| 5 | La cifra dentro de su contexto | Sin cambios: revisadas la portada y precios, no hay cifras sueltas en frases de venta que no lleven su panel o su nota. |
+| 6 | Aviso de cookies en móvil | Aplicada: texto más corto, sin icono en móvil, y mientras está abierto la página gana por abajo su alto para que no tape el final. |
+| 7 | Titular principal más ligero | Aplicada tras compararlo en claro y en oscuro: 420 en claro y 400 en oscuro, que es el mínimo que tiene la fuente recortada. Los h2 siguen en 500. |
+| 8 | Testimonios con contexto | Pendiente de que existan usuarios reales. No se inventan. |
+| 9 | Filete encima de cada cifra | Aplicada en la franja de cifras. |
+| 10 | Selector de región | No procede hoy. |
+
 ### Impacto alto
 
 **1. Poner fuente y fecha de corte a cada cifra que se afirma.**
@@ -106,9 +121,13 @@ diseño de otro.
   la seguridad como contenido, no como letra pequeña. *Comprobado en Indexa; Trading 212 sin
   verificar.*
 - *A tu manera:* tú no custodias dinero, pero sí datos. Una ficha técnica sobria —en qué carpeta se
-  guardan, en qué formato, qué sale de tu equipo (nada salvo la analítica opcional de la web), cómo se
-  exporta y cómo se borra— dicha con nombres concretos y no con adjetivos. Parte de ese material ya
-  existe en «Qué se guarda y dónde».
+  guardan, en qué formato, qué sale de tu equipo, cómo se exporta y cómo se borra— dicha con nombres
+  concretos y no con adjetivos.
+- **Corrección:** al escribir esto dije que «parte de ese material ya existe». En realidad existe
+  entero: la página de seguridad lista, conexión por conexión, todo lo que sale a internet (licencia,
+  actualizaciones, datos públicos de mercado, Binance, webhooks y copia en tu propia nube), además del
+  archivo SQLite y la exportación. Lo que faltaba era que la portada llevara hasta allí, y ahora lo
+  hace la nota 2 de la franja de cifras.
 
 **5. La cifra, dentro de su contexto.**
 - *Por qué:* Public, Robinhood, Mercury y Trading 212 casi nunca enseñan un número suelto: lo meten

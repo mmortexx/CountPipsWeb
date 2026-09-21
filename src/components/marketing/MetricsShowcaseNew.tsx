@@ -377,7 +377,14 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
   const es = lang === "es";
   const [vista, setVista] = useState<Vista>("curva");
   const [enfoque, setEnfoque] = useState<Enfoque>(null);
+  const [todas, setTodas] = useState(false);
   const id = useId();
+  /* En móvil, fuera de la página de métricas, el panel enseña las cuatro
+     cifras que definen el riesgo y deja el resto a un toque: ocho cifras
+     en cuatro filas eran una pantalla entera de panel antes de llegar a la
+     primera sección. En la página de métricas se ven todas siempre. */
+  const secundarias = new Set(["sortino", "omega", "calmar", "payoff"]);
+  const recoge = !enPagina;
 
   const vistas: { id: Vista; l: string }[] = [
     { id: "curva", l: es ? "Curva de capital" : "Equity curve" },
@@ -496,13 +503,14 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
         </div>
         </div>
 
-        <ul className="tj-metricas-ratios tj-matriz">
+        <ul id={`${id}-ratios`} className="tj-metricas-ratios tj-matriz" data-recogidas={recoge && !todas ? "true" : undefined}>
           {ratios.map((m) => {
             const activa = m.enlaza && enfoque === m.enlaza && pista[m.enlaza] === vista;
             return (
               <li
                 key={m.id}
                 className="tj-metricas-ratio"
+                data-secundaria={secundarias.has(m.id) ? "true" : undefined}
                 data-enfoque={activa ? "true" : undefined}
                 tabIndex={m.enlaza ? 0 : undefined}
                 onPointerEnter={() => m.enlaza && setEnfoque(m.enlaza)}
@@ -524,6 +532,17 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
             );
           })}
         </ul>
+        {recoge && (
+          <button
+            type="button"
+            className="tj-metricas-todas"
+            aria-expanded={todas}
+            aria-controls={`${id}-ratios`}
+            onClick={() => setTodas((t) => !t)}
+          >
+            {todas ? (es ? "Ver sólo las cuatro principales" : "Show only the main four") : es ? "Ver las ocho cifras" : "Show all eight figures"}
+          </button>
+        )}
         <p className="tj-ficha-barra tj-ficha-barra--pie">
           {es
             ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`

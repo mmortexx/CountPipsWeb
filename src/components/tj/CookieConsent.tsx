@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import {
@@ -143,6 +143,25 @@ export function CookieConsent() {
     };
   }, [visible]);
 
+  /* EN MÓVIL EL AVISO NO TAPA NADA PARA SIEMPRE. Es una hoja fija abajo, y
+     fija tapa lo que cae debajo: con su alto como relleno inferior de la
+     página, lo último de ella se puede subir por encima del aviso en vez
+     de quedarse detrás mientras nadie decide. */
+  const hoja = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const n = hoja.current;
+    if (!visible || !n) return;
+    const raiz = document.documentElement;
+    const mide = () => raiz.style.setProperty("--alto-aviso", `${Math.ceil(n.getBoundingClientRect().height)}px`);
+    mide();
+    const ro = new ResizeObserver(mide);
+    ro.observe(n);
+    return () => {
+      ro.disconnect();
+      raiz.style.removeProperty("--alto-aviso");
+    };
+  }, [visible]);
+
   /** Persist the user's choice and hide the banner. Both branches functionally
    *  do the same thing today (no non-essential cookies are loaded), but the
    *  stored value lets future analytics/preference scripts branch on consent
@@ -188,6 +207,7 @@ export function CookieConsent() {
           montado, el botón se habría quedado levantado para siempre. */}
       {visible && !dismissed && (
         <div
+          ref={hoja}
           role="dialog"
           aria-live="polite"
           aria-label={es ? "Consentimiento de cookies" : "Cookie consent"}
@@ -207,7 +227,7 @@ export function CookieConsent() {
             //
             // z-50 sobre BackToTop (z-40). safe-bottom para el home
             // indicator de iOS en el sheet móvil.
-            className="tj-entra-abajo tj-cristal tj-cristal--denso z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[4px] p-4 md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[8px] md:p-5"
+            className="tj-entra-abajo tj-cristal tj-cristal--denso z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[4px] px-4 pb-3 pt-3.5 md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[8px] md:p-5"
           >
             <div className="flex items-start gap-2.5 md:gap-3">
               <CookieIcon />
@@ -224,8 +244,8 @@ export function CookieConsent() {
                   precisamente la diferencia. */}
               <p className="text-[13px] leading-[1.5] text-secondary flex-1 md:text-[14px] md:leading-relaxed">
                 {es
-                  ? "Usamos almacenamiento local para preferencias. La analítica opcional sólo se activa si la aceptas. "
-                  : "We use local storage for preferences. Optional analytics only starts if you accept it. "}
+                  ? "Guardamos tus preferencias en este navegador; la analítica, sólo si la aceptas. "
+                  : "We keep your preferences in this browser; analytics only if you accept it. "}
                 <Link
                   href="/cookies"
                   className="link-underline-host whitespace-nowrap text-primary transition-colors hover:text-[rgb(var(--accent-base))]"
@@ -240,7 +260,7 @@ export function CookieConsent() {
             {/* Action row — 2-column grid (Decline | Accept). Botones
                 full-width en sus celdas, ≥44px tap target. En móvil el
                 sheet es full-width así que los botones son cómodos. */}
-            <div className="mt-3 grid grid-cols-2 gap-2 md:mt-4">
+            <div className="mt-2.5 grid grid-cols-2 gap-2 md:mt-4">
               <button
                 type="button"
                 onClick={() => choose("declined")}
@@ -267,7 +287,7 @@ export function CookieConsent() {
 function CookieIcon() {
   return (
     <span
-      className="shrink-0 mt-0.5 inline-flex items-center justify-center w-7 h-7 text-secondary"
+      className="shrink-0 mt-0.5 hidden items-center justify-center w-7 h-7 text-secondary md:inline-flex"
       aria-hidden="true"
     >
       <svg

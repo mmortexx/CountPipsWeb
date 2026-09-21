@@ -283,7 +283,7 @@ export default function RootLayout({
             // primer paint: decidirlo ya montado en React significaría
             // un fogonazo blanco a quien tiene el sistema en oscuro,
             // justo a quien se está intentando no deslumbrar.
-            __html: `(function(){try{var t=localStorage.getItem('tj-theme');if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.dataset.theme=t;document.documentElement.dataset.palette='clasico';document.documentElement.classList.toggle('dark',t==='dark');}catch(e){document.documentElement.dataset.theme='light';document.documentElement.dataset.palette='clasico';}})();`,
+            __html: `(function(){document.documentElement.dataset.js='1';try{var t=localStorage.getItem('tj-theme');if(t!=='dark'&&t!=='light'){t=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.dataset.theme=t;document.documentElement.dataset.palette='clasico';document.documentElement.classList.toggle('dark',t==='dark');}catch(e){document.documentElement.dataset.theme='light';document.documentElement.dataset.palette='clasico';}})();`,
           }}
         />
         <script

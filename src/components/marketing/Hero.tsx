@@ -14,9 +14,12 @@ export function Hero({ producto }: { producto?: ReactNode }) {
   const { lang } = useLang();
   const es = lang === "es";
 
+  /* Las tres diferencias que no tiene ningún diario de la competencia
+     (docs/analisis-referentes.md), juntas y en voz baja. «Windows» ya lo
+     dice la etiqueta de encima. «Previsto» porque la venta no está abierta. */
   const datos = es
-    ? ["Windows 10 y 11", "Tus datos en tu equipo", "Demo sin registro"]
-    : ["Windows 10 and 11", "Your data on your machine", "Demo without sign-up"];
+    ? ["Pago único previsto, sin suscripción", "Sin nube: tus datos en tu equipo", "Demo sin registro"]
+    : ["Planned one-time payment, no subscription", "No cloud: your data on your machine", "Demo without sign-up"];
 
   const compatibles = ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"];
 

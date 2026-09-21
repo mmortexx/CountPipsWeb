@@ -1,8 +1,10 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
+import { FECHA_PUBLICACION } from "@/lib/publicacion";
 
 /**
  * StatsBandNew — la banda de credenciales de la home: tres cifras que
@@ -53,12 +55,40 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
         : "free tools on the site — no sign-up, no install",
     },
   ];
+  /* FUENTE Y FECHA DE CORTE. Una cifra suelta se lee como reclamo; con su
+     llamada y la fecha a la que vale, como dato. Es lo que hacen las
+     gestoras (docs/analisis-referentes.md, recomendación 1). La fecha es
+     la de la publicación, no la del reloj de quien mira. */
+  const enlace = (href: string, texto: string) => (
+    <Link href={href} className="link-underline-host text-secondary hover:text-primary">
+      {texto}
+    </Link>
+  );
+  const notas: ReactNode[] = es
+    ? [
+        <>Por operación y por periodo, en la versión en pruebas del programa.</>,
+        <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
+        <>Se cuentan solas: son las calculadoras publicadas hoy en {enlace("/herramientas", "Herramientas")}.</>,
+      ]
+    : [
+        <>Per trade and per period, in the pre-release version of the application.</>,
+        <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
+        <>Counted automatically: the calculators published today under {enlace("/herramientas", "Tools")}.</>,
+      ];
+  const corte = FECHA_PUBLICACION
+    ? new Date(FECHA_PUBLICACION).toLocaleDateString(es ? "es-ES" : "en-GB", { year: "numeric", month: "long", timeZone: "UTC" })
+    : "";
+
   return (
     <section className="section-tight relative">
       <div className="tj-container">
-        <div className="grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-y-0 sm:divide-x sm:divide-[var(--line)]">
+        {/* Filete ENCIMA de cada cifra y no entre ellas: se lee como el
+            cuadro de un informe anual, no como tres tarjetas. */}
+        {/* En móvil, cifra y texto en la misma fila: apiladas, las tres
+            cifras eran casi una pantalla entera. */}
+        <div className="grid grid-cols-1 gap-y-5 sm:grid-cols-3 sm:gap-x-8">
           {stats.map((s, i) => (
-            <Reveal key={s.v} delay={i * 0.06} y={10} className="flex flex-col sm:px-8 sm:first:pl-0 sm:last:pr-0">
+            <Reveal key={s.v} delay={i * 0.06} y={10} className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-x-4 border-t border-[var(--line-2)] pt-5 sm:flex sm:flex-col sm:items-stretch sm:pt-6">
               <div
                 className="tnum text-primary"
                 style={{
@@ -74,10 +104,22 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
                 >
                   <span className="tj-cifra-real">{s.v}</span>
                 </span>
+                <sup aria-hidden className="tj-llamada">{i + 1}</sup>
               </div>
-              <div className="mt-3 max-w-[22em] text-balance text-[15px] leading-snug text-secondary">{s.l}</div>
+              <div className="max-w-[22em] text-balance text-[15px] leading-snug text-secondary sm:mt-3">{s.l}</div>
             </Reveal>
           ))}
+        </div>
+        <div className="tj-notas-cifras">
+          <ol>
+            {notas.map((n, i) => (
+              <li key={i}>
+                <span aria-hidden className="tj-notas-num">{i + 1}</span>
+                <span>{n}</span>
+              </li>
+            ))}
+          </ol>
+          {corte && <p>{es ? `Cifras a ${corte}.` : `Figures as of ${corte}.`}</p>}
         </div>
       </div>
     </section>
