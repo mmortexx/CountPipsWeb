@@ -51,7 +51,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "parte de hoy en lenguaje llano, que avisa cuando llevas más operaciones abiertas de " +
       "las que sueles aguantar.",
     notaEn:
-      "Below the logging form, the overview screen opens in two: the performance curve with " +
+      "Below the logging form, the overview screen splits in two: the performance curve with " +
       "its drawdown areas shaded and the balance as a dashed line, and the month calendar " +
       "with each day's result and each week's total. Above them, today's briefing in plain " +
       "language, which speaks up when you have more trades on than you usually handle.",

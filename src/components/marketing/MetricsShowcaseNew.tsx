@@ -395,7 +395,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), f: "μ / σ", d: es ? "Retorno por unidad de volatilidad." : "Return per unit of volatility." },
     { id: "sortino", l: "Sortino", v: fmtNum(METRICS.sortino, lang, 2), f: "μ / σ↓", d: es ? "Sólo penaliza la volatilidad bajista." : "Penalizes downside volatility only." },
     { id: "omega", l: "Omega", v: fmtNum(METRICS.omega, lang, 2), f: es ? "Σ ganancias / Σ pérdidas" : "Σ gains / Σ losses", d: es ? "Pondera la distribución entera." : "Weighs the whole distribution." },
-    { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst fall." },
+    { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst drawdown." },
     {
       id: "expectancy",
       /* «Expectancy» también en español: es como la nombran las otras
@@ -406,7 +406,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
       l: "Expectancy",
       v: fmtR(METRICS.expectancyR, lang, 2),
       f: "WR·W̄ − (1−WR)·L̄",
-      d: es ? "Lo que deja cada operación, en R." : "What each trade leaves, in R.",
+      d: es ? "Lo que deja cada operación, en R." : "Average result per trade, in R.",
       c: METRICS.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
       enlaza: "expectancy",
     },
@@ -415,7 +415,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
       l: "Max drawdown",
       v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
       f: es ? "(pico − valle) / pico" : "(peak − trough) / peak",
-      d: es ? "La peor caída de pico a valle." : "The worst peak-to-trough fall.",
+      d: es ? "La peor caída de pico a valle." : "The largest peak-to-trough decline.",
       c: "rgb(var(--pnl-neg))",
       enlaza: "maxDd",
     },
@@ -424,7 +424,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
        quince páginas. Decía «Ganadoras», sólo aquí.
        La FÓRMULA sí se traduce («G / N»), igual que «Σ ganancias / Σ
        pérdidas» en Omega: eso son letras, no el nombre de la métrica. */
-    { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed in profit.", enlaza: "winRate" },
+    { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed at a profit.", enlaza: "winRate" },
     { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: es ? "Ganancia media frente a pérdida media." : "Average win against average loss." },
   ];
 

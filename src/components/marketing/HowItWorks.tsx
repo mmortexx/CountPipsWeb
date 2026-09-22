@@ -19,7 +19,7 @@ export function HowItWorks() {
     },
     {
       n: "02",
-      title: es ? "Analiza tus métricas" : "Analyze your metrics",
+      title: es ? "Analiza tus métricas" : "Analyse your metrics",
       desc: es
         ? "Más de 40 métricas institucionales recalculadas con cada operación: expectancy, profit factor, Sharpe, drawdown, win rate por setup."
         : "Over 40 institutional metrics recalculated with every trade: expectancy, profit factor, Sharpe, drawdown, win rate by setup.",
@@ -30,7 +30,7 @@ export function HowItWorks() {
       title: es ? "Mejora tu disciplina" : "Improve your discipline",
       desc: es
         ? "El ritual pre/post mercado y el coste de indisciplina te muestran lo que tu comportamiento te cuesta — en dinero real."
-        : "The pre/post-market ritual and the cost-of-indiscipline metric show what your behavior costs you — in real money.",
+        : "The pre/post-market ritual and the cost-of-indiscipline metric show what your behaviour costs you — in real money.",
       kbd: "Ctrl + 4",
     },
   ];

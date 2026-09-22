@@ -1,6 +1,12 @@
 import type { Lang } from "@/lib/i18n";
 
 const LOCALE: Record<Lang, string> = { es: "es-ES", en: "en-US" };
+/* Las cifras en inglés salen de en-US porque en-GB escribe «US$» delante del
+   dólar; las FECHAS no tienen ese problema y van en británico, como la app
+   (Strings/en-GB), el pie, los legales y el resto del inglés del sitio
+   («licence», «judgement»). Con en-US convivían en la misma portada «Feb 15»
+   en el gráfico y «21 September 2026» en el pie. */
+export const LOCALE_FECHA: Record<Lang, string> = { es: "es-ES", en: "en-GB" };
 
 /** Format a USD money value with sign-aware coloring support.
  *
@@ -149,7 +155,7 @@ export function fmtDuration(minutes: number, _lang: Lang = "es"): string {
    La barra de la app enseña un reloj UTC junto a estas cifras; ahora las
    dos cosas dicen la hora en la misma escala. */
 export function fmtDate(date: Date, lang: Lang = "es"): string {
-  return new Intl.DateTimeFormat(LOCALE[lang], {
+  return new Intl.DateTimeFormat(LOCALE_FECHA[lang], {
     day: "2-digit",
     month: "short",
     year: "numeric",
@@ -157,15 +163,15 @@ export function fmtDate(date: Date, lang: Lang = "es"): string {
   }).format(date);
 }
 
-/** Rótulo corto de eje de fechas, como el de la app: «15 feb» / «Feb 15». */
+/** Rótulo corto de eje de fechas, como el de la app: «15 feb» / «15 Feb». */
 export function fmtDiaMes(date: Date, lang: Lang = "es"): string {
-  return new Intl.DateTimeFormat(LOCALE[lang], { day: "numeric", month: "short", timeZone: "UTC" })
+  return new Intl.DateTimeFormat(LOCALE_FECHA[lang], { day: "numeric", month: "short", timeZone: "UTC" })
     .format(date)
     .replace(".", "");
 }
 
 export function fmtDateTime(date: Date, lang: Lang = "es"): string {
-  return new Intl.DateTimeFormat(LOCALE[lang], {
+  return new Intl.DateTimeFormat(LOCALE_FECHA[lang], {
     day: "2-digit",
     month: "short",
     hour: "2-digit",
@@ -175,7 +181,7 @@ export function fmtDateTime(date: Date, lang: Lang = "es"): string {
 }
 
 export function fmtTime(date: Date, lang: Lang = "es"): string {
-  return new Intl.DateTimeFormat(LOCALE[lang], {
+  return new Intl.DateTimeFormat(LOCALE_FECHA[lang], {
     hour: "2-digit",
     minute: "2-digit",
     timeZone: "UTC",

@@ -165,11 +165,14 @@ export function Footer() {
   return (
     <footer className="tj-pie relative mt-auto safe-bottom">
       <div className="tj-container relative py-12 md:py-16">
-        {/* Cinco columnas desde `md`, no cuatro: la legal es nueva. En
-            móvil siguen siendo dos, y las cuatro de enlaces caen en dos
-            filas de dos, que es lo que cabe en 376 px sin apretar. */}
-        <div className="grid grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] gap-8 md:gap-10">
-          <div className="col-span-2 md:col-span-1">
+        {/* Cinco columnas desde `lg`: marca y cuatro de enlaces. En
+            tableta la marca sube a su propia fila y los enlaces van en
+            cuatro columnas — con las cinco a 820 px cada una medía unos
+            100 px y «Operativa manual», «Acceso anticipado» o «Test de
+            disciplina» caían en dos renglones. En móvil, dos filas de dos,
+            que es lo que cabe en 376 px sin apretar. */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] gap-8 md:gap-10">
+          <div className="col-span-2 md:col-span-4 lg:col-span-1">
             {/* `-my-2 py-2` es un truco con un motivo: el bloque medía 28 px
                 de alto, y un dedo no acierta 28 px. El relleno lo lleva a
                 44; el margen negativo devuelve exactamente esos 8 px por
@@ -288,7 +291,7 @@ export function Footer() {
             above. Status dot is decorative (aria-hidden); the label text
             carries the accessible meaning. `mt-8` separates it from the
             trust pills above. */}
-        <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-6 flex flex-col lg:flex-row items-center justify-between gap-4">
           <p className="text-xs text-secondary">
             © <span className="tnum">{year}</span> {t("appName")}. {t("rights")}
           </p>
@@ -301,7 +304,11 @@ export function Footer() {
               The version `v1.4.2` is overridden back to text-tertiary
               below — it's pure metadata and the dimmer weight helps it
               read as secondary information next to the legal links. */}
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-secondary">
+          {/* Los puntos separadores sólo desde `lg`, donde la fila cabe en
+              una línea. Por debajo se parte, y el punto que seguía a la
+              última pieza de un renglón se quedaba colgando contra el
+              canto, detrás de nada; ahí separa el hueco. */}
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:gap-x-3 text-xs text-secondary">
             {/* Aquí había un punto verde con «Sistemas operativos» que no
                 consultaba absolutamente nada: era verde siempre, por
                 estar escrito en verde. Un indicador de estado que no mide
@@ -346,11 +353,11 @@ export function Footer() {
                     })}
                   </time>
                 </span>
-                <span aria-hidden className="opacity-40">·</span>
+                <span aria-hidden className="hidden lg:inline opacity-40">·</span>
               </>
             )}
             <span>ES + EN</span>
-            <span aria-hidden className="opacity-40">·</span>
+            <span aria-hidden className="hidden lg:inline opacity-40">·</span>
             {/* ── RETIRAR EL CONSENTIMIENTO ────────────────────────────
                 La política de privacidad instruye a "volver a elegir
                 «Solo necesarias»" para dejar de ser medido. Ese aviso no

@@ -10,7 +10,7 @@ import {
   monthlyBreakdown,
   type Trade,
 } from "@/lib/trading/data";
-import { fmtInt, fmtNum, fmtDate, fmtMoney, fmtPct } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtDate, fmtMoney, fmtPct, LOCALE_FECHA } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -1718,7 +1718,7 @@ export function JournalPage() {
                               lado podían decir días distintos. */}
                           {entry.date
                             .toLocaleDateString(
-                              lang === "es" ? "es-ES" : "en-US",
+                              LOCALE_FECHA[lang],
                               { month: "short", timeZone: "UTC" }
                             )
                             .replace(".", "")}

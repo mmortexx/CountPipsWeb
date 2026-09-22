@@ -3,7 +3,7 @@
 import { memo, useMemo, useState, type CSSProperties } from "react";
 import type { Metrics } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney } from "@/lib/trading/format";
+import { fmtMoney, LOCALE_FECHA } from "@/lib/trading/format";
 
 interface EquityCurveProps {
   metrics: Metrics;
@@ -97,7 +97,7 @@ export const EquityCurve = memo(function EquityCurve({
     }
   };
 
-  const locale = lang === "es" ? "es-ES" : "en-US";
+  const locale = LOCALE_FECHA[lang];
   const hoverPoint = hover && points[hover.idx];
 
   // Tooltip X follows the pointer, clamped so it never overflows left/right edges.

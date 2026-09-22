@@ -336,7 +336,7 @@ export const STR = {
   },
   featuresLead: {
     es: "Es la única app que te enseña lo que TU comportamiento te cuesta en dinero — y vive en tu ordenador, no en la nube de nadie.",
-    en: "It's the only app that shows you what YOUR behavior costs in money — and lives on your computer, not in anyone's cloud.",
+    en: "It's the only app that shows you what YOUR behaviour costs in money — and lives on your computer, not in anyone's cloud.",
   },
 
   // ---- Pricing ----

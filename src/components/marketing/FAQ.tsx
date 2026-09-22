@@ -81,7 +81,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   const categories = [
     { id: "all" as const, labelEs: "Todas las preguntas", labelEn: "All questions" },
     { id: "security" as const, labelEs: "Seguridad y Datos", labelEn: "Security & Data" },
-    { id: "access" as const, labelEs: "Licencia y Acceso", labelEn: "License & Access" },
+    { id: "access" as const, labelEs: "Licencia y Acceso", labelEn: "Licence & Access" },
     { id: "product" as const, labelEs: "Producto y Funciones", labelEn: "Product & Features" },
   ];
 

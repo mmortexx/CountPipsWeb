@@ -2,13 +2,14 @@
  * ENLACES — ¿te deja un enlace tirado en el otro idioma?
  *
  * ── Qué mide ──────────────────────────────────────────────────────────
- * Recorre el sitio compilado y comprueba una sola cosa, en las dos
- * direcciones:
+ * Recorre el sitio compilado y comprueba:
  *
  *   · Ninguna página INGLESA enlaza a una ruta española que SÍ tiene
  *     versión inglesa. Si existe `/en/faq/`, un enlace a `/faq/` desde
  *     `/en/pricing/` saca al visitante de su idioma sin avisarle.
  *   · Ninguna página ESPAÑOLA enlaza a una ruta `/en/…`.
+ *   · Todo enlace interno lleva a una página que existe.
+ *   · Ningún botón de acción (`.cta`) lleva a la página en la que está.
  *
  * No se comprueba contra la lista de rutas del código, sino contra los
  * FICHEROS que hay en `out/`: que exista `out/en/faq/index.html` es un
@@ -97,6 +98,25 @@ function enlacesInternos(html) {
   return [...salida];
 }
 
+/* UNA LLAMADA QUE TE DEJA DONDE ESTÁS.
+   Añadido el 2026-09-22: el cierre de `/pricing/` ofrecía «Ver precios»,
+   que recargaba la misma página. Un botón de acción (`.cta`) cuyo destino
+   es la página en la que está no lleva a ningún sitio. Las anclas a una
+   sección de la misma página (`#…`) sí son un destino y no cuentan. */
+function llamadasASiMisma(html, ruta) {
+  const aqui = ruta.replace(/\/+$/, "") || "/";
+  const salida = [];
+  for (const [etiqueta] of cuerpo(html).matchAll(/<a\b[^>]*>/g)) {
+    const clase = etiqueta.match(/class="([^"]*)"/)?.[1] ?? "";
+    if (!/(?:^|\s)cta(?:\s|$)/.test(clase)) continue;
+    let h = etiqueta.match(/href="([^"]*)"/)?.[1] ?? "";
+    if (!h.startsWith("/") || h.includes("#")) continue;
+    if (PREFIJO && h.startsWith(PREFIJO)) h = h.slice(PREFIJO.length) || "/";
+    if ((h.split("?")[0].replace(/\/+$/, "") || "/") === aqui) salida.push(h);
+  }
+  return salida;
+}
+
 const fallos = [];
 let paginas = 0;
 let enlaces = 0;
@@ -107,6 +127,10 @@ for await (const f of htmls(RAIZ)) {
   const en = ruta === "/en/" || ruta.startsWith("/en/");
   const html = await readFile(f, "utf8");
   paginas++;
+
+  for (const h of llamadasASiMisma(html, ruta)) {
+    fallos.push({ ruta, regla: "botón de acción que lleva a la misma página", detalle: h });
+  }
 
   for (const h of enlacesInternos(html)) {
     enlaces++;
@@ -147,7 +171,7 @@ for (const [regla, casos] of Object.entries(porRegla)) {
 
 console.log(`\n[enlaces] ${paginas} páginas · ${enlaces} enlaces internos revisados`);
 if (fallos.length) {
-  console.log(`[enlaces] ${fallos.length} enlace(s) que sacan al visitante de su idioma`);
+  console.log(`[enlaces] ${fallos.length} enlace(s) con fallo`);
   console.log("[enlaces] el prefijo `/en` lo pone `withLocale(href, lang)`, en `src/lib/locale.ts`");
   process.exit(1);
 }

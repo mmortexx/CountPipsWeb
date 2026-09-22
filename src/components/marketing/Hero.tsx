@@ -63,7 +63,9 @@ export function Hero({ producto }: { producto?: ReactNode }) {
       <div className="tj-container relative mt-[clamp(2.25rem,4vw,3rem)]">
         {producto}
 
-        <div className="flex flex-col items-center gap-4 py-[clamp(2.5rem,5vw,3.5rem)] text-center md:flex-row md:justify-between md:text-left">
+        {/* En fila desde `lg`: a 820 px, rótulo y nombres en la misma línea
+            no cabían y «Bybit» bajaba solo a un segundo renglón. */}
+        <div className="flex flex-col items-center gap-4 py-[clamp(2.5rem,5vw,3.5rem)] text-center lg:flex-row lg:justify-between lg:text-left">
           <p className="m-0 text-[13px] text-tertiary">
             {es ? "Plantillas de importación CSV para" : "CSV import templates for"}
           </p>

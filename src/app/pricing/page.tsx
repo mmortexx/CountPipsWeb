@@ -163,7 +163,7 @@ export function PricingBody() {
       <PricingFAQ />
       <BetaStatus />
 
-      <FinalCTANew />
+      <FinalCTANew enPrecios />
       <TableOfContents />
     </>
   );

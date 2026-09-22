@@ -1649,6 +1649,79 @@ balance` y los párrafos `pretty`; hay `hyphens` con
 `.medida` (68ch) y `tabular-nums` en `th`, `td`, `time`, `output` y
 `[data-cifra]`. No había nada que subir ahí.
 
+### Decimosexta tanda: la web entera con ojos nuevos (2026-09-22)
+
+Catorce rutas y sus gemelas inglesas, a 390, 820 y 1440 px, en claro y en
+oscuro: 168 capturas de página entera, miradas una a una. Ninguna página
+desborda de lado en ningún ancho. Lo que salió:
+
+- **Una promesa que no existía.** La portada decía que los dos recorridos
+  «adaptan la demostración a las decisiones que realmente tomas». Ninguno
+  toca la demo: son páginas propias. Ahora dice lo que hay al otro lado.
+- **El cierre de `/pricing` ofrecía «Ver precios»**, que recargaba la misma
+  página. Ahora la segunda acción es pedir el acceso. `enlaces.mjs` vigila
+  desde hoy que ningún `.cta` lleve a la página en la que está (vista en
+  rojo sobre la compilación anterior: `/pricing/` y `/en/pricing/`).
+- **El glosario se cerraba con el texto de las calculadoras** («La cuenta
+  ya te sale. Esto mismo, pero sobre tu historial…») cuando allí no se ha
+  hecho ninguna cuenta. Tiene su propia variante.
+- **Móvil y tableta: la ficha del Guardián llegaba antes que su titular** y
+  se leía como parte de la sección anterior. La columna de texto va primero
+  en el documento —también para quien usa lector de pantalla— y en
+  escritorio la ficha vuelve a la izquierda con `lg:order-first`.
+- **El pie**: en tableta, cinco columnas de ~100 px partían «Operativa
+  manual» o «Test de disciplina» en dos renglones; ahora la marca sube a su
+  fila y los enlaces van a cuatro columnas. Y el punto separador colgaba al
+  final de renglón en móvil y tableta (el mismo defecto que la
+  decimocuarta tanda quitó de la tira de confianza): sólo se pinta desde
+  `lg`, donde la fila cabe entera.
+- **Titulares de cabecera**: una palabra de una o dos letras ya no cierra
+  renglón («La app, en / tu navegador.» → «La app, / en tu navegador.»).
+- **La fila de plataformas CSV** dejaba «Bybit» sola en un segundo renglón
+  a 820 px; va en fila sólo desde `lg`.
+- **Inglés**: calcos en la portada («What each trade leaves», «the worst
+  fall», «opens in two», «brakes you», «NY break», «before opening sales»,
+  «Measuring is not the same as noting»), y una mezcla de variantes: el
+  sitio escribe «licence», «judgement» y «travelled», y el pie y los
+  legales fechan a la británica, pero había «behavior», «License»,
+  «Analyze» y el gráfico de la portada fechaba a la americana («Feb 15»).
+  Las fechas del formateador de la casa pasan a en-GB (`LOCALE_FECHA`); las
+  cifras siguen en en-US porque en-GB escribe «US$».
+
+#### La trampa de medida de esta tanda
+
+Las capturas de página entera pintan MAL lo que tiene `content-visibility:
+auto` fuera de pantalla: en `/pricing` móvil la tabla comparativa salía en
+blanco (un «hueco» de 1.100 px) y en `/about` medio titular salía a ~0,64 de
+su tamaño con el MISMO estilo calculado. Tres de tres con `.cv-auto`, cero
+de tres sin él, y al desplazarse hasta la sección el navegador lo pinta
+bien: no es un defecto del sitio. Para mirar capturas de página entera hay
+que inyectar `.cv-auto{content-visibility:visible!important}` antes.
+
+#### Rendimiento y fluidez, medidos en producción
+
+Móvil emulado (Pixel 7), CPU ×4, red «Fast 4G» de DevTools (9 Mbps, 165 ms),
+carga en frío, tres pasadas por ruta y una carga de calentamiento que no
+cuenta — sin ella la primera ruta pagaba DNS y TLS y salía a 3,7 s. Rangos:
+FCP 0,74–1,23 s (portada 1,00–1,01), LCP 0,92–2,40 s, CLS 0 en todas, JS
+214–243 kB (la demo 310), p95 de fotograma 16,8 ms en casi todo el español.
+
+**Pendiente, medido y sin causa:** el inglés da más fotogramas lentos que
+su gemela española, con el orden de medida invertido y sin nada más
+corriendo — portada 9–11 frente a 0–3, glosario 11–12 frente a 3–7. Se
+descartaron el partido de palabras (`hyphens`) y `content-visibility`:
+quitarlos no lo cambia. Queda abierto.
+
+#### Lo que se miró y no se tocó
+
+- La calculadora de riesgo deja a 1440 px unos 440 px vacíos bajo sus
+  entradas, junto al panel de resultados, que es más alto. Es la
+  composición natural de un formulario de dos columnas desiguales; llenar
+  ese hueco con algo sería relleno.
+- La captura clara del programa dentro del tema oscuro es deliberada (la
+  oscura pierde el contraste al reducirse; está explicado en
+  `ProductPlate.tsx`).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -1660,18 +1733,18 @@ node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo p
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
 node scripts/metadatos.mjs out          # título, descripción, canónico, hreflang, lang y ld+json de las 170
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
-node scripts/corrobora-menus.mjs        # navegación y menús, escritorio + móvil
+node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritorio + móvil (vale contra `out/` servido sin modo SPA)
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
 node scripts/cifras.mjs out             # convención de idioma, y restos de plantilla («undefined», «NaN») a la vista
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 5 botones «Copiar»
-node scripts/enlaces.mjs out            # ningún enlace roto, y ninguno que saque al visitante de su idioma
+node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 5 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 29 suites, 319 tests
+npx vitest run                          # 29 suites, 323 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

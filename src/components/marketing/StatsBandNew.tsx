@@ -68,12 +68,12 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
     ? [
         <>Por operación y por periodo, en la versión en pruebas del programa.</>,
         <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
-        <>Se cuentan solas: son las calculadoras publicadas hoy en {enlace("/herramientas", "Herramientas")}.</>,
+        <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
       ]
     : [
         <>Per trade and per period, in the pre-release version of the application.</>,
         <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
-        <>Counted automatically: the calculators published today under {enlace("/herramientas", "Tools")}.</>,
+        <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
       ];
   const corte = FECHA_PUBLICACION
     ? new Date(FECHA_PUBLICACION).toLocaleDateString(es ? "es-ES" : "en-GB", { year: "numeric", month: "long", timeZone: "UTC" })

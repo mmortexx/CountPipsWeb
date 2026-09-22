@@ -113,7 +113,7 @@ export default async function TerminoEnPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(terminoSchema) }}
       />
       <TerminoVista termino={t} />
-      <FinalCTANew variante="herramienta" />
+      <FinalCTANew variante="glosario" />
     </>
   );
 }

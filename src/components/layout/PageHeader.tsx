@@ -21,14 +21,21 @@ interface PageHeaderProps {
   tono?: TonoPagina;
 }
 
+/* Una palabra de una o dos letras no cierra renglón en un titular: a 390 px
+   «La app, en / tu navegador.» dejaba la preposición colgando. Se pega a la
+   siguiente con un espacio duro. */
+const CORTA = /^[a-záéíóúñü]{1,2}$/i;
+const pegaCortas = (s: string) =>
+  s.split(" ").reduce((acc, palabra, k, todas) => (k === 0 ? palabra : acc + (CORTA.test(todas[k - 1]) ? " " : " ") + palabra), "");
+
 function Titular({ text, highlight }: { text: string; highlight?: string }) {
   const i = highlight ? text.lastIndexOf(highlight) : -1;
-  if (!highlight || i < 0) return <>{text}</>;
+  if (!highlight || i < 0) return <>{pegaCortas(text)}</>;
   return (
     <>
-      {text.slice(0, i)}
-      <span className="text-gradient">{highlight}</span>
-      {text.slice(i + highlight.length)}
+      {pegaCortas(text.slice(0, i))}
+      <span className="text-gradient">{pegaCortas(highlight)}</span>
+      {pegaCortas(text.slice(i + highlight.length))}
     </>
   );
 }

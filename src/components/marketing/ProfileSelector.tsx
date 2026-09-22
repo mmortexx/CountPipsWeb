@@ -47,7 +47,7 @@ export function ProfileSelector() {
       title: es ? "Para operar con reglas que importan" : "To trade under rules that matter",
       body: es
         ? "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar."
-        : "Control limits, consistency and risk by account when an evaluation leaves no room for improvisation.",
+        : "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
       action: es ? "Explorar recorrido prop" : "Explore the prop path",
     },
   ] as const;
@@ -64,12 +64,12 @@ export function ProfileSelector() {
             {es ? <>Dos formas de operar. <span className="text-gradient tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="text-gradient tj-frase-nueva">One clearer read.</span></>}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-secondary md:text-lg">
-            {/* «the demonstration» es la palabra del diccionario, no la
-                que usa nadie: en inglés esto se llama «the demo», y así
-                lo llama el resto del sitio —el botón principal dice «See
-                the demo»—. Decirlo de dos maneras en la misma página es
-                lo que delata una traducción. */}
-            {es ? "Selecciona el contexto que más se parece al tuyo y adapta la demostración a las decisiones que realmente tomas." : "Select the context closest to yours and tailor the demo to the decisions you actually make."}
+            {/* Decía «adapta la demostración», y ninguno de los dos
+                recorridos toca la demo: son páginas propias. Se promete
+                lo que hay al otro lado del enlace. */}
+            {es
+              ? "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan."
+              : "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm's rules if you're being evaluated."}
           </p>
         </div>
 

@@ -164,7 +164,7 @@ export function Story() {
             <p className="mt-8 text-secondary leading-[1.7] max-w-[44em]">
               {es
                 ? "Cada app de trading que probamos era o bien una hoja de cálculo glorificada, o bien una suscripción mensual que perdía tus datos si dejabas de pagar. Ninguna te enseñaba lo que TU comportamiento te costaba en dinero. Así que construimos una que sí lo hace — y que vive en tu ordenador."
-                : "Every trading app we tried was either a glorified spreadsheet, or a monthly subscription that lost your data if you stopped paying. None of them showed what YOUR behavior cost you in money. So we built one that does — and that lives on your computer."}
+                : "Every trading app we tried was either a glorified spreadsheet, or a monthly subscription that lost your data if you stopped paying. None of them showed what YOUR behaviour cost you in money. So we built one that does — and that lives on your computer."}
             </p>
           </Reveal>
         </div>

@@ -44,7 +44,7 @@ const VALUES: Value[] = [
     descEs:
       "Datos de muestra, sin tarjeta ni instalación. El piloto privado valida el producto con usuarios reales antes de abrir la venta.",
     descEn:
-      "Sample data, no card and no installation. The private pilot validates the product with real users before opening sales.",
+      "Sample data, no card and no installation. The private pilot validates the product with real users before sales open.",
     href: "/demo",
     pruebaEs: "Recorrer la demo entera",
     pruebaEn: "Walk the whole demo",
@@ -60,10 +60,10 @@ const VALUES: Value[] = [
     descEs:
       "Las métricas sin disciplina son ruido. El Guardián te avisa antes de romper tus reglas y, si lo activas, te frena.",
     descEn:
-      "Metrics without discipline are noise. The Guardian warns you before you break your rules and, if you turn it on, brakes you.",
+      "Metrics without discipline are noise. The Guardian warns you before you break your rules and, if you turn it on, stops you.",
     href: "/features/disciplina",
     pruebaEs: "Cómo frena el Guardián",
-    pruebaEn: "How the Guardian brakes",
+    pruebaEn: "How the brake works",
     icon: <ShieldIcon />,
   },
   {

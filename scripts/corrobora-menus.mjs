@@ -23,8 +23,12 @@ ok("megamenú abre al hover", menuItems >= 4, `${menuItems} entradas`);
 
 // 2. Navega por una entrada del megamenú.
 await page.getByRole("menuitem").filter({ hasText: /Disciplina|Discipline/ }).first().click();
-await page.waitForURL("**/features/disciplina", { timeout: 8000 });
-ok("megamenú navega a /features/disciplina", page.url().endsWith("/features/disciplina"));
+/* Con o sin barra final: el servidor de desarrollo sirve «/demo» y la
+   exportación estática, que es lo que se publica, «/demo/». Exigir la
+   primera hacía que esta guarda no pudiera pasar nunca contra `out/`. */
+const acabaEn = (ruta) => new RegExp(`${ruta.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}/?$`);
+await page.waitForURL(acabaEn("/features/disciplina"), { timeout: 8000 });
+ok("megamenú navega a /features/disciplina", acabaEn("/features/disciplina").test(page.url()));
 
 // 3. Barra: enlaces directos.
 for (const [ruta, patron] of [
@@ -32,7 +36,7 @@ for (const [ruta, patron] of [
   ["/traders/manual", /^Manual$/],
 ]) {
   await page.locator("header").getByRole("link", { name: patron }).first().click();
-  await page.waitForURL(`**${ruta}`, { timeout: 8000 });
+  await page.waitForURL(acabaEn(ruta), { timeout: 8000 });
   ok(`barra navega a ${ruta}`, page.url().includes(ruta));
 }
 
@@ -133,7 +137,7 @@ if (!(await menuBtn.count())) {
   const destino = mob.locator('[data-visible="true"] a[href*="pricing"]').first();
   if ((await destino.count()) === 1) {
     await destino.click();
-    await mob.waitForURL("**/pricing", { timeout: 9000 });
+    await mob.waitForURL(acabaEn("/pricing"), { timeout: 9000 });
     await mob.waitForTimeout(700);
     const visibleTrasNavegar = await mob.locator('[data-visible="true"] a').count();
     ok("cajón navega y se cierra", visibleTrasNavegar === 0);

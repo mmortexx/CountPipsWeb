@@ -89,7 +89,7 @@ export function GlosarioBody() {
         breadcrumbEn="Glossary"
       />
       <GlosarioIndice />
-      <FinalCTANew variante="herramienta" />
+      <FinalCTANew variante="glosario" />
     </>
   );
 }

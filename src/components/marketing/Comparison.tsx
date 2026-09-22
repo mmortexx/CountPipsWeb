@@ -75,14 +75,14 @@ export function Comparison() {
               </>
             ) : (
               <>
-                Measuring is not <span className="text-gradient">the same as noting.</span>
+                Measuring is not <span className="text-gradient">writing it down.</span>
               </>
             )
           }
           entradilla={
             es
               ? "Una hoja de cálculo guarda lo que apuntas; un diario en la nube lo calcula en su servidor. CountPips lo calcula en tu equipo."
-              : "A spreadsheet stores what you note down; a cloud journal computes it on its server. CountPips computes it on your machine."
+              : "A spreadsheet stores what you write down; a cloud journal computes it on its server. CountPips computes it on your machine."
           }
         />
 

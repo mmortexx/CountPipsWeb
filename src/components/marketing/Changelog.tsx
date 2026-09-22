@@ -123,7 +123,7 @@ export function Changelog() {
           titulo={es ? (
             <>Qué está listo, <span className="text-gradient">qué validamos y qué sigue.</span></>
           ) : (
-            <>What is ready, <span className="text-gradient">what we validate and what follows.</span></>
+            <>What&apos;s ready, <span className="text-gradient">what we&apos;re testing and what comes next.</span></>
           )}
           entradilla={es
             ? "Separado entre entregado, acceso anticipado y futuro. Sin testimonios ni fechas inventadas: actualizamos esta página cuando haya evidencia."

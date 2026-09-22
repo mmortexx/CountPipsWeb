@@ -67,13 +67,96 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           globals.css, sustituyendo al `max-w-[1240px] mx-auto px-5 md:px-8`
           hardcodeado. Paridad con StatsBandNew, MetricsShowcaseNew y Values. */}
       <div className="relative tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+        {/* Columna de texto: primero en el documento para que en móvil y en
+            un lector de pantalla el titular llegue antes que la ficha; en
+            escritorio la ficha pasa a la izquierda con `lg:order-first`.
+            Copy + 3 features
+            P1 — envoltorios Reveal con stagger (0, 0.06, 0.12, 0.18) para
+            que la columna derecha entre en escena coordinada con la
+            tarjeta mockup de la izquierda (que tiene su propio motion.div).
+            Antes la columna aparecía estática mientras la tarjeta izquierda
+            no animaba; ahora las dos mitades se asientan a la par. */}
+        <div>
+          {!enPagina && (
+          <Reveal>
+            <div className="inline-flex items-center gap-3 mb-5">
+              <span className="eyebrow">
+                {es ? "DISCIPLINA" : "DISCIPLINE"}
+              </span>
+            </div>
+          </Reveal>
+          )}
+          <Reveal delay={0.06}>
+            <h2
+              className={enPagina ? "sr-only" : "t-h2 m-0 text-primary"}
+            >
+              {es ? (
+                <>
+                  Disciplina que <span className="text-gradient">actúa</span>,
+                  <br className="hidden sm:block" />
+                  {" "}no que sermonea.
+                </>
+              ) : (
+                <>
+                  Discipline that <span className="text-gradient">acts</span>,
+                  <br className="hidden sm:block" />
+                  {" "}not lectures.
+                </>
+              )}
+            </h2>
+          </Reveal>
+          {!enPagina && (
+          <Reveal delay={0.12}>
+            <p
+              className="mt-5 mb-8"
+              style={{
+                fontSize: "clamp(1rem, 1.3vw, 1.1rem)",
+                lineHeight: 1.62,
+                color: "var(--ink-2)",
+                maxWidth: "36em",
+              }}
+            >
+              {es
+                ? "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes."
+                : "The Guardian doesn't tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them."}
+            </p>
+          </Reveal>
+          )}
+          {/* T2d — `space-y-5` (20px) entre features (era `space-y-4` 16px):
+              el incremento refuerza la legibilidad móvil sin abrir un
+              hueco tipográfico; a desktop el Δ es apenas perceptible.
+              + `leading-[1.6]` en la descripción para parity con Values
+              y con el spec de legibilidad de la home.
+              P1 — envoltorio Reveal delay 0.18 para que las 3 features
+              entren como bloque coordinado tras el titular. */}
+          <Reveal delay={0.18}>
+          <ul className="m-0 p-0 list-none border-b border-[var(--line)]">
+            {[
+              { i: ShieldCheck, t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
+              { i: HandMetal, t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
+              { i: Timer, t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
+            ].map((f) => {
+              const Icon = f.i;
+              return (
+                <li key={f.t} className="flex items-start gap-4 border-t border-[var(--line)] py-5">
+                  <Icon size={18} strokeWidth={1.6} aria-hidden className="mt-0.5 flex-none text-tertiary" />
+                  <div>
+                    <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
+                    <p className="m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+          </Reveal>
+        </div>
         {/* La comprobación previa como ficha de auditoría: barra con el
             rótulo, la línea de la operación, las reglas en filas con su
             estado en texto, y el veredicto. Divisiones con filetes, sin
             cajas rellenas dentro de la tarjeta ni sellos de color: el
             color queda para lo que lo necesita —la regla que falla y el
             veredicto—. */}
-        <div data-entra className="tj-ficha">
+        <div data-entra className="tj-ficha lg:order-first">
           <p className="tj-ficha-barra">
             <span>
               {es ? "Semáforo de riesgo" : "Risk light"}
@@ -94,7 +177,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             </div>
             <ul className="m-0 p-0 list-none">
               {[
-                { ok: true, l: es ? "Setup apto: ruptura NY" : "Valid setup: NY break" },
+                { ok: true, l: es ? "Setup apto: ruptura NY" : "Valid setup: NY breakout" },
                 { ok: true, l: es ? "R:R ≥ 1,5" : "R:R ≥ 1.5" },
                 {
                   // El texto y el estado salen del cálculo, no de una
@@ -179,87 +262,6 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               )}
             </div>
           </div>
-        </div>
-
-        {/* Columna derecha: copy + 3 features
-            P1 — envoltorios Reveal con stagger (0, 0.06, 0.12, 0.18) para
-            que la columna derecha entre en escena coordinada con la
-            tarjeta mockup de la izquierda (que tiene su propio motion.div).
-            Antes la columna aparecía estática mientras la tarjeta izquierda
-            no animaba; ahora las dos mitades se asientan a la par. */}
-        <div>
-          {!enPagina && (
-          <Reveal>
-            <div className="inline-flex items-center gap-3 mb-5">
-              <span className="eyebrow">
-                {es ? "DISCIPLINA" : "DISCIPLINE"}
-              </span>
-            </div>
-          </Reveal>
-          )}
-          <Reveal delay={0.06}>
-            <h2
-              className={enPagina ? "sr-only" : "t-h2 m-0 text-primary"}
-            >
-              {es ? (
-                <>
-                  Disciplina que <span className="text-gradient">actúa</span>,
-                  <br className="hidden sm:block" />
-                  {" "}no que sermonea.
-                </>
-              ) : (
-                <>
-                  Discipline that <span className="text-gradient">acts</span>,
-                  <br className="hidden sm:block" />
-                  {" "}not lectures.
-                </>
-              )}
-            </h2>
-          </Reveal>
-          {!enPagina && (
-          <Reveal delay={0.12}>
-            <p
-              className="mt-5 mb-8"
-              style={{
-                fontSize: "clamp(1rem, 1.3vw, 1.1rem)",
-                lineHeight: 1.62,
-                color: "var(--ink-2)",
-                maxWidth: "36em",
-              }}
-            >
-              {es
-                ? "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes."
-                : "The Guardian doesn't tell you what to do: it measures every trade against the rules you set and, if you turn it on, brakes you when you break them."}
-            </p>
-          </Reveal>
-          )}
-          {/* T2d — `space-y-5` (20px) entre features (era `space-y-4` 16px):
-              el incremento refuerza la legibilidad móvil sin abrir un
-              hueco tipográfico; a desktop el Δ es apenas perceptible.
-              + `leading-[1.6]` en la descripción para parity con Values
-              y con el spec de legibilidad de la home.
-              P1 — envoltorio Reveal delay 0.18 para que las 3 features
-              entren como bloque coordinado tras el titular. */}
-          <Reveal delay={0.18}>
-          <ul className="m-0 p-0 list-none border-b border-[var(--line)]">
-            {[
-              { i: ShieldCheck, t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
-              { i: HandMetal, t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
-              { i: Timer, t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
-            ].map((f) => {
-              const Icon = f.i;
-              return (
-                <li key={f.t} className="flex items-start gap-4 border-t border-[var(--line)] py-5">
-                  <Icon size={18} strokeWidth={1.6} aria-hidden className="mt-0.5 flex-none text-tertiary" />
-                  <div>
-                    <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
-                    <p className="m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          </Reveal>
         </div>
       </div>
     </section>
