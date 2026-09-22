@@ -1706,6 +1706,14 @@ cuenta — sin ella la primera ruta pagaba DNS y TLS y salía a 3,7 s. Rangos:
 FCP 0,74–1,23 s (portada 1,00–1,01), LCP 0,92–2,40 s, CLS 0 en todas, JS
 214–243 kB (la demo 310), p95 de fotograma 16,8 ms en casi todo el español.
 
+Repetido al día siguiente sobre lo ya publicado, con el mismo método, salió
+más rápido en TODAS las rutas —también en las que esta tanda no tocó
+(`/traders/manual`: bloqueo 111–119 → 34–42 ms)—. Es la máquina, no el
+código: los cambios son de texto y maquetación, y la diferencia entre días
+se traga cualquier efecto suyo. El único cambio atribuible es +1 kB de JS
+por los textos del cierre. Para comparar rendimiento, medir antes y después
+en la misma sesión, alternando.
+
 **Pendiente, medido y sin causa:** el inglés da más fotogramas lentos que
 su gemela española, con el orden de medida invertido y sin nada más
 corriendo — portada 9–11 frente a 0–3, glosario 11–12 frente a 3–7. Se
