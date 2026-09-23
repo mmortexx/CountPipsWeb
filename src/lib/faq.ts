@@ -25,7 +25,7 @@ export type QA = { q: string; a: string };
 export const FAQ_ES: QA[] = [
   {
     q: "¿Ya se puede comprar?",
-    a: "La demo es pública y no pide registro ni tarjeta. Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
+    a: "Todavía no. La compra se abrirá con el lanzamiento; hasta entonces, la demo es pública y no pide registro ni tarjeta. Core 149\u00a0$ y Pro 249\u00a0$ son los precios de lanzamiento previstos.",
   },
   {
     q: "¿Mis datos están seguros?",
@@ -64,8 +64,8 @@ export const FAQ_ES: QA[] = [
     a: "Core incluye el diario, las métricas, el calendario y la curva de equity, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y 2 cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.",
   },
   {
-    q: "¿Cómo funcionará la privacidad de mis datos?",
-    a: "La aplicación está pensada para funcionar en local: las operaciones viven en tu equipo y la web no pide credenciales, capital, extractos ni datos financieros. El piloto privado valida el flujo sin exponer esos datos.",
+    q: "¿Qué datos pide esta web?",
+    a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden sólo lo que ves en ellos —el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados y cómo llevas hoy tu diario—, y la analítica de visitas sólo se activa si la aceptas en el aviso de cookies.",
   },
   {
     q: "¿Podré usarlo en varios ordenadores?",
@@ -80,7 +80,7 @@ export const FAQ_ES: QA[] = [
 export const FAQ_EN: QA[] = [
   {
     q: "Can I buy it yet?",
-    a: "The demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 until commercial delivery opens.",
+    a: "Not yet. Purchases open at launch; until then, the demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 as launch prices.",
   },
   {
     q: "Are my data safe?",
@@ -119,8 +119,8 @@ export const FAQ_EN: QA[] = [
     a: "Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and 2 trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.",
   },
   {
-    q: "How will my data stay private?",
-    a: "The app is designed local-first: trades live on your machine and the website never asks for credentials, capital, statements or financial data. The private pilot validates the workflow without exposing those data.",
+    q: "What data does this website ask for?",
+    a: "Nothing financial: no credentials, no capital, no statements. The calculators do their maths in your browser. The forms ask only for what you see in them — the contact form, name, email and message; the early-access form, email, profile, experience, markets and how you keep your journal today — and visit analytics only switch on if you accept them in the cookie notice.",
   },
   {
     q: "Will I be able to use it on multiple computers?",

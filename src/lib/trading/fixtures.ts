@@ -36,7 +36,14 @@ export interface Bilingue {
   en: string;
 }
 
-const MONTH_DAYS = 31; // julio 2026
+/* El mes de muestra. El desfase del día 1 y la longitud salen del
+   calendario: escritos a mano, el 1 de julio caía en sábado y el mes
+   acababa en el 30. */
+const ANIO = 2026;
+const MES = 6; // julio
+const MONTH_DAYS = new Date(Date.UTC(ANIO, MES + 1, 0)).getUTCDate();
+const DESFASE = (new Date(Date.UTC(ANIO, MES, 1)).getUTCDay() + 6) % 7; // lunes = 0
+const CELDAS = Math.ceil((DESFASE + MONTH_DAYS) / 7) * 7;
 
 /* ---------- Cache ---------- */
 
@@ -48,7 +55,7 @@ function build() {
   return {
     /** Métricas "live" que el HTML mostraba flotando sobre el hero. */
     kpis: buildKpis(),
-    /** Calendario de julio 2026: 35 celdas (5 semanas × 7) con P&L diario. */
+    /** Calendario de julio 2026, semanas completas de lunes a domingo, con P&L diario. */
     cal: buildCal(),
   };
 }
@@ -72,9 +79,9 @@ function buildCal() {
   // monthlyBreakdown would show for July. Days without trades (early
   // weekdays with no fills, or the not-yet-reached second half of the
   // month) render as transparent cells with just the day number.
-  const dailyPnl = dailyPnlForMonth(TRADES, 2026, 6); // July = month index 6
-  const cells = Array.from({ length: 35 }, (_, i) => {
-    const dayNum = i - 4; // Empezamos en martes (offset 1) para alinear con julio 2026
+  const dailyPnl = dailyPnlForMonth(TRADES, ANIO, MES);
+  const cells = Array.from({ length: CELDAS }, (_, i) => {
+    const dayNum = i - DESFASE + 1;
     if (dayNum < 1 || dayNum > MONTH_DAYS) {
       return { day: "", val: "", style: "background:transparent" };
     }

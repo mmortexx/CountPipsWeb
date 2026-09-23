@@ -24,7 +24,7 @@ export function Story() {
   const phases: Phase[] = [
     {
       tag: es ? "Antes" : "Before",
-      title: es ? "Operabas a instinto" : "You traded on instinct",
+      title: es ? "Operabas por instinto" : "You traded on instinct",
       desc: es
         ? "Anotabas en Excel. No sabías por qué ganabas ni por qué perdías. Repetías los mismos errores sin ver el patrón."
         : "You took notes in Excel. You didn't know why you won or why you lost. You repeated the same mistakes without seeing the pattern.",

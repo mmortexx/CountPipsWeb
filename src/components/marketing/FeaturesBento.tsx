@@ -15,6 +15,19 @@ import { fmtPct, fmtR } from "@/lib/trading/format";
  * cuadradito gris, filas en cajas rellenas, estados en chapa de color y
  * se levantaban al pasar el ratón: el vocabulario de una plantilla.
  */
+/* R media por hora de la ficha «Rendimiento por hora» (null: sin
+   operaciones). Una sola serie para las barras y para el texto: antes las
+   barras eran alturas sueltas, resaltaban las 9:00 con la mejor ventana en
+   las 10:00 y su barra más alta caía en las 14:00, una hora «a evitar». */
+const HORAS_R: (number | null)[] = [
+  null, null, null, null, null, null, 0.05, 0.12, 0.2, 0.3, 0.62, 0.48,
+  0.1, 0.05, -0.8, 0.22, 0.15, -1.2, 0.08, 0.1, 0.02, -0.4, null, null,
+];
+const MEJOR_VENTANA = [10, 11];
+const TOPE_POS = Math.max(...HORAS_R.map((v) => v ?? 0));
+const TOPE_NEG = Math.max(...HORAS_R.map((v) => -(v ?? 0)));
+const ZONA_POS = (TOPE_POS / (TOPE_POS + TOPE_NEG)) * 100;
+
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
 /** `cal`: el mes de muestra, calculado al construir para no generar las operaciones en el navegador. */
 export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeof getCal>; enPagina?: boolean }) {
@@ -112,25 +125,41 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
               <h3 className={`${titulo} md:min-h-[2.5em]`}>
                 {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
               </h3>
-              <div className="mt-5 flex items-end gap-[3px]" style={{ height: 100 }}>
-                {[6, 8, 12, 18, 24, 32, 38, 44, 52, 60, 58, 50, 56, 68, 72, 64, 48, 38, 30, 22, 18, 14, 10, 8].map((h, i) => (
-                  <div
-                    key={i}
-                    className="flex-1 rounded-t-[1px]"
-                    style={{
-                      height: `${h}%`,
-                      background: i === 9 ? "rgb(var(--accent-base))" : "color-mix(in oklab, rgb(var(--accent-base)) 32%, transparent)",
-                    }}
-                    aria-hidden
-                  />
+              <div className="relative mt-5 flex gap-[3px]" style={{ height: 100 }} aria-hidden>
+                <span className="absolute inset-x-0 h-px bg-[var(--ficha-division)]" style={{ top: `${ZONA_POS}%` }} />
+                {HORAS_R.map((v, i) => (
+                  <div key={i} className="flex flex-1 flex-col">
+                    <div className="flex items-end" style={{ height: `${ZONA_POS}%` }}>
+                      {v !== null && v > 0 && (
+                        <div
+                          className="w-full rounded-t-[1px]"
+                          style={{
+                            height: `${(v / TOPE_POS) * 100}%`,
+                            background: MEJOR_VENTANA.includes(i) ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-pos) / 0.38)",
+                          }}
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      {v !== null && v < 0 && (
+                        <div
+                          className="w-full rounded-b-[1px]"
+                          style={{ height: `${(-v / TOPE_NEG) * 100}%`, background: "rgb(var(--pnl-neg) / 0.8)" }}
+                        />
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
               {/* Eje de horas: sin él, 24 barras no dicen a qué hora cae el pico. */}
-              <div className={`flex items-center justify-between border-t ${division} pt-1.5 tnum text-[11px] tracking-[0.06em] text-tertiary`} aria-hidden>
+              <div className="flex items-center justify-between pt-1.5 tnum text-[11px] tracking-[0.06em] text-tertiary" aria-hidden>
                 {["00", "06", "12", "18", "23"].map((h) => (
                   <span key={h}>{h}</span>
                 ))}
               </div>
+              <p className="m-0 mt-1.5 text-[11px] text-tertiary">
+                {es ? "R media de cada hora; sin barra, sin operaciones." : "Average R per hour; no bar, no trades."}
+              </p>
               <div className="mt-5 flex items-end justify-between gap-3">
                 <div>
                   <p className={`${rotulo} m-0`}>{es ? "Mejor ventana" : "Best window"}</p>
@@ -143,9 +172,9 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
               <p className={`${rotulo} m-0 mt-6`}>{es ? "Ventanas a evitar" : "Windows to avoid"}</p>
               <ul className="m-0 mt-1 p-0 list-none">
                 {[
-                  { w: "14:00 – 15:00", n: es ? "18 ops" : "18 trades", r: fmtR(-0.8, lang, 1) },
-                  { w: "17:00 – 18:00", n: es ? "11 ops" : "11 trades", r: fmtR(-1.2, lang, 1) },
-                  { w: "21:00 – 22:00", n: es ? "7 ops" : "7 trades", r: fmtR(-0.4, lang, 1) },
+                  { w: "14:00 – 15:00", n: es ? "18 ops" : "18 trades", r: fmtR(HORAS_R[14] ?? 0, lang, 1) },
+                  { w: "17:00 – 18:00", n: es ? "11 ops" : "11 trades", r: fmtR(HORAS_R[17] ?? 0, lang, 1) },
+                  { w: "21:00 – 22:00", n: es ? "7 ops" : "7 trades", r: fmtR(HORAS_R[21] ?? 0, lang, 1) },
                 ].map((row) => (
                   <li key={row.w} className="tj-ficha-fila tnum text-[13px]">
                     <span className="text-secondary">{row.w}</span>
@@ -203,7 +232,7 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
           <article data-entra="3" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>{es ? "Diario narrativo" : "Narrative journal"}</span>
-              <span className="tnum">2026-07-22</span>
+              <span className="tnum">2026-07-15</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1 flex flex-col">
               <h3 className={titulo}>{es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}</h3>

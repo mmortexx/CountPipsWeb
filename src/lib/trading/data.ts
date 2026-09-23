@@ -162,7 +162,7 @@ function buildTrades(): Trade[] {
   const dayMs = 86400000;
   let id = 1;
 
-  // 200 trades ≈ ~1.1 trades / business day over 180 days — realistic
+  // 200 trades ≈ ~1.5 trades / business day over 180 days — realistic
   // cadence for an active retail day-trader running 1–3 setups per session.
   for (let i = 0; i < 200; i++) {
     const inst = INSTRUMENTS[Math.floor(rnd() * INSTRUMENTS.length)];
@@ -234,6 +234,13 @@ function buildTrades(): Trade[] {
        desplazaba la operación tantas horas como huso tuviera la máquina.
        Ver la cabecera del fichero. */
     closedAt.setUTCHours(hourBase, Math.floor(rnd() * 60), 0, 0);
+    // Con el mercado cerrado sólo cotiza la cripto: el sábado pasa al
+    // viernes y el domingo al lunes, sin gastar sorteo.
+    if (inst.assetClass !== "crypto") {
+      const dia = closedAt.getUTCDay();
+      if (dia === 6) closedAt.setUTCDate(closedAt.getUTCDate() - 1);
+      else if (dia === 0) closedAt.setUTCDate(closedAt.getUTCDate() + 1);
+    }
     const durationMin =
       session === "Asia"
         ? 60 + Math.floor(rnd() * 240)

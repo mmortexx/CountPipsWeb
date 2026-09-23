@@ -1849,7 +1849,7 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
   en 2 × 2 hasta escritorio; y una ronda de redacción (FAQ «¿Ya se puede
   comprar?», «bróker», «Drawdown máximo», sin «la única app»).
 
-### Decimonovena tanda: la prueba de fondeo y un Monte Carlo legible (2026-09-24)
+### Decimonovena tanda: la prueba de fondeo y un Monte Carlo legible (2026-09-23)
 
 - **Décima herramienta: simulador de prueba de fondeo.** Qué parte de
   2.000 intentos toca el objetivo antes que el drawdown, estático o
@@ -1873,6 +1873,27 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
 - **Textos.** «No es un SaaS de Silicon Valley» en los principios de la
   portada; «Drawdown trailing» y «un edge» en las páginas de perfil.
 
+### Vigésima tanda: la muestra de /features, fiel a un calendario (2026-09-23)
+
+- **El calendario de /features** ponía el 1 de julio de 2026 en sábado y
+  acababa el mes en el 30: el desfase iba escrito a mano. Ahora sale de
+  `Date.UTC` (`fixtures.ts`), con prueba en `calendario-muestra.test.ts`.
+- **La muestra operaba con el mercado cerrado.** `buildTrades` repartía los
+  cierres por los 180 días sin mirar el día: 58 de 200 caían en fin de
+  semana, casi todos índices, oro o divisas. Ahora el sábado pasa al viernes
+  y el domingo al lunes salvo en cripto, sin gastar sorteo: el resultado de
+  cada operación no cambia (la prueba fija el total, 6.807,72 $). Sí cambian
+  las cifras que dependen del orden o del día —rachas, caída máxima, reparto
+  por día de la semana—, todas calculadas, ninguna escrita a mano.
+- **El gráfico por horas contradecía su texto:** resaltaba las 9:00 y la
+  barra más alta era las 14:00, una «ventana a evitar». Ahora son barras
+  divergentes de R media por hora (`HORAS_R`), de donde salen también las
+  cifras de las ventanas, con la mejor ventana resaltada y una línea de pie.
+- **FAQ.** «¿Ya se puede comprar?» empieza por «Todavía no». La pregunta de
+  privacidad repetía la de seguridad; ahora es «¿Qué datos pide esta web?»,
+  con lo que piden de verdad los dos formularios y la analítica sujeta a
+  consentimiento.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -1895,7 +1916,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 33 suites, 352 tests (+2 omitidos)
+npx vitest run                          # 34 suites, 356 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 
