@@ -13,7 +13,7 @@ del diario de trading nativo de Windows (WinUI 3, no incluido en este repo).
 - **Framework**: Next.js 16 (App Router, `output: "export"`) + React 19 + TypeScript estricto.
 - **Estilos**: Tailwind CSS v4 + tokens de diseño (`--tj-*`, `--surface-*`, `--accent-*`, `--pnl-*`).
 - **I18n**: Routing simétrico ES (`/`) / EN (`/en/`). 210 claves `STR`, 57 términos de
-  glosario (cinco familias), 8 herramientas + 1 test de disciplina, 13 FAQs, 4 legales.
+  glosario (cinco familias), 9 herramientas + 1 test de disciplina, 13 FAQs, 4 legales.
   Paridad 1:1 obligatoria entre idiomas.
 - **Demo**: PRNG determinista (`mulberry32`), 200 operaciones de muestra, 5 vistas
   WinUI 3 (Resumen, Operaciones, Analítica, Diario, TradeDetail), estado reactivo
@@ -1798,6 +1798,57 @@ Mirándolas a 1440 y 390, en claro y oscuro:
   exista: la primera versión de este cambio habría borrado en silencio
   el enlace de cuatro términos, y fue esa prueba la que lo cazó.
 
+### Decimoctava tanda: una herramienta nueva y lo que se copia (2026-09-23)
+
+Escrita con el equipo ocupado (sólo tipos, lint y pruebas a prioridad
+mínima) y comprobada después entera: compilación, batería completa en
+verde y capturas a 1440, 820 y 390 en los dos temas.
+
+- **Novena herramienta: recuperación de drawdown.** Lo que hay que ganar
+  para volver al máximo (20 % pide 25 %, 50 % pide 100 %) y cuántas
+  operaciones tarda el camino típico con tu riesgo, acierto y payoff. El
+  ritmo es el crecimiento logarítmico esperado —la mediana, no la media—,
+  así que con esperanza cero ya no vuelve, y con esperanza positiva pero
+  riesgo excesivo tampoco: la herramienta lo dice en vez de dar un número.
+  Cálculo en `lib/trading/recuperacion.ts` (nunca NaN ni Infinity; prueba
+  vista en rojo cambiando el redondeo). El término `drawdown` del glosario
+  lleva ahora aquí; `max-drawdown` sigue en el Monte Carlo.
+- **La cifra de herramientas sale del dato.** «Ocho calculadoras» estaba
+  escrito a mano en cinco textos de `/herramientas`; ahora lo da
+  `herramientasEnLetra()`. Una prueba recorre todo `src/` buscando cifras
+  a mano junto a «herramientas / calculadoras / tools»: la primera versión
+  no cazaba «Eight free tools» (una palabra en medio) y se amplió tras
+  verla pasar en verde con el fallo puesto.
+- **La columna «Resultado» del índice** vivía en un mapa aparte por slug:
+  una herramienta nueva sin entrada salía con la celda vacía. Ahora es un
+  campo obligatorio de cada herramienta y lo exige el compilador.
+- **Enlaces a un dominio que no existe.** Los resúmenes que copian el
+  proyector y el test llevaban `countpips.com`, sin comprar. Ahora salen de
+  `siteUrl()` y en el idioma de la página; una prueba impide el dominio
+  fuera de `site.ts` (vista en rojo con los dos ficheros).
+- **Comisiones con pérdida.** Con costes por encima de la ganancia, el
+  resultado anual salía «+−1.234 $» en verde, y el acierto necesario
+  pasaba del 100 %. Ahora va con su signo y en rojo, y «Inalcanzable».
+- **Acabado.** Mayúsculas a la inglesa en tablas y resúmenes copiados
+  («Start Bal», «PnL Anual», «Time to Double»), «⚠» y «✓» como adorno de
+  texto, «Edge fuerte» por «Ventaja sólida», y la campana de Gauss, que
+  al estirarse dibujaba el punto ovalado y cambiaba el grosor del trazo.
+- **Márgenes que se perdían.** `.tj-matriz` fijaba `margin: 0` fuera de
+  capa y ganaba a las utilidades: tres matrices (significancia y Monte
+  Carlo) pedían `mb-4`/`mb-5` y quedaban pegadas a lo siguiente. La regla
+  pasa a `@layer components`.
+- **Entradillas de sección a 88 caracteres.** `SectionHeader` las medía
+  con `max-w-[58ch]`, que en esta letra son ~88 caracteres por línea; ahora
+  lleva `medida`, como el resto. Lo cazó `medida.mjs` en `/traders/manual`.
+- **La herramienta nueva en móvil** ponía el resultado debajo de la
+  tabla, lejos de los controles; ahora va entre ambos, también en el orden
+  del documento (teclado y lector de pantalla).
+- **De la tanda sin publicar anterior:** el proyector arranca en el
+  perfil de cuenta fondeada a tres años; el pie falso de la vela de la
+  demo enseña comisiones y cumplimiento del plan; el reloj de sesiones va
+  en 2 × 2 hasta escritorio; y una ronda de redacción (FAQ «¿Ya se puede
+  comprar?», «bróker», «Drawdown máximo», sin «la única app»).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -1805,7 +1856,7 @@ Antes de dar por terminado un cambio visible, correr lo que aplique:
 ```bash
 npm run build                       # compila a /out
 node scripts/humo.mjs --serve out   # contraste, láminas, velo, entradas, menú…
-node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (28 rutas)
+node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (29 rutas)
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
 node scripts/metadatos.mjs out          # título, descripción, canónico, hreflang, lang y ld+json de las 170
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
@@ -1813,14 +1864,14 @@ node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritori
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
 node scripts/cifras.mjs out             # convención de idioma, y restos de plantilla («undefined», «NaN») a la vista
-node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 5 botones «Copiar»
+node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 6 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
-node scripts/anuncios.mjs --serve out   # las 5 herramientas dicen su resultado a quien no ve la pantalla
+node scripts/anuncios.mjs --serve out   # las 6 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 31 suites, 339 tests (+2 omitidos)
+npx vitest run                          # 32 suites, 346 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
 import { type Trade } from "@/lib/trading/data";
-import { fmtPrice } from "@/lib/trading/format";
+import { fmtMoney, fmtPrice } from "@/lib/trading/format";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
 interface Candle {
@@ -447,16 +447,33 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
         )}
       </div>
 
-      {/* Chart Footer Telemetry */}
+      {/* Pie con datos de ESTA operación. Antes decía «Motor gráfico
+          vectorial nativo», una «SMA (7)» que era el precio de entrada y
+          un deslizamiento y una conformidad fijos («0.00 pts», «100% OK»)
+          en todas las operaciones, también en las que rompían el plan. */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-tertiary">
-        <div className="flex items-center gap-4">
-          <span>{es ? "Motor Gráfico Vectorial Nativo" : "Native Vector Chart Engine"}</span>
-          <span>SMA (7): <b className="text-[rgb(var(--accent-base))]">{fmtPrice(trade.entry, decimals, lang)}</b></span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>{es ? "Deslizamiento (Slippage)" : "Slippage"}: <b className="text-primary">0.00 pts</b></span>
-          <span>{es ? "Conformidad" : "Rule Audit"}: <b className="text-[rgb(var(--pnl-pos))]">100% OK</b></span>
-        </div>
+        <span>
+          {es ? "Comisiones" : "Fees"}: <b className="text-primary">{fmtMoney(trade.fees, lang)}</b>
+        </span>
+        <span>
+          Plan:{" "}
+          <b
+            style={{
+              color:
+                trade.compliance === "yes"
+                  ? "rgb(var(--pnl-pos))"
+                  : trade.compliance === "partial"
+                    ? "rgb(var(--pnl-warn))"
+                    : "rgb(var(--pnl-neg))",
+            }}
+          >
+            {trade.compliance === "yes"
+              ? es ? "cumplido" : "followed"
+              : trade.compliance === "partial"
+                ? es ? "a medias" : "partly followed"
+                : es ? "roto" : "broken"}
+          </b>
+        </span>
       </div>
     </div>
   );

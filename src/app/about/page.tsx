@@ -96,8 +96,8 @@ export function AboutBody() {
         titleEn="Made for the serious manual trader."
         titleHighlightEs="manual serio."
         titleHighlightEn="manual trader."
-        subtitleEs="No es un SaaS más. Es una app nativa de Windows que vive en tu máquina, con métricas institucionales y disciplina que se mide en dinero."
-        subtitleEn="Not another SaaS. It's a native Windows app that lives on your machine, with institutional metrics and discipline measured in money."
+        subtitleEs="Una app nativa de Windows que vive en tu equipo, sin suscripción ni servidores, con métricas institucionales y una disciplina que se mide en dinero."
+        subtitleEn="A native Windows app that lives on your computer, with no subscription and no servers, institutional metrics and discipline measured in money."
         breadcrumbEs="Acerca de"
         breadcrumbEn="About"
       />

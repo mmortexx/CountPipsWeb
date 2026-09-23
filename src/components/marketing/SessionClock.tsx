@@ -165,11 +165,11 @@ export function SessionClock() {
           </div>
         </div>
 
-        <ul className="m-0 mb-10 grid list-none grid-cols-1 p-0 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="m-0 mb-10 grid list-none grid-cols-2 p-0 lg:grid-cols-4">
           {plazas.map((p) => {
             const open = p.abierta;
             return (
-              <li key={p.id} className="border-t border-[var(--line)] py-4 sm:pr-6">
+              <li key={p.id} className="border-t border-[var(--line)] py-4 pr-4 sm:pr-6">
                 <div className="flex items-center gap-2 text-[13px]" style={{ color: open ? "var(--ink)" : "var(--ink-3)" }}>
                   <span aria-hidden className="h-2 w-2 rounded-[2px]" style={{ background: open ? "var(--ink)" : "color-mix(in srgb, var(--ink) 20%, transparent)" }} />
                   {open ? (es ? "Abierta" : "Open") : (es ? "Cerrada" : "Closed")}

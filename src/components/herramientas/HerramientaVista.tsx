@@ -47,6 +47,9 @@ const COMPONENTES = {
       (m) => m.CommissionDragCalculator,
     ),
   ),
+  DrawdownRecovery: dynamic(() =>
+    import("@/components/marketing/DrawdownRecovery").then((m) => m.DrawdownRecovery),
+  ),
 } as const;
 
 export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) {

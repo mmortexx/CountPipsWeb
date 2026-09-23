@@ -10,19 +10,8 @@ import { HERRAMIENTAS } from "@/lib/herramientas";
  * no como una parrilla de tarjetas. Cada fila es una pieza con código
  * de catálogo, nombre, qué entrega y un disparador. Quien llega aquí
  * busca una calculadora concreta: la lista densa se recorre más rápido
- * que ocho recuadros con el mismo gesto.
+ * que una parrilla de recuadros con el mismo gesto.
  */
-
-const ENTREGA: Record<string, { es: string; en: string }> = {
-  "calculadora-de-riesgo": { es: "Lotes · contratos", en: "Lots · contracts" },
-  "significancia-estadistica": { es: "Ventaja vs azar", en: "Edge vs chance" },
-  "monte-carlo": { es: "Abanico de curvas", en: "Curve fan" },
-  "proyector-de-capital": { es: "Curva a N años", en: "N-year curve" },
-  "coste-de-indisciplina": { es: "Fuga anual", en: "Annual leak" },
-  "reloj-de-sesiones": { es: "Sesión · solape", en: "Session · overlap" },
-  "ahorro-vs-suscripcion": { es: "Escenario de coste", en: "Cost scenario" },
-  "impacto-de-comisiones": { es: "Break-even real", en: "True break-even" },
-};
 
 export function HerramientasIndice() {
   const { lang } = useLang();
@@ -43,7 +32,7 @@ export function HerramientasIndice() {
               {es ? "Instrumento" : "Instrument"}
             </span>
             <span className="tnum text-[12px] font-semibold text-tertiary">
-              {es ? "Entrega" : "Output"}
+              {es ? "Resultado" : "Output"}
             </span>
             {/* La cuarta columna no lleva rótulo: decía «Abrir» encima de
                 nueve celdas que ya dicen «Abrir →». */}
@@ -53,7 +42,6 @@ export function HerramientasIndice() {
           <ul className="m-0 list-none p-0">
             {HERRAMIENTAS.map((h, i) => {
               const codigo = `H-${String(i + 1).padStart(2, "0")}`;
-              const entrega = ENTREGA[h.slug];
               return (
                 <li key={h.slug} className="border-b border-[var(--line)]">
                   <Reveal delay={i * 0.03}>
@@ -76,7 +64,7 @@ export function HerramientasIndice() {
                         </span>
                       </span>
                       <span className="tnum hidden text-[13px] text-tertiary sm:block">
-                        {es ? entrega?.es : entrega?.en}
+                        {es ? h.entregaEs : h.entregaEn}
                       </span>
                       <span
                         aria-hidden

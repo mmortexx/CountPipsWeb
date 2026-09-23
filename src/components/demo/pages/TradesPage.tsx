@@ -1036,7 +1036,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          {es ? "Fuera de Plan (Fallo)" : "Off-plan (Mistake)"}
+          {es ? "Fuera de plan (fallo)" : "Off-plan (mistake)"}
         </button>
 
         <button
@@ -1052,7 +1052,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          {es ? "100 % en Plan" : "100% In-plan"}
+          {es ? "100 % en plan" : "100% in plan"}
         </button>
 
         <button

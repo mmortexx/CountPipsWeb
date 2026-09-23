@@ -554,11 +554,53 @@ describe("el menú cuenta lo que hay", () => {
     for (const n of vistas) expect(n).toBe(HERRAMIENTAS.length);
   });
 
+  /* Fuera del menú, la cifra sale de `herramientasEnLetra`. Al publicar la
+     novena, cinco textos de la página de herramientas seguían en «Ocho». */
+  it("fuera del menú nadie escribe a mano cuántas herramientas hay", async () => {
+    const { herramientasEnLetra, HERRAMIENTAS } = await import("@/lib/herramientas");
+    expect(NUMEROS[herramientasEnLetra("es").toLowerCase()]).toBe(HERRAMIENTAS.length);
+    expect(NUMEROS[herramientasEnLetra("en").toLowerCase()]).toBe(HERRAMIENTAS.length);
+    const fuentes: string[] = [];
+    const recorrer = (dir: string) => {
+      for (const entrada of readdirSync(join(RAIZ, dir))) {
+        const rel = `${dir}/${entrada}`;
+        if (statSync(join(RAIZ, rel)).isDirectory()) recorrer(rel);
+        else if (/\.(ts|tsx)$/.test(entrada) && !rel.endsWith("/Navbar.tsx")) fuentes.push(rel);
+      }
+    };
+    recorrer("src");
+    expect(fuentes.length).toBeGreaterThan(100);
+    const CIFRA =
+      /\b(?:dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|\d+)\s+(?:[\p{L}-]+\s+){0,2}(?:calculadoras|herramientas|calculators|tools)\b/giu;
+    const aMano = fuentes.flatMap((rel) => (sinComentarios(leer(rel)).match(CIFRA) ?? []).map((m) => `${rel}: ${m}`));
+    expect(aMano).toEqual([]);
+  });
+
   it("términos del glosario", async () => {
     const { TERMINOS } = await import("@/lib/glosario");
     const vistas = cifra(/"(\d+) (?:términos|terms)\b/g);
     expect(vistas.length).toBe(2);
     for (const n of vistas) expect(n).toBe(TERMINOS.length);
+  });
+});
+
+describe("ningún enlace apunta a un dominio que aún no existe", () => {
+  /* `countpips.com` no está comprado. Los resúmenes que se copian del
+     proyector y del test lo llevaban escrito: el visitante pegaba en su
+     diario un enlace que no resuelve. La dirección sale de `SITE_URL`. */
+  it("el dominio propio sólo aparece en site.ts", () => {
+    const fuentes: string[] = [];
+    const recorrer = (dir: string) => {
+      for (const entrada of readdirSync(join(RAIZ, dir))) {
+        const rel = `${dir}/${entrada}`;
+        if (statSync(join(RAIZ, rel)).isDirectory()) recorrer(rel);
+        else if (/\.(ts|tsx)$/.test(entrada)) fuentes.push(rel);
+      }
+    };
+    recorrer("src");
+    expect(fuentes.length).toBeGreaterThan(100);
+    const conDominio = fuentes.filter((rel) => /countpips\.com/i.test(sinComentarios(leer(rel))));
+    expect(conDominio).toEqual([]);
   });
 });
 

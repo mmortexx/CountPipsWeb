@@ -80,9 +80,9 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
   const categories = [
     { id: "all" as const, labelEs: "Todas las preguntas", labelEn: "All questions" },
-    { id: "security" as const, labelEs: "Seguridad y Datos", labelEn: "Security & Data" },
-    { id: "access" as const, labelEs: "Licencia y Acceso", labelEn: "Licence & Access" },
-    { id: "product" as const, labelEs: "Producto y Funciones", labelEn: "Product & Features" },
+    { id: "security" as const, labelEs: "Seguridad y datos", labelEn: "Security & data" },
+    { id: "access" as const, labelEs: "Licencia y acceso", labelEn: "Licence & access" },
+    { id: "product" as const, labelEs: "Producto y funciones", labelEn: "Product & features" },
   ];
 
   // While searching or filtering, force a fresh `key` so the first match opens by default

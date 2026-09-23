@@ -17,13 +17,14 @@ import { TERMINOS, terminoPorSlug, tituloDeTermino, CATEGORIAS } from "@/lib/glo
 import { customTradeToTrade, mergeTrades, type CustomTrade } from "@/lib/trading/demoStore";
 
 describe("D14: Suite Cuantitativa Institucional Integral", () => {
-  describe("1. Directorio de 8 Herramientas Interactivas", () => {
-    it("contiene exactamente 8 herramientas con sus slugs y componentes definidos", () => {
-      expect(HERRAMIENTAS).toHaveLength(8);
+  describe("1. Directorio de 9 Herramientas Interactivas", () => {
+    it("contiene exactamente 9 herramientas con sus slugs y componentes definidos", () => {
+      expect(HERRAMIENTAS).toHaveLength(9);
       const slugs = [
         "calculadora-de-riesgo",
         "significancia-estadistica",
         "monte-carlo",
+        "recuperacion-de-drawdown",
         "proyector-de-capital",
         "coste-de-indisciplina",
         "reloj-de-sesiones",

@@ -194,17 +194,17 @@ export function EdgeSignificanceChecker() {
         }
       : c.strongSignificant
         ? {
-            label: es ? "Edge fuerte" : "Strong edge",
+            label: es ? "Ventaja sólida" : "Strong edge",
             color: "rgb(var(--pnl-pos))",
             text: es
               ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí — pero valídalo fuera de muestra.`
               : `A ${fmtNum(winRate, 0)}% over ${trades} trades is very unlikely by chance (p = ${fmtNum(c.pValue, 4)} < 0.01). There's something real here — but validate out-of-sample.`,
           }
         : {
-            label: es ? "Edge moderado" : "Moderate edge",
+            label: es ? "Ventaja moderada" : "Moderate edge",
             color: "rgb(var(--accent-base))",
             text: es
-              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es significativo (p = ${fmtNum(c.pValue, 3)} < 0,05). Probablemente hay un edge, pero el margen es fino: acumula más operaciones para confirmarlo.`
+              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es significativo (p = ${fmtNum(c.pValue, 3)} < 0,05). Probablemente hay una ventaja, pero el margen es fino: acumula más operaciones para confirmarlo.`
               : `A ${fmtNum(winRate, 0)}% over ${trades} trades is significant (p = ${fmtNum(c.pValue, 3)} < 0.05). There's likely an edge, but the margin is thin: accumulate more trades to confirm.`,
           };
 
@@ -226,7 +226,7 @@ export function EdgeSignificanceChecker() {
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow" data-titular-herramienta>
-              {es ? "TEST ESTADÍSTICO" : "STATISTICAL TEST"}
+              {es ? "Test estadístico" : "Statistical test"}
             </span>
           </div>
           <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
@@ -293,7 +293,7 @@ export function EdgeSignificanceChecker() {
                 {es ? "Ratio trades/parámetro:" : "Trades/parameter ratio:"} <strong className="tnum text-primary">{fmtNum(c.tradesPerParam, 1)}:1</strong>
               </span>
               <span className={`font-semibold ${c.overfittingRisk ? "text-[rgb(var(--pnl-neg))]" : "text-[rgb(var(--pnl-pos))]"}`}>
-                {c.overfittingRisk ? (es ? "⚠ Riesgo de sobreajuste" : "⚠ Overfitting risk") : (es ? "✓ Robusto (≥20:1)" : "✓ Robust (≥20:1)")}
+                {c.overfittingRisk ? (es ? "Riesgo de sobreajuste" : "Overfitting risk") : (es ? "Robusto (≥ 20:1)" : "Robust (≥ 20:1)")}
               </span>
             </div>
           </div>
@@ -325,7 +325,7 @@ export function EdgeSignificanceChecker() {
           {/* Gaussian Bell Curve Distribution Chart */}
           <div className="mb-5 border-t border-[var(--ficha-division)] pt-3">
             <div className="flex flex-wrap justify-between gap-x-4 text-[12px] tnum text-tertiary mb-1">
-              <span className="whitespace-nowrap">{es ? "Campana de Gauss (H₀: Azar)" : "Gaussian Bell Curve (H₀: Luck)"}</span>
+              <span className="whitespace-nowrap">{es ? "Campana de Gauss (H₀: azar)" : "Bell curve (H₀: chance)"}</span>
               <span className="whitespace-nowrap">
                 {es ? "Región crítica: |z| ≥ 1,96" : "Critical zone: |z| ≥ 1.96"}
               </span>
@@ -337,7 +337,7 @@ export function EdgeSignificanceChecker() {
           <div className="tj-matriz grid-cols-2 mb-5">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? `p-valor (H₀: 50${PCT})` : `p-value (H₀: 50%)`} value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
-            <Result label={es ? "Potencia (1 - β)" : "Statistical Power"} value={`${fmtNum(c.power, 1)}${PCT}`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
+            <Result label={es ? "Potencia (1 − β)" : "Statistical power (1 − β)"} value={`${fmtNum(c.power, 1)}${PCT}`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
             <Result label={es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"} value={`${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`} color="var(--ink)" />
           </div>
 
@@ -372,7 +372,7 @@ export function EdgeSignificanceChecker() {
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {es ? "Muestra vs. necesaria" : "Sample vs. needed"}
+                {es ? "Muestra frente a la necesaria" : "Sample vs. required"}
               </span>
               <span className="tnum" style={{ fontSize: 12, fontWeight: 600, color: c.sampleAdequate ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}>
                 {trades} / {c.minSample}
@@ -429,7 +429,7 @@ export function EdgeSignificanceChecker() {
                 <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
                 <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" strokeWidth="1.3" />
               </svg>
-              {copied ? (es ? "¡Informe copiado!" : "Report copied!") : (es ? "Copiar informe estadístico" : "Copy statistical report")}
+              {copied ? (es ? "Informe copiado" : "Report copied") : (es ? "Copiar informe" : "Copy report")}
             </button>
             <span className="text-[12px] text-tertiary tnum">
               {es ? "100 % privado en tu navegador" : "100% private in your browser"}
@@ -501,14 +501,14 @@ function GaussianBellCurve({ z, isSignificant }: { z: number; isSignificant: boo
         <rect x={critRightX} y={padY} width={W - padX - critRightX} height={plotH} fill="rgb(var(--pnl-pos))" fillOpacity="0.15" />
 
         {/* Critical threshold lines (z = +/- 1.96) */}
-        <line x1={critLeftX} y1={padY} x2={critLeftX} y2={H - padY} stroke="rgb(var(--divider)/0.2)" strokeDasharray="2 2" />
-        <line x1={critRightX} y1={padY} x2={critRightX} y2={H - padY} stroke="rgb(var(--divider)/0.2)" strokeDasharray="2 2" />
+        <line x1={critLeftX} y1={padY} x2={critLeftX} y2={H - padY} stroke="rgb(var(--divider)/0.2)" strokeDasharray="2 2" vectorEffect="non-scaling-stroke" />
+        <line x1={critRightX} y1={padY} x2={critRightX} y2={H - padY} stroke="rgb(var(--divider)/0.2)" strokeDasharray="2 2" vectorEffect="non-scaling-stroke" />
 
         {/* Center baseline */}
-        <line x1={padX} y1={H - padY} x2={W - padX} y2={H - padY} stroke="rgb(var(--divider)/0.25)" />
+        <line x1={padX} y1={H - padY} x2={W - padX} y2={H - padY} stroke="rgb(var(--divider)/0.25)" vectorEffect="non-scaling-stroke" />
 
         {/* Gaussian curve line */}
-        <path d={pathD} fill="none" stroke="var(--ink-3)" strokeWidth="1.5" />
+        <path d={pathD} fill="none" stroke="var(--ink-3)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
 
         {/* User's observed z-score marker */}
         <line
@@ -518,12 +518,7 @@ function GaussianBellCurve({ z, isSignificant }: { z: number; isSignificant: boo
           y2={H - padY}
           stroke={isSignificant ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"}
           strokeWidth="2"
-        />
-        <circle
-          cx={zX}
-          cy={padY + 4}
-          r="3"
-          fill={isSignificant ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"}
+          vectorEffect="non-scaling-stroke"
         />
       </svg>
     </div>

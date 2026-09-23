@@ -102,7 +102,7 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
 
             {[
               {
-                label: es ? "Precio Entrada → Salida" : "Entry → Exit Price",
+                label: es ? "Precio de entrada → salida" : "Entry → exit price",
                 valA: `${fmtPrice(tradeA.entry, 2, lang)} → ${fmtPrice(tradeA.exit, 2, lang)}`,
                 valB: `${fmtPrice(tradeB.entry, 2, lang)} → ${fmtPrice(tradeB.exit, 2, lang)}`,
               },
@@ -137,7 +137,7 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
                 valB: tradeB.session,
               },
               {
-                label: es ? "Cumplimiento de Plan" : "Plan Compliance",
+                label: es ? "Cumplimiento del plan" : "Plan compliance",
                 valA: tradeA.compliance === "yes" ? (es ? "✓ Cumplido (100%)" : "✓ Respected (100%)") : (es ? "✕ Ruptura de plan" : "✕ Rule break"),
                 valB: tradeB.compliance === "yes" ? (es ? "✓ Cumplido (100%)" : "✓ Respected (100%)") : (es ? "✕ Ruptura de plan" : "✕ Rule break"),
               },

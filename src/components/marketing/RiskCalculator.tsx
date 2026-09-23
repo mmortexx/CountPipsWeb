@@ -559,7 +559,7 @@ export function RiskCalculator() {
             {showKelly && (
               <div className="mt-3 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-tertiary">{es ? "Win Rate histórico estimado:" : "Estimated historical Win Rate:"}</span>
+                  <span className="text-tertiary">{es ? "Win rate histórico estimado:" : "Estimated historical win rate:"}</span>
                   <span className="tnum font-semibold text-primary">{kellyWinRate}{PCT}</span>
                 </div>
                 <input
@@ -703,7 +703,7 @@ export function RiskCalculator() {
                   color: c.leverage > 10 ? "rgb(var(--pnl-neg))" : "var(--ink)",
                 }}
               >
-                {fmtNum(c.leverage, 1)}x
+                {fmtNum(c.leverage, 1)}{"\u00a0×"}
               </div>
             </div>
             <div className="caja-cifra">

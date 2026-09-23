@@ -24,7 +24,7 @@ export type QA = { q: string; a: string };
 
 export const FAQ_ES: QA[] = [
   {
-    q: "¿Cuál es el estado de compra?",
+    q: "¿Ya se puede comprar?",
     a: "La demo es pública y no pide registro ni tarjeta. Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos hasta que la entrega comercial esté abierta.",
   },
   {
@@ -65,7 +65,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Cómo funcionará la privacidad de mis datos?",
-    a: "La aplicación está diseñada local-first: las operaciones viven en tu equipo y la web no pide credenciales, capital, extractos ni datos financieros. El piloto privado valida el flujo sin exponer esos datos.",
+    a: "La aplicación está pensada para funcionar en local: las operaciones viven en tu equipo y la web no pide credenciales, capital, extractos ni datos financieros. El piloto privado valida el flujo sin exponer esos datos.",
   },
   {
     q: "¿Podré usarlo en varios ordenadores?",
@@ -79,7 +79,7 @@ export const FAQ_ES: QA[] = [
 
 export const FAQ_EN: QA[] = [
   {
-    q: "What is the purchase status?",
+    q: "Can I buy it yet?",
     a: "The demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 until commercial delivery opens.",
   },
   {

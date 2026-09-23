@@ -3,6 +3,7 @@
 import { useState, useMemo, useId, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
 import { pctSep } from "@/lib/trading/format";
+import { siteUrl } from "@/lib/site";
 import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
 
 /**
@@ -275,17 +276,17 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
   const copyAssessment = async () => {
     if (!allAnswered || !level) return;
     const lines = [
-      es ? "Diagnóstico de Disciplina — CountPips" : "Discipline Assessment — CountPips",
+      es ? "Diagnóstico de disciplina — CountPips" : "Discipline assessment — CountPips",
       "─".repeat(32),
-      `${es ? "Puntuación Global" : "Global Score"}: ${score} / 100 (${level.label})`,
+      `${es ? "Puntuación global" : "Overall score"}: ${score} / 100 (${level.label})`,
       "",
-      es ? "Desglose por Ejes:" : "Axis Breakdown:",
+      es ? "Desglose por ejes:" : "Axis breakdown:",
       ...perDim.map(({ dim, pct }) => `  · ${es ? dim.es : dim.en}: ${pct}${pctSep(lang)}`),
       "",
       `${es ? "Punto a reforzar" : "Priority focus"}: ${weakest ? (es ? weakest.dim.es : weakest.dim.en) : "—"}`,
       weakest ? (es ? weakest.dim.tipEs : weakest.dim.tipEn) : "",
       "─".repeat(32),
-      "https://countpips.com/test",
+      siteUrl(es ? "/test/" : "/en/test/"),
     ];
     try {
       await navigator.clipboard.writeText(lines.join("\n"));

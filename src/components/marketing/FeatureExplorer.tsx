@@ -56,7 +56,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: "playbook",
-    titleEs: "Playbooks con stats en vivo",
+    titleEs: "Playbooks con estadísticas en vivo",
     titleEn: "Playbooks with live stats",
     descEs: "Documenta cada setup y mide su expectancy real. Sabes qué setup funciona y cuál no, con su muestra al lado.",
     descEn: "Document each setup and measure its real expectancy. Know which setup works and which does not, with its sample beside it.",
@@ -96,8 +96,8 @@ const FEATURES: Feature[] = [
   },
   {
     id: "export",
-    titleEs: "Export CSV/JSON/PDF",
-    titleEn: "Export CSV/JSON/PDF",
+    titleEs: "Exportación a CSV, JSON y PDF",
+    titleEn: "Export to CSV, JSON and PDF",
     descEs: "Tus datos son tuyos. Exporta todo en formatos abiertos, sin bloqueo, cuando quieras.",
     descEn: "Your data is yours. Export everything in open formats, no lock-in, whenever you want.",
     tags: ["export", "local", "security"],
@@ -106,8 +106,8 @@ const FEATURES: Feature[] = [
     id: "mae-mfe",
     titleEs: "MAE / MFE",
     titleEn: "MAE / MFE",
-    descEs: "Maximum Adverse y Favorable Excursion: detecta si sales pronto o tarde de forma sistemática.",
-    descEn: "Maximum Adverse and Favorable Excursion: detect if you exit early or late, systematically.",
+    descEs: "Cuánto fue en tu contra y a tu favor cada operación antes de cerrarla: detecta si sales pronto o tarde de forma sistemática.",
+    descEn: "How far each trade went against you and in your favour before you closed it: spot whether you exit early or late, systematically.",
     tags: ["metrics"],
   },
   {

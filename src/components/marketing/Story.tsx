@@ -48,7 +48,7 @@ export function Story() {
            inglés con “…”, como el aviso de cookies y la cita del diario
            de `/features`. Esta frase era la única que se salía, en los
            dos idiomas a la vez. */
-        ? "Tu setup «estrella» apenas tiene expectancy positivo. Tu mejor hora no es la que creías. Tu sesión perdedora es siempre la misma."
+        ? "Tu setup «estrella» apenas tiene expectancy positiva. Tu mejor hora no es la que creías. Tu sesión perdedora es siempre la misma."
         : "Your “star” setup barely has positive expectancy. Your best hour isn't the one you thought. Your losing session is always the same one.",
       tone: "neutral",
     },
@@ -163,8 +163,8 @@ export function Story() {
                 otherwise stretch it too wide. */}
             <p className="mt-8 text-secondary leading-[1.7] max-w-[44em]">
               {es
-                ? "Cada app de trading que probamos era o bien una hoja de cálculo glorificada, o bien una suscripción mensual que perdía tus datos si dejabas de pagar. Ninguna te enseñaba lo que TU comportamiento te costaba en dinero. Así que construimos una que sí lo hace — y que vive en tu ordenador."
-                : "Every trading app we tried was either a glorified spreadsheet, or a monthly subscription that lost your data if you stopped paying. None of them showed what YOUR behaviour cost you in money. So we built one that does — and that lives on your computer."}
+                ? "Cada app de trading que probamos era o una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace — y que vive en tu ordenador."
+                : "Every trading app we tried was either a glorified spreadsheet, or a monthly subscription that lost your data if you stopped paying. None of them showed what your own behaviour cost you in money. So we built one that does — and that lives on your computer."}
             </p>
           </Reveal>
         </div>

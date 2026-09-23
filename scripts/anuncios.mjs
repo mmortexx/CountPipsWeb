@@ -2,7 +2,7 @@
  * ANUNCIOS — lo que cambia en pantalla, ¿lo oye quien no la ve?
  *
  * ── Qué mide ──────────────────────────────────────────────────────────
- * Las cinco herramientas del sitio recalculan mientras se teclea. Quien
+ * Las herramientas del sitio recalculan mientras se teclea. Quien
  * usa un lector de pantalla no ve ese cambio: si no está dentro de una
  * región que el lector anuncie, teclea sus datos y no se entera de que
  * el resultado ya está ahí. Es el criterio 4.1.3 de WCAG, y no lo caza
@@ -54,6 +54,7 @@ const HERRAMIENTAS = [
   "herramientas/calculadora-de-riesgo",
   "herramientas/significancia-estadistica",
   "herramientas/monte-carlo",
+  "herramientas/recuperacion-de-drawdown",
   "herramientas/proyector-de-capital",
   "herramientas/coste-de-indisciplina",
 ];
@@ -191,4 +192,4 @@ if (fallos.length) {
   console.log("[anuncios] si falla «habla sola al cargar»: algo publica texto en el primer render, y eso se lee encima del titular");
   process.exit(1);
 }
-console.log("[anuncios] correcto — las cinco herramientas dicen su resultado, callan al cargar, y cada una en la convención de su idioma");
+console.log("[anuncios] correcto — las herramientas dicen su resultado, callan al cargar, y cada una en la convención de su idioma");

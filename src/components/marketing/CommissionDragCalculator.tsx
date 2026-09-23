@@ -385,8 +385,12 @@ export function CommissionDragCalculator() {
                 <span className="text-xs text-secondary">
                   {es ? "Lo que queda en la cuenta" : "What stays in the account"}
                 </span>
-                <div className="text-3xl tnum font-semibold text-[rgb(var(--pnl-pos))]">
-                  +{fmtMoney(netAnnual, lang, { decimals: 0 })}
+                <div
+                  className={`text-3xl tnum font-semibold ${
+                    netAnnual < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-[rgb(var(--pnl-pos))]"
+                  }`}
+                >
+                  {fmtMoney(netAnnual, lang, { decimals: 0, sign: true })}
                 </div>
               </div>
             </div>
@@ -451,8 +455,15 @@ export function CommissionDragCalculator() {
                 <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Win rate para no perder" : "Break-even win rate"}
                 </span>
-                <span className="text-base tnum font-semibold text-primary">
-                  {fmtPct(breakEvenWinRate / 100, lang)}
+                {/* Por encima del 100 % no hay acierto que llegue: se dice, no se pinta «112 %». */}
+                <span
+                  className={`text-base tnum font-semibold ${
+                    breakEvenWinRate > 100 ? "text-[rgb(var(--pnl-neg))]" : "text-primary"
+                  }`}
+                >
+                  {breakEvenWinRate > 100
+                    ? es ? "Inalcanzable" : "Out of reach"
+                    : fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
                 <span className="text-[11px] text-tertiary block mt-0.5">
                   {es ? "a 1,5:1 R:R" : "at 1.5:1 R:R"}
@@ -469,7 +480,11 @@ export function CommissionDragCalculator() {
                   <ShieldCheck size={16} className="text-[rgb(var(--accent-base))] shrink-0 mt-0.5" />
                 )}
                 <p className="text-[13px] text-secondary leading-relaxed m-0">
-                  {costDragPct > 25
+                  {netAnnual < 0
+                    ? es
+                      ? "Los costes superan la ganancia bruta: con estos números la cuenta pierde aunque cada operación alcance su objetivo."
+                      : "Costs exceed the gross profit: with these numbers the account loses even if every trade reaches its target."
+                    : costDragPct > 25
                     ? es
                       ? "Más del 25 % de tu ganancia bruta se va en costes. Con este objetivo por operación, comisiones y deslizamiento pesan tanto como parte de tu ventaja."
                       : "Over 25% of your gross profit goes to costs. With this target per trade, fees and slippage weigh as much as part of your edge."

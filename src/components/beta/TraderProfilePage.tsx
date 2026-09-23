@@ -230,7 +230,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? `Max Drawdown (${firm.maxDDPct}\u00a0%)` : `Max Drawdown (${firm.maxDDPct}%)`}</span>
+                  <span>{es ? `Drawdown m\u00e1ximo (${firm.maxDDPct}\u00a0%)` : `Max drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-primary tnum">
@@ -282,7 +282,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             <SectionHeader
               etiqueta={es ? "Playbooks en vivo" : "Live playbooks"}
               titulo={es ? "Separa tus patrones ganadores de tus impulsos." : "Separate your winning patterns from your impulses."}
-              entradilla={es ? "Un trader manual no falla por análisis técnico, falla por falta de consistencia en la ejecución. El playbook compara la muestra real de cada setup; aquí, con datos de muestra." : "A manual trader does not fail because of technical analysis: they fail because execution is not consistent. The playbook compares the real sample of each setup — here, with sample data."}
+              entradilla={es ? "Un trader manual rara vez falla por el análisis: falla porque no ejecuta siempre igual. El playbook compara la muestra real de cada setup; aquí, con datos de muestra." : "A manual trader does not fail because of technical analysis: they fail because execution is not consistent. The playbook compares the real sample of each setup — here, with sample data."}
               className="mb-10"
             />
 
@@ -325,7 +325,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
 
               <div className="caja-cifra p-5">
-                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Win Rate & Payoff" : "Win Rate & Payoff"}</span>
+                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Acierto y payoff" : "Win rate & payoff"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-semibold text-primary tnum">
                   {es
@@ -347,7 +347,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </span>
                 {/* El color seguia al rotulo y no al mensaje: estaba fijo en
                     rojo mientras el texto cambia de aviso a elogio segun el
-                    setup, asi que "Proceso consistente y repetible" salia
+                    setup, asi que "Proceso estable y repetible" salia
                     pintado de perdida en dos de los tres casos. Y va en la
                     familia del semaforo, no en la del P&L: esto es un
                     veredicto sobre el proceso, no una cifra de dinero. */}
@@ -358,7 +358,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 }`}>
                   {manualSetup === "reversion"
                     ? (es ? "Fuga de capital detectada en salidas prematuras" : "Capital leak detected on early exits")
-                    : (es ? "Proceso consistente y repetible" : "Consistent, repeatable process")}
+                    : (es ? "Proceso estable y repetible" : "Consistent, repeatable process")}
                 </span>
               </div>
             </div>

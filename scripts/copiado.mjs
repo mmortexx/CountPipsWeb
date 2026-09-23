@@ -40,7 +40,7 @@ const args = process.argv.slice(2);
 const dir = args.includes("--serve") ? args[args.indexOf("--serve") + 1] : "out";
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-/* Las cinco herramientas con botón de copiar. `preparar` deja la página
+/* Las herramientas con botón de copiar. `preparar` deja la página
    en el estado en que ese botón existe: el test de disciplina no lo
    muestra hasta haber respondido las preguntas. */
 const HERRAMIENTAS = [
@@ -48,6 +48,7 @@ const HERRAMIENTAS = [
   { ruta: "/herramientas/calculadora-de-riesgo", nombre: "calculadora de riesgo" },
   { ruta: "/herramientas/coste-de-indisciplina", nombre: "coste de indisciplina" },
   { ruta: "/herramientas/significancia-estadistica", nombre: "significancia estadística" },
+  { ruta: "/herramientas/recuperacion-de-drawdown", nombre: "recuperación de drawdown" },
   { ruta: "/test", nombre: "test de disciplina", preparar: responderTest },
 ];
 

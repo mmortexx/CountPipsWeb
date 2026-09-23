@@ -3787,17 +3787,21 @@ select.tj-campo:invalid {
    sombra desplazada; los de la primera columna y la primera fila caen
    fuera de la matriz y el `overflow` los recorta. Así no hay que saber
    cuántas columnas hay en cada ancho para quitar el filete del borde. */
-.tj-matriz {
-  display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  overflow: hidden;
-  border-top: 1px solid var(--ficha-division);
-}
-.tj-matriz > * {
-  min-width: 0;
-  box-shadow: -1px 0 0 var(--ficha-division), 0 -1px 0 var(--ficha-division);
+/* En capa: fuera de ella, `margin: 0` ganaba a las utilidades y tres
+   matrices que pedían `mb-4`/`mb-5` se quedaban pegadas a lo siguiente. */
+@layer components {
+  .tj-matriz {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    border-top: 1px solid var(--ficha-division);
+  }
+  .tj-matriz > * {
+    min-width: 0;
+    box-shadow: -1px 0 0 var(--ficha-division), 0 -1px 0 var(--ficha-division);
+  }
 }
 /* En una tabla comparativa, la columna propia se distingue con un tono
    apenas más denso de arriba abajo, como la columna resaltada de una

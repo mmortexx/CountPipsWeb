@@ -35,7 +35,7 @@
 | `adversarial_stress.test.ts` | Casos límite adversariales del motor de métricas y contratos de futuros |
 | `campo-cifra.test.ts` | Las cifras de los campos editables: coma o punto según idioma, sin millares, ida y vuelta exacta |
 | `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida |
-| `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"` |
+| `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts` |
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
 | `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
 | `grabado.test.ts` | Reglas visuales comprobables por máquina: sin degradados decorativos, fondo limpio, sello de «previsto» |
@@ -43,6 +43,7 @@
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
 | `marcas-eje.test.ts` | Marcas de eje en cifras redondas (1 · 2 · 2,5 · 5), dentro del rango y sin reventar con rangos imposibles |
 | `metricas.test.ts` | El motor de métricas y la distribución de R de la portada |
+| `recuperacion.test.ts` | Recuperación de drawdown: la asimetría, la operación exacta en que se vuelve al máximo, sin ventaja no vuelve, nunca NaN ni Infinity |
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |
 | `tipografias.test.ts` | El build no depende de que Google Fonts responda |

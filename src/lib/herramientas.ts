@@ -28,7 +28,8 @@ export type Herramienta = {
     | "SavingsCalculator"
     | "SessionClock"
     | "DisciplineCost"
-    | "CommissionDragCalculator";
+    | "CommissionDragCalculator"
+    | "DrawdownRecovery";
   tituloEs: string;
   tituloEn: string;
   /** Titular de la cabecera. Corto: se anima carácter a carácter. */
@@ -42,6 +43,9 @@ export type Herramienta = {
   /** Para el índice y para la ficha del buscador. */
   resumenEs: string;
   resumenEn: string;
+  /** Lo que devuelve, en la columna «Resultado» del índice. */
+  entregaEs: string;
+  entregaEn: string;
   descripcionEs: string;
   descripcionEn: string;
 };
@@ -66,6 +70,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Tell me your capital, the percentage you risk and the distance to your stop, and I will tell you the exact position size. No sign-up, and nothing you type leaves your browser.",
     resumenEs: "El tamaño exacto de la posición a partir de tu riesgo y tu stop.",
     resumenEn: "The exact position size from your risk and your stop.",
+    entregaEs: "Lotes · contratos",
+    entregaEn: "Lots · contracts",
     descripcionEs:
       "Calcula el tamaño de posición a partir de tu capital, el porcentaje de riesgo por operación y la distancia al stop. Gratis, sin registro y sin enviar datos.",
     descripcionEn:
@@ -86,6 +92,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "With twenty trades behind it, a good result means nothing: it fits comfortably inside what chance alone produces. Enter your numbers and see whether your sample says anything yet.",
     resumenEs: "Si tu muestra ya distingue una ventaja del azar, o aún no.",
     resumenEn: "Whether your sample can tell an edge from chance yet.",
+    entregaEs: "Ventaja vs azar",
+    entregaEn: "Edge vs chance",
     descripcionEs:
       "Comprueba si tus resultados de trading distinguen una ventaja real del azar, a partir del número de operaciones, el porcentaje de aciertos y el payoff.",
     descripcionEn:
@@ -106,10 +114,34 @@ export const HERRAMIENTAS: Herramienta[] = [
       "The same edge produces very different outcomes depending on the order in which wins and losses arrive. This plays out your next trades three hundred times, with your win rate and payoff, to show you the whole fan: not what will happen, but what can.",
     resumenEs: "El abanico de caminos posibles con tu ventaja, y el peor de ellos.",
     resumenEn: "The fan of possible paths for your edge — and the worst of them.",
+    entregaEs: "Abanico de curvas",
+    entregaEn: "Curve fan",
     descripcionEs:
       "Trescientas secuencias de tus próximas operaciones: el abanico de curvas posibles, la peor racha y el riesgo de arruinar la cuenta.",
     descripcionEn:
       "Three hundred sequences of your next trades: the fan of possible curves, the worst run and the risk of ruining the account.",
+  },
+  {
+    slug: "recuperacion-de-drawdown",
+    componente: "DrawdownRecovery",
+    tituloEs: "Calculadora de recuperación de drawdown",
+    tituloEn: "Drawdown recovery calculator",
+    h1Es: "Cuesta más subir que caer.",
+    h1En: "The climb back is steeper.",
+    resaltaEs: "que caer.",
+    resaltaEn: "is steeper.",
+    subtituloEs:
+      "Una caída del 50\u00a0% no se recupera ganando un 50\u00a0%: hace falta un 100\u00a0%. Mete tu caída, tu riesgo por operación, tu acierto y tu payoff, y mira cuánto tienes que ganar y cuántas operaciones tarda en volver el camino típico.",
+    subtituloEn:
+      "A 50% drawdown is not undone by a 50% gain: it takes 100%. Enter your drawdown, your risk per trade, your win rate and your payoff, and see how much you need to make and how many trades the typical path takes to get back.",
+    resumenEs: "Lo que hay que ganar para volver al máximo, y cuántas operaciones tarda.",
+    resumenEn: "What it takes to get back to the peak, and how many trades it takes.",
+    entregaEs: "Ganancia · operaciones",
+    entregaEn: "Gain · trades",
+    descripcionEs:
+      "Calcula la ganancia necesaria para recuperar un drawdown y cuántas operaciones tarda, con tu acierto, tu payoff y tu riesgo por operación.",
+    descripcionEn:
+      "Work out the gain needed to recover a drawdown and how many trades it takes, from your win rate, payoff and risk per trade.",
   },
   {
     slug: "proyector-de-capital",
@@ -126,6 +158,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "If you hold your expectancy and your trade frequency, this is the curve over several years. It is arithmetic, not a promise: it shows what compounding does, it does not guarantee it.",
     resumenEs: "La curva a varios años si mantienes tu esperanza y tu ritmo.",
     resumenEn: "The multi-year curve if you hold your expectancy and pace.",
+    entregaEs: "Curva a N años",
+    entregaEn: "N-year curve",
     descripcionEs:
       "Proyecta tu curva de capital a varios años a partir de tu esperanza matemática por operación y de cuántas haces al mes.",
     descripcionEn:
@@ -148,6 +182,8 @@ export const HERRAMIENTAS: Herramienta[] = [
        «between A and B»—; nació en el español y la traducción lo copió. */
     resumenEs: "La brecha real de dinero entre operar según tu plan y romper tus reglas.",
     resumenEn: "The real cash gap between trading your plan and breaking your rules.",
+    entregaEs: "Fuga anual",
+    entregaEn: "Annual leak",
     descripcionEs:
       "Estima lo que te cuestan tus errores operativos y la diferencia de expectancy entre tus operaciones disciplinadas y fuera de plan.",
     descripcionEn:
@@ -168,6 +204,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Asia, London and New York on a single twenty-four-hour band, in real time. What matters is not when each opens, but where they overlap: that is when two markets are awake at once.",
     resumenEs: "Asia, Londres y Nueva York en hora real, con sus solapes.",
     resumenEn: "Asia, London and New York in real time, with their overlaps.",
+    entregaEs: "Sesión · solape",
+    entregaEn: "Session · overlap",
     descripcionEs:
       "Qué sesión de mercado está abierta ahora mismo y dónde se solapan Asia, Londres y Nueva York, que es cuando suele haber más movimiento.",
     descripcionEn:
@@ -188,6 +226,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Core $149 and Pro $249 are planned launch prices. Enter a monthly alternative to compare scenarios; the result is not a purchase offer.",
     resumenEs: "Cómo se compara un coste mensual con los precios previstos de lanzamiento.",
     resumenEn: "How a monthly cost compares with the planned launch prices.",
+    entregaEs: "Escenario de coste",
+    entregaEn: "Cost scenario",
     descripcionEs:
       "Compara un coste mensual con los precios previstos de lanzamiento de CountPips, sin convertir el resultado en una oferta de compra.",
     descripcionEn:
@@ -208,12 +248,28 @@ export const HERRAMIENTAS: Herramienta[] = [
       "In CME futures and Forex, fees and slippage eat into every trade. Enter your contracts and see how much you need to make just to cover them.",
     resumenEs: "El impacto real de las tarifas CME, spread y deslizamiento en tu cuenta.",
     resumenEn: "The real bottom-line impact of CME fees, spread and slippage on your trading.",
+    entregaEs: "Break-even real",
+    entregaEn: "True break-even",
     descripcionEs:
       "Calcula lo que te cuestan comisiones y deslizamiento, y cuántos ticks necesitas por operación para cubrirlos, en futuros (NQ, ES, MES, MNQ) y Forex.",
     descripcionEn:
       "Calculate commission drag, slippage friction and the exact break-even threshold per trade in futures (NQ, ES, MES, MNQ) and Forex.",
   },
 ];
+
+const EN_LETRA: Record<"es" | "en", string[]> = {
+  es: ["cero", "una", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once", "doce"],
+  en: ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"],
+};
+
+/** Cuántas herramientas hay, en letra y con mayúscula inicial. Los textos
+ *  que lo dicen salen de aquí: escritos a mano se quedaban en «Ocho» al
+ *  publicar la novena. */
+export function herramientasEnLetra(lang: "es" | "en"): string {
+  const n = HERRAMIENTAS.length;
+  const p = EN_LETRA[lang][n] ?? String(n);
+  return p.charAt(0).toUpperCase() + p.slice(1);
+}
 
 export function herramientaPorSlug(slug: string): Herramienta | undefined {
   return HERRAMIENTAS.find((h) => h.slug === slug);

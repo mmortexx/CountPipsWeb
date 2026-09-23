@@ -225,7 +225,9 @@ export const HERRAMIENTA_DE: Record<string, string> = {
   "risk-of-ruin": "/herramientas/monte-carlo",
   "monte-carlo": "/herramientas/monte-carlo",
   "r-multiple": "/herramientas/monte-carlo",
-  drawdown: "/herramientas/monte-carlo",
+  /* El drawdown lleva a lo que cuesta salir de él; el máximo, al Monte
+     Carlo, que es donde se ve cuánto puede llegar a caer. */
+  drawdown: "/herramientas/recuperacion-de-drawdown",
   "max-drawdown": "/herramientas/monte-carlo",
 
   /* ¿Ventaja o azar? */

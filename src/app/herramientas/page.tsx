@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { HerramientasIndice } from "@/components/herramientas/HerramientasIndice";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { HERRAMIENTAS } from "@/lib/herramientas";
+import { HERRAMIENTAS, herramientasEnLetra } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -54,12 +54,12 @@ const listaSchema = {
 export const metadata: Metadata = {
   title: "Herramientas de trading",
   description:
-    "Ocho calculadoras de trading: riesgo por operación, Monte Carlo, significancia estadística y coste de comisiones. Gratis, sin registro y sin enviar datos.",
+    `${herramientasEnLetra("es")} calculadoras de trading: riesgo por operación, Monte Carlo, significancia estadística y coste de comisiones. Gratis, sin registro y sin enviar datos.`,
   alternates: { canonical: `${SITE_URL}/herramientas/`, languages: hreflangDe("/herramientas") },
   openGraph: {
     title: "Herramientas de trading — CountPips",
     description:
-      "Ocho herramientas que funcionan en tu navegador. Sin registro y sin enviar datos.",
+      `${herramientasEnLetra("es")} herramientas que funcionan en tu navegador. Sin registro y sin enviar datos.`,
     url: `${SITE_URL}/herramientas/`,
     type: "website",
     siteName: "CountPips",
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Herramientas de trading — CountPips",
-    description: "Ocho herramientas gratis, sin registro y sin enviar datos.",
+    description: `${herramientasEnLetra("es")} herramientas gratis, sin registro y sin enviar datos.`,
   },
 };
 
@@ -87,8 +87,8 @@ export function HerramientasBody() {
         titleEn="Tools that do the maths for you."
         titleHighlightEs="la cuenta por ti."
         titleHighlightEn="the maths for you."
-        subtitleEs="Ocho calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo."
-        subtitleEn="Eight calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine."
+        subtitleEs={`${herramientasEnLetra("es")} calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo.`}
+        subtitleEn={`${herramientasEnLetra("en")} calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine.`}
         breadcrumbEs="Herramientas"
         breadcrumbEn="Tools"
       />

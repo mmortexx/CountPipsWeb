@@ -319,7 +319,7 @@ export function BetaApplication() {
           </div>
           <div className="mt-7 flex items-start gap-2.5 border-t border-[rgb(var(--divider)/0.12)] pt-5 text-xs text-tertiary">
             <ShieldCheck size={16} className="mt-0.5 shrink-0" aria-hidden />
-            <span>{es ? "No pedimos credenciales, saldos ni acceso a tu broker." : "We never ask for credentials, balances or broker access."}</span>
+            <span>{es ? "No pedimos credenciales, saldos ni acceso a tu bróker." : "We never ask for credentials, balances or broker access."}</span>
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { HerramientasBody } from "../../herramientas/page";
-import { HERRAMIENTAS } from "@/lib/herramientas";
+import { HERRAMIENTAS, herramientasEnLetra } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 const breadcrumbSchema = {
@@ -37,14 +37,14 @@ const listaSchema = {
 export const metadata: Metadata = {
   title: "Trading tools",
   description:
-    "Eight trading calculators: risk per trade, Monte Carlo, edge significance and commission drag. Free, no sign-up and nothing sent anywhere.",
+    `${herramientasEnLetra("en")} trading calculators: risk per trade, Monte Carlo, edge significance and commission drag. Free, no sign-up and nothing sent anywhere.`,
   alternates: {
     canonical: `${SITE_URL}/en/herramientas/`,
     languages: hreflangDe("/herramientas"),
   },
   openGraph: {
     title: "Trading tools — CountPips",
-    description: "Eight tools that run in your browser. No sign-up and nothing sent anywhere.",
+    description: `${herramientasEnLetra("en")} tools that run in your browser. No sign-up and nothing sent anywhere.`,
     url: `${SITE_URL}/en/herramientas/`,
     type: "website",
     siteName: "CountPips",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Trading tools — CountPips",
-    description: "Eight free tools, no sign-up and nothing sent anywhere.",
+    description: `${herramientasEnLetra("en")} free tools, no sign-up and nothing sent anywhere.`,
   },
 };
 

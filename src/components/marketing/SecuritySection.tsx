@@ -15,7 +15,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
   const cards = [
     { i: Database, t: es ? "En tu equipo" : "On your machine", d: es ? "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips." : "Your trades live on your disk. No account, no telemetry and no CountPips servers." },
     { i: FileLock2, t: es ? "Un solo archivo" : "One single file", d: es ? "Una base de datos SQLite con copias automáticas verificadas y restauración a la vista." : "One SQLite database with verified automatic backups and visible restore." },
-    { i: KeyRound, t: es ? "Export e import" : "Export & import", d: es ? "Exporta a CSV, JSON completo y PDF, e importa cualquier CSV con mapeo de columnas." : "Export to CSV, full JSON and PDF, and import any CSV with column mapping." },
+    { i: KeyRound, t: es ? "Exportar e importar" : "Export & import", d: es ? "Exporta a CSV, JSON completo y PDF, e importa cualquier CSV con mapeo de columnas." : "Export to CSV, full JSON and PDF, and import any CSV with column mapping." },
   ];
   const compare: { l: string; tj: string | boolean; cloud: string | boolean; bueno?: boolean }[] = [
     { l: es ? "Dónde viven los datos" : "Where data lives", tj: es ? "Tu disco" : "Your disk", cloud: es ? "Servidores del proveedor" : "Vendor servers" },

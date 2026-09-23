@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
 import { formatoUsd, pctSep } from "@/lib/trading/format";
+import { siteUrl } from "@/lib/site";
 
 /**
  * EquityProjector — Proyector de curva de capital de alta resolución.
@@ -37,9 +38,9 @@ const PRESETS: PresetConfig[] = [
   {
     id: "propfirm",
     labelEs: "Cuenta fondeada",
-    labelEn: "Prop Firm",
+    labelEn: "Prop firm",
     tagEs: "Riesgo estricto",
-    tagEn: "Strict Risk",
+    tagEn: "Strict risk",
     winRate: 56,
     avgWinR: 1.5,
     avgLossR: 1.0,
@@ -49,10 +50,10 @@ const PRESETS: PresetConfig[] = [
   },
   {
     id: "daytrader",
-    labelEs: "Day Trading",
-    labelEn: "Day Trading",
+    labelEs: "Day trading",
+    labelEn: "Day trading",
     tagEs: "Alta convicción",
-    tagEn: "High Conviction",
+    tagEn: "High conviction",
     winRate: 52,
     avgWinR: 2.0,
     avgLossR: 1.0,
@@ -62,8 +63,8 @@ const PRESETS: PresetConfig[] = [
   },
   {
     id: "swing",
-    labelEs: "Swing Trading",
-    labelEn: "Swing Trading",
+    labelEs: "Swing trading",
+    labelEn: "Swing trading",
     tagEs: "Alto R:R",
     tagEn: "High R:R",
     winRate: 42,
@@ -78,7 +79,7 @@ const PRESETS: PresetConfig[] = [
     labelEs: "Scalping",
     labelEn: "Scalping",
     tagEs: "Alta frecuencia",
-    tagEn: "High Frequency",
+    tagEn: "High frequency",
     winRate: 64,
     avgWinR: 1.1,
     avgLossR: 1.0,
@@ -104,17 +105,23 @@ export function EquityProjector() {
   const es = lang === "es";
 
   // ── Estado ────────────────────────────────────────────────────────
-  const [selectedPreset, setSelectedPreset] = useState<PresetKey>("daytrader");
+  /* Se abre con el perfil más prudente y a tres años. Con «Day trading» a
+     cinco años la primera cifra que veía el visitante era +21.721 %: la
+     aritmética era correcta, pero una web que habla como un departamento
+     de riesgo no puede abrir con eso. Los valores salen del perfil, así
+     que el perfil marcado y sus cifras no pueden discrepar. */
+  const inicial = PRESETS[0];
+  const [selectedPreset, setSelectedPreset] = useState<PresetKey>(inicial.id);
   const [startBalance, setStartBalance] = useState(10000);
-  const [tradesPerYear, setTradesPerYear] = useState(200);
-  const [winRate, setWinRate] = useState(52); // %
-  const [avgWinR, setAvgWinR] = useState(2.0); // R
-  const [avgLossR, setAvgLossR] = useState(1.0); // R
-  const [riskPct, setRiskPct] = useState(1.0); // %
-  const [years, setYears] = useState(5);
+  const [tradesPerYear, setTradesPerYear] = useState(inicial.tradesPerYear);
+  const [winRate, setWinRate] = useState(inicial.winRate); // %
+  const [avgWinR, setAvgWinR] = useState(inicial.avgWinR); // R
+  const [avgLossR, setAvgLossR] = useState(inicial.avgLossR); // R
+  const [riskPct, setRiskPct] = useState(inicial.riskPct); // %
+  const [years, setYears] = useState(3);
   const [reinvestMode, setReinvestMode] = useState<ReinvestMode>("compound");
   const [monthlyContribution, setMonthlyContribution] = useState(0); // USD / mes
-  const [frictionR, setFrictionR] = useState(0.02); // R por trade
+  const [frictionR, setFrictionR] = useState(inicial.frictionR); // R por trade
   const [viewTab, setViewTab] = useState<ViewTab>("chart");
   const [showConfidenceCone, setShowConfidenceCone] = useState(true);
   const [hoverMonthIndex, setHoverMonthIndex] = useState<number | null>(null);
@@ -499,27 +506,30 @@ export function EquityProjector() {
     const lines = [
       es ? "PROYECCIÓN DE CURVA DE CAPITAL — CountPips" : "EQUITY CURVE PROJECTION — CountPips",
       "═".repeat(38),
-      `${es ? "Perfil" : "Profile"}: ${selectedPreset.toUpperCase()}`,
-      `${es ? "Balance inicial" : "Starting Balance"}: ${fmtUsd(startBalance)}`,
-      `${es ? "Aporte mensual" : "Monthly Deposit"}: ${fmtUsd(monthlyContribution)} / ${es ? "mes" : "mo"}`,
-      `${es ? "Horizonte" : "Time Horizon"}: ${years} ${es ? "años" : "years"} (${tradesPerYear * years} ops)`,
-      `${es ? "Reinversión" : "Compounding Mode"}: ${reinvestMode === "compound" ? (es ? "Interés compuesto" : "Compounding") : (es ? "Retiro fijo" : "Fixed")}`,
+      `${es ? "Perfil" : "Profile"}: ${(() => {
+        const p = PRESETS.find((x) => x.id === selectedPreset);
+        return p ? (es ? p.labelEs : p.labelEn) : es ? "Manual" : "Custom";
+      })()}`,
+      `${es ? "Balance inicial" : "Starting balance"}: ${fmtUsd(startBalance)}`,
+      `${es ? "Aporte mensual" : "Monthly deposit"}: ${fmtUsd(monthlyContribution)} / ${es ? "mes" : "mo"}`,
+      `${es ? "Horizonte" : "Time horizon"}: ${years} ${es ? "años" : "years"} (${tradesPerYear * years} ops)`,
+      `${es ? "Reinversión" : "Compounding mode"}: ${reinvestMode === "compound" ? (es ? "Interés compuesto" : "Compounding") : (es ? "Retiro fijo" : "Fixed")}`,
       "─".repeat(38),
-      `${es ? "Ventaja" : "Edge Stats"}:`,
-      `  • Win Rate: ${fmtNum(winRate, 1)}${pctSep(lang)}`,
-      `  • ${es ? "Ratio Ganancia / Pérdida" : "Win / Loss Ratio"}: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
-      `  • ${es ? "Expectancy Neta" : "Net Expectancy"}: ${c.netExpectancyR >= 0 ? "+" : ""}${fmtNum(c.netExpectancyR, 3)} R`,
-      `  • Profit Factor: ${fmtNum(c.profitFactor, 2)}`,
-      `  • ${es ? "Riesgo / Op" : "Risk / Trade"}: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
+      `${es ? "Ventaja" : "Edge"}:`,
+      `  • Win rate: ${fmtNum(winRate, 1)}${pctSep(lang)}`,
+      `  • ${es ? "Ganancia / pérdida media" : "Average win / loss"}: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
+      `  • ${es ? "Expectancy neta" : "Net expectancy"}: ${c.netExpectancyR >= 0 ? "+" : ""}${fmtNum(c.netExpectancyR, 3)} R`,
+      `  • Profit factor: ${fmtNum(c.profitFactor, 2)}`,
+      `  • ${es ? "Riesgo por operación" : "Risk per trade"}: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
       "─".repeat(38),
-      `${es ? "Resultados proyectados" : "Projected Results"}:`,
-      `  • ${es ? "Balance final" : "Final Balance"}: ${fmtUsd(c.finalBalance)}`,
-      `  • ${es ? "Beneficio neto" : "Net Profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
+      `${es ? "Resultados proyectados" : "Projected results"}:`,
+      `  • ${es ? "Balance final" : "Final balance"}: ${fmtUsd(c.finalBalance)}`,
+      `  • ${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
       `  • CAGR: ${fmtPct(c.cagr * 100, 1)}`,
-      `  • ${es ? "Drawdown máximo estimado (99\u00a0%)" : "Est. Max DD (99%)"}: ${fmtPct(c.estMaxDDpct, 1)}`,
-      `  • ${es ? "Tiempo para duplicar" : "Time to Double"}: ${c.monthsToDouble ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : "N/A"}`,
+      `  • ${es ? "Drawdown máximo estimado (99\u00a0%)" : "Estimated max drawdown (99%)"}: ${fmtPct(c.estMaxDDpct, 1)}`,
+      `  • ${es ? "Tiempo para duplicar" : "Time to double"}: ${c.monthsToDouble ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : "N/A"}`,
       "═".repeat(38),
-      "https://countpips.com/herramientas/proyector-de-capital",
+      siteUrl(`${es ? "" : "/en"}/herramientas/proyector-de-capital/`),
     ];
 
     try {
@@ -1357,10 +1367,10 @@ export function EquityProjector() {
                     <thead>
                       <tr className="text-[12px] text-[var(--ink-3)]">
                         <th className="tj-matriz-cab py-2.5 px-3 font-medium">{es ? "Año" : "Year"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance inicial" : "Start Bal"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "PnL Anual" : "Year PnL"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Retorno %" : "Return %"}</th>
-                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance final" : "End Bal"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance inicial" : "Start balance"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Resultado del año" : "Year P&L"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Rentabilidad" : "Return"}</th>
+                        <th className="tj-matriz-cab py-2.5 px-3 text-right font-medium">{es ? "Balance final" : "End balance"}</th>
                       </tr>
                     </thead>
                     <tbody>

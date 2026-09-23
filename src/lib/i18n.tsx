@@ -323,22 +323,6 @@ export const STR = {
   palAurora: { es: "Verde", en: "Green" },
   palSilk: { es: "Verde", en: "Green" },
 
-  // ---- Features (marketing) ----
-  featuresEyebrow: { es: "Por qué es distinto", en: "Why it's different" },
-  /* «journal» en la versión española: el sitio llama DIARIO a esto mismo
-     en su propia descripción («el diario de trading profesional») y en el
-     menú de la demo (`journalTitle`). Dos nombres para el producto en la
-     misma página no es bilingüismo, es descuido. En inglés se queda
-     «journal», que es su nombre allí. */
-  featuresTitle: {
-    es: "No es otro diario con las mismas 30 métricas.",
-    en: "Not another journal with the same 30 metrics.",
-  },
-  featuresLead: {
-    es: "Es la única app que te enseña lo que TU comportamiento te cuesta en dinero — y vive en tu ordenador, no en la nube de nadie.",
-    en: "It's the only app that shows you what YOUR behaviour costs in money — and lives on your computer, not in anyone's cloud.",
-  },
-
   // ---- Pricing ----
   pricingEyebrow: { es: "Precios de lanzamiento", en: "Launch pricing" },
   pricingTitle: {

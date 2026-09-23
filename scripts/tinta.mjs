@@ -133,10 +133,10 @@ for (const tema of ["dark", "light"]) {
   await p.waitForTimeout(700);
 
   /* El separador del signo de porcentaje es un espacio DURO en espanol
-     (U+00A0, la regla de `PCT_SEP`), asi que "100% en Plan" escrito con
+     (U+00A0, la regla de `PCT_SEP`), asi que "100% en plan" escrito con
      un espacio normal no casa con nada y el filtro se quedaba sin medir.
      Se busca por el trozo estable del rotulo. */
-  for (const rotulo of ["Ganadoras", "Pérdidas", "Fuera de Plan (Fallo)", "en Plan"]) {
+  for (const rotulo of ["Ganadoras", "Pérdidas", "Fuera de plan (fallo)", "en plan"]) {
     /* Texto literal, no expresion regular: hay dos botones «Ganadoras»
        —el filtro rapido y el selector de resultado— y el primero en el
        DOM es el que se pinta con el fondo lleno de P&L. */
