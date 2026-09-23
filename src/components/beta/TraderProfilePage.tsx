@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney } from "@/lib/trading/format";
+import { fmtMoney, fmtPct } from "@/lib/trading/format";
 import { Link } from "@/components/tj/LocaleLink";
 
 export type TraderProfile = "manual" | "prop";
@@ -44,6 +44,9 @@ const DATA = {
   },
 } as const;
 
+/** Riesgo por operación del ejemplo, en %: la ficha, su colchón y el enlace al simulador. */
+const RIESGO_PCT = 0.75;
+
 /* Los mismos valores que las plantillas del programa (`PropFirmTemplates.cs`,
    revisadas el 22/07/2026): la variante más común de cada firma. */
 const PROP_FIRMS = [
@@ -72,7 +75,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const maxTrailingLoss = propBalance * (firm.maxDDPct / 100);
   const phase1Target = propBalance * (firm.phase1Pct / 100);
   const phase2Target = firm.phase2Pct > 0 ? propBalance * (firm.phase2Pct / 100) : 0;
-  const maxSafeRiskPerTrade = propBalance * 0.0075; // 0.75% por trade
+  const maxSafeRiskPerTrade = propBalance * (RIESGO_PCT / 100);
 
   // Límite de pérdida total: fijo sobre el balance inicial o trailing sobre el pico
   const peakEquity = Math.max(propBalance, currentEquity);
@@ -234,7 +237,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   <span>{es ? `Drawdown m\u00e1ximo (${firm.maxDDPct}\u00a0%)` : `Max drawdown (${firm.maxDDPct}%)`}</span>
                   <ShieldCheck size={14} className="flex-none" />
                 </div>
-                <div className="cifra-xl font-semibold text-primary tnum">
+                <div className="cifra-xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(maxTrailingLoss, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
@@ -264,14 +267,14 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
 
               <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
-                  <span>{es ? "Riesgo por operación (0,75\u00a0%)" : "Risk per trade (0.75%)"}</span>
+                  <span>{es ? "Riesgo por operación" : "Risk per trade"} ({fmtPct(RIESGO_PCT / 100, lang, 2)})</span>
                   <Target size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? `Deja ${Math.floor(firm.dailyPct / 0.75)} pérdidas seguidas de colchón antes del límite diario.` : `Leaves a buffer of ${Math.floor(firm.dailyPct / 0.75)} straight losses before the daily limit.`}
+                  {es ? `Deja ${Math.floor(firm.dailyPct / RIESGO_PCT)} pérdidas seguidas de colchón antes del límite diario.` : `Leaves a buffer of ${Math.floor(firm.dailyPct / RIESGO_PCT)} straight losses before the daily limit.`}
                 </p>
               </div>
             </div>
@@ -280,7 +283,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 simulador abre ya con su objetivo, su drawdown y su tipo. */}
             <p className="mt-6 text-[14px]">
               <Link
-                href={`/herramientas/prueba-de-fondeo?objetivo=${firm.phase1Pct}&dd=${firm.maxDDPct}&tipo=${firm.trailingType === "static" ? "estatico" : "dinamico"}&riesgo=0.75`}
+                href={`/herramientas/prueba-de-fondeo?objetivo=${firm.phase1Pct}&dd=${firm.maxDDPct}&tipo=${firm.trailingType === "static" ? "estatico" : "dinamico"}&riesgo=${RIESGO_PCT}`}
                 className="link-underline-host group -my-3 inline-flex items-center gap-1.5 py-3 text-secondary transition-colors hover:text-primary"
               >
                 <span className="link-underline">

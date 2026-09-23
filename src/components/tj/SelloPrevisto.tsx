@@ -20,21 +20,17 @@ import { useLang } from "@/lib/i18n";
  * columnas… Cinco dialectos para un solo concepto significa que el
  * visitante tiene que aprenderlos todos, y que ninguno se le queda.
  *
- * ── Por qué un marco de trazos y no un sello inclinado ────────────────
- * La convención ya existe DENTRO de este sitio, dos veces: la lámina
- * `blueprint` de /beta dibuja un despiece con piezas a línea llena y a
- * línea de trazos, que en dibujo técnico significa exactamente «previsto,
- * no ejecutado»; y el registro de versiones marca con `border-dashed` las
- * entregas que aún no han salido. Las dos dicen lo mismo sin saber la una
- * de la otra. Esto las convierte en una sola pieza.
+ * ── Por qué un rótulo y no un sello inclinado ─────────────────────────
+ * Empezó como un marco a trazos, la convención del dibujo técnico para
+ * «previsto, no ejecutado». Cuando precios y preguntas dejaron de ir en
+ * cajas (09544c0) el marco se fue con ellas, y quedó la palabra en tinta
+ * secundaria: la misma en el precio, el estado del producto y el registro
+ * de versiones.
  *
  * Y va RECTO, sin rotación ni color de alerta. Un sello de goma inclinado
- * es un objeto que alguien estampa encima de un papel terminado; aquí no
- * hay nadie estampando nada: es la propia plancha la que dibuja a trazos
- * la parte que todavía no se ha construido. La diferencia importa porque
- * el resto del sitio se ha pasado meses retirando adornos —el cristal, los
- * halos, los barridos de luz— y un tampón rotado los devuelve todos de
- * golpe.
+ * es un objeto que alguien estampa encima de un papel terminado, y el
+ * resto del sitio se ha pasado meses retirando adornos —el cristal, los
+ * halos, los barridos de luz— que un tampón rotado devolvería de golpe.
  *
  * ── Lo que NO hace ────────────────────────────────────────────────────
  * No atenúa lo que envuelve. Bajar la opacidad de un bloque para decir que

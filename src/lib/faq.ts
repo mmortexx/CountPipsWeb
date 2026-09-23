@@ -65,7 +65,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué datos pide esta web?",
-    a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden solo lo que ves en ellos —el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados y cómo llevas hoy tu diario—, y la analítica de visitas solo se activa si la aceptas en el aviso de cookies.",
+    a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden solo lo que ves en ellos —el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados, cómo llevas hoy tu diario, qué quieres mejorar primero y una nota opcional—, y la analítica de visitas solo se activa si la aceptas en el aviso de cookies.",
   },
   {
     q: "¿Podré usarlo en varios ordenadores?",
@@ -120,7 +120,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What data does this website ask for?",
-    a: "Nothing financial: no credentials, no capital, no statements. The calculators do their maths in your browser. The forms ask only for what you see in them — the contact form, name, email and message; the early-access form, email, profile, experience, markets and how you keep your journal today — and visit analytics only switch on if you accept them in the cookie notice.",
+    a: "Nothing financial: no credentials, no capital, no statements. The calculators do their maths in your browser. The forms ask only for what you see in them — the contact form, name, email and message; the early-access form, email, profile, experience, markets, how you keep your journal today, what you want to improve first and an optional note — and visit analytics only switch on if you accept them in the cookie notice.",
   },
   {
     q: "Will I be able to use it on multiple computers?",

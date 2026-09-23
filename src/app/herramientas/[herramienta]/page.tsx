@@ -97,8 +97,9 @@ export default async function HerramientaPage({ params }: Props) {
         titleHighlightEn={h.resaltaEn}
         subtitleEs={h.subtituloEs}
         subtitleEn={h.subtituloEn}
-        breadcrumbEs={`Herramientas · ${h.tituloEs}`}
-        breadcrumbEn={`Tools · ${h.tituloEn}`}
+        padre={{ href: "/herramientas", es: "Herramientas", en: "Tools" }}
+        breadcrumbEs={h.tituloEs}
+        breadcrumbEn={h.tituloEn}
       />
       <script
         type="application/ld+json"

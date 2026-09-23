@@ -281,7 +281,7 @@ export function RiskCalculator() {
       "─".repeat(28),
       `${es ? "Tamaño" : "Size"}: ${fmtNum(c.size, 2)} ${c.sizeLabel}`,
       `${es ? "Valor pip/punto" : "Pip/Point value"}: ${fmtUsd(c.pipValue)}`,
-      `${es ? "R:R" : "R:R"}: ${fmtNum(c.rr, 2)} : 1`,
+      `R:R: ${fmtNum(c.rr, 2)}:1`,
       `${es ? "Beneficio neto estimado" : "Estimated net profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)}${pctSep(lang)})`,
       `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.positionValue)}`,
     ];
@@ -672,7 +672,7 @@ export function RiskCalculator() {
             <Result label={es ? "Riesgo total" : "Total risk"} value={fmtUsd(c.totalRiskUsd)} color="rgb(var(--pnl-neg))" />
             <Result label={es ? "Beneficio neto" : "Net profit"} value={fmtUsd(c.profit)} color="rgb(var(--pnl-pos))" />
             <Result label={es ? "Tamaño de posición" : "Position size"} value={`${fmtNum(c.size, assetMode === "forex" ? 2 : (assetMode === "futures" ? 1 : 2))} ${c.sizeLabel}`} color="var(--ink)" />
-            <Result label="R:R" value={`${fmtNum(c.rr, 2)} : 1`} color="var(--ink)" />
+            <Result label="R:R" value={`${fmtNum(c.rr, 2)}:1`} color="var(--ink)" />
             <Result label={es ? "Valor del pip / punto" : "Pip / point value"} value={fmtUsd(c.pipValue)} color="var(--ink)" />
             <Result label={es ? "Fricción estimada" : "Est. friction"} value={`−${fmtUsd(c.estimatedFriction)}`} color="var(--ink-2)" />
           </div>
@@ -737,7 +737,7 @@ export function RiskCalculator() {
                 {es ? "Riesgo" : "Risk"}
               </span>
               <span className="tnum font-semibold text-[rgb(var(--accent-base))]">
-                {fmtNum(c.rr, 2)} : 1 R:R
+                {fmtNum(c.rr, 2)}:1 R:R
               </span>
               <span className="tnum inline-flex items-center gap-1.5 text-tertiary">
                 {es ? "Beneficio" : "Profit"}

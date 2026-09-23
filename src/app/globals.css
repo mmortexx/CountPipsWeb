@@ -4066,6 +4066,12 @@ select.tj-campo:invalid {
 .tj-escritorio--ancho {
   inset: -8% calc(50% - 50vw) 4%;
 }
+/* Detrás de un panel suelto, no de la sección: desborda el panel para que
+   la mancha asome alrededor y no solo a través del cristal. */
+.tj-escritorio--tras {
+  inset: -45% -30%;
+  overflow: visible;
+}
 
 /* ---- Panel de cifras ------------------------------------------------ */
 .tj-metricas {
@@ -4662,18 +4668,13 @@ select.tj-campo:invalid {
 /* ============================================================
    EL SELLO DE «PREVISTO»
    ============================================================
-   La única forma que tiene este sitio de decir, en dibujo, que algo
-   todavía no existe. El razonamiento está en `SelloPrevisto.tsx`; aquí
-   sólo el trazo.
+   La única forma que tiene este sitio de decir que algo todavía no
+   existe. El razonamiento está en `SelloPrevisto.tsx`.
 
-   El borde es DISCONTINUO porque en dibujo técnico la línea de trazos
-   significa «previsto, no ejecutado» — la misma convención que usa la
-   lámina `blueprint` del acceso anticipado. El guion mide 5 px y el hueco
-   3: por debajo de eso el trazo se lee como una línea continua sucia a
-   tamaños pequeños, y por encima parece un borde roto.
-
-   Sin rotación, sin color de alerta y sin bajar la opacidad de lo que
-   envuelve: lo previsto no está deshabilitado, sólo no ha llegado. */
+   Nació con un marco a trazos; se le quitó en 09544c0, cuando precios y
+   preguntas dejaron de ir en cajas, y queda como rótulo en tinta
+   secundaria. Sin color de alerta y sin bajar la opacidad de lo que
+   envuelve: lo previsto no está deshabilitado, solo no ha llegado. */
 .sello-previsto {
   display: inline-flex;
   align-items: baseline;

@@ -44,6 +44,7 @@
 | `marcas-eje.test.ts` | Marcas de eje en cifras redondas (1 · 2 · 2,5 · 5), dentro del rango y sin reventar con rangos imposibles |
 | `metricas.test.ts` | El motor de métricas y la distribución de R de la portada |
 | `fondeo.test.ts` | Prueba de fondeo: coincide con la ruina del jugador, el dinámico nunca aprueba más que el estático, escenario leído de la dirección acotado y ajustado al paso |
+| `formulario-declarado.test.ts` | Lo que la FAQ y la política de privacidad dicen que pide el formulario de acceso es lo que pide: cuenta los campos del HTML compilado (se salta sin `out/`) |
 | `calendario-muestra.test.ts` | Muestra de /features: el calendario de julio de 2026 empieza en su día y tiene 31; ningún cierre en fin de semana salvo cripto, sin cambiar el resultado total; los setups de la ficha de playbooks cubren la muestra, de mejor a peor, con alguno sin ventaja |
 | `recuperacion.test.ts` | Recuperación de drawdown: la asimetría, la operación exacta en que se vuelve al máximo, sin ventaja no vuelve, nunca NaN ni Infinity |
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |

@@ -133,8 +133,9 @@ export function SeguridadBody() {
         titleHighlightEn="on your machine."
         subtitleEs="Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y lo que se conecta a internet lo activas tú."
         subtitleEn="No account, no telemetry and no CountPips servers: your trades live on your machine and anything that goes online is something you turn on."
-        breadcrumbEs="Características · Seguridad"
-        breadcrumbEn="Features · Security"
+        padre={{ href: "/features", es: "Características", en: "Features" }}
+        breadcrumbEs="Seguridad"
+        breadcrumbEn="Security"
       />
       <SecuritySection enPagina />
       <DataFlowComparison />

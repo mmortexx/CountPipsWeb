@@ -131,7 +131,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Risk of ruin",
-    es: "Probabilidad matemática de perder todo el capital de la cuenta asumiendo un tamaño de riesgo fijo por operación. Crece exponencialmente con el riesgo por trade.",
+    es: "Probabilidad matemática de perder todo el capital de la cuenta asumiendo un tamaño de riesgo fijo por operación. Crece exponencialmente con el riesgo por operación.",
     en: "The mathematical probability of losing the entire account balance assuming a fixed risk size per trade. It grows exponentially with risk per trade.",
     category: "risk",
   },

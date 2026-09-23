@@ -287,13 +287,13 @@ export const FORMULAS_GLOSARIO: Record<
   "sharpe-ratio": {
     formulaEs: "S = (E[R − Rf] / σ) × √N",
     formulaEn: "S = (E[R − Rf] / σ) × √N",
-    variablesEs: "μ: retorno medio por trade, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σ: desviación estándar, N: trades/año",
+    variablesEs: "μ: retorno medio por operación, Rf: tasa libre de riesgo (Rf=0 en operativa intradiaria), σ: desviación estándar, N: operaciones/año",
     variablesEn: "μ: mean return per trade, Rf: risk-free rate (Rf=0 in intraday trading), σ: standard deviation, N: trades/year",
   },
   "sortino-ratio": {
     formulaEs: "So = (E[R − Rf] / σd) × √N",
     formulaEn: "So = (E[R − Rf] / σd) × √N",
-    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en demo), σd: desviación estándar de retornos negativos, N: trades/año",
+    variablesEs: "μ: retorno medio, Rf: tasa libre de riesgo (Rf=0 en demo), σd: desviación estándar de retornos negativos, N: operaciones/año",
     variablesEn: "μ: mean return, Rf: risk-free rate (Rf=0 in demo), σd: downside standard deviation, N: trades/year",
   },
   "calmar-ratio": {
@@ -351,7 +351,7 @@ export const FORMULAS_GLOSARIO: Record<
   "risk-of-ruin": {
     formulaEs: "P(Ruina) = e^(−2 · E · B / σ²)",
     formulaEn: "P(Ruin) = e^(−2 · E · B / σ²)",
-    variablesEs: "E: valor esperado por trade, B: capital antes del nivel de quiebra, σ²: varianza del retorno",
+    variablesEs: "E: valor esperado por operación, B: capital antes del nivel de quiebra, σ²: varianza del retorno",
     variablesEn: "E: expected value per trade, B: bankroll buffer before bankruptcy, σ²: variance",
   },
   cagr: {

@@ -18,6 +18,8 @@ interface PageHeaderProps {
   subtitleEn: string;
   breadcrumbEs: string;
   breadcrumbEn: string;
+  /** Nivel intermedio de las migas, enlazado: «Inicio / Glosario / Drawdown». */
+  padre?: { href: string; es: string; en: string };
   tono?: TonoPagina;
 }
 
@@ -51,6 +53,7 @@ export function PageHeader({
   subtitleEn,
   breadcrumbEs,
   breadcrumbEn,
+  padre,
   tono = "capitulo",
 }: PageHeaderProps) {
   const { lang } = useLang();
@@ -71,7 +74,18 @@ export function PageHeader({
             {es ? "Inicio" : "Home"}
           </Link>
           <span aria-hidden="true">/</span>
-          <span className="text-secondary" aria-current="page">
+          {padre ? (
+            <>
+              <Link
+                href={padre.href}
+                className="-my-2 inline-flex min-h-[44px] shrink-0 items-center rounded-[4px] px-1 py-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+              >
+                {es ? padre.es : padre.en}
+              </Link>
+              <span aria-hidden="true">/</span>
+            </>
+          ) : null}
+          <span className="min-w-0 text-secondary" aria-current="page">
             {es ? breadcrumbEs : breadcrumbEn}
           </span>
         </nav>

@@ -290,7 +290,7 @@ export function EdgeSignificanceChecker() {
             />
             <div className="mt-2 flex items-center justify-between text-[12px]">
               <span className="text-secondary">
-                {es ? "Ratio trades/parámetro:" : "Trades/parameter ratio:"} <strong className="tnum text-primary">{fmtNum(c.tradesPerParam, 1)}:1</strong>
+                {es ? "Operaciones por parámetro:" : "Trades per parameter:"} <strong className="tnum text-primary">{fmtNum(c.tradesPerParam, 1)}:1</strong>
               </span>
               <span className={`font-semibold ${c.overfittingRisk ? "text-[rgb(var(--pnl-neg))]" : "text-[rgb(var(--pnl-pos))]"}`}>
                 {c.overfittingRisk ? (es ? "Riesgo de sobreajuste" : "Overfitting risk") : (es ? "Robusto (≥ 20:1)" : "Robust (≥ 20:1)")}

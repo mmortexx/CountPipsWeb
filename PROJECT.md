@@ -1911,6 +1911,40 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
   FAQ mezclaba las dos formas). `vocabulario.test.ts` lo vigila, visto en
   rojo sobre la compilación anterior.
 
+### Vigesimoprimera tanda: barrido de detalles, texto y plantillas (2026-09-23)
+
+- **Barrido del texto visible de las 173 páginas** (comillas, raya,
+  puntos suspensivos, palabras repetidas, restos del otro idioma):
+  - las 57 fichas del glosario en inglés decían `What "X" means`, con
+    comillas rectas; ahora “X”;
+  - «por trade» y «trades/año» en definiciones españolas pasan a «por
+    operación» y «operaciones/año», y «Ratio trades/parámetro» a
+    «Operaciones por parámetro»;
+  - la proporción R:R iba unas veces «3,00 : 1» y otras «12,0:1»; ahora
+    siempre sin espacios.
+  «Nota post-trade» se queda: es la etiqueta de la app.
+- **La FAQ decía que el formulario de acceso pedía cinco cosas y pide
+  siete** (faltaban «qué quieres mejorar primero» y la nota opcional; la
+  política de privacidad sí las nombraba). `formulario-declarado.test.ts`
+  cuenta los campos del HTML compilado y los compara con la FAQ y la
+  política en los dos idiomas; visto en rojo con el texto antiguo.
+- **Migas de tres niveles** en glosario, herramientas y las tres
+  subpáginas de características: «Inicio / Glosario / Drawdown», con el
+  nivel intermedio enlazado (`padre` en `PageHeader`). Antes era un solo
+  paso sin enlace, «Glosario · Drawdown», aunque los datos estructurados
+  ya declaraban los tres.
+- **La mancha de fondo de la demo** (`Escritorio`) iba centrada en la
+  sección y caía detrás del titular de la izquierda, no del panel de la
+  derecha. Ahora cuelga del panel (`tj-escritorio--tras`).
+- **Prop firms:** el límite diario salía en rojo y el drawdown máximo en
+  negro, siendo los dos umbrales de pérdida; ahora los dos en rojo. El
+  0,75 % de riesgo estaba escrito en cuatro sitios; queda en `RIESGO_PCT`.
+- **Textos:** «esto es la curva» → «esta es la curva»; «tu esperanza» →
+  «tu esperanza matemática» en la lista de herramientas.
+- **Comentarios que mentían:** el sello «Previsto» se describía con un
+  marco a trazos que se le quitó en 09544c0; corregidos en el CSS y en
+  `SelloPrevisto.tsx`.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -1934,7 +1968,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 34 suites, 359 tests (+2 omitidos)
+npx vitest run                          # 35 suites, 362 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

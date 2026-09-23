@@ -29,8 +29,7 @@ export function DemoConversionPanel() {
       ];
 
   return (
-    <section id="demo-next-step" className="section-tight relative scroll-mt-24">
-      <Escritorio />
+    <section id="demo-next-step" className="section-tight relative scroll-mt-24 overflow-x-clip">
       <div className="tj-container relative">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
           <Reveal>
@@ -55,6 +54,9 @@ export function DemoConversionPanel() {
           </Reveal>
 
           <div className="relative">
+            {/* La mancha cuelga del panel y no de la sección: centrada en la
+                sección caía entre las dos columnas, detrás del titular. */}
+            <Escritorio className="tj-escritorio--tras" />
             <aside className="tj-cristal relative rounded-[8px] p-6 sm:p-8">
               <div className="flex items-center gap-3">
                 <span className="grid size-10 place-items-center rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">

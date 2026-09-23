@@ -139,8 +139,9 @@ export function MetricasBody() {
         titleHighlightEn="real edge."
         subtitleEs="40+ ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R. No gráficos bonitos: números con su muestra y su intervalo de confianza."
         subtitleEn="40+ institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R. Not pretty charts: numbers with their sample size and confidence interval."
-        breadcrumbEs="Características · Métricas"
-        breadcrumbEn="Features · Metrics"
+        padre={{ href: "/features", es: "Características", en: "Features" }}
+        breadcrumbEs="Métricas"
+        breadcrumbEn="Metrics"
       />
       <MetricsShowcaseNew cifras={cifrasMuestra()} enPagina />
       <RiskCalculator />
