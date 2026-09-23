@@ -116,7 +116,7 @@ export const QUESTIONS: Q[] = [
     qEn: "Do you log your trades with the reason for each?",
     options: [
       { es: "No anoto nada", en: "I log nothing" },
-      { es: "Sólo el resultado", en: "Only the result" },
+      { es: "Solo el resultado", en: "Only the result" },
       { es: "Sí, con el motivo", en: "Yes, with the reason" },
       { es: "Sí, con motivo, estado y captura", en: "Yes, with reason, state and screenshot" },
     ],

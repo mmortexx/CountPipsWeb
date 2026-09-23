@@ -57,7 +57,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Puedo ver el producto antes de solicitar acceso?",
-    a: "Sí. Puedes explorar la demo en vivo con datos deterministas, sin registro y sin descargar nada. La aplicación instalada se entrega sólo a participantes del piloto privado invitados.",
+    a: "Sí. Puedes explorar la demo en vivo con datos deterministas, sin registro y sin descargar nada. La aplicación instalada se entrega solo a participantes del piloto privado invitados.",
   },
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
@@ -65,11 +65,11 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué datos pide esta web?",
-    a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden sólo lo que ves en ellos —el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados y cómo llevas hoy tu diario—, y la analítica de visitas sólo se activa si la aceptas en el aviso de cookies.",
+    a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden solo lo que ves en ellos —el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados y cómo llevas hoy tu diario—, y la analítica de visitas solo se activa si la aceptas en el aviso de cookies.",
   },
   {
     q: "¿Podré usarlo en varios ordenadores?",
-    a: "La política de dispositivos se concretará antes de la venta. Durante el piloto privado recibirás instrucciones de instalación sólo si eres invitado.",
+    a: "La política de dispositivos se concretará antes de la venta. Durante el piloto privado recibirás instrucciones de instalación solo si eres invitado.",
   },
   {
     q: "¿Qué ocurre si cambio de ordenador durante el piloto?",
@@ -152,7 +152,7 @@ export const PRICING_FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué datos no se solicitan?",
-    a: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Sólo preguntamos lo necesario para seleccionar el piloto y entender tu contexto de diario.",
+    a: "Nunca pedimos credenciales, capital, extractos ni datos financieros. Solo preguntamos lo necesario para seleccionar el piloto y entender tu contexto de diario.",
   },
 ];
 

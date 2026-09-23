@@ -74,6 +74,13 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string }[] = [
       "rejilla de métricas de la portada era el único sitio que la llamaba " +
       "«Esperanza», y quien la leía ahí no la encontraba luego en el glosario",
   },
+  {
+    palabra: /\bsólo\b/i,
+    nombre: "sólo, con tilde",
+    motivo:
+      "el sitio escribe «solo» sin tilde, como pide la RAE desde 2010; convivían " +
+      "las dos formas, a veces en la misma respuesta de la FAQ",
+  },
 ];
 
 /* NO se prohíbe «Drawdown máx.»: la calculadora de capital lo usa para el

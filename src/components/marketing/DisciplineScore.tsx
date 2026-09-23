@@ -102,7 +102,7 @@ const DIMS: Dim[] = [
     en: "Consistency",
     weight: 1.5,
     tipEs:
-      "Tu punto flaco es la constancia. Haces las cosas bien a ratos, y a ratos no basta: la ventaja sólo aparece sobre muchas operaciones seguidas del mismo modo. Elige un método y sostenlo tres meses sin cambiarlo, midiendo. Cambiar de sistema tras cada mala racha es la forma más cara de no aprender nada.",
+      "Tu punto flaco es la constancia. Haces las cosas bien a ratos, y a ratos no basta: la ventaja solo aparece sobre muchas operaciones seguidas del mismo modo. Elige un método y sostenlo tres meses sin cambiarlo, midiendo. Cambiar de sistema tras cada mala racha es la forma más cara de no aprender nada.",
     tipEn:
       "Your weak point is consistency. You do things well in patches, and patches are not enough: an edge only shows over many trades done the same way. Pick one method and hold it for three months, measuring. Switching systems after every bad run is the most expensive way to learn nothing.",
   },

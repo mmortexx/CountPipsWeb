@@ -71,7 +71,7 @@ const privacidad: DocumentoLegal = {
   tituloEs: "Política de privacidad",
   tituloEn: "Privacy policy",
   entradaEs:
-    "Esta web recoge una solicitud de acceso anticipado cuando la envías y, sólo con permiso, medición agregada de uso mediante PostHog en la UE. No pedimos credenciales, capital, extractos ni datos financieros.",
+    "Esta web recoge una solicitud de acceso anticipado cuando la envías y, solo con permiso, medición agregada de uso mediante PostHog en la UE. No pedimos credenciales, capital, extractos ni datos financieros.",
   entradaEn:
     "This site collects an early-access application when you submit it and, only with permission, aggregated usage measurement through EU-hosted PostHog. We do not ask for credentials, capital, statements or financial data.",
   descripcionEs:
@@ -103,7 +103,7 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "La solicitud de acceso anticipado pide sólo el contexto necesario para seleccionar un piloto: email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo y comentario opcional. El formulario de contacto pide nombre, email y mensaje.",
+          es: "La solicitud de acceso anticipado pide solo el contexto necesario para seleccionar un piloto: email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo y comentario opcional. El formulario de contacto pide nombre, email y mensaje.",
           en: "The early-access application asks only for the context needed to select a pilot: email, profile, experience, markets, current journaling method, goal and optional note. The contact form asks for name, email and message.",
         },
         {
@@ -191,7 +191,7 @@ const privacidad: DocumentoLegal = {
         },
         {
           tipo: "parrafo",
-          es: "Las comunicaciones futuras son opcionales y separadas: sólo se enviarán si marcas esa casilla. Tu email no se usa para publicidad de terceros.",
+          es: "Las comunicaciones futuras son opcionales y separadas: solo se enviarán si marcas esa casilla. Tu email no se usa para publicidad de terceros.",
           en: "Future communications are optional and separate: they are sent only if you tick that box. Your email is not used for third-party advertising.",
         },
       ],
@@ -211,7 +211,7 @@ const privacidad: DocumentoLegal = {
           es: [
             "Endpoint de admisión — recibe y deduplica solicitudes para el equipo de selección.",
             "Cloudflare Turnstile — valida que la solicitud procede de una persona cuando el control está activado.",
-            "PostHog EU — recibe eventos técnicos sólo tras consentimiento analítico.",
+            "PostHog EU — recibe eventos técnicos solo tras consentimiento analítico.",
             "Web3Forms — recibe el formulario de contacto y lo reenvía al correo del titular.",
           ],
           en: [
@@ -236,7 +236,7 @@ const privacidad: DocumentoLegal = {
         {
           tipo: "lista",
           es: [
-            "Solicitud de acceso anticipado: durante la selección y el piloto, y después sólo el tiempo necesario para atender obligaciones o tu baja.",
+            "Solicitud de acceso anticipado: durante la selección y el piloto, y después solo el tiempo necesario para atender obligaciones o tu baja.",
             "Contacto: el tiempo necesario para resolver tu consulta y el plazo en que pudieran derivarse responsabilidades.",
           ],
           en: [
@@ -300,7 +300,7 @@ const cookies: DocumentoLegal = {
   tituloEs: "Política de cookies",
   tituloEn: "Cookie policy",
   entradaEs:
-    "Las preferencias técnicas se guardan localmente. La analítica opcional sólo se activa si la aceptas y puede usar almacenamiento de PostHog para recordar tu consentimiento.",
+    "Las preferencias técnicas se guardan localmente. La analítica opcional solo se activa si la aceptas y puede usar almacenamiento de PostHog para recordar tu consentimiento.",
   entradaEn:
     "Technical preferences are stored locally. Optional analytics only starts if you accept it and may use PostHog storage to remember your consent.",
   descripcionEs:

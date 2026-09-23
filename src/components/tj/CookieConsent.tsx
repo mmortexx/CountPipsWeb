@@ -244,7 +244,7 @@ export function CookieConsent() {
                   precisamente la diferencia. */}
               <p className="text-[13px] leading-[1.5] text-secondary flex-1 md:text-[14px] md:leading-relaxed">
                 {es
-                  ? "Guardamos tus preferencias en este navegador; la analítica, sólo si la aceptas. "
+                  ? "Guardamos tus preferencias en este navegador; la analítica, solo si la aceptas. "
                   : "We keep your preferences in this browser; analytics only if you accept it. "}
                 <Link
                   href="/cookies"

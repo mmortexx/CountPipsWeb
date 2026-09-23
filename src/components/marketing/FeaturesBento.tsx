@@ -3,7 +3,7 @@
 import { useLang } from "@/lib/i18n";
 import type { getCal, SetupResumen } from "@/lib/trading/fixtures";
 import { nombreSetup } from "@/lib/trading/setups";
-import { fmtPct, fmtR } from "@/lib/trading/format";
+import { fmtMoney, fmtPct, fmtR } from "@/lib/trading/format";
 
 /**
  * FeaturesBento — sección `#features`. Cinco fichas: calendario de P&L
@@ -263,29 +263,37 @@ export function FeaturesBento({
           {/* Multi-cuenta (span 4) */}
           <article data-entra="4" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
-              <span>{es ? "Multi-cuenta, multi-activo" : "Multi-account, multi-asset"}</span>
+              <span>{es ? "Multi-cuenta" : "Multi-account"}</span>
               <span>{es ? "3 cuentas" : "3 accounts"}</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1">
               <h3 className={titulo}>{es ? "Una cuenta o diez, en la misma vista" : "One account or ten, in the same view"}</h3>
+              {/* El resultado se calcula del saldo y el capital inicial para
+                  que no puedan contradecirse: la Topstep «aprobada» tiene
+                  que pasar el +6 % de su plantilla. */}
               <ul className="m-0 mt-3 p-0 list-none tnum">
                 {[
-                  { name: "Apex 150k (#1)", balance: es ? "154.820 $" : "$154,820", pnl: es ? "+1.420 $" : "+$1,420", status: es ? "En curso" : "In progress" },
-                  { name: "Topstep 50k (#2)", balance: es ? "51.240 $" : "$51,240", pnl: es ? "+1.240 $" : "+$1,240", status: es ? "Aprobada" : "Passed" },
-                  { name: "IBKR Futures Core", balance: es ? "84.190 $" : "$84,190", pnl: es ? "+2.100 $" : "+$2,100", status: es ? "Personal" : "Personal" },
+                  { name: "Apex 150k (#1)", inicial: 150000, saldo: 154820, status: es ? "En curso" : "In progress" },
+                  { name: "Topstep 50k (#2)", inicial: 50000, saldo: 53240, status: es ? "Aprobada" : "Passed" },
+                  { name: "IBKR Futures Core", inicial: 80000, saldo: 84190, status: es ? "Personal" : "Personal" },
                 ].map((acc) => (
                   <li key={acc.name} className={`flex items-start justify-between gap-3 border-b ${division} py-3 last:border-b-0`}>
                     <div className="min-w-0">
                       <p className="m-0 truncate text-[13px] font-medium text-primary">{acc.name}</p>
-                      <p className="m-0 mt-0.5 text-[12px] text-tertiary">{acc.balance}</p>
+                      <p className="m-0 mt-0.5 text-[12px] text-tertiary">{fmtMoney(acc.saldo, lang, { decimals: 0 })}</p>
                     </div>
                     <div className="text-right">
-                      <p className="m-0 text-[13px] font-medium text-[rgb(var(--pnl-pos))]">{acc.pnl}</p>
+                      <p className="m-0 text-[13px] font-medium text-[rgb(var(--pnl-pos))]">
+                        {fmtMoney(acc.saldo - acc.inicial, lang, { decimals: 0, sign: true })}
+                      </p>
                       <p className="m-0 mt-0.5 text-[10.5px] font-medium uppercase tracking-[0.1em] text-tertiary">{acc.status}</p>
                     </div>
                   </li>
                 ))}
               </ul>
+              <p className="m-0 mt-3 text-[11px] text-tertiary">
+                {es ? "Saldo y resultado desde la apertura de cada cuenta." : "Balance and result since each account opened."}
+              </p>
             </div>
           </article>
         </div>

@@ -277,7 +277,7 @@ export function BetaApplication() {
           <h2 className="mt-5 t-h3 text-primary">{es ? "Solicitud recibida." : "Application received."}</h2>
           <p className="mt-3 text-secondary leading-relaxed">
             {es
-              ? "Revisaremos las solicitudes por perfil y fase del producto. Te escribiremos sólo si encaja con el piloto privado; no necesitas tarjeta."
+              ? "Revisaremos las solicitudes por perfil y fase del producto. Te escribiremos solo si encaja con el piloto privado; no necesitas tarjeta."
               : "We review applications by profile and product phase. We will write only if you fit the private pilot; no card is required."}
           </p>
           <Link href="/demo" className="cta cta--secundario mt-6 hover:bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]">

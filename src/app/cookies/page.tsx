@@ -63,7 +63,7 @@ export function CookiesBody() {
         titleEn="Clear preferences. Optional analytics."
         titleHighlightEs="Analítica opcional."
         titleHighlightEn="Optional analytics."
-        subtitleEs="Las preferencias técnicas se quedan en tu navegador. PostHog sólo se carga si aceptas la medición y puedes retirarla cuando quieras."
+        subtitleEs="Las preferencias técnicas se quedan en tu navegador. PostHog solo se carga si aceptas la medición y puedes retirarla cuando quieras."
         subtitleEn="Technical preferences stay in your browser. PostHog only loads if you accept measurement, and you can withdraw it at any time."
         breadcrumbEs="Cookies"
         breadcrumbEn="Cookies"

@@ -1902,6 +1902,14 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
   operación, cifras que ningún trader se cree. Ahora sale de la muestra
   (`getSetups` en `fixtures.ts`): los cinco setups de mejor a peor, de
   +0,37R a −0,09R, con la Ruptura apenas positiva, como cuenta /about.
+- **La ficha de multicuenta no cuadraba:** «Apex 150k» con 154.820 $ decía
+  +1.420 $, y la Topstep «aprobada» solo llevaba +1.240 $, por debajo del
+  +6 % que la propia web da como objetivo. Ahora el resultado se calcula
+  del saldo y el capital inicial. Su rótulo, «Multi-cuenta, multi-activo»,
+  partía la barra en dos líneas a 1024 y en inglés; queda «Multi-cuenta».
+- **«solo» sin tilde en todo el texto visible** (dominaba 34 a 19, y la
+  FAQ mezclaba las dos formas). `vocabulario.test.ts` lo vigila, visto en
+  rojo sobre la compilación anterior.
 
 ## Herramientas de auditoría propias
 
@@ -1926,7 +1934,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 34 suites, 358 tests (+2 omitidos)
+npx vitest run                          # 34 suites, 359 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

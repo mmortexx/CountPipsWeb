@@ -397,6 +397,10 @@ VOZ:
 - NUNCA: "revolucionario", "game-changer", "el mejor", "increíble", emojis en copy.
 - NUNCA: "onboarding", "freemium", "growth hack" en texto visible.
 - Las cifras hablan: "Sharpe 4,08 · ventaja al 99 %" — no "¡métricas increíbles!".
+- Ortografía: «solo» sin tilde (RAE, 2010); comillas «…» en español y “…” en inglés.
+  `tests/vocabulario.test.ts` vigila el vocabulario sobre el HTML compilado.
+- Cifras de muestra: si el dato existe en las 200 operaciones de `lib/trading/data.ts`, se
+  calcula de ahí; lo que se escriba a mano tiene que ser verosímil y cuadrar consigo mismo.
 
 PARIDAD BILINGÜE:
 - Cada string visible → correspondiente EN en src/lib/i18n.tsx.

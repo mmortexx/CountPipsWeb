@@ -393,7 +393,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
 
   const ratios: { id: string; l: string; v: string; f: string; d: string; c?: string; enlaza?: Enfoque }[] = [
     { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), f: "μ / σ", d: es ? "Retorno por unidad de volatilidad." : "Return per unit of volatility." },
-    { id: "sortino", l: "Sortino", v: fmtNum(METRICS.sortino, lang, 2), f: "μ / σ↓", d: es ? "Sólo penaliza la volatilidad bajista." : "Penalizes downside volatility only." },
+    { id: "sortino", l: "Sortino", v: fmtNum(METRICS.sortino, lang, 2), f: "μ / σ↓", d: es ? "Solo penaliza la volatilidad bajista." : "Penalizes downside volatility only." },
     { id: "omega", l: "Omega", v: fmtNum(METRICS.omega, lang, 2), f: es ? "Σ ganancias / Σ pérdidas" : "Σ gains / Σ losses", d: es ? "Pondera la distribución entera." : "Weighs the whole distribution." },
     { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst drawdown." },
     {
@@ -540,7 +540,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
             aria-controls={`${id}-ratios`}
             onClick={() => setTodas((t) => !t)}
           >
-            {todas ? (es ? "Ver sólo las cuatro principales" : "Show only the main four") : es ? "Ver las ocho cifras" : "Show all eight figures"}
+            {todas ? (es ? "Ver solo las cuatro principales" : "Show only the main four") : es ? "Ver las ocho cifras" : "Show all eight figures"}
           </button>
         )}
         <p className="tj-ficha-barra tj-ficha-barra--pie">
