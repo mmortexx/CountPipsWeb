@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
+import { CampoCifra } from "@/components/tj/CampoCifra";
 import { fmtMoney, fmtNum, pctSep } from "@/lib/trading/format";
 
 interface MistakeItem {
@@ -15,8 +16,8 @@ interface MistakeItem {
 const PRESETS = [
   {
     id: "prop",
-    nameEs: "Trader de Prop Firm",
-    nameEn: "Prop Firm Trader",
+    nameEs: "Trader de prop firm",
+    nameEn: "Prop firm trader",
     trades: 50,
     breachPct: 30,
     inPlanExp: 55,
@@ -24,8 +25,8 @@ const PRESETS = [
   },
   {
     id: "scalper",
-    nameEs: "Scalper de Futuros / Cripto",
-    nameEn: "Futures / Crypto Scalper",
+    nameEs: "Scalper de futuros o cripto",
+    nameEn: "Futures or crypto scalper",
     trades: 80,
     breachPct: 40,
     inPlanExp: 38,
@@ -33,8 +34,8 @@ const PRESETS = [
   },
   {
     id: "swing",
-    nameEs: "Swing Trader Discrecional",
-    nameEn: "Discretionary Swing Trader",
+    nameEs: "Swing trader discrecional",
+    nameEn: "Discretionary swing trader",
     trades: 24,
     breachPct: 25,
     inPlanExp: 140,
@@ -72,7 +73,7 @@ export function DisciplineCost() {
 
   const mistakes: MistakeItem[] = useMemo(() => [
     { id: "offhours", labelEs: "Operar fuera de horario", labelEn: "Trading off-hours", pct: 32 },
-    { id: "oversize", labelEs: "Tamaño excesivo (Oversize)", labelEn: "Oversized position", pct: 27 },
+    { id: "oversize", labelEs: "Tamaño excesivo (oversize)", labelEn: "Oversized position", pct: 27 },
     { id: "nostop", labelEs: "Sin stop loss / omitido", labelEn: "No stop loss / omitted", pct: 18 },
     { id: "chasing", labelEs: "Perseguir el precio (FOMO)", labelEn: "Chasing price (FOMO)", pct: 14 },
     { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
@@ -291,13 +292,12 @@ export function DisciplineCost() {
                     {es ? "Ganancia media en plan ($/op.)" : "Avg win in-plan ($/trade)"}
                   </label>
                   <div className="relative">
-                    <input
+                    <CampoCifra
                       id="disc-inplan"
-                      type="number"
-                      step={1}
+                      paso={1}
                       min={0}
-                      value={inPlanExp}
-                      onChange={(e) => setInPlanExp(Number(e.target.value))}
+                      valor={inPlanExp}
+                      onValor={setInPlanExp}
                       className="tj-campo w-full h-11 sm:h-9 px-3 text-sm text-primary tnum"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
@@ -309,13 +309,12 @@ export function DisciplineCost() {
                     {es ? "Resultado medio fuera de plan ($)" : "Avg result off-plan ($)"}
                   </label>
                   <div className="relative">
-                    <input
+                    <CampoCifra
                       id="disc-offplan"
-                      type="number"
-                      step={1}
+                      paso={1}
                       max={0}
-                      value={offPlanExp}
-                      onChange={(e) => setOffPlanExp(Number(e.target.value))}
+                      valor={offPlanExp}
+                      onValor={setOffPlanExp}
                       className="tj-campo w-full h-11 sm:h-9 px-3 text-sm text-[rgb(var(--pnl-neg))] tnum"
                     />
                     <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
@@ -330,7 +329,7 @@ export function DisciplineCost() {
             >
               {/* Es una <table> real con display:grid, no una rejilla de <div>:
                   un lector de pantalla necesita asociar cada cifra con su
-                  columna («Neto») y con su fila («GAP»), cosa que una rejilla
+                  columna («Neto») y con su fila («Brecha»), cosa que una rejilla
                   de <div> no ofrece por más ARIA que se le ponga. `display:
                   grid` sobre <table>/<tr> es la técnica estándar para
                   conservar `subgrid` sin perder esa semántica: el navegador
@@ -379,7 +378,7 @@ export function DisciplineCost() {
 
                 {/* Fila Gap */}
                 <tr className="relative col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center px-2.5 py-3.5 text-sm">
-                  <th scope="row" className="text-left font-semibold text-primary text-[14px]">GAP</th>
+                  <th scope="row" className="text-left font-semibold text-primary text-[14px]">{es ? "Brecha" : "Gap"}</th>
                   <td className="tnum text-right text-secondary text-[14px]">—</td>
                   <td className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[14px]">
                     {usd("−", gap)}
@@ -395,8 +394,8 @@ export function DisciplineCost() {
 
             <p className="medida mt-3 text-[13px] text-tertiary leading-relaxed">
               {es
-                ? "El GAP es el dinero que dejas de ganar en cada operación que rompe las reglas frente a haberla ejecutado con disciplina."
-                : "The GAP is the cash lost on every off-plan trade compared to executing cleanly inside your rules."}
+                ? "La brecha es el dinero que dejas de ganar en cada operación que rompe las reglas frente a haberla ejecutado con disciplina."
+                : "The gap is the cash lost on every off-plan trade compared to executing cleanly inside your rules."}
             </p>
           </div>
 
@@ -432,7 +431,7 @@ export function DisciplineCost() {
                   <li key={row.id}>
                     <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-2.5 text-xs">
                       {/* Se parte en dos lineas, no se trunca: «Tamaño
-                          excesivo (Oversize)» con puntos suspensivos no
+                          excesivo (oversize)» con puntos suspensivos no
                           dice nada, y a 320 px se cortaba siempre. */}
                       <span className="min-w-0 font-medium leading-[1.3] text-primary [overflow-wrap:anywhere]">
                         {es ? row.labelEs : row.labelEn}
@@ -541,10 +540,10 @@ export function DisciplineCost() {
                     {es ? "Escenario" : "Scenario"}
                   </span>
                 </div>
-                <p className="text-xs text-secondary leading-relaxed mb-3">
+                <p className="medida text-xs text-secondary leading-relaxed mb-3">
                   {es
-                    ? `Si evitaras el 60\u00a0% de tus operaciones fuera de plan, dejarías de perder unos +${fmtMoney(totalLeakMonthly * 0.6, lang)} al mes. Es una estimación con tus cifras, no una promesa de resultado.`
-                    : `If you avoided 60% of your off-plan trades, you would stop losing about +${fmtMoney(totalLeakMonthly * 0.6, lang)} a month. It is an estimate from your numbers, not a promise of results.`}
+                    ? `Si evitaras el 60\u00a0% de tus operaciones fuera de plan, dejarías de perder unos ${fmtMoney(Math.round(totalLeakMonthly * 0.6), lang, { decimals: 0 })} al mes. Es una estimación con tus cifras, no una promesa de resultado.`
+                    : `If you avoided 60% of your off-plan trades, you would stop losing about ${fmtMoney(Math.round(totalLeakMonthly * 0.6), lang, { decimals: 0 })} a month. It is an estimate from your numbers, not a promise of results.`}
                 </p>
                 {/* Mismo tratamiento que la proyeccion: el «al mes» baja a
                     su propia linea en vez de alargar una cifra que ya no
@@ -589,7 +588,7 @@ export function DisciplineCost() {
               </button>
 
               <span className="text-[12px] text-tertiary tnum">
-                {es ? "100 % privado en tu navegador" : "100% private in browser"}
+                {es ? "100 % privado en tu navegador" : "100% private in your browser"}
               </span>
             </div>
           </div>

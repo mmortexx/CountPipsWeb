@@ -5,6 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio } from "@/lib/trading/estadistica";
 import { fmtPct, formatoUsd, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
+import { CampoCifra } from "@/components/tj/CampoCifra";
 
 /**
  * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
@@ -253,16 +254,10 @@ export function RiskCalculator() {
       <span className="tnum block text-[12px] text-tertiary mb-1">
         {label}
       </span>
-      <input
-        type="number"
-        inputMode="decimal"
-        step="any"
+      <CampoCifra
         min={0}
-        value={Number.isFinite(value) ? value : ""}
-        onChange={(e) => {
-          const v = parseFloat(e.target.value);
-          onChange(Number.isFinite(v) ? v : 0);
-        }}
+        valor={value}
+        onValor={onChange}
         aria-label={ariaLabel}
         className="tj-campo tnum w-full min-h-[44px] px-3 text-base font-medium text-primary"
       />

@@ -18,7 +18,7 @@ import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
+import { cifraEditable, fmtNum, fmtPct, fmtR, leeCifra } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -57,7 +57,7 @@ function sliceMetricsByDays(m: Metrics, days: number): Metrics {
 
 const inputCls =
   /* `min-w-0` en la clase compartida: `w-full` no basta. Un
-     `<input type=number>` trae un ancho intrinseco del navegador y, como
+     `<input>` trae un ancho intrinseco del navegador y, como
      elemento de reticula, su `min-width: auto` impide que la celda baje
      de ahi — a 320 px se salia 14 px. Aqui vale para todos los campos de
      la demo de una vez. */
@@ -120,17 +120,22 @@ export function DashboardPage() {
   const [direction, setDirection] = useState<Direction>("long");
   const [instrumentSymbol, setInstrumentSymbol] = useState(INSTRUMENTS[0].symbol);
   const [setupName, setSetupName] = useState<string>(SETUP_NAMES[1]);
+  /* Los precios del formulario se escriben y se leen como el idioma de la
+     página: «21500,00» en español. Con `toFixed` y `parseFloat` salía el
+     punto inglés, y una coma escrita a mano se leía como corte: «1,08» → 1. */
+  const precio = (n: number, dec: number) => cifraEditable(n, lang, dec, dec);
+  const num = (s: string) => leeCifra(s) ?? Number.NaN;
   const [entry, setEntry] = useState<string>(
-    INSTRUMENTS[0].basePrice.toFixed(INSTRUMENTS[0].decimals)
+    precio(INSTRUMENTS[0].basePrice, INSTRUMENTS[0].decimals)
   );
   const [stop, setStop] = useState<string>(
-    (INSTRUMENTS[0].basePrice * 0.992).toFixed(INSTRUMENTS[0].decimals)
+    precio(INSTRUMENTS[0].basePrice * 0.992, INSTRUMENTS[0].decimals)
   );
   const [exitPrice, setExitPrice] = useState<string>(
-    (INSTRUMENTS[0].basePrice * 1.018).toFixed(INSTRUMENTS[0].decimals)
+    precio(INSTRUMENTS[0].basePrice * 1.018, INSTRUMENTS[0].decimals)
   );
   const [target, setTarget] = useState<string>(
-    (INSTRUMENTS[0].basePrice * 1.024).toFixed(INSTRUMENTS[0].decimals)
+    precio(INSTRUMENTS[0].basePrice * 1.024, INSTRUMENTS[0].decimals)
   );
   const [quantity, setQuantity] = useState<string>("1");
   const [note, setNote] = useState<string>("");
@@ -139,10 +144,10 @@ export function DashboardPage() {
   const inst =
     INSTRUMENTS.find((i) => i.symbol === instrumentSymbol) ?? INSTRUMENTS[0];
 
-  const entryNum = parseFloat(entry) || 0;
-  const stopNum = parseFloat(stop) || 0;
-  const targetNum = parseFloat(target) || 0;
-  const qtyNum = parseFloat(quantity) || 0;
+  const entryNum = num(entry) || 0;
+  const stopNum = num(stop) || 0;
+  const targetNum = num(target) || 0;
+  const qtyNum = num(quantity) || 0;
 
   const stopDist = Math.abs(entryNum - stopNum);
   // planned R:R = |target - entry| / |entry - stop| (real app's TradeRrDisplay).
@@ -171,13 +176,13 @@ export function DashboardPage() {
 
   // ----- handlers -----
   function handleRegister() {
-    const entryN = parseFloat(entry);
-    const stopN = parseFloat(stop);
-    const exitParsed = parseFloat(exitPrice);
+    const entryN = num(entry);
+    const stopN = num(stop);
+    const exitParsed = num(exitPrice);
     // Exit isn't strictly required — fall back to entry so a missing exit
     // records a scratch trade (P&L = 0, R = 0) instead of NaN poisoning.
     const exitN = Number.isFinite(exitParsed) ? exitParsed : entryN;
-    const qtyN = parseFloat(quantity);
+    const qtyN = num(quantity);
 
     if (
       !Number.isFinite(entryN) ||
@@ -233,10 +238,10 @@ export function DashboardPage() {
     const next = INSTRUMENTS.find((i) => i.symbol === sym);
     if (!next) return;
     setInstrumentSymbol(sym);
-    setEntry(next.basePrice.toFixed(next.decimals));
-    setStop((next.basePrice * 0.992).toFixed(next.decimals));
-    setExitPrice((next.basePrice * 1.018).toFixed(next.decimals));
-    setTarget((next.basePrice * 1.024).toFixed(next.decimals));
+    setEntry(precio(next.basePrice, next.decimals));
+    setStop(precio(next.basePrice * 0.992, next.decimals));
+    setExitPrice(precio(next.basePrice * 1.018, next.decimals));
+    setTarget(precio(next.basePrice * 1.024, next.decimals));
   }
 
   // session count: trades logged "today" (demo: any custom trade this session).
@@ -330,7 +335,7 @@ export function DashboardPage() {
                   consola, ni los tests, ni el ancho del documento se
                   enteraban. Lo vigila ahora `humo.mjs`. */}
               {/* `minmax(0,1fr)` por lo mismo que la reticula de entrada y
-                  salida: un `<input type=number>` no baja de su ancho
+                  salida: un `<input>` no baja de su ancho
                   intrinseco y arrastraba la columna. */}
               <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
                 {/* ============ LEFT COLUMN: image + risk footer ============ */}
@@ -566,7 +571,7 @@ export function DashboardPage() {
                   </div>
 
                   {/* Entry + Exit — 2-col grid.
-                      `minmax(0,1fr)` y no `1fr`: un `<input type=number>`
+                      `minmax(0,1fr)` y no `1fr`: un `<input>`
                       trae un ancho intrinseco del navegador, y en una
                       reticula una columna `1fr` no baja de el por mucho
                       `w-full` que lleve el campo. A 320 px se salia 14 px
@@ -578,9 +583,9 @@ export function DashboardPage() {
                       </label>
                       <input
                         id="d-entry"
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="any"
+                        autoComplete="off"
                         value={entry}
                         onChange={(e) => setEntry(e.target.value)}
                         className={inputCls}
@@ -592,9 +597,9 @@ export function DashboardPage() {
                       </label>
                       <input
                         id="d-exit"
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="any"
+                        autoComplete="off"
                         value={exitPrice}
                         onChange={(e) => setExitPrice(e.target.value)}
                         className={inputCls}
@@ -610,9 +615,9 @@ export function DashboardPage() {
                       </label>
                       <input
                         id="d-qty"
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="any"
+                        autoComplete="off"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
                         className={inputCls}
@@ -638,7 +643,7 @@ export function DashboardPage() {
                             const mult = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
                             const q =
                               (INITIAL_BALANCE_CONST * 0.01) / (stopDist * mult);
-                            setQuantity(q < 1 ? q.toFixed(3) : q.toFixed(2));
+                            setQuantity(q < 1 ? precio(q, 3) : precio(q, 2));
                           }
                         }}
                         className="h-9 px-3 inline-flex items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-[12px] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.06)] transition-colors whitespace-nowrap"
@@ -670,9 +675,9 @@ export function DashboardPage() {
                       </label>
                       <input
                         id="d-stop"
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="any"
+                        autoComplete="off"
                         value={stop}
                         onChange={(e) => setStop(e.target.value)}
                         className={inputCls}
@@ -684,9 +689,9 @@ export function DashboardPage() {
                       </label>
                       <input
                         id="d-target"
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="any"
+                        autoComplete="off"
                         value={target}
                         onChange={(e) => setTarget(e.target.value)}
                         className={inputCls}

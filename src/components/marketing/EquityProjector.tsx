@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
@@ -120,6 +121,21 @@ export function EquityProjector() {
   const [copied, setCopied] = useState(false);
 
   const chartRef = useRef<SVGSVGElement | null>(null);
+  /* El gráfico se dibuja al ancho real de su caja, en píxeles. Con un
+     lienzo fijo de 900 escalado a la caja, en un móvil de 390 todo se
+     reducía a un tercio y las cifras de los ejes quedaban en 3–4 px. */
+  const cajaGraficoRef = useRef<HTMLDivElement | null>(null);
+  const [anchoGrafico, setAnchoGrafico] = useState(900);
+  useEffect(() => {
+    const caja = cajaGraficoRef.current;
+    if (!caja || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(([e]) => {
+      const w = Math.round(e.contentRect.width);
+      if (w > 0) setAnchoGrafico(w);
+    });
+    ro.observe(caja);
+    return () => ro.disconnect();
+  }, []);
 
   // Aplicar Preset
   const applyPreset = useCallback((presetId: PresetKey) => {
@@ -344,7 +360,7 @@ export function EquityProjector() {
          «2.182.131 US$» de la casilla vecina que sale de `Intl` y la
          pone detras. Ahora cada idioma abrevia como escribe. */
       if (compact && Math.abs(n) >= 1_000_000) {
-        const cifra = (n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+        const cifra = (n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
         return es ? `${cifra}\u00a0M $` : `$${cifra}M`;
       }
       if (compact && Math.abs(n) >= 10_000) {
@@ -378,8 +394,8 @@ export function EquityProjector() {
   );
 
   // ── Renderizado del Gráfico Vectorial en Ultra Alta Resolución ───
-  const svgW = 900;
-  const svgH = 320;
+  const svgW = anchoGrafico;
+  const svgH = Math.round(Math.max(200, Math.min(320, svgW * 0.4)));
   const padLeft = 75;
   const padRight = 24;
   const padTop = 24;
@@ -433,16 +449,16 @@ export function EquityProjector() {
         " Z";
     }
 
-    // 4 Ticks limpios en el eje Y a la izquierda con separación vertical amplia
-    const gridYValues = [0.2, 0.45, 0.72, 0.98].map((pct) => {
-      const val = minVal + range * pct;
-      return { val, y: getY(val) };
-    });
+    const gridYValues = marcasRedondas(minVal, maxVal)
+      .filter((val) => val > minVal)
+      .map((val) => ({ val, y: getY(val) }));
 
-    // Ticks en el eje X por cada año
+    // Un rótulo de año cada ~44 px como mínimo; si no caben todos, uno de cada dos.
+    const saltoAnios = (svgW - padLeft - padRight) / Math.max(1, years) < 44 ? 2 : 1;
     const gridXYears = Array.from({ length: years + 1 }, (_, i) => ({
       year: i,
       x: getX(i * 12),
+      rotulo: i % saltoAnios === 0,
     }));
 
     return {
@@ -455,7 +471,7 @@ export function EquityProjector() {
       gridYValues,
       gridXYears,
     };
-  }, [c.monthlyPoints, showConfidenceCone, startBalance, years]);
+  }, [c.monthlyPoints, showConfidenceCone, startBalance, years, svgW, svgH]);
 
   // Manejo de interacción de cursor / toque
   const handleSvgMove = (clientX: number) => {
@@ -1159,6 +1175,7 @@ export function EquityProjector() {
 
                   {/* SVG Chart con Renderizado Preciso */}
                   <div
+                    ref={cajaGraficoRef}
                     className="relative cursor-crosshair touch-none select-none rounded-[8px] overflow-hidden"
                     style={{ boxShadow: "inset 0 0 0 1px var(--ficha-division)" }}
                     onMouseMove={(e) => handleSvgMove(e.clientX)}
@@ -1187,9 +1204,6 @@ export function EquityProjector() {
                           <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.14" />
                           <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.03" />
                         </linearGradient>
-                        <filter id="eq-glow" x="-20%" y="-20%" width="140%" height="140%">
-                          <feDropShadow dx="0" dy="2" stdDeviation="4" floodColor="rgb(var(--accent-base))" floodOpacity="0.45" />
-                        </filter>
                       </defs>
 
                       {/* Rejilla Horizontal con Labels a la Izquierda */}
@@ -1209,9 +1223,9 @@ export function EquityProjector() {
                             y={gy.y + 3.5}
                             textAnchor="end"
                             fill="var(--ink-3)"
-                            fontSize="10"
-                            fontFamily="monospace"
+                            fontSize="11"
                             fontWeight="500"
+                            style={{ fontFamily: "var(--font-mono)" }}
                             className="tnum"
                           >
                             {fmtUsd(gy.val, true)}
@@ -1231,18 +1245,20 @@ export function EquityProjector() {
                             strokeDasharray="2 3"
                             strokeWidth="1"
                           />
-                          <text
-                            x={gx.x}
-                            y={svgH - 10}
-                            textAnchor="middle"
-                            fill="var(--ink-3)"
-                            fontSize="10.5"
-                            fontFamily="monospace"
-                            fontWeight="600"
-                            className="tnum"
-                          >
-                            {gx.year === 0 ? (es ? "Inicio" : "Start") : `A${gx.year}`}
-                          </text>
+                          {gx.rotulo && (
+                            <text
+                              x={gx.x}
+                              y={svgH - 11}
+                              textAnchor={gx.year === 0 ? "start" : gx.year === years ? "end" : "middle"}
+                              fill="var(--ink-3)"
+                              fontSize="11"
+                              fontWeight="500"
+                              style={{ fontFamily: "var(--font-mono)" }}
+                              className="tnum"
+                            >
+                              {gx.year === 0 ? (es ? "Inicio" : "Start") : `${es ? "A" : "Y"}${gx.year}`}
+                            </text>
+                          )}
                         </g>
                       ))}
 
@@ -1264,10 +1280,9 @@ export function EquityProjector() {
                         d={chartData.medianPath}
                         fill="none"
                         stroke="rgb(var(--accent-base))"
-                        strokeWidth="2.8"
+                        strokeWidth="2.4"
                         strokeLinejoin="round"
                         strokeLinecap="round"
-                        filter="url(#eq-glow)"
                       />
 
                       {/* Línea Base */}
@@ -1299,7 +1314,6 @@ export function EquityProjector() {
                             fill="rgb(var(--accent-base))"
                             stroke="var(--ficha-fondo)"
                             strokeWidth="2.5"
-                            filter="url(#eq-glow)"
                           />
                           <circle
                             cx={activeCoord.x}
@@ -1437,7 +1451,7 @@ export function EquityProjector() {
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
                     {startBalance > 0
-                      ? `${fmtNum(c.finalBalance / startBalance, 1)}x ${es ? "capital inicial" : "starting capital"}`
+                      ? `${fmtNum(c.finalBalance / startBalance, 1)}\u00a0× ${es ? "el capital inicial" : "starting capital"}`
                       : ""}
                   </div>
                 </div>

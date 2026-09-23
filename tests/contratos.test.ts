@@ -579,3 +579,61 @@ describe("los escapes de JavaScript no llegan a pantalla", () => {
     expect(malos).toEqual([]);
   });
 });
+
+describe("lo que el titular del Monte Carlo promete", () => {
+  /* Decía «Mil versiones de tu año» y el simulador jugaba 300 caminos; su
+     ficha para buscadores hablaba de «miles de reordenaciones». El número
+     vive en `CAMINOS_MONTE_CARLO` y aquí se exige que el titular y las
+     descripciones lo digan en letra. Si el número cambia, esta tabla no
+     lo conoce y la prueba falla hasta que alguien reescriba el titular. */
+  const EN_LETRA: Record<number, { es: string; en: string }> = {
+    300: { es: "trescientas", en: "three hundred" },
+  };
+
+  it("titular, subtítulo y descripción dicen los caminos que se juegan", async () => {
+    const { HERRAMIENTAS, CAMINOS_MONTE_CARLO } = await import("@/lib/herramientas");
+    const mc = HERRAMIENTAS.find((h) => h.slug === "monte-carlo")!;
+    const letra = EN_LETRA[CAMINOS_MONTE_CARLO];
+    expect(letra, `no hay cómo escribir ${CAMINOS_MONTE_CARLO} en letra: revisa el titular`).toBeDefined();
+    for (const t of [mc.h1Es, mc.subtituloEs, mc.descripcionEs]) expect(t.toLowerCase()).toContain(letra.es);
+    for (const t of [mc.h1En, mc.subtituloEn, mc.descripcionEn]) expect(t.toLowerCase()).toContain(letra.en);
+    for (const t of [mc.h1Es, mc.subtituloEs, mc.descripcionEs, mc.h1En, mc.subtituloEn, mc.descripcionEn]) {
+      expect(t).not.toMatch(/\b(mil|miles|thousands?)\b/i);
+    }
+  });
+});
+
+describe("el glosario enlaza herramientas que existen", () => {
+  /* Si un destino no casa, la ficha del término se queda sin su enlace en
+     silencio. `/test` es el único destino que no es una calculadora. */
+  it("cada destino de HERRAMIENTA_DE es una herramienta con ficha o el test", async () => {
+    const { HERRAMIENTA_DE } = await import("@/lib/glosario");
+    const { herramientaPorSlug } = await import("@/lib/herramientas");
+    const destinos = Object.entries(HERRAMIENTA_DE);
+    expect(destinos.length).toBeGreaterThan(0);
+    const huerfanos = destinos.filter(
+      ([, href]) => href !== "/test" && !(href.startsWith("/herramientas/") && herramientaPorSlug(href.slice(14))),
+    );
+    expect(huerfanos).toEqual([]);
+  });
+});
+
+describe("los campos de cifra escriben como el idioma de la página", () => {
+  /* `type="number"` enseña y lee el decimal según el idioma del NAVEGADOR:
+     en la web española salía «1.24» junto a «43.200 $». Los campos de
+     cifra van por `CampoCifra` o, si guardan texto, por `leeCifra`. */
+  it("ningún componente usa type=\"number\"", () => {
+    const tsx: string[] = [];
+    const recorrer = (dir: string) => {
+      for (const e of readdirSync(dir)) {
+        const p = join(dir, e);
+        if (statSync(p).isDirectory()) recorrer(p);
+        else if (e.endsWith(".tsx")) tsx.push(p);
+      }
+    };
+    recorrer(join(process.cwd(), "src"));
+    expect(tsx.length).toBeGreaterThan(50);
+    const conNumber = tsx.filter((p) => /<input[^>]*\btype=["{]?["']?number/.test(readFileSync(p, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\s+/g, " ")));
+    expect(conNumber).toEqual([]);
+  });
+});

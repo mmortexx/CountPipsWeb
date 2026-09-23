@@ -4,6 +4,7 @@ import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum, fmtPct } from "@/lib/trading/format";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
+import { CampoCifra } from "@/components/tj/CampoCifra";
 
 interface InstrumentConfig {
   id: string;
@@ -248,7 +249,7 @@ export function CommissionDragCalculator() {
                     }`}
                   >
                     <span className="tnum">{item.id}</span>
-                    <span className={`text-[12px] font-normal ${selectedInstId === item.id ? "opacity-75" : "text-tertiary"}`}>{item.category}</span>
+                    <span className={`text-[12px] font-normal ${selectedInstId === item.id ? "opacity-75" : "text-tertiary"}`}>{es && item.category === "futures" ? "futuros" : item.category}</span>
                   </button>
                 ))}
               </div>
@@ -333,12 +334,12 @@ export function CommissionDragCalculator() {
                   </span>
                   <div className="flex items-center gap-1">
                     <span className="text-sm tnum text-secondary">$</span>
-                    <input
-                      type="number"
-                      step="0.05"
-                      min="0"
-                      value={customCommission}
-                      onChange={(e) => setCustomCommission(Math.max(0, Number(e.target.value)))}
+                    <CampoCifra
+                      paso={0.05}
+                      min={0}
+                      valor={customCommission}
+                      onValor={setCustomCommission}
+                      aria-label={es ? "Comisión ida y vuelta, en dólares" : "Round-turn fee, in dollars"}
                       className="w-full bg-transparent tnum text-sm text-primary font-semibold outline-none"
                     />
                   </div>
@@ -349,13 +350,13 @@ export function CommissionDragCalculator() {
                     {es ? "Deslizamiento medio" : "Average slippage"}
                   </span>
                   <div className="flex items-center gap-1">
-                    <input
-                      type="number"
-                      step="0.5"
-                      min="0"
-                      max="10"
-                      value={slippageTicks}
-                      onChange={(e) => setSlippageTicks(Math.max(0, Number(e.target.value)))}
+                    <CampoCifra
+                      paso={0.5}
+                      min={0}
+                      max={10}
+                      valor={slippageTicks}
+                      onValor={setSlippageTicks}
+                      aria-label={es ? "Deslizamiento medio, en ticks" : "Average slippage, in ticks"}
                       className="w-full bg-transparent tnum text-sm text-primary font-semibold outline-none"
                     />
                     <span className="text-xs tnum text-tertiary">ticks</span>

@@ -257,7 +257,7 @@ export function EdgeSignificanceChecker() {
           <div className="mt-6 border-t border-[var(--ficha-division)] pt-5">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum text-[12px] text-tertiary">
-                {es ? "Parámetros / Reglas del Setup" : "Setup Parameters / Rules"}
+                {es ? "Parámetros o reglas del setup" : "Setup parameters or rules"}
               </span>
               <span className="tnum font-semibold text-primary">{parametersCount}</span>
             </div>
@@ -293,7 +293,7 @@ export function EdgeSignificanceChecker() {
                 {es ? "Ratio trades/parámetro:" : "Trades/parameter ratio:"} <strong className="tnum text-primary">{fmtNum(c.tradesPerParam, 1)}:1</strong>
               </span>
               <span className={`font-semibold ${c.overfittingRisk ? "text-[rgb(var(--pnl-neg))]" : "text-[rgb(var(--pnl-pos))]"}`}>
-                {c.overfittingRisk ? (es ? "⚠ Riesgo de Sobreajuste" : "⚠ Overfitting Risk") : (es ? "✓ Robusto (≥20:1)" : "✓ Robust (≥20:1)")}
+                {c.overfittingRisk ? (es ? "⚠ Riesgo de sobreajuste" : "⚠ Overfitting risk") : (es ? "✓ Robusto (≥20:1)" : "✓ Robust (≥20:1)")}
               </span>
             </div>
           </div>
@@ -432,7 +432,7 @@ export function EdgeSignificanceChecker() {
               {copied ? (es ? "¡Informe copiado!" : "Report copied!") : (es ? "Copiar informe estadístico" : "Copy statistical report")}
             </button>
             <span className="text-[12px] text-tertiary tnum">
-              {es ? "100 % privado en navegador" : "100% private in browser"}
+              {es ? "100 % privado en tu navegador" : "100% private in your browser"}
             </span>
           </div>
         </div>

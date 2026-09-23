@@ -46,6 +46,10 @@ export type Herramienta = {
   descripcionEn: string;
 };
 
+/** Caminos que juega el simulador de Monte Carlo. El titular de su página
+ *  lo dice en letra: si cambia, `tests/contratos.test.ts` lo exige allí. */
+export const CAMINOS_MONTE_CARLO = 300;
+
 export const HERRAMIENTAS: Herramienta[] = [
   {
     slug: "calculadora-de-riesgo",
@@ -92,20 +96,20 @@ export const HERRAMIENTAS: Herramienta[] = [
     componente: "RMultipleSimulator",
     tituloEs: "Simulador de Monte Carlo",
     tituloEn: "Monte Carlo simulator",
-    h1Es: "Mil versiones de tu año.",
-    h1En: "A thousand versions of your year.",
-    resaltaEs: "de tu año.",
-    resaltaEn: "of your year.",
+    h1Es: "Tu ventaja, trescientas veces.",
+    h1En: "Your edge, three hundred times.",
+    resaltaEs: "trescientas veces.",
+    resaltaEn: "three hundred times.",
     subtituloEs:
-      "La misma ventaja, repetida muchas veces, da resultados muy distintos. Esto reordena tus operaciones al azar una y otra vez para enseñarte el abanico completo: no lo que salió, sino lo que podía haber salido.",
+      "La misma ventaja da resultados muy distintos según el orden en que lleguen las ganancias y las pérdidas. Esto juega trescientas veces tus próximas operaciones, con tu acierto y tu payoff, para enseñarte el abanico completo: no lo que saldrá, sino lo que puede salir.",
     subtituloEn:
-      "The same edge, repeated many times, produces very different outcomes. This reshuffles your trades over and over to show you the whole fan: not what happened, but what could have.",
+      "The same edge produces very different outcomes depending on the order in which wins and losses arrive. This plays out your next trades three hundred times, with your win rate and payoff, to show you the whole fan: not what will happen, but what can.",
     resumenEs: "El abanico de caminos posibles con tu ventaja, y el peor de ellos.",
     resumenEn: "The fan of possible paths for your edge — and the worst of them.",
     descripcionEs:
-      "Simula miles de reordenaciones de tus operaciones para ver el abanico de curvas posibles, la peor racha y el riesgo de arruinar la cuenta.",
+      "Trescientas secuencias de tus próximas operaciones: el abanico de curvas posibles, la peor racha y el riesgo de arruinar la cuenta.",
     descripcionEn:
-      "Simulate thousands of reorderings of your trades to see the fan of possible curves, the worst run and the risk of ruining the account.",
+      "Three hundred sequences of your next trades: the fan of possible curves, the worst run and the risk of ruining the account.",
   },
   {
     slug: "proyector-de-capital",

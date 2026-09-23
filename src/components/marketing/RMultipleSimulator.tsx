@@ -5,6 +5,9 @@ import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
 import { formatoUsd, pctSep } from "@/lib/trading/format";
+import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
+
+const SIM_RUNS = CAMINOS_MONTE_CARLO;
 
 /**
  * RMultipleSimulator — simulador Monte Carlo de distribución de R.
@@ -50,7 +53,6 @@ export function RMultipleSimulator() {
   const [monthlyWithdrawal, setMonthlyWithdrawal] = useState(0); // $
   const [seed, setSeed] = useState(1);
 
-  const SIM_RUNS = 300;
 
   // ── PRNG mulberry32 (determinista por seed) ──────────────────────
   const mulberry32 = useCallback((s: number) => {
@@ -338,8 +340,8 @@ export function RMultipleSimulator() {
           </h2>
           <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
-              ? "300 simulaciones de tus próximas operaciones. Cada camino es distinto: el abanico muestra los percentiles completos (P5 a P95). El mismo edge puede multiplicar tu cuenta o arruinarte según el orden. La disciplina es lo que te deja sobrevivir hasta cobrarlo."
-              : "300 simulations of your next trades. Each path is different: the fan shows full percentiles (P5 to P95). The same edge can multiply your account or ruin you depending on order. Discipline is what lets you survive long enough to collect it."}
+              ? `${SIM_RUNS} simulaciones de tus próximas operaciones. Cada camino es distinto: el abanico muestra los percentiles completos (P5 a P95). El mismo edge puede multiplicar tu cuenta o arruinarte según el orden. La disciplina es lo que te deja sobrevivir hasta cobrarlo.`
+              : `${SIM_RUNS} simulations of your next trades. Each path is different: the fan shows full percentiles (P5 to P95). The same edge can multiply your account or ruin you depending on order. Discipline is what lets you survive long enough to collect it.`}
           </p>
 
           {/* ── ARQUETIPOS ────────────────────────────────────────────
@@ -360,9 +362,9 @@ export function RMultipleSimulator() {
             </span>
             <div className="tj-segmentado tj-segmentado-rejilla" role="group">
               {[
-                { label: es ? "Evaluación Prop" : "Prop Challenge", nota: es ? "0,75 % riesgo" : "0.75% risk", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
-                { label: es ? "Seguimiento de tendencia" : "Trend Following", nota: es ? "42 % acierto · 3,2 R" : "42% hit · 3.2R", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
-                { label: es ? "Scalping de reversión" : "Mean Reversion Scalp", nota: es ? "65 % acierto · 1,2 R" : "65% hit · 1.2R", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
+                { label: es ? "Prueba de fondeo" : "Prop challenge", nota: es ? "0,75 % riesgo" : "0.75% risk", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
+                { label: es ? "Seguimiento de tendencia" : "Trend following", nota: es ? "42 % acierto · 3,2 R" : "42% hit · 3.2R", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
+                { label: es ? "Scalping de reversión" : "Mean-reversion scalp", nota: es ? "65 % acierto · 1,2 R" : "65% hit · 1.2R", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
                 { label: es ? "Sobre-apalancamiento" : "Over-leveraged", nota: es ? "3,5 % riesgo · peligro" : "3.5% risk · danger", wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
               ].map((preset) => {
                 const activo =
@@ -384,7 +386,7 @@ export function RMultipleSimulator() {
                     }}
                   >
                     {/* El nombre reserva DOS lineas aunque ocupe una:
-                        «Evaluación Prop» cabe en una y los otros tres no,
+                        «Prueba de fondeo» cabe en una y los otros tres no,
                         y sin el suelo las cuatro notas quedaban a alturas
                         distintas — que es lo que hacia que cuatro
                         opciones del mismo rango se leyeran desiguales. */}
@@ -512,14 +514,17 @@ export function RMultipleSimulator() {
               Cada columna es su propio contenedor de medida (`caja-cifra`)
               y el importe va abreviado: «18,9 k $» en vez de «18.906 US$»,
               que no cabe en 70 px. */}
+          {/* El rojo dice «por debajo del capital inicial», no «el peor
+              percentil»: con una ventaja sana el P5 también gana, y
+              pintarlo de pérdida contradecía la cifra que lleva debajo. */}
           <div className="tj-matriz mb-4 grid-cols-5 border-b border-[var(--ficha-division)] text-center tnum">
             {[
-              { k: "P5", n: es ? "Cola 5 %" : "Bottom 5%", v: c.finalP5, col: "rgb(var(--pnl-neg))", ref: false },
+              { k: "P5", n: es ? "Cola 5 %" : "Bottom 5%", v: c.finalP5, col: "var(--ink-2)", ref: false },
               { k: "P25", n: "Q1", v: c.finalP25, col: "var(--ink-2)", ref: false },
               { k: "P50", n: es ? "Mediana" : "Median", v: c.finalP50, col: "rgb(var(--accent-base))", ref: true },
               { k: "P75", n: "Q3", v: c.finalP75, col: "var(--ink-2)", ref: false },
-              { k: "P95", n: es ? "Cima 5 %" : "Top 5%", v: c.finalP95, col: "rgb(var(--pnl-pos))", ref: false },
-            ].map((p) => (
+              { k: "P95", n: es ? "Cima 5 %" : "Top 5%", v: c.finalP95, col: "var(--ink-2)", ref: false },
+            ].map((p) => ({ ...p, col: p.v < startBalance ? "rgb(var(--pnl-neg))" : p.col })).map((p) => (
               <div
                 key={p.k}
                 title={fmtUsd(p.v)}
@@ -580,7 +585,7 @@ export function RMultipleSimulator() {
               },
               {
                 t: es ? "Racha perdedora" : "Losing streak",
-                sub: es ? `esperada · mediana ${c.medianMaxLossStreak}` : `expected · median ${c.medianMaxLossStreak}`,
+                sub: es ? `teórica · simulada ${c.medianMaxLossStreak}` : `theoretical · simulated ${c.medianMaxLossStreak}`,
                 v: `~${c.theoreticalMaxLossStreak}`,
                 col: "var(--ink)",
               },
@@ -620,8 +625,8 @@ export function RMultipleSimulator() {
           >
             <p className="medida m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
               {es
-                ? "300 caminos con la semilla " + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."
-                : "300 paths with seed " + seed + ": each trade wins with " + fmtNum(winRate, 0) + "% probability, with fixed R wins and losses and compounding risk. Real markets have more extreme streaks, so your drawdown can be worse than these paths. Not financial advice."}
+                ? `${SIM_RUNS} caminos con la semilla ` + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."
+                : `${SIM_RUNS} paths with seed ` + seed + ": each trade wins with " + fmtNum(winRate, 0) + "% probability, with fixed R wins and losses and compounding risk. Real markets have more extreme streaks, so your drawdown can be worse than these paths. Not financial advice."}
             </p>
           </div>
         </div>

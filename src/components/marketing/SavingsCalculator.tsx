@@ -287,8 +287,10 @@ export function SavingsCalculator() {
                 {fmtUsd(c.savings)}
               </span>
               <span className="tnum" style={{ fontSize: 16, fontWeight: 600, color: savingsColor }}>
-                {fmtNum(c.savingsPct, 0)}
-                {pctSep(lang)}
+                {fmtNum(Math.abs(c.savingsPct), 0)}
+                {pctSep(lang)}{" "}
+                {/* Un «72 %» suelto no decía de qué. */}
+                {c.savings >= 0 ? (es ? "menos" : "less") : (es ? "más" : "more")}
               </span>
             </div>
           </div>

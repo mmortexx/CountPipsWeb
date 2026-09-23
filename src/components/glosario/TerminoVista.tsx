@@ -12,6 +12,30 @@ import {
   vecinos,
   type TerminoGlosario,
 } from "@/lib/glosario";
+import { herramientaPorSlug } from "@/lib/herramientas";
+
+const minusculaInicial = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
+
+/** Una salida de la ficha: rótulo pequeño encima y destino con su flecha. */
+function Salida({ href, rotulo, destino }: { href: string; rotulo: string; destino: string }) {
+  return (
+    <Link
+      href={href}
+      className="group -mx-4 flex items-center justify-between gap-4 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+    >
+      <span className="min-w-0">
+        <span className="block text-[12px] uppercase tracking-[0.08em] text-tertiary">{rotulo}</span>
+        <span className="mt-1 block text-[15px] font-medium text-primary">{destino}</span>
+      </span>
+      <span
+        aria-hidden
+        className="shrink-0 text-[15px] text-tertiary transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-primary"
+      >
+        →
+      </span>
+    </Link>
+  );
+}
 
 /**
  * La página de un término.
@@ -36,6 +60,11 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
   const familia = CATEGORIAS[termino.category];
   const seguir = SEGUIR_LEYENDO[termino.category];
   const herramienta = HERRAMIENTA_DE[termino.slug];
+  const esTest = herramienta === "/test";
+  const fichaHerramienta = herramienta && !esTest ? herramientaPorSlug(herramienta.split("/").pop() ?? "") : undefined;
+  const destinoHerramienta = esTest
+    ? es ? "Test de disciplina" : "Discipline test"
+    : fichaHerramienta && (es ? fichaHerramienta.tituloEs : fichaHerramienta.tituloEn);
   const formula = FORMULAS_GLOSARIO[termino.slug];
   const cercanos = relacionados(termino.slug);
   const { anterior, siguiente } = vecinos(termino.slug);
@@ -80,8 +109,8 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
               >
                 <span className="link-underline">{es ? familia.es : familia.en}</span>
               </Link>
-              {" — "}
-              {es ? familia.descEs : familia.descEn}
+              {": "}
+              {minusculaInicial(es ? familia.descEs : familia.descEn)}
             </p>
           </Reveal>
 
@@ -102,46 +131,26 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             </Reveal>
           )}
 
-          {/* La herramienta que lo calcula, si existe */}
-          {herramienta && (
-            <Reveal delay={0.1}>
-              <Link
-                href={herramienta}
-                className="group -mx-4 mt-6 flex items-center justify-between gap-4 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
-              >
-                <span className="min-w-0">
-                  <span className="block text-[12px] uppercase tracking-[0.08em] text-tertiary">
-                    {es ? "Calcúlalo" : "Work it out"}
-                  </span>
-                  <span className="mt-1 block text-[15px] font-medium text-primary">
-                    {es
-                      ? "Hay una herramienta para esto, gratis y sin registro"
-                      : "There is a tool for this, free and with no sign-up"}
-                  </span>
-                </span>
-                <span
-                  aria-hidden
-                  className="shrink-0 text-[15px] text-tertiary transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-primary"
-                >
-                  →
-                </span>
-              </Link>
-            </Reveal>
-          )}
-
-          {/* Dónde continúa dentro del producto */}
-          <Reveal delay={0.14}>
-            <p className="mt-8 text-[15px] leading-relaxed text-secondary">
-              {es ? "Dentro del programa: " : "Inside the app: "}
-              <Link
+          {/* Salidas: la herramienta que lo calcula, si existe, y dónde sigue en el programa. */}
+          <Reveal delay={0.1}>
+            <div className="mt-6 grid gap-1">
+              {herramienta && destinoHerramienta && (
+                <Salida
+                  href={herramienta}
+                  rotulo={
+                    esTest
+                      ? es ? "Mídete · gratis y sin registro" : "Measure yourself · free, no sign-up"
+                      : es ? "Calcúlalo · gratis y sin registro" : "Work it out · free, no sign-up"
+                  }
+                  destino={destinoHerramienta}
+                />
+              )}
+              <Salida
                 href={seguir.href}
-                className="link-underline-host -my-2 inline-flex py-2 text-primary transition-colors hover:text-[rgb(var(--accent-base))]"
-              >
-                <span className="link-underline">
-                  {es ? seguir.es : seguir.en}
-                </span>
-              </Link>
-            </p>
+                rotulo={es ? "Dentro del programa" : "Inside the app"}
+                destino={es ? seguir.es : seguir.en}
+              />
+            </div>
           </Reveal>
 
         </div>

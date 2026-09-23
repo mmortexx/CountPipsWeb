@@ -1758,6 +1758,46 @@ salida).
   oscura pierde el contraste al reducirse; está explicado en
   `ProductPlate.tsx`).
 
+### Decimoséptima tanda: las páginas que nadie había mirado (2026-09-23)
+
+La tanda anterior capturó 14 rutas y sus gemelas. Quedaban fuera siete
+herramientas, el test, los cuatro legales y las 57 fichas del glosario.
+Mirándolas a 1440 y 390, en claro y oscuro:
+
+- **Campos de cifra en el idioma de la página.** `type="number"` pinta y
+  lee el decimal según el idioma del NAVEGADOR: la web española enseñaba
+  «$ 1.24» junto a «43.200 $», y en la demo `parseFloat("1,08")` daba 1
+  sin avisar. Ahora `CampoCifra` (calculadoras) y `leeCifra` /
+  `cifraEditable` (formulario de la demo, en `lib/trading/format.ts`):
+  coma en español, punto en inglés, se aceptan las dos al escribir y no
+  se enseñan millares, para que un único separador sea siempre el
+  decimal. Lo vigila `tests/contratos.test.ts` (ningún `type="number"`;
+  visto en rojo con el formulario antiguo) y `tests/campo-cifra.test.ts`.
+- **Gráfico del proyector de capital.** Se dibujaba en un lienzo fijo de
+  900 escalado a la caja: en móvil las cifras de los ejes medían 3–4 px.
+  Ahora se dibuja al ancho real, con marcas redondas (`lib/marcasEje.ts`:
+  1 · 2 · 2,5 · 5 por potencia de diez, antes «801 k · 1,8 M · 2,88 M ·
+  3,93 M») y sin el resplandor de color en la curva, que las normas
+  prohíben.
+- **Lo que el Monte Carlo prometía.** «Mil versiones de tu año» y
+  «miles de reordenaciones» para un simulador que juega 300 caminos, y
+  que no reordena operaciones sino que las genera. El número vive en
+  `CAMINOS_MONTE_CARLO` y una prueba exige que el titular lo diga.
+- **Colores que contradecían su cifra.** El P5 del Monte Carlo iba en rojo
+  aunque ganara un 50 %; ahora el rojo es «por debajo del capital
+  inicial».
+- **Textos.** Mayúsculas a la inglesa («Riesgo de Sobreajuste», «Swing
+  Trader Discrecional»), «futures» sin traducir, «GAP» por «brecha»,
+  «dejarías de perder unos +982,08 $» (signo y céntimos en una
+  estimación), un «72 %» suelto que no decía de qué, «0 / 100» en el test
+  antes de contestar nada, y la primera frase de Términos repetida con el
+  subtítulo.
+- **Fichas del glosario.** El enlace a la calculadora decía «Hay una
+  herramienta para esto» sin decir cuál; ahora la nombra, y el de los
+  términos de conducta lleva al test. Una prueba exige que cada destino
+  exista: la primera versión de este cambio habría borrado en silencio
+  el enlace de cuatro términos, y fue esa prueba la que lo cazó.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -1780,7 +1820,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 5 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 29 suites, 325 tests (+2 omitidos)
+npx vitest run                          # 31 suites, 339 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

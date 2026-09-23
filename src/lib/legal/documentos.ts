@@ -412,9 +412,9 @@ const terminos: DocumentoLegal = {
   tituloEs: "Términos de uso",
   tituloEn: "Terms of use",
   entradaEs:
-    "Condiciones de uso de esta web y de las herramientas que ofrece. El programa, cuando esté a la venta, tendrá además su propia licencia.",
+    "Lo que sigue rige esta web. El programa, cuando esté a la venta, tendrá además su propia licencia.",
   entradaEn:
-    "Conditions for using this site and the tools it offers. The software, once on sale, will also have its own licence.",
+    "What follows governs this website. The software, once on sale, will also have its own licence.",
   descripcionEs:
     "Condiciones de uso de la web de CountPips, sus calculadoras y su demo. Incluye el aviso de que nada de esto es asesoramiento financiero.",
   descripcionEn:

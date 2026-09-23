@@ -606,7 +606,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                     transition: "color 0.25s ease",
                   }}
                 >
-                  {score}
+                  {/* Sin respuestas no hay cifra: un «0» se leía como nota. */}
+                  {answeredCount > 0 ? score : "—"}
                 </span>
                 <span className="tnum" style={{ fontSize: 15, color: "var(--ink-3)", paddingBottom: 4 }}>
                   / 100

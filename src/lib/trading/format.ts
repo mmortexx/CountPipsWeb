@@ -63,6 +63,32 @@ export function fmtNum(
   }).format(value);
 }
 
+/** Una cifra para un campo EDITABLE: coma decimal en español, punto en
+ *  inglés, y sin separador de millares. Con millares, «1.240» en un campo
+ *  español no se distingue de «1,24» mal escrito, y al leerlo de vuelta
+ *  habría que adivinar. */
+export function cifraEditable(value: number, lang: Lang = "es", maxDecimales = 6, minDecimales = 0): string {
+  if (!Number.isFinite(value)) return "";
+  return new Intl.NumberFormat(LOCALE[lang], {
+    useGrouping: false,
+    minimumFractionDigits: minDecimales,
+    maximumFractionDigits: Math.max(minDecimales, maxDecimales),
+  })
+    .format(value)
+    .replace("\u2212", "-");
+}
+
+/** Lee lo que alguien escribe en un campo de cifra, en cualquiera de los
+ *  dos idiomas: coma o punto como decimal, «−» tipográfico o «-». Como los
+ *  campos no enseñan millares, un único separador es siempre el decimal.
+ *  Devuelve `null` si no es una cifra (vacío, «1.2.3», «abc»). */
+export function leeCifra(texto: string): number | null {
+  const limpio = texto.trim().replace(/\u2212/g, "-").replace(/\s/g, "").replace(",", ".");
+  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(limpio)) return null;
+  const n = Number(limpio);
+  return Number.isFinite(n) ? n : null;
+}
+
 /** Separador entre la cifra y el signo de porcentaje.
  *
  *  En español la ortografía académica exige espacio ("50 %"); en inglés
