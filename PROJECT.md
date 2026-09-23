@@ -1733,6 +1733,15 @@ pasadas sin ella; glosario inglés 4–43 (mediana 9) con ella y 0–11
 (mediana 1,5) sin ella, ocho pasadas por lado —los rangos se tocan por
 una pasada de cada lado—. El español no cambia (0–2).
 
+Ya publicado, tres pasadas: portada 0–4 en inglés frente a 0–2 en español;
+glosario 1–13 frente a 1–3, con una sola pasada inglesa alta. La traza del
+glosario sale igual en los dos idiomas (recálculo de estilo 3,4–3,8 s
+frente a 3,4 s bajo traza), así que lo que queda es ruido, no idioma. Sí
+queda a la vista que el glosario, en los dos, recalcula mucho más estilo
+al desplazarse que la portada (~3,4 s frente a ~0,65 s bajo traza), con
+57 filas de la lista invalidadas por `tj-cifra-cuenta`; en fotogramas no
+se nota (0–3 lentos en español). Sin tocar.
+
 Lo vigilan `tests/css.test.ts` (ningún `:has()` de `html`/`:root` baja a
 descendientes; visto en rojo con la hoja antigua) y `humo.mjs`, que ahora
 comprueba también que bajo `/en/` sin JavaScript la 404 no enseña el
