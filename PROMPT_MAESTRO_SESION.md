@@ -225,7 +225,7 @@ MOTOR DE DEMO (5 vistas WinUI 3):
 
 COMPONENTES TJ (infraestructura):
 - BackToTop (17 KB) — Botón de vuelta arriba
-- BrandGlyph (15 KB) — Marca con glifo de vela
+- BrandGlyph — Logotipo «Corte», generado por scripts/generate-brand.py
 - Chip — Chip/etiqueta
 - ComparisonSlider (23 KB) — Slider antes/después
 - CookieConsent (14 KB) — Banner RGPD

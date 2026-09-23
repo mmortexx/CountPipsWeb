@@ -56,9 +56,9 @@ export const SITE_URL =
 export const SITE_NAME = "CountPips";
 
 /**
- * El logotipo de la marca —el cuaderno con las tres velas, el mismo icono
- * que la aplicación de escritorio— rasterizado desde la misma geometría
- * del glifo vectorial. Va en el dato estructurado de `Organization`, que
+ * El logotipo de la marca —el «Corte» sobre su placa, el mismo icono que
+ * la aplicación de escritorio— rasterizado desde la misma geometría del
+ * glifo vectorial. Va en el dato estructurado de `Organization`, que
  * es de donde Google saca el logotipo del sitio.
  *
  * Se regenera con `python scripts/generate-brand.py`, que produce además

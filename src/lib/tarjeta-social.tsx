@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
-import { GROSOR_MARCA, MOTIVO_MARCA } from "@/components/tj/BrandGlyph";
+import { CAJA_MARCA, TRAZO_MARCA } from "@/components/tj/BrandGlyph";
 import { INITIAL_BALANCE_CONST, METRICS } from "@/lib/trading/data";
 import { getRDistribution } from "@/lib/trading/fixtures";
 
@@ -31,11 +31,9 @@ const svg = (w: number, h: number, cuerpo: string) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${cuerpo}</svg>`,
   ).toString("base64")}`;
 
-const MARCA = svg(
-  512,
-  512,
-  `<path d="${MOTIVO_MARCA}" fill="none" stroke="${TINTA}" stroke-width="${GROSOR_MARCA}" stroke-linecap="round"/>`,
-);
+const MARCA = `data:image/svg+xml;base64,${Buffer.from(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="${CAJA_MARCA}"><path d="${TRAZO_MARCA}" fill="${TINTA}"/></svg>`,
+).toString("base64")}`;
 
 const CURVA_W = 424;
 const CURVA_H = 190;

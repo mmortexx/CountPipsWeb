@@ -342,9 +342,8 @@ function AccountChip() {
 /**
  * Icono de la app en la barra de título de la ventana simulada.
  *
- * Va suelto, sin placa, como en la barra de una ventana real: a 18 px
- * `BrandGlyph` dibuja la variante reducida de la retícula de puntos y
- * el propio motivo hace de cuerpo. El ancho de la fila no cambia.
+ * Va suelto, sin placa, como en la barra de título de la app real. El
+ * ancho de la fila no cambia.
  */
 function AppIcon() {
   return <BrandGlyph size={18} className="shrink-0" />;

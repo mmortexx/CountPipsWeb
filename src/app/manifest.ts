@@ -30,11 +30,9 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: "es",
     icons: [
       {
-        // El logotipo REAL de la aplicación de escritorio: el mismo archivo
-        // que usan su barra de título y su icono de bandeja
-        // (CountPips.App/Assets/app-logo.png). Antes había aquí un SVG
-        // en línea inventado —cuadrado verde con una línea de gráfico— que
-        // no aparecía en ninguna otra parte del producto.
+        // El logotipo REAL de la aplicación de escritorio: el mismo icono
+        // que su ejecutable y su bandeja, generado desde la misma geometría
+        // por scripts/generate-brand.py.
         src: `${BASE}/logo.png`,
         sizes: "512x512",
         type: "image/png",

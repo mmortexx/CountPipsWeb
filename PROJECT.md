@@ -54,8 +54,7 @@ Robinhood Legend, Two Sigma, Bridgewater.
 - **Afirmaciones técnicas**: la ficha de almacenamiento de /features/seguridad
   sólo dice lo comprobado en el código del programa (SQLite, `%LOCALAPPDATA%`,
   copias AES-256-GCM con PBKDF2 600.000, DPAPI para credenciales).
-- **Pendiente de decidir por el dueño**: el logotipo de puntos se ve borroso a
-  tamaño de barra; la captura oscura de «Resumen» no deja ver la curva; las
+- **Pendiente de decidir por el dueño**: la captura oscura de «Resumen» no deja ver la curva; las
   capturas sólo existen en español; «0 bytes enviados a la nube», «sin
   servidores» y «cifrado en reposo» chocan con lo que hace el programa
   (datos de mercado, licencias y sincronización opcional; no se encontró
