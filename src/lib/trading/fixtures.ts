@@ -29,6 +29,7 @@
 
 import { fmtMoney, fmtNum, fmtPct } from "./format";
 import { METRICS, TRADES, dailyPnlForMonth } from "./data";
+import { SETUP_NAMES, type SetupName } from "./setups";
 
 /** Un rótulo que la fixture no puede resolver sola: no conoce el idioma. */
 export interface Bilingue {
@@ -158,6 +159,29 @@ export function getKpis() {
 }
 export function getCal() {
   return buildMarketingFixture().cal;
+}
+
+export interface SetupResumen {
+  setup: SetupName;
+  n: number;
+  acierto: number;
+  expectativaR: number;
+}
+
+/** Cada setup de la muestra con su acierto y su R media, de mejor a peor. */
+export function getSetups(): SetupResumen[] {
+  return SETUP_NAMES.map((setup) => {
+    const ops = TRADES.filter((t) => t.setup === setup);
+    const n = ops.length;
+    return {
+      setup,
+      n,
+      acierto: n ? ops.filter((t) => t.rMultiple > 0).length / n : 0,
+      expectativaR: n ? ops.reduce((s, t) => s + t.rMultiple, 0) / n : 0,
+    };
+  })
+    .filter((s) => s.n > 0)
+    .sort((a, b) => b.expectativaR - a.expectativaR);
 }
 
 /* ---------- Distribución de R-múltiplo ---------- */

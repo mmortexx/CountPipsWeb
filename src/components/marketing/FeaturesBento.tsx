@@ -1,8 +1,8 @@
 "use client";
 
 import { useLang } from "@/lib/i18n";
-import type { getCal } from "@/lib/trading/fixtures";
-import { nombreSetup, type SetupName } from "@/lib/trading/setups";
+import type { getCal, SetupResumen } from "@/lib/trading/fixtures";
+import { nombreSetup } from "@/lib/trading/setups";
 import { fmtPct, fmtR } from "@/lib/trading/format";
 
 /**
@@ -30,7 +30,15 @@ const ZONA_POS = (TOPE_POS / (TOPE_POS + TOPE_NEG)) * 100;
 
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
 /** `cal`: el mes de muestra, calculado al construir para no generar las operaciones en el navegador. */
-export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeof getCal>; enPagina?: boolean }) {
+export function FeaturesBento({
+  cal,
+  setups,
+  enPagina = false,
+}: {
+  cal: ReturnType<typeof getCal>;
+  setups: SetupResumen[];
+  enPagina?: boolean;
+}) {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -190,41 +198,40 @@ export function FeaturesBento({ cal, enPagina = false }: { cal: ReturnType<typeo
           <article data-entra="2" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>Playbooks</span>
-              <span>4 setups</span>
+              <span>{setups.length} setups</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1">
               <h3 className={titulo}>{es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don't"}</h3>
-              {/* Los nombres salen del mismo catálogo que la demo; los
-                  porcentajes son los de la maqueta: esta ficha ilustra la
-                  forma de la vista, no publica un resultado. El acierto va
-                  como NÚMERO porque también es el ancho de la barra: «62 %»
-                  con su espacio no es una medida CSS válida. */}
+              {/* De la misma muestra que el calendario, de mejor a peor R
+                  media. Era una maqueta con +2,1R por operación, una cifra
+                  que ningún trader se cree. La barra es el acierto. */}
               <ul className="m-0 mt-3 p-0 list-none">
-                {[
-                  { k: "Breakout", wr: 0.62, exp: 1.8, n: 58, c: "rgb(var(--pnl-pos))" },
-                  { k: "Pullback", wr: 0.58, exp: 1.4, n: 42, c: "rgb(var(--pnl-pos))" },
-                  { k: "Reversal", wr: 0.41, exp: -0.3, n: 30, c: "rgb(var(--pnl-neg))" },
-                  { k: "Trend", wr: 0.55, exp: 2.1, n: 70, c: "rgb(var(--pnl-pos))" },
-                ].map((s) => (
-                  <li key={s.k} className={`border-b ${division} py-3 last:border-b-0`}>
-                    <div className="flex items-baseline gap-3 tnum text-[13px]">
-                      <span className="font-medium text-primary">{nombreSetup(s.k as SetupName, lang)}</span>
-                      <span className="ml-auto text-[12px] text-tertiary">
-                        {s.n} {es ? "ops" : "trades"}
-                      </span>
-                      <span className="min-w-[40px] text-right font-medium" style={{ color: s.c }}>
-                        {fmtR(s.exp, lang, 1)}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center gap-3">
-                      <div className="h-[3px] flex-1 overflow-hidden rounded-[1px] bg-[var(--ficha-division)]">
-                        <div className="h-full" style={{ width: `${Math.round(s.wr * 100)}%`, background: s.c }} />
+                {setups.map((s) => {
+                  const c = s.expectativaR > 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
+                  return (
+                    <li key={s.setup} className={`border-b ${division} py-3 last:border-b-0`}>
+                      <div className="flex items-baseline gap-3 tnum text-[13px]">
+                        <span className="font-medium text-primary">{nombreSetup(s.setup, lang)}</span>
+                        <span className="ml-auto text-[12px] text-tertiary">
+                          {s.n} {es ? "ops" : "trades"}
+                        </span>
+                        <span className="min-w-[48px] text-right font-medium" style={{ color: c }}>
+                          {fmtR(s.expectativaR, lang, 2)}
+                        </span>
                       </div>
-                      <span className="tnum min-w-[34px] text-right text-[12px] text-secondary">{fmtPct(s.wr, lang, 0)}</span>
-                    </div>
-                  </li>
-                ))}
+                      <div className="mt-2 flex items-center gap-3">
+                        <div className="h-[3px] flex-1 overflow-hidden rounded-[1px] bg-[var(--ficha-division)]">
+                          <div className="h-full" style={{ width: `${Math.round(s.acierto * 100)}%`, background: c }} />
+                        </div>
+                        <span className="tnum min-w-[34px] text-right text-[12px] text-secondary">{fmtPct(s.acierto, lang, 0)}</span>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
+              <p className="m-0 mt-3 text-[11px] text-tertiary">
+                {es ? "R media por operación; la barra, el acierto." : "Average R per trade; the bar, the win rate."}
+              </p>
             </div>
           </article>
 

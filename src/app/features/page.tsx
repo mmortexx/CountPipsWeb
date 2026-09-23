@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { getCal } from "@/lib/trading/fixtures";
+import { getCal, getSetups } from "@/lib/trading/fixtures";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -146,7 +146,7 @@ export function FeaturesBody() {
       />
       {/* Overview sections — broad strokes. Deep dives moved to
           /features/metricas, /features/disciplina, /features/seguridad. */}
-      <FeaturesBento cal={getCal()} enPagina />
+      <FeaturesBento cal={getCal()} setups={getSetups()} enPagina />
 
       {/* Resumen → verlo → cómo se usa → el índice completo como referencia. */}
       <GaleriaPantallas />

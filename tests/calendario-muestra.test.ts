@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getCal } from "@/lib/trading/fixtures";
+import { getCal, getSetups } from "@/lib/trading/fixtures";
 import { TRADES } from "@/lib/trading/data";
 
 const CRIPTO = new Set(["BTC/USDT", "ETH/USDT"]);
@@ -27,6 +27,25 @@ describe("el calendario de muestra es un mes de verdad", () => {
 /* El generador repartía los cierres por los 180 días sin mirar el
    calendario: 58 de 200 caían en sábado o domingo, con el índice, el
    oro o el EURUSD cerrados. Sólo la cripto cotiza el fin de semana. */
+/* La ficha de playbooks era una maqueta con +2,1R por operación. Ahora
+   sale de la muestra, y su titular promete «cuáles no»: tiene que haber
+   alguno que no dé ventaja. */
+describe("los setups de /features son los de la muestra", () => {
+  const setups = getSetups();
+
+  it("cubren todas las operaciones, de mejor a peor", () => {
+    expect(setups.reduce((s, x) => s + x.n, 0)).toBe(TRADES.length);
+    const r = setups.map((s) => s.expectativaR);
+    expect(r).toEqual([...r].sort((a, b) => b - a));
+  });
+
+  it("hay alguno con ventaja y alguno sin ella, en cifras creíbles", () => {
+    expect(setups.some((s) => s.expectativaR > 0)).toBe(true);
+    expect(setups.some((s) => s.expectativaR <= 0)).toBe(true);
+    expect(setups.every((s) => Math.abs(s.expectativaR) < 1)).toBe(true);
+  });
+});
+
 describe("la muestra no opera con el mercado cerrado", () => {
   it("ningún cierre en fin de semana salvo cripto", () => {
     const enFinde = TRADES.filter(

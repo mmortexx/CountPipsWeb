@@ -1899,6 +1899,10 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
   filas. Arreglado con `content-start`, y una guarda nueva,
   `scripts/rejillas.mjs`, recorre todas las páginas compiladas buscando lo
   mismo. Vista en rojo sobre la compilación sin el arreglo.
+- **La ficha de playbooks era una maqueta** con +1,8R y +2,1R por
+  operación, cifras que ningún trader se cree. Ahora sale de la muestra
+  (`getSetups` en `fixtures.ts`): los cinco setups de mejor a peor, de
+  +0,37R a −0,09R, con la Ruptura apenas positiva, como cuenta /about.
 
 ## Herramientas de auditoría propias
 
@@ -1923,7 +1927,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 34 suites, 356 tests (+2 omitidos)
+npx vitest run                          # 34 suites, 358 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 
