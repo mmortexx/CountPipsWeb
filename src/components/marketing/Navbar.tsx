@@ -176,8 +176,8 @@ const PRODUCT_ITEMS: {
     href: "/herramientas",
     labelEs: "Herramientas",
     labelEn: "Tools",
-    descEs: "Nueve calculadoras, gratis y sin registro",
-    descEn: "Nine calculators, free and with no sign-up",
+    descEs: "Diez calculadoras, gratis y sin registro",
+    descEn: "Ten calculators, free and with no sign-up",
     grupo: "laboratorio",
     icon: (
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>

@@ -49,6 +49,7 @@ const HERRAMIENTAS = [
   { ruta: "/herramientas/coste-de-indisciplina", nombre: "coste de indisciplina" },
   { ruta: "/herramientas/significancia-estadistica", nombre: "significancia estadística" },
   { ruta: "/herramientas/recuperacion-de-drawdown", nombre: "recuperación de drawdown" },
+  { ruta: "/herramientas/prueba-de-fondeo", nombre: "prueba de fondeo" },
   { ruta: "/test", nombre: "test de disciplina", preparar: responderTest },
 ];
 

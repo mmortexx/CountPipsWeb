@@ -13,7 +13,7 @@ del diario de trading nativo de Windows (WinUI 3, no incluido en este repo).
 - **Framework**: Next.js 16 (App Router, `output: "export"`) + React 19 + TypeScript estricto.
 - **Estilos**: Tailwind CSS v4 + tokens de diseño (`--tj-*`, `--surface-*`, `--accent-*`, `--pnl-*`).
 - **I18n**: Routing simétrico ES (`/`) / EN (`/en/`). 210 claves `STR`, 57 términos de
-  glosario (cinco familias), 9 herramientas + 1 test de disciplina, 13 FAQs, 4 legales.
+  glosario (cinco familias), 10 herramientas + 1 test de disciplina, 13 FAQs, 4 legales.
   Paridad 1:1 obligatoria entre idiomas.
 - **Demo**: PRNG determinista (`mulberry32`), 200 operaciones de muestra, 5 vistas
   WinUI 3 (Resumen, Operaciones, Analítica, Diario, TradeDetail), estado reactivo
@@ -1849,6 +1849,30 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
   en 2 × 2 hasta escritorio; y una ronda de redacción (FAQ «¿Ya se puede
   comprar?», «bróker», «Drawdown máximo», sin «la única app»).
 
+### Decimonovena tanda: la prueba de fondeo y un Monte Carlo legible (2026-09-24)
+
+- **Décima herramienta: simulador de prueba de fondeo.** Qué parte de
+  2.000 intentos toca el objetivo antes que el drawdown, estático o
+  dinámico (sigue al máximo del saldo hasta el inicial), con el riesgo
+  como fracción fija del saldo inicial. No modela la pérdida diaria ni las
+  reglas de consistencia, y lo dice. Cálculo en `lib/trading/fondeo.ts`,
+  contrastado con la fórmula exacta de la ruina del jugador (vista en rojo
+  moviendo el suelo). Arranca con una ventaja pequeña (+0,04 R): con la
+  primera elección (+0,35 R) aprobaba el 96 % y parecía prometerlo.
+- **Escenario en la dirección.** `?objetivo=6&dd=4&tipo=dinamico&riesgo=0.75`
+  abre el simulador con esas reglas (acotadas y ajustadas al paso de cada
+  control, `leerEscenario`). La página de prop firms enlaza así con la
+  plantilla de la firma elegida. Se lee con `useSyncExternalStore`, vacía
+  en el servidor, para no romper la hidratación del HTML estático.
+- **El abanico del Monte Carlo** era un lienzo fijo escalado, con el eje en
+  0 —la curva ocupaba la mitad de arriba— y sin una sola cifra. Ahora va al
+  ancho real, con eje en cifras redondas, rejilla y operaciones abajo.
+- **Un solo generador aleatorio** (`lib/trading/azar.ts`): la demo y el
+  Monte Carlo llevaban cada uno su copia de mulberry32. La secuencia es la
+  misma; lo confirman las pruebas de los datos de la demo.
+- **Textos.** «No es un SaaS de Silicon Valley» en los principios de la
+  portada; «Drawdown trailing» y «un edge» en las páginas de perfil.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -1856,7 +1880,7 @@ Antes de dar por terminado un cambio visible, correr lo que aplique:
 ```bash
 npm run build                       # compila a /out
 node scripts/humo.mjs --serve out   # contraste, láminas, velo, entradas, menú…
-node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (29 rutas)
+node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo plano (30 rutas)
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
 node scripts/metadatos.mjs out          # título, descripción, canónico, hreflang, lang y ld+json de las 170
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
@@ -1864,14 +1888,14 @@ node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritori
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
 node scripts/cifras.mjs out             # convención de idioma, y restos de plantilla («undefined», «NaN») a la vista
-node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 6 botones «Copiar»
+node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
-node scripts/anuncios.mjs --serve out   # las 6 herramientas dicen su resultado a quien no ve la pantalla
+node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 32 suites, 346 tests (+2 omitidos)
+npx vitest run                          # 33 suites, 352 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

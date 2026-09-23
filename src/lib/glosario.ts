@@ -251,6 +251,9 @@ export const HERRAMIENTA_DE: Record<string, string> = {
   "asia-session": "/herramientas/reloj-de-sesiones",
   "kill-zone": "/herramientas/reloj-de-sesiones",
 
+  /* Pruebas de fondeo */
+  "prop-firm": "/herramientas/prueba-de-fondeo",
+
   /* Conducta */
   discipline: "/test",
   tilt: "/test",

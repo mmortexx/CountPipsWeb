@@ -64,6 +64,7 @@ const RUTAS = [
   "/herramientas/significancia-estadistica",
   "/herramientas/monte-carlo",
   "/herramientas/recuperacion-de-drawdown",
+  "/herramientas/prueba-de-fondeo",
   "/herramientas/proyector-de-capital",
   "/herramientas/coste-de-indisciplina",
   "/herramientas/reloj-de-sesiones",

@@ -29,7 +29,8 @@ export type Herramienta = {
     | "SessionClock"
     | "DisciplineCost"
     | "CommissionDragCalculator"
-    | "DrawdownRecovery";
+    | "DrawdownRecovery"
+    | "PropChallengeSimulator";
   tituloEs: string;
   tituloEn: string;
   /** Titular de la cabecera. Corto: se anima carácter a carácter. */
@@ -142,6 +143,28 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Calcula la ganancia necesaria para recuperar un drawdown y cuántas operaciones tarda, con tu acierto, tu payoff y tu riesgo por operación.",
     descripcionEn:
       "Work out the gain needed to recover a drawdown and how many trades it takes, from your win rate, payoff and risk per trade.",
+  },
+  {
+    slug: "prueba-de-fondeo",
+    componente: "PropChallengeSimulator",
+    tituloEs: "Simulador de prueba de fondeo",
+    tituloEn: "Prop firm challenge simulator",
+    h1Es: "Cuántas veces la pasarías.",
+    h1En: "How often you would pass.",
+    resaltaEs: "la pasarías.",
+    resaltaEn: "you would pass.",
+    subtituloEs:
+      "Una prueba de fondeo se aprueba o se suspende según lo que llegue antes: el objetivo o el drawdown. Pon sus reglas y tu forma de operar, y mira qué parte de dos mil intentos la supera.",
+    subtituloEn:
+      "A prop firm challenge is passed or failed by whichever comes first: the target or the drawdown. Set its rules and how you trade, and see what share of two thousand attempts gets through.",
+    resumenEs: "Qué parte de dos mil intentos llega antes al objetivo que al drawdown.",
+    resumenEn: "What share of two thousand attempts hits the target before the drawdown.",
+    entregaEs: "Aprueba · suspende",
+    entregaEn: "Pass · fail",
+    descripcionEs:
+      "Simula una prueba de fondeo con drawdown estático o dinámico: probabilidad de aprobar según tu objetivo, tu riesgo por operación, tu acierto y tu payoff.",
+    descripcionEn:
+      "Simulate a prop firm challenge with a static or trailing drawdown: your odds of passing from the target, risk per trade, win rate and payoff.",
   },
   {
     slug: "proyector-de-capital",

@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
 import { formatoUsd, pctSep } from "@/lib/trading/format";
 import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
+import { mulberry32 } from "@/lib/trading/azar";
 
 const SIM_RUNS = CAMINOS_MONTE_CARLO;
 
@@ -21,13 +23,13 @@ const SIM_RUNS = CAMINOS_MONTE_CARLO;
  * muestreando de una distribución Bernoulli(winRate) con payouts
  * avgWinR / -avgLossR, y muestra:
  *   · la curva de equity MEDIA (centro del abanico)
- *   · las bandas P10 / P50 / P90 (incertidumbre)
+ *   · las bandas P5–P95 y P25–P75, y la mediana (incertidumbre)
  *   · la probabilidad de ruina (balance → 0) y de superar 2×
  *
  * ── Por qué Monte Carlo aquí ──────────────────────────────────────────
  * Un solo camino no enseña nada: el mismo edge puede llevarte a
- * multiplicar por 4 o a quebrar, dependiendo del ORDEN. Correr 500
- * caminos y mostrar el abanico es la forma honesta de visualizar el
+ * multiplicar por 4 o a quebrar, dependiendo del ORDEN. Correr cientos
+ * de caminos y mostrar el abanico es la forma honesta de visualizar el
  * riesgo — y refuerza el mensaje de disciplina: el edge existe, pero
  * necesitas sobrevivir a la varianza para cobrarlo.
  *
@@ -37,8 +39,6 @@ const SIM_RUNS = CAMINOS_MONTE_CARLO;
  * Esto evita que el gráfico baile en cada render y permite comparar
  * escenarios. "Re-tirar" cambia la semilla y da otra realización.
  *
- * ── Material ──────────────────────────────────────────────────────────
- * .tj-paper + .tj-paper-glow (papel translúcido cálido, halo champagne).
  */
 export function RMultipleSimulator() {
   const { lang } = useLang();
@@ -52,18 +52,19 @@ export function RMultipleSimulator() {
   const [riskPct, setRiskPct] = useState(1.0);
   const [monthlyWithdrawal, setMonthlyWithdrawal] = useState(0); // $
   const [seed, setSeed] = useState(1);
-
-
-  // ── PRNG mulberry32 (determinista por seed) ──────────────────────
-  const mulberry32 = useCallback((s: number) => {
-    let a = s >>> 0;
-    return () => {
-      a |= 0; a = (a + 0x6D2B79F5) | 0;
-      let t = Math.imul(a ^ (a >>> 15), 1 | a);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+  const cajaGraficoRef = useRef<HTMLDivElement | null>(null);
+  const [anchoGrafico, setAnchoGrafico] = useState(540);
+  useEffect(() => {
+    const caja = cajaGraficoRef.current;
+    if (!caja || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(([e]) => {
+      const w = Math.round(e.contentRect.width);
+      if (w > 0) setAnchoGrafico(w);
+    });
+    ro.observe(caja);
+    return () => ro.disconnect();
   }, []);
+
 
   const c = useMemo(() => {
     const wr = winRate / 100;
@@ -167,7 +168,7 @@ export function RMultipleSimulator() {
       analyticalRuinProb,
       probRuin, probDouble,
     };
-  }, [startBalance, trades, winRate, avgWinR, avgLossR, riskPct, monthlyWithdrawal, seed, mulberry32]);
+  }, [startBalance, trades, winRate, avgWinR, avgLossR, riskPct, monthlyWithdrawal, seed]);
 
   const fmtUsd = (n: number) =>
     es
@@ -192,63 +193,40 @@ export function RMultipleSimulator() {
 
   const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)}${pctSep(lang)}`;
 
-  // ── SVG paths para el abanico P5-P95, P25-P75 + media + mediana ──────────
-  const svgW = 540;
-  const svgH = 150;
-  const padX = 8;
-  const padY = 10;
+  // ── Abanico P5-P95, P25-P75, media y mediana ─────────────────────────────
+  /* Al ancho real de la caja y con escala: antes era un lienzo fijo de 540
+     escalado, con el eje en 0 —la curva vivía apretada en la mitad de
+     arriba— y sin una sola cifra que dijera cuánto marcaba cada banda. */
+  const svgW = anchoGrafico;
+  const svgH = Math.round(Math.max(160, Math.min(220, svgW * 0.36)));
+  const padL = 4;
+  const padR = 56;
+  const padT = 10;
+  const padB = 24;
   const allVals = c.statsPerTrade.flatMap((s) => [s.p5, s.p25, s.p50, s.p75, s.p95, s.mean]);
-  const maxV = Math.max(...allVals, startBalance, 1);
-  const minV = 0;
+  const lo = Math.min(...allVals, startBalance);
+  const hi = Math.max(...allVals, startBalance);
+  const holgura = (hi - lo || Math.max(hi, 1) * 0.1) * 0.06;
+  const minV = Math.max(0, lo - holgura);
+  const maxV = hi + holgura;
   const range = maxV - minV || 1;
   const N = c.statsPerTrade.length;
+  const xDe = (i: number) => padL + (i / Math.max(1, N - 1)) * (svgW - padL - padR);
+  const yDe = (v: number) => svgH - padB - ((v - minV) / range) * (svgH - padT - padB);
+  const marcasY = marcasRedondas(minV, maxV);
 
-  const toPath = (key: "p5" | "p25" | "p50" | "p75" | "p95" | "mean") => {
-    const pts = c.statsPerTrade.map((s, i) => {
-      const x = padX + (i / (N - 1)) * (svgW - padX * 2);
-      const y = svgH - padY - ((s[key] - minV) / range) * (svgH - padY * 2);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    });
-    return "M " + pts.join(" L ");
+  const toPath = (key: "p5" | "p25" | "p50" | "p75" | "p95" | "mean") =>
+    "M " + c.statsPerTrade.map((s, i) => `${xDe(i).toFixed(1)},${yDe(s[key]).toFixed(1)}`).join(" L ");
+
+  const banda = (arriba: "p95" | "p75", abajo: "p5" | "p25") => {
+    const top = c.statsPerTrade.map((s, i) => `${xDe(i).toFixed(1)},${yDe(s[arriba]).toFixed(1)}`);
+    const bottom = c.statsPerTrade
+      .map((s, i) => `${xDe(i).toFixed(1)},${yDe(s[abajo]).toFixed(1)}`)
+      .reverse();
+    return "M " + top.join(" L ") + " L " + bottom.join(" L ") + " Z";
   };
-
-  // Banda P5-P95 como area cerrada externa
-  const outerBandPath = useMemo(() => {
-    const top = c.statsPerTrade.map((s, i) => {
-      const x = padX + (i / (N - 1)) * (svgW - padX * 2);
-      const y = svgH - padY - ((s.p95 - minV) / range) * (svgH - padY * 2);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    });
-    const bottom = c.statsPerTrade
-      .slice()
-      .reverse()
-      .map((s, i) => {
-        const idx = N - 1 - i;
-        const x = padX + (idx / (N - 1)) * (svgW - padX * 2);
-        const y = svgH - padY - ((c.statsPerTrade[idx].p5 - minV) / range) * (svgH - padY * 2);
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      });
-    return "M " + top.join(" L ") + " L " + bottom.join(" L ") + " Z";
-  }, [c.statsPerTrade, N, range, minV]);
-
-  // Banda P25-P75 como area cerrada interna
-  const innerBandPath = useMemo(() => {
-    const top = c.statsPerTrade.map((s, i) => {
-      const x = padX + (i / (N - 1)) * (svgW - padX * 2);
-      const y = svgH - padY - ((s.p75 - minV) / range) * (svgH - padY * 2);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    });
-    const bottom = c.statsPerTrade
-      .slice()
-      .reverse()
-      .map((s, i) => {
-        const idx = N - 1 - i;
-        const x = padX + (idx / (N - 1)) * (svgW - padX * 2);
-        const y = svgH - padY - ((c.statsPerTrade[idx].p25 - minV) / range) * (svgH - padY * 2);
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      });
-    return "M " + top.join(" L ") + " L " + bottom.join(" L ") + " Z";
-  }, [c.statsPerTrade, N, range, minV]);
+  const outerBandPath = banda("p95", "p5");
+  const innerBandPath = banda("p75", "p25");
 
   // Reusable slider
   const slider = (
@@ -467,7 +445,8 @@ export function RMultipleSimulator() {
                 <span className="inline-flex items-center gap-1"><span aria-hidden className="inline-block w-2.5 h-[1.5px] border-t border-dashed" style={{ borderColor: "var(--ink-2)" }} /> P50</span>
               </div>
             </div>
-            <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ height: "auto", display: "block" }} aria-label={es ? "Abanico de caminos simulados" : "Fan of simulated paths"} role="img">
+            <div ref={cajaGraficoRef}>
+            <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} className="block max-w-full" aria-label={es ? "Abanico de caminos simulados" : "Fan of simulated paths"} role="img">
               <defs>
                 <linearGradient id="rs-outer-band" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.14" />
@@ -478,25 +457,47 @@ export function RMultipleSimulator() {
                   <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.12" />
                 </linearGradient>
               </defs>
-              {/* baseline (start balance) */}
+              {marcasY.map((v) => (
+                <g key={v}>
+                  <line x1={padL} x2={svgW - padR} y1={yDe(v)} y2={yDe(v)} stroke="rgb(var(--divider) / 0.08)" strokeWidth="1" />
+                  <text
+                    x={svgW}
+                    y={yDe(v)}
+                    dy="0.35em"
+                    textAnchor="end"
+                    style={{ fontSize: 11, fontFamily: "var(--font-mono)", fill: "var(--ink-3)" }}
+                  >
+                    {fmtUsdCorto(v)}
+                  </text>
+                </g>
+              ))}
+              {/* Capital inicial: la referencia que separa ganar de perder */}
               <line
-                x1={padX}
-                y1={svgH - padY - ((startBalance - minV) / range) * (svgH - padY * 2)}
-                x2={svgW - padX}
-                y2={svgH - padY - ((startBalance - minV) / range) * (svgH - padY * 2)}
-                stroke="rgb(var(--divider) / 0.22)"
+                x1={padL}
+                y1={yDe(startBalance)}
+                x2={svgW - padR}
+                y2={yDe(startBalance)}
+                stroke="rgb(var(--divider) / 0.35)"
                 strokeWidth="1"
                 strokeDasharray="3 3"
               />
-              {/* P5-P95 outer band */}
               <path d={outerBandPath} fill="url(#rs-outer-band)" />
-              {/* P25-P75 inner band */}
               <path d={innerBandPath} fill="url(#rs-inner-band)" />
-              {/* mean line */}
               <path d={toPath("mean")} fill="none" stroke="rgb(var(--accent-base))" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-              {/* median dashed */}
               <path d={toPath("p50")} fill="none" stroke="var(--ink-2)" strokeWidth="1.5" strokeDasharray="4 3" strokeLinejoin="round" strokeLinecap="round" />
+              {[0, Math.round(trades / 2), trades].map((t, i) => (
+                <text
+                  key={i}
+                  x={xDe((t / Math.max(1, trades)) * (N - 1))}
+                  y={svgH - 6}
+                  textAnchor={i === 0 ? "start" : i === 2 ? "end" : "middle"}
+                  style={{ fontSize: 11, fontFamily: "var(--font-mono)", fill: "var(--ink-3)" }}
+                >
+                  {i === 2 ? `${t} ${es ? "ops" : "trades"}` : t}
+                </text>
+              ))}
             </svg>
+            </div>
           </div>
 
           {/* ── LA DISTRIBUCION, EN UNA SOLA TIRA ─────────────────────

@@ -43,6 +43,7 @@
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
 | `marcas-eje.test.ts` | Marcas de eje en cifras redondas (1 · 2 · 2,5 · 5), dentro del rango y sin reventar con rangos imposibles |
 | `metricas.test.ts` | El motor de métricas y la distribución de R de la portada |
+| `fondeo.test.ts` | Prueba de fondeo: coincide con la ruina del jugador, el dinámico nunca aprueba más que el estático, escenario leído de la dirección acotado y ajustado al paso |
 | `recuperacion.test.ts` | Recuperación de drawdown: la asimetría, la operación exacta en que se vuelve al máximo, sin ventaja no vuelve, nunca NaN ni Infinity |
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |

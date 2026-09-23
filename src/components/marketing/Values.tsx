@@ -70,9 +70,9 @@ const VALUES: Value[] = [
     titleEs: "Hecho por un trader, para traders",
     titleEn: "Made by a trader, for traders",
     descEs:
-      "No es un SaaS de Silicon Valley. Es una app de escritorio hecha por alguien que opera.",
+      "Una app de escritorio hecha por alguien que opera, para usarla mientras se opera.",
     descEn:
-      "Not a Silicon Valley SaaS. A desktop app made by someone who trades.",
+      "A desktop app made by someone who trades, to be used while trading.",
     href: "/about",
     pruebaEs: "Quién hay detrás",
     pruebaEn: "Who is behind it",

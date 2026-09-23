@@ -7,6 +7,7 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney } from "@/lib/trading/format";
+import { Link } from "@/components/tj/LocaleLink";
 
 export type TraderProfile = "manual" | "prop";
 
@@ -22,7 +23,7 @@ const DATA = {
     subtitleEn: "Log the trade, review the execution and discover which setups, sessions and decisions actually support your edge.",
     cards: [
       { icon: BarChart3, titleEs: "Métricas que explican", titleEn: "Metrics that explain", textEs: "Expectancy, profit factor, drawdown y distribución de R en el mismo lugar que tus operaciones.", textEn: "Expectancy, profit factor, drawdown and R distribution next to the trades that produced them." },
-      { icon: BookOpenCheck, titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con un edge.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
+      { icon: BookOpenCheck, titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con una ventaja.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
       { icon: Target, titleEs: "Revisión sin excusas", titleEn: "No-excuse review", textEs: "Anota el plan, la gestión y el cierre para ver dónde se rompe tu proceso.", textEn: "Capture plan, management and exit so you can see where your process breaks." },
     ],
   },
@@ -47,7 +48,7 @@ const DATA = {
    revisadas el 22/07/2026): la variante más común de cada firma. */
 const PROP_FIRMS = [
   { id: "ftmo" as const, name: "FTMO", typeEs: "Drawdown estático", typeEn: "Static drawdown", dailyPct: 5, maxDDPct: 10, phase1Pct: 10, phase2Pct: 0, trailingType: "static" },
-  { id: "topstep" as const, name: "Topstep", typeEs: "Drawdown trailing", typeEn: "Trailing drawdown", dailyPct: 2, maxDDPct: 4, phase1Pct: 6, phase2Pct: 0, trailingType: "trailing" },
+  { id: "topstep" as const, name: "Topstep", typeEs: "Drawdown dinámico", typeEn: "Trailing drawdown", dailyPct: 2, maxDDPct: 4, phase1Pct: 6, phase2Pct: 0, trailingType: "trailing" },
   { id: "the5ers" as const, name: "The5ers", typeEs: "Drawdown estático", typeEn: "Static drawdown", dailyPct: 5, maxDDPct: 5, phase1Pct: 8, phase2Pct: 0, trailingType: "static" },
 ];
 
@@ -239,7 +240,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
                   {firm.trailingType === "static"
                     ? (es ? "Drawdown estático respecto al balance de inicio." : "Static drawdown anchored to initial balance.")
-                    : (es ? "Trailing ajustado dinámicamente al pico de balance." : "Trailing dynamically tracking balance peak.")}
+                    : (es ? "Drawdown dinámico: sigue al pico del balance." : "Trailing drawdown: follows the balance peak.")}
                 </p>
               </div>
 
@@ -274,6 +275,22 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 </p>
               </div>
             </div>
+
+            {/* Las reglas de la firma elegida viajan en la dirección: el
+                simulador abre ya con su objetivo, su drawdown y su tipo. */}
+            <p className="mt-6 text-[14px]">
+              <Link
+                href={`/herramientas/prueba-de-fondeo?objetivo=${firm.phase1Pct}&dd=${firm.maxDDPct}&tipo=${firm.trailingType === "static" ? "estatico" : "dinamico"}&riesgo=0.75`}
+                className="link-underline-host group -my-3 inline-flex items-center gap-1.5 py-3 text-secondary transition-colors hover:text-primary"
+              >
+                <span className="link-underline">
+                  {es
+                    ? `Cuántas veces aprobarías la prueba de ${firm.name}, con tu acierto y tu payoff`
+                    : `How often you would pass the ${firm.name} challenge, with your win rate and payoff`}
+                </span>
+                <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+              </Link>
+            </p>
           </div>
         </section>
       ) : (

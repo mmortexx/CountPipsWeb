@@ -12,7 +12,7 @@ Stack y versiones bloqueadas:
 - Tipografía local: Instrument Sans (sans variable), Newsreader (serif variable con cursiva real y eje óptico), Geist Mono (monoespaciada)
 - Despliegue: GitHub Pages con `basePath` dinámico (helper `asset()` de `@/lib/asset`)
 
-Arquitectura I18n: Routing simétrico bilingüe — español en raíz (`/`) e inglés bajo `/en/`. 210 claves `STR`, 57 términos de glosario, 9 herramientas, 13 FAQs, 4 documentos legales. Paridad 1:1 obligatoria.
+Arquitectura I18n: Routing simétrico bilingüe — español en raíz (`/`) e inglés bajo `/en/`. 210 claves `STR`, 57 términos de glosario, 10 herramientas, 13 FAQs, 4 documentos legales. Paridad 1:1 obligatoria.
 
 Decisiones de diseño ya tomadas e irrevocables:
 - Dirección institucional (2026-09-13): blanco y negro reales, neutro frío, acento = tinta plena (#0B0F14 claro / #ECEFF2 oscuro). El color es del dinero (P&L) y de las sesiones; jamás dorado, tierra ni un acento que compita con el verde P&L.
@@ -139,11 +139,12 @@ PRODUCTO:
   /features/disciplina — Control emocional + DisciplineScore + DisciplineCost + GuardianNew
   /features/seguridad — Privacidad local + SecuritySection + DataFlowComparison
 
-9 HERRAMIENTAS + 1 TEST (ruta dinámica /herramientas/[herramienta]):
+10 HERRAMIENTAS + 1 TEST (ruta dinámica /herramientas/[herramienta]):
   /herramientas/calculadora-de-riesgo      → RiskCalculator
   /herramientas/significancia-estadistica  → EdgeSignificanceChecker
   /herramientas/monte-carlo                → RMultipleSimulator
   /herramientas/recuperacion-de-drawdown   → DrawdownRecovery
+  /herramientas/prueba-de-fondeo           → PropChallengeSimulator
   /herramientas/proyector-de-capital       → EquityProjector
   /herramientas/coste-de-indisciplina      → DisciplineCost
   /herramientas/reloj-de-sesiones          → SessionClock
@@ -266,7 +267,7 @@ LIBRERÍAS CORE (src/lib/):
 - theme.tsx (5 KB) — getTheme/setTheme con try-catch defensivo
 - site.ts (17 KB) — Metadata, JSON-LD, hreflang
 - glosario.ts (16 KB) — 57 términos bilingües, cinco familias
-- herramientas.ts — 9 definiciones de herramientas
+- herramientas.ts — 10 definiciones de herramientas
 - faq.ts (11 KB) — 13 FAQs bilingües
 - consent.ts (4 KB) — Gestión de consentimiento con try-catch
 - forms.ts (14 KB) — Validación de formularios

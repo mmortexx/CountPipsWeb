@@ -50,6 +50,9 @@ const COMPONENTES = {
   DrawdownRecovery: dynamic(() =>
     import("@/components/marketing/DrawdownRecovery").then((m) => m.DrawdownRecovery),
   ),
+  PropChallengeSimulator: dynamic(() =>
+    import("@/components/marketing/PropChallengeSimulator").then((m) => m.PropChallengeSimulator),
+  ),
 } as const;
 
 export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) {
