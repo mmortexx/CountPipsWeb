@@ -315,7 +315,7 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
              la del párrafo de 14 px que lleva dentro. Medido: 122
              caracteres, más de los cien que este comentario decía evitar.
              La medida la pone ahora `.medida` en el propio párrafo. */
-          className="grid gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10 lg:grid-cols-1 lg:gap-1.5"
+          className="grid content-start gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10 lg:grid-cols-1 lg:gap-1.5"
         >
           <h3 className="m-0 flex items-baseline gap-2.5 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
             {es ? f.titleEs : f.titleEn}

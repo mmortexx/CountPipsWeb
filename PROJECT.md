@@ -1893,6 +1893,12 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
   privacidad repetía la de seguridad; ahora es «¿Qué datos pide esta web?»,
   con lo que piden de verdad los dos formularios y la analítica sujeta a
   consentimiento.
+- **Fichas que despegaban su texto.** En el índice de /features, cuando la
+  ficha vecina ocupaba más líneas, la descripción bajaba 11 px respecto a
+  su título: la ficha es una rejilla y repartía el alto sobrante entre sus
+  filas. Arreglado con `content-start`, y una guarda nueva,
+  `scripts/rejillas.mjs`, recorre todas las páginas compiladas buscando lo
+  mismo. Vista en rojo sobre la compilación sin el arreglo.
 
 ## Herramientas de auditoría propias
 
@@ -1912,6 +1918,7 @@ node scripts/cifras.mjs out             # convención de idioma, y restos de pla
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
+node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
