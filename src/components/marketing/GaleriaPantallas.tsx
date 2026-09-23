@@ -79,7 +79,8 @@ export function GaleriaPantallas() {
               ? "Capturas del programa con datos de muestra, no ilustraciones. Elige la pantalla y " +
                 "mira lo que hay dentro: cada pie cuenta qué se está viendo y por qué esa pantalla " +
                 "existe."
-              : "Screenshots of the application with sample data, not illustrations. Pick a screen " +
+              : "Screenshots of the application with sample data, not illustrations, taken in its " +
+                "Spanish interface; it also runs in English. Pick a screen " +
                 "and look inside: each caption says what you are seeing and why that screen exists."
           }
         />

@@ -1944,6 +1944,14 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
 - **Comentarios que mentían:** el sello «Previsto» se describía con un
   marco a trazos que se le quitó en 09544c0; corregidos en el CSS y en
   `SelloPrevisto.tsx`.
+- **«Solo lo que ves» no era verdad del todo:** el formulario de acceso
+  envía además el idioma, la página y, si el enlace la trae, la campaña
+  (UTM), como ya decía la política de privacidad. La FAQ lo cuenta ahora.
+  El de contacto sí envía solo lo visible (`forms.ts`).
+- **Las capturas de la app están en su interfaz española** (no hay otras
+  en `public/img`); las dos galerías en inglés lo dicen y aclaran que la
+  app también funciona en inglés (`Strings/en-GB` en el repositorio de
+  la app).
 
 ## Herramientas de auditoría propias
 

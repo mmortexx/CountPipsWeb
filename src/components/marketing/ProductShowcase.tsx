@@ -80,7 +80,7 @@ export function ProductShowcase() {
             <p className="max-w-[46ch] text-lg leading-relaxed text-secondary">
               {es
                 ? "Capturas reales del programa con datos de muestra. Elige una pantalla."
-                : "Real screenshots of the application with sample data. Pick a screen."}
+                : "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen."}
             </p>
             <div className="mt-5">
               <Link href="/demo" className="cta cta--secundario">
