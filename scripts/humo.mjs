@@ -1818,6 +1818,7 @@ const NO_EXISTE = [
   { ruta: "/en/ruta-que-no-existe-humo", lang: "en", texto: /stopped out/ },
 ];
 let cuatrocientoscuatro = 0;
+let veloLevanta = false;
 if (SERVIR) {
   const ctx404 = await navegador.newContext({ viewport: { width: 390, height: 844 } });
   for (const { ruta, lang, texto } of NO_EXISTE) {
@@ -1831,12 +1832,14 @@ if (SERVIR) {
       const resp = await pagina.goto(`${BASE}${ruta}`, { waitUntil: "networkidle", timeout: 30000 });
       if (resp?.status() !== 404) fallos.push(`404 ${ruta}: respondió ${resp?.status()} en vez de 404`);
       await pagina.waitForTimeout(800);
-      const { h1, idioma } = await pagina.evaluate(() => ({
+      const { h1, idioma, cuerpo } = await pagina.evaluate(() => ({
         h1: document.querySelector("h1")?.textContent ?? "",
         idioma: document.documentElement.lang,
+        cuerpo: getComputedStyle(document.body).visibility,
       }));
       if (!texto.test(h1)) fallos.push(`404 ${ruta}: el titular no está en ${lang} («${h1}»)`);
       if (idioma !== lang) fallos.push(`404 ${ruta}: <html lang="${idioma}">, se esperaba "${lang}"`);
+      if (cuerpo !== "visible") fallos.push(`404 ${ruta}: la página sigue oculta tras hidratar (visibility:${cuerpo})`);
       if (errores.length) fallos.push(`404 ${ruta}: ${errores.slice(0, 2).join(" | ")}`);
       else cuatrocientoscuatro++;
     } catch (e) {
@@ -1844,6 +1847,26 @@ if (SERVIR) {
     }
     await pagina.close();
   }
+
+  /* Bajo `/en/` el español compilado no se pinta mientras React no llega,
+     y si no llega nunca la página aparece sola al segundo y medio. Se
+     corta el JavaScript de la aplicación para verlo: el script embebido
+     que pone `lang="en"` sí corre. */
+  const velo = await ctx404.newPage();
+  await velo.route("**/_next/static/**/*.js", (r) => r.abort());
+  try {
+    await velo.goto(`${BASE}/en/ruta-que-no-existe-humo`, { waitUntil: "domcontentloaded", timeout: 30000 });
+    const antes = await velo.evaluate(() => [document.documentElement.lang, getComputedStyle(document.body).visibility]);
+    await velo.waitForTimeout(2000);
+    const despues = await velo.evaluate(() => getComputedStyle(document.body).visibility);
+    if (antes[0] !== "en" || antes[1] !== "hidden")
+      fallos.push(`404 /en/ sin JS: enseña el español compilado (lang="${antes[0]}", visibility:${antes[1]})`);
+    else if (despues !== "visible") fallos.push(`404 /en/ sin JS: sigue oculta a los 2 s (visibility:${despues})`);
+    else veloLevanta = true;
+  } catch (e) {
+    fallos.push(`404 /en/ sin JS: ${String(e).split("\n")[0]}`);
+  }
+  await velo.close();
   await ctx404.close();
 }
 
@@ -1989,7 +2012,7 @@ if (presupuestosBarra.length) {
 }
 
 if (SERVIR) {
-  console.log(`[humo] 404 — ${cuatrocientoscuatro} de ${NO_EXISTE.length} idiomas hidratan sin error`);
+  console.log(`[humo] 404 — ${cuatrocientoscuatro} de ${NO_EXISTE.length} idiomas hidratan sin error; ${veloLevanta ? "bajo /en/ sin JS no enseña el español y aparece sola" : "el velo de /en/ NO se comprobó"}`);
 } else {
   console.warn("  aviso  la 404 sólo se comprueba sobre el export (--serve)");
 }

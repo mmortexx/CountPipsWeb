@@ -1714,11 +1714,30 @@ se traga cualquier efecto suyo. El único cambio atribuible es +1 kB de JS
 por los textos del cierre. Para comparar rendimiento, medir antes y después
 en la misma sesión, alternando.
 
-**Pendiente, medido y sin causa:** el inglés da más fotogramas lentos que
-su gemela española, con el orden de medida invertido y sin nada más
-corriendo — portada 9–11 frente a 0–3, glosario 11–12 frente a 3–7. Se
-descartaron el partido de palabras (`hyphens`) y `content-visibility`:
-quitarlos no lo cambia. Queda abierto.
+**El inglés daba más fotogramas lentos que su gemela española** —portada
+9–11 frente a 0–3, glosario 11–12 frente a 3–7—, con el orden de medida
+invertido y sin nada más corriendo. No eran `hyphens` ni
+`content-visibility`. La traza lo señaló: `html[lang="en"]:has([data-tj-404="es"]) body`,
+una regla que sólo servía a la 404 pero vivía en la hoja de todas las
+páginas. En las inglesas casaba su primera mitad, y con un `:has()` en la
+raíz seguido de un descendiente Chrome daba por sucio el estilo del
+documento entero a cada nodo insertado —cada trozo de JavaScript que
+llega al desplazarse—: 12 invalidaciones de todo el árbol por recorrido,
+1.028 elementos cada una. La regla pasó a una hoja que pinta la propia
+404 (`NotFoundClient.tsx`) y se va al pasar a inglés; el comportamiento
+de la 404 es el mismo.
+
+Medido sobre lo publicado quitando la regla en pasadas alternas, misma
+sesión: portada inglesa 2–7 fotogramas lentos con ella y 0 en las tres
+pasadas sin ella; glosario inglés 4–43 (mediana 9) con ella y 0–11
+(mediana 1,5) sin ella, ocho pasadas por lado —los rangos se tocan por
+una pasada de cada lado—. El español no cambia (0–2).
+
+Lo vigilan `tests/css.test.ts` (ningún `:has()` de `html`/`:root` baja a
+descendientes; visto en rojo con la hoja antigua) y `humo.mjs`, que ahora
+comprueba también que bajo `/en/` sin JavaScript la 404 no enseña el
+español y aparece sola (visto en rojo quitando el velo y dejándolo sin
+salida).
 
 #### Lo que se miró y no se tocó
 
@@ -1752,7 +1771,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 5 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 29 suites, 323 tests (+2 omitidos)
+npx vitest run                          # 29 suites, 325 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

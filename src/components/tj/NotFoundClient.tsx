@@ -68,9 +68,19 @@ export function NotFoundClient() {
   }
 
   return (
+    <>
+    {/* `404.html` sale en español; bajo `/en/…` React lo pasa a inglés justo
+        tras hidratar (ver `langHidratacion` en i18n.tsx) y esta hoja se va
+        con el español. Mientras tanto la página no se pinta; si el
+        JavaScript no llega, se muestra igual al segundo y medio. Vive aquí
+        y no en globals.css porque como `html:has(...)` obligaba a revisar
+        el estilo de todo el documento en cada nodo insertado, en todas las
+        páginas inglesas. */}
+    {es && (
+      <style>{`html[lang="en"] body{visibility:hidden;animation:tj-404-espera 0s 1.5s forwards}@keyframes tj-404-espera{to{visibility:visible}}`}</style>
+    )}
     <section
       aria-labelledby="not-found-heading"
-      data-tj-404={lang}
       className="relative min-h-screen flex items-center justify-center overflow-clip px-5 pt-28 pb-20 md:pt-32"
     >
       <div className="relative text-center max-w-xl mx-auto">
@@ -196,5 +206,6 @@ export function NotFoundClient() {
         </div>
       </div>
     </section>
+    </>
   );
 }

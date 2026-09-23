@@ -207,6 +207,58 @@ describe("la contención de scroll no vuelve a tragarse la rueda", () => {
 });
 
 /**
+ * Un `:has()` colgado de la raíz que luego baja a los descendientes.
+ *
+ * `html[lang="en"]:has([data-tj-404="es"]) body` existía sólo para la 404,
+ * pero estaba en la hoja de TODAS las páginas y en las inglesas casaba su
+ * primera mitad. Con eso Chrome, a cada nodo insertado —cada trozo de
+ * JavaScript que llega al desplazarse—, daba por sucio el estilo del
+ * documento entero: 1.028 elementos recalculados de golpe. Medido en
+ * `/en/`, 12 invalidaciones de todo el árbol por recorrido, 15 fotogramas
+ * de más de 8 ms frente a 3–5 sin ella. `html:has(x)` a secas no cuesta
+ * eso: sólo recalcula `<html>`.
+ */
+const COMPUESTO_RAIZ = /^(?:html|:root)(?:\[[^\]]*\]|\.[\w-]+|:[\w-]+(?:\((?:[^()]|\([^()]*\))*\))?)*/;
+
+function partirComas(lista: string): string[] {
+  const partes: string[] = [];
+  let hondo = 0;
+  let desde = 0;
+  for (let i = 0; i < lista.length; i++) {
+    const c = lista[i];
+    if (c === "(" || c === "[") hondo++;
+    else if (c === ")" || c === "]") hondo--;
+    else if (c === "," && hondo === 0) {
+      partes.push(lista.slice(desde, i).trim());
+      desde = i + 1;
+    }
+  }
+  partes.push(lista.slice(desde).trim());
+  return partes;
+}
+
+function selectoresDeRaizConHas(css: string): { todos: string[]; bajan: string[] } {
+  const plano = transform({ filename: "globals.css", code: Buffer.from(css), minify: true, errorRecovery: true }).code.toString();
+  const selectores = [...plano.matchAll(/(?:^|[{};])([^{}@;]+)\{/g)].flatMap((m) => partirComas(m[1]));
+  const todos = selectores.filter((s) => COMPUESTO_RAIZ.exec(s)?.[0].includes(":has("));
+  const bajan = todos.filter((s) => /^[ >+~]/.test(s.slice(COMPUESTO_RAIZ.exec(s)![0].length)));
+  return { todos, bajan };
+}
+
+describe("ningún :has() de la raíz obliga a recalcular la página entera", () => {
+  it("globals.css no cuelga descendientes de un :has() de html o :root", () => {
+    const { todos, bajan } = selectoresDeRaizConHas(CSS);
+    expect(todos.length, "no encuentra ni los :has() de raíz legítimos: la prueba no está mirando").toBeGreaterThan(0);
+    expect(bajan).toEqual([]);
+  });
+
+  it("caza la regla que costaba fotogramas en inglés", () => {
+    const { bajan } = selectoresDeRaizConHas(`${CSS}\nhtml[lang="en"]:has([data-tj-404="es"]) body{visibility:hidden}`);
+    expect(bajan).toEqual(["html[lang=en]:has([data-tj-404=es]) body"]);
+  });
+});
+
+/**
  * `:last-of-type` no es «el último hijo».
  *
  * Es «el último de CADA tipo de etiqueta», así que en un contenedor con
