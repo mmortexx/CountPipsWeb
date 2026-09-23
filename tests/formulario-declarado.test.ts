@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { FAQ_EN, FAQ_ES } from "@/lib/faq";
@@ -34,8 +34,13 @@ function elementos(lista: string, y: RegExp): number {
   return lista.split(/,\s*/).flatMap((p) => p.split(y)).filter((p) => p.trim()).length;
 }
 
+/* `skipIf` salta las pruebas pero ejecuta igual el cuerpo del `describe`:
+   leer aquí arriba rompía el CI, que pasa las pruebas antes de compilar. */
 describe.skipIf(!existsSync(BETA))("lo que se dice que pide el formulario es lo que pide", () => {
-  const n = camposDelFormulario(readFileSync(BETA, "utf8"));
+  let n = 0;
+  beforeAll(() => {
+    n = camposDelFormulario(readFileSync(BETA, "utf8"));
+  });
 
   it("el formulario compilado tiene campos que contar", () => {
     expect(n).toBeGreaterThan(3);
