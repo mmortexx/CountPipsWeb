@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Acceso anticipado",
   description: "Solicita acceso anticipado privado a CountPips para probar la aplicación con tus propios datos.",
   alternates: { canonical: `${SITE_URL}/beta/`, languages: hreflangDe("/beta") },
-  openGraph: { title: "Acceso anticipado — CountPips", description: "Solicita acceso anticipado privado a CountPips.", url: `${SITE_URL}/beta/`, type: "website", siteName: "CountPips", locale: "es_ES", alternateLocale: ["en_US"] },
+  openGraph: { title: "Acceso anticipado — CountPips", description: "Solicita acceso anticipado privado a CountPips.", url: `${SITE_URL}/beta/`, type: "website", siteName: "CountPips", locale: "es_ES", alternateLocale: ["en_GB"] },
 };
 
 /* El `WebPage` estaba fijo en la versión española y la inglesa reutiliza

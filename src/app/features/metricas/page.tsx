@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "CountPips",
     locale: "es_ES",
-    alternateLocale: ["en_US"],
+    alternateLocale: ["en_GB"],
     // Next.js shallow-merges child openGraph over layout's — layout's
     // default OG image is NOT inherited when the child omits `images`.
     // See worklog Task R22-1d (G2) + R23-2a.

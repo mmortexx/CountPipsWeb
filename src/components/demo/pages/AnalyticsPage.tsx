@@ -1521,7 +1521,7 @@ export function AnalyticsPage() {
                 </RatioCell>
                 <RatioCell
                   label="CAGR"
-                  hint={desc("Tasa anualizada time-weighted", "Time-weighted annualized return")}
+                  hint={desc("Tasa anualizada time-weighted", "Time-weighted annualised return")}
                 >
                   <span className={adv.cagr >= 0 ? "text-pnl-pos" : "text-pnl-neg"}>
                     {adv.cagr >= 0 ? "+" : "−"}

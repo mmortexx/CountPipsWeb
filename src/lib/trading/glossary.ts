@@ -182,7 +182,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Tilt",
     es: "Estado emocional tras una pérdida o racha perdedora en el que el juicio se nubla y el trader abandona su plan. Suele llevar a sobreoperar, aumentar tamaño y forzar entradas. La mejor defensa es parar y desconectar.",
-    en: "An emotional state after a loss or losing streak where judgement clouds and the trader abandons their plan. Usually leads to overtrading, increased size and forced entries. The best defense is to stop and disconnect.",
+    en: "An emotional state after a loss or losing streak where judgement clouds and the trader abandons their plan. Usually leads to overtrading, increased size and forced entries. The best defence is to stop and disconnect.",
     category: "psychology",
   },
   {
@@ -208,19 +208,19 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Sharpe ratio",
     es: "Mide el rendimiento ajustado al riesgo: el exceso de rentabilidad sobre el activo libre de riesgo dividido por la volatilidad de los retornos. Penaliza la variabilidad, no la dirección.",
-    en: "Measures risk-adjusted return: the excess return over the risk-free asset divided by the volatility of returns. It penalizes variability, not direction.",
+    en: "Measures risk-adjusted return: the excess return over the risk-free asset divided by the volatility of returns. It penalises variability, not direction.",
     category: "metrics",
   },
   {
     term: "Sortino ratio",
     es: "Variante del Sharpe que solo penaliza la volatilidad a la baja (pérdidas). Refleja mejor cómo un trader gestiona el riesgo real, ignorando las subidas positivas.",
-    en: "A Sharpe variant that only penalizes downside volatility (losses). It better reflects how a trader manages real risk, ignoring positive upside.",
+    en: "A Sharpe variant that only penalises downside volatility (losses). It better reflects how a trader manages real risk, ignoring positive upside.",
     category: "metrics",
   },
   {
     term: "Calmar ratio",
     es: "Cociente entre la rentabilidad anualizada y el drawdown máximo. Resume en un solo número la relación entre lo que ganas y lo que sufres en el peor momento.",
-    en: "The ratio of annualized return to maximum drawdown. It summarizes in a single number the relationship between what you earn and what you suffer at the worst moment.",
+    en: "The ratio of annualised return to maximum drawdown. It summarises in a single number the relationship between what you earn and what you suffer at the worst moment.",
     category: "metrics",
   },
   {
@@ -268,7 +268,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "CAGR",
     es: "Tasa de crecimiento anual compuesta (Compound Annual Growth Rate). Expresa la rentabilidad media anualizada que equivaldría al crecimiento total observado. Permite comparar estrategias con horizontes distintos.",
-    en: "Compound Annual Growth Rate. Expresses the annualized average return equivalent to the observed total growth. Lets you compare strategies with different horizons.",
+    en: "Compound Annual Growth Rate. Expresses the annualised average return equivalent to the observed total growth. Lets you compare strategies with different horizons.",
     category: "metrics",
   },
 
@@ -288,7 +288,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "MFE (Maximum Favorable Excursion)",
     es: "Máxima distancia a favor que recorrió el precio antes de cerrar la operación. Útil para auditar si tus objetivos son demasiado conservadores o demasiado ambiciosos.",
-    en: "The maximum favorable distance the price travelled before the trade closed. Useful for auditing whether your targets are too conservative or too ambitious.",
+    en: "The maximum favourable distance the price travelled before the trade closed. Useful for auditing whether your targets are too conservative or too ambitious.",
     category: "execution",
   },
   {
@@ -360,7 +360,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Ulcer index",
     es: "Medida cuadrática de la profundidad y duración del drawdown sobre la curva de capital de Peter Martin. Pondera las caídas prolongadas de forma más severa que la volatilidad ordinaria.",
-    en: "Peter Martin's quadratic measure of drawdown depth and duration on the equity curve. Penalizes protracted drawdowns more heavily than ordinary volatility.",
+    en: "Peter Martin's quadratic measure of drawdown depth and duration on the equity curve. Penalises protracted drawdowns more heavily than ordinary volatility.",
     category: "risk",
   },
   {

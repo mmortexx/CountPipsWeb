@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/en/traders/prop-firms/`,
     type: "website",
     siteName: "CountPips",
-    locale: "en_US",
+    locale: "en_GB",
     alternateLocale: ["es_ES"],
   },
   twitter: {

@@ -364,7 +364,7 @@ export const FORMULAS_GLOSARIO: Record<
     formulaEs: "R = PnL / Riesgo inicial (1R)",
     formulaEn: "R = PnL / Initial risk (1R)",
     variablesEs: "Beneficio o pérdida normalizado entre la distancia en dólares al stop loss inicial",
-    variablesEn: "Profit or loss normalized by the initial dollar risk to the stop loss",
+    variablesEn: "Profit or loss normalised by the initial dollar risk to the stop loss",
   },
   "position-sizing": {
     formulaEs: "Tamaño = (Balance × Riesgo %) / (|Precio entrada − Precio stop| × Multiplicador)",

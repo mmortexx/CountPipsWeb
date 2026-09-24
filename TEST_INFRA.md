@@ -53,6 +53,7 @@
 | `variables.test.ts` | Toda `var(--nombre)` que se lee sin valor de reserva está declarada en alguna hoja o estilo: una sin declarar deja el fondo transparente sin que nada falle |
 | `almacenamiento-declarado.test.ts` | La tabla de la política de cookies tiene una fila por clave que el código escribe en `localStorage`/`sessionStorage` (más PostHog), y las de «hasta que cierres la pestaña» existen como almacenamiento de sesión |
 | `formulas-glosario.test.ts` | Cada símbolo que explica la leyenda de una fórmula del glosario («σ: desviación…») aparece en la propia fórmula, en los dos idiomas |
+| `ortografia-britanica.test.ts` | Ninguna raíz americana de una lista cerrada (-ize, defense, color, behavior, favor, center, catalog…) aparece en los campos ingleses del glosario, sus fórmulas, la FAQ, las láminas del producto ni `i18n.tsx`, salvo los nombres propios de términos técnicos («Maximum Favorable/Adverse Excursion») |
 | `palabras.test.ts` | El titular palabra a palabra conserva el texto exacto, no deja la puntuación en su propia máscara, realza exactamente su tramo aunque corte una palabra y pega las palabras de una o dos letras a la siguiente con espacio duro |
 | `formato-millares.test.ts` | `fmtInt`, `fmtPrice`, `fmtNum` y `fmtMoney` agrupan millares también con cuatro dígitos, en los dos idiomas; `fmtCifraCorta` escribe «+1,2k» en español |
 | `recuperacion.test.ts` | Recuperación de drawdown: la asimetría, la operación exacta en que se vuelve al máximo, sin ventaja no vuelve, nunca NaN ni Infinity |

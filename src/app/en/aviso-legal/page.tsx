@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/en/aviso-legal/`,
     type: "website",
     siteName: "CountPips",
-    locale: "en_US",
+    locale: "en_GB",
     alternateLocale: ["es_ES"],
   },
   twitter: {

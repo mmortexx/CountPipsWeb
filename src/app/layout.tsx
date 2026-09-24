@@ -215,7 +215,7 @@ export const metadata: Metadata = {
     siteName: "CountPips",
     type: "website",
     locale: "es_ES",
-    alternateLocale: ["en_US"],
+    alternateLocale: ["en_GB"],
     // `images` se omite AQUÍ a propósito: Next.js auto-inyecta la
     // tarjeta desde src/app/opengraph-image.tsx (imagen dinámica
     // generada en runtime, servida desde /opengraph-image en la raíz

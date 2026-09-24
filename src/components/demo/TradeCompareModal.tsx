@@ -133,12 +133,12 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
                 valB: `1:${fmtNum(tradeB.plannedRr, lang, 2)}`,
               },
               {
-                label: "MAE (Max Adverse Excursion)",
+                label: "MAE (Maximum Adverse Excursion)",
                 valA: fmtR(tradeA.mae, lang, 2),
                 valB: fmtR(tradeB.mae, lang, 2),
               },
               {
-                label: "MFE (Max Favorable Excursion)",
+                label: "MFE (Maximum Favorable Excursion)",
                 valA: fmtR(tradeA.mfe, lang, 2),
                 valB: fmtR(tradeB.mfe, lang, 2),
               },
