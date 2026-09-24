@@ -54,8 +54,8 @@ Robinhood Legend, Two Sigma, Bridgewater.
 - **Afirmaciones técnicas**: la ficha de almacenamiento de /features/seguridad
   sólo dice lo comprobado en el código del programa (SQLite, `%LOCALAPPDATA%`,
   copias AES-256-GCM con PBKDF2 600.000, DPAPI para credenciales).
-- **Pendiente de decidir por el dueño**: la captura oscura de «Resumen» no deja ver la curva; las
-  capturas sólo existen en español; «0 bytes enviados a la nube», «sin
+- **Pendiente de decidir por el dueño**: las
+  capturas sólo existen en español (también las de septiembre de 2026); «0 bytes enviados a la nube», «sin
   servidores» y «cifrado en reposo» chocan con lo que hace el programa
   (datos de mercado, licencias y sincronización opcional; no se encontró
   cifrado de la base viva).
@@ -1755,7 +1755,8 @@ salida).
   ese hueco con algo sería relleno.
 - La captura clara del programa dentro del tema oscuro es deliberada (la
   oscura pierde el contraste al reducirse; está explicado en
-  `ProductPlate.tsx`).
+  `ProductPlate.tsx`). **Revertido en la tanda 27**: medido, la oscura
+  nunca tuvo menos contraste; cada tema enseña ya su captura.
 
 ### Decimoséptima tanda: las páginas que nadie había mirado (2026-09-23)
 
@@ -2117,8 +2118,57 @@ asienta; nada rebota ni brilla.
   fórmula escribía E[R] — ahora `((μ − Rf) / σ) × √N`, con guarda nueva
   (`tests/formulas-glosario.test.ts`, vista en rojo en esos cuatro casos).
   Descartado con motivo: la captura clara en tema oscuro (decisión escrita
-  en ProductPlate) y las tablas legales con desplazamiento lateral (tienen
-  tres columnas y su aviso de que sigue).
+  en ProductPlate; revisada y revertida en la tanda 27, cuyo motivo no
+  resistió la medida) y las tablas legales con desplazamiento lateral
+  (tienen tres columnas y su aviso de que sigue).
+
+### Vigesimoséptima tanda: las capturas de septiembre (2026-09-24)
+
+- **Catorce capturas nuevas** de la app (commit 12c91fd0 de Agenda Trading),
+  archivadas en `assets/capturas-originales/` y recortadas con
+  `scripts/capturas.py`. Mismas medidas que las de agosto, así que
+  `laminas.ts` no cambia de tamaños.
+- **Recortes de móvil medidos otra vez** sobre las nuevas y mirados uno a
+  uno en claro y en oscuro: calendario, formulario, riesgo con sus dos
+  avisos, cabecera del registro, ganadoras/perdedoras con el veredicto,
+  check-in con sus dos «aún no lo sé» y la ficha de reversión entera.
+- **Pies reescritos** con lo que se ve: el Guardián enseña dos avisos y no
+  tres; el Resumen ya no abre con el parte del día sino con el rendimiento
+  de las diez últimas; el Playbook tiene tres fichas con «ventaja
+  sugerente» y dos «no concluyente», con curvas grises; el diario enseña
+  el rendimiento por franja; Operaciones tiene ocho filtros.
+- **Cada tema enseña su captura.** Se dejó de servir la clara en oscuro:
+  el motivo escrito («la oscura pierde el contraste») no resistió la
+  medida —la desviación de luminancia a tamaño de lámina es igual o mayor
+  en la oscura en las siete pantallas, agosto incluido— y la clara era un
+  bloque blanco en la página oscura. Las dos van en el HTML, el CSS oculta
+  la otra y, perezosa, no se descarga (comprobado: una sola petición por
+  tema; el botón de tema pide la otra al momento; el visor sigue al tema).
+  Guarda nueva en `humo.mjs`: cada lámina enseña UNA captura y la de su
+  tema; vista en rojo con la regla quitada y con las clases cambiadas.
+- **Sin carga prioritaria en la lámina de la portada**: empieza a unos
+  2340 px y la pedía al cargar.
+- **Lo que cuesta el titular palabra a palabra (pendiente de la tanda 25),
+  medido** sobre la misma compilación con la animación y anulándola, 10–15
+  cargas por caso: el LCP no se mueve (1440: 156–200 ms con, 152–168 sin;
+  390: 148–156 con, 144–160 sin). Lo que cambia es cuándo se lee: con
+  palabras, cada una a menos del 5 % de su sitio a los 962–989 ms (quieta
+  del todo a 1578–1610); sin ellas, 80–90 ms. Es el precio del gesto y se
+  deja así.
+- **La guarda del titular de `humo.mjs` estaba ciega desde la tanda 25**:
+  medía la opacidad del h1, que ya no se anima (se animan sus palabras), y
+  daba «legible» al instante. Ahora espera a las palabras; vista en rojo
+  alargando la animación a 8 s (3388–3616 ms frente al presupuesto de
+  2500).
+- `capturas.py` ya no tapa una barra de desplazamiento que las nuevas no
+  traen; ahora comprueba que no la traigan (14 de 14 de agosto la tenían,
+  0 de 14 de septiembre) y valida todo antes de escribir nada.
+- **Encontrado en la app, no tocado**: en Operaciones, BTCUSDT y ETHUSDT
+  salen a precios de unos 100 y con salidas negativas (ETHUSDT 100,48 →
+  −111,42). Probable causa, sin verificar: el generador de datos de
+  ejemplo pone precio por nombre («BTC/USDT» → 65.000, `_` → 100) y en
+  pantalla el símbolo sale sin barra. Se ve en la captura de escritorio; el recorte de
+  móvil no llega a esas filas.
 
 ## Herramientas de auditoría propias
 

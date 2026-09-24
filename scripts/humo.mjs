@@ -236,6 +236,8 @@ const contrastesMedidos = [];
 /** Ídem para las láminas del producto: si la ruta con capturas se cae de la
     lista, la comprobación de legibilidad en móvil pasa a no mirar nada. */
 const laminasVistas = [];
+/** Lo que enseñó cada lámina en tema oscuro, para que el informe diga que se miró. */
+const temasLaminaVistos = [];
 /** Ídem para el idioma: cuántos caracteres se han llegado a leer en cada
     página inglesa. Un `innerText` vacío pasaría la comprobación en verde
     sin haber mirado una sola palabra. */
@@ -472,10 +474,20 @@ for (const pantalla of PANTALLAS) {
       const t0 = Date.now();
       let visibleEn = null;
       while (Date.now() - t0 < PRESUPUESTO_H1_MS + 1500) {
+        /* Desde que el titular entra palabra a palabra (`Palabras.tsx`), el
+           h1 está opaco desde el primer fotograma y lo que se mueve son sus
+           palabras: mirar solo su opacidad daba «legible a los 0 ms» y
+           dejaba esta comprobación ciega. Una palabra cuenta como leída
+           cuando le queda menos del 5 % de su alto por subir. */
         const op = await pagina
           .evaluate(() => {
             const h1 = document.querySelector("h1");
-            return h1 ? Number(getComputedStyle(h1).opacity) : 0;
+            if (!h1) return 0;
+            const enSitio = [...h1.querySelectorAll(".tj-pal > span")].every((s) => {
+              const t = getComputedStyle(s).transform;
+              return Math.abs(new DOMMatrix(t === "none" ? undefined : t).m42) <= 0.05 * s.offsetHeight;
+            });
+            return enSitio ? Number(getComputedStyle(h1).opacity) : 0;
           })
           .catch(() => 0);
         if (op >= 0.99) {
@@ -826,6 +838,63 @@ for (const pantalla of PANTALLAS) {
           if (p.tinte === "transparent" || (alfa !== undefined && p.tinte.startsWith("rgba") && Number(alfa) < 1)) {
             fallos.push(`${etiqueta} (tema ${tema}): la tarjeta dejó de ser opaca (${p.tinte})`);
           }
+        }
+      }
+
+      /* ── CADA TEMA, SU CAPTURA, Y SOLO UNA ──────────────────────────
+         La lámina monta la captura clara y la oscura, y el CSS esconde la
+         que no toca (ProductPlate.tsx). Si esa regla se pierde o cambia
+         de nombre, nada falla: en oscuro se ve la clara, o se ven las dos
+         una encima de otra. Se fuerza cada tema como hace el botón y se
+         mira qué fichero enseña cada ventana. */
+      const temasLamina = await pagina.evaluate(async () => {
+        const ventanas = [...document.querySelectorAll(".tj-lamina-ventana")];
+        if (!ventanas.length) return null;
+        const raiz = document.documentElement;
+        const original = raiz.dataset.theme;
+        const salida = {};
+        for (const tema of ["light", "dark"]) {
+          raiz.dataset.theme = tema;
+          raiz.classList.toggle("dark", tema === "dark");
+          await new Promise((r) => requestAnimationFrame(() => r()));
+          const visibles = ventanas.map((v) =>
+            [...v.querySelectorAll("img")].filter((i) => i.getBoundingClientRect().width > 0)
+          );
+          for (const i of visibles.flat()) i.loading = "eager";
+          await Promise.race([
+            Promise.all(
+              visibles.flat().map((i) =>
+                i.complete && i.naturalWidth > 0
+                  ? null
+                  : new Promise((r) => {
+                      i.addEventListener("load", r, { once: true });
+                      i.addEventListener("error", r, { once: true });
+                    })
+              )
+            ),
+            new Promise((r) => setTimeout(r, 3000)),
+          ]);
+          salida[tema] = visibles.map((imgs) =>
+            imgs.map((i) => (i.currentSrc || "").split("/").pop() || "(sin descargar)")
+          );
+        }
+        if (original === undefined) delete raiz.dataset.theme;
+        else raiz.dataset.theme = original;
+        raiz.classList.toggle("dark", original === "dark");
+        return salida;
+      });
+      if (temasLamina) {
+        for (const tema of ["light", "dark"]) {
+          temasLamina[tema].forEach((sirve, n) => {
+            if (sirve.length !== 1) {
+              fallos.push(
+                `${etiqueta} (tema ${tema}): la lámina ${n + 1} enseña ${sirve.length} capturas a la vez (${sirve.join(", ") || "ninguna"})`
+              );
+            } else if (sirve[0].includes("-oscuro") !== (tema === "dark")) {
+              fallos.push(`${etiqueta} (tema ${tema}): la lámina ${n + 1} enseña "${sirve[0]}", la del otro tema`);
+            }
+            if (tema === "dark") temasLaminaVistos.push(`${etiqueta} ${sirve.join(",")}`);
+          });
         }
       }
 
@@ -1902,6 +1971,14 @@ if (laminasVistas.length) {
   );
 } else {
   console.warn("  aviso  ninguna lámina de producto en las rutas auditadas: nadie vigila su legibilidad");
+}
+if (temasLaminaVistos.length) {
+  console.log(
+    `[humo] láminas por tema — ${temasLaminaVistos.length} comprobadas en claro y en oscuro: ` +
+      `${temasLaminaVistos.filter((s) => s.includes("-oscuro")).length} con la captura oscura en tema oscuro`
+  );
+} else {
+  console.warn("  aviso  ninguna lámina comprobada por tema: nadie vigila que el oscuro enseñe su captura");
 }
 
 if (idiomasRevisados.length) {

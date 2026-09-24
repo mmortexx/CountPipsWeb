@@ -119,7 +119,7 @@ export function ProductShowcase() {
 
         <div role="tabpanel" id={`${idBase}-panel`} aria-labelledby={`${idBase}-tab-${activa}`}>
           <div key={activa} className="tj-lamina-cambia">
-            <ProductPlate lamina={lamina} priority={activa === PANTALLAS_PORTADA[0]} />
+            <ProductPlate lamina={lamina} />
           </div>
         </div>
       </div>

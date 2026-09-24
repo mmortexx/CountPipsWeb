@@ -3303,9 +3303,16 @@ button.icon-btn:hover > svg,
   line-height: 0;
 }
 
-/* En tema oscuro la captura clara va montada entera en un bisel oscuro. Sin
-   el desvanecido de abajo: sobre una imagen clara, fundir hacia el fondo
-   oscuro dejaba una franja gris sucia. */
+/* Cada tema enseña su captura (ProductPlate.tsx). Las dos están en el HTML;
+   la oculta, con `loading="lazy"`, no se descarga. */
+:root:not([data-theme="light"]) .tj-captura-clara,
+:root[data-theme="light"] .tj-captura-oscura {
+  display: none;
+}
+
+/* En tema oscuro la captura oscura va montada entera en un bisel. Sin el
+   desvanecido de abajo: el bisel enmarca la ventana completa y fundirlo se
+   comería su canto inferior. */
 :root:not([data-theme="light"]) .tj-lamina-marco {
   padding: 10px;
   border-radius: 12px;
@@ -3321,8 +3328,6 @@ button.icon-btn:hover > svg,
 :root:not([data-theme="light"]) .tj-lamina-ventana img {
   margin: 0;
   width: 100%;
-  /* Sin atenuar: al 86 % el blanco de la app se volvía gris y la captura
-     parecía sucia. El bisel oscuro ya la separa de la página. */
 }
 .tj-lamina-ampliable {
   position: relative;

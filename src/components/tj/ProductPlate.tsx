@@ -106,13 +106,23 @@ export type LaminaProducto = {
   detalleEn: string;
 };
 
-export function ProductPlate({
-  lamina,
-  priority = false,
-}: {
-  lamina: LaminaProducto;
-  priority?: boolean;
-}) {
+/* CADA TEMA, SU CAPTURA. Hasta septiembre de 2026 iba la clara en los dos:
+   se escribió que la oscura «perdía el contraste al reducirse», pero medido
+   (desviación de luminancia a tamaño de lámina) la oscura tiene tanto o más
+   que la clara en las siete pantallas, y en tema oscuro la clara era un
+   bloque blanco en mitad de la página.
+
+   Las dos van en el HTML y el CSS oculta la que no toca
+   (`.tj-captura-clara` / `.tj-captura-oscura`, globals.css): el tema lo
+   elige el botón de la web y no solo el sistema, así que un
+   `<source media="(prefers-color-scheme)">` se equivocaría con el botón.
+   Con `loading="lazy"` el navegador no descarga la que está oculta. */
+const TEMAS = [
+  { sufijo: "", clase: "tj-captura-clara" },
+  { sufijo: "-oscuro", clase: "tj-captura-oscura" },
+] as const;
+
+export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
   const { lang } = useLang();
   const es = lang === "es";
   const { archivo, ancho, alto, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
@@ -157,25 +167,25 @@ export function ProductPlate({
               `images.unoptimized`, así que next/image no optimizaría nada
               y sí añadiría envoltorio.
 
-              UNA SOLA CAPTURA, LA CLARA, EN LOS DOS TEMAS. La oscura de la
-              app pierde casi todo su contraste al reducirse a lámina y se
-              leía como un rectángulo apagado; en tema oscuro la clara va
-              dentro de un marco oscuro (globals.css, `.tj-lamina-marco`). */}
-          <picture>
-            <source
-              media={`(max-width: ${CORTE_MOVIL_PX}px)`}
-              srcSet={asset(`/img/${variante("-movil")}`)}
-            />
-            <img
-              src={asset(`/img/${archivo}`)}
-              alt={alt}
-              width={ancho}
-              height={alto}
-              loading={priority ? "eager" : "lazy"}
-              decoding="async"
-              fetchPriority={priority ? "high" : "auto"}
-            />
-          </picture>
+              Sin carga prioritaria: la lámina de la portada empieza a unos
+              2340 px (medido a 1440, 1920 y 390), y pedirla al cargar le
+              quitaba ancho de banda a lo que sí se ve. */}
+          {TEMAS.map(({ sufijo, clase }) => (
+            <picture key={clase} className={clase}>
+              <source
+                media={`(max-width: ${CORTE_MOVIL_PX}px)`}
+                srcSet={asset(`/img/${variante(`${sufijo}-movil`)}`)}
+              />
+              <img
+                src={asset(`/img/${variante(sufijo)}`)}
+                alt={alt}
+                width={ancho}
+                height={alto}
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
+          ))}
           <span className="tj-lamina-lupa tj-cristal tj-cristal--denso" aria-hidden>
             <Maximize2 size={15} />
           </span>
@@ -192,7 +202,18 @@ export function ProductPlate({
       >
         {abierto && (
           <div className="tj-visor-lienzo" onClick={cerrar}>
-            <img src={asset(`/img/${archivo}`)} alt={alt} width={ancho} height={alto} decoding="async" />
+            {TEMAS.map(({ sufijo, clase }) => (
+              <img
+                key={clase}
+                className={clase}
+                src={asset(`/img/${variante(sufijo)}`)}
+                alt={alt}
+                width={ancho}
+                height={alto}
+                loading="lazy"
+                decoding="async"
+              />
+            ))}
           </div>
         )}
         <button
