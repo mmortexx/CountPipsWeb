@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useId, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
-import { pctSep } from "@/lib/trading/format";
+import { pctSep, fmtInt } from "@/lib/trading/format";
 import { siteUrl } from "@/lib/site";
 import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
 
@@ -278,7 +278,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
     const lines = [
       es ? "Diagnóstico de disciplina — CountPips" : "Discipline assessment — CountPips",
       "─".repeat(32),
-      `${es ? "Puntuación global" : "Overall score"}: ${score} / 100 (${level.label})`,
+      `${es ? "Puntuación global" : "Overall score"}: ${fmtInt(score, lang)} / 100 (${level.label})`,
       "",
       es ? "Desglose por ejes:" : "Axis breakdown:",
       ...perDim.map(({ dim, pct }) => `  · ${es ? dim.es : dim.en}: ${pct}${pctSep(lang)}`),
@@ -608,7 +608,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   }}
                 >
                   {/* Sin respuestas no hay cifra: un «0» se leía como nota. */}
-                  {answeredCount > 0 ? score : "—"}
+                  {answeredCount > 0 ? fmtInt(score, lang) : "—"}
                 </span>
                 <span className="tnum" style={{ fontSize: 15, color: "var(--ink-3)", paddingBottom: 4 }}>
                   / 100
