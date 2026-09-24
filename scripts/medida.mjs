@@ -195,7 +195,7 @@ for (const ruta of RUTAS) {
 await nav.close();
 server.close();
 
-console.log(`[medida] ${medidos} rutas recorridas · tope ${TOPE} caracteres por línea (sólo textos de 2 líneas o más)`);
+console.log(`[medida] ${medidos} rutas recorridas · tope ${TOPE} caracteres por línea (solo textos de 2 líneas o más)`);
 if (fallos) {
   console.log(`[medida] ${fallos} texto(s) por encima del tope; el peor, ${peor} caracteres`);
   console.log(`[medida] se arregla añadiendo la clase \`medida\` AL ELEMENTO QUE LLEVA EL font-size del texto`);

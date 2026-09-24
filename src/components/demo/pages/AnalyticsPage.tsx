@@ -136,7 +136,7 @@ function KpiStripCell({
 
 /* Aquí vivía `Sparkline`, la curva en miniatura de las fichas de KPI, y
    más arriba `FilterChip`. Ninguno de los dos se monta desde que las
-   fichas pasaron a mostrar sólo la cifra y los filtros a usar `Chip`
+   fichas pasaron a mostrar solo la cifra y los filtros a usar `Chip`
    directamente. Se van con sus tres `useMemo` de datos. */
 
 /* ============================================================
@@ -276,8 +276,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
               fill={color}
               fillOpacity={0.85}
               initial={{ scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: true }}
+              animate={{ scaleY: 1 }}
               transition={{
                 delay: Math.min(0.6, i * 0.012),
                 duration: 0.5,
@@ -320,8 +319,7 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
                   `transform-origin`, que es el mismo gesto a la vista. */}
               <motion.div
                 initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: 1 }}
-                viewport={{ once: true }}
+                animate={{ scaleX: 1 }}
                 transition={{
                   delay: i * 0.05,
                   duration: 0.7,
@@ -413,8 +411,7 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
                 fill={color}
                 fillOpacity={0.85}
                 initial={{ scaleY: 0 }}
-                whileInView={{ scaleY: 1 }}
-                viewport={{ once: true }}
+                animate={{ scaleY: 1 }}
                 transition={{
                   delay: i * 0.05,
                   duration: 0.6,
@@ -507,8 +504,7 @@ function RankingCard({
                       `width`. */}
                   <motion.div
                     initial={{ scaleX: 0 }}
-                    whileInView={{ scaleX: 1 }}
-                    viewport={{ once: true }}
+                    animate={{ scaleX: 1 }}
                     transition={{
                       delay: i * 0.06,
                       duration: 0.7,
@@ -915,25 +911,21 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
 
 const dayMs = 86_400_000;
 
-/* ============================================================
- * Section nav — SelectorBar-style horizontal tab strip.
- * Mirrors AnalyticsPage.xaml lines 50-62 (six SelectorBarItems).
- * Visual-only: the demo doesn't actually swap content per tab,
- * but the strip reads as the page's primary navigation.
- * ============================================================ */
-/* Secciones de Analítica. El número que va tras el nombre es la CANTIDAD
-   de bloques que trae esa sección — así lo hace la app, y es lo que
-   convierte la barra en un índice ("Riesgo tiene 12 cosas que mirar") en
-   vez de en una fila de pestañas mudas. Antes la demo pintaba ahí el
-   número de orden (1, 2, 3...), que no informaba de nada. */
+/* Secciones de Analítica. Como en la app (AnalyticsPage.xaml, pastillas
+   de radio que muestran una sección cada vez), elegir una enseña solo sus
+   bloques; antes la barra solo se marcaba y la página lo enseñaba todo.
+   El número tras el nombre es cuántos bloques trae, contado de esta misma
+   lista. «Comportamiento» no está: la demo no tiene esos bloques —la
+   disciplina vive en su Diario— y una pestaña vacía prometería algo. */
 const SECTIONS = [
-  { id: "summary", labelEs: "Resumen", labelEn: "Summary", count: 6 },
-  { id: "risk", labelEs: "Riesgo", labelEn: "Risk", count: 5 },
-  { id: "distributions", labelEs: "Distribuciones", labelEn: "Distributions", count: 4 },
-  { id: "time", labelEs: "Tiempo y cadencia", labelEn: "Timing & cadence", count: 4 },
-  { id: "attribution", labelEs: "Atribución", labelEn: "Attribution", count: 3 },
-  { id: "behaviour", labelEs: "Comportamiento", labelEn: "Behaviour", count: 4 },
+  { id: "summary", labelEs: "Resumen", labelEn: "Summary", bloques: ["comparativa", "kpis", "curva"] },
+  { id: "risk", labelEs: "Riesgo", labelEn: "Risk", bloques: ["ganadorasRiesgo", "ventaja"] },
+  { id: "distributions", labelEs: "Distribuciones", labelEn: "Distributions", bloques: ["donutR", "distribuciones"] },
+  { id: "time", labelEs: "Tiempo y cadencia", labelEn: "Timing & cadence", bloques: ["semanaMes", "calor"] },
+  { id: "attribution", labelEs: "Atribución", labelEn: "Attribution", bloques: ["rankings"] },
 ] as const;
+
+type Bloque = (typeof SECTIONS)[number]["bloques"][number];
 
 function SectionBar({
   active,
@@ -951,15 +943,32 @@ function SectionBar({
         aria-label={lang === "es" ? "Secciones" : "Sections"}
         className="tj-fila-sigue flex items-center gap-1 overflow-x-auto custom-scroll -mx-1 px-1"
       >
-        {SECTIONS.map((s) => {
+        {SECTIONS.map((s, i) => {
           const isActive = s.id === active;
           return (
             <button
               key={s.id}
+              id={`analitica-tab-${s.id}`}
               type="button"
               role="tab"
               aria-selected={isActive}
+              aria-controls="analitica-panel"
+              tabIndex={isActive ? 0 : -1}
               onClick={() => onChange(s.id)}
+              onKeyDown={(e) => {
+                // Flechas, Inicio y Fin, como pide el patrón de pestañas.
+                const n = SECTIONS.length;
+                const destino =
+                  e.key === "ArrowRight" ? (i + 1) % n
+                  : e.key === "ArrowLeft" ? (i - 1 + n) % n
+                  : e.key === "Home" ? 0
+                  : e.key === "End" ? n - 1
+                  : -1;
+                if (destino < 0) return;
+                e.preventDefault();
+                onChange(SECTIONS[destino].id);
+                (e.currentTarget.parentElement?.children[destino] as HTMLElement | undefined)?.focus();
+              }}
               className={`relative whitespace-nowrap px-3 py-1.5 text-xs font-medium transition-colors rounded-[2px] ${
                 isActive
                   ? "text-primary"
@@ -969,7 +978,7 @@ function SectionBar({
               <span className="flex items-center gap-1.5">
                 {lang === "es" ? s.labelEs : s.labelEn}
                 <span className="text-[9.5px] text-tertiary tnum">
-                  · {s.count}
+                  · {s.bloques.length}
                 </span>
               </span>
               {isActive && (
@@ -1048,6 +1057,8 @@ export function AnalyticsPage() {
   const { t, lang } = useLang();
   const { filters, setFilters, clearFilters } = useDemo();
   const [activeSection, setActiveSection] = useState<string>("summary");
+  const bloquesActivos: readonly Bloque[] = SECTIONS.find((s) => s.id === activeSection)?.bloques ?? SECTIONS[0].bloques;
+  const ver = (b: Bloque) => bloquesActivos.includes(b);
 
   const filteredTrades = useMemo(() => {
     return TRADES.filter((tr) => {
@@ -1256,8 +1267,9 @@ export function AnalyticsPage() {
       )}
 
       {filteredTrades.length > 0 && (
-        <>
+        <div role="tabpanel" id="analitica-panel" aria-labelledby={`analitica-tab-${activeSection}`} className="space-y-5">
           {/* ============ PERIOD COMPARISON CARD ============ */}
+          {ver("comparativa") && (
           <SectionCard
             eyebrow={lang === "es" ? "De un vistazo" : "At a glance"}
           >
@@ -1323,8 +1335,10 @@ export function AnalyticsPage() {
               </table>
             </div>
           </SectionCard>
+          )}
 
           {/* ============ KPI STRIP — loose, vertical hairlines ============ */}
+          {ver("kpis") && (
           <div className="space-y-2">
             <Eyebrow>
               {lang === "es" ? "Resumen del periodo filtrado" : "Filtered period summary"}
@@ -1367,8 +1381,10 @@ export function AnalyticsPage() {
               </KpiStripCell>
             </div>
           </div>
+          )}
 
           {/* ============ WIN/LOSS + RISK/QUALITY 2-CARD ROW (3:4 ratio) ============ */}
+          {ver("ganadorasRiesgo") && (
           <div className="grid grid-cols-1 lg:grid-cols-7 gap-5 min-w-0">
             {/* Win/loss card — 3×2 grid. Mobile: 3 cols is tight at 320px;
                 the RatioCells are centered so they read fine even when
@@ -1515,8 +1531,10 @@ export function AnalyticsPage() {
               </div>
             </SectionCard>
           </div>
+          )}
 
           {/* ============ EDGE CARD — verdict + CI intervals ============ */}
+          {ver("ventaja") && (
           <SectionCard
             eyebrow={lang === "es" ? "¿Ventaja real o suerte?" : "Real edge or luck?"}
           >
@@ -1593,8 +1611,10 @@ export function AnalyticsPage() {
               </div>
             </div>
           </SectionCard>
+          )}
 
           {/* ============ EQUITY CURVE + EQUITY QUALITY (2:1) ============ */}
+          {ver("curva") && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <SectionCard
               eyebrow={lang === "es" ? "Curva de rendimiento" : "Equity curve"}
@@ -1657,8 +1677,10 @@ export function AnalyticsPage() {
               </div>
             </SectionCard>
           </div>
+          )}
 
           {/* ============ WINNERS DONUT + R-OVER-TIME ============ */}
+          {ver("donutR") && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <SectionCard
               eyebrow={t("winnersVsLosers")}
@@ -1713,6 +1735,7 @@ export function AnalyticsPage() {
               </div>
             </SectionCard>
           </div>
+          )}
 
           {/* ============ DISTRIBUTIONS (3 cards) ============
               The Histogram component (`src/components/charts/Histogram.tsx`)
@@ -1728,6 +1751,7 @@ export function AnalyticsPage() {
               width, which in turn lets the labels' `truncate w-full`
               actually truncate. `overflow-hidden` is the safety net so no
               bar can ever escape the card, even mid-animation. */}
+          {ver("distribuciones") && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <SectionCard eyebrow={t("rDistribution")}>
               <Histogram
@@ -1772,8 +1796,10 @@ export function AnalyticsPage() {
               />
             </SectionCard>
           </div>
+          )}
 
           {/* ============ WEEKDAY + MONTH ============ */}
+          {ver("semanaMes") && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <SectionCard eyebrow={t("pnlByWeekday")}>
               <WeekdayBars trades={filteredTrades} />
@@ -1782,8 +1808,10 @@ export function AnalyticsPage() {
               <MonthlyBars trades={filteredTrades} />
             </SectionCard>
           </div>
+          )}
 
           {/* ============ HEATMAP + LEGEND ============ */}
+          {ver("calor") && (
           <SectionCard
             eyebrow={t("heatmapTitle")}
             hint={
@@ -1795,8 +1823,10 @@ export function AnalyticsPage() {
             <Heatmap trades={filteredTrades} />
             <HeatmapLegend trades={filteredTrades} />
           </SectionCard>
+          )}
 
           {/* ============ RANKINGS ============ */}
+          {ver("rankings") && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <RankingCard
               title={t("setupsByExpectancy")}
@@ -1809,7 +1839,8 @@ export function AnalyticsPage() {
               reKey={`inst-${filterSig}`}
             />
           </div>
-        </>
+          )}
+        </div>
       )}
 
       {/* Footer spacer. */}

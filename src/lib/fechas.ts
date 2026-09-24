@@ -30,7 +30,7 @@ import { execFileSync } from "node:child_process";
  * publicación, y ahí git siempre está — es de donde sale el código.
  */
 
-/** Último recurso: sólo se usa si `git` no responde. */
+/** Último recurso: solo se usa si `git` no responde. */
 const RESPALDO = "2026-08-01T00:00:00.000Z";
 
 function leerFechaDeGit(): Date | null {

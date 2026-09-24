@@ -105,7 +105,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                       // arreglar sin tocar el color y se quedaba corto en
                       // celdas intensas (hasta 1,87:1). El resultado ya lo
                       // dicen el tinte y la posición de la celda; la cifra
-                      // sólo tiene que leerse.
+                      // solo tiene que leerse.
                       <span className="relative z-10 text-primary">
                         {fmtCifraCorta(v, lang)}
                       </span>

@@ -178,7 +178,7 @@ function auditar() {
        lleva `aria-hidden` y resulta que SÍ había que leerlo, el problema
        no es el contraste — es el `aria-hidden`. */
     if (el.closest("[aria-hidden='true']")) continue;
-    // sólo elementos con texto PROPIO
+    // solo elementos con texto PROPIO
     const texto = [...el.childNodes]
       .filter((n) => n.nodeType === 3)
       .map((n) => n.textContent.trim())
@@ -266,7 +266,7 @@ for (const pantalla of PANTALLAS) {
          todas las hojas de estilo, y entonces esto mide una página en
          negro sobre blanco con los tamaños por defecto del navegador: da
          números, no da información. Pasó en la primera pasada de este
-         guion —9.412 trozos «medidos» y cero fondos con imagen— y sólo
+         guion —9.412 trozos «medidos» y cero fondos con imagen— y solo
          se notó al comparar con la corrida anterior. */
       const hojas = await pagina.evaluate(() => document.styleSheets.length);
       if (!hojas) {

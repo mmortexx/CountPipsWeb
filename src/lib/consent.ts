@@ -64,7 +64,7 @@ export function readConsent(): Consent {
   }
 }
 
-/** `true` sólo si el visitante aceptó la analítica de forma explícita. */
+/** `true` solo si el visitante aceptó la analítica de forma explícita. */
 export function analyticsAllowed(): boolean {
   return readConsent() === "accepted";
 }

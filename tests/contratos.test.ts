@@ -93,7 +93,7 @@ describe("rutas declaradas frente a rutas reales", () => {
           statSync(join(p, "page.tsx"));
           out.add(hijo);
         } catch {
-          /* carpeta sin página propia: sólo agrupa */
+          /* carpeta sin página propia: solo agrupa */
         }
         recorrer(p, hijo);
       }
@@ -167,7 +167,7 @@ describe("contrato del formulario de acceso anticipado", () => {
 
   it("el límite de peticiones no se desactiva solo si falta su almacén", () => {
     // Devolvía `true` —puerta abierta— cuando el binding KV no estaba
-    // configurado, y hoy no lo está. Ahora sólo se salta si el propio
+    // configurado, y hoy no lo está. Ahora solo se salta si el propio
     // despliegue lo pide a propósito, y el rechazo lleva un código que
     // dice «mal configurado», no «demasiadas peticiones».
     expect(worker).toMatch(/RATE_LIMIT_OPTIONAL/);
@@ -183,7 +183,7 @@ describe("contrato del formulario de acceso anticipado", () => {
          deje al solicitante con un «demasiadas peticiones» que no
          describe lo que pasó.
        Estuvieron juntas en una sola función y el segundo efecto era un
-       callejón sin salida. `await nombre(` sólo aparece en las LLAMADAS:
+       callejón sin salida. `await nombre(` solo aparece en las LLAMADAS:
        las definiciones son `async function nombre(`. */
     const iConsulta = worker.indexOf("await rateLimitDisponible(");
     const iTurnstile = worker.indexOf("await verifyTurnstile(");
@@ -231,7 +231,7 @@ describe("analítica y consentimiento", () => {
  * promesa. Eran cuatro de las 155 páginas del sitio, y las únicas cuatro
  * que se pasaban.
  *
- * Esto no lo puede vigilar el humo, que sólo recorre doce rutas y ninguna
+ * Esto no lo puede vigilar el humo, que solo recorre doce rutas y ninguna
  * del glosario: hay que mirar las 102 páginas generadas, y eso se hace
  * aquí, sin navegador.
  */
@@ -285,7 +285,7 @@ describe("el precio es el mismo en todas partes", () => {
    * Así que el texto se queda como está y lo que se ata es la
    * COHERENCIA: cualquier cifra de tres dígitos precedida de `$` en el
    * código fuente tiene que ser uno de los dos precios declarados. Si
-   * mañana Core pasa a 179 y alguien cambia sólo `precios.ts`, las doce
+   * mañana Core pasa a 179 y alguien cambia solo `precios.ts`, las doce
    * frases que sigan diciendo 149 hacen fallar esto con su ruta y su
    * línea delante.
    */
@@ -353,7 +353,7 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
    * y PayPal. Emitimos factura con IVA si procede.».
    *
    * Es la peor forma del fallo: mirando la página no se ve, porque la
-   * afirmación falsa sólo existe en el canal que la publica en los
+   * afirmación falsa solo existe en el canal que la publica en los
    * resultados de búsqueda. Doce de las trece respuestas declaradas no
    * existían en la página.
    */
@@ -409,7 +409,7 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
     /* El invariante del producto: /demo es pública sin registro, el acceso
        anticipado es privado por invitación y 149/249 son precios
        PREVISTOS — no hay compra posible ni pasarela integrada. Nombrar una
-       marca de pago concreta en el código sólo puede significar dos cosas:
+       marca de pago concreta en el código solo puede significar dos cosas:
        o se ha integrado de verdad (y entonces esta prueba obliga a
        revisar a conciencia lo que promete la web), o se está prometiendo
        algo que no se puede cumplir, que es lo que pasó. */
@@ -440,7 +440,7 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
 });
 
 /**
- * La marca vive en cinco ficheros y sólo uno la calcula.
+ * La marca vive en cinco ficheros y solo uno la calcula.
  *
  * `scripts/generate-brand.py` toma la geometría del logo «Corte» del
  * generador de la aplicación de escritorio y de ahí salen `logo.png`,
@@ -533,7 +533,7 @@ describe("ningún enlace apunta a un dominio que aún no existe", () => {
   /* `countpips.com` no está comprado. Los resúmenes que se copian del
      proyector y del test lo llevaban escrito: el visitante pegaba en su
      diario un enlace que no resuelve. La dirección sale de `SITE_URL`. */
-  it("el dominio propio sólo aparece en site.ts", () => {
+  it("el dominio propio solo aparece en site.ts", () => {
     const fuentes: string[] = [];
     const recorrer = (dir: string) => {
       for (const entrada of readdirSync(join(RAIZ, dir))) {

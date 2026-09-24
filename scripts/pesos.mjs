@@ -98,7 +98,7 @@ async function rangosDeclarados() {
 }
 
 const declarados = await rangosDeclarados();
-/* Sólo las familias con el eje recortado. Si una declara el rango completo
+/* Solo las familias con el eje recortado. Si una declara el rango completo
    de su fichero, no hay nada que pedirle de más. */
 const VIGILADAS = declarados.filter((d) => /Newsreader/i.test(d.familia));
 if (!VIGILADAS.length) {
@@ -179,7 +179,7 @@ console.log(`\n[pesos] ${rutasVistas} de ${RUTAS.length} rutas · ${elementos} e
 /* Si no encuentra elementos, algo se rompió: la serif está en todos los
    titulares del sitio. Una guarda que no mide nada pasa siempre. */
 if (elementos < 50) {
-  console.log(`[pesos] sólo ${elementos} elementos con la serif: se esperaban decenas. ¿Cambió la familia o falló la carga?`);
+  console.log(`[pesos] solo ${elementos} elementos con la serif: se esperaban decenas. ¿Cambió la familia o falló la carga?`);
   process.exit(1);
 }
 if (fallos.length) {

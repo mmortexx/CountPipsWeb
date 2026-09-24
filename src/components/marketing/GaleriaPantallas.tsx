@@ -26,14 +26,14 @@ import { LAMINAS_PRODUCTO, ORDEN_LAMINAS } from "@/lib/laminas";
  * La galería imita esa barra a propósito.
  *
  * La portada monta las mismas láminas por su cuenta (`ProductShowcase`,
- * § 02) pero sólo cuatro: allí la sección tiene que caber en una portada
+ * § 02) pero solo cuatro: allí la sección tiene que caber en una portada
  * que ya mide diez mil píxeles. Aquí van las siete, que es lo que esta
  * página promete. Aquí ya ha entrado a leer las
  * características, así que elegir es una mejora y no un peaje.
  *
  * ── Lo que NO hace ────────────────────────────────────────────────────
  * No monta las siete láminas y esconde seis: eso descarga siete capturas
- * para enseñar una. Monta sólo la activa; el resto llega cuando se pide.
+ * para enseñar una. Monta solo la activa; el resto llega cuando se pide.
  * Con `loading="lazy"` en las imágenes, cambiar de pestaña cuesta una
  * petición de unos 60 KB.
  */

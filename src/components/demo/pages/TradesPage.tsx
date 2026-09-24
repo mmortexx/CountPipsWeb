@@ -35,7 +35,7 @@ import { TradeCompareModal } from "@/components/demo/TradeCompareModal";
 
 /* ============================================================
  * Tablas estáticas — la clase de activo ya no se codifica por color (ver
- * AssetMark), sólo queda su etiqueta y la de plaza y decimales.
+ * AssetMark), solo queda su etiqueta y la de plaza y decimales.
  * ============================================================ */
 
 const DECIMALS: Record<string, number> = Object.fromEntries(

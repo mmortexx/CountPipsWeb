@@ -66,7 +66,7 @@ export function ContactForm() {
   const [error, setError] = useState<string | null>(null);
   /** Cuando el fallo es nuestro, ofrecemos el buzón de soporte como salida. */
   const [showFallback, setShowFallback] = useState(false);
-  /** Qué campo concreto está mal, para marcarlo sólo a él. */
+  /** Qué campo concreto está mal, para marcarlo solo a él. */
   const [invalidos, setInvalidos] = useState({ name: false, email: false, message: false });
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -88,9 +88,9 @@ export function ContactForm() {
     if (sent || sending) return;
 
     /* ── QUÉ CAMPO FALLA, Y NO «ALGO FALLA» ────────────────────────────
-       Antes esto sólo componía un texto de aviso y salía. Los tres
+       Antes esto solo componía un texto de aviso y salía. Los tres
        campos llevaban `aria-invalid={!!error}`, es decir, el MISMO
-       valor: si sólo el correo estaba mal, un lector de pantalla
+       valor: si solo el correo estaba mal, un lector de pantalla
        anunciaba también el nombre y el mensaje como erróneos. Y no se
        movía el foco a ninguna parte, así que quien navega con teclado
        se quedaba donde estaba, con un aviso arriba que quizá ni veía.

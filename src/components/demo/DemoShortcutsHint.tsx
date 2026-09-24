@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { useDemo } from "./DemoContext";
+import { PESTANAS_NUMERADAS } from "./TopNav";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
 
 /* ------------------------------------------------------------------ */
@@ -91,7 +92,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
         <>
           <Kbd>1</Kbd>
           <Dash />
-          <Kbd>4</Kbd>
+          <Kbd>{PESTANAS_NUMERADAS}</Kbd>
         </>
       ),
       labelEs: "Cambiar pestaña",

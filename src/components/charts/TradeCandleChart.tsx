@@ -286,7 +286,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               del margen derecho, y cuando una operación tiene el stop o el
               objetivo cerca de una división de la rejilla, los dos textos
               caían en el mismo Y y salían superpuestos e ilegibles. La
-              línea de puntos se mantiene — sólo se retira el número que
+              línea de puntos se mantiene — solo se retira el número que
               ya dice la etiqueta con recuadro. */}
           {[0.2, 0.4, 0.6, 0.8].map((ratio) => {
             const y = padT + ratio * chartH;

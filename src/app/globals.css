@@ -731,7 +731,7 @@
        mismo grosor de asta que el pie de foto a 0,75rem. */
     font-optical-sizing: auto;
     /* La puntuación de apertura cuelga del margen en vez de meter el
-       texto hacia dentro. Sólo lo hace Safari hoy; donde no, no
+       texto hacia dentro. Solo lo hace Safari hoy; donde no, no
        cambia nada. Es gratis y es correcto. */
     hanging-punctuation: first last;
   }
@@ -759,7 +759,7 @@
     p, li, dd, blockquote {
       hyphens: auto;
       -webkit-hyphens: auto;
-      /* Sólo las palabras que de verdad abren ríos. Con el mínimo en 7
+      /* Solo las palabras que de verdad abren ríos. Con el mínimo en 7
          se partían «Des-liza», «opera-ción» y «ope-rativa» —palabras
          cortas y corrientes— y un guión en una palabra que cabía
          entera canta más que el río que venía a evitar. Doce caracteres
@@ -905,7 +905,7 @@
      La condición es `pointer: coarse` y no un ancho: lo que provoca el
      zoom es el teclado virtual del dispositivo táctil, no la ventana
      estrecha. Así un escritorio angosto conserva su escala tipográfica
-     —donde 14 px es una decisión de diseño— y sólo se corrige donde el
+     —donde 14 px es una decisión de diseño— y solo se corrige donde el
      navegador iba a intervenir por su cuenta.
 
      Fuera quedan los controles sin texto que escribir: casillas, radios
@@ -1002,7 +1002,7 @@
        la última letra del tramo se pega a la primera del texto recto. */
     padding-right: 0.04em;
   }
-  /* En la sans no hay cursiva dibujada, sólo la oblicua sintética que
+  /* En la sans no hay cursiva dibujada, solo la oblicua sintética que
      genera el navegador — y ésa sí es el gesto barato que la dirección
      evita. Ahí el realce se queda en el acento a secas. */
   .text-gradient:not(:is(h1, h2, h3, h4, .t-h1, .t-h2, .t-h3) *) {
@@ -1489,7 +1489,7 @@ textarea:focus-visible,
 
    Se arregla declarando la pista y subiendo la bolita la mitad de la
    diferencia entre ambas alturas. Firefox centra por su cuenta y no
-   necesita el ajuste, así que va sólo en la regla de WebKit. */
+   necesita el ajuste, así que va solo en la regla de WebKit. */
 .tj-range::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
@@ -1516,7 +1516,7 @@ textarea:focus-visible,
   border-radius: 999px;
   background: var(--tj-surco);
 }
-/* Lo ya recorrido, en el color de acento. Sólo Firefox lo ofrece como
+/* Lo ya recorrido, en el color de acento. Solo Firefox lo ofrece como
    pseudo-elemento; en WebKit lo pinta el propio componente. */
 .tj-range::-moz-range-progress {
   height: 4px;
@@ -1765,7 +1765,7 @@ textarea:focus-visible,
    desvanecido incluido. Esta variante retira la reserva. */
 .tj-fila-sigue--sin-reserva {
   /* El desvanecido de ::after se monta con `position: sticky`,
-     `flex: none` y `align-self: stretch` — una receta que sólo tiene
+     `flex: none` y `align-self: stretch` — una receta que solo tiene
      sentido DENTRO de un contenedor flexible. Las dos filas de fichas
      que usan esta clase ya traen `flex` de Tailwind; los dos
      envoltorios de tabla (los documentos legales y la matriz de
@@ -1781,7 +1781,7 @@ textarea:focus-visible,
 }
 /* Y el precio de haberlo hecho flexible: el hijo dejó de ser un bloque
    —que ocupa el ancho entero— y pasó a ser un ITEM, que se dimensiona
-   por su contenido. La matriz de seguridad, cuyo envoltorio sólo declara
+   por su contenido. La matriz de seguridad, cuyo envoltorio solo declara
    `min-w-[480px]`, se quedó clavada en 480 px dentro de una tarjeta de
    1166: 686 px de tarjeta vacía a la derecha de una tabla cuyas franjas
    se cortan a media caja, que no se lee como «tabla estrecha» sino como
@@ -1856,7 +1856,7 @@ textarea:focus-visible,
    - El PANEL DE RESULTADOS de la calculadora de comisiones pedía
      `sticky top-24` y no se quedaba quieto al desplazar.
 
-   El anclaje sólo existe para que los pseudoelementos decorativos de
+   El anclaje solo existe para que los pseudoelementos decorativos de
    cada material (grano, filo, catch-light) tengan contra qué colocarse,
    y cualquier posición no estática sirve para eso. Declararlo en
    `@layer components` conserva el comportamiento donde no hay utilidad
@@ -2284,7 +2284,7 @@ button.icon-btn:hover > svg,
   [class*="ScrollProgress"],
   #mobile-nav-drawer,
   canvas,
-  /* Un botón no hace nada en papel, y la luz de detrás del panel sólo
+  /* Un botón no hace nada en papel, y la luz de detrás del panel solo
      gasta tinta: las dos son decorado de pantalla. */
   .cta,
   .tj-escritorio,
@@ -2293,7 +2293,7 @@ button.icon-btn:hover > svg,
   }
 
   /* LAS RESPUESTAS PLEGADAS SE ABREN. En pantalla la FAQ es un acordeón y
-     sólo hay una respuesta a la vista; en papel no hay dónde pulsar, así
+     solo hay una respuesta a la vista; en papel no hay dónde pulsar, así
      que un folio con trece preguntas y una sola respuesta no sirve de
      nada. El contenido ya está montado —`forceMount` en accordion.tsx—,
      así que basta con devolverle la visibilidad. Y el galón del
@@ -2352,7 +2352,7 @@ button.icon-btn:hover > svg,
     border-radius: 3px !important;
   }
 
-  /* Gemelo de `.tj-no-print`: lo que sólo existe en papel. Va con `hidden`
+  /* Gemelo de `.tj-no-print`: lo que solo existe en papel. Va con `hidden`
      de Tailwind en el marcado, y aquí gana por `!important`. */
   .tj-solo-papel {
     display: block !important;
@@ -2532,7 +2532,7 @@ button.icon-btn:hover > svg,
    ============================================================ */
 /* NOTA sobre los dos vocabularios de tinta: en la paleta `clasico` —la
    que el sitio fuerza— `--ink*` se declara DERIVADO de `--txt-*`, porque
-   ahí los valores coincidían exactamente y tener dos copias sólo servía
+   ahí los valores coincidían exactamente y tener dos copias solo servía
    para que un día dejaran de coincidir. Aquí, en las paletas base, no se
    derivan: estos hex llevan calibraciones propias medidas contra fondos
    concretos (ver la nota de `--ink-3` justo debajo, buscado por barrido
@@ -2595,7 +2595,7 @@ button.icon-btn:hover > svg,
    línea y un `useEffect` la subía a 1 al montar. En un sitio de
    EXPORTACIÓN ESTÁTICA eso significa que el HTML servido llevaba
    el titular de todas las páginas interiores con opacidad cero,
-   y sólo aparecía si el JavaScript arrancaba. Sin JavaScript
+   y solo aparecía si el JavaScript arrancaba. Sin JavaScript
    —bloqueado, fallido, o un rastreador que no lo ejecuta— el
    titular principal no existía.
 
@@ -2754,7 +2754,7 @@ button.icon-btn:hover > svg,
 }
 
 /* Celdas del calendario de P&L. El color del resultado lo lleva el FONDO
-   de la celda; el texto sólo tiene que leerse encima.
+   de la celda; el texto solo tiene que leerse encima.
 
    EN LOS DOS TEMAS va en TINTA, no en el color P&L. La excepción para el
    tema oscuro se retiró: se apoyaba en que allí el tinte era "casi negro",
@@ -2990,7 +2990,7 @@ button.icon-btn:hover > svg,
    sitio del sitio entero (la cita del diario en el bento de /features),
    así que viajaban precargados en las 171 páginas para nada. La familia
    cursiva se declara aparte en `layout.tsx` con `preload: false` y se
-   aplica sólo aquí, de modo que el navegador la pide cuando encuentra el
+   aplica solo aquí, de modo que el navegador la pide cuando encuentra el
    elemento que la usa y no antes.
 
    `font-style: italic` va explícito: sin él la familia cursiva se
@@ -3378,7 +3378,7 @@ button.icon-btn:hover > svg,
   place-items: center;
 }
 /* Abre como se levanta una hoja: el velo funde y la captura llega desde un
-   punto más pequeña. Sólo al abrir; al cerrar desaparece sin esperar. */
+   punto más pequeña. Solo al abrir; al cerrar desaparece sin esperar. */
 @media (prefers-reduced-motion: no-preference) {
   .tj-visor[open]::backdrop {
     transition: opacity 0.24s var(--ease-suave);
@@ -3454,7 +3454,7 @@ html:has(.tj-visor[open]) {
      medidos. Ver la nota de `.medida`. */
   max-width: calc(75ch / 1.35);
 }
-/* «Detalle: el calendario del mes.» Sólo aparece donde de verdad se está
+/* «Detalle: el calendario del mes.» Solo aparece donde de verdad se está
    sirviendo el recorte, y el umbral es EL MISMO que el del `<picture>` de
    `ProductPlate` (767 px). Si uno se mueve sin el otro, el pie miente: o
    anuncia un detalle donde se ve la pantalla entera, o calla donde se ve un
@@ -3739,10 +3739,10 @@ select.tj-campo:invalid {
   text-transform: none;
 }
 /* El pie de ficha NO lleva medida a propósito. Mide 102 caracteres, pero
-   EN UNA SOLA LÍNEA: el renglón largo sólo cansa cuando hay que volver al
+   EN UNA SOLA LÍNEA: el renglón largo solo cansa cuando hay que volver al
    margen izquierdo a buscar el siguiente, y aquí no hay siguiente. Cortarlo
    además acortaría el filete, que es lo que separa el pie del cuerpo de la
-   ficha. `scripts/medida.mjs` sólo cuenta textos de dos líneas o más por
+   ficha. `scripts/medida.mjs` solo cuenta textos de dos líneas o más por
    este mismo motivo. */
 .tj-ficha-cuerpo {
   padding: var(--ficha-pad);
@@ -3902,12 +3902,12 @@ select.tj-campo:invalid {
 
       SIN un segundo desenfoque, a propósito. `backdrop-filter: blur()`
       es lo caro de este material y aquí ya hay uno por panel; el anillo
-      sólo lleva `brightness`/`saturate`, que el compositor resuelve sin
+      solo lleva `brightness`/`saturate`, que el compositor resuelve sin
       volver a muestrear. La refracción de verdad —desplazamiento óptico
       con `feDisplacementMap` o WebGL— se descartó por eso: se repinta en
       cada fotograma del desplazamiento.
 
-   El anillo sólo va en los paneles. La barra superior no lo lleva: un
+   El anillo solo va en los paneles. La barra superior no lo lleva: un
    canto de vidrio de lado a lado de la pantalla no lo tiene ningún
    material real. */
 :root {
@@ -4046,7 +4046,7 @@ select.tj-campo:invalid {
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
 }
-/* La curva sólo vive detrás del cristal: a todo el ancho asomaba nítida
+/* La curva solo vive detrás del cristal: a todo el ancho asomaba nítida
    por los lados del panel y se leía como un trazo suelto. Su ancho es el
    del panel que tiene delante (`--curva-ancho`). */
 .tj-escritorio-curva {
@@ -4453,7 +4453,7 @@ select.tj-campo:invalid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
-/* Cuatro cifras en móvil; las otras cuatro, a un toque. El botón sólo
+/* Cuatro cifras en móvil; las otras cuatro, a un toque. El botón solo
    existe por debajo de 768 px: por encima caben las ocho en dos filas.
    Se condiciona a `data-js`, que lo pone el script del <head> antes de
    pintar: sin JavaScript el botón no haría nada, así que entonces no se
@@ -4721,7 +4721,7 @@ select.tj-campo:invalid {
    `getComputedStyle` devolvía las dos capas vivas a la vez. En las
    capturas se veía el síntoma sin saber la causa — el grabado se
    distinguía en los márgenes, donde el degradado ya es transparente y
-   sólo queda el color plano, y desaparecía bajo la mancha de texto.
+   solo queda el color plano, y desaparecía bajo la mancha de texto.
 
    Se van las tres. El velo vuelve a ser UNA declaración, en el bloque
    de la paleta, y su valor sube de 88 % a 84 %: es el que sostiene la
@@ -4742,7 +4742,7 @@ select.tj-campo:invalid {
    se fue y la promoción se quedó.
 
    Sin `backdrop-filter` y sin nada que animar, promocionar una superficie
-   estática no la hace más fluida: sólo reserva memoria de GPU. Y no son
+   estática no la hace más fluida: solo reserva memoria de GPU. Y no son
    dos elementos — son 53 en el glosario y 22 en características, contados
    sobre el HTML construido, en todas las páginas y para siempre.
 
@@ -4790,7 +4790,7 @@ select.tj-campo:invalid {
    quedaban tapadas del todo —entre ellas los botones Long y Short, los
    dos selectores y el área de nota—. Alguien que navega con teclado
    escribía en un campo que no veía. Descartando el aviso, las nueve
-   volvían a verse: la causa era ésta y sólo ésta.
+   volvían a verse: la causa era ésta y solo ésta.
 
    El reparto va atado al atributo que el propio aviso publica mientras
    está en pantalla, así que cuando se descarta el hueco desaparece solo
@@ -4974,14 +4974,14 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
      contenido vive en un panel con scroll PROPIO (`overflow-y-auto`,
      560/640 px de alto). `view()` ancla la línea de tiempo al
      desplazamiento más cercano, o sea a ese panel: las piezas de dentro
-     sólo entrarían si alguien desplazara el panel, no la página.
+     solo entrarían si alguien desplazara el panel, no la página.
 
      Nadie lo desplaza al pasar, así que CUARENTA piezas se quedaban a
      opacidad cero de forma permanente — «P&L total», «El parte de hoy»,
      la fila de métricas entera. No es que entraran mal: es que no se
      veían, y una demo cuyo contenido no se ve no demuestra nada.
 
-     Aquí la entrada por scroll no sólo falla: sobra. Lo que se enseña es
+     Aquí la entrada por scroll no solo falla: sobra. Lo que se enseña es
      una aplicación en uso, y una aplicación en uso tiene sus datos a la
      vista desde el primer momento. */
   .demo-window [data-entra] {
@@ -5056,7 +5056,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
    Esta regla se escribió primero como `animation: a curva both, b curva
    both`, y el compilador de estilos del proyecto (Lightning CSS, vía
    Tailwind v4) **se comió el segundo elemento de la lista sin avisar**:
-   en la hoja servida sólo quedaba `tj-estampa`, sin error ni en la
+   en la hoja servida solo quedaba `tj-estampa`, sin error ni en la
    consola ni en el build. Con las propiedades por separado —
    `animation-name`, `animation-fill-mode`, `animation-timeline`,
    `animation-range`, `animation-timing-function`— las dos sobreviven.
@@ -5100,7 +5100,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
    modo que el eje vertical del tiempo queda en medio y las fichas se
    acercan a él. Iba en framer-motion con `initial={{x: ±48}}`.
 
-   Sólo desde 768 px: por debajo la línea del tiempo se va al margen
+   Solo desde 768 px: por debajo la línea del tiempo se va al margen
    izquierdo y las tarjetas se apilan en una sola columna, así que un
    desplazamiento lateral no tendría a qué acercarse — y en un ancho de
    390 px, 48 px de recorrido horizontal son el 12 % de la pantalla. */
@@ -5153,7 +5153,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 /* ── LA TRAZA: UN FILETE QUE SE DIBUJA, PERO CON SU PROPIO ASPECTO ────
    `.tj-filete` de más abajo trae altura, color y origen; estos filetes
    ya tienen los suyos —un degradado de acento que se apaga en los dos
-   extremos— y sólo les falta el gesto. `data-entra="traza"` anima el
+   extremos— y solo les falta el gesto. `data-entra="traza"` anima el
    `scaleX` y no toca nada más.
 
    El `transform-origin` NO se declara aquí a propósito: cada filete
@@ -5182,7 +5182,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
    sube se lee como un bloque más de página, y una que se asienta se lee
    como una lámina que se posa. Se conserva el gesto.
 
-   Sólo para el encuadre `cover`. En `contain` el zoom recorta el canto
+   Solo para el encuadre `cover`. En `contain` el zoom recorta el canto
    de la captura durante la entrada, así que ésas usan el escalón normal
    — la razón está escrita en `FeatureImage.tsx` y se respeta. */
 @supports (animation-timeline: view()) {
@@ -5353,10 +5353,10 @@ svg [data-entra="sello"] {
 
    `both` en el modo de relleno: sin él, el elemento parpadea a su
    estado final durante el retardo antes de empezar. */
-/* Dos animaciones y no una: `tj-estampa` sólo mueve la escala desde que
+/* Dos animaciones y no una: `tj-estampa` solo mueve la escala desde que
    el sobreimpulso dejó de arrastrar a la tinta (ver el bloque del sello),
    así que la opacidad necesita la suya. Con una sola, el disco nacía
-   opaco y sólo crecía.
+   opaco y solo crecía.
 
    En longhands por lo mismo que allí: el atajo `animation` con lista
    pierde el segundo elemento al compilar. */
@@ -5535,10 +5535,10 @@ svg [data-entra="sello"] {
    es de las pocas cosas que se notan sin saber mirar.
 
    La API del navegador toma una instantánea de la vista que sale y otra
-   de la que entra, y las anima como dos capas. Sólo participa el
+   de la que entra, y las anima como dos capas. Solo participa el
    contenido —ver el `ViewTransition` del layout—: la barra y el pie se
    quedan quietos, porque son los mismos en las 155 páginas y fundirlos
-   consigo mismos sólo produce un parpadeo.
+   consigo mismos solo produce un parpadeo.
 
    ── La coreografía ────────────────────────────────────────────────────
    Un desplazamiento CORTO y en sentidos opuestos: la página que sale se
@@ -5561,7 +5561,7 @@ svg [data-entra="sello"] {
 
    La salida NO tiene token, y es deliberado: `cubic-bezier(0.4, 0, 1, 1)`
    acelera hacia fuera, que es lo contrario de todo lo demás en esta
-   hoja. Una página que se va debe quitarse de en medio; sólo ocurre
+   hoja. Una página que se va debe quitarse de en medio; solo ocurre
    aquí, así que no se asciende a token. */
 :root[data-transicion] #main-content {
   view-transition-name: pagina;
@@ -5611,8 +5611,8 @@ svg [data-entra="sello"] {
    transición de vista el navegador funde una FOTO de la página vieja
    sobre la nueva: una sola animación, todo incluido, el atlas también.
 
-   La clase la pone `ThemeProvider` sólo durante el cambio de tema, para
-   que la raíz siga quieta en las transiciones de página de arriba. Sólo
+   La clase la pone `ThemeProvider` solo durante el cambio de tema, para
+   que la raíz siga quieta en las transiciones de página de arriba. Solo
    se anima la foto vieja —apagándose sobre la nueva, que ya está
    pintada—: el fundido cruzado con las dos animadas necesita mezcla
    aditiva y en un fondo casi negro se ve un escalón de brillo. */
@@ -5824,7 +5824,7 @@ svg [data-entra="sello"] {
 
 /* La entrada del aviso de cookies: sube desde abajo una sola vez, al
    montarse. Sustituye a un `initial/animate` de framer-motion — una
-   animación de entrada no necesita biblioteca, sólo un `@keyframes`. */
+   animación de entrada no necesita biblioteca, solo un `@keyframes`. */
 .tj-entra-abajo {
   animation: tj-sube-aviso 0.28s var(--ease-suave, ease) both;
 }
@@ -5846,7 +5846,7 @@ svg [data-entra="sello"] {
 
 /* Cruce corto de icono al cambiar de estado (sol ↔ luna). Con
    `key={estado}` React reemplaza el nodo y el nuevo entra con esto. En
-   120 ms sólo se percibe la aparición, así que no hace falta coreografiar
+   120 ms solo se percibe la aparición, así que no hace falta coreografiar
    también la salida — que es lo único que aportaba `AnimatePresence`. */
 .tj-cruza {
   animation: tj-aparece 0.12s linear both;
@@ -6092,14 +6092,14 @@ svg [data-entra="sello"] {
 .tj-en-herramienta :has(> h2[data-titular-herramienta]):not(:has(> :not(h2, p, span))) { display: contents; }
 
 /* ── COMPOSICIÓN AL DESPLAZAR ─────────────────────────────────────────
-   Cuatro gestos atados al scroll, sin JavaScript y sólo con transform,
+   Cuatro gestos atados al scroll, sin JavaScript y solo con transform,
    opacity y un desenfoque corto en los titulares:
    · las listas y rejillas se ordenan pieza a pieza (`--orden` desplaza
      el rango de cada hija; en vertical cada fila entra además cuando le
-     toca, así que el escalonado sólo se nota entre hermanas en fila);
+     toca, así que el escalonado solo se nota entre hermanas en fila);
    · los titulares se enfocan al entrar;
    · el fondo de escritorio deriva detrás del cristal, que así se lee
-     translúcido en movimiento y no sólo en reposo;
+     translúcido en movimiento y no solo en reposo;
    · los paneles de cristal se asientan con transform, nunca con opacidad
      (una opacidad en el panel o en un ancestro le corta lo que ve detrás).
    Rango en `cover`, no en `entry`: una fila de 40 px con `entry`
@@ -6220,7 +6220,7 @@ svg [data-entra="sello"] {
 /* ── LA PRIMERA PANTALLA SE COMPONE AL ABRIR ──────────────────────────
    Lo que está a la vista al cargar no tiene scroll que lo anime: con
    `view()` nace ya colocado. Aquí entra por tiempo, en cascada: etiqueta,
-   titular, entradilla, llamadas y panel. El panel de cristal sólo se
+   titular, entradilla, llamadas y panel. El panel de cristal solo se
    desplaza (una opacidad en un ancestro le quitaría el esmerilado). */
 @media (prefers-reduced-motion: no-preference) {
   .tj-hero > .tj-container:first-child > *,
@@ -6302,7 +6302,7 @@ svg [data-entra="sello"] {
 /* ── LA PÁGINA SE COMPONE AL DESPLAZAR (Aparecer.tsx) ─────────────────
    Con JavaScript manda este sistema por tiempo; las entradas atadas al
    scroll de más arriba se retiran para no animar dos veces lo mismo.
-   Sólo transform y opacity: lo mueve la tarjeta gráfica. */
+   Solo transform y opacity: lo mueve la tarjeta gráfica. */
 html.tj-mov #main-content section:not(#top),
 html.tj-mov [data-entra]:not(.tj-cabecera *),
 html.tj-mov #main-content :is(ul, ol, dl, [data-orden]) > *,
@@ -6398,7 +6398,7 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
   backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
 }
-/* EL PANEL DE CIFRAS NO DESENFOCA. Detrás sólo tiene la luz lisa del
+/* EL PANEL DE CIFRAS NO DESENFOCA. Detrás solo tiene la luz lisa del
    escritorio, y desenfocar algo liso no cambia nada: medido, 3/255 de
    diferencia media en claro y menos de 1 en oscuro. Lo que sí cambiaba era
    el coste: un desenfoque de 1.100 × 800 px recalculado en cada fotograma

@@ -31,7 +31,7 @@ import { Eyebrow } from "@/components/tj/Eyebrow";
  *    columna a la derecha. Usa el ancho real de la pantalla en vez de
  *    dejar medio lienzo vacío, y crea la asimetría que rompe la
  *    cadencia. Es la que usan las revistas para abrir un reportaje.
- *    Sólo tiene sentido si hay entradilla y es de dos líneas o más.
+ *    Solo tiene sentido si hay entradilla y es de dos líneas o más.
  *
  *  · `centrada` — para un cierre o un momento de énfasis. Centrar es
  *    una decisión fuerte y por eso se reserva: si se centra todo, deja

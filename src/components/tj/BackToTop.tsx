@@ -9,7 +9,7 @@ import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
  * BackToTop — botón flotante cuadrado (4 px, como el resto de controles).
  *
  * - En pantallas donde no cabe en el margen (< 1280 px) tapaba el final de
- *   las líneas mientras se leía. Ahí sólo aparece al desplazarse HACIA
+ *   las líneas mientras se leía. Ahí solo aparece al desplazarse HACIA
  *   ARRIBA —que es cuando alguien quiere volver— o cerca del final.
  *
  * - Hidden until the user scrolls more than 400 px down. (Lowered from the
@@ -41,7 +41,7 @@ import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
  *   wins; if neither applies the button sits at its natural position
  *   (env + 1.5 rem from the bottom).
  * - Al pulsarlo sube a la cabecera con `irArriba()` (src/lib/scroll.ts):
- *   salta hasta un palmo del destino y anima sólo ese tramo, en vez de
+ *   salta hasta un palmo del destino y anima solo ese tramo, en vez de
  *   recorrer las diez pantallas que puede haber de por medio.
  * - Al pasar por encima se levanta 2 px y gana un halo del acento. Todo
  *   en CSS (`.tj-subir`), y anulado bajo `prefers-reduced-motion`.
@@ -109,7 +109,7 @@ export function BackToTop() {
 
   /* LOS DOS ARRANCAN EN `false`, SIN MIRAR `window`.
      Aquí ponía `typeof window !== "undefined" ? window.scrollY > SHOW_AFTER
-     : false`, y ese inicializador NO se ejecuta sólo «en el cliente»: se
+     : false`, y ese inicializador NO se ejecuta solo «en el cliente»: se
      ejecuta durante la hidratación. Al recargar con la página ya desplazada
      —o al volver con la posición restaurada, que es lo normal— el servidor
      había mandado el árbol sin botón y el cliente lo montaba con botón:
@@ -217,7 +217,7 @@ export function BackToTop() {
     };
   }, []);
 
-  /* Este botón sólo aparece a partir de 400 px, así que su salto es
+  /* Este botón solo aparece a partir de 400 px, así que su salto es
      LARGO por definición — es el caso que peor se veía con el scroll
      suave del navegador: desde el pie de la portada recorría el sitio
      entero hacia atrás. `irArriba` salta y anima nada más el último

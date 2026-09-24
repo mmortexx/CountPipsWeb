@@ -75,8 +75,6 @@ export const STR = {
   demoShareCopied: { es: "✓ Copiado", en: "✓ Copied" },
   demoReset: { es: "Reiniciar", en: "Reset" },
   demoResetDone: { es: "✓ Reiniciado", en: "✓ Reset" },
-  // Keyboard-hint label rendered in the demo status bar (desktop only).
-  demoKeyHint: { es: "⌨ 1–6", en: "⌨ 1–6" },
 
   // ---- App nav (demo) ----
   pageDashboard: { es: "Resumen", en: "Dashboard" },
@@ -422,7 +420,7 @@ function langHidratacion(deRuta: Lang): Lang {
  * que hace que se lea en español. `setLang`/`toggle` ya no cambian un
  * estado — NAVEGAN a la dirección equivalente en el otro idioma. El
  * selector de idioma de la barra no tuvo que tocarse: sigue llamando a
- * los mismos `setLang`/`toggle` de siempre, sólo que ahora hacen otra
+ * los mismos `setLang`/`toggle` de siempre, solo que ahora hacen otra
  * cosa por dentro.
  *
  * Al derivarse del pathname en cada render —no de un estado que se fija

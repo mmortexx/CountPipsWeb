@@ -15,7 +15,7 @@ import { rutaDeRouter } from "@/lib/asset";
  *
  * ── Por qué se hace a mano ────────────────────────────────────────────
  * El camino corto sería `<ViewTransition>` de React, pero ese componente
- * sólo existe en las compilaciones experimentales: en la 19.2 estable
+ * solo existe en las compilaciones experimentales: en la 19.2 estable
  * que usa el proyecto no está ni en los tipos ni en el runtime
  * (comprobado). Y la API del navegador —`document.startViewTransition`—
  * sí está, así que se usa directamente.
@@ -48,10 +48,10 @@ import { rutaDeRouter } from "@/lib/asset";
  * colgada — sin errores en consola y sin forma de saber por qué.
  *
  * Por eso el callback resuelve SIEMPRE: o porque la ruta cambió, o
- * porque se agotó el plazo. Un plazo agotado sólo cuesta una transición
+ * porque se agotó el plazo. Un plazo agotado solo cuesta una transición
  * fea; no resolver cuesta la página entera.
  *
- * No pinta nada: es sólo efecto.
+ * No pinta nada: es solo efecto.
  */
 
 /** Plazo máximo que se espera a que la ruta cambie, en milisegundos. */

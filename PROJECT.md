@@ -2022,7 +2022,41 @@ escribe «10.000 $» a mano en `demoAccount` (resuelto en la tanda 23).
   respiro entre la tarjeta de la herramienta y el aviso de debajo, igual en
   todas.
 - Se dejan los 269 «sólo» con tilde de los comentarios: no se leen en la
-  web y tocarlos movería 95 ficheros.
+  web y tocarlos movería 95 ficheros (hecho en la tanda 24).
+
+### Vigesimocuarta tanda: cerrar todo lo pendiente (2026-09-24)
+
+- **Analítica de la demo tiene pestañas de verdad.** La barra de secciones
+  se marcaba y no cambiaba nada (la app sí cambia de sección). Ahora cada
+  pestaña enseña sus bloques, con flechas/Inicio/Fin y panel accesible;
+  el número tras cada nombre se cuenta de la propia lista. «Comportamiento»
+  sale: la demo no tiene esos bloques y la pestaña habría estado vacía.
+  Al montarse ya en pantalla, las barras que se revelaban «al entrar en
+  vista» (y nacían con ancho cero) se quedaban sin pintar: animan al
+  montarse. Comprobado a 1440 claro y 390 oscuro, las cinco pestañas.
+- **Ficha de operación:** «Contexto» (temporalidad, mercado, ánimo) era
+  «5m · Tendencia · 3/5» para todas; ahora `contextoDeMercado()` lo deduce
+  de duración y setup, y el ánimo inventado pasa a «Puntuación del día»,
+  que la muestra sí trae. Las horas de las ejecuciones salían en la hora
+  de quien mira; van en UTC como el resto de la ficha.
+- **Una sola fuente:** tasa del 8 % (`lib/supuestos.ts`), arranque medido
+  «0,7 s con 50.000» (`lib/producto.ts`), horarios del reloj desde
+  `PLAZAS`, notas de los perfiles del simulador desde sus campos,
+  etiquetas de capital del proyector, riesgo por defecto del registro
+  rápido, `LOCALE_FECHA` en pie, banda de cifras, precios, legales y
+  resumen; la ayuda de atajos cita `PESTANAS_NUMERADAS`. Fuera el texto
+  muerto «⌨ 1–6» del diccionario.
+- **Comparativa:** comprobado hoy en las webs de TradeZella, TraderSync,
+  TradesViz y Tradervue: suscripción mensual o anual (dos con plan
+  gratuito limitado, ahora dicho), cuenta obligatoria, ninguna web en
+  español (la celda decía «parcial»; ahora «no»); fecha de la nota a
+  septiembre de 2026.
+- «sólo» → «solo» en 260 comentarios de 93 ficheros (script contado);
+  se dejan los de `vocabulario.test.ts` y `cifras.mjs`, que lo usan como
+  dato de sus guardas.
+- Borradas las nueve copias de trabajo de la tanda 22 y sus ramas, ya
+  fusionadas; antes se quitó cada enlace a `node_modules` y se comprobó
+  que el original seguía entero (343 entradas).
 
 ## Herramientas de auditoría propias
 
@@ -2047,7 +2081,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 37 suites, 375 tests (+2 omitidos)
+npx vitest run                          # 37 suites, 376 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

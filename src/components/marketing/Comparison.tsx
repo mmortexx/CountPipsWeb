@@ -24,7 +24,7 @@ const ROWS: Row[] = [
     labelEn: "Payment model",
     cells: [
       { es: "Pago único previsto", en: "Planned one-time payment" },
-      { es: "Suscripción mensual", en: "Monthly subscription" },
+      { es: "Suscripción mensual o anual", en: "Monthly or annual subscription" },
       { es: "Sin coste añadido", en: "No extra cost" },
     ],
   },
@@ -43,7 +43,7 @@ const ROWS: Row[] = [
       { es: "Tuyo", en: "Yours" },
     ],
   },
-  { labelEs: "Español nativo", labelEn: "Native Spanish and English", cells: ["yes", "partial", "yes"] },
+  { labelEs: "Español nativo", labelEn: "Native Spanish and English", cells: ["yes", "no", "yes"] },
   { labelEs: "Sin crear una cuenta", labelEn: "No account to create", cells: ["yes", "no", "yes"] },
   { labelEs: "Modo prop firm", labelEn: "Prop firm mode", cells: ["yes-pro", "partial", "no"] },
 ];
@@ -151,8 +151,8 @@ export function Comparison() {
         <Reveal delay={0.12} className="mt-6">
           <p className="medida mx-auto text-center text-xs text-tertiary">
             {es
-              ? "Diarios en la nube: TradeZella, TraderSync, TradesViz y Tradervue, según sus webs en julio de 2026. Hoja de cálculo sin plantillas avanzadas."
-              : "Cloud journals: TradeZella, TraderSync, TradesViz and Tradervue, as published on their websites in July 2026. Spreadsheet without advanced templates."}
+              ? "Diarios en la nube: TradeZella, TraderSync, TradesViz y Tradervue, según sus webs en septiembre de 2026; TradesViz y Tradervue tienen además un plan gratuito limitado. Hoja de cálculo sin plantillas avanzadas."
+              : "Cloud journals: TradeZella, TraderSync, TradesViz and Tradervue, as published on their websites in September 2026; TradesViz and Tradervue also offer a limited free plan. Spreadsheet without advanced templates."}
           </p>
         </Reveal>
       </div>

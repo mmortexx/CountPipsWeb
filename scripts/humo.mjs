@@ -2,13 +2,13 @@
  * Comprobación de humo en navegador real.
  *
  * No sustituye a las pruebas de `tests/`: aquellas vigilan cálculos y
- * contratos de datos, y ésta vigila lo que sólo se ve cuando la página se
+ * contratos de datos, y ésta vigila lo que solo se ve cuando la página se
  * pinta de verdad — que el titular exista y esté visible, que el idioma
  * declarado sea el que toca, que nada se salga por el lado en un móvil
  * estrecho, y que la consola no escupa errores.
  *
  * El caso que la motivó: el `h1` de todas las páginas interiores se
- * servía con opacidad cero y sólo aparecía si arrancaba el JavaScript.
+ * servía con opacidad cero y solo aparecía si arrancaba el JavaScript.
  * Ninguna comprobación de tipos ni de código lo habría visto; un
  * navegador con el JavaScript apagado lo ve en el primer intento.
  *
@@ -169,7 +169,7 @@ const RUTAS = [
 ];
 
 /**
- * Palabras que sólo pueden estar en una página española.
+ * Palabras que solo pueden estar en una página española.
  *
  * ── Por qué palabras función y no un diccionario ──────────────────────
  * Buscar sustantivos («operación», «ganancia») caza el texto traducido a
@@ -192,7 +192,7 @@ const RUTAS = [
  * Basta UNA para dar el fallo. Ninguna de las que quedan existe en
  * inglés ni es un símbolo del mercado, así que su presencia no admite
  * segunda lectura — y exigir dos dejaba pasar frases cortas como
- * «Hecho para el trader manual serio», que sólo aporta «para».
+ * «Hecho para el trader manual serio», que solo aporta «para».
  */
 const PALABRAS_ESPANOLAS =
   /(?:^|[\s"'“”(¡¿—–-])(para|por|sin|más|que|del|con|una|unos|unas|los|las|sus|como|cuando|desde|hasta|pero|también|según|cada|todo|todos|todas|entre|sobre|está|están|este|esta|esto|nuestro|nuestra|qué|cómo|dónde|hecho|hasta|muy|aquí|así)(?=[\s".,;:!?)"'”—–-]|$)/giu;
@@ -438,7 +438,7 @@ for (const pantalla of PANTALLAS) {
     pagina.on("console", (m) => {
       const t = m.text();
       // El "Failed to load resource" ya lo reporta el manejador de arriba
-      // con la URL concreta; aquí sólo estorbaría duplicado y sin ella.
+      // con la URL concreta; aquí solo estorbaría duplicado y sin ella.
       if (m.type() === "error" && !RUIDO.test(t) && !/Failed to load resource/i.test(t)) {
         errores.push(t);
       }
@@ -550,7 +550,7 @@ for (const pantalla of PANTALLAS) {
              página — los elementos se pisan entre ellos y ya está.
              Aquí se compara caja contra caja. */
           /* ── EL PRESUPUESTO DE LA BARRA ────────────────────────────
-             El solape de abajo sólo salta cuando dos cajas YA se pisan, y
+             El solape de abajo solo salta cuando dos cajas YA se pisan, y
              con 1 px de tolerancia. Eso deja pasar el estado previo, que
              es el que de verdad avisa: la barra pedía 1.100 px de
              contenido dentro de un tope de 1.080, la zona central se
@@ -608,7 +608,7 @@ for (const pantalla of PANTALLAS) {
                   h: b.height,
                 };
               })
-              // Sólo lo visible y sólo la primera fila de la barra.
+              // Solo lo visible y solo la primera fila de la barra.
               .filter((c) => c.w > 0 && c.h > 0 && c.cy < 80)
               .sort((a, b) => a.l - b.l);
             const out = [];
@@ -650,7 +650,7 @@ for (const pantalla of PANTALLAS) {
           /* Candidatos para la medición de contraste, que se hace fuera
              (ver `mideContraste`): los textos MÁS PEQUEÑOS que están
              sobre el fondo grabado, que son los que se quedan sin margen
-             cuando alguien mueve el velo. Aquí sólo se eligen; medirlos
+             cuando alguien mueve el velo. Aquí solo se eligen; medirlos
              desde el CSS computado no funciona —hay que leer píxeles—, y
              el porqué está escrito en `mideContraste`. */
           candidatosContraste: (() => {
@@ -696,7 +696,7 @@ for (const pantalla of PANTALLAS) {
              fichero, sino que le llegue al elemento.
 
              La medición vive FUERA de este informe (ver «el papel, en los
-             dos temas» más abajo): aquí sólo se miraba el tema con el que
+             dos temas» más abajo): aquí solo se miraba el tema con el que
              arranca el documento —`data-theme="light"`—, y el defecto que
              se acaba de describir estaba en el OSCURO. El guardián que
              vigilaba el fallo no visitaba el tema donde ocurrió. */
@@ -712,7 +712,7 @@ for (const pantalla of PANTALLAS) {
           textoVisible: (document.body.innerText || "").slice(0, 60000),
           textoDatos: [...document.querySelectorAll('script[type="application/ld+json"]')]
             .map((s) => {
-              // Sólo los valores de texto: las claves de schema.org y las
+              // Solo los valores de texto: las claves de schema.org y las
               // URLs son inglesas por definición y no dicen nada del
               // idioma de la página.
               try {
@@ -915,7 +915,7 @@ for (const pantalla of PANTALLAS) {
           fallos.push(`${etiqueta}: ninguna pieza con \`data-entra\` que comprobar`);
         } else if (entradas.animaron < entradas.total * 0.25) {
           fallos.push(
-            `${etiqueta}: sólo ${entradas.animaron} de ${entradas.total} piezas con ` +
+            `${etiqueta}: solo ${entradas.animaron} de ${entradas.total} piezas con ` +
               `\`data-entra\` llegan a entrar — la línea de tiempo está inactiva ` +
               `(la causa conocida es una sección con \`overflow-hidden\` en vez de \`overflow-clip\`)`
           );
@@ -935,7 +935,7 @@ for (const pantalla of PANTALLAS) {
          y `overflow: hidden` crea uno. Una pieza dentro de un `div` con
          `overflow-hidden` que no se desplaza nunca se queda clavada en su
          estado final, sin error, sin aviso y sin que se note al mirar la
-         página — sólo se nota que «no entra».
+         página — solo se nota que «no entra».
 
          `overflow: clip` recorta exactamente igual y no crea contenedor.
          Por eso la regla no es «no recortes», es «recorta con clip».
@@ -991,7 +991,7 @@ for (const pantalla of PANTALLAS) {
           `${p.tagName.toLowerCase()}[data-entra="${p.getAttribute("data-entra")}"] dentro de ` +
           `${jaula.tagName.toLowerCase()}.${(jaula.className || "").toString().split(/\s+/).filter(Boolean).slice(0, 3).join(".")}`;
         /* Enjaulada y APAGADA es un agujero en la página: el visitante no
-           ve ese contenido y nada avisa. Enjaulada y encendida sólo se
+           ve ese contenido y nada avisa. Enjaulada y encendida solo se
            pierde el gesto de entrada — molesto, no grave, y por eso va
            como aviso y no tumba el guardián. */
         const apagadas = presas.filter(([p]) => Number(getComputedStyle(p).opacity) < 0.98);
@@ -1034,7 +1034,7 @@ for (const pantalla of PANTALLAS) {
 
       /* ── EL CAJÓN LATERAL, ABIERTO ─────────────────────────────────
          Todo lo que se comprueba arriba mira la página en reposo, y el
-         cajón de navegación sólo existe cuando alguien lo abre: ni su
+         cajón de navegación solo existe cuando alguien lo abre: ni su
          posición ni su opacidad ni el texto que tapa entran en ninguna
          de las otras comprobaciones. Se abre y se mide.
 
@@ -1114,7 +1114,7 @@ for (const pantalla of PANTALLAS) {
          Se comprueban las tres formas de llegar al menú:
            · ratón encima          → abre
            · ratón encima + clic   → SIGUE abierto  (el fallo)
-           · sólo teclado (Enter)  → abre
+           · solo teclado (Enter)  → abre
 
          Comprobado contra el defecto devolviendo el `onClick` a
          `setMegaOpen((o) => !o)`: la segunda salta. */
@@ -1192,7 +1192,7 @@ for (const pantalla of PANTALLAS) {
          llegar rota a pantalla — una transición, un `@media` o una
          clase que gane por especificidad valen para deshacerlo.
 
-         En los dos anchos, no sólo en escritorio: la barra móvil tiene
+         En los dos anchos, no solo en escritorio: la barra móvil tiene
          su propia rejilla y su propio cajón. */
       if (pantalla.nombre === "escritorio" || pantalla.nombre === "movil") {
         const alturas = await pagina.evaluate(async () => {
@@ -1235,7 +1235,7 @@ for (const pantalla of PANTALLAS) {
          un salto de un rebobinado — el destino es el mismo en los dos
          casos, así que comprobar dónde acaba no habría cazado nada.
 
-         Sólo en la portada y en escritorio: es la página más larga del
+         Solo en la portada y en escritorio: es la página más larga del
          sitio y donde el botón aparece antes. */
       if (ruta === "/" && pantalla.nombre === "escritorio") {
         const viaje = await pagina.evaluate(async () => {
@@ -1286,7 +1286,7 @@ for (const pantalla of PANTALLAS) {
       }
 
       /* Una sola pantalla basta: el idioma no depende del ancho, y
-         repetirlo cuatro veces sólo multiplicaría el mismo fallo. */
+         repetirlo cuatro veces solo multiplicaría el mismo fallo. */
       if (lang === "en" && pantalla.nombre === "escritorio") {
         const enPantalla = marcasEspanolas(informe.textoVisible);
         const enDatos = marcasEspanolas(informe.textoDatos);
@@ -1338,17 +1338,17 @@ for (const pantalla of PANTALLAS) {
          262px en un hueco de 224 y el «5,20 %» quedaba cortado por el
          canto de la tarjeta, que tiene `overflow:hidden`. Nada fallaba
          —ni consola, ni tests, ni el ancho del documento, porque el
-         recorte se come el desbordamiento— y sólo se veía mirando la
+         recorte se come el desbordamiento— y solo se veía mirando la
          página en un teléfono.
 
          Se busca justo esa forma: un elemento CON TEXTO que sobresale
          del rectángulo del ancestro más cercano que recorta.
 
-         Por qué sólo en móvil: es donde el ancho aprieta y donde una
+         Por qué solo en móvil: es donde el ancho aprieta y donde una
          rejilla que no encoge revienta. En escritorio sobra sitio y
          estas mismas rejillas caben.
 
-         Acotado para que no mienta: sólo hojas de texto (si un hijo
+         Acotado para que no mienta: solo hojas de texto (si un hijo
          también tiene texto, el desbordamiento se le imputa al hijo y no
          se cuenta dos veces), nada marcado `aria-hidden` —lo decorativo
          se sale a propósito—, nada dentro de un contenedor que se pueda
@@ -1369,7 +1369,7 @@ for (const pantalla of PANTALLAS) {
             const txt = (el.textContent || "").trim();
             if (!txt) continue;
             if (el.closest('[aria-hidden="true"]')) continue;
-            // Sólo la hoja: si algún hijo tiene texto, ya se mirará él.
+            // Solo la hoja: si algún hijo tiene texto, ya se mirará él.
             if ([...el.children].some((c) => (c.textContent || "").trim())) continue;
             const r = el.getBoundingClientRect();
             if (r.width === 0 || r.height === 0) continue;
@@ -1382,7 +1382,7 @@ for (const pantalla of PANTALLAS) {
                `content-visibility:auto` que el navegador ni siquiera
                maqueta, así que su geometría no significa nada— pero de paso
                DESACTIVÓ la comprobación entera en /demo: las filas de la
-               tabla entran con `opacity:0` y sólo suben a 1 cuando el
+               tabla entran con `opacity:0` y solo suben a 1 cuando el
                scroller interno las revela, así que el fallo real de la
                tabla dejó de detectarse. Se comprobó revirtiendo el arreglo
                a propósito: la comprobación decía «correcto».
@@ -1391,7 +1391,7 @@ for (const pantalla of PANTALLAS) {
                maquetado»: un elemento a opacidad 0 por una animación de
                entrada SÍ se va a ver, y su caja ya es la definitiva; uno
                saltado por `content-visibility` no está renderizado y su
-               caja es una estimación del navegador. Por eso sólo se pasa la
+               caja es una estimación del navegador. Por eso solo se pasa la
                bandera `contentVisibilityAuto` y NO las de opacidad y
                visibilidad. */
             if (
@@ -1411,7 +1411,7 @@ for (const pantalla of PANTALLAS) {
             }
             if (!caja) continue;
             const cr = caja.getBoundingClientRect();
-            /* El texto sólo para lectores de pantalla (`.sr-only`) vive a
+            /* El texto solo para lectores de pantalla (`.sr-only`) vive a
                propósito dentro de una caja de 1×1 px con `overflow:hidden`:
                ahí el contenido SIEMPRE sobresale, y está bien que lo haga.
                Se descarta por la geometría y no por el nombre de la clase,
@@ -1433,7 +1433,7 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* El contraste sólo se mide en escritorio: la composición de capas
+      /* El contraste solo se mide en escritorio: la composición de capas
          es la misma en las cuatro pantallas y leer píxeles cuesta una
          captura por elemento. */
       if (pantalla.nombre === "escritorio") {
@@ -1471,7 +1471,7 @@ for (const pantalla of PANTALLAS) {
         if (pide > hay - canal) {
           fallos.push(
             `${etiqueta}: la barra superior pide ${pide}px de contenido y la rejilla ` +
-              `le da ${hay}px — ${pide > hay ? `se pasa por ${pide - hay}px` : `sólo le sobran ${hay - pide}px`}, ` +
+              `le da ${hay}px — ${pide > hay ? `se pasa por ${pide - hay}px` : `solo le sobran ${hay - pide}px`}, ` +
               `por debajo del canal de ${canal}px. La zona central se sale de su columna y ` +
               `queda a un pelo de montarse sobre la marca`
           );
@@ -1511,7 +1511,7 @@ for (const pantalla of PANTALLAS) {
 }
 
 /* ── Sin JavaScript ──────────────────────────────────────────────────
-   La comprobación que motivó todo esto. Se repite sólo en escritorio:
+   La comprobación que motivó todo esto. Se repite solo en escritorio:
    el problema no dependía del tamaño de la ventana.
 
    RECORRE LA LISTA COMPLETA, NO LAS OCHO PRIMERAS. Llevaba
@@ -1524,7 +1524,7 @@ for (const pantalla of PANTALLAS) {
    Lo que esto NO es: una revisión de las 154 páginas que exporta el
    build. Son 19 rutas — las escritas a mano más una muestra de cada
    plantilla generada. Decirlo importa: un `loading` reintroducido en un
-   componente que sólo aparezca en, digamos, `/glosario/gap` seguiría
+   componente que solo aparezca en, digamos, `/glosario/gap` seguiría
    sin verse aquí. */
 const sinJs = await navegador.newContext({
   javaScriptEnabled: false,
@@ -1694,7 +1694,7 @@ for (const { ruta } of RUTAS) {
       fallos.push(
         `sin-JS ${ruta}: ${ocultos.total} caracteres de marcado (el ${Math.round(
           (ocultos.total / Math.max(1, ocultos.documento)) * 100
-        )} % de la página) se sirven dentro de ${ocultos.bloques} bloque(s) oculto(s) que sólo ` +
+        )} % de la página) se sirven dentro de ${ocultos.bloques} bloque(s) oculto(s) que solo ` +
           `el JavaScript sabe abrir — «${ocultos.muestra}…»`
       );
     }
@@ -1762,7 +1762,7 @@ for (const { ruta } of RUTAS) {
         const cs = getComputedStyle(el);
         /* LAS TRES DECLARACIONES, NO SÓLO LA OPACIDAD. La regla del
            <noscript> rescata `opacity`, `transform` y `visibility`, y
-           antes esto sólo miraba la primera: quitar el `transform:none`
+           antes esto solo miraba la primera: quitar el `transform:none`
            dejaba las secciones desplazadas sin JavaScript y nada se
            ponía rojo. Una animación de entrada típica combina las tres,
            así que vigilar una de tres no protege de dos tercios. */
@@ -1810,7 +1810,7 @@ await sinJs.close();
    GitHub Pages sirve un único `404.html`, compilado en español, para
    cualquier dirección que no exista, también bajo `/en/`. Si el
    proveedor de idioma hidrata con el de la URL en vez del compilado,
-   React no casa el HTML (error #418) y rehace el árbol entero. Sólo se
+   React no casa el HTML (error #418) y rehace el árbol entero. Solo se
    mira sobre el export: `next dev` pinta la 404 por su cuenta y ahí el
    error sale aunque la web publicada esté bien. */
 const NO_EXISTE = [
@@ -2014,7 +2014,7 @@ if (presupuestosBarra.length) {
 if (SERVIR) {
   console.log(`[humo] 404 — ${cuatrocientoscuatro} de ${NO_EXISTE.length} idiomas hidratan sin error; ${veloLevanta ? "bajo /en/ sin JS no enseña el español y aparece sola" : "el velo de /en/ NO se comprobó"}`);
 } else {
-  console.warn("  aviso  la 404 sólo se comprueba sobre el export (--serve)");
+  console.warn("  aviso  la 404 solo se comprueba sobre el export (--serve)");
 }
 
 console.log(

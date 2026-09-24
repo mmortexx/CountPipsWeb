@@ -11,7 +11,7 @@ import { LAMINAS_PRODUCTO, ORDEN_LAMINAS } from "@/lib/laminas";
  * afirmaba que era «el tamaño real». Lo fue, hasta que
  * `scripts/capturas.py` cambió el recorte dentro del propio fichero: la
  * imagen salía con franjas vacías dentro de un marco cuya razón de existir
- * era que se leyera entera. Nada falla, nada avisa, y sólo se ve mirando
+ * era que se leyera entera. Nada falla, nada avisa, y solo se ve mirando
  * la página con atención.
  *
  * Un número afirmado en un comentario deja de ser documentación en cuanto

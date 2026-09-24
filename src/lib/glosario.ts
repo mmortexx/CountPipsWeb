@@ -207,7 +207,7 @@ export const SEGUIR_LEYENDO: Record<
 /**
  * Términos que además tienen una herramienta que los calcula.
  *
- * Sólo los que existen de verdad — se comprueban contra las direcciones
+ * Solo los que existen de verdad — se comprueban contra las direcciones
  * de `/herramientas`. Un enlace de más aquí sería un 404 en el glosario.
  */
 export const HERRAMIENTA_DE: Record<string, string> = {

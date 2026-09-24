@@ -31,7 +31,7 @@ import { curva } from "@/lib/motion";
  *     dos mecanismos a la vez animarían la misma opacidad dos veces.
  *  2. **No anima lo que ya está en pantalla.** Es la regla que faltaba,
  *     y la que convertía un adorno en un defecto de legibilidad. Una
- *     entrada sólo tiene sentido para lo que el visitante todavía no ha
+ *     entrada solo tiene sentido para lo que el visitante todavía no ha
  *     visto.
  *
  * Implementación con Web Animations API (`el.animate()`) en lugar de

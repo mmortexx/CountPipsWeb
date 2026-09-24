@@ -16,7 +16,7 @@ import { join } from "node:path";
  * `next/font/local`. Esta barrera existe porque el defecto que evita es
  * INVISIBLE mientras el tercero funcione: volver a escribir un
  * `next/font/google` compila en verde en local y en el 99 % de los
- * despliegues, y sólo revienta el día que no toca.
+ * despliegues, y solo revienta el día que no toca.
  *
  * Se rompió a propósito para comprobar que salta, en las dos direcciones:
  * reponiendo el `import { Newsreader } from "next/font/google"` en
@@ -97,7 +97,7 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
  * `text-[17px]` nuevo en un fichero que no está en la lista sigue
  * rompiendo esta prueba, y también lo hace un `text-[17px]` DE MÁS en un
  * fichero que ya tenía uno permitido, porque se compara ocurrencia a
- * ocurrencia, no sólo por fichero.
+ * ocurrencia, no solo por fichero.
  *
  *  · 22px y 28px (DashboardPage, GlosarioIndice, FeaturesBento): tamaños
  *    de TITULAR, no de cuerpo — la cifra protagonista de la demo y algún
@@ -105,7 +105,7 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
  *    pantallas; es una decisión tomada, no un olvido.
  *  · 19px en `glosario/TerminoVista.tsx`: la definición del término. Es
  *    la voz principal de esa página —lo único que el visitante vino a
- *    leer—; a 15px queda igualada con el resto y distinguida sólo por el
+ *    leer—; a 15px queda igualada con el resto y distinguida solo por el
  *    color. Se bajó una vez y `scripts/medida.mjs` lo cazó por otro lado:
  *    al encoger la letra el renglón se fue a 92 caracteres, por encima
  *    del tope de 85. Mismo criterio que la entradilla legal de abajo.
@@ -116,7 +116,7 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
  *    que es la entradilla. Se decidió no tocarla.
  *  · El resto — 17px en FeaturesBento/GuardianNew/Navbar/SecuritySection
  *    y 20px en SessionClock —: huérfanos ya localizados que quedan fuera
- *    del alcance de la tanda que escribió esta prueba (sólo tocaba
+ *    del alcance de la tanda que escribió esta prueba (solo tocaba
  *    `legal/LegalDoc.tsx` y `glosario/TerminoVista.tsx`). Siguen
  *    pendientes de que otra tanda decida su escalón; quitar una fila de
  *    aquí sin arreglar antes el fichero vuelve a poner la prueba en rojo,
@@ -152,7 +152,7 @@ function tsxDelProyecto(dir: string, acc: string[] = []): string[] {
 
 /** Cada `text-[Npx]` fuera de la escala, como `"N px en fichero"`, en el
  *  mismo orden en que aparece — así una lista y otra se pueden comparar
- *  ocurrencia a ocurrencia y no sólo por conjunto. */
+ *  ocurrencia a ocurrencia y no solo por conjunto. */
 function huerfanosDelCuerpo(): string[] {
   const huerfanos: string[] = [];
   for (const fichero of tsxDelProyecto(join(RAIZ, "src"))) {

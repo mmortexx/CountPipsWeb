@@ -304,7 +304,7 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
 
       // Verify explicit disclaimer in HerramientaVista
       // Se comprueba la parte que obliga la ley, no la redacción entera: el
-      // texto de alrededor puede reescribirse y esta prueba sólo debe caer si
+      // texto de alrededor puede reescribirse y esta prueba solo debe caer si
       // desaparece el descargo.
       expect(vistaCode).toContain("No es asesoramiento financiero");
       expect(vistaCode).toContain("It is not financial advice");

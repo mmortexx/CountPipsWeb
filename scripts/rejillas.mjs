@@ -20,7 +20,7 @@
  * esa compilación antes del arreglo (`content-start` en la ficha).
  *
  * ── Lo que NO mira ────────────────────────────────────────────────────
- * Flexbox, donde el mismo reparto sólo ocurre si alguien lo pide.
+ * Flexbox, donde el mismo reparto solo ocurre si alguien lo pide.
  *
  * Uso:  node scripts/rejillas.mjs --serve out
  */
@@ -82,7 +82,7 @@ async function paginas(carpeta) {
 
 const RUTAS = await paginas(dir);
 if (RUTAS.length < 100) {
-  console.log(`[rejillas] sólo ${RUTAS.length} páginas en ${dir}: ¿está compilado?`);
+  console.log(`[rejillas] solo ${RUTAS.length} páginas en ${dir}: ¿está compilado?`);
   process.exit(1);
 }
 
@@ -161,7 +161,7 @@ for (const [clase, casos] of fallos) {
 console.log(`\n[rejillas] ${RUTAS.length} páginas × ${ANCHOS.length} anchos · ${rejillas} rejillas de varias filas medidas`);
 /* Una guarda que no mide nada pasa siempre: el sitio tiene cientos. */
 if (rejillas < 200) {
-  console.log(`[rejillas] sólo ${rejillas} rejillas: se esperaban cientos. ¿Falló la carga?`);
+  console.log(`[rejillas] solo ${rejillas} rejillas: se esperaban cientos. ¿Falló la carga?`);
   process.exit(1);
 }
 if (fallos.size) {

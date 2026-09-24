@@ -11,7 +11,7 @@
  * entera para disparar las animaciones de entrada, y vigila fotograma a
  * fotograma si algún elemento cambia de POSICIÓN.
  *
- * ── Por qué sólo la posición, y no la opacidad ────────────────────────
+ * ── Por qué solo la posición, y no la opacidad ────────────────────────
  * Un fundido no marea a nadie: lo que provoca el mareo es el movimiento
  * y el escalado. Por eso `reducedMotion: "user"` de framer-motion apaga
  * las animaciones de posición y deja pasar las de opacidad a propósito,
@@ -199,4 +199,4 @@ if (fallos.length) {
   console.log("[movimiento] framer-motion necesita `<MotionConfig reducedMotion=\"user\">` por encima, o `useReducedMotion()` en el componente");
   process.exit(1);
 }
-console.log("[movimiento] correcto — con «reducir movimiento» activo no se desplaza nada; sólo quedan fundidos, que no marean");
+console.log("[movimiento] correcto — con «reducir movimiento» activo no se desplaza nada; solo quedan fundidos, que no marean");

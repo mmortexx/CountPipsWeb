@@ -103,7 +103,7 @@ async function responderTest(pag) {
       await pag.waitForTimeout(100);
     }
     /* El patrón va ANCLADO al principio del texto: sin el ancla, «resultado»
-       encajaba también con «Sólo el resultado» —un selector de vista de la
+       encajaba también con «Solo el resultado» —un selector de vista de la
        página de resultados— y el recorrido se quedaba dando vueltas en la
        primera pregunta sin que nada lo denunciara. */
     const avanzar = pag
@@ -121,7 +121,7 @@ const PALABRAS_ES = [
   "cuando", "donde", "según", "también", "además", "aunque", "mientras", "hacia",
   "desde", "hasta", "entre", "sobre", "cada", "todo", "todos", "toda", "todas",
   "otro", "otra", "esto", "esta", "este", "estos", "estas", "más", "muy", "así",
-  "sólo", "siempre", "nunca", "año", "años", "mes", "meses", "día", "días",
+  "solo", "siempre", "nunca", "año", "años", "mes", "meses", "día", "días",
   "operación", "operaciones", "ganancia", "pérdida", "riesgo", "cuenta", "cuentas",
   "inicial", "neta", "neto", "beneficio", "fuga", "brecha", "desglose", "resumen",
   "perfil", "ventaja", "puntuación", "objetivo", "tamaño", "entrada", "dirección",

@@ -57,6 +57,10 @@ const NAV_ITEMS: {
   },
 ];
 
+/** Cuántas pestañas se alcanzan con las teclas 1…n: la ayuda de atajos lo
+ *  cita de aquí (prometía «1–7» con cuatro pestañas). */
+export const PESTANAS_NUMERADAS = NAV_ITEMS.length;
+
 export function TopNav() {
   const { page, setPage } = useDemo();
   const { t, lang, setLang } = useLang();

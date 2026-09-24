@@ -13,7 +13,7 @@ import { useLang } from "@/lib/i18n";
  * términos de precios, en el texto de /beta, en el aviso bajo las
  * tarjetas— y no estaba DIBUJADA en ninguna parte.
  *
- * Cuando una cosa se dice sólo con palabras, cada sitio la dice a su
+ * Cuando una cosa se dice solo con palabras, cada sitio la dice a su
  * manera, y acaban existiendo cinco maneras: un chip con borde discontinuo
  * en el registro de versiones, un icono de reloj en el estado del piloto,
  * un sufijo «/ precio previsto» junto a la cifra, una barra de tres

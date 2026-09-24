@@ -4,11 +4,7 @@ import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum as fmtNumBase, fmtPct, pctSep } from "@/lib/trading/format";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
-
-/** Tasa de reinversión ilustrativa (S&P 500 indexado): una sola cifra para
- *  el cálculo y para la nota que la describe, no una escrita a mano en
- *  cada sitio. */
-const TASA_REINVERSION_ANUAL = 0.08;
+import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 
 /**
  * SavingsCalculator — illustrative post-beta cost scenario.
@@ -68,7 +64,7 @@ export function SavingsCalculator() {
     // Break-even: cuántos meses hasta que la suscripción supere el pago único
     const breakEvenMonths = cpPrice > 0 && altMonthly > 0 ? Math.ceil(cpPrice / altMonthly) : 0;
 
-    // Proyección de ahorro con Interés Compuesto reinvertido al 8% anual (rendimiento indexado SP500)
+    // Proyección del ahorro reinvertido a TASA_REINVERSION_ANUAL, con interés compuesto mensual
     // Aporte mensual de altMonthly durante years * 12 meses
     const monthlyRate = TASA_REINVERSION_ANUAL / 12;
     const totalMonths = years * 12;

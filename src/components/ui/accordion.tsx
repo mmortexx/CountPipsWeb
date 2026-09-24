@@ -55,7 +55,7 @@ function AccordionContent({
   return (
     /* ── `forceMount`: LA RESPUESTA TIENE QUE ESTAR EN LA PÁGINA ─────
        Radix desmonta el contenido plegado, así que de las trece preguntas
-       de `/faq` sólo la abierta existía en el DOM. Las otras doce estaban
+       de `/faq` solo la abierta existía en el DOM. Las otras doce estaban
        declaradas en el `FAQPage` de datos estructurados y no aparecían por
        ninguna parte del documento — comprobado en el HTML construido:
        «BitLocker» salía en el JSON-LD y cero veces en el cuerpo.

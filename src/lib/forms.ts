@@ -40,7 +40,7 @@ export const formsConfigured = ACCESS_KEY.length > 0;
  * script vive en docs/waitlist-apps-script.js, con sus instrucciones.
  *
  * Es pública por el mismo motivo que la clave de Web3Forms: viaja en el
- * cliente porque el navegador tiene que llamarla. Sólo permite añadir
+ * cliente porque el navegador tiene que llamarla. Solo permite añadir
  * filas, nunca leer la hoja.
  */
 const WAITLIST_URL = (process.env.NEXT_PUBLIC_WAITLIST_URL ?? "").trim();
@@ -56,7 +56,7 @@ export const betaConfigured = BETA_API_URL.length > 0;
 /**
  * Buzón de soporte. ÚNICO sitio del proyecto donde se escribe.
  *
- * No es sólo el respaldo cuando falla un envío: es la dirección que sale
+ * No es solo el respaldo cuando falla un envío: es la dirección que sale
  * en la tarjeta de contacto, al pie de la FAQ y en la llamada de "¿no
  * encuentras tu respuesta?". Esas tres la llevaban copiada a mano
  * mientras el formulario y la lista de espera sí importaban esta
@@ -316,14 +316,14 @@ const COUNT_TIMEOUT_MS = 8_000;
  *     `Access-Control-Allow-Origin: *`, así que en un navegador sano
  *     esto basta y no ejecuta código de terceros.
  *
- *  2. JSONP (una etiqueta `<script>`) sólo si la primera falla. Hay dos
+ *  2. JSONP (una etiqueta `<script>`) solo si la primera falla. Hay dos
  *     escenarios reales en los que falla: extensiones de privacidad que
  *     cortan la petición entre dominios, y navegadores que se atragantan
  *     con la redirección de `script.google.com` a
  *     `script.googleusercontent.com`. La etiqueta no está sujeta a CORS,
  *     así que atraviesa ambos casos.
  *
- * El JSONP ejecuta lo que responda el endpoint, de modo que sólo se usa
+ * El JSONP ejecuta lo que responda el endpoint, de modo que solo se usa
  * contra la URL configurada en build — nunca contra una que venga del
  * usuario o de la barra de direcciones.
  */

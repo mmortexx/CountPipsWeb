@@ -168,7 +168,7 @@ async function luces(sistema, ruta) {
   await cdp.send("Page.stopScreencast");
 
   /* Decodificar en otra pestaña evita añadir una dependencia de imagen
-     al proyecto sólo para leer un píxel. */
+     al proyecto solo para leer un píxel. */
   const lector = await ctx.newPage();
   const medidas = await lector.evaluate(async (lista) => {
     const out = [];

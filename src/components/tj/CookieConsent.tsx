@@ -188,7 +188,7 @@ export function CookieConsent() {
 
   return (
     <>
-      {/* El aviso sólo entra en el árbol cuando de verdad hay que
+      {/* El aviso solo entra en el árbol cuando de verdad hay que
           enseñarlo. A diferencia del botón de volver arriba —que se
           queda montado y oculto—, aquí sí se monta y se desmonta: es un
           diálogo con `role="dialog"`, y un diálogo permanentemente
@@ -201,7 +201,7 @@ export function CookieConsent() {
           después de que el visitante ya ha decidido y ha pulsado, que
           es el momento en el que menos importa cómo se va.
 
-          `data-cookie-consent="visible"` sólo existe mientras el aviso
+          `data-cookie-consent="visible"` solo existe mientras el aviso
           está en pantalla, y eso importa: `BackToTop` busca ese
           selector para apartarse del banner. Con el nodo siempre
           montado, el botón se habría quedado levantado para siempre. */}

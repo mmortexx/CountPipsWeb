@@ -210,7 +210,7 @@ export function GlossaryModal({
     <Dialog open={open} onOpenChange={setOpen}>
       {/* `trigger={false}` = el disparador lo pone el llamante y vive
           FUERA de este componente. Lo usa `GlossaryLauncher`, que pinta
-          el enlace sin cargar el glosario y sólo trae este módulo cuando
+          el enlace sin cargar el glosario y solo trae este módulo cuando
           alguien lo abre de verdad. Sin este caso habría que renderizar
           un disparador de mentira y esconderlo. */}
       {trigger !== false && (

@@ -12,6 +12,7 @@ import {
   type Compliance,
   NOMBRE_SESION,
   contextoDelDia,
+  contextoDeMercado,
   ENFRIAMIENTO_MIN,
 } from "@/lib/trading/data";
 import { useCustomTrades, customTradeToTrade } from "@/lib/trading/demoStore";
@@ -24,6 +25,7 @@ import {
   fmtPrice,
   pctSep,
   pnlTone,
+  LOCALE_FECHA,
 } from "@/lib/trading/format";
 import { useDemo } from "@/components/demo/DemoContext";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -153,12 +155,15 @@ function buildFills(trade: Trade, decimals: number, lang: Lang): FillRow[] {
   const opened = trade.openedAt;
   const mid = new Date(opened.getTime() + trade.durationMin * 30000);
   const closed = trade.closedAt;
+  // En UTC, como la apertura y el cierre de la misma ficha (`fmtDateTime`):
+  // sin `timeZone`, las ejecuciones salían en la hora de quien mira.
   const fmtT = (d: Date) =>
-    new Intl.DateTimeFormat(lang === "es" ? "es-ES" : "en-US", {
+    new Intl.DateTimeFormat(LOCALE_FECHA[lang], {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: false,
+      timeZone: "UTC",
     }).format(d);
   const totalQty = trade.qty;
   // Split: 2 entries (60% + 40%) and 1 exit, OR 1 entry + 2 exits
@@ -515,6 +520,7 @@ export function TradeDetailPage() {
      eran marcadores fijos: toda operación era la tercera del día, ocho
      minutos después de otra y con −84,60 $ previos. */
   const dia = contextoDelDia(trade, allTrades);
+  const mercado = contextoDeMercado(trade);
   const dayOrdinal =
     lang === "es"
       ? `${fmtInt(dia.ordinal, lang)}.ª operación del día`
@@ -974,7 +980,7 @@ export function TradeDetailPage() {
               <Eyebrow className="mb-4">{t("context")}</Eyebrow>
               <dl className="grid grid-cols-2 gap-y-3.5 gap-x-4">
                 <Detail label={lang === "es" ? "Temporalidad" : "Timeframe"}>
-                  <span className="text-primary">5m</span>
+                  <span className="text-primary">{mercado.temporalidad}</span>
                 </Detail>
                 <Detail label={lang === "es" ? "Sesión" : "Session"}>
                   <span className="text-primary">
@@ -982,12 +988,10 @@ export function TradeDetailPage() {
                   </span>
                 </Detail>
                 <Detail label={lang === "es" ? "Mercado" : "Market"}>
-                  <span className="text-primary">
-                    {lang === "es" ? "Tendencia" : "Trending"}
-                  </span>
+                  <span className="text-primary">{mercado.regimen[lang]}</span>
                 </Detail>
-                <Detail label={lang === "es" ? "Ánimo pre" : "Mood pre"}>
-                  <span className="text-primary">3/5</span>
+                <Detail label={lang === "es" ? "Puntuación del día" : "Day score"}>
+                  <span className="text-primary tnum">{fmtInt(trade.dayScore, lang)}/5</span>
                 </Detail>
               </dl>
             </motion.div>

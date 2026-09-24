@@ -266,7 +266,7 @@ describe("Dimension D8: Design System Tokens (Tier 2 Boundary & Corner Cases)", 
    * muerto.
    */
   it("T2.5: Elevation and depth shadow tokens maintain hierarchy across light and dark modes", () => {
-    /* Los dos bloques son dedicados —sólo declaran `--sombra`—, así que
+    /* Los dos bloques son dedicados —solo declaran `--sombra`—, así que
        se casan enteros. Un regex que buscara «desde `:root` hasta el
        primer `--sombra`» tropezaba con el `:root` gigante de la cabecera
        del fichero, que declara otras cuarenta variables y ninguna de

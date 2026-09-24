@@ -21,7 +21,7 @@ interface RevealProps {
  * ── El fallo que tenía, y por qué era grave ───────────────────────────
  * Estaba hecho con `framer-motion` y `initial="hidden"`. Eso significa
  * que el bloque se RENDERIZA con opacidad 0 —en el HTML que sale del
- * servidor— y sólo sube a 1 cuando React hidrata y el observador de
+ * servidor— y solo sube a 1 cuando React hidrata y el observador de
  * viewport dispara.
  *
  * Las consecuencias:

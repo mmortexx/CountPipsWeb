@@ -36,7 +36,7 @@
    estado mejor que con uno roto.
 
    Así que el valor por defecto es la dirección real y viva. El dominio
-   propio se activa por entorno, y sólo cuando exista de verdad:
+   propio se activa por entorno, y solo cuando exista de verdad:
 
      NEXT_PUBLIC_SITE_URL=https://countpips.com
 
@@ -123,7 +123,7 @@ export function hreflangDe(path: string): {
  *    sitio entero una vez por página es repetir la misma declaración en
  *    cada hoja del libro.
  *
- * Ahora los emiten sólo las dos portadas, cada una en su idioma, que es
+ * Ahora los emiten solo las dos portadas, cada una en su idioma, que es
  * donde Google espera encontrar `WebSite` y `Organization`.
  *
  * `soporte` se pasa desde fuera en vez de importarse: este módulo
@@ -183,7 +183,7 @@ export function esquemasGlobales(
          de título —con el nombre anterior al renombrado— y la de estado
          —con el sello «Compilación de desarrollo»—, pero aquí viajaban
          los ficheros enteros, sin recortar, desde las 155 páginas. Un
-         recorte que sólo existe en la hoja de estilos no protege nada de
+         recorte que solo existe en la hoja de estilos no protege nada de
          lo que se sirve.
 
          Ya no hay recorte que se pueda olvidar: los ficheros de
@@ -218,7 +218,7 @@ export function esquemasGlobales(
         ? "El diario de trading profesional, nativo de Windows. Explora el producto antes de instalarlo: métricas institucionales, disciplina y datos locales."
         : "The professional trading journal, native to Windows. Explore the product before installing it: institutional metrics, discipline and local data.",
       foundingDate: "2024",
-      /* Sólo el repositorio, que es el único perfil que existe de verdad.
+      /* Solo el repositorio, que es el único perfil que existe de verdad.
          Los iconos de X, YouTube y Discord se retiraron del pie por
          apuntar a ninguna parte; añadirlos aquí sería el mismo error en
          otro sitio. */
@@ -270,7 +270,7 @@ export function esquemasGlobales(
  * El objeto se escribía a mano en cada página: veinte copias de la misma
  * forma con el mismo `"@context"`, el mismo `"@type"` y la misma cuenta de
  * posiciones. Y donde hay veinte copias escritas a mano hay huecos: `/beta`
- * emitía sólo un `WebPage` sin migas, y las dos páginas de `/traders` no
+ * emitía solo un `WebPage` sin migas, y las dos páginas de `/traders` no
  * emitían NINGÚN dato estructurado — las cuatro llevan migas visibles en su
  * cabecera, así que le estábamos enseñando al visitante una jerarquía que
  * al buscador le ocultábamos.

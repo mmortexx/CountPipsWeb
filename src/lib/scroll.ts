@@ -18,7 +18,7 @@
  *     desplazamiento que el ojo puede seguir, y seguirlo es lo que le
  *     dice al visitante que no ha cambiado de página.
  *   · **Más de dos pantallas** — se salta hasta un palmo del destino y
- *     sólo ese palmo se anima. Ese último tramo llega en el mismo gesto
+ *     solo ese palmo se anima. Ese último tramo llega en el mismo gesto
  *     que un recorrido corto, así que la llegada se lee igual de
  *     asentada; lo que desaparece es el viaje por en medio, que era la
  *     parte que no aportaba nada.

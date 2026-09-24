@@ -8,7 +8,7 @@ import { SITE_URL, hreflangDe } from "@/lib/site";
 /**
  * /test — el diagnóstico de disciplina, con página propia.
  *
- * Vivía enterrado al final de `/features/disciplina`, donde sólo lo
+ * Vivía enterrado al final de `/features/disciplina`, donde solo lo
  * encontraba quien ya había leído la página entera. Es la pieza que más
  * engancha del sitio —el visitante sale con una cifra suya y un siguiente
  * paso concreto—, así que tiene entrada en la navegación principal y

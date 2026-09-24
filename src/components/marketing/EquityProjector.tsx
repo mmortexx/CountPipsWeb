@@ -104,14 +104,7 @@ const PRESETS: PresetConfig[] = [
   },
 ];
 
-const CAPITAL_CHIPS = [
-  { v: 5000, label: "$5k" },
-  { v: 10000, label: "$10k" },
-  { v: 25000, label: "$25k" },
-  { v: 50000, label: "$50k" },
-  { v: 100000, label: "$100k" },
-  { v: 250000, label: "$250k" },
-];
+const CAPITAL_CHIPS = [5000, 10000, 25000, 50000, 100000, 250000].map((v) => ({ v }));
 
 const HORIZON_CHIPS = [1, 2, 3, 5, 10];
 
@@ -615,7 +608,7 @@ export function EquityProjector() {
               «$10,000» en inglés. Con el sufijo fijo `" $"` la web inglesa
               componía «10,000 $», que es la forma española del símbolo en
               una página en inglés. Las demás unidades —ops, %, R— sí van
-              siempre detrás, así que sólo se bifurca el dinero. */}
+              siempre detrás, así que solo se bifurca el dinero. */}
           {suffix === " $" ? (
             es ? (
               <>
@@ -825,7 +818,7 @@ export function EquityProjector() {
                             setStartBalance(chip.v);
                           }}
                         >
-                          {es ? `${chip.v / 1000}\u00a0k\u00a0$` : chip.label}
+                          {es ? `${fmtInt(chip.v / 1000, lang)}\u00a0k\u00a0$` : `$${fmtInt(chip.v / 1000, lang)}k`}
                         </button>
                       );
                     })}

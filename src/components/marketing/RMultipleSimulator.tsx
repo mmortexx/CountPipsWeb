@@ -334,11 +334,19 @@ export function RMultipleSimulator() {
             </span>
             <div className="tj-segmentado tj-segmentado-rejilla" role="group">
               {[
-                { label: es ? "Prueba de fondeo" : "Prop challenge", nota: es ? "0,75 % riesgo" : "0.75% risk", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
-                { label: es ? "Seguimiento de tendencia" : "Trend following", nota: es ? "42 % acierto · 3,2 R" : "42% hit · 3.2R", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
-                { label: es ? "Scalping de reversión" : "Mean-reversion scalp", nota: es ? "65 % acierto · 1,2 R" : "65% hit · 1.2R", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
-                { label: es ? "Sobre-apalancamiento" : "Over-leveraged", nota: es ? "3,5 % riesgo · peligro" : "3.5% risk · danger", wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
-              ].map((preset) => {
+                { label: es ? "Prueba de fondeo" : "Prop challenge", muestra: "riesgo", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
+                { label: es ? "Seguimiento de tendencia" : "Trend following", muestra: "acierto", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
+                { label: es ? "Scalping de reversión" : "Mean-reversion scalp", muestra: "acierto", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
+                { label: es ? "Sobre-apalancamiento" : "Over-leveraged", muestra: "riesgo", peligro: true, wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
+              ].map((p) => ({
+                ...p,
+                /* La nota se compone de los campos del perfil: escrita a mano,
+                   repetía cada cifra y podía quedarse atrás al retocar una. */
+                nota:
+                  p.muestra === "riesgo"
+                    ? `${fmtPct(p.risk, Number.isInteger(p.risk * 10) ? 1 : 2)} ${es ? "riesgo" : "risk"}${p.peligro ? (es ? " · peligro" : " · danger") : ""}`
+                    : `${fmtPct(p.wr, 0)} ${es ? "acierto" : "hit"} · ${fmtNum(p.winR, 1)}R`,
+              })).map((preset) => {
                 const activo =
                   winRate === preset.wr &&
                   avgWinR === preset.winR &&

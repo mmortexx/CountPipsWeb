@@ -91,7 +91,7 @@ export function MagneticButton({
      dirección completa y no hay nada que prefijar.
 
      La regla la vigila `tests/prefijo-despliegue.test.ts` sobre el HTML
-     ya compilado, para toda la familia y no sólo para este componente. */
+     ya compilado, para toda la familia y no solo para este componente. */
   if (href) {
     const interno = href.startsWith("/") && !href.startsWith("//");
     if (interno) {

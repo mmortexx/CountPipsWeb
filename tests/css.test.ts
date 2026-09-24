@@ -17,7 +17,7 @@ import { transform } from "lightningcss";
  * analizador la descarta y en la recuperación se lleva por delante
  * reglas reales — le pasó al bloque `.tj-paper` entero, que desapareció
  * del tema oscuro sin un solo aviso: `bun run build` compilaba en verde
- * y sólo `bun run dev` daba «Invalid empty selector». El síntoma que
+ * y solo `bun run dev` daba «Invalid empty selector». El síntoma que
  * llegaba era «la web se ve un poco sosa».
  *
  * Y volvió a pasar con el comentario escrito para documentarlo, que
@@ -32,7 +32,7 @@ import { transform } from "lightningcss";
  * comprobado: un cierre de comentario al FINAL de una línea, con una
  * frase en ASCII puro detrás, pasaba las tres heurísticas en verde
  * mientras el analizador real fallaba con «Expected identifier in class
- * selector». Una barrera que sólo detecta los fallos que llevan tilde no
+ * selector». Una barrera que solo detecta los fallos que llevan tilde no
  * es una barrera.
  *
  * Y además daba falsos positivos: `.a{}` seguido de un comentario y de
@@ -96,7 +96,7 @@ describe("globals.css se analiza como CSS, no como prosa", () => {
   });
 
   /**
-   * La prueba de arriba sólo vale si PUEDE fallar. Aquí se rompe la hoja
+   * La prueba de arriba solo vale si PUEDE fallar. Aquí se rompe la hoja
    * a propósito, con el defecto exacto que ya ocurrió dos veces, y se
    * exige que el resultado no sea el mismo. Si alguien rompe la ruta del
    * fichero o retira el comentario que se usa de conejillo, esto se pone
@@ -145,7 +145,7 @@ describe("globals.css se analiza como CSS, no como prosa", () => {
       }).code.toString();
 
     /* ── SE EXIGEN LOS DOS SÍNTOMAS, NO UNO ─────────────────────────────
-     * Tercera vuelta a la misma tuerca. La versión que sólo exigía ERROR
+     * Tercera vuelta a la misma tuerca. La versión que solo exigía ERROR
      * DE ANÁLISIS se desarmó cuando el desfase dejó de topar con una
      * llave; se cambió por «lo emitido tiene que cambiar», y esa se
      * desarmó al mover `position: relative` de `.tj-paper` a su capa: con
@@ -209,14 +209,14 @@ describe("la contención de scroll no vuelve a tragarse la rueda", () => {
 /**
  * Un `:has()` colgado de la raíz que luego baja a los descendientes.
  *
- * `html[lang="en"]:has([data-tj-404="es"]) body` existía sólo para la 404,
+ * `html[lang="en"]:has([data-tj-404="es"]) body` existía solo para la 404,
  * pero estaba en la hoja de TODAS las páginas y en las inglesas casaba su
  * primera mitad. Con eso Chrome, a cada nodo insertado —cada trozo de
  * JavaScript que llega al desplazarse—, daba por sucio el estilo del
  * documento entero: 1.028 elementos recalculados de golpe. Medido en
  * `/en/`, 12 invalidaciones de todo el árbol por recorrido, 15 fotogramas
  * de más de 8 ms frente a 3–5 sin ella. `html:has(x)` a secas no cuesta
- * eso: sólo recalcula `<html>`.
+ * eso: solo recalcula `<html>`.
  */
 const COMPUESTO_RAIZ = /^(?:html|:root)(?:\[[^\]]*\]|\.[\w-]+|:[\w-]+(?:\((?:[^()]|\([^()]*\))*\))?)*/;
 
@@ -326,7 +326,7 @@ describe("no se acumulan clases que no lleva nadie", () => {
       .replace(/'[^']*'/g, "''");
     /* Dos formas de declarar una clase, y la segunda no lleva punto.
        Tailwind v4 define utilidades con `@utility nombre { … }`, y de ahí
-       sale una `.nombre` en el CSS que recibe el navegador. Buscando sólo
+       sale una `.nombre` en el CSS que recibe el navegador. Buscando solo
        `.nombre`, esta prueba daba por retiradas las cuatro `depth-*`
        mientras la hoja PUBLICADA las seguía sirviendo: se habían quitado
        sus reglas normales y se habían dejado las declaraciones
@@ -350,7 +350,7 @@ describe("no se acumulan clases que no lleva nadie", () => {
       if (GANCHOS[c]) return false;
       /* Las barras van DOBLES: dentro de una plantilla, `\w` se evalúa
          como la letra `w`, así que el regex habría quedado
-         `(?<![w-])`, que sólo excluye esa letra y el guion. Pasaba en
+         `(?<![w-])`, que solo excluye esa letra y el guion. Pasaba en
          verde por casualidad — ningún nombre de clase del fichero va
          precedido de una `w` en el código. */
       return !new RegExp(`(?<![\\w-])${c}(?![\\w-])`).test(fuente);

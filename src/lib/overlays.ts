@@ -9,7 +9,7 @@
  * y eso anulaba en la práctica la carga diferida de `OverlayHost`: el
  * módulo pesado volvía a entrar en el arranque por la puerta de atrás.
  *
- * Separándolos, pedir la apertura no cuesta nada y sólo pinta quien
+ * Separándolos, pedir la apertura no cuesta nada y solo pinta quien
  * escucha. El nombre del evento se declara UNA vez y se importa: si
  * estuviera escrito a mano en cada extremo, bastaría una errata para que
  * la tecla dejara de abrir nada y sin ningún error que lo delatara.

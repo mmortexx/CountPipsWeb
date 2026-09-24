@@ -22,7 +22,7 @@ import { join } from "node:path";
  * anunciada como −10,6 % en el HTML servido y −10,0 % un instante
  * después. En local NO se veía: quien compila y quien mira están en el
  * mismo huso, así que la única forma de reproducirlo era abrir el sitio
- * ya publicado. Una prueba que sólo corre en la máquina de casa nunca lo
+ * ya publicado. Una prueba que solo corre en la máquina de casa nunca lo
  * habría visto tampoco — de ahí que ésta cambie el huso a propósito.
  *
  * ── Por qué en un proceso aparte ──────────────────────────────────────

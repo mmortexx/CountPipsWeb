@@ -19,7 +19,7 @@ import { NotFoundClient } from "@/components/tj/NotFoundClient";
  * en toda página 404 exportada, sin que la API de metadatos pueda
  * suprimirlo — es una protección de la propia herramienta. El de aquí se
  * suma, no contradice: las dos etiquetas dicen «no indexar», así que ya
- * no hay instrucciones opuestas en el documento, sólo una redundante que
+ * no hay instrucciones opuestas en el documento, solo una redundante que
  * no depende de este fichero.
  *
  * El resto SÍ se puede fijar del todo, y se fija: `alternates.canonical`

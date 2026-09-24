@@ -106,7 +106,7 @@ describe("asset y rutaDeRouter son la ida y la vuelta", () => {
 /**
  * ── Y AHORA SOBRE EL HTML QUE DE VERDAD SE PUBLICA ────────────────────
  * Todo lo de arriba prueba las dos funciones que traducen entre
- * convenciones, y eso sólo protege al código que se acuerda de usarlas.
+ * convenciones, y eso solo protege al código que se acuerda de usarlas.
  * El fallo siguiente no pasó por ninguna de las dos: `MagneticButton`
  * pintaba un `<a href="/beta">` a pelo, así que el botón «Solicitar
  * acceso anticipado» de los dos planes de la página de precios —el

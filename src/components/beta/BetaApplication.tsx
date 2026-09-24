@@ -115,11 +115,11 @@ export function BetaApplication() {
   const goalRef = useRef<HTMLSelectElement>(null);
   const privacyRef = useRef<HTMLInputElement>(null);
   /* El aviso de error recibe el foco cuando lo que falla no es un campo
-     —hoy sólo el caso de la verificación anti-bot—, para que el mensaje
+     —hoy solo el caso de la verificación anti-bot—, para que el mensaje
      que explica la salida sea lo siguiente que se lee. `tabIndex={-1}`
      lo hace enfocable por código sin meterlo en el orden de tabulación. */
   const errorRef = useRef<HTMLParagraphElement>(null);
-  /* Se pide el foco ANTES de que exista el elemento: `setError` sólo
+  /* Se pide el foco ANTES de que exista el elemento: `setError` solo
      programa un repintado, así que en ese instante `errorRef.current`
      todavía es null. Esta bandera lo aplaza a después del render. */
   const pedirFocoAviso = useRef(false);
@@ -190,7 +190,7 @@ export function BetaApplication() {
     if (faltanCampos || faltaVerificacion) {
       /* ── EL CALLEJÓN SIN SALIDA ────────────────────────────────────
          Antes había un solo mensaje —«Completa los campos
-         obligatorios»— y una cascada de foco que sólo contemplaba los
+         obligatorios»— y una cascada de foco que solo contemplaba los
          campos. Si el formulario estaba entero relleno y lo único que
          faltaba era el token de Turnstile (un bloqueador de anuncios,
          una red corporativa o una CSP que corte `challenges.

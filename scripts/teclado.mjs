@@ -127,7 +127,7 @@ for (const ruta of RUTAS) {
   paradasTotales += paradas;
 
   if (paradas < PARADAS_MINIMAS) {
-    fallos.push({ ruta, detalle: `sólo ${paradas} paradas de tabulador: se esperaban decenas. ¿Cargó la página?` });
+    fallos.push({ ruta, detalle: `solo ${paradas} paradas de tabulador: se esperaban decenas. ¿Cargó la página?` });
   }
   for (const x of sinIndicador.slice(0, 6)) {
     fallos.push({ ruta, detalle: `se llega con el tabulador y nada lo señala: ${x}` });
@@ -264,7 +264,7 @@ console.log(`\n[teclado] ${RUTAS.length} rutas recorridas · ${paradasTotales} p
    que se escape—, y una guarda así aprueba siempre en cuanto deja de
    recorrer. Si apenas ha encontrado paradas, no ha mirado el sitio. */
 if (paradasTotales < RUTAS.length * PARADAS_MINIMAS) {
-  console.log(`[teclado] sólo ${paradasTotales} paradas en ${RUTAS.length} rutas: la guarda no está recorriendo el sitio, así que su respuesta no vale`);
+  console.log(`[teclado] solo ${paradasTotales} paradas en ${RUTAS.length} rutas: la guarda no está recorriendo el sitio, así que su respuesta no vale`);
   process.exit(1);
 }
 if (fallos.length) {

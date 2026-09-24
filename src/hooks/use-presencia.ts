@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
  * comandos y la ayuda de atajos arrastraban la biblioteca entera.
  *
  * ── CÓMO ──────────────────────────────────────────────────────────────
- * `montado` se pone a true en cuanto `abierto` lo hace, y sólo vuelve a
+ * `montado` se pone a true en cuanto `abierto` lo hace, y solo vuelve a
  * false cuando ha pasado `ms`. `saliendo` marca ese intervalo, para que
  * el componente pueda ponerle la clase de despedida.
  *

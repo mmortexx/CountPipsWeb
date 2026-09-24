@@ -150,7 +150,7 @@ function FlowColumn({
 }) {
   return (
     <div className="tj-ficha">
-      {/* La barra lleva el nombre y dónde acaba el dato; el color, sólo en
+      {/* La barra lleva el nombre y dónde acaba el dato; el color, solo en
           el punto que lo marca. */}
       <p className="tj-ficha-barra">
         <span className="text-primary">{title}</span>

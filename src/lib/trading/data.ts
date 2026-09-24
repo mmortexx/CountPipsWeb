@@ -243,7 +243,7 @@ function buildTrades(): Trade[] {
        desplazaba la operación tantas horas como huso tuviera la máquina.
        Ver la cabecera del fichero. */
     closedAt.setUTCHours(hourBase, Math.floor(rnd() * 60), 0, 0);
-    // Con el mercado cerrado sólo cotiza la cripto: el sábado pasa al
+    // Con el mercado cerrado solo cotiza la cripto: el sábado pasa al
     // viernes y el domingo al lunes, sin gastar sorteo.
     if (inst.assetClass !== "crypto") {
       const dia = closedAt.getUTCDay();
@@ -771,6 +771,24 @@ export const runsTest = computeRunsTest;
 
 export const METRICS = computeMetrics(TRADES);
 export const INITIAL_BALANCE_CONST = INITIAL_BALANCE;
+
+/** Temporalidad y régimen de mercado de una operación de muestra. La
+ *  muestra no los trae, así que se deducen de lo que sí trae —duración y
+ *  setup— en vez de escribir «5m» y «Tendencia» para las 200. */
+export function contextoDeMercado(trade: Trade): {
+  temporalidad: string;
+  regimen: { es: string; en: string };
+} {
+  const d = trade.durationMin;
+  const temporalidad = d < 30 ? "1m" : d < 120 ? "5m" : d < 240 ? "15m" : "1h";
+  const regimen =
+    trade.setup === "Trend" || trade.setup === "Pullback"
+      ? { es: "Tendencia", en: "Trending" }
+      : trade.setup === "Breakout"
+        ? { es: "Expansión", en: "Expanding" }
+        : { es: "Rango", en: "Ranging" };
+  return { temporalidad, regimen };
+}
 
 /** Ventana tras una pérdida en la que volver al mismo instrumento cuenta
  *  como posible revancha. */

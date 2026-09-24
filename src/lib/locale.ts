@@ -104,7 +104,7 @@ export function sinPrefijoEn(pathname: string): string {
  * Separa el `hash` y la `query` antes de decidir, y los reconstruye
  * después: un enlace como `/terminos#no-advice` no tiene versión en
  * inglés porque `/terminos` no la tiene, así que se queda intacto con su
- * ancla — nunca se prefija sólo la mitad de la dirección.
+ * ancla — nunca se prefija solo la mitad de la dirección.
  */
 export function withLocale(href: string, lang: Lang): string {
   if (lang !== "en") return href;

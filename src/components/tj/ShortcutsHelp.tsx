@@ -127,7 +127,7 @@ export function ShortcutsHelp({
      quince de ellos son saltos de navegación. En plano el lector leía
      «Ir a» quince veces y tenía que recorrer veintidós renglones iguales
      para encontrar el suyo. El prefijo vive ahora en el título del grupo
-     y cada renglón dice sólo su destino. */
+     y cada renglón dice solo su destino. */
   const grupos: {
     titulo: string;
     filas: { keys: ReactNode; label: string }[];
@@ -250,7 +250,7 @@ export function ShortcutsHelp({
                     : "Move faster through the app."}
                 </p>
                 {/* En pantalla sobra —la marca está en la barra de arriba—,
-                    pero una hoja impresa que sólo dice «Atajos de teclado»
+                    pero una hoja impresa que solo dice «Atajos de teclado»
                     no dice de qué. */}
                 <p className="tj-solo-papel hidden mt-1 text-[11px] text-tertiary">
                   CountPips
@@ -367,5 +367,5 @@ function getFocusables(container: HTMLElement): HTMLElement[] {
 
 /* `openShortcutsHelp` se mudó a `@/lib/overlays`. Importarlo desde aquí
    obligaba a `GlobalShortcuts` —presente en todas las páginas— a cargar
-   esta ventana entera sólo para poder pedir su apertura. Ver el
+   esta ventana entera solo para poder pedir su apertura. Ver el
    encabezado de ese módulo. */

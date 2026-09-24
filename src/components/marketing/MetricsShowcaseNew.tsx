@@ -421,7 +421,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     },
     /* «Win rate» también en español, por lo mismo que «Expectancy» de
        arriba: así se titula su ficha del glosario y así la nombran otras
-       quince páginas. Decía «Ganadoras», sólo aquí.
+       quince páginas. Decía «Ganadoras», solo aquí.
        La FÓRMULA sí se traduce («G / N»), igual que «Σ ganancias / Σ
        pérdidas» en Omega: eso son letras, no el nombre de la métrica. */
     { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed at a profit.", enlaza: "winRate" },

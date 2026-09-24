@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
  * - Lo que ya está en pantalla al montar no se oculta (sin parpadeo).
  * - Sin JavaScript o con movimiento reducido no se marca nada.
  * - Estado en atributos `data-tj-ap`, que React no gestiona ni pisa.
- * - Lo que lleva cristal sólo se desplaza: una opacidad le quitaría el
+ * - Lo que lleva cristal solo se desplaza: una opacidad le quitaría el
  *   esmerilado mientras dura.
  */
 const LISTAS = "ul, ol, dl, [data-orden], .grid";
@@ -25,7 +25,7 @@ export function Aparecer() {
     const main = document.getElementById("main-content");
     if (!main || typeof IntersectionObserver === "undefined") return;
     document.documentElement.classList.add("tj-mov");
-    // Lo que depende de hidratar sólo entra si hidrata pronto: tarde sería un parpadeo.
+    // Lo que depende de hidratar solo entra si hidrata pronto: tarde sería un parpadeo.
     if (performance.now() < 1500) document.documentElement.classList.add("tj-mov-pronto");
 
     // El escalonado se reparte entre lo que asoma a la vez, en orden de

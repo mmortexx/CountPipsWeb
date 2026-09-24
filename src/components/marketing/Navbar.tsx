@@ -429,7 +429,7 @@ export function Navbar() {
      más natural del mundo, que es pulsarlo.
 
      La regla pasa a depender de cómo se activó:
-       · Con el puntero encima, el clic sólo puede ABRIR. Cerrar es
+       · Con el puntero encima, el clic solo puede ABRIR. Cerrar es
          apartarse o pulsar Escape, que es lo que ya hace cualquiera con
          un menú que se abre al pasar por encima.
        · Con el teclado (`detail === 0`: ni ratón ni dedo) sigue
@@ -480,7 +480,7 @@ export function Navbar() {
   useEffect(() => {
     if (!mobileOpen) return;
     /* EL FOCO ENTRABA EN UN CAJÓN QUE TODAVÍA ERA INVISIBLE.
-       `.tj-cajon` nace con `visibility: hidden` y sólo se vuelve visible
+       `.tj-cajon` nace con `visibility: hidden` y solo se vuelve visible
        cuando el navegador aplica `data-visible="true"`. Un `focus()`
        sobre un elemento invisible NO hace nada y NO da error, así que
        esto fallaba en silencio: medido en el navegador, el cajón se
@@ -1003,7 +1003,7 @@ export function Navbar() {
               porque están duplicados dentro del drawer a ≥44 px (ver
               "Preferencias" más abajo). Antes mostraban a 36 px en la barra
               superior móvil, por debajo del mínimo táctil de 44 px — el
-              usuario los veía "mal posicionados". Ahora la barra móvil sólo
+              usuario los veía "mal posicionados". Ahora la barra móvil solo
               lleva logo + hamburguesa, ambos limpios.
 
               AQUÍ HUBO UN RELOJ UTC. Se retira por decisión del fundador:
@@ -1028,7 +1028,7 @@ export function Navbar() {
                   cambiar de tema, y el nodo nuevo entra con su propia
                   animación CSS. Es lo mismo que hacía `AnimatePresence`
                   con `mode="wait"`, sin biblioteca: en un cruce de
-                  120 ms sólo se percibe la aparición. */}
+                  120 ms solo se percibe la aparición. */}
               <span
                 key={theme}
                 className="tj-cruza grid place-items-center"
@@ -1112,7 +1112,7 @@ export function Navbar() {
           diálogo permanente en el árbol— y se paga con `inert`, que lo
           saca por completo mientras está cerrado: ni foco, ni lectura,
           ni clics. Es más limpio que el `tabIndex={-1}` de antes, que
-          sólo cubría el propio contenedor y dejaba enfocables los
+          solo cubría el propio contenedor y dejaba enfocables los
           enlaces de dentro.
 
           La maquinaria de accesibilidad (bloqueo de scroll, trampa de
@@ -1450,7 +1450,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
-  // `size` sólo controla la altura del disparador: "sm" (h-9, 36 px) para
+  // `size` solo controla la altura del disparador: "sm" (h-9, 36 px) para
   // el clúster de escritorio donde comparte fila con otros cuadrados de
   // 36 px; "md" (h-11, 44 px) para el drawer móvil, donde rige el suelo
   // táctil ≥44 px. El resto del estilo (borde, hover, focus-visible, tipo)

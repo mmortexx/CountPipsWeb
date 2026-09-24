@@ -34,7 +34,7 @@ import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
  * Consecuencia buscada: un punto flaco grave en riesgo hunde el resultado
  * aunque todo lo demás esté bien. Es lo que pasa en la realidad.
  *
- * ── El resultado dice DÓNDE, no sólo CUÁNTO ───────────────────────────
+ * ── El resultado dice DÓNDE, no solo CUÁNTO ───────────────────────────
  * Una cifra sola no es accionable. Se devuelve el perfil de los cinco
  * ejes en barras, el eje más débil señalado, y una recomendación escrita
  * para ESE eje — no un consejo genérico por tramo de puntuación.
@@ -112,7 +112,7 @@ const DIMS: Dim[] = [
    `@/lib/trading/disciplineQuestions.ts`, no aquí. Un componente con
    `"use client"` no puede exportar datos planos hacia un componente de
    servidor —en el servidor el módulo se sustituye por un sustituto que
-   sólo sabe hacer de componente—, y `/test` necesita este mismo array
+   solo sabe hacer de componente—, y `/test` necesita este mismo array
    para construir el `Quiz` que exige Google. */
 
 /** Puntos máximos de una pregunta: cuatro opciones, de 0 a 3. */
@@ -523,7 +523,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 400 %, que es el criterio de accesibilidad— los tres no
                 caben en una línea: «Siguiente →» se salía 14 px y
                 empujaba la página entera de lado. En inglés cabía, así
-                que sólo se rompía en español. Por debajo de `sm` el
+                que solo se rompía en español. Por debajo de `sm` el
                 contador se lleva su propia línea y los dos botones se
                 reparten la de abajo; de `sm` en adelante, nada cambia. */}
             <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">

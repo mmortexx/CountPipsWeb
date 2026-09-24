@@ -120,7 +120,7 @@ export function ProductPlate({
 
   /* Los cuatro ficheros de cada lámina: pantalla y detalle, en los dos
      temas. Los nombres los fija `scripts/capturas.py` y los comprueba
-     `tests/capturas.test.ts`; aquí sólo se derivan. */
+     `tests/capturas.test.ts`; aquí solo se derivan. */
   const variante = (sufijo: string) => archivo.replace(/\.webp$/, `${sufijo}.webp`);
 
   /* Visor: la captura entera a su tamaño, en un `<dialog>` nativo (foco,

@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
  *
  * Seis intentos cada 220 ms cubren algo más de un segundo: el tiempo que
  * tardan en asentarse las tipografías web, los trozos de JavaScript que
- * se cargan bajo demanda y las secciones que sólo se dibujan al
+ * se cargan bajo demanda y las secciones que solo se dibujan al
  * acercarse. Es una corrección barata (leer una posición y, casi
  * siempre, no hacer nada) y se interrumpe en cuanto el visitante mueve
  * la página por su cuenta.
@@ -42,7 +42,7 @@ const TOLERANCE_PX = 4;
  * `scroll-margin-top` de cada sección, que es lo que evita que la barra
  * de navegación fija tape el titular al llegar.
  *
- * No pinta nada: es sólo efecto.
+ * No pinta nada: es solo efecto.
  */
 export function ScrollToTop() {
   const pathname = usePathname();

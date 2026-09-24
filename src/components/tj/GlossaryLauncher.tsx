@@ -17,7 +17,7 @@ import { useCallback, useState } from "react";
  *
  * ── La separación ─────────────────────────────────────────────────────
  * Un enlace no necesita saber qué hay al otro lado hasta que lo pulsan.
- * Este componente pinta el disparador —y sólo el disparador— y trae el
+ * Este componente pinta el disparador —y solo el disparador— y trae el
  * diálogo con `import()` en el mismo gesto del clic. Es el mismo criterio
  * que sigue `OverlayHost` con la paleta ⌘K.
  *
@@ -45,7 +45,7 @@ export function GlossaryLauncher({ children }: { children: React.ReactNode }) {
 
   const onActivate = useCallback((e: React.MouseEvent<HTMLSpanElement>) => {
     /* El disparador real es el hijo (un <button> con su foco y su rol);
-       este envoltorio sólo recoge el clic que burbujea desde él. */
+       este envoltorio solo recoge el clic que burbujea desde él. */
     setAnchor(e.currentTarget.querySelector("button"));
     setMounted(true);
     setOpen(true);

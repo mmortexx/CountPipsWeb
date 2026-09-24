@@ -18,14 +18,14 @@ import { LAMINAS_PRODUCTO } from "@/lib/laminas";
  *
  * No era falta de material: las siete pantallas reales llevaban meses
  * en `public/img/`, recortadas, en los dos temas y con recorte de móvil
- * aparte, montadas sólo en `/features`. La portada —que es donde llega
+ * aparte, montadas solo en `/features`. La portada —que es donde llega
  * quien no conoce el programa— era la única página que no lo enseñaba.
  *
  * ── POR QUÉ ENTRAN POR LA PUERTA DE `ProductPlate` ────────────────────
  * Porque ya hay una: numeración, filete doble y pie que dice qué se
  * está viendo, con el `<picture>` que sirve la captura del tema activo
  * y un recorte dedicado en pantalla estrecha. Montar aquí un segundo
- * marco —con su degradado negro y su ficha flotante— no sólo repetiría
+ * marco —con su degradado negro y su ficha flotante— no solo repetiría
  * el trabajo: sobre una captura real, ese degradado tapa justo la parte
  * baja de la interfaz, que es donde el programa pone las cifras.
  *
@@ -33,7 +33,7 @@ import { LAMINAS_PRODUCTO } from "@/lib/laminas";
  * Cuatro capturas apiladas son cuatro pantallas de scroll en una portada
  * que ya mide diez mil píxeles. La barra imita la del propio programa
  * —que es como se cambia de sección dentro de él—, así que además de
- * ahorrar recorrido enseña cómo se navega. Se monta sólo la activa: el
+ * ahorrar recorrido enseña cómo se navega. Se monta solo la activa: el
  * resto se descarga cuando se pide.
  */
 

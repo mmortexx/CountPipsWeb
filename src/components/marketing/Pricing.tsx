@@ -8,7 +8,7 @@ import { Escritorio } from "@/components/tj/Escritorio";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO, FECHA_TIPO_EUR, aproxEur } from "@/lib/precios";
-import { fmtInt } from "@/lib/trading/format";
+import { fmtInt, LOCALE_FECHA } from "@/lib/trading/format";
 
 type Plan = {
   id: "core" | "pro";
@@ -185,7 +185,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   );
 }
 
-const fechaTipo = new Date(FECHA_TIPO_EUR).toLocaleDateString("es-ES", {
+const fechaTipo = new Date(FECHA_TIPO_EUR).toLocaleDateString(LOCALE_FECHA.es, {
   month: "long",
   year: "numeric",
   timeZone: "UTC",

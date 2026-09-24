@@ -18,7 +18,7 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
-/* Esto era un objeto `as const` del que sólo se leía el TIPO (`typeof
+/* Esto era un objeto `as const` del que solo se leía el TIPO (`typeof
    actionTypes`). El objeto viajaba al navegador en cada página sin que
    ninguna línea lo consultara: cuatro cadenas cuyo único trabajo era
    existir para que TypeScript las mirara. Escrito como tipo hace

@@ -5,11 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
-
-/** Tasa de reinversión ilustrativa (S&P 500 indexado) que usan la ficha de
- *  proyección y su nota: una sola cifra, no una escrita a mano en el texto
- *  y otra en el cálculo. */
-const TASA_REINVERSION_ANUAL = 0.08;
+import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 
 interface MistakeItem {
   id: string;

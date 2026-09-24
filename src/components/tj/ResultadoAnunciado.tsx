@@ -21,7 +21,7 @@ import { useEffect, useRef, useState } from "react";
  *  · React vuelve a pintar en cada pulsación, así que un `aria-live`
  *    directo dispara un anuncio por tecla: escribir «1500» son cuatro
  *    lecturas, tres de ellas de cifras que nadie quiso. Por eso el texto
- *    se publica con retardo y el reloj se reinicia en cada cambio: sólo
+ *    se publica con retardo y el reloj se reinicia en cada cambio: solo
  *    se dice el valor que ha quedado quieto.
  *
  * Y no dice nada al cargar la página. Un `role="status"` que nace con
@@ -29,7 +29,7 @@ import { useEffect, useRef, useState } from "react";
  * titular, y el visitante no ha hecho nada todavía.
  *
  * `role="status"` ya implica `aria-live="polite"`; se declaran los dos
- * porque hay lectores que sólo atienden a uno.
+ * porque hay lectores que solo atienden a uno.
  */
 export function ResultadoAnunciado({
   texto,

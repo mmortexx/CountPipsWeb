@@ -175,7 +175,7 @@ console.log(`[postbuild] ${copias} fichero(s) de precarga copiados con el nombre
    De las 152 páginas de contenido, 142 no emitían `og:image` y las 76
    inglesas no emitían ninguna de las dos, mientras las 155 declaraban
    `twitter:card="summary_large_image"`: una tarjeta grande, sin imagen.
-   La convención de fichero `opengraph-image.tsx` sólo existe en diez
+   La convención de fichero `opengraph-image.tsx` solo existe en diez
    segmentos españoles, y una página que declara su propio bloque
    `openGraph` sin `images` no hereda nada.
 
@@ -229,7 +229,7 @@ const IMAGEN_POR_IDIOMA = {
 };
 
 /* Si una de las dos no está compilada, el reparto de abajo repartiría un
-   404 a decenas de páginas y sólo se vería al pegar un enlace en un
+   404 a decenas de páginas y solo se vería al pegar un enlace en un
    chat. Se para aquí. */
 for (const [idioma, rutaImagen] of Object.entries(IMAGEN_POR_IDIOMA)) {
   const enDisco = join(OUT, rutaImagen.slice(PREFIJO.length).replace(/^\//, ""));
@@ -297,7 +297,7 @@ for (const ruta of htmls) {
     /* LA TARJETA TIENE QUE HABLAR EL IDIOMA DE SU PÁGINA.
        Este es el fallo que se arregló el 2026-09-20 y que nadie habría
        visto abriendo el sitio: se ve al pegar el enlace en un chat, y
-       sólo si eres el que lo pega. Una página inglesa no puede anunciar
+       solo si eres el que lo pega. Una página inglesa no puede anunciar
        la tarjeta de raíz, que está en español. */
     const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
     const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");

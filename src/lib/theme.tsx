@@ -110,7 +110,7 @@ function readSavedPalette(): PaletteName {
  * React vaciado con `flushSync`— porque el navegador fotografía la página
  * justo antes y justo después de ese callback; un cambio que llegara en un
  * efecto posterior quedaría fuera de la foto. La clase `tj-tema-cambia`
- * enciende el fundido en globals.css sólo mientras dura.
+ * enciende el fundido en globals.css solo mientras dura.
  */
 function cambiarTemaConFundido(next: Theme, aplicar: () => void) {
   const doc = document as Document & {

@@ -73,10 +73,10 @@ describe("escala de radios", () => {
    * cinco superficies con `rounded-[12px]` puesto directamente en el JSX
    * —la tarjeta de precio, el megamenú, el aviso de cookies, el panel de
    * conversión y la calculadora de riesgo—: pasaban por encima del tope
-   * sin tocar ningún token. Una prueba que sólo mira la declaración deja
+   * sin tocar ningún token. Una prueba que solo mira la declaración deja
    * fuera justo el sitio por donde se escapa.
    *
-   * Sólo se vigila el TOPE, no la escala entera: los cantos de 1 y 2 px
+   * Solo se vigila el TOPE, no la escala entera: los cantos de 1 y 2 px
    * de la demo son deliberados —replican la ventana de la app de
    * escritorio— y afilar por debajo del sistema nunca fue el problema.
    */

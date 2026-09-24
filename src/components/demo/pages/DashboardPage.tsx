@@ -18,7 +18,7 @@ import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { cifraEditable, fmtInt, fmtNum, fmtPct, fmtR, leeCifra } from "@/lib/trading/format";
+import { cifraEditable, fmtInt, fmtNum, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -37,6 +37,10 @@ const TF_DAYS: Record<Timeframe, number> = { "1M": 30, "3M": 90, "6M": 180 };
 // Cuántas operaciones recientes se listan bajo el rendimiento — una sola
 // fuente para el `slice` y para el rótulo "Últimas N operaciones".
 const RECENT_TRADES_COUNT = 6;
+
+/** Riesgo de partida del registro rápido: el que se supone sin stop ni
+ *  cantidad, el que usa «Calcular tamaño» y el umbral del aviso ámbar. */
+const RIESGO_POR_DEFECTO = 0.01;
 
 /** Slice a Metrics snapshot to the last N days of trades — keeps the
  *  equityCurve + drawdownCeiling arrays in sync so the chart redraws
@@ -176,7 +180,7 @@ export function DashboardPage() {
       return stopDist * qtyNum * multiplier;
     }
     // Fallback: 1% of the initial balance (the demo's default posture).
-    return INITIAL_BALANCE_CONST * 0.01;
+    return INITIAL_BALANCE_CONST * RIESGO_POR_DEFECTO;
   }, [stopDist, qtyNum, instrumentSymbol, inst.assetClass]);
 
   const riskPct = INITIAL_BALANCE_CONST > 0 ? riskUsdLive / INITIAL_BALANCE_CONST : 0;
@@ -390,7 +394,7 @@ export function DashboardPage() {
                     <span className="text-sm font-medium text-secondary text-center px-6">
                       {t("dropScreens")}
                     </span>
-                    {/* La pista de Ctrl+V sólo donde ese atajo existe. En un
+                    {/* La pista de Ctrl+V solo donde ese atajo existe. En un
                         teléfono no hay ni Ctrl ni arrastrar un fichero: dejarla
                         ahí era prometer una interacción imposible en el propio
                         dispositivo desde el que se lee, y esta página presume
@@ -466,7 +470,7 @@ export function DashboardPage() {
                           className={`text-lg font-semibold tnum ${
                             riskPct > 0.02
                               ? "text-pnl-neg"
-                              : riskPct > 0.01
+                              : riskPct > RIESGO_POR_DEFECTO
                               ? "text-pnl-warn"
                               : "text-pnl-pos"
                           }`}
@@ -649,7 +653,7 @@ export function DashboardPage() {
                             // el tamaño que arriesga exactamente ese 1 %.
                             const mult = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
                             const q =
-                              (INITIAL_BALANCE_CONST * 0.01) / (stopDist * mult);
+                              (INITIAL_BALANCE_CONST * RIESGO_POR_DEFECTO) / (stopDist * mult);
                             setQuantity(q < 1 ? precio(q, 3) : precio(q, 2));
                           }
                         }}
@@ -1174,7 +1178,7 @@ export function DashboardPage() {
                     >
                       {fmtR(tr.rMultiple, lang, 2)}
                     </div>
-                    {/* `ml-auto` sólo en móvil: es lo que manda el resultado al
+                    {/* `ml-auto` solo en móvil: es lo que manda el resultado al
                         canto derecho de la segunda línea cuando la fila
                         envuelve. En sm+ la fila es una sola línea y el hueco
                         ya lo reparte la columna del setup con `flex-1`. */}
@@ -1278,10 +1282,10 @@ function TodayBriefing() {
   // valor derivado del cliente, no estado propio. Con el efecto había que
   // guardarlo en useState y eso disparaba un render en cascada al montar
   // (regla react-hooks/set-state-in-effect). Así se calcula durante el
-  // render, pero sólo cuando ya estamos en el navegador.
+  // render, pero solo cuando ya estamos en el navegador.
   const hydrated = useHydrated();
   const weekday = hydrated
-    ? new Date().toLocaleDateString(es ? "es-ES" : "en-GB", { weekday: "long" })
+    ? new Date().toLocaleDateString(LOCALE_FECHA[lang], { weekday: "long" })
     : null;
 
   // Operaciones de la muestra que cayeron en el mismo día de la semana:

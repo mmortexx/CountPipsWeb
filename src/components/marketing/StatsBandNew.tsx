@@ -5,6 +5,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { FECHA_PUBLICACION } from "@/lib/publicacion";
+import { LOCALE_FECHA } from "@/lib/trading/format";
 
 /**
  * StatsBandNew — la banda de credenciales de la home: tres cifras que
@@ -76,7 +77,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
         <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
       ];
   const corte = FECHA_PUBLICACION
-    ? new Date(FECHA_PUBLICACION).toLocaleDateString(es ? "es-ES" : "en-GB", { year: "numeric", month: "long", timeZone: "UTC" })
+    ? new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[es ? "es" : "en"], { year: "numeric", month: "long", timeZone: "UTC" })
     : "";
 
   return (

@@ -4,6 +4,7 @@ import { Lock } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { arranqueMedido } from "@/lib/producto";
 
 interface SpecRow {
   /** Bilingual label and value. */
@@ -25,7 +26,7 @@ interface SpecRow {
  *
  * Los filetes: `border-t` en el contenedor cierra la retícula por
  * arriba, cada celda pone su `border-b`, y la segunda columna añade un
- * `border-l` sólo a partir de `sm` — en móvil hay una sola columna y esa
+ * `border-l` solo a partir de `sm` — en móvil hay una sola columna y esa
  * raya no separaría nada. Ninguna celda descuelga su borde inferior: el
  * último trazo es el que cierra la cuadrícula.
  */
@@ -43,8 +44,8 @@ export function TechSpecs() {
     {
       labelEs: "Arranque",
       labelEn: "Startup",
-      valueEs: "0,7 s con 50.000 operaciones (medido)",
-      valueEn: "0.7 s with 50,000 trades (measured)",
+      valueEs: arranqueMedido("es"),
+      valueEn: arranqueMedido("en"),
     },
     {
       labelEs: "Carpeta de datos",
@@ -115,7 +116,7 @@ export function TechSpecs() {
               <dl
                 key={r.labelEn}
                 data-entra="ciclo"
-                /* El filete vertical sólo en la segunda columna y sólo
+                /* El filete vertical solo en la segunda columna y solo
                    cuando hay dos: en móvil la retícula es una sola
                    columna y una raya a la izquierda no separaría nada. */
                 className="flex flex-col gap-1 min-w-0 py-4 pr-6 border-b border-[rgb(var(--divider)/0.14)] sm:[&:nth-child(even)]:pl-6 sm:[&:nth-child(even)]:border-l sm:[&:nth-child(even)]:border-l-[rgb(var(--divider)/0.14)]"

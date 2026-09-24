@@ -85,7 +85,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           {/* LA DEFINICIÓN ES LA VOZ PRINCIPAL DE ESTA PÁGINA, Y VA A 19 px.
               Bajarla a los 15 px del cuerpo la iguala con todo lo demás y
               deja la única cosa que el visitante vino a leer distinguida
-              sólo por el color. Es el mismo criterio por el que la
+              solo por el color. Es el mismo criterio por el que la
               entradilla de los documentos legales se queda en 17 px: no es
               cuerpo, es la entrada del documento. Ambas están escritas como
               excepción en `tests/tipografias.test.ts`.

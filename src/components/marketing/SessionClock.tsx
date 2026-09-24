@@ -123,6 +123,11 @@ export function SessionClock() {
   const desfaseH = Math.floor(desfaseMin / 60);
   const desfaseM = desfaseMin % 60;
   const etiquetaDesfase = `UTC${desfaseRef >= 0 ? "+" : "−"}${desfaseH}${desfaseM ? `:${String(desfaseM).padStart(2, "0")}` : ""}`;
+  // El párrafo de horarios sale de PLAZAS: antes repetía a mano sus ocho horas.
+  const hhmm = (min: number) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, "0")}`;
+  const horarios = new Intl.ListFormat(es ? "es" : "en-GB", { type: "conjunction" }).format(
+    PLAZAS.map((p) => `${hhmm(p.abre)}–${hhmm(p.cierra)} ${es ? "en" : "in"} ${es ? p.es : p.en}`),
+  );
   const pct = (h: number) => (h / 24) * 100;
 
   const tramos = (a: number, b: number) => (a <= b ? [[a, b]] : [[a, 24], [0, b]]);
@@ -279,8 +284,8 @@ export function SessionClock() {
 
         <p className="mt-6 mb-0 max-w-[92ch] text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
           {es
-            ? "Horario de cada plaza en su hora local, el mismo que usa la app: 7:00–17:00 en Sídney, 8:00–17:00 en Tokio, 8:00–16:30 en Londres y 9:30–16:00 en Nueva York, de lunes a viernes. No es el horario de un bróker concreto."
-            : "Each market's hours in its local time, the same the app uses: 7:00–17:00 in Sydney, 8:00–17:00 in Tokyo, 8:00–16:30 in London and 9:30–16:00 in New York, Monday to Friday. Not the schedule of any specific broker."}
+            ? `Horario de cada plaza en su hora local, el mismo que usa la app: ${horarios}, de lunes a viernes. No es el horario de un bróker concreto.`
+            : `Each market's hours in its local time, the same the app uses: ${horarios}, Monday to Friday. Not the schedule of any specific broker.`}
         </p>
       </div>
     </section>

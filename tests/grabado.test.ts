@@ -179,7 +179,7 @@ describe("lo que se retiró por no usarse", () => {
 });
 
 describe("las láminas del producto", () => {
-  /* La regla del fichero es que sólo se describe lo que se ha abierto y
+  /* La regla del fichero es que solo se describe lo que se ha abierto y
      mirado. Eso una prueba no lo puede comprobar. Lo que SÍ puede es cazar
      las dos formas en que esa regla se rompe sin querer: una captura que
      entra en `public/img/` y nadie describe —cuatro de las ocho llevaban
@@ -189,7 +189,7 @@ describe("las láminas del producto", () => {
     const { LAMINAS_PRODUCTO } = await import("@/lib/laminas");
     const dir = join(import.meta.dirname, "..", "public", "img");
     /* Cada lámina son CUATRO ficheros: pantalla y detalle, en tema claro y
-       en tema oscuro. El catálogo nombra sólo el de escritorio claro y los
+       en tema oscuro. El catálogo nombra solo el de escritorio claro y los
        otros tres se derivan de él, así que aquí se comparan quitando los
        sufijos — si no, las variantes oscuras contarían como capturas
        huérfanas. */

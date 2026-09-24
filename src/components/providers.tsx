@@ -23,7 +23,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
        CON UNA EXCEPCIÓN, y esta frase estuvo mintiendo hasta que se
        midió: lo que anima framer-motion NO lo toca ningún `@media`,
-       porque lo anima en JavaScript. Eso vive sólo dentro de la demo, y
+       porque lo anima en JavaScript. Eso vive solo dentro de la demo, y
        por eso el `MotionConfig` está ahora en `AppDemo.tsx` — donde
        cuesta lo que ya costaba y no en las 155 páginas. */
     <ThemeProvider>

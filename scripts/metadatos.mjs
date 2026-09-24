@@ -88,7 +88,7 @@ const rutasQueExisten = new Set(paginas.map((p) => p.ruta.replace(/\/$/, "") || 
 const fallos = [];
 const anota = (regla, ruta, detalle) => fallos.push({ regla, ruta, detalle });
 
-/* Sólo las que piden ser indexadas responden por su ficha. */
+/* Solo las que piden ser indexadas responden por su ficha. */
 const indexables = paginas.filter((p) => !p.noindex);
 
 for (const p of paginas) {
@@ -155,7 +155,7 @@ console.log(`\n[metadatos] ${paginas.length} páginas · ${indexables.length} in
    vacío o a medio compilar, y una guarda que no mira nada aprueba
    siempre. */
 if (paginas.length < 100) {
-  console.log(`[metadatos] sólo ${paginas.length} páginas: se esperaban más de 150. ¿Está compilado el sitio?`);
+  console.log(`[metadatos] solo ${paginas.length} páginas: se esperaban más de 150. ¿Está compilado el sitio?`);
   process.exit(1);
 }
 if (fallos.length) {

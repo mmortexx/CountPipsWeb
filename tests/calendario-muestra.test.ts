@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getCal, getSetups } from "@/lib/trading/fixtures";
-import { TRADES, cumplimientoMensual, contextoDelDia, ENFRIAMIENTO_MIN } from "@/lib/trading/data";
+import { TRADES, cumplimientoMensual, contextoDelDia, contextoDeMercado, ENFRIAMIENTO_MIN } from "@/lib/trading/data";
 import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 
 const CRIPTO = new Set(["BTC/USDT", "ETH/USDT"]);
@@ -27,7 +27,7 @@ describe("el calendario de muestra es un mes de verdad", () => {
 
 /* El generador repartía los cierres por los 180 días sin mirar el
    calendario: 58 de 200 caían en sábado o domingo, con el índice, el
-   oro o el EURUSD cerrados. Sólo la cripto cotiza el fin de semana. */
+   oro o el EURUSD cerrados. Solo la cripto cotiza el fin de semana. */
 /* La ficha de playbooks era una maqueta con +2,1R por operación. Ahora
    sale de la muestra, y su titular promete «cuáles no»: tiene que haber
    alguno que no dé ventaja. */
@@ -121,6 +121,16 @@ describe("el contexto del día sale de las operaciones de ese día", () => {
     expect(contextoDelDia(pasado, [dia[0], pasado]).revancha).toBe(false);
     const otroInstrumento = op(8, minutoDespues(5), "2026-07-01T11:00:00Z", 10, "NQ");
     expect(contextoDelDia(otroInstrumento, [dia[0], otroInstrumento]).revancha).toBe(false);
+  });
+
+  it("la temporalidad y el régimen salen de la duración y el setup, no son fijos", () => {
+    const tf = new Set(TRADES.map((t) => contextoDeMercado(t).temporalidad));
+    const reg = new Set(TRADES.map((t) => contextoDeMercado(t).regimen.es));
+    expect(tf.size).toBeGreaterThanOrEqual(3);
+    expect([...reg].sort()).toEqual(["Expansión", "Rango", "Tendencia"]);
+    expect(contextoDeMercado({ ...base, durationMin: 10, setup: "Range" })).toEqual({
+      temporalidad: "1m", regimen: { es: "Rango", en: "Ranging" },
+    });
   });
 
   it("en la muestra no es el mismo para todas", () => {

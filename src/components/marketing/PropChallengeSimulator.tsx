@@ -69,7 +69,7 @@ export function PropChallengeSimulator() {
 
   /* Un escenario compartido llega en la dirección. En el servidor no hay
      dirección —el HTML estático se genera sin ella— y la lectura da vacío;
-     en el navegador, la de verdad. Encima va sólo lo que el visitante toca. */
+     en el navegador, la de verdad. Encima va solo lo que el visitante toca. */
   const busqueda = useSyncExternalStore(sinSuscripcion, () => window.location.search, () => "");
   const [cambios, setCambios] = useState<Partial<EscenarioFondeo>>({});
   const esc: EscenarioFondeo = { ...DEFECTO, ...leerEscenario(busqueda), ...cambios };

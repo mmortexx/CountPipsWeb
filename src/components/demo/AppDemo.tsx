@@ -35,10 +35,10 @@ export function AppDemo({ hideHeader = false }: { hideHeader?: boolean } = {}) {
 
        Medido en /demo cambiando de página con la preferencia activa: los
        mismos 7 elementos recorriendo los mismos estados intermedios que
-       sin ella. De los ocho ficheros que aún usan la biblioteca, sólo uno
+       sin ella. De los ocho ficheros que aún usan la biblioteca, solo uno
        comprobaba nada.
 
-       El ajuste vuelve, pero AQUÍ y no en el layout: framer-motion sólo
+       El ajuste vuelve, pero AQUÍ y no en el layout: framer-motion solo
        vive dentro de la demo, así que esto no le cuesta un byte a
        ninguna otra página. `"user"` es lo que hay que poner: apaga el
        movimiento a quien lo ha pedido en su sistema y lo deja intacto

@@ -145,7 +145,7 @@ const newsreader = localFont({
    llega a ver.
 
    Separada, la redonda —que sí sostiene todos los titulares del sitio—
-   conserva su precarga, y la cursiva se descarga sólo cuando el navegador
+   conserva su precarga, y la cursiva se descarga solo cuando el navegador
    encuentra un elemento que la compone. `preload: false` es lo que quita
    el `<link rel="preload">`; sin él, separarlas no habría servido de nada.
 
@@ -262,12 +262,12 @@ export default function RootLayout({
       <head>
         <script
           // Prevent FOUC: apply saved theme/palette before paint
-          // suppressHydrationWarning: este script sólo existe para leer
+          // suppressHydrationWarning: este script solo existe para leer
           // localStorage antes del primer paint — el servidor nunca puede
           // reproducir su __html tal cual lo ve React al reconciliar, igual
           // que ya pasa con el <html> de arriba. Sin esto, React marcaba un
           // "mismatch" en cada primera visita (consola sucia en cada carga,
-          // no sólo la primera de la sesión de un visitante).
+          // no solo la primera de la sesión de un visitante).
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
             // El estilo es único ("clasico") y se fija aquí sin consultar
@@ -278,7 +278,7 @@ export default function RootLayout({
             // recuerda del visitante es si prefiere papel o tinta.
             //
             // El orden es el mismo que explica `src/lib/theme.tsx`: lo
-            // que el visitante eligió, y sólo si no ha elegido nunca, lo
+            // que el visitante eligió, y solo si no ha elegido nunca, lo
             // que pida su sistema. Tiene que resolverse AQUÍ, antes del
             // primer paint: decidirlo ya montado en React significaría
             // un fogonazo blanco a quien tiene el sistema en oscuro,
@@ -306,7 +306,7 @@ export default function RootLayout({
         {/* ── RED DE SEGURIDAD PARA QUIEN NO EJECUTA JAVASCRIPT ──────
             Los componentes que animan con `framer-motion` y
             `initial={{ opacity: 0 }}` escriben ese cero como estilo EN
-            LÍNEA en el HTML servido, y sólo lo suben cuando React
+            LÍNEA en el HTML servido, y solo lo suben cuando React
             hidrata. En una exportación estática eso significa que sin
             JavaScript hay secciones enteras invisibles — no degradadas:
             invisibles.
@@ -319,7 +319,7 @@ export default function RootLayout({
             rutas auditadas — 43 filas de tabla en /pricing y 23
             tarjetas en /features, medidas quitándola a propósito.
 
-            LO QUE NO CUBRE, dicho para que nadie se confíe: sólo el
+            LO QUE NO CUBRE, dicho para que nadie se confíe: solo el
             valor CERO EXACTO. Un `initial={{ opacity: 0.02 }}` es
             invisible en la práctica y esta regla lo deja pasar, porque
             no hay forma de distinguir en un selector de atributo un
@@ -344,7 +344,7 @@ export default function RootLayout({
             red de seguridad estropeaba la página que venía a salvar.
 
             `:not([style*="opacity:0."])` descarta cualquier valor con
-            decimales y deja pasar sólo el cero exacto, que es lo que
+            decimales y deja pasar solo el cero exacto, que es lo que
             escriben hoy todas las animaciones de entrada del sitio —
             comprobado extrayendo los atributos `style` de las 154
             páginas exportadas: las únicas opacidades en línea que
@@ -375,7 +375,7 @@ export default function RootLayout({
             de su propio `lang`.
 
             Viven ahora en `esquemasGlobales()` (src/lib/site.ts) y los
-            emiten sólo las dos portadas, cada una en el suyo. Ver allí el
+            emiten solo las dos portadas, cada una en el suyo. Ver allí el
             razonamiento completo. */}
         <Providers>
           <div className="min-h-screen flex flex-col">
@@ -398,13 +398,13 @@ export default function RootLayout({
                 sobre todo la lista de lo que NO intercepta. */}
             <TransicionPagina />
             <Navbar />
-            {/* `view-transition-name` en el contenido y sólo en él: la
+            {/* `view-transition-name` en el contenido y solo en él: la
                 barra y el pie son los mismos en las 155 páginas, y
                 hacerlos participar en la transición significaría fundir
                 un elemento consigo mismo — el resultado es un parpadeo
                 de lo que debería quedarse quieto. Lo que se mueve es lo
                 que cambia. Quien dispara la transición es
-                `TransicionPagina`, que pone el nombre sólo mientras dura
+                `TransicionPagina`, que pone el nombre solo mientras dura
                 —un `view-transition-name` fijo impide al cristal leer lo
                 que tiene detrás—; la coreografía está en
                 `::view-transition-*` (globals.css). */}
@@ -416,7 +416,7 @@ export default function RootLayout({
                 interactiva», dentro de esta etiqueta—, pero WebKit no lo
                 hace, y ahí el salto no sirve de nada: el tabulador vuelve
                 a empezar por la navegación que se quería saltar. El −1 no
-                mete este `<main>` en el orden de tabulación; sólo permite
+                mete este `<main>` en el orden de tabulación; solo permite
                 enfocarlo por programa. Su anillo de foco se apaga en
                 `globals.css`: un contorno alrededor de la página entera no
                 dice nada que el enlace recién pulsado no haya dicho ya. */}

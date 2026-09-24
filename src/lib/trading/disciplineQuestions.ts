@@ -7,7 +7,7 @@
  * construir el dato estructurado `Quiz` de Google: `DisciplineScore.tsx`
  * lleva `"use client"`, y un componente de servidor no puede importar un
  * valor plano — un array, un tipo— desde un módulo de cliente. En el
- * servidor, ese módulo se sustituye por un sustituto que sólo sabe hacer
+ * servidor, ese módulo se sustituye por un sustituto que solo sabe hacer
  * de componente; `QUESTIONS.map` deja de ser una función y la
  * compilación entera falla.
  *

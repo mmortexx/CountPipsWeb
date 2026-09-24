@@ -103,7 +103,7 @@ function buildCal() {
     // pintaba con opacidad 0: dieciocho de los treinta días de julio
     // desaparecían y las dos últimas filas del calendario quedaban en
     // blanco, de modo que el desfase del primer día no significaba nada.
-    // Ahora la celda existe siempre, en gris neutro, y sólo el color
+    // Ahora la celda existe siempre, en gris neutro, y solo el color
     // distingue ganancia de pérdida.
     const bg =
       pnl === 0

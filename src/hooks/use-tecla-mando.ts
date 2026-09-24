@@ -15,17 +15,17 @@ import { useHydrated } from "@/hooks/use-hydrated";
  * `⌘` es la tecla Comando de un Mac. CountPips es una aplicación NATIVA
  * DE WINDOWS —lo dice el rótulo del titular de la portada— y su web
  * enseña a sus visitantes un atajo que en su teclado no existe. No es
- * sólo una instrucción equivocada: es la clase de detalle por la que se
+ * solo una instrucción equivocada: es la clase de detalle por la que se
  * nota que una página se hizo mirando otra.
  *
  * ── Por qué no basta con leer `navigator` y ya ─────────────────────────
- * La plataforma sólo se conoce en el navegador, y estas páginas se
+ * La plataforma solo se conoce en el navegador, y estas páginas se
  * sirven compiladas. Escribir el valor real durante el primer render
  * daría un texto en el HTML y otro al hidratar: `Minified React error
  * #418`, el mismo que ya costó cerrar en las fechas de la muestra.
  *
  * Así que el valor del servidor —y el del primer render del cliente— es
- * `Ctrl`, y sólo después de hidratar se cambia a `⌘` si el teclado es de
+ * `Ctrl`, y solo después de hidratar se cambia a `⌘` si el teclado es de
  * Apple. Eso deja SIN NINGÚN CAMBIO al visitante de Windows, que es el
  * público entero de este producto, y hace un único reemplazo silencioso
  * en el Mac de quien viene a mirar.

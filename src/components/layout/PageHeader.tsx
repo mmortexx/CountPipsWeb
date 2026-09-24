@@ -3,7 +3,7 @@
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 
-/** Qué clase de página es; sólo ajusta la medida del subtítulo y el aire. */
+/** Qué clase de página es; solo ajusta la medida del subtítulo y el aire. */
 export type TonoPagina = "capitulo" | "instrumento" | "registro" | "tarifa" | "documento";
 
 interface PageHeaderProps {

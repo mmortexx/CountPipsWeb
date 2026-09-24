@@ -251,10 +251,10 @@ export function FeaturesBento({
               {/* Una nota del diario se compone como una cita impresa: en la
                   cursiva de la serif, sin franja de color al lado. `font-cursiva`
                   —y no `font-serif italic`— porque la cursiva es un fichero
-                  aparte que sólo se descarga aquí; ver la nota en globals.css. */}
+                  aparte que solo se descarga aquí; ver la nota en globals.css. */}
               <blockquote className="m-0 mt-4 font-cursiva text-[17px] leading-[1.5] text-secondary">
                 {es
-                  ? "“Entré en NQ por ruptura del rango NY, pero moví el stop a +1R para ‘asegurar’. Error: el plan era aguantar a 2R. Terminé saliendo en BE después de que el precio llegó al objetivo sin mí.”"
+                  ? "«Entré en NQ por ruptura del rango NY, pero moví el stop a +1R para “asegurar”. Error: el plan era aguantar a 2R. Terminé saliendo en BE después de que el precio llegó al objetivo sin mí.»"
                   : "“Entered NQ on NY range break, but moved stop to +1R to ‘be safe’. Mistake: the plan was to hold to 2R. I ended up exiting at BE after price hit the target without me.”"}
               </blockquote>
               <p className={`mt-auto mb-0 pt-5 flex items-center gap-2 border-t ${division} text-[12px] text-tertiary`}>

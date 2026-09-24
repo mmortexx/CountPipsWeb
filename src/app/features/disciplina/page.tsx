@@ -92,7 +92,7 @@ export const metadata: Metadata = {
 // Un `loading` en `next/dynamic` abre un límite de Suspense, y React
 // resuelve un límite de Suspense durante el prerenderizado escribiendo el
 // hueco en su sitio y el contenido REAL al final del <body>, dentro de un
-// <div hidden> que sólo un script sabe devolver a su lugar. Sin
+// <div hidden> que solo un script sabe devolver a su lugar. Sin
 // JavaScript ese script no corre: medido en el HTML compilado, la portada
 // servía 37.921 de sus 118.707 caracteres —el 32 %— dentro de bloques
 // ocultos, y /features 61.865 de 128.953, el 48 %.
@@ -146,7 +146,7 @@ export function DisciplinaBody() {
 
       {/* El diagnóstico de disciplina se mudó a `/test`, con página y
           entrada propias en el menú. Aquí estaba al final del todo, así
-          que sólo lo encontraba quien ya había bajado la página entera —
+          que solo lo encontraba quien ya había bajado la página entera —
           y es la pieza que más engancha del sitio.
 
           No se deja también aquí a propósito: el mismo cuestionario en

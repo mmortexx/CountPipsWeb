@@ -19,7 +19,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
   ];
   const compare: { l: string; tj: string | boolean; cloud: string | boolean; bueno?: boolean }[] = [
     { l: es ? "Dónde viven los datos" : "Where data lives", tj: es ? "Tu disco" : "Your disk", cloud: es ? "Servidores del proveedor" : "Vendor servers" },
-    { l: es ? "Modelo" : "Model", tj: es ? "Pago único previsto" : "Planned one-time payment", cloud: es ? "Suscripción mensual" : "Monthly subscription" },
+    { l: es ? "Modelo" : "Model", tj: es ? "Pago único previsto" : "Planned one-time payment", cloud: es ? "Suscripción mensual o anual" : "Monthly or annual subscription" },
     { l: es ? "Funciona sin internet" : "Works offline", tj: true, cloud: false, bueno: true },
     { l: es ? "Sin crear una cuenta" : "No account to create", tj: true, cloud: false, bueno: true },
     { l: es ? "Tu historial si dejas de pagar" : "Your history if you stop paying", tj: es ? "Legible y exportable" : "Readable and exportable", cloud: es ? "Depende del proveedor" : "Up to the vendor" },

@@ -1,4 +1,4 @@
-/* Catálogo de setups, aparte del generador de la muestra: quien sólo
+/* Catálogo de setups, aparte del generador de la muestra: quien solo
    necesita el nombre no carga las 200 operaciones. */
 
 /**
@@ -23,7 +23,7 @@
  * Nada persistido se rompe: `demoStore` guarda el diario del visitante
  * con estas mismas claves desde el momento en que se escribe, y valida
  * `typeof setup === "string"`, así que una entrada antigua sigue
- * cargando — sólo deja de casar con su filtro, que es el peor caso
+ * cargando — solo deja de casar con su filtro, que es el peor caso
  * aceptable para datos de una demo sin publicar.
  */
 export const SETUP_NAMES = [
@@ -47,7 +47,7 @@ const SETUP_LABELS: Record<SetupName, { es: string; en: string }> = {
 /**
  * El nombre de un setup tal y como debe leerse en la página.
  *
- * Acepta `string` y no sólo `SetupName` porque el diario del visitante
+ * Acepta `string` y no solo `SetupName` porque el diario del visitante
  * se guarda en su navegador: una entrada escrita antes de este cambio
  * trae un valor que ya no está en el catálogo, y la respuesta correcta
  * es pintarlo tal cual —el dato es suyo— en vez de romper la vista.

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { fmtInt } from "@/lib/trading/format";
+import { arranqueMedido } from "@/lib/producto";
 
 /** Índice de funciones de /features: se filtra por ejes y marca lo que es exclusivo de Pro. */
 
@@ -187,8 +188,8 @@ const FEATURES: Feature[] = [
     id: "native",
     titleEs: "Nativa de Windows",
     titleEn: "Native Windows app",
-    descEs: "WinUI 3, no Electron. Arranca en 0,7 s con 50.000 operaciones (medido) y se integra con el sistema: bandeja, instancia única y tema claro u oscuro.",
-    descEn: "WinUI 3, not Electron. Starts in 0.7 s with 50,000 trades (measured) and fits the system: tray, single instance and light or dark theme.",
+    descEs: `WinUI 3, no Electron. Arranca en ${arranqueMedido("es")} y se integra con el sistema: bandeja, instancia única y tema claro u oscuro.`,
+    descEn: `WinUI 3, not Electron. Starts in ${arranqueMedido("en")} and fits the system: tray, single instance and light or dark theme.`,
     tags: ["speed", "local"],
   },
 ];

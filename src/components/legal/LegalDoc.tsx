@@ -5,6 +5,7 @@ import { Reveal } from "@/components/tj/Reveal";
 import type { Bloque, DocumentoLegal } from "@/lib/legal/documentos";
 import { LEGAL_ACTUALIZADO } from "@/lib/legal/documentos";
 import { titularIncompleto } from "@/lib/legal/titular";
+import { LOCALE_FECHA } from "@/lib/trading/format";
 
 /**
  * LegalDoc — el cuerpo de las cuatro páginas legales.
@@ -45,7 +46,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
      servidor que compila sí está en UTC, el texto servido y el pintado no
      coincidían: un desajuste de hidratación además de una fecha falsa. */
   const fecha = new Date(LEGAL_ACTUALIZADO).toLocaleDateString(
-    es ? "es-ES" : "en-GB",
+    LOCALE_FECHA[es ? "es" : "en"],
     { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" },
   );
 
@@ -67,7 +68,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
             elemento era este `div`, que hereda el tamaño base del sitio: 68
             de sus caracteres daban 110 de los del párrafo de 15 px que
             lleva dentro. La medida de verdad la pone ahora `.medida` en
-            cada bloque de texto; estas columnas sólo reparten el ancho
+            cada bloque de texto; estas columnas solo reparten el ancho
             entre cuerpo e índice, y por eso van en `rem`, que no depende de
             la tipografía. `justify-between` las separa a los dos extremos:
             con el cuerpo ya en su medida, sin esto quedaba un vacío grande

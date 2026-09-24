@@ -97,7 +97,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: ULTIMA_ACTUALIZACION,
     changeFrequency,
     priority,
-    /* Sólo en las diez rutas que existen en los dos idiomas —las mismas
+    /* Solo en las diez rutas que existen en los dos idiomas —las mismas
        de `LOCALIZED_PATHS`—: las etiquetas hreflang recíprocas, para que
        el buscador entienda que la versión en español y la inglesa son
        la MISMA página en dos idiomas y no dos páginas distintas con

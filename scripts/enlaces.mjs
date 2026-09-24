@@ -148,7 +148,7 @@ for await (const f of htmls(RAIZ)) {
     }
     if (en) {
       if (h === "/en" || h.startsWith("/en/")) continue; // ya está en inglés
-      /* Sólo es un fallo si la versión inglesa EXISTE. Un enlace a una
+      /* Solo es un fallo si la versión inglesa EXISTE. Un enlace a una
          página que nunca se tradujo es deliberado: volver al español es
          mejor que un 404. */
       const hermana = h === "/" ? "/en" : `/en${h}`;

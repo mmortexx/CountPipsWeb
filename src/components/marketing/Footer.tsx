@@ -8,6 +8,7 @@ import { MagneticButton } from "@/components/tj/MagneticButton";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { reopenConsent } from "@/lib/consent";
 import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
+import { LOCALE_FECHA } from "@/lib/trading/format";
 
 /**
  * Social link definition — icon + accessible label.
@@ -304,7 +305,7 @@ export function Footer() {
               The version `v1.4.2` is overridden back to text-tertiary
               below — it's pure metadata and the dimmer weight helps it
               read as secondary information next to the legal links. */}
-          {/* Los puntos separadores sólo desde `lg`, donde la fila cabe en
+          {/* Los puntos separadores solo desde `lg`, donde la fila cabe en
               una línea. Por debajo se parte, y el punto que seguía a la
               última pieza de un renglón se quedaba colgando contra el
               canto, detrás de nada; ahí separa el hueco. */}
@@ -334,7 +335,7 @@ export function Footer() {
                 destino repetido dos veces en el mismo pie no da acceso,
                 da ruido — y el que se retira era justo el inservible. */}
             {/* CUÁNDO SE PUBLICÓ ESTO. Un producto que todavía no se
-                descarga sólo puede demostrar que está vivo con fechas, y
+                descarga solo puede demostrar que está vivo con fechas, y
                 ésta sale de la fecha del último commit, no del reloj de
                 quien mira —ver `publicacion.ts`—. No vuelve la versión
                 «v1.4.2» que se retiró: eso declaraba una versión de un
@@ -345,7 +346,7 @@ export function Footer() {
                 <span>
                   {es ? "Sitio actualizado el " : "Site updated "}
                   <time dateTime={FECHA_PUBLICACION}>
-                    {new Date(FECHA_PUBLICACION).toLocaleDateString(es ? "es-ES" : "en-GB", {
+                    {new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[es ? "es" : "en"], {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -368,7 +369,7 @@ export function Footer() {
                 darlo, y darlo era un clic.
 
                 Va en el pie porque el pie está en las 154 páginas: la
-                puerta de salida no puede estar sólo en la página que
+                puerta de salida no puede estar solo en la página que
                 habla de cookies. Altura mínima de 44 px como el resto de
                 objetivos táctiles del pie. */}
             <ConsentPreferencesButton />
@@ -424,7 +425,7 @@ function GitHubIcon() {
 }
 
 /* Aquí dormían los iconos de X, YouTube, Discord y RSS: cuatro SVG
-   completos que no dibujaba nadie. El pie sólo enlaza el repositorio, y no
+   completos que no dibujaba nadie. El pie solo enlaza el repositorio, y no
    hay cuenta de ninguna de esas cuatro cosas que enlazar — pintar el icono
    antes de tener el sitio al que lleva es prometer una comunidad que no
    existe. Cuando haya una, el icono se escribe entonces; el trabajo de
