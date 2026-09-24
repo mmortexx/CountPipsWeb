@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio } from "@/lib/trading/estadistica";
-import { fmtPct, formatoUsd, pctSep } from "@/lib/trading/format";
+import { fmtPct, fmtMoney, fmtNum as fmtNumBase, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 
@@ -43,9 +43,10 @@ type ForexLotType = "standard" | "mini" | "micro";
 
 export function RiskCalculator() {
   const { lang } = useLang();
-  /* Espacio duro antes del signo en espanol, pegado en ingles: la regla
-     de la casa, escrita en `PCT_SEP` de lib/trading/format.ts. */
-  const PCT = lang === "es" ? "\u00a0%" : "%";
+  /* El espacio duro antes del signo en espanol, pegado en ingles, es
+     `PCT_SEP` de lib/trading/format.ts: aqui se llama a traves de
+     `pctSep(lang)`, sin repetirlo. */
+  const PCT = pctSep(lang);
   const es = lang === "es";
 
   const presets = [
@@ -178,25 +179,14 @@ export function RiskCalculator() {
     };
   }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, lotMultiplier, includeFriction, kellyWinRate, es]);
 
-  const nf = useMemo(() => {
-    const locale = es ? "es-ES" : "en-US";
-    return {
-      usd: formatoUsd(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2,
-      }),
-      dec1: new Intl.NumberFormat(locale, {
-        minimumFractionDigits: 1, maximumFractionDigits: 1,
-      }),
-      dec2: new Intl.NumberFormat(locale, {
-        minimumFractionDigits: 2, maximumFractionDigits: 2,
-      }),
-    };
-  }, [es]);
-
-  const fmtUsd = useCallback((n: number) => nf.usd.format(n), [nf]);
+  /* `fmtUsd`/`fmtNum` reformulados sobre los helpers de format.ts en vez
+     de reimplementar `Intl.NumberFormat` a mano: misma cifra, una sola
+     fuente de formato para toda la web. */
+  const fmtUsd = useCallback((n: number) => fmtMoney(n, lang), [lang]);
 
   const fmtNum = useCallback(
-    (n: number, dec = 2) => (dec === 1 ? nf.dec1 : nf.dec2).format(n),
-    [nf],
+    (n: number, dec = 2) => fmtNumBase(n, lang, dec),
+    [lang],
   );
 
   const tramos = tramosRiesgoBeneficio(c.riskUsd, c.profit);
@@ -560,7 +550,7 @@ export function RiskCalculator() {
               <div className="mt-3 space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-tertiary">{es ? "Win rate histórico estimado:" : "Estimated historical win rate:"}</span>
-                  <span className="tnum font-semibold text-primary">{kellyWinRate}{PCT}</span>
+                  <span className="tnum font-semibold text-primary">{fmtNum(kellyWinRate, 0)}{PCT}</span>
                 </div>
                 <input
                   type="range"

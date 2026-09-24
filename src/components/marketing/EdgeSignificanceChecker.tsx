@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { pctSep } from "@/lib/trading/format";
+import { pctSep, fmtNum as fmtNumBase } from "@/lib/trading/format";
 import { computeStatisticalPower, normalCdf } from "@/lib/trading/estadistica";
 
 export { normalCdf };
@@ -39,11 +39,10 @@ export { normalCdf };
 export function EdgeSignificanceChecker() {
   const { lang } = useLang();
   const es = lang === "es";
-  /* Espacio DURO antes del signo en espanol, pegado en ingles: la misma
-     regla que `PCT_SEP` de lib/trading/format.ts. Aqui se escribia pegado
-     en los dos idiomas, y convivia con cifras que si respetan el locale
-     ("0,2579" y "20,1%" en la misma tarjeta). */
-  const PCT = es ? "\u00a0%" : "%";
+  /* El espacio duro antes del signo en espanol, pegado en ingles, es
+     `PCT_SEP` de lib/trading/format.ts: aqui se llama a traves de
+     `pctSep(lang)`, sin repetirlo. */
+  const PCT = pctSep(lang);
 
   const [trades, setTrades] = useState(50);
   const [winRate, setWinRate] = useState(58); // %
@@ -118,10 +117,10 @@ export function EdgeSignificanceChecker() {
     };
   }, [trades, winRate, avgWinR, avgLossR, parametersCount]);
 
-  const fmtNum = (n: number, dec = 2) =>
-    es
-      ? new Intl.NumberFormat("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n)
-      : new Intl.NumberFormat("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
+  /* Reformulado sobre el helper de format.ts en vez de reimplementar
+     `Intl.NumberFormat` a mano: misma cifra, una sola fuente de formato
+     para toda la web. */
+  const fmtNum = (n: number, dec = 2) => fmtNumBase(n, lang, dec);
 
   // Reusable slider — label + accent value pill + ≥44px touch row.
   // Unified across all interactive tools (Risk/Equity/RMultiple/Savings/Edge).
@@ -414,7 +413,7 @@ export function EdgeSignificanceChecker() {
               onClick={() => {
                 const report = es
                   ? `Informe de Significancia Estadística (CountPips):\n• Muestra analizada: ${trades} operaciones\n• Win Rate observado: ${fmtNum(winRate, 0)}${PCT}\n• IC 95${PCT} Wilson Score: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R\n• z-score: ${fmtNum(c.z, 2)} | p-valor: ${fmtNum(c.pValue, 4)}\n• Veredicto: ${verdict.label} (${c.significant ? "Significativo p < 0,05" : "No significativo"})\n• Muestra 95${PCT} requerida: ${c.minSample95} ops\n• Parámetros del setup: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`
-                  : `Statistical Significance Report (CountPips):\n• Analyzed Sample: ${trades} trades\n• Observed Win Rate: ${winRate}%\n• Wilson 95% CI: [${c.wilsonLower.toFixed(1)}%, ${c.wilsonUpper.toFixed(1)}%]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${c.expectancyR.toFixed(3)} R\n• z-score: ${c.z.toFixed(2)} | p-value: ${c.pValue.toFixed(4)}\n• Verdict: ${verdict.label} (${c.significant ? "Significant p < 0.05" : "Not significant"})\n• 95% Min Sample: ${c.minSample95} trades\n• Setup Parameters: ${parametersCount} (${c.tradesPerParam.toFixed(1)}:1 ratio)`;
+                  : `Statistical Significance Report (CountPips):\n• Analyzed Sample: ${trades} trades\n• Observed Win Rate: ${fmtNum(winRate, 0)}${PCT}\n• Wilson 95% CI: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R\n• z-score: ${fmtNum(c.z, 2)} | p-value: ${fmtNum(c.pValue, 4)}\n• Verdict: ${verdict.label} (${c.significant ? "Significant p < 0.05" : "Not significant"})\n• 95% Min Sample: ${c.minSample95} trades\n• Setup Parameters: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`;
 
                 if (navigator?.clipboard?.writeText) {
                   navigator.clipboard.writeText(report).then(() => {
