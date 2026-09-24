@@ -5,8 +5,23 @@ import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
-import { formatoUsd, pctSep } from "@/lib/trading/format";
+import { formatoUsd, pctSep, fmtInt, fmtNum as fmtNumCasa } from "@/lib/trading/format";
 import { siteUrl } from "@/lib/site";
+
+/** Cuántos decimales (0 a `max`) hacen falta para representar `v` sin ceros
+ *  de más: el mismo recorte que hacía `minimumFractionDigits: 0,
+ *  maximumFractionDigits: max`, pero para pasarlo al formateador de la
+ *  casa en vez de a `toLocaleString` directamente. */
+function decimalesSinCeros(v: number, max: number): number {
+  const factor = 10 ** max;
+  let n = Math.round(Math.abs(v) * factor);
+  let d = max;
+  while (d > 0 && n % 10 === 0) {
+    n /= 10;
+    d--;
+  }
+  return d;
+}
 
 /**
  * EquityProjector — Proyector de curva de capital de alta resolución.
@@ -99,6 +114,17 @@ const CAPITAL_CHIPS = [
 ];
 
 const HORIZON_CHIPS = [1, 2, 3, 5, 10];
+
+/* El nivel de confianza de la peor racha (abajo, en el motor cuantitativo)
+   y el de la banda de varianza del gráfico se citan cada uno en tres
+   textos distintos. Una sola constante para cada uno: si el nivel
+   cambiara, los textos lo siguen solos en vez de quedar tres números
+   sueltos por corregir a mano. */
+const CONFIANZA_RACHA = 0.99;
+/** Ancho de la banda p10–p90 del cono de varianza. Va emparejado con el
+ *  z-score `z80` del motor cuantitativo (abajo): si este cambia, `z80`
+ *  tiene que cambiar con él. */
+const CONO_CONFIANZA_PCT = 80;
 
 export function EquityProjector() {
   const { lang } = useLang();
@@ -221,7 +247,7 @@ export function EquityProjector() {
       netProfit: 0,
     });
 
-    const z80 = 1.282; // 80% confianza bilateral (p10 a p90)
+    const z80 = 1.282; // z-score para CONO_CONFIANZA_PCT (80 %), bilateral (p10 a p90)
     const monthlyGrowthFactor = Math.pow(1 + Math.max(-0.99, growthPerTrade), tradesPerMonth);
 
     for (let m = 1; m <= totalMonths; m++) {
@@ -266,12 +292,12 @@ export function EquityProjector() {
         ? Math.pow(finalBalance / startBalance, 1 / years) - 1
         : -1;
 
-    // Peor racha al 99 % en todo el horizonte: P(racha >= r en N ops) ~ 1 - e^(-N·p·q^r).
+    // Peor racha a CONFIANZA_RACHA en todo el horizonte: P(racha >= r en N ops) ~ 1 - e^(-N·p·q^r).
     // La caída sale de esa racha, compuesta si se reinvierte; es un suelo, no el máximo.
     const totalTrades = tradesPerYear * years;
     const maxConsecLosses =
       lr > 0 && lr < 1 && wr > 0 && totalTrades > 0
-        ? Math.max(1, Math.log(-Math.log(0.99) / (totalTrades * wr)) / Math.log(lr))
+        ? Math.max(1, Math.log(-Math.log(CONFIANZA_RACHA) / (totalTrades * wr)) / Math.log(lr))
         : 0;
     const perdidaPorOp = Math.min(0.99, avgLossR * (riskPct / 100));
     const estMaxDDpct =
@@ -367,28 +393,23 @@ export function EquityProjector() {
          «2.182.131 US$» de la casilla vecina que sale de `Intl` y la
          pone detras. Ahora cada idioma abrevia como escribe. */
       if (compact && Math.abs(n) >= 1_000_000) {
-        const cifra = (n / 1_000_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        const valor = n / 1_000_000;
+        const cifra = fmtNumCasa(valor, lang, decimalesSinCeros(valor, 2));
         return es ? `${cifra}\u00a0M $` : `$${cifra}M`;
       }
       if (compact && Math.abs(n) >= 10_000) {
-        const cifra = (n / 1_000).toLocaleString(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        const cifra = fmtNumCasa(n / 1_000, lang, 0);
         return es ? `${cifra}\u00a0k $` : `$${cifra}k`;
       }
       return formatoUsd(locale, { maximumFractionDigits: 0,
       }).format(n);
     },
-    [es],
+    [es, lang],
   );
 
   const fmtNum = useCallback(
-    (n: number, dec = 2) => {
-      const locale = es ? "es-ES" : "en-US";
-      return new Intl.NumberFormat(locale, {
-        minimumFractionDigits: dec,
-        maximumFractionDigits: dec,
-      }).format(n);
-    },
-    [es],
+    (n: number, dec = 2) => fmtNumCasa(n, lang, dec),
+    [lang],
   );
 
   /* El espacio antes del signo es ESPANOL. En ingles el signo va pegado;
@@ -512,7 +533,7 @@ export function EquityProjector() {
       })()}`,
       `${es ? "Balance inicial" : "Starting balance"}: ${fmtUsd(startBalance)}`,
       `${es ? "Aporte mensual" : "Monthly deposit"}: ${fmtUsd(monthlyContribution)} / ${es ? "mes" : "mo"}`,
-      `${es ? "Horizonte" : "Time horizon"}: ${years} ${es ? "años" : "years"} (${tradesPerYear * years} ops)`,
+      `${es ? "Horizonte" : "Time horizon"}: ${years} ${es ? "años" : "years"} (${fmtInt(tradesPerYear * years, lang)} ops)`,
       `${es ? "Reinversión" : "Compounding mode"}: ${reinvestMode === "compound" ? (es ? "Interés compuesto" : "Compounding") : (es ? "Retiro fijo" : "Fixed")}`,
       "─".repeat(38),
       `${es ? "Ventaja" : "Edge"}:`,
@@ -526,7 +547,7 @@ export function EquityProjector() {
       `  • ${es ? "Balance final" : "Final balance"}: ${fmtUsd(c.finalBalance)}`,
       `  • ${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
       `  • CAGR: ${fmtPct(c.cagr * 100, 1)}`,
-      `  • ${es ? "Drawdown máximo estimado (99\u00a0%)" : "Estimated max drawdown (99%)"}: ${fmtPct(c.estMaxDDpct, 1)}`,
+      `  • ${es ? "Drawdown máximo estimado" : "Estimated max drawdown"} (${fmtPct(CONFIANZA_RACHA * 100, 0)}): ${fmtPct(c.estMaxDDpct, 1)}`,
       `  • ${es ? "Tiempo para duplicar" : "Time to double"}: ${c.monthsToDouble ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : "N/A"}`,
       "═".repeat(38),
       siteUrl(`${es ? "" : "/en"}/herramientas/proyector-de-capital/`),
@@ -856,7 +877,7 @@ export function EquityProjector() {
                             setMonthlyContribution(amt);
                           }}
                         >
-                          {amt === 0 ? (es ? "Sin aporte" : "None") : es ? `+${amt}\u00a0$` : `+$${amt}`}
+                          {amt === 0 ? (es ? "Sin aporte" : "None") : `+${fmtUsd(amt)}`}
                         </button>
                       );
                     })}
@@ -1108,7 +1129,7 @@ export function EquityProjector() {
                     aria-pressed={viewTab === "chart"}
                     className="px-3 text-[12px] tnum flex items-center gap-1.5 cursor-pointer"
                   >
-                    <LineChart className="w-3.5 h-3.5" />
+                    <LineChart aria-hidden className="w-3.5 h-3.5" />
                     <span>{es ? "Curva" : "Curve"}</span>
                   </button>
                   <button
@@ -1117,7 +1138,7 @@ export function EquityProjector() {
                     aria-pressed={viewTab === "table"}
                     className="px-3 text-[12px] tnum flex items-center gap-1.5 cursor-pointer"
                   >
-                    <Table className="w-3.5 h-3.5" />
+                    <Table aria-hidden className="w-3.5 h-3.5" />
                     <span>{es ? "Por años" : "By year"}</span>
                   </button>
                 </div>
@@ -1137,7 +1158,7 @@ export function EquityProjector() {
                         border: "1px solid rgb(var(--accent-base))",
                       }}
                     />
-                    <span>{es ? `Banda del 80\u00a0%` : "80% band"}</span>
+                    <span>{es ? `Banda del ${fmtPct(CONO_CONFIANZA_PCT, 0)}` : `${fmtPct(CONO_CONFIANZA_PCT, 0)} band`}</span>
                   </button>
                 )}
               </div>
@@ -1158,7 +1179,7 @@ export function EquityProjector() {
                           ? es
                             ? "Inicio (Año 0)"
                             : "Start (Year 0)"
-                          : `${es ? "Año" : "Year"} ${activePoint.year} (${activePoint.trades} ${es ? "ops" : "trades"})`}
+                          : `${es ? "Año" : "Year"} ${fmtNumCasa(activePoint.year, lang, decimalesSinCeros(activePoint.year, 2))} (${fmtInt(activePoint.trades, lang)} ${es ? "ops" : "trades"})`}
                       </span>
                     </div>
 
@@ -1454,7 +1475,7 @@ export function EquityProjector() {
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold flex items-center justify-between">
                     <span>{es ? "Balance proyectado" : "Projected balance"}</span>
-                    <ArrowUpRight className="w-3 h-3 text-[rgb(var(--accent-base))]" />
+                    <ArrowUpRight aria-hidden className="w-3 h-3 text-[rgb(var(--accent-base))]" />
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--accent-base))]">
                     {fmtUsd(c.finalBalance, true)}
@@ -1517,13 +1538,17 @@ export function EquityProjector() {
                   className="caja-cifra p-3.5"
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
-                    {es ? "Drawdown máx. est. (99\u00a0%)" : "Est. max DD (99%)"}
+                    {es
+                      ? `Drawdown máx. est. (${fmtPct(CONFIANZA_RACHA * 100, 0)})`
+                      : `Est. max DD (${fmtPct(CONFIANZA_RACHA * 100, 0)})`}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--pnl-neg))]">
                     −{fmtPct(c.estMaxDDpct, 1)}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
-                    {es ? `Peor racha: ~${c.maxConsecLosses} pérdidas` : `Streak: ~${c.maxConsecLosses} losses`}
+                    {es
+                      ? `Peor racha: ~${fmtInt(c.maxConsecLosses, lang)} pérdidas`
+                      : `Streak: ~${fmtInt(c.maxConsecLosses, lang)} losses`}
                   </div>
                 </div>
 
@@ -1570,8 +1595,8 @@ export function EquityProjector() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span className="text-[12px] tnum text-[var(--ink-3)]">
                   {es
-                    ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"} y banda de varianza del 80\u00a0%. No es una promesa.`
-                    : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection with an 80% variance band. Not a promise.`}
+                    ? `Proyección ${reinvestMode === "compound" ? "con interés compuesto" : "con riesgo fijo"} y banda de varianza del ${fmtPct(CONO_CONFIANZA_PCT, 0)}. No es una promesa.`
+                    : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection with an ${fmtPct(CONO_CONFIANZA_PCT, 0)} variance band. Not a promise.`}
                 </span>
 
                 <button
@@ -1579,7 +1604,7 @@ export function EquityProjector() {
                   onClick={copySummary}
                   className="toque-comodo -mx-1 px-1 py-2 text-[13px] font-medium transition-colors cursor-pointer flex items-center gap-2 text-primary hover:text-[rgb(var(--accent-base))]"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? <Check aria-hidden className="w-3.5 h-3.5" /> : <Copy aria-hidden className="w-3.5 h-3.5" />}
                   <span>
                     {copied
                       ? es
@@ -1596,8 +1621,8 @@ export function EquityProjector() {
               <div className="border-t border-[var(--ficha-division)] pt-3">
                 <p className="medida tnum m-0 text-[11px] leading-relaxed text-[var(--ink-3)]">
                   {es
-                    ? "Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al 99 % de confianza estadística."
-                    : "Statistical note: This projection assumes constant mathematical expectancy. In live trading, regimes shift and drawdowns may be larger. Estimated max drawdown models streaks at 99% confidence."}
+                    ? `Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al ${fmtPct(CONFIANZA_RACHA * 100, 0)} de confianza estadística.`
+                    : `Statistical note: This projection assumes constant mathematical expectancy. In live trading, regimes shift and drawdowns may be larger. Estimated max drawdown models streaks at ${fmtPct(CONFIANZA_RACHA * 100, 0)} confidence.`}
                 </p>
               </div>
             </div>
