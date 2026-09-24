@@ -2155,6 +2155,13 @@ asienta; nada rebota ni brilla.
   palabras, cada una a menos del 5 % de su sitio a los 962–989 ms (quieta
   del todo a 1578–1610); sin ellas, 80–90 ms. Es el precio del gesto y se
   deja así.
+- **Capas abiertas, repasadas en claro y en oscuro** (menú de producto,
+  idioma, ayuda de atajos, aviso de cookies a 1440 y 390, cajón del móvil,
+  paleta y ayuda de la demo). Arreglado: la ayuda de atajos de la demo va
+  anclada a su barra de estado y con `?` se abría FUERA de la pantalla en
+  los cuatro tamaños (a 1440×900, en 994–1200 px); ahora se desplaza lo
+  justo para verse. Guarda nueva en `humo.mjs`, vista en rojo en las ocho
+  combinaciones de pantalla e idioma antes del arreglo.
 - **La guarda del titular de `humo.mjs` estaba ciega desde la tanda 25**:
   medía la opacidad del h1, que ya no se anima (se animan sus palabras), y
   daba «legible» al instante. Ahora espera a las palabras; vista en rojo

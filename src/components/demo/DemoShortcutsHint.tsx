@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { useDemo } from "./DemoContext";
@@ -55,6 +55,20 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   const { page } = useDemo();
   const es = lang === "es";
   const mando = useTeclaMando();
+  const caja = useRef<HTMLDivElement>(null);
+
+  /* Va anclada encima de la barra de estado, junto al icono que también la
+     abre. Con `?` esa esquina puede estar fuera de la pantalla (a 1440×900
+     quedaba 94 px por debajo del borde) y la ayuda se abría sin que nadie
+     la viera: se desplaza lo justo para enseñarla entera. */
+  useEffect(() => {
+    if (!open) return;
+    const id = requestAnimationFrame(() => {
+      const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      caja.current?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: quieto ? "auto" : "smooth" });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [open]);
 
   // While open: mark body so the AppDemo `?` interceptor + GlobalShortcuts
   // can skip their own keys, and capture Escape on the way down so any
@@ -132,6 +146,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
     <AnimatePresence>
       {open && (
         <motion.div
+          ref={caja}
           className="absolute bottom-9 right-2 z-30 w-[17rem] max-w-[calc(100%-1rem)]"
           role="dialog"
           aria-modal="false"

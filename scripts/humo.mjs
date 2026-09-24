@@ -238,6 +238,8 @@ const contrastesMedidos = [];
 const laminasVistas = [];
 /** Lo que enseñó cada lámina en tema oscuro, para que el informe diga que se miró. */
 const temasLaminaVistos = [];
+/** Dónde se abrió la ayuda de atajos de la demo, por pantalla. */
+const ayudasDemo = [];
 /** Ídem para el idioma: cuántos caracteres se han llegado a leer en cada
     página inglesa. Un `innerText` vacío pasaría la comprobación en verde
     sin haber mirado una sola palabra. */
@@ -895,6 +897,39 @@ for (const pantalla of PANTALLAS) {
             }
             if (tema === "dark") temasLaminaVistos.push(`${etiqueta} ${sirve.join(",")}`);
           });
+        }
+      }
+
+      /* ── LA AYUDA DE LA DEMO SE ABRE DONDE SE VE ────────────────────
+         Va anclada a la barra de estado de la demo, y a 1440×900 esa
+         esquina quedaba debajo del borde: `?` la abría sin que se viera
+         nada. Se abre como lo haría alguien —foco en la demo y `?`— y se
+         exige que quepa entera en la ventana. */
+      if (ruta.endsWith("/demo")) {
+        const pestana = pagina.locator(".demo-window [role=tab]").first();
+        if (await pestana.count()) {
+          await pestana.click();
+          await pagina.keyboard.press("Shift+Slash");
+          await pagina.waitForTimeout(900);
+          const ayuda = await pagina.evaluate(() => {
+            const d = document.querySelector('.demo-window [role="dialog"][aria-modal="false"]');
+            if (!d) return null;
+            const r = d.getBoundingClientRect();
+            return { arriba: Math.round(r.top), abajo: Math.round(r.bottom), alto: innerHeight };
+          });
+          await pagina.keyboard.press("Escape");
+          if (!ayuda) {
+            fallos.push(`${etiqueta}: «?» con la demo enfocada no abre su ayuda de atajos`);
+          } else {
+            ayudasDemo.push(`${etiqueta} ${ayuda.arriba}–${ayuda.abajo}/${ayuda.alto}`);
+            if (ayuda.arriba < 0 || ayuda.abajo > ayuda.alto) {
+              fallos.push(
+                `${etiqueta}: la ayuda de atajos de la demo se abre fuera de la pantalla (${ayuda.arriba}–${ayuda.abajo} px con la ventana en ${ayuda.alto})`
+              );
+            }
+          }
+        } else {
+          avisos.push(`${etiqueta}: no encuentro las pestañas de la demo para abrir su ayuda`);
         }
       }
 
@@ -1979,6 +2014,11 @@ if (temasLaminaVistos.length) {
   );
 } else {
   console.warn("  aviso  ninguna lámina comprobada por tema: nadie vigila que el oscuro enseñe su captura");
+}
+if (ayudasDemo.length) {
+  console.log(`[humo] ayuda de la demo — abierta con «?» en ${ayudasDemo.length} pantallas: ${ayudasDemo.join("; ")}`);
+} else {
+  console.warn("  aviso  la ayuda de atajos de la demo no se abrió en ninguna pantalla: nadie vigila dónde aparece");
 }
 
 if (idiomasRevisados.length) {
