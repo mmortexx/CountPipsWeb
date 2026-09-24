@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 
 import { PLAZAS, estaAbierta, horaLocal, proximaApertura, ventanaUtc, type Plaza } from "@/lib/sesiones";
+import { fmtNum } from "@/lib/trading/format";
 
 /**
  * Reloj de sesiones con los horarios locales de la app de escritorio: cada plaza
@@ -117,7 +118,14 @@ export function SessionClock() {
     if (dd > 0) return `${dd} d ${hh} h`;
     return hh > 0 ? `${hh} h ${mm} min` : `${mm} min`;
   };
-  const etiquetaDesfase = `UTC${desfaseRef >= 0 ? "+" : "−"}${Math.abs(desfaseRef)}`;
+  /* El desfase de "tu hora" puede caer en una zona de media o cuarto de
+     hora (India, Irán…): `${n}` crudo lo escribía siempre con punto, la
+     forma inglesa, también en español. `fmtNum` decide la coma y cuántos
+     decimales hacen falta según si el desfase es entero, de media o de
+     cuarto de hora. */
+  const desfaseAbs = Math.abs(desfaseRef);
+  const decimalesDesfase = desfaseAbs % 1 === 0 ? 0 : desfaseAbs % 0.5 === 0 ? 1 : 2;
+  const etiquetaDesfase = `UTC${desfaseRef >= 0 ? "+" : "−"}${fmtNum(desfaseAbs, lang, decimalesDesfase)}`;
   const pct = (h: number) => (h / 24) * 100;
 
   const tramos = (a: number, b: number) => (a <= b ? [[a, b]] : [[a, 24], [0, b]]);

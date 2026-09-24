@@ -2,7 +2,12 @@
 
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
-import { formatoUsd, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum as fmtNumBase, fmtPct, pctSep } from "@/lib/trading/format";
+
+/** Tasa de reinversión ilustrativa (S&P 500 indexado): una sola cifra para
+ *  el cálculo y para la nota que la describe, no una escrita a mano en
+ *  cada sitio. */
+const TASA_REINVERSION_ANUAL = 0.08;
 
 /**
  * SavingsCalculator — illustrative post-beta cost scenario.
@@ -64,7 +69,7 @@ export function SavingsCalculator() {
 
     // Proyección de ahorro con Interés Compuesto reinvertido al 8% anual (rendimiento indexado SP500)
     // Aporte mensual de altMonthly durante years * 12 meses
-    const monthlyRate = 0.08 / 12;
+    const monthlyRate = TASA_REINVERSION_ANUAL / 12;
     const totalMonths = years * 12;
     let compoundInvested = 0;
     for (let m = 1; m <= totalMonths; m++) {
@@ -86,15 +91,9 @@ export function SavingsCalculator() {
   // sigue el signo en vez de estar fijo en verde.
   const savingsColor = c.savings >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
 
-  const fmtUsd = (n: number) =>
-    es
-      ? formatoUsd("es-ES", { maximumFractionDigits: 0 }).format(n)
-      : formatoUsd("en-US", { maximumFractionDigits: 0 }).format(n);
+  const fmtUsd = (n: number) => fmtMoney(n, lang, { decimals: 0 });
 
-  const fmtNum = (n: number, dec = 0) =>
-    es
-      ? new Intl.NumberFormat("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n)
-      : new Intl.NumberFormat("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
+  const fmtNum = (n: number, dec = 0) => fmtNumBase(n, lang, dec);
 
   // SVG curva: suscripción (creciente) vs CountPips (plano)
   const svgW = 520;
@@ -141,9 +140,11 @@ export function SavingsCalculator() {
             )}
           </h2>
           <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
-            {es
-              ? "Core 149\u00a0$ y Pro 249\u00a0$ son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial."
-              : "Core at $149 and Pro at $249 are indicative launch prices. Compare a monthly cost scenario without treating the result as a commercial promise."}
+            {es ? (
+              <>Core {fmtUsd(COUNTPIPS_PLANS[0].price)} y Pro {fmtUsd(COUNTPIPS_PLANS[1].price)} son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial.</>
+            ) : (
+              <>Core at {fmtUsd(COUNTPIPS_PLANS[0].price)} and Pro at {fmtUsd(COUNTPIPS_PLANS[1].price)} are indicative launch prices. Compare a monthly cost scenario without treating the result as a commercial promise.</>
+            )}
           </p>
 
           {/* Plan CountPips */}
@@ -342,7 +343,7 @@ export function SavingsCalculator() {
             <Result label={es ? "Referencia CountPips" : "CountPips reference"} value={fmtUsd(c.cpPrice)} color="rgb(var(--accent-base))" />
             <Result label={es ? "Alternativa acumulada" : "Cumulative alternative"} value={fmtUsd(c.altTotal)} color="rgb(var(--pnl-neg))" />
             <Result label={es ? "Ahorro directo" : "Direct savings"} value={fmtUsd(c.savings)} color={savingsColor} />
-            <Result label={es ? "Reinvertido al 8 % anual" : "Compounded at 8% p.a."} value={fmtUsd(c.compoundAdvantage)} color="rgb(var(--pnl-pos))" />
+            <Result label={es ? `Reinvertido al ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual` : `Compounded at ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} p.a.`} value={fmtUsd(c.compoundAdvantage)} color="rgb(var(--pnl-pos))" />
           </div>
 
           {/* Break-even note */}
@@ -359,8 +360,8 @@ export function SavingsCalculator() {
             </div>
             <p className="tnum m-0 text-[13px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
               {es
-                ? `A partir del mes ${c.breakEvenMonths}, la suscripción ya ha costado más que el pago único. Si la diferencia rindiera un 8\u00a0% anual, a ${years} años serían ${fmtUsd(c.compoundAdvantage)}; es un supuesto, no una rentabilidad.`
-                : `From month ${c.breakEvenMonths}, the subscription has cost more than the one-time payment. If the difference earned 8% a year, over ${years} years it would be ${fmtUsd(c.compoundAdvantage)}; an assumption, not a return.`}
+                ? `A partir del mes ${c.breakEvenMonths}, la suscripción ya ha costado más que el pago único. Si la diferencia rindiera un ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual, a ${years} años serían ${fmtUsd(c.compoundAdvantage)}; es un supuesto, no una rentabilidad.`
+                : `From month ${c.breakEvenMonths}, the subscription has cost more than the one-time payment. If the difference earned ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} a year, over ${years} years it would be ${fmtUsd(c.compoundAdvantage)}; an assumption, not a return.`}
             </p>
           </div>
         </div>

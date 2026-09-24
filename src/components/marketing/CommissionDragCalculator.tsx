@@ -2,9 +2,15 @@
 
 import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney, fmtNum, fmtPct } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 import { CampoCifra } from "@/components/tj/CampoCifra";
+
+/** Umbral de fuga alta: una sola cifra para el aviso visual y para el
+ *  texto del diagnóstico, no una repetida a mano en cada sitio. */
+const UMBRAL_DRAG_ALTO = 25;
+/** Ratio objetivo:riesgo usado para el win rate de equilibrio de la ficha. */
+const RATIO_RR_EQUILIBRIO = 1.5;
 
 interface InstrumentConfig {
   id: string;
@@ -193,8 +199,8 @@ export function CommissionDragCalculator() {
       : 0;
   const breakEvenUnitsPerTrade = breakEvenTicksPerTrade * inst.tickSize;
 
-  // Win rate de equilibrio a 1.5:1 R:R
-  const nominalStopPerTrade = grossProfitPerTrade / 1.5;
+  // Win rate de equilibrio al ratio objetivo:riesgo declarado arriba
+  const nominalStopPerTrade = grossProfitPerTrade / RATIO_RR_EQUILIBRIO;
   const breakEvenWinRate =
     nominalStopPerTrade + grossProfitPerTrade > 0
       ? ((nominalStopPerTrade + totalCostPerTrade) / (nominalStopPerTrade + grossProfitPerTrade)) * 100
@@ -466,7 +472,7 @@ export function CommissionDragCalculator() {
                     : fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
                 <span className="text-[11px] text-tertiary block mt-0.5">
-                  {es ? "a 1,5:1 R:R" : "at 1.5:1 R:R"}
+                  {es ? `a ${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)}:1 R:R` : `at ${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)}:1 R:R`}
                 </span>
               </div>
             </div>
@@ -474,20 +480,20 @@ export function CommissionDragCalculator() {
             {/* Diagnóstico Institucional */}
             <div className="mt-5 pt-4 border-t border-[var(--line)]">
               <div className="flex items-start gap-2">
-                {costDragPct > 25 ? (
-                  <AlertTriangle size={16} className="text-[rgb(var(--pnl-neg))] shrink-0 mt-0.5" />
+                {costDragPct > UMBRAL_DRAG_ALTO ? (
+                  <AlertTriangle size={16} aria-hidden="true" className="text-[rgb(var(--pnl-neg))] shrink-0 mt-0.5" />
                 ) : (
-                  <ShieldCheck size={16} className="text-[rgb(var(--accent-base))] shrink-0 mt-0.5" />
+                  <ShieldCheck size={16} aria-hidden="true" className="text-[rgb(var(--accent-base))] shrink-0 mt-0.5" />
                 )}
                 <p className="text-[13px] text-secondary leading-relaxed m-0">
                   {netAnnual < 0
                     ? es
                       ? "Los costes superan la ganancia bruta: con estos números la cuenta pierde aunque cada operación alcance su objetivo."
                       : "Costs exceed the gross profit: with these numbers the account loses even if every trade reaches its target."
-                    : costDragPct > 25
+                    : costDragPct > UMBRAL_DRAG_ALTO
                     ? es
-                      ? "Más del 25 % de tu ganancia bruta se va en costes. Con este objetivo por operación, comisiones y deslizamiento pesan tanto como parte de tu ventaja."
-                      : "Over 25% of your gross profit goes to costs. With this target per trade, fees and slippage weigh as much as part of your edge."
+                      ? `Más del ${UMBRAL_DRAG_ALTO}${pctSep(lang)} de tu ganancia bruta se va en costes. Con este objetivo por operación, comisiones y deslizamiento pesan tanto como parte de tu ventaja.`
+                      : `Over ${UMBRAL_DRAG_ALTO}${pctSep(lang)} of your gross profit goes to costs. With this target per trade, fees and slippage weigh as much as part of your edge.`
                     : es
                     ? "Con estos números, la ganancia por operación cubre comisiones y deslizamiento con margen."
                     : "With these numbers, the gain per trade covers fees and slippage with room to spare."}

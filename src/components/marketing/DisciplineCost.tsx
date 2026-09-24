@@ -4,7 +4,12 @@ import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
-import { fmtMoney, fmtNum, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
+
+/** Tasa de reinversión ilustrativa (S&P 500 indexado) que usan la ficha de
+ *  proyección y su nota: una sola cifra, no una escrita a mano en el texto
+ *  y otra en el cálculo. */
+const TASA_REINVERSION_ANUAL = 0.08;
 
 interface MistakeItem {
   id: string;
@@ -497,12 +502,14 @@ export function DisciplineCost() {
                   {es ? "Capital fugado acumulado" : "Cumulative leaked capital"}
                 </span>
                 <span className="mb-2.5 block text-[12px] text-tertiary">
-                  {es ? "Supuesto: reinvertido al 8 % anual" : "Assumption: reinvested at 8% p.a."}
+                  {es
+                    ? `Supuesto: reinvertido al ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual`
+                    : `Assumption: reinvested at ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} p.a.`}
                 </span>
                 <div className="tj-matriz grid-cols-3 text-center tnum">
                   {([1, 3, 5] as const).map((yr) => {
                     const months = yr * 12;
-                    const rMonthly = 0.08 / 12;
+                    const rMonthly = TASA_REINVERSION_ANUAL / 12;
                     let fv = 0;
                     for (let m = 1; m <= months; m++) {
                       fv = (fv + totalLeakMonthly) * (1 + rMonthly);
@@ -556,7 +563,9 @@ export function DisciplineCost() {
                       className="caja-cifra min-w-0 px-1.5 py-3"
                     >
                       <span className="block text-[12px] text-tertiary">
-                        {es ? `Evitando el ${f * 100} %` : `Avoiding ${f * 100}%`}
+                        {es
+                          ? `Evitando el ${fmtNum(f * 100, lang, 0)}${pctSep(lang)}`
+                          : `Avoiding ${fmtNum(f * 100, lang, 0)}${pctSep(lang)}`}
                       </span>
                       <span
                         className="tnum cifra-sm block whitespace-nowrap font-semibold text-[rgb(var(--pnl-pos))]"

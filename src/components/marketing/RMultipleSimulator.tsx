@@ -5,7 +5,7 @@ import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
-import { formatoUsd, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum as fmtNumBase, fmtR, pctSep } from "@/lib/trading/format";
 import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
 import { mulberry32 } from "@/lib/trading/azar";
 
@@ -170,10 +170,7 @@ export function RMultipleSimulator() {
     };
   }, [startBalance, trades, winRate, avgWinR, avgLossR, riskPct, monthlyWithdrawal, seed]);
 
-  const fmtUsd = (n: number) =>
-    es
-      ? formatoUsd("es-ES", { maximumFractionDigits: 0 }).format(n)
-      : formatoUsd("en-US", { maximumFractionDigits: 0 }).format(n);
+  const fmtUsd = (n: number) => fmtMoney(n, lang, { decimals: 0 });
 
   /* Importe corto para las cinco celdas de percentil, que a 320 px miden
      poco mas de 70 px. A mano y no con `notation: "compact"` de Intl:
@@ -186,10 +183,7 @@ export function RMultipleSimulator() {
     return fmtUsd(n);
   };
 
-  const fmtNum = (n: number, dec = 2) =>
-    es
-      ? new Intl.NumberFormat("es-ES", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n)
-      : new Intl.NumberFormat("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec }).format(n);
+  const fmtNum = (n: number, dec = 2) => fmtNumBase(n, lang, dec);
 
   const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)}${pctSep(lang)}`;
 
@@ -420,7 +414,7 @@ export function RMultipleSimulator() {
                   className="tnum"
                   style={{ fontSize: 26, fontWeight: 600, color: c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                 >
-                  {c.expectancyR >= 0 ? "+" : ""}{fmtNum(c.expectancyR, 3)} R
+                  {fmtR(c.expectancyR, lang, 3)}
                 </span>
               </div>
             </div>
