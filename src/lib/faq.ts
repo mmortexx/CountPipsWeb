@@ -115,7 +115,7 @@ export const FAQ_EN: QA[] = [
     a: "Yes. Explore the live demo with deterministic data, no sign-up and nothing to download. The desktop installer is delivered only to invited private-pilot participants.",
   },
   {
-    q: "What's the difference between Core and Pro?",
+    q: "What’s the difference between Core and Pro?",
     a: "Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and 2 trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.",
   },
   {

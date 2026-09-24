@@ -53,9 +53,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     notaEn:
       "Below the logging form, the overview screen splits in two: the performance curve with " +
       "its drawdown areas shaded and the balance as a dashed line, and the month calendar " +
-      "with each day's result and each week's total. Above them, how your last ten trades " +
+      "with each day’s result and each week’s total. Above them, how your last ten trades " +
       "are going and a 1-to-5 question about how trading felt today, which is recorded " +
-      "against the day's trades.",
+      "against the day’s trades.",
     altEs:
       "Pantalla de resumen: arriba, el rendimiento rodante de las diez últimas operaciones " +
       "con su win rate, su expectancy y su P&L; debajo, una pregunta para puntuar del 1 al 5 " +
@@ -66,7 +66,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "Overview screen: at the top, the rolling performance of the last ten trades with " +
       "their win rate, expectancy and P&L; below, a question to rate from 1 to 5 how trading " +
       "felt today, the performance curve with its performance and balance checkboxes, and a " +
-      "monthly calendar with each day's profit or loss, the weekly total in the margin and " +
+      "monthly calendar with each day’s profit or loss, the weekly total in the margin and " +
       "the best and worst day at the foot.",
     detalleEs: "el calendario del mes",
     detalleEn: "the month calendar",
@@ -108,7 +108,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "selector, entry, stop, an optional target and an open exit, the risk in dollars and as " +
       "a share of the account on a stop–entry–1 R ruler, a note comparing the size with " +
       "half-Kelly, the quantity and buttons to add detail, calculate size, save a draft, “Saw " +
-      "it, didn't take it” and log the trade. Below, a row with the account metrics.",
+      "it, didn’t take it” and log the trade. Below, a row with the account metrics.",
     detalleEs: "los campos de la operación",
     detalleEn: "the trade fields",
   },
@@ -121,7 +121,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     pestanaEs: "Guardián",
     pestanaEn: "Guardian",
     tituloEs: "Cuando el tamaño no es el tuyo, lo dice antes",
-    tituloEn: "When the size isn't yours, it says so first",
+    tituloEn: "When the size isn’t yours, it says so first",
     notaEs:
       "La misma operación con más cantidad y el stop más lejos: el riesgo se dispara y " +
       "aparecen dos avisos. Uno compara lo que estás arriesgando con lo que arriesgas de " +
@@ -130,9 +130,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "No bloquea el botón: te obliga a pulsarlo habiéndolo leído.",
     notaEn:
       "The same trade with more size and a wider stop: risk shoots up and two notices " +
-      "appear. One compares what you're risking with what you usually risk across two " +
+      "appear. One compares what you’re risking with what you usually risk across two " +
       "hundred trades; the other places the size against full Kelly and points out that " +
-      "beyond it, more risk means less expected growth. It doesn't disable the button: it " +
+      "beyond it, more risk means less expected growth. It doesn’t disable the button: it " +
       "makes you press it having read them.",
     altEs:
       "El mismo formulario con más cantidad y el stop más lejos: el riesgo en dólares y en " +
@@ -141,7 +141,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "frente a Kelly»— antes de los botones de guardar borrador y registrar la operación.",
     altEn:
       "The same form with more size and a wider stop: the risk in dollars and as a share of " +
-      "the account grows and two notices with a warning triangle stack below —“This isn't " +
+      "the account grows and two notices with a warning triangle stack below —“This isn’t " +
       "how you usually trade”, which compares the risk with the usual one, and “Your size " +
       "against Kelly”— before the save-draft and log-trade buttons.",
     detalleEs: "el riesgo y sus dos avisos",
@@ -165,7 +165,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "dos clics.",
     notaEn:
       "Filters by instrument, direction, outcome, rule compliance, setup, behaviour, slippage " +
-      "and session. The table isn't the point: the row above it is —labelled “what's on " +
+      "and session. The table isn’t the point: the row above it is —labelled “what’s on " +
       "screen”— and it recalculates over whatever survives the filter. Asking “what if I drop " +
       "the days I broke my plan?” stops being a hypothesis and becomes two clicks.",
     altEs:
@@ -203,8 +203,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "A table compares the month, the quarter, the year and the full history by the same " +
       "criteria, and no row appears without the number of trades it is computed on. Below, " +
       "the verdict: whether expectancy is distinguishable from zero, with its p-value. And it " +
-      "says so explicitly — it doesn't guarantee the future, it says what you've got so far " +
-      "doesn't look like chance.",
+      "says so explicitly — it doesn’t guarantee the future, it says what you’ve got so far " +
+      "doesn’t look like chance.",
     altEs:
       "Pantalla de analítica: el neto de todo el histórico en grande y una tabla por periodo " +
       "con operaciones, neto, win rate, profit factor y drawdown máximo; el resumen del " +
@@ -239,9 +239,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     notaEn:
       "Hours of sleep, mental state, physical state, and whether you have a plan today. It " +
       "saves itself, with no button. And where another program would put a conclusion, this " +
-      "one writes that there still aren't enough check-ins to cross how you arrive with how " +
+      "one writes that there still aren’t enough check-ins to cross how you arrive with how " +
       "you trade, and not enough days on both sides to compare. It would rather say nothing " +
-      "than say something it can't yet support.",
+      "than say something it can’t yet support.",
     altEs:
       "Pantalla de diario con el check-in del día: horas de sueño con controles de más y " +
       "menos, estado mental y físico como barras de cinco pasos, y un interruptor de «¿tienes " +
@@ -252,9 +252,9 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     altEn:
       "Journal screen with the daily check-in: hours of sleep with plus and minus controls, " +
       "mental and physical state as five-step bars, and a “do you have a plan today?” switch. " +
-      "Below, the notice that there aren't enough check-ins yet to draw conclusions, the " +
+      "Below, the notice that there aren’t enough check-ins yet to draw conclusions, the " +
       "“does journalling pay off?” block with days with and without a written plan or review " +
-      "and the warning that there aren't enough days yet to compare, and performance by time " +
+      "and the warning that there aren’t enough days yet to compare, and performance by time " +
       "of day, from morning to night.",
     detalleEs: "el check-in del día y sus avisos",
     detalleEn: "the daily check-in and its notices",
@@ -279,8 +279,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "Five strategies with their curve, sample, expectancy, win rate, compliance rate and R " +
       "spread with its median and central 50 %. In this sample three come out “edge " +
       "suggestive” and two “inconclusive”, even though one of those two makes money: the " +
-      "stamp doesn't reward the result, it measures whether the sample is enough to claim " +
-      "anything. A playbook where everything works in the first month isn't measuring, it's " +
+      "stamp doesn’t reward the result, it measures whether the sample is enough to claim " +
+      "anything. A playbook where everything works in the first month isn’t measuring, it’s " +
       "flattering.",
     altEs:
       "Pantalla de playbook con cinco fichas —rango, tendencia, ruptura, reversión y " +

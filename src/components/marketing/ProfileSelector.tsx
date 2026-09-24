@@ -69,7 +69,7 @@ export function ProfileSelector() {
                 lo que hay al otro lado del enlace. */}
             {es
               ? "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan."
-              : "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm's rules if you're being evaluated."}
+              : "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated."}
           </p>
         </div>
 

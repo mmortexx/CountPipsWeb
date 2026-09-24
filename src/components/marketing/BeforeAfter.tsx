@@ -19,10 +19,10 @@ export function BeforeAfter() {
       ]
     : [
         ["You trade on instinct", "Every trade has a plan"],
-        ["You don't remember why you entered", "The reason is written on every trade"],
-        ["You repeat the same mistakes", "You know what worked and what didn't"],
-        ["You don't know your real win rate", "You know your expectancy per setup"],
-        ["You lose money and don't know why", "You see what breaking the plan costs you"],
+        ["You don’t remember why you entered", "The reason is written on every trade"],
+        ["You repeat the same mistakes", "You know what worked and what didn’t"],
+        ["You don’t know your real win rate", "You know your expectancy per setup"],
+        ["You lose money and don’t know why", "You see what breaking the plan costs you"],
       ];
 
   return (
@@ -45,7 +45,7 @@ export function BeforeAfter() {
           entradilla={
             es
               ? "No te prometemos rentabilidad. Te damos un espejo: lo que haces hoy, sin maquillaje, y lo que cambia cuando cada operación tiene un plan."
-              : "We don't promise profits. We give you a mirror: what you do today, without makeup, and what changes when every trade has a plan."
+              : "We don’t promise profits. We give you a mirror: what you do today, without makeup, and what changes when every trade has a plan."
           }
         />
 

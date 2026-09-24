@@ -15,7 +15,7 @@ const ROWS: Row[] = [
     labelEn: "Where your data lives",
     cells: [
       { es: "Tu equipo", en: "Your machine" },
-      { es: "Servidor del proveedor", en: "The vendor's server" },
+      { es: "Servidor del proveedor", en: "The vendor’s server" },
       { es: "Tu equipo", en: "Your machine" },
     ],
   },

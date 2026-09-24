@@ -132,7 +132,7 @@ const privacidad: DocumentoLegal = {
               en: [
                 "Contact",
                 "Your name, your email and your message",
-                "Web3Forms, which forwards it to the owner's email",
+                "Web3Forms, which forwards it to the owner’s email",
               ],
             },
           ],
@@ -218,7 +218,7 @@ const privacidad: DocumentoLegal = {
             "Admission endpoint — receives and deduplicates applications for the selection team.",
             "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
             "EU PostHog — receives technical events only after analytics consent.",
-            "Web3Forms — receives the contact form and forwards it to the owner's email.",
+            "Web3Forms — receives the contact form and forwards it to the owner’s email.",
           ],
         },
         {
@@ -316,7 +316,7 @@ const cookies: DocumentoLegal = {
         {
           tipo: "parrafo",
           es: "Las preferencias de tema y consentimiento se guardan localmente; el idioma no, porque sale de la dirección de la página (/en para el inglés). Si aceptas analítica, PostHog puede guardar identificadores técnicos para medir el uso agregado; puedes retirar ese permiso desde el aviso de cookies o borrando el almacenamiento del sitio.",
-          en: "Theme and consent preferences are stored locally; the language is not, because it comes from the page address (/en for English). If you accept analytics, PostHog may store technical identifiers for aggregate measurement; you can withdraw permission from the cookie notice or by clearing this site's storage.",
+          en: "Theme and consent preferences are stored locally; the language is not, because it comes from the page address (/en for English). If you accept analytics, PostHog may store technical identifiers for aggregate measurement; you can withdraw permission from the cookie notice or by clearing this site’s storage.",
         },
         {
           tipo: "parrafo",
@@ -392,7 +392,7 @@ const cookies: DocumentoLegal = {
         {
           tipo: "parrafo",
           es: "Pulsa «Preferencias de privacidad» al final de cualquier página y elige «Solo necesarias»: eso retira el permiso y detiene la medición. Para borrar además lo ya guardado en tu equipo, vacía los datos de este sitio desde los ajustes de tu navegador. Y si quieres suprimir una solicitud de acceso anticipado, escríbenos.",
-          en: "Use “Privacy preferences” at the bottom of any page and choose “Necessary only”: that withdraws the permission and stops measurement. To also erase what is already stored on your device, clear this site's data from your browser settings. And to delete an early-access application, write to us.",
+          en: "Use “Privacy preferences” at the bottom of any page and choose “Necessary only”: that withdraws the permission and stops measurement. To also erase what is already stored on your device, clear this site’s data from your browser settings. And to delete an early-access application, write to us.",
         },
       ],
     },
@@ -492,7 +492,7 @@ const terminos: DocumentoLegal = {
           en: [
             "Do not attempt to interfere with how the site works or access parts that are not public.",
             "Do not use the forms to send unlawful content, unsolicited advertising or third-party data without their permission.",
-            "Do not reproduce the site's content in bulk or by automated means.",
+            "Do not reproduce the site’s content in bulk or by automated means.",
           ],
         },
       ],

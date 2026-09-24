@@ -1304,7 +1304,7 @@ function TodayBriefing() {
   return (
     <div className="demo-card p-5">
       <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
-        {es ? "El parte de hoy" : "Today's briefing"}
+        {es ? "El parte de hoy" : "Today’s briefing"}
       </div>
       <p className="mt-2 text-[12px] text-tertiary leading-relaxed max-w-3xl">
         {es

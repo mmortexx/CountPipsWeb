@@ -39,7 +39,7 @@ function failureCopy(reason: SubmitFailure, es: boolean): string {
     case "network":
       return es
         ? "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo."
-        : "We couldn't connect. Check your connection and try again.";
+        : "We couldn’t connect. Check your connection and try again.";
     case "unconfigured":
     case "rejected":
       return es
@@ -236,7 +236,7 @@ export function ContactForm() {
                       >
                         {es
                           ? "✓ Mensaje enviado. Te contestamos en cuanto lo veamos."
-                          : "✓ Message sent. We'll reply as soon as we see it."}
+                          : "✓ Message sent. We’ll reply as soon as we see it."}
                       </p>
                     </div>
                   ) : (

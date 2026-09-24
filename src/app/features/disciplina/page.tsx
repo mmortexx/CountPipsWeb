@@ -132,7 +132,7 @@ export function DisciplinaBody() {
         titleHighlightEs="actúa."
         titleHighlightEn="acts."
         subtitleEs="El Guardián no te dice qué hacer: mide cada operación contra tus reglas con un semáforo de riesgo y, si lo activas, un freno duro deja de admitir operaciones nuevas cuando tocas tu límite. Saltárselo exige escribir el motivo."
-        subtitleEn="The Guardian doesn't tell you what to do: it measures every trade against your rules with a risk light and, if you turn it on, a hard brake stops accepting new trades when you hit your limit. Skipping it requires writing the reason."
+        subtitleEn="The Guardian doesn’t tell you what to do: it measures every trade against your rules with a risk light and, if you turn it on, a hard brake stops accepting new trades when you hit your limit. Skipping it requires writing the reason."
         padre={{ href: "/features", es: "Características", en: "Features" }}
         breadcrumbEs="Disciplina"
         breadcrumbEn="Discipline"

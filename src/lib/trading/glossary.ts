@@ -64,13 +64,13 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Prop firm",
     es: "Empresa que aporta capital a traders que superan una evaluación. El trader opera con dinero de la firma y se reparte un porcentaje de los beneficios.",
-    en: "A firm that provides capital to traders who pass an evaluation. The trader trades the firm's money and shares a percentage of the profits.",
+    en: "A firm that provides capital to traders who pass an evaluation. The trader trades the firm’s money and shares a percentage of the profits.",
     category: "basics",
   },
   {
     term: "Track record",
     es: "Historial de resultados reales de un trader a lo largo del tiempo, operación a operación. Cuanto más largo y verificable es, más peso tiene como evidencia de una ventaja: unas pocas semanas buenas no lo son.",
-    en: "A history of a trader's real results over time, trade by trade. The longer and more verifiable it is, the more weight it carries as evidence of an edge: a few good weeks are not.",
+    en: "A history of a trader’s real results over time, trade by trade. The longer and more verifiable it is, the more weight it carries as evidence of an edge: a few good weeks are not.",
     category: "basics",
   },
   {
@@ -82,7 +82,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Volatility",
     es: "Magnitud de las variaciones de precio de un activo durante un periodo. Alta volatilidad implica rangos amplios y más riesgo por operación; baja volatilidad, movimientos más contenidos y operaciones menores.",
-    en: "The magnitude of an asset's price fluctuations over a period. High volatility means wide ranges and more risk per trade; low volatility means smaller moves and smaller trades.",
+    en: "The magnitude of an asset’s price fluctuations over a period. High volatility means wide ranges and more risk per trade; low volatility means smaller moves and smaller trades.",
     category: "basics",
   },
   {
@@ -144,7 +144,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Risk-reward ratio",
     es: "Relación entre el beneficio objetivo de una operación y la pérdida máxima aceptada (el riesgo). Un ratio 1:3 significa arriesgar 1 para ganar 3; permite ser rentable incluso con un win rate bajo.",
-    en: "The relationship between a trade's target profit and the maximum accepted loss (the risk). A 1:3 ratio means risking 1 to make 3; it lets you stay profitable even with a low win rate.",
+    en: "The relationship between a trade’s target profit and the maximum accepted loss (the risk). A 1:3 ratio means risking 1 to make 3; it lets you stay profitable even with a low win rate.",
     category: "risk",
   },
   {
@@ -226,7 +226,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "R-multiple",
     es: "Resultado de una operación expresado en múltiplos del riesgo inicial (R). +2R significa ganar el doble de lo arriesgado; −1R es perder justo el stop. Permite comparar operaciones de cualquier tamaño.",
-    en: "A trade's result expressed as multiples of initial risk (R). +2R means winning twice what was risked; −1R is losing exactly the stop. It lets you compare trades of any size.",
+    en: "A trade’s result expressed as multiples of initial risk (R). +2R means winning twice what was risked; −1R is losing exactly the stop. It lets you compare trades of any size.",
     category: "metrics",
   },
   {
@@ -256,7 +256,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Forward testing",
     es: "Validación de una estrategia en tiempo real (cuenta demo o tamaño mínimo) durante un periodo significativo. Confirma que el backtest no sobreajustó y que la estrategia sobrevive a condiciones de mercado no vistas.",
-    en: "Validating a strategy in real time (demo account or minimum size) over a meaningful period. Confirms the backtest wasn't overfit and that the strategy survives unseen market conditions.",
+    en: "Validating a strategy in real time (demo account or minimum size) over a meaningful period. Confirms the backtest wasn’t overfit and that the strategy survives unseen market conditions.",
     category: "metrics",
   },
   {
@@ -306,7 +306,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Limit order",
     es: "Orden que especifica el precio exacto al que estás dispuesto a comprar o vender. Garantiza el precio pero no la ejecución: si el mercado no llega a tu nivel, la orden queda abierta.",
-    en: "An order specifying the exact price at which you're willing to buy or sell. Guarantees the price but not the fill: if the market never reaches your level, the order stays open.",
+    en: "An order specifying the exact price at which you’re willing to buy or sell. Guarantees the price but not the fill: if the market never reaches your level, the order stays open.",
     category: "execution",
   },
   {
@@ -336,7 +336,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "NY session",
     es: "Sesión americana: de 09:30 a 16:00, hora de Nueva York. Coincide con Londres hasta las 11:30 de Nueva York, una ventana que suele concentrar mucho del movimiento del día en ES, NQ y EURUSD.",
-    en: "American session: 09:30 to 16:00, New York time. It overlaps with London until 11:30 New York time, a window that often carries much of the day's movement in ES, NQ and EURUSD.",
+    en: "American session: 09:30 to 16:00, New York time. It overlaps with London until 11:30 New York time, a window that often carries much of the day’s movement in ES, NQ and EURUSD.",
     category: "execution",
   },
   {
@@ -348,7 +348,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Kill zone",
     es: "Ventana dentro de una sesión en la que los setups de un trader han funcionado mejor en su historial (p. ej. la apertura de Londres, de 08:00 a 11:00 hora de Londres, o la de Nueva York, de 09:30 a 11:30 hora de Nueva York). Si filtrar por ella mejora tu expectancy se comprueba con tus propias operaciones.",
-    en: "A window within a session where a trader's setups have worked best in their history (e.g. the London open, 08:00 to 11:00 London time, or the New York open, 09:30 to 11:30 New York time). Whether filtering by it improves your expectancy is checked against your own trades.",
+    en: "A window within a session where a trader’s setups have worked best in their history (e.g. the London open, 08:00 to 11:00 London time, or the New York open, 09:30 to 11:30 New York time). Whether filtering by it improves your expectancy is checked against your own trades.",
     category: "execution",
   },
   {
@@ -360,7 +360,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Ulcer index",
     es: "Medida cuadrática de la profundidad y duración del drawdown sobre la curva de capital de Peter Martin. Pondera las caídas prolongadas de forma más severa que la volatilidad ordinaria.",
-    en: "Peter Martin's quadratic measure of drawdown depth and duration on the equity curve. Penalises protracted drawdowns more heavily than ordinary volatility.",
+    en: "Peter Martin’s quadratic measure of drawdown depth and duration on the equity curve. Penalises protracted drawdowns more heavily than ordinary volatility.",
     category: "risk",
   },
   {
@@ -372,7 +372,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Gain-to-pain ratio",
     es: "Métrica de Jack Schwager que divide la suma de todos los rendimientos netos entre el valor absoluto de la suma de pérdidas. Mide el retorno generado por cada unidad de dolor soportado.",
-    en: "Jack Schwager's ratio dividing the sum of all net profits by the absolute sum of all losses. Measures total return generated per unit of downside pain endured.",
+    en: "Jack Schwager’s ratio dividing the sum of all net profits by the absolute sum of all losses. Measures total return generated per unit of downside pain endured.",
     category: "metrics",
   },
   {

@@ -208,7 +208,7 @@ export function FeaturesBento({
               <span>{fmtInt(setups.length, lang)} setups</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1">
-              <h3 className={titulo}>{es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don't"}</h3>
+              <h3 className={titulo}>{es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don’t"}</h3>
               {/* De la misma muestra que el calendario, de mejor a peor R
                   media. Era una maqueta con +2,1R por operación, una cifra
                   que ningún trader se cree. La barra es el acierto. */}

@@ -118,7 +118,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             >
               {es
                 ? "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes."
-                : "The Guardian doesn't tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them."}
+                : "The Guardian doesn’t tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them."}
             </p>
           </Reveal>
           )}

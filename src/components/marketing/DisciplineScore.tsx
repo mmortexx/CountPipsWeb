@@ -244,7 +244,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
         label: es ? "En construcción" : "Building",
         color: "rgb(var(--sig-amber))",
         resumenEs: "Hay base. Lo que falta es que se sostenga cuando cuesta.",
-        resumenEn: "There's a base. What's missing is holding it when it's hard.",
+        resumenEn: "There’s a base. What’s missing is holding it when it’s hard.",
       };
     if (score < 85)
       return {
@@ -375,7 +375,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               </>
             ) : (
               <>
-                Measure yourself. <span className="text-gradient">Where you're weak.</span>
+                Measure yourself. <span className="text-gradient">Where you’re weak.</span>
               </>
             )}
           </h2>
@@ -385,7 +385,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
           >
             {es
               ? "Quince preguntas sobre cinco ejes: riesgo, plan, registro, temple y constancia. No todas pesan igual — mover un stop en contra dice más de un trader que revisar el diario los domingos. Al final: tu perfil por ejes, la cifra global y qué arreglar primero. Sin email."
-              : "Fifteen questions across five axes: risk, plan, record, composure and consistency. They don't all weigh the same — moving a stop against you says more about a trader than reviewing the journal on Sundays. At the end: your profile by axis, the overall figure and what to fix first. No email."}
+              : "Fifteen questions across five axes: risk, plan, record, composure and consistency. They don’t all weigh the same — moving a stop against you says more about a trader than reviewing the journal on Sundays. At the end: your profile by axis, the overall figure and what to fix first. No email."}
           </p>
         </div>
 

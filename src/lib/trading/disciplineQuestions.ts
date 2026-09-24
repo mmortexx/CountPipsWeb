@@ -39,7 +39,7 @@ export const QUESTIONS: Q[] = [
     qEs: "Antes de abrir una operación, ¿sabes cuánto dinero pierdes si sale mal?",
     qEn: "Before opening a trade, do you know how much money you lose if it goes wrong?",
     options: [
-      { es: "No lo calculo", en: "I don't work it out" },
+      { es: "No lo calculo", en: "I don’t work it out" },
       { es: "Una idea aproximada", en: "A rough idea" },
       { es: "Sí, en porcentaje de la cuenta", en: "Yes, as a % of the account" },
       { es: "Sí, la cifra exacta en dinero", en: "Yes, the exact figure in money" },
@@ -89,7 +89,7 @@ export const QUESTIONS: Q[] = [
     qEs: "¿Tienes tus situaciones de entrada escritas con reglas concretas?",
     qEn: "Do you have your setups written down with concrete rules?",
     options: [
-      { es: "No, las llevo en la cabeza", en: "No, they're in my head" },
+      { es: "No, las llevo en la cabeza", en: "No, they’re in my head" },
       { es: "Apuntes sueltos", en: "Loose notes" },
       { es: "Sí, documentadas", en: "Yes, documented" },
       { es: "Sí, y mido cuánto rinde cada una", en: "Yes, and I measure how each performs" },
@@ -104,7 +104,7 @@ export const QUESTIONS: Q[] = [
       { es: "A menudo, si lo veo claro", en: "Often, if it looks clear" },
       { es: "Alguna vez a la semana", en: "A few times a week" },
       { es: "Rara vez", en: "Rarely" },
-      { es: "No. Si no encaja, no existe", en: "No. If it doesn't fit, it doesn't exist" },
+      { es: "No. Si no encaja, no existe", en: "No. If it doesn’t fit, it doesn’t exist" },
     ],
   },
 
@@ -128,7 +128,7 @@ export const QUESTIONS: Q[] = [
     qEn: "Do you know your measured average result per trade?",
     options: [
       { es: "Ni idea", en: "No idea" },
-      { es: "Sé si voy ganando o perdiendo", en: "I know if I'm up or down" },
+      { es: "Sé si voy ganando o perdiendo", en: "I know if I’m up or down" },
       { es: "Sé mi porcentaje de aciertos", en: "I know my win rate" },
       { es: "Sé mi expectancy y mi R medio", en: "I know my expectancy and average R" },
     ],
@@ -156,14 +156,14 @@ export const QUESTIONS: Q[] = [
       { es: "Sí, quiero recuperar ya", en: "Yes, I want it back now" },
       { es: "A veces se me va la mano", en: "Sometimes I overdo it" },
       { es: "No, mantengo el tamaño", en: "No, I keep the size" },
-      { es: "No, lo reduzco hasta recomponerme", en: "No, I cut it until I'm steady" },
+      { es: "No, lo reduzco hasta recomponerme", en: "No, I cut it until I’m steady" },
     ],
   },
   {
     dim: "temple",
     weight: 2,
     qEs: "¿Cierras ganadoras antes de tiempo por miedo a que se den la vuelta?",
-    qEn: "Do you close winners early for fear they'll turn?",
+    qEn: "Do you close winners early for fear they’ll turn?",
     options: [
       { es: "Casi siempre", en: "Almost always" },
       { es: "Bastante a menudo", en: "Fairly often" },
@@ -180,7 +180,7 @@ export const QUESTIONS: Q[] = [
       { es: "Sí, opero igual", en: "Yes, I trade anyway" },
       { es: "A veces, sin pensarlo", en: "Sometimes, without thinking" },
       { es: "Rara vez", en: "Rarely" },
-      { es: "No. Si no estoy bien, no abro nada", en: "No. If I'm not right, I open nothing" },
+      { es: "No. Si no estoy bien, no abro nada", en: "No. If I’m not right, I open nothing" },
     ],
   },
 
@@ -218,7 +218,7 @@ export const QUESTIONS: Q[] = [
       { es: "Nunca", en: "Never" },
       { es: "Casi nunca", en: "Almost never" },
       { es: "A veces", en: "Sometimes" },
-      { es: "Sí, forma parte de mi rutina", en: "Yes, it's part of my routine" },
+      { es: "Sí, forma parte de mi rutina", en: "Yes, it’s part of my routine" },
     ],
   },
 ];

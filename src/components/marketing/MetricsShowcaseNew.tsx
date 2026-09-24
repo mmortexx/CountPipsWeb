@@ -546,7 +546,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
         <p className="tj-ficha-barra tj-ficha-barra--pie">
           {es
             ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
-            : `Computed over the demo's ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualised.`}
+            : `Computed over the demo’s ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualised.`}
         </p>
       </div>
     </div>

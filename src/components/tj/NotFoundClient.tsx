@@ -107,7 +107,7 @@ export function NotFoundClient() {
         >
           {es
             ? "La URL que buscas no existe, se ha movido o nunca estuvo en tu watchlist."
-            : "The URL you're after doesn't exist, has moved, or was never on your watchlist."}
+            : "The URL you’re after doesn’t exist, has moved, or was never on your watchlist."}
         </p>
 
         <form

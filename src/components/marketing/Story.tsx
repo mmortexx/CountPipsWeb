@@ -27,7 +27,7 @@ export function Story() {
       title: es ? "Operabas por instinto" : "You traded on instinct",
       desc: es
         ? "Anotabas en Excel. No sabías por qué ganabas ni por qué perdías. Repetías los mismos errores sin ver el patrón."
-        : "You took notes in Excel. You didn't know why you won or why you lost. You repeated the same mistakes without seeing the pattern.",
+        : "You took notes in Excel. You didn’t know why you won or why you lost. You repeated the same mistakes without seeing the pattern.",
       tone: "neg",
     },
     {
@@ -35,12 +35,12 @@ export function Story() {
       title: es ? "Registras todo" : "You log everything",
       desc: es
         ? "Por primera vez ves tu win rate real, tu expectancy real, tu comisión real. La verdad duele un poco — y eso es bueno."
-        : "For the first time you see your real win rate, your real expectancy, your real fees. The truth hurts a bit — and that's good.",
+        : "For the first time you see your real win rate, your real expectancy, your real fees. The truth hurts a bit — and that’s good.",
       tone: "warn",
     },
     {
       tag: es ? "Mes 3" : "Month 3",
-      title: es ? "Descubres lo que no sabías" : "You discover what you didn't know",
+      title: es ? "Descubres lo que no sabías" : "You discover what you didn’t know",
       desc: es
         /* Las comillas rectas son de máquina de escribir, y el sitio no
            las usa en ninguna otra parte: el español entrecomilla con
@@ -49,7 +49,7 @@ export function Story() {
            de `/features`. Esta frase era la única que se salía, en los
            dos idiomas a la vez. */
         ? "Tu setup «estrella» apenas tiene expectancy positiva. Tu mejor hora no es la que creías. Tu sesión perdedora es siempre la misma."
-        : "Your “star” setup barely has positive expectancy. Your best hour isn't the one you thought. Your losing session is always the same one.",
+        : "Your “star” setup barely has positive expectancy. Your best hour isn’t the one you thought. Your losing session is always the same one.",
       tone: "neutral",
     },
     {
@@ -57,7 +57,7 @@ export function Story() {
       title: es ? "Romper el plan cuesta dinero" : "Breaking the plan costs money",
       desc: es
         ? "Ves el coste de indisciplina en una cifra concreta. Cada vez que rompes tu plan, ves cuánto te estás cobrando a ti mismo."
-        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you see how much you're charging yourself.",
+        : "You see the cost of indiscipline as a concrete number. Every time you break your plan, you see how much you’re charging yourself.",
       tone: "accent",
     },
     {
@@ -91,7 +91,7 @@ export function Story() {
   // Pull-quote split into words for staggered word-by-word reveal.
   const quote = es
     ? "Lo que no se mide, no se mejora. Lo que se mide pero no se mira, tampoco."
-    : "What isn't measured doesn't improve. What is measured but not looked at doesn't either.";
+    : "What isn’t measured doesn’t improve. What is measured but not looked at doesn’t either.";
   const quoteWords = quote.split(" ");
 
   return (
@@ -150,7 +150,7 @@ export function Story() {
                 ))}
               </p>
               <footer className="mt-4 text-sm text-tertiary">
-                — {es ? "filosofía de la app" : "the app's philosophy"}
+                — {es ? "filosofía de la app" : "the app’s philosophy"}
               </footer>
             </blockquote>
           </Reveal>

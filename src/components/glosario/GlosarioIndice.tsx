@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
+import { paraBuscar } from "@/lib/busqueda";
 import { Reveal } from "@/components/tj/Reveal";
 import {
   CATEGORIAS,
@@ -30,11 +31,8 @@ export function GlosarioIndice() {
   const [q, setQ] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
-  const norm = (s: string) =>
-    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
-
   const filtrados = useMemo(() => {
-    const t = norm(q.trim());
+    const t = paraBuscar(q.trim());
     if (!t && activeCategory === "all") return null;
 
     let base = TERMINOS;
@@ -46,8 +44,8 @@ export function GlosarioIndice() {
 
     return base.filter(
       (x) =>
-        norm(x.term).includes(t) ||
-        norm(es ? x.es : x.en).includes(t),
+        paraBuscar(x.term).includes(t) ||
+        paraBuscar(es ? x.es : x.en).includes(t),
     );
   }, [q, activeCategory, es]);
 

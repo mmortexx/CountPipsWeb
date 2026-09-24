@@ -14,14 +14,14 @@ const breadcrumbSchema = {
 export const metadata: Metadata = {
   title: "About",
   description:
-    "The story of CountPips: why it exists, who it's for, and how it evolves. Made for the serious manual trader.",
+    "The story of CountPips: why it exists, who it’s for, and how it evolves. Made for the serious manual trader.",
   alternates: {
     canonical: `${SITE_URL}/en/about/`,
     languages: hreflangDe("/about"),
   },
   openGraph: {
     title: "About — CountPips",
-    description: "The story of CountPips: why it exists, who it's for, and how it evolves.",
+    description: "The story of CountPips: why it exists, who it’s for, and how it evolves.",
     url: `${SITE_URL}/en/about/`,
     type: "website",
     siteName: "CountPips",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "About — CountPips",
-    description: "The story of CountPips: why it exists, who it's for, and how it evolves. Made for the serious manual trader.",
+    description: "The story of CountPips: why it exists, who it’s for, and how it evolves. Made for the serious manual trader.",
   },
 };
 

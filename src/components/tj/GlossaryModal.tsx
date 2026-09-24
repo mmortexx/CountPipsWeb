@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Chip } from "@/components/tj/Chip";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { useLang } from "@/lib/i18n";
+import { paraBuscar } from "@/lib/busqueda";
 import {
   GLOSSARY,
   GLOSSARY_CATEGORIES,
@@ -148,13 +149,13 @@ export function GlossaryModal({
 
   // Filter by search (term + definition, case-insensitive) + active category.
   const filtered = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = paraBuscar(query.trim());
     return GLOSSARY.filter((g) => {
       const matchesCat = activeCat === "all" || g.category === activeCat;
       const matchesQuery =
         q === "" ||
-        g.term.toLowerCase().includes(q) ||
-        (es ? g.es : g.en).toLowerCase().includes(q);
+        paraBuscar(g.term).includes(q) ||
+        paraBuscar(es ? g.es : g.en).includes(q);
       return matchesCat && matchesQuery;
     });
   }, [query, activeCat, es]);

@@ -250,6 +250,215 @@ for (const d of DIALOGOS) {
   await ctx.close();
 }
 
+// ── 4. las capas devuelven el foco, y el aviso de cookies no lo roba ──
+/* Seis recorridos que el 2026-09-25 fallaban: el Tab se escapaba de la
+   paleta de la demo, la ayuda de la demo se abría sin llevarse el foco, el
+   aviso de cookies reabierto desde el pie no lo recibía, el glosario no
+   decía qué opción estaba activa, el megamenú se quedaba abierto al salir
+   de él con Tab y el formulario señalaba el error en los tres campos. */
+const nueva = async (ruta, { ancho = 1280, consentimiento = "declined" } = {}) => {
+  const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
+  if (consentimiento) {
+    await ctx.addInitScript((v) => { try { localStorage.setItem("tj-cookie-consent", v); } catch {} }, consentimiento);
+  }
+  // Nada de esta guarda puede llegar a enviar un mensaje de verdad.
+  await ctx.route(/web3forms/i, (r) => r.abort());
+  const p = await ctx.newPage();
+  await p.goto(base + ruta, { waitUntil: "load", timeout: 30000 });
+  await p.waitForTimeout(800);
+  return { ctx, p };
+};
+const marcaFoco = (p) => p.evaluate(() => {
+  const a = document.activeElement;
+  if (!a || a === document.body) return false;
+  a.setAttribute("data-foco-previo", "");
+  return true;
+});
+const focoVuelve = (p) => p.evaluate(() => document.activeElement?.hasAttribute("data-foco-previo") === true);
+const dialogo = (p, nombre) => p.evaluate((n) => {
+  const d = [...document.querySelectorAll('[role="dialog"]')].find((x) => x.getAttribute("aria-label") === n);
+  if (!d) return null;
+  const a = document.activeElement;
+  return { dentro: d.contains(a), foco: a?.getAttribute("aria-label") || (a?.textContent || "").trim().slice(0, 30) };
+}, nombre);
+const atrapa = async (p, nombre, veces = 20) => {
+  let fuera = 0;
+  for (let i = 0; i < veces; i++) {
+    await p.keyboard.press(i % 4 === 3 ? "Shift+Tab" : "Tab");
+    if (!(await dialogo(p, nombre))?.dentro) fuera++;
+  }
+  return fuera;
+};
+let recorridos = 0;
+
+for (const idioma of ["es", "en"]) {
+  const es = idioma === "es";
+  const { ctx, p } = await nueva(es ? "/demo/" : "/en/demo/");
+  const ruta = es ? "/demo/" : "/en/demo/";
+  const PALETA = es ? "Paleta de comandos" : "Command palette";
+  const ATAJOS = es ? "Atajos de teclado" : "Keyboard shortcuts";
+  const boton = p.locator("[data-demo-raiz] button:visible").first();
+  if (!(await boton.count())) {
+    fallos.push({ ruta, detalle: "no encontré ningún botón dentro de `[data-demo-raiz]`: ¿se quitó el atributo de AppDemo?" });
+    await ctx.close();
+    continue;
+  }
+  // (a) la paleta de la demo
+  await boton.focus();
+  await marcaFoco(p);
+  await p.keyboard.press("Control+k");
+  await p.waitForTimeout(500);
+  if (!(await dialogo(p, PALETA))) {
+    fallos.push({ ruta, detalle: "Ctrl+K con el foco dentro de la demo no abre su paleta" });
+  } else {
+    recorridos++;
+    const fuera = await atrapa(p, PALETA);
+    if (fuera) fallos.push({ ruta, detalle: `el Tab se escapa de la paleta de la demo: ${fuera} de 20 pulsaciones acabaron fuera` });
+    await p.keyboard.press("Escape");
+    await p.waitForTimeout(500);
+    if (!(await focoVuelve(p))) fallos.push({ ruta, detalle: "al cerrar la paleta de la demo, el foco no vuelve a donde estaba" });
+  }
+  // (b) la ayuda de atajos de la demo
+  await boton.focus();
+  await p.keyboard.press("Shift+Slash");
+  await p.waitForTimeout(700);
+  const ayuda = await dialogo(p, ATAJOS);
+  if (!ayuda) {
+    fallos.push({ ruta, detalle: "«?» con el foco dentro de la demo no abre su ayuda de atajos" });
+  } else {
+    recorridos++;
+    if (!ayuda.dentro) fallos.push({ ruta, detalle: `la ayuda de la demo se abre y el foco se queda fuera (en «${ayuda.foco}»)` });
+    await p.keyboard.press("Escape");
+    await p.waitForTimeout(500);
+    if (!(await focoVuelve(p))) fallos.push({ ruta, detalle: "al cerrar la ayuda de la demo, el foco no vuelve a donde estaba" });
+  }
+  console.log(`  demo ${idioma}: paleta y ayuda de atajos`);
+  await ctx.close();
+}
+
+// (c) el aviso de cookies: aparece solo sin robar el foco, y reabierto desde el pie sí lo recibe
+{
+  const { ctx, p } = await nueva("/", { consentimiento: null });
+  await p.keyboard.press("Tab");
+  const marcado = await marcaFoco(p);
+  await p.waitForTimeout(5800);
+  const visible = await p.evaluate(() => !!document.querySelector('[data-cookie-consent="visible"]'));
+  if (!marcado || !visible) {
+    fallos.push({ ruta: "/", detalle: `no pude preparar la prueba del aviso de cookies (foco marcado: ${marcado}, aviso visible: ${visible})` });
+  } else {
+    recorridos++;
+    if (!(await focoVuelve(p))) fallos.push({ ruta: "/", detalle: "el aviso de cookies, al aparecer solo, se lleva el foco: quien estaba leyendo pierde su sitio" });
+  }
+  await ctx.close();
+}
+{
+  const { ctx, p } = await nueva("/");
+  const pie = p.locator("footer button").filter({ hasText: "Preferencias de privacidad" }).first();
+  if (!(await pie.count())) {
+    fallos.push({ ruta: "/", detalle: "no encontré «Preferencias de privacidad» en el pie" });
+  } else {
+    await pie.focus();
+    await marcaFoco(p);
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(700);
+    const aviso = await dialogo(p, "Consentimiento de cookies");
+    if (!aviso?.dentro) {
+      fallos.push({ ruta: "/", detalle: `reabierto desde el pie, el aviso de cookies no recibe el foco (está en «${aviso?.foco ?? "ninguno"}»)` });
+    } else {
+      recorridos++;
+      await p.keyboard.press("Enter");
+      await p.waitForTimeout(500);
+      if (!(await focoVuelve(p))) fallos.push({ ruta: "/", detalle: "tras elegir en el aviso de cookies, el foco no vuelve al enlace del pie" });
+    }
+  }
+  await ctx.close();
+}
+
+// (d) el glosario dice qué opción está activa
+{
+  const { ctx, p } = await nueva("/faq/");
+  const b = p.locator("button").filter({ hasText: /glosario|glossary/i }).first();
+  if (await b.count()) {
+    await b.focus();
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(700);
+    const lista = p.locator('[role="dialog"] [role="listbox"]').first();
+    if (!(await lista.count())) {
+      fallos.push({ ruta: "/faq/", detalle: "el glosario no expone ningún role=\"listbox\"" });
+    } else {
+      await lista.focus();
+      await p.keyboard.press("ArrowDown");
+      await p.keyboard.press("ArrowDown");
+      await p.waitForTimeout(200);
+      const r = await p.evaluate(() => {
+        const ul = document.querySelector('[role="dialog"] [role="listbox"]');
+        const id = ul?.getAttribute("aria-activedescendant");
+        const elegida = ul?.querySelector('[aria-selected="true"]');
+        return { id, existe: !!(id && document.getElementById(id)), coincide: !!elegida && elegida.id === id, foco: document.activeElement === ul };
+      });
+      if (!r.existe || !r.coincide) {
+        fallos.push({ ruta: "/faq/", detalle: `el glosario no dice qué opción está activa (aria-activedescendant=«${r.id ?? "nada"}»)` });
+      } else recorridos++;
+      if (!r.foco) fallos.push({ ruta: "/faq/", detalle: "al moverse con las flechas, el foco sale de la lista del glosario" });
+    }
+  } else fallos.push({ ruta: "/faq/", detalle: "no encontré el botón del glosario" });
+  await ctx.close();
+}
+
+// (e) el megamenú se cierra cuando el Tab sale de la navegación, no antes
+{
+  const { ctx, p } = await nueva("/");
+  const disp = p.locator("#navbar-producto-trigger").first();
+  if (await disp.count()) {
+    await disp.focus();
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(400);
+    await p.keyboard.press("Tab");
+    await p.waitForTimeout(150);
+    const dentroAbierto = await p.evaluate(() => document.getElementById("navbar-producto-trigger")?.getAttribute("aria-expanded"));
+    if (dentroAbierto !== "true") fallos.push({ ruta: "/", detalle: "el megamenú se cierra en cuanto el Tab entra en sus enlaces" });
+    let salio = false;
+    for (let i = 0; i < 60 && !salio; i++) {
+      await p.keyboard.press("Tab");
+      salio = await p.evaluate(() => {
+        const zona = document.getElementById("navbar-producto-trigger")?.parentElement?.parentElement;
+        return !!zona && !zona.contains(document.activeElement);
+      });
+    }
+    await p.waitForTimeout(300);
+    const fuera = await p.evaluate(() => document.getElementById("navbar-producto-trigger")?.getAttribute("aria-expanded"));
+    if (!salio) fallos.push({ ruta: "/", detalle: "tras 60 tabuladores el foco no salió de la navegación: la guarda no está midiendo lo que cree" });
+    else if (fuera !== "false") fallos.push({ ruta: "/", detalle: "el Tab sale de la navegación y el megamenú se queda abierto encima de la página" });
+    else recorridos++;
+  }
+  await ctx.close();
+}
+
+// (f) el formulario señala el error en el campo que falla, no en los tres
+{
+  const { ctx, p } = await nueva("/faq/");
+  const email = p.locator("#cf-email");
+  if (!(await email.count())) {
+    fallos.push({ ruta: "/faq/", detalle: "no encontré el formulario de contacto (#cf-email)" });
+  } else {
+    await p.fill("#cf-name", "Prueba de teclado");
+    await email.fill("esto-no-es-un-correo");
+    await p.fill("#cf-msg", "Mensaje de prueba de la guarda de teclado, que nunca se envía.");
+    await p.locator("form:has(#cf-email) button[type=submit]").first().focus();
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(500);
+    const r = await p.evaluate(() => ["cf-name", "cf-email", "cf-msg"].map((id) => document.getElementById(id)?.getAttribute("aria-describedby") ?? null));
+    if (r[1] !== "cf-error") fallos.push({ ruta: "/faq/", detalle: `el correo inválido no apunta a su error (aria-describedby=«${r[1]}»)` });
+    else if (r[0] || r[2]) fallos.push({ ruta: "/faq/", detalle: `los campos válidos también se anuncian con el error (nombre «${r[0]}», mensaje «${r[2]}»)` });
+    else recorridos++;
+  }
+  await ctx.close();
+}
+console.log(`  capas, aviso de cookies, glosario, megamenú y formulario: ${recorridos} de 9 recorridos completos`);
+if (recorridos < 9 && !fallos.length) {
+  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 9 recorridos llegaron a medirse` });
+}
+
 await navegador.close();
 server.close();
 

@@ -312,6 +312,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           Radio 2 px, el canto del sistema. */}
       <div
         ref={demoRootRef}
+        data-demo-raiz=""
         className={`relative mx-auto transition-[transform,border-radius,box-shadow,opacity] duration-500 ease-[var(--ease-suave)] ${
           fullscreen ? "fixed inset-3 z-[100] rounded-[2px]" : "rounded-[2px]"
         }`}

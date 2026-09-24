@@ -795,7 +795,7 @@ function PlanToggle({
   return (
     <div className="space-y-2.5">
       <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
-        {lang === "es" ? "Plan del día" : "Today's plan"}
+        {lang === "es" ? "Plan del día" : "Today’s plan"}
       </span>
       <button
         type="button"
@@ -1088,12 +1088,12 @@ export function JournalPage() {
           <div className="space-y-5">
             <div className="space-y-1">
               <Eyebrow>
-                {L("Check-in del día", "Today's check-in")}
+                {L("Check-in del día", "Today’s check-in")}
               </Eyebrow>
               <p className="text-xs text-tertiary leading-relaxed max-w-xl">
                 {L(
                   "Registra tu estado antes de operar. Los cruces debajo contrastan cada campo con el resultado real del día.",
-                  "Log your state before trading. The crosses below contrast each field with the day's actual result."
+                  "Log your state before trading. The crosses below contrast each field with the day’s actual result."
                 )}
               </p>
             </div>

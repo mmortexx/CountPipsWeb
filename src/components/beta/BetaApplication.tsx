@@ -80,7 +80,7 @@ function failureCopy(reason: SubmitFailure, es: boolean) {
   if (reason === "network") {
     return es
       ? "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo."
-      : "We couldn't connect. Check your connection and try again.";
+      : "We couldn’t connect. Check your connection and try again.";
   }
   return es
     ? `La solicitud no se ha podido guardar. ${SUPPORT_EMAIL ? `Escríbenos a ${SUPPORT_EMAIL}.` : "Inténtalo de nuevo en unos minutos."}`
@@ -307,7 +307,7 @@ export function BetaApplication() {
           <p className="mt-3 max-w-md text-secondary leading-relaxed">
             {es
               ? "Buscamos un piloto pequeño y útil. No hace falta que tengas una cuenta ni que compartas resultados o datos financieros."
-              : "We are building a small, useful private pilot. You won't need an account, and you won't be asked for performance or financial data."}
+              : "We are building a small, useful private pilot. You won’t need an account, and you won’t be asked for performance or financial data."}
           </p>
           <div className="mt-6 space-y-3 text-sm text-secondary">
             {[es ? "Piloto privado, por invitación" : "Private pilot, invite only", es ? "Tus operaciones, en tu equipo" : "Your trades, on your machine", es ? "Sin spam ni newsletter por defecto" : "No spam or newsletter by default"].map((item) => (

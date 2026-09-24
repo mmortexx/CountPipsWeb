@@ -37,7 +37,7 @@
 import { chromium } from "playwright";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { join, extname } from "node:path";
 
 const dir = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -50,15 +50,18 @@ const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 /** Más que el retardo de `ResultadoAnunciado`, con margen. */
 const ESPERA = 1400;
 
-const HERRAMIENTAS = [
-  "herramientas/calculadora-de-riesgo",
-  "herramientas/significancia-estadistica",
-  "herramientas/monte-carlo",
-  "herramientas/recuperacion-de-drawdown",
-  "herramientas/prueba-de-fondeo",
-  "herramientas/proyector-de-capital",
-  "herramientas/coste-de-indisciplina",
-];
+/* Las herramientas salen de la propia compilación, no de una lista a mano:
+   la lista escrita se quedó en siete cuando ya había nueve que calculan, y
+   las dos nuevas pasaron sin que nadie comprobara si anunciaban algo. El
+   reloj de sesiones no recibe datos ni calcula: no tiene resultado que decir. */
+const SIN_RESULTADO = new Set(["reloj-de-sesiones"]);
+const HERRAMIENTAS = readdirSync(join(dir, "herramientas"), { withFileTypes: true })
+  .filter((e) => e.isDirectory() && !e.name.startsWith("__") && !SIN_RESULTADO.has(e.name))
+  .map((e) => `herramientas/${e.name}`);
+if (HERRAMIENTAS.length < 9) {
+  console.log(`[anuncios] solo encuentro ${HERRAMIENTAS.length} herramientas en ${dir}/herramientas: la guarda no está midiendo lo que cree`);
+  process.exit(1);
+}
 
 const TIPOS = {
   ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css",

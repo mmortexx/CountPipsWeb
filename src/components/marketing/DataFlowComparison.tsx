@@ -59,7 +59,7 @@ export function DataFlowComparison() {
           <p className="medida mt-4" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
             {es
               ? "Pulsa el botón. En CountPips la operación viaja a tu archivo local. En una herramienta en la nube, sale de tu equipo, cruza internet y llega a un servidor ajeno."
-              : "Press the button. In CountPips the trade travels to your local file. In a cloud tool, it leaves your machine, crosses the internet, and reaches someone else's server."}
+              : "Press the button. In CountPips the trade travels to your local file. In a cloud tool, it leaves your machine, crosses the internet, and reaches someone else’s server."}
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export function DataFlowComparison() {
             steps={[
               { label: es ? "Tu operación" : "Your trade", icon: "form" },
               { label: es ? "Internet" : "Internet", icon: "cloud", sub: es ? "Sale de tu equipo" : "Leaves your machine" },
-              { label: es ? "Servidor" : "Server", icon: "server", sub: es ? "Del proveedor" : "Vendor's server" },
+              { label: es ? "Servidor" : "Server", icon: "server", sub: es ? "Del proveedor" : "Vendor’s server" },
               { label: es ? "Vuelve" : "Returns", icon: "back", sub: es ? "Con latencia" : "With latency" },
             ]}
             pulseKey={pulses}

@@ -12,6 +12,6 @@ export default function Image() {
     lang: "en",
     antetitulo: "About",
     titulo: "Built for the serious manual trader.",
-    subtitulo: "Why CountPips exists, who it's for and how it evolves.",
+    subtitulo: "Why CountPips exists, who it’s for and how it evolves.",
   });
 }

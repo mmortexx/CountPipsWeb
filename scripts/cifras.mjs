@@ -89,7 +89,8 @@ function soloTexto(html) {
     .replace(/<[^>]*>/g, " ")
     .replace(/&nbsp;/g, "\u00a0")
     .replace(/&amp;/g, "&")
-    .replace(/&#x27;/g, "'")
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&quot;/g, '"')
     .replace(/[ \t]+/g, " ");
 }
 
@@ -137,6 +138,22 @@ for await (const f of htmls(RAIZ)) {
        coló en la definición de «pullback» del glosario y salía en cinco
        páginas inglesas, porque esa ficha la citan otras cuatro. */
     anota("comillas angulares en la web inglesa", /[«»]/g, ctx);
+    /* EL APÓSTROFO Y LAS COMILLAS DEL TECLADO.
+       La web inglesa escribe “…” y don’t con los signos tipográficos, igual
+       que la española escribe «…». El 2026-09-25 había 106 apóstrofos
+       rectos repartidos por 31 ficheros, y ninguna prueba los veía porque
+       la mayoría vive en JSX, no en los catálogos. */
+    anota("apóstrofo recto en la web inglesa", /[A-Za-z]'[A-Za-z]/g, ctx);
+    anota("comillas rectas en la web inglesa", /"/g, ctx);
+    /* ORTOGRAFÍA BRITÁNICA. `tests/ortografia-britanica.test.ts` vigila los
+       catálogos; esto vigila lo que de verdad se publica, incluido el texto
+       escrito dentro de los componentes. El nombre propio del término
+       «Maximum Favorable Excursion» se respeta. */
+    anota(
+      "ortografía americana en la web inglesa",
+      /\b\w*(?:penaliz|annualiz|summariz|normaliz|optimiz|analyz|realiz|recogniz|organiz|minimiz|maximiz|standardiz|prioritiz|customiz|visualiz|categoriz|behavior|defense)\w*\b|\b(?:colors?|centers?|catalogs?)\b|\bfavor(?!able Excursion)\w*/gi,
+      ctx,
+    );
     /* «OPERAR» NO SE DICE «OPERATE».
        En inglés de mercados el verbo es «trade»; «operate» se lee como
        «manejar una máquina» o «funcionar». Es el calco que más veces

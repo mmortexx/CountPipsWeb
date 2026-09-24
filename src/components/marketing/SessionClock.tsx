@@ -27,7 +27,7 @@ type Ventana = { id: string; es: string; en: string; tz: string; abre: number; c
 const VENTANAS: Ventana[] = [
   { id: "london_open", es: "Apertura de Londres", en: "London open", tz: "Europe/London", abre: 8 * 60, cierra: 11 * 60, notaEs: "Arranca la sesión europea.", notaEn: "The European session starts." },
   { id: "ny_open", es: "Apertura de Nueva York", en: "New York open", tz: "America/New_York", abre: 9 * 60 + 30, cierra: 11 * 60 + 30, notaEs: "Coincide con Londres abierta.", notaEn: "Overlaps with London still open." },
-  { id: "london_close", es: "Cierre de Londres", en: "London close", tz: "Europe/London", abre: 15 * 60, cierra: 16 * 60 + 30, notaEs: "Última hora y media de Europa.", notaEn: "Europe's last hour and a half." },
+  { id: "london_close", es: "Cierre de Londres", en: "London close", tz: "Europe/London", abre: 15 * 60, cierra: 16 * 60 + 30, notaEs: "Última hora y media de Europa.", notaEn: "Europe’s last hour and a half." },
 ];
 
 type Referencia = "local" | "utc" | "ny" | "madrid";
@@ -285,7 +285,7 @@ export function SessionClock() {
         <p className="mt-6 mb-0 max-w-[92ch] text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
           {es
             ? `Horario de cada plaza en su hora local, el mismo que usa la app: ${horarios}, de lunes a viernes. No es el horario de un bróker concreto.`
-            : `Each market's hours in its local time, the same the app uses: ${horarios}, Monday to Friday. Not the schedule of any specific broker.`}
+            : `Each market’s hours in its local time, the same the app uses: ${horarios}, Monday to Friday. Not the schedule of any specific broker.`}
         </p>
       </div>
     </section>

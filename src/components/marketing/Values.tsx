@@ -32,7 +32,7 @@ const VALUES: Value[] = [
     descEs:
       "Tus operaciones son tuyas. Viven en tu equipo y solo salen si activas una función que lo necesita; la analítica de esta web solo se activa con tu consentimiento.",
     descEn:
-      "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it; this site's analytics only activates with your consent.",
+      "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it; this site’s analytics only activates with your consent.",
     href: "/features/seguridad",
     pruebaEs: "Qué se guarda y dónde",
     pruebaEn: "What is stored, and where",
@@ -105,7 +105,7 @@ export function Values() {
           entradilla={
             es
               ? "Cuatro ideas que no son negociables. Si algún día dejamos de cumplirlas, la app deja de tener sentido."
-              : "Four ideas that aren't negotiable. If we ever stop delivering on them, the app stops making sense."
+              : "Four ideas that aren’t negotiable. If we ever stop delivering on them, the app stops making sense."
           }
         />
 

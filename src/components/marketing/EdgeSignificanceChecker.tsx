@@ -180,7 +180,7 @@ export function EdgeSignificanceChecker() {
         color: "var(--ink-2)",
         text: es
           ? `Con ${trades} operaciones no se puede hacer un test estadístico fiable. Necesitas al menos ~20 para que la aproximación sea válida.`
-          : `With ${trades} trades a reliable statistical test isn't possible. You need at least ~20 for the approximation to hold.`,
+          : `With ${trades} trades a reliable statistical test isn’t possible. You need at least ~20 for the approximation to hold.`,
       }
     : !c.significant
       ? {
@@ -196,14 +196,14 @@ export function EdgeSignificanceChecker() {
             color: "rgb(var(--pnl-pos))",
             text: es
               ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí — pero valídalo fuera de muestra.`
-              : `A ${fmtNum(winRate, 0)}% over ${trades} trades is very unlikely by chance (p = ${fmtNum(c.pValue, 4)} < 0.01). There's something real here — but validate out-of-sample.`,
+              : `A ${fmtNum(winRate, 0)}% over ${trades} trades is very unlikely by chance (p = ${fmtNum(c.pValue, 4)} < 0.01). There’s something real here — but validate out-of-sample.`,
           }
         : {
             label: es ? "Ventaja moderada" : "Moderate edge",
             color: "rgb(var(--accent-base))",
             text: es
               ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es significativo (p = ${fmtNum(c.pValue, 3)} < 0,05). Probablemente hay una ventaja, pero el margen es fino: acumula más operaciones para confirmarlo.`
-              : `A ${fmtNum(winRate, 0)}% over ${trades} trades is significant (p = ${fmtNum(c.pValue, 3)} < 0.05). There's likely an edge, but the margin is thin: accumulate more trades to confirm.`,
+              : `A ${fmtNum(winRate, 0)}% over ${trades} trades is significant (p = ${fmtNum(c.pValue, 3)} < 0.05). There’s likely an edge, but the margin is thin: accumulate more trades to confirm.`,
           };
 
   return (
@@ -241,7 +241,7 @@ export function EdgeSignificanceChecker() {
           <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
             {es
               ? `60${PCT} de aciertos en 20 operaciones suena bien — pero estadísticamente es indistinguible de una moneda. Este test te dice si tu muestra basta para afirmar que tienes un edge.`
-              : "60% win rate over 20 trades sounds good — but statistically it's indistinguishable from a coin. This test tells you if your sample is enough to claim you have an edge."}
+              : "60% win rate over 20 trades sounds good — but statistically it’s indistinguishable from a coin. This test tells you if your sample is enough to claim you have an edge."}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">

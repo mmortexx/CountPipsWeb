@@ -97,7 +97,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
                   </strong>
                   {es
                     ? "Faltan los datos fiscales del titular, que la ley exige en cuanto haya venta. Hasta entonces este texto describe con exactitud cómo funciona la web, pero no sustituye a la revisión de un profesional."
-                    : "The owner's tax details are missing; the law requires them as soon as sales begin. Until then this text describes accurately how the site works, but it does not replace review by a professional."}
+                    : "The owner’s tax details are missing; the law requires them as soon as sales begin. Until then this text describes accurately how the site works, but it does not replace review by a professional."}
                 </p>
               </div>
             </Reveal>

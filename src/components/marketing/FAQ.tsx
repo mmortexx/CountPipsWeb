@@ -5,6 +5,7 @@ import { Search } from "lucide-react";
 
 import { useLang } from "@/lib/i18n";
 import { FAQ_ES, FAQ_EN, type QA } from "@/lib/faq";
+import { paraBuscar } from "@/lib/busqueda";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { GlossaryModal } from "@/components/tj/GlossaryModal";
@@ -60,7 +61,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
   // Real-time filter on question + answer text + category (active language).
   const filtered = React.useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = paraBuscar(query.trim());
     return items.filter((it, idx) => {
       // Category classification
       if (activeCategory === "security") {
@@ -73,7 +74,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
       if (q === "") return true;
       return (
-        it.q.toLowerCase().includes(q) || it.a.toLowerCase().includes(q)
+        paraBuscar(it.q).includes(q) || paraBuscar(it.a).includes(q)
       );
     });
   }, [items, query, activeCategory]);
@@ -316,7 +317,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                 >
                   {es
                     ? "¿No encuentras tu término? Consulta el glosario →"
-                    : "Can't find your term? Browse the glossary →"}
+                    : "Can’t find your term? Browse the glossary →"}
                 </button>
               }
             />

@@ -31,7 +31,7 @@ const TEXTOS = {
     /* Sin contracción, «See how it is measured» suena a manual técnico justo
        al lado de «Stop trading blind», que es directo y hablado. Los dos
        trozos de la misma frase tienen que sonar a la misma voz. */
-    en: ["Stop trading blind.", "See how it's measured.", "40+ metrics, a discipline guardian and your data on your machine. Explore the demo and decide with clarity."],
+    en: ["Stop trading blind.", "See how it’s measured.", "40+ metrics, a discipline guardian and your data on your machine. Explore the demo and decide with clarity."],
   },
   herramienta: {
     es: ["La cuenta ya te sale.", "Hazla con las tuyas.", "Esto mismo, pero sobre tu historial entero y al día con cada operación que registras. La demo lo enseña con datos de muestra."],
