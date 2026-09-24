@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { ShieldCheck, AlertTriangle, HandMetal, Timer } from "lucide-react";
+import { fmtInt, fmtNum, pctSep } from "@/lib/trading/format";
 
 /**
  * GuardianNew — sección `#guardian`. Disciplina que actúa: comprobación
@@ -30,7 +31,7 @@ import { ShieldCheck, AlertTriangle, HandMetal, Timer } from "lucide-react";
  * tamaño baja, el riesgo baja con él y el aviso pasa de bloqueado a
  * permitido, que es exactamente lo que la sección promete que hace la
  * aplicación.
- *
+ */
 
 /** Riesgo que aporta cada contrato, en % de la cuenta. */
 const RIESGO_POR_CONTRATO = 0.5;
@@ -54,8 +55,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   const contratos: number = estado === "ajustado" ? CONTRATOS_AJUSTADOS : CONTRATOS_INICIALES;
   const riesgo = contratos * RIESGO_POR_CONTRATO;
   const dentroDelLimite = riesgo <= LIMITE_RIESGO;
-  const pct = (n: number) =>
-    `${n.toLocaleString(es ? "es-ES" : "en-US", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}${es ? " %" : "%"}`;
+  const pct = (n: number) => `${fmtNum(n, lang, 1)}${pctSep(lang)}`;
 
   return (
     <section
@@ -171,9 +171,9 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 Long
               </span>
               <span className="text-[13px] text-secondary">
-                {contratos} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
+                {fmtInt(contratos, lang)} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
               </span>
-              <span className="ml-auto text-[13px] text-secondary">28 pts</span>
+              <span className="ml-auto text-[13px] text-secondary">{fmtInt(28, lang)} pts</span>
             </div>
             <ul className="m-0 p-0 list-none">
               {[
@@ -226,11 +226,11 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     : "It is logged with the light on red. If you turn on the hard brake, hitting your daily loss stops new trades from being logged."
                   : tono === "ok"
                     ? es
-                      ? `Con ${contratos} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite.`
-                      : `At ${contratos} contracts the risk drops to ${pct(riesgo)}, exactly at your limit.`
+                      ? `Con ${fmtInt(contratos, lang)} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite.`
+                      : `At ${fmtInt(contratos, lang)} contracts the risk drops to ${pct(riesgo)}, exactly at your limit.`
                     : es
-                      ? `El riesgo supera tu máximo por operación. Con ${CONTRATOS_AJUSTADOS} contratos quedaría en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
-                      : `Risk is above your per-trade maximum. At ${CONTRATOS_AJUSTADOS} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
+                      ? `El riesgo supera tu máximo por operación. Con ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos quedaría en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
+                      : `Risk is above your per-trade maximum. At ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
               const Icono = tono === "ok" ? ShieldCheck : AlertTriangle;
               return (
                 <div role="status" aria-live="polite" className="mt-1 pt-5 border-t border-[var(--ficha-division)]">
@@ -249,7 +249,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               {estado === "bloqueado" ? (
                 <>
                   <button type="button" onClick={() => setEstado("ajustado")} className="cta cta--primario tnum">
-                    {es ? `Ajustar a ${CONTRATOS_AJUSTADOS} contratos` : `Adjust to ${CONTRATOS_AJUSTADOS} contracts`}
+                    {es ? `Ajustar a ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos` : `Adjust to ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts`}
                   </button>
                   <button type="button" onClick={() => setEstado("anulado")} className="cta cta--secundario">
                     {es ? "Registrar igualmente" : "Log anyway"}

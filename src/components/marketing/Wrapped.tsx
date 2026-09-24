@@ -6,7 +6,7 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Money } from "@/components/tj/Money";
 import { nombreSetup } from "@/lib/trading/setups";
 import type { LecturasMuestra } from "@/lib/trading/cifras-muestra";
-import { fmtNum, fmtPct } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtPct } from "@/lib/trading/format";
 
 /** Lo que el diario destapa: seis lecturas que el programa calcula de las operaciones de muestra. */
 export function Wrapped({ datos }: { datos: LecturasMuestra }) {
@@ -25,7 +25,7 @@ export function Wrapped({ datos }: { datos: LecturasMuestra }) {
     Dom: ["Domingo", "Sunday"],
   };
   const dia = dias[bestDay.day]?.[es ? 0 : 1] ?? bestDay.day;
-  const ops = (n: number) => (es ? `${n} operaciones` : `${n} trades`);
+  const ops = (n: number) => (es ? `${fmtInt(n, lang)} operaciones` : `${fmtInt(n, lang)} trades`);
 
   const lecturas: { key: string; label: string; value: ReactNode; detalle: ReactNode; sub: string }[] = [
     {
