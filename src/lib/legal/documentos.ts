@@ -10,7 +10,7 @@ import { TITULAR, LEGAL_ACTUALIZADO } from "@/lib/legal/titular";
  *  · El formulario de contacto envía a Web3Forms (`src/lib/forms.ts:19`).
  *  · La solicitud de acceso anticipado se envía al endpoint de admisión configurado
  *    (`src/lib/forms.ts`, `docs/waitlist-apps-script.js`).
- *  · La analítica PostHog sólo se carga después del consentimiento explícito
+ *  · La analítica PostHog solo se carga después del consentimiento explícito
  *    y en su región europea; la web no envía respuestas ni datos financieros.
  *  · Las tipografías se sirven desde el propio dominio (`next/font`), así
  *    que ni siquiera hay una petición a Google Fonts que registre una IP.

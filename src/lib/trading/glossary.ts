@@ -396,7 +396,7 @@ export const GLOSSARY_CATEGORIES: {
   en: string;
 }[] = [
   { id: "all", es: "Todas", en: "All" },
-  { id: "basics", es: "Conceptos", en: "Basics" },
+  { id: "basics", es: "Fundamentos", en: "Basics" },
   { id: "risk", es: "Riesgo", en: "Risk" },
   { id: "psychology", es: "Psicología", en: "Psychology" },
   { id: "metrics", es: "Métricas", en: "Metrics" },
