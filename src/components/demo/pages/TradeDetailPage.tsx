@@ -10,7 +10,7 @@ import {
   INITIAL_BALANCE_CONST,
   type Trade,
   type Compliance,
-  type Session,
+  NOMBRE_SESION,
 } from "@/lib/trading/data";
 import { useCustomTrades, customTradeToTrade } from "@/lib/trading/demoStore";
 import {
@@ -32,15 +32,6 @@ import { MagneticButton } from "@/components/tj/MagneticButton";
 import { TradeCandleChart } from "@/components/charts/TradeCandleChart";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-
-/** Nombre completo y traducido de la plaza — mismo criterio que TradesPage
- *  (la app escribe "Nueva York", "Londres", "Asia", no la abreviatura
- *  interna del dato). */
-const SESSION_LABEL: Record<Session, { es: string; en: string }> = {
-  London: { es: "Londres", en: "London" },
-  NY: { es: "Nueva York", en: "New York" },
-  Asia: { es: "Asia", en: "Asia" },
-};
 
 /** Lado de la ejecución («Anatomía»), traducido — ENTRY/EXIT y BUY/SELL
  *  se quedaban en inglés en la versión española de la ficha. */
@@ -973,7 +964,7 @@ export function TradeDetailPage() {
                 </Detail>
                 <Detail label={lang === "es" ? "Sesión" : "Session"}>
                   <span className="text-primary">
-                    {SESSION_LABEL[trade.session][lang]}
+                    {NOMBRE_SESION[trade.session][lang]}
                   </span>
                 </Detail>
                 <Detail label={lang === "es" ? "Mercado" : "Market"}>

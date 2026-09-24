@@ -44,13 +44,6 @@ export function fmtMoney(
   return formatted;
 }
 
-/** `Intl.NumberFormat` de dólares con el símbolo de la app: «1.234 $» en
- *  español (Intl pondría «US$») y «$1,234» en inglés. */
-export function formatoUsd(locale: string, opts: Intl.NumberFormatOptions = {}) {
-  const f = new Intl.NumberFormat(locale, { ...opts, style: "currency", currency: "USD" });
-  return { format: (n: number) => f.format(n).replace("US$", "$") };
-}
-
 export function fmtNum(
   value: number,
   lang: Lang = "es",
@@ -144,14 +137,18 @@ export function fmtR(
   return `${sign}${fmtNum(Math.abs(rounded), lang, decimals)}R`;
 }
 
+/* `useGrouping: "always"` en las tres: sin él, `Intl` en español no agrupa
+   las cifras de cuatro dígitos y la tabla de la demo ponía «2350,00» en una
+   fila y «18.200,0» en la siguiente. */
 export function fmtInt(value: number, lang: Lang = "es"): string {
-  return new Intl.NumberFormat(LOCALE[lang]).format(value);
+  return new Intl.NumberFormat(LOCALE[lang], { useGrouping: "always" }).format(value);
 }
 
 export function fmtPrice(value: number, decimals = 2, lang: Lang = "es"): string {
   return new Intl.NumberFormat(LOCALE[lang], {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
+    useGrouping: "always",
   }).format(value);
 }
 

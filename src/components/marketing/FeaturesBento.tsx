@@ -24,6 +24,11 @@ const HORAS_R: (number | null)[] = [
   0.1, 0.05, -0.8, 0.22, 0.15, -1.2, 0.08, 0.1, 0.02, -0.4, null, null,
 ];
 const MEJOR_VENTANA = [10, 11];
+/* El rótulo y la cifra salen de la serie: decían «10:00 – 11:30» y
+   «+27 % sobre media», que no casaban con las barras resaltadas. */
+const hora = (h: number) => `${String(h).padStart(2, "0")}:00`;
+const VENTANA_ROTULO = `${hora(MEJOR_VENTANA[0])} – ${hora(MEJOR_VENTANA[MEJOR_VENTANA.length - 1] + 1)}`;
+const VENTANA_R = MEJOR_VENTANA.reduce((s, h) => s + (HORAS_R[h] ?? 0), 0) / MEJOR_VENTANA.length;
 const TOPE_POS = Math.max(...HORAS_R.map((v) => v ?? 0));
 const TOPE_NEG = Math.max(...HORAS_R.map((v) => -(v ?? 0)));
 const ZONA_POS = (TOPE_POS / (TOPE_POS + TOPE_NEG)) * 100;
@@ -171,9 +176,9 @@ export function FeaturesBento({
               <div className="mt-5 flex items-end justify-between gap-3">
                 <div>
                   <p className={`${rotulo} m-0`}>{es ? "Mejor ventana" : "Best window"}</p>
-                  <p className="tnum m-0 mt-1 text-[17px] font-medium text-primary">10:00 – 11:30</p>
+                  <p className="tnum m-0 mt-1 text-[17px] font-medium text-primary">{VENTANA_ROTULO}</p>
                 </div>
-                <span className="tnum text-[12px] text-tertiary">{es ? "+27 % sobre media" : "+27% over average"}</span>
+                <span className="tnum text-[12px] text-tertiary">{`${fmtR(VENTANA_R, lang, 2)} ${es ? "de media" : "on average"}`}</span>
               </div>
               {/* La otra cara del dato —cuándo NO operar— es la que promete
                   el titular, y equilibra el alto con el calendario. */}

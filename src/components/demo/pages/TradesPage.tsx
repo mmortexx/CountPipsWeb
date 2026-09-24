@@ -9,6 +9,7 @@ import {
   INSTRUMENTS,
   SETUP_NAMES,
   nombreSetup,
+  NOMBRE_SESION,
 } from "@/lib/trading/data";
 import {
   customTradeToTrade,
@@ -47,14 +48,6 @@ const ASSET_LABEL: Record<string, { es: string; en: string }> = {
   stock: { es: "Acciones", en: "Stock" },
   futures: { es: "Futuros", en: "Futures" },
   commodity: { es: "Materias Primas", en: "Commodities" },
-};
-
-/** La app escribe la plaza con su nombre completo y traducido ("Nueva
- *  York", "Londres", "Asia"), no con la abreviatura interna del dato. */
-const SESSION_LABEL: Record<string, { es: string; en: string }> = {
-  London: { es: "Londres", en: "London" },
-  NY: { es: "Nueva York", en: "New York" },
-  Asia: { es: "Asia", en: "Asia" },
 };
 
 const PAGE_SIZE = 20;
@@ -254,7 +247,7 @@ const TradeRow = memo(function TradeRow({
 
       {/* Col 3 — session. */}
       <td className="px-3 py-2.5 whitespace-nowrap text-tertiary text-xs">
-        {SESSION_LABEL[trade.session]?.[lang] ?? trade.session}
+        {NOMBRE_SESION[trade.session]?.[lang] ?? trade.session}
       </td>
 
       {/* Col 4 — entry → exit. */}

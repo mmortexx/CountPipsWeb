@@ -34,6 +34,7 @@
 
 import { SETUP_NAMES, type SetupName } from "./setups.ts";
 import { mulberry32 } from "./azar.ts";
+import { OPERACIONES_MUESTRA } from "./muestra.ts";
 
 export interface Instrument {
   symbol: string;
@@ -90,6 +91,14 @@ export { SETUP_NAMES, nombreSetup, type SetupName } from "./setups.ts";
 
 export const SESSIONS = ["London", "NY", "Asia"] as const;
 export type Session = (typeof SESSIONS)[number];
+
+/** La app escribe la plaza con su nombre completo y traducido, no con la
+ *  abreviatura interna del dato. */
+export const NOMBRE_SESION: Record<Session, { es: string; en: string }> = {
+  London: { es: "Londres", en: "London" },
+  NY: { es: "Nueva York", en: "New York" },
+  Asia: { es: "Asia", en: "Asia" },
+};
 
 export type Direction = "long" | "short";
 export type Compliance = "yes" | "partial" | "no";
@@ -164,7 +173,7 @@ function buildTrades(): Trade[] {
 
   // 200 trades ≈ ~1.5 trades / business day over 180 days — realistic
   // cadence for an active retail day-trader running 1–3 setups per session.
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < OPERACIONES_MUESTRA; i++) {
     const inst = INSTRUMENTS[Math.floor(rnd() * INSTRUMENTS.length)];
     const setup = SETUP_NAMES[Math.floor(rnd() * SETUP_NAMES.length)];
     const direction: Direction = rnd() > 0.42 ? "long" : "short";
@@ -762,6 +771,26 @@ export const runsTest = computeRunsTest;
 
 export const METRICS = computeMetrics(TRADES);
 export const INITIAL_BALANCE_CONST = INITIAL_BALANCE;
+
+/** Cumplimiento del plan por mes natural (UTC), con el mismo criterio que
+ *  `compliancePct`: los `meses` últimos hasta el de la operación más reciente.
+ *  Un mes sin operaciones sale con `n: 0` y fracción 0. */
+export function cumplimientoMensual(
+  trades: Trade[],
+  meses = 6,
+): { inicio: Date; n: number; fraccion: number }[] {
+  if (!trades.length) return [];
+  const ultimo = trades.reduce((m, t) => Math.max(m, t.closedAt.getTime()), -Infinity);
+  const fin = new Date(ultimo);
+  return Array.from({ length: meses }, (_, i) => {
+    const inicio = new Date(Date.UTC(fin.getUTCFullYear(), fin.getUTCMonth() - (meses - 1 - i), 1));
+    const del = trades.filter(
+      (t) => t.closedAt.getUTCFullYear() === inicio.getUTCFullYear() && t.closedAt.getUTCMonth() === inicio.getUTCMonth(),
+    );
+    const cumplidas = del.filter((t) => t.compliance === "yes").length;
+    return { inicio, n: del.length, fraccion: del.length ? cumplidas / del.length : 0 };
+  });
+}
 
 /* ===== Analytics distributions ===== */
 export function rHistogram(trades: Trade[], bins = 9): { x: number; count: number }[] {

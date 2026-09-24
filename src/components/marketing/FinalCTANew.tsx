@@ -4,7 +4,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
-import { TRADES } from "@/lib/trading/data";
+import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 import { fmtInt } from "@/lib/trading/format";
 
 /** Cierre de página, compuesto como el final de un informe: un filete, el
@@ -38,9 +38,7 @@ const TEXTOS = {
     en: ["The numbers add up.", "Now run your own.", "The same thing, over your whole history and updated with every trade you log. The demo shows it with sample data."],
   },
   glosario: {
-    // El «{n}» se sustituye por `TRADES.length` (data.ts) al montar el
-    // componente: la cifra no se copia a mano, sale de la misma fuente
-    // que usa el resto del sitio para contar la muestra.
+    // «{n}» es OPERACIONES_MUESTRA, la misma constante que usa el generador.
     es: ["Del término a la cifra.", "Míralo en la demo.", "La demo aplica este vocabulario a {n} operaciones de muestra: cada ratio con su muestra y cada error con lo que cuesta."],
     en: ["From the term to the number.", "See it in the demo.", "The demo applies this vocabulary to {n} sample trades: every ratio with its sample size, every mistake with what it costs."],
   },
@@ -54,7 +52,7 @@ export function FinalCTANew({
   const { lang } = useLang();
   const es = lang === "es";
   const [titular, tenue, entradillaCruda] = TEXTOS[variante][lang];
-  const entradilla = entradillaCruda.replace("{n}", fmtInt(TRADES.length, lang));
+  const entradilla = entradillaCruda.replace("{n}", fmtInt(OPERACIONES_MUESTRA, lang));
   const garantias = es
     ? ["Datos de muestra", "Sin registro", "Tus datos en tu equipo"]
     : ["Sample data", "No sign-up", "Your data on your machine"];

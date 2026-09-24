@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum as fmtNumBase, fmtPct, pctSep } from "@/lib/trading/format";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 
 /** Tasa de reinversión ilustrativa (S&P 500 indexado): una sola cifra para
  *  el cálculo y para la nota que la describe, no una escrita a mano en
@@ -40,8 +41,8 @@ const TASA_REINVERSION_ANUAL = 0.08;
 type PlanId = "core" | "pro";
 
 const COUNTPIPS_PLANS: { id: PlanId; label: string; price: number }[] = [
-  { id: "core", label: "CountPips Core", price: 149 },
-  { id: "pro", label: "CountPips Pro", price: 249 },
+  { id: "core", label: "CountPips Core", price: PRECIO_CORE },
+  { id: "pro", label: "CountPips Pro", price: PRECIO_PRO },
 ];
 
 export function SavingsCalculator() {

@@ -5,7 +5,7 @@ import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
-import { formatoUsd, pctSep, fmtInt, fmtNum as fmtNumCasa } from "@/lib/trading/format";
+import { fmtMoney, pctSep, fmtInt, fmtNum as fmtNumCasa } from "@/lib/trading/format";
 import { siteUrl } from "@/lib/site";
 
 /** Cuántos decimales (0 a `max`) hacen falta para representar `v` sin ceros
@@ -387,7 +387,6 @@ export function EquityProjector() {
   // ── Formateadores de Alta Fidelidad ──────────────────────────────
   const fmtUsd = useCallback(
     (n: number, compact = false) => {
-      const locale = es ? "es-ES" : "en-US";
       /* Las abreviadas escribian «$2,18M» tambien en castellano: la
          divisa delante, que es la convencion inglesa, al lado de un
          «2.182.131 US$» de la casilla vecina que sale de `Intl` y la
@@ -401,8 +400,8 @@ export function EquityProjector() {
         const cifra = fmtNumCasa(n / 1_000, lang, 0);
         return es ? `${cifra}\u00a0k $` : `$${cifra}k`;
       }
-      return formatoUsd(locale, { maximumFractionDigits: 0,
-      }).format(n);
+      // Con millares siempre: `Intl` en español deja «1000 $» sin punto.
+      return fmtMoney(n, lang, { decimals: 0 });
     },
     [es, lang],
   );

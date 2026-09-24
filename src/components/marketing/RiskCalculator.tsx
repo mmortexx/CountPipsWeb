@@ -179,9 +179,9 @@ export function RiskCalculator() {
     };
   }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, lotMultiplier, includeFriction, kellyWinRate, es]);
 
-  /* `fmtUsd`/`fmtNum` reformulados sobre los helpers de format.ts en vez
-     de reimplementar `Intl.NumberFormat` a mano: misma cifra, una sola
-     fuente de formato para toda la web. */
+  /* Los helpers de format.ts, no un `Intl.NumberFormat` propio: el propio
+     agrupaba sin millares «1234,56 $» en español y ponía «-» en vez de «−»,
+     distinto del resto de la web. */
   const fmtUsd = useCallback((n: number) => fmtMoney(n, lang), [lang]);
 
   const fmtNum = useCallback(

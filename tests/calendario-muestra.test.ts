@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getCal, getSetups } from "@/lib/trading/fixtures";
-import { TRADES } from "@/lib/trading/data";
+import { TRADES, cumplimientoMensual } from "@/lib/trading/data";
+import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 
 const CRIPTO = new Set(["BTC/USDT", "ETH/USDT"]);
 const AHORA = new Date("2026-07-16T18:00:00Z");
@@ -58,5 +59,35 @@ describe("la muestra no opera con el mercado cerrado", () => {
     expect(TRADES).toHaveLength(200);
     expect(TRADES.reduce((s, t) => s + t.netPnl, 0).toFixed(2)).toBe("6807.72");
     expect(TRADES.every((t) => t.closedAt.getTime() <= AHORA.getTime())).toBe(true);
+  });
+
+  /* El cierre de las fichas del glosario cita la cifra sin cargar TRADES. */
+  it("la constante del tamaño de la muestra es el tamaño de la muestra", () => {
+    expect(TRADES).toHaveLength(OPERACIONES_MUESTRA);
+  });
+});
+
+/* «Cumplimiento mensual» del diario llevaba cinco meses inventados y, bajo
+   «Jul», el cumplimiento de los 180 días. */
+describe("el cumplimiento mensual sale de la muestra", () => {
+  const meses = cumplimientoMensual(TRADES);
+
+  it("son los seis meses naturales que acaban en el de la última operación", () => {
+    expect(meses.map((m) => m.inicio.toISOString().slice(0, 7))).toEqual([
+      "2026-02", "2026-03", "2026-04", "2026-05", "2026-06", "2026-07",
+    ]);
+  });
+
+  it("cada mes cuenta sus operaciones y su fracción con el criterio de las métricas", () => {
+    for (const m of meses) {
+      const del = TRADES.filter((t) => t.closedAt.toISOString().slice(0, 7) === m.inicio.toISOString().slice(0, 7));
+      expect(m.n).toBe(del.length);
+      expect(m.fraccion).toBeCloseTo(del.filter((t) => t.compliance === "yes").length / del.length, 10);
+    }
+    expect(new Set(meses.map((m) => m.fraccion.toFixed(3))).size).toBeGreaterThan(1);
+  });
+
+  it("sin operaciones no inventa meses", () => {
+    expect(cumplimientoMensual([])).toEqual([]);
   });
 });

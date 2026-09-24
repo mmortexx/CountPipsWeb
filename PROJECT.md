@@ -1953,6 +1953,56 @@ verde y capturas a 1440, 820 y 390 en los dos temas.
   app también funciona en inglés (`Strings/en-GB` en el repositorio de
   la app).
 
+### Vigesimosegunda tanda: coherencia de cifras y textos, en paralelo (2026-09-24)
+
+Nueve trabajadores (Sonnet, cada uno en su copia del repositorio y con la
+misma lista cerrada de reglas) repasaron calculadoras, demo, portada,
+características, precios, glosario y legales; el coordinador revisó cada
+diff, fusionó en local y corrigió encima lo que no pasaba la revisión.
+
+- **Millares siempre.** `Intl` en español no agrupa las cifras de cuatro
+  dígitos: salían «1234,56 $» en la calculadora de riesgo, «2350,00» junto
+  a «18.200,0» en la tabla de la demo y «1000 $» en el proyector. `fmtInt`
+  y `fmtPrice` agrupan ya como `fmtNum`/`fmtMoney`, y las calculadoras que
+  llevaban su propio `Intl.NumberFormat` usan los de `format.ts`.
+  `formatoUsd` desaparece (su propio comentario prometía «1.234 $» y
+  daba «1234 $»). Guarda: `formato-millares.test.ts`.
+- **La política de cookies declaraba una clave que ya no existe**
+  («si ya viste la animación de entrada», `sessionStorage` `tj_intro`,
+  retirada en 91c72b9). Fila quitada, fecha legal al 2026-09-24.
+  `almacenamiento-declarado.test.ts` cuenta las claves que el código
+  escribe en el navegador y las filas de la tabla; visto en rojo con la
+  fila antigua.
+- **Cifras inventadas que ahora salen de los datos:**
+  - «Cumplimiento mensual» del diario: cinco fracciones escritas a mano y,
+    bajo «Jul», el cumplimiento de los 180 días. Ahora
+    `cumplimientoMensual()` por mes natural UTC.
+  - Ficha «Rendimiento por hora» de /features: decía «10:00 – 11:30» y
+    «+27 % sobre media» con la ventana resaltada en 10:00–12:00 y una
+    media de +0,55R. Rótulo y cifra salen de `HORAS_R`/`MEJOR_VENTANA`.
+  - La fila «Suma» de la tabla de operaciones enseñaba la media.
+- **El cierre del glosario cita las 200 operaciones sin cargarlas.** Un
+  trabajador lo resolvió importando `TRADES` en `FinalCTANew` (componente
+  de cliente de decenas de páginas): comprobado compilando que así glosario,
+  FAQ y precios descargaban el generador. Queda `OPERACIONES_MUESTRA`
+  (`lib/trading/muestra.ts`), la misma que usa el bucle de `data.ts`.
+- **Demo:** la ayuda de atajos prometía «1–7» y hay cuatro pestañas; la
+  ficha de operación deja el inglés en sesión, lado y cantidad; R, MAE y
+  MFE con `fmtR` (menos tipográfico); `NOMBRE_SESION` en `data.ts` en vez
+  de dos copias; `10_000` → `INITIAL_BALANCE_CONST`.
+- **Calculadoras:** tasa del 8 %, umbral de comisiones, confianza del 99 %
+  y banda del 80 % como constantes de las que se deriva el texto; precios
+  de la calculadora de ahorro desde `lib/precios`; el reloj escribe
+  «UTC+5:30», no «UTC+5.5».
+- **Glosario:** la familia «basics» se llamaba «Conceptos» en la ventana y
+  «Fundamentos» en las fichas; ahora «Fundamentos».
+
+Informado y no tocado: la tarjeta «Dónde cayó dentro del día» de la ficha
+de operación usa marcadores fijos (documentados en el código); la cita de
+competidores «según sus webs en julio de 2026» no se puede comprobar desde
+el repositorio; `i18n.tsx` interpola cifras crudas en `tradesCount` y
+escribe «10.000 $» a mano en `demoAccount`.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -1976,7 +2026,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 35 suites, 362 tests (+2 omitidos)
+npx vitest run                          # 37 suites, 371 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

@@ -188,7 +188,7 @@ for (const [regla, casos] of Object.entries(porRegla)) {
 console.log(`\n[cifras] ${paginas} páginas revisadas`);
 if (fallos.length) {
   console.log(`[cifras] ${fallos.length} caso(s) con la convención del otro idioma`);
-  console.log("[cifras] el separador del porcentaje sale de `pctSep(lang)`; el dólar, de `fmtMoney` o `formatoUsd`");
+  console.log("[cifras] el separador del porcentaje sale de `pctSep(lang)`; el dólar, de `fmtMoney`");
   console.log("[cifras] una palabra española en /en es un literal sin bifurcar: `es ? \"…\" : \"…\"`");
   process.exit(1);
 }

@@ -173,7 +173,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               <span className="text-[13px] text-secondary">
                 {fmtInt(contratos, lang)} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
               </span>
-              <span className="ml-auto text-[13px] text-secondary">{fmtInt(28, lang)} pts</span>
+              <span className="ml-auto text-[13px] text-secondary">28 pts</span>
             </div>
             <ul className="m-0 p-0 list-none">
               {[

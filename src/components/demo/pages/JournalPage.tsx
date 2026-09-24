@@ -8,6 +8,7 @@ import {
   METRICS,
   weekdayBreakdown,
   monthlyBreakdown,
+  cumplimientoMensual,
   type Trade,
 } from "@/lib/trading/data";
 import { fmtInt, fmtNum, fmtDate, fmtMoney, fmtPct, pctSep, LOCALE_FECHA } from "@/lib/trading/format";
@@ -1034,13 +1035,15 @@ export function JournalPage() {
   }, [streakStrip]);
 
   // Monthly compliance trend (last 6 months, deterministic).
+  /* Antes: cinco fracciones escritas a mano y, bajo «Jul», el cumplimiento
+     de los 180 días enteros. */
   const complianceTrend = useMemo(() => {
-    const months = lang === "es"
-      ? ["Feb", "Mar", "Abr", "May", "Jun", "Jul"]
-      : ["Feb", "Mar", "Apr", "May", "Jun", "Jul"];
-    const base = [0.62, 0.71, 0.66, 0.78, 0.74, compliancePct];
-    return months.map((m, i) => ({ label: m, fraction: base[i] ?? 0.7 }));
-  }, [lang, compliancePct]);
+    const mes = new Intl.DateTimeFormat(LOCALE_FECHA[lang], { month: "short", timeZone: "UTC" });
+    return cumplimientoMensual(TRADES).map((m) => {
+      const nombre = mes.format(m.inicio).replace(".", "");
+      return { label: nombre.charAt(0).toUpperCase() + nombre.slice(1), fraction: m.fraccion };
+    });
+  }, [lang]);
 
   const togglePre = (id: string) =>
     setPreState((p) => ({ ...p, [id]: !p[id] }));
