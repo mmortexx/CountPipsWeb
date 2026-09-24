@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useLang } from "@/lib/i18n";
 import { type Trade, nombreSetup } from "@/lib/trading/data";
 import { fmtMoney, fmtNum, fmtR, fmtPrice, fmtDuration, fmtDateTime } from "@/lib/trading/format";
@@ -17,17 +18,32 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
   const { lang } = useLang();
   const es = lang === "es";
 
+  /* `<dialog>` nativo abierto con `showModal()`, como el visor de capturas:
+     el navegador pone el foco dentro, lo retiene, deja inerte lo de detrás y
+     cierra con Escape. Era un `div` con `aria-modal` que no hacía ninguna de
+     las cuatro cosas: Escape no cerraba y el tabulador se iba a la página. */
+  const ventana = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ventana.current;
+    if (d && !d.open) d.showModal();
+    return () => d?.close();
+  }, []);
+
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
+    <dialog
+      ref={ventana}
       aria-labelledby="compare-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      onClick={onClose}
+      className="tj-comparador"
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
+      }}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
     >
       <div
-        className="w-full max-w-3xl overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.2)] tj-paper-dense shadow-[var(--ficha-sombra)] transition-all"
-        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-3xl overflow-hidden rounded-[4px] border border-[rgb(var(--divider)/0.2)] tj-paper-dense shadow-[var(--ficha-sombra)]"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[rgb(var(--divider)/0.12)] px-5 py-3.5 bg-[color-mix(in_oklab,var(--surface-2)_60%,transparent)]">
@@ -168,6 +184,6 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

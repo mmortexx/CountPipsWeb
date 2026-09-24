@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
+import { MotionConfig } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { DemoProvider, useDemo, type DemoPage } from "./DemoContext";
 import { WindowChrome } from "./WindowChrome";
@@ -359,22 +359,22 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={page}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  className="min-h-full"
-                >
-                  {page === "dashboard" && <DashboardPage />}
-                  {page === "trades" && <TradesPage />}
-                  {page === "detail" && <TradeDetailPage />}
-                  {page === "analytics" && <AnalyticsPage />}
-                  {page === "journal" && <JournalPage />}
-                </motion.div>
-              </AnimatePresence>
+              {/* Los gestos de la app de verdad (Fluent): una sección entra
+                  desde abajo con la curva de deceleración de WinUI; abrir una
+                  operación es un «drill-in», llega desde el fondo.
+
+                  En CSS y no con AnimatePresence: medido fotograma a fotograma,
+                  framer dejaba el panel a opacidad 0 un fotograma justo al
+                  terminar cada entrada (10 de 10 cambios, a los ≈640 ms), un
+                  parpadeo en blanco. Y sin salida animada no hay espera: la
+                  página nueva empieza a entrar al pulsar. */}
+              <div key={page} className={`min-h-full ${page === "detail" ? "tj-demo-fondo" : "tj-demo-entra"}`}>
+                {page === "dashboard" && <DashboardPage />}
+                {page === "trades" && <TradesPage />}
+                {page === "detail" && <TradeDetailPage />}
+                {page === "analytics" && <AnalyticsPage />}
+                {page === "journal" && <JournalPage />}
+              </div>
             </div>
             <div
               aria-hidden

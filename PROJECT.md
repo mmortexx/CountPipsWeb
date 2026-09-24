@@ -2095,6 +2095,31 @@ asienta; nada rebota ni brilla.
   pestaña se quedaba sin memoria. Lee por tandas de 25; la medida no
   cambia (0 de 180 fotogramas claros en portada, control 321).
 
+### Vigesimosexta tanda: la demo y el móvil en oscuro (2026-09-24)
+
+- **La demo parpadeaba en blanco al cambiar de pestaña.** Medido fotograma
+  a fotograma: al terminar cada entrada, `AnimatePresence` dejaba el panel
+  a opacidad 0 durante un fotograma (10 de 10 cambios, a los ≈640 ms). El
+  cambio de página pasa a CSS (`.tj-demo-entra`, y `.tj-demo-fondo` para
+  abrir una operación, «drill-in»), con la curva de deceleración de WinUI.
+  Sin salida animada tampoco hay espera: la página nueva está entera en
+  318–345 ms (diez cambios), antes 450 ms más la salida. 10 de 10 sin caída.
+- **La barrita de la pestaña activa viaja** (`layoutId`), como en el
+  NavigationView de la app: llega centrada al píxel (900/900 a 1440,
+  181/181 a 390).
+- **El comparador era un `div` con `aria-modal`** que no cerraba con
+  Escape ni retenía el foco. Ahora es un `<dialog>` nativo con
+  `showModal()`, como el visor de capturas: comprobado abierto, modal,
+  con el foco dentro, y cerrado tras Escape. Entra con velo y hoja.
+- **Móvil en oscuro, todas las plantillas revisadas.** Arreglado: el
+  buscador de la 404 cortaba su texto de ayuda («Una métrica o una
+  pregunt»); y las leyendas de Sharpe y Sortino definían «μ» mientras la
+  fórmula escribía E[R] — ahora `((μ − Rf) / σ) × √N`, con guarda nueva
+  (`tests/formulas-glosario.test.ts`, vista en rojo en esos cuatro casos).
+  Descartado con motivo: la captura clara en tema oscuro (decisión escrita
+  en ProductPlate) y las tablas legales con desplazamiento lateral (tienen
+  tres columnas y su aviso de que sigue).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2118,7 +2143,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 38 suites, 382 tests (+2 omitidos)
+npx vitest run                          # 39 suites, 415 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

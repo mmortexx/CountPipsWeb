@@ -6616,6 +6616,75 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   transition: opacity 0.2s var(--ease-suave);
 }
 
+/* ── CAMBIO DE PÁGINA DENTRO DE LA DEMO (AppDemo.tsx) ─────────────────
+   La curva es la de deceleración de WinUI, no la de la casa: dentro de la
+   ventana se imita a la aplicación, fuera se habla con la voz de la web. */
+@media (prefers-reduced-motion: no-preference) {
+  .tj-demo-entra {
+    animation: tj-demo-entra 0.5s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+  }
+  .tj-demo-fondo {
+    animation: tj-demo-fondo 0.45s cubic-bezier(0.1, 0.9, 0.2, 1) both;
+  }
+}
+@keyframes tj-demo-entra {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+}
+@keyframes tj-demo-fondo {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+/* ── EL COMPARADOR DE LA DEMO ES UN <dialog> NATIVO ───────────────────
+   El velo llega un pelo antes que la hoja, y la hoja sube desde un punto
+   más pequeña, como el visor de capturas. Al cerrar no se espera. */
+.tj-comparador {
+  width: 100vw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+/* `margin: auto` y no `align-items: center`: en un móvil la hoja es más
+   alta que la pantalla, y centrada con flex se cortaría por arriba sin
+   poder desplazarla. */
+.tj-comparador[open] {
+  display: flex;
+  overflow-y: auto;
+}
+.tj-comparador[open] > div {
+  margin: auto;
+}
+.tj-comparador::backdrop {
+  background: rgb(0 0 0 / 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tj-comparador[open]::backdrop {
+    transition: opacity 0.22s var(--ease-suave);
+    @starting-style { opacity: 0; }
+  }
+  .tj-comparador[open] > div {
+    transition:
+      opacity 0.3s var(--ease-suave) 0.04s,
+      transform 0.45s var(--ease-salida) 0.04s;
+    @starting-style {
+      opacity: 0;
+      transform: translate3d(0, 14px, 0) scale(0.97);
+    }
+  }
+}
+
 /* ── Y EL DE LAS PESTAÑAS, IGUAL (SubrayadoPestanas.tsx) ─────────────── */
 .tj-pestanas[data-desliza] {
   position: relative;

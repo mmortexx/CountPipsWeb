@@ -128,11 +128,13 @@ export function NotFoundClient() {
               onChange={(e) => setQ(e.target.value)}
               placeholder={
                 es
-                  ? "Una métrica o una pregunta…"
-                  : "A metric or a question…"
+                  ? "Métrica o pregunta…"
+                  : "Metric or question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              className="w-full h-14 rounded-[4px] bg-transparent pl-11 pr-28 text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
+              /* El relleno derecho es el botón (≈ 92 px) más su aire: con
+                 `pr-28` a 390 px el texto de ayuda se cortaba a media palabra. */
+              className="w-full h-14 rounded-[4px] bg-transparent pl-11 pr-[6.25rem] text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
             />
             <button
               type="submit"

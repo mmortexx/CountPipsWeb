@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 import { useDemo, type DemoPage } from "./DemoContext";
 import { useLang } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
@@ -210,11 +211,16 @@ export function TopNav() {
                   borde. `left-1/2 -translate-x-1/2 w-6 sm:w-5` reproduce el
                   ancho fijo del indicador de WinUI (24 px en móvil para
                   mejor visibilidad sobre iconos sin etiqueta, 20 px en sm+). */}
+              {/* Y como en WinUI, la barrita no se apaga en un item y se
+                  enciende en otro: viaja al nuevo (`layoutId`). El contenedor
+                  centrado lleva la posición; la barra, solo el trazo. */}
               {active && (
-                <span
+                <motion.span
+                  layoutId="demo-indicador-pestana"
                   aria-hidden="true"
-                  className="absolute bottom-[6px] left-1/2 -translate-x-1/2 w-6 sm:w-5 h-[3px] rounded-[1px] transition-all duration-200 ease-[var(--ease-menu-in)]"
+                  className="absolute bottom-[6px] left-1/2 -ml-3 sm:-ml-2.5 w-6 sm:w-5 h-[3px] rounded-[1px]"
                   style={{ background: "rgb(var(--accent-base))" }}
+                  transition={{ duration: 0.4, ease: [0.1, 0.9, 0.2, 1] }}
                 />
               )}
             </button>
