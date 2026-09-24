@@ -384,6 +384,12 @@ export default function RootLayout({
             <Aparecer />
             <SubrayadoPestanas />
             <SkipLink />
+            {/* Fixed — su sitio en pantalla no depende de dónde vive en
+                el árbol (ver CookieConsent.tsx). Aquí, justo después del
+                SkipLink, entra pronto en el orden de tabulación: antes
+                vivía al final, después de las 150+ páginas de contenido
+                que hay entre el SkipLink y el pie. */}
+            <CookieConsent />
             <GlobalShortcuts />
             {/* El glosario (⌘G) y la ayuda de atajos `?` se cargan bajo
                 demanda: OverlayHost escucha las teclas y trae el código
@@ -426,7 +432,6 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
-            <CookieConsent />
             <BackToTop />
           </div>
           <Toaster />

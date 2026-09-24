@@ -56,6 +56,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   const es = lang === "es";
   const mando = useTeclaMando();
   const caja = useRef<HTMLDivElement>(null);
+  const cerrarRef = useRef<HTMLButtonElement>(null);
 
   /* Va anclada encima de la barra de estado, junto al icono que también la
      abre. Con `?` esa esquina puede estar fuera de la pantalla (a 1440×900
@@ -68,6 +69,24 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
       caja.current?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: quieto ? "auto" : "smooth" });
     });
     return () => cancelAnimationFrame(id);
+  }, [open]);
+
+  /* Foco: se abre con `?` o con el icono de la barra de estado, así que
+     hay que decírselo a quien usa lector de pantalla. Se mueve al botón
+     de cerrar DESPUÉS del `scrollIntoView` del efecto anterior — React
+     ejecuta los efectos en el orden en que se declaran, y este va
+     declarado justo debajo — y con `preventScroll` para no desplazar la
+     página una segunda vez. Al cerrar, el foco vuelve a quien lo tenía. */
+  useEffect(() => {
+    if (!open) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    const id = requestAnimationFrame(() =>
+      cerrarRef.current?.focus({ preventScroll: true })
+    );
+    return () => {
+      cancelAnimationFrame(id);
+      previouslyFocused?.focus?.();
+    };
   }, [open]);
 
   // While open: mark body so the AppDemo `?` interceptor + GlobalShortcuts
@@ -174,6 +193,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
                 </h3>
               </div>
               <button
+                ref={cerrarRef}
                 type="button"
                 onClick={onClose}
                 aria-label={es ? "Cerrar" : "Close"}

@@ -51,6 +51,27 @@ import {
 const RECENT_KEY = "tj-glossary-recent";
 const RECENT_MAX = 3;
 
+/** `id` estable de cada opción del listbox, para `aria-activedescendant`.
+ *  Función pura — sin DOM — para poder probarla contra todo `GLOSSARY`
+ *  sin renderizar React. */
+export function idOpcionGlosario(term: string): string {
+  // Se descompone a NFD ("é" -> "e" + marca de acento) y luego se filtran
+  // las marcas combinantes por su código de punto, no por un escape
+  // `\uXXXX` en una regex: ese escape se ha degradado antes a caracteres
+  // literales al pasar por herramientas de edición basadas en shell (ver
+  // la nota de memoria "heredoc-se-come-barras"), y un id que depende de
+  // caracteres pegados en el fichero fuente es frágil de un modo que no
+  // se ve leyendo el código con normalidad.
+  const sinAcentos = Array.from(term.toLowerCase().normalize("NFD"))
+    .filter((ch) => {
+      const code = ch.codePointAt(0) ?? 0;
+      return code < 0x0300 || code > 0x036f;
+    })
+    .join("");
+  const slug = sinAcentos.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  return `glosario-opcion-${slug || "x"}`;
+}
+
 function readRecent(): string[] {
   if (typeof window === "undefined") return [];
   try {
@@ -393,6 +414,13 @@ export function GlossaryModal({
               ref={listRef}
               role="listbox"
               aria-label={es ? "Términos del glosario" : "Glossary terms"}
+              aria-activedescendant={
+                filtered.length === 0
+                  ? undefined
+                  : idOpcionGlosario(
+                      filtered[Math.min(activeIndex, filtered.length - 1)].term
+                    )
+              }
               tabIndex={0}
               onKeyDown={handleListKeyDown}
               className="grid gap-2.5 outline-none"
@@ -404,6 +432,7 @@ export function GlossaryModal({
                 return (
                   <li
                     key={g.term}
+                    id={idOpcionGlosario(g.term)}
                     role="option"
                     aria-selected={isActive}
                     data-glossary-index={i}

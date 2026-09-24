@@ -82,6 +82,13 @@ export function CookieConsent() {
   });
   const [visible, setVisible] = useState(false);
 
+  /* Quién tenía el foco cuando el USUARIO reabrió el aviso desde el pie —
+     null en todo lo demás (revelación por scroll, por los 5 s, primera
+     carga). Solo en ese caso se mueve el foco al abrir y se devuelve al
+     cerrar; ver el porqué en el efecto de foco, más abajo. */
+  const reopenSourceRef = useRef<HTMLElement | null>(null);
+  const primerBotonRef = useRef<HTMLButtonElement>(null);
+
   /* Reapertura desde el control «Preferencias de privacidad», que vive en
      el pie y por tanto sale en las 154 páginas. Sin esto, el aviso no
      volvía a salir jamás una vez elegido, y la política prometía por
@@ -91,12 +98,26 @@ export function CookieConsent() {
      acaba de pedirlo, así que la respuesta es inmediata. */
   useEffect(() => {
     const reopen = () => {
+      // El enlace del pie es quien dispara este evento, así que en el
+      // instante en que se dispara `document.activeElement` es ese
+      // enlace (clic o Enter con teclado, en ambos casos lo enfoca).
+      reopenSourceRef.current = document.activeElement as HTMLElement | null;
       setDismissed(false);
       setVisible(true);
     };
     window.addEventListener(CONSENT_REOPEN_EVENT, reopen);
     return () => window.removeEventListener(CONSENT_REOPEN_EVENT, reopen);
   }, []);
+
+  /* NUNCA se roba el foco cuando el aviso aparece solo (por scroll o por
+     los 5 s) — sería peor que no pedirlo. Esto solo mueve el foco cuando
+     `reopenSourceRef` está poblado, y eso solo ocurre por la vía de
+     arriba: el usuario pidiéndolo desde el pie. */
+  useEffect(() => {
+    if (!visible || !reopenSourceRef.current) return;
+    const id = requestAnimationFrame(() => primerBotonRef.current?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [visible]);
 
   // Reveal on first scroll OR 5 s after mount — whichever fires first.
   // Rationale: the old 2 s auto-reveal interrupted screen-reader page-load
@@ -172,6 +193,12 @@ export function CookieConsent() {
     // `writeConsent` guarda y avisa; si el almacenamiento está bloqueado,
     // la elección vale igual para esta sesión (ver src/lib/consent.ts).
     writeConsent(choice);
+    // Si el aviso se abrió desde el enlace del pie, el foco vuelve a él;
+    // en la revelación automática no hay adónde volver (nunca se lo
+    // llevó) y esto no hace nada.
+    const volver = reopenSourceRef.current;
+    reopenSourceRef.current = null;
+    volver?.focus?.();
   }, []);
 
   // Dismiss on Escape key for keyboard accessibility (WCAG 2.1.1)
@@ -209,6 +236,7 @@ export function CookieConsent() {
         <div
           ref={hoja}
           role="dialog"
+          aria-modal="false"
           aria-live="polite"
           aria-label={es ? "Consentimiento de cookies" : "Cookie consent"}
           data-cookie-consent="visible"
@@ -262,6 +290,7 @@ export function CookieConsent() {
                 sheet es full-width así que los botones son cómodos. */}
             <div className="mt-2.5 grid grid-cols-2 gap-2 md:mt-4">
               <button
+                ref={primerBotonRef}
                 type="button"
                 onClick={() => choose("declined")}
                 className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium text-secondary bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:bg-[color-mix(in_srgb,var(--ink)_10%,transparent)] hover:text-primary transition-[background,color,transform] duration-150"
