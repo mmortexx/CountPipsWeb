@@ -18,7 +18,7 @@ import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { cifraEditable, fmtNum, fmtPct, fmtR, leeCifra } from "@/lib/trading/format";
+import { cifraEditable, fmtInt, fmtNum, fmtPct, fmtR, leeCifra } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -33,6 +33,10 @@ import { useDemo } from "@/components/demo/DemoContext";
 type Timeframe = "1M" | "3M" | "6M";
 const TIMEFRAMES: Timeframe[] = ["1M", "3M", "6M"];
 const TF_DAYS: Record<Timeframe, number> = { "1M": 30, "3M": 90, "6M": 180 };
+
+// Cuántas operaciones recientes se listan bajo el rendimiento — una sola
+// fuente para el `slice` y para el rótulo "Últimas N operaciones".
+const RECENT_TRADES_COUNT = 6;
 
 /** Slice a Metrics snapshot to the last N days of trades — keeps the
  *  equityCurve + drawdownCeiling arrays in sync so the chart redraws
@@ -114,7 +118,10 @@ export function DashboardPage() {
   // useAllTrades subscribes to localStorage so trades logged via the
   // composer above appear here instantly without a manual refresh.
   const allTrades = useAllTrades(TRADES);
-  const recentTrades = useMemo(() => allTrades.slice(0, 6), [allTrades]);
+  const recentTrades = useMemo(
+    () => allTrades.slice(0, RECENT_TRADES_COUNT),
+    [allTrades]
+  );
 
   // ----- composer form state -----
   const [direction, setDirection] = useState<Direction>("long");
@@ -783,7 +790,7 @@ export function DashboardPage() {
                 {/* Session count */}
                 <div className="flex items-center gap-2 text-xs">
                   <span className="text-sm font-semibold tnum text-primary">
-                    {sessionCount}
+                    {fmtInt(sessionCount, lang)}
                   </span>
                   <span className="text-tertiary uppercase tracking-[0.1em]">
                     {es ? "en la sesión" : "this session"}
@@ -958,7 +965,7 @@ export function DashboardPage() {
                   }`}
                 >
                   {METRICS.currentStreak.count > 0
-                    ? `${METRICS.currentStreak.count}${
+                    ? `${fmtInt(METRICS.currentStreak.count, lang)}${
                         METRICS.currentStreak.kind === "win"
                           ? es
                             ? "G"
@@ -1092,7 +1099,9 @@ export function DashboardPage() {
                   {es ? "Operaciones recientes" : "Recent trades"}
                 </div>
                 <div className="mt-1 text-primary font-medium text-base">
-                  {es ? "Últimas 6 operaciones" : "Last 6 trades"}
+                  {es
+                    ? `Últimas ${fmtInt(RECENT_TRADES_COUNT, lang)} operaciones`
+                    : `Last ${fmtInt(RECENT_TRADES_COUNT, lang)} trades`}
                 </div>
               </div>
               <button
@@ -1306,8 +1315,8 @@ function TodayBriefing() {
         <p>
           {weekday
             ? es
-              ? `Es ${weekday}. Con ${sameWeekdayCount} operaciones, tus resultados de ese día van de un lado a otro del cero: no hay ventaja ni desventaja que afirmar.`
-              : `It is ${weekday}. Across ${sameWeekdayCount} trades, your results that day fall on both sides of zero: there is no edge or disadvantage to claim.`
+              ? `Es ${weekday}. Con ${fmtInt(sameWeekdayCount, lang)} operaciones, tus resultados de ese día van de un lado a otro del cero: no hay ventaja ni desventaja que afirmar.`
+              : `It is ${weekday}. Across ${fmtInt(sameWeekdayCount, lang)} trades, your results that day fall on both sides of zero: there is no edge or disadvantage to claim.`
             : " "}
         </p>
         <p>
@@ -1321,10 +1330,10 @@ function TodayBriefing() {
         {streak.kind !== "none" && streak.count > 1 && (
           <p>
             {es
-              ? `Llegas con ${streak.count} ${
+              ? `Llegas con ${fmtInt(streak.count, lang)} ${
                   streak.kind === "win" ? "ganadoras" : "pérdidas"
                 } seguidas.`
-              : `You arrive on a run of ${streak.count} ${
+              : `You arrive on a run of ${fmtInt(streak.count, lang)} ${
                   streak.kind === "win" ? "winners" : "losers"
                 }.`}
           </p>
@@ -1380,8 +1389,8 @@ function RealityCheck() {
   if (streak.kind === "loss" && streak.count > 0) {
     parts.push(
       es
-        ? `Llevas ${streak.count} pérdidas seguidas: con tu porcentaje de acierto lo normal es llegar a ${expectedStreak}, y ${rareStreak} tampoco sería raro.`
-        : `You are on a run of ${streak.count} losses: with your win rate, reaching ${expectedStreak} is normal, and ${rareStreak} would not be unusual either.`
+        ? `Llevas ${fmtInt(streak.count, lang)} pérdidas seguidas: con tu porcentaje de acierto lo normal es llegar a ${fmtInt(expectedStreak, lang)}, y ${fmtInt(rareStreak, lang)} tampoco sería raro.`
+        : `You are on a run of ${fmtInt(streak.count, lang)} losses: with your win rate, reaching ${fmtInt(expectedStreak, lang)} is normal, and ${fmtInt(rareStreak, lang)} would not be unusual either.`
     );
   }
 

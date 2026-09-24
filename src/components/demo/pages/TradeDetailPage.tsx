@@ -7,15 +7,20 @@ import {
   TRADES,
   INSTRUMENTS,
   nombreSetup,
+  INITIAL_BALANCE_CONST,
   type Trade,
   type Compliance,
+  type Session,
 } from "@/lib/trading/data";
 import { useCustomTrades, customTradeToTrade } from "@/lib/trading/demoStore";
 import {
   fmtNum,
+  fmtInt,
+  fmtR,
   fmtDuration,
   fmtDateTime,
   fmtPrice,
+  pctSep,
   pnlTone,
 } from "@/lib/trading/format";
 import { useDemo } from "@/components/demo/DemoContext";
@@ -27,6 +32,26 @@ import { MagneticButton } from "@/components/tj/MagneticButton";
 import { TradeCandleChart } from "@/components/charts/TradeCandleChart";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+
+/** Nombre completo y traducido de la plaza — mismo criterio que TradesPage
+ *  (la app escribe "Nueva York", "Londres", "Asia", no la abreviatura
+ *  interna del dato). */
+const SESSION_LABEL: Record<Session, { es: string; en: string }> = {
+  London: { es: "Londres", en: "London" },
+  NY: { es: "Nueva York", en: "New York" },
+  Asia: { es: "Asia", en: "Asia" },
+};
+
+/** Lado de la ejecución («Anatomía»), traducido — ENTRY/EXIT y BUY/SELL
+ *  se quedaban en inglés en la versión española de la ficha. */
+function dirLabel(dir: FillRow["dir"], lang: Lang): string {
+  if (lang !== "es") return dir;
+  return dir === "ENTRY" ? "ENTRADA" : "SALIDA";
+}
+function sideLabel(side: FillRow["side"], lang: Lang): string {
+  if (lang !== "es") return side;
+  return side === "BUY" ? "COMPRA" : "VENTA";
+}
 
 /* ---------- helpers ---------- */
 
@@ -347,10 +372,12 @@ type TagKind = "error" | "win" | "emotion" | "custom";
 function TagPill({
   kind,
   label,
+  lang,
   onRemove,
 }: {
   kind: TagKind;
   label: string;
+  lang: Lang;
   onRemove?: () => void;
 }) {
   const colors: Record<TagKind, string> = {
@@ -378,7 +405,7 @@ function TagPill({
         <button
           type="button"
           onClick={onRemove}
-          aria-label="Remove tag"
+          aria-label={lang === "es" ? "Quitar etiqueta" : "Remove tag"}
           className="ml-0.5 -mr-0.5 w-4 h-4 rounded-[2px] hover:bg-[rgb(var(--divider)/0.1)] inline-flex items-center justify-center"
         >
           <svg
@@ -483,7 +510,7 @@ export function TradeDetailPage() {
 
   // Risk amount in $ = the 1R dollar amount (already in trade.riskUsd).
   const riskAmount = trade.riskUsd;
-  const riskPct = (riskAmount / 10000) * 100;
+  const riskPct = (riskAmount / INITIAL_BALANCE_CONST) * 100;
 
   // Day-context data — deterministic placeholders that mirror the
   // real app's "Dónde cayó dentro del día" card.
@@ -643,8 +670,7 @@ export function TradeDetailPage() {
                   trade.rMultiple >= 0 ? "text-pnl-pos" : "text-pnl-neg"
                 }`}
               >
-                {trade.rMultiple > 0 ? "+" : ""}
-                {fmtNum(trade.rMultiple, lang, 2)}R
+                {fmtR(trade.rMultiple, lang, 2)}
               </span>
             </HeroStat>
             <HeroStat label={lang === "es" ? "Riesgo" : "Risk"} divider>
@@ -654,7 +680,8 @@ export function TradeDetailPage() {
                   className="text-2xl md:text-3xl font-semibold"
                 />
                 <span className="text-[10px] text-tertiary tnum">
-                  {fmtNum(riskPct, lang, 2)} % {lang === "es" ? "del capital" : "of capital"}
+                  {fmtNum(riskPct, lang, 2)}
+                  {pctSep(lang)} {lang === "es" ? "del capital" : "of capital"}
                 </span>
               </div>
             </HeroStat>
@@ -677,7 +704,7 @@ export function TradeDetailPage() {
                     MAE
                   </span>
                   <span className="text-pnl-neg font-semibold tnum">
-                    {trade.mae.toFixed(2)}R
+                    {fmtR(trade.mae, lang, 2)}
                   </span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
@@ -685,7 +712,7 @@ export function TradeDetailPage() {
                     MFE
                   </span>
                   <span className="text-pnl-pos font-semibold tnum">
-                    +{trade.mfe.toFixed(2)}R
+                    {fmtR(trade.mfe, lang, 2)}
                   </span>
                 </span>
               </div>
@@ -774,7 +801,7 @@ export function TradeDetailPage() {
                 {lang === "es" ? "Anatomía" : "Anatomy"}
               </Eyebrow>
               <Chip variant="count" size="xs" rounded="sm" className="tnum">
-                {fills.length} {lang === "es" ? "fills" : "fills"}
+                {fmtInt(fills.length, lang)} {lang === "es" ? "ejecuciones" : "fills"}
               </Chip>
             </div>
             {/* Table header — wrapped in overflow-x-auto so the fixed
@@ -786,7 +813,7 @@ export function TradeDetailPage() {
               <div className="grid grid-cols-[3.5rem_1fr_3.5rem_4rem_3rem_3.5rem] gap-x-3 pb-2 min-w-[24rem] text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
                 <div>{lang === "es" ? "Lado" : "Side"}</div>
                 <div>{lang === "es" ? "Hora" : "Time"}</div>
-                <div className="text-right">Qty</div>
+                <div className="text-right">{lang === "es" ? "Cant." : "Qty"}</div>
                 <div className="text-right">{lang === "es" ? "Precio" : "Price"}</div>
                 <div className="text-right">{lang === "es" ? "Com." : "Fee"}</div>
                 <div className="text-right">{lang === "es" ? "Acum." : "Cum."}</div>
@@ -814,10 +841,10 @@ export function TradeDetailPage() {
                             : "text-pnl-pos"
                         }`}
                       >
-                        {f.dir}
+                        {dirLabel(f.dir, lang)}
                       </span>
                       <span className="text-[10px] text-tertiary">
-                        {f.side}
+                        {sideLabel(f.side, lang)}
                       </span>
                     </div>
                     <span className="tnum text-secondary">{f.time}</span>
@@ -918,12 +945,12 @@ export function TradeDetailPage() {
                 </Detail>
                 <Detail label="MAE">
                   <span className="tnum text-pnl-neg">
-                    {trade.mae.toFixed(2)}R
+                    {fmtR(trade.mae, lang, 2)}
                   </span>
                 </Detail>
                 <Detail label="MFE">
                   <span className="tnum text-pnl-pos">
-                    +{trade.mfe.toFixed(2)}R
+                    {fmtR(trade.mfe, lang, 2)}
                   </span>
                 </Detail>
               </dl>
@@ -945,7 +972,9 @@ export function TradeDetailPage() {
                   <span className="text-primary">5m</span>
                 </Detail>
                 <Detail label={lang === "es" ? "Sesión" : "Session"}>
-                  <span className="text-primary">{trade.session}</span>
+                  <span className="text-primary">
+                    {SESSION_LABEL[trade.session][lang]}
+                  </span>
                 </Detail>
                 <Detail label={lang === "es" ? "Mercado" : "Market"}>
                   <span className="text-primary">
@@ -1050,6 +1079,7 @@ export function TradeDetailPage() {
                   key={`${tag.kind}-${tag.label}-${i}`}
                   kind={tag.kind}
                   label={tag.label}
+                  lang={lang}
                   onRemove={() =>
                     setTags((prev) => prev.filter((_, j) => j !== i))
                   }
@@ -1116,8 +1146,8 @@ export function TradeDetailPage() {
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">
                   {lang === "es"
-                    ? `MFE alcanzó ${trade.mfe.toFixed(2)}R; salí en ${trade.rMultiple.toFixed(2)}R.`
-                    : `MFE reached ${trade.mfe.toFixed(2)}R; exited at ${trade.rMultiple.toFixed(2)}R.`}
+                    ? `MFE alcanzó ${fmtR(trade.mfe, lang, 2)}; salí en ${fmtR(trade.rMultiple, lang, 2)}.`
+                    : `MFE reached ${fmtR(trade.mfe, lang, 2)}; exited at ${fmtR(trade.rMultiple, lang, 2)}.`}
                 </blockquote>
               </div>
               <div>
@@ -1178,7 +1208,7 @@ export function TradeDetailPage() {
               <SummaryRow
                 label={t("rr")}
                 tone={trade.rMultiple >= 0 ? "pos" : "neg"}
-                value={`${trade.rMultiple > 0 ? "+" : ""}${trade.rMultiple.toFixed(2)}R`}
+                value={fmtR(trade.rMultiple, lang, 2)}
               />
               <SummaryRow
                 label={t("grossPnl")}
