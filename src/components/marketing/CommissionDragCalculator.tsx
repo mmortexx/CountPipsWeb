@@ -5,6 +5,8 @@ import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 import { CampoCifra } from "@/components/tj/CampoCifra";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
+import { clasificaFugaComisiones } from "@/lib/trading/fugaComisiones";
 
 /** Umbral de fuga alta: una sola cifra para el aviso visual y para el
  *  texto del diagnóstico, no una repetida a mano en cada sitio. */
@@ -193,6 +195,12 @@ export function CommissionDragCalculator() {
   const totalCostAnnual = totalCostMonthly * 12;
 
   const costDragPct = grossMonthly > 0 ? (totalCostMonthly / grossMonthly) * 100 : 0;
+  const nivelFuga = clasificaFugaComisiones(costDragPct);
+  const NIVEL_FUGA_LABEL: Record<typeof nivelFuga, { es: string; en: string }> = {
+    alto: { es: "alto", en: "high" },
+    moderado: { es: "moderado", en: "moderate" },
+    bajo: { es: "bajo", en: "low" },
+  };
   const breakEvenTicksPerTrade =
     inst.tickValue * contracts > 0
       ? totalCostPerTrade / (inst.tickValue * contracts)
@@ -378,6 +386,16 @@ export function CommissionDragCalculator() {
               {es ? "En un año" : "Over a year"}
             </span>
 
+            {/* El resultado que resume la tarjeta, dicho en voz alta para
+                quien no ve la pantalla: ver ResultadoAnunciado. */}
+            <ResultadoAnunciado
+              texto={
+                es
+                  ? `Lo que queda en la cuenta: ${fmtMoney(netAnnual, lang, { decimals: 0, sign: true })} al año. Costes: ${fmtPct(costDragPct / 100, lang)} de la ganancia bruta.`
+                  : `What stays in the account: ${fmtMoney(netAnnual, lang, { decimals: 0, sign: true })} a year. Costs: ${fmtPct(costDragPct / 100, lang)} of gross profit.`
+              }
+            />
+
             {/* P&L Neto vs Bruto */}
             <div className="space-y-3 pb-5 border-b border-[var(--line)]">
               <div>
@@ -431,14 +449,16 @@ export function CommissionDragCalculator() {
                 </span>
                 <span
                   className={`text-base tnum font-semibold ${
-                    costDragPct > 30
+                    nivelFuga === "alto"
                       ? "text-[rgb(var(--pnl-neg))]"
-                      : costDragPct > 15
+                      : nivelFuga === "moderado"
                       ? "text-[rgb(var(--sig-amber))]"
                       : "text-[rgb(var(--pnl-pos))]"
                   }`}
                 >
                   {fmtPct(costDragPct / 100, lang)}
+                  {" · "}
+                  {es ? NIVEL_FUGA_LABEL[nivelFuga].es : NIVEL_FUGA_LABEL[nivelFuga].en}
                 </span>
                 <span className="text-[11px] text-tertiary block mt-0.5">
                   {es ? "del beneficio" : "of profit"}

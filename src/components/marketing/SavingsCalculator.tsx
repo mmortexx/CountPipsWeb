@@ -5,6 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum as fmtNumBase, fmtPct, pctSep } from "@/lib/trading/format";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 
 /**
  * SavingsCalculator — illustrative post-beta cost scenario.
@@ -275,6 +276,16 @@ export function SavingsCalculator() {
           className="tj-paper tj-paper-glow relative"
           style={{ padding: 24, borderRadius: 3, border: "1px solid transparent" }}
         >
+          {/* El resultado que resume la tarjeta, dicho en voz alta para
+              quien no ve la pantalla: ver ResultadoAnunciado. */}
+          <ResultadoAnunciado
+            texto={
+              es
+                ? `Diferencia ilustrativa: ${fmtUsd(c.savings)}, un ${fmtNum(Math.abs(c.savingsPct), 0)}${pctSep(lang)} ${c.savings >= 0 ? "menos" : "más"}.`
+                : `Illustrative difference: ${fmtUsd(c.savings)}, ${fmtNum(Math.abs(c.savingsPct), 0)}${pctSep(lang)} ${c.savings >= 0 ? "less" : "more"}.`
+            }
+          />
+
           {/* Headline savings */}
           <div className="mb-5">
             <div className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>

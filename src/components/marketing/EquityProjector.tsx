@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
+import { proyectaCapital, CONFIANZA_RACHA } from "@/lib/trading/proyeccion";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
 import { fmtMoney, pctSep, fmtInt, fmtNum as fmtNumCasa } from "@/lib/trading/format";
@@ -112,8 +113,8 @@ const HORIZON_CHIPS = [1, 2, 3, 5, 10];
    y el de la banda de varianza del gráfico se citan cada uno en tres
    textos distintos. Una sola constante para cada uno: si el nivel
    cambiara, los textos lo siguen solos en vez de quedar tres números
-   sueltos por corregir a mano. */
-const CONFIANZA_RACHA = 0.99;
+   sueltos por corregir a mano. `CONFIANZA_RACHA` en sí vive en
+   `lib/trading/proyeccion.ts`, que es quien la usa para calcular. */
 /** Ancho de la banda p10–p90 del cono de varianza. Va emparejado con el
  *  z-score `z80` del motor cuantitativo (abajo): si este cambia, `z80`
  *  tiene que cambiar con él. */
@@ -183,199 +184,34 @@ export function EquityProjector() {
     }
   };
 
-  // ── Motor Cuantitativo ──────────────────────────────────────────
-  const c = useMemo(() => {
-    const wr = winRate / 100;
-    const lr = 1 - wr;
-
-    // Expectancy bruta y neta (deduciendo comisiones / slippage)
-    const grossExpectancyR = wr * avgWinR - lr * avgLossR;
-    const netExpectancyR = grossExpectancyR - frictionR;
-    const hasEdge = netExpectancyR > 0;
-
-    // Profit factor
-    const grossWinTotal = wr * avgWinR;
-    const grossLossTotal = lr * avgLossR;
-    const profitFactor = grossLossTotal > 0 ? grossWinTotal / grossLossTotal : 0;
-
-    // Criterio de Kelly institucional
-    const b = avgLossR > 0 ? avgWinR / avgLossR : 1;
-    const fullKellyPct = b > 0 ? Math.max(0, ((wr * b - lr) / b) * 100) : 0;
-    const halfKellyPct = fullKellyPct / 2;
-
-    // Varianza por operación en unidades de R
-    const diffWin = avgWinR - grossExpectancyR;
-    const diffLoss = -avgLossR - grossExpectancyR;
-    const varPerTradeR = Math.max(0, wr * (diffWin * diffWin) + lr * (diffLoss * diffLoss));
-    const stdPerTradeR = Math.sqrt(varPerTradeR);
-
-    // Tasa de crecimiento por trade
-    const growthPerTrade = (netExpectancyR * riskPct) / 100;
-    const tradesPerMonth = tradesPerYear / 12;
-
-    // Simulación mensual
-    const totalMonths = years * 12;
-    const monthlyPoints: Array<{
-      month: number;
-      year: number;
-      trades: number;
-      balance: number;
-      lowerBalance: number;
-      upperBalance: number;
-      totalDeposited: number;
-      netProfit: number;
-    }> = [];
-
-    let currentBalance = startBalance;
-    let totalDeposited = startBalance;
-
-    monthlyPoints.push({
-      month: 0,
-      year: 0,
-      trades: 0,
-      balance: currentBalance,
-      lowerBalance: currentBalance,
-      upperBalance: currentBalance,
-      totalDeposited,
-      netProfit: 0,
-    });
-
-    const z80 = 1.282; // z-score para CONO_CONFIANZA_PCT (80 %), bilateral (p10 a p90)
-    const monthlyGrowthFactor = Math.pow(1 + Math.max(-0.99, growthPerTrade), tradesPerMonth);
-
-    for (let m = 1; m <= totalMonths; m++) {
-      if (reinvestMode === "compound") {
-        currentBalance = Math.max(0, currentBalance * monthlyGrowthFactor + monthlyContribution);
-      } else {
-        const monthlyProfit = startBalance * growthPerTrade * tradesPerMonth;
-        currentBalance = Math.max(0, currentBalance + monthlyProfit + monthlyContribution);
-      }
-
-      totalDeposited += monthlyContribution;
-
-      // Estimación analítica del cono de dispersión
-      const cumulativeTrades = Math.round(m * tradesPerMonth);
-      const stdCumulativeReturn = stdPerTradeR * (riskPct / 100) * Math.sqrt(cumulativeTrades);
-      const expectedLogGrowth = cumulativeTrades * Math.log(Math.max(0.001, 1 + growthPerTrade));
-      const upperFactor = Math.exp(expectedLogGrowth + z80 * stdCumulativeReturn);
-      const lowerFactor = Math.exp(Math.max(-5, expectedLogGrowth - z80 * stdCumulativeReturn));
-
-      const upperBalance = Math.max(0, startBalance * upperFactor + (totalDeposited - startBalance));
-      const lowerBalance = Math.max(0, startBalance * lowerFactor + (totalDeposited - startBalance));
-
-      monthlyPoints.push({
-        month: m,
-        year: Number((m / 12).toFixed(2)),
-        trades: cumulativeTrades,
-        balance: currentBalance,
-        lowerBalance,
-        upperBalance,
-        totalDeposited,
-        netProfit: currentBalance - totalDeposited,
-      });
-    }
-
-    const finalBalance = monthlyPoints[monthlyPoints.length - 1].balance;
-    const finalNetProfit = finalBalance - totalDeposited;
-    const totalReturnPct = totalDeposited > 0 ? (finalNetProfit / totalDeposited) * 100 : 0;
-
-    // CAGR (Tasa de crecimiento anual compuesto)
-    const cagr =
-      startBalance > 0 && finalBalance > 0 && years > 0
-        ? Math.pow(finalBalance / startBalance, 1 / years) - 1
-        : -1;
-
-    // Peor racha a CONFIANZA_RACHA en todo el horizonte: P(racha >= r en N ops) ~ 1 - e^(-N·p·q^r).
-    // La caída sale de esa racha, compuesta si se reinvierte; es un suelo, no el máximo.
-    const totalTrades = tradesPerYear * years;
-    const maxConsecLosses =
-      lr > 0 && lr < 1 && wr > 0 && totalTrades > 0
-        ? Math.max(1, Math.log(-Math.log(CONFIANZA_RACHA) / (totalTrades * wr)) / Math.log(lr))
-        : 0;
-    const perdidaPorOp = Math.min(0.99, avgLossR * (riskPct / 100));
-    const estMaxDDpct =
-      reinvestMode === "compound"
-        ? (1 - Math.pow(1 - perdidaPorOp, maxConsecLosses)) * 100
-        : Math.min(100, maxConsecLosses * perdidaPorOp * 100);
-
-    // Tiempo para duplicar capital
-    let monthsToDouble: number | null = null;
-    if (hasEdge && growthPerTrade > 0) {
-      const tradesToDouble = Math.log(2) / Math.log(1 + growthPerTrade);
-      monthsToDouble = tradesPerMonth > 0 ? tradesToDouble / tradesPerMonth : null;
-    }
-
-    // Expectancy en dólares iniciales
-    const expectancyUsdInitial = netExpectancyR * (riskPct / 100) * startBalance;
-    const yearlyUsdInitial = expectancyUsdInitial * tradesPerYear;
-
-    // Desglose por años para la tabla
-    const yearlyBreakdown: Array<{
-      year: number;
-      startBal: number;
-      endBal: number;
-      trades: number;
-      yearProfit: number;
-      yearReturnPct: number;
-      cumulativeProfit: number;
-      estDrawdownPct: number;
-    }> = [];
-
-    for (let y = 1; y <= years; y++) {
-      const startM = (y - 1) * 12;
-      const endM = y * 12;
-      const startBalYear = monthlyPoints[startM].balance;
-      const endBalYear = monthlyPoints[endM].balance;
-      const depositsThisYear = monthlyContribution * 12;
-      const yearProfit = endBalYear - startBalYear - depositsThisYear;
-      const yearReturnPct = startBalYear > 0 ? (yearProfit / startBalYear) * 100 : 0;
-      const cumulativeProfit = endBalYear - monthlyPoints[endM].totalDeposited;
-
-      yearlyBreakdown.push({
-        year: y,
-        startBal: startBalYear,
-        endBal: endBalYear,
-        trades: tradesPerYear,
-        yearProfit,
-        yearReturnPct,
-        cumulativeProfit,
-        estDrawdownPct: estMaxDDpct,
-      });
-    }
-
-    return {
-      grossExpectancyR,
-      netExpectancyR,
-      hasEdge,
-      profitFactor,
-      fullKellyPct,
-      halfKellyPct,
-      growthPerTrade,
-      monthlyPoints,
-      finalBalance,
-      finalNetProfit,
-      totalDeposited,
-      totalReturnPct,
-      cagr,
-      maxConsecLosses: Math.max(0, Math.round(maxConsecLosses)),
-      estMaxDDpct: Math.max(0, estMaxDDpct),
-      monthsToDouble,
-      expectancyUsdInitial,
-      yearlyUsdInitial,
-      yearlyBreakdown,
-    };
-  }, [
-    startBalance,
-    tradesPerYear,
-    winRate,
-    avgWinR,
-    avgLossR,
-    riskPct,
-    years,
-    reinvestMode,
-    monthlyContribution,
-    frictionR,
-  ]);
+  // ── Motor Cuantitativo (función pura en lib/trading/proyeccion.ts) ──
+  const c = useMemo(
+    () =>
+      proyectaCapital({
+        startBalance,
+        tradesPerYear,
+        winRate,
+        avgWinR,
+        avgLossR,
+        riskPct,
+        years,
+        reinvestMode,
+        monthlyContribution,
+        frictionR,
+      }),
+    [
+      startBalance,
+      tradesPerYear,
+      winRate,
+      avgWinR,
+      avgLossR,
+      riskPct,
+      years,
+      reinvestMode,
+      monthlyContribution,
+      frictionR,
+    ]
+  );
 
   // ── Formateadores de Alta Fidelidad ──────────────────────────────
   const fmtUsd = useCallback(
@@ -516,6 +352,7 @@ export function EquityProjector() {
 
   // Copiar resumen al portapapeles
   const copySummary = useCallback(async () => {
+    if (c.fueraDeEscala) return;
     const lines = [
       es ? "PROYECCIÓN DE CURVA DE CAPITAL — CountPips" : "EQUITY CURVE PROJECTION — CountPips",
       "═".repeat(38),
@@ -662,9 +499,13 @@ export function EquityProjector() {
           optimista. */}
       <ResultadoAnunciado
         texto={
-          es
-            ? `Capital final: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Drawdown máximo estimado: ${fmtPct(c.estMaxDDpct, 1)}.`
-            : `Final balance: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Estimated max drawdown: ${fmtPct(c.estMaxDDpct, 1)}.`
+          c.fueraDeEscala
+            ? es
+              ? "Con estos valores la proyección se sale de cualquier escala realista."
+              : "With these values the projection is off any realistic scale."
+            : es
+              ? `Capital final: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Drawdown máximo estimado: ${fmtPct(c.estMaxDDpct, 1)}.`
+              : `Final balance: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Estimated max drawdown: ${fmtPct(c.estMaxDDpct, 1)}.`
         }
       />
       <div className="tj-container">
@@ -1155,6 +996,21 @@ export function EquityProjector() {
                 )}
               </div>
 
+              {/* El balance ya no es una cifra creíble: ni el gráfico ni
+                  la tabla dicen nada fiable, así que en su sitio va el
+                  aviso, no una curva o una tabla con Infinity dentro. */}
+              {c.fueraDeEscala ? (
+                <div
+                  className="border-y border-[var(--ficha-division)] py-6 text-[13px] leading-relaxed text-center"
+                  style={{ color: "rgb(var(--pnl-neg))" }}
+                  role="alert"
+                >
+                  {es
+                    ? "Con estos valores la proyección se sale de cualquier escala realista."
+                    : "With these values the projection is off any realistic scale."}
+                </div>
+              ) : (
+                <>
               {/* VISTA 1: Gráfico Interactivo de Alta Definición */}
               {viewTab === "chart" && (
                 <div className="space-y-2">
@@ -1449,6 +1305,8 @@ export function EquityProjector() {
                   </table>
                 </div>
               )}
+                </>
+              )}
 
               {/* ── LAS SEIS CIFRAS, EN UNA RETICULA DE FILETES ────────
                   Eran seis tarjetas sueltas con 10 px de hueco, borde y
@@ -1470,11 +1328,15 @@ export function EquityProjector() {
                     <ArrowUpRight aria-hidden className="w-3 h-3 text-[rgb(var(--accent-base))]" />
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--accent-base))]">
-                    {fmtUsd(c.finalBalance, true)}
+                    {c.fueraDeEscala ? "—" : fmtUsd(c.finalBalance, true)}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
-                    {startBalance > 0
-                      ? `${fmtNum(c.finalBalance / startBalance, 1)}\u00a0× ${es ? "el capital inicial" : "starting capital"}`
+                    {c.fueraDeEscala
+                      ? es
+                        ? "Fuera de escala"
+                        : "Off scale"
+                      : startBalance > 0
+                      ? `${fmtNum(c.finalBalance / startBalance, 1)}× ${es ? "el capital inicial" : "starting capital"}`
                       : ""}
                   </div>
                 </div>
@@ -1492,7 +1354,7 @@ export function EquityProjector() {
                     className="tnum text-lg sm:text-xl font-semibold mt-1"
                     style={{ color: c.cagr >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
-                    {fmtPct(c.cagr * 100, 1)}
+                    {c.fueraDeEscala ? "—" : fmtPct(c.cagr * 100, 1)}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
                     {es ? "Crecimiento compuesto" : "Compound growth"}
@@ -1514,12 +1376,24 @@ export function EquityProjector() {
                       color: c.totalReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                     }}
                   >
-                    {c.totalReturnPct >= 0 ? "+" : ""}
-                    {fmtPct(c.totalReturnPct, 0)}
+                    {c.fueraDeEscala ? (
+                      "—"
+                    ) : (
+                      <>
+                        {c.totalReturnPct >= 0 ? "+" : ""}
+                        {fmtPct(c.totalReturnPct, 0)}
+                      </>
+                    )}
                   </div>
                   <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
-                    {c.finalNetProfit >= 0 ? "+" : ""}
-                    {fmtUsd(c.finalNetProfit, true)} {es ? "neto" : "net"}
+                    {c.fueraDeEscala ? (
+                      es ? "Fuera de escala" : "Off scale"
+                    ) : (
+                      <>
+                        {c.finalNetProfit >= 0 ? "+" : ""}
+                        {fmtUsd(c.finalNetProfit, true)} {es ? "neto" : "net"}
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -1594,7 +1468,8 @@ export function EquityProjector() {
                 <button
                   type="button"
                   onClick={copySummary}
-                  className="toque-comodo -mx-1 px-1 py-2 text-[13px] font-medium transition-colors cursor-pointer flex items-center gap-2 text-primary hover:text-[rgb(var(--accent-base))]"
+                  disabled={c.fueraDeEscala}
+                  className="toque-comodo -mx-1 px-1 py-2 text-[13px] font-medium transition-colors cursor-pointer flex items-center gap-2 text-primary hover:text-[rgb(var(--accent-base))] disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {copied ? <Check aria-hidden className="w-3.5 h-3.5" /> : <Copy aria-hidden className="w-3.5 h-3.5" />}
                   <span>

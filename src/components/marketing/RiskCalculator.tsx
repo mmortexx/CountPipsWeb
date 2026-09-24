@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio } from "@/lib/trading/estadistica";
+import { validaPlan } from "@/lib/trading/validaPlan";
 import { fmtPct, fmtMoney, fmtNum as fmtNumBase, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
@@ -90,7 +91,7 @@ export function RiskCalculator() {
   const c = useMemo(() => {
     const riskPerShare = Math.abs(entry - stop);
     const rewardPerShare = Math.abs(target - entry);
-    const valid = riskPerShare > 0 && rewardPerShare > 0 && entry > 0;
+    const { valido: valid, motivo: motivoInvalido } = validaPlan(entry, stop, target);
     const rr = valid ? rewardPerShare / riskPerShare : 0;
     const riskUsd = (balance * riskPct) / 100;
 
@@ -157,6 +158,7 @@ export function RiskCalculator() {
       riskPerShare,
       rewardPerShare,
       valid,
+      motivoInvalido,
       rr,
       riskUsd,
       totalRiskUsd,
@@ -615,9 +617,13 @@ export function RiskCalculator() {
               style={{ color: "rgb(var(--pnl-neg))" }}
               role="alert"
             >
-              {es
-                ? "Entrada, stop y objetivo deben ser distintos y positivos para calcular el tamaño."
-                : "Entry, stop and target must be distinct and positive to calculate size."}
+              {c.motivoInvalido === "lado"
+                ? es
+                  ? "El objetivo tiene que quedar al otro lado de la entrada que el stop."
+                  : "The target must be on the opposite side of entry from the stop."
+                : es
+                  ? "Entrada, stop y objetivo deben ser distintos y positivos para calcular el tamaño."
+                  : "Entry, stop and target must be distinct and positive to calculate size."}
             </div>
           ) : (
             <div

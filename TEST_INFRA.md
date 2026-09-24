@@ -55,6 +55,10 @@
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |
 | `tipografias.test.ts` | El build no depende de que Google Fonts responda |
 | `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma |
+| `valida-plan.test.ts` | `validaPlan`: RiskCalculator ya no da por válido un objetivo que cae al mismo lado de la entrada que el stop; campos no positivos, no finitos o repetidos se rechazan antes de mirar el lado |
+| `proyeccion-capital.test.ts` | `proyectaCapital`: con expectancy, riesgo y frecuencia altos a 10 años el balance en bruto no está acotado (no se recorta en silencio) y la función marca `fueraDeEscala` cuando deja de ser una cifra creíble; con parámetros razonables no la marca |
+| `fuga-comisiones.test.ts` | `clasificaFugaComisiones`: mismas fronteras que ya pintaba CommissionDragCalculator (>30 alto, >15 moderado, resto bajo), ahora en palabra |
+| `resultado-anunciado-cobertura.test.ts` | Las nueve calculadoras de marketing/ envuelven su resultado principal con `ResultadoAnunciado` |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 
