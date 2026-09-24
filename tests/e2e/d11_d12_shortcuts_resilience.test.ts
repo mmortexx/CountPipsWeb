@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
+import { validaPlan } from "@/lib/trading/validaPlan";
 
 /**
  * Dimension D11 & D12: Shortcuts, Error Handling & Resilience
@@ -81,9 +82,24 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
     const equityProj = readSrc("src/components/marketing/EquityProjector.tsx");
     const edgeChecker = readSrc("src/components/marketing/EdgeSignificanceChecker.tsx");
 
-    // RiskCalculator checks valid pricing and shows alert when invalid
-    expect(riskCalc).toContain("const valid = riskPerShare > 0 && rewardPerShare > 0 && entry > 0;");
+    // RiskCalculator delega la validación en validaPlan (comportamiento,
+    // no una línea de código concreta) y sigue mostrando alerta si no es válido.
+    expect(riskCalc).toContain("validaPlan(");
     expect(riskCalc).toContain('role="alert"');
+    expect(validaPlan(0, 95, 115).valido).toBe(false);
+    expect(validaPlan(100, 100, 115).valido).toBe(false);
+    expect(validaPlan(100, 95, 100).valido).toBe(false);
+    expect(validaPlan(100, 95, 110).valido).toBe(true); // largo: stop abajo, objetivo arriba
+    expect(validaPlan(100, 105, 90).valido).toBe(true); // corto: stop arriba, objetivo abajo
+    const objetivoLadoDelStop = validaPlan(100, 105, 110);
+    expect(objetivoLadoDelStop.valido).toBe(false);
+    expect(objetivoLadoDelStop.motivo).toBe("lado");
+    const largoConObjetivoAbajo = validaPlan(100, 95, 90);
+    expect(largoConObjetivoAbajo.valido).toBe(false);
+    expect(largoConObjetivoAbajo.motivo).toBe("lado");
+    expect(validaPlan(NaN, 95, 115).valido).toBe(false);
+    expect(validaPlan(100, NaN, 115).valido).toBe(false);
+    expect(validaPlan(100, 95, NaN).valido).toBe(false);
 
     // EquityProjector warns on negative expectancy
     expect(equityProj).toContain("!c.hasEdge &&");
