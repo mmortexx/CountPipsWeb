@@ -385,7 +385,7 @@ export default function RootLayout({
             <SubrayadoPestanas />
             <SkipLink />
             <GlobalShortcuts />
-            {/* La paleta ⌘K y la ayuda de atajos `?` se cargan bajo
+            {/* El glosario (⌘G) y la ayuda de atajos `?` se cargan bajo
                 demanda: OverlayHost escucha las teclas y trae el código
                 de cada overlay la primera vez que se abre. Ver el
                 encabezado de OverlayHost.tsx para el porqué. */}

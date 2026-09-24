@@ -1014,7 +1014,7 @@ export function Navbar() {
           </div>
 
           {/* ZONA 3 — Utilidades: tema · idioma · CTA · hamburguesa.
-              En móvil (<768px) el tema/idioma/⌘K/CTA se OCULTAN aquí
+              En móvil (<768px) el tema/idioma/CTA se OCULTAN aquí
               porque están duplicados dentro del drawer a ≥44 px (ver
               "Preferencias" más abajo). Antes mostraban a 36 px en la barra
               superior móvil, por debajo del mínimo táctil de 44 px — el

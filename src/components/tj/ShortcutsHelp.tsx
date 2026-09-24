@@ -23,7 +23,7 @@ import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
  * before dispatching the open event.
  *
  * ── Componente CONTROLADO ─────────────────────────────────────────────
- * Igual que la paleta: el `open` y la escucha del evento de apertura
+ * Igual que el glosario: el `open` y la escucha del evento de apertura
  * viven en `OverlayHost`, que sabe abrir esta ventana sin haber cargado
  * antes su código. Este overlay solo se ve cuando alguien pulsa `?`, así
  * que no tiene por qué viajar en el arranque de todas las páginas.

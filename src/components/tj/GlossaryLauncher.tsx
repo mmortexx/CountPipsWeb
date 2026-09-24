@@ -19,7 +19,7 @@ import { useCallback, useState } from "react";
  * Un enlace no necesita saber qué hay al otro lado hasta que lo pulsan.
  * Este componente pinta el disparador —y solo el disparador— y trae el
  * diálogo con `import()` en el mismo gesto del clic. Es el mismo criterio
- * que sigue `OverlayHost` con la paleta ⌘K.
+ * que sigue `OverlayHost` con la ayuda de atajos.
  *
  * ── Por qué el disparador queda FUERA del diálogo ──────────────────────
  * `GlossaryModal` sabe pintar su propio disparador, pero eso aquí no
