@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useLang } from "@/lib/i18n";
+import { fmtInt } from "@/lib/trading/format";
 
 /**
  * DataFlowComparison — visualización animada de a dónde van tus datos.
@@ -76,7 +77,7 @@ export function DataFlowComparison() {
           {es ? "Añadir operación" : "Add trade"}
           {pulses > 0 && (
             <span className="tnum ml-1 px-1.5 py-0.5 rounded-[4px] text-[11px]" style={{ background: "color-mix(in srgb, var(--bg) 22%, transparent)", color: "var(--bg)" }}>
-              {pulses}
+              {fmtInt(pulses, lang)}
             </span>
           )}
         </button>
