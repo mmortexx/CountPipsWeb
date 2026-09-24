@@ -11,6 +11,8 @@ import {
   type Trade,
   type Compliance,
   NOMBRE_SESION,
+  contextoDelDia,
+  ENFRIAMIENTO_MIN,
 } from "@/lib/trading/data";
 import { useCustomTrades, customTradeToTrade } from "@/lib/trading/demoStore";
 import {
@@ -45,6 +47,12 @@ function sideLabel(side: FillRow["side"], lang: Lang): string {
 }
 
 /* ---------- helpers ---------- */
+
+function ordinalEn(n: number): string {
+  const d = n % 100;
+  const suf = d >= 11 && d <= 13 ? "th" : ["th", "st", "nd", "rd"][n % 10] ?? "th";
+  return `${n}${suf}`;
+}
 
 function seededRnd(seed: number) {
   let s = Math.abs(Math.floor(seed)) || 1;
@@ -503,18 +511,24 @@ export function TradeDetailPage() {
   const riskAmount = trade.riskUsd;
   const riskPct = (riskAmount / INITIAL_BALANCE_CONST) * 100;
 
-  // Day-context data — deterministic placeholders that mirror the
-  // real app's "Dónde cayó dentro del día" card.
+  /* «Dónde cayó dentro del día», calculado del día de la operación. Antes
+     eran marcadores fijos: toda operación era la tercera del día, ocho
+     minutos después de otra y con −84,60 $ previos. */
+  const dia = contextoDelDia(trade, allTrades);
   const dayOrdinal =
     lang === "es"
-      ? `3ª operación del día`
-      : `3rd trade of the day`;
+      ? `${fmtInt(dia.ordinal, lang)}.ª operación del día`
+      : `${ordinalEn(dia.ordinal)} trade of the day`;
   const sincePrevious =
-    lang === "es"
-      ? `8 min después de la operación anterior`
-      : `8 min after the previous trade`;
-  const dayPnlBefore = -84.6;
-  const isRevengeCandidate = dayPnlBefore < 0;
+    dia.minDesdeAnterior === null
+      ? lang === "es"
+        ? "Ninguna cerrada antes ese día"
+        : "None closed earlier that day"
+      : lang === "es"
+        ? `${fmtDuration(dia.minDesdeAnterior, lang)} después de cerrar la anterior`
+        : `${fmtDuration(dia.minDesdeAnterior, lang)} after the previous close`;
+  const dayPnlBefore = dia.pnlPrevio;
+  const isRevengeCandidate = dia.revancha;
 
   /* Se van cuatro cálculos que no leía nadie: `instrument` (la búsqueda en
      el catálogo, sustituida por el símbolo que ya trae la operación), las
@@ -889,8 +903,8 @@ export function TradeDetailPage() {
                   </svg>
                   <p className="text-xs leading-relaxed">
                     {lang === "es"
-                      ? "Posible revancha: mismo instrumento, dentro de tu ventana de enfriamiento."
-                      : "Possible revenge: same instrument, inside your cooldown window."}
+                      ? `Posible revancha: mismo instrumento tras una pérdida, a menos de ${fmtInt(ENFRIAMIENTO_MIN, lang)} min.`
+                      : `Possible revenge: same instrument after a loss, within ${fmtInt(ENFRIAMIENTO_MIN, lang)} min.`}
                   </p>
                 </div>
               )}

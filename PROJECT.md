@@ -2001,7 +2001,28 @@ Informado y no tocado: la tarjeta «Dónde cayó dentro del día» de la ficha
 de operación usa marcadores fijos (documentados en el código); la cita de
 competidores «según sus webs en julio de 2026» no se puede comprobar desde
 el repositorio; `i18n.tsx` interpola cifras crudas en `tradesCount` y
-escribe «10.000 $» a mano en `demoAccount`.
+escribe «10.000 $» a mano en `demoAccount` (resuelto en la tanda 23).
+
+### Vigesimotercera tanda: lo que quedó fuera del reparto (2026-09-24)
+
+- **«Dónde cayó dentro del día»** en la ficha de operación era igual para
+  las 200: tercera del día, ocho minutos después de otra, −84,60 $ previos
+  y aviso de revancha siempre. Ahora `contextoDelDia()` lo calcula del día
+  de la operación; la revancha exige mismo instrumento, pérdida previa y
+  menos de `ENFRIAMIENTO_MIN` (30 min), y el aviso lo dice.
+- **Mapa de calor y minicalendario de la demo:** las celdas de más de mil
+  salían «1.2k» también en español (`toFixed`). `fmtCifraCorta` en
+  `format.ts`, una para los dos.
+- **Diccionario de la demo (`i18n.tsx`):** «DEMO · 10.000 $» sale de
+  `SALDO_INICIAL_MUESTRA` (en `muestra.ts`, la misma que usa `data.ts`) y
+  los recuentos pasan por `fmtInt`.
+- **Revisado a ojo a 820 px** portada, características, precios, demo,
+  las diez herramientas, índice del glosario, los cuatro legales y precios
+  en inglés: sin desbordes; los «huecos» que marca la captura son el
+  respiro entre la tarjeta de la herramienta y el aviso de debajo, igual en
+  todas.
+- Se dejan los 269 «sólo» con tilde de los comentarios: no se leen en la
+  web y tocarlos movería 95 ficheros.
 
 ## Herramientas de auditoría propias
 
@@ -2026,7 +2047,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 37 suites, 371 tests (+2 omitidos)
+npx vitest run                          # 37 suites, 375 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

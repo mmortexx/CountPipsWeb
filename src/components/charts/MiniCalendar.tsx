@@ -4,7 +4,7 @@ import { memo, useMemo, useRef, useState } from "react";
 import type { Trade } from "@/lib/trading/data";
 import { dailyPnlForMonth } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney } from "@/lib/trading/format";
+import { fmtCifraCorta, fmtMoney } from "@/lib/trading/format";
 
 interface MiniCalendarProps {
   trades: Trade[];
@@ -139,7 +139,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
                    primario en claro, donde el signo lo sigue dando el fondo
                    de la celda (y el + / − escrito). */
                 <span className="text-[9.5px] leading-none cal-day-pnl" data-neg={!pos}>
-                  {pos ? "+" : "−"}{Math.abs(pnl) >= 1000 ? `${(Math.abs(pnl) / 1000).toFixed(1)}k` : Math.round(Math.abs(pnl))}
+                  {fmtCifraCorta(pnl, lang)}
                 </span>
               )}
             </div>

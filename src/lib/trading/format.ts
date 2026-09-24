@@ -144,6 +144,15 @@ export function fmtInt(value: number, lang: Lang = "es"): string {
   return new Intl.NumberFormat(LOCALE[lang], { useGrouping: "always" }).format(value);
 }
 
+/** Cifra con signo para celdas diminutas (calendario, mapa de calor):
+ *  «+845» o «−1,2k». Se escribía con `toFixed`, que daba «1.2k» también
+ *  en español. */
+export function fmtCifraCorta(value: number, lang: Lang = "es"): string {
+  const abs = Math.round(Math.abs(value));
+  const signo = value >= 0 ? "+" : "−";
+  return abs >= 1000 ? `${signo}${fmtNum(abs / 1000, lang, 1)}k` : `${signo}${abs}`;
+}
+
 export function fmtPrice(value: number, decimals = 2, lang: Lang = "es"): string {
   return new Intl.NumberFormat(LOCALE[lang], {
     minimumFractionDigits: decimals,

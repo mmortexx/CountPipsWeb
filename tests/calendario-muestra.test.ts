@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { getCal, getSetups } from "@/lib/trading/fixtures";
-import { TRADES, cumplimientoMensual } from "@/lib/trading/data";
+import { TRADES, cumplimientoMensual, contextoDelDia, ENFRIAMIENTO_MIN } from "@/lib/trading/data";
 import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 
 const CRIPTO = new Set(["BTC/USDT", "ETH/USDT"]);
@@ -89,5 +89,42 @@ describe("el cumplimiento mensual sale de la muestra", () => {
 
   it("sin operaciones no inventa meses", () => {
     expect(cumplimientoMensual([])).toEqual([]);
+  });
+});
+
+/* «Dónde cayó dentro del día» era igual para las 200 operaciones: tercera
+   del día, ocho minutos después de otra, −84,60 $ previos. */
+describe("el contexto del día sale de las operaciones de ese día", () => {
+  const base = TRADES[0];
+  const op = (id: number, abre: string, cierra: string, netPnl: number, instrument = "ES") => ({
+    ...base, id, instrument, netPnl, openedAt: new Date(abre), closedAt: new Date(cierra),
+  });
+  const dia = [
+    op(1, "2026-07-01T08:00:00Z", "2026-07-01T08:30:00Z", -50),
+    op(2, "2026-07-01T08:40:00Z", "2026-07-01T09:00:00Z", 20, "NQ"),
+    op(3, "2026-07-01T09:10:00Z", "2026-07-01T09:50:00Z", 30),
+    op(4, "2026-06-30T23:00:00Z", "2026-07-01T07:00:00Z", 100),
+  ];
+
+  it("cuenta las abiertas antes ese día, el tiempo desde el último cierre y el resultado ya cerrado", () => {
+    expect(contextoDelDia(dia[2], dia)).toEqual({ ordinal: 3, minDesdeAnterior: 10, pnlPrevio: 70, revancha: false });
+    expect(contextoDelDia(dia[0], dia)).toEqual({ ordinal: 1, minDesdeAnterior: 60, pnlPrevio: 100, revancha: false });
+  });
+
+  it("marca revancha solo si vuelve al mismo instrumento tras una pérdida y dentro del enfriamiento", () => {
+    const vuelta = op(5, "2026-07-01T08:35:00Z", "2026-07-01T08:50:00Z", 10);
+    expect(contextoDelDia(vuelta, [...dia, vuelta]).revancha).toBe(true);
+    const minutoDespues = (m: number) => new Date(dia[0].closedAt.getTime() + m * 60000).toISOString();
+    const justo = op(6, minutoDespues(ENFRIAMIENTO_MIN), "2026-07-01T11:00:00Z", 10);
+    const pasado = op(7, minutoDespues(ENFRIAMIENTO_MIN + 1), "2026-07-01T11:00:00Z", 10);
+    expect(contextoDelDia(justo, [dia[0], justo]).revancha).toBe(true);
+    expect(contextoDelDia(pasado, [dia[0], pasado]).revancha).toBe(false);
+    const otroInstrumento = op(8, minutoDespues(5), "2026-07-01T11:00:00Z", 10, "NQ");
+    expect(contextoDelDia(otroInstrumento, [dia[0], otroInstrumento]).revancha).toBe(false);
+  });
+
+  it("en la muestra no es el mismo para todas", () => {
+    const vistos = new Set(TRADES.map((t) => JSON.stringify(contextoDelDia(t, TRADES))));
+    expect(vistos.size).toBeGreaterThan(50);
   });
 });

@@ -11,6 +11,8 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { sinPrefijoEn } from "@/lib/locale";
+import { fmtInt, fmtMoney } from "@/lib/trading/format";
+import { SALDO_INICIAL_MUESTRA } from "@/lib/trading/muestra";
 
 export type Lang = "es" | "en";
 
@@ -57,7 +59,10 @@ export const STR = {
   winRestore: { es: "Restaurar", en: "Restore" },
   winClose: { es: "Cerrar", en: "Close" },
   localFirst: { es: "Local-first", en: "Local-first" },
-  demoAccount: { es: "DEMO · 10.000 $", en: "DEMO · $10,000" },
+  demoAccount: {
+    es: `DEMO · ${fmtMoney(SALDO_INICIAL_MUESTRA, "es", { decimals: 0 })}`,
+    en: `DEMO · ${fmtMoney(SALDO_INICIAL_MUESTRA, "en", { decimals: 0 })}`,
+  },
   autoSaved: {
     es: "Guardado automático en este navegador",
     en: "Auto-saved in this browser",
@@ -149,8 +154,8 @@ export const STR = {
     en: "Your custom trades have been cleared.",
   },
   sessionCount: {
-    es: (n: number) => `${n} registradas esta sesión`,
-    en: (n: number) => `${n} logged this session`,
+    es: (n: number) => `${fmtInt(n, "es")} registradas esta sesión`,
+    en: (n: number) => `${fmtInt(n, "en")} logged this session`,
   },
   riskUsd: { es: "Riesgo en $", en: "Risk in $" },
   riskEur: { es: "Riesgo en €", en: "Risk in €" },
@@ -174,8 +179,8 @@ export const STR = {
   tradesEyebrow: { es: "Registro", en: "Capture" },
   tradesTitle: { es: "Operaciones", en: "Trades" },
   tradesCount: {
-    es: (n: number) => `${n} operaciones`,
-    en: (n: number) => `${n} trades`,
+    es: (n: number) => `${fmtInt(n, "es")} operaciones`,
+    en: (n: number) => `${fmtInt(n, "en")} trades`,
   },
   searchPlaceholder: {
     es: "Buscar por instrumento, setup o nota…",

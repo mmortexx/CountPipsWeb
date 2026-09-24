@@ -34,7 +34,7 @@
 
 import { SETUP_NAMES, type SetupName } from "./setups.ts";
 import { mulberry32 } from "./azar.ts";
-import { OPERACIONES_MUESTRA } from "./muestra.ts";
+import { OPERACIONES_MUESTRA, SALDO_INICIAL_MUESTRA } from "./muestra.ts";
 
 export interface Instrument {
   symbol: string;
@@ -162,7 +162,7 @@ const ES_CLOSE = [
   "Cerré en breakeven tras ver falta de seguimiento.",
 ];
 
-const INITIAL_BALANCE = 10000;
+const INITIAL_BALANCE = SALDO_INICIAL_MUESTRA;
 
 function buildTrades(): Trade[] {
   const rnd = mulberry32(20260716);
@@ -771,6 +771,42 @@ export const runsTest = computeRunsTest;
 
 export const METRICS = computeMetrics(TRADES);
 export const INITIAL_BALANCE_CONST = INITIAL_BALANCE;
+
+/** Ventana tras una pérdida en la que volver al mismo instrumento cuenta
+ *  como posible revancha. */
+export const ENFRIAMIENTO_MIN = 30;
+
+/** Dónde cae una operación dentro de su día (UTC): cuántas se abrieron
+ *  antes, cuánto hace que cerró la anterior, el resultado ya cerrado ese
+ *  día al abrirla y si parece revancha (vuelta al mismo instrumento tras
+ *  una pérdida, dentro de `ENFRIAMIENTO_MIN`). */
+export function contextoDelDia(trade: Trade, trades: Trade[]) {
+  const dia = trade.openedAt.toISOString().slice(0, 10);
+  const antes = trades
+    .filter((t) => t.id !== trade.id && t.openedAt.toISOString().slice(0, 10) === dia && t.openedAt < trade.openedAt)
+    .sort((a, b) => a.openedAt.getTime() - b.openedAt.getTime());
+  const cerradasAntes = trades.filter(
+    (t) => t.id !== trade.id && t.closedAt.toISOString().slice(0, 10) === dia && t.closedAt <= trade.openedAt,
+  );
+  const anterior = cerradasAntes.reduce<Trade | undefined>(
+    (u, t) => (!u || t.closedAt > u.closedAt ? t : u),
+    undefined,
+  );
+  const minDesdeAnterior = anterior
+    ? Math.round((trade.openedAt.getTime() - anterior.closedAt.getTime()) / 60000)
+    : null;
+  return {
+    ordinal: antes.length + 1,
+    minDesdeAnterior,
+    pnlPrevio: +cerradasAntes.reduce((s, t) => s + t.netPnl, 0).toFixed(2),
+    revancha:
+      !!anterior &&
+      anterior.netPnl < 0 &&
+      anterior.instrument === trade.instrument &&
+      minDesdeAnterior !== null &&
+      minDesdeAnterior <= ENFRIAMIENTO_MIN,
+  };
+}
 
 /** Cumplimiento del plan por mes natural (UTC), con el mismo criterio que
  *  `compliancePct`: los `meses` últimos hasta el de la operación más reciente.

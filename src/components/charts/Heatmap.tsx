@@ -4,7 +4,7 @@ import { memo, useMemo, useRef, useState } from "react";
 import type { Trade } from "@/lib/trading/data";
 import { heatmap, WEEKDAYS_SHORT } from "@/lib/trading/data";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney } from "@/lib/trading/format";
+import { fmtCifraCorta, fmtInt, fmtMoney } from "@/lib/trading/format";
 interface HeatmapProps {
   trades: Trade[];
   className?: string;
@@ -107,7 +107,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                       // dicen el tinte y la posición de la celda; la cifra
                       // sólo tiene que leerse.
                       <span className="relative z-10 text-primary">
-                        {v >= 0 ? "+" : "−"}{Math.abs(v) >= 1000 ? `${(Math.abs(v) / 1000).toFixed(1)}k` : Math.round(Math.abs(v))}
+                        {fmtCifraCorta(v, lang)}
                       </span>
                     )}
                   </div>
@@ -146,7 +146,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
           </div>
           {countGrid[hovered.r][hovered.c] > 0 && (
             <div className="text-tertiary text-[10px] mt-0.5 tnum">
-              {countGrid[hovered.r][hovered.c]} {lang === "es" ? "ops" : "trades"}
+              {fmtInt(countGrid[hovered.r][hovered.c], lang)} {lang === "es" ? "ops" : "trades"}
             </div>
           )}
         </div>
