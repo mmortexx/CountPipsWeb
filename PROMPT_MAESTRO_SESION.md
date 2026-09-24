@@ -180,7 +180,8 @@ NAVBAR (89 KB, 1.786 líneas — Navbar.tsx):
 - Hover/foco en CSS puro (hover: / focus-visible:), NUNCA en JS con onMouseEnter
 
 HERO (Hero.tsx):
-- Sección #top alineada a `.tj-container`, sin scrim ni animación de entrada
+- Sección #top alineada a `.tj-container`, sin scrim. Entrada en cascada al cargar:
+  titular palabra a palabra y el panel de cifras que se endereza (rotateX)
 - Ceja, titular serif `.t-display`, entradilla sans, dos `.cta` y tres datos
 - Captura real (`app-analitica`, clara/oscura y recorte móvil) en `.tj-hero-producto`
 
@@ -357,9 +358,16 @@ JERARQUÍA Y ESPACIADO:
 MICRO-INTERACCIONES:
 - Hover: cambio de tono suave con --ease-suave. NUNCA sheen ni glow.
 - .link-underline: barrido de acento izquierda→derecha en hover.
-- MagneticButton: 0.3 pull para iconos y controles secundarios.
-- CountUp: conteo animado al entrar en viewport.
-- SectionReveal: opacity + translateY al scroll.
+- Navegación y pestañas: UN subrayado que viaja entre elementos (`.tj-nav-foco`,
+  `SubrayadoPestanas`), no uno que se apaga y otro que se enciende.
+- Llamada principal: se levanta 1 px con sombra neutra; toda `.cta` se hunde al pulsar.
+  (MagneticButton está retirado: ver su cabecera.)
+- CountUp / `.tj-cifra-cuenta`: conteo animado al entrar en viewport.
+- Entradas (`Aparecer.tsx`): por tiempo, 24 px + escala .985, escalonadas entre
+  hermanas; los h2 se enfocan desde un desenfoque; las capturas se abren como una
+  ventana (clip-path).
+- Titulares h1 (`Palabras.tsx`): palabra a palabra desde su máscara.
+- Gráficos (`data-dibuja` + `.tj-d-*`): se dibujan cuando se ven, no al cargar.
 - PROHIBIDO: Bouncing, pulsing, traveling pills, parallax ornamental.
 
 RESPONSIVE (Desktop 1920×1080 + Mobile 390×844):

@@ -393,6 +393,31 @@ export function Navbar() {
   const megaButtonRef = useRef<HTMLButtonElement>(null);
   /** El disparador y su panel: lo que cuenta como «dentro» del menú. */
   const megaWrapRef = useRef<HTMLDivElement>(null);
+  const focoRef = useRef<HTMLSpanElement>(null);
+  /* Realce de navegación: UN trazo fino compartido que viaja al enlace bajo
+     el puntero o el foco (`.tj-nav-foco`). Sobre el enlace activo se apaga:
+     ahí manda la barra de acento, y dos trazos a 6 px serían ruido. Se mueve
+     escribiendo en su estilo, sin estado: no vuelve a pintar la barra. */
+  const mueveFoco = (el: HTMLElement, activo: boolean, sangria: number) => {
+    const f = focoRef.current;
+    if (!f) return;
+    if (activo) {
+      f.dataset.visible = "false";
+      return;
+    }
+    const nuevo = f.dataset.visible !== "true";
+    if (nuevo) f.dataset.quieto = "true";
+    f.style.setProperty("--x", `${el.offsetLeft + sangria}px`);
+    f.style.setProperty("--w", String(Math.max(0, el.offsetWidth - 2 * sangria)));
+    f.dataset.visible = "true";
+    if (nuevo) {
+      void f.offsetWidth;
+      delete f.dataset.quieto;
+    }
+  };
+  const ocultaFoco = () => {
+    if (focoRef.current) focoRef.current.dataset.visible = "false";
+  };
   const drawerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -608,6 +633,7 @@ export function Navbar() {
     setMobileOpen(false);
     setMegaOpen(false);
     setHovered(null);
+    ocultaFoco();
   }, [pathname]);
 
   const productItems = PRODUCT_ITEMS;
@@ -624,32 +650,6 @@ export function Navbar() {
   const isActive = (href: string) =>
     rutaActual === href || rutaActual.startsWith(href + "/");
 
-  /**
-   * Realce compartido. Una línea inferior fina que crece desde el centro
-   * al pasar el puntero o al recibir foco de teclado. Sustituye a la
-   * píldora de fondo de versiones previas: un trazo es más sobrio que un
-   * relleno y, sobre todo, NO compite con la regla de acento persistente
-   * que marca la ruta activa — dos señales, dos soportes distintos.
-   *
-   * La animación vive en CSS (`group-hover` / `group-focus-within`), no en
-   * el estado `hovered`: así el trazo se interpola al entrar Y al salir,
-   * algo que la versión condicional (`hovered === key && …`) no podía
-   * hacer porque el nodo desaparecía de golpe al desmontar.
-   *
-   * Se suprime cuando el enlace está activo: ahí manda la barra de
-   * acento y sumarle un segundo trazo a 6 px de distancia habría sido
-   * ruido visual, no refinamiento.
-   */
-  const hoverUnderline = (active: boolean) => (
-    <span
-      aria-hidden
-      className={`pointer-events-none absolute bottom-[6px] left-[15px] right-[15px] h-px origin-center scale-x-0 transition-transform duration-200 ease-[var(--ease-suave)] ${
-        active ? "" : "group-hover:scale-x-100 group-focus-within:scale-x-100"
-      }`}
-      style={{ background: "color-mix(in srgb, var(--ink) 22%, transparent)" }}
-    />
-  );
-
   /** Regla de acento persistente que marca la ruta actual. */
   const activeBar = (
     <span
@@ -665,13 +665,18 @@ export function Navbar() {
       <div
         key={href}
         className="group relative"
-        onMouseEnter={() => setHovered(href)}
+        onMouseEnter={(e) => {
+          setHovered(href);
+          mueveFoco(e.currentTarget, active, 12);
+        }}
       >
-        {hoverUnderline(active)}
         <Link
           href={href}
           aria-current={active ? "page" : undefined}
-          onFocus={() => setHovered(href)}
+          onFocus={(e) => {
+            setHovered(href);
+            if (e.currentTarget.parentElement) mueveFoco(e.currentTarget.parentElement, active, 12);
+          }}
           /* `whitespace-nowrap`: un rótulo de navegación no se parte
              nunca. Sin esto, «Prop firms» se rompía en dos renglones en
              cuanto la barra se estrechaba, y una entrada de menú a dos
@@ -794,19 +799,26 @@ export function Navbar() {
 
           {/* ZONA 2 — Navegación centrada: Producto (megamenú) · Demo · Precios */}
           <div
-            className="hidden items-center gap-0.5 justify-self-center min-[1120px]:flex"
-            onMouseLeave={() => setHovered(null)}
+            className="relative hidden items-center gap-0.5 justify-self-center min-[1120px]:flex"
+            onMouseLeave={() => {
+              setHovered(null);
+              ocultaFoco();
+            }}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) ocultaFoco();
+            }}
           >
+            <span ref={focoRef} aria-hidden className="tj-nav-foco" />
             <div
               ref={megaWrapRef}
               className="group relative"
-              onMouseEnter={() => {
+              onMouseEnter={(e) => {
                 setHovered("product");
+                mueveFoco(e.currentTarget, productActive, 15);
                 megaEnter();
               }}
               onMouseLeave={megaLeave}
             >
-              {hoverUnderline(productActive)}
               <button
                 type="button"
                 id="navbar-producto-trigger"
@@ -823,7 +835,10 @@ export function Navbar() {
                    secas: cerraba el panel que el hover acababa de abrir.
                    El porqué completo, en `megaClick`. */
                 onClick={megaClick}
-                onFocus={() => setHovered("product")}
+                onFocus={() => {
+                  setHovered("product");
+                  if (megaWrapRef.current) mueveFoco(megaWrapRef.current, productActive, 15);
+                }}
                 aria-expanded={megaOpen}
                 aria-haspopup="menu"
                 className="relative z-10 inline-flex cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-[15px] py-[9px] text-sm outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"

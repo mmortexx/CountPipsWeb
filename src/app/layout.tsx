@@ -14,6 +14,7 @@ import { TransicionPagina } from "@/components/tj/TransicionPagina";
 import { SkipLink } from "@/components/tj/SkipLink";
 import { SectionReveal } from "@/components/tj/SectionReveal";
 import { Aparecer } from "@/components/tj/Aparecer";
+import { SubrayadoPestanas } from "@/components/tj/SubrayadoPestanas";
 import { SITE_URL } from "@/lib/site";
 
 /** Mismo valor que usa `asset()`; vacío en Cloudflare, `/CountPipsWeb` en
@@ -381,6 +382,7 @@ export default function RootLayout({
           <div className="min-h-screen flex flex-col">
             <SectionReveal />
             <Aparecer />
+            <SubrayadoPestanas />
             <SkipLink />
             <GlobalShortcuts />
             {/* La paleta ⌘K y la ayuda de atajos `?` se cargan bajo

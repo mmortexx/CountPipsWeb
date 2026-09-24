@@ -498,7 +498,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
           </div>
         </div>
 
-        <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${vista}`} className="tj-metricas-vista" key={vista}>
+        <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${vista}`} className="tj-metricas-vista" key={vista} data-dibuja>
           {vista === "curva" ? <Curva g={g} lang={lang} es={es} enfoque={enfoque} /> : <Distribucion g={g} lang={lang} es={es} enfoque={enfoque} />}
         </div>
         </div>

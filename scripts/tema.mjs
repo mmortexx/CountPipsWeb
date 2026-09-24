@@ -169,8 +169,21 @@ async function luces(sistema, ruta) {
 
   /* Decodificar en otra pestaña evita añadir una dependencia de imagen
      al proyecto solo para leer un píxel. */
+  /* Por tandas: con las entradas animadas de la portada la grabación pasa
+     del centenar de fotogramas, y mandarlos todos de una vez a la pestaña
+     lectora la dejaba sin memoria y se cerraba a mitad de la medida. */
   const lector = await ctx.newPage();
-  const medidas = await lector.evaluate(async (lista) => {
+  const TANDA = 25;
+  const medidas = [];
+  for (let i = 0; i < fotogramas.length; i += TANDA) {
+    medidas.push(...(await medirTanda(lector, fotogramas.slice(i, i + TANDA))));
+  }
+  await ctx.close();
+  return medidas;
+}
+
+async function medirTanda(lector, tanda) {
+  return lector.evaluate(async (lista) => {
     const out = [];
     for (const b64 of lista) {
       const img = new Image();
@@ -201,9 +214,7 @@ async function luces(sistema, ruta) {
       out.push(Math.min(...vals));
     }
     return out;
-  }, fotogramas);
-  await ctx.close();
-  return medidas;
+  }, tanda);
 }
 
 const UMBRAL_CLARO = 140;

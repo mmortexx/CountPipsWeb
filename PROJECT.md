@@ -2058,6 +2058,43 @@ escribe «10.000 $» a mano en `demoAccount` (resuelto en la tanda 23).
   fusionadas; antes se quitó cada enlace a `node_modules` y se comprobó
   que el original seguía entero (343 entradas).
 
+### Vigesimoquinta tanda: el movimiento, rehecho (2026-09-24)
+
+El juicio fue «animaciones básicas, sin efecto». Visto con tiras de
+fotogramas a ×0,1 (Animation.setPlaybackRate): todo entraba igual —un
+bloque que sube 56 px y se funde—, el titular no tenía gesto propio y el
+gráfico de la portada se dibujaba a la carga, bajo el pliegue, sin que
+nadie lo viera. Lenguaje nuevo, «precisión»: se enfoca, se dibuja, se
+asienta; nada rebota ni brilla.
+
+- **Titulares h1** (`Palabras.tsx`, portada y `PageHeader`): palabra a
+  palabra desde su máscara. La puntuación va en la máscara de su palabra
+  y el realce puede cortar a mitad de palabra (`tests/palabras.test.ts`,
+  visto en rojo con dos mutaciones). Recorrido 140 %: con 112 % asomaban
+  los puntos de las íes por el margen de los descendentes.
+- **Escalonado entre hermanas.** `Aparecer` contaba el paso sobre TODO el
+  lote del observador: la cabecera de `#producto` heredaba el paso 4 de
+  piezas de otra sección — 280 ms de espera muerta, medidos. Ahora cada
+  grupo de hermanas empieza en cero.
+- **Entradas:** 24 px + escala .985 (antes 56 px); h2 que se enfocan
+  desde `blur(10px)`; capturas que se abren como una ventana
+  (`clip-path`), con prioridad sobre el cristal —el único que llevan es
+  la lupa, oculta en reposo—. El bloque bajo cada cabecera espera al
+  titular (salvo si lleva cristal: ahí solo se desplaza, porque una
+  opacidad en un ancestro le quita lo que ve detrás).
+- **Gráficos que se dibujan al verse:** `data-dibuja` pone en pausa las
+  animaciones de dentro hasta que el contenedor asoma. Calendario en
+  diagonal, barras por hora, playbooks que se llenan, curva y barras de
+  la portada, y el guardián evalúa regla a regla antes del veredicto.
+- **Panel de la portada** llega tumbado (rotateX 16°) y se endereza.
+- **Subrayado que viaja** en la barra (`.tj-nav-foco`) y en las pestañas
+  (`SubrayadoPestanas.tsx`); el cambio de captura se enfoca (0,55 s,
+  blur) en vez de fundirse en 220 ms; la llamada principal se levanta.
+- **Auditoría `tema`:** mandaba todos los fotogramas grabados a la vez a
+  la pestaña lectora; con las entradas nuevas pasan del centenar y la
+  pestaña se quedaba sin memoria. Lee por tandas de 25; la medida no
+  cambia (0 de 180 fotogramas claros en portada, control 321).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2081,7 +2118,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
-npx vitest run                          # 37 suites, 376 tests (+2 omitidos)
+npx vitest run                          # 38 suites, 382 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

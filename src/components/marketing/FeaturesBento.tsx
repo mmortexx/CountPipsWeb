@@ -88,11 +88,12 @@ export function FeaturesBento({
                   </span>
                 ))}
               </div>
-              <div className="mt-1.5 grid grid-cols-7 gap-1.5">
+              <div className="mt-1.5 grid grid-cols-7 gap-1.5" data-dibuja>
                 {cal.cells.map((c, i) => {
-                  const cellStyle = c.style ? { ...parseInlineStyle(c.style), padding: "4px" } : { padding: "4px" };
+                  const diagonal = { "--i": (i % 7) + Math.floor(i / 7) } as React.CSSProperties;
+                  const cellStyle = c.style ? { ...parseInlineStyle(c.style), padding: "4px", ...diagonal } : { padding: "4px", ...diagonal };
                   return (
-                    <div key={i} style={cellStyle}>
+                    <div key={i} className="tj-d-celda" style={cellStyle}>
                       {/* Tinta explícita, no opacidad: atenuado, el día bajaba
                           de 4,5:1 sobre la celda teñida. La jerarquía entre día
                           e importe la llevan el cuerpo y el peso. */}
@@ -138,15 +139,16 @@ export function FeaturesBento({
               <h3 className={`${titulo} md:min-h-[2.5em]`}>
                 {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
               </h3>
-              <div className="relative mt-5 flex gap-[3px]" style={{ height: 100 }} aria-hidden>
+              <div className="relative mt-5 flex gap-[3px]" style={{ height: 100 }} aria-hidden data-dibuja>
                 <span className="absolute inset-x-0 h-px bg-[var(--ficha-division)]" style={{ top: `${ZONA_POS}%` }} />
                 {HORAS_R.map((v, i) => (
                   <div key={i} className="flex flex-1 flex-col">
                     <div className="flex items-end" style={{ height: `${ZONA_POS}%` }}>
                       {v !== null && v > 0 && (
                         <div
-                          className="w-full rounded-t-[1px]"
+                          className="tj-d-sube w-full rounded-t-[1px]"
                           style={{
+                            ["--i" as string]: i,
                             height: `${(v / TOPE_POS) * 100}%`,
                             background: MEJOR_VENTANA.includes(i) ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-pos) / 0.38)",
                           }}
@@ -156,8 +158,8 @@ export function FeaturesBento({
                     <div className="flex-1">
                       {v !== null && v < 0 && (
                         <div
-                          className="w-full rounded-b-[1px]"
-                          style={{ height: `${(-v / TOPE_NEG) * 100}%`, background: "rgb(var(--pnl-neg) / 0.8)" }}
+                          className="tj-d-baja w-full rounded-b-[1px]"
+                          style={{ ["--i" as string]: i, height: `${(-v / TOPE_NEG) * 100}%`, background: "rgb(var(--pnl-neg) / 0.8)" }}
                         />
                       )}
                     </div>
@@ -210,8 +212,8 @@ export function FeaturesBento({
               {/* De la misma muestra que el calendario, de mejor a peor R
                   media. Era una maqueta con +2,1R por operación, una cifra
                   que ningún trader se cree. La barra es el acierto. */}
-              <ul className="m-0 mt-3 p-0 list-none">
-                {setups.map((s) => {
+              <ul className="m-0 mt-3 p-0 list-none" data-dibuja>
+                {setups.map((s, k) => {
                   const c = s.expectativaR > 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
                   return (
                     <li key={s.setup} className={`border-b ${division} py-3 last:border-b-0`}>
@@ -226,7 +228,7 @@ export function FeaturesBento({
                       </div>
                       <div className="mt-2 flex items-center gap-3">
                         <div className="h-[3px] flex-1 overflow-hidden rounded-[1px] bg-[var(--ficha-division)]">
-                          <div className="h-full" style={{ width: `${Math.round(s.acierto * 100)}%`, background: c }} />
+                          <div className="tj-d-llena h-full" style={{ ["--i" as string]: k, width: `${Math.round(s.acierto * 100)}%`, background: c }} />
                         </div>
                         <span className="tnum min-w-[34px] text-right text-[12px] text-secondary">{fmtPct(s.acierto, lang, 0)}</span>
                       </div>

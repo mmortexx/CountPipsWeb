@@ -2,6 +2,7 @@
 
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
+import { Palabras } from "@/components/tj/Palabras";
 
 /** Qué clase de página es; solo ajusta la medida del subtítulo y el aire. */
 export type TonoPagina = "capitulo" | "instrumento" | "registro" | "tarifa" | "documento";
@@ -21,25 +22,6 @@ interface PageHeaderProps {
   /** Nivel intermedio de las migas, enlazado: «Inicio / Glosario / Drawdown». */
   padre?: { href: string; es: string; en: string };
   tono?: TonoPagina;
-}
-
-/* Una palabra de una o dos letras no cierra renglón en un titular: a 390 px
-   «La app, en / tu navegador.» dejaba la preposición colgando. Se pega a la
-   siguiente con un espacio duro. */
-const CORTA = /^[a-záéíóúñü]{1,2}$/i;
-const pegaCortas = (s: string) =>
-  s.split(" ").reduce((acc, palabra, k, todas) => (k === 0 ? palabra : acc + (CORTA.test(todas[k - 1]) ? " " : " ") + palabra), "");
-
-function Titular({ text, highlight }: { text: string; highlight?: string }) {
-  const i = highlight ? text.lastIndexOf(highlight) : -1;
-  if (!highlight || i < 0) return <>{pegaCortas(text)}</>;
-  return (
-    <>
-      {pegaCortas(text.slice(0, i))}
-      <span className="text-gradient">{pegaCortas(highlight)}</span>
-      {pegaCortas(text.slice(i + highlight.length))}
-    </>
-  );
 }
 
 export function PageHeader({
@@ -95,10 +77,7 @@ export function PageHeader({
         </p>
 
         <h1 data-entra="2" className="t-h1 mt-5 max-w-[22ch] text-primary">
-          <Titular
-            text={es ? titleEs : titleEn}
-            highlight={es ? titleHighlightEs : titleHighlightEn}
-          />
+          <Palabras texto={es ? titleEs : titleEn} realce={es ? titleHighlightEs : titleHighlightEn} />
         </h1>
 
         <p

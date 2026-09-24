@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight, Check } from "lucide-react";
 import { useLang } from "@/lib/i18n";
+import { Palabras } from "@/components/tj/Palabras";
 
 /**
  * Hero — sección `#top`. Titular centrado, dos llamadas y, debajo, lo que
@@ -31,7 +32,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
         </p>
 
         <h1 className="t-display mx-auto mt-6 max-w-[15ch] text-balance text-primary">
-          {es ? "Opera como una mesa institucional." : "Trade like an institutional desk."}
+          <Palabras texto={es ? "Opera como una mesa institucional." : "Trade like an institutional desk."} />
         </h1>
 
         <p className="mx-auto mt-7 max-w-[40rem] text-[clamp(1.125rem,1.5vw,1.3125rem)] leading-[1.55] text-secondary">

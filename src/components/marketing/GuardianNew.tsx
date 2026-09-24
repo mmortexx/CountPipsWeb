@@ -164,7 +164,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             </span>
             <span className="tj-ficha-vivo">{es ? "En vivo" : "Live"}</span>
           </p>
-          <div className="tj-ficha-cuerpo">
+          <div className="tj-ficha-cuerpo" data-dibuja>
             <div className="tnum flex items-baseline gap-x-3 pb-4 border-b border-[var(--ficha-division)]">
               <span className="text-[17px] font-semibold tracking-[-0.01em] text-primary">NQ</span>
               <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[rgb(var(--pnl-pos))]">
@@ -188,12 +188,14 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     ? `Riesgo ${pct(riesgo)} · límite ${pct(LIMITE_RIESGO)}`
                     : `Risk ${pct(riesgo)} · limit ${pct(LIMITE_RIESGO)}`,
                 },
-              ].map((c) => (
-                <li key={c.l} className="tj-ficha-fila tnum">
+              ].map((c, i) => (
+                /* Clave por posición: al ajustar, la fila cambia de texto y de
+                   estado sin volver a montarse, así que no repite la entrada. */
+                <li key={i} className="tj-ficha-fila tnum">
                   <span
                     aria-hidden
-                    className="w-4 flex-none text-[13px] font-semibold"
-                    style={{ color: c.ok ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
+                    className="tj-d-marca w-4 flex-none text-[13px] font-semibold"
+                    style={{ ["--i" as string]: i, color: c.ok ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
                     {c.ok ? "✓" : "✕"}
                   </span>
@@ -233,7 +235,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                       : `Risk is above your per-trade maximum. At ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
               const Icono = tono === "ok" ? ShieldCheck : AlertTriangle;
               return (
-                <div role="status" aria-live="polite" className="mt-1 pt-5 border-t border-[var(--ficha-division)]">
+                <div role="status" aria-live="polite" className="tj-d-veredicto mt-1 pt-5 border-t border-[var(--ficha-division)]">
                   <p className="m-0 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color }}>
                     <Icono size={14} strokeWidth={2} aria-hidden />
                     {titulo}
