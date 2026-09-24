@@ -47,7 +47,7 @@ export function HerramientasIndice() {
                   <Reveal delay={i * 0.03}>
                     <Link
                       href={`/herramientas/${h.slug}`}
-                      className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_4.5rem] sm:gap-4 sm:py-0"
+                      className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_4.5rem] sm:gap-4 sm:py-2.5"
                     >
                       <span
                         className="tnum text-[13px] font-semibold tracking-wide"
@@ -83,7 +83,7 @@ export function HerramientasIndice() {
               <Reveal delay={HERRAMIENTAS.length * 0.03}>
                 <Link
                   href="/test"
-                  className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_4.5rem] sm:gap-4 sm:py-0"
+                  className="group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:grid-cols-[4.5rem_minmax(0,1.4fr)_minmax(0,1fr)_4.5rem] sm:gap-4 sm:py-2.5"
                 >
                   <span
                     className="tnum text-[13px] font-semibold tracking-wide"
