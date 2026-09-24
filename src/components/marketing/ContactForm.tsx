@@ -166,7 +166,7 @@ export function ContactForm() {
             titulo={es ? (
               <>¿No encuentras tu <span className="text-gradient">respuesta?</span></>
             ) : (
-              <>Can&apos;t find your <span className="text-gradient">answer?</span></>
+              <>Can’t find your <span className="text-gradient">answer?</span></>
             )}
             entradilla={es
               ? "Escríbenos. Contesta quien desarrolla CountPips, en español o en inglés."

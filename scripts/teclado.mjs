@@ -228,8 +228,14 @@ for (const d of DIALOGOS) {
   if (!abierto.etiquetado) fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» se abre sin nombre: un lector lo anuncia como «diálogo» y ya` });
   if (!abierto.dentro) fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» se abre y el foco se queda fuera` });
 
+  // Más pulsaciones que enfocables: si no, la trampa rota nunca se alcanza.
+  const enfocables = await p.evaluate(() => {
+    const dl = document.querySelector('[role="dialog"][data-state="open"], [role="dialog"][data-visible="true"]') || document.querySelector('[role="dialog"]');
+    return dl ? dl.querySelectorAll("a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex='-1'])").length : 0;
+  });
+  const vueltas = Math.max(30, enfocables + 3);
   let fuera = 0;
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < vueltas; i++) {
     await p.keyboard.press("Tab");
     const sigueDentro = await p.evaluate(() => {
       const dl = document.querySelector('[role="dialog"][data-state="open"], [role="dialog"][data-visible="true"]') || document.querySelector('[role="dialog"]');
@@ -237,7 +243,7 @@ for (const d of DIALOGOS) {
     });
     if (!sigueDentro) fuera++;
   }
-  if (fuera > 0) fallos.push({ ruta: d.ruta, detalle: `el foco se escapa de «${d.nombre}»: ${fuera} de 30 tabuladores acabaron detrás de la capa` });
+  if (fuera > 0) fallos.push({ ruta: d.ruta, detalle: `el foco se escapa de «${d.nombre}»: ${fuera} de ${vueltas} tabuladores acabaron detrás de la capa` });
 
   await p.keyboard.press("Escape");
   await p.waitForTimeout(600);
@@ -281,13 +287,23 @@ const dialogo = (p, nombre) => p.evaluate((n) => {
   const a = document.activeElement;
   return { dentro: d.contains(a), foco: a?.getAttribute("aria-label") || (a?.textContent || "").trim().slice(0, 30) };
 }, nombre);
-const atrapa = async (p, nombre, veces = 20) => {
+/* Recorre MÁS paradas que enfocables tiene la capa, primero hacia delante y
+   luego hacia atrás: una trampa rota solo se ve al pasar del último (o del
+   primero). Con un número fijo de pulsaciones, una paleta de 15 botones
+   aprobaba sin trampa ninguna porque nunca se llegaba al final. */
+const atrapa = async (p, nombre) => {
+  const n = await p.evaluate((x) => {
+    const d = [...document.querySelectorAll('[role="dialog"]')].find((e) => e.getAttribute("aria-label") === x);
+    return d ? d.querySelectorAll("a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex='-1'])").length : 0;
+  }, nombre);
   let fuera = 0;
-  for (let i = 0; i < veces; i++) {
-    await p.keyboard.press(i % 4 === 3 ? "Shift+Tab" : "Tab");
-    if (!(await dialogo(p, nombre))?.dentro) fuera++;
+  for (const tecla of ["Tab", "Shift+Tab"]) {
+    for (let i = 0; i < n + 3; i++) {
+      await p.keyboard.press(tecla);
+      if (!(await dialogo(p, nombre))?.dentro) fuera++;
+    }
   }
-  return fuera;
+  return { fuera, pulsaciones: 2 * (n + 3) };
 };
 let recorridos = 0;
 
@@ -312,8 +328,8 @@ for (const idioma of ["es", "en"]) {
     fallos.push({ ruta, detalle: "Ctrl+K con el foco dentro de la demo no abre su paleta" });
   } else {
     recorridos++;
-    const fuera = await atrapa(p, PALETA);
-    if (fuera) fallos.push({ ruta, detalle: `el Tab se escapa de la paleta de la demo: ${fuera} de 20 pulsaciones acabaron fuera` });
+    const { fuera, pulsaciones } = await atrapa(p, PALETA);
+    if (fuera) fallos.push({ ruta, detalle: `el Tab se escapa de la paleta de la demo: ${fuera} de ${pulsaciones} pulsaciones acabaron fuera` });
     await p.keyboard.press("Escape");
     await p.waitForTimeout(500);
     if (!(await focoVuelve(p))) fallos.push({ ruta, detalle: "al cerrar la paleta de la demo, el foco no vuelve a donde estaba" });

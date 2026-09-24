@@ -191,7 +191,11 @@ export function RiskCalculator() {
     [lang],
   );
 
-  const tramos = tramosRiesgoBeneficio(c.riskUsd, c.profit);
+  const tramos = c.valid ? tramosRiesgoBeneficio(c.riskUsd, c.profit) : { riesgo: 0, beneficio: 0 };
+  /* Sin un plan válido, lo que depende de él no se enseña: un tamaño de 0
+     junto a «riesgo de ruina 100 %» se lee como un resultado, no como un
+     hueco. El VaR sí se enseña, porque solo depende del balance y del %. */
+  const siPlan = (s: string) => (c.valid ? s : "—");
 
   const handleAssetChange = useCallback((mode: AssetMode) => {
     setAssetMode(mode);
@@ -665,12 +669,12 @@ export function RiskCalculator() {
               herramienta a 768; 2 en movil— y baja a 2 solo en el caso
               que se rompia. */}
           <div className="grid grid-cols-[repeat(auto-fit,minmax(8.25rem,1fr))] gap-x-4 mb-2">
-            <Result label={es ? "Riesgo total" : "Total risk"} value={fmtUsd(c.totalRiskUsd)} color="rgb(var(--pnl-neg))" />
-            <Result label={es ? "Beneficio neto" : "Net profit"} value={fmtUsd(c.profit)} color="rgb(var(--pnl-pos))" />
-            <Result label={es ? "Tamaño de posición" : "Position size"} value={`${fmtNum(c.size, assetMode === "forex" ? 2 : (assetMode === "futures" ? 1 : 2))} ${c.sizeLabel}`} color="var(--ink)" />
-            <Result label="R:R" value={`${fmtNum(c.rr, 2)}:1`} color="var(--ink)" />
-            <Result label={es ? "Valor del pip / punto" : "Pip / point value"} value={fmtUsd(c.pipValue)} color="var(--ink)" />
-            <Result label={es ? "Fricción estimada" : "Est. friction"} value={`−${fmtUsd(c.estimatedFriction)}`} color="var(--ink-2)" />
+            <Result label={es ? "Riesgo total" : "Total risk"} value={siPlan(fmtUsd(c.totalRiskUsd))} color={c.valid ? "rgb(var(--pnl-neg))" : "var(--ink-2)"} />
+            <Result label={es ? "Beneficio neto" : "Net profit"} value={siPlan(fmtUsd(c.profit))} color={c.valid ? "rgb(var(--pnl-pos))" : "var(--ink-2)"} />
+            <Result label={es ? "Tamaño de posición" : "Position size"} value={siPlan(`${fmtNum(c.size, assetMode === "forex" ? 2 : (assetMode === "futures" ? 1 : 2))} ${c.sizeLabel}`)} color="var(--ink)" />
+            <Result label="R:R" value={siPlan(`${fmtNum(c.rr, 2)}:1`)} color="var(--ink)" />
+            <Result label={es ? "Valor del pip / punto" : "Pip / point value"} value={siPlan(fmtUsd(c.pipValue))} color="var(--ink)" />
+            <Result label={es ? "Fricción estimada" : "Est. friction"} value={siPlan(`−${fmtUsd(c.estimatedFriction)}`)} color="var(--ink-2)" />
           </div>
 
           {/* Stats adicionales: valor posición, apalancamiento, VaR 95% y riesgo de ruina */}
@@ -686,7 +690,7 @@ export function RiskCalculator() {
                 {es ? "Valor nocional" : "Notional value"}
               </div>
               <div className="tnum text-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
-                {fmtUsd(c.positionValue)}
+                {siPlan(fmtUsd(c.positionValue))}
               </div>
             </div>
             <div className="caja-cifra">
@@ -699,7 +703,7 @@ export function RiskCalculator() {
                   color: c.leverage > 10 ? "rgb(var(--pnl-neg))" : "var(--ink)",
                 }}
               >
-                {fmtNum(c.leverage, 1)}{"\u00a0×"}
+                {c.valid ? <>{fmtNum(c.leverage, 1)}{"\u00a0×"}</> : "—"}
               </div>
             </div>
             <div className="caja-cifra">
@@ -717,10 +721,10 @@ export function RiskCalculator() {
               <div
                 className="tnum text-sm font-semibold mt-0.5"
                 style={{
-                  color: c.riskOfRuin > 1 ? "rgb(var(--pnl-neg))" : "rgb(var(--pnl-pos))",
+                  color: !c.valid ? "var(--ink-2)" : c.riskOfRuin > 1 ? "rgb(var(--pnl-neg))" : "rgb(var(--pnl-pos))",
                 }}
               >
-                {fmtNum(c.riskOfRuin, 2)}{PCT}
+                {siPlan(`${fmtNum(c.riskOfRuin, 2)}${PCT}`)}
               </div>
             </div>
           </div>
@@ -733,7 +737,7 @@ export function RiskCalculator() {
                 {es ? "Riesgo" : "Risk"}
               </span>
               <span className="tnum font-semibold text-[rgb(var(--accent-base))]">
-                {fmtNum(c.rr, 2)}:1 R:R
+                {siPlan(`${fmtNum(c.rr, 2)}:1`)} R:R
               </span>
               <span className="tnum inline-flex items-center gap-1.5 text-tertiary">
                 {es ? "Beneficio" : "Profit"}
@@ -759,9 +763,9 @@ export function RiskCalculator() {
               />
             </div>
             <div className="mt-2 flex items-center justify-between tnum text-[12px] text-secondary">
-              <span>{fmtUsd(c.riskUsd)}</span>
-              <span className="text-tertiary">{fmtNum(c.profitPct, 1)}{PCT} {es ? "del balance" : "of balance"}</span>
-              <span>{fmtUsd(c.profit)}</span>
+              <span>{siPlan(fmtUsd(c.riskUsd))}</span>
+              <span className="text-tertiary">{siPlan(`${fmtNum(c.profitPct, 1)}${PCT}`)} {es ? "del balance" : "of balance"}</span>
+              <span>{siPlan(fmtUsd(c.profit))}</span>
             </div>
           </div>
 

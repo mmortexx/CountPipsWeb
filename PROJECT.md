@@ -2177,6 +2177,63 @@ asienta; nada rebota ni brilla.
   pantalla el símbolo sale sin barra. Se ve en la captura de escritorio; el recorte de
   móvil no llega a esas filas.
 
+### Vigesimoctava tanda: inglés, calculadoras y teclado, con un equipo (2026-09-25)
+
+Tres auditores (inglés, calculadoras, accesibilidad) y después un equipo de
+cuatro agentes con nombre que se mandaban mensajes: tres arreglaban, cada uno
+en su copia y con ficheros sin solape, y el cuarto revisaba cada rama y
+devolvía los cambios directamente. En la app de escritorio no hay «equipo»
+de verdad (lista de tareas compartida y apagado ordenado son solo de la
+terminal); con agentes con nombre basta, porque un mensaje reactiva al
+destinatario aunque haya terminado. Todo lo que trajeron se comprobó otra vez
+al integrar, y no todo aguantó (ver la calculadora de riesgo).
+
+- **Inglés británico**: -ise/-our/defence en glosario, FAQ, i18n y textos
+  de la demo; «Is my data safe?»; MAE/MFE con «Maximum»; `en_US` → `en_GB`
+  en los 43 `openGraph` (43 antes, 0 después). Prueba de catálogos
+  (`ortografia-britanica.test.ts`, roja con 12 casos antes del arreglo).
+- **Apóstrofo tipográfico**: 106 rectos en 31 ficheros pasados a ’ con el
+  analizador de TypeScript (solo cadenas y texto JSX, nunca comentarios;
+  recuento exigido antes de escribir, 0 después). Tres más venían escritos
+  como `&apos;` en JSX y el script no los veía: los cazó la guarda nueva de
+  `cifras.mjs`, que mira la web inglesa compilada (apóstrofo y comillas
+  rectas y ortografía americana también dentro de los componentes; roja
+  con 77 y 63 casos sobre la compilación anterior).
+- **Buscadores**: FAQ, glosario y su ventana comparan con `paraBuscar`
+  (`src/lib/busqueda.ts`): sin mayúsculas, sin tildes y con un solo
+  apóstrofo. Sin eso, al pasar a ’ «what's» dejaba de encontrar la
+  pregunta. La ventana del glosario no ignoraba las tildes; ahora sí.
+- **Calculadora de riesgo**: 100/105/110 se daba por un corto con
+  199,90 $ de beneficio (visto en la web publicada). `validaPlan` exige el
+  objetivo al otro lado de la entrada y avisa. Con el plan inválido seguía
+  enseñando «riesgo de ruina 100 %», tamaño 0 y la barra: el encargo lo
+  pedía, el agente no lo hizo y el revisor lo aprobó; se vio al mirarla en
+  el navegador. Ahora todo lo que depende del plan dice «—» (el VaR se
+  queda: solo depende del balance y del %).
+- **Proyector de capital**: al máximo pintaba 537.689.208… $ (87 cifras)
+  ya a 3 años. `proyectaCapital` marca `fueraDeEscala` por encima de 1e12
+  y la herramienta avisa y enseña «—» en balance, CAGR y retorno.
+- **Ahorro y comisiones** anuncian su resultado (`ResultadoAnunciado`); el
+  porcentaje coloreado de comisiones lleva palabra (alto/moderado/bajo).
+  `anuncios.mjs` saca ahora la lista de herramientas de la compilación: la
+  escrita se había quedado en siete.
+- **Teclado**: la paleta de la demo atrapa el Tab y devuelve el foco; la
+  ayuda de la demo se lleva el foco y lo devuelve; el aviso de cookies no
+  roba el foco al salir solo y, reabierto desde el pie, lo recibe y lo
+  devuelve (y va justo después del salto al contenido); el glosario dice
+  su opción activa (`aria-activedescendant`); el megamenú se cierra cuando
+  el Tab sale de la navegación; el formulario apunta el error solo al campo
+  que falla. Nueve recorridos nuevos en `teclado.mjs`, rojos en los siete
+  arreglos con el código anterior.
+- **Dos guardas estaban ciegas** en `teclado.mjs`: daban un número fijo de
+  tabuladores (20 y 30) y la paleta tiene 15 enfocables con Shift+Tab
+  intercalados, así que nunca se llegaba al final. Ahora cuentan los
+  enfocables de la capa y recorren más, hacia delante y hacia atrás.
+- `humo.mjs` comprueba en pantalla las dos calculadoras (roja la de riesgo
+  con la compilación sin el «—», la del proyector contra la web publicada).
+- Índice de herramientas en tableta con aire (`sm:py-2.5`) y
+  `test-infra.test.ts`: cada prueba con su fila en TEST_INFRA.md.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2191,15 +2248,15 @@ node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los
 node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritorio + móvil (vale contra `out/` servido sin modo SPA)
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
-node scripts/cifras.mjs out             # convención de idioma, y restos de plantilla («undefined», «NaN») a la vista
+node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, comillas y ortografía británica en /en), y restos de plantilla a la vista
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
-node scripts/anuncios.mjs --serve out   # las 7 herramientas dicen su resultado a quien no ve la pantalla
-node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús y diálogos
+node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
+node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
 npx vitest run                          # 39 suites, 415 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```

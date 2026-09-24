@@ -1352,7 +1352,7 @@ export function EquityProjector() {
                   </div>
                   <div
                     className="tnum text-lg sm:text-xl font-semibold mt-1"
-                    style={{ color: c.cagr >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
+                    style={{ color: c.fueraDeEscala ? "var(--ink)" : c.cagr >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
                     {c.fueraDeEscala ? "—" : fmtPct(c.cagr * 100, 1)}
                   </div>
@@ -1373,7 +1373,7 @@ export function EquityProjector() {
                   <div
                     className="tnum text-lg sm:text-xl font-semibold mt-1"
                     style={{
-                      color: c.totalReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
+                      color: c.fueraDeEscala ? "var(--ink)" : c.totalReturnPct >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                     }}
                   >
                     {c.fueraDeEscala ? (

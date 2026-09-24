@@ -1974,6 +1974,61 @@ if (SERVIR) {
   await ctx404.close();
 }
 
+/* ── LAS CALCULADORAS NO DAN POR BUENO LO IMPOSIBLE ─────────────────
+   Hasta el 2026-09-25 la calculadora de riesgo daba 100/105/110 por un
+   corto con 199,90 $ de beneficio (el objetivo estaba del lado del stop),
+   y con el plan inválido seguía enseñando «riesgo de ruina 100 %» y un
+   tamaño 0. El proyector, con los controles al máximo, pintaba un capital
+   de 87 cifras. Las funciones puras tienen sus pruebas; esto mira lo que
+   llega a la pantalla. */
+let calculadorasVistas = 0;
+if (SERVIR) {
+  const ctxCalc = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  await ctxCalc.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
+  const pagina = await ctxCalc.newPage();
+  try {
+    await pagina.goto(`${BASE}/herramientas/calculadora-de-riesgo/`, { waitUntil: "load", timeout: 30000 });
+    await pagina.waitForTimeout(600);
+    for (const [etiqueta, valor] of [["Precio de entrada", "100"], ["Precio de stop loss", "105"], ["Precio objetivo take profit", "110"]]) {
+      const campo = pagina.getByLabel(etiqueta, { exact: true });
+      await campo.fill(valor);
+      await campo.press("Tab");
+    }
+    await pagina.waitForTimeout(400);
+    const r = await pagina.evaluate(() => {
+      const aviso = document.querySelector('[role="alert"]')?.textContent ?? "";
+      const t = document.querySelector("main")?.innerText ?? "";
+      return { aviso, corto: /Operación en corto detectada/.test(t), ruina: /Riesgo de ruina\s+\d/.test(t), tamano: /Tamaño de posición\s+\d/.test(t) };
+    });
+    if (!/otro lado de la entrada/.test(r.aviso)) fallos.push(`riesgo 100/105/110: no avisa de que el objetivo está del lado del stop («${r.aviso.slice(0, 60)}»)`);
+    else if (r.corto) fallos.push("riesgo 100/105/110: sigue diciendo «Operación en corto detectada»");
+    else if (r.ruina || r.tamano) fallos.push("riesgo 100/105/110: con el plan inválido sigue enseñando cifras del plan (tamaño o riesgo de ruina)");
+    else calculadorasVistas++;
+
+    await pagina.goto(`${BASE}/herramientas/proyector-de-capital/`, { waitUntil: "load", timeout: 30000 });
+    await pagina.waitForTimeout(600);
+    for (const [etiqueta, tecla] of [["Operaciones por año", "End"], ["Win rate", "End"], ["Ganancia media", "End"], ["Pérdida media", "Home"], ["Riesgo por operación", "End"]]) {
+      const campo = pagina.getByLabel(etiqueta, { exact: true });
+      await campo.focus();
+      await campo.press(tecla);
+    }
+    await pagina.waitForTimeout(500);
+    const p = await pagina.evaluate(() => {
+      const t = document.querySelector("main")?.innerText ?? "";
+      return { aviso: /se sale de cualquier escala realista/.test(t), enorme: (t.match(/\d{1,3}(?:\.\d{3}){5,}/) || [""])[0] };
+    });
+    if (!p.aviso) fallos.push("proyector al máximo: no avisa de que la proyección se sale de escala");
+    else if (p.enorme) fallos.push(`proyector al máximo: enseña una cifra de más de mil billones («${p.enorme.slice(0, 30)}…»)`);
+    else calculadorasVistas++;
+  } catch (e) {
+    fallos.push(`calculadoras: ${String(e).split("\n")[0]}`);
+  }
+  await ctxCalc.close();
+  if (calculadorasVistas < 2 && !fallos.some((f) => /^(riesgo|proyector|calculadoras)/.test(f))) {
+    fallos.push(`calculadoras: solo ${calculadorasVistas} de 2 comprobadas`);
+  }
+}
+
 await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
@@ -2014,6 +2069,9 @@ if (temasLaminaVistos.length) {
   );
 } else {
   console.warn("  aviso  ninguna lámina comprobada por tema: nadie vigila que el oscuro enseñe su captura");
+}
+if (calculadorasVistas) {
+  console.log(`[humo] calculadoras — ${calculadorasVistas} de 2 no dan por bueno lo imposible (plan con el objetivo del lado del stop; proyección fuera de escala)`);
 }
 if (ayudasDemo.length) {
   console.log(`[humo] ayuda de la demo — abierta con «?» en ${ayudasDemo.length} pantallas: ${ayudasDemo.join("; ")}`);
