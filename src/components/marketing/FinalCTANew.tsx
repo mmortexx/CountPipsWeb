@@ -4,6 +4,8 @@ import { Link } from "@/components/tj/LocaleLink";
 import { ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
+import { TRADES } from "@/lib/trading/data";
+import { fmtInt } from "@/lib/trading/format";
 
 /** Cierre de página, compuesto como el final de un informe: un filete, el
  *  titular a la izquierda y las acciones a la derecha, sin recuadro. Antes
@@ -36,8 +38,11 @@ const TEXTOS = {
     en: ["The numbers add up.", "Now run your own.", "The same thing, over your whole history and updated with every trade you log. The demo shows it with sample data."],
   },
   glosario: {
-    es: ["Del término a la cifra.", "Míralo en la demo.", "La demo aplica este vocabulario a 200 operaciones de muestra: cada ratio con su muestra y cada error con lo que cuesta."],
-    en: ["From the term to the number.", "See it in the demo.", "The demo applies this vocabulary to 200 sample trades: every ratio with its sample size, every mistake with what it costs."],
+    // El «{n}» se sustituye por `TRADES.length` (data.ts) al montar el
+    // componente: la cifra no se copia a mano, sale de la misma fuente
+    // que usa el resto del sitio para contar la muestra.
+    es: ["Del término a la cifra.", "Míralo en la demo.", "La demo aplica este vocabulario a {n} operaciones de muestra: cada ratio con su muestra y cada error con lo que cuesta."],
+    en: ["From the term to the number.", "See it in the demo.", "The demo applies this vocabulary to {n} sample trades: every ratio with its sample size, every mistake with what it costs."],
   },
 } as const;
 
@@ -48,7 +53,8 @@ export function FinalCTANew({
 }: { enDemo?: boolean; enPrecios?: boolean; variante?: keyof typeof TEXTOS } = {}) {
   const { lang } = useLang();
   const es = lang === "es";
-  const [titular, tenue, entradilla] = TEXTOS[variante][lang];
+  const [titular, tenue, entradillaCruda] = TEXTOS[variante][lang];
+  const entradilla = entradillaCruda.replace("{n}", fmtInt(TRADES.length, lang));
   const garantias = es
     ? ["Datos de muestra", "Sin registro", "Tus datos en tu equipo"]
     : ["Sample data", "No sign-up", "Your data on your machine"];
