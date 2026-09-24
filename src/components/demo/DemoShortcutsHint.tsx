@@ -20,7 +20,8 @@ interface DemoShortcutsHintProps {
  * INSIDE the demo window (just above the status bar). Lists the demo's
  * keyboard shortcuts:
  *
- *   1–7     switch tabs (6 main tabs + the Trade-detail drill-down)
+ *   1–4     switch tabs (Dashboard / Trades / Analytics / Journal — see
+ *           TopNav's NAV_ITEMS, the Trade-detail drill-down has no number)
  *   ⌘/Ctrl K  command palette (demo-scoped)
  *   ?       this help
  *   Esc     close
@@ -90,7 +91,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
         <>
           <Kbd>1</Kbd>
           <Dash />
-          <Kbd>7</Kbd>
+          <Kbd>4</Kbd>
         </>
       ),
       labelEs: "Cambiar pestaña",

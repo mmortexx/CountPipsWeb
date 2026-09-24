@@ -20,10 +20,11 @@ import {
   computeUlcerIndex,
   computeHalfKelly,
   computeOmega,
+  INITIAL_BALANCE_CONST,
   type Trade,
   type RankingRow,
 } from "@/lib/trading/data";
-import { fmtMoney, fmtNum, fmtPct, fmtInt } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtPct, fmtInt, pctSep } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -150,7 +151,7 @@ function WinnersDonut({
   losses: number;
   reKey: string;
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const total = wins + losses || 1;
   const winFrac = wins / total;
   const r = 56;
@@ -195,7 +196,7 @@ function WinnersDonut({
             key={`donut-pct-${reKey}`}
             to={winFrac * 100}
             decimals={1}
-            suffix="%"
+            suffix={pctSep(lang)}
           />
         </div>
         <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mt-1.5">
@@ -210,6 +211,7 @@ function WinnersDonut({
  * R-multiple over time — animated bar chart.
  * ============================================================ */
 function ROverTimeChart({ trades }: { trades: Trade[] }) {
+  const { lang } = useLang();
   const H = 150;
   const W = 560;
   const padTop = 8;
@@ -244,7 +246,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
         height={H}
         preserveAspectRatio="none"
         role="img"
-        aria-label="R-multiple over time chart"
+        aria-label={lang === "es" ? "Gráfico de R por operación en el tiempo" : "R-multiple over time chart"}
       >
         <line
           x1={0}
@@ -283,7 +285,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
               }}
               style={{ transformOrigin: `center ${baselineY}px` }}
             >
-              <title>{`R ${t.rMultiple >= 0 ? "+" : ""}${t.rMultiple.toFixed(2)}`}</title>
+              <title>{`R ${t.rMultiple >= 0 ? "+" : ""}${fmtNum(t.rMultiple, lang, 2)}`}</title>
             </motion.rect>
           );
         })}
@@ -380,7 +382,7 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
         height={H}
         preserveAspectRatio="none"
         role="img"
-        aria-label="P&L by month chart"
+        aria-label={lang === "es" ? "Gráfico de resultado por mes" : "P&L by month chart"}
       >
         <line
           x1={0}
@@ -674,8 +676,8 @@ function buildPeriodRows(trades: Trade[]): PeriodRow[] {
     const netPnl = slice.reduce((s, t) => s + t.netPnl, 0);
 
     // Max drawdown % over the slice's equity curve (starting at $10,000).
-    let peak = 10_000;
-    let bal = 10_000;
+    let peak = INITIAL_BALANCE_CONST;
+    let bal = INITIAL_BALANCE_CONST;
     let maxDdPct = 0;
     const chrono = [...slice].sort(
       (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
@@ -709,7 +711,7 @@ function computeEquityQuality(trades: Trade[]) {
   const chrono = [...trades].sort(
     (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
   );
-  let bal = 10_000;
+  let bal = INITIAL_BALANCE_CONST;
   const ys: number[] = [];
   for (const t of chrono) {
     bal += t.netPnl;
@@ -743,11 +745,17 @@ function computeEquityQuality(trades: Trade[]) {
  * verdict is "Inconclusive"; with 30-100 it's "Suggestive" if the
  * CI excludes zero; with 100+ it's "Confirmed".
  * ============================================================ */
+/** Mínimo de operaciones para un veredicto con confianza estadística.
+ *  Único origen: se usa tanto en `computeEdge` como en el aviso de
+ *  «muestra corta» del componente principal, así el texto y el corte
+ *  numérico nunca pueden desincronizarse. */
+const MUESTRA_MINIMA = 30;
+
 function computeEdge(trades: Trade[], lang: "es" | "en") {
   const n = trades.length;
   if (n < 5) {
     return {
-      verdict: "Inconclusive",
+      verdict: lang === "es" ? "Inconcluso" : "Inconclusive",
       verdictTone: "neutral" as const,
       hint: lang === "es"
         ? "Muy pocas operaciones para emitir veredicto."
@@ -807,12 +815,12 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
   let verdict: string;
   let verdictTone: "pos" | "warn" | "neutral";
   let hint: string;
-  if (n < 30) {
-    verdict = "Inconclusive";
+  if (n < MUESTRA_MINIMA) {
+    verdict = lang === "es" ? "Inconcluso" : "Inconclusive";
     verdictTone = "neutral";
     hint = lang === "es"
-      ? "Necesitas al menos 30 operaciones para emitir un veredicto con confianza estadística."
-      : "You need at least 30 trades to reach a verdict with statistical confidence.";
+      ? `Necesitas al menos ${fmtInt(MUESTRA_MINIMA, lang)} operaciones para emitir un veredicto con confianza estadística.`
+      : `You need at least ${fmtInt(MUESTRA_MINIMA, lang)} trades to reach a verdict with statistical confidence.`;
   } else if (loR > 0) {
     verdict = lang === "es" ? "Edge confirmado" : "Confirmed edge";
     verdictTone = "pos";
@@ -872,22 +880,22 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
 
   // SQN and Ulcer index via canonical pure quantitative functions
   const sqn = computeSqn(trades);
-  const ulcer = computeUlcerIndex(trades, 10_000);
+  const ulcer = computeUlcerIndex(trades, INITIAL_BALANCE_CONST);
 
   // CAGR — time-weighted, ~180 days of history.
   const chrono = [...trades].sort(
     (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
   );
   const netPnl = trades.reduce((s, t) => s + t.netPnl, 0);
-  const final = 10_000 + netPnl;
+  const final = INITIAL_BALANCE_CONST + netPnl;
   const yearsSpan = Math.max(
     1 / 365,
     (chrono[chrono.length - 1]!.closedAt.getTime() - chrono[0]!.closedAt.getTime()) /
       (365 * dayMs)
   );
   const cagr =
-    final > 0 && 10_000 > 0
-      ? (Math.pow(final / 10_000, 1 / yearsSpan) - 1) * 100
+    final > 0 && INITIAL_BALANCE_CONST > 0
+      ? (Math.pow(final / INITIAL_BALANCE_CONST, 1 / yearsSpan) - 1) * 100
       : 0;
 
   // Fractional Kelly criterion (Half Kelly)
@@ -1097,7 +1105,7 @@ export function AnalyticsPage() {
     filters.direction !== "all" ||
     filters.compliance !== "all";
 
-  const shortSample = m.closedCount < 30;
+  const shortSample = m.closedCount < MUESTRA_MINIMA;
 
   const compactMoney = (v: number) =>
     fmtMoney(v, lang, { compact: true, decimals: 0 });
@@ -1307,7 +1315,7 @@ export function AnalyticsPage() {
                         {fmtNum(row.profitFactor, lang, 2)}
                       </td>
                       <td className="px-2 py-2.5 tnum text-pnl-neg text-xs text-right">
-                        −{fmtNum(row.maxDdPct, lang, 1)}%
+                        −{fmtNum(row.maxDdPct, lang, 1)}{pctSep(lang)}
                       </td>
                     </tr>
                   ))}
@@ -1341,7 +1349,7 @@ export function AnalyticsPage() {
                 showHairline
                 reKey={`wr-${filterSig}`}
               >
-                <CountUp to={m.winRate * 100} decimals={1} suffix="%" />
+                <CountUp to={m.winRate * 100} decimals={1} suffix={pctSep(lang)} />
               </KpiStripCell>
               <KpiStripCell
                 label={t("expectancy")}
@@ -1460,7 +1468,7 @@ export function AnalyticsPage() {
                   hint={desc("Criterio de Kelly al 50 % (riesgo óptimo)", "Half Kelly sizing (optimal fraction)")}
                 >
                   <span className={adv.halfKelly > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
-                    {fmtNum(adv.halfKelly, lang, 1)}%
+                    {fmtNum(adv.halfKelly, lang, 1)}{pctSep(lang)}
                   </span>
                 </RatioCell>
                 <RatioCell
@@ -1501,7 +1509,7 @@ export function AnalyticsPage() {
                 >
                   <span className={adv.cagr >= 0 ? "text-pnl-pos" : "text-pnl-neg"}>
                     {adv.cagr >= 0 ? "+" : "−"}
-                    {fmtNum(Math.abs(adv.cagr), lang, 1)}%
+                    {fmtNum(Math.abs(adv.cagr), lang, 1)}{pctSep(lang)}
                   </span>
                 </RatioCell>
               </div>
@@ -1522,15 +1530,7 @@ export function AnalyticsPage() {
                   />
                 </span>
                 <span className={`text-base font-semibold ${verdictTextClass}`}>
-                  {lang === "es" && edge.verdict === "Edge confirmado"
-                    ? "Edge confirmado"
-                    : lang === "es" && edge.verdict === "Sugerente"
-                    ? "Sugerente"
-                    : lang === "es" && edge.verdict === "Sin edge"
-                    ? "Sin edge"
-                    : lang === "es"
-                    ? "Inconcluso"
-                    : edge.verdict}
+                  {edge.verdict}
                 </span>
                 <Chip variant="stat" size="sm" rounded="sm">
                   <span>p =</span>
@@ -1540,11 +1540,7 @@ export function AnalyticsPage() {
 
               {/* Hint sentence. */}
               <p className="text-sm text-secondary leading-relaxed max-w-3xl">
-                {edge.verdict === "Inconclusive"
-                  ? lang === "es"
-                    ? "Necesitas al menos 30 operaciones para emitir un veredicto con confianza estadística."
-                    : "You need at least 30 trades to issue a statistically confident verdict."
-                  : edge.hint}
+                {edge.hint}
               </p>
 
               {/* 4 intervals grid. */}
