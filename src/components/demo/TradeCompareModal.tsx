@@ -2,7 +2,7 @@
 
 import { useLang } from "@/lib/i18n";
 import { type Trade, nombreSetup } from "@/lib/trading/data";
-import { fmtMoney, fmtPrice, fmtDuration, fmtDateTime } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtPrice, fmtDuration, fmtDateTime } from "@/lib/trading/format";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
 import { X } from "lucide-react";
@@ -64,7 +64,7 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
               <div className="flex items-baseline gap-2">
                 <Money value={tradeA.netPnl} sign colorizeSign className="text-xl font-semibold font-mono" />
                 <span className={`text-sm font-mono font-semibold ${tradeA.rMultiple >= 0 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--pnl-neg))]"}`}>
-                  ({tradeA.rMultiple >= 0 ? "+" : ""}{tradeA.rMultiple}R)
+                  ({tradeA.rMultiple >= 0 ? "+" : ""}{fmtNum(tradeA.rMultiple, lang, 2)}R)
                 </span>
               </div>
               <div className="text-[11px] text-tertiary">
@@ -83,7 +83,7 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
               <div className="flex items-baseline gap-2">
                 <Money value={tradeB.netPnl} sign colorizeSign className="text-xl font-semibold font-mono" />
                 <span className={`text-sm font-mono font-semibold ${tradeB.rMultiple >= 0 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--pnl-neg))]"}`}>
-                  ({tradeB.rMultiple >= 0 ? "+" : ""}{tradeB.rMultiple}R)
+                  ({tradeB.rMultiple >= 0 ? "+" : ""}{fmtNum(tradeB.rMultiple, lang, 2)}R)
                 </span>
               </div>
               <div className="text-[11px] text-tertiary">
@@ -113,18 +113,18 @@ export function TradeCompareModal({ tradeA, tradeB, onClose }: TradeCompareModal
               },
               {
                 label: es ? "Riesgo : Recompensa Planificado" : "Planned Risk : Reward",
-                valA: `1 : ${tradeA.plannedRr.toFixed(2)} R`,
-                valB: `1 : ${tradeB.plannedRr.toFixed(2)} R`,
+                valA: `1:${fmtNum(tradeA.plannedRr, lang, 2)} R`,
+                valB: `1:${fmtNum(tradeB.plannedRr, lang, 2)} R`,
               },
               {
                 label: "MAE (Max Adverse Excursion)",
-                valA: `${tradeA.mae.toFixed(2)} R`,
-                valB: `${tradeB.mae.toFixed(2)} R`,
+                valA: `${fmtNum(tradeA.mae, lang, 2)} R`,
+                valB: `${fmtNum(tradeB.mae, lang, 2)} R`,
               },
               {
                 label: "MFE (Max Favorable Excursion)",
-                valA: `+${tradeA.mfe.toFixed(2)} R`,
-                valB: `+${tradeB.mfe.toFixed(2)} R`,
+                valA: `+${fmtNum(tradeA.mfe, lang, 2)} R`,
+                valB: `+${fmtNum(tradeB.mfe, lang, 2)} R`,
               },
               {
                 label: es ? "Duración de posición" : "Trade Duration",
