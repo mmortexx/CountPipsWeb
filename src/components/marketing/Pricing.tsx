@@ -1,13 +1,14 @@
 "use client";
 
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, type Lang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { Escritorio } from "@/components/tj/Escritorio";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO, FECHA_TIPO_EUR, aproxEur } from "@/lib/precios";
+import { fmtInt } from "@/lib/trading/format";
 
 type Plan = {
   id: "core" | "pro";
@@ -192,6 +193,7 @@ const fechaTipo = new Date(FECHA_TIPO_EUR).toLocaleDateString("es-ES", {
 
 function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   const isPro = plan.popular;
+  const lang: Lang = es ? "es" : "en";
 
   return (
     <div
@@ -223,7 +225,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         {es ? (
           <>
             <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
-              {plan.price}
+              {fmtInt(plan.price, lang)}
             </span>
             <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
           </>
@@ -231,14 +233,14 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           <>
             <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
             <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
-              {plan.price}
+              {fmtInt(plan.price, lang)}
             </span>
           </>
         )}
       </div>
       {es && (
         <p className="mt-3 mb-0 text-[14px] text-tertiary tnum">
-          <span className="whitespace-nowrap">{`≈\u00a0${aproxEur(plan.price)}\u00a0€`}</span> al cambio de {fechaTipo}
+          <span className="whitespace-nowrap">{`≈\u00a0${fmtInt(aproxEur(plan.price), lang)}\u00a0€`}</span> al cambio de {fechaTipo}
         </p>
       )}
 

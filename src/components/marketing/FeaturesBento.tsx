@@ -3,7 +3,7 @@
 import { useLang } from "@/lib/i18n";
 import type { getCal, SetupResumen } from "@/lib/trading/fixtures";
 import { nombreSetup } from "@/lib/trading/setups";
-import { fmtMoney, fmtPct, fmtR } from "@/lib/trading/format";
+import { fmtInt, fmtMoney, fmtPct, fmtR } from "@/lib/trading/format";
 
 /**
  * FeaturesBento — sección `#features`. Cinco fichas: calendario de P&L
@@ -198,7 +198,7 @@ export function FeaturesBento({
           <article data-entra="2" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>Playbooks</span>
-              <span>{setups.length} setups</span>
+              <span>{fmtInt(setups.length, lang)} setups</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1">
               <h3 className={titulo}>{es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don't"}</h3>
@@ -213,7 +213,7 @@ export function FeaturesBento({
                       <div className="flex items-baseline gap-3 tnum text-[13px]">
                         <span className="font-medium text-primary">{nombreSetup(s.setup, lang)}</span>
                         <span className="ml-auto text-[12px] text-tertiary">
-                          {s.n} {es ? "ops" : "trades"}
+                          {fmtInt(s.n, lang)} {es ? "ops" : "trades"}
                         </span>
                         <span className="min-w-[48px] text-right font-medium" style={{ color: c }}>
                           {fmtR(s.expectativaR, lang, 2)}

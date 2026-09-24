@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { fmtInt } from "@/lib/trading/format";
 
 /** Índice de funciones de /features: se filtra por ejes y marca lo que es exclusivo de Pro. */
 
@@ -273,7 +274,7 @@ export function FeatureExplorer() {
           <div>
             <div className="mb-4 flex items-center justify-between">
               <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "En este recorte" : "In this cut"} · {topMatches.length}
+                {es ? "En este recorte" : "In this cut"} · {fmtInt(topMatches.length, lang)}
               </span>
               {topMatches.length === 0 && (
                 <span className="text-[13px]" style={{ color: "var(--ink-3)" }}>
@@ -288,7 +289,7 @@ export function FeatureExplorer() {
           <div>
             <div className="mb-4">
               <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
-                {es ? "Todas las características" : "All features"} · {FEATURES.length}
+                {es ? "Todas las características" : "All features"} · {fmtInt(FEATURES.length, lang)}
               </span>
             </div>
             <ListaFunciones items={FEATURES} es={es} />
