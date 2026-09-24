@@ -27,6 +27,46 @@ interface Command {
   run: () => void;
 }
 
+/* ------------------------------------------------------------------ */
+/* Trampa de Tab — mismo patrón que ShortcutsHelp.tsx                 */
+/* ------------------------------------------------------------------ */
+
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  'input:not([disabled]):not([type="hidden"])',
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
+
+function getFocusables(container: HTMLElement): HTMLElement[] {
+  return Array.from(
+    container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+  ).filter((el) => {
+    const rects = el.getClientRects();
+    if (rects.length === 0) return false;
+    const { width, height } = rects[0];
+    return width > 0 && height > 0;
+  });
+}
+
+/** A qué extremo saltar al pulsar Tab dentro de la trampa de foco, o
+ *  `null` si el Tab puede seguir su curso normal dentro del panel.
+ *  Función pura — sin DOM — para poder probarla sin renderizar React. */
+export type DestinoTrampaTab = "primero" | "ultimo" | null;
+
+export function destinoTrampaTab(opts: {
+  dentro: boolean;
+  esPrimero: boolean;
+  esUltimo: boolean;
+  shiftKey: boolean;
+}): DestinoTrampaTab {
+  const { dentro, esPrimero, esUltimo, shiftKey } = opts;
+  if (shiftKey) return !dentro || esPrimero ? "ultimo" : null;
+  return !dentro || esUltimo ? "primero" : null;
+}
+
 /**
  * DemoCommandPalette — a Cmd+K (or Ctrl+K) command palette that works
  * INSIDE the demo window, separate from the global site-wide CommandPalette.
@@ -90,6 +130,17 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     if (!open) return;
     const id = requestAnimationFrame(() => inputRef.current?.focus());
     return () => cancelAnimationFrame(id);
+  }, [open]);
+
+  /* Guarda el foco que había al abrir y lo devuelve al cerrar (por Esc,
+     clic fuera o al ejecutar un comando — las tres vías pasan por
+     `onClose`/desmontaje). Mismo patrón que ShortcutsHelp.tsx. */
+  useEffect(() => {
+    if (!open) return;
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    return () => {
+      previouslyFocused?.focus?.();
+    };
   }, [open]);
 
   const paletteOrder: PaletteName[] = useMemo(() => ["clasico"], []);
@@ -294,6 +345,32 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
           onClose();
         }
       }
+      if (e.key === "Tab") {
+        const panel = rootRef.current;
+        if (!panel) return;
+        const focusables = getFocusables(panel);
+        if (focusables.length === 0) {
+          e.preventDefault();
+          panel.focus();
+          return;
+        }
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        const active = document.activeElement;
+        const destino = destinoTrampaTab({
+          dentro: panel.contains(active),
+          esPrimero: active === first,
+          esUltimo: active === last,
+          shiftKey: e.shiftKey,
+        });
+        if (destino === "primero") {
+          e.preventDefault();
+          first.focus();
+        } else if (destino === "ultimo") {
+          e.preventDefault();
+          last.focus();
+        }
+      }
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
@@ -322,6 +399,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
           {/* Panel — fluent acrylic depth-4 with hardware acceleration */}
           <motion.div
             ref={rootRef}
+            tabIndex={-1}
             style={{ contain: "layout paint", willChange: "transform, opacity" }}
             className="relative w-full max-w-lg tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-[var(--ficha-sombra)] overflow-hidden"
             initial={{ opacity: 0, scale: 0.985, y: -6 }}

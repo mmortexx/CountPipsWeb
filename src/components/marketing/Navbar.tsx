@@ -805,7 +805,14 @@ export function Navbar() {
               ocultaFoco();
             }}
             onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) ocultaFoco();
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                ocultaFoco();
+                // El foco sale de TODA la zona de navegación (no solo del
+                // megamenú): si el panel estaba abierto, se cierra con él.
+                // Escape y el cierre al pulsar fuera (pointerdown) siguen
+                // intactos — esto solo cubre la vía del teclado (Tab).
+                setMegaOpen(false);
+              }
             }}
           >
             <span ref={focoRef} aria-hidden className="tj-nav-foco" />
