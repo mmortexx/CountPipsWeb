@@ -10,7 +10,7 @@ import {
   monthlyBreakdown,
   type Trade,
 } from "@/lib/trading/data";
-import { fmtInt, fmtNum, fmtDate, fmtMoney, fmtPct, LOCALE_FECHA } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtDate, fmtMoney, fmtPct, pctSep, LOCALE_FECHA } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -199,11 +199,12 @@ function DayScoreDots({
   onChange: (v: number) => void;
   idPrefix: string;
 }) {
+  const { lang } = useLang();
   return (
     <div
       className="flex items-center gap-1.5"
       role="radiogroup"
-      aria-label="Day score"
+      aria-label={lang === "es" ? "Puntuación del día" : "Day score"}
     >
       {[0, 1, 2, 3, 4, 5].map((n) => {
         const active = n <= value;
@@ -214,7 +215,7 @@ function DayScoreDots({
             type="button"
             role="radio"
             aria-checked={isSelected}
-            aria-label={`Score ${n}`}
+            aria-label={lang === "es" ? `Puntuación ${fmtInt(n, lang)}` : `Score ${fmtInt(n, lang)}`}
             onClick={() => onChange(n)}
             whileTap={{ scale: 0.8 }}
             whileHover={{ scale: 1.18 }}
@@ -274,7 +275,7 @@ function RitualColumn({
   idPrefix: string;
   placeholder: string;
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const checkedCount = items.filter((it) => state[it.id]).length;
   return (
     <div className="flex flex-col gap-4">
@@ -288,7 +289,7 @@ function RitualColumn({
           <h3 className="font-medium text-primary">{title}</h3>
         </div>
         <Chip variant="count" rounded="sm" className="tnum">
-          {checkedCount}/{items.length}
+          {fmtInt(checkedCount, lang)}/{fmtInt(items.length, lang)}
         </Chip>
       </div>
 
@@ -418,7 +419,7 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className={`text-3xl md:text-4xl font-semibold tnum ${toneClass} leading-none`}>
-          <CountUp to={pct * 100} decimals={0} suffix={lang === "es" ? " %" : "%"} />
+          <CountUp to={pct * 100} decimals={0} suffix={pctSep(lang)} />
         </div>
         <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mt-1.5 text-center">
           {label}
@@ -978,7 +979,7 @@ export function JournalPage() {
       const a = TRADES.filter((t) => f(t) >= alto);
       return { low: avg(b), high: avg(a), n: b.length + a.length };
     };
-    const ops = (n: number) => `${n} ${lang === "es" ? "operaciones" : "trades"}`;
+    const ops = (n: number) => `${fmtInt(n, lang)} ${lang === "es" ? "operaciones" : "trades"}`;
     const s = cruce(sueno, 2, 4);
     const m = cruce((t) => t.dayScore, 2, 4);
     const f = cruce(fisico, 2, 4);
@@ -1104,13 +1105,13 @@ export function JournalPage() {
                 value={mental}
                 onChange={setMental}
                 label={L("Estado mental", "Mental state")}
-                display={`${mental}/5`}
+                display={`${fmtInt(mental, lang)}/5`}
               />
               <SegmentedMeter
                 value={physical}
                 onChange={setPhysical}
                 label={L("Estado físico", "Physical state")}
-                display={`${physical}/5`}
+                display={`${fmtInt(physical, lang)}/5`}
               />
               <PlanToggle on={hasPlan} onToggle={() => setHasPlan((p) => !p)} />
             </div>
@@ -1177,7 +1178,7 @@ export function JournalPage() {
                       {L("Actual", "Current")}
                     </span>
                     <span className="text-sm font-semibold tnum text-primary leading-none">
-                      {currentStreak}
+                      {fmtInt(currentStreak, lang)}
                     </span>
                     <span className="text-[10px] text-secondary">
                       {L("días", "days")}
@@ -1189,7 +1190,7 @@ export function JournalPage() {
                       {L("Mejor", "Best")}
                     </span>
                     <span className="text-sm font-semibold tnum text-primary leading-none">
-                      {bestStreak}
+                      {fmtInt(bestStreak, lang)}
                     </span>
                     <span className="text-[10px] text-tertiary">
                       {L("días", "days")}
@@ -1724,7 +1725,7 @@ export function JournalPage() {
                             .replace(".", "")}
                         </div>
                         <div className="text-lg font-semibold tnum text-primary leading-none mt-0.5">
-                          {entry.date.getUTCDate()}
+                          {fmtInt(entry.date.getUTCDate(), lang)}
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">
@@ -1736,7 +1737,7 @@ export function JournalPage() {
                             ·
                           </span>
                           <span className="text-[11px] text-tertiary tnum">
-                            {entry.count}{" "}
+                            {fmtInt(entry.count, lang)}{" "}
                             {L("ops.", "trades")}
                           </span>
                           <span className="text-tertiary" aria-hidden="true">
@@ -1745,7 +1746,7 @@ export function JournalPage() {
                           <span className="text-[11px] text-tertiary tnum">
                             {t("dayScore")}:{" "}
                             <span className="text-primary font-medium">
-                              {entry.avgScore}/5
+                              {fmtInt(entry.avgScore, lang)}/5
                             </span>
                           </span>
                         </div>

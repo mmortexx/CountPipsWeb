@@ -17,10 +17,11 @@ import {
 } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
 import {
-  fmtNum,
   fmtPrice,
   fmtDate,
   fmtDuration,
+  fmtR,
+  fmtInt,
 } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
@@ -93,8 +94,7 @@ function RChip({ value, lang }: { value: number; lang: "es" | "en" }) {
       : "bg-pnl-neg/15 text-pnl-neg border-pnl-neg/30 shadow-[inset_0_0_0_1px_rgb(var(--pnl-neg)/0.08)]";
   return (
     <span className={`inline-flex items-center rounded-[2px] px-[0.55rem] py-[0.15rem] tnum text-[11px] font-semibold leading-[1.4] border ${cls}`}>
-      {value > 0 ? "+" : ""}
-      {fmtNum(value, lang, 2)}R
+      {fmtR(value, lang, 2)}
     </span>
   );
 }
@@ -535,7 +535,7 @@ function BulkActionBar({
       />
       <div className="flex flex-wrap items-center gap-3">
         <Chip variant="selection" size="sm" rounded="sm" className="tnum">
-          {count}
+          {fmtInt(count, lang)}
         </Chip>
         <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary hidden sm:inline">
           {lang === "es" ? "seleccionadas" : "selected"}
@@ -688,8 +688,8 @@ export function TradesPage() {
       toast({
         title: es ? "Exportación CSV generada" : "CSV export generated",
         description: es
-          ? `${filtered.length} operaciones descargadas en formato CSV estándar.`
-          : `${filtered.length} trades downloaded in standard CSV format.`,
+          ? `${fmtInt(filtered.length, lang)} operaciones descargadas en formato CSV estándar.`
+          : `${fmtInt(filtered.length, lang)} trades downloaded in standard CSV format.`,
       });
     } else {
       const jsonContent = JSON.stringify(
@@ -713,8 +713,8 @@ export function TradesPage() {
       toast({
         title: es ? "Snapshot JSON generado" : "JSON snapshot generated",
         description: es
-          ? `Copia completa con métricas y notas de ${filtered.length} operaciones.`
-          : `Complete copy with metrics and notes for ${filtered.length} trades.`,
+          ? `Copia completa con métricas y notas de ${fmtInt(filtered.length, lang)} operaciones.`
+          : `Complete copy with metrics and notes for ${fmtInt(filtered.length, lang)} trades.`,
       });
     }
   };
@@ -820,10 +820,11 @@ export function TradesPage() {
   const filterSig = `${filters.instrument}|${filters.direction}|${filters.compliance}|${outcome}|${setupSel}|${debounced.trim()}|${sortKey}|${sortDir}`;
 
   const totalPnl = metrics.netPnl;
-  const totalR =
-    filtered.length > 0
-      ? filtered.reduce((s, tr) => s + tr.rMultiple, 0) / filtered.length
-      : 0;
+  // Suma de R, no media: la fila de totales la etiqueta "Suma"/"Sum" (más
+  // abajo) y la media por operación ya tiene su propio KPI (Expectancy R).
+  // Antes dividía entre filtered.length, así que bajo la etiqueta "Suma"
+  // se mostraba la misma media que Expectancy R con un número distinto.
+  const totalR = filtered.reduce((s, tr) => s + tr.rMultiple, 0);
 
   const resetAll = () => {
     clearFilters();
@@ -883,15 +884,15 @@ export function TradesPage() {
   function handleTagAdd(tag: string) {
     toast({
       title: lang === "es"
-        ? `Etiqueta “${tag}” aplicada a ${selectedIds.size} operaciones`
-        : `Tag “${tag}” applied to ${selectedIds.size} trades`,
+        ? `Etiqueta «${tag}» aplicada a ${fmtInt(selectedIds.size, lang)} operaciones`
+        : `Tag “${tag}” applied to ${fmtInt(selectedIds.size, lang)} trades`,
     });
   }
   function handleTagRemove(tag: string) {
     toast({
       title: lang === "es"
-        ? `Etiqueta “${tag}” quitada de ${selectedIds.size} operaciones`
-        : `Tag “${tag}” removed from ${selectedIds.size} trades`,
+        ? `Etiqueta «${tag}» quitada de ${fmtInt(selectedIds.size, lang)} operaciones`
+        : `Tag “${tag}” removed from ${fmtInt(selectedIds.size, lang)} trades`,
     });
   }
 
@@ -990,7 +991,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          {es ? "Todas" : "All"} ({allTrades.length})
+          {es ? "Todas" : "All"} ({fmtInt(allTrades.length, lang)})
         </button>
 
         <button
@@ -1533,7 +1534,7 @@ export function TradesPage() {
                         totalR > 0 ? "text-pnl-pos" : totalR < 0 ? "text-pnl-neg" : "text-secondary"
                       }`}
                     >
-                      {fmtNum(totalR, lang, 2)}
+                      {fmtR(totalR, lang, 2)}
                     </td>
                     <td className="pl-3 pr-4 py-3" />
                   </tr>
@@ -1593,8 +1594,8 @@ export function TradesPage() {
               className="px-4 py-1.5 rounded-[2px] text-xs font-medium border border-[rgb(var(--divider)/0.1)] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.05)] transition-colors"
             >
               {lang === "es"
-                ? `Cargar más (${sorted.length - visibleCount} restantes)`
-                : `Load more (${sorted.length - visibleCount} left)`}
+                ? `Cargar más (${fmtInt(sorted.length - visibleCount, lang)} restantes)`
+                : `Load more (${fmtInt(sorted.length - visibleCount, lang)} left)`}
             </button>
           </div>
         )}
