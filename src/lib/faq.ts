@@ -83,7 +83,7 @@ export const FAQ_EN: QA[] = [
     a: "Not yet. Purchases open at launch; until then, the demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 as launch prices.",
   },
   {
-    q: "Are my data safe?",
+    q: "Is my data safe?",
     a: "Your trades live in a SQLite database on your machine. There is no account and no telemetry, and CountPips has no servers to store them. You can turn on Windows EFS encryption for the data folder. Something only leaves your machine if you turn on a feature that needs it, such as the encrypted copy in your own cloud folder; the full list is on the security page.",
   },
   {

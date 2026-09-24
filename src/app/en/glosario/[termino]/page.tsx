@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `${SITE_URL}/en/glosario/${t.slug}/`,
       type: "article",
       siteName: "CountPips",
-      locale: "en_US",
+      locale: "en_GB",
       alternateLocale: ["es_ES"],
     },
     twitter: {

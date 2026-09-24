@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "CountPips",
     locale: "es_ES",
-    alternateLocale: ["en_US"],
+    alternateLocale: ["en_GB"],
   },
   twitter: {
     card: "summary_large_image",
