@@ -2075,6 +2075,53 @@ if (SERVIR) {
   if (!desenfoquesVistos) fallos.push("desenfoque: no encontré ningún elemento que desenfoque (ni la barra): la guarda no está mirando");
 }
 
+/* ── EL BOTÓN DE SUBIR NO TAPA EL PIE ──────────────────────────────
+   Al final de la página el botón flotante se aparta hacia arriba. Subía
+   una cantidad fija (104 px) calculada cuando la barra final del pie era
+   una línea; con tres, en un móvil caía sobre «Todos los derechos
+   reservados.». Se mide cada trozo de texto del pie contra el botón. */
+let subirMedidos = 0;
+if (SERVIR) {
+  for (const [ancho, alto] of [[390, 844], [375, 667], [768, 1024]]) {
+    const ctxSubir = await navegador.newContext({ viewport: { width: ancho, height: alto }, reducedMotion: "reduce" });
+    await ctxSubir.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
+    const pagina = await ctxSubir.newPage();
+    for (const ruta of ["/faq/", "/demo/", "/glosario/drawdown/"]) {
+      try {
+        await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+        await pagina.mouse.wheel(0, 100000);
+        await pagina.waitForTimeout(600);
+        await pagina.mouse.wheel(0, 2000);
+        await pagina.waitForTimeout(600);
+        const r = await pagina.evaluate(() => {
+          const b = document.querySelector('button[aria-label="Volver arriba"],button[aria-label="Back to top"]');
+          if (!b || b.dataset.visible !== "true") return null;
+          const br = b.getBoundingClientRect();
+          const pie = document.querySelector("footer");
+          if (!pie) return null;
+          const w = document.createTreeWalker(pie, NodeFilter.SHOW_TEXT);
+          const tapa = [];
+          for (let n = w.nextNode(); n; n = w.nextNode()) {
+            if (!n.textContent.trim()) continue;
+            const rg = document.createRange();
+            rg.selectNodeContents(n);
+            for (const q of rg.getClientRects()) {
+              if (q.right > br.left && q.left < br.right && q.bottom > br.top && q.top < br.bottom) tapa.push(n.textContent.trim().slice(0, 40));
+            }
+          }
+          return tapa;
+        });
+        if (r === null) { fallos.push(`subir ${ancho}px ${ruta}: el botón no aparece al final de la página`); continue; }
+        subirMedidos++;
+        if (r.length) fallos.push(`subir ${ancho}px ${ruta}: el botón tapa texto del pie: ${[...new Set(r)].join(" · ")}`);
+      } catch (e) {
+        fallos.push(`subir ${ancho}px ${ruta}: ${String(e).split("\n")[0]}`);
+      }
+    }
+    await ctxSubir.close();
+  }
+}
+
 await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
@@ -2115,6 +2162,9 @@ if (temasLaminaVistos.length) {
   );
 } else {
   console.warn("  aviso  ninguna lámina comprobada por tema: nadie vigila que el oscuro enseñe su captura");
+}
+if (subirMedidos) {
+  console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
 if (desenfoquesVistos) {
   console.log(`[humo] desenfoque — ${desenfoquesVistos} elementos desenfocan su fondo en 5 rutas, todos flotando sobre la página`);

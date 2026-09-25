@@ -519,6 +519,29 @@ describe("Modelos Institucionales de Ruina, Rachas y Valor en Riesgo", () => {
     expect(r3).toBeLessThanOrEqual(100);
   });
 
+  /* La aproximación de difusión e^(−2·E·U/σ²) falla con pagos muy
+     asimétricos: con un 50 % de acierto y ganancias de 1.500 R daba un
+     87 % de ruina a una operación que solo se arruina con 50 pérdidas
+     seguidas. Ahora es exacta para ganancias y pérdidas fijas. */
+  it("computeRiskOfRuin con payoff 1 es la ruina del jugador: (q/p)^U", async () => {
+    const { computeRiskOfRuin } = await import("@/lib/trading/data");
+    // p = 0,55, riesgo 5 % y umbral 50 % → U = 10 unidades.
+    expect(computeRiskOfRuin(55, 1, 5, 50)).toBeCloseTo(100 * (0.45 / 0.55) ** 10, 1);
+    expect(computeRiskOfRuin(60, 1, 10, 50)).toBeCloseTo(100 * (0.4 / 0.6) ** 5, 1);
+  });
+
+  it("computeRiskOfRuin con un pago enorme no se arruina (50 pérdidas seguidas)", async () => {
+    const { computeRiskOfRuin } = await import("@/lib/trading/data");
+    expect(computeRiskOfRuin(50, 1500, 1, 50)).toBeLessThan(0.01);
+  });
+
+  it("computeRiskOfRuin con payoff 2 casa con la raíz cerrada de p·z² + q/z = 1", async () => {
+    const { computeRiskOfRuin } = await import("@/lib/trading/data");
+    // p = 0,4: 0,4z³ − z + 0,6 = (z − 1)(0,4z² + 0,4z − 0,6) → z = (−0,4 + √1,12) / 0,8.
+    const z = (-0.4 + Math.sqrt(1.12)) / 0.8;
+    expect(computeRiskOfRuin(40, 2, 5, 50)).toBeCloseTo(100 * z ** 10, 1);
+  });
+
   it("computeExpectedMaxLossStreak calcula correctamente la longitud de racha analítica", async () => {
     const { computeExpectedMaxLossStreak } = await import("@/lib/trading/data");
     // Con WR = 50% y N = 100 -> q = 0.5, ln(100)/-ln(0.5) = 4.605 / 0.693 = 6.64 -> ~7 operaciones

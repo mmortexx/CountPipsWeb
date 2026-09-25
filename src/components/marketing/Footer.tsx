@@ -286,13 +286,10 @@ export function Footer() {
         <div className="mt-12 h-px bg-[var(--line)]" />
 
 
-        {/* Bottom bar — left: © year appName. rights; right: status
-            indicator (pulsing emerald dot + label) + Privacy/Terms legal
-            links + version + locale. Hairline top via the divider-grad
-            above. Status dot is decorative (aria-hidden); the label text
-            carries the accessible meaning. `mt-8` separates it from the
-            trust pills above. */}
-        <div className="mt-6 flex flex-col lg:flex-row items-center justify-between gap-4">
+        {/* Barra final: copyright a un lado; fecha, idiomas y
+            preferencias al otro. `data-pie-final` es la marca que mide el
+            botón de subir para quedarse encima al llegar aquí. */}
+        <div data-pie-final className="mt-6 flex flex-col lg:flex-row items-center justify-between gap-4">
           <p className="text-xs text-secondary">
             © <span className="tnum">{year}</span> {t("appName")}. {t("rights")}
           </p>

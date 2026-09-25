@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { irArriba } from "@/lib/scroll";
 import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
@@ -16,17 +16,11 @@ import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
  *   original 600 px threshold so the affordance appears earlier on the
  *   common ~8 vh hero-scroll case on mobile, where 600 px is already
  *   mid-MetricsShowcase.)
- * - When the user is within ~140 px of the bottom of the page, the button
- *   is shifted UP by 5.5 rem (88 px) via a CSS `transform: translateY()` on
- *   the outer container. This lifts it clear of the footer's bottom-bar
- *   cluster (copyright + status + locale) so the floating button never
- *   sits on top of that text — the overlap VLM flagged on mobile. The
- *   transform is GPU-accelerated and transitions over 200 ms so the lift
- *   reads as a deliberate reposition, not a jump.
- *   (The bar used to also carry an inline "v1.4.2 · Privacidad ·
- *   Términos" — a fabricated version number and a duplicate of the
- *   footer's own legal column — since retired; the 88 px clearance still
- *   applies to whatever text remains in that row.)
+ * - Cuando la barra final del pie (`[data-pie-final]`) entra en pantalla,
+ *   el botón sube hasta quedar 8 px por encima de ella. Antes subía una
+ *   cantidad fija (104 px) calculada para una barra de una línea; con
+ *   tres, en un móvil caía sobre «Todos los derechos reservados.». Medir
+ *   la barra no se queda corto si vuelve a crecer; `humo.mjs` lo vigila.
  * - COOKIE-BANNER AVOIDANCE — additionally lifts above the CookieConsent
  *   banner (`[data-cookie-consent="visible"]`) when both are mounted. The
  *   banner is anchored bottom-left and the button bottom-right; they
@@ -63,38 +57,18 @@ import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
  * ── Sin framer-motion ─────────────────────────────────────────────────
  * Este componente usaba `AnimatePresence`, `motion.button` y
  * `MotionConfig`, y con ellos arrastraba la biblioteca entera al paquete
- * común de las 155 páginas. Ahora el botón está SIEMPRE montado y su
- * visibilidad es un atributo (`.tj-emerge`, en globals.css): entrar y
- * salir es una transición CSS que resuelve el compositor. Un botón de
- * 44 px en el árbol no cuesta nada; la biblioteca costaba 344 KB.
+ * común de las 155 páginas. Ahora se monta la primera vez que hace falta
+ * y ya se queda, y su visibilidad es un atributo (`.tj-emerge`, en
+ * globals.css): entrar y salir es una transición CSS que resuelve el
+ * compositor. La biblioteca costaba 344 KB.
  *
- * State strategy: `visible` uses a lazy initializer so a back/forward
- * navigation that restores scroll > 400 px shows the button immediately
- * without a setState-in-effect. Subsequent updates come from the scroll
- * listener (event-handler semantics). `progress`, `shifted`, and
- * `cookieLift` are separate states updated via rAF.
+ * `visible`, `pieLift` y `cookieLift` se actualizan desde el scroll, en un
+ * rAF. Los levantamientos miden dónde está el botón (su `bottom`, con la
+ * muesca incluida) en vez de suponer los 24 px de la esquina.
  */
 const SHOW_AFTER = 400;
-/** Distance (px) from the bottom of the scrollable region at which the
- *  button lifts to clear the footer bottom-bar. 180 px ≈ footer
- *  bottom-bar height (~72 px) + footer py-12/py-16 padding (48-64 px) +
- *  40-60 px buffer so the lift starts BEFORE the overlap begins and the
- *  transition has time to settle before the bar reaches the button. */
-const SHIFT_THRESHOLD = 180;
-/** How far (rem) the button lifts when shifted. 6.5 rem (104 px) clears
- *  the mobile bottom-bar (72 px tall, sitting 48 px above viewport
- *  bottom via footer `py-12`) with an 8 px buffer. Desktop doesn't
- *  actually need the lift (the bottom-bar cluster is centered, the
- *  button is at the right edge — they don't horizontally overlap), but
- *  applying the same lift keeps the behaviour consistent across
- *  breakpoints and the button simply reads as "floating a bit higher
- *  near the end of the page". */
-const SHIFT_LIFT_REM = 6.5;
-const SHIFT_LIFT_PX = SHIFT_LIFT_REM * 16;
-/** Gap (px) between the lifted button's bottom edge and the cookie
- *  banner's top edge when the cookie-avoidance lift is active. 8 px is
- *  enough to read as "above" rather than "touching" without leaving a
- *  large dead band. */
+/** Hueco (px) entre el borde inferior del botón levantado y lo que
+ *  esquiva: la barra final del pie o el aviso de cookies. */
 const COOKIE_GAP_PX = 8;
 /** Desde este ancho el botón cae en el margen, fuera del texto. */
 const ANCHO_CON_MARGEN = 1280;
@@ -124,8 +98,9 @@ export function BackToTop() {
      de las 155 páginas para alguien que a lo mejor no baja nunca —
      mismo patrón, y mismo motivo, que el cajón de navegación. */
   const [montado, setMontado] = useState(false);
-  const [shifted, setShifted] = useState(false);
+  const [pieLift, setPieLift] = useState(0);
   const [cookieLift, setCookieLift] = useState(0);
+  const anclaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let ticking = false;
@@ -144,11 +119,13 @@ export function BackToTop() {
       const debeVerse = scrollTop > SHOW_AFTER && libre;
       if (debeVerse) setMontado(true);
       setVisible(debeVerse);
-      // Lift the button when within SHIFT_THRESHOLD px of the bottom so it
-      // never overlaps the footer bottom-bar cluster. `scrollable - scrollTop`
-      // is the remaining scrollable distance (px) — when it drops below the
-      // threshold, the footer's last 80 px is entering the viewport.
-      setShifted(scrollable - scrollTop < SHIFT_THRESHOLD);
+      /* Borde inferior del botón sin levantar: el `bottom` del ancla lleva
+         ya el margen de la muesca. Sin ancla todavía, los 24 px de base. */
+      const ancla = anclaRef.current;
+      const baseBoton = window.innerHeight - (ancla ? parseFloat(getComputedStyle(ancla).bottom) || 24 : 24);
+      const pie = document.querySelector<HTMLElement>("[data-pie-final]");
+      const pieTop = pie ? pie.getBoundingClientRect().top : Infinity;
+      setPieLift(pieTop < window.innerHeight ? Math.max(0, Math.round(baseBoton - (pieTop - COOKIE_GAP_PX))) : 0);
       // CookieConsent-avoidance lift. The banner is anchored bottom-left and
       // the button bottom-right; they don't horizontally overlap, but they
       // share a vertical band on narrow viewports. Lifting the button above
@@ -167,11 +144,8 @@ export function BackToTop() {
         // that rect.top is within a sane band (≥0 means banner fully in
         // view at the bottom of the screen).
         if (rect.bottom > 0 && rect.top < window.innerHeight && rect.top >= 0) {
-          // We want button.bottom = rect.top - COOKIE_GAP_PX.
-          // Natural button.bottom = vh - 24 (env+1.5rem, ignoring safe-area
-          // which only adds to the offset).
-          // Lift = (vh - 24) - (rect.top - COOKIE_GAP_PX) = vh - rect.top - 24 + COOKIE_GAP_PX
-          cLift = Math.max(0, window.innerHeight - rect.top - 24 + COOKIE_GAP_PX);
+          // El borde inferior del botón, COOKIE_GAP_PX por encima del aviso.
+          cLift = Math.max(0, baseBoton - (rect.top - COOKIE_GAP_PX));
         }
       }
       /* Mismo motivo que el porcentaje: al píxel, no a la fracción. */
@@ -225,10 +199,8 @@ export function BackToTop() {
      mira ella. */
   const scrollToTop = () => irArriba();
 
-  // Combined lift: max of footer-shift and cookie-avoidance. Whichever is
-  // binding wins; if neither applies, lift = 0 and the button sits at its
-  // natural position (env + 1.5 rem from the bottom).
-  const totalLift = Math.max(shifted ? SHIFT_LIFT_PX : 0, cookieLift);
+  // Lo que más obligue de los dos; sin ninguno, el botón en su sitio.
+  const totalLift = Math.max(pieLift, cookieLift);
 
   if (!montado) return null;
 
@@ -240,6 +212,7 @@ export function BackToTop() {
           mismo eje: mezclarlas en un elemento hace que la última escrita
           pise a la anterior. */}
       <div
+        ref={anclaRef}
         className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform duration-200 ease-[var(--ease-suave)] motion-reduce:transition-none"
         style={{ transform: `translateY(-${totalLift}px)` }}
       >

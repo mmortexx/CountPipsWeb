@@ -349,10 +349,10 @@ export const FORMULAS_GLOSARIO: Record<
     variablesEn: "p: win probability, q = 1 − p: loss probability, b: payoff ratio",
   },
   "risk-of-ruin": {
-    formulaEs: "P(Ruina) = e^(−2 · E · B / σ²)",
-    formulaEn: "P(Ruin) = e^(−2 · E · B / σ²)",
-    variablesEs: "E: valor esperado por operación, B: capital antes del nivel de quiebra, σ²: varianza del retorno",
-    variablesEn: "E: expected value per trade, B: bankroll buffer before bankruptcy, σ²: variance",
+    formulaEs: "P(Ruina) = z^U, con p · z^b + q / z = 1",
+    formulaEn: "P(Ruin) = z^U, where p · z^b + q / z = 1",
+    variablesEs: "p: probabilidad de acierto, q: 1 − p, b: payoff (ganancia entre pérdida), U: umbral de ruina entre riesgo por operación, z: la raíz entre q y 1",
+    variablesEn: "p: win probability, q: 1 − p, b: payoff (win over loss), U: ruin threshold over risk per trade, z: the root between q and 1",
   },
   cagr: {
     formulaEs: "CAGR = (Vf / Vi)^(1 / t) − 1",

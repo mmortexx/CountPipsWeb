@@ -23,15 +23,16 @@ export function tramosRiesgoBeneficio(
 export const UMBRAL_RUINA_PCT = 50;
 
 /**
- * Riesgo de Ruina de Ralph Vince / Perry Kaufman.
- * Calcula la probabilidad analítica de sufrir un drawdown de capital determinado (por defecto 50%).
+ * Riesgo de ruina: probabilidad de perder alguna vez `ruinDdPct` del
+ * capital arriesgando `riskPct` fijo por operación, con ganancias de `b`
+ * unidades y pérdidas de 1.
  *
- * E = p * b - q  (Esperanza matemática en R)
- * σ_R^2 = p * b^2 + q - E^2  (Varianza del sistema en R)
- * Unidades de riesgo antes de la ruina: U = ruinDdPct / riskPct
- *
- * Si E <= 0 -> Ruina matemática inevitable (100%).
- * Si E > 0  -> P(ruina) = e^( -2 * E * U / σ_R^2 ) * 100
+ * E = p · b − q. Si E ≤ 0 la ruina es segura (100 %). Si no,
+ * P(ruina) = z^U, con U = ruinDdPct / riskPct y z la raíz en (q, 1) de
+ * p · z^b + q / z = 1: la ruina del jugador generalizada, exacta cuando
+ * las pérdidas son de una unidad. La aproximación de difusión
+ * e^(−2·E·U/σ²), que es la que había, falla con pagos asimétricos: con
+ * un 50 % de acierto y ganancias de 1.500 R daba un 87 % de ruina.
  */
 export function computeRiskOfRuin(
   winRate: number,
@@ -46,16 +47,22 @@ export function computeRiskOfRuin(
   const safeDd = Math.max(1, ruinDdPct);
   const units = safeDd / safeRisk;
 
-  const expectancy = p * b - q;
-  if (expectancy <= 0) return 100;
+  if (p * b - q <= 0) return 100;
+  if (q <= 0) return 0;
 
-  const variance = p * b * b + q - expectancy * expectancy;
-  if (variance <= 0) return 0;
-
-  // Formulación exponencial clásica de aproximación de difusión
-  const exponent = (-2 * expectancy * units) / variance;
-  const prob = Math.exp(Math.max(-50, Math.min(0, exponent)));
-  return +(Math.min(100, Math.max(0, prob * 100))).toFixed(2);
+  const g = (z: number) => p * Math.pow(z, b) + q / z - 1;
+  /* g(1) = 0 y g'(1) = E > 0, así que g es negativa justo por debajo de 1;
+     y g(q) = p·q^b > 0. La raíz buscada queda entre q y ese punto. */
+  let hi = 1 - 1e-6;
+  while (g(hi) >= 0 && 1 - hi > 1e-15) hi = 1 - (1 - hi) / 10;
+  if (g(hi) >= 0) return 100;
+  let lo = q;
+  for (let i = 0; i < 200; i++) {
+    const mid = (lo + hi) / 2;
+    if (g(mid) > 0) lo = mid;
+    else hi = mid;
+  }
+  return Math.min(100, Math.max(0, Math.pow((lo + hi) / 2, units) * 100));
 }
 
 /**

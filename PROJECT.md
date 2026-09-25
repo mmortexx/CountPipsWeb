@@ -2318,6 +2318,30 @@ cada arreglo con su prueba vista en rojo.
   GPU, con y sin movimiento reducido) sale a su tamaño. Es un defecto de
   la captura, no de la página.
 
+### Trigésima primera tanda: la ruina exacta y el botón de subir (2026-09-25)
+
+- **Riesgo de ruina exacto.** `computeRiskOfRuin` usaba la aproximación
+  de difusión e^(−2·E·U/σ²), que falla con pagos asimétricos: con un
+  50 % de acierto y ganancias de 1.500 R daba un 87 % de ruina a una
+  operación que solo se arruina con 50 pérdidas seguidas. Ahora es z^U,
+  con z la raíz de p·z^b + q/z = 1 (la ruina del jugador generalizada,
+  exacta con pérdidas de una unidad). Pruebas contra resultados cerrados:
+  (q/p)^U con payoff 1 y la raíz de la cúbica con payoff 2, las dos en
+  rojo con la fórmula vieja. La función ya no redondea (eso es de la
+  pantalla) y el glosario enseña la fórmula que se usa.
+- **El botón de subir tapaba el copyright en móvil.** Al final de la
+  página subía 104 px fijos, calculados para una barra final de una
+  línea; con tres, a 390 y 375 px caía sobre «Todos los derechos
+  reservados.» (en inglés, más corto, no llegaba). Ahora mide la barra
+  (`[data-pie-final]`) y su propia posición, muesca incluida, y se queda
+  8 px por encima. Guarda nueva en `humo.mjs` que mide cada trozo de
+  texto del pie contra el botón en tres anchos; roja con la versión
+  anterior en los seis casos de móvil.
+- Revisadas a ojo las ocho páginas que faltaban (disciplina, seguridad,
+  operativa manual, legales, 404, demo) a 1440 oscuro y 390 claro, con
+  capturas por pantallas en vez de página entera: sin desbordes ni
+  errores de JavaScript.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
