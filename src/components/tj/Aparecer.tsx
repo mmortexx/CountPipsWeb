@@ -24,6 +24,12 @@ export function Aparecer() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const main = document.getElementById("main-content");
     if (!main || typeof IntersectionObserver === "undefined") return;
+    /* En una sola columna las piezas de una lista no asoman a la vez, que es
+       para lo que existe el escalonado: cada una entraba sola, y al deslizar
+       el glosario había seis o diez transiciones en curso. Medido en móvil
+       (CPU ×4, gráfica real, 6 pasadas por lado): fotogramas de más de 33 ms
+       del 3,5–9,9 % al 0,9–3,1 %. Por debajo de 768 px llegan con su bloque. */
+    const conPiezas = matchMedia("(min-width: 768px)").matches;
     document.documentElement.classList.add("tj-mov");
     // Lo que depende de hidratar solo entra si hidrata pronto: tarde sería un parpadeo.
     if (performance.now() < 1500) document.documentElement.classList.add("tj-mov-pronto");
@@ -115,6 +121,7 @@ export function Aparecer() {
         const bloques = [...raiz.children].filter(valido);
         bloques.forEach((b) => {
           marcar(b, 1);
+          if (!conPiezas) return;
           const contenedores = [...(b.matches(LISTAS) ? [b] : []), ...b.querySelectorAll<HTMLElement>(LISTAS)].filter(
             (c) => c === b || !c.parentElement?.closest(LISTAS) || !b.contains(c.parentElement.closest(LISTAS)),
           );

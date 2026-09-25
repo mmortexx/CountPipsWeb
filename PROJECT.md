@@ -2234,6 +2234,47 @@ al integrar, y no todo aguantó (ver la calculadora de riesgo).
 - Índice de herramientas en tableta con aire (`sm:py-2.5`) y
   `test-infra.test.ts`: cada prueba con su fila en TEST_INFRA.md.
 
+### Vigesimonovena tanda: fluidez, medida (2026-09-25)
+
+Medido con un script propio de una sola vez (carga, y cada fotograma
+mientras se baja la página con la rueda), en escritorio 1440 y en móvil
+390 con CPU ×4, 3–6 pasadas por caso. **Ojo con el navegador de
+pruebas**: por defecto pinta con SwiftShader (una tarjeta gráfica por
+software) y exagera todo lo que es de composición —desenfoques, capas
+animadas—. Con `--use-angle=d3d11 --enable-gpu --ignore-gpu-blocklist`
+usa la tarjeta real (aquí una RTX 4070 Ti, más que cualquier móvil).
+Criterio: lo que no cambia el aspecto se arregla con cualquiera de las
+dos medidas; lo que cambia el diseño, solo si también falla con la real.
+
+- **El cristal solo desenfoca cuando flota.** Las tarjetas de /pricing
+  y el panel de la demo desenfocaban el fondo liso que tienen detrás:
+  p95 al deslizar de 33,3 ms (4 de 4 pasadas, por software) a 16,8; en
+  captura, a lo sumo 11/255 de diferencia en los dos temas y anchos. Con
+  la tarjeta real el tirón era menor (0–1,3 % de fotogramas lentos), así
+  que era sobre todo para gráficas modestas. Regla nueva: `tj-cristal`
+  no desenfoca; `tj-cristal--denso` y la barra sí. Guarda en `humo.mjs`
+  (ningún elemento en el flujo desenfoca), roja contra la web publicada
+  con las dos tarjetas y el panel.
+- **Las piezas de las listas no se escalonan en una columna** (< 768 px).
+  En móvil cada término del glosario entraba solo, con seis a diez
+  transiciones a la vez al deslizar: fotogramas de más de 33 ms del
+  3,5–9,9 % al 0,9–2,5 % con la tarjeta real (6 pasadas por lado). En
+  tableta y escritorio no cambia nada.
+- **La primera pantalla se asienta antes**: lo que va bajo la cabecera
+  entra a 0,3 s en 0,9 s (era 0,5 + 1,1). La primera página de la demo
+  ya no entra animada, porque su esqueleto ya dibuja la silueta (era un
+  segundo movimiento encima del de la sección). La ventana de la demo se
+  ve al 50 % a los 468–555 ms (antes 685–771) y al 95 % a los 769–855
+  (antes 1055–1138), 5 pasadas por lado. El LCP que da Chrome casi no se
+  mueve (≈1 s) porque cuenta el final del fundido, no cuándo se ve.
+- **Descartado, con la medida**: el JavaScript por página (≈190 KB
+  comprimidos) está bien repartido —el glosario solo viaja en su página,
+  los polyfills llevan `noModule`, PostHog solo carga con permiso—; lo
+  que queda es React con `framer-motion`, ya decidido.
+- **Fecha del pie**: «Sitio actualizado» y el año del copyright salen del
+  día del commit en su propia zona (`diaDelCommit`); antes, en UTC, un
+  commit hecho en España de madrugada salía con el día anterior.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

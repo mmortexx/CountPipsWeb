@@ -57,6 +57,17 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
   const { t, lang } = useLang();
   const { page, fullscreen, setFullscreen, setPage, goBack } = useDemo();
 
+  /* La primera página no entra animada: el esqueleto de AppDemoClient ya
+     dibuja su silueta, y animarla la dejaba medio segundo invisible y con un
+     salto de 28 px sobre ese esqueleto (la cifra principal se veía a los
+     ≈1000 ms en escritorio y ≈1700 en móvil). La animación es del CAMBIO. */
+  const [paginaPrevia, setPaginaPrevia] = useState(page);
+  const [haCambiado, setHaCambiado] = useState(false);
+  if (page !== paginaPrevia) {
+    setPaginaPrevia(page);
+    setHaCambiado(true);
+  }
+
   // Demo-scoped command palette + shortcuts-overlay open state. Lifted here
   // so the capture-phase keydown listener (below) can toggle them, and so
   // the overlays render inside the demo window's positioning context.
@@ -369,7 +380,7 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
                   terminar cada entrada (10 de 10 cambios, a los ≈640 ms), un
                   parpadeo en blanco. Y sin salida animada no hay espera: la
                   página nueva empieza a entrar al pulsar. */}
-              <div key={page} className={`min-h-full ${page === "detail" ? "tj-demo-fondo" : "tj-demo-entra"}`}>
+              <div key={page} className={`min-h-full ${!haCambiado ? "" : page === "detail" ? "tj-demo-fondo" : "tj-demo-entra"}`}>
                 {page === "dashboard" && <DashboardPage />}
                 {page === "trades" && <TradesPage />}
                 {page === "detail" && <TradeDetailPage />}

@@ -2029,6 +2029,52 @@ if (SERVIR) {
   }
 }
 
+/* ── NINGÚN PANEL QUIETO DESENFOCA ─────────────────────────────────
+   Desenfocar el fondo se recalcula en cada fotograma del scroll, y un
+   panel en el flujo de la página solo tiene detrás el fondo liso: no se
+   ve y cuesta. El 2026-09-25 las tarjetas de /pricing lo hacían (p95 de
+   33 ms al deslizar a 1440 con el pintado por software). Solo desenfoca
+   lo que flota —fijo, pegajoso o superpuesto— o lo que va dentro de eso. */
+let desenfoquesVistos = 0;
+if (SERVIR) {
+  const ctxBlur = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
+  await ctxBlur.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
+  const pagina = await ctxBlur.newPage();
+  for (const ruta of ["/", "/pricing/", "/demo/", "/features/", "/features/metricas/"]) {
+    try {
+      await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+      await pagina.waitForTimeout(500);
+      const r = await pagina.evaluate(() => {
+        const flota = (el) => {
+          for (let a = el; a && a !== document.documentElement; a = a.parentElement) {
+            if (/^(fixed|sticky|absolute)$/.test(getComputedStyle(a).position)) return true;
+          }
+          return false;
+        };
+        let conBlur = 0;
+        const quietos = [];
+        for (const el of document.querySelectorAll("body *")) {
+          for (const pseudo of [null, "::before", "::after"]) {
+            const bf = getComputedStyle(el, pseudo).backdropFilter;
+            if (!bf || !bf.includes("blur")) continue;
+            conBlur++;
+            if (!flota(el) && !(pseudo && /^(fixed|sticky|absolute)$/.test(getComputedStyle(el, pseudo).position) && flota(el.parentElement))) {
+              quietos.push(`${el.tagName.toLowerCase()}.${String(el.className).split(" ").slice(0, 3).join(".")}${pseudo ?? ""}`);
+            }
+          }
+        }
+        return { conBlur, quietos };
+      });
+      desenfoquesVistos += r.conBlur;
+      if (r.quietos.length) fallos.push(`desenfoque ${ruta}: ${r.quietos.length} panel(es) quieto(s) desenfocan el fondo: ${r.quietos.slice(0, 3).join(", ")}`);
+    } catch (e) {
+      fallos.push(`desenfoque ${ruta}: ${String(e).split("\n")[0]}`);
+    }
+  }
+  await ctxBlur.close();
+  if (!desenfoquesVistos) fallos.push("desenfoque: no encontré ningún elemento que desenfoque (ni la barra): la guarda no está mirando");
+}
+
 await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
@@ -2069,6 +2115,9 @@ if (temasLaminaVistos.length) {
   );
 } else {
   console.warn("  aviso  ninguna lámina comprobada por tema: nadie vigila que el oscuro enseñe su captura");
+}
+if (desenfoquesVistos) {
+  console.log(`[humo] desenfoque — ${desenfoquesVistos} elementos desenfocan su fondo en 5 rutas, todos flotando sobre la página`);
 }
 if (calculadorasVistas) {
   console.log(`[humo] calculadoras — ${calculadorasVistas} de 2 no dan por bueno lo imposible (plan con el objetivo del lado del stop; proyección fuera de escala)`);

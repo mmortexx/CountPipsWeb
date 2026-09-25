@@ -6244,9 +6244,13 @@ svg [data-entra="sello"] {
   }
   /* Lo que la página enseña justo debajo de su cabecera sale en la primera
      pantalla, sin scroll que lo anime: aparecía entero antes que el titular.
-     Espera a que el titular haya subido. Sin opacidad donde hay cristal. */
+     Espera a que las primeras palabras del titular hayan subido (a 0,3 s la
+     primera ya ha hecho casi la mitad del recorrido). Con 0,5 s + 1,1 s la
+     página no quedaba quieta hasta el 1,6 s y la ventana de la demo, que es
+     lo que se viene a ver, no asomaba hasta el segundo. Sin opacidad donde
+     hay cristal. */
   #main-content .tj-cabecera + section:not(#top):not(section section) {
-    animation: tj-carga 1.1s var(--ease-salida) 0.5s both;
+    animation: tj-carga 0.9s var(--ease-salida) 0.3s both;
     animation-timeline: auto;
     animation-range: normal;
   }
@@ -6437,19 +6441,25 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 /* Detrás del cristal no hay retícula: una cuadrícula de papel milimetrado
    detrás del panel se leía como plantilla, no como material. Basta la luz
    difusa de `.tj-escritorio`. */
-.tj-cristal,
+/* SOLO DESENFOCA EL CRISTAL QUE FLOTA. Un panel quieto sobre el fondo
+   liso del escritorio no tiene nada detrás que desenfocar, y el desenfoque
+   se recalcula en cada fotograma del scroll. Primero se vio en el panel de
+   cifras de la portada (3/255 de diferencia; p95 de 33 a 17 ms con CPU ×4);
+   el 2026-09-25, en las tarjetas de /pricing a 1440: p95 de 33,3 ms en 4
+   de 4 pasadas con desenfoque y 16,8 sin él, y en captura, a lo sumo
+   11/255 de diferencia en los dos temas y anchos. Lo que flota sobre
+   contenido que se mueve —barra, desplegable, aviso de cookies, botón de
+   subir, lupa y cierre del visor— lleva `tj-cristal--denso` y sí desenfoca:
+   un panel nuevo que flote tiene que llevarlo. */
+.tj-cristal {
+  -webkit-backdrop-filter: saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
+  backdrop-filter: saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
+}
+.tj-cristal--denso,
 .tj-barra[data-cristal="true"]::before {
   -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
   backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
 }
-/* EL PANEL DE CIFRAS NO DESENFOCA. Detrás solo tiene la luz lisa del
-   escritorio, y desenfocar algo liso no cambia nada: medido, 3/255 de
-   diferencia media en claro y menos de 1 en oscuro. Lo que sí cambiaba era
-   el coste: un desenfoque de 1.100 × 800 px recalculado en cada fotograma
-   del scroll. En la portada, con CPU ×4, la media por fotograma bajó de
-   18,6–19,8 ms a 16,8–17,2 y el p95 de 33 a 17 ms (tres pasadas cada uno).
-   El cristal se queda donde hay algo que desenfocar: la barra y los
-   botones flotantes. */
 .tj-metricas.tj-cristal {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
