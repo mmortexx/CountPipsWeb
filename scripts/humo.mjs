@@ -1280,6 +1280,59 @@ for (const pantalla of PANTALLAS) {
           if (await abierto()) {
             fallos.push(`${etiqueta}: el menú de Producto no se cierra con Escape`);
           }
+
+          /* ── LOS DESPLEGABLES NO TRANSPARENTAN EL TITULAR ────────────
+             Se abren sobre el h1 del héroe. Con el fondo al 0,74 de
+             opacidad, sus letras de 90 px se leían como un borrón detrás
+             de la lista. Se mide el fondo en los dos temas; la regla que
+             lo sube es de una clase (`tj-cristal--menu`) que basta con
+             olvidar en un panel nuevo. */
+          const opacidadEnTemas = (selector) =>
+            pagina.evaluate((sel) => {
+              const el = document.querySelector(sel);
+              if (!el) return null;
+              const raiz = document.documentElement;
+              const antes = raiz.getAttribute("data-theme");
+              const r = {};
+              for (const t of ["light", "dark"]) {
+                raiz.setAttribute("data-theme", t);
+                const n = getComputedStyle(el).backgroundColor.match(/[\d.]+/g) || [];
+                r[t] = n.length === 4 ? Number(n[3]) : n.length === 3 ? 1 : 0;
+              }
+              if (antes === null) raiz.removeAttribute("data-theme");
+              else raiz.setAttribute("data-theme", antes);
+              return r;
+            }, selector);
+          const MIN_OPACIDAD = 0.9;
+          const vistos = [];
+          await pagina.evaluate(() =>
+            document.getElementById("navbar-producto-trigger").focus()
+          );
+          await pagina.keyboard.press("Enter");
+          await pagina.waitForTimeout(320);
+          const deMenus = [["Producto", await opacidadEnTemas('[aria-labelledby="navbar-producto-trigger"]')]];
+          await pagina.keyboard.press("Escape");
+          await pagina.waitForTimeout(240);
+          await pagina.locator('button[aria-haspopup="listbox"]:visible').first().click();
+          await pagina.waitForSelector('[role="listbox"]', { timeout: 5000 }).catch(() => {});
+          deMenus.push(["idioma", await opacidadEnTemas('[role="listbox"]')]);
+          await pagina.keyboard.press("Escape");
+          for (const [nombre, o] of deMenus) {
+            if (!o) {
+              fallos.push(`${etiqueta}: no se pudo abrir el menú de ${nombre} para medir su fondo`);
+              continue;
+            }
+            vistos.push(`${nombre} ${o.light.toFixed(2)}/${o.dark.toFixed(2)}`);
+            for (const t of ["light", "dark"]) {
+              if (o[t] < MIN_OPACIDAD) {
+                fallos.push(
+                  `${etiqueta} (tema ${t}): el menú de ${nombre} tiene el fondo al ${o[t]} de opacidad ` +
+                    `(mínimo ${MIN_OPACIDAD}) — el titular de detrás se transparenta`
+                );
+              }
+            }
+          }
+          menusVistos.push(`fondo claro/oscuro: ${vistos.join(" · ")}`);
         }
       }
 

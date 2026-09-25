@@ -7,7 +7,6 @@ import { useLang, type Lang } from "@/lib/i18n";
 import { sinPrefijoEn } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
-import { ANIO_PUBLICACION } from "@/lib/publicacion";
 
 /**
  * Navbar — barra edge-to-edge con material de papel translúcido (e-reader).
@@ -920,7 +919,7 @@ export function Navbar() {
                     }}
                     // Cristal: la página se ve difuminada detrás. `position` en línea porque
                     // una regla posterior de globals.css pisaría la utilidad `absolute`.
-                    className="tj-cae tj-cristal tj-cristal--denso absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[8px] p-0"
+                    className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[8px] p-0"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
@@ -1245,7 +1244,7 @@ export function Navbar() {
                             href={l.href}
                             onClick={() => setMobileOpen(false)}
                             aria-current={active ? "page" : undefined}
-                            className={`group relative flex min-h-[44px] items-center gap-3 rounded-[4px] py-2 pr-3 pl-3 text-sm outline-none transition-[background-color,transform,color] duration-150 ease-[var(--ease-menu-in)] hover:translate-x-1 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                            className={`group relative flex min-h-[44px] items-center gap-3 rounded-[4px] py-2 pr-3 pl-3 text-sm outline-none transition-[background-color,color] duration-150 ease-[var(--ease-suave)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
                               active
                                 ? "bg-[rgb(var(--divider)/0.06)] font-medium text-[var(--ink)]"
                                 : "text-[var(--ink-2)] hover:bg-[rgb(var(--divider)/0.04)] hover:text-[var(--ink)]"
@@ -1259,15 +1258,8 @@ export function Navbar() {
                               />
                             )}
                             <span
-                              className="grid h-7 w-7 flex-none place-items-center rounded-[4px]"
-                              style={{
-                                background: active
-                                  ? "rgb(var(--accent-base) / 0.12)"
-                                  : "rgb(var(--divider) / 0.06)",
-                                color: active
-                                  ? "rgb(var(--accent-base))"
-                                  : "var(--ink-3)",
-                              }}
+                              className="grid w-5 flex-none place-items-center transition-colors duration-150 group-hover:text-[var(--ink-2)]"
+                              style={{ color: active ? "rgb(var(--accent-base))" : "var(--ink-3)" }}
                             >
                               {l.icon}
                             </span>
@@ -1339,13 +1331,10 @@ export function Navbar() {
                 </div>
               </nav>
 
-              {/* Footer del drawer — CTAs + marca + copyright.
-                 El `safe-bottom` añade el inset de la home indicator en
-                 iOS; en escritorio resuelve a 0. El bloque flota sobre
-                 un borde superior hairline que separa la navegación
-                 (scrollable) de la conversión (fija al fondo). */}
-              <div className="safe-bottom shrink-0 border-t border-[rgb(var(--divider)/0.06)] px-4 pt-4">
-                <div className="flex flex-col gap-2">
+              {/* Botonera fija al fondo, separada de la lista por un filete.
+                 `safe-bottom` deja sitio a la barra de inicio de iOS. */}
+              <div className="safe-bottom shrink-0 border-t border-[rgb(var(--divider)/0.08)] px-4 pt-4">
+                <div className="flex flex-col gap-2 pb-4">
                   {/* CTA secundario — lleva a precios después de la demo.
                       Ghost, sin relleno de acento, para no competir con el
                       recorrido principal. */}
@@ -1357,7 +1346,7 @@ export function Navbar() {
                   >
                     {es ? "Ver precios" : "See pricing"}
                     <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M5 3l5 5-5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
                   {/* CTA primario — la demo es el primer paso del recorrido:
@@ -1376,25 +1365,6 @@ export function Navbar() {
                       <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </Link>
-                </div>
-
-                {/* Marca + copyright. Mismo glifo y nombre que la barra
-                    superior — el pie del drawer reafirma dónde se está. */}
-                <div className="mt-4 flex items-center gap-2 border-t border-[rgb(var(--divider)/0.06)] pt-3">
-                  <BrandMark />
-                  <div className="flex min-w-0 flex-col leading-tight">
-                    <span className="text-[13px] font-semibold text-[var(--ink)]">
-                      {t("appName")}
-                    </span>
-                    <span
-                      className="tnum text-[12px]"
-                      style={{ color: "var(--ink-3)" }}
-                    >
-                      {/* El año lo fija la compilación, no el reloj del
-                          visitante: ver `@/lib/publicacion`. */}
-                      © {ANIO_PUBLICACION} {t("appName")}. {t("rights")}
-                    </span>
-                  </div>
                 </div>
               </div>
             </aside>
@@ -1539,15 +1509,11 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
             ref={popRef}
             role="listbox"
             aria-label={es ? "Idiomas" : "Languages"}
-            className="tj-cae absolute right-0 z-50 min-w-[168px] rounded-[4px] border p-1"
-            style={{
-              top: "calc(100% + 8px)",
-              borderColor: "rgb(var(--divider) / 0.14)",
-              background: "color-mix(in srgb, var(--surface) 97%, transparent)",
-              backdropFilter: "blur(24px) saturate(1.4)",
-              WebkitBackdropFilter: "blur(24px) saturate(1.4)",
-              boxShadow: "0 1px 2px rgb(0 0 0 / 0.5), 0 30px 60px -24px rgb(0 0 0 / 0.7)",
-            }}
+            // El mismo material que el menú «Producto»: antes llevaba el suyo
+            // propio, con una sombra negra al 70 % que en claro pesaba más
+            // que el menú entero.
+            className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute right-0 z-50 min-w-[168px] rounded-[6px] p-1"
+            style={{ position: "absolute", top: "calc(100% + 8px)" }}
           >
             {LANGUAGES.map((l) => {
               const activo = l.code === lang;

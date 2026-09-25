@@ -2342,6 +2342,36 @@ cada arreglo con su prueba vista en rojo.
   capturas por pantallas en vez de página entera: sin desbordes ni
   errores de JavaScript.
 
+### Trigésima segunda tanda: el cromo, más callado (2026-09-25)
+
+Sin tocar tipografía ni paleta. Comparado con capturas antes/después de
+portada, precios y características a 1440 (claro y oscuro) y 390.
+
+- **Desplegables opacos.** El menú «Producto» usaba el cristal denso al
+  0,74: se abre justo encima del h1 del héroe y sus letras se leían como
+  un borrón detrás de la lista. Nueva variante `tj-cristal--menu` (0,95
+  claro, 0,96 oscuro, sin reflejo especular, sombra más recogida). El de
+  idioma llevaba un material propio con una sombra negra al 70 % que en
+  claro pesaba más que el menú; ahora usa la misma variante. Guarda en
+  `humo.mjs` que mide el fondo de los dos menús en los dos temas (mínimo
+  0,9), roja contra la versión publicada.
+- **Barra al bajar.** Sombra reducida a un filete y una caída corta, y
+  saturación del desenfoque al 125 % (los paneles siguen al 180 %): el
+  verde y el rojo del calendario de /features asomaban como manchas
+  detrás de «Producto».
+- **Sombra de los paneles de cristal en claro**, más corta y más clara: el
+  halo gris alrededor de las tarjetas de precios y del panel de cifras
+  pesaba más que el propio panel.
+- **Cajón móvil.** Iconos sin placa (el tono marca el activo), sin el
+  empujón lateral al pasar, la misma flecha en «Ver precios» y «Ver la
+  demo», y fuera la marca y el copyright del fondo: la marca ya encabeza
+  el cajón y el copyright está en el pie de cada página.
+- **Pie.** El icono de GitHub, suelto bajo el lema y con efecto
+  magnético, pasa a enlace de texto «Código de la web» en la línea final.
+  Fuera ~150 líneas de comentarios que describían un pie que ya no existe
+  (pastillas de confianza, indicador de estado, `liquid-glass`, cinco
+  redes sociales).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

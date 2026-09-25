@@ -1,93 +1,22 @@
 "use client";
 
-import { type ReactElement } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { GlossaryLauncher } from "@/components/tj/GlossaryLauncher";
-import { MagneticButton } from "@/components/tj/MagneticButton";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { reopenConsent } from "@/lib/consent";
 import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
 import { LOCALE_FECHA } from "@/lib/trading/format";
 
-/**
- * Social link definition — icon + accessible label.
- *
- * SOLO PERFILES QUE EXISTEN. Aquí había cinco iconos y cuatro apuntaban a
- * `href="#"` porque las cuentas no estaban creadas: X, YouTube, Discord y
- * RSS. Eso son cuatro enlaces muertos repetidos en las diez páginas del
- * sitio, y un enlace que no lleva a ninguna parte cuesta más credibilidad
- * de la que aporta el icono.
- *
- * Se quedan fuera hasta que la cuenta exista de verdad. Para volver a
- * ponerlos basta añadir la línea con su dirección real — los iconos siguen
- * definidos más abajo, no hay que rehacer nada.
- *
- * El RSS además no puede existir todavía por otro motivo: no hay blog del
- * que emitir un canal.
- */
-type SocialLink = { label: string; href: string; Icon: () => ReactElement };
-
-const SOCIAL_LINKS: SocialLink[] = [
-  { label: "GitHub", href: "https://github.com/mmortexx/CountPipsWeb", Icon: GitHubIcon },
-];
+/** El único perfil externo que existe: el código de esta web. */
+const REPOSITORIO = "https://github.com/mmortexx/CountPipsWeb";
 
 /**
- * Institutional closing footer — the "closing statement" of the marketing
- * site, designed to read as the footer of a Stripe / Linear / Vercel /
- * Bloomberg fintech product rather than a generic link dump.
- *
- * Layout — 4-column responsive grid (`grid-cols-2 md:grid-cols-[1.6fr_1fr_1fr_1fr]`):
- *  - Brand column (1.6fr): the candlestick brand mark + wordmark lockup
- *    (mirrors `Navbar.BrandMark` exactly so the lockup reads as one
- *    product across the chrome), the tagline (`t("tagline")` —
- *    "Tu operativa, medida." / "Your trading, measured."), a "100 % local"
- *    inline pill (lock glyph + label, signalling the local-first promise
- *    inline), and the 5 social icons (28px hit-targets, `MagneticButton`
- *    wrappers with a 0.3 magnetic pull, `liquid-glass` surface).
- *  - 3 link columns (1fr each): Producto / Recursos / Empresa, each with
- *    a refined `.eyebrow` header (uppercase, wide tracking, text-tertiary)
- *    and `text-sm text-secondary hover:text-primary` links that carry the
- *    `.link-underline` left-sweep accent underline on hover (the design
- *    system's inline-text hover affordance — the same one the FAQ support
- *    link uses, and the one `globals.css` documents as the canonical
- *    "Footer columns" treatment).
- *
- * Trust strip — a row of 4 small inline pills ("Pago único · Sin
- * suscripción", "Datos 100 % locales", "ES + EN", "Garantía 30 días")
- * with un filete y un tinte muy leves, ambos atados a `--divider`.
- * Reads as a quiet institutional credentials row — the PositioningStrip
- * on the home page carries the visual version of these; the footer's is
- * the closing reminder.
- *
- * Bottom bar — copyright on the left, status indicator + legal links +
- * version + locale on the right. The status indicator is a pulsing
- * emerald dot + "All systems operational" label (Stripe / Vercel pattern).
- * The top edge is the `.liquid-glass::before` machined rim PLUS a
- * filete `border-t` atado a `--divider` para que el pie se lea como panel
- * closing panel rather than a soft fade.
- *
- * Material — `liquid-glass` (rgba(0,0,0,0.4) + 4px blur + machined inset
- * edges + `::before` rim gradient) — the same surface language as the
- * Navbar's scrolled state, demo chrome, and floating cards.
- * `safe-bottom` clears the iOS home indicator via env(safe-area-inset-bottom).
- *
- * SIN RADIO EN LA ESQUINA SUPERIOR. Llevaba `rounded-t-xl`, y el resultado
- * era que una banda a sangre completa —pegada a los dos bordes de la
- * ventana y al inferior— se redondeaba solo por arriba. Eso no lee como
- * "cerrar la página con suavidad": lee como una tarjeta gigante mal
- * recortada, porque el rim de `liquid-glass::before` hereda el radio y
- * dibuja el contorno curvo contra un elemento que no tiene margen donde
- * apoyarlo. Un elemento a sangre no se redondea; se separa con un filete,
- * que es lo que hace ya el `border-t`.
- *
- * Accessibility — `<footer>` landmark with three `<nav aria-label="...">`
- * subsections (one per link column) so screen-reader users can navigate
- * the footer by section. Links use `.link-underline` which exposes its
- * hover affordance to `:focus-visible` as well (so keyboard focus also
- * draws the accent underline). The pulsing status dot is `aria-hidden`
- * (decorative); the "All systems operational" text is the accessible
- * label. The lock glyph in the "100 % local" pill is `aria-hidden`.
+ * Pie del sitio: marca con lema y plataforma, cuatro columnas de enlaces
+ * (Producto, Recursos, Empresa, Legal) y una línea final con el copyright,
+ * la fecha de publicación, los idiomas, el código de la web y las
+ * preferencias de privacidad. Solo enlaza lo que existe: ni perfiles
+ * sociales sin cuenta detrás ni indicadores de estado que no miden nada.
  */
 export function Footer() {
   const { t, lang } = useLang();
@@ -151,18 +80,6 @@ export function Footer() {
     },
   ];
 
-  // Trust-signal pills — single-row strip above the bottom bar. Compact
-  // pills with a hairline border + faint tint so the strip reads as a
-  // quiet institutional credentials row, not a feature gallery. The
-  // PositioningStrip on the home page carries the visual version of these;
-  // the footer's is the closing reminder.
-
-  // SE QUEDA EN `liquid-glass` a propósito: el pie es una banda a ancho
-  // completo, no una tarjeta, y el papel —con su grano y su sombra
-  // proyectada— convertiría el cierre de la página en una hoja flotando sin
-  // apoyo. `glass-band` cuelga además del selector `.liquid-glass.glass-band`,
-  // así que renombrar la clase apagaría la luz del canto superior. Mismo caso
-  // que la cinta de cotizaciones.
   return (
     <footer className="tj-pie relative mt-auto safe-bottom">
       <div className="tj-container relative py-12 md:py-16">
@@ -196,23 +113,6 @@ export function Footer() {
             <p className="mt-2 text-[13px] text-tertiary max-w-xs leading-relaxed">
               {lang === "es" ? "Diario de trading para Windows 10 y 11." : "Trading journal for Windows 10 and 11."}
             </p>
-
-
-            <div className="mt-4 -ml-3 flex items-center gap-1">
-              {SOCIAL_LINKS.map(({ label, href, Icon }) => (
-                <MagneticButton
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  ariaLabel={label}
-                  strength={0.3}
-                  className="icon-btn grid h-11 w-11 place-items-center rounded-[4px] text-secondary transition-colors duration-150 hover:text-primary focus-visible:bg-[rgb(var(--divider)/0.08)] focus-visible:text-primary"
-                >
-                  <Icon />
-                </MagneticButton>
-              ))}
-            </div>
           </div>
 
           {/* Link columns — refined `.eyebrow` header (uppercase, wide
@@ -293,51 +193,10 @@ export function Footer() {
           <p className="text-xs text-secondary">
             © <span className="tnum">{year}</span> {t("appName")}. {t("rights")}
           </p>
-          {/* R27-1c — bottom bar cluster bumped from text-tertiary to
-              text-secondary. VLM flagged the copyright + legal links as
-              washed out on the bright footer surface; the parent already
-              had tertiary here, but `border-[rgb(var(--divider)/0.1)]` +
-              `liquid-glass` produce a near-white panel in light theme
-              where tertiary's ≈5.5:1 reads as faded on small 12px text.
-              The version `v1.4.2` is overridden back to text-tertiary
-              below — it's pure metadata and the dimmer weight helps it
-              read as secondary information next to the legal links. */}
           {/* Los puntos separadores solo desde `lg`, donde la fila cabe en
-              una línea. Por debajo se parte, y el punto que seguía a la
-              última pieza de un renglón se quedaba colgando contra el
-              canto, detrás de nada; ahí separa el hueco. */}
+              una línea; por debajo se parte y separa el hueco. La fecha sale
+              del último commit (`publicacion.ts`), no del reloj de quien mira. */}
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 lg:gap-x-3 text-xs text-secondary">
-            {/* Aquí había un punto verde con «Sistemas operativos» que no
-                consultaba absolutamente nada: era verde siempre, por
-                estar escrito en verde. Un indicador de estado que no mide
-                el estado es peor que ninguno — el día que algo se caiga
-                seguirá diciendo que todo va bien.
-
-                Y va acompañado de otra retirada: el pie declaraba la
-                versión «v1.4.2» de un programa que aún no se puede
-                descargar. Las dos afirmaciones se sostenían en el mismo
-                historial de versiones inventado que se acaba de convertir
-                en hoja de ruta.
-
-                Cuando exista un servicio real que vigilar, esto vuelve —
-                leyendo de algún sitio. */}
-            {/* Aquí vivían otra vez «Privacidad» y «Términos», los mismos
-                dos enlaces que la columna «Empresa» de arriba ya lista a
-                unos centímetros. Duplicados y, además, rotos de otra
-                manera: sin altura propia medían 16 px de alto, la mitad
-                del mínimo que se puede acertar con el pulgar, mientras
-                que los de la columna sí tienen sus 44 px.
-
-                Se quedan los de la columna y desaparecen éstos: un mismo
-                destino repetido dos veces en el mismo pie no da acceso,
-                da ruido — y el que se retira era justo el inservible. */}
-            {/* CUÁNDO SE PUBLICÓ ESTO. Un producto que todavía no se
-                descarga solo puede demostrar que está vivo con fechas, y
-                ésta sale de la fecha del último commit, no del reloj de
-                quien mira —ver `publicacion.ts`—. No vuelve la versión
-                «v1.4.2» que se retiró: eso declaraba una versión de un
-                programa que no se puede tener, y esto declara un hecho
-                comprobable sobre el sitio. Sin git no sale la línea. */}
             {FECHA_PUBLICACION && (
               <>
                 <span>
@@ -356,19 +215,18 @@ export function Footer() {
             )}
             <span>ES + EN</span>
             <span aria-hidden className="hidden lg:inline opacity-40">·</span>
-            {/* ── RETIRAR EL CONSENTIMIENTO ────────────────────────────
-                La política de privacidad instruye a "volver a elegir
-                «Solo necesarias»" para dejar de ser medido. Ese aviso no
-                volvía a salir nunca y no había ningún control en toda la
-                web para provocarlo: la única vía real era abrir las
-                herramientas del navegador y vaciar el almacenamiento del
-                sitio. El RGPD pide que retirarlo sea tan fácil como
-                darlo, y darlo era un clic.
-
-                Va en el pie porque el pie está en las 154 páginas: la
-                puerta de salida no puede estar solo en la página que
-                habla de cookies. Altura mínima de 44 px como el resto de
-                objetivos táctiles del pie. */}
+            <a
+              href={REPOSITORIO}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-underline-host inline-flex min-h-[44px] items-center gap-1.5 text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
+            >
+              <GitHubIcon />
+              <span className="link-underline">{es ? "Código de la web" : "Website source"}</span>
+            </a>
+            <span aria-hidden className="hidden lg:inline opacity-40">·</span>
+            {/* Retirar el consentimiento tiene que ser tan fácil como darlo
+                (RGPD), y el pie está en todas las páginas. */}
             <ConsentPreferencesButton />
           </div>
         </div>
@@ -411,20 +269,10 @@ function BrandMark() {
   return <BrandGlyph size={24} className="shrink-0" />;
 }
 
-/* ---------------- Inline brand SVG icons (currentColor, 14px box) ---------------- */
-
 function GitHubIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49v-1.71c-2.78.62-3.37-1.21-3.37-1.21-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05a9.36 9.36 0 015 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9v2.82c0 .27.18.59.69.49A10.26 10.26 0 0022 12.25C22 6.58 17.52 2 12 2z" />
     </svg>
   );
 }
-
-/* Aquí dormían los iconos de X, YouTube, Discord y RSS: cuatro SVG
-   completos que no dibujaba nadie. El pie solo enlaza el repositorio, y no
-   hay cuenta de ninguna de esas cuatro cosas que enlazar — pintar el icono
-   antes de tener el sitio al que lleva es prometer una comunidad que no
-   existe. Cuando haya una, el icono se escribe entonces; el trabajo de
-   volver a teclear un `path` de SVG no compensa tener cuatro puertas
-   pintadas en la pared durante meses. */

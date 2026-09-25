@@ -3835,7 +3835,7 @@ select.tj-campo:invalid {
   --cristal-canto: rgb(11 15 20 / 0.1);
   --cristal-pie: rgb(11 15 20 / 0.17);
   --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.18) 28%, rgb(255 255 255 / 0) 58%);
-  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.95), inset 0 0 0 1px rgb(255 255 255 / 0.35), 0 1px 2px rgb(11 15 20 / 0.06), 0 14px 28px -16px rgb(11 15 20 / 0.14), 0 44px 90px -44px rgb(11 15 20 / 0.34);
+  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.95), inset 0 0 0 1px rgb(255 255 255 / 0.35), 0 1px 2px rgb(11 15 20 / 0.06), 0 12px 26px -16px rgb(11 15 20 / 0.11), 0 40px 80px -48px rgb(11 15 20 / 0.2);
   --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
   --luz: 17 24 32;
   --luz-alfa: 0.17;
@@ -4010,11 +4010,29 @@ select.tj-campo:invalid {
 :root:not([data-theme="light"]) .tj-cristal--denso {
   --cristal-halo: 0 0 #0000;
 }
+/* Los desplegables de la barra se abren sobre el titular del héroe: con el
+   0,74 del denso, sus letras de 90 px se transparentaban como un borrón
+   detrás de la lista. Casi opacos, el cristal queda en el filo y el grano,
+   y la sombra se recoge: un menú no flota tan lejos como un panel. */
+.tj-cristal--menu {
+  --cristal-alfa-denso: 0.95;
+  --cristal-especular: none;
+  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(11 15 20 / 0.06), 0 12px 32px -14px rgb(11 15 20 / 0.2);
+}
+:root:not([data-theme="light"]) .tj-cristal--menu {
+  --cristal-alfa-denso: 0.96;
+  --cristal-sombra: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 36px -18px rgb(0 0 0 / 0.75);
+}
 
 /* La barra: opaca arriba del todo y translúcida al desplazar, de lado a
    lado. El material va en `::before` para que la barra no sea raíz de
    difuminado y el menú que cuelga de ella siga viendo lo de detrás. */
+/* Saturación contenida: al 180 % de los paneles, el verde y el rojo del
+   calendario que pasa por debajo asomaban como dos manchas de color detrás
+   de «Producto». La barra se lee como vidrio por el desenfoque, no por el
+   color. */
 .tj-barra {
+  --cristal-saturacion: 125%;
   isolation: isolate;
   background-color: var(--bg);
   transition: background-color 0.3s var(--ease-suave);
@@ -4030,7 +4048,7 @@ select.tj-campo:invalid {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s var(--ease-suave);
-  box-shadow: inset 0 -1px 0 var(--line), 0 10px 30px -24px rgb(11 15 20 / 0.3);
+  box-shadow: inset 0 -1px 0 var(--line), 0 6px 18px -16px rgb(11 15 20 / 0.22);
 }
 .tj-barra[data-cristal="true"]::before {
   opacity: 1;
