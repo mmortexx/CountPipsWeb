@@ -47,7 +47,7 @@ const ASSET_LABEL: Record<string, { es: string; en: string }> = {
   forex: { es: "Forex", en: "Forex" },
   stock: { es: "Acciones", en: "Stock" },
   futures: { es: "Futuros", en: "Futures" },
-  commodity: { es: "Materias Primas", en: "Commodities" },
+  commodity: { es: "Materias primas", en: "Commodities" },
 };
 
 const PAGE_SIZE = 20;
@@ -1062,7 +1062,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          NQ Futuros
+          {es ? "Futuros NQ" : "NQ futures"}
         </button>
 
         <button
@@ -1078,7 +1078,7 @@ export function TradesPage() {
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
         >
-          ES Futuros
+          {es ? "Futuros ES" : "ES futures"}
         </button>
       </div>
 

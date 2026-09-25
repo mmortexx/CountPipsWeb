@@ -131,8 +131,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Risk of ruin",
-    es: "Probabilidad matemática de perder todo el capital de la cuenta asumiendo un tamaño de riesgo fijo por operación. Crece exponencialmente con el riesgo por operación.",
-    en: "The mathematical probability of losing the entire account balance assuming a fixed risk size per trade. It grows exponentially with risk per trade.",
+    es: "Probabilidad de que las pérdidas lleven la cuenta hasta el nivel que das por quiebra —todo el capital o, como en las calculadoras de esta web, la mitad— con un riesgo fijo por operación. Crece exponencialmente con el riesgo por operación.",
+    en: "The probability that losses take the account down to the level you count as ruin (the whole balance or, as in this site’s calculators, half of it) with a fixed risk per trade. It grows exponentially with risk per trade.",
     category: "risk",
   },
   {
@@ -353,7 +353,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "SQN (System Quality Number)",
-    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (esperanza en R / desviación típica de R). En su escala, a partir de 2,5 es bueno y de 3 en adelante, excelente.",
+    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (expectancy en R / desviación típica de R). En su escala, a partir de 2,5 es bueno y de 3 en adelante, excelente.",
     en: "Van Tharp metric assessing statistical system quality: SQN = √N × (expectancy in R / standard deviation of R). On his scale, 2.5 and up is good and 3 and up is excellent.",
     category: "metrics",
   },

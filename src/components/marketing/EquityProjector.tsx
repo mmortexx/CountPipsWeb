@@ -948,7 +948,7 @@ export function EquityProjector() {
                 >
                   ⚠{" "}
                   {es
-                    ? "Tu esperanza matemática neta es negativa: el interés compuesto jugará en tu contra. Ajusta tu ratio R o win rate antes de apalancar."
+                    ? "Tu expectancy neta es negativa: el interés compuesto jugará en tu contra. Ajusta tu ratio R o win rate antes de apalancar."
                     : "Your net expectancy is negative: compounding works against you. Adjust R ratio or win rate before scaling."}
                 </div>
               )}
@@ -1488,7 +1488,7 @@ export function EquityProjector() {
               <div className="border-t border-[var(--ficha-division)] pt-3">
                 <p className="medida tnum m-0 text-[11px] leading-relaxed text-[var(--ink-3)]">
                   {es
-                    ? `Nota de rigor estadístico: Esta proyección asume una esperanza matemática constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al ${fmtPct(CONFIANZA_RACHA * 100, 0)} de confianza estadística.`
+                    ? `Nota de rigor estadístico: esta proyección asume una expectancy constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al ${fmtPct(CONFIANZA_RACHA * 100, 0)} de confianza estadística.`
                     : `Statistical note: This projection assumes constant mathematical expectancy. In live trading, regimes shift and drawdowns may be larger. Estimated max drawdown models streaks at ${fmtPct(CONFIANZA_RACHA * 100, 0)} confidence.`}
                 </p>
               </div>

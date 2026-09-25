@@ -350,7 +350,7 @@ export function GlossaryModal({
                 : `${filtered.length} ${filtered.length === 1 ? "term" : "terms"}`}
             {activeCat !== "all" || query.trim() !== ""
               ? es
-                ? " · filtra aplicada"
+                ? " · filtro aplicado"
                 : " · filter applied"
               : ""}
           </p>

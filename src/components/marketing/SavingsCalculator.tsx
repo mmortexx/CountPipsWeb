@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum as fmtNumBase, fmtPct, pctSep } from "@/lib/trading/format";
-import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { amortizacion, PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 
@@ -62,8 +62,7 @@ export function SavingsCalculator() {
     const altTotal = altMonthly * 12 * years;
     const savings = altTotal - cpPrice;
     const savingsPct = altTotal > 0 ? (savings / altTotal) * 100 : 0;
-    // Break-even: cuántos meses hasta que la suscripción supere el pago único
-    const breakEvenMonths = cpPrice > 0 && altMonthly > 0 ? Math.ceil(cpPrice / altMonthly) : 0;
+    const { meses: breakEvenMonths, dentro: seAmortizaDentro } = amortizacion(cpPrice, altMonthly, years);
 
     // Proyección del ahorro reinvertido a TASA_REINVERSION_ANUAL, con interés compuesto mensual
     // Aporte mensual de altMonthly durante years * 12 meses
@@ -80,7 +79,7 @@ export function SavingsCalculator() {
     for (let y = 0; y <= years; y++) {
       curve.push({ year: y, sub: altMonthly * 12 * y, cp: cpPrice });
     }
-    return { cpPrice, altTotal, savings, savingsPct, breakEvenMonths, compoundInvested, compoundAdvantage, curve };
+    return { cpPrice, altTotal, savings, savingsPct, breakEvenMonths, seAmortizaDentro, compoundInvested, compoundAdvantage, curve };
   }, [plan, altMonthly, years]);
 
   // A precios más altos, el escenario mínimo (años=1, alternativa=5$/mes)
@@ -244,7 +243,7 @@ export function SavingsCalculator() {
                   transition: "color 0.18s var(--ease-suave)",
                 }}
               >
-                {years} {es ? "años" : "yrs"}
+                {years} {es ? (years === 1 ? "año" : "años") : years === 1 ? "yr" : "yrs"}
               </span>
             </div>
             <input
@@ -367,9 +366,13 @@ export function SavingsCalculator() {
               </span>
             </div>
             <p className="tnum m-0 text-[13px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
-              {es
-                ? `A partir del mes ${c.breakEvenMonths}, la suscripción ya ha costado más que el pago único. Si la diferencia rindiera un ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual, a ${years} años serían ${fmtUsd(c.compoundAdvantage)}; es un supuesto, no una rentabilidad.`
-                : `From month ${c.breakEvenMonths}, the subscription has cost more than the one-time payment. If the difference earned ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} a year, over ${years} years it would be ${fmtUsd(c.compoundAdvantage)}; an assumption, not a return.`}
+              {!c.seAmortizaDentro
+                ? es
+                  ? `Con ${fmtUsd(altMonthly)} al mes, en ${years} ${years === 1 ? "año" : "años"} la suscripción no llega a costar el pago único: lo alcanzaría en el mes ${c.breakEvenMonths ?? "—"}.`
+                  : `At ${fmtUsd(altMonthly)} a month, over ${years} ${years === 1 ? "year" : "years"} the subscription doesn’t reach the one-time payment: it would in month ${c.breakEvenMonths ?? "—"}.`
+                : es
+                ? `A partir del mes ${c.breakEvenMonths}, la suscripción ya ha costado más que el pago único. Si la diferencia rindiera un ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual, a ${years} ${years === 1 ? "año" : "años"} serían ${fmtUsd(c.compoundAdvantage)}; es un supuesto, no una rentabilidad.`
+                : `From month ${c.breakEvenMonths}, the subscription has cost more than the one-time payment. If the difference earned ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} a year, over ${years} ${years === 1 ? "year" : "years"} it would be ${fmtUsd(c.compoundAdvantage)}; an assumption, not a return.`}
             </p>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validaPlan } from "../src/lib/trading/validaPlan";
+import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan } from "../src/lib/trading/validaPlan";
 
 /**
  * RiskCalculator daba por válido un plan cuyo objetivo cae en el MISMO lado
@@ -54,5 +54,31 @@ describe("validaPlan", () => {
     expect(validaPlan(100, 100, 110).valido).toBe(false);
     expect(validaPlan(100, 95, 100).valido).toBe(false);
     expect(validaPlan(100, 95, 95).valido).toBe(false);
+  });
+});
+
+describe("excedeApalancamiento", () => {
+  it("un stop a un céntimo en acciones (100×) avisa", () => {
+    // 10.000 $ al 1 %: 100 $ / 0,01 $ = 10.000 acciones a 100 $ = 1.000.000 $.
+    expect(excedeApalancamiento("equities", 1_000_000 / 10_000)).toBe(true);
+  });
+
+  it("dentro del tope de cada mercado no avisa, y justo en el tope tampoco", () => {
+    expect(excedeApalancamiento("equities", 2)).toBe(false);
+    expect(excedeApalancamiento("forex", 25)).toBe(false);
+    expect(excedeApalancamiento("futures", 15)).toBe(false);
+    for (const [m, tope] of Object.entries(TOPE_APALANCAMIENTO)) {
+      expect(excedeApalancamiento(m as keyof typeof TOPE_APALANCAMIENTO, tope), m).toBe(false);
+    }
+  });
+
+  it("lo que es normal en divisas avisa en acciones", () => {
+    expect(excedeApalancamiento("forex", 20)).toBe(false);
+    expect(excedeApalancamiento("equities", 20)).toBe(true);
+  });
+
+  it("sin cifra válida no avisa", () => {
+    expect(excedeApalancamiento("equities", Number.NaN)).toBe(false);
+    expect(excedeApalancamiento("equities", Number.POSITIVE_INFINITY)).toBe(false);
   });
 });

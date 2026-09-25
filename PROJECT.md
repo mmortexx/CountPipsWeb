@@ -2275,6 +2275,49 @@ dos medidas; lo que cambia el diseño, solo si también falla con la real.
   día del commit en su propia zona (`diaDelCommit`); antes, en UTC, un
   commit hecho en España de madrugada salía con el día anterior.
 
+### Trigésima tanda: lo que decían las cifras y los textos (2026-09-25)
+
+Tres revisores en solo lectura (calculadoras, textos en español,
+contenido) y revisión visual de las 14 páginas que faltaban (1440
+oscuro y 390 claro). Cada hallazgo, reproducido antes de tocarlo, y
+cada arreglo con su prueba vista en rojo.
+
+- **La promesa de seguridad decía de más.** «Tus datos no salen de tu
+  equipo si tú no lo decides» y «lo que se conecta a internet lo activas
+  tú», con la licencia —que se comprueba sola, una vez al día— en la
+  tabla de al lado. Ahora hablan de tus **operaciones**, que es lo cierto,
+  y nombran la licencia. La tabla, la FAQ y la entradilla salen de
+  `src/lib/conexiones.ts`; `tests/conexiones.test.ts` exige que cada
+  resumen nombre lo que va solo.
+- **Comisiones con EUR/USD, 10.000 veces de más**: multiplicaba los pips
+  por el tamaño del lote (100.000) en vez de por su valor (10 $); 15 pips
+  con 2 lotes daban 3.000.000 $ por operación. El equilibrio en pips salía
+  multiplicado por 0,0001. La tabla de instrumentos vive en
+  `fugaComisiones.ts` y todo sale de `tickSize` y `tickValue` (se quitó el
+  valor del punto, el dato que permitía la contradicción).
+- **Monte Carlo, «ruina 0 %» con la cuenta en céntimos**: con riesgo
+  compuesto el saldo nunca toca 0. Ruina es ahora perder
+  `UMBRAL_RUINA_PCT` (50 %) del balance, el mismo umbral y la misma
+  fórmula que la calculadora de riesgo; los rótulos lo dicen, y el
+  glosario ya no define la ruina como «perder todo». La simulación vive
+  en `src/lib/trading/montecarlo.ts`.
+- **Calculadora de riesgo**: un stop a un céntimo llevaba 10.000 $ a
+  comprar 1.000.000 $ en acciones sin aviso. Avisa por encima del tope de
+  la ESMA para minoristas de cada mercado (acciones 5:1, divisas 30:1,
+  índices 20:1), y el rojo de la cifra usa el mismo tope (antes, 10× para
+  todo: rojo en un futuro normal, callado en acciones a 9×).
+- **Escenario de coste**: hablaba del «mes 50» con un horizonte de un año
+  como si cayera dentro; ahora lo dice fuera. «1 años» → «1 año».
+- **Textos**: «expectancy» en vez de «esperanza matemática» (cinco sitios,
+  dos en la misma herramienta); «boletines» por «newsletter»; «filtro
+  aplicado»; «Materias primas»; los atajos «NQ Futuros» / «ES Futuros»
+  de la demo salían en español también en /en/demo. En /about, los hitos
+  futuros ya no dicen dos veces lo mismo («Más adelante» + «Previsto»).
+- **Descartado, con la medida**: el título de /test salía pequeño en la
+  captura de página entera; en ocho combinaciones reales (con y sin
+  GPU, con y sin movimiento reducido) sale a su tamaño. Es un defecto de
+  la captura, no de la página.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

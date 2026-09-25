@@ -2,17 +2,6 @@
    importarlas no genera las 200 operaciones de /demo. */
 
 /**
- * Riesgo de Ruina de Ralph Vince / Perry Kaufman.
- * Calcula la probabilidad analítica de sufrir un drawdown de capital determinado (por defecto 50%).
- *
- * E = p * b - q  (Esperanza matemática en R)
- * σ_R^2 = p * b^2 + q - E^2  (Varianza del sistema en R)
- * Unidades de riesgo antes de la ruina: U = ruinDdPct / riskPct
- *
- * Si E <= 0 -> Ruina matemática inevitable (100%).
- * Si E > 0  -> P(ruina) = e^( -2 * E * U / σ_R^2 ) * 100
- */
-/**
  * Los dos tramos de la barra riesgo/beneficio crecen desde el CENTRO del
  * carril, cada uno hacia su lado, así que ninguno puede pasar del 50 %.
  *
@@ -30,11 +19,25 @@ export function tramosRiesgoBeneficio(
   return { riesgo: (r / max) * 50, beneficio: (b / max) * 50 };
 }
 
+/** Parte del balance inicial perdida que las calculadoras cuentan como ruina. */
+export const UMBRAL_RUINA_PCT = 50;
+
+/**
+ * Riesgo de Ruina de Ralph Vince / Perry Kaufman.
+ * Calcula la probabilidad analítica de sufrir un drawdown de capital determinado (por defecto 50%).
+ *
+ * E = p * b - q  (Esperanza matemática en R)
+ * σ_R^2 = p * b^2 + q - E^2  (Varianza del sistema en R)
+ * Unidades de riesgo antes de la ruina: U = ruinDdPct / riskPct
+ *
+ * Si E <= 0 -> Ruina matemática inevitable (100%).
+ * Si E > 0  -> P(ruina) = e^( -2 * E * U / σ_R^2 ) * 100
+ */
 export function computeRiskOfRuin(
   winRate: number,
   payoff: number,
   riskPct = 1.0,
-  ruinDdPct = 50
+  ruinDdPct = UMBRAL_RUINA_PCT
 ): number {
   const p = winRate > 1 ? winRate / 100 : Math.max(0, Math.min(1, winRate));
   const q = 1 - p;

@@ -65,9 +65,12 @@
 | `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma |
 | `paleta-trampa-tab.test.ts` | `destinoTrampaTab` (trampa de foco de `DemoCommandPalette`): a qué extremo salta Tab/Shift+Tab desde cada posición, incluida la de un único elemento enfocable |
 | `glosario-activedescendant.test.ts` | `idOpcionGlosario` (`aria-activedescendant` del listbox de `GlossaryModal`): id legible, normaliza acentos/símbolos, nunca vacío, único para cada término real de `GLOSSARY` |
-| `valida-plan.test.ts` | `validaPlan`: RiskCalculator ya no da por válido un objetivo que cae al mismo lado de la entrada que el stop; campos no positivos, no finitos o repetidos se rechazan antes de mirar el lado |
+| `valida-plan.test.ts` | `validaPlan`: RiskCalculator ya no da por válido un objetivo que cae al mismo lado de la entrada que el stop; campos no positivos, no finitos o repetidos se rechazan antes de mirar el lado. `excedeApalancamiento`: un stop a un céntimo en acciones (100×) avisa; el tope depende del mercado |
 | `proyeccion-capital.test.ts` | `proyectaCapital`: con expectancy, riesgo y frecuencia altos a 10 años el balance en bruto no está acotado (no se recorta en silencio) y la función marca `fueraDeEscala` cuando deja de ser una cifra creíble; con parámetros razonables no la marca |
-| `fuga-comisiones.test.ts` | `clasificaFugaComisiones`: mismas fronteras que ya pintaba CommissionDragCalculator (>30 alto, >15 moderado, resto bajo), ahora en palabra |
+| `fuga-comisiones.test.ts` | `clasificaFugaComisiones`: mismas fronteras que ya pintaba CommissionDragCalculator (>30 alto, >15 moderado, resto bajo), ahora en palabra. Valor del objetivo por instrumento con cifras de mercado a mano: 15 pips de EUR/USD con 2 lotes son 300 $, no 3.000.000 $ |
+| `montecarlo.test.ts` | Ruina del simulador de Monte Carlo = perder `UMBRAL_RUINA_PCT` del balance: la peor combinación es 100 % en simulación y por fórmula; todo camino que acaba bajo el umbral cuenta; la fórmula es la de la calculadora de riesgo |
+| `amortizacion.test.ts` | El escenario de coste no habla de un mes de amortización fuera del horizonte elegido como si cayera dentro |
+| `conexiones.test.ts` | Cada texto que resume lo que se conecta a internet (FAQ, entradilla de seguridad) nombra lo que va solo —la licencia—; cada fila de la lista dice en su redacción si depende de ti |
 | `resultado-anunciado-cobertura.test.ts` | Las nueve calculadoras de marketing/ envuelven su resultado principal con `ResultadoAnunciado` |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado

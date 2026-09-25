@@ -6,138 +6,18 @@ import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
 import { AlertTriangle, ShieldCheck } from "lucide-react";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { clasificaFugaComisiones } from "@/lib/trading/fugaComisiones";
+import {
+  INSTRUMENT_SPECS,
+  clasificaFugaComisiones,
+  resultadoBrutoPorOperacion,
+  ticksAUnidades,
+} from "@/lib/trading/fugaComisiones";
 
 /** Umbral de fuga alta: una sola cifra para el aviso visual y para el
  *  texto del diagnóstico, no una repetida a mano en cada sitio. */
 const UMBRAL_DRAG_ALTO = 25;
 /** Ratio objetivo:riesgo usado para el win rate de equilibrio de la ficha. */
 const RATIO_RR_EQUILIBRIO = 1.5;
-
-interface InstrumentConfig {
-  id: string;
-  name: string;
-  category: "futures" | "micro" | "forex";
-  pointValue: number;
-  tickSize: number;
-  tickValue: number;
-  defaultCommissionRT: number; // Round turn por contrato en USD
-  unitNameEs: string;
-  unitNameEn: string;
-}
-
-const INSTRUMENT_SPECS: InstrumentConfig[] = [
-  {
-    id: "NQ",
-    name: "NQ · E-mini Nasdaq-100",
-    category: "futures",
-    pointValue: 20,
-    tickSize: 0.25,
-    tickValue: 5.0,
-    defaultCommissionRT: 4.5,
-    unitNameEs: "puntos",
-    unitNameEn: "points",
-  },
-  {
-    id: "MNQ",
-    name: "MNQ · Micro E-mini Nasdaq",
-    category: "micro",
-    pointValue: 2,
-    tickSize: 0.25,
-    tickValue: 0.5,
-    defaultCommissionRT: 1.24,
-    unitNameEs: "puntos",
-    unitNameEn: "points",
-  },
-  {
-    id: "ES",
-    name: "ES · E-mini S&P 500",
-    category: "futures",
-    pointValue: 50,
-    tickSize: 0.25,
-    tickValue: 12.5,
-    defaultCommissionRT: 4.5,
-    unitNameEs: "puntos",
-    unitNameEn: "points",
-  },
-  {
-    id: "MES",
-    name: "MES · Micro E-mini S&P",
-    category: "micro",
-    pointValue: 5,
-    tickSize: 0.25,
-    tickValue: 1.25,
-    defaultCommissionRT: 1.24,
-    unitNameEs: "puntos",
-    unitNameEn: "points",
-  },
-  {
-    id: "CL",
-    name: "CL · Petróleo Crudo (Crude Oil)",
-    category: "futures",
-    pointValue: 1000,
-    tickSize: 0.01,
-    tickValue: 10.0,
-    defaultCommissionRT: 4.5,
-    unitNameEs: "dólares",
-    unitNameEn: "dollars",
-  },
-  {
-    id: "MCL",
-    name: "MCL · Micro Crude Oil",
-    category: "micro",
-    pointValue: 100,
-    tickSize: 0.01,
-    tickValue: 1.0,
-    defaultCommissionRT: 1.24,
-    unitNameEs: "dólares",
-    unitNameEn: "dollars",
-  },
-  {
-    id: "GC",
-    name: "GC · Oro (Gold Futures)",
-    category: "futures",
-    pointValue: 100,
-    tickSize: 0.1,
-    tickValue: 10.0,
-    defaultCommissionRT: 4.5,
-    unitNameEs: "dólares",
-    unitNameEn: "dollars",
-  },
-  {
-    id: "MGC",
-    name: "MGC · Micro Gold",
-    category: "micro",
-    pointValue: 10,
-    tickSize: 0.1,
-    tickValue: 1.0,
-    defaultCommissionRT: 1.24,
-    unitNameEs: "dólares",
-    unitNameEn: "dollars",
-  },
-  {
-    id: "RTY",
-    name: "RTY · E-mini Russell 2000",
-    category: "futures",
-    pointValue: 50,
-    tickSize: 0.1,
-    tickValue: 5.0,
-    defaultCommissionRT: 4.5,
-    unitNameEs: "puntos",
-    unitNameEn: "points",
-  },
-  {
-    id: "EURUSD",
-    name: "EUR/USD · Forex Estándar (100k)",
-    category: "forex",
-    pointValue: 100000,
-    tickSize: 0.0001,
-    tickValue: 10.0, // 1 pip = $10 en 1 lote estándar
-    defaultCommissionRT: 5.0,
-    unitNameEs: "pips",
-    unitNameEn: "pips",
-  },
-];
 
 export function CommissionDragCalculator() {
   const { lang } = useLang();
@@ -178,7 +58,7 @@ export function CommissionDragCalculator() {
   };
 
   // Cálculos matemáticos
-  const grossProfitPerTrade = targetUnits * inst.pointValue * contracts;
+  const grossProfitPerTrade = resultadoBrutoPorOperacion(inst, targetUnits, contracts);
   const grossMonthly = grossProfitPerTrade * monthlyTrades;
 
   const commissionPerTrade = customCommission * contracts;
@@ -205,7 +85,7 @@ export function CommissionDragCalculator() {
     inst.tickValue * contracts > 0
       ? totalCostPerTrade / (inst.tickValue * contracts)
       : 0;
-  const breakEvenUnitsPerTrade = breakEvenTicksPerTrade * inst.tickSize;
+  const breakEvenUnitsPerTrade = ticksAUnidades(inst, breakEvenTicksPerTrade);
 
   // Win rate de equilibrio al ratio objetivo:riesgo declarado arriba
   const nominalStopPerTrade = grossProfitPerTrade / RATIO_RR_EQUILIBRIO;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useLang } from "@/lib/i18n";
+import { CONEXIONES } from "@/lib/conexiones";
 import { Database, FileLock2, KeyRound, Check, X } from "lucide-react";
 
 /**
@@ -24,23 +25,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
     { l: es ? "Sin crear una cuenta" : "No account to create", tj: true, cloud: false, bueno: true },
     { l: es ? "Tu historial si dejas de pagar" : "Your history if you stop paying", tj: es ? "Legible y exportable" : "Readable and exportable", cloud: es ? "Depende del proveedor" : "Up to the vendor" },
   ];
-  const conexiones = es
-    ? [
-        ["Licencia", "La clave y el nombre del equipo, como mucho una vez al día"],
-        ["Actualizaciones", "Solo cuando las pides"],
-        ["Mercados", "Datos públicos (BCE, Tesoro de EE. UU., CFTC, SEC, FMI, Kraken) al pulsar Actualizar"],
-        ["Binance", "Tu histórico en solo lectura, si configuras la sincronización"],
-        ["Webhooks", "Un aviso a la dirección que tú pongas, si los activas"],
-        ["Nube", "Una copia cifrada en tu propia carpeta de nube, si la activas"],
-      ]
-    : [
-        ["Licence", "The key and the computer name, at most once a day"],
-        ["Updates", "Only when you ask for them"],
-        ["Markets", "Public data (ECB, US Treasury, CFTC, SEC, IMF, Kraken) when you press Refresh"],
-        ["Binance", "Your history in read-only mode, if you set up the sync"],
-        ["Webhooks", "An alert to the address you choose, if you turn them on"],
-        ["Cloud", "An encrypted copy in your own cloud folder, if you turn it on"],
-      ];
+  const conexiones = CONEXIONES.map((c) => (es ? c.es : c.en));
   return (
     <section
       id="security"
@@ -56,11 +41,11 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
           <h2 className="t-h2 m-0 text-primary text-balance">
             {es ? (
               <>
-                Tus datos <span className="text-gradient">no salen</span> de tu equipo si tú no lo decides.
+                Tus operaciones <span className="text-gradient">no salen</span> de tu equipo si tú no lo decides.
               </>
             ) : (
               <>
-                Your data <span className="text-gradient">stays</span> on your machine unless you decide otherwise.
+                Your trades <span className="text-gradient">stay</span> on your machine unless you decide otherwise.
               </>
             )}
           </h2>
@@ -107,10 +92,10 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               {es ? "Todo lo que se conecta a internet" : "Everything that goes online"}
             </p>
             <dl className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)] text-[14px]">
-              {conexiones.map(([k, v]) => (
-                <div key={k} className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                  <dt className="font-medium text-primary">{k}</dt>
-                  <dd className="m-0 text-secondary">{v}</dd>
+              {conexiones.map(({ nombre, que }) => (
+                <div key={nombre} className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                  <dt className="font-medium text-primary">{nombre}</dt>
+                  <dd className="m-0 text-secondary">{que}</dd>
                 </div>
               ))}
             </dl>

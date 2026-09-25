@@ -176,15 +176,15 @@ export const HERRAMIENTAS: Herramienta[] = [
     resaltaEs: "tu ventaja.",
     resaltaEn: "your edge.",
     subtituloEs:
-      "Si mantienes tu esperanza matemática y tu ritmo de operaciones, esta es la curva que sale a varios años. Es aritmética, no una promesa: sirve para ver el efecto del interés compuesto, no para contar con él.",
+      "Si mantienes tu expectancy y tu ritmo de operaciones, esta es la curva que sale a varios años. Es aritmética, no una promesa: sirve para ver el efecto del interés compuesto, no para contar con él.",
     subtituloEn:
       "If you hold your expectancy and your trade frequency, this is the curve over several years. It is arithmetic, not a promise: it shows what compounding does, it does not guarantee it.",
-    resumenEs: "La curva a varios años si mantienes tu esperanza matemática y tu ritmo.",
+    resumenEs: "La curva a varios años si mantienes tu expectancy y tu ritmo.",
     resumenEn: "The multi-year curve if you hold your expectancy and pace.",
     entregaEs: "Curva a N años",
     entregaEn: "N-year curve",
     descripcionEs:
-      "Proyecta tu curva de capital a varios años a partir de tu esperanza matemática por operación y de cuántas haces al mes.",
+      "Proyecta tu curva de capital a varios años a partir de tu expectancy por operación y de cuántas haces al mes.",
     descripcionEn:
       "Project your equity curve over several years from your expectancy per trade and how many trades you take per month.",
   },

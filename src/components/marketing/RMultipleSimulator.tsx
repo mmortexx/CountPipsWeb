@@ -4,10 +4,10 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { computeExpectedMaxLossStreak } from "@/lib/trading/estadistica";
+import { simulaMonteCarlo } from "@/lib/trading/montecarlo";
+import { UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
 import { fmtMoney, fmtNum as fmtNumBase, fmtR, pctSep } from "@/lib/trading/format";
 import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
-import { mulberry32 } from "@/lib/trading/azar";
 
 const SIM_RUNS = CAMINOS_MONTE_CARLO;
 
@@ -24,7 +24,7 @@ const SIM_RUNS = CAMINOS_MONTE_CARLO;
  * avgWinR / -avgLossR, y muestra:
  *   · la curva de equity MEDIA (centro del abanico)
  *   · las bandas P5–P95 y P25–P75, y la mediana (incertidumbre)
- *   · la probabilidad de ruina (balance → 0) y de superar 2×
+ *   · la probabilidad de ruina (perder la mitad) y de superar 2×
  *
  * ── Por qué Monte Carlo aquí ──────────────────────────────────────────
  * Un solo camino no enseña nada: el mismo edge puede llevarte a
@@ -66,109 +66,10 @@ export function RMultipleSimulator() {
   }, []);
 
 
-  const c = useMemo(() => {
-    const wr = winRate / 100;
-    const expectancyR = wr * avgWinR - (1 - wr) * avgLossR;
-
-    // Fórmula Analítica de Probabilidad de Ruina:
-    // P(Ruin) = exp(-2 * E * B / sigma^2)
-    // donde E = EV por trade en %, B = Capital inicial en %, sigma^2 = varianza del retorno
-    const meanTradePct = (expectancyR * riskPct) / 100;
-    const varTradePct = wr * Math.pow((avgWinR * riskPct) / 100 - meanTradePct, 2) +
-      (1 - wr) * Math.pow((-avgLossR * riskPct) / 100 - meanTradePct, 2);
-    const analyticalRuinProb = meanTradePct > 0 && varTradePct > 0
-      ? Math.min(100, Math.max(0, Math.exp((-2 * meanTradePct * 1.0) / varTradePct) * 100))
-      : 100;
-
-    // Simular SIM_RUNS caminos de `trades` operaciones cada uno.
-    const rng = mulberry32(seed * 7919 + 1);
-    const paths: number[][] = [];
-    let ruinCount = 0;
-    let doubleCount = 0;
-    const finalBalances: number[] = [];
-    const maxLossStreaks: number[] = [];
-
-    // Aproximamos 20 operaciones por mes para los retiros periódicos
-    const tradesPerMonth = 20;
-
-    for (let run = 0; run < SIM_RUNS; run++) {
-      const path: number[] = [startBalance];
-      let bal = startBalance;
-      let ruined = false;
-      let curLossStreak = 0;
-      let maxLossRun = 0;
-
-      for (let t = 0; t < trades; t++) {
-        if (bal <= 0) { ruined = true; break; }
-        const r = rng();
-        const riskUsd = bal * (riskPct / 100);
-        if (r < wr) {
-          bal += riskUsd * avgWinR;
-          curLossStreak = 0;
-        } else {
-          bal -= riskUsd * avgLossR;
-          curLossStreak++;
-          maxLossRun = Math.max(maxLossRun, curLossStreak);
-        }
-
-        // Retiro periódico al final de cada bloque mensual
-        if ((t + 1) % tradesPerMonth === 0 && monthlyWithdrawal > 0) {
-          bal = Math.max(0, bal - monthlyWithdrawal);
-        }
-
-        if (bal <= 0) { bal = 0; ruined = true; }
-        path.push(bal);
-      }
-      paths.push(path);
-      finalBalances.push(bal);
-      maxLossStreaks.push(maxLossRun);
-      if (ruined) ruinCount++;
-      if (bal >= startBalance * 2) doubleCount++;
-    }
-
-    // Estadísticas por operación: P5, P25, P50 (mediana), P75, P95, media.
-    const statsPerTrade: { p5: number; p25: number; p50: number; p75: number; p95: number; mean: number }[] = [];
-    for (let t = 0; t <= trades; t++) {
-      const vals = paths.map((p) => p[t] ?? 0).sort((a, b) => a - b);
-      const idx = (q: number) => Math.min(vals.length - 1, Math.max(0, Math.floor(q * vals.length)));
-      statsPerTrade.push({
-        p5: vals[idx(0.05)],
-        p25: vals[idx(0.25)],
-        p50: vals[idx(0.50)],
-        p75: vals[idx(0.75)],
-        p95: vals[idx(0.95)],
-        mean: vals.reduce((s, v) => s + v, 0) / vals.length,
-      });
-    }
-
-    const sortedFinal = [...finalBalances].sort((a, b) => a - b);
-    const idx = (q: number) => Math.min(sortedFinal.length - 1, Math.max(0, Math.floor(q * sortedFinal.length)));
-    const finalP5 = sortedFinal[idx(0.05)];
-    const finalP25 = sortedFinal[idx(0.25)];
-    const finalP50 = sortedFinal[idx(0.50)];
-    const finalP75 = sortedFinal[idx(0.75)];
-    const finalP95 = sortedFinal[idx(0.95)];
-    const finalMean = finalBalances.reduce((s, v) => s + v, 0) / finalBalances.length;
-
-    // Distribución de racha máxima perdedora
-    const sortedStreaks = [...maxLossStreaks].sort((a, b) => a - b);
-    const medianMaxLossStreak = sortedStreaks[idx(0.50)];
-    const p95MaxLossStreak = sortedStreaks[idx(0.95)];
-
-    const probRuin = (ruinCount / SIM_RUNS) * 100;
-    const probDouble = (doubleCount / SIM_RUNS) * 100;
-
-    return {
-      expectancyR,
-      statsPerTrade,
-      finalP5, finalP25, finalP50, finalP75, finalP95, finalMean,
-      medianMaxLossStreak,
-      p95MaxLossStreak,
-      theoreticalMaxLossStreak: computeExpectedMaxLossStreak(winRate, trades),
-      analyticalRuinProb,
-      probRuin, probDouble,
-    };
-  }, [startBalance, trades, winRate, avgWinR, avgLossR, riskPct, monthlyWithdrawal, seed]);
+  const c = useMemo(
+    () => simulaMonteCarlo({ caminos: SIM_RUNS, startBalance, trades, winRate, avgWinR, avgLossR, riskPct, monthlyWithdrawal, seed }),
+    [startBalance, trades, winRate, avgWinR, avgLossR, riskPct, monthlyWithdrawal, seed],
+  );
 
   const fmtUsd = (n: number) => fmtMoney(n, lang, { decimals: 0 });
 
@@ -575,20 +476,20 @@ export function RMultipleSimulator() {
           <div className="tj-matriz mb-4 grid-cols-2 border-b border-[var(--ficha-division)] text-center tnum sm:grid-cols-4">
             {[
               {
-                t: es ? "Ruina" : "Ruin",
+                t: es ? `Ruina (−${UMBRAL_RUINA_PCT}\u00a0%)` : `Ruin (−${UMBRAL_RUINA_PCT}%)`,
                 sub: es ? "en la simulación" : "in the simulation",
                 v: fmtPct(c.probRuin, 1),
                 col: c.probRuin > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },
               {
-                t: es ? "Ruina" : "Ruin",
+                t: es ? `Ruina (−${UMBRAL_RUINA_PCT}\u00a0%)` : `Ruin (−${UMBRAL_RUINA_PCT}%)`,
                 sub: es ? "por fórmula" : "by formula",
                 v: fmtPct(c.analyticalRuinProb, 1),
                 col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },
               {
                 t: es ? "Racha perdedora" : "Losing streak",
-                sub: es ? `teórica · simulada ${c.medianMaxLossStreak}` : `theoretical · simulated ${c.medianMaxLossStreak}`,
+                sub: es ? `teórica (simulada: ${c.medianMaxLossStreak})` : `theoretical (simulated: ${c.medianMaxLossStreak})`,
                 v: `~${c.theoreticalMaxLossStreak}`,
                 col: "var(--ink)",
               },
@@ -628,8 +529,8 @@ export function RMultipleSimulator() {
           >
             <p className="medida m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
               {es
-                ? `${SIM_RUNS} caminos con la semilla ` + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."
-                : `${SIM_RUNS} paths with seed ` + seed + ": each trade wins with " + fmtNum(winRate, 0) + "% probability, with fixed R wins and losses and compounding risk. Real markets have more extreme streaks, so your drawdown can be worse than these paths. Not financial advice."}
+                ? `${SIM_RUNS} caminos con la semilla ` + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. Ruina es perder en algún momento el " + UMBRAL_RUINA_PCT + "\u00a0% del balance inicial, por pérdidas o por retiros. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."
+                : `${SIM_RUNS} paths with seed ` + seed + ": each trade wins with " + fmtNum(winRate, 0) + "% probability, with fixed R wins and losses and compounding risk. Ruin means losing " + UMBRAL_RUINA_PCT + "% of the starting balance at any point, through losses or withdrawals. Real markets have more extreme streaks, so your drawdown can be worse than these paths. Not financial advice."}
             </p>
           </div>
         </div>

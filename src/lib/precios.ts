@@ -34,3 +34,9 @@ export const USD_POR_EUR = 1.1551;
 export const FECHA_TIPO_EUR = "2026-09-14";
 
 export const aproxEur = (usd: number) => Math.round(usd / USD_POR_EUR);
+
+/** Meses de suscripción que cuestan lo mismo que el pago único, y si caben en el horizonte elegido. */
+export function amortizacion(precio: number, mensual: number, anios: number) {
+  const meses = precio > 0 && mensual > 0 ? Math.ceil(precio / mensual) : null;
+  return { meses, dentro: meses !== null && meses <= anios * 12 };
+}

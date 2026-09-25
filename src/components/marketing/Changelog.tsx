@@ -5,23 +5,15 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 
 /**
- * Changelog & Roadmap — vertical timeline that shows the product is
- * actively developed and gives transparency about where it's going.
- *
- * Premium motion layer:
- *  - Center accent line that fades in at top/bottom.
- *  - Timeline dots pop in (scale 0→1, springy) on view.
- *  - Cards slide in from alternating sides on desktop (left/right),
- *    stack on mobile with the line on the left.
- *  - Upcoming dots use a hollow ring to signal "in progress".
- *  - Each card uses a spring hover lift for subtle interactivity.
+ * Estado del producto: lista de hitos entregados, en piloto y previstos.
+ * Lo previsto no lleva fecha (no se inventan): solo el sello «Previsto».
  */
 
 type Entry = {
   version: string;
   title: string;
   description: string;
-  date: string;
+  date?: string;
   stage: "delivered" | "pilot" | "future";
 };
 
@@ -59,15 +51,13 @@ export function Changelog() {
           version: "04",
           title: "Importación ampliada",
           description: "Importadores de TradeZella, Tradervue y Edgewonk, y más formatos de bróker.",
-          date: "Más adelante",
           stage: "future",
         },
         {
           version: "05",
           title: "Más prop firms",
           description:
-            "Hoy hay plantillas de FTMO, Topstep, The5ers, FundedNext y Apex, cada una con su fecha de revisión.",
-          date: "Más adelante",
+            "Más plantillas además de las cinco de hoy: FTMO, Topstep, The5ers, FundedNext y Apex, cada una con su fecha de revisión.",
           stage: "future",
         },
       ]
@@ -100,15 +90,13 @@ export function Changelog() {
           version: "04",
           title: "Expanded imports",
           description: "TradeZella, Tradervue and Edgewonk importers, and more broker formats.",
-          date: "Later",
           stage: "future",
         },
         {
           version: "05",
           title: "More prop firms",
           description:
-            "Today there are templates for FTMO, Topstep, The5ers, FundedNext and Apex, each with its review date.",
-          date: "Later",
+            "More templates beyond today’s five: FTMO, Topstep, The5ers, FundedNext and Apex, each with its review date.",
           stage: "future",
         },
       ];
@@ -158,10 +146,12 @@ export function Changelog() {
                   <h3 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
                     {entry.title}
                   </h3>
-                  <p className="mt-1 m-0 text-[13px] text-tertiary tnum">
-                    <span className="sr-only">{estado}: </span>
-                    {entry.date}
-                  </p>
+                  {entry.date ? (
+                    <p className="mt-1 m-0 text-[13px] text-tertiary tnum">
+                      <span className="sr-only">{estado}: </span>
+                      {entry.date}
+                    </p>
+                  ) : null}
                 </div>
                 <p
                   className={`medida m-0 text-[14px] leading-[1.55] ${

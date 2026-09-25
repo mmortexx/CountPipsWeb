@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SeguridadBody } from "../../../features/seguridad/page";
+import { RESUMEN_SEGURIDAD } from "@/lib/conexiones";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -20,7 +21,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Your data, on your machine",
   description:
-    "No account, no telemetry and no CountPips servers: your trades live on your machine and anything that goes online is something you turn on.",
+    RESUMEN_SEGURIDAD.en,
   url: `${SITE_URL}/en/features/seguridad/`,
   mainEntityOfPage: `${SITE_URL}/en/features/seguridad/`,
   author: { "@type": "Organization", name: "CountPips" },

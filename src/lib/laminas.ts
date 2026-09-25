@@ -232,7 +232,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     tituloEn: "Twenty seconds before trading",
     notaEs:
       "Horas de sueño, estado mental, estado físico y si hoy traes plan. Se guarda solo, sin " +
-      "botón. Y donde otro programa pondría una conclusión, éste escribe que aún no hay " +
+      "botón. Y donde otro programa pondría una conclusión, este escribe que aún no hay " +
       "suficientes check-ins para cruzar cómo llegas con cómo operas, y que todavía no hay " +
       "días bastantes en los dos lados para comparar. Prefiere no decir nada a decir algo que " +
       "todavía no sostiene.",

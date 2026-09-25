@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
+import { RESUMEN_SEGURIDAD } from "@/lib/conexiones";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
 
@@ -28,7 +29,7 @@ const articleSchema = {
   "@type": "Article",
   headline: "Tus datos, en tu equipo",
   description:
-    "Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y lo que se conecta a internet lo activas tú.",
+    RESUMEN_SEGURIDAD.es,
   url: `${SITE_URL}/features/seguridad/`,
   mainEntityOfPage: `${SITE_URL}/features/seguridad/`,
   author: { "@type": "Organization", name: "CountPips" },
@@ -131,8 +132,8 @@ export function SeguridadBody() {
         titleEn="Your data, on your machine."
         titleHighlightEs="en tu equipo."
         titleHighlightEn="on your machine."
-        subtitleEs="Sin cuenta, sin telemetría y sin servidores de CountPips: tus operaciones viven en tu equipo y lo que se conecta a internet lo activas tú."
-        subtitleEn="No account, no telemetry and no CountPips servers: your trades live on your machine and anything that goes online is something you turn on."
+        subtitleEs={RESUMEN_SEGURIDAD.es}
+        subtitleEn={RESUMEN_SEGURIDAD.en}
         padre={{ href: "/features", es: "Características", en: "Features" }}
         breadcrumbEs="Seguridad"
         breadcrumbEn="Security"

@@ -20,6 +20,8 @@
  * a escribir un `acceptedAnswer` a mano bajo `src/app/`.
  */
 
+import { LO_QUE_VA_SOLO } from "./conexiones";
+
 export type QA = { q: string; a: string };
 
 export const FAQ_ES: QA[] = [
@@ -29,7 +31,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Mis datos están seguros?",
-    a: "Tus operaciones viven en una base de datos SQLite dentro de tu equipo. No hay cuenta ni telemetría, y CountPips no tiene servidores donde guardarlas. Puedes activar el cifrado EFS de Windows sobre la carpeta de datos. Solo sale algo del equipo si activas una función que lo necesita, como la copia cifrada en tu propia carpeta de nube; la lista completa está en la página de seguridad.",
+    a: `Tus operaciones viven en una base de datos SQLite dentro de tu equipo. No hay cuenta ni telemetría, y CountPips no tiene servidores donde guardarlas. Puedes activar el cifrado EFS de Windows sobre la carpeta de datos. Solo salen del equipo si activas una función que lo necesita, como la copia cifrada en tu propia carpeta de nube. ${LO_QUE_VA_SOLO.es}; la lista completa está en la página de seguridad.`,
   },
   {
     q: "¿Puedo exportar mis datos?",
@@ -84,7 +86,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "Is my data safe?",
-    a: "Your trades live in a SQLite database on your machine. There is no account and no telemetry, and CountPips has no servers to store them. You can turn on Windows EFS encryption for the data folder. Something only leaves your machine if you turn on a feature that needs it, such as the encrypted copy in your own cloud folder; the full list is on the security page.",
+    a: `Your trades live in a SQLite database on your machine. There is no account and no telemetry, and CountPips has no servers to store them. You can turn on Windows EFS encryption for the data folder. They only leave your machine if you turn on a feature that needs them, such as the encrypted copy in your own cloud folder. ${LO_QUE_VA_SOLO.en}; the full list is on the security page.`,
   },
   {
     q: "Can I export my data?",

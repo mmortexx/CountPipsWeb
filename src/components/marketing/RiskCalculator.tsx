@@ -2,8 +2,8 @@
 
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio } from "@/lib/trading/estadistica";
-import { validaPlan } from "@/lib/trading/validaPlan";
+import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
+import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan, type MercadoPlan } from "@/lib/trading/validaPlan";
 import { fmtPct, fmtMoney, fmtNum as fmtNumBase, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
@@ -21,7 +21,7 @@ const RISK_MIN = 0.25;
 const RISK_MAX = 3;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
-type AssetMode = "equities" | "forex" | "futures";
+type AssetMode = MercadoPlan;
 
 interface FuturesContract {
   id: string;
@@ -175,9 +175,10 @@ export function RiskCalculator() {
       fullKellyPct,
       halfKellyPct,
       quarterKellyPct,
-      riskOfRuin: computeRiskOfRuin(kellyWinRate, rr, riskPct, 50),
+      riskOfRuin: computeRiskOfRuin(kellyWinRate, rr, riskPct, UMBRAL_RUINA_PCT),
       var95: computeParametricVaR(balance, riskPct, 95),
       leverage: valid && balance > 0 ? positionValue / balance : 0,
+      apalancamientoExcesivo: valid && balance > 0 && excedeApalancamiento(assetMode, positionValue / balance),
     };
   }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, lotMultiplier, includeFriction, kellyWinRate, es]);
 
@@ -652,6 +653,17 @@ export function RiskCalculator() {
               </span>
             </div>
           )}
+          {c.apalancamientoExcesivo ? (
+            <p
+              className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
+              style={{ color: "rgb(var(--pnl-neg))" }}
+              role="status"
+            >
+              {es
+                ? `La posición equivale a ${fmtNum(c.leverage, 1)} veces tu balance, por encima del ${TOPE_APALANCAMIENTO[assetMode]}:1 que se suele permitir en este mercado. Con el stop tan cerca de la entrada el tamaño se dispara: revisa la distancia.`
+                : `The position is ${fmtNum(c.leverage, 1)} times your balance, above the ${TOPE_APALANCAMIENTO[assetMode]}:1 usually allowed in this market. With the stop this close to entry the size balloons: check the distance.`}
+            </p>
+          ) : null}
 
           {/* Resultados — la rejilla cuenta sus columnas contra SU ancho,
               no contra el de la ventana. Con `sm:grid-cols-3` pedia tres
@@ -700,7 +712,7 @@ export function RiskCalculator() {
               <div
                 className="tnum text-sm font-semibold mt-0.5"
                 style={{
-                  color: c.leverage > 10 ? "rgb(var(--pnl-neg))" : "var(--ink)",
+                  color: c.apalancamientoExcesivo ? "rgb(var(--pnl-neg))" : "var(--ink)",
                 }}
               >
                 {c.valid ? <>{fmtNum(c.leverage, 1)}{"\u00a0×"}</> : "—"}
@@ -716,7 +728,7 @@ export function RiskCalculator() {
             </div>
             <div className="caja-cifra">
               <div className="tnum text-[12px] leading-[1.3] text-tertiary [hyphens:auto] break-words">
-                {es ? "Riesgo de ruina" : "Risk of ruin (50%)"}
+                {es ? `Riesgo de ruina (−${UMBRAL_RUINA_PCT}\u00a0%)` : `Risk of ruin (−${UMBRAL_RUINA_PCT}%)`}
               </div>
               <div
                 className="tnum text-sm font-semibold mt-0.5"
