@@ -2088,11 +2088,19 @@ if (SERVIR) {
     const pagina = await ctxSubir.newPage();
     for (const ruta of ["/faq/", "/demo/", "/glosario/drawdown/"]) {
       try {
-        await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+        /* Sin esperas fijas: en la máquina de GitHub la primera página de
+           cada contexto tardaba más en hidratar y el botón aún no estaba. */
+        await pagina.goto(`${BASE}${ruta}`, { waitUntil: "networkidle", timeout: 30000 });
         await pagina.mouse.wheel(0, 100000);
-        await pagina.waitForTimeout(600);
+        await pagina
+          .waitForFunction(
+            () => document.querySelector('button[aria-label="Volver arriba"],button[aria-label="Back to top"]')?.dataset.visible === "true",
+            null,
+            { timeout: 5000 },
+          )
+          .catch(() => {});
         await pagina.mouse.wheel(0, 2000);
-        await pagina.waitForTimeout(600);
+        await pagina.waitForTimeout(400);
         const r = await pagina.evaluate(() => {
           const b = document.querySelector('button[aria-label="Volver arriba"],button[aria-label="Back to top"]');
           if (!b || b.dataset.visible !== "true") return null;
