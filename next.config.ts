@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import type { NextConfig } from "next";
+import { diaDelCommit } from "./src/lib/dia-del-commit";
 
 /* ── EL AÑO DEL AVISO DE COPYRIGHT ─────────────────────────────────────
    Lo escribían el pie y el cajón de navegación con `new Date()
@@ -21,38 +22,29 @@ import type { NextConfig } from "next";
    importar desde un componente de cliente porque lee `node:child_process`
    y arrastraría medio Node al navegador—. Dos compilaciones del mismo
    código dan el mismo año. */
-function anioDePublicacion(): string {
-  try {
-    const iso = execFileSync("git", ["log", "-1", "--format=%cI"], {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      timeout: 5_000,
-    }).trim();
-    const d = new Date(iso);
-    if (!Number.isNaN(d.getTime())) return String(d.getUTCFullYear());
-  } catch {
-    /* Sin git —un tarball descargado, por ejemplo— se compila igual. */
-  }
-  return String(new Date().getUTCFullYear());
-}
-
 /* La fecha COMPLETA de la misma compilación, en ISO, para el «actualizado
    el …» del pie. Mismo camino que el año y por el mismo motivo: el reloj
    del visitante no sabe cuándo se publicó esto, y leerlo de ahí rompe la
-   hidratación en cuanto cambia el día. */
+   hidratación en cuanto cambia el día. El día es el del commit en su propia
+   zona horaria (ver `diaDelCommit`). */
 function fechaDePublicacion(): string {
   try {
-    const iso = execFileSync("git", ["log", "-1", "--format=%cI"], {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "ignore"],
-      timeout: 5_000,
-    }).trim();
-    const d = new Date(iso);
-    if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    return diaDelCommit(
+      execFileSync("git", ["log", "-1", "--format=%cI"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "ignore"],
+        timeout: 5_000,
+      }),
+    );
   } catch {
     /* Sin git se compila igual; el pie se queda sin la línea. */
+    return "";
   }
-  return "";
+}
+
+function anioDePublicacion(): string {
+  /* Sin git —un tarball descargado, por ejemplo— se compila igual. */
+  return fechaDePublicacion().slice(0, 4) || String(new Date().getUTCFullYear());
 }
 
 /* ── DÓNDE CUELGA EL SITIO ─────────────────────────────────────────────
