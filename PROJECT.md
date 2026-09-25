@@ -2372,6 +2372,25 @@ portada, precios y características a 1440 (claro y oscuro) y 390.
   (pastillas de confianza, indicador de estado, `liquid-glass`, cinco
   redes sociales).
 
+### Trigésima tercera tanda: las secciones, una sola voz (2026-09-25)
+
+Repaso a ojo de diez páginas a 1440 claro y cuatro a 390 oscuro.
+
+- **Estado del producto** (/beta y /pricing): las tres columnas se
+  marcaban con un ✓ verde, un reloj y la palabra «Previsto». Ahora las
+  tres llevan una palabra en la misma voz —«Disponible», «Por
+  invitación», «Previsto»—; la nueva clase `.rotulo-estado` comparte
+  regla con `.sello-previsto`.
+- **Enlaces de /beta**: «Ver el detalle previsto» y «Abrir la FAQ» iban
+  subrayados en negrita, los únicos del sitio; pasan a `cta--secundario`
+  (texto con flecha), como el resto.
+- **Cierre de página en móvil**: el botón principal medía ~280 de 350 px
+  (`justify-items: start`). Ahora va a todo el ancho, como el del héroe.
+  Guarda en `humo.mjs` en todas las rutas a 390, que además falla si no
+  llega a medir ninguna.
+- **Sombra de las fichas en claro**, más corta, a juego con la del
+  cristal de la tanda anterior.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

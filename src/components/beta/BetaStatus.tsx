@@ -1,21 +1,18 @@
 "use client";
 
-import { Check, Clock3 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 
 export function ProductStatus() {
   const { lang } = useLang();
   const es = lang === "es";
+  /* Las tres columnas se marcan con una palabra en la misma voz. Antes eran
+     un ✓ verde, un reloj y la palabra «Previsto»: tres dialectos para una
+     sola escala, y el ojo leía el color del primero antes que su estado. */
   const rows = [
-    { icon: Check, tone: "text-[rgb(var(--pnl-pos))]", title: es ? "Listo para probar" : "Ready to test", text: es ? "Demo navegable, métricas y diario local." : "Clickable demo, metrics and local journal." },
-    { icon: Clock3, tone: "text-[rgb(var(--accent-base))]", title: es ? "Piloto privado" : "Private pilot", text: es ? "Flujos de disciplina, riesgo y prop firm con usuarios invitados." : "Discipline, risk and prop-firm workflows with invited users." },
-    /* La tercera fila llevaba un `Circle` gris, que es un icono que no
-       significa nada — un círculo vacío puede leerse como "pendiente",
-       como "opcional" o como un radio button sin marcar. Lleva el sello,
-       que es la pieza con la que este sitio dice «previsto» en todas
-       partes: aquí, en el precio y en el registro de versiones. */
-    { icon: null, tone: "", title: es ? "Apertura comercial" : "Commercial launch", text: es ? "Entrega, licencia, soporte y precios definitivos." : "Delivery, licensing, support and final pricing." },
+    { estado: es ? "Disponible" : "Available", previsto: false, title: es ? "Listo para probar" : "Ready to test", text: es ? "Demo navegable, métricas y diario local." : "Clickable demo, metrics and local journal." },
+    { estado: es ? "Por invitación" : "By invitation", previsto: false, title: es ? "Piloto privado" : "Private pilot", text: es ? "Flujos de disciplina, riesgo y prop firm con usuarios invitados." : "Discipline, risk and prop-firm workflows with invited users." },
+    { estado: "", previsto: true, title: es ? "Apertura comercial" : "Commercial launch", text: es ? "Entrega, licencia, soporte y precios definitivos." : "Delivery, licensing, support and final pricing." },
   ];
   return (
     <section className="section">
@@ -38,19 +35,13 @@ export function ProductStatus() {
             </h2>
           </div>
           <div data-orden className="grid gap-3 sm:grid-cols-3">
-            {rows.map(({ icon: Icon, tone, title, text }) => (
+            {rows.map(({ estado, previsto, title, text }) => (
               <div key={title} className="border-t border-[rgb(var(--divider)/0.18)] pt-4">
-                {/* Caja de alto fijo para la marca. El icono mide 17 px y el
-                    sello 22, así que sin ella la tercera columna empujaba su
-                    titular ocho píxeles por debajo de las otras dos y las
-                    tres líneas base dejaban de ser una. */}
-                <div className="flex h-6 items-center">
-                  {Icon ? (
-                    <Icon size={17} className={tone} aria-hidden />
-                  ) : (
-                    <SelloPrevisto es="Previsto" en="Planned" />
-                  )}
-                </div>
+                {previsto ? (
+                  <SelloPrevisto es="Previsto" en="Planned" />
+                ) : (
+                  <span className="rotulo-estado">{estado}</span>
+                )}
                 <h3 className="mt-3 text-sm font-semibold text-primary">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-secondary">{text}</p>
               </div>

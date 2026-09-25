@@ -273,6 +273,9 @@ const entradasVistas = [];
 const menusVistos = [];
 /** Ídem para la holgura de la barra superior: cuánto pide y cuánto hay. */
 const presupuestosBarra = [];
+/** Ídem para el botón principal del cierre en móvil: sin ninguno medido,
+    la comprobación no protege nada. */
+const cierresMedidos = [];
 
 /**
  * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
@@ -1588,6 +1591,28 @@ for (const pantalla of PANTALLAS) {
             `${etiqueta}: "${c.txt}" se sale ${c.fuera}px del canto de un contenedor que recorta`
           );
         }
+
+        /* El botón principal del cierre de página va a todo el ancho en
+           móvil, como el del héroe. Con `justify-items: start` en su
+           rejilla medía unos 280 de los 350 px disponibles y quedaba
+           descolgado del borde derecho del titular. */
+        const cierre = await pagina.evaluate(() => {
+          const boton = document.querySelector(".tj-cierre .cta--primario");
+          const bloque = boton?.closest(".tj-cierre");
+          if (!boton || !bloque) return null;
+          return {
+            boton: Math.round(boton.getBoundingClientRect().width),
+            bloque: Math.round(bloque.getBoundingClientRect().width),
+          };
+        });
+        if (cierre) {
+          cierresMedidos.push(cierre.boton);
+          if (cierre.boton < cierre.bloque - 2) {
+            fallos.push(
+              `${etiqueta}: el botón principal del cierre mide ${cierre.boton}px de ${cierre.bloque}px — en móvil va a todo el ancho`
+            );
+          }
+        }
       }
 
       /* El contraste solo se mide en escritorio: la composición de capas
@@ -2187,6 +2212,9 @@ await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
 for (const a of avisos) console.warn(`  aviso  ${a}`);
+if (!cierresMedidos.length) {
+  fallos.push("no se midió el botón del cierre en móvil en ninguna ruta: esa comprobación no protege nada");
+}
 if (fallos.length) {
   console.error(`\n[humo] ${fallos.length} fallo(s):`);
   for (const f of fallos) console.error(`  ✗ ${f}`);
@@ -2337,6 +2365,8 @@ if (menusVistos.length) {
 } else {
   console.warn("  aviso  no se comprobó el menú de Producto con el ratón");
 }
+
+console.log(`[humo] cierre en móvil — ${cierresMedidos.length} rutas, botón principal a todo el ancho`);
 
 if (presupuestosBarra.length) {
   console.log(
