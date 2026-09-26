@@ -9,9 +9,10 @@ import {
   weekdayBreakdown,
   monthlyBreakdown,
   cumplimientoMensual,
+  nivelDisciplina,
   type Trade,
 } from "@/lib/trading/data";
-import { fmtInt, fmtNum, fmtDate, fmtMoney, fmtPct, pctSep, LOCALE_FECHA } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtDate, fmtPct, pctSep, LOCALE_FECHA } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -33,7 +34,7 @@ interface ChecklistItem {
 const PRE_ITEMS: ChecklistItem[] = [
   { id: "plan", es: "¿Plan definido?", en: "Is the plan defined?" },
   { id: "limits", es: "¿Límites de pérdida?", en: "Loss limits set?" },
-  { id: "mind", es: "¿Estado mental?", en: "Mental state ready?" },
+  { id: "mind", es: "¿Estado mental listo?", en: "Mental state ready?" },
   { id: "news", es: "¿Noticias revisadas?", en: "News checked?" },
 ];
 
@@ -45,12 +46,12 @@ const POST_ITEMS: ChecklistItem[] = [
 ];
 
 const PRE_PLACEHOLDER = {
-  es: "¿Qué vigilas hoy? ¿Qué evitas?",
-  en: "What are you watching? What do you avoid?",
+  es: "Tu plan antes de abrir: sesgo, niveles, escenarios y riesgo máximo.",
+  en: "Your plan before the open: bias, levels, scenarios and max risk.",
 };
 const POST_PLACEHOLDER = {
-  es: "¿Qué aprendiste? ¿Qué cambiarás?",
-  en: "What did you learn? What will you change?",
+  es: "Cómo fue la sesión: qué hiciste bien, qué mejorar, cómo te sentiste.",
+  en: "How the session went: what you did well, what to improve, how you felt.",
 };
 const COST_COPY = {
   es: { cost: "Lo que tu indisciplina te costó", saver: "Tu indisciplina te benefició esta vez" },
@@ -58,57 +59,20 @@ const COST_COPY = {
 };
 
 /* ============================================================
-   Mistake-type labels for the discipline invoice breakdown.
+   Reparto del cumplimiento: la fila «Sí · a medias · no» de la app.
    ============================================================ */
 
-interface MistakeRow {
-  key: string;
-  es: string;
-  en: string;
-  count: number;
-  cost: number;
-}
+const NIVELES_CUMPLIMIENTO: { key: Trade["compliance"]; es: string; en: string; tono: string }[] = [
+  { key: "yes", es: "Cumplí el plan", en: "Followed the plan", tono: "bg-pnl-pos" },
+  { key: "partial", es: "Lo cumplí a medias", en: "Followed it partly", tono: "bg-pnl-warn" },
+  { key: "no", es: "Me salté el plan", en: "Broke the plan", tono: "bg-pnl-neg" },
+];
 
-const MISTAKE_LABELS: Record<string, { es: string; en: string }> = {
-  wideStop: { es: "Stop lejano", en: "Wide stop" },
-  earlyExit: { es: "Salida anticipada", en: "Early exit" },
-  lateEntry: { es: "Entrada tardía", en: "Late entry" },
-  oversized: { es: "Tamaño excesivo", en: "Oversized position" },
-  noPlan: { es: "Operado sin plan", en: "Traded without plan" },
-  partialPlan: { es: "Plan parcial", en: "Partial plan" },
-};
-
-function buildMistakeBreakdown(trades: Trade[]): MistakeRow[] {
-  const inPlan = trades.filter((t) => t.compliance === "yes");
-  const expInPlan = inPlan.length
-    ? inPlan.reduce((s, t) => s + t.netPnl, 0) / inPlan.length
-    : 0;
-  const broke = trades.filter((t) => t.compliance !== "yes");
-
-  const cats: Record<string, { count: number; cost: number }> = {};
-  for (const t of broke) {
-    let key: string;
-    if (t.compliance === "no") key = "noPlan";
-    else if (t.mae < -1) key = "wideStop";
-    else if (t.rMultiple > 0 && t.mfe > t.rMultiple + 0.5) key = "earlyExit";
-    else if (t.rMultiple < 0 && t.rMultiple > -0.95) key = "lateEntry";
-    else if (Math.abs(t.netPnl) > 100) key = "oversized";
-    else key = "partialPlan";
-
-    if (!cats[key]) cats[key] = { count: 0, cost: 0 };
-    cats[key].count += 1;
-    cats[key].cost += expInPlan - t.netPnl;
-  }
-
-  return Object.entries(cats)
-    .map(([key, v]) => ({
-      key,
-      es: MISTAKE_LABELS[key]?.es ?? key,
-      en: MISTAKE_LABELS[key]?.en ?? key,
-      count: v.count,
-      cost: v.cost,
-    }))
-    .sort((a, b) => b.cost - a.cost);
+function repartoCumplimiento(trades: Trade[]) {
+  return NIVELES_CUMPLIMIENTO.map((nivel) => ({
+    ...nivel,
+    count: trades.filter((t) => t.compliance === nivel.key).length,
+  }));
 }
 
 /* ============================================================
@@ -205,7 +169,7 @@ function DayScoreDots({
     <div
       className="flex items-center gap-1.5"
       role="radiogroup"
-      aria-label={lang === "es" ? "Puntuación del día" : "Day score"}
+      aria-label={lang === "es" ? "Nota del día" : "Day score"}
     >
       {[0, 1, 2, 3, 4, 5].map((n) => {
         const active = n <= value;
@@ -216,7 +180,11 @@ function DayScoreDots({
             type="button"
             role="radio"
             aria-checked={isSelected}
-            aria-label={lang === "es" ? `Puntuación ${fmtInt(n, lang)}` : `Score ${fmtInt(n, lang)}`}
+            aria-label={
+              n === 0
+                ? lang === "es" ? "Sin nota" : "No score"
+                : lang === "es" ? `Nota ${fmtInt(n, lang)}` : `Score ${fmtInt(n, lang)}`
+            }
             onClick={() => onChange(n)}
             whileTap={{ scale: 0.8 }}
             whileHover={{ scale: 1.18 }}
@@ -268,8 +236,8 @@ function RitualColumn({
   items: ChecklistItem[];
   state: Record<string, boolean>;
   onToggle: (id: string) => void;
-  score: number;
-  onScoreChange: (n: number) => void;
+  score?: number;
+  onScoreChange?: (n: number) => void;
   note: string;
   onNoteChange: (s: string) => void;
   accent: boolean;
@@ -306,33 +274,27 @@ function RitualColumn({
         ))}
       </ul>
 
-      <div className="space-y-1.5">
-        <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
-          {t("dayScore")}
-        </div>
-        <DayScoreDots
-          value={score}
-          onChange={onScoreChange}
-          idPrefix={idPrefix}
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label
-          htmlFor={`${idPrefix}-note`}
-          className="text-[11px] uppercase tracking-[0.15em] text-tertiary"
-        >
-          {t("freeNote")}
-        </label>
-        <textarea
-          id={`${idPrefix}-note`}
+      <textarea
+          aria-label={placeholder}
           value={note}
           onChange={(e) => onNoteChange(e.target.value)}
           rows={3}
           placeholder={placeholder}
           className="w-full bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] p-3 text-sm text-primary placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] outline-none transition-colors resize-none custom-scroll"
-        />
-      </div>
+      />
+
+      {score !== undefined && onScoreChange && (
+        <div className="space-y-1.5">
+          <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
+            {t("dayScore")}
+          </div>
+          <DayScoreDots
+            value={score}
+            onChange={onScoreChange}
+            idPrefix={idPrefix}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -916,7 +878,6 @@ export function JournalPage() {
     emotions: false,
     learn: false,
   });
-  const [preScore, setPreScore] = useState(3);
   const [postScore, setPostScore] = useState(4);
   const [preNote, setPreNote] = useState("");
   const [postNote, setPostNote] = useState("");
@@ -936,16 +897,8 @@ export function JournalPage() {
   );
   const history = useMemo(() => buildHistory(TRADES), []);
 
-  // Discipline invoice breakdown — derived from the full TRADES set.
-  const mistakeRows = useMemo(() => buildMistakeBreakdown(TRADES), []);
-  const totalMistakeCount = useMemo(
-    () => mistakeRows.reduce((s, r) => s + r.count, 0),
-    [mistakeRows]
-  );
-  const totalMistakeCost = useMemo(
-    () => mistakeRows.reduce((s, r) => s + r.cost, 0),
-    [mistakeRows]
-  );
+  const reparto = useMemo(() => repartoCumplimiento(TRADES), []);
+  const totalReparto = reparto.reduce((s, r) => s + r.count, 0);
 
   const compliancePct = METRICS.compliancePct;
   const costOfIndiscipline = METRICS.costOfIndiscipline;
@@ -962,8 +915,7 @@ export function JournalPage() {
     ? "0 0 18px rgb(var(--pnl-neg) / 0.45)"
     : "0 0 18px rgb(var(--pnl-pos) / 0.35)";
 
-  const trafficLevel: "green" | "amber" | "red" =
-    compliancePct > 0.7 ? "green" : compliancePct > 0.5 ? "amber" : "red";
+  const trafficLevel = ({ alta: "green", media: "amber", baja: "red" } as const)[nivelDisciplina(compliancePct)];
 
   // Deterministic cross-comparison values for the check-in card.
   // These mirror the real app's Sleep×Result / Mental×Result / Physical×Result
@@ -1249,8 +1201,6 @@ export function JournalPage() {
               items={PRE_ITEMS}
               state={preState}
               onToggle={togglePre}
-              score={preScore}
-              onScoreChange={setPreScore}
               note={preNote}
               onNoteChange={setPreNote}
               accent
@@ -1405,122 +1355,58 @@ export function JournalPage() {
               </div>
             </div>
 
-            {/* ============ DISCIPLINE INVOICE — KEY FEATURE ============
-                Invoice-style breakdown of each indiscipline type with
-                count, % of total mistakes, and dollar cost. */}
+            {/* Reparto sí · a medias · no. Solo «me salté el plan» entra
+                en el coste de indisciplina (DisciplineCalculator de la app). */}
             <div className="pt-5 border-t border-[rgb(var(--divider)/0.1)]">
-              <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="w-1 h-4 bg-pnl-neg rounded-[1px] shrink-0" />
-                  <h3 className="text-[13px] font-medium text-primary tracking-[-0.01em]">
-                    {L(
-                      "Desglose por tipo de indisciplina",
-                      "Breakdown by indiscipline type"
-                    )}
-                  </h3>
-                </div>
-                <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary tnum">
-                  {L("Coste en $", "Cost in $")}
-                </span>
+              <div className="flex items-center gap-2 mb-3 min-w-0">
+                <span className="w-1 h-4 bg-pnl-neg rounded-[1px] shrink-0" />
+                <h3 className="text-[13px] font-medium text-primary tracking-[-0.01em]">
+                  {L("Sí · a medias · no", "Yes · partly · no")}
+                </h3>
               </div>
 
-              {/* En móvil el tipo ocupa su propia línea y las tres cifras
-                  van debajo: con cuatro columnas la tabla tenía que
-                  deslizarse, el tipo salía recortado («Stop lej…») y el
-                  coste —el dato de la tabla— quedaba fuera de la vista. */}
-              <div>
-              <div>
-              {/* Table header row */}
-              <div className="grid grid-cols-[2.5rem_3rem_minmax(0,1fr)] sm:grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 pb-2 text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)] font-mono">
-                <div className="hidden sm:block">{L("Tipo", "Type")}</div>
-                <div className="text-right">#</div>
-                <div className="text-right">%</div>
-                <div className="text-right">{L("Coste", "Cost")}</div>
+              <div className="flex h-1.5 w-full overflow-hidden rounded-[1px] bg-[rgb(var(--divider)/0.08)]" aria-hidden>
+                {reparto.map((r) => (
+                  <span
+                    key={r.key}
+                    className={r.tono}
+                    style={{ width: `${totalReparto ? (r.count / totalReparto) * 100 : 0}%` }}
+                  />
+                ))}
               </div>
 
-              {/* Body rows */}
-              <div>
-                {mistakeRows.map((row, i) => {
-                  const pctOfTotal = totalMistakeCount
-                    ? row.count / totalMistakeCount
-                    : 0;
-                  const isSaver = row.cost < 0;
-                  return (
-                    <motion.div
-                      key={row.key}
-                      initial={{ opacity: 0, y: 6 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: "-20px" }}
-                      transition={{
-                        duration: 0.4,
-                        delay: i * 0.05,
-                        ease: EASE,
-                      }}
-                      className={`grid grid-cols-[2.5rem_3rem_minmax(0,1fr)] sm:grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-2.5 items-center text-sm border-b border-dashed border-[rgb(var(--divider)/0.1)] hover:bg-[rgb(var(--divider)/0.025)] transition-colors font-mono ${
-                        i % 2 === 1 ? "bg-[rgb(var(--divider)/0.012)]" : ""
-                      }`}
-                    >
-                      <div className="col-span-3 sm:col-span-1 mb-1 sm:mb-0 text-secondary min-w-0 flex items-center gap-2">
-                        <span
-                          aria-hidden
-                          className={`inline-block w-1 h-1 rounded-[1px] ${
-                            isSaver ? "bg-pnl-pos" : "bg-pnl-neg"
-                          }`}
-                        />
-                        <span className="italic">
-                          {lang === "es" ? row.es : row.en}
+              <table className="mt-3 w-full text-sm tnum">
+                <thead>
+                  <tr className="text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
+                    <th scope="col" className="px-2 pb-2 text-left font-normal">{L("Cumplimiento", "Compliance")}</th>
+                    <th scope="col" className="px-2 pb-2 text-right font-normal">{L("Operaciones", "Trades")}</th>
+                    <th scope="col" className="px-2 pb-2 text-right font-normal">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reparto.map((r) => (
+                    <tr key={r.key} className="border-b border-dashed border-[rgb(var(--divider)/0.1)]">
+                      <th scope="row" className="px-2 py-2.5 text-left font-normal text-secondary">
+                        <span className="flex items-center gap-2">
+                          <span aria-hidden className={`inline-block h-1.5 w-1.5 rounded-[1px] ${r.tono}`} />
+                          {lang === "es" ? r.es : r.en}
                         </span>
-                      </div>
-                      <div className="text-right tnum text-secondary">
-                        {fmtInt(row.count, lang)}
-                      </div>
-                      <div className="text-right tnum text-tertiary">
-                        {fmtPct(pctOfTotal, lang, 0)}
-                      </div>
-                      <div
-                        className={`text-right tnum font-semibold tabular-nums ${
-                          isSaver ? "text-pnl-pos" : "text-pnl-neg"
-                        }`}
-                      >
-                        {isSaver ? "+" : "−"}
-                        {fmtMoney(Math.abs(row.cost), lang, { decimals: 0 })}
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
+                      </th>
+                      <td className="px-2 py-2.5 text-right text-secondary">{fmtInt(r.count, lang)}</td>
+                      <td className="px-2 py-2.5 text-right text-tertiary">
+                        {fmtPct(totalReparto ? r.count / totalReparto : 0, lang, 0)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
-              {/* Total row */}
-              <div className="grid grid-cols-[2.5rem_3rem_minmax(0,1fr)] sm:grid-cols-[1fr_2.5rem_3rem_5.5rem] gap-x-3 px-2 py-3 items-center mt-1 border-t-2 border-[rgb(var(--divider)/0.15)] font-mono">
-                <div
-                  className={`col-span-3 sm:col-span-1 mb-1 sm:mb-0 text-[11px] uppercase tracking-[0.15em] font-semibold ${
-                    totalMistakeCost < 0 ? "text-pnl-pos" : "text-pnl-neg"
-                  }`}
-                >
-                  {L("Total", "Total")}
-                </div>
-                <div className="text-right tnum font-semibold text-primary">
-                  {fmtInt(totalMistakeCount, lang)}
-                </div>
-                <div className="text-right tnum text-tertiary">{lang === "es" ? "100 %" : "100%"}</div>
-                <div
-                  className={`text-right tnum font-semibold ${
-                    totalMistakeCost < 0 ? "text-pnl-pos" : "text-pnl-neg"
-                  }`}
-                >
-                  {totalMistakeCost < 0 ? "+" : "−"}
-                  {fmtMoney(Math.abs(totalMistakeCost), lang, { decimals: 0 })}
-                </div>
-              </div>
-              </div>
-              </div>
-
-              <div className="mt-2 px-2 text-[10px] text-tertiary/80 italic leading-relaxed">
+              <p className="mt-2 px-2 text-[11px] text-tertiary leading-relaxed">
                 {L(
-                  "Σ (expectancy en plan − netPnl) sobre operaciones fuera de plan. El total coincide con el coste de indisciplina mostrado arriba.",
-                  "Σ (expectancy in plan − netPnl) over out-of-plan trades. Total matches the cost of indiscipline shown above."
+                  "El coste de indisciplina es el resultado neto de las operaciones que marcaste como «me salté el plan». Las de «a medias» bajan tu cumplimiento, pero no entran en el coste.",
+                  "The cost of indiscipline is the net result of the trades you marked “broke the plan”. “Partly” trades lower your compliance but don’t count towards the cost."
                 )}
-              </div>
+              </p>
             </div>
 
             {/* ============ COMPLIANCE TREND (monthly) — mirrors the

@@ -11,6 +11,7 @@ import {
   nombreSetup,
   INITIAL_BALANCE_CONST,
   getInstrumentMultiplier,
+  nivelDisciplina,
   type Direction,
   type Metrics,
 } from "@/lib/trading/data";
@@ -988,11 +989,9 @@ export function DashboardPage() {
               value={
                 <span
                   className={`text-lg font-semibold tnum ${
-                    METRICS.compliancePct >= 0.7
-                      ? "text-pnl-pos"
-                      : METRICS.compliancePct >= 0.5
-                      ? "text-pnl-warn"
-                      : "text-pnl-neg"
+                    { alta: "text-pnl-pos", media: "text-pnl-warn", baja: "text-pnl-neg" }[
+                      nivelDisciplina(METRICS.compliancePct)
+                    ]
                   }`}
                 >
                   {fmtPct(METRICS.compliancePct, lang, 0)}

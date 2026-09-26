@@ -150,7 +150,9 @@ for (const tema of ["dark", "light"]) {
   /* ── /demo → detalle: etiquetas SL y TP del gráfico de velas ── */
   await p.locator("button").filter({ hasText: /^Ganadoras$/ }).first().click().catch(() => {});
   await p.waitForTimeout(300);
-  await p.locator("tbody tr").first().click().catch(() => {});
+  // La fila de una operación, no la de cualquier tabla: con un filtro activo
+  // el panel «Esta selección frente al resto» pone otra tabla antes.
+  await p.locator("tr[data-operacion]").first().click().catch(() => {});
   await p.waitForTimeout(1200);
   for (const pref of ["SL", "TP"]) {
     const r = await p.evaluate((pre) => {

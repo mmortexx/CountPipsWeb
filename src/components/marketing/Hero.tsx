@@ -19,8 +19,8 @@ export function Hero({ producto }: { producto?: ReactNode }) {
      (docs/analisis-referentes.md), juntas y en voz baja. «Windows» ya lo
      dice la etiqueta de encima. «Previsto» porque la venta no está abierta. */
   const datos = es
-    ? ["Pago único previsto, sin suscripción", "Sin nube: tus datos en tu equipo", "Demo sin registro"]
-    : ["Planned one-time payment, no subscription", "No cloud: your data on your machine", "Demo without sign-up"];
+    ? ["Pago único previsto, sin suscripción", "Sin servidores: tus datos en tu equipo", "Demo sin registro"]
+    : ["Planned one-time payment, no subscription", "No servers: your data on your machine", "Demo without sign-up"];
 
   const compatibles = ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"];
 

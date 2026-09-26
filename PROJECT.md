@@ -2472,6 +2472,60 @@ Repaso de /test, /herramientas, la calculadora de riesgo,
   pinta los h1 de `Palabras` encogidos y con huecos desiguales. En
   pantalla real miden igual (12 px entre máscaras, 12,4 el espacio duro).
 
+### Trigésima octava tanda: la web contra el programa (2026-09-26)
+
+Cotejo de cada afirmación de producto con el código de la app
+(`Agenda Trading/03-mvp/app`; el índice es `Strings/es-ES/Resources.resw`,
+y ante discrepancia gana el código). Lo que no casaba:
+
+- **Licencia** (`conexiones.ts`, privacidad): la comprobación diaria manda
+  la clave y el identificador de la instalación, no el nombre del equipo;
+  el nombre solo va al activar. `LEGAL_ACTUALIZADO` al 26.
+- **Guardián de portada**: enseñaba reglas que no existen («Setup apto»,
+  «R:R ≥ 1,5») y un tamaño sugerido inventado. Ahora pérdida del día,
+  operaciones de hoy y riesgo; el rojo avisa pero guarda, lo que bloquea
+  es el freno duro opcional.
+- **Prop firms**: el freno duro va con tus reglas de riesgo, no con los
+  límites de la firma.
+- **Portada**: «Sin nube» → «Sin servidores» (existe la copia cifrada en
+  tu carpeta de nube); «Una cuenta o diez» → «Todas tus cuentas» (Core
+  admite dos).
+- **Demo, Operaciones**: fuera «Comparar 2 operaciones», que la app no
+  tiene. En su lugar «Esta selección frente al resto», solo con filtro
+  activo, con los textos de la app: ventaja por operación en R, win rate,
+  P&L y veredicto por intervalos del 95 % (mínimo 20, como
+  `SignificanceCalculator`). Lógica en `lib/trading/comparacion.ts`.
+  `TradeCompareModal.tsx` se borró (a la papelera) al quedar sin uso, y
+  con él su CSS `.tj-comparador`.
+- **Demo, Diario**: el «desglose por tipo de indisciplina» (stop lejano,
+  entrada tardía…) era una heurística sin equivalente; ahora el reparto
+  sí · a medias · no. El coste de indisciplina se calcula como la app: el
+  neto de «me salté el plan», sin las de «a medias» (antes, un coste de
+  oportunidad que las mezclaba). Nota del día solo en el post-mercado;
+  textos de ayuda y «¿Estado mental listo?» como en la app.
+- **Semáforo de disciplina**: Resumen y barra de estado cortaban en 70 %
+  y el Diario en otro sitio; ahora los tres usan `nivelDisciplina` con los
+  cortes de la app (80 % y 50 %). La muestra (71,5 %) pasa a «media».
+- **FAQ y seguridad**: «tus datos viven en un único archivo» no es cierto
+  (las capturas van en su carpeta); lo que es un archivo es la copia de
+  seguridad, que las incluye.
+
+- **Cifras que cuentan (`CountUp`)**: con «reducir movimiento» empezaban
+  en su valor final pero marcaban `started`, y eso lanzaba la animación
+  desde 0. Ahora no arrancan. `movimiento.mjs` vigila el texto de toda
+  cifra con `data-cuenta` en la pestaña Operaciones, con pasada de
+  control (sin la preferencia tienen que contar: 4 de 4).
+- **`tinta.mjs`** pulsaba `tbody tr` a secas y, con el filtro «Ganadoras»,
+  caía en la tabla del panel nuevo en vez de en una operación. Ahora usa
+  `tr[data-operacion]`.
+- **Falsa alarma, anotada**: las cifras que «no contaban» estaban justo
+  bajo el borde de la ventana; cuentan al verse, que es lo correcto.
+
+Pruebas nuevas, vistas en rojo antes de pasar: `comparacion.test.ts`
+(veredicto por solape, mínimo de muestra), dos en `metricas.test.ts`
+(coste como la app, cortes del semáforo) y la vigilancia de cifras de
+`movimiento.mjs` (roja con 4 cifras contando antes del arreglo).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

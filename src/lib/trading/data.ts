@@ -335,6 +335,13 @@ export interface Metrics {
   gainToPainRatio: number;
 }
 
+/** Semáforo de disciplina con los cortes de la app (DisciplineSignal.LevelOf):
+ *  alta desde el 80 %, media desde el 50 %. Una sola fuente para Resumen,
+ *  Diario y la barra de estado. */
+export function nivelDisciplina(pct: number): "alta" | "media" | "baja" {
+  return pct >= 0.8 ? "alta" : pct >= 0.5 ? "media" : "baja";
+}
+
 export function computeMetrics(trades: Trade[]): Metrics {
   const sorted = [...trades].sort(
     (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
@@ -435,17 +442,16 @@ export function computeMetrics(trades: Trade[]): Metrics {
   const complied = sorted.filter((t) => t.compliance === "yes").length;
   const compliancePct = n ? complied / n : 0;
   const inPlan = sorted.filter((t) => t.compliance === "yes");
-  const broke = sorted.filter((t) => t.compliance !== "yes");
+  // Como DisciplineCalculator de la app: «a medias» baja el cumplimiento pero
+  // no entra en el coste, que es el neto de lo marcado «me salté el plan»
+  // (positivo cuando esas operaciones perdieron).
+  const broke = sorted.filter((t) => t.compliance === "no");
   const expectancyInPlan = inPlan.length
     ? inPlan.reduce((s, t) => s + t.netPnl, 0) / inPlan.length
     : 0;
-  const expectancyBrokePlan = broke.length
-    ? broke.reduce((s, t) => s + t.netPnl, 0) / broke.length
-    : 0;
-  const costOfIndiscipline = broke.reduce(
-    (s, t) => s + (expectancyInPlan - t.netPnl),
-    0
-  );
+  const pnlBroke = broke.reduce((s, t) => s + t.netPnl, 0);
+  const expectancyBrokePlan = broke.length ? pnlBroke / broke.length : 0;
+  const costOfIndiscipline = 0 - pnlBroke;
 
   const payoff = avgLoss ? avgWin / avgLoss : 0;
   const winRate = n ? wins.length / n : 0;

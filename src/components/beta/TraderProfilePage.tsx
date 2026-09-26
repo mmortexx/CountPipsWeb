@@ -133,7 +133,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
           <div className="tj-container">
             <SectionHeader
               etiqueta={es ? "Reglas de evaluación y fondeo" : "Evaluation & funding rules"}
-              titulo={es ? "El Guardián calibrado para tu firma y cuenta." : "The Guardian calibrated for your firm and account."}
+              titulo={es ? "Las reglas de tu firma, con cada operación." : "Your firm’s rules, with every trade."}
               entradilla={es ? "Elige firma y tamaño de cuenta. El modo prop firm aplica la plantilla de la firma y sigue la pérdida diaria, el drawdown y el objetivo con cada operación que registras. Ejemplo con valores de muestra." : "Pick a firm and account size. Prop firm mode applies the firm template and tracks daily loss, drawdown and the target with every trade you log. Example with sample values."}
               className="mb-10"
             />
@@ -223,7 +223,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   −{fmtMoney(dailyLossLimit, lang)}
                 </div>
                 <p className="text-xs text-tertiary mt-2 leading-relaxed">
-                  {es ? "Aviso preventivo antes de tocarlo; con el freno duro activado, dejas de registrar operaciones nuevas." : "A preventive alert before you reach it; with the hard brake on, new trades stop being logged."}
+                  {es ? "Aviso cuando te acercas. El freno duro va con tus propias reglas de riesgo: pon tu pérdida diaria dentro de este límite y dejarás de registrar operaciones nuevas antes de tocarlo." : "An alert as you get close. The hard brake runs on your own risk rules: set your daily loss inside this limit and new trades stop being logged before you reach it."}
                 </p>
               </div>
 

@@ -6722,52 +6722,7 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   }
 }
 
-/* ── EL COMPARADOR DE LA DEMO ES UN <dialog> NATIVO ───────────────────
-   El velo llega un pelo antes que la hoja, y la hoja sube desde un punto
-   más pequeña, como el visor de capturas. Al cerrar no se espera. */
-.tj-comparador {
-  width: 100vw;
-  max-width: none;
-  height: 100dvh;
-  max-height: none;
-  margin: 0;
-  padding: 1rem;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-}
-/* `margin: auto` y no `align-items: center`: en un móvil la hoja es más
-   alta que la pantalla, y centrada con flex se cortaría por arriba sin
-   poder desplazarla. */
-.tj-comparador[open] {
-  display: flex;
-  overflow-y: auto;
-}
-.tj-comparador[open] > div {
-  margin: auto;
-}
-.tj-comparador::backdrop {
-  background: rgb(0 0 0 / 0.5);
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .tj-comparador[open]::backdrop {
-    transition: opacity 0.22s var(--ease-suave);
-    @starting-style { opacity: 0; }
-  }
-  .tj-comparador[open] > div {
-    transition:
-      opacity 0.3s var(--ease-suave) 0.04s,
-      transform 0.45s var(--ease-salida) 0.04s;
-    @starting-style {
-      opacity: 0;
-      transform: translate3d(0, 14px, 0) scale(0.97);
-    }
-  }
-}
-
-/* ── Y EL DE LAS PESTAÑAS, IGUAL (SubrayadoPestanas.tsx) ─────────────── */
+/* ── EL SUBRAYADO DE LAS PESTAÑAS VIAJA COMO EL DE LOS ENLACES (SubrayadoPestanas.tsx) */
 .tj-pestanas[data-desliza] {
   position: relative;
 }

@@ -35,7 +35,7 @@ export function Changelog() {
           version: "02",
           title: "Programa de escritorio",
           description:
-            "Terminado el producto mínimo: diario, métricas, riesgo, psicología, modo prop firm, módulo fiscal y terminal de Mercados. Antes de abrir la venta faltan la tienda, la firma del instalador y la licencia de uso.",
+            "Terminado el producto mínimo: diario, métricas, riesgo, psicología, modo prop firm, módulo fiscal y terminal de Mercados. Antes de abrir la venta faltan la tienda, la firma del instalador, el alojamiento de las actualizaciones y la licencia de uso.",
           date: "Construido",
           stage: "delivered",
         },
@@ -74,7 +74,7 @@ export function Changelog() {
           version: "02",
           title: "Desktop app",
           description:
-            "The minimum product is finished: journal, metrics, risk, psychology, prop firm mode, tax module and Markets terminal. Before sales open it still needs the store, installer signing and the end-user licence.",
+            "The minimum product is finished: journal, metrics, risk, psychology, prop firm mode, tax module and Markets terminal. Before sales open it still needs the store, installer signing, update hosting and the end-user licence.",
           date: "Built",
           stage: "delivered",
         },

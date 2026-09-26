@@ -34,6 +34,14 @@
  * resuelve con una regla global que cualquiera puede esquivar sin querer
  * animando por JavaScript, que es lo que la regla de CSS no alcanza.
  *
+ * ── Los números que cuentan (2026-09-26) ──────────────────────────────
+ * Las cifras de la demo suben de 0 a su valor (`CountUp`, marcado con
+ * `data-cuenta`). Con la preferencia tienen que salir ya en su valor. No
+ * lo hacían: el componente empezaba en el valor final y aun así lanzaba
+ * la animación desde 0. Ninguna posición cambiaba, así que esta guarda no
+ * lo veía. Ahora también vigila el texto de esos números, en la pestaña
+ * Operaciones de la demo, con su propia pasada de control.
+ *
  * Uso:  node scripts/movimiento.mjs --serve out
  */
 import { chromium } from "playwright";
@@ -93,9 +101,22 @@ async function servir(raiz) {
    dura menos que el tiempo que tardaría en instalarse después. */
 const ESPIA = `
 window.__mov = new Map();
+window.__cuenta = new Map();
 (function () {
   const previo = new WeakMap();
+  const textoPrevio = new WeakMap();
   function mira() {
+    for (const el of document.querySelectorAll("[data-cuenta]")) {
+      const t = el.textContent;
+      const antes = textoPrevio.get(el);
+      if (antes !== undefined && antes !== t) {
+        const v = window.__cuenta.get(el) || { veces: 0 };
+        v.veces++;
+        v.texto = t.trim().slice(0, 34);
+        window.__cuenta.set(el, v);
+      }
+      textoPrevio.set(el, t);
+    }
     for (const el of document.querySelectorAll("body *")) {
       const cs = getComputedStyle(el);
       const t = cs.transform;
@@ -135,10 +156,23 @@ async function recorrer(ctx, ruta, base) {
     await p.waitForTimeout(260);
   }
   await p.waitForTimeout(600);
+  /* En la demo, además, la pestaña Operaciones: su franja de cifras es
+     de números que cuentan. */
+  if (ruta === "/demo/") {
+    await p.evaluate(() => window.scrollTo(0, 0));
+    await p.getByRole("tab", { name: "Operaciones", exact: true }).first().click().catch(() => {});
+    await p.waitForTimeout(400);
+    /* Cuentan al verse: sin desplazarse hasta ellas se quedan en su
+       valor de partida y la pasada de control no vería nada. */
+    await p.locator("[data-cuenta]").first().evaluate((el) => el.scrollIntoView({ block: "center" })).catch(() => {});
+    await p.waitForTimeout(2000);
+  }
   const r = await p.evaluate((minimo) => {
     const out = [];
     for (const v of window.__mov.values()) if (v.veces >= minimo) out.push(v);
-    return out.sort((a, b) => b.veces - a.veces);
+    const cuentas = [];
+    for (const v of window.__cuenta.values()) if (v.veces >= minimo) cuentas.push(v);
+    return { mov: out.sort((a, b) => b.veces - a.veces), cuentas };
   }, FOTOGRAMAS_MINIMOS);
   await p.close();
   return r;
@@ -149,24 +183,30 @@ const navegador = await chromium.launch();
 
 const fallos = [];
 let controlTotal = 0;
+let controlCuentas = 0;
 const sinControl = [];
 
 for (const modo of ["reduce", "no-preference"]) {
   const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: modo });
   await ctx.addInitScript(ESPIA);
   for (const ruta of RUTAS) {
-    const r = await recorrer(ctx, ruta, base);
-    if (r === null) {
+    const res = await recorrer(ctx, ruta, base);
+    if (res === null) {
       fallos.push({ ruta, detalle: "la página no cargó: la guarda no pudo medirla" });
       continue;
     }
+    const r = res.mov;
     if (modo === "reduce") {
+      for (const v of res.cuentas) {
+        fallos.push({ ruta, detalle: `una cifra cambió durante ${v.veces} fotogramas hasta «${v.texto}»: cuenta pese a la preferencia` });
+      }
       for (const v of r.slice(0, 5)) {
         fallos.push({ ruta, detalle: `<${v.tag}> se movió durante ${v.veces} fotogramas — «${v.texto}» · ${v.clase}` });
       }
       if (r.length > 5) fallos.push({ ruta, detalle: `… y ${r.length - 5} elemento(s) más` });
     } else {
       controlTotal += r.length;
+      controlCuentas += res.cuentas.length;
       if (r.length === 0) sinControl.push(ruta);
       console.log(`[movimiento] control ${ruta.padEnd(16)} ${String(r.length).padStart(3)} elementos con movimiento`);
     }
@@ -182,7 +222,7 @@ if (fallos.length) {
   for (const f of fallos) console.log(`     ${f.ruta}  ${f.detalle}`);
 }
 
-console.log(`\n[movimiento] ${RUTAS.length} rutas · control: ${controlTotal} elementos con movimiento cuando se permite`);
+console.log(`\n[movimiento] ${RUTAS.length} rutas · control: ${controlTotal} elementos con movimiento y ${controlCuentas} cifras que cuentan cuando se permite`);
 
 /* La pasada de control es la que impide que esta guarda se quede verde
    para siempre. Si el sitio se moviera en menos de la mitad de sus
@@ -193,8 +233,12 @@ if (sinControl.length > RUTAS.length / 2 || controlTotal < 20) {
   console.log("[movimiento] eso no dice que el sitio esté quieto: dice que esta guarda está rota y no vale su respuesta");
   process.exit(1);
 }
+if (controlCuentas === 0) {
+  console.log("[movimiento] ninguna cifra de la demo contó ni con el movimiento permitido: la vigilancia de `data-cuenta` está rota o la pestaña no se abrió");
+  process.exit(1);
+}
 if (fallos.length) {
-  console.log(`[movimiento] ${fallos.length} elemento(s) cambian de posición con «reducir movimiento» activo`);
+  console.log(`[movimiento] ${fallos.length} elemento(s) se mueven o cuentan con «reducir movimiento» activo`);
   console.log("[movimiento] las transiciones de CSS las apaga la regla de `globals.css`; lo que anima por JavaScript, no");
   console.log("[movimiento] framer-motion necesita `<MotionConfig reducedMotion=\"user\">` por encima, o `useReducedMotion()` en el componente");
   process.exit(1);

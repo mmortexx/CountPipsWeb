@@ -210,7 +210,6 @@ MOTOR DE DEMO (5 vistas WinUI 3):
 - DemoShortcutsHint (9 KB) — Panel de atajos
 - DemoCapabilities (9 KB) — Panel de capacidades
 - DemoConversionPanel (6 KB) — Panel de conversión
-- TradeCompareModal (9 KB) — Modal de comparación de trades
 - AppDemo / AppDemoClient — Orquestador
 - PÁGINAS: DashboardPage (70 KB) · TradesPage (63 KB) · TradeDetailPage (47 KB) · AnalyticsPage (72 KB) · JournalPage (68 KB)
 - Motor: PRNG determinista mulberry32, indexación temporal UTC, useSyncExternalStore

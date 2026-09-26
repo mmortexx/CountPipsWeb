@@ -27,10 +27,16 @@ import { fmtInt, fmtNum, pctSep } from "@/lib/trading/format";
  *
  * Ahora el riesgo se CALCULA a partir del tamaño (0,5 % por contrato) y
  * el veredicto sale de compararlo con el límite, así que la aritmética no
- * puede volver a descuadrarse. Y pulsar cambia de verdad el estado: el
- * tamaño baja, el riesgo baja con él y el aviso pasa de bloqueado a
- * permitido, que es exactamente lo que la sección promete que hace la
- * aplicación.
+ * puede volver a descuadrarse.
+ *
+ * ── FIEL AL PROGRAMA (cotejado con su código el 2026-09-26) ───────────
+ * Las filas son reglas que el semáforo de la app evalúa de verdad
+ * (`RiskFindingKind`: pérdida diaria y semanal, drawdown, operaciones del
+ * día, correlación y riesgo por operación). Antes enseñaba «setup apto» y
+ * «R:R ≥ 1,5», que la app no comprueba. El aviso rojo es la frase de la
+ * app, sin proponer un tamaño —eso lo hace aparte su calculadora—, y el
+ * semáforo AVISA pero no impide guardar: lo único que bloquea es el freno
+ * duro, si se activa.
  */
 
 /** Riesgo que aporta cada contrato, en % de la cuenta. */
@@ -177,8 +183,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             </div>
             <ul className="m-0 p-0 list-none">
               {[
-                { ok: true, l: es ? "Setup apto: ruptura NY" : "Valid setup: NY breakout" },
-                { ok: true, l: es ? "R:R ≥ 1,5" : "R:R ≥ 1.5" },
+                { ok: true, l: es ? `Pérdida del día ${pct(0.6)} · límite ${pct(3)}` : `Daily loss ${pct(0.6)} · limit ${pct(3)}` },
+                { ok: true, l: es ? `Operaciones hoy ${fmtInt(2, lang)} · máximo ${fmtInt(5, lang)}` : `Trades today ${fmtInt(2, lang)} · max ${fmtInt(5, lang)}` },
                 {
                   // El texto y el estado salen del cálculo, no de una
                   // constante: el riesgo es el tamaño por el riesgo
@@ -217,22 +223,22 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 tono === "ok" ? "rgb(var(--pnl-pos))" : tono === "mal" ? "rgb(var(--pnl-neg))" : "var(--ink-3)";
               const titulo =
                 tono === "neutro"
-                  ? es ? "Registrada fuera de tu regla" : "Logged against your rule"
+                  ? es ? "Registrada con el semáforo en rojo" : "Logged on a red light"
                   : tono === "ok"
                     ? es ? "Semáforo en verde" : "Green light"
                     : es ? "Semáforo en rojo" : "Red light";
               const cuerpo =
                 tono === "neutro"
                   ? es
-                    ? "Queda anotada con el semáforo en rojo. Si activas el freno duro, al tocar tu pérdida diaria dejará de admitir operaciones nuevas."
-                    : "It is logged with the light on red. If you turn on the hard brake, hitting your daily loss stops new trades from being logged."
+                    ? "El semáforo avisa, no bloquea: la operación se guarda. Lo que bloquea es el freno duro, si lo activas, al tocar tu pérdida diaria, una racha o tu caída máxima."
+                    : "The light warns, it doesn’t block: the trade is saved. What blocks is the hard brake, if you turn it on, when you hit your daily loss, a losing streak or your max drawdown."
                   : tono === "ok"
                     ? es
-                      ? `Con ${fmtInt(contratos, lang)} contratos el riesgo baja a ${pct(riesgo)}, justo en tu límite.`
-                      : `At ${fmtInt(contratos, lang)} contracts the risk drops to ${pct(riesgo)}, exactly at your limit.`
+                      ? `Esta operación arriesga ${pct(riesgo)} de tu cuenta, dentro de tu límite por operación.`
+                      : `This trade risks ${pct(riesgo)} of your account, within your per-trade limit.`
                     : es
-                      ? `El riesgo supera tu máximo por operación. Con ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos quedaría en ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, dentro de tu límite.`
-                      : `Risk is above your per-trade maximum. At ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts it would be ${pct(CONTRATOS_AJUSTADOS * RIESGO_POR_CONTRATO)}, within your limit.`;
+                      ? `Esta operación arriesga ${pct(riesgo)} de tu cuenta; tu límite por operación es ${pct(LIMITE_RIESGO)}.`
+                      : `This trade risks ${pct(riesgo)} of your account; your per-trade limit is ${pct(LIMITE_RIESGO)}.`;
               const Icono = tono === "ok" ? ShieldCheck : AlertTriangle;
               return (
                 <div role="status" aria-live="polite" className="tj-d-veredicto mt-1 pt-5 border-t border-[var(--ficha-division)]">
@@ -251,7 +257,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               {estado === "bloqueado" ? (
                 <>
                   <button type="button" onClick={() => setEstado("ajustado")} className="cta cta--primario tnum">
-                    {es ? `Ajustar a ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos` : `Adjust to ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts`}
+                    {es ? `Probar con ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos` : `Try ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts`}
                   </button>
                   <button type="button" onClick={() => setEstado("anulado")} className="cta cta--secundario">
                     {es ? "Registrar igualmente" : "Log anyway"}

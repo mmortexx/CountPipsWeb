@@ -56,4 +56,4 @@ export const titularIncompleto =
  * de fecha en cada compilación, sin que su contenido cambie, no informa de
  * nada. Se actualiza cuando se revise el texto.
  */
-export const LEGAL_ACTUALIZADO = "2026-09-24";
+export const LEGAL_ACTUALIZADO = "2026-09-26";

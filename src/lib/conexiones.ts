@@ -15,8 +15,8 @@ export type Conexion = { automatica: boolean; es: Texto; en: Texto };
 export const CONEXIONES: Conexion[] = [
   {
     automatica: true,
-    es: { nombre: "Licencia", que: "La clave y el nombre del equipo, como mucho una vez al día" },
-    en: { nombre: "Licence", que: "The key and the computer name, at most once a day" },
+    es: { nombre: "Licencia", que: "La clave y el identificador de esta instalación, como mucho una vez al día" },
+    en: { nombre: "Licence", que: "The key and this installation’s identifier, at most once a day" },
   },
   {
     automatica: false,

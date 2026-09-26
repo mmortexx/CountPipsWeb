@@ -75,7 +75,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué ocurre si cambio de ordenador durante el piloto?",
-    a: "Tus datos viven en un único archivo: crea una copia de seguridad desde el programa y restáurala en el ordenador nuevo. No pediremos credenciales ni datos financieros para hacerlo.",
+    a: "Crea una copia de seguridad desde el programa —un solo archivo con tus operaciones y tus capturas— y restáurala en el ordenador nuevo. No pediremos credenciales ni datos financieros para hacerlo.",
   },
 ];
 
@@ -130,7 +130,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What if I change computers during the pilot?",
-    a: "Your data lives in a single file: create a backup from the app and restore it on the new computer. We will not ask for credentials or financial data to do it.",
+    a: "Create a backup from the app —a single file with your trades and your screenshots— and restore it on the new computer. We will not ask for credentials or financial data to do it.",
   },
 ];
 

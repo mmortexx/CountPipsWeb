@@ -274,7 +274,7 @@ export function FeaturesBento({
               <span>{es ? "3 cuentas" : "3 accounts"}</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1">
-              <h3 className={titulo}>{es ? "Una cuenta o diez, en la misma vista" : "One account or ten, in the same view"}</h3>
+              <h3 className={titulo}>{es ? "Todas tus cuentas, en la misma vista" : "All your accounts, in the same view"}</h3>
               {/* El resultado se calcula del saldo y el capital inicial para
                   que no puedan contradecirse: la Topstep «aprobada» tiene
                   que pasar el +6 % de su plantilla. */}

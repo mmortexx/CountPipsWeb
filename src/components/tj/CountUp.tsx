@@ -42,14 +42,14 @@ export function CountUp({
 }: CountUpProps) {
   const { lang } = useLang();
   const ref = useRef<HTMLSpanElement>(null);
-  // SSR-safe lazy initial state: under reduced-motion, mount directly at
-  // the final value with `started=true` so neither the IntersectionObserver
-  // nor the rAF loop ever fires.
-  const reduceAtMount =
-    typeof window !== "undefined" &&
-    matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const [val, setVal] = useState(reduceAtMount ? to : from);
-  const [started, setStarted] = useState(reduceAtMount);
+  // Con «reducir movimiento» se pinta el valor final y no arranca nada.
+  // Antes solo se marcaba `started`, y eso era justo lo que lanzaba la
+  // animación desde `from` (lo vigila `scripts/movimiento.mjs`).
+  const [reduced] = useState(
+    () => typeof window !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+  const [val, setVal] = useState(reduced ? to : from);
+  const [started, setStarted] = useState(reduced);
 
   useEffect(() => {
     if (started) return; // reduced-motion path already at final state
@@ -69,7 +69,7 @@ export function CountUp({
   }, [started]);
 
   useEffect(() => {
-    if (!started) return;
+    if (!started || reduced) return;
     let raf = 0;
     const start = performance.now();
     const tick = (now: number) => {
@@ -81,7 +81,7 @@ export function CountUp({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [started, to, from, duration]);
+  }, [started, reduced, to, from, duration]);
 
   const toneClass =
     tone === "pos"
@@ -98,10 +98,11 @@ export function CountUp({
       // mount, so the live region only fires when the value stabilises
       // (the rapid intermediate values are throttled by the screen reader).
       aria-live="polite"
+      data-cuenta=""
       className={`tnum ${toneClass} ${className}`}
     >
       {prefix}
-      {fmtNum(val, lang, decimals)}
+      {fmtNum(reduced ? to : val, lang, decimals)}
       {suffix}
     </span>
   );

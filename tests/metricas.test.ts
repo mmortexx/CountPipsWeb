@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { METRICS, TRADES, computeMetrics } from "@/lib/trading/data";
+import { METRICS, TRADES, computeMetrics, nivelDisciplina } from "@/lib/trading/data";
 import { getRDistribution } from "@/lib/trading/fixtures";
 
 /**
@@ -55,6 +55,23 @@ describe("motor de métricas", () => {
     expect(METRICS.winRate).toBeLessThan(0.75);
     expect(METRICS.profitFactor).toBeLessThan(4);
     expect(METRICS.expectancyR).toBeLessThan(1);
+  });
+
+  it("disciplina como la app: el coste es el neto de «me salté el plan»; «a medias» no entra", () => {
+    const base = TRADES[0];
+    const op = (id: number, netPnl: number, compliance: "yes" | "partial" | "no") => ({ ...base, id, netPnl, compliance });
+    const m = computeMetrics([op(1, 300, "yes"), op(2, 100, "yes"), op(3, -500, "partial"), op(4, -120, "no"), op(5, 20, "no")]);
+    expect(m.compliancePct).toBeCloseTo(2 / 5, 12);
+    expect(m.expectancyInPlan).toBeCloseTo(200, 9);
+    expect(m.expectancyBrokePlan).toBeCloseTo(-50, 9);
+    expect(m.costOfIndiscipline).toBeCloseTo(100, 9);
+  });
+
+  it("semáforo de disciplina con los cortes de la app: 80 % y 50 %", () => {
+    expect(nivelDisciplina(0.8)).toBe("alta");
+    expect(nivelDisciplina(0.7999)).toBe("media");
+    expect(nivelDisciplina(0.5)).toBe("media");
+    expect(nivelDisciplina(0.4999)).toBe("baja");
   });
 });
 

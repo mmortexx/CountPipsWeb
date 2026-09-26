@@ -23,6 +23,7 @@ import {
   fmtDuration,
   fmtR,
   fmtInt,
+  fmtPct,
 } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
@@ -31,7 +32,7 @@ import { CountUp } from "@/components/tj/CountUp";
 import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
-import { TradeCompareModal } from "@/components/demo/TradeCompareModal";
+import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
 
 /* ============================================================
  * Tablas estáticas — la clase de activo ya no se codifica por color (ver
@@ -194,6 +195,7 @@ const TradeRow = memo(function TradeRow({
         ease: [0.22, 1, 0.36, 1],
       }}
       onClick={() => !isConfirming && goDetail(trade.id)}
+      data-operacion={trade.id}
       className={`group relative cursor-pointer border-b border-[rgb(var(--divider)/0.06)] last:border-b-0 transition-[background-color,box-shadow] duration-150 ${
         selected ? "bg-[rgb(var(--accent-base)/0.08)]" : "even:bg-[rgb(var(--divider)/0.02)] hover:bg-[rgb(var(--divider)/0.06)]"
       } hover:shadow-[inset_2px_0_0_0_rgb(var(--accent-base))] ${
@@ -498,6 +500,81 @@ function KpiStripCell({
   );
 }
 
+/* «Esta selección frente al resto» (TradesPage.xaml, 21/07/2026): solo con
+   filtro activo, porque sin filtro no hay «resto». Textos de la app. */
+function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: "es" | "en" }) {
+  const es = lang === "es";
+  const r = (v: number | null) => (v === null ? "—" : fmtR(v, lang, 2));
+  const wr = (v: number | null) => (v === null ? "—" : fmtPct(v, lang, 0));
+  const ops = (n: number) =>
+    es ? `${fmtInt(n, lang)} ${n === 1 ? "operación" : "operaciones"}` : `${fmtInt(n, lang)} ${n === 1 ? "trade" : "trades"}`;
+  const firme = c.veredicto === "gana-seleccion" || c.veredicto === "gana-resto";
+  const ganador = c.veredicto === "gana-seleccion" ? (es ? "esta selección" : "this selection") : es ? "el resto" : "the rest";
+  const veredicto = firme
+    ? es
+      ? `Gana ${ganador}, y la diferencia no es casualidad: sus intervalos de confianza no se solapan.`
+      : `${ganador[0].toUpperCase()}${ganador.slice(1)} wins, and the difference is not chance: their confidence intervals don’t overlap.`
+    : c.veredicto === "solapan"
+      ? es
+        ? "Todavía no puedes distinguirlas: sus intervalos de confianza se solapan. Que se solapen no quiere decir que sean iguales — quiere decir que aún faltan operaciones para saberlo."
+        : "You can’t tell them apart yet: their confidence intervals overlap. Overlapping doesn’t mean they’re equal — it means you still need more trades to know."
+      : es
+        ? "Uno de los dos grupos no tiene operaciones suficientes con R para compararlos con rigor."
+        : "One of the two groups doesn’t have enough trades with R to compare them rigorously.";
+  const filas: { l: string; a: ReactNode; b: ReactNode; grande?: boolean }[] = [
+    { l: es ? "Ventaja por operación" : "Edge per trade", a: r(c.seleccion.expectancyR), b: r(c.resto.expectancyR), grande: true },
+    { l: "Win rate", a: wr(c.seleccion.winRate), b: wr(c.resto.winRate) },
+    {
+      l: es ? "P&L total" : "Total P&L",
+      a: <Money value={c.seleccion.pnl} sign colorizeSign />,
+      b: <Money value={c.resto.pnl} sign colorizeSign />,
+    },
+  ];
+  return (
+    <section className="demo-card p-5 space-y-3" aria-label={es ? "Esta selección frente al resto" : "This selection against the rest"}>
+      <Eyebrow>{es ? "Esta selección frente al resto" : "This selection against the rest"}</Eyebrow>
+      <p className="text-xs leading-relaxed text-tertiary max-w-[72ch]">
+        {es
+          ? "Filtrar es comparar: lo que has dejado a la vista, medido contra todo lo que has escondido. Se compara la ventaja por operación en R —no el dinero, que premia operar más— y solo se declara ganador si la diferencia no es azar."
+          : "Filtering is comparing: what you left in view, measured against everything you hid. It compares the edge per trade in R —not money, which rewards trading more— and only names a winner if the difference isn’t chance."}
+      </p>
+      <table className="w-full max-w-[560px] tnum text-left [&_td]:py-1 [&_th]:py-1">
+        <thead>
+          <tr>
+            <td />
+            <th scope="col" className="pl-4 sm:pl-8 text-[11px] font-medium text-[rgb(var(--accent-base))]">{es ? "Selección" : "Selection"}</th>
+            <th scope="col" className="pl-4 sm:pl-8 text-[11px] font-medium text-secondary">{es ? "El resto" : "The rest"}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filas.map((f) => (
+            <tr key={f.l} className="align-baseline">
+              <th scope="row" className="text-xs font-normal text-tertiary">{f.l}</th>
+              <td className={`pl-4 sm:pl-8 font-semibold text-primary ${f.grande ? "text-xl" : "text-sm"}`}>{f.a}</td>
+              <td className={`pl-4 sm:pl-8 text-secondary ${f.grande ? "text-xl" : "text-sm"}`}>{f.b}</td>
+            </tr>
+          ))}
+          <tr>
+            <td />
+            <td className="pl-4 sm:pl-8 text-xs text-tertiary">{ops(c.seleccion.n)}</td>
+            <td className="pl-4 sm:pl-8 text-xs text-tertiary">{ops(c.resto.n)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p
+        role="status"
+        className={
+          firme
+            ? "inline-block max-w-[780px] rounded-full border border-[rgb(var(--sig-green)/0.35)] px-3 py-1 text-xs leading-relaxed text-[rgb(var(--sig-green))]"
+            : "max-w-[820px] text-xs leading-relaxed text-secondary"
+        }
+      >
+        {veredicto}
+      </p>
+    </section>
+  );
+}
+
 /* ============================================================
  * Bulk action bar — mirrors TradesPage.xaml lines 474-536.
  * Appears only when at least one row is selected. Shows a
@@ -509,14 +586,12 @@ function BulkActionBar({
   onClear,
   onTagAdd,
   onTagRemove,
-  onCompare,
   lang,
 }: {
   count: number;
   onClear: () => void;
   onTagAdd: (tag: string) => void;
   onTagRemove: (tag: string) => void;
-  onCompare?: () => void;
   lang: "es" | "en";
 }) {
   const [tag, setTag] = useState("");
@@ -533,17 +608,6 @@ function BulkActionBar({
         <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary hidden sm:inline">
           {lang === "es" ? "seleccionadas" : "selected"}
         </span>
-
-        {/* Compare 2 trades action button */}
-        {count === 2 && onCompare && (
-          <button
-            type="button"
-            onClick={onCompare}
-            className="flex items-center gap-1.5 h-7 px-3 rounded-[2px] border border-[rgb(var(--accent-base)/0.4)] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-mono text-xs font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-sm"
-          >
-            <span>{lang === "es" ? "Comparar 2 operaciones" : "Compare 2 trades"}</span>
-          </button>
-        )}
 
         <span className="hidden md:inline-block w-px h-4 bg-[rgb(var(--divider)/0.1)] mx-1" aria-hidden="true" />
 
@@ -622,17 +686,6 @@ export function TradesPage() {
   // los comparte ninguna otra página.
   const [outcome, setOutcome] = useState<"all" | "win" | "loss" | "be">("all");
   const [setupSel, setSetupSel] = useState<string>("all");
-  const [comparingPair, setComparingPair] = useState<[(typeof TRADES)[number], (typeof TRADES)[number]] | null>(null);
-
-  const handleCompare = () => {
-    if (selectedIds.size !== 2) return;
-    const ids = Array.from(selectedIds);
-    const tA = allTrades.find((t) => t.id === ids[0]);
-    const tB = allTrades.find((t) => t.id === ids[1]);
-    if (tA && tB) {
-      setComparingPair([tA, tB]);
-    }
-  };
 
   const handleExport = (format: "csv" | "json") => {
     if (!filtered.length) return;
@@ -813,6 +866,10 @@ export function TradesPage() {
   const filterSig = `${filters.instrument}|${filters.direction}|${filters.compliance}|${outcome}|${setupSel}|${debounced.trim()}|${sortKey}|${sortDir}`;
 
   const totalPnl = metrics.netPnl;
+  const comparacion = useMemo(
+    () => (filterActive ? compararSeleccion(allTrades, filtered) : null),
+    [filterActive, allTrades, filtered]
+  );
   // Suma de R, no media: la fila de totales la etiqueta "Suma"/"Sum" (más
   // abajo) y la media por operación ya tiene su propio KPI (Expectancy R).
   // Antes dividía entre filtered.length, así que bajo la etiqueta "Suma"
@@ -1321,6 +1378,8 @@ export function TradesPage() {
         </div>
       </div>
 
+      {comparacion && <SeleccionFrenteAlResto c={comparacion} lang={lang} />}
+
       {/* ===== Trades table card (the only boxed surface) =====
            Mobile: the table is wider than the card (min-w-[1080px]) so it
            scrolls horizontally INSIDE the card via overflow-x-auto. A
@@ -1568,7 +1627,6 @@ export function TradesPage() {
                 onClear={clearSelection}
                 onTagAdd={handleTagAdd}
                 onTagRemove={handleTagRemove}
-                onCompare={handleCompare}
                 lang={lang}
               />
             </motion.div>
@@ -1593,15 +1651,6 @@ export function TradesPage() {
           </div>
         )}
       </div>
-
-      {/* Trade Comparison Modal */}
-      {comparingPair && (
-        <TradeCompareModal
-          tradeA={comparingPair[0]}
-          tradeB={comparingPair[1]}
-          onClose={() => setComparingPair(null)}
-        />
-      )}
     </div>
   );
 }

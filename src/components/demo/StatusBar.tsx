@@ -1,7 +1,7 @@
 "use client";
 
 import { useLang } from "@/lib/i18n";
-import { METRICS } from "@/lib/trading/data";
+import { METRICS, nivelDisciplina } from "@/lib/trading/data";
 import { fmtPct } from "@/lib/trading/format";
 
 /* ------------------------------------------------------------------ */
@@ -61,7 +61,8 @@ export function StatusBar() {
   // derives text + color from a similar compliance calculation against
   // real trades). Capped at [0, 1] for safety.
   const compliance = Math.max(0, Math.min(1, METRICS.compliancePct));
-  const isHealthy = compliance >= 0.7;
+  const nivel = nivelDisciplina(compliance);
+  const isHealthy = nivel === "alta";
   const complianceLabel = fmtPct(compliance, lang, 0);
 
   return (
@@ -78,7 +79,7 @@ export function StatusBar() {
           {t("discipline")}:{" "}
           <span
             className={`tnum font-medium ${
-              isHealthy ? "text-pnl-pos" : "text-pnl-warn"
+              { alta: "text-pnl-pos", media: "text-pnl-warn", baja: "text-pnl-neg" }[nivel]
             }`}
           >
             {complianceLabel}

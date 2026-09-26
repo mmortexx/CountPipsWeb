@@ -42,7 +42,8 @@
 | `hero-calcs.test.ts` | Las micro-calculadoras del hero (sin deslizadores) |
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
 | `marcas-eje.test.ts` | Marcas de eje en cifras redondas (1 · 2 · 2,5 · 5), dentro del rango y sin reventar con rangos imposibles |
-| `metricas.test.ts` | El motor de métricas y la distribución de R de la portada |
+| `metricas.test.ts` | El motor de métricas y la distribución de R de la portada; el coste de indisciplina y el semáforo de disciplina con el criterio y los cortes de la app |
+| `comparacion.test.ts` | «Esta selección frente al resto» de la demo: gana solo quien tiene intervalos disjuntos, solaparse no es empatar, por debajo de 20 operaciones no hay veredicto, y el resto es el complemento exacto |
 | `fondeo.test.ts` | Prueba de fondeo: coincide con la ruina del jugador, el dinámico nunca aprueba más que el estático, escenario leído de la dirección acotado y ajustado al paso |
 | `formulario-declarado.test.ts` | Lo que la FAQ y la política de privacidad dicen que pide el formulario de acceso es lo que pide: cuenta los campos del HTML compilado (se salta sin `out/`) |
 | `calendario-muestra.test.ts` | Muestra de /features: el calendario de julio de 2026 empieza en su día y tiene 31; ningún cierre en fin de semana salvo cripto, sin cambiar el resultado total; los setups de la ficha de playbooks cubren la muestra, de mejor a peor, con alguno sin ventaja; `OPERACIONES_MUESTRA` es el tamaño real de la muestra; el cumplimiento mensual del diario son los seis meses naturales con el criterio de las métricas; el contexto del día de la ficha (orden, tiempo desde el último cierre, resultado previo, revancha en el límite del enfriamiento) sale de las operaciones de ese día; la temporalidad y el régimen de la tarjeta «Contexto» salen de duración y setup |
