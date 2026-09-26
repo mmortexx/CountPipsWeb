@@ -3,7 +3,6 @@
 import { Link } from "@/components/tj/LocaleLink";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -112,15 +111,11 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                     </span>
                   </span>
                   {isActive ? (
-                    <span className="tnum shrink-0 text-[11px] font-semibold text-[rgb(var(--accent-base))]">
-                      {es ? "Aquí" : "Here"}
+                    <span className="tnum shrink-0 text-[12px] font-medium text-tertiary">
+                      {es ? "Estás aquí" : "You are here"}
                     </span>
                   ) : (
-                    <ArrowRight
-                      size={14}
-                      className="shrink-0 text-tertiary transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
-                      aria-hidden
-                    />
+                    <span aria-hidden />
                   )}
                 </Link>
               </li>

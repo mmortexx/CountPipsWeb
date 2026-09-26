@@ -290,7 +290,7 @@ export function FeatureExplorer() {
           <div>
             <div className="mb-4">
               <span className="tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>
-                {es ? "Todas las características" : "All features"} · {fmtInt(FEATURES.length, lang)}
+                {fmtInt(FEATURES.length, lang)} {es ? "características" : "features"}
               </span>
             </div>
             <ListaFunciones items={FEATURES} es={es} />

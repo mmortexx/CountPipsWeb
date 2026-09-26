@@ -92,10 +92,9 @@ export function PricingFAQ() {
               /* `-my-2 py-2` amplía la zona que se puede tocar sin
                  desplazar la línea: medía 20 px de alto y es la salida
                  hacia la FAQ desde la página que más importa vender. */
-              className="group/link inline-flex items-center gap-1 -my-3 py-3 text-primary hover:text-[rgb(var(--accent-base))] hover:underline font-medium transition-colors duration-200"
+              className="link-underline-host inline-flex -my-3 py-3 text-primary font-medium"
             >
-              <span>{es ? "Ver FAQ completa" : "See full FAQ"}</span>
-              <span className="transition-transform duration-200 group-hover/link:translate-x-0.5" aria-hidden="true">→</span>
+              <span className="link-underline">{es ? "Ver FAQ completa" : "See full FAQ"}</span>
             </a>
           </p>
         </Reveal>

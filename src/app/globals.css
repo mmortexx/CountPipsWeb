@@ -857,7 +857,7 @@
     /* Relleno tenue en vez de filete: funciona sobre cualquier fondo. */
     background-color: color-mix(in srgb, var(--ink) 4.5%, transparent);
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: 4px;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   }
   input:focus,
@@ -2021,15 +2021,11 @@ textarea:focus-visible,
 }
 
 /* ============================================================
-   LINK-UNDERLINE — subtle accent underline that sweeps in from the
-   left on hover. Apply to inline text links that don't already
-   carry their own hover affordance (Footer columns, FAQ support
-   link, section descriptions). The 1px hairline sits 2px below
-   the baseline (optical alignment for descenders), the
-   transform-origin: left pairs with the cubic-bezier "soft settle"
-   curve used site-wide so the sweep matches the Reveal / motion
-   timing budget. Focus-visible reuses the same sweep so keyboard
-   users get an equivalent affordance to hover.
+   LINK-UNDERLINE — filete de 1 px, 2 px bajo la línea base, en la
+   tinta del propio enlace al 32 %: a la vista siempre, para que el
+   enlace se lea como enlace sin flecha. Al pasar o con foco de teclado
+   se entinta entero. En listas de enlaces, `--al-pasar` lo esconde
+   hasta entonces.
    ============================================================ */
 .link-underline {
   position: relative;
@@ -2042,23 +2038,22 @@ textarea:focus-visible,
   right: 0;
   bottom: -2px;
   height: 1px;
-  /* El filete era un degradado del acento al 40 % hasta el 100 %. Un
-     subrayado que cambia de densidad a lo largo del renglón no lo hace
-     ninguna imprenta: el trazo entra con el movimiento, que es lo que
-     ya hace el `scaleX`, y su grosor y su tinta son constantes. */
-  background-color: rgb(var(--accent-base));
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s var(--ease-suave);
+  background-color: color-mix(in srgb, currentColor 32%, transparent);
+  transition: background-color 0.2s var(--ease-suave);
 }
+/* En listas de enlaces (pie, índice legal) el filete solo sale al pasar:
+   subrayar cada renglón de una lista que ya es de enlaces es ruido. */
+.link-underline--al-pasar::after {
+  background-color: transparent;
+}
+.link-underline-host:hover .link-underline::after,
 .link-underline:hover::after,
 .link-underline:focus-visible::after,
 /* El filete se dibuja en un `span` que no es focalizable: quien recibe el
    foco es el enlace de fuera, así que `:focus-visible` sobre el `span` no
-   se cumple nunca. El aro del navegador sí sale, pero el barrido que promete
-   el comentario de arriba no llegaba al teclado hasta esta línea. */
+   se cumple nunca. */
 .link-underline-host:focus-visible .link-underline::after {
-  transform: scaleX(1);
+  background-color: currentColor;
 }
 @media (prefers-reduced-motion: reduce) {
   .link-underline::after { transition: none; }
@@ -3064,23 +3059,22 @@ button.icon-btn:hover > svg,
 .cta--primario:hover {
   background: rgb(var(--accent-hover));
 }
-/* La secundaria no compite: es texto con flecha, sin caja. */
+/* La secundaria no compite: texto subrayado, sin caja ni flecha. El
+   filete tenue dice «enlace» sin adorno y se entinta al pasar. */
 .cta--secundario {
   padding: 0;
   border: 0;
   color: var(--ink);
   background: transparent;
   font-weight: 500;
-}
-.cta--secundario::after {
-  content: "→";
-  transition: transform 160ms var(--ease-suave);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  text-decoration-color: color-mix(in srgb, currentColor 32%, transparent);
+  transition: text-decoration-color 0.2s var(--ease-suave);
 }
 .cta--secundario:hover {
-  color: var(--ink-2);
-}
-.cta--secundario:hover::after {
-  transform: translateX(3px);
+  text-decoration-color: currentColor;
 }
 @media (max-width: 480px) {
   .cta--primario {
@@ -3269,7 +3263,7 @@ button.icon-btn:hover > svg,
 }
 .tj-lamina-marco {
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 0 0 1px var(--line);
   -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
@@ -3290,7 +3284,7 @@ button.icon-btn:hover > svg,
    comería su canto inferior. */
 :root:not([data-theme="light"]) .tj-lamina-marco {
   padding: 10px;
-  border-radius: 12px;
+  border-radius: 8px;
   background: rgb(255 255 255 / 0.035);
   box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 40px 80px -48px rgb(0 0 0 / 0.9);
   -webkit-mask-image: none;
@@ -3851,7 +3845,7 @@ select.tj-campo:invalid {
   position: relative;
   height: clamp(190px, 26vw, 300px);
   margin-top: 0.5rem;
-  border-radius: 8px;
+  border-radius: 4px;
   touch-action: pan-y;
   cursor: crosshair;
 }
@@ -5977,12 +5971,6 @@ svg [data-entra="sello"] {
   .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(2) { animation-delay: 0.14s; }
   .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(n + 3) { animation-delay: 0.2s; }
 
-  .cta--secundario::after {
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .cta--secundario:hover::after {
-    transform: translateX(5px);
-  }
 }
 @keyframes tj-carga {
   from {

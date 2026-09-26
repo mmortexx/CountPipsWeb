@@ -136,7 +136,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
                       >
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <span className="link-underline">
+                      <span className="link-underline link-underline--al-pasar">
                         {es ? s.tituloEs : s.tituloEn}
                       </span>
                     </a>

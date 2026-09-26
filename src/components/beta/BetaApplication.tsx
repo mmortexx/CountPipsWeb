@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Check, ChevronDown, ShieldCheck } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
@@ -309,16 +309,12 @@ export function BetaApplication() {
               ? "Buscamos un piloto pequeño y útil. No hace falta que tengas una cuenta ni que compartas resultados o datos financieros."
               : "We are building a small, useful private pilot. You won’t need an account, and you won’t be asked for performance or financial data."}
           </p>
-          <div className="mt-6 space-y-3 text-sm text-secondary">
-            {[es ? "Piloto privado, por invitación" : "Private pilot, invite only", es ? "Tus operaciones, en tu equipo" : "Your trades, on your machine", es ? "Sin spam ni boletines por defecto" : "No spam or newsletter by default"].map((item) => (
-              <div key={item} className="flex items-start gap-2.5">
-                <Check size={16} className="mt-0.5 shrink-0 text-tertiary" aria-hidden />
-                <span>{item}</span>
-              </div>
+          <ul className="mt-6 space-y-2 p-0 text-sm text-secondary">
+            {[es ? "Piloto privado, por invitación." : "Private pilot, invite only.", es ? "Tus operaciones, en tu equipo." : "Your trades, on your machine.", es ? "Sin spam ni boletines por defecto." : "No spam or newsletter by default."].map((item) => (
+              <li key={item} className="list-none">{item}</li>
             ))}
-          </div>
-          <div className="mt-7 flex items-start gap-2.5 border-t border-[rgb(var(--divider)/0.12)] pt-5 text-xs text-tertiary">
-            <ShieldCheck size={16} className="mt-0.5 shrink-0" aria-hidden />
+          </ul>
+          <div className="mt-7 border-t border-[rgb(var(--divider)/0.12)] pt-5 text-xs text-tertiary">
             <span>{es ? "No pedimos credenciales, saldos ni acceso a tu bróker." : "We never ask for credentials, balances or broker access."}</span>
           </div>
         </div>

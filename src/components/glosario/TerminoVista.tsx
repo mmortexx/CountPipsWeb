@@ -15,22 +15,16 @@ import {
 import { herramientaPorSlug } from "@/lib/herramientas";
 
 
-/** Una salida de la ficha: rótulo pequeño encima y destino con su flecha. */
+/** Una salida de la ficha: rótulo pequeño encima y el destino subrayado. */
 function Salida({ href, rotulo, destino }: { href: string; rotulo: string; destino: string }) {
   return (
     <Link
       href={href}
-      className="group -mx-4 flex items-center justify-between gap-4 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+      className="link-underline-host -mx-4 block rounded-[4px] px-4 py-3.5"
     >
-      <span className="min-w-0">
-        <span className="block text-[12px] text-tertiary">{rotulo}</span>
-        <span className="mt-1 block text-[15px] font-medium text-primary">{destino}</span>
-      </span>
-      <span
-        aria-hidden
-        className="shrink-0 text-[15px] text-tertiary transition-[color,transform] duration-300 group-hover:translate-x-1 group-hover:text-primary"
-      >
-        →
+      <span className="block text-[12px] text-tertiary">{rotulo}</span>
+      <span className="mt-1 inline-block text-[15px] font-medium text-primary">
+        <span className="link-underline">{destino}</span>
       </span>
     </Link>
   );
@@ -123,8 +117,8 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   href={herramienta}
                   rotulo={
                     esTest
-                      ? es ? "Mídete · gratis y sin registro" : "Measure yourself · free, no sign-up"
-                      : es ? "Calcúlalo · gratis y sin registro" : "Work it out · free, no sign-up"
+                      ? es ? "Mídete, gratis y sin registro" : "Measure yourself, free and without sign-up"
+                      : es ? "Calcúlalo, gratis y sin registro" : "Work it out, free and without sign-up"
                   }
                   destino={destinoHerramienta}
                 />

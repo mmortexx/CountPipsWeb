@@ -71,8 +71,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Tell me your capital, the percentage you risk and the distance to your stop, and I will tell you the exact position size. No sign-up, and nothing you type leaves your browser.",
     resumenEs: "El tamaño exacto de la posición a partir de tu riesgo y tu stop.",
     resumenEn: "The exact position size from your risk and your stop.",
-    entregaEs: "Lotes · contratos",
-    entregaEn: "Lots · contracts",
+    entregaEs: "Lotes y contratos",
+    entregaEn: "Lots and contracts",
     descripcionEs:
       "Calcula el tamaño de posición a partir de tu capital, el porcentaje de riesgo por operación y la distancia al stop. Gratis, sin registro y sin enviar datos.",
     descripcionEn:
@@ -137,8 +137,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "A 50% drawdown is not undone by a 50% gain: it takes 100%. Enter your drawdown, your risk per trade, your win rate and your payoff, and see how much you need to make and how many trades the typical path takes to get back.",
     resumenEs: "Lo que hay que ganar para volver al máximo, y cuántas operaciones tarda.",
     resumenEn: "What it takes to get back to the peak, and how many trades it takes.",
-    entregaEs: "Ganancia · operaciones",
-    entregaEn: "Gain · trades",
+    entregaEs: "Ganancia y operaciones",
+    entregaEn: "Gain and trades",
     descripcionEs:
       "Calcula la ganancia necesaria para recuperar un drawdown y cuántas operaciones tarda, con tu acierto, tu payoff y tu riesgo por operación.",
     descripcionEn:
@@ -159,8 +159,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "A prop firm challenge is passed or failed by whichever comes first: the target or the drawdown. Set its rules and how you trade, and see what share of two thousand attempts gets through.",
     resumenEs: "Qué parte de dos mil intentos llega antes al objetivo que al drawdown.",
     resumenEn: "What share of two thousand attempts hits the target before the drawdown.",
-    entregaEs: "Aprueba · suspende",
-    entregaEn: "Pass · fail",
+    entregaEs: "Aprueba o suspende",
+    entregaEn: "Pass or fail",
     descripcionEs:
       "Simula una prueba de fondeo con drawdown estático o dinámico: probabilidad de aprobar según tu objetivo, tu riesgo por operación, tu acierto y tu payoff.",
     descripcionEn:
@@ -227,8 +227,8 @@ export const HERRAMIENTAS: Herramienta[] = [
       "Asia, London and New York on a single twenty-four-hour band, in real time. What matters is not when each opens, but where they overlap: that is when two markets are awake at once.",
     resumenEs: "Asia, Londres y Nueva York en hora real, con sus solapes.",
     resumenEn: "Asia, London and New York in real time, with their overlaps.",
-    entregaEs: "Sesión · solape",
-    entregaEn: "Session · overlap",
+    entregaEs: "Sesiones y solapes",
+    entregaEn: "Sessions and overlaps",
     descripcionEs:
       "Qué sesión de mercado está abierta ahora mismo y dónde se solapan Asia, Londres y Nueva York, que es cuando suele haber más movimiento.",
     descripcionEn:

@@ -2562,6 +2562,36 @@ ante cualquiera y demuestra que mira contando elementos y exigiendo la
 barra (roja con un `blur` inyectado en la barra). `src/components/tj/Escritorio.tsx`
 queda sin uso: pendiente de permiso para borrarlo.
 
+### Cuadragésima tanda: sin flechas ni sellos (2026-09-26)
+
+Segunda pasada de sobriedad, a partir de un inventario medido sobre el DOM
+de 19 rutas (flechas, puntos medios, mayúsculas, tracking, radios,
+sombras, degradados), no a ojo.
+
+- **Enlaces sin flecha.** `.cta--secundario` y `.link-underline` llevan
+  un filete tenue a la vista (tinta del enlace al 32 %) que se entinta al
+  pasar; antes el filete solo aparecía al pasar y la flecha hacía de
+  aviso. En listas de enlaces (pie, índice legal) el filete sigue solo al
+  pasar (`--al-pasar`). Fuera las flechas de portada, cierre, principios,
+  perfiles, menú, precios, FAQ, herramientas, fichas de trader, salidas
+  del glosario y ejes de características. Quedan las de dirección
+  (Anterior/Siguiente, «desliza»).
+- **Sin sellos de verificación.** La fila de ✓ del héroe es una frase; la
+  lista de /beta, texto sin marcas, y la nota, sin escudo.
+- **Sin coletilla.** «Datos de muestra · Sin registro · Tus datos en tu
+  equipo» salía bajo el cierre de las 162 páginas que lo llevan; «sin
+  registro» pasa a la entradilla y lo demás ya lo decía.
+- **«·» solo en lecturas de datos.** Rótulos compuestos con «y»/«o»
+  (herramientas, integraciones, precios de /beta y la 404, salidas del
+  glosario); las lecturas de la muestra («200 operaciones · USD») siguen.
+- **Radios en orden:** campos 4 px (antes 8, más que los paneles), lienzo
+  de métricas 4 px dentro de su panel de 6, lámina de producto 8 px (el
+  radio real de una ventana de Windows 11, antes 12).
+
+`cifras.mjs` vigila ahora que ningún `<a>` ni `<button>` termine en
+flecha salvo los de dirección: roja con la compilación anterior (164
+salidas del glosario), verde con esta.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2576,7 +2606,7 @@ node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los
 node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritorio + móvil (vale contra `out/` servido sin modo SPA)
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
-node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, comillas y ortografía británica en /en), y restos de plantilla a la vista
+node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, comillas y ortografía británica en /en), restos de plantilla a la vista y flechas añadidas a enlaces
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae

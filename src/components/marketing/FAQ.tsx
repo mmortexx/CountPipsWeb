@@ -242,7 +242,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   onClick={() => setGlossaryOpen(true)}
                   className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px]"
                 >
-                  {es ? "Abrir glosario →" : "Open glossary →"}
+                  {es ? "Abrir el glosario" : "Open the glossary"}
                 </button>
               </div>
             ) : (
@@ -305,8 +305,8 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   }`}
                 >
                   {es
-                    ? "¿No encuentras tu término? Consulta el glosario →"
-                    : "Can’t find your term? Browse the glossary →"}
+                    ? "¿No encuentras tu término? Consulta el glosario."
+                    : "Can’t find your term? Browse the glossary."}
                 </button>
               }
             />

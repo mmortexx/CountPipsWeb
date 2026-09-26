@@ -26,11 +26,11 @@ import { fmtInt } from "@/lib/trading/format";
  *  de mantener en dos idiomas. */
 const TEXTOS = {
   general: {
-    es: ["Deja de operar a ciegas.", "Mira cómo se mide.", "40+ métricas, un guardián de disciplina y tus datos en tu equipo. Explora la demo y decide con criterio."],
+    es: ["Deja de operar a ciegas.", "Mira cómo se mide.", "40+ métricas, un guardián de disciplina y tus datos en tu equipo. Explora la demo, sin registro, y decide con criterio."],
     /* Sin contracción, «See how it is measured» suena a manual técnico justo
        al lado de «Stop trading blind», que es directo y hablado. Los dos
        trozos de la misma frase tienen que sonar a la misma voz. */
-    en: ["Stop trading blind.", "See how it’s measured.", "40+ metrics, a discipline guardian and your data on your machine. Explore the demo and decide with clarity."],
+    en: ["Stop trading blind.", "See how it’s measured.", "40+ metrics, a discipline guardian and your data on your machine. Explore the demo, no sign-up, and decide with clarity."],
   },
   herramienta: {
     es: ["La cuenta ya te sale.", "Hazla con las tuyas.", "Esto mismo, pero sobre tu historial entero y al día con cada operación que registras. La demo lo enseña con datos de muestra."],
@@ -52,10 +52,6 @@ export function FinalCTANew({
   const es = lang === "es";
   const [titular, tenue, entradillaCruda] = TEXTOS[variante][lang];
   const entradilla = entradillaCruda.replace("{n}", fmtInt(OPERACIONES_MUESTRA, lang));
-  const garantias = es
-    ? ["Datos de muestra", "Sin registro", "Tus datos en tu equipo"]
-    : ["Sample data", "No sign-up", "Your data on your machine"];
-
   return (
     <section className="section relative">
       <div className="tj-container">
@@ -93,7 +89,6 @@ export function FinalCTANew({
                   : es ? "Ver precios" : "See pricing"}
               </Link>
             </div>
-            <p className="m-0 text-[13px] text-tertiary">{garantias.join(" · ")}</p>
           </div>
         </div>
       </div>

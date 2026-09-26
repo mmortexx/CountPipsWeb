@@ -123,15 +123,14 @@ export function Values() {
                 </p>
 
                 {/* `mt-auto`: los cuerpos miden dos o tres líneas, así que
-                    las dos flechas de una misma fila se quedaban a
-                    distinta altura. Pegadas al fondo de la celda, la
+                    los dos enlaces de una misma fila se quedaban a
+                    distinta altura. Pegados al fondo de la celda, la
                     rejilla vuelve a tener renglones. */}
                 <Link
                   href={v.href}
-                  className="mt-auto pt-2 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-medium text-primary outline-none transition-colors duration-200 hover:text-secondary focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
+                  className="link-underline-host mt-auto pt-2 inline-flex min-h-[44px] items-center text-sm font-medium text-primary outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                 >
-                  {es ? v.pruebaEs : v.pruebaEn}
-                  <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+                  <span className="link-underline">{es ? v.pruebaEs : v.pruebaEn}</span>
                 </Link>
               </article>
             </Reveal>

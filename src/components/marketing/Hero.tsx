@@ -2,7 +2,6 @@
 
 import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { Check } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Palabras } from "@/components/tj/Palabras";
 
@@ -19,8 +18,8 @@ export function Hero({ producto }: { producto?: ReactNode }) {
      (docs/analisis-referentes.md), juntas y en voz baja. «Windows» ya lo
      dice la etiqueta de encima. «Previsto» porque la venta no está abierta. */
   const datos = es
-    ? ["Pago único previsto, sin suscripción", "Sin servidores: tus datos en tu equipo", "Demo sin registro"]
-    : ["Planned one-time payment, no subscription", "No servers: your data on your machine", "Demo without sign-up"];
+    ? "Pago único previsto, sin suscripción. Sin servidores: tus datos, en tu equipo. Demo sin registro."
+    : "Planned one-time payment, no subscription. No servers: your data, on your machine. Demo without sign-up.";
 
   const compatibles = ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"];
 
@@ -41,7 +40,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
             : "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine."}
         </p>
 
-        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
           <Link href="/demo" className="cta cta--primario">
             {es ? "Ver la demo interactiva" : "See the interactive demo"}
           </Link>
@@ -50,14 +49,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
           </Link>
         </div>
 
-        <ul className="mt-7 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[14px] text-tertiary">
-          {datos.map((d) => (
-            <li key={d} className="flex items-center gap-2">
-              <Check size={14} strokeWidth={2} aria-hidden className="text-primary" />
-              {d}
-            </li>
-          ))}
-        </ul>
+        <p className="mx-auto mt-7 max-w-[40rem] text-balance text-[14px] leading-[1.6] text-tertiary">{datos}</p>
       </div>
 
       <div className="tj-container relative mt-[clamp(2.25rem,4vw,3rem)]">

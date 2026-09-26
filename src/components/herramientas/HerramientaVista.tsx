@@ -130,7 +130,6 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                     <span className="link-underline">
                       {es ? "Ver todas las herramientas" : "See all tools"}
                     </span>
-                    <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                   </Link>
                 </p>
               </div>

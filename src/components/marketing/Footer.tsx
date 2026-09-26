@@ -165,7 +165,7 @@ export function Footer() {
                           type="button"
                           className="link-underline-host inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-left text-sm text-secondary hover:text-primary transition-colors duration-200"
                         >
-                          <span className="link-underline">{l.label}</span>
+                          <span className="link-underline link-underline--al-pasar">{l.label}</span>
                         </button>
                       </GlossaryLauncher>
                     ) : (
@@ -173,7 +173,7 @@ export function Footer() {
                         href={l.href}
                         className="inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-sm text-secondary hover:text-primary transition-colors duration-200"
                       >
-                        <span className="link-underline">{l.label}</span>
+                        <span className="link-underline link-underline--al-pasar">{l.label}</span>
                       </Link>
                     )}
                   </li>
@@ -222,7 +222,7 @@ export function Footer() {
               className="link-underline-host inline-flex min-h-[44px] items-center gap-1.5 text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
             >
               <GitHubIcon />
-              <span className="link-underline">{es ? "Código de la web" : "Website source"}</span>
+              <span className="link-underline link-underline--al-pasar">{es ? "Código de la web" : "Website source"}</span>
             </a>
             <span aria-hidden className="hidden lg:inline opacity-40">·</span>
             {/* Retirar el consentimiento tiene que ser tan fácil como darlo
@@ -257,7 +257,7 @@ function ConsentPreferencesButton() {
       onClick={reopenConsent}
       className="link-underline-host inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
     >
-      <span className="link-underline">
+      <span className="link-underline link-underline--al-pasar">
         {es ? "Preferencias de privacidad" : "Privacy preferences"}
       </span>
     </button>

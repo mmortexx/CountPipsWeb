@@ -5,7 +5,7 @@ import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { proyectaCapital, CONFIANZA_RACHA } from "@/lib/trading/proyeccion";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { Copy, Check, Table, LineChart, ArrowUpRight } from "lucide-react";
+import { Copy, Check, Table, LineChart } from "lucide-react";
 import { fmtMoney, pctSep, fmtInt, fmtNum as fmtNumCasa } from "@/lib/trading/format";
 import { siteUrl } from "@/lib/site";
 
@@ -1323,9 +1323,8 @@ export function EquityProjector() {
                      salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
                 >
-                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold flex items-center justify-between">
-                    <span>{es ? "Balance proyectado" : "Projected balance"}</span>
-                    <ArrowUpRight aria-hidden className="w-3 h-3 text-[rgb(var(--accent-base))]" />
+                  <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                    {es ? "Balance proyectado" : "Projected balance"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--accent-base))]">
                     {c.fueraDeEscala ? "—" : fmtUsd(c.finalBalance, true)}

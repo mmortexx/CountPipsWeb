@@ -51,8 +51,8 @@ export function NotFoundClient() {
       href: "/pricing",
       label: es ? "Precios" : "Pricing",
       desc: es
-        ? "Core 149\u00a0$ · Pro 249\u00a0$ como precios de lanzamiento previstos."
-        : "Core $149 · Pro $249 as planned launch prices.",
+        ? "Core 149\u00a0$ y Pro 249\u00a0$, precios de lanzamiento previstos."
+        : "Core $149 and Pro $249, planned launch prices.",
     },
   ];
 
@@ -193,11 +193,7 @@ export function NotFoundClient() {
           >
             <Link
               href="/"
-              /* `group` + `inline-flex` + `min-h-[44px]`: la flecha llevaba
-                 `group-hover` sin padre `group` — nunca se movía —, y con
-                 `py-2` el enlace medía ~36 px, bajo el objetivo táctil de
-                 44 px que rige el resto de controles del sitio. */
-              className="group cta cta--secundario"
+              className="cta cta--secundario"
             >
               {es ? "Volver al inicio" : "Back to home"}
             </Link>

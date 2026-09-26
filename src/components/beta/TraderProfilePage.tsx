@@ -281,7 +281,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                     ? `Cuántas veces aprobarías la prueba de ${firm.name}, con tu acierto y tu payoff`
                     : `How often you would pass the ${firm.name} challenge, with your win rate and payoff`}
                 </span>
-                <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
               </Link>
             </p>
           </div>

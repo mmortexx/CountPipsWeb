@@ -363,7 +363,9 @@ JERARQUÍA Y ESPACIADO:
 
 MICRO-INTERACCIONES:
 - Hover: cambio de tono suave con --ease-suave. NUNCA sheen ni glow.
-- .link-underline: barrido de acento izquierda→derecha en hover.
+- Enlaces sin flecha: `.link-underline` y `.cta--secundario` llevan un filete tenue
+  a la vista que se entinta al pasar; en listas de enlaces, `--al-pasar`. Solo
+  llevan flecha los saltos con dirección (Anterior/Siguiente, «desliza»).
 - Navegación y pestañas: UN subrayado que viaja entre elementos (`.tj-nav-foco`,
   `SubrayadoPestanas`), no uno que se apaga y otro que se enciende.
 - Llamadas: sin elevación, sombra ni flecha al pasar; toda `.cta` se hunde al pulsar.

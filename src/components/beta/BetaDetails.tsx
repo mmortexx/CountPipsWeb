@@ -13,7 +13,7 @@ export function BetaDetails() {
       <div className="tj-container grid gap-5 md:grid-cols-2">
         <article className="border-t border-[rgb(var(--divider)/0.18)] pt-5">
           <p className="eyebrow">{es ? "Precios de lanzamiento" : "Launch pricing"}</p>
-          <h2 className="mt-4 t-h3 text-primary">{es ? "Core 149\u00a0$ · Pro 249\u00a0$" : "Core $149 · Pro $249"}</h2>
+          <h2 className="mt-4 t-h3 text-primary">{es ? "Core 149\u00a0$ y Pro 249\u00a0$" : "Core $149 and Pro $249"}</h2>
           <p className="mt-3 text-secondary">{es ? "Son referencias de lanzamiento. La compra se abrirá cuando la entrega comercial, la licencia y el soporte estén listos; este formulario no es una preventa." : "These are indicative launch prices. Purchase opens when commercial delivery, licensing and support are ready; this form is not a pre-order."}</p>
           <Link href="/pricing" className="cta cta--secundario mt-3">{es ? "Ver el detalle previsto" : "See planned details"}</Link>
         </article>

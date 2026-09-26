@@ -16,10 +16,10 @@ interface Broker {
  * guarda la receta. Cualquier otro CSV entra con mapeo manual.
  */
 const BROKERS: Broker[] = [
-  { name: "Interactive Brokers", via: "CSV · Flex Query" },
+  { name: "Interactive Brokers", via: "CSV, Flex Query" },
   { name: "MetaTrader 4/5", via: "CSV" },
   { name: "TradingView", via: "CSV" },
-  { name: "Binance", via: "CSV · API" },
+  { name: "Binance", via: "CSV, API" },
   { name: "Bybit", via: "CSV" },
 ];
 

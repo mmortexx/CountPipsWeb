@@ -53,7 +53,7 @@ export function HerramientasIndice() {
               {es ? "Resultado" : "Output"}
             </span>
             {/* La tercera columna no lleva rótulo: decía «Abrir» encima de
-                celdas que ya dicen «Abrir →». */}
+                celdas que ya dicen «Abrir». */}
             <span />
           </div>
 
@@ -80,7 +80,7 @@ export function HerramientasIndice() {
                       aria-hidden
                       className="mt-1 text-[13px] font-medium text-primary sm:mt-0 sm:justify-self-end"
                     >
-                      {es ? "Abrir →" : "Open →"}
+                      {es ? "Abrir" : "Open"}
                     </span>
                   </Link>
                 </Reveal>

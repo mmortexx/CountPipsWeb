@@ -30,6 +30,11 @@
  * «10,000 $» se lee como traducida del español, que es exactamente lo que
  * un portal bilingüe no puede parecer.
  *
+ * Además, en los dos idiomas: ningún enlace ni botón termina en una
+ * flecha añadida («Ver precios →»). El 2026-09-26 se quitaron las que
+ * quedaban; el enlace se reconoce por su subrayado. Solo la llevan los
+ * saltos con dirección (Anterior / Siguiente).
+ *
  * Y, con la cuarta regla, «218.2x capital inicial» bajo el balance
  * proyectado del proyector de capital inglés, en dos páginas: el literal
  * era el único del componente que nadie había bifurcado por idioma.
@@ -116,7 +121,8 @@ for await (const f of htmls(RAIZ)) {
   const ruta = "/" + relative(RAIZ, f).split(sep).join("/").replace(/index\.html$/, "");
   if (ruta.startsWith("/404") || ruta.startsWith("/_not-found")) continue;
   const en = ruta === "/en/" || ruta.startsWith("/en/");
-  const t = soloTexto(await readFile(f, "utf8"));
+  const crudo = await readFile(f, "utf8");
+  const t = soloTexto(crudo);
   paginas++;
 
   const anota = (regla, re, ejemploDe) => {
@@ -191,6 +197,15 @@ for await (const f of htmls(RAIZ)) {
      atributo, nunca el de una frase— y sólo en 64 rutas escritas a mano.
      Aquí se mira el texto visible de las 168, que es donde se ve. */
   anota("resto de plantilla a la vista", /\b(?:undefined|NaN|Invalid Date)\b|\[object [A-Z]\w*\]/g, ctx);
+
+  /* FLECHA AÑADIDA A UN ENLACE O BOTÓN. Se lee el HTML, no el texto
+     plano: hace falta saber que la flecha cierra un `<a>` o un `<button>`. */
+  for (const m of crudo.matchAll(/<(a|button)\b[^>]*>([\s\S]*?)<\/\1>/gi)) {
+    const dentro = soloTexto(m[2]).replace(/\s+/g, " ").trim();
+    if (/[→↗]$/.test(dentro) && !/\b(?:Siguiente|Anterior|Next|Previous)\b/i.test(dentro)) {
+      fallos.push({ ruta, regla: "flecha añadida a un enlace o botón", ejemplo: dentro.slice(-60) });
+    }
+  }
 }
 
 const porRegla = {};
@@ -207,6 +222,7 @@ if (fallos.length) {
   console.log(`[cifras] ${fallos.length} caso(s) con la convención del otro idioma`);
   console.log("[cifras] el separador del porcentaje sale de `pctSep(lang)`; el dólar, de `fmtMoney`");
   console.log("[cifras] una palabra española en /en es un literal sin bifurcar: `es ? \"…\" : \"…\"`");
+  console.log("[cifras] un enlace se reconoce por su subrayado (`.link-underline`), no por una flecha");
   process.exit(1);
 }
 console.log("[cifras] correcto — cada número y cada palabra usan la convención de su idioma");

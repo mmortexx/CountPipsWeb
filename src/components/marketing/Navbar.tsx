@@ -865,7 +865,6 @@ export function Navbar() {
                               style={{ color: "rgb(var(--accent-base))" }}
                             >
                               {es ? "Abrir la demo" : "Open the demo"}
-                              <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                             </Link>
                           </div>
                         </>
