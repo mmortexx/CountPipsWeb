@@ -50,13 +50,16 @@ describe("Cromo de mesa", () => {
     expect(log).not.toMatch(/rounded-full bg-\[rgb\(var\(--accent-base\)\)\]/);
   });
 
-  it("traders no pinta tres tarjetas de icono; usa filas numeradas", () => {
+  /* Filas, no tarjetas de icono. Sin 01/02/03: son capacidades, no pasos
+     (tanda 35); la numeración queda para lo que tiene orden de verdad. */
+  it("traders no pinta tres tarjetas de icono; usa filas sin numerar", () => {
     const traders = sinComentarios(
       leer("src/components/beta/TraderProfilePage.tsx"),
     );
     expect(traders).toMatch(/data\.cards\.map/);
     expect(traders).not.toMatch(/<article key=\{titleEs\}/);
-    expect(traders).toMatch(/md:grid-cols-\[2\.75rem_minmax\(0,16rem\)_minmax\(0,1fr\)\]/);
+    expect(traders).toMatch(/md:grid-cols-\[minmax\(0,16rem\)_minmax\(0,1fr\)\]/);
+    expect(traders).not.toMatch(/padStart\(2, "0"\)/);
     expect(traders).not.toMatch(/<ul className="[^"]*rounded-\[4px\] border /);
   });
 
@@ -84,8 +87,9 @@ describe("Cromo de mesa", () => {
     const err = sinComentarios(leer("src/app/error.tsx"));
     expect(nf).not.toMatch(/blur-\[130px\]/);
     expect(err).not.toMatch(/blur-\[130px\]/);
-    expect(nf).toMatch(/<ol[\s>]/);
-    expect(nf).toMatch(/padStart\(2, "0"\)/);
+    /* Tres destinos en filas, sin numerar: no son una secuencia. */
+    expect(nf).toMatch(/<ul[\s>]/);
+    expect(nf).not.toMatch(/padStart\(2, "0"\)/);
     expect(nf).not.toMatch(/hover:shadow-\[0_12px_32px_-8px_rgb\(var\(--accent-base\)/);
   });
 

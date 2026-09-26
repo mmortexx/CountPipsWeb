@@ -145,21 +145,18 @@ export function NotFoundClient() {
           </div>
         </form>
 
-        <ol
+        {/* Sin 01/02/03: tres destinos no son una secuencia. Mismo ancho que
+            el buscador de encima para que los dos bloques compartan cantos. */}
+        <ul
           style={{ animationDelay: "0.4s" }}
-          className="tj-alza mt-8 m-0 list-none p-0 text-left"
+          className="tj-alza mx-auto mt-8 mb-0 max-w-md list-none p-0 text-left"
         >
-          {tiles.map((tile, i) => (
+          {tiles.map((tile) => (
             <li key={tile.href}>
               <Link
                 href={tile.href}
-                className="group grid min-h-[56px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                className="group grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
-                <span
-                  className="tnum text-[12px] font-medium text-tertiary"
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold text-primary">
                     {tile.label}
@@ -185,7 +182,7 @@ export function NotFoundClient() {
               </Link>
             </li>
           ))}
-        </ol>
+        </ul>
 
         <div
           style={{ animationDelay: "0.48s" }}

@@ -108,27 +108,22 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
             entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It’s which part of your process is worth repeating, and which part needs a rule before you go back to the market."}
           />
-          <ol className="mt-12 m-0 border-t border-[var(--line)] p-0">
-            {data.cards.map(({ titleEs, titleEn, textEs, textEn }, i) => (
+          {/* Sin 01/02/03: son tres capacidades, no tres pasos. */}
+          <ul className="mt-12 m-0 list-none border-t border-[var(--line)] p-0">
+            {data.cards.map(({ titleEs, titleEn, textEs, textEn }) => (
               <li
                 key={titleEs}
-                className="grid grid-cols-[2.75rem_minmax(0,1fr)] gap-x-3 gap-y-1 border-b border-[var(--line)] py-5 md:grid-cols-[2.75rem_minmax(0,16rem)_minmax(0,1fr)] md:items-baseline md:gap-x-6"
+                className="grid gap-y-1 border-b border-[var(--line)] py-5 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] md:items-baseline md:gap-x-6"
               >
-                <span
-                  className="tnum text-[12px] font-semibold"
-                  style={{ color: "rgb(var(--accent-base))" }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
                 <h3 className="m-0 text-[clamp(1.125rem,1.6vw,1.375rem)] font-medium text-primary">
                   {es ? titleEs : titleEn}
                 </h3>
-                <p className="medida col-start-2 m-0 text-[15px] leading-[1.6] text-secondary md:col-start-3">
+                <p className="medida m-0 text-[15px] leading-[1.6] text-secondary">
                   {es ? textEs : textEn}
                 </p>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
       </section>
 

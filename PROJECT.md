@@ -2409,6 +2409,20 @@ privacidad a 1440 oscuro y 390 claro.
 - Revisado y descartado: el «azul» de las entradillas en las capturas de
   móvil es suavizado de subpíxel; medido, el texto es gris (58, 66, 75).
 
+### Trigésima quinta tanda: números que no cuentan nada (2026-09-26)
+
+Repaso de las páginas en inglés (portada, precios, características) y de
+la 404, a 1440 claro y 390 oscuro. El inglés, sin nada que corregir.
+
+- **Numeración decorativa fuera.** La regla: 01/02/03 solo donde hay
+  orden de verdad (pasos, cronología, documento legal, la serie de
+  características con anterior/siguiente). En la 404 (Características,
+  Demo, Precios) y en la lista de capacidades de /traders/manual y
+  /traders/prop-firms no lo había: pasan de `<ol>` numerada a `<ul>`.
+- **404**: la lista de destinos era más ancha que el buscador de encima
+  (448–990 frente a 496–944 px a 1440) y los cantos no casaban; ahora
+  comparten el `max-w-md`.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
