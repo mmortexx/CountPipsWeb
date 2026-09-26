@@ -20,15 +20,15 @@ type Feature = {
   pro?: boolean;
 };
 
-const TAGS: { id: Tag; labelEs: string; labelEn: string; icon: string }[] = [
-  { id: "metrics", labelEs: "Métricas", labelEn: "Metrics", icon: "chart" },
-  { id: "discipline", labelEs: "Disciplina", labelEn: "Discipline", icon: "shield" },
-  { id: "security", labelEs: "Privacidad", labelEn: "Privacy", icon: "lock" },
-  { id: "speed", labelEs: "Rapidez", labelEn: "Speed", icon: "bolt" },
-  { id: "local", labelEs: "En tu equipo", labelEn: "On your machine", icon: "disk" },
-  { id: "multi", labelEs: "Multi-cuenta", labelEn: "Multi-account", icon: "layers" },
-  { id: "export", labelEs: "Exportar", labelEn: "Export", icon: "download" },
-  { id: "psychology", labelEs: "Psicología", labelEn: "Psychology", icon: "brain" },
+const TAGS: { id: Tag; labelEs: string; labelEn: string }[] = [
+  { id: "metrics", labelEs: "Métricas", labelEn: "Metrics" },
+  { id: "discipline", labelEs: "Disciplina", labelEn: "Discipline" },
+  { id: "security", labelEs: "Privacidad", labelEn: "Privacy" },
+  { id: "speed", labelEs: "Rapidez", labelEn: "Speed" },
+  { id: "local", labelEs: "En tu equipo", labelEn: "On your machine" },
+  { id: "multi", labelEs: "Multi-cuenta", labelEn: "Multi-account" },
+  { id: "export", labelEs: "Exportar", labelEn: "Export" },
+  { id: "psychology", labelEs: "Psicología", labelEn: "Psychology" },
 ];
 
 const FEATURES: Feature[] = [
@@ -242,7 +242,7 @@ export function FeatureExplorer() {
               <button
                 key={t.id}
                 onClick={() => toggle(t.id)}
-                className="inline-flex items-center gap-2 min-h-[44px] px-3.5 rounded-[4px] border text-[14px] font-medium transition-[background-color,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+                className="inline-flex items-center min-h-[44px] px-3.5 rounded-[4px] border text-[14px] font-medium transition-[background-color,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
                   background: active ? "var(--ink)" : "transparent",
                   borderColor: active ? "var(--ink)" : "var(--line-2)",
@@ -250,7 +250,6 @@ export function FeatureExplorer() {
                 }}
                 aria-pressed={active}
               >
-                <TagIcon name={t.icon} />
                 {es ? t.labelEs : t.labelEn}
               </button>
             );
@@ -336,27 +335,3 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
   );
 }
 
-/* ── TagIcon — iconos SVG inline ── */
-function TagIcon({ name }: { name: string }) {
-  const s = 14;
-  switch (name) {
-    case "chart":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 14h12M4 11V7M7.5 11V4M11 11V8.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>;
-    case "shield":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5l5 2v4c0 3-2 5.5-5 7-3-1.5-5-4-5-7v-4l5-2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>;
-    case "lock":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.2" stroke="currentColor" strokeWidth="1.4" /><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>;
-    case "bolt":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M9 1L3 9h4l-1 6 6-8H8l1-6z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg>;
-    case "disk":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.4" /><circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.4" /></svg>;
-    case "layers":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2l6 3-6 3-6-3 6-3z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /><path d="M2 8l6 3 6-3M2 11l6 3 6-3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" /></svg>;
-    case "download":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v8M5 7l3 3 3-3M3 14h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-    case "brain":
-      return <svg width={s} height={s} viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 3a2 2 0 00-2 2 2 2 0 00-1 4 2 2 0 001 3 2 2 0 004 0V5a2 2 0 00-2-2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /></svg>;
-    default:
-      return null;
-  }
-}

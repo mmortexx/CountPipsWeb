@@ -155,30 +155,14 @@ export function NotFoundClient() {
             <li key={tile.href}>
               <Link
                 href={tile.href}
-                className="group grid min-h-[56px] grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                className="link-underline-host block min-h-[56px] rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
               >
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-primary">
-                    {tile.label}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-secondary leading-snug">
-                    {tile.desc}
-                  </span>
+                <span className="block text-sm font-semibold text-primary">
+                  <span className="link-underline">{tile.label}</span>
                 </span>
-                <svg
-                  className="size-3.5 text-tertiary transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M3 8h9M8 4l4 4-4 4"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <span className="mt-1 block text-xs text-secondary leading-snug">
+                  {tile.desc}
+                </span>
               </Link>
             </li>
           ))}

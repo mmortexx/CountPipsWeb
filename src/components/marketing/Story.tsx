@@ -88,11 +88,9 @@ export function Story() {
     pos: "text-primary",
   };
 
-  // Pull-quote split into words for staggered word-by-word reveal.
   const quote = es
     ? "Lo que no se mide, no se mejora. Lo que se mide pero no se mira, tampoco."
     : "What isn’t measured doesn’t improve. What is measured but not looked at doesn’t either.";
-  const quoteWords = quote.split(" ");
 
   return (
     <section id="story" className="section relative scroll-mt-24 overflow-clip">
@@ -127,28 +125,7 @@ export function Story() {
 
           <Reveal delay={0.1}>
             <blockquote className="mt-8 relative pl-6 border-l-2 border-[rgb(var(--divider)/0.20)]">
-              <span
-                className="absolute -left-1 -top-3 text-5xl leading-none text-primary/40 font-serif select-none"
-                aria-hidden="true"
-              >
-                &ldquo;
-              </span>
-              {/* La cita se escribe sola, palabra a palabra. Era un
-                  `staggerChildren: 0.035` de framer-motion; ahora cada
-                  palabra lleva su posición en `--i` y la hoja desplaza su
-                  rango de entrada 1,5 puntos por posición. Ver
-                  `[data-entra="palabra"]` en globals.css. */}
-              <p className="t-h3 text-primary leading-snug">
-                {quoteWords.map((w, i) => (
-                  <span
-                    key={i}
-                    data-entra="palabra"
-                    style={{ "--i": i } as React.CSSProperties}
-                  >
-                    {w}&nbsp;
-                  </span>
-                ))}
-              </p>
+              <p className="t-h3 text-primary leading-snug">{quote}</p>
               <footer className="mt-4 text-sm text-tertiary">
                 — {es ? "filosofía de la app" : "the app’s philosophy"}
               </footer>
@@ -194,25 +171,9 @@ export function Story() {
                     data-entra
                     className="relative min-w-0 border-b border-[rgb(var(--divider)/0.10)] pb-5"
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <span
-                        className={`text-[11px] font-semibold tnum ${toneText[p.tone]}`}
-                      >
-                        {p.tag}
-                      </span>
-                      {/* Phase index — split so the current number reads in
-                          secondary (one step above tertiary) and the total
-                          stays tertiary. The contrast reinforces "you are
-                          here" vs "of N" without adding a new color token.
-                          Both keep tnum for tabular alignment. */}
-                      <span className="text-[11px] text-tertiary tnum">
-                        <span className="text-secondary">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        {" / "}
-                        {String(phases.length).padStart(2, "0")}
-                      </span>
-                    </div>
+                    <span className={`text-[12px] font-semibold tnum ${toneText[p.tone]}`}>
+                      {p.tag}
+                    </span>
                     <h3 className="mt-2 t-h3 text-primary">
                       {p.title}
                     </h3>

@@ -2592,6 +2592,26 @@ sombras, degradados), no a ojo.
 flecha salvo los de dirección: roja con la compilación anterior (164
 salidas del glosario), verde con esta.
 
+### Cuadragésima primera tanda: las páginas que faltaban y el movimiento (2026-09-26)
+
+Repaso en capturas de /pricing, /about, /faq, /test, las tres de
+características, /features, /demo, legales y 404. Lo que quedaba:
+
+- **Movimiento más callado.** Los bloques se asientan desde 12 px (antes
+  24 con escala .985), sin escala; fuera el desenfoque con que se
+  «enfocaban» los h2 y la cita de /about que se escribía palabra a
+  palabra. La lámina se abre un 3 % (antes 9 % con zoom 1,04). La galería
+  cambia de pantalla con un fundido de 0,35 s, sin desenfoque. Sin cristal,
+  `Aparecer` ya no distingue piezas que «solo se mueven».
+- **/about**: la cita sin comilla decorativa; las fases llevaban «Mes 3» y
+  «03 / 05» a la vez, queda solo el mes.
+- **Sin iconos de adorno**: la lista del Guardián, los filtros de
+  /features (con su `TagIcon`, que queda sin uso y se borra) y las
+  flechas SVG de las filas de la 404 y del cajón móvil (la 404 subraya el
+  destino, como el resto).
+- **Texto táctil**: «Pasa el ratón por la curva» → «Toca o pasa el
+  puntero»; la curva y las barras ya respondían al toque.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

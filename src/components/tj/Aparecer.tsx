@@ -12,8 +12,6 @@ import { usePathname } from "next/navigation";
  * - Lo que ya está en pantalla al montar no se oculta (sin parpadeo).
  * - Sin JavaScript o con movimiento reducido no se marca nada.
  * - Estado en atributos `data-tj-ap`, que React no gestiona ni pisa.
- * - Lo que lleva cristal solo se desplaza: una opacidad le quitaría el
- *   esmerilado mientras dura.
  */
 const LISTAS = "ul, ol, dl, [data-orden], .grid";
 
@@ -77,10 +75,7 @@ export function Aparecer() {
       }
       el.dataset.tjAp = "0";
       el.dataset.tjNivel = String(nivel);
-      // La lámina antes que el cristal: el único cristal que lleva dentro es
-      // la lupa, que está oculta hasta pasar el puntero.
       if (el.matches(".tj-lamina-marco, figure") || el.querySelector(".tj-lamina-marco")) el.dataset.tjTipo = "lamina";
-      else if (el.matches(".tj-cristal") || el.querySelector(".tj-cristal")) el.dataset.tjSolo = "mueve";
       io.observe(el);
     };
 

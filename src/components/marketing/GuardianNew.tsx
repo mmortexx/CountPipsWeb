@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
-import { ShieldCheck, AlertTriangle, HandMetal, Timer } from "lucide-react";
+import { ShieldCheck, AlertTriangle } from "lucide-react";
 import { fmtInt, fmtNum, pctSep } from "@/lib/trading/format";
 
 /**
@@ -138,21 +138,15 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           <Reveal delay={0.18}>
           <ul className="m-0 p-0 list-none border-b border-[var(--line)]">
             {[
-              { i: ShieldCheck, t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
-              { i: HandMetal, t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
-              { i: Timer, t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
-            ].map((f) => {
-              const Icon = f.i;
-              return (
-                <li key={f.t} className="flex items-start gap-4 border-t border-[var(--line)] py-5">
-                  <Icon size={18} strokeWidth={1.6} aria-hidden className="mt-0.5 flex-none text-tertiary" />
-                  <div>
-                    <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
-                    <p className="m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
-                  </div>
-                </li>
-              );
-            })}
+              { t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
+              { t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
+              { t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
+            ].map((f) => (
+              <li key={f.t} className="border-t border-[var(--line)] py-5">
+                <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
+                <p className="medida m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
+              </li>
+            ))}
           </ul>
           </Reveal>
         </div>

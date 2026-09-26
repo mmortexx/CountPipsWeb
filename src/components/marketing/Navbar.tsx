@@ -1117,17 +1117,6 @@ export function Navbar() {
                               />
                             )}
                             <span className="flex-1">{es ? l.labelEs : l.labelEn}</span>
-                            <svg
-                              width="12"
-                              height="12"
-                              viewBox="0 0 16 16"
-                              fill="none"
-                              aria-hidden
-                              className="opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
-                              style={{ color: "var(--ink-3)" }}
-                            >
-                              <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
                           </Link>
                         );
                       })}

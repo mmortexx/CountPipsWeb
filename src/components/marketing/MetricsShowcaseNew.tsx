@@ -462,7 +462,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
               <p className="m-0 mt-2 text-[14px] leading-[1.55] text-secondary">
                 {es ? "Ratios con su muestra, no gráficos bonitos. " : "Ratios with the sample size behind them, not pretty charts. "}
                 <span className="[@media(hover:none)]:hidden">
-                  {es ? "Pasa el ratón por la curva, las barras o las cifras." : "Hover the curve, the bars or the figures."}
+                  {es ? "Toca o pasa el puntero por la curva, las barras o las cifras." : "Tap or hover the curve, the bars or the figures."}
                 </span>
                 <span className="hidden [@media(hover:none)]:inline">
                   {es ? "Desliza el dedo por la curva o toca las barras." : "Slide a finger along the curve or tap the bars."}

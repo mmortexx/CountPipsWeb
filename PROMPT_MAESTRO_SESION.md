@@ -371,9 +371,11 @@ MICRO-INTERACCIONES:
 - Llamadas: sin elevación, sombra ni flecha al pasar; toda `.cta` se hunde al pulsar.
   (MagneticButton está retirado: ver su cabecera.)
 - CountUp / `.tj-cifra-cuenta`: conteo animado al entrar en viewport.
-- Entradas (`Aparecer.tsx`): por tiempo, 24 px + escala .985, escalonadas entre
-  hermanas; los h2 se enfocan desde un desenfoque; las capturas se abren como una
-  ventana (clip-path).
+- Entradas (`Aparecer.tsx`): por tiempo, 12 px y fundido, sin escala ni
+  desenfoque, escalonadas entre hermanas; las capturas se abren apenas, como una
+  ventana (clip-path de un 3 %). La galería cambia de lámina con un fundido.
+  PROHIBIDO: titulares que se enfocan desde borroso y textos que se escriben
+  palabra a palabra fuera del h1 de portada.
 - Titulares h1 (`Palabras.tsx`): palabra a palabra desde su máscara.
 - Gráficos (`data-dibuja` + `.tj-d-*`): se dibujan cuando se ven, no al cargar.
 - PROHIBIDO: Bouncing, pulsing, traveling pills, parallax ornamental.
