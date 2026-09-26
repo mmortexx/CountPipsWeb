@@ -2391,6 +2391,24 @@ Repaso a ojo de diez páginas a 1440 claro y cuatro a 390 oscuro.
 - **Sombra de las fichas en claro**, más corta, a juego con la del
   cristal de la tanda anterior.
 
+### Trigésima cuarta tanda: glosario y legales (2026-09-25)
+
+Repaso a ojo de ficha de glosario, calculadora, seguridad, disciplina y
+privacidad a 1440 oscuro y 390 claro.
+
+- **Fichas del glosario**: el subtítulo era la misma frase de plantilla
+  en los 57 términos («Qué significa «X» y por qué cambia la forma de
+  medir tu operativa»). Ahora es la descripción de su familia («Lo que
+  decide si una cuenta sobrevive a una mala racha»), y sale la línea
+  «Familia Riesgo: …» que la repetía debajo. El enlace a la familia pasa
+  al raíl lateral («Toda la familia Riesgo →»); los términos del raíl, de
+  negrita a peso medio.
+- **Documentos legales**: los títulos de sección son h2 y la regla de
+  marca los pone en la serif; a 15 px quedaban más débiles que el cuerpo.
+  Suben a 20 px (`text-xl`), con el número en la sans como el índice.
+- Revisado y descartado: el «azul» de las entradillas en las capturas de
+  móvil es suavizado de subpíxel; medido, el texto es gris (58, 66, 75).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

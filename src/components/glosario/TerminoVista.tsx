@@ -14,7 +14,6 @@ import {
 } from "@/lib/glosario";
 import { herramientaPorSlug } from "@/lib/herramientas";
 
-const minusculaInicial = (t: string) => t.charAt(0).toLowerCase() + t.slice(1);
 
 /** Una salida de la ficha: rótulo pequeño encima y destino con su flecha. */
 function Salida({ href, rotulo, destino }: { href: string; rotulo: string; destino: string }) {
@@ -99,21 +98,6 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             </p>
           </Reveal>
 
-          {/* Familia */}
-          <Reveal delay={0.06}>
-            <p className="m-0 mt-6 text-[14px] leading-relaxed text-tertiary">
-              {es ? "Familia " : "Family "}
-              <Link
-                href={`/glosario#${termino.category}`}
-                className="link-underline-host -my-2 inline-flex py-2 font-medium text-primary"
-              >
-                <span className="link-underline">{es ? familia.es : familia.en}</span>
-              </Link>
-              {": "}
-              {minusculaInicial(es ? familia.descEs : familia.descEn)}
-            </p>
-          </Reveal>
-
           {/* Fórmula, cuando el término es cuantitativo */}
           {formula && (
             <Reveal delay={0.08}>
@@ -171,7 +155,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                       >
                         <span
                           lang="en"
-                          className="text-[14px] font-semibold text-primary"
+                          className="text-[14px] font-medium text-primary"
                         >
                           {t.term}
                         </span>
@@ -182,6 +166,14 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                     </li>
                   ))}
                 </ul>
+                {/* La descripción de la familia ya es el subtítulo de la
+                    página; aquí queda la puerta a la familia entera. */}
+                <Link
+                  href={`/glosario#${termino.category}`}
+                  className="cta cta--secundario mt-3 h-11 text-[14px]"
+                >
+                  {es ? `Toda la familia ${familia.es}` : `All of ${familia.en}`}
+                </Link>
               </div>
             </Reveal>
           )}

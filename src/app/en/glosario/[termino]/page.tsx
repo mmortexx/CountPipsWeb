@@ -99,8 +99,8 @@ export default async function TerminoEnPage({ params }: Props) {
         eyebrowEn={familia.en}
         titleEs={t.term}
         titleEn={t.term}
-        subtitleEs={`Qué significa «${t.term}» y por qué cambia la forma de medir tu operativa.`}
-        subtitleEn={`What “${t.term}” means and why it changes the way you measure your trading.`}
+        subtitleEs={familia.descEs}
+        subtitleEn={familia.descEn}
         padre={{ href: "/glosario", es: "Glosario", en: "Glossary" }}
         breadcrumbEs={t.term}
         breadcrumbEn={t.term}
