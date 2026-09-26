@@ -117,7 +117,7 @@ export function Wrapped({ datos }: { datos: LecturasMuestra }) {
             <div
               data-entra="ciclo"
               key={l.key}
-              className="flex min-w-0 flex-col border-b border-[var(--line)] py-7 sm:px-6 sm:[&:nth-child(2n+1)]:pl-0 lg:[&:nth-child(2n+1)]:pl-6 lg:[&:nth-child(3n+1)]:pl-0"
+              className="flex min-w-0 flex-col border-b border-[var(--line)] py-7 sm:pr-6"
             >
               <dt className="text-[13px] font-medium text-tertiary">{l.label}</dt>
               <dd className="m-0 mt-3 t-h2 tnum text-primary break-words leading-tight">{l.value}</dd>

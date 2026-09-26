@@ -1,6 +1,5 @@
 "use client";
 
-import { Check, LockKeyhole } from "lucide-react";
 import { Reveal } from "@/components/tj/Reveal";
 import { Escritorio } from "@/components/tj/Escritorio";
 import { useLang } from "@/lib/i18n";
@@ -57,24 +56,21 @@ export function DemoConversionPanel() {
             {/* La mancha cuelga del panel y no de la sección: centrada en la
                 sección caía entre las dos columnas, detrás del titular. */}
             <Escritorio className="tj-escritorio--tras" />
+            {/* Sin el candado en su baldosa ni los ticks en verde: el verde
+                es el color de la ganancia, no el de «sí», y la baldosa con
+                icono era el único adorno de plantilla que quedaba en /demo.
+                Tres afirmaciones separadas por filetes, como el resto del
+                sitio. */}
             <aside className="tj-cristal relative rounded-[8px] p-6 sm:p-8">
-              <div className="flex items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-[8px] bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] text-primary">
-                  <LockKeyhole size={18} strokeWidth={1.6} aria-hidden />
-                </span>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-tertiary">{es ? "Límite honesto" : "Honest boundary"}</p>
-                  <h3 className="mt-1 text-lg font-semibold text-primary">{es ? "Datos de muestra, cero riesgo." : "Sample data, zero risk."}</h3>
-                </div>
-              </div>
-              <ul className="mt-6 space-y-3 text-sm leading-relaxed text-secondary">
+              <p className="eyebrow">{es ? "Límite honesto" : "Honest boundary"}</p>
+              <h3 className="mt-3 text-lg font-semibold text-primary">{es ? "Datos de muestra, cero riesgo." : "Sample data, zero risk."}</h3>
+              <ul className="mt-5 m-0 list-none p-0 text-sm leading-relaxed text-secondary">
                 {(es
                   ? ["No pide email ni tarjeta para explorar.", "Las operaciones no salen del navegador.", "Las funciones no visibles se etiquetan, no se simulan."]
                   : ["No email or card required to explore.", "Trades never leave the browser.", "Unavailable features are labelled, not faked."]
                 ).map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <Check size={16} className="mt-0.5 shrink-0 text-[rgb(var(--pnl-pos))]" aria-hidden />
-                    <span>{item}</span>
+                  <li key={item} className="border-t border-[var(--line)] py-3 last:pb-0">
+                    {item}
                   </li>
                 ))}
               </ul>

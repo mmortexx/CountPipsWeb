@@ -2449,6 +2449,29 @@ Medido con Playwright, fotograma a fotograma, no a ojo.
 - **La FAQ sin números**: se renumeraban al buscar (la «03» pasaba a
   «01»), así que no identificaban nada.
 
+### Trigésima séptima tanda: lo que no casaba con el resto (2026-09-26)
+
+Repaso de /test, /herramientas, la calculadora de riesgo,
+/features/metricas, /about y /demo, a 1440 claro y 390 oscuro.
+
+- **/about, estado del producto**: el estado iba debajo del título en
+  tres filas y en una columna a la derecha en las dos «Previsto». Ahora
+  los cinco en la misma columna, con `.rotulo-estado` / `SelloPrevisto`
+  como en /beta. Fuera el prefijo para lector de pantalla «Entregado:
+  Construido», que se contradecía.
+- **«Tus hábitos, en cifras»**: la primera columna no tenía relleno a la
+  izquierda y las otras sí, así que el texto empezaba a 0, 400 y 776 px.
+  Todas con `pr-6`: 0, 376, 752. `rejillas.mjs` vigila ahora el compás
+  de toda rejilla de tres pistas iguales o más (48 en el sitio), roja
+  con la compilación anterior.
+- **/demo, «Límite honesto»**: fuera el candado en su baldosa y los ticks
+  en verde de ganancia; tres afirmaciones con filetes. En /beta los ticks
+  de la lista pasan a gris (el de «Solicitud recibida» sigue verde: ahí
+  sí significa hecho).
+- **Falsa alarma, anotada**: la captura de página entera de Playwright
+  pinta los h1 de `Palabras` encogidos y con huecos desiguales. En
+  pantalla real miden igual (12 px entre máscaras, 12,4 el espacio duro).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2467,7 +2490,7 @@ node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, c
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
-node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila (todas las páginas, 1440 y 390)
+node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, y columnas iguales a compás (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla

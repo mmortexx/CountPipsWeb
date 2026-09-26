@@ -125,16 +125,11 @@ export function Changelog() {
           {entries.map((entry) => {
             const isPast = entry.stage === "delivered";
             const isPilot = entry.stage === "pilot";
-            const estado = isPast
-              ? (es ? "Entregado" : "Delivered")
-              : isPilot
-                ? (es ? "Acceso anticipado" : "Early access")
-                : (es ? "Previsto" : "Planned");
             return (
               <li
                 key={entry.version}
                 data-entra
-                className="grid gap-2 border-b border-[var(--line)] py-5 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_6rem] sm:items-baseline sm:gap-5"
+                className="grid gap-2 border-b border-[var(--line)] py-5 sm:grid-cols-[3.5rem_minmax(0,1.1fr)_minmax(0,1.6fr)_7.5rem] sm:items-baseline sm:gap-5"
               >
                 <span
                   className="tnum text-[13px] font-semibold"
@@ -142,17 +137,9 @@ export function Changelog() {
                 >
                   {entry.version}
                 </span>
-                <div>
-                  <h3 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
-                    {entry.title}
-                  </h3>
-                  {entry.date ? (
-                    <p className="mt-1 m-0 text-[13px] text-tertiary tnum">
-                      <span className="sr-only">{estado}: </span>
-                      {entry.date}
-                    </p>
-                  ) : null}
-                </div>
+                <h3 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
+                  {entry.title}
+                </h3>
                 <p
                   className={`medida m-0 text-[14px] leading-[1.55] ${
                     isPast || isPilot ? "text-secondary" : "text-tertiary"
@@ -160,13 +147,15 @@ export function Changelog() {
                 >
                   {entry.description}
                 </p>
-                {!isPast && !isPilot ? (
-                  <span className="sm:justify-self-end">
+                {/* El estado, en la misma columna para las cinco filas: iba
+                    debajo del título en tres y a la derecha en dos. */}
+                <span className="sm:justify-self-end">
+                  {!isPast && !isPilot ? (
                     <SelloPrevisto es="Previsto" en="Planned" />
-                  </span>
-                ) : (
-                  <span className="hidden sm:block" aria-hidden />
-                )}
+                  ) : (
+                    <span className="rotulo-estado">{entry.date}</span>
+                  )}
+                </span>
               </li>
             );
           })}
