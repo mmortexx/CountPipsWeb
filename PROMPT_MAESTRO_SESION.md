@@ -99,7 +99,8 @@ RADIOS:
 TIPOGRAFÍA:
   --font-sans  → Instrument Sans (400-700 variable) — cuerpo, rótulos, etiquetas y h3
   --font-serif → Newsreader (200-800 variable) — sólo h1 y h2, sin cursiva de realce
-  Letra mínima: 11 px. Realce de titular: `.text-gradient` (tono terciario, no cursiva).
+  Letra mínima: 11 px. Titulares de un solo tono: `.text-gradient` ya no realza nada
+  (hereda el color); no se destaca una palabra dentro de un titular.
   --font-mono  → Geist Mono — código, datos tabulares, métricas
 
 MATERIALES CSS (definidos en globals.css):
@@ -107,6 +108,8 @@ MATERIALES CSS (definidos en globals.css):
   .tj-paper       — tarjeta opaca (`--raised`)
   .tj-paper-dense — superficie que flota sobre contenido (barra, cajón, menús; `--bg`)
   .tj-hoja        — canto de 1 px y radio 6 px; `.tj-hoja--pliego` añade sombra suave
+  .tj-cristal     — hoja opaca de los paneles que flotan (menús, cajón, avisos): canto
+                    de 1 px y sombra; sin desenfoque ni transparencia
   .cta / .cta--primario / .cta--secundario — llamadas a la acción
   .tj-pestanas    — control segmentado de pantallas
   .tj-cierre      — bloque de cierre en tinta invertida
@@ -230,10 +233,10 @@ COMPONENTES TJ (infraestructura):
 - ComparisonSlider (23 KB) — Slider antes/después
 - CookieConsent (14 KB) — Banner RGPD
 - CountUp — Conteo animado
-- Eyebrow — Ceja tipográfica (uppercase, wide tracking)
+- Eyebrow — Ceja tipográfica (minúscula de frase, 13 px, terciario)
 - GlobalShortcuts (9 KB) — Listener global de atajos
 - GlossaryLauncher / GlossaryModal (18 KB) — Glosario modal Ctrl+G
-- MagneticButton (5 KB) — Efecto magnético de cursor
+- MagneticButton — enlace o botón sin efecto (el imán se retiró; queda por compatibilidad)
 - Money — Formateador monetario
 - NotFoundClient (11 KB) — Cliente 404
 - OverlayHost (5 KB) — Host de overlays
@@ -345,7 +348,11 @@ TIPOGRAFÍA:
 - Titulares: Newsreader serif 500-700, tracking neutro. Solo para titulares y cifras editoriales.
 - Cuerpo: Instrument Sans 400-600. Interlineado 1.5-1.7 (cuerpo), 1.1-1.2 (titulares).
 - Datos: Geist Mono, tabular-nums para alineación de columnas.
-- Cejas: uppercase, tracking 0.1em+, --txt-tertiary, peso 500-600.
+- Cejas: minúscula de frase, sin tracking, --txt-tertiary, peso 500. Solo donde
+  nombran algo que el titular no dice; nunca un rótulo encima de cada bloque.
+- PROHIBIDO: MAYÚSCULAS en rótulos, numeración 01/02/03 donde no hay orden,
+  iconos decorativos encima de cada titular, monogramas que imitan logotipos
+  y flechas SVG en los botones.
 - PROHIBIDO: Huge typefaces sin tracking. Gradientes en texto. Texto sobre imagen sin scrim.
 
 JERARQUÍA Y ESPACIADO:
@@ -359,7 +366,7 @@ MICRO-INTERACCIONES:
 - .link-underline: barrido de acento izquierda→derecha en hover.
 - Navegación y pestañas: UN subrayado que viaja entre elementos (`.tj-nav-foco`,
   `SubrayadoPestanas`), no uno que se apaga y otro que se enciende.
-- Llamada principal: se levanta 1 px con sombra neutra; toda `.cta` se hunde al pulsar.
+- Llamadas: sin elevación, sombra ni flecha al pasar; toda `.cta` se hunde al pulsar.
   (MagneticButton está retirado: ver su cabecera.)
 - CountUp / `.tj-cifra-cuenta`: conteo animado al entrar en viewport.
 - Entradas (`Aparecer.tsx`): por tiempo, 24 px + escala .985, escalonadas entre

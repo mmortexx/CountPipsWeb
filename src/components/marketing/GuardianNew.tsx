@@ -87,7 +87,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           <Reveal>
             <div className="inline-flex items-center gap-3 mb-5">
               <span className="eyebrow">
-                {es ? "DISCIPLINA" : "DISCIPLINE"}
+                {es ? "Disciplina" : "Discipline"}
               </span>
             </div>
           </Reveal>
@@ -168,12 +168,14 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               {es ? "Semáforo de riesgo" : "Risk light"}
               <span className="hidden sm:inline">{es ? " · nueva operación" : " · new trade"}</span>
             </span>
-            <span className="tj-ficha-vivo">{es ? "En vivo" : "Live"}</span>
+            {/* Era «En vivo» con un punto verde: es un ejemplo que se puede
+                tocar, no un dato en directo, y el verde es el del dinero. */}
+            <span>{es ? "Ejemplo" : "Example"}</span>
           </p>
           <div className="tj-ficha-cuerpo" data-dibuja>
             <div className="tnum flex items-baseline gap-x-3 pb-4 border-b border-[var(--ficha-division)]">
               <span className="text-[17px] font-semibold tracking-[-0.01em] text-primary">NQ</span>
-              <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-[rgb(var(--pnl-pos))]">
+              <span className="text-[11px] font-medium text-[rgb(var(--pnl-pos))]">
                 Long
               </span>
               <span className="text-[13px] text-secondary">
@@ -242,7 +244,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               const Icono = tono === "ok" ? ShieldCheck : AlertTriangle;
               return (
                 <div role="status" aria-live="polite" className="tj-d-veredicto mt-1 pt-5 border-t border-[var(--ficha-division)]">
-                  <p className="m-0 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color }}>
+                  <p className="m-0 flex items-center gap-2 text-[11px] font-semibold" style={{ color }}>
                     <Icono size={14} strokeWidth={2} aria-hidden />
                     {titulo}
                   </p>

@@ -405,7 +405,7 @@ export function DisciplineCost() {
             className="relative p-6 tj-ficha"
           >
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4 pb-3 border-b border-[var(--ficha-division)]">
-              <span className="tnum text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary">
+              <span className="tnum text-[11px] font-medium text-tertiary">
                 {es ? "Factura de indisciplina" : "Indiscipline invoice"}
               </span>
               <span className="text-[12px] text-tertiary">
@@ -539,7 +539,7 @@ export function DisciplineCost() {
                   <span className="text-[12px] font-semibold text-primary">
                     {es ? "Si evitaras parte de la fuga" : "If you avoided part of the leak"}
                   </span>
-                  <span className="text-[11px] tnum font-medium uppercase tracking-[0.1em] text-tertiary">
+                  <span className="text-[11px] tnum font-medium text-tertiary">
                     {es ? "Escenario" : "Scenario"}
                   </span>
                 </div>

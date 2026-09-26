@@ -103,7 +103,8 @@ describe("Cromo de mesa", () => {
     expect(precios).not.toMatch(/hover:shadow-\[0_6px_16px_rgb\(var\(--accent-base\)/);
     expect(cmp).not.toMatch(/w-5 h-5 rounded-full bg-pnl-pos/);
     expect(ejes).toMatch(/<ol /);
-    expect(ejes).toMatch(/padStart\(2, "0"\)/);
+    // Tres ejes sin orden entre ellos: numerarlos «01/02/03» era plantilla.
+    expect(ejes).not.toMatch(/padStart\(2, "0"\)/);
     expect(ejes).not.toMatch(/md:grid-cols-3/);
     expect(ejes).not.toMatch(/Desliza para explorar/);
   });

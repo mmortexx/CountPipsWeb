@@ -47,7 +47,7 @@ export function FeaturesBento({
   const { lang } = useLang();
   const es = lang === "es";
 
-  const rotulo = "text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary tnum";
+  const rotulo = "text-[12px] font-medium text-tertiary tnum";
   const titulo = "m-0 text-[clamp(1.25rem,1.8vw,1.5rem)] leading-[1.25] text-primary [text-wrap:balance]";
   const division = "border-[var(--ficha-division)]";
 
@@ -293,7 +293,7 @@ export function FeaturesBento({
                       <p className="m-0 text-[13px] font-medium text-[rgb(var(--pnl-pos))]">
                         {fmtMoney(acc.saldo - acc.inicial, lang, { decimals: 0, sign: true })}
                       </p>
-                      <p className="m-0 mt-0.5 text-[10.5px] font-medium uppercase tracking-[0.1em] text-tertiary">{acc.status}</p>
+                      <p className="m-0 mt-0.5 text-[11px] font-medium text-tertiary">{acc.status}</p>
                     </div>
                   </li>
                 ))}

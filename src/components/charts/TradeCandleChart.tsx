@@ -436,7 +436,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
         {/* Live Hover HUD / Crosshair Readout */}
         {hoveredCandle && (
-          <div className="absolute top-2 left-2 bg-[color-mix(in_oklab,var(--paper-dense)_90%,transparent)] backdrop-blur border border-[rgb(var(--divider)/0.2)] rounded-[4px] p-2 text-[10.5px] font-mono text-secondary flex items-center gap-3">
+          <div className="absolute top-2 left-2 bg-[var(--paper-dense)] border border-[rgb(var(--divider)/0.2)] rounded-[4px] p-2 text-[10.5px] font-mono text-secondary flex items-center gap-3">
             <span>T: <b className="text-primary">{hoveredCandle.time}</b></span>
             <span>O: <b className="text-primary">{fmtPrice(hoveredCandle.open, decimals, lang)}</b></span>
             <span>H: <b className="text-primary">{fmtPrice(hoveredCandle.high, decimals, lang)}</b></span>

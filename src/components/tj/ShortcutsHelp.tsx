@@ -212,7 +212,7 @@ export function ShortcutsHelp({
         >
           {/* Backdrop — subtle blur + fade-in */}
           <div
-            className={`tj-no-print absolute inset-0 bg-black/50 backdrop-blur-md backdrop-saturate-150 ${
+            className={`tj-no-print absolute inset-0 bg-black/50 ${
               saliendo ? "tj-velo-sale" : "tj-velo-entra"
             }`}
             onClick={() => setOpen(false)}

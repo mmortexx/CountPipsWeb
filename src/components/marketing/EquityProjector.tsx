@@ -521,7 +521,7 @@ export function EquityProjector() {
                   quien lo lea puede creer que esta viendo aquella. Se
                   nombra la herramienta por su nombre real, el mismo del
                   rotulo del marco y el de `herramientas.ts`. */}
-              {es ? "PROYECTOR DE CAPITAL" : "EQUITY PROJECTOR"}
+              {es ? "Proyector de capital" : "Equity projector"}
             </span>
           </div>
 
@@ -574,7 +574,7 @@ export function EquityProjector() {
                 programa. El marco se queda —es la caja de la herramienta—
                 pero el rotulo la nombra por su nombre real, el mismo que
                 usa `src/lib/herramientas.ts` para esta entrada. */}
-            <span className="tnum text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--ink-3)]">
+            <span className="tnum text-[11px] font-medium text-[var(--ink-3)]">
               CountPips · {es ? "Proyector de capital" : "Equity projector"}
             </span>
 
@@ -895,7 +895,7 @@ export function EquityProjector() {
               {/* Encabezado: Expectancy & Live Status */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--ficha-division)]">
                 <div className="min-w-0">
-                  <div className="tnum text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--ink-3)]">
+                  <div className="tnum text-[11px] font-medium text-[var(--ink-3)]">
                     {es ? "Expectancy neta por operación" : "Net expectancy per trade"}
                   </div>
                   <div className="flex items-baseline gap-2 mt-1">

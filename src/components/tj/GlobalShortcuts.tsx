@@ -193,7 +193,7 @@ export function GlobalShortcuts() {
     >
           <div className="tj-paper tj-paper-dense rounded-[4px] pl-3 pr-3.5 py-1.5 flex items-center gap-2 border border-[rgb(var(--divider)/0.15)]">
             {/* Label — tells the user what the prefix does */}
-            <span className="text-[11px] uppercase tracking-[0.08em] text-tertiary font-semibold hidden sm:inline">
+            <span className="text-[11px] text-tertiary font-semibold hidden sm:inline">
               {es ? "navegación" : "navigation"}
             </span>
             <span className="hidden sm:inline w-px h-3 bg-[rgb(var(--divider)/0.2)]" aria-hidden />

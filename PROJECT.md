@@ -2526,6 +2526,42 @@ Pruebas nuevas, vistas en rojo antes de pasar: `comparacion.test.ts`
 (coste como la app, cortes del semáforo) y la vigilancia de cifras de
 `movimiento.mjs` (roja con 4 cifras contando antes del arreglo).
 
+### Trigésima novena tanda: más sobria, en toda la web (2026-09-26)
+
+Encargo: «más elegante, institucional, profesional, sutil», en todas las
+páginas, menús y secciones. Criterio: quitar lo que se lee como plantilla;
+no se tocan la tipografía, la paleta ni las capturas.
+
+- **Titulares de un tono.** `.text-gradient` hereda el color: ya no se
+  destaca una palabra en gris dentro del titular. Lo mismo el segundo
+  renglón apagado del cierre (`FinalCTANew`).
+- **Cejas en minúscula de frase** (13 px, sin tracking) y fuera las
+  MAYÚSCULAS escritas a mano en rótulos y estados de fichas (unos 25
+  ficheros). La demo conserva las suyas porque imita a la app.
+- **Superficies opacas.** El «cristal» (desenfoque, deriva, transparencias
+  y sus alternativas de accesibilidad) pasa a una hoja opaca con canto de
+  1 px y sombra corta; un solo radio de panel (`--radio-panel`, 6 px) para
+  fichas, láminas y métricas. Fuera los degradados de cabecera, banda,
+  resplandor oscuro del héroe y pie (ahora un filete).
+- **Llamadas quietas.** Sin elevación, sombra ni flecha SVG al pasar; se
+  hunden al pulsar. Sin iconos en el menú Producto ni en el cajón.
+- **Fuera los adornos que no informan:** iconos encima de cada titular
+  (Principios, Seguridad, perfiles), monogramas «IB/MT/TV» que imitaban
+  logotipos, la numeración 01/02/03 de «Sigue explorando» y de las familias
+  del glosario, y el código «H-01» de herramientas. «En vivo» → «Ejemplo»
+  en el semáforo de portada, que es una muestra.
+- **Precios**: cifra en peso normal; sin la lámina de escritorio de fondo
+  (tampoco en métricas ni en la demo).
+- **Principio 4** de portada: «Hecha para tenerla abierta mientras
+  operas», con enlace a la ficha técnica (`#ficha-tecnica`).
+
+`cromo-mesa.test.ts` exigía la numeración de «Sigue explorando»; ahora
+exige que no esté (roja con el código anterior). La guarda de desenfoque
+de `humo.mjs` pedía encontrar alguno «para saber que miraba»; ahora falla
+ante cualquiera y demuestra que mira contando elementos y exigiendo la
+barra (roja con un `blur` inyectado en la barra). `src/components/tj/Escritorio.tsx`
+queda sin uso: pendiente de permiso para borrarlo.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2549,7 +2585,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 39 suites, 415 tests (+2 omitidos)
+npx vitest run                          # 53 suites, 561 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

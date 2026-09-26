@@ -23,7 +23,7 @@ function Salida({ href, rotulo, destino }: { href: string; rotulo: string; desti
       className="group -mx-4 flex items-center justify-between gap-4 rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
     >
       <span className="min-w-0">
-        <span className="block text-[12px] uppercase tracking-[0.08em] text-tertiary">{rotulo}</span>
+        <span className="block text-[12px] text-tertiary">{rotulo}</span>
         <span className="mt-1 block text-[15px] font-medium text-primary">{destino}</span>
       </span>
       <span
@@ -189,7 +189,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   href={`/glosario/${anterior.slug}`}
                   className="group flex min-h-[44px] max-w-[46%] flex-col justify-center text-left"
                 >
-                  <span className="text-[12px] uppercase tracking-[0.08em] text-tertiary">
+                  <span className="text-[12px] text-tertiary">
                     ← {es ? "Anterior" : "Previous"}
                   </span>
                   <span
@@ -207,7 +207,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                   href={`/glosario/${siguiente.slug}`}
                   className="group flex min-h-[44px] max-w-[46%] flex-col justify-center text-right"
                 >
-                  <span className="text-[12px] uppercase tracking-[0.08em] text-tertiary">
+                  <span className="text-[12px] text-tertiary">
                     {es ? "Siguiente" : "Next"} →
                   </span>
                   <span

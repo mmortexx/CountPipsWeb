@@ -88,7 +88,7 @@ export function TechSpecs() {
   ];
 
   return (
-    <section className="section relative overflow-clip">
+    <section id="ficha-tecnica" className="section relative overflow-clip scroll-mt-24">
       <div className="relative tj-container">
         <SectionHeader
           composicion="partida"

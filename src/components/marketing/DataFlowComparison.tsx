@@ -42,7 +42,7 @@ export function DataFlowComparison() {
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
-              {es ? "FLUJO DE DATOS" : "DATA FLOW"}
+              {es ? "Flujo de datos" : "Data flow"}
             </span>
           </div>
           <h2 className="t-h2 m-0 text-primary">

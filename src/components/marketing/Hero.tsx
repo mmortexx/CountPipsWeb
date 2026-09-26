@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { ArrowRight, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Palabras } from "@/components/tj/Palabras";
 
@@ -44,7 +44,6 @@ export function Hero({ producto }: { producto?: ReactNode }) {
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link href="/demo" className="cta cta--primario">
             {es ? "Ver la demo interactiva" : "See the interactive demo"}
-            <ArrowRight size={16} aria-hidden />
           </Link>
           <Link href="/pricing" className="cta cta--secundario">
             {es ? "Ver precios" : "See pricing"}

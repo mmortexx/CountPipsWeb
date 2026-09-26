@@ -6,8 +6,6 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
 
 interface Broker {
   name: string;
-  /** Two-letter monogram for the logo placeholder chip. */
-  mark: string;
   via: string;
 }
 
@@ -18,11 +16,11 @@ interface Broker {
  * guarda la receta. Cualquier otro CSV entra con mapeo manual.
  */
 const BROKERS: Broker[] = [
-  { name: "Interactive Brokers", mark: "IB", via: "CSV · Flex Query" },
-  { name: "MetaTrader 4/5", mark: "MT", via: "CSV" },
-  { name: "TradingView", mark: "TV", via: "CSV" },
-  { name: "Binance", mark: "BN", via: "CSV · API" },
-  { name: "Bybit", mark: "BY", via: "CSV" },
+  { name: "Interactive Brokers", via: "CSV · Flex Query" },
+  { name: "MetaTrader 4/5", via: "CSV" },
+  { name: "TradingView", via: "CSV" },
+  { name: "Binance", via: "CSV · API" },
+  { name: "Bybit", via: "CSV" },
 ];
 
 /** Logo wall of broker / import integrations. Bilingual. */
@@ -58,27 +56,10 @@ export function Integrations() {
               key={b.name}
               className="group relative p-4 min-w-0 flex flex-col gap-3 border-b border-l border-[rgb(var(--divider)/0.14)]"
             >
-              {/* Row: monogram mark (left) + CSV chip (right). */}
-              <div className="relative flex items-center justify-between">
-                <span
-                  className="w-10 h-10 rounded-[4px] shadow-[inset_0_0_0_1px_var(--ficha-filo)] flex items-center justify-center text-primary text-[13px] font-medium tracking-tight"
-                  style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
-                  aria-hidden="true"
-                >
-                  {b.mark}
-                </span>
-                <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary">
-                  {b.via}
-                </span>
-              </div>
-
-              {/* Broker name. */}
-              <div className="relative">
-                {/* R25-1e — broker name brightens on hover, coordinating
-                    with the card's accent border glow so the name reads
-                    as the card's "active" element on hover. */}
-                <p className="t-h4 text-secondary transition-colors duration-300 group-hover:text-primary">{b.name}</p>
-              </div>
+              {/* Sin monograma: «IB», «MT»… en una baldosa hacían de
+                  logotipo sin serlo. El nombre y cómo entra, nada más. */}
+              <p className="t-h4 m-0 text-primary">{b.name}</p>
+              <span className="text-[12px] font-medium text-tertiary">{b.via}</span>
             </div>
           ))}
           </div>

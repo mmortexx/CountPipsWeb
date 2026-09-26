@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, BookOpenCheck, ShieldCheck, Target, CheckCircle2, AlertTriangle } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
@@ -22,9 +21,9 @@ const DATA = {
     subtitleEs: "Registra la operación, revisa la ejecución y descubre qué setups, horarios y decisiones sostienen de verdad tu ventaja.",
     subtitleEn: "Log the trade, review the execution and discover which setups, sessions and decisions actually support your edge.",
     cards: [
-      { icon: BarChart3, titleEs: "Métricas que explican", titleEn: "Metrics that explain", textEs: "Expectancy, profit factor, drawdown y distribución de R en el mismo lugar que tus operaciones.", textEn: "Expectancy, profit factor, drawdown and R distribution next to the trades that produced them." },
-      { icon: BookOpenCheck, titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con una ventaja.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
-      { icon: Target, titleEs: "Revisión sin excusas", titleEn: "No-excuse review", textEs: "Anota el plan, la gestión y el cierre para ver dónde se rompe tu proceso.", textEn: "Capture plan, management and exit so you can see where your process breaks." },
+      { titleEs: "Métricas que explican", titleEn: "Metrics that explain", textEs: "Expectancy, profit factor, drawdown y distribución de R en el mismo lugar que tus operaciones.", textEn: "Expectancy, profit factor, drawdown and R distribution next to the trades that produced them." },
+      { titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con una ventaja.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
+      { titleEs: "Revisión sin excusas", titleEn: "No-excuse review", textEs: "Anota el plan, la gestión y el cierre para ver dónde se rompe tu proceso.", textEn: "Capture plan, management and exit so you can see where your process breaks." },
     ],
   },
   prop: {
@@ -37,9 +36,9 @@ const DATA = {
     subtitleEs: "La demo enseña un flujo para traders que operan con límites de pérdida, evaluaciones y una disciplina que no admite improvisación.",
     subtitleEn: "The demo shows a workflow for traders working with loss limits, evaluations and discipline that leaves no room for improvisation.",
     cards: [
-      { icon: ShieldCheck, titleEs: "Riesgo que se ve", titleEn: "Visible risk", textEs: "Revisa drawdown, rachas y exposición antes de que una operación te saque del plan.", textEn: "Review drawdown, streaks and exposure before one trade takes you outside the plan." },
-      { icon: BarChart3, titleEs: "Informe de evaluación", titleEn: "Evaluation report", textEs: "Un PDF con el progreso al objetivo, el riesgo disponible hoy y el colchón hasta el límite de pérdida.", textEn: "A PDF with progress to target, risk available today and the buffer to the loss limit." },
-      { icon: Target, titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
+      { titleEs: "Riesgo que se ve", titleEn: "Visible risk", textEs: "Revisa drawdown, rachas y exposición antes de que una operación te saque del plan.", textEn: "Review drawdown, streaks and exposure before one trade takes you outside the plan." },
+      { titleEs: "Informe de evaluación", titleEn: "Evaluation report", textEs: "Un PDF con el progreso al objetivo, el riesgo disponible hoy y el colchón hasta el límite de pérdida.", textEn: "A PDF with progress to target, risk available today and the buffer to the loss limit." },
+      { titleEs: "Reglas verificables", titleEn: "Verifiable rules", textEs: "Usa el diario para detectar incumplimientos recurrentes y preparar la siguiente evaluación.", textEn: "Use the journal to spot recurring breaches and prepare for the next evaluation." },
     ],
   },
 } as const;
@@ -215,9 +214,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             {/* Matriz de parámetros de prop firm */}
             <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] sm:grid-cols-2 lg:grid-cols-4">
               <div className="caja-cifra p-5">
-                <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
+                <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Límite diario (${firm.dailyPct}\u00a0%)` : `Daily limit (${firm.dailyPct}%)`}</span>
-                  <AlertTriangle size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(dailyLossLimit, lang)}
@@ -228,9 +226,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
 
               <div className="caja-cifra p-5">
-                <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
+                <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Drawdown m\u00e1ximo (${firm.maxDDPct}\u00a0%)` : `Max drawdown (${firm.maxDDPct}%)`}</span>
-                  <ShieldCheck size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(maxTrailingLoss, lang)}
@@ -243,9 +240,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
 
               <div className="caja-cifra p-5">
-                <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
+                <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? `Fase 1 (+${firm.phase1Pct}\u00a0%) ${firm.phase2Pct > 0 ? `/ F2 (+${firm.phase2Pct}\u00a0%)` : ""}` : `Phase 1 (+${firm.phase1Pct}%) ${firm.phase2Pct > 0 ? `/ P2 (+${firm.phase2Pct}%)` : ""}`}</span>
-                  <CheckCircle2 size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   +{fmtMoney(phase1Target, lang)}{" "}
@@ -261,9 +257,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
 
               <div className="caja-cifra p-5">
-                <div className="mb-2 flex items-start justify-between gap-2 text-xs uppercase tracking-wider text-tertiary [&>span]:min-w-0">
+                <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
                   <span>{es ? "Riesgo por operación" : "Risk per trade"} ({fmtPct(RIESGO_PCT / 100, lang, 2)})</span>
-                  <Target size={14} className="flex-none" />
                 </div>
                 <div className="cifra-xl font-semibold text-primary tnum">
                   {fmtMoney(maxSafeRiskPerTrade, lang)}
@@ -323,7 +318,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             {/* Tarjeta de métricas del setup */}
             <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] md:grid-cols-3">
               <div className="caja-cifra p-5">
-                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
+                <span className="text-xs text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-semibold text-[rgb(var(--pnl-pos))] tnum">
                   {es
@@ -340,7 +335,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
 
               <div className="caja-cifra p-5">
-                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Acierto y payoff" : "Win rate & payoff"}</span>
+                <span className="text-xs text-tertiary block mb-2">{es ? "Acierto y payoff" : "Win rate & payoff"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-semibold text-primary tnum">
                   {es
@@ -355,7 +350,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
 
               <div className="caja-cifra p-5">
-                <span className="text-xs uppercase tracking-wider text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
+                <span className="text-xs text-tertiary block mb-2">{es ? "Cumplimiento de plan" : "Plan compliance"}</span>
                 <span style={{ fontSize: "clamp(1.05rem, 3.4vw, 1.5rem)" }}
                   className="whitespace-nowrap font-semibold text-primary tnum">
                   {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? "\u00a0%" : "%")}

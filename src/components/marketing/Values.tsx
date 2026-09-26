@@ -8,8 +8,10 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
 /**
  * Values — los cuatro principios del producto: local siempre, demo
  * honesta, disciplina por encima de métricas, y hecho por alguien que
- * opera. Retícula 2×2 de filetes —no de tarjetas— con su marca, su
- * afirmación, y el sitio donde el visitante puede ir a comprobarla.
+ * opera. Retícula 2×2 de filetes —no de tarjetas— con su afirmación y el
+ * sitio donde el visitante puede ir a comprobarla. Sin iconos: un candado
+ * o una brújula sobre cada principio no decían nada que el titular no
+ * dijera ya.
  */
 
 interface Value {
@@ -21,8 +23,6 @@ interface Value {
   href: string;
   pruebaEs: string;
   pruebaEn: string;
-  /** Small SVG mark per card — keeps the grid visually rhythmic. */
-  icon: React.ReactNode;
 }
 
 const VALUES: Value[] = [
@@ -36,7 +36,6 @@ const VALUES: Value[] = [
     href: "/features/seguridad",
     pruebaEs: "Qué se guarda y dónde",
     pruebaEn: "What is stored, and where",
-    icon: <LockIcon />,
   },
   {
     titleEs: "Demo honesta, sin atajos",
@@ -48,7 +47,6 @@ const VALUES: Value[] = [
     href: "/demo",
     pruebaEs: "Recorrer la demo entera",
     pruebaEn: "Walk the whole demo",
-    icon: <CoinIcon />,
   },
   {
     /* Se escribía «Disciplina > métricas». Entre tres titulares que son
@@ -64,19 +62,19 @@ const VALUES: Value[] = [
     href: "/features/disciplina",
     pruebaEs: "Cómo frena el Guardián",
     pruebaEn: "How the brake works",
-    icon: <ShieldIcon />,
   },
   {
-    titleEs: "Hecho por un trader, para traders",
-    titleEn: "Made by a trader, for traders",
+    /* Antes «Hecho por un trader, para traders»: nada en el producto lo
+       demuestra, y un principio tiene que poder comprobarse. */
+    titleEs: "Hecha para tenerla abierta mientras operas",
+    titleEn: "Built to stay open while you trade",
     descEs:
-      "Una app de escritorio hecha por alguien que opera, para usarla mientras se opera.",
+      "Una app de escritorio que arranca en menos de un segundo, funciona sin conexión y no te pide cuenta.",
     descEn:
-      "A desktop app made by someone who trades, to be used while trading.",
-    href: "/about",
-    pruebaEs: "Quién hay detrás",
-    pruebaEn: "Who is behind it",
-    icon: <CompassIcon />,
+      "A desktop app that starts in under a second, works offline and asks for no account.",
+    href: "/features/seguridad#ficha-tecnica",
+    pruebaEs: "Ver la ficha técnica",
+    pruebaEn: "See the spec sheet",
   },
 ];
 
@@ -117,11 +115,7 @@ export function Values() {
                   i % 2 === 1 ? "md:border-l md:pl-12" : "md:pr-12"
                 }`}
               >
-                <span className="flex text-primary" aria-hidden="true">
-                  {v.icon}
-                </span>
-
-                <h3 className="mt-4 t-h3 text-primary md:mt-6">
+                <h3 className="t-h3 text-primary">
                   {es ? v.titleEs : v.titleEn}
                 </h3>
                 <p className="mt-2.5 text-[15px] text-secondary leading-[1.65] max-w-[42em]">
@@ -146,39 +140,5 @@ export function Values() {
 
       </div>
     </section>
-  );
-}
-
-function LockIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <rect x="3" y="7" width="10" height="7" rx="1.4" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M5 7V5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      <circle cx="8" cy="10.5" r="1" fill="currentColor" />
-    </svg>
-  );
-}
-function CoinIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="5.4" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M8 5v6M6.4 6.4h2.4a1.2 1.2 0 0 1 0 2.4H7.2m0 0h1.6a1.2 1.2 0 0 1 0 2.4H6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function ShieldIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <path d="M8 1.5 3 3.5v3.2c0 3 2.2 5.6 5 6.8 2.8-1.2 5-3.8 5-6.8V3.5L8 1.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-      <path d="M5.8 8.2l1.6 1.6L10.4 6.8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-function CompassIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-      <circle cx="8" cy="8" r="5.4" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M10.2 5.8 8.8 8.8 5.8 10.2 7.2 7.2l3-1.4Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-    </svg>
   );
 }

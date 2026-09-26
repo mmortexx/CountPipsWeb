@@ -225,7 +225,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
               <th
                 key={c}
                 scope="col"
-                className="border-b px-3 py-2.5 align-bottom text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary"
+                className="border-b px-3 py-2.5 align-bottom text-[12px] font-semibold text-tertiary"
                 style={{ borderColor: "rgb(var(--divider) / 0.16)" }}
               >
                 {c}

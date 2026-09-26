@@ -94,8 +94,8 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
                 className="tnum text-primary"
                 style={{
                   fontSize: "clamp(2.5rem, 4vw, 3.5rem)",
-                  fontWeight: 500,
-                  letterSpacing: "-0.035em",
+                  fontWeight: 400,
+                  letterSpacing: "-0.04em",
                   lineHeight: 1,
                 }}
               >

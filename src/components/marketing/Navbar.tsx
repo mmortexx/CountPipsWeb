@@ -98,7 +98,6 @@ const PRODUCT_ITEMS: {
   descEs: string;
   descEn: string;
   grupo: "producto" | "laboratorio";
-  icon: React.ReactNode;
 }[] = [
   {
     href: "/features",
@@ -107,14 +106,6 @@ const PRODUCT_ITEMS: {
     descEs: "Vista general del producto",
     descEn: "Product overview",
     grupo: "producto",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor" />
-        <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-        <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-        <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-      </svg>
-    ),
   },
   {
     href: "/features/metricas",
@@ -123,11 +114,6 @@ const PRODUCT_ITEMS: {
     descEs: "Sharpe, profit factor, expectancy",
     descEn: "Sharpe, profit factor, expectancy",
     grupo: "producto",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path d="M2 13V7M6 13V3M10 13V9M14 13V5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    ),
   },
   {
     href: "/features/disciplina",
@@ -136,11 +122,6 @@ const PRODUCT_ITEMS: {
     descEs: "Semáforo de riesgo y freno duro",
     descEn: "Risk light and hard brake",
     grupo: "producto",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path d="M8 1.6 2.9 3.8v3.5c0 3.1 2.2 5.5 5.1 6.5 2.9-1 5.1-3.4 5.1-6.5V3.8L8 1.6Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-      </svg>
-    ),
   },
   {
     href: "/features/seguridad",
@@ -149,12 +130,6 @@ const PRODUCT_ITEMS: {
     descEs: "Tus datos en tu equipo, sin cuenta",
     descEn: "Your data on your machine, no account",
     grupo: "producto",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <rect x="2.5" y="6.5" width="11" height="7.5" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M5 6.5V4.5a3 3 0 0 1 6 0v2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    ),
   },
   {
     href: "/test",
@@ -163,13 +138,6 @@ const PRODUCT_ITEMS: {
     descEs: "Mídete en cinco ejes, sin email",
     descEn: "Measure yourself across five axes, no email",
     grupo: "laboratorio",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path d="M8 14.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        <path d="M8 8l4-3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        <circle cx="8" cy="8" r="1.4" fill="currentColor" />
-      </svg>
-    ),
   },
   {
     href: "/herramientas",
@@ -178,16 +146,6 @@ const PRODUCT_ITEMS: {
     descEs: "Diez calculadoras, gratis y sin registro",
     descEn: "Ten calculators, free and with no sign-up",
     grupo: "laboratorio",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path
-          d="M10.4 2.3a3.4 3.4 0 0 0-4 4.4L2.6 10.5a1.3 1.3 0 0 0 1.8 1.8l3.8-3.8a3.4 3.4 0 0 0 4.4-4l-2 2-1.6-1.6 2-1.6Z"
-          stroke="currentColor"
-          strokeWidth="1.3"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
   },
   {
     href: "/glosario",
@@ -196,17 +154,6 @@ const PRODUCT_ITEMS: {
     descEs: "57 términos explicados sin rodeos",
     descEn: "57 terms explained without waffle",
     grupo: "laboratorio",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path
-          d="M3 2.6h6.2a2 2 0 0 1 2 2v8.8H5a2 2 0 0 1-2-2V2.6Z"
-          stroke="currentColor"
-          strokeWidth="1.3"
-          strokeLinejoin="round"
-        />
-        <path d="M5.4 5.6h3.6M5.4 8h3.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    ),
   },
 ];
 
@@ -226,140 +173,66 @@ const DRAWER_LINKS: {
   labelEs: string;
   labelEn: string;
   grupo: (typeof DRAWER_GRUPOS)[number]["id"];
-  icon: React.ReactNode;
 }[] = [
   {
     href: "/features",
     labelEs: "Características",
     labelEn: "Features",
     grupo: "producto",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor" />
-        <rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-        <rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-        <rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-      </svg>
-    ),
   },
   {
     href: "/demo",
     labelEs: "Demo",
     labelEn: "Demo",
     grupo: "producto",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <rect x="1.5" y="3" width="13" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M6.5 6.5v3l2.8-1.5-2.8-1.5Z" fill="currentColor" />
-      </svg>
-    ),
   },
   {
     href: "/traders/manual",
     labelEs: "Operativa manual",
     labelEn: "Manual trading",
     grupo: "operativa",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path d="M3 13V5.5L8 3l5 2.5V13" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-        <path d="M8 7.5v5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    ),
   },
   {
     href: "/traders/prop-firms",
     labelEs: "Prop firms",
     labelEn: "Prop firms",
     grupo: "operativa",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <rect x="2.5" y="3.5" width="11" height="9" rx="1.2" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M2.5 6.5h11M6 9.5h4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    ),
   },
   {
     href: "/beta",
     labelEs: "Acceso anticipado",
     labelEn: "Early access",
     grupo: "operativa",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path d="M3.5 12.5 8 3.5l4.5 9H3.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-      </svg>
-    ),
   },
   {
     href: "/about",
     labelEs: "Acerca de",
     labelEn: "About",
     grupo: "empresa",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M8 7v4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        <circle cx="8" cy="5" r="0.85" fill="currentColor" />
-      </svg>
-    ),
   },
   {
     href: "/test",
     labelEs: "Test de disciplina",
     labelEn: "Discipline test",
     grupo: "laboratorio",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path d="M8 14.5A6.5 6.5 0 1 1 8 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        <path d="M8 8l4-3.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        <circle cx="8" cy="8" r="1.4" fill="currentColor" />
-      </svg>
-    ),
   },
   {
     href: "/herramientas",
     labelEs: "Herramientas",
     labelEn: "Tools",
     grupo: "laboratorio",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path
-          d="M10.4 2.3a3.4 3.4 0 0 0-4 4.4L2.6 10.5a1.3 1.3 0 0 0 1.8 1.8l3.8-3.8a3.4 3.4 0 0 0 4.4-4l-2 2-1.6-1.6 2-1.6Z"
-          stroke="currentColor"
-          strokeWidth="1.3"
-          strokeLinejoin="round"
-        />
-      </svg>
-    ),
   },
   {
     href: "/glosario",
     labelEs: "Glosario",
     labelEn: "Glossary",
     grupo: "laboratorio",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <path
-          d="M3 2.6h6.2a2 2 0 0 1 2 2v8.8H5a2 2 0 0 1-2-2V2.6Z"
-          stroke="currentColor"
-          strokeWidth="1.3"
-          strokeLinejoin="round"
-        />
-        <path d="M5.4 5.6h3.6M5.4 8h3.6" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-      </svg>
-    ),
   },
   {
     href: "/faq",
     labelEs: "FAQ",
     labelEn: "FAQ",
     grupo: "laboratorio",
-    icon: (
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-        <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
-        <path d="M6.3 6.4c.1-1 .9-1.6 1.9-1.6 1.1 0 1.8.6 1.8 1.4 0 .7-.4 1-1 1.3-.6.3-.8.5-.8 1.1v.2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-        <circle cx="8" cy="11.3" r="0.85" fill="currentColor" />
-      </svg>
-    ),
   },
 ];
 
@@ -919,7 +792,7 @@ export function Navbar() {
                     }}
                     // Cristal: la página se ve difuminada detrás. `position` en línea porque
                     // una regla posterior de globals.css pisaría la utilidad `absolute`.
-                    className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top rounded-[8px] p-0"
+                    className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute left-1/2 w-[640px] max-w-[calc(100vw-3rem)] origin-top p-0"
                     style={{
                       position: "absolute",
                       top: "calc(100% + 14px)",
@@ -949,16 +822,6 @@ export function Navbar() {
                             }
                           }}
                         >
-                          <span
-                            className="grid flex-none place-items-center rounded-[4px]"
-                            style={{
-                              width: 28,
-                              height: 28,
-                              color: "rgb(var(--accent-base))",
-                            }}
-                          >
-                            {item.icon}
-                          </span>
                           <span>
                             <span className="block text-[14px] font-semibold">
                               {es ? item.labelEs : item.labelEn}
@@ -976,13 +839,13 @@ export function Navbar() {
                         <>
                           <div className="relative grid grid-cols-2 divide-x divide-[rgb(var(--divider)/0.10)] p-2">
                             <div className="pr-2">
-                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold text-tertiary">
                                 {es ? "Producto" : "Product"}
                               </p>
                               {productItems.filter((i) => i.grupo === "producto").map(fila)}
                             </div>
                             <div className="pl-2">
-                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold text-tertiary">
                                 {es ? "Laboratorio" : "Lab"}
                               </p>
                               {productItems.filter((i) => i.grupo === "laboratorio").map(fila)}
@@ -1079,9 +942,6 @@ export function Navbar() {
               }}
             >
               {es ? "Ver la demo" : "See the demo"}
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden>
-                <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
             </Link>
             </div>{/* /hidden min-[1120px]:flex — utilidades de escritorio */}
 
@@ -1144,7 +1004,7 @@ export function Navbar() {
             <div
               onClick={() => setMobileOpen(false)}
               data-visible={mobileOpen ? "true" : "false"}
-              className="tj-velo fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm backdrop-saturate-150 min-[1120px]:hidden"
+              className="tj-velo fixed inset-0 z-[55] bg-black/60 min-[1120px]:hidden"
               aria-hidden="true"
             />
             <aside
@@ -1229,7 +1089,7 @@ export function Navbar() {
                       />
                     )}
                     <span
-                      className={`block px-3 pb-1.5 text-[12px] font-semibold uppercase tracking-[0.08em] ${gi === 0 ? "" : "pt-2.5"}`}
+                      className={`block px-3 pb-1.5 text-[12px] font-semibold ${gi === 0 ? "" : "pt-2.5"}`}
                       style={{ color: "var(--ink-3)" }}
                     >
                       {es ? grupo.es : grupo.en}
@@ -1257,12 +1117,6 @@ export function Navbar() {
                                 style={{ background: "rgb(var(--accent-base))" }}
                               />
                             )}
-                            <span
-                              className="grid w-5 flex-none place-items-center transition-colors duration-150 group-hover:text-[var(--ink-2)]"
-                              style={{ color: active ? "rgb(var(--accent-base))" : "var(--ink-3)" }}
-                            >
-                              {l.icon}
-                            </span>
                             <span className="flex-1">{es ? l.labelEs : l.labelEn}</span>
                             <svg
                               width="12"
@@ -1304,7 +1158,7 @@ export function Navbar() {
                   style={{ background: "rgb(var(--divider) / 0.08)" }}
                 />
                 <span
-                  className="px-3 pb-2 pt-4 text-[12px] font-semibold uppercase tracking-[0.08em]"
+                  className="px-3 pb-2 pt-4 text-[12px] font-semibold"
                   style={{ color: "var(--ink-3)" }}
                 >
                   {es ? "Preferencias" : "Preferences"}
@@ -1345,9 +1199,6 @@ export function Navbar() {
                     style={{ color: "var(--ink)" }}
                   >
                     {es ? "Ver precios" : "See pricing"}
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
                   </Link>
                   {/* CTA primario — la demo es el primer paso del recorrido:
                       rectángulo de 4 px, sin sheen ni sombra de acento. */}
@@ -1361,9 +1212,6 @@ export function Navbar() {
                     }}
                   >
                     {lang === "es" ? "Ver la demo" : "See the demo"}
-                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M3 8h9M8 4l4 4-4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
                   </Link>
                 </div>
               </div>

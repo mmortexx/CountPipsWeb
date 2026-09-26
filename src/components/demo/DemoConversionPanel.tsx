@@ -1,7 +1,6 @@
 "use client";
 
 import { Reveal } from "@/components/tj/Reveal";
-import { Escritorio } from "@/components/tj/Escritorio";
 import { useLang } from "@/lib/i18n";
 
 /**
@@ -53,9 +52,6 @@ export function DemoConversionPanel() {
           </Reveal>
 
           <div className="relative">
-            {/* La mancha cuelga del panel y no de la sección: centrada en la
-                sección caía entre las dos columnas, detrás del titular. */}
-            <Escritorio className="tj-escritorio--tras" />
             {/* Sin el candado en su baldosa ni los ticks en verde: el verde
                 es el color de la ganancia, no el de «sí», y la baldosa con
                 icono era el único adorno de plantilla que quedaba en /demo.

@@ -364,7 +364,7 @@ export function GlossaryModal({
           {/* Recently viewed — last 3 expanded terms, persisted in localStorage */}
           {recentTerms.length > 0 && (
             <div className="mb-4">
-              <div className="flex items-center gap-1.5 mb-2 text-[12px] uppercase tracking-[0.08em] text-tertiary font-semibold">
+              <div className="flex items-center gap-1.5 mb-2 text-[12px] text-tertiary font-semibold">
                 <Clock className="size-3" aria-hidden="true" />
                 {es ? "Vistos recientemente" : "Recently viewed"}
               </div>

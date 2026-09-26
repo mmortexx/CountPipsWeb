@@ -115,8 +115,8 @@ export function Footer() {
             </p>
           </div>
 
-          {/* Link columns — refined `.eyebrow` header (uppercase, wide
-              tracking, text-tertiary) + links in `text-sm text-secondary`
+          {/* Link columns — `.eyebrow` header (sentence case, tertiary)
+              + links in `text-sm text-secondary`
               that lift to `text-primary` on hover with a `.link-underline`
               left-sweep accent underline on hover/focus-visible (the design
               system's documented "Footer columns" affordance). Each column

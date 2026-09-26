@@ -3,7 +3,6 @@
 import { useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n";
-import { Escritorio } from "@/components/tj/Escritorio";
 import type { CifrasMuestra } from "@/lib/trading/cifras-muestra";
 import { fmtDate, fmtDiaMes, fmtMoney, fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
 
@@ -443,7 +442,6 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
 
   const contenido = (
     <div className="relative">
-      <Escritorio className="tj-escritorio--ancho" />
       <div className="tj-cristal tj-metricas relative">
         <p className="tj-ficha-barra">
           <span>{es ? "Operativa de muestra" : "Sample track record"}</span>
@@ -518,7 +516,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
                 onFocus={() => m.enlaza && setEnfoque(m.enlaza)}
                 onBlur={() => m.enlaza && setEnfoque(null)}
               >
-                <span className="block truncate text-[11px] uppercase tracking-[0.08em] text-tertiary">{m.l}</span>
+                <span className="block truncate text-[11px] text-tertiary">{m.l}</span>
                 <span className="tnum mt-1.5 block text-[clamp(1.25rem,1.9vw,1.5rem)] font-medium leading-none tracking-[-0.02em]" style={{ color: m.c ?? "var(--ink)" }}>
                   {m.v}
                 </span>

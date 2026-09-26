@@ -297,7 +297,7 @@ export function RiskCalculator() {
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow" data-titular-herramienta>
-              {es ? "CALCULADORA DE RIESGO" : "RISK CALCULATOR"}
+              {es ? "Calculadora de riesgo" : "Risk calculator"}
             </span>
           </div>
 
@@ -472,7 +472,7 @@ export function RiskCalculator() {
 
         {/* Tarjeta calculadora */}
         <div
-          className="tj-paper tj-paper-glow relative p-6 rounded-[8px]"
+          className="tj-paper tj-paper-glow relative p-6"
         >
           {/* Slider de riesgo */}
           <div className="mb-5">

@@ -90,7 +90,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
       <div className="relative tj-container">
         <p className="eyebrow mb-6">{es ? "Sigue explorando" : "Keep exploring"}</p>
         <ol className="m-0 border-t border-[var(--line)] p-0">
-          {ORDER.map((axis, i) => {
+          {ORDER.map((axis) => {
             const isActive = axis === current;
             const a = AXES[axis];
             return (
@@ -101,14 +101,8 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                 <Link
                   href={a.href}
                   aria-current={isActive ? "page" : undefined}
-                  className="group grid min-h-[72px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-3 py-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.6)]"
+                  className="group grid min-h-[72px] grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.6)]"
                 >
-                  <span
-                    className="tnum text-[12px] font-semibold"
-                    style={{ color: "rgb(var(--accent-base))" }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
                   <span className="min-w-0">
                     <span className="block text-[clamp(1.125rem,1.6vw,1.375rem)] font-medium text-primary transition-colors group-hover:text-secondary">
                       {es ? a.labelEs : a.labelEn}
@@ -118,7 +112,7 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
                     </span>
                   </span>
                   {isActive ? (
-                    <span className="tnum shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em] text-[rgb(var(--accent-base))]">
+                    <span className="tnum shrink-0 text-[11px] font-semibold text-[rgb(var(--accent-base))]">
                       {es ? "Aquí" : "Here"}
                     </span>
                   ) : (

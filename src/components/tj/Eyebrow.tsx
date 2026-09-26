@@ -14,11 +14,9 @@ interface EyebrowProps {
 }
 
 /**
- * Eyebrow — small uppercase label used as a section header.
- *
- * Visual spec (P5 polish): tracking 0.2em (set globally via `.eyebrow` in
- * globals.css for the clasico palette), 11px font, ink-3 / txt-tertiary
- * color. The leading mark is a 6×1px hairline at 60% opacity by default —
+ * Eyebrow — rótulo pequeño sobre una sección: minúscula normal, sin
+ * espaciado, 13 px, tinta terciaria (`.eyebrow` en globals.css). The
+ * leading mark is a 6×1px hairline at 60% opacity by default —
  * a whisper, not a rule. Mark variants let callers swap to a dot or omit
  * the mark without losing the consistent typography.
  */

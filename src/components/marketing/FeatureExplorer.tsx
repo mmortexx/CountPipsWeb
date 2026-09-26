@@ -274,7 +274,7 @@ export function FeatureExplorer() {
         {hasSelection ? (
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>
                 {es ? "En este recorte" : "In this cut"} · {fmtInt(topMatches.length, lang)}
               </span>
               {topMatches.length === 0 && (
@@ -289,7 +289,7 @@ export function FeatureExplorer() {
           // Empty state — show all features as a static grid
           <div>
             <div className="mb-4">
-              <span className="tnum" style={{ fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)" }}>
+              <span className="tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>
                 {es ? "Todas las características" : "All features"} · {fmtInt(FEATURES.length, lang)}
               </span>
             </div>
@@ -322,7 +322,7 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
           <h3 className="m-0 flex items-baseline gap-2.5 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
             {es ? f.titleEs : f.titleEn}
             {f.pro && (
-              <span className="relative -top-px rounded-[4px] border border-[var(--line-2)] px-1.5 py-px text-[10px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+              <span className="relative -top-px rounded-[4px] border border-[var(--line-2)] px-1.5 py-px text-[11px] font-semibold text-tertiary">
                 Pro
               </span>
             )}

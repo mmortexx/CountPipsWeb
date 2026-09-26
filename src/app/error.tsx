@@ -62,7 +62,7 @@ export default function Error({
         {error?.digest ? (
           <p
             style={{ animationDelay: "0.3s" }}
-            className="tj-alza mt-3 text-[12px] uppercase tracking-[0.08em] text-tertiary tnum"
+            className="tj-alza mt-3 text-[12px] text-tertiary tnum"
           >
             {es ? "Referencia" : "Reference"}: {error.digest}
           </p>

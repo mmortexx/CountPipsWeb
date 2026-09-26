@@ -1,7 +1,6 @@
 "use client";
 
 import { Link } from "@/components/tj/LocaleLink";
-import { ArrowRight } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
 import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
@@ -70,7 +69,7 @@ export function FinalCTANew({
               incluida la portada (84). */}
           <h2 data-entra className="tj-cierre-titular t-h2 m-0 max-w-[20ch] text-balance">
             {titular}{" "}
-            <span className="tj-cierre-tenue tj-frase-nueva">{tenue}</span>
+            <span className="tj-frase-nueva">{tenue}</span>
           </h2>
           <p data-entra="2" className="m-0 max-w-[34rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
             {entradilla}
@@ -83,7 +82,6 @@ export function FinalCTANew({
                 className="cta cta--primario"
               >
                 {enDemo ? (es ? "Solicitar acceso" : "Request access") : es ? "Ver la demo" : "See the demo"}
-                <ArrowRight size={16} aria-hidden />
               </Link>
               <Link
                 href={enPrecios ? "/beta" : "/pricing"}

@@ -923,12 +923,14 @@
 
 @layer components {
 
+  /* La ceja es un rótulo, no un grito: minúscula normal, sin espaciado,
+     un punto por debajo del cuerpo. Las mayúsculas espaciadas sobre cada
+     titular eran lo más repetido del sitio (2026-09-26). */
   .eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     line-height: 1.4;
-    font-weight: 600;
+    font-weight: 500;
+    letter-spacing: 0;
     color: rgb(var(--txt-tertiary));
   }
 
@@ -967,47 +969,17 @@
   .text-secondary { color: rgb(var(--txt-secondary)); }
   .text-tertiary { color: rgb(var(--txt-tertiary)); }
 
-  /* ── El realce del titular: CURSIVA, porque el color no puede ─────
-     Era un `linear-gradient` de 120° recortado contra el texto. Aparte
-     de ser la figura que esta dirección descarta de raíz —densidad por
-     transición de color en vez de por trazo— y de adelgazar ópticamente
-     el asta de cada letra en una serif a peso 500, tenía un problema
-     mayor: NO REALZABA NADA.
-
-     Medido en el navegador sobre las dos paletas, el contraste entre la
-     palabra "resaltada" y el resto del titular era de 1,21:1 en claro y
-     1,26:1 en oscuro. Uno es el umbral de "son el mismo color". Y no es
-     un descuido que se pueda arreglar subiendo el acento: la nota de la
-     escalera de tinta dice, con razón, que el acento y el texto van a un
-     paso el uno del otro para que la marca no grite. Con esa decisión
-     —que se queda— el énfasis por color es imposible por construcción.
-     Medio centenar de titulares llevaban un mecanismo de énfasis que no
-     producía énfasis.
-
-     Lo resuelve la CURSIVA, que es como enfatiza una obra impresa desde
-     mucho antes de que hubiera color que gastar en ello. Newsreader
-     trae cursiva de verdad —dibujada, no una oblicua inclinada por el
-     navegador—, y ese es justo el detalle que separa una composición
-     editorial de una imitación. El acento se conserva encima: en oscuro
-     aporta un matiz de plata, y en claro no estorba.
-
-     Se conserva el NOMBRE de la clase a propósito: la usan medio
-     centenar de titulares y renombrarla no cambiaría un píxel. */
+  /* ── Titulares de un solo tono (2026-09-26) ──────────────────────
+     `.text-gradient` marcaba la segunda mitad del titular en gris
+     terciario. Repetido en cada página era la firma de una plantilla, y
+     un titular institucional no subraya media frase: se lee entero. La
+     clase se queda —la llevan medio centenar de titulares— pero ya no
+     cambia el tono. Si algún día vuelve el realce, es esta regla. */
   .text-gradient {
-    color: rgb(var(--txt-tertiary));
+    color: inherit;
     -webkit-text-fill-color: currentColor;
     background: none;
     font-style: normal;
-    /* La cursiva de una serif ocupa menos y se inclina: sin este respiro
-       la última letra del tramo se pega a la primera del texto recto. */
-    padding-right: 0.04em;
-  }
-  /* En la sans no hay cursiva dibujada, solo la oblicua sintética que
-     genera el navegador — y ésa sí es el gesto barato que la dirección
-     evita. Ahí el realce se queda en el acento a secas. */
-  .text-gradient:not(:is(h1, h2, h3, h4, .t-h1, .t-h2, .t-h3) *) {
-    font-style: normal;
-    padding-right: 0;
   }
 
   /* ══════════════════════════════════════════════════════════════
@@ -1162,10 +1134,6 @@
   .cv-auto {
     content-visibility: auto;
     contain-intrinsic-size: auto 500px;
-  }
-  /* El cristal necesita ver lo que tiene detrás; la contención se lo corta. */
-  .cv-auto:has(.tj-cristal) {
-    content-visibility: visible;
   }
 
   /* ============================================================
@@ -2293,7 +2261,6 @@ button.icon-btn:hover > svg,
   /* Un botón no hace nada en papel, y la luz de detrás del panel solo
      gasta tinta: las dos son decorado de pantalla. */
   .cta,
-  .tj-escritorio,
   .tj-no-print {
     display: none !important;
   }
@@ -3253,34 +3220,21 @@ button.icon-btn:hover > svg,
 }
 
 /* ---- La captura del producto en la portada ------------------------- */
-/* Banda de fondo: necesita algo más de aire que el reparto normal para
-   que su degradado entre y salga sin pisar el texto. */
+/* La banda ya no lleva fondo (era un degradado gris que entraba y salía):
+   conserva algo más de aire que el reparto normal, que es lo que la
+   separa. */
 .section.tj-banda,
 .tj-banda + .section,
 .tj-banda + .section-tight {
   padding-top: calc(var(--ritmo-3) * 0.7);
 }
-/* La banda no corta: entra y sale del fondo con un degradado. */
 .section.tj-banda {
   padding-bottom: var(--ritmo-3);
-  background: linear-gradient(to bottom, transparent, var(--surface) 22%, var(--surface) 78%, transparent);
 }
-/* La luz del escritorio bajo el panel de cifras desborda a lo ancho sin crear scroll. */
+/* Nada del héroe desborda a lo ancho ni crea scroll lateral. */
 .tj-hero {
   overflow-x: clip;
   isolation: isolate;
-}
-/* En oscuro, una luz fría y muy baja cae desde arriba sobre la portada.
-   En claro el blanco ya da esa amplitud; sin ella el oscuro era un plano
-   negro uniforme y el titular flotaba sin sitio. */
-:root:not([data-theme="light"]) .tj-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: min(100%, 60rem);
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(62% 58% at 50% 0%, rgb(236 240 244 / 0.075), transparent 72%);
 }
 /* Las capturas traen el filo de la ventana de Windows: se recorta bajo el
    marco para que no haya dos bordes. */
@@ -3396,8 +3350,6 @@ button.icon-btn:hover > svg,
 }
 .tj-visor::backdrop {
   background: rgb(8 10 14 / 0.86);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
 }
 .tj-visor[open] {
   display: grid;
@@ -3665,7 +3617,7 @@ html:has(.tj-visor[open]) {
 .tj-paper-glow {
   background-color: var(--ficha-fondo) !important;
   border-color: transparent !important;
-  border-radius: 12px !important;
+  border-radius: var(--radio-panel) !important;
   box-shadow: 0 0 0 1px var(--ficha-filo), var(--ficha-sombra);
 }
 /* CAMPO: filete fino y fondo transparente, no un rectángulo relleno.
@@ -3693,7 +3645,7 @@ select.tj-campo:invalid {
   color: rgb(var(--txt-tertiary));
 }
 .tj-pie {
-  background-image: linear-gradient(to bottom, transparent, var(--surface) 7rem);
+  border-top: 1px solid var(--line);
 }
 /* ============================================================
    FICHA — el panel como documento, no como tarjeta
@@ -3706,8 +3658,8 @@ select.tj-campo:invalid {
    entre celdas como la de una hoja de datos.
 
    `.tj-ficha` es el marco opaco (para paneles sobre una banda o sobre el
-   fondo liso). Los de cristal —sobre `.tj-escritorio`— usan `.tj-cristal`
-   como material y las mismas barras y matriz por dentro.
+   fondo liso). Los paneles de `.tj-cristal` usan el mismo material
+    y las mismas barras y matriz por dentro.
 
    En oscuro la ficha es un escalón MÁS CLARA que la banda que la lleva:
    con el color de la página quedaba más oscura que su fondo, un agujero
@@ -3716,23 +3668,24 @@ select.tj-campo:invalid {
   --ficha-fondo: #ffffff;
   --ficha-filo: rgb(11 15 20 / 0.1);
   --ficha-division: rgb(11 15 20 / 0.075);
-  --ficha-sombra: 0 1px 2px rgb(11 15 20 / 0.03), 0 24px 48px -36px rgb(11 15 20 / 0.2);
+  --ficha-sombra: 0 1px 2px rgb(11 15 20 / 0.04);
   --ficha-pad: clamp(1.25rem, 2.4vw, 2rem);
+  /* Un solo radio para todo panel: ficha, hoja, panel de cifras y tarjeta
+     de precio. Era 12 px en unos y 8 en otros; la app usa 4–8 y la norma
+     de la casa, no más de 6 en tarjetas. */
+  --radio-panel: 6px;
 }
 :root:not([data-theme="light"]) {
   --ficha-fondo: #13171c;
   --ficha-filo: rgb(236 239 242 / 0.1);
   --ficha-division: rgb(236 239 242 / 0.07);
-  /* El filo de luz de arriba es lo que en claro hace la sombra: separa
-     la lámina del fondo. En oscuro una sombra negra sobre casi negro no
-     se ve, y la ficha quedaba como un recorte plano. */
-  --ficha-sombra: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 28px 56px -36px rgb(0 0 0 / 0.75);
+  --ficha-sombra: 0 1px 2px rgb(0 0 0 / 0.3);
 }
 /* Sin `position`: esta regla no va en capa y ganaría a un `lg:sticky`
    de Tailwind —los paneles de resultado de las calculadoras lo llevan—.
    Quien necesite `relative` lo pone en el marcado. */
 .tj-ficha {
-  border-radius: 12px;
+  border-radius: var(--radio-panel);
   background-color: var(--ficha-fondo);
   box-shadow: 0 0 0 1px var(--ficha-filo), var(--ficha-sombra);
 }
@@ -3748,11 +3701,9 @@ select.tj-campo:invalid {
   margin: 0;
   padding: 0.625rem var(--ficha-pad);
   border-bottom: 1px solid var(--ficha-division);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   line-height: 1.35;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
 }
@@ -3788,24 +3739,9 @@ select.tj-campo:invalid {
 .tj-ficha-estado {
   margin-left: auto;
   flex: none;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   color: var(--ink-3);
-}
-/* Punto de estado («En vivo»): un punto y texto, sin chapa alrededor. */
-.tj-ficha-vivo {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.tj-ficha-vivo::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgb(var(--pnl-pos));
 }
 
 /* MATRIZ: celdas separadas por filetes de 1 px, con cualquier número de
@@ -3837,229 +3773,49 @@ select.tj-campo:invalid {
 }
 
 /* ============================================================
-   CRISTAL — el acrílico de la app de escritorio
+   HOJA — el material de paneles, menús y barra
    ============================================================
-   Mismos ingredientes que el AcrylicBrush de la app: lo de detrás
-   difuminado y saturado, un tinte frío encima, grano muy fino y un filo
-   de luz arriba. El claro aclara el #E9EFF3 de la app porque aquí el
-   fondo es blanco; el oscuro usa su #0C1116. Sin nada detrás que
-   difuminar el cristal no se nota: por eso va sobre `.tj-escritorio`
-   o sobre la página que pasa bajo la barra. */
+   Hasta el 2026-09-26 esto era «cristal»: acrílico con desenfoque,
+   grano, reflejos especulares y un canto de lente, sobre una mancha de
+   luz difusa (`.tj-escritorio`). Se retiró entero. Un instrumento no
+   brilla, el sitio se leía como una demostración de efectos, y el
+   desenfoque costaba fotogramas (p95 de 33 ms frente a 17 en /pricing).
+
+   Queda una lámina opaca —blanca en claro, un escalón más clara que la
+   página en oscuro— con filete de 1 px y una sombra corta. Lo que flota
+   sobre contenido (desplegables, aviso de cookies, botón de subir) lleva
+   una sombra algo más larga para separarse. Las clases conservan su
+   nombre porque las lleva media docena de componentes, y
+   `--cristal-tinte` sigue siendo el tono de la lámina: lo usan los
+   anillos de foco que se dibujan sobre ella. */
 :root {
   --cristal-tinte: 255 255 255;
-  --cristal-alfa: 0.4;
-  --cristal-alfa-denso: 0.74;
-  --barra-alfa: 0.62;
-  --cristal-blur: 14px;
-  --cristal-saturacion: 180%;
-  --cristal-filo: rgb(255 255 255 / 1);
   --cristal-canto: rgb(11 15 20 / 0.1);
-  --cristal-pie: rgb(11 15 20 / 0.17);
-  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.18) 28%, rgb(255 255 255 / 0) 58%);
-  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.95), inset 0 0 0 1px rgb(255 255 255 / 0.35), 0 1px 2px rgb(11 15 20 / 0.06), 0 12px 26px -16px rgb(11 15 20 / 0.11), 0 40px 80px -48px rgb(11 15 20 / 0.2);
-  --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  --luz: 17 24 32;
-  --luz-alfa: 0.17;
-  --curva: rgb(11 15 20 / 0.42);
+  --cristal-sombra: 0 1px 2px rgb(11 15 20 / 0.04);
+  --cristal-sombra-flota: 0 1px 2px rgb(11 15 20 / 0.06), 0 12px 32px -14px rgb(11 15 20 / 0.2);
 }
-:root:not([data-theme="light"]) {
-  --cristal-tinte: 12 17 22;
-  --cristal-alfa: 0.55;
-  --cristal-alfa-denso: 0.78;
-  --barra-alfa: 0.7;
-  --cristal-saturacion: 150%;
-  --cristal-filo: rgb(255 255 255 / 0.22);
-  --cristal-canto: rgb(255 255 255 / 0.05);
-  --cristal-pie: rgb(255 255 255 / 0.03);
-  --cristal-brillo: linear-gradient(to bottom, rgb(255 255 255 / 0.045), rgb(255 255 255 / 0.01) 30%, rgb(255 255 255 / 0) 56%);
-  --cristal-blur: 18px;
-  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 32px -18px rgb(0 0 0 / 0.55), 0 44px 90px -40px rgb(0 0 0 / 0.9);
-  --cristal-grano: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  --luz: 236 240 244;
-  --luz-alfa: 0.095;
-  --curva: rgb(236 239 242 / 0.34);
-}
-.tj-cristal,
-.tj-barra[data-cristal="true"]::before {
-  background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa));
-  background-image: var(--cristal-brillo), var(--cristal-grano);
-  -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
-  backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion));
-}
-.tj-cristal {
-  box-shadow: var(--cristal-sombra);
-}
-/* El canto: un filo de 1 px que recibe la luz desde arriba — claro en el
-   borde superior, casi nada en los lados y un poco de sombra al pie. Es lo
-   que separa una lámina de vidrio de un rectángulo con borde. Estático:
-   ni reflejos que sigan al puntero ni refracción. */
-.tj-cristal::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  padding: 1px;
-  border-radius: inherit;
-  background: linear-gradient(to bottom, var(--cristal-filo), var(--cristal-canto) 38%, var(--cristal-canto) 72%, var(--cristal-pie));
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-.tj-cristal--denso {
-  background-color: rgb(var(--cristal-tinte) / var(--cristal-alfa-denso));
-}
-
-/* ── REFLEJOS Y CANTO GRUESO ──────────────────────────────────────────
-   Dos cosas que separan una lámina de vidrio de un rectángulo
-   translúcido, y ninguna de las dos necesita seguir al puntero ni
-   deformar lo de detrás:
-
-   1. EL REFLEJO. Una banda especular en diagonal desde arriba a la
-      izquierda —de donde viene la luz en todo el sitio— y un rebote
-      mucho más flojo en la esquina opuesta, que es la luz que vuelve de
-      la cara trasera del vidrio. El lavado vertical que ya había
-      (`--cristal-brillo`) se queda: hace de reflejo ambiente.
-
-   2. EL CANTO GRUESO. En el borde, el vidrio tiene más espesor, así que
-      lo que se ve a través está más denso. Eso se finge con un anillo
-      de `--cristal-lente` de grosor que sube el brillo y la saturación
-      de lo que ya difuminó el panel, más un resplandor interior suave
-      que funde el filo de dentro del anillo con el resto.
-
-      SIN un segundo desenfoque, a propósito. `backdrop-filter: blur()`
-      es lo caro de este material y aquí ya hay uno por panel; el anillo
-      solo lleva `brightness`/`saturate`, que el compositor resuelve sin
-      volver a muestrear. La refracción de verdad —desplazamiento óptico
-      con `feDisplacementMap` o WebGL— se descartó por eso: se repinta en
-      cada fotograma del desplazamiento.
-
-   El anillo solo va en los paneles. La barra superior no lo lleva: un
-   canto de vidrio de lado a lado de la pantalla no lo tiene ningún
-   material real. */
-:root {
-  /* En claro el canto NO se aclara: el fondo ya es casi blanco y subirle
-     el brillo no cambia nada. El vidrio grueso sobre fondo claro se lee
-     al revés —algo más denso y más frío—, así que aquí la lente baja el
-     brillo y sube la saturación y el contraste. En oscuro es al
-     contrario, y por eso los dos temas no comparten los valores. */
-  --cristal-lente: 22px;
-  --cristal-lente-luz: 0.965;
-  --cristal-lente-color: 1.5;
-  --cristal-lente-contraste: 1.06;
-  --cristal-halo: inset 0 0 22px -8px rgb(11 15 20 / 0.11);
-  --cristal-especular:
-    linear-gradient(125deg, rgb(255 255 255 / 0.5) 0%, rgb(255 255 255 / 0.12) 17%, rgb(255 255 255 / 0) 41%),
-    linear-gradient(305deg, rgb(255 255 255 / 0.22) 0%, rgb(255 255 255 / 0) 25%);
-}
-:root:not([data-theme="light"]) {
-  --cristal-lente-luz: 1.2;
-  --cristal-lente-color: 1.25;
-  --cristal-lente-contraste: 1;
-  --cristal-halo: inset 0 0 22px -8px rgb(255 255 255 / 0.16);
-  --cristal-especular:
-    linear-gradient(125deg, rgb(255 255 255 / 0.1) 0%, rgb(255 255 255 / 0.022) 19%, rgb(255 255 255 / 0) 43%),
-    linear-gradient(305deg, rgb(255 255 255 / 0.05) 0%, rgb(255 255 255 / 0) 23%);
-}
-.tj-cristal {
-  background-image: var(--cristal-especular), var(--cristal-brillo), var(--cristal-grano);
-  box-shadow: var(--cristal-halo), var(--cristal-sombra);
-}
-.tj-cristal::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  -webkit-backdrop-filter: brightness(var(--cristal-lente-luz)) saturate(var(--cristal-lente-color)) contrast(var(--cristal-lente-contraste, 1));
-  backdrop-filter: brightness(var(--cristal-lente-luz)) saturate(var(--cristal-lente-color)) contrast(var(--cristal-lente-contraste, 1));
-  /* Cuatro degradados, uno por lado, sumados. Un anillo recortado con
-     `padding` + máscara `exclude` deja un filo interior duro y lo que se
-     ve no es un canto, son dos marcos. Sumando una caída suave desde
-     cada borde, el efecto se apaga hacia dentro y las esquinas —donde
-     se cruzan dos— salen algo más densas, que es lo que hace el vidrio
-     de verdad. */
-  -webkit-mask-image:
-    linear-gradient(to right, #000, transparent var(--cristal-lente)),
-    linear-gradient(to left, #000, transparent var(--cristal-lente)),
-    linear-gradient(to bottom, #000, transparent var(--cristal-lente)),
-    linear-gradient(to top, #000, transparent var(--cristal-lente));
-  mask-image:
-    linear-gradient(to right, #000, transparent var(--cristal-lente)),
-    linear-gradient(to left, #000, transparent var(--cristal-lente)),
-    linear-gradient(to bottom, #000, transparent var(--cristal-lente)),
-    linear-gradient(to top, #000, transparent var(--cristal-lente));
-  -webkit-mask-composite: source-over;
-  mask-composite: add;
-  pointer-events: none;
-}
-/* Los cristales densos son piezas pequeñas —el botón de subir, el aviso
-   de cookies, la lupa de la lámina—. Un canto de 14 px en un botón de
-   40 px se come el botón entero. */
-.tj-cristal--denso {
-  --cristal-lente: 9px;
-  --cristal-halo: inset 0 0 9px -3px rgb(255 255 255 / 0.45);
-}
-:root:not([data-theme="light"]) .tj-cristal--denso {
-  --cristal-halo: inset 0 0 10px -4px rgb(255 255 255 / 0.12);
-}
-/* ── EN OSCURO, EL PANEL SE SEPARA POR TONO Y NO POR LUZ ─────────────────
-   Los tres efectos de arriba están pensados para el claro, donde van hacia
-   dentro: el canto oscurece un poco y el reflejo casi no se ve sobre
-   blanco. Sobre negro los tres empujan hacia fuera —halo blanco interior,
-   un anillo de 22 px con el brillo a ×1,2 y dos bandas diagonales— y
-   juntos dibujan un marco luminoso alrededor de cada recuadro. Además el
-   tinte #0C1116 con el fondo oscurecido a 0,86 dejaba el panel del mismo
-   tono que la página, así que ese marco era lo único que lo separaba.
-   Aquí el panel queda un escalón más claro que el fondo, sin halo, sin
-   anillo y sin reflejos, con un filo de 1 px casi igual en los cuatro
-   lados: el mismo vidrio esmerilado plano que en claro. Va después de
-   todos los ajustes por variante (`--denso`) para que ninguno
-   devuelva el halo. */
 :root:not([data-theme="light"]) {
   --cristal-tinte: 20 24 30;
-  --cristal-alfa: 0.66;
-  --cristal-alfa-denso: 0.86;
-  --cristal-filo: rgb(236 239 242 / 0.13);
-  --cristal-canto: rgb(236 239 242 / 0.075);
-  --cristal-pie: rgb(236 239 242 / 0.06);
-  --cristal-brillo: linear-gradient(to bottom, rgb(236 239 242 / 0.025), rgb(236 239 242 / 0) 40%);
-  --cristal-sombra: 0 1px 2px rgb(0 0 0 / 0.35), 0 18px 40px -22px rgb(0 0 0 / 0.7);
-  --cristal-lente-luz: 1;
-  --cristal-lente-color: 1;
-  --cristal-especular: none;
-  --cristal-halo: 0 0 #0000;
+  --cristal-canto: rgb(236 239 242 / 0.09);
+  --cristal-sombra: 0 1px 2px rgb(0 0 0 / 0.3);
+  --cristal-sombra-flota: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 36px -18px rgb(0 0 0 / 0.75);
 }
-:root:not([data-theme="light"]) .tj-cristal--denso {
-  --cristal-halo: 0 0 #0000;
+.tj-cristal {
+  border-radius: var(--radio-panel);
+  background-color: rgb(var(--cristal-tinte));
+  box-shadow: 0 0 0 1px var(--cristal-canto), var(--cristal-sombra);
 }
-/* Los desplegables de la barra se abren sobre el titular del héroe: con el
-   0,74 del denso, sus letras de 90 px se transparentaban como un borrón
-   detrás de la lista. Casi opacos, el cristal queda en el filo y el grano,
-   y la sombra se recoge: un menú no flota tan lejos como un panel. */
+.tj-cristal--denso,
 .tj-cristal--menu {
-  --cristal-alfa-denso: 0.95;
-  --cristal-especular: none;
-  --cristal-sombra: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1px 2px rgb(11 15 20 / 0.06), 0 12px 32px -14px rgb(11 15 20 / 0.2);
-}
-:root:not([data-theme="light"]) .tj-cristal--menu {
-  --cristal-alfa-denso: 0.96;
-  --cristal-sombra: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 36px -18px rgb(0 0 0 / 0.75);
+  box-shadow: 0 0 0 1px var(--cristal-canto), var(--cristal-sombra-flota);
 }
 
-/* La barra: opaca arriba del todo y translúcida al desplazar, de lado a
-   lado. El material va en `::before` para que la barra no sea raíz de
-   difuminado y el menú que cuelga de ella siga viendo lo de detrás. */
-/* Saturación contenida: al 180 % de los paneles, el verde y el rojo del
-   calendario que pasa por debajo asomaban como dos manchas de color detrás
-   de «Producto». La barra se lee como vidrio por el desenfoque, no por el
-   color. */
+/* La barra: del color de la página siempre; al desplazar solo aparece un
+   filete debajo. Sin translucidez: lo que pasaba por detrás asomaba como
+   manchas de color tras los enlaces. */
 .tj-barra {
-  --cristal-saturacion: 125%;
   isolation: isolate;
   background-color: var(--bg);
-  transition: background-color 0.3s var(--ease-suave);
-}
-.tj-barra[data-cristal="true"] {
-  background-color: transparent;
 }
 .tj-barra::before {
   content: "";
@@ -4069,58 +3825,16 @@ select.tj-campo:invalid {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s var(--ease-suave);
-  box-shadow: inset 0 -1px 0 var(--line), 0 6px 18px -16px rgb(11 15 20 / 0.22);
+  box-shadow: inset 0 -1px 0 var(--line);
 }
 .tj-barra[data-cristal="true"]::before {
   opacity: 1;
-  background-color: rgb(var(--cristal-tinte) / var(--barra-alfa));
-}
-
-/* El fondo de escritorio: una sola mancha difusa y neutra que se funde con
-   la página arriba y abajo —en claro, una sombra gris sobre el blanco; en
-   oscuro, una luz tenue—, y una curva de capital opcional. Sin color: el
-   cristal se lee como material porque tiene algo que difuminar detrás. */
-.tj-escritorio {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background: radial-gradient(56% 64% at 50% 34%, rgb(var(--luz) / var(--luz-alfa)), transparent 72%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
-  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
-}
-/* La curva solo vive detrás del cristal: a todo el ancho asomaba nítida
-   por los lados del panel y se leía como un trazo suelto. Su ancho es el
-   del panel que tiene delante (`--curva-ancho`). */
-.tj-escritorio-curva {
-  --curva-ancho: calc(min(var(--page-w, 1080px), 100%) - 2 * clamp(1.25rem, 4vw, 2.25rem));
-  position: absolute;
-  top: 26%;
-  left: calc((100% - var(--curva-ancho)) / 2);
-  width: var(--curva-ancho);
-  height: 54%;
-}
-.tj-escritorio-curva path {
-  fill: none;
-  stroke: var(--curva);
-  stroke-width: 3;
-  stroke-linejoin: round;
-}
-.tj-escritorio--ancho {
-  inset: -8% calc(50% - 50vw) 4%;
-}
-/* Detrás de un panel suelto, no de la sección: desborda el panel para que
-   la mancha asome alrededor y no solo a través del cristal. */
-.tj-escritorio--tras {
-  inset: -45% -30%;
-  overflow: visible;
 }
 
 /* ---- Panel de cifras ------------------------------------------------ */
 .tj-metricas {
   --serie-balance: #2a78d6;
-  border-radius: 12px;
+  border-radius: var(--radio-panel);
   text-align: left;
 }
 :root:not([data-theme="light"]) .tj-metricas {
@@ -4599,41 +4313,6 @@ select.tj-campo:invalid {
   }
 }
 
-@media (max-width: 640px) {
-  :root {
-    --cristal-blur: 14px;
-  }
-}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .tj-cristal,
-  .tj-barra[data-cristal="true"]::before {
-    background-color: rgb(var(--cristal-tinte) / 0.96);
-  }
-  /* Sin nada difuminado detrás, el canto no tiene qué densificar y se
-     quedaría en un marco de color a secas. */
-  .tj-cristal::before {
-    display: none;
-  }
-}
-@media (prefers-reduced-transparency: reduce) {
-  .tj-cristal,
-  .tj-barra[data-cristal="true"]::before {
-    background-color: var(--raised);
-    background-image: none;
-  }
-  .tj-cristal {
-    box-shadow: var(--cristal-sombra);
-  }
-  .tj-cristal::before {
-    display: none;
-  }
-  .tj-barra[data-cristal="true"]::before {
-    background-color: var(--bg);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
 /* ============================================================
    CONTRASTE ALTO
    ============================================================
@@ -4684,28 +4363,6 @@ select.tj-campo:invalid {
     outline: 3px solid rgb(var(--accent-base));
     outline-offset: -3px;
     box-shadow: none;
-  }
-  /* Cristal opaco: el desenfoque del fondo baja el contraste del texto
-     que va encima, que es justo lo que no se quiere aquí. */
-  .tj-cristal,
-  .tj-barra[data-cristal="true"]::before {
-    background-color: var(--raised);
-    background-image: none;
-  }
-  .tj-cristal {
-    box-shadow: var(--cristal-sombra);
-  }
-  .tj-cristal::before {
-    display: none;
-  }
-  .tj-barra[data-cristal="true"]::before {
-    background-color: var(--bg);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  /* Y la luz de detrás del panel, que es decorativa, estorba. */
-  .tj-escritorio {
-    display: none;
   }
 }
 
@@ -4902,8 +4559,9 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 
    El respaldo para quien no lo soporte sigue en `SectionReveal.tsx`. */
 @supports (animation-timeline: view()) {
-  /* Las secciones con cristal no entran animadas: una opacidad animada en
-     un ancestro corta lo que el cristal ve detrás y lo deja transparente. */
+  /* Las secciones con panel no entran con opacidad: el panel ya se
+     asienta con su propia animación (`tj-asienta`), y dos a la vez se
+     leían como un tirón. */
   #main-content section:not(#top):not(section section):not(:has(.tj-cristal)) {
     animation: tj-entra-seccion linear both;
     animation-timeline: view(block);
@@ -5560,7 +5218,6 @@ svg [data-entra="sello"] {
 .tj-cabecera {
   padding-top: clamp(7.5rem, 13vh, 9.5rem);
   padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
-  background-image: linear-gradient(to bottom, var(--surface) 45%, transparent);
   /* La entradilla de la cabecera, en caracteres de verdad. Estaba escrita
      en `ch` —62, 58, 60, 56— y daba 84 a 93 caracteres medidos, porque el
      `ch` vale 1,35 caracteres reales; ver la nota larga de `.medida`. Los
@@ -5988,8 +5645,6 @@ svg [data-entra="sello"] {
   opacity: 0;
   visibility: hidden;
   will-change: opacity;
-  backdrop-filter: blur(10px) saturate(140%);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
   transition:
     opacity 0.22s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)),
     visibility 0s linear 0.22s;
@@ -6172,10 +5827,7 @@ svg [data-entra="sello"] {
      el rango de cada hija; en vertical cada fila entra además cuando le
      toca, así que el escalonado solo se nota entre hermanas en fila);
    · los titulares se enfocan al entrar;
-   · el fondo de escritorio deriva detrás del cristal, que así se lee
-     translúcido en movimiento y no solo en reposo;
-   · los paneles de cristal se asientan con transform, nunca con opacidad
-     (una opacidad en el panel o en un ancestro le corta lo que ve detrás).
+   · los paneles se asientan con transform, sin opacidad.
    Rango en `cover`, no en `entry`: una fila de 40 px con `entry`
    entraría en 15 px de scroll, que se ve como un salto. */
 @supports (animation-timeline: view()) {
@@ -6197,17 +5849,6 @@ svg [data-entra="sello"] {
       animation-range: cover 0% cover 30%;
     }
 
-    .tj-escritorio {
-      animation: tj-deriva linear both;
-      animation-timeline: view(block);
-      animation-range: cover 0% cover 100%;
-    }
-    .tj-escritorio-curva {
-      animation: tj-deriva-curva linear both;
-      animation-timeline: view(block);
-      animation-range: cover 0% cover 100%;
-    }
-
     #main-content .tj-cristal:not(.tj-cristal--denso):not(#top *) {
       animation: tj-asienta linear both;
       animation-timeline: view(block);
@@ -6223,22 +5864,6 @@ svg [data-entra="sello"] {
   to {
     opacity: 1;
     transform: none;
-  }
-}
-@keyframes tj-deriva {
-  from {
-    transform: translate3d(0, 6%, 0);
-  }
-  to {
-    transform: translate3d(0, -6%, 0);
-  }
-}
-@keyframes tj-deriva-curva {
-  from {
-    transform: translate3d(0, 14%, 0) scaleY(0.9);
-  }
-  to {
-    transform: translate3d(0, -14%, 0) scaleY(1.06);
   }
 }
 @keyframes tj-asienta {
@@ -6352,13 +5977,6 @@ svg [data-entra="sello"] {
   .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(2) { animation-delay: 0.14s; }
   .tj-cajon[data-visible="true"] .tj-cajon-lista > :nth-child(n + 3) { animation-delay: 0.2s; }
 
-  /* La flecha de la llamada principal empuja al pasar el ratón. */
-  .cta--primario svg {
-    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .cta--primario:hover svg {
-    transform: translateX(4px);
-  }
   .cta--secundario::after {
     transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -6505,41 +6123,6 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   }
 }
 
-/* Detrás del cristal no hay retícula: una cuadrícula de papel milimetrado
-   detrás del panel se leía como plantilla, no como material. Basta la luz
-   difusa de `.tj-escritorio`. */
-/* SOLO DESENFOCA EL CRISTAL QUE FLOTA. Un panel quieto sobre el fondo
-   liso del escritorio no tiene nada detrás que desenfocar, y el desenfoque
-   se recalcula en cada fotograma del scroll. Primero se vio en el panel de
-   cifras de la portada (3/255 de diferencia; p95 de 33 a 17 ms con CPU ×4);
-   el 2026-09-25, en las tarjetas de /pricing a 1440: p95 de 33,3 ms en 4
-   de 4 pasadas con desenfoque y 16,8 sin él, y en captura, a lo sumo
-   11/255 de diferencia en los dos temas y anchos. Lo que flota sobre
-   contenido que se mueve —barra, desplegable, aviso de cookies, botón de
-   subir, lupa y cierre del visor— lleva `tj-cristal--denso` y sí desenfoca:
-   un panel nuevo que flote tiene que llevarlo. */
-.tj-cristal {
-  -webkit-backdrop-filter: saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
-  backdrop-filter: saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
-}
-.tj-cristal--denso,
-.tj-barra[data-cristal="true"]::before {
-  -webkit-backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
-  backdrop-filter: blur(var(--cristal-blur)) saturate(var(--cristal-saturacion)) brightness(var(--cristal-luz, 1));
-}
-.tj-metricas.tj-cristal {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-:root {
-  --cristal-luz: 1.06;
-}
-:root:not([data-theme="light"]) {
-  /* Era 0,86: oscurecía lo de detrás hasta que el panel quedaba del tono
-     de la página. Ver «EN OSCURO, EL PANEL SE SEPARA POR TONO». */
-  --cristal-luz: 0.94;
-}
-
 /* ══════════════════════════════════════════════════════════════════════
    LENGUAJE DE MOVIMIENTO: PRECISIÓN
    ══════════════════════════════════════════════════════════════════════
@@ -6651,19 +6234,14 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   }
 }
 
-/* ── LA LLAMADA PRINCIPAL SE LEVANTA ──────────────────────────────────
-   Un píxel de altura y una sombra neutra que se abre al pasar; al pulsar
-   se hunde. La sombra es gris, nunca del color de acento. */
+/* ── LA LLAMADA PRINCIPAL SE HUNDE AL PULSAR ──────────────────────────
+   Al pasar solo cambia de tono; ya no se levanta ni echa sombra, que es
+   gesto de anuncio y no de instrumento. Al pulsar, se hunde. */
 @media (prefers-reduced-motion: no-preference) {
   .cta--primario {
     transition:
       background-color 160ms var(--ease-suave),
-      transform 0.35s var(--ease-salida),
-      box-shadow 0.35s var(--ease-salida);
-  }
-  .cta--primario:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px -12px rgb(0 0 0 / 0.45), 0 2px 6px -2px rgb(0 0 0 / 0.18);
+      transform 0.35s var(--ease-salida);
   }
   .cta:active {
     transform: translateY(0) scale(0.98);

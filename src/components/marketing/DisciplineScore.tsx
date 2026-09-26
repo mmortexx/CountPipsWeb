@@ -365,7 +365,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
         <div className={enPagina ? "sr-only" : "mb-8 max-w-[46em]"}>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
-              {es ? "DIAGNÓSTICO" : "DIAGNOSIS"}
+              {es ? "Diagnóstico" : "Diagnosis"}
             </span>
           </div>
           <h2 className="t-h2 m-0 text-primary">
@@ -619,8 +619,6 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                     style={{
                       fontSize: 11,
                       fontWeight: 600,
-                      letterSpacing: "0.1em",
-                      textTransform: "uppercase",
                       color: level.color,
                     }}
                   >
@@ -676,7 +674,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               {weakest ? (
                 <>
                   <div className="border-t border-[var(--ficha-division)] pt-4">
-                    <div className="tnum mb-2 text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary">
+                    <div className="tnum mb-2 text-[11px] font-medium text-tertiary">
                       {es ? "Empieza por aquí" : "Start here"}
                     </div>
                     <p className="m-0 text-sm leading-relaxed text-secondary">

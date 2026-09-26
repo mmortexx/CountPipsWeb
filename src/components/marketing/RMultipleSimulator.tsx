@@ -197,7 +197,7 @@ export function RMultipleSimulator() {
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow" data-titular-herramienta>
-              {es ? "SIMULADOR" : "SIMULATOR"}
+              {es ? "Simulador" : "Simulator"}
             </span>
           </div>
           <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">

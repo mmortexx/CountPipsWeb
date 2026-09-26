@@ -168,11 +168,6 @@ export function GlosarioIndice() {
                 <Reveal key={cat} delay={i * 0.04}>
                   <section id={cat} className="scroll-mt-28">
                     <div className="flex items-baseline gap-3">
-                      <span
-                        className="tnum text-[13px] text-tertiary"
-                      >
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
                       <h2 className="m-0 text-[22px] font-semibold tracking-tight text-primary">
                         {es ? meta.es : meta.en}
                       </h2>

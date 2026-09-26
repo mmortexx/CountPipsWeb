@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowRight, BriefcaseBusiness, UserRound } from "lucide-react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
@@ -14,19 +13,14 @@ export function ProfileSelector() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  /* Los antetítulos van en caja normal y la MAYÚSCULA la pone el CSS
-     (`uppercase` en el `<p>` que los pinta). Estaban escritos en
-     mayúsculas literales — "OPERATIVA MANUAL", "PROP FIRMS" —, y eso
-     cambia el texto real, no su aspecto: algunos lectores de pantalla
-     deletrean letra a letra lo que viene todo en mayúsculas, así que se
-     oía "O-P-E-R-A-T-I-V-A". El resto del sitio ya lo hacía bien (ver
-     `.eyebrow` en globals.css); estas dos eran la excepción. En pantalla
-     no cambia nada. */
+  /* Los antetítulos van en caja normal, nunca en mayúsculas literales:
+     algunos lectores de pantalla deletrean letra a letra lo que viene
+     todo en mayúsculas («O-P-E-R-A-T-I-V-A»). Desde el 2026-09-26 el
+     sitio tampoco los pone en mayúsculas por CSS (ver `.eyebrow`). */
   const profiles = [
     {
       id: "manual",
       href: "/traders/manual",
-      icon: UserRound,
       eyebrow: es ? "Operativa manual" : "Manual trading",
       title: es ? "Para leer tu proceso con claridad" : "To read your process clearly",
       body: es
@@ -37,7 +31,6 @@ export function ProfileSelector() {
     {
       id: "prop",
       href: "/traders/prop-firms",
-      icon: BriefcaseBusiness,
       eyebrow: "Prop firms",
       /* «For operating under rules» era calco doble. En inglés de
          mercados el verbo es «trade», no «operate» —«operating» se lee
@@ -75,7 +68,6 @@ export function ProfileSelector() {
 
         <div className="mt-12 grid md:grid-cols-2 lg:mt-0 lg:grid-cols-1 lg:border-b lg:border-[var(--line)]">
           {profiles.map((profile, i) => {
-            const Icon = profile.icon;
             return (
               <Link
                 key={profile.id}
@@ -88,15 +80,14 @@ export function ProfileSelector() {
                     : "border-t border-[var(--line)] md:border-t-0 md:border-l md:pl-12 lg:border-l-0 lg:border-t lg:pl-0"
                 }`}
               >
-                <p className="flex items-center gap-2.5 text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
-                  <Icon size={16} strokeWidth={1.75} aria-hidden className="text-primary" />
+                <p className="eyebrow">
                   {profile.eyebrow}
                 </p>
                 <h3 className="mt-5 text-[clamp(1.375rem,2vw,1.75rem)] leading-tight text-primary">{profile.title}</h3>
                 <p className="mt-3 max-w-md text-[15px] leading-relaxed text-secondary">{profile.body}</p>
                 <span className="mt-6 inline-flex items-center gap-2 text-[15px] font-medium text-primary">
                   {profile.action}
-                  <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden />
+                  <span aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
                 </span>
               </Link>
             );

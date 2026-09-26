@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowRight, Check, ChevronDown, ShieldCheck } from "lucide-react";
+import { Check, ChevronDown, ShieldCheck } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
@@ -434,7 +434,6 @@ export function BetaApplication() {
           {error && (<p ref={errorRef} tabIndex={-1} className="text-sm text-pnl-neg outline-none" role="alert">{error}</p>)}
           <button type="submit" disabled={!ready || status === "sending"} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[4px] bg-[rgb(var(--accent-base))] px-5 text-sm font-semibold text-[rgb(var(--accent-ink))] transition-colors hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] disabled:cursor-not-allowed disabled:opacity-60">
             {status === "sending" ? es ? "Enviando…" : "Sending…" : es ? "Solicitar acceso" : "Request access"}
-            {status !== "sending" && <ArrowRight size={15} aria-hidden />}
           </button>
         </div>
       </div>

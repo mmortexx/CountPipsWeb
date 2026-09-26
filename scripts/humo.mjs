@@ -2107,13 +2107,14 @@ if (SERVIR) {
   }
 }
 
-/* ── NINGÚN PANEL QUIETO DESENFOCA ─────────────────────────────────
-   Desenfocar el fondo se recalcula en cada fotograma del scroll, y un
-   panel en el flujo de la página solo tiene detrás el fondo liso: no se
-   ve y cuesta. El 2026-09-25 las tarjetas de /pricing lo hacían (p95 de
-   33 ms al deslizar a 1440 con el pintado por software). Solo desenfoca
-   lo que flota —fijo, pegajoso o superpuesto— o lo que va dentro de eso. */
+/* ── NADA DESENFOCA SU FONDO ───────────────────────────────────────
+   Desenfocar el fondo se recalcula en cada fotograma del scroll (el
+   2026-09-25 las tarjetas de /pricing daban un p95 de 33 ms al deslizar),
+   y el 2026-09-26 el cristal se retiró entero: las superficies que flotan
+   son hojas opacas. Cualquier `backdrop-filter: blur` que vuelva es un
+   resto. Para no dar verde sin mirar, cuenta lo recorrido y exige la barra. */
 let desenfoquesVistos = 0;
+let elementosMirados = 0;
 if (SERVIR) {
   const ctxBlur = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
   await ctxBlur.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
@@ -2123,34 +2124,30 @@ if (SERVIR) {
       await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
       await pagina.waitForTimeout(500);
       const r = await pagina.evaluate(() => {
-        const flota = (el) => {
-          for (let a = el; a && a !== document.documentElement; a = a.parentElement) {
-            if (/^(fixed|sticky|absolute)$/.test(getComputedStyle(a).position)) return true;
-          }
-          return false;
-        };
-        let conBlur = 0;
-        const quietos = [];
+        const conBlur = [];
+        let mirados = 0;
+        const barra = document.querySelector("header.tj-barra, header .tj-barra");
         for (const el of document.querySelectorAll("body *")) {
+          mirados++;
           for (const pseudo of [null, "::before", "::after"]) {
             const bf = getComputedStyle(el, pseudo).backdropFilter;
-            if (!bf || !bf.includes("blur")) continue;
-            conBlur++;
-            if (!flota(el) && !(pseudo && /^(fixed|sticky|absolute)$/.test(getComputedStyle(el, pseudo).position) && flota(el.parentElement))) {
-              quietos.push(`${el.tagName.toLowerCase()}.${String(el.className).split(" ").slice(0, 3).join(".")}${pseudo ?? ""}`);
+            if (bf && bf.includes("blur")) {
+              conBlur.push(`${el.tagName.toLowerCase()}.${String(el.className).split(" ").slice(0, 3).join(".")}${pseudo ?? ""}`);
             }
           }
         }
-        return { conBlur, quietos };
+        return { conBlur, mirados, barra: !!barra };
       });
-      desenfoquesVistos += r.conBlur;
-      if (r.quietos.length) fallos.push(`desenfoque ${ruta}: ${r.quietos.length} panel(es) quieto(s) desenfocan el fondo: ${r.quietos.slice(0, 3).join(", ")}`);
+      if (!r.barra) fallos.push(`desenfoque ${ruta}: no encuentro la barra de navegación (la guarda no está mirando)`);
+      elementosMirados += r.mirados;
+      desenfoquesVistos += r.conBlur.length;
+      if (r.conBlur.length) fallos.push(`desenfoque ${ruta}: ${r.conBlur.length} elemento(s) desenfocan el fondo: ${r.conBlur.slice(0, 3).join(", ")}`);
     } catch (e) {
       fallos.push(`desenfoque ${ruta}: ${String(e).split("\n")[0]}`);
     }
   }
   await ctxBlur.close();
-  if (!desenfoquesVistos) fallos.push("desenfoque: no encontré ningún elemento que desenfoque (ni la barra): la guarda no está mirando");
+  if (elementosMirados < 1000) fallos.push(`desenfoque: solo ${elementosMirados} elementos recorridos en 5 rutas: la guarda no está mirando`);
 }
 
 /* ── EL ACORDEÓN SE PLIEGA, NO SALTA ───────────────────────────────
@@ -2357,8 +2354,8 @@ if (temasLaminaVistos.length) {
 if (subirMedidos) {
   console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
-if (desenfoquesVistos) {
-  console.log(`[humo] desenfoque — ${desenfoquesVistos} elementos desenfocan su fondo en 5 rutas, todos flotando sobre la página`);
+if (elementosMirados && !desenfoquesVistos) {
+  console.log(`[humo] desenfoque — ${elementosMirados} elementos recorridos en 5 rutas, ninguno desenfoca su fondo`);
 }
 if (calculadorasVistas) {
   console.log(`[humo] calculadoras — ${calculadorasVistas} de 2 no dan por bueno lo imposible (plan con el objetivo del lado del stop; proyección fuera de escala)`);

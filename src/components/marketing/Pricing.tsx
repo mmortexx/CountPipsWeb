@@ -4,7 +4,6 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang, type Lang } from "@/lib/i18n";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
-import { Escritorio } from "@/components/tj/Escritorio";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 import { PRECIO_CORE, PRECIO_PRO, FECHA_TIPO_EUR, aproxEur } from "@/lib/precios";
@@ -145,7 +144,6 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         </Reveal>
 
         <div className={`relative ${standalone ? "" : "mt-10"}`}>
-          <Escritorio className="tj-escritorio--ancho" />
           <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 max-w-[60rem] mx-auto items-stretch">
           {plans.map((plan) => (
             <div key={plan.id} className="h-full">
@@ -198,7 +196,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
   return (
     <div
       data-entra
-      className="tj-cristal relative flex h-full flex-col rounded-[8px]"
+      className="tj-cristal relative flex h-full flex-col"
     >
       {/* Dos zonas, como una ficha: arriba el nivel, el precio y la
           acción; debajo, tras un filete de borde a borde, lo que incluye. */}
@@ -224,15 +222,15 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
       <div className="mt-8 flex items-baseline min-w-0 gap-1">
         {es ? (
           <>
-            <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
+            <span className="text-5xl md:text-6xl font-normal tracking-[-0.035em] text-primary tnum leading-[0.95]">
               {fmtInt(plan.price, lang)}
             </span>
-            <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
+            <span className="text-2xl md:text-3xl font-normal text-tertiary tnum">$</span>
           </>
         ) : (
           <>
-            <span className="text-2xl md:text-3xl font-medium text-secondary tnum">$</span>
-            <span className="text-5xl md:text-6xl font-semibold tracking-[-0.03em] text-primary tnum leading-[0.95]">
+            <span className="text-2xl md:text-3xl font-normal text-tertiary tnum">$</span>
+            <span className="text-5xl md:text-6xl font-normal tracking-[-0.035em] text-primary tnum leading-[0.95]">
               {fmtInt(plan.price, lang)}
             </span>
           </>
@@ -266,28 +264,12 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           }
         >
           {plan.cta}
-          <svg
-            className="transition-transform duration-200 group-hover:translate-x-0.5"
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M3 8h9M8 4l4 4-4 4"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
         </MagneticButton>
       </div>
 
       </div>
       <div className="flex-1 border-t border-[var(--ficha-division)] px-7 pt-6 pb-7 sm:px-9 sm:pb-9">
-      <p className="m-0 text-[11px] font-medium uppercase tracking-[0.1em] text-tertiary">
+      <p className="m-0 text-[11px] font-medium text-tertiary">
         {isPro ? (es ? "Todo lo de Core, y además" : "Everything in Core, plus") : (es ? "Incluye" : "Includes")}
       </p>
       <ul className="mt-4 space-y-3">

@@ -2,7 +2,7 @@
 
 import { useLang } from "@/lib/i18n";
 import { CONEXIONES } from "@/lib/conexiones";
-import { Database, FileLock2, KeyRound, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 /**
  * SecuritySection — sección `#security` del HTML. Local-first:
@@ -14,9 +14,9 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
   const { lang } = useLang();
   const es = lang === "es";
   const cards = [
-    { i: Database, t: es ? "En tu equipo" : "On your machine", d: es ? "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips." : "Your trades live on your disk. No account, no telemetry and no CountPips servers." },
-    { i: FileLock2, t: es ? "Copias verificadas" : "Verified backups", d: es ? "Una base de datos SQLite con copias automáticas verificadas y restauración a la vista." : "One SQLite database with verified automatic backups and visible restore." },
-    { i: KeyRound, t: es ? "Exportar e importar" : "Export & import", d: es ? "Exporta a CSV, JSON completo y PDF, e importa cualquier CSV con mapeo de columnas." : "Export to CSV, full JSON and PDF, and import any CSV with column mapping." },
+    { t: es ? "En tu equipo" : "On your machine", d: es ? "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips." : "Your trades live on your disk. No account, no telemetry and no CountPips servers." },
+    { t: es ? "Copias verificadas" : "Verified backups", d: es ? "Una base de datos SQLite con copias automáticas verificadas y restauración a la vista." : "One SQLite database with verified automatic backups and visible restore." },
+    { t: es ? "Exportar e importar" : "Export & import", d: es ? "Exporta a CSV, JSON completo y PDF, e importa cualquier CSV con mapeo de columnas." : "Export to CSV, full JSON and PDF, and import any CSV with column mapping." },
   ];
   const compare: { l: string; tj: string | boolean; cloud: string | boolean; bueno?: boolean }[] = [
     { l: es ? "Dónde viven los datos" : "Where data lives", tj: es ? "Tu disco" : "Your disk", cloud: es ? "Servidores del proveedor" : "Vendor servers" },
@@ -35,7 +35,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
         <div className={enPagina ? "sr-only" : "max-w-[760px] mx-auto text-center mb-12"}>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
-              {es ? "SEGURIDAD" : "SECURITY"}
+              {es ? "Seguridad" : "Security"}
             </span>
           </div>
           <h2 className="t-h2 m-0 text-primary text-balance">
@@ -69,15 +69,13 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
             cuadradito, que es el vocabulario de una plantilla. */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-8 mb-14">
           {cards.map((c) => {
-            const Icon = c.i;
             return (
               <div
                 key={c.t}
                 data-entra="ciclo"
                 className="border-t border-[var(--line-2)] pt-5"
               >
-                <Icon size={18} strokeWidth={1.6} aria-hidden className="text-tertiary" />
-                <h3 className="mt-4 mb-1.5 text-[17px] text-primary">{c.t}</h3>
+                <h3 className="mb-1.5 text-[17px] text-primary">{c.t}</h3>
                 <p className="m-0" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>
                   {c.d}
                 </p>
@@ -88,7 +86,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
 
         <div className="mb-14">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-tertiary">
+            <p className="text-[12px] font-semibold text-tertiary">
               {es ? "Todo lo que se conecta a internet" : "Everything that goes online"}
             </p>
             <dl className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)] text-[14px]">
@@ -138,21 +136,21 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                 <th
                   scope="col"
                   className="tnum w-[33%]"
-                  style={{ padding: "12px 0 12px 18px", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 400 }}
+                  style={{ padding: "12px 0 12px 18px", fontSize: 11, color: "var(--ink-3)", fontWeight: 400 }}
                 >
                   <span className="sr-only">{es ? "Característica" : "Feature"}</span>
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[33%] tj-columna-propia"
-                  style={{ padding: "14px 12px", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink)", fontWeight: 600 }}
+                  style={{ padding: "14px 12px", fontSize: 11, color: "var(--ink)", fontWeight: 600 }}
                 >
                   CountPips
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[34%]"
-                  style={{ padding: "14px 18px 14px 12px", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 500 }}
+                  style={{ padding: "14px 18px 14px 12px", fontSize: 11, color: "var(--ink-3)", fontWeight: 500 }}
                 >
                   {es ? "Diario en la nube" : "Cloud-based journal"}
                 </th>
@@ -220,7 +218,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
             />
           </div>
           {/* Mobile-only scroll hint. */}
-          <div className="md:hidden py-2 px-4 text-[12px] uppercase tracking-[0.08em] text-tertiary font-semibold text-center">
+          <div className="md:hidden py-2 px-4 text-[12px] text-tertiary font-semibold text-center">
             <span aria-hidden>←</span>{" "}{es ? "Desliza para comparar" : "Swipe to compare"}{" "}<span aria-hidden>→</span>
           </div>
         </div>
