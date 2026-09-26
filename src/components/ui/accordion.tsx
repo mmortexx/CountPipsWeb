@@ -67,15 +67,24 @@ function AccordionContent({
        indexable del sitio: su contenido no estaba.
 
        Con `forceMount` el contenido siempre está montado y lo que cambia
-       es su visibilidad — `hidden` mientras está plegado, que es lo que
-       Google acepta y lo que los lectores de pantalla saben interpretar. */
+       es su visibilidad — `visibility: hidden` mientras está plegado, que
+       Google acepta y los lectores de pantalla saben interpretar.
+
+       El pliegue lo hace `.tj-pliegue` (globals.css), no la animación de
+       Radix: con `forceMount` Radix mide la altura después de pintar y no
+       vuelve a pintar, así que abría y cerraba de golpe, sin un solo
+       fotograma intermedio. */
     <AccordionPrimitive.Content
       forceMount
       data-slot="accordion-content"
-      className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down data-[state=closed]:hidden overflow-hidden text-sm"
+      className="text-sm"
       {...props}
     >
-      <div className={cn("pt-0 pb-4", className)}>{children}</div>
+      <div className="tj-pliegue">
+        <div>
+          <div className={cn("pt-0 pb-4", className)}>{children}</div>
+        </div>
+      </div>
     </AccordionPrimitive.Content>
   )
 }

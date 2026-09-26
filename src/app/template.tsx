@@ -11,7 +11,8 @@ import type { ReactNode } from "react";
  *
  * The animation itself is defined in globals.css (`@keyframes
  * page-enter` + `.page-enter`) and respects
- * `prefers-reduced-motion`.
+ * `prefers-reduced-motion`. It only runs in browsers without view
+ * transitions; elsewhere `TransicionPagina` already animates the swap.
  *
  * This is a Server Component — no hooks, no client JS.
  */

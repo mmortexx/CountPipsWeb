@@ -268,20 +268,9 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           flex justify-between) can wrap long questions
                           like "What's the difference between Core and Pro?"
                           on a 375px viewport without pushing the chevron
-                          off the right edge. */}
-                      {/* Sangría francesa: el número en su propia celda y la
-                          pregunta en la suya. Con los dos en el mismo flujo
-                          en línea, la segunda línea de una pregunta larga
-                          volvía al margen y se metía debajo del número. */}
-                      <span className="flex min-w-0 items-baseline gap-2.5">
-                        <span
-                          className="tnum shrink-0 text-[12px] font-semibold text-tertiary"
-                          aria-hidden
-                        >
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span className="min-w-0 break-words">{item.q}</span>
-                      </span>
+                          off the right edge. Sin número delante: la lista se
+                          filtra al buscar y el «03» pasaba a ser «01». */}
+                      <span className="min-w-0 break-words">{item.q}</span>
                     </AccordionTrigger>
                     <AccordionContent className="medida text-secondary leading-relaxed text-[0.95rem] pb-5">
                       {item.a}

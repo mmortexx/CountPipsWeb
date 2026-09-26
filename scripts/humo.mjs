@@ -2153,6 +2153,105 @@ if (SERVIR) {
   if (!desenfoquesVistos) fallos.push("desenfoque: no encontré ningún elemento que desenfoque (ni la barra): la guarda no está mirando");
 }
 
+/* ── EL ACORDEÓN SE PLIEGA, NO SALTA ───────────────────────────────
+   Hasta el 2026-09-26 las respuestas de /faq y /pricing se abrían y
+   cerraban de golpe: con `forceMount` Radix mide la altura después de
+   pintar y la animación iba de 0 a `auto`, que no se interpola. Se
+   muestrea la altura fotograma a fotograma: tiene que pasar por valores
+   intermedios al abrir y al cerrar, y plegada no se ve ni se enfoca. */
+const acordeones = [];
+{
+  const ctxPliegue = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctxPliegue.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
+  const pagina = await ctxPliegue.newPage();
+  for (const ruta of ["/faq/", "/pricing/"]) {
+    try {
+      await pagina.goto(`${BASE}${ruta}`, { waitUntil: "networkidle", timeout: 45000 });
+      const r = await pagina.evaluate(async () => {
+        const t = [...document.querySelectorAll("[data-slot=accordion-trigger]")].find((x) => x.dataset.state === "closed");
+        if (!t) return null;
+        t.scrollIntoView({ block: "center" });
+        await new Promise((ok) => setTimeout(ok, 400));
+        const c = t.closest("[data-slot=accordion-item]").querySelector("[data-slot=accordion-content]");
+        const muestra = async () => {
+          const alturas = [];
+          const t0 = performance.now();
+          while (performance.now() - t0 < 600) {
+            alturas.push(Math.round(c.getBoundingClientRect().height));
+            await new Promise((ok) => requestAnimationFrame(ok));
+          }
+          const fin = alturas[alturas.length - 1];
+          const ini = alturas[0];
+          const lo = Math.min(ini, fin), hi = Math.max(ini, fin);
+          return { de: ini, a: fin, intermedios: new Set(alturas.filter((h) => h > lo && h < hi)).size };
+        };
+        t.click();
+        const abre = await muestra();
+        t.click();
+        const cierra = await muestra();
+        const plegada = c.querySelector(".tj-pliegue") ?? c;
+        return { abre, cierra, visible: getComputedStyle(plegada).visibility !== "hidden" && getComputedStyle(c).display !== "none" };
+      });
+      if (!r) {
+        fallos.push(`acordeón ${ruta}: no hay ninguna pregunta plegada que abrir`);
+        continue;
+      }
+      acordeones.push(ruta);
+      if (r.abre.a <= r.abre.de || r.abre.intermedios < 3) {
+        fallos.push(`acordeón ${ruta}: al abrir va de ${r.abre.de}px a ${r.abre.a}px con ${r.abre.intermedios} fotogramas intermedios — salta en vez de desplegarse`);
+      }
+      if (r.cierra.a >= r.cierra.de || r.cierra.intermedios < 3) {
+        fallos.push(`acordeón ${ruta}: al cerrar va de ${r.cierra.de}px a ${r.cierra.a}px con ${r.cierra.intermedios} fotogramas intermedios — salta en vez de plegarse`);
+      }
+      if (r.visible) fallos.push(`acordeón ${ruta}: la respuesta plegada sigue visible para el lector de pantalla`);
+    } catch (e) {
+      fallos.push(`acordeón ${ruta}: ${String(e).split("\n")[0]}`);
+    }
+  }
+  await ctxPliegue.close();
+}
+
+/* ── LA PÁGINA NUEVA ENTRA UNA VEZ ─────────────────────────────────
+   Con transición de vista, el fundido de `.page-enter` se sumaba al de
+   la vista y a la entrada de la cabecera: el contenido subía 28 px con
+   doble fundido. Al navegar de / a /pricing no pueden correr los dos. */
+let navegacionMirada = false;
+{
+  const ctxNav = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+  await ctxNav.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
+  const pagina = await ctxNav.newPage();
+  try {
+    await pagina.goto(`${BASE}/`, { waitUntil: "networkidle", timeout: 45000 });
+    await pagina.waitForTimeout(1500);
+    const r = await pagina.evaluate(async () => {
+      const a = [...document.querySelectorAll("a[href]")].find((x) => /\/pricing\/?$/.test(x.getAttribute("href")) && x.offsetParent);
+      if (!a) return null;
+      const vistas = new Set();
+      let seguir = true;
+      const mira = () => {
+        for (const an of document.getAnimations()) if (an.animationName) vistas.add(an.animationName);
+        if (seguir) requestAnimationFrame(mira);
+      };
+      requestAnimationFrame(mira);
+      a.click();
+      await new Promise((ok) => setTimeout(ok, 900));
+      seguir = false;
+      return { ruta: location.pathname, vistas: [...vistas] };
+    });
+    if (!r) fallos.push("navegación: no encontré en la portada un enlace a /pricing");
+    else if (!/\/pricing\/?$/.test(r.ruta)) fallos.push(`navegación: el clic acabó en ${r.ruta}, no en /pricing`);
+    else {
+      navegacionMirada = true;
+      if (r.vistas.includes("tj-vt-entra") && r.vistas.includes("page-enter")) {
+        fallos.push("navegación: la página nueva entra dos veces — `page-enter` corre a la vez que la transición de vista");
+      }
+    }
+  } catch (e) {
+    fallos.push(`navegación: ${String(e).split("\n")[0]}`);
+  }
+  await ctxNav.close();
+}
+
 /* ── EL BOTÓN DE SUBIR NO TAPA EL PIE ──────────────────────────────
    Al final de la página el botón flotante se aparta hacia arriba. Subía
    una cantidad fija (104 px) calculada cuando la barra final del pie era
@@ -2212,6 +2311,9 @@ await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
 for (const a of avisos) console.warn(`  aviso  ${a}`);
+if (!acordeones.length) {
+  fallos.push("acordeón: no se abrió ninguno — esa comprobación no protege nada");
+}
 if (!cierresMedidos.length) {
   fallos.push("no se midió el botón del cierre en móvil en ninguna ruta: esa comprobación no protege nada");
 }
@@ -2367,6 +2469,8 @@ if (menusVistos.length) {
 }
 
 console.log(`[humo] cierre en móvil — ${cierresMedidos.length} rutas, botón principal a todo el ancho`);
+console.log(`[humo] acordeón — ${acordeones.join(", ")}: se despliega y se pliega con fotogramas intermedios`);
+if (navegacionMirada) console.log("[humo] navegación / → /pricing — la página nueva entra una sola vez");
 
 if (presupuestosBarra.length) {
   console.log(

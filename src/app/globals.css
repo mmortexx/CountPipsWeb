@@ -2039,8 +2039,14 @@ textarea:focus-visible,
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.page-enter {
-  animation: page-enter 0.4s var(--ease-suave);
+/* Solo donde no hay transición de vista (TransicionPagina.tsx). Con ella,
+   la página nueva entraba tres veces a la vez —la vista, este fundido y
+   la entrada de la cabecera—: 28 px de recorrido y doble fundido, medido
+   con Playwright al pasar de / a /pricing. */
+@supports not (view-transition-name: none) {
+  .page-enter {
+    animation: page-enter 0.4s var(--ease-suave);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .page-enter { animation: none; }
@@ -2303,6 +2309,13 @@ button.icon-btn:hover > svg,
     height: auto !important;
     overflow: visible !important;
     animation: none !important;
+  }
+  .tj-pliegue {
+    grid-template-rows: 1fr !important;
+    visibility: visible !important;
+  }
+  .tj-pliegue > div {
+    opacity: 1 !important;
   }
   [data-slot="accordion-trigger"] > svg {
     display: none !important;
@@ -5620,7 +5633,7 @@ svg [data-entra="sello"] {
 @keyframes tj-vt-entra {
   from {
     opacity: 0;
-    transform: translate3d(0, 16px, 0);
+    transform: translate3d(0, 8px, 0);
   }
 }
 
@@ -5905,7 +5918,7 @@ svg [data-entra="sello"] {
 /* Entrada de un desplegable anclado a su disparador: micro-elevación institucional
    y desvanecimiento acelerado por hardware (GPU 165Hz/120Hz/60Hz). */
 .tj-cae {
-  animation: tj-menu-dropdown-in 0.34s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  animation: tj-menu-dropdown-in 0.22s var(--ease-menu-in, cubic-bezier(0.16, 1, 0.3, 1)) both;
   will-change: transform, opacity;
   transform-origin: top center;
   backface-visibility: hidden;
@@ -5913,7 +5926,7 @@ svg [data-entra="sello"] {
 @keyframes tj-menu-dropdown-in {
   from {
     opacity: 0;
-    transform: translate3d(0, -10px, 0) scale(0.96);
+    transform: translate3d(0, -4px, 0) scale(0.985);
   }
   to {
     opacity: 1;
@@ -5924,6 +5937,30 @@ svg [data-entra="sello"] {
   .tj-cae {
     animation: none;
   }
+}
+
+/* El pliegue del acordeón: la fila de la rejilla va de 0fr a 1fr, que sí
+   se interpola (una altura `auto` no). Se abre algo más despacio de lo que
+   se cierra, y `visibility` cambia al final del cierre para que la
+   respuesta plegada no se lea ni se enfoque. */
+.tj-pliegue {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s var(--ease-suave), visibility 0s;
+}
+.tj-pliegue > div {
+  min-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s var(--ease-suave);
+}
+[data-state="closed"] > .tj-pliegue {
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition: grid-template-rows 0.22s var(--ease-suave), visibility 0s 0.22s;
+}
+[data-state="closed"] > .tj-pliegue > div {
+  opacity: 0;
+  transition-duration: 0.16s;
 }
 
 /* ── El cajón móvil y su velo ─────────────────────────────────────────
@@ -6206,7 +6243,7 @@ svg [data-entra="sello"] {
 }
 @keyframes tj-asienta {
   from {
-    transform: translate3d(0, 56px, 0) scale(0.97);
+    transform: translate3d(0, 32px, 0) scale(0.98);
   }
   to {
     transform: none;
@@ -6302,11 +6339,11 @@ svg [data-entra="sello"] {
 
   /* Los enlaces del desplegable llegan uno detrás de otro. */
   .tj-cae [role="menuitem"] {
-    animation: tj-cae-fila 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: tj-cae-fila 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
-  .tj-cae [role="menuitem"]:nth-child(3) { animation-delay: 0.04s; }
-  .tj-cae [role="menuitem"]:nth-child(4) { animation-delay: 0.08s; }
-  .tj-cae [role="menuitem"]:nth-child(n + 5) { animation-delay: 0.12s; }
+  .tj-cae [role="menuitem"]:nth-child(3) { animation-delay: 0.03s; }
+  .tj-cae [role="menuitem"]:nth-child(4) { animation-delay: 0.06s; }
+  .tj-cae [role="menuitem"]:nth-child(n + 5) { animation-delay: 0.09s; }
 
   /* El cajón móvil: los grupos entran detrás del cajón. */
   .tj-cajon[data-visible="true"] .tj-cajon-lista > * {
@@ -6332,7 +6369,7 @@ svg [data-entra="sello"] {
 @keyframes tj-carga {
   from {
     opacity: 0;
-    transform: translate3d(0, 34px, 0);
+    transform: translate3d(0, 20px, 0);
   }
   to {
     opacity: 1;
@@ -6406,7 +6443,7 @@ html.tj-mov #main-content .tj-cristal:not(#top *) {
 }
 [data-tj-ap="0"][data-tj-solo="mueve"] {
   opacity: 1;
-  transform: translate3d(0, 64px, 0) scale(0.97);
+  transform: translate3d(0, 32px, 0) scale(0.98);
 }
 /* Los titulares de sección se enfocan: llegan desenfocados y se aclaran
    un poco por detrás del bloque. (El espaciado entre letras no se anima:

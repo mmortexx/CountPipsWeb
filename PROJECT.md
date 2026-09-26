@@ -2423,6 +2423,32 @@ la 404, a 1440 claro y 390 oscuro. El inglés, sin nada que corregir.
   (448–990 frente a 496–944 px a 1440) y los cantos no casaban; ahora
   comparten el `max-w-md`.
 
+### Trigésima sexta tanda: el movimiento que respondía mal (2026-09-26)
+
+Medido con Playwright, fotograma a fotograma, no a ojo.
+
+- **El acordeón saltaba.** Las respuestas de /faq y /pricing se abrían
+  y cerraban de golpe (0 → 172 px sin un fotograma intermedio): con
+  `forceMount` Radix mide la altura después de pintar y no vuelve a
+  pintar, así que la animación iba de 0 a `auto`; al cerrar, el
+  `hidden` llegaba antes que la animación. Ahora lo pliega `.tj-pliegue`
+  (fila de rejilla 0fr ↔ 1fr, 0,3 s al abrir y 0,22 s al cerrar, con
+  `visibility` al final para que lo plegado no se lea ni se enfoque).
+  Guarda en `humo.mjs`, roja contra la web publicada en las dos rutas.
+- **La página nueva entraba tres veces.** Al navegar corrían a la vez la
+  transición de vista, el `page-enter` de `template.tsx` y la entrada de
+  la cabecera: 28 px de recorrido y doble fundido. `page-enter` queda
+  solo para navegadores sin transición de vista. Guarda en `humo.mjs`,
+  roja contra la web publicada.
+- **Recorridos más cortos**, la misma coreografía: cabecera 34 → 20 px,
+  bloque bajo la cabecera 56 → 32 px, piezas con cristal 64 → 32 px,
+  página nueva 16 → 8 px. El panel de la portada que se endereza no se
+  toca: es el único gesto grande y así destaca.
+- **Desplegables más rápidos**: 0,34 → 0,22 s, desde 4 px y 0,985 (antes
+  10 px y 0,96); sus filas en 0,3 s con 30 ms de escalón.
+- **La FAQ sin números**: se renumeraban al buscar (la «03» pasaba a
+  «01»), así que no identificaban nada.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
