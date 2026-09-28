@@ -2634,6 +2634,20 @@ Criterio: la ceja queda si nombra algo que el titular no dice.
   sección de la portada está al 66 % a los 150 ms y al 97 % a los 350, con
   12 px de recorrido y sin escala.
 
+### Cuadragésima tercera tanda: inglés, menús y aviso de cookies (2026-09-28)
+
+Capturas de /en (portada, precios, acerca de, características), del menú
+Producto y del cajón móvil en claro y oscuro, y del aviso de cookies a
+1440 y 390 tras sus 5 s de espera. El inglés sale con los mismos
+componentes, comillas tipográficas y moneda delante; los menús, sin
+iconos ni flechas desde las tandas 39–41.
+
+- **Aviso de cookies**: fuera el icono de galleta, el último icono de
+  adorno del cromo; su radio de escritorio pasa de 8 px al de panel.
+- **Visto y sin cambio**: el titular inglés corta «Trade like / an
+  institutional desk.», con la primera línea corta; se deja así porque
+  la alternativa separa el artículo de su nombre («an / institutional»).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

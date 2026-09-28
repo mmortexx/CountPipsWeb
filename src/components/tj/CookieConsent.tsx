@@ -255,10 +255,9 @@ export function CookieConsent() {
             //
             // z-50 sobre BackToTop (z-40). safe-bottom para el home
             // indicator de iOS en el sheet móvil.
-            className="tj-entra-abajo tj-cristal tj-cristal--denso z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[4px] px-4 pb-3 pt-3.5 md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[8px] md:p-5"
+            className="tj-entra-abajo tj-cristal tj-cristal--denso z-50 safe-bottom left-0 bottom-0 w-full rounded-t-[4px] px-4 pb-3 pt-3.5 md:left-4 md:bottom-4 md:w-[22rem] md:rounded-[var(--radio-panel)] md:p-5"
           >
             <div className="flex items-start gap-2.5 md:gap-3">
-              <CookieIcon />
               {/* El enlace a la política es obligatorio, no cortesía: pedir
                   consentimiento sin ofrecer dónde informarse es justo lo
                   que la norma no permite, y aquí se había quitado a
@@ -308,32 +307,5 @@ export function CookieConsent() {
         </div>
       )}
     </>
-  );
-}
-
-/* ---------- Cookie icon (currentColor, no indigo/blue) ---------- */
-
-function CookieIcon() {
-  return (
-    <span
-      className="shrink-0 mt-0.5 hidden items-center justify-center w-7 h-7 text-secondary md:inline-flex"
-      aria-hidden="true"
-    >
-      <svg
-        width="16"
-        height="16"
-        viewBox="0 0 16 16"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.3"
-        strokeLinejoin="round"
-      >
-        <path d="M13.5 8.2A5.3 5.3 0 1 1 7.8 2.5a2.6 2.6 0 0 0 3.2 3.2 2.6 2.6 0 0 0 2.5 2.5z" />
-        <circle cx="5.7" cy="6.2" r="0.55" fill="currentColor" stroke="none" />
-        <circle cx="9.4" cy="5.4" r="0.55" fill="currentColor" stroke="none" />
-        <circle cx="6.4" cy="9.8" r="0.55" fill="currentColor" stroke="none" />
-        <circle cx="10.2" cy="9.6" r="0.55" fill="currentColor" stroke="none" />
-      </svg>
-    </span>
   );
 }
