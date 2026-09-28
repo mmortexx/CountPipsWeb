@@ -2612,6 +2612,28 @@ características, /features, /demo, legales y 404. Lo que quedaba:
 - **Texto táctil**: «Pasa el ratón por la curva» → «Toca o pasa el
   puntero»; la curva y las barras ya respondían al toque.
 
+### Cuadragésima segunda tanda: cejas con motivo (2026-09-28)
+
+Inventario de cada ceja con el titular que lleva debajo, en las páginas
+españolas fuera de las fichas del glosario: 90 parejas antes, 60 después.
+Criterio: la ceja queda si nombra algo que el titular no dice.
+
+- **Cabeceras de página**: la ceja es opcional en `PageHeader`. Fuera en
+  15 páginas y en las dos de traders, donde repetía las migas («Legal»
+  bajo «Inicio / Términos», «Producto» bajo «Características»). Queda la
+  familia en los términos del glosario y «Gratis / Herramienta gratuita».
+- **Secciones**: fuera las que repetían o generalizaban («Principios»
+  sobre «Lo que creemos», «Disciplina» sobre «Disciplina que actúa»,
+  «Antes de decidir», «Un flujo pensado para tu contexto», «La galería»,
+  «Índice», «Integraciones», «Estado del producto» ×2, «Por qué existe
+  esto», «Preguntas», «Solicitud breve», «Lo que destapa el diario»).
+  Quedan las que nombran una herramienta o un apartado.
+- **Acento en titulares**: «Calcula tu riesgo *antes*» y «*No es una
+  oferta*» llevaban una palabra en color de acento; ahora un solo tono.
+- **Movimiento, visto con él activo** (lo pendiente de la tanda 41): una
+  sección de la portada está al 66 % a los 150 ms y al 97 % a los 350, con
+  12 px de recorrido y sin escala.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

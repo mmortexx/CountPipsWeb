@@ -88,7 +88,6 @@ export function Values() {
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="partida"
-          etiqueta={es ? "Principios" : "Principles"}
           titulo={
             es ? (
               <>

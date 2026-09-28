@@ -52,8 +52,6 @@ export function BetaPage({ lang = "es" }: { lang?: "es" | "en" } = {}) {
       ))}
       <PageHeader
         tono="registro"
-        eyebrowEs="Acceso anticipado"
-        eyebrowEn="Early access"
         titleEs="Prueba CountPips antes de la apertura comercial."
         titleEn="Try CountPips before commercial launch."
         titleHighlightEs="apertura comercial."

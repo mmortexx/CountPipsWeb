@@ -90,8 +90,6 @@ export function AboutBody() {
     <>
       <PageHeader
         tono="capitulo"
-        eyebrowEs="Acerca de"
-        eyebrowEn="About"
         titleEs="Hecho para el trader manual serio."
         titleEn="Made for the serious manual trader."
         titleHighlightEs="manual serio."

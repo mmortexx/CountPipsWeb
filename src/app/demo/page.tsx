@@ -87,8 +87,6 @@ export function DemoBody() {
     <>
       <PageHeader
         tono="instrumento"
-        eyebrowEs="Demo"
-        eyebrowEn="Demo"
         titleEs="La app, en tu navegador."
         titleEn="The app, in your browser."
         titleHighlightEs="en tu navegador."

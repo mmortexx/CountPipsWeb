@@ -128,11 +128,11 @@ export function SavingsCalculator() {
           <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
-                Un escenario de coste. <span className="text-[rgb(var(--accent-base))]">No es una oferta.</span>
+                Un escenario de coste. No es una oferta.
               </>
             ) : (
               <>
-                A cost scenario. <span className="text-[rgb(var(--accent-base))]">Not an offer.</span>
+                A cost scenario. Not an offer.
               </>
             )}
           </h2>

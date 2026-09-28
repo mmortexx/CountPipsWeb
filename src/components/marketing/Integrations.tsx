@@ -33,7 +33,6 @@ export function Integrations() {
       <div className="relative tj-container">
         <SectionHeader
           composicion="apilada"
-          etiqueta={es ? "Integraciones" : "Integrations"}
           titulo={es ? (
               <>
                 Importa desde <span className="text-gradient">tu plataforma.</span>

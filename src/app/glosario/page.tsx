@@ -75,8 +75,6 @@ export function GlosarioBody() {
     <>
       <PageHeader
         tono="registro"
-        eyebrowEs="Referencia"
-        eyebrowEn="Reference"
         titleEs="Glosario de trading."
         titleEn="Trading glossary."
         titleHighlightEs="de trading."

@@ -220,7 +220,6 @@ export function FeatureExplorer() {
       <div className="tj-container">
         <SectionHeader
           className="mb-8"
-          etiqueta={es ? "Índice" : "Index"}
           titulo={es ? (
             <>Elige el eje. <span className="text-gradient tj-frase-nueva">Sale lo que encaja.</span></>
           ) : (

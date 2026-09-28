@@ -55,8 +55,6 @@ export function AvisoLegalBody() {
     <>
       <PageHeader
         tono="documento"
-        eyebrowEs="Legal"
-        eyebrowEn="Legal"
         titleEs="Aviso legal."
         titleEn="Legal notice."
         titleHighlightEs="legal."

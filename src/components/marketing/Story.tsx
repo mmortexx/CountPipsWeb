@@ -2,7 +2,6 @@
 
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
-import { Eyebrow } from "@/components/tj/Eyebrow";
 
 /**
  * Story — narrative section explaining why the app exists. Editorial
@@ -105,10 +104,7 @@ export function Story() {
             bloques ya entran con sus `Reveal`. */}
         <div className="lg:sticky lg:top-24" >
           <Reveal>
-            <Eyebrow>{es ? "Por qué existe esto" : "Why this exists"}</Eyebrow>
-            <h2
-              className="mt-5 t-h2 text-primary"
-            >
+            <h2 className="t-h2 text-primary">
               {es ? (
                 <>
                   El diario que{" "}

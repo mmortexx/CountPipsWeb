@@ -106,8 +106,6 @@ export function FaqBody() {
     <>
       <PageHeader
         tono="registro"
-        eyebrowEs="Dudas"
-        eyebrowEn="Questions"
         titleEs="Preguntas frecuentes."
         titleEn="Frequently asked questions."
         titleHighlightEs="frecuentes."

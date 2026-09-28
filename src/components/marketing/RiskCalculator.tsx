@@ -304,11 +304,11 @@ export function RiskCalculator() {
           <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
-                Calcula tu riesgo <span className="text-[rgb(var(--accent-base))]">antes</span> de operar.
+                Calcula tu riesgo antes de operar.
               </>
             ) : (
               <>
-                Calculate your risk <span className="text-[rgb(var(--accent-base))]">before</span> you trade.
+                Calculate your risk before you trade.
               </>
             )}
           </h2>

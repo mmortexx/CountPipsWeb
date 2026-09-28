@@ -12,8 +12,6 @@ export type TraderProfile = "manual" | "prop";
 
 const DATA = {
   manual: {
-    eyebrowEs: "Para traders manuales",
-    eyebrowEn: "For manual traders",
     titleEs: "Tu criterio merece una pista de datos.",
     titleEn: "Your judgement deserves a data trail.",
     highlightEs: "una pista de datos.",
@@ -27,8 +25,6 @@ const DATA = {
     ],
   },
   prop: {
-    eyebrowEs: "Para prop firms",
-    eyebrowEn: "For prop firms",
     titleEs: "Opera con tus reglas delante.",
     titleEn: "Trade with your rules in view.",
     highlightEs: "tus reglas delante.",
@@ -87,8 +83,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   return (
     <>
       <PageHeader
-        eyebrowEs={data.eyebrowEs}
-        eyebrowEn={data.eyebrowEn}
         titleEs={data.titleEs}
         titleEn={data.titleEn}
         titleHighlightEs={data.highlightEs}
@@ -103,7 +97,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         <div className="tj-container">
           <SectionHeader
             composicion="partida"
-            etiqueta={es ? "Un flujo pensado para tu contexto" : "A workflow shaped for your context"}
             titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
             entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It’s which part of your process is worth repeating, and which part needs a rule before you go back to the market."}
           />

@@ -126,8 +126,6 @@ export function SeguridadBody() {
     <>
       <PageHeader
         tono="capitulo"
-        eyebrowEs="Producto"
-        eyebrowEn="Product"
         titleEs="Tus datos, en tu equipo."
         titleEn="Your data, on your machine."
         titleHighlightEs="en tu equipo."

@@ -93,7 +93,6 @@ export function Wrapped({ datos }: { datos: LecturasMuestra }) {
       <div className="tj-container">
         <SectionHeader
           composicion="partida"
-          etiqueta={es ? "Lo que destapa el diario" : "What the journal uncovers"}
           titulo={
             es ? (
               <>

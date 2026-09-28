@@ -56,8 +56,6 @@ export function TerminosBody() {
     <>
       <PageHeader
         tono="documento"
-        eyebrowEs="Legal"
-        eyebrowEn="Legal"
         titleEs="Términos de uso."
         titleEn="Terms of use."
         titleHighlightEs="de uso."

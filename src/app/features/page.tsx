@@ -133,8 +133,6 @@ export function FeaturesBody() {
     <>
       <PageHeader
         tono="capitulo"
-        eyebrowEs="Producto"
-        eyebrowEn="Product"
         titleEs="Todo lo que necesitas para operar con disciplina."
         titleEn="Everything you need to trade with discipline."
         titleHighlightEs="operar con disciplina."

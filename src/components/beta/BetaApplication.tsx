@@ -302,8 +302,7 @@ export function BetaApplication() {
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>
-          <p className="eyebrow">{es ? "Solicitud breve" : "Short application"}</p>
-          <h2 className="mt-4 t-h3 text-primary">{es ? "Cuéntanos cómo operas." : "Tell us how you trade."}</h2>
+          <h2 className="t-h3 text-primary">{es ? "Cuéntanos cómo operas." : "Tell us how you trade."}</h2>
           <p className="mt-3 max-w-md text-secondary leading-relaxed">
             {es
               ? "Buscamos un piloto pequeño y útil. No hace falta que tengas una cuenta ni que compartas resultados o datos financieros."

@@ -131,8 +131,6 @@ export function MetricasBody() {
     <>
       <PageHeader
         tono="capitulo"
-        eyebrowEs="Producto"
-        eyebrowEn="Product"
         titleEs="Métricas que separan un edge real de una racha."
         titleEn="Metrics that separate a real edge from a streak."
         titleHighlightEs="edge real."

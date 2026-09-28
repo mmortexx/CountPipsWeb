@@ -58,8 +58,6 @@ export function PrivacidadBody() {
     <>
       <PageHeader
         tono="documento"
-        eyebrowEs="Legal"
-        eyebrowEn="Legal"
         titleEs="Política de privacidad."
         titleEn="Privacy policy."
         titleHighlightEs="privacidad."

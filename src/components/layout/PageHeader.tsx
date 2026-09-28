@@ -8,8 +8,11 @@ import { Palabras } from "@/components/tj/Palabras";
 export type TonoPagina = "capitulo" | "instrumento" | "registro" | "tarifa" | "documento";
 
 interface PageHeaderProps {
-  eyebrowEs: string;
-  eyebrowEn: string;
+  /** Solo si dice algo que las migas no dicen (la familia de un término,
+   *  que la herramienta es gratis). Repetir «Legal» bajo «Inicio / Términos»
+   *  era un rótulo de plantilla. */
+  eyebrowEs?: string;
+  eyebrowEn?: string;
   titleEs: string;
   titleEn: string;
   /** Tramo del titular que va en el tono secundario. */
@@ -72,11 +75,13 @@ export function PageHeader({
           </span>
         </nav>
 
-        <p data-entra="2" className="eyebrow">
-          {es ? eyebrowEs : eyebrowEn}
-        </p>
+        {eyebrowEs ? (
+          <p data-entra="2" className="eyebrow">
+            {es ? eyebrowEs : eyebrowEn}
+          </p>
+        ) : null}
 
-        <h1 data-entra="2" className="t-h1 mt-5 max-w-[22ch] text-primary">
+        <h1 data-entra="2" className={`t-h1 max-w-[22ch] text-primary ${eyebrowEs ? "mt-5" : ""}`}>
           <Palabras texto={es ? titleEs : titleEn} realce={es ? titleHighlightEs : titleHighlightEn} />
         </h1>
 

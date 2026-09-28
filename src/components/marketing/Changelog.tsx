@@ -107,7 +107,6 @@ export function Changelog() {
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="partida"
-          etiqueta={es ? "Estado del producto" : "Product status"}
           titulo={es ? (
             <>Qué está listo, <span className="text-gradient">qué validamos y qué sigue.</span></>
           ) : (

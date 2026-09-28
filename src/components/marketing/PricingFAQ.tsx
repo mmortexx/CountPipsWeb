@@ -33,7 +33,6 @@ export function PricingFAQ() {
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="centrada"
-          etiqueta={es ? "Antes de decidir" : "Before you decide"}
           titulo={es ? (
             <>Lo que casi todos <span className="text-gradient">quieren saber.</span></>
           ) : (

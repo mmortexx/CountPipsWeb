@@ -349,7 +349,11 @@ TIPOGRAFÍA:
 - Cuerpo: Instrument Sans 400-600. Interlineado 1.5-1.7 (cuerpo), 1.1-1.2 (titulares).
 - Datos: Geist Mono, tabular-nums para alineación de columnas.
 - Cejas: minúscula de frase, sin tracking, --txt-tertiary, peso 500. Solo donde
-  nombran algo que el titular no dice; nunca un rótulo encima de cada bloque.
+  nombran algo que el titular no dice (una herramienta, una función, un apartado);
+  nunca repiten el titular ni lo introducen con una generalidad («Antes de
+  decidir»). En la cabecera de página, solo si dicen algo que las migas no dicen
+  (la familia de un término del glosario, «Herramienta gratuita»).
+- Titulares de un tono también en color: ninguna palabra en el color de acento.
 - PROHIBIDO: MAYÚSCULAS en rótulos, numeración 01/02/03 donde no hay orden,
   iconos decorativos encima de cada titular, monogramas que imitan logotipos
   y flechas SVG en los botones.

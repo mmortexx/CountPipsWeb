@@ -68,7 +68,6 @@ export function GaleriaPantallas() {
       <div className="tj-container">
         <SectionHeader
           composicion="partida"
-          etiqueta={es ? "La galería" : "The gallery"}
           titulo={
             <span id={`${idBase}-titulo`}>
               {es ? "Las siete pantallas, por dentro." : "The seven screens, from the inside."}

@@ -19,8 +19,7 @@ export function ProductStatus() {
       <div className="tj-container">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
           <div>
-            <p className="eyebrow">{es ? "Estado del producto" : "Product status"}</p>
-            <h2 className="mt-5 t-h2 text-primary">
+            <h2 className="t-h2 text-primary">
               {es ? (
                 <>
                   Lo que está listo.{" "}

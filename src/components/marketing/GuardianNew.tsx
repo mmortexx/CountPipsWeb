@@ -83,15 +83,6 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             Antes la columna aparecía estática mientras la tarjeta izquierda
             no animaba; ahora las dos mitades se asientan a la par. */}
         <div>
-          {!enPagina && (
-          <Reveal>
-            <div className="inline-flex items-center gap-3 mb-5">
-              <span className="eyebrow">
-                {es ? "Disciplina" : "Discipline"}
-              </span>
-            </div>
-          </Reveal>
-          )}
           <Reveal delay={0.06}>
             <h2
               className={enPagina ? "sr-only" : "t-h2 m-0 text-primary"}

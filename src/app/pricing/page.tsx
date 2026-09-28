@@ -145,8 +145,6 @@ export function PricingBody() {
           haya que pedirla. */}
       <PageHeader
         tono="tarifa"
-        eyebrowEs="Precios"
-        eyebrowEn="Pricing"
         titleEs="El precio, por escrito."
         titleEn="The price, up front."
         titleHighlightEs="por escrito."

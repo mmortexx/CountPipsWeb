@@ -57,8 +57,6 @@ export function CookiesBody() {
     <>
       <PageHeader
         tono="documento"
-        eyebrowEs="Legal"
-        eyebrowEn="Legal"
         titleEs="Preferencias claras. Analítica opcional."
         titleEn="Clear preferences. Optional analytics."
         titleHighlightEs="Analítica opcional."

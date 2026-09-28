@@ -116,8 +116,6 @@ export function TestBody() {
     <>
       <PageHeader
         tono="instrumento"
-        eyebrowEs="Diagnóstico"
-        eyebrowEn="Diagnosis"
         titleEs="¿Qué tipo de trader eres?"
         titleEn="What kind of trader are you?"
         titleHighlightEs="trader eres?"

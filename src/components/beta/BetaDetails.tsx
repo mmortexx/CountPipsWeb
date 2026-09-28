@@ -18,8 +18,7 @@ export function BetaDetails() {
           <Link href="/pricing" className="cta cta--secundario mt-3">{es ? "Ver el detalle previsto" : "See planned details"}</Link>
         </article>
         <article className="border-t border-[rgb(var(--divider)/0.18)] pt-5">
-          <p className="eyebrow">{es ? "Preguntas" : "Questions"}</p>
-          <h2 className="mt-4 t-h3 text-primary">{es ? "¿Quieres saber algo antes?" : "Want to know something first?"}</h2>
+          <h2 className="t-h3 text-primary">{es ? "¿Quieres saber algo antes?" : "Want to know something first?"}</h2>
           <p className="mt-3 text-secondary">{es ? "La FAQ explica privacidad, compatibilidad e importación. Si falta una respuesta, escríbenos." : "The FAQ covers privacy, compatibility and imports. If an answer is missing, write to us."}</p>
           <Link href="/faq" className="cta cta--secundario mt-3">{es ? "Abrir la FAQ" : "Open the FAQ"}</Link>
         </article>
