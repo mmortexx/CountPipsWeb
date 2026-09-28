@@ -1,6 +1,5 @@
 "use client";
 
-import { Lock } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -135,13 +134,8 @@ export function TechSpecs() {
           </div>
         </Reveal>
 
-        {/* Footnote */}
         <Reveal delay={0.2} className="mt-6">
-          {/* R25-1e — Lock icon prefix promotes the footnote from fine
-              print to a deliberate "offline / privacy" callout. The
-              accent-tinted icon ties to the section's accent palette. */}
-          <p className="medida text-xs text-tertiary leading-[1.6] flex items-start gap-1.5">
-            <Lock size={13} aria-hidden className="mt-0.5 shrink-0 text-[rgb(var(--accent-base)/0.70)]" />
+          <p className="medida text-xs text-tertiary leading-[1.6]">
             <span>
               {es
                 ? "Funciona sin conexión. La licencia se revalida como mucho una vez al día y aguanta 30 días sin red; si caduca, la app pasa a solo lectura y tus datos siguen siendo tuyos."

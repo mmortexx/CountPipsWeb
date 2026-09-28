@@ -238,7 +238,7 @@ export function EdgeSignificanceChecker() {
               </>
             )}
           </h2>
-          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
+          <p className="t-entradilla mt-5 mb-7 text-secondary max-w-[34em]">
             {es
               ? `60${PCT} de aciertos en 20 operaciones suena bien — pero estadísticamente es indistinguible de una moneda. Este test te dice si tu muestra basta para afirmar que tienes un edge.`
               : "60% win rate over 20 trades sounds good — but statistically it’s indistinguishable from a coin. This test tells you if your sample is enough to claim you have an edge."}

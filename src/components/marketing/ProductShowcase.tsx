@@ -77,7 +77,7 @@ export function ProductShowcase() {
             </h2>
           </div>
           <div className="lg:pb-1">
-            <p className="max-w-[46ch] text-lg leading-relaxed text-secondary">
+            <p className="max-w-[46ch] t-entradilla text-secondary">
               {es
                 ? "Capturas reales del programa con datos de muestra. Elige una pantalla."
                 : "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen."}

@@ -34,7 +34,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
           <Palabras texto={es ? "Opera como una mesa institucional." : "Trade like an institutional desk."} />
         </h1>
 
-        <p className="mx-auto mt-7 max-w-[40rem] text-[clamp(1.125rem,1.5vw,1.3125rem)] leading-[1.55] text-secondary">
+        <p className="mx-auto mt-7 max-w-[40rem] t-lede text-secondary">
           {es
             ? "40+ métricas de riesgo y rendimiento, un guardián que te avisa antes de romper tus reglas y tus datos en tu equipo."
             : "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine."}

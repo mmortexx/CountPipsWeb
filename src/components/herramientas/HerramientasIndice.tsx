@@ -66,7 +66,7 @@ export function HerramientasIndice() {
                     className={`group grid min-h-[72px] grid-cols-1 items-center gap-1 py-4 transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:min-h-[64px] sm:gap-4 sm:py-2.5 ${COLUMNAS}`}
                   >
                     <span className="min-w-0">
-                      <span className="block text-[15.5px] font-semibold tracking-tight text-primary">
+                      <span className="block t-h5 text-primary">
                         {f.titulo}
                       </span>
                       <span className="mt-0.5 block text-[14px] leading-[1.45] text-secondary">
@@ -78,7 +78,7 @@ export function HerramientasIndice() {
                     </span>
                     <span
                       aria-hidden
-                      className="mt-1 text-[13px] font-medium text-primary sm:mt-0 sm:justify-self-end"
+                      className="hidden text-[13px] font-medium text-primary sm:block sm:justify-self-end"
                     >
                       {es ? "Abrir" : "Open"}
                     </span>

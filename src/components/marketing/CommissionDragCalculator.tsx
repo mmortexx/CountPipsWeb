@@ -3,7 +3,6 @@
 import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
-import { AlertTriangle, ShieldCheck } from "lucide-react";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
@@ -379,12 +378,7 @@ export function CommissionDragCalculator() {
 
             {/* Diagnóstico Institucional */}
             <div className="mt-5 pt-4 border-t border-[var(--line)]">
-              <div className="flex items-start gap-2">
-                {costDragPct > UMBRAL_DRAG_ALTO ? (
-                  <AlertTriangle size={16} aria-hidden="true" className="text-[rgb(var(--pnl-neg))] shrink-0 mt-0.5" />
-                ) : (
-                  <ShieldCheck size={16} aria-hidden="true" className="text-[rgb(var(--accent-base))] shrink-0 mt-0.5" />
-                )}
+              <div>
                 <p className="text-[13px] text-secondary leading-relaxed m-0">
                   {netAnnual < 0
                     ? es

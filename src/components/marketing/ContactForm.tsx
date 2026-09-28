@@ -104,18 +104,13 @@ export function ContactForm() {
       email: !email.trim() || !EMAIL_RE.test(email.trim()),
       message: !message.trim(),
     };
-    const missing: string[] = [];
-    if (fallan.name) missing.push(es ? "nombre" : "name");
-    if (fallan.email) missing.push(es ? "email válido" : "valid email");
-    if (fallan.message) missing.push(es ? "mensaje" : "message");
-
-    if (missing.length) {
+    if (fallan.name || fallan.email || fallan.message) {
       setShowFallback(false);
       setInvalidos(fallan);
       setError(
         es
-          ? `Revisa: ${missing.join(", ")}.`
-          : `Please check: ${missing.join(", ")}.`
+          ? "Completa los campos marcados para enviar el mensaje."
+          : "Complete the marked fields to send your message."
       );
       const primero = fallan.name
         ? nameRef.current
@@ -176,67 +171,18 @@ export function ContactForm() {
           <Reveal delay={0.14} y={20}>
             <div className="tj-ficha p-6 sm:p-9 relative overflow-hidden">
               <div className="min-h-[360px] flex flex-col justify-center">
-                {/* AQUÍ HABÍA UN `AnimatePresence`, Y LO QUE HACÍA SE
-                    CONSERVA MENOS UNA COSA.
-                    Se conserva la coreografía de la confirmación: el
-                    disco se estampa, la marca se dibuja encima y el
-                    texto sube detrás, con los mismos retardos (0 / 0,25
-                    / 0,55 s). Se conserva porque son animaciones de
-                    ENTRADA, y una entrada no necesita biblioteca: basta
-                    con que la clase esté puesta cuando el elemento se
-                    monta.
-
-                    Lo que se pierde es el fundido de SALIDA del
-                    formulario, de 0,25 s. Eso sí necesita mantener vivo
-                    en el árbol un elemento que React ya ha quitado, que
-                    es exactamente el problema que `AnimatePresence`
-                    existe para resolver — y la única razón por la que
-                    esta página descargaba framer-motion entera (36 KB
-                    comprimidos). Cambiar un cuarto de segundo de
-                    desvanecido, en un formulario que se envía una vez,
-                    por 36 KB en cada visita a /faq es un cambio que se
-                    hace sin pensarlo mucho. */}
+                {/* La confirmación es texto, como la de /beta: sin disco
+                    que se estampa ni marca que se dibuja. Entra con el
+                    mismo fundido corto que el resto del sitio. */}
                 {sent ? (
-                    <div className="tj-sube-ya flex flex-col items-center gap-4 py-8 text-center">
-                      <svg
-                        width="64"
-                        height="64"
-                        viewBox="0 0 64 64"
-                        fill="none"
-                        aria-hidden="true"
-                      >
-                        {/* `pathLength="1"` normaliza el recorrido del
-                            trazo a la unidad para que `stroke-dasharray:
-                            1` funcione sin medir su longitud real en
-                            píxeles. Ver `tj-dibuja` en globals.css. */}
-                        <circle
-                          className="tj-estampa-ya"
-                          cx="32"
-                          cy="32"
-                          r="28"
-                          stroke="rgb(var(--sig-green))"
-                          strokeWidth="2"
-                          fill="rgb(var(--sig-green) / 0.10)"
-                        />
-                        <path
-                          className="tj-dibuja-ya"
-                          pathLength="1"
-                          d="M20 33.5l8 8 16-18"
-                          stroke="rgb(var(--sig-green))"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                      </svg>
-                      <p
-                        className="tj-sube-ya-tarde text-base font-medium text-primary"
-                        aria-live="polite"
-                        role="status"
-                      >
+                    <div className="tj-sube-ya py-8" role="status" aria-live="polite">
+                      <p className="t-h4 m-0 text-primary">
+                        {es ? "Mensaje enviado." : "Message sent."}
+                      </p>
+                      <p className="mt-2 mb-0 text-secondary leading-relaxed">
                         {es
-                          ? "✓ Mensaje enviado. Te contestamos en cuanto lo veamos."
-                          : "✓ Message sent. We’ll reply as soon as we see it."}
+                          ? "Te contestamos en cuanto lo veamos."
+                          : "We’ll reply as soon as we see it."}
                       </p>
                     </div>
                   ) : (
@@ -245,7 +191,7 @@ export function ContactForm() {
                       noValidate
                       className="flex flex-col gap-4"
                     >
-                      <Field label={es ? "Nombre" : "Name"} htmlFor="cf-name">
+                      <Field label={es ? "Nombre" : "Name"} htmlFor="cf-name" error={invalidos.name ? (es ? "Escribe tu nombre." : "Enter your name.") : null}>
                         <input
                           id="cf-name"
                           ref={nameRef}
@@ -256,12 +202,12 @@ export function ContactForm() {
                           placeholder={es ? "Tu nombre" : "Your name"}
                           aria-label={es ? "Nombre" : "Name"}
                           aria-invalid={invalidos.name || undefined}
-                          aria-describedby={invalidos.name ? "cf-error" : undefined}
+                          aria-describedby={invalidos.name ? "cf-name-error" : undefined}
                           required
-                          className="tj-campo w-full h-11 px-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
+                          className="tj-campo w-full h-12 px-3.5 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none"
                         />
                       </Field>
-                      <Field label={es ? "Email" : "Email"} htmlFor="cf-email">
+                      <Field label={es ? "Email" : "Email"} htmlFor="cf-email" error={invalidos.email ? (es ? "Escribe un email válido." : "Enter a valid email.") : null}>
                         <input
                           id="cf-email"
                           ref={emailRef}
@@ -273,12 +219,12 @@ export function ContactForm() {
                           placeholder={es ? "tu@email.com" : "you@email.com"}
                           aria-label={es ? "Email" : "Email"}
                           aria-invalid={invalidos.email || undefined}
-                          aria-describedby={invalidos.email ? "cf-error" : undefined}
+                          aria-describedby={invalidos.email ? "cf-email-error" : undefined}
                           required
-                          className="tj-campo w-full h-11 px-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
+                          className="tj-campo w-full h-12 px-3.5 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none"
                         />
                       </Field>
-                      <Field label={es ? "Mensaje" : "Message"} htmlFor="cf-msg">
+                      <Field label={es ? "Mensaje" : "Message"} htmlFor="cf-msg" error={invalidos.message ? (es ? "Escribe tu mensaje." : "Write your message.") : null}>
                         <textarea
                           id="cf-msg"
                           ref={messageRef}
@@ -287,10 +233,10 @@ export function ContactForm() {
                           placeholder={es ? "¿En qué podemos ayudarte?" : "How can we help?"}
                           aria-label={es ? "Mensaje" : "Message"}
                           aria-invalid={invalidos.message || undefined}
-                          aria-describedby={invalidos.message ? "cf-error" : undefined}
+                          aria-describedby={invalidos.message ? "cf-msg-error" : undefined}
                           required
                           rows={4}
-                          className="tj-campo w-full px-3 py-2.5 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.38)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0 resize-y min-h-[112px] aria-invalid:border-[rgb(var(--pnl-neg)/0.50)] aria-invalid:hover:border-[rgb(var(--pnl-neg)/0.65)] aria-invalid:focus-visible:border-[rgb(var(--pnl-neg)/0.70)] aria-invalid:focus-visible:ring-[rgb(var(--pnl-neg)/0.18)]"
+                          className="tj-campo w-full px-3.5 py-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none resize-y min-h-[112px]"
                         />
                       </Field>
 
@@ -320,7 +266,7 @@ export function ContactForm() {
                       {error && (
                           <div
                             id="cf-error"
-                            className="tj-sube-ya text-xs text-pnl-neg"
+                            className="tj-sube-ya text-sm text-pnl-neg"
                             role="alert"
                           >
                             {error}
@@ -377,24 +323,30 @@ export function ContactForm() {
   );
 }
 
+/* Etiqueta, campo y aviso con las mismas medidas que el formulario de
+   /beta: 14 px en la etiqueta, 12 px en el aviso, pegado a su campo. */
 function Field({
   label,
   htmlFor,
+  error,
   children,
 }: {
   label: string;
   htmlFor: string;
+  error: string | null;
   children: ReactNode;
 }) {
   return (
-    <div className="group flex flex-col gap-1.5">
-      <label
-        htmlFor={htmlFor}
-        className="text-[13px] font-medium text-secondary transition-colors duration-200 group-focus-within:text-primary"
-      >
+    <div className="flex flex-col gap-2">
+      <label htmlFor={htmlFor} className="text-sm font-medium text-primary">
         {label}
       </label>
       {children}
+      {error ? (
+        <p id={`${htmlFor}-error`} className="m-0 -mt-0.5 text-xs text-pnl-neg">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

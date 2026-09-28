@@ -107,7 +107,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 key={titleEs}
                 className="grid gap-y-1 border-b border-[var(--line)] py-5 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] md:items-baseline md:gap-x-6"
               >
-                <h3 className="m-0 text-[clamp(1.125rem,1.6vw,1.375rem)] font-medium text-primary">
+                <h3 className="m-0 t-h3 text-primary">
                   {es ? titleEs : titleEn}
                 </h3>
                 <p className="medida m-0 text-[15px] leading-[1.6] text-secondary">

@@ -41,7 +41,7 @@ export function ProductStatus() {
                 ) : (
                   <span className="rotulo-estado">{estado}</span>
                 )}
-                <h3 className="mt-3 text-sm font-semibold text-primary">{title}</h3>
+                <h3 className="mt-3 t-h5 text-primary">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-secondary">{text}</p>
               </div>
             ))}

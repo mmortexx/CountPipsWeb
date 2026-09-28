@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
-import { ShieldCheck, AlertTriangle } from "lucide-react";
 import { fmtInt, fmtNum, pctSep } from "@/lib/trading/format";
 
 /**
@@ -105,10 +104,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           {!enPagina && (
           <Reveal delay={0.12}>
             <p
-              className="mt-5 mb-8"
+              className="t-entradilla mt-5 mb-8"
               style={{
-                fontSize: "clamp(1rem, 1.3vw, 1.1rem)",
-                lineHeight: 1.62,
                 color: "var(--ink-2)",
                 maxWidth: "36em",
               }}
@@ -134,7 +131,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               { t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
             ].map((f) => (
               <li key={f.t} className="border-t border-[var(--line)] py-5">
-                <h3 className="m-0" style={{ fontSize: 15, fontWeight: 600, color: "var(--ink)" }}>{f.t}</h3>
+                <h3 className="m-0 t-h5" style={{ color: "var(--ink)" }}>{f.t}</h3>
                 <p className="medida m-0 mt-1" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>{f.d}</p>
               </li>
             ))}
@@ -185,15 +182,11 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 /* Clave por posición: al ajustar, la fila cambia de texto y de
                    estado sin volver a montarse, así que no repite la entrada. */
                 <li key={i} className="tj-ficha-fila tnum">
-                  <span
-                    aria-hidden
-                    className="tj-d-marca w-4 flex-none text-[13px] font-semibold"
-                    style={{ ["--i" as string]: i, color: c.ok ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
-                  >
-                    {c.ok ? "✓" : "✕"}
-                  </span>
                   <span className={`text-[14px] ${c.ok ? "text-secondary" : "text-primary"}`}>{c.l}</span>
-                  <span className="tj-ficha-estado" style={c.ok ? undefined : { color: "rgb(var(--pnl-neg))" }}>
+                  <span
+                    className="tj-ficha-estado tj-d-marca"
+                    style={{ ["--i" as string]: i, ...(c.ok ? {} : { color: "rgb(var(--pnl-neg))" }) }}
+                  >
                     {c.ok ? (es ? "Cumple" : "Pass") : es ? "Excede" : "Over"}
                   </span>
                 </li>
@@ -226,11 +219,9 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     : es
                       ? `Esta operación arriesga ${pct(riesgo)} de tu cuenta; tu límite por operación es ${pct(LIMITE_RIESGO)}.`
                       : `This trade risks ${pct(riesgo)} of your account; your per-trade limit is ${pct(LIMITE_RIESGO)}.`;
-              const Icono = tono === "ok" ? ShieldCheck : AlertTriangle;
               return (
                 <div role="status" aria-live="polite" className="tj-d-veredicto mt-1 pt-5 border-t border-[var(--ficha-division)]">
-                  <p className="m-0 flex items-center gap-2 text-[11px] font-semibold" style={{ color }}>
-                    <Icono size={14} strokeWidth={2} aria-hidden />
+                  <p className="m-0 text-[12px] font-semibold" style={{ color }}>
                     {titulo}
                   </p>
                   <p className="m-0 mt-2 max-w-[46ch] text-[14px] leading-[1.55] text-secondary">{cuerpo}</p>

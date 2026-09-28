@@ -226,7 +226,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
         </button>
       </dialog>
       <figcaption className="tj-lamina-pie">
-        <h3 className="tj-lamina-titulo">{es ? tituloEs : tituloEn}</h3>
+        <h3 className="tj-lamina-titulo t-h3">{es ? tituloEs : tituloEn}</h3>
         <p className="tj-lamina-nota">{es ? notaEs : notaEn}</p>
         <p className="tj-lamina-detalle">
           {es ? `Detalle: ${lamina.detalleEs}.` : `Detail: ${lamina.detalleEn}.`}

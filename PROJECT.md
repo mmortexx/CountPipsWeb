@@ -2648,6 +2648,57 @@ iconos ni flechas desde las tandas 39–41.
   institutional desk.», con la primera línea corta; se deja así porque
   la alternativa separa el artículo de su nombre («an / institutional»).
 
+### Cuadragésima cuarta tanda: la escala, las listas y los formularios (2026-09-28)
+
+Inventario medido con Playwright sobre `out/` (172 páginas × 1440/390 ×
+claro/oscuro: titulares, cuerpo, letra < 11 px, mayúsculas, radios,
+desbordes, desenfoque) y después capturas de ventana de las fichas del
+glosario y las herramientas (cuatro combinaciones), de todo /en a 390 en
+oscuro y de los estados de los dos formularios. Sin desbordes, sin
+desenfoque y sin letra por debajo de 11 px; lo que salió:
+
+- **Escala tipográfica.** Nueve tamaños de h3 (14, 15, 16, 17, 18, 20,
+  22, 24 y 28 px), h2 de panel a 20, 22 y 32 px y entradillas a 17,
+  17,28, 17,6, 18,72, 19 y 21 px para el mismo papel. Ahora tres peldaños
+  de h3 (`t-h3` 24/20, `t-h4` 18, `t-h5` 15, nuevo), todo h2 que titula
+  un panel o apartado en `t-h3` (métricas de portada, /beta, legales,
+  familias del glosario), y dos tokens de texto: `t-lede` (20/18, bajo el
+  h1: cabeceras, héroe, definición del glosario) y `t-entradilla` (18,
+  bajo el h2: `SectionHeader` y las siete secciones que la escribían con
+  `clamp()` a mano, el cierre y la entradilla legal). Las preguntas de las
+  dos FAQ pasan a `t-h5` desde el acordeón. La pregunta del test, a
+  `t-h4`. Guarda nueva, `scripts/escala.mjs`: roja con la compilación
+  anterior (1.028 tamaños fuera), verde con esta (1.276 titulares y 1.750
+  bloques medidos). `tipografias.test.ts` pierde cinco excepciones.
+- **Formularios.** El borde rojo de los campos con error no se pintaba
+  nunca, ni en /beta ni en el contacto de /faq: `.tj-campo` va sin capa y
+  ganaba a las utilidades `aria-invalid:` (medido: el campo inválido con
+  el mismo filete que el válido). Ahora lo pone `.tj-campo[aria-invalid]`
+  en globals.css y se borran las utilidades de foco y error que no hacían
+  nada. Los dos formularios iguales: campo de 48 px, etiqueta 14 px/500,
+  aviso de 12 px bajo su campo (el del email de /beta quedaba separado) y
+  resumen de 14 px junto al botón; el contacto gana avisos por campo. La
+  confirmación del contacto era un disco verde que se estampaba, una ✓ que
+  se dibujaba y otra ✓ en el texto; ahora es texto, como la de /beta, que
+  pierde su ✓. `teclado.mjs` exige que el campo inválido tenga otro borde
+  que el válido y que su aviso exista con texto.
+- **Marcas y adornos.** Fuera las ✓ de las listas de /pricing, las ✗/✓ del
+  antes y después de /features/disciplina y las del Guardián (repetían
+  «Cumple»/«Excede», que ahora entra con un fundido sin escala), el
+  candado de la ficha técnica, el escudo y el triángulo de comisiones y
+  del Guardián, la baldosa con flecha de «Operación en largo detectada»,
+  los iconos de «Curva / Por años» y el icono de GitHub del pie, que
+  tampoco lleva ya puntos entre sus datos. `cifras.mjs` vigila que ningún
+  elemento de lista empiece por ✓, ✕ o un icono: roja con la compilación
+  anterior (54 casos), verde con esta.
+- **Detalles.** «Precio previsto · se fija…» pasa a dos líneas (no es una
+  lectura de datos). El índice de herramientas repetía «Abrir» bajo cada
+  fila en móvil. «Qué NO se recoge» y «la WEB» sin mayúsculas de énfasis.
+  «Consulta el glosario» (FAQ) se subraya como cualquier enlace.
+- **Visto y sin cambio.** La numeración 01–04 de la demo, del test, del
+  proyector y de /about marca un orden real; la de los legales es su
+  índice. Las filas «Sí · Pro» de la comparativa son lecturas de datos.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2667,6 +2718,7 @@ node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian lo
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
 node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, y columnas iguales a compás (todas las páginas, 1440 y 390)
+node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en un peldaño t-* de la escala (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla

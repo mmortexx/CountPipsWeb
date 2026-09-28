@@ -317,7 +317,7 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
              La medida la pone ahora `.medida` en el propio párrafo. */
           className="grid content-start gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10 lg:grid-cols-1 lg:gap-1.5"
         >
-          <h3 className="m-0 flex items-baseline gap-2.5 text-[15px] font-semibold tracking-tight" style={{ color: "var(--ink)" }}>
+          <h3 className="m-0 flex items-baseline gap-2.5 t-h5" style={{ color: "var(--ink)" }}>
             {es ? f.titleEs : f.titleEn}
             {f.pro && (
               <span className="relative -top-px rounded-[4px] border border-[var(--line-2)] px-1.5 py-px text-[11px] font-semibold text-tertiary">

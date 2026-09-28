@@ -56,7 +56,7 @@ export function ProfileSelector() {
           <h2 id="profile-selector-title" className="t-h2 mt-4 text-primary text-balance">
             {es ? <>Dos formas de operar. <span className="text-gradient tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="text-gradient tj-frase-nueva">One clearer read.</span></>}
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-secondary md:text-lg">
+          <p className="mt-4 t-entradilla text-secondary">
             {/* Decía «adapta la demostración», y ninguno de los dos
                 recorridos toca la demo: son páginas propias. Se promete
                 lo que hay al otro lado del enlace. */}
@@ -83,7 +83,7 @@ export function ProfileSelector() {
                 <p className="eyebrow">
                   {profile.eyebrow}
                 </p>
-                <h3 className="mt-5 text-[clamp(1.375rem,2vw,1.75rem)] leading-tight text-primary">{profile.title}</h3>
+                <h3 className="mt-5 t-h3 text-primary">{profile.title}</h3>
                 <p className="mt-3 max-w-md text-[15px] leading-relaxed text-secondary">{profile.body}</p>
                 <span className="mt-6 inline-flex text-[15px] font-medium text-primary">
                   <span className="link-underline">{profile.action}</span>

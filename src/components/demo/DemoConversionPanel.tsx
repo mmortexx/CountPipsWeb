@@ -44,7 +44,7 @@ export function DemoConversionPanel() {
               {steps.map(([number, title, body]) => (
                 <li key={number} className="border-t border-[rgb(var(--divider)/0.16)] pt-4">
                   <span className="tnum text-xs font-semibold tracking-[0.08em] text-tertiary">{number}</span>
-                  <h3 className="mt-2 text-sm font-semibold text-primary">{title}</h3>
+                  <h3 className="mt-2 t-h5 text-primary">{title}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-secondary">{body}</p>
                 </li>
               ))}
@@ -59,7 +59,7 @@ export function DemoConversionPanel() {
                 sitio. */}
             <aside className="tj-cristal relative rounded-[8px] p-6 sm:p-8">
               <p className="eyebrow">{es ? "Límite honesto" : "Honest boundary"}</p>
-              <h3 className="mt-3 text-lg font-semibold text-primary">{es ? "Datos de muestra, cero riesgo." : "Sample data, zero risk."}</h3>
+              <h3 className="mt-3 t-h4 text-primary">{es ? "Datos de muestra, cero riesgo." : "Sample data, zero risk."}</h3>
               <ul className="mt-5 m-0 list-none p-0 text-sm leading-relaxed text-secondary">
                 {(es
                   ? ["No pide email ni tarjeta para explorar.", "Las operaciones no salen del navegador.", "Las funciones no visibles se etiquetan, no se simulan."]

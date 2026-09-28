@@ -380,8 +380,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
             )}
           </h2>
           <p
-            className="mt-5"
-            style={{ fontSize: "clamp(1rem, 1.3vw, 1.1rem)", lineHeight: 1.62, color: "var(--ink-2)" }}
+            className="t-entradilla mt-5"
+            style={{ color: "var(--ink-2)" }}
           >
             {es
               ? "Quince preguntas sobre cinco ejes: riesgo, plan, registro, temple y constancia. No todas pesan igual — mover un stop en contra dice más de un trader que revisar el diario los domingos. Al final: tu perfil por ejes, la cifra global y qué arreglar primero. Sin email."
@@ -448,8 +448,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                     </div>
                     <p
                       id={idPregunta(qi)}
-                      className="m-0 mb-5 text-balance"
-                      style={{ fontSize: 19, lineHeight: 1.4, fontWeight: 500, color: "var(--ink)" }}
+                      className="t-h4 m-0 mb-5"
+                      style={{ color: "var(--ink)" }}
                     >
                       {es ? q.qEs : q.qEn}
                     </p>

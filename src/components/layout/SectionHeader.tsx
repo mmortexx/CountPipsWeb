@@ -102,7 +102,7 @@ export function SectionHeader({
     <Reveal delay={0.12}>
       <p
         className={[
-          "medida text-lg text-secondary leading-relaxed",
+          "medida t-entradilla text-secondary",
           /* En `partida` la entradilla es su propia columna y no lleva
              separación superior: se alinea ópticamente con el titular.
              En las otras dos va debajo, y sí. */

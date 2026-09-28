@@ -56,7 +56,7 @@ export function DataFlowComparison() {
               </>
             )}
           </h2>
-          <p className="medida mt-4" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
+          <p className="medida t-entradilla mt-4" style={{ color: "var(--ink-2)" }}>
             {es
               ? "Pulsa el botón. En CountPips la operación viaja a tu archivo local. En una herramienta en la nube, sale de tu equipo, cruza internet y llega a un servidor ajeno."
               : "Press the button. In CountPips the trade travels to your local file. In a cloud tool, it leaves your machine, crosses the internet, and reaches someone else’s server."}

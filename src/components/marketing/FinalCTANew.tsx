@@ -67,7 +67,7 @@ export function FinalCTANew({
             {titular}{" "}
             <span className="tj-frase-nueva">{tenue}</span>
           </h2>
-          <p data-entra="2" className="m-0 max-w-[34rem] text-[clamp(1.0625rem,1.3vw,1.1875rem)] leading-[1.6] tj-cierre-tenue">
+          <p data-entra="2" className="m-0 max-w-[34rem] t-entradilla tj-cierre-tenue">
             {entradilla}
           </p>
           <div data-entra="3" className="tj-cierre-acciones">

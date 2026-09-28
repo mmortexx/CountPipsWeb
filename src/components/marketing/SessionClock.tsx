@@ -157,7 +157,7 @@ export function SessionClock() {
                 </>
               )}
             </h2>
-            <p className="mt-4 mb-0" style={{ fontSize: "clamp(1rem, 1.2vw, 1.08rem)", lineHeight: 1.6, color: "var(--ink-2)" }}>
+            <p className="t-entradilla mt-4 mb-0" style={{ color: "var(--ink-2)" }}>
               {es
                 ? "Las cuatro sesiones de referencia del mercado de divisas, sus solapes y las aperturas más vigiladas, con el cambio de hora ya aplicado."
                 : "The four reference sessions of the currency market, their overlaps and the most watched opens, with daylight saving already applied."}

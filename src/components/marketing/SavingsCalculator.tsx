@@ -136,7 +136,7 @@ export function SavingsCalculator() {
               </>
             )}
           </h2>
-          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
+          <p className="t-entradilla mt-5 mb-7 text-secondary max-w-[34em]">
             {es ? (
               <>Core {fmtUsd(COUNTPIPS_PLANS[0].price)} y Pro {fmtUsd(COUNTPIPS_PLANS[1].price)} son referencias previstas de lanzamiento. Compara un escenario de coste mensual sin interpretar el resultado como una promesa comercial.</>
             ) : (

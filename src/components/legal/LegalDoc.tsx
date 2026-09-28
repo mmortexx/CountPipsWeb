@@ -77,7 +77,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
         <div className="w-full max-w-[44rem] lg:col-start-1 lg:row-start-1">
           {/* Entradilla — lo que hay que saber sin leer el documento. */}
           <Reveal>
-            <p className="medida m-0 text-[17px] leading-relaxed text-secondary">
+            <p className="medida m-0 t-entradilla text-secondary">
               {es ? doc.entradaEs : doc.entradaEn}
             </p>
             <p className="mt-4 text-[14px] text-tertiary">
@@ -150,10 +150,10 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           <div className="mt-12 flex w-full max-w-[44rem] flex-col gap-11 lg:col-start-1 lg:row-start-2">
             {doc.secciones.map((s, i) => (
               <section key={s.id} id={s.id} className="scroll-mt-28">
-                {/* 20 px: todo h2 sale en la serif (regla de marca), y a los
+                {/* `t-h3` (24/20 px): todo h2 sale en la serif (regla de marca), y a los
                     15 px de antes la serif quedaba más débil que el cuerpo
                     en sans que la sigue. */}
-                <h2 className="m-0 flex items-baseline gap-3 text-xl leading-snug text-primary">
+                <h2 className="m-0 flex items-baseline gap-3 t-h3 text-primary">
                   <span
                     className="tnum font-sans text-[13px] font-semibold"
                     style={{ color: "rgb(var(--accent-base))" }}

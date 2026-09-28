@@ -184,10 +184,8 @@ export function DisciplineCost() {
               )}
             </h2>
             <p
-              className="mt-4 mb-6"
+              className="t-entradilla mt-4 mb-6"
               style={{
-                fontSize: "clamp(1rem, 1.25vw, 1.08rem)",
-                lineHeight: 1.6,
                 color: "var(--ink-2)",
                 maxWidth: "38em",
               }}

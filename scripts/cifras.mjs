@@ -33,7 +33,8 @@
  * Además, en los dos idiomas: ningún enlace ni botón termina en una
  * flecha añadida («Ver precios →»). El 2026-09-26 se quitaron las que
  * quedaban; el enlace se reconoce por su subrayado. Solo la llevan los
- * saltos con dirección (Anterior / Siguiente).
+ * saltos con dirección (Anterior / Siguiente). Y ningún elemento de lista
+ * empieza por un ✓, un ✕ o un icono (tanda 44).
  *
  * Y, con la cuarta regla, «218.2x capital inicial» bajo el balance
  * proyectado del proyector de capital inglés, en dos páginas: el literal
@@ -116,6 +117,7 @@ const RE_ES = new RegExp("\\b(?:" + PALABRAS_ES.join("|") + ")\\b", "gi");
 
 const fallos = [];
 let paginas = 0;
+let elementosLista = 0;
 
 for await (const f of htmls(RAIZ)) {
   const ruta = "/" + relative(RAIZ, f).split(sep).join("/").replace(/index\.html$/, "");
@@ -206,6 +208,20 @@ for await (const f of htmls(RAIZ)) {
       fallos.push({ ruta, regla: "flecha añadida a un enlace o botón", ejemplo: dentro.slice(-60) });
     }
   }
+
+  /* MARCA DELANTE DE UN ELEMENTO DE LISTA. Un ✓, un ✕ o un icono que
+     abre cada renglón repite lo que ya dicen el rótulo de la lista
+     («Incluye») o el estado escrito al lado («Cumple»). Hasta la tanda 44
+     los llevaban las listas de /pricing, el antes y después de
+     /features/disciplina y las filas del Guardián. */
+  for (const m of crudo.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)) {
+    elementosLista++;
+    const inicio = m[1].replace(/^(\s*<(?:span|div)\b[^>]*>)+/i, "");
+    const texto = soloTexto(m[1]).trim();
+    if (/^<svg\b/i.test(inicio) || /^[✓✔✗✕×]/.test(texto)) {
+      fallos.push({ ruta, regla: "marca o icono delante de un elemento de lista", ejemplo: texto.slice(0, 60) });
+    }
+  }
 }
 
 const porRegla = {};
@@ -217,7 +233,9 @@ for (const [regla, casos] of Object.entries(porRegla)) {
   if (casos.length > 6) console.log(`     … y ${casos.length - 6} más`);
 }
 
-console.log(`\n[cifras] ${paginas} páginas revisadas`);
+console.log(`\n[cifras] ${paginas} páginas revisadas, ${elementosLista} elementos de lista`);
+/* Si no encontró ninguna lista, la regla de marcas no estaba mirando. */
+if (!elementosLista) fallos.push({ ruta: "—", regla: "no se encontró ningún elemento de lista", ejemplo: "" });
 if (fallos.length) {
   console.log(`[cifras] ${fallos.length} caso(s) con la convención del otro idioma`);
   console.log("[cifras] el separador del porcentaje sale de `pctSep(lang)`; el dólar, de `fmtMoney`");

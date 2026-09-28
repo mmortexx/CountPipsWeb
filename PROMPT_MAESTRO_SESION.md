@@ -101,6 +101,14 @@ TIPOGRAFÍA:
   --font-serif → Newsreader (200-800 variable) — sólo h1 y h2, sin cursiva de realce
   Letra mínima: 11 px. Titulares de un solo tono: `.text-gradient` ya no realza nada
   (hereda el color); no se destaca una palabra dentro de un titular.
+  ESCALA (globals.css, capa base; ninguna utilidad de tamaño junto a ella):
+    t-display · t-h1 · t-h2 (sección) · t-h3 24/20 px (subsección, y todo h2 que
+    titula un panel o un apartado: métricas de portada, /beta, legales, familias
+    del glosario) · t-h4 18 px · t-h5 15 px (título de ficha, fila o pregunta)
+    t-lede 20/18 px (bajo el h1) · t-entradilla 18 px (bajo el h2)
+    Cuerpo en píxeles enteros de 11 a 16. Nada de `clamp()` ni `text-[17px]`
+    sueltos en titulares o entradillas: `scripts/escala.mjs` lo mide en todas
+    las páginas a 1440 y 390.
   --font-mono  → Geist Mono — código, datos tabulares, métricas
 
 MATERIALES CSS (definidos en globals.css):
@@ -354,9 +362,14 @@ TIPOGRAFÍA:
   decidir»). En la cabecera de página, solo si dicen algo que las migas no dicen
   (la familia de un término del glosario, «Herramienta gratuita»).
 - Titulares de un tono también en color: ninguna palabra en el color de acento.
-- PROHIBIDO: MAYÚSCULAS en rótulos, numeración 01/02/03 donde no hay orden,
+- PROHIBIDO: MAYÚSCULAS en rótulos (tampoco de énfasis en el texto: «Qué no se
+  recoge», no «Qué NO se recoge»), numeración 01/02/03 donde no hay orden,
   iconos decorativos encima de cada titular, monogramas que imitan logotipos
   y flechas SVG en los botones.
+- PROHIBIDO: ✓, ✕ o un icono delante de cada elemento de lista (precios,
+  antes/después, filas de estado): el rótulo de la lista o el estado escrito
+  ya lo dicen. Tampoco iconos al lado de un texto que ya dice lo mismo
+  (escudo, candado, aviso, GitHub en el pie). `cifras.mjs` vigila las listas.
 - PROHIBIDO: Huge typefaces sin tracking. Gradientes en texto. Texto sobre imagen sin scrim.
 
 JERARQUÍA Y ESPACIADO:
@@ -375,6 +388,11 @@ MICRO-INTERACCIONES:
 - Llamadas: sin elevación, sombra ni flecha al pasar; toda `.cta` se hunde al pulsar.
   (MagneticButton está retirado: ver su cabecera.)
 - CountUp / `.tj-cifra-cuenta`: conteo animado al entrar en viewport.
+- Formularios (/beta y contacto de /faq, iguales): campo `.tj-campo` de 48 px;
+  etiqueta 14 px/500 en tinta; aviso de 12 px pegado bajo su campo, con
+  `aria-describedby`; resumen de 14 px junto al botón; el borde rojo lo pone
+  `.tj-campo[aria-invalid="true"]` en globals.css (una utilidad `aria-invalid:`
+  no gana a esa regla sin capa). La confirmación es texto, sin sello ni ✓.
 - Entradas (`Aparecer.tsx`): por tiempo, 12 px y fundido, sin escala ni
   desenfoque, escalonadas entre hermanas; las capturas se abren apenas, como una
   ventana (clip-path de un 3 %). La galería cambia de lámina con un fundido.

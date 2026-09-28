@@ -99,28 +99,16 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
  * fichero que ya tenía uno permitido, porque se compara ocurrencia a
  * ocurrencia, no solo por fichero.
  *
- *  · 22px y 28px (DashboardPage, GlosarioIndice, FeaturesBento): tamaños
- *    de TITULAR, no de cuerpo — la cifra protagonista de la demo y algún
- *    rótulo grande. Bajarlos a 15px cambiaría la jerarquía de esas
- *    pantallas; es una decisión tomada, no un olvido.
- *  · 19px en `glosario/TerminoVista.tsx`: la definición del término. Es
- *    la voz principal de esa página —lo único que el visitante vino a
- *    leer—; a 15px queda igualada con el resto y distinguida solo por el
- *    color. Se bajó una vez y `scripts/medida.mjs` lo cazó por otro lado:
- *    al encoger la letra el renglón se fue a 92 caracteres, por encima
- *    del tope de 85. Mismo criterio que la entradilla legal de abajo.
- *  · 17px en `legal/LegalDoc.tsx`: la entradilla del documento legal.
- *    Comparte estilo (sin negrita, `text-secondary`) con el párrafo de
- *    cuerpo que viene después en la misma página; bajarla a 15px la
- *    haría indistinguible de ese párrafo y borraría la única señal de
- *    que es la entradilla. Se decidió no tocarla.
- *  · El resto — 17px en FeaturesBento/GuardianNew/Navbar/SecuritySection
- *    y 20px en SessionClock —: huérfanos ya localizados que quedan fuera
- *    del alcance de la tanda que escribió esta prueba (solo tocaba
- *    `legal/LegalDoc.tsx` y `glosario/TerminoVista.tsx`). Siguen
- *    pendientes de que otra tanda decida su escalón; quitar una fila de
- *    aquí sin arreglar antes el fichero vuelve a poner la prueba en rojo,
- *    que es la señal correcta.
+ *  · 22px y 28px (DashboardPage, FeaturesBento): cifras protagonistas de
+ *    la demo y de una ficha, no cuerpo. Es una decisión tomada.
+ *  · 17px (FeaturesBento, GuardianNew, Navbar) y 20px (SessionClock):
+ *    una franja horaria, el símbolo «NQ», el nombre de la marca y la hora
+ *    del reloj. Son cifras y rótulos, no bloques de texto.
+ *  · Lo que sí era texto salió de aquí en la tanda 44: la definición del
+ *    glosario (19px) y la entradilla legal (17px) pasaron a `t-lede` y
+ *    `t-entradilla`; los titulares de familia del glosario (22px) y de
+ *    SecuritySection (17px), a `t-h3` y `t-h4`. Los titulares y los
+ *    bloques de texto los vigila en el DOM `scripts/escala.mjs`.
  */
 const ESCALA_CUERPO = [10, 11, 12, 13, 14, 15];
 
@@ -128,15 +116,10 @@ const EXCEPCIONES: Array<{ fichero: string; valor: number }> = [
   { fichero: "components/demo/pages/DashboardPage.tsx", valor: 28 },
   { fichero: "components/demo/pages/DashboardPage.tsx", valor: 22 },
   { fichero: "components/demo/pages/DashboardPage.tsx", valor: 28 },
-  { fichero: "components/glosario/GlosarioIndice.tsx", valor: 22 },
-  { fichero: "components/glosario/TerminoVista.tsx", valor: 19 },
-  { fichero: "components/legal/LegalDoc.tsx", valor: 17 },
   { fichero: "components/marketing/FeaturesBento.tsx", valor: 22 },
-  { fichero: "components/marketing/FeaturesBento.tsx", valor: 17 },
   { fichero: "components/marketing/FeaturesBento.tsx", valor: 17 },
   { fichero: "components/marketing/GuardianNew.tsx", valor: 17 },
   { fichero: "components/marketing/Navbar.tsx", valor: 17 },
-  { fichero: "components/marketing/SecuritySection.tsx", valor: 17 },
   { fichero: "components/marketing/SessionClock.tsx", valor: 20 },
 ];
 

@@ -653,6 +653,32 @@
        the second line optically even (R26-2b). */
     text-wrap: balance;
   }
+  /* Tercer peldaño de los h3: el título de ficha o de fila (Guardián,
+     novedades, estados, preguntas). Antes había seis tamaños escritos a
+     mano para ese mismo papel (14, 15, 16, 16,8, 17 y 18 px). */
+  .t-h5 {
+    font-size: 0.9375rem;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  /* Entradilla de página (bajo el h1) y de sección (bajo el h2). Solo
+     tamaño e interlineado, como el resto de la escala. Sustituyen a los
+     `clamp()` sueltos que daban 17,3, 17,6, 18,7 y 21 px al mismo papel. */
+  .t-lede {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+  @media (min-width: 768px) {
+    .t-lede {
+      font-size: 1.25rem;
+    }
+  }
+  .t-entradilla {
+    font-size: 1.125rem;
+    line-height: 1.625;
+  }
 
   /* Balanced text wrapping for every heading — prevents orphan
      words on the last line and produces more even line breaks in
@@ -3414,8 +3440,6 @@ html:has(.tj-visor[open]) {
   }
 }
 .tj-lamina-titulo {
-  font-size: 1.25rem;
-  line-height: 1.3;
   color: var(--ink);
 }
 .tj-lamina-nota {
@@ -3632,6 +3656,18 @@ html:has(.tj-visor[open]) {
   outline: none;
   border-color: var(--ink-3);
   box-shadow: 0 0 0 3px rgb(var(--accent-base) / 0.2);
+}
+/* Campo con error. Tiene que vivir aquí y no en utilidades del
+   formulario: esta regla va sin capa y gana a cualquier
+   `aria-invalid:border-*`, y por eso el borde rojo que pedían /beta y el
+   contacto de /faq no se llegó a pintar nunca. */
+.tj-campo[aria-invalid="true"] {
+  border-color: rgb(var(--pnl-neg) / 0.7);
+}
+.tj-campo[aria-invalid="true"]:focus,
+.tj-campo[aria-invalid="true"]:focus-visible {
+  border-color: rgb(var(--pnl-neg) / 0.9);
+  box-shadow: 0 0 0 3px rgb(var(--pnl-neg) / 0.16);
 }
 /* Desplegable sin elegir (`required` con valor vacío es `:invalid`):
    «Selecciona» se lee como marcador, igual que en los campos de texto. */
@@ -4387,12 +4423,16 @@ select.tj-campo:invalid {
   font-weight: 500;
   white-space: nowrap;
 }
+/* El detalle va en su propia línea, no unido con «·»: es una segunda
+   frase, no una lectura de datos. */
+.sello-previsto:has(.sello-previsto-detalle) {
+  flex-wrap: wrap;
+  row-gap: 0.2em;
+}
 .sello-previsto-detalle {
+  flex-basis: 100%;
   color: var(--ink-3);
   font-variant-numeric: tabular-nums;
-}
-.sello-previsto-detalle::before {
-  content: "· ";
 }
 
 /* ============================================================
@@ -5037,70 +5077,20 @@ svg [data-entra="sello"] {
   }
 }
 
-/* ── LAS MISMAS ENTRADAS, PERO AL MONTARSE ────────────────────────────
+/* ── LA MISMA ENTRADA, PERO AL MONTARSE ──────────────────────────────
    Todo lo de arriba se mapea con la posición en la ventana, y eso vale
    para lo que YA está en la página cuando se carga. No vale para lo que
-   aparece por una acción: la confirmación de un formulario enviado nace
-   en el centro de la pantalla, con su rango de `view()` ya consumido, y
-   se vería aparecer de golpe y a medio camino.
-
-   Estas tres reproducen la misma coreografía con una línea de tiempo
-   normal: se disparan al montarse el elemento, que es exactamente
-   cuando el visitante acaba de pulsar «enviar». Los retardos son los
-   que tenía la versión con framer-motion (0 / 0,25 / 0,55 s), así que
-   el disco se estampa, la marca se dibuja encima y el texto sube
-   después.
-
-   `both` en el modo de relleno: sin él, el elemento parpadea a su
-   estado final durante el retardo antes de empezar. */
-/* Dos animaciones y no una: `tj-estampa` solo mueve la escala desde que
-   el sobreimpulso dejó de arrastrar a la tinta (ver el bloque del sello),
-   así que la opacidad necesita la suya. Con una sola, el disco nacía
-   opaco y solo crecía.
-
-   En longhands por lo mismo que allí: el atajo `animation` con lista
-   pierde el segundo elemento al compilar. */
-.tj-estampa-ya {
-  animation-name: tj-estampa, tj-estampa-tinta;
-  animation-duration: 0.45s, 0.3s;
-  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1), var(--ease-suave);
-  animation-fill-mode: both, both;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-/* Aquí el muelle sí tiene su línea de tiempo natural —el disco se estampa
-   al pulsar «enviar», por reloj y no por scroll—, así que se lleva la
-   misma curva de muelle real que el sello. */
-@supports (animation-timing-function: linear(0, 1)) {
-  .tj-estampa-ya {
-    animation-timing-function:
-      linear(
-        0, 0.017, 0.061, 0.127, 0.207, 0.296, 0.389, 0.483, 0.574, 0.66,
-        0.739, 0.81, 0.872, 0.926, 0.971, 1.008, 1.037, 1.058, 1.074, 1.084,
-        1.089, 1.09, 1.088, 1.084, 1.078, 1.07, 1.062, 1.054, 1.045, 1.037,
-        1.03, 1.023, 1.016, 1.011, 1.006, 1.002, 0.999, 0.996, 0.995, 0.993,
-        0.992, 0.992, 0.992, 0.992, 0.993, 0.993, 0.994, 0.995, 0.995, 1
-      ),
-      var(--ease-suave);
-  }
-}
-.tj-dibuja-ya {
-  stroke-dasharray: 1;
-  animation: tj-dibuja 0.5s var(--ease-suave, ease) 0.25s both;
-}
+   aparece por una acción (el aviso o la confirmación de un formulario):
+   nace con su rango de `view()` ya consumido y se vería de golpe. Esta
+   se dispara al montarse el elemento. La confirmación de contacto tuvo
+   además un disco que se estampaba y una marca que se dibujaba; se
+   retiraron en la tanda 44, con la regla de no poner sellos. */
 .tj-sube-ya {
   animation: tj-entra-pieza 0.4s var(--ease-suave, ease) both;
 }
-.tj-sube-ya-tarde {
-  animation: tj-entra-pieza 0.4s var(--ease-suave, ease) 0.55s both;
-}
 @media (prefers-reduced-motion: reduce) {
-  .tj-estampa-ya,
-  .tj-dibuja-ya,
-  .tj-sube-ya,
-  .tj-sube-ya-tarde {
+  .tj-sube-ya {
     animation: none;
-    stroke-dashoffset: 0;
   }
 }
 
@@ -6125,8 +6115,9 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   .tj-d-celda {
     animation: tj-d-celda 0.7s var(--ease-salida) calc(var(--i, 0) * 34ms) both;
   }
-  /* El guardián evalúa: cada regla recibe su marca una detrás de otra y el
-     veredicto llega al final, cuando ya se han visto las tres. */
+  /* El guardián evalúa: cada regla recibe su estado («Cumple», «Excede»)
+     una detrás de otra y el veredicto llega al final. Fundido, sin escala:
+     hasta la tanda 44 era un ✓/✕ que crecía desde el 40 %. */
   .tj-d-marca {
     display: inline-block;
     animation: tj-d-marca 0.55s var(--ease-salida) calc(0.35s + var(--i, 0) * 240ms) both;
@@ -6158,10 +6149,6 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 @keyframes tj-d-marca {
   from {
     opacity: 0;
-    transform: scale(0.4);
-  }
-  60% {
-    opacity: 1;
   }
 }
 @keyframes tj-d-veredicto {

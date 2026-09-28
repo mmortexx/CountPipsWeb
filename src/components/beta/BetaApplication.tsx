@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
@@ -39,7 +39,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
    De 640 px para arriba vuelve a 14 px, que es la densidad que pide un
    formulario largo en escritorio. */
 const campoBase =
-  "tj-campo min-h-12 w-full px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[rgb(var(--txt-primary)/0.6)] focus:ring-[3px] focus:ring-[rgb(var(--txt-primary)/0.08)]";
+  "tj-campo min-h-12 w-full px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary";
 
 const inputClass = `mt-2 ${campoBase}`;
 
@@ -60,13 +60,8 @@ const galonSelect = (
    role="alert" dice que "algo falta", pero no cuál — quien usa lector de
    pantalla tenía que recorrer los 6 campos a ciegas. `aria-invalid` +
    `aria-describedby` identifican el campo exacto al llegar a él por
-   teclado, sin disparar 6 alertas simultáneas y superpuestas. */
-function fieldBorderClass(invalid: boolean) {
-  return invalid
-    ? "border-[rgb(var(--pnl-neg)/0.55)] focus:border-[rgb(var(--pnl-neg)/0.7)] focus:ring-[rgb(var(--pnl-neg)/0.14)]"
-    : "";
-}
-
+   teclado, sin disparar 6 alertas simultáneas y superpuestas. El borde
+   rojo lo pone `.tj-campo[aria-invalid]` en globals.css. */
 function FieldError({ id, show, message }: { id: string; show: boolean; message: string }) {
   if (!show) return null;
   return (
@@ -272,9 +267,8 @@ export function BetaApplication() {
   if (status === "success") {
     return (
       <div ref={exitoRef} tabIndex={-1} className="tj-ficha p-7 sm:p-10 outline-none" role="status">
-        <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-          <Check size={28} strokeWidth={1.6} className="text-[rgb(var(--pnl-pos))]" aria-hidden />
-          <h2 className="mt-5 t-h3 text-primary">{es ? "Solicitud recibida." : "Application received."}</h2>
+        <div className="max-w-xl">
+          <h2 className="t-h3 text-primary">{es ? "Solicitud recibida." : "Application received."}</h2>
           <p className="mt-3 text-secondary leading-relaxed">
             {es
               ? "Revisaremos las solicitudes por perfil y fase del producto. Te escribiremos solo si encaja con el piloto privado; no necesitas tarjeta."
@@ -337,15 +331,15 @@ export function BetaApplication() {
 
           <label className="block text-sm font-medium text-primary">
             {es ? "Email" : "Email"}
-            <input ref={emailRef} className={`${inputClass} ${fieldBorderClass(emailInvalid)}`} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={es ? "tu@email.com" : "you@email.com"} required aria-invalid={emailInvalid} aria-describedby={emailInvalid ? "email-error" : undefined} />
+            <input ref={emailRef} className={inputClass} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={es ? "tu@email.com" : "you@email.com"} required aria-invalid={emailInvalid} aria-describedby={emailInvalid ? "email-error" : undefined} />
+            <FieldError id="email-error" show={emailInvalid} message={es ? "Escribe un email válido." : "Enter a valid email."} />
           </label>
-          <FieldError id="email-error" show={emailInvalid} message={es ? "Escribe un email válido." : "Enter a valid email."} />
 
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-medium text-primary">
               {es ? "Experiencia" : "Experience"}
               <span className="relative mt-2 block">
-                <select ref={experienceRef} className={`${selectClass} ${fieldBorderClass(experienceInvalid)}`} value={experience} onChange={(e) => setExperience(e.target.value)} required aria-invalid={experienceInvalid} aria-describedby={experienceInvalid ? "experience-error" : undefined}>
+                <select ref={experienceRef} className={selectClass} value={experience} onChange={(e) => setExperience(e.target.value)} required aria-invalid={experienceInvalid} aria-describedby={experienceInvalid ? "experience-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
                 <option value="under-1">{es ? "Menos de 1 año" : "Under 1 year"}</option>
                 <option value="1-3">1–3 {es ? "años" : "years"}</option>
@@ -357,7 +351,7 @@ export function BetaApplication() {
             </label>
             <label className="block text-sm font-medium text-primary">
               {es ? "Mercados" : "Markets"}
-              <input ref={marketsRef} className={`${inputClass} ${fieldBorderClass(marketsInvalid)}`} value={markets} onChange={(e) => setMarkets(e.target.value)} placeholder={es ? "Forex, futuros, acciones…" : "Forex, futures, equities…"} required aria-invalid={marketsInvalid} aria-describedby={marketsInvalid ? "markets-error" : undefined} />
+              <input ref={marketsRef} className={inputClass} value={markets} onChange={(e) => setMarkets(e.target.value)} placeholder={es ? "Forex, futuros, acciones…" : "Forex, futures, equities…"} required aria-invalid={marketsInvalid} aria-describedby={marketsInvalid ? "markets-error" : undefined} />
               <FieldError id="markets-error" show={marketsInvalid} message={es ? "Indica qué mercados operas." : "Tell us which markets you trade."} />
             </label>
           </div>
@@ -366,7 +360,7 @@ export function BetaApplication() {
             <label className="block text-sm font-medium text-primary">
               {es ? "Cómo llevas hoy tu diario" : "How you journal today"}
               <span className="relative mt-2 block">
-                <select ref={workflowRef} className={`${selectClass} ${fieldBorderClass(workflowInvalid)}`} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
+                <select ref={workflowRef} className={selectClass} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
                 <option value="spreadsheet">{es ? "Excel / Sheets" : "Excel / Sheets"}</option>
                 <option value="journal">{es ? "Otro diario" : "Another journal"}</option>
@@ -380,7 +374,7 @@ export function BetaApplication() {
             <label className="block text-sm font-medium text-primary">
               {es ? "Qué quieres mejorar primero" : "What you want to improve first"}
               <span className="relative mt-2 block">
-                <select ref={goalRef} className={`${selectClass} ${fieldBorderClass(goalInvalid)}`} value={goal} onChange={(e) => setGoal(e.target.value)} required aria-invalid={goalInvalid} aria-describedby={goalInvalid ? "goal-error" : undefined}>
+                <select ref={goalRef} className={selectClass} value={goal} onChange={(e) => setGoal(e.target.value)} required aria-invalid={goalInvalid} aria-describedby={goalInvalid ? "goal-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
                 <option value="metrics">{es ? "Métricas y edge" : "Metrics and edge"}</option>
                 <option value="discipline">{es ? "Disciplina" : "Discipline"}</option>

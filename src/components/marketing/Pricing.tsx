@@ -137,7 +137,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             )}
           </h2>
           {!standalone && (
-            <p className="mt-4 text-lg text-secondary leading-relaxed">
+            <p className="mt-4 t-entradilla text-secondary">
               {t("pricingLead")}
             </p>
           )}
@@ -202,7 +202,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
           acción; debajo, tras un filete de borde a borde, lo que incluye. */}
       <div className="p-7 sm:p-9">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-xl md:text-2xl font-semibold text-primary tracking-tight min-w-0 break-words">
+        <h3 className="t-h3 text-primary min-w-0 break-words">
           {plan.name}
         </h3>
       </div>
@@ -274,32 +274,13 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
       </p>
       <ul className="mt-4 space-y-3">
         {(isPro ? plan.features.slice(1) : plan.features).map((f) => (
-          <li key={f} className="flex items-start gap-3 text-[15px]">
-            <span className="shrink-0 mt-[4px] text-primary" aria-hidden="true">
-              <CheckIcon />
-            </span>
-            <span className="text-secondary leading-[1.55] min-w-0 break-words">{f}</span>
+          <li key={f} className="text-[15px] leading-[1.55] text-secondary break-words">
+            {f}
           </li>
         ))}
       </ul>
       </div>
     </div>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path
-        data-entra="trazo"
-        pathLength="1"
-        d="m3.5 8.5 3 3 6-7"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
 

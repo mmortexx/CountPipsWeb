@@ -60,7 +60,7 @@ export function PricingFAQ() {
                      dibujaba encima del texto de la pregunta abierta. */
                   className="border-b border-[var(--line)]"
                 >
-                  <AccordionTrigger className="text-left text-[15px] font-medium text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
+                  <AccordionTrigger className="text-left text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
                     {/* Wrap the question in a min-w-0 span so the flex
                         trigger (shadcn AccordionTrigger uses
                         flex justify-between) can wrap long questions

@@ -313,7 +313,7 @@ export function RiskCalculator() {
             )}
           </h2>
 
-          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
+          <p className="t-entradilla mt-5 mb-7 text-secondary max-w-[34em]">
             {es
               ? "Introduce tu capital y la distancia a tu stop. Calculamos el tamaño exacto en unidades, lotes o contratos según el mercado que operes."
               : "Enter your balance and stop distance. We work out the exact sizing in units, lots or contracts tailored to your market."}
@@ -632,20 +632,8 @@ export function RiskCalculator() {
             </div>
           ) : (
             <div
-              className="mb-4 flex items-center gap-2 text-[12px] tnum text-secondary"
+              className="mb-4 text-[12px] text-secondary"
             >
-              <span
-                aria-hidden
-                className="inline-flex items-center justify-center rounded-[2px] w-4 h-4 font-semibold text-[11px]"
-                style={{
-                  background: c.direction === "short"
-                    ? "color-mix(in oklab, rgb(var(--pnl-neg)) 16%, transparent)"
-                    : "color-mix(in oklab, rgb(var(--pnl-pos)) 16%, transparent)",
-                  color: c.direction === "short" ? "rgb(var(--pnl-neg))" : "rgb(var(--pnl-pos))",
-                }}
-              >
-                {c.direction === "short" ? "↓" : "↑"}
-              </span>
               <span>
                 {c.direction === "short"
                   ? (es ? "Operación en corto detectada" : "Short trade detected")

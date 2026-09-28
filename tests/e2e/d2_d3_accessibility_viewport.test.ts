@@ -259,10 +259,11 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 2 Boundary & 
     const discCost = readSrc("src/components/marketing/DisciplineCost.tsx");
     const edgeChecker = readSrc("src/components/marketing/EdgeSignificanceChecker.tsx");
 
-    // RiskCalculator includes directional arrow and text in addition to green/red color
-    expect(riskCalc).toContain('c.direction === "short" ? "↓" : "↑"');
+    // RiskCalculator dice la dirección con palabras («en corto» / «en
+    // largo»), no con color: la baldosa con flecha se retiró en la tanda 44.
     expect(riskCalc).toContain('c.direction === "short"');
     expect(riskCalc).toContain("Operación en corto detectada");
+    expect(riskCalc).toContain("Operación en largo detectada");
 
     // DisciplineCost uses explicit + and - prefix signs for P&L values.
     // El signo es el PRIMER argumento de `usd`, que lo antepone a la cifra;

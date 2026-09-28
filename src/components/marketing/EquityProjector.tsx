@@ -5,7 +5,7 @@ import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { proyectaCapital, CONFIANZA_RACHA } from "@/lib/trading/proyeccion";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { Copy, Check, Table, LineChart } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 import { fmtMoney, pctSep, fmtInt, fmtNum as fmtNumCasa } from "@/lib/trading/format";
 import { siteUrl } from "@/lib/site";
 
@@ -539,10 +539,8 @@ export function EquityProjector() {
           </h2>
 
           <p
-            className="medida mt-3.5 mb-0"
+            className="medida t-entradilla mt-3.5 mb-0"
             style={{
-              fontSize: "clamp(0.95rem, 1.25vw, 1.08rem)",
-              lineHeight: 1.6,
               color: "var(--ink-2)",
             }}
           >
@@ -960,18 +958,16 @@ export function EquityProjector() {
                     type="button"
                     onClick={() => setViewTab("chart")}
                     aria-pressed={viewTab === "chart"}
-                    className="px-3 text-[12px] tnum flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 text-[12px] tnum cursor-pointer"
                   >
-                    <LineChart aria-hidden className="w-3.5 h-3.5" />
                     <span>{es ? "Curva" : "Curve"}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setViewTab("table")}
                     aria-pressed={viewTab === "table"}
-                    className="px-3 text-[12px] tnum flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 text-[12px] tnum cursor-pointer"
                   >
-                    <Table aria-hidden className="w-3.5 h-3.5" />
                     <span>{es ? "Por años" : "By year"}</span>
                   </button>
                 </div>

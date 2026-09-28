@@ -103,7 +103,7 @@ export function NotFoundClient() {
 
         <p
           style={{ animationDelay: "0.25s" }}
-          className="tj-alza mt-4 text-base md:text-lg text-secondary leading-relaxed"
+          className="tj-alza mt-4 t-entradilla text-secondary"
         >
           {es
             ? "La URL que buscas no existe, se ha movido o nunca estuvo en tu watchlist."

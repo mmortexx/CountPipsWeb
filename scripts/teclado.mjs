@@ -464,8 +464,16 @@ for (const idioma of ["es", "en"]) {
     await p.keyboard.press("Enter");
     await p.waitForTimeout(500);
     const r = await p.evaluate(() => ["cf-name", "cf-email", "cf-msg"].map((id) => document.getElementById(id)?.getAttribute("aria-describedby") ?? null));
-    if (r[1] !== "cf-error") fallos.push({ ruta: "/faq/", detalle: `el correo inválido no apunta a su error (aria-describedby=«${r[1]}»)` });
+    const aviso = r[1] ? await p.evaluate((id) => document.getElementById(id)?.textContent?.trim() ?? "", r[1]) : "";
+    /* El borde se mide con el foco fuera de los dos campos: el anillo de
+       foco también cambia el borde y taparía la diferencia. Hasta la
+       tanda 44 el campo inválido llevaba el mismo filete que el válido
+       (la regla sin capa de `.tj-campo` ganaba al `aria-invalid:`). */
+    await p.locator("form:has(#cf-email) button[type=submit]").first().focus();
+    const [bordeValido, bordeInvalido] = await p.evaluate(() => ["cf-name", "cf-email"].map((id) => getComputedStyle(document.getElementById(id)).borderTopColor));
+    if (r[1] !== "cf-email-error" || !aviso) fallos.push({ ruta: "/faq/", detalle: `el correo inválido no apunta a un aviso con texto (aria-describedby=«${r[1]}», aviso «${aviso}»)` });
     else if (r[0] || r[2]) fallos.push({ ruta: "/faq/", detalle: `los campos válidos también se anuncian con el error (nombre «${r[0]}», mensaje «${r[2]}»)` });
+    else if (bordeValido === bordeInvalido) fallos.push({ ruta: "/faq/", detalle: `el campo inválido lleva el mismo borde que el válido (${bordeInvalido})` });
     else recorridos++;
   }
   await ctx.close();

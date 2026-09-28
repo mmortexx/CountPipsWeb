@@ -262,7 +262,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                        y el chevrón girado. */
                     className="border-b border-b-[var(--ficha-division)] last:border-b-0 px-4 md:px-5"
                   >
-                    <AccordionTrigger className="text-left text-base md:text-[1.05rem] font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:!text-[rgb(var(--accent-base))] [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)] data-[state=open]:text-[rgb(var(--accent-base))]">
+                    <AccordionTrigger className="text-left text-primary hover:text-[rgb(var(--accent-hover))] hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:!text-[rgb(var(--accent-base))] [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)] data-[state=open]:text-[rgb(var(--accent-base))]">
                       {/* Wrap the question in a min-w-0 span so the flex
                           trigger (shadcn AccordionTrigger uses
                           flex justify-between) can wrap long questions
@@ -300,13 +300,20 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                      enlace suelto en mitad de un párrafo, y medía 20 px
                      de alto. El relleno lateral además separa el foco
                      del texto para que el anillo no lo estrangule. */
-                  className={`min-h-[44px] px-3 text-sm text-tertiary hover:text-primary transition-colors inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px] ${
+                  className={`link-underline-host min-h-[44px] px-3 text-sm text-tertiary transition-colors inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px] ${
                     standalone ? "text-left" : ""
                   }`}
                 >
-                  {es
-                    ? "¿No encuentras tu término? Consulta el glosario."
-                    : "Can’t find your term? Browse the glossary."}
+                  {/* Abre el glosario: se subraya como cualquier enlace del
+                      sitio, que antes solo lo delataba el cambio de color al
+                      pasar. */}
+                  <span>
+                    {es ? "¿No encuentras tu término? " : "Can’t find your term? "}
+                    <span className="link-underline text-secondary">
+                      {es ? "Consulta el glosario" : "Browse the glossary"}
+                    </span>
+                    .
+                  </span>
                 </button>
               }
             />

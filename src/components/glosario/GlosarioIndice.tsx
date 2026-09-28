@@ -168,7 +168,7 @@ export function GlosarioIndice() {
                 <Reveal key={cat} delay={i * 0.04}>
                   <section id={cat} className="scroll-mt-28">
                     <div className="flex items-baseline gap-3">
-                      <h2 className="m-0 text-[22px] font-semibold tracking-tight text-primary">
+                      <h2 className="m-0 t-h3 text-primary">
                         {es ? meta.es : meta.en}
                       </h2>
                       <span className="tnum text-[14px] text-tertiary">

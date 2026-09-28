@@ -136,7 +136,7 @@ export function Changelog() {
                 >
                   {entry.version}
                 </span>
-                <h3 className="m-0 text-[15px] font-semibold tracking-tight text-primary">
+                <h3 className="m-0 t-h5 text-primary">
                   {entry.title}
                 </h3>
                 <p

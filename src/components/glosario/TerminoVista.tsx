@@ -87,7 +87,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
               cazó `scripts/medida.mjs`—, porque cuanta menos letra, más
               texto entra en el mismo ancho. */}
           <Reveal>
-            <p className="m-0 text-[19px] leading-[1.65] text-primary">
+            <p className="m-0 t-lede text-primary">
               {es ? termino.es : termino.en}
             </p>
           </Reveal>

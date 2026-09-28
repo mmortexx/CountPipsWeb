@@ -1,6 +1,5 @@
 "use client";
 
-import { X, Check } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 
@@ -61,13 +60,11 @@ export function BeforeAfter() {
                 key={antes}
                 className="grid grid-cols-2 gap-6 border-b border-[var(--line)] py-4 text-[15px] leading-[1.5] sm:gap-12"
               >
-                <span className="flex min-w-0 items-start gap-3 text-tertiary">
-                  <X size={16} strokeWidth={2} aria-hidden className="mt-[3px] shrink-0 text-pnl-neg" />
+                <span className="min-w-0 text-tertiary">
                   <span className="sr-only">{es ? "Sin diario: " : "Without a journal: "}</span>
                   {antes}
                 </span>
-                <span className="flex min-w-0 items-start gap-3 text-primary">
-                  <Check size={16} strokeWidth={2} aria-hidden className="mt-[3px] shrink-0 text-[rgb(var(--sig-green))]" />
+                <span className="min-w-0 text-primary">
                   <span className="sr-only">{es ? "Con CountPips: " : "With CountPips: "}</span>
                   {despues}
                 </span>

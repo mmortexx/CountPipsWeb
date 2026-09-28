@@ -87,7 +87,7 @@ export function PageHeader({
 
         <p
           data-entra="3"
-          className="mt-6 text-lg leading-[1.6] text-secondary md:text-xl"
+          className="mt-6 t-lede text-secondary"
           style={{ maxWidth: "var(--medida, 62ch)" }}
         >
           {es ? subtitleEs : subtitleEn}

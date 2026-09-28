@@ -50,10 +50,8 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
             )}
           </h2>
           <p
-            className="mt-5"
+            className="t-entradilla mt-5"
             style={{
-              fontSize: "clamp(1rem, 1.3vw, 1.1rem)",
-              lineHeight: 1.62,
               color: "var(--ink-2)",
               maxWidth: "38em",
               margin: "20px auto 0",
@@ -75,7 +73,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                 data-entra="ciclo"
                 className="border-t border-[var(--line-2)] pt-5"
               >
-                <h3 className="mb-1.5 text-[17px] text-primary">{c.t}</h3>
+                <h3 className="mb-1.5 t-h4 text-primary">{c.t}</h3>
                 <p className="m-0" style={{ fontSize: 14, lineHeight: 1.6, color: "var(--ink-2)" }}>
                   {c.d}
                 </p>

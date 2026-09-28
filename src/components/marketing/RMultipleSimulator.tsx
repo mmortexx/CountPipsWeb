@@ -211,7 +211,7 @@ export function RMultipleSimulator() {
               </>
             )}
           </h2>
-          <p className="mt-5 mb-7 text-base sm:text-lg leading-relaxed text-secondary max-w-[34em]">
+          <p className="t-entradilla mt-5 mb-7 text-secondary max-w-[34em]">
             {es
               ? `${SIM_RUNS} simulaciones de tus próximas operaciones. Cada camino es distinto: el abanico muestra los percentiles completos (P5 a P95). El mismo edge puede multiplicar tu cuenta o arruinarte según el orden. La disciplina es lo que te deja sobrevivir hasta cobrarlo.`
               : `${SIM_RUNS} simulations of your next trades. Each path is different: the fan shows full percentiles (P5 to P95). The same edge can multiply your account or ruin you depending on order. Discipline is what lets you survive long enough to collect it.`}
