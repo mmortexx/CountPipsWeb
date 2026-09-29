@@ -265,7 +265,7 @@ export function RMultipleSimulator() {
                       <span className="flex min-h-[2.5em] items-center justify-center">
                         {preset.label}
                       </span>
-                      <span className="mt-0.5 text-[11px] opacity-70">{preset.nota}</span>
+                      <span className="mt-0.5 text-[12px] opacity-70">{preset.nota}</span>
                     </span>
                   </button>
                 );
@@ -298,30 +298,19 @@ export function RMultipleSimulator() {
         </div>
 
         {/* Right: results card */}
-        <div
-          className="tj-paper tj-paper-glow relative"
-          style={{ padding: 24, borderRadius: 3, border: "1px solid transparent" }}
-        >
-          {/* Expectancy + runs headline */}
-          <div className="mb-5 flex items-baseline justify-between flex-wrap gap-2">
-            <div>
-              <div className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {es ? "Expectancy" : "Expectancy"}
-              </div>
-              <div className="flex items-baseline gap-3 mt-1">
-                <span
-                  className="tj-cifra"
-                  style={{ color: c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
-                >
-                  {fmtR(c.expectancyR, lang, 3)}
-                </span>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {es ? "Simulación" : "Simulation"}
-              </div>
-              <div className="tnum" style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)" }}>{es ? `${SIM_RUNS} caminos · semilla ${seed}` : `${SIM_RUNS} paths · seed ${seed}`}</div>
+        <div className="tj-ficha relative">
+          <p className="tj-ficha-barra">
+            <span>{es ? "Simulación" : "Simulation"}</span>
+            <span>{es ? `${SIM_RUNS} caminos · semilla ${seed}` : `${SIM_RUNS} paths · seed ${seed}`}</span>
+          </p>
+          <div className="tj-ficha-cuerpo">
+          <div className="mb-5">
+            <span className="block text-[12px] text-tertiary">{es ? "Expectancy por operación" : "Expectancy per trade"}</span>
+            <div
+              className="tj-cifra mt-1"
+              style={{ color: c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
+            >
+              {fmtR(c.expectancyR, lang, 3)}
             </div>
           </div>
 
@@ -422,12 +411,12 @@ export function RMultipleSimulator() {
                   />
                 )}
                 <span
-                  className="tnum block text-[11px] font-semibold tracking-[0.08em]"
+                  className="tnum block text-[12px] font-semibold"
                   style={{ color: p.ref ? "rgb(var(--accent-base))" : "var(--ink-3)" }}
                 >
                   {p.k}
                 </span>
-                <span className="mt-0.5 block text-[11px] leading-[1.2] text-tertiary">{p.n}</span>
+                <span className="mt-0.5 block text-[12px] leading-[1.2] text-tertiary">{p.n}</span>
                 <span
                   className="tnum cifra-sm mt-1.5 block whitespace-nowrap font-semibold"
                   style={{ color: p.col }}
@@ -490,7 +479,7 @@ export function RMultipleSimulator() {
                 >
                   {m.t}
                 </span>
-                <span className="mt-0.5 text-[11px] leading-[1.25] text-tertiary [overflow-wrap:anywhere]">
+                <span className="mt-0.5 text-[12px] leading-[1.25] text-tertiary [overflow-wrap:anywhere]">
                   {m.sub}
                 </span>
                 <span
@@ -512,6 +501,7 @@ export function RMultipleSimulator() {
                 ? `${SIM_RUNS} caminos con la semilla ` + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. Ruina es perder en algún momento el " + UMBRAL_RUINA_PCT + "\u00a0% del balance inicial, por pérdidas o por retiros. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."
                 : `${SIM_RUNS} paths with seed ` + seed + ": each trade wins with " + fmtNum(winRate, 0) + "% probability, with fixed R wins and losses and compounding risk. Ruin means losing " + UMBRAL_RUINA_PCT + "% of the starting balance at any point, through losses or withdrawals. Real markets have more extreme streaks, so your drawdown can be worse than these paths. Not financial advice."}
             </p>
+          </div>
           </div>
         </div>
       </div>

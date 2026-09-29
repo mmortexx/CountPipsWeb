@@ -12,7 +12,10 @@
  *    o más) mida un peldaño de texto (11–16 px enteros) o uno de la escala;
  *  · ningún tramo de un titular pinte otro color que el titular (la regla
  *    de un solo tono; se quitó `.text-gradient`, y esto mira el color
- *    calculado, no la clase, para cazar cualquier otra vía).
+ *    calculado, no la clase, para cazar cualquier otra vía);
+ *  · en cada página de herramienta, ningún texto fuera de los gráficos baje
+ *    de 12 px y la tarjeta de resultado abra con `.tj-ficha-barra` (tanda
+ *    47: había cifras a 11,2 px y siete cabeceras distintas).
  *
  * Lo que atrapa es el tamaño escrito a mano: un `clamp()` suelto da
  * 17,28 o 18,72 px, y un `text-[17px]` en un h3 da un peldaño que no
@@ -89,6 +92,7 @@ const navegador = await chromium.launch();
 const fallos = [];
 let titulares = 0;
 let bloques = 0;
+let herramientas = 0;
 
 for (const ancho of ANCHOS) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
@@ -150,10 +154,26 @@ for (const ancho of ANCHOS) {
           const px = parseFloat(getComputedStyle(el).fontSize);
           if (!vale(px, deTexto)) malos.push({ tipo: el.tagName.toLowerCase(), px, texto: propio.slice(0, 50) });
         }
-        return { malos, nt, nb };
+        /* Herramientas: nada por debajo de 12 px fuera de los gráficos, y la
+           tarjeta de resultado abre con la barra común (rótulo | dato). */
+        let nh = 0;
+        if (/\/herramientas\/[^/]+\/$/.test(location.pathname)) {
+          nh = 1;
+          if (!document.querySelector("main .tj-ficha > .tj-ficha-barra:first-child")) {
+            malos.push({ tipo: "herramienta sin barra de ficha", px: 0, texto: document.querySelector("h1")?.textContent.trim().slice(0, 50) ?? "" });
+          }
+          for (const el of document.querySelectorAll("main *")) {
+            if (el.closest("svg,[aria-hidden=true]") || !visible(el)) continue;
+            if (![...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) continue;
+            const px = parseFloat(getComputedStyle(el).fontSize);
+            if (px < 11.95) malos.push({ tipo: "texto de herramienta bajo 12", px, texto: el.textContent.trim().slice(0, 50) });
+          }
+        }
+        return { malos, nt, nb, nh };
       });
       titulares += r.nt;
       bloques += r.nb;
+      herramientas += r.nh;
       for (const m of r.malos) fallos.push({ ruta, ancho, ...m });
     }
     await pag.close();
@@ -164,9 +184,9 @@ for (const ancho of ANCHOS) {
 await navegador.close();
 server.close();
 
-console.log(`[escala] ${rutas.length} páginas × ${ANCHOS.length} anchos: ${titulares} titulares y ${bloques} bloques de texto medidos`);
-if (!titulares || !bloques) {
-  console.log("[escala] no encontró titulares o bloques: la guarda no está mirando");
+console.log(`[escala] ${rutas.length} páginas × ${ANCHOS.length} anchos: ${titulares} titulares, ${bloques} bloques de texto y ${herramientas} páginas de herramienta medidos`);
+if (!titulares || !bloques || !herramientas) {
+  console.log("[escala] no encontró titulares, bloques o herramientas: la guarda no está mirando");
   process.exit(1);
 }
 if (fallos.length) {

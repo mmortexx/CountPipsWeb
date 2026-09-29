@@ -5,11 +5,11 @@ import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import {
-  INSTRUMENT_SPECS,
-  clasificaFugaComisiones,
-  resultadoBrutoPorOperacion,
-  ticksAUnidades,
+import {
+  INSTRUMENT_SPECS,
+  clasificaFugaComisiones,
+  resultadoBrutoPorOperacion,
+  ticksAUnidades,
 } from "@/lib/trading/fugaComisiones";
 
 /** Umbral de fuga alta: una sola cifra para el aviso visual y para el
@@ -255,10 +255,14 @@ export function CommissionDragCalculator() {
           </div>
 
           {/* Columna Derecha: Tarjeta de Resultados */}
-          <div className="tj-ficha p-6 sm:p-7 lg:sticky lg:top-24">
-            <span className="text-[13px] font-medium text-secondary block mb-4">
-              {es ? "En un año" : "Over a year"}
-            </span>
+          <div className="tj-ficha lg:sticky lg:top-24">
+            <p className="tj-ficha-barra">
+              <span>{es ? "En un año" : "Over a year"}</span>
+              <span>
+                {inst.id} · {fmtNum(monthlyTrades * 12, lang, 0)} {es ? "operaciones" : "trades"}
+              </span>
+            </p>
+            <div className="tj-ficha-cuerpo">
 
             {/* El resultado que resume la tarjeta, dicho en voz alta para
                 quien no ve la pantalla: ver ResultadoAnunciado. */}
@@ -334,7 +338,7 @@ export function CommissionDragCalculator() {
                   {" · "}
                   {es ? NIVEL_FUGA_LABEL[nivelFuga].es : NIVEL_FUGA_LABEL[nivelFuga].en}
                 </span>
-                <span className="text-[11px] text-tertiary block mt-0.5">
+                <span className="text-[12px] text-tertiary block mt-0.5">
                   {es ? "del beneficio" : "of profit"}
                 </span>
               </div>
@@ -346,7 +350,7 @@ export function CommissionDragCalculator() {
                 <span className="text-base tnum font-semibold text-primary">
                   {fmtNum(breakEvenTicksPerTrade, lang, 2)}
                 </span>
-                <span className="text-[11px] text-tertiary block mt-0.5 tnum">
+                <span className="text-[12px] text-tertiary block mt-0.5 tnum">
                   {fmtNum(breakEvenUnitsPerTrade, lang, 2)} {es ? inst.unitNameEs : inst.unitNameEn}
                 </span>
               </div>
@@ -365,7 +369,7 @@ export function CommissionDragCalculator() {
                     ? es ? "Inalcanzable" : "Out of reach"
                     : fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
-                <span className="text-[11px] text-tertiary block mt-0.5">
+                <span className="text-[12px] text-tertiary block mt-0.5">
                   {es ? `a ${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)}:1 R:R` : `at ${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)}:1 R:R`}
                 </span>
               </div>
@@ -388,6 +392,7 @@ export function CommissionDragCalculator() {
                     : "With these numbers, the gain per trade covers fees and slippage with room to spare."}
                 </p>
               </div>
+            </div>
             </div>
           </div>
         </div>

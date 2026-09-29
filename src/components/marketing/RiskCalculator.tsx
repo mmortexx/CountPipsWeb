@@ -503,7 +503,7 @@ export function RiskCalculator() {
                 } as CSSProperties
               }
             />
-            <div className="flex justify-between mt-1 text-[11px] text-tertiary tnum">
+            <div className="flex justify-between mt-1 text-[12px] text-tertiary tnum">
               {/* `0.25%` con punto ingles, en una lista donde la cifra de al
                   lado dice `3,00%`. La marca salia del numero crudo de
                   JavaScript, que siempre lleva punto decimal. */}
@@ -524,77 +524,21 @@ export function RiskCalculator() {
         </div>
 
         {/* Tarjeta calculadora */}
-        <div
-          className="tj-paper tj-paper-glow relative p-6"
-        >
-          {/* Criterio de Kelly (Medio Kelly institucional). Abre la tarjeta:
-              solo filete debajo. */}
-          <div className="mb-5 border-b border-[var(--line)] pb-3">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setShowKelly((v) => !v)}
-                aria-expanded={showKelly}
-                className="toque-comodo text-[13px] text-secondary hover:text-primary flex items-center gap-2 transition-colors"
-              >
-                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className={`transition-transform duration-150 ${showKelly ? "rotate-90" : ""}`}>
-                  <path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span>{es ? "Criterio de Kelly" : "Kelly criterion"}</span>
-              </button>
-              <span className="text-[12px] tnum text-tertiary">
-                {es ? "Medio Kelly: " : "Half-Kelly: "}
-                <strong className="text-primary font-semibold">{fmtNum(c.halfKellyPct)}{PCT}</strong>
-              </span>
-            </div>
-
-            {showKelly && (
-              <div className="mt-3 space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-tertiary">{es ? "Win rate histórico estimado:" : "Estimated historical win rate:"}</span>
-                  <span className="tnum font-semibold text-primary">{fmtNum(kellyWinRate, 0)}{PCT}</span>
-                </div>
-                <input
-                  type="range"
-                  min={35}
-                  max={75}
-                  step={1}
-                  value={kellyWinRate}
-                  onChange={(e) => setKellyWinRate(parseInt(e.target.value, 10))}
-                  aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
-                  /* `.tj-range` como el resto: con `appearance-none` y sin
-                     regla de bolita, en WebKit no se veía la agarradera. */
-                  className="tj-range w-full"
-                  style={{ "--pct": `${((kellyWinRate - 35) / 40) * 100}%` } as CSSProperties}
-                />
-                <div className="grid grid-cols-3 gap-2 text-center text-[12px] tnum">
-                  <div className="py-1">
-                    <div className="text-tertiary">{es ? "Kelly completo" : "Full Kelly"}</div>
-                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}{PCT}</div>
-                  </div>
-                  <div className="py-1">
-                    <div className="text-[rgb(var(--accent-base))] font-semibold">{es ? "Medio Kelly" : "Half Kelly"}</div>
-                    <div className="font-semibold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}{PCT}</div>
-                  </div>
-                  <div className="py-1">
-                    <div className="text-tertiary">{es ? "Cuarto de Kelly" : "Quarter Kelly"}</div>
-                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}{PCT}</div>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  disabled={c.halfKellyPct <= 0}
-                  onClick={() => c.halfKellyPct > 0 && setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
-                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium tj-campo text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {c.halfKellyPct <= 0
-                    ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
-                    : (es ? `Usar medio Kelly (${fmtNum(c.halfKellyPct)}${PCT} de riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`)}
-                </button>
-              </div>
-            )}
-          </div>
-
+        <div className="tj-ficha relative">
+          {/* La dirección se dice con palabras, no con color. */}
+          <p className="tj-ficha-barra">
+            <span>
+              {!c.valid
+                ? (es ? "Plan sin calcular" : "Plan not calculated")
+                : c.direction === "short"
+                  ? (es ? "Plan en corto" : "Short plan")
+                  : (es ? "Plan en largo" : "Long plan")}
+            </span>
+            <span>
+              {fmtNum(riskPct)}{PCT} {es ? "de" : "of"} {fmtMoney(balance, lang, { decimals: 0 })}
+            </span>
+          </p>
+          <div className="tj-ficha-cuerpo">
           {/* Lo que se ha venido a saber, en una frase, para quien no ve
               la pantalla: el panel son doce líneas y leerlas todas en
               cada tecla sería ruido. Cuando la entrada no es válida no
@@ -610,7 +554,6 @@ export function RiskCalculator() {
             }
           />
 
-          {/* Aviso de validación + dirección */}
           {!c.valid ? (
             <div
               className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
@@ -625,17 +568,7 @@ export function RiskCalculator() {
                   ? "Entrada, stop y objetivo deben ser distintos y positivos para calcular el tamaño."
                   : "Entry, stop and target must be distinct and positive to calculate size."}
             </div>
-          ) : (
-            <div
-              className="mb-4 text-[12px] text-secondary"
-            >
-              <span>
-                {c.direction === "short"
-                  ? (es ? "Operación en corto detectada" : "Short trade detected")
-                  : (es ? "Operación en largo detectada" : "Long trade detected")}
-              </span>
-            </div>
-          )}
+          ) : null}
           {c.apalancamientoExcesivo ? (
             <p
               className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
@@ -764,30 +697,93 @@ export function RiskCalculator() {
             </div>
           </div>
 
-          {/* Copiar plan */}
+          {/* Criterio de Kelly (Medio Kelly institucional), plegado al final. */}
+          <div className="mt-6 border-t border-[var(--ficha-division)] pt-3">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setShowKelly((v) => !v)}
+                aria-expanded={showKelly}
+                className="toque-comodo text-[13px] text-secondary hover:text-primary flex items-center gap-2 transition-colors"
+              >
+                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className={`transition-transform duration-150 ${showKelly ? "rotate-90" : ""}`}>
+                  <path d="M3.5 2l3 3-3 3" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span>{es ? "Criterio de Kelly" : "Kelly criterion"}</span>
+              </button>
+              <span className="text-[12px] tnum text-tertiary">
+                {es ? "Medio Kelly: " : "Half-Kelly: "}
+                <strong className="text-primary font-semibold">{fmtNum(c.halfKellyPct)}{PCT}</strong>
+              </span>
+            </div>
+
+            {showKelly && (
+              <div className="mt-3 space-y-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-tertiary">{es ? "Win rate histórico estimado:" : "Estimated historical win rate:"}</span>
+                  <span className="tnum font-semibold text-primary">{fmtNum(kellyWinRate, 0)}{PCT}</span>
+                </div>
+                <input
+                  type="range"
+                  min={35}
+                  max={75}
+                  step={1}
+                  value={kellyWinRate}
+                  onChange={(e) => setKellyWinRate(parseInt(e.target.value, 10))}
+                  aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
+                  /* `.tj-range` como el resto: con `appearance-none` y sin
+                     regla de bolita, en WebKit no se veía la agarradera. */
+                  className="tj-range w-full"
+                  style={{ "--pct": `${((kellyWinRate - 35) / 40) * 100}%` } as CSSProperties}
+                />
+                <div className="grid grid-cols-3 gap-2 text-center text-[12px] tnum">
+                  <div className="py-1">
+                    <div className="text-tertiary">{es ? "Kelly completo" : "Full Kelly"}</div>
+                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}{PCT}</div>
+                  </div>
+                  <div className="py-1">
+                    <div className="text-[rgb(var(--accent-base))] font-semibold">{es ? "Medio Kelly" : "Half Kelly"}</div>
+                    <div className="font-semibold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}{PCT}</div>
+                  </div>
+                  <div className="py-1">
+                    <div className="text-tertiary">{es ? "Cuarto de Kelly" : "Quarter Kelly"}</div>
+                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}{PCT}</div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={c.halfKellyPct <= 0}
+                  onClick={() => c.halfKellyPct > 0 && setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
+                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium tj-campo text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {c.halfKellyPct <= 0
+                    ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
+                    : (es ? `Usar medio Kelly (${fmtNum(c.halfKellyPct)}${PCT} de riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`)}
+                </button>
+              </div>
+            )}
+          </div>
+
+          </div>
+          <div className="tj-ficha-barra tj-ficha-barra--pie">
           <button
             type="button"
             onClick={copyPlan}
             disabled={!c.valid}
-            className="mt-4 -ml-1 inline-flex items-center gap-2 min-h-[44px] px-1 text-[14px] font-medium transition-colors duration-150 text-primary hover:text-[rgb(var(--accent-base))] disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold transition-colors duration-150 text-primary hover:text-[rgb(var(--accent-base))] disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
           >
-            {copied ? (
-              <>
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span>{es ? "Plan copiado al portapapeles" : "Plan copied to clipboard"}</span>
-              </>
-            ) : (
-              <>
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M3 11V3.5A1.5 1.5 0 014.5 2H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-                <span>{es ? "Copiar plan de operación" : "Copy trade plan"}</span>
-              </>
-            )}
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+              <path
+                d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"
+                stroke="currentColor"
+                strokeWidth="1.3"
+              />
+            </svg>
+            {copied ? (es ? "Plan copiado" : "Plan copied") : es ? "Copiar plan de operación" : "Copy trade plan"}
           </button>
+            <span className="text-tertiary">{es ? "Privado en tu navegador" : "Private in your browser"}</span>
+          </div>
         </div>
       </div>
     </section>

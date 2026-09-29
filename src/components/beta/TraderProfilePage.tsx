@@ -151,7 +151,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   >
                     <span className="flex flex-col items-center py-1 leading-tight">
                       <span>{f.name}</span>
-                      <span className="text-[11px] font-normal text-tertiary">{es ? f.typeEs : f.typeEn}</span>
+                      <span className="text-[12px] font-normal text-tertiary">{es ? f.typeEs : f.typeEn}</span>
                     </span>
                   </button>
                 ))}

@@ -288,7 +288,7 @@ export function ShortcutsHelp({
                       cerrado con `!important`, y esto es un antetítulo. */}
                   <p
                     id={`tj-atajos-g${n}`}
-                    className="eyebrow px-2 pb-1.5 text-[11px]"
+                    className="eyebrow px-2 pb-1.5"
                   >
                     {g.titulo}
                   </p>

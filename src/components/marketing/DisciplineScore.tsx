@@ -40,7 +40,7 @@ import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
  * para ESE eje — no un consejo genérico por tramo de puntuación.
  *
  * ── Material ──────────────────────────────────────────────────────────
- * .tj-paper + .tj-paper-glow. Objetivos táctiles ≥44 px. Sin desbordes en
+ * .tj-ficha con barra de cabecera. Objetivos táctiles ≥44 px. Sin desbordes en
  * móvil: las opciones se apilan y el perfil es de una columna.
  */
 
@@ -674,7 +674,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               {weakest ? (
                 <>
                   <div className="border-t border-[var(--ficha-division)] pt-4">
-                    <div className="tnum mb-2 text-[11px] font-medium text-tertiary">
+                    <div className="tnum mb-2 text-[12px] font-medium text-tertiary">
                       {es ? "Empieza por aquí" : "Start here"}
                     </div>
                     <p className="m-0 text-sm leading-relaxed text-secondary">

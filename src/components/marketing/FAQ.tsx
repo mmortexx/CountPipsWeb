@@ -308,7 +308,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                       sitio, que antes solo lo delataba el cambio de color al
                       pasar. */}
                   <span>
-                    {es ? "¿No encuentras tu término? " : "Can’t find your term? "}
+                    {es ? "¿Buscas un término? " : "Looking for a term? "}
                     <span className="link-underline text-secondary">
                       {es ? "Consulta el glosario" : "Browse the glossary"}
                     </span>

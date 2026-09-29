@@ -393,17 +393,12 @@ export function DisciplineCost() {
           </div>
 
           {/* Factura Dinámica */}
-          <div
-            className="relative p-6 tj-ficha"
-          >
-            <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mb-4 pb-3 border-b border-[var(--ficha-division)]">
-              <span className="tnum text-[11px] font-medium text-tertiary">
-                {es ? "Factura de indisciplina" : "Indiscipline invoice"}
-              </span>
-              <span className="text-[12px] text-tertiary">
-                {es ? "Estimación mensual con tus cifras" : "Monthly estimate from your numbers"}
-              </span>
-            </div>
+          <div className="relative tj-ficha">
+            <p className="tj-ficha-barra">
+              <span>{es ? "Factura de indisciplina" : "Indiscipline invoice"}</span>
+              <span>{es ? "Al mes, con tus cifras" : "Monthly, from your numbers"}</span>
+            </p>
+            <div className="tj-ficha-cuerpo">
 
             {/* ── EL DESGLOSE, COMO UN LIBRO DE CUENTAS ──────────────
                 Tres columnas declaradas: concepto, porcentaje e importe.
@@ -507,7 +502,7 @@ export function DisciplineCost() {
                         title={`−${fmtMoney(fv, lang)}`}
                         className="caja-cifra min-w-0 px-1.5 py-3"
                       >
-                        <span className="block text-[11px] text-tertiary">
+                        <span className="block text-[12px] text-tertiary">
                           {yr} {yr === 1 ? (es ? "año" : "year") : (es ? "años" : "years")}
                         </span>
                         <span
@@ -530,7 +525,7 @@ export function DisciplineCost() {
                   <span className="text-[12px] font-semibold text-primary">
                     {es ? "Si evitaras parte de la fuga" : "If you avoided part of the leak"}
                   </span>
-                  <span className="text-[11px] tnum font-medium text-tertiary">
+                  <span className="text-[12px] text-tertiary">
                     {es ? "Escenario" : "Scenario"}
                   </span>
                 </div>
@@ -569,8 +564,8 @@ export function DisciplineCost() {
               </div>
             )}
 
-            {/* Acción: Copiar resumen */}
-            <div className="mt-5 pt-3 border-t border-[rgb(var(--divider)/0.06)] flex flex-wrap items-center justify-between gap-x-4">
+            </div>
+            <div className="tj-ficha-barra tj-ficha-barra--pie">
               <button
                 type="button"
                 onClick={copiarResumen}
@@ -580,11 +575,10 @@ export function DisciplineCost() {
                   <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
                   <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" strokeWidth="1.3" />
                 </svg>
-                {copied ? (es ? "¡Resumen copiado!" : "Summary copied!") : (es ? "Copiar este desglose" : "Copy breakdown")}
+                {copied ? (es ? "Resumen copiado" : "Summary copied") : (es ? "Copiar resumen" : "Copy summary")}
               </button>
-
-              <span className="text-[12px] text-tertiary tnum">
-                {es ? "100 % privado en tu navegador" : "100% private in your browser"}
+              <span className="text-tertiary">
+                {es ? "Privado en tu navegador" : "Private in your browser"}
               </span>
             </div>
           </div>

@@ -72,17 +72,13 @@ export function GlosarioIndice() {
               }
               className="h-12 w-full tj-campo px-5 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[var(--line-2)] focus:bg-[var(--bg)]"
             />
-            {/* Category Pills */}
-            <div className="flex flex-wrap items-center gap-1 mt-4">
+            {/* El mismo filtro que el glosario del modal: `.tj-filtro`. */}
+            <div className="flex flex-wrap items-center gap-2 mt-4" role="group" aria-label={es ? "Familia" : "Family"}>
               <button
                 type="button"
                 aria-pressed={activeCategory === "all"}
                 onClick={() => setActiveCategory("all")}
-                className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 py-2.5 sm:py-0 rounded-[4px] text-[13px] font-medium inline-flex items-center justify-center transition-all ${
-                  activeCategory === "all"
-                    ? "bg-[var(--ink)] text-[var(--bg)]"
-                    : "text-secondary hover:text-primary"
-                }`}
+                className="tj-filtro"
               >
                 {es ? "Todas las familias" : "All families"}
               </button>
@@ -94,11 +90,7 @@ export function GlosarioIndice() {
                     type="button"
                     aria-pressed={activeCategory === cat}
                     onClick={() => setActiveCategory(cat)}
-                    className={`min-h-[44px] sm:min-h-0 sm:h-8 px-3.5 py-2.5 sm:py-0 rounded-[4px] text-[13px] font-medium inline-flex items-center justify-center transition-all ${
-                      activeCategory === cat
-                        ? "bg-[var(--ink)] text-[var(--bg)]"
-                        : "text-secondary hover:text-primary"
-                    }`}
+                    className="tj-filtro"
                   >
                     {es ? meta.es : meta.en}
                   </button>
@@ -106,7 +98,7 @@ export function GlosarioIndice() {
               })}
             </div>
 
-            <p className="mt-2.5 text-[14px] text-tertiary">
+            <p className="mt-3 text-[13px] text-tertiary">
               {filtrados
                 ? `${filtrados.length} ${
                     filtrados.length === 1

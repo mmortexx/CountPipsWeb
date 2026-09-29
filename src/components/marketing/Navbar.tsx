@@ -856,13 +856,13 @@ export function Navbar() {
                         <>
                           <div className="relative grid grid-cols-2 divide-x divide-[rgb(var(--divider)/0.10)] p-2">
                             <div className="pr-2">
-                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold text-tertiary">
+                              <p className="eyebrow m-0 px-2.5 pb-1.5 pt-1">
                                 {es ? "Producto" : "Product"}
                               </p>
                               {productItems.filter((i) => i.grupo === "producto").map(fila)}
                             </div>
                             <div className="pl-2">
-                              <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold text-tertiary">
+                              <p className="eyebrow m-0 px-2.5 pb-1.5 pt-1">
                                 {es ? "Recursos" : "Resources"}
                               </p>
                               {productItems.filter((i) => i.grupo === "recursos").map(fila)}

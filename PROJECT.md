@@ -2855,6 +2855,69 @@ partida.
 - **Medido.** Arranque con CPU ×4 a 390 px, 3 pasadas: el titular es
   legible entre 149 y 174 ms (tanda 45: 160–191).
 
+### Cuadragésima séptima tanda: una sola tarjeta de resultado (2026-09-29)
+
+Primero se midió, con Playwright sobre `out/`, todo texto de menos de
+13 px fuera de la demo: unas 600 piezas. La mayoría están dentro de las
+fichas que imitan la app, y esas se quedan. Las que no: cifras de
+resultado a 11,2 y 12,1 px y rótulos de tarjeta a 11 px en las
+calculadoras.
+
+- **Esqueleto común.** Solo fondeo y drawdown usaban `.tj-ficha` con
+  barra de cabecera, cuerpo y pie. Riesgo, ahorro, comisiones, Monte
+  Carlo, significancia e indisciplina llevaban cada una su cabecera,
+  entre ellas un desplegable de Kelly, un rótulo suelto o un bloque
+  «Simulación» a la derecha. Ahora todas abren con `.tj-ficha-barra`
+  (rótulo | dato). La barra dice:
+  - riesgo: «Plan en largo · 1,00 % de 10.000 $»;
+  - ahorro: «Frente a una suscripción · 3 años»;
+  - comisiones: «En un año · MNQ · 720 operaciones»;
+  - Monte Carlo: «Simulación · 300 caminos · semilla 1»;
+  - significancia: «Veredicto · 50 operaciones · 58 %»;
+  - indisciplina: «Factura de indisciplina · Al mes».
+
+  Las que copian algo cierran con `.tj-ficha-barra--pie`: «Copiar … |
+  Privado en tu navegador», el mismo texto en las cinco. Antes se leía
+  «100 % privado», «¡Resumen copiado!» o una ✓ que sustituía al icono.
+  El reloj de sesiones y el proyector usan la misma barra en su banda y
+  en su cabecera.
+- **Riesgo.** La dirección («Plan en largo / en corto / sin calcular»)
+  pasa a la barra y sustituye a la línea «Operación en largo detectada».
+  El Kelly se pliega al final del cuerpo, antes del pie.
+- **Suelo de 12 px en las herramientas.** Treinta y dos rótulos de 11 px
+  pasan a 12. En el proyector eran trece y el resto se reparte entre
+  comisiones, drawdown, significancia, Monte Carlo, riesgo, reloj e
+  indisciplina. `.cifra-sm` pasa de `clamp(0.7rem…)` a
+  `clamp(0.8125rem, 9cqi, 0.9375rem)`: los percentiles de Monte Carlo
+  salían a 11,2 px. Los rótulos de grupo del menú Producto, del índice
+  lateral y de la hoja de atajos pasan a `.eyebrow` (13 px).
+- **Rojo solo en el dinero** (lo empezado en la tanda 46). El barrido de
+  significancia pierde su degradado y queda en color plano.
+- **Glosario.** El filtro de familias era un bloque negro relleno para la
+  elegida y texto suelto para las demás. Ahora es `.tj-filtro`, igual que
+  el modal del glosario.
+- **Curva de métricas.** La muestra de «Balance» en la leyenda se veía
+  como una raya continua: el `border dashed` con radio, a 16 px, no
+  llegaba a partirse. Ahora es un trazo 5/4, el mismo que la serie; se
+  comprobó ampliado a 3× en los dos temas.
+- **FAQ.** «¿No encuentras tu término?» pasa a «¿Buscas un término?».
+- **Guarda nueva** en `scripts/escala.mjs`: en cada página de
+  herramienta, ningún texto fuera de los gráficos baja de 12 px y la
+  tarjeta abre con `.tj-ficha > .tj-ficha-barra`. Se vio en rojo con la
+  compilación anterior a los arreglos del reloj y el proyector (8 páginas
+  sin barra y 36 textos a 11 px) y en verde después.
+  `scripts/humo.mjs` comprueba ahora que el plan inválido diga «Plan sin
+  calcular».
+- **Visto y sin cambio.** El halo de la curva de rendimiento imita la del
+  Resumen de la app. Los presets del proyector se quedan. La numeración
+  del test es un orden real.
+- **Medido.** El arranque salió entre 119 y 472 ms en nueve pasadas con
+  el equipo cargado, así que se comparó en las mismas condiciones contra
+  el commit anterior, alternando tres veces cada uno: viejo 164–188 ms y
+  nuevo 171–206 ms. Los rangos se solapan. El HTML de la portada es
+  idéntico y lo que carga pesa 244 bytes menos. Con este ruido, así no se
+  puede medir ninguna diferencia.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

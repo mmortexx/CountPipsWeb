@@ -182,7 +182,7 @@ export function DrawdownRecovery() {
                   >
                     {noVuelve ? (es ? "No vuelve" : "Never") : fmtInt(c.operaciones!, lang)}
                   </dd>
-                  <dd className="m-0 text-[11px] text-tertiary">{es ? "camino típico" : "typical path"}</dd>
+                  <dd className="m-0 text-[12px] text-tertiary">{es ? "camino típico" : "typical path"}</dd>
                 </div>
                 <div className="px-3 py-3 sm:px-4">
                   <dt className="text-[12px] text-tertiary">{es ? "Crecimiento" : "Growth"}</dt>
@@ -191,7 +191,7 @@ export function DrawdownRecovery() {
                   >
                     {conSigno(c.crecimiento, 2)}
                   </dd>
-                  <dd className="m-0 text-[11px] text-tertiary">{es ? "típico por operación" : "typical per trade"}</dd>
+                  <dd className="m-0 text-[12px] text-tertiary">{es ? "típico por operación" : "typical per trade"}</dd>
                 </div>
                 <div className="px-3 py-3 sm:px-4">
                   <dt className="text-[12px] text-tertiary">Expectancy</dt>
@@ -200,7 +200,7 @@ export function DrawdownRecovery() {
                   >
                     {fmtR(c.esperanza, lang)}
                   </dd>
-                  <dd className="m-0 text-[11px] text-tertiary">{es ? "por operación" : "per trade"}</dd>
+                  <dd className="m-0 text-[12px] text-tertiary">{es ? "por operación" : "per trade"}</dd>
                 </div>
               </dl>
 

@@ -164,7 +164,7 @@ export function SessionClock() {
             </p>
           </div>
           <div className="justify-self-start">
-            <div className="mb-2 text-[12px] text-tertiary">{es ? "Ver horas en" : "Show times in"}</div>
+            <div className="tj-deslizador-etiqueta mb-2">{es ? "Ver horas en" : "Show times in"}</div>
             <div className="tj-segmentado" role="group" aria-label={es ? "Referencia horaria" : "Time reference"}>
               {referencias.map((r) => (
                 <button key={r.id} type="button" onClick={() => setRef(r.id)} aria-pressed={ref === r.id} title={r.id === "local" && ahora ? zonaLocal : undefined}>
@@ -193,18 +193,19 @@ export function SessionClock() {
           })}
         </ul>
 
-        <div className="tj-paper tj-paper-glow mb-10 p-5 sm:p-6">
-          <div className="mb-4 flex flex-col justify-between gap-2 text-[13px] sm:flex-row sm:items-center">
-            <span className="text-secondary">
-              {es ? "Las 24 horas" : "The 24 hours"} <span className="tnum text-tertiary">· {etiquetaDesfase}</span>
+        <div className="tj-ficha mb-10">
+          <p className="tj-ficha-barra">
+            <span>
+              {es ? "Las 24 horas" : "The 24 hours"} · {etiquetaDesfase}
             </span>
             {proxima && (
-              <span className="tnum text-tertiary">
-                {es ? "Próxima apertura:" : "Next open:"} <span className="font-medium text-primary">{nombre(proxima.plaza)}</span>{" "}
+              <span>
+                {es ? "Próxima apertura:" : "Next open:"} <span className="text-primary">{nombre(proxima.plaza)}</span>{" "}
                 {es ? "en" : "in"} {falta(proxima.minutos / 60)}
               </span>
             )}
-          </div>
+          </p>
+          <div className="tj-ficha-cuerpo">
 
           <div className="relative h-[92px]">
             {[0, 6, 12, 18, 24].map((h) => (
@@ -228,7 +229,7 @@ export function SessionClock() {
                   aria-hidden={k !== principal || undefined}
                 >
                   {k === principal && (
-                    <span className="absolute inset-y-0 left-2 flex items-center whitespace-nowrap text-[11px] font-medium" style={{ color: "var(--ink)" }}>
+                    <span className="absolute inset-y-0 left-2 flex items-center whitespace-nowrap text-[12px] font-medium" style={{ color: "var(--ink)" }}>
                       {nombre(p)}
                     </span>
                   )}
@@ -244,7 +245,7 @@ export function SessionClock() {
             {[0, 6, 12, 18, 24].map((h) => (
               <span
                 key={h}
-                className="tnum absolute text-[11px]"
+                className="tnum absolute text-[12px]"
                 style={{ left: `${pct(h)}%`, transform: h === 0 ? "none" : h === 24 ? "translateX(-100%)" : "translateX(-50%)", color: "var(--ink-3)" }}
               >
                 {String(h).padStart(2, "0")}:00
@@ -259,6 +260,7 @@ export function SessionClock() {
               {es ? " están abiertas a la vez." : " are open at the same time."}
             </p>
           )}
+          </div>
         </div>
 
         <div className="mb-3 text-[13px] font-medium text-secondary">{es ? "Aperturas y cierres vigilados" : "Watched opens and closes"}</div>

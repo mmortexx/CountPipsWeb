@@ -23,7 +23,7 @@ import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
  * el tiempo mientras la suscripción sigue cobrando cada mes.
  *
  * ── Material ──────────────────────────────────────────────────────────
- * .tj-paper + .tj-paper-glow (papel translúcido cálido, halo champagne).
+ * .tj-ficha con barra de cabecera y cuerpo.
  * Touch targets ≥44px. Sin overflow en mobile.
  */
 /* Los planes viven FUERA del componente por dos motivos, y ninguno es estético.
@@ -244,10 +244,14 @@ export function SavingsCalculator() {
         </div>
 
         {/* Right: results card */}
-        <div
-          className="tj-paper tj-paper-glow relative"
-          style={{ padding: 24, borderRadius: 3, border: "1px solid transparent" }}
-        >
+        <div className="tj-ficha relative">
+          <p className="tj-ficha-barra">
+            <span>{es ? "Frente a una suscripción" : "Against a subscription"}</span>
+            <span>
+              {years} {years === 1 ? (es ? "año" : "year") : (es ? "años" : "years")}
+            </span>
+          </p>
+          <div className="tj-ficha-cuerpo">
           {/* El resultado que resume la tarjeta, dicho en voz alta para
               quien no ve la pantalla: ver ResultadoAnunciado. */}
           <ResultadoAnunciado
@@ -280,7 +284,7 @@ export function SavingsCalculator() {
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {es ? "Coste acumulado de referencia" : "Cumulative reference cost"} · {years} {es ? "años" : "yrs"}
+                {es ? "Coste acumulado" : "Cumulative cost"}
               </span>
             </div>
             <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ height: "auto", display: "block" }} aria-label={es ? "Comparación de pago acumulado" : "Cumulative cost comparison"} role="img">
@@ -341,6 +345,7 @@ export function SavingsCalculator() {
                 ? `A partir del mes ${c.breakEvenMonths}, la suscripción ya ha costado más que el pago único. Si la diferencia rindiera un ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual, a ${years} ${years === 1 ? "año" : "años"} serían ${fmtUsd(c.compoundAdvantage)}; es un supuesto, no una rentabilidad.`
                 : `From month ${c.breakEvenMonths}, the subscription has cost more than the one-time payment. If the difference earned ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} a year, over ${years} ${years === 1 ? "year" : "years"} it would be ${fmtUsd(c.compoundAdvantage)}; an assumption, not a return.`}
             </p>
+          </div>
           </div>
         </div>
       </div>

@@ -2076,10 +2076,10 @@ if (SERVIR) {
     const r = await pagina.evaluate(() => {
       const aviso = document.querySelector('[role="alert"]')?.textContent ?? "";
       const t = document.querySelector("main")?.innerText ?? "";
-      return { aviso, corto: /Operación en corto detectada/.test(t), ruina: /Riesgo de ruina\s+\d/.test(t), tamano: /Tamaño de posición\s+\d/.test(t) };
+      return { aviso, sinCalcular: /Plan sin calcular/.test(t), ruina: /Riesgo de ruina\s+\d/.test(t), tamano: /Tamaño de posición\s+\d/.test(t) };
     });
     if (!/otro lado de la entrada/.test(r.aviso)) fallos.push(`riesgo 100/105/110: no avisa de que el objetivo está del lado del stop («${r.aviso.slice(0, 60)}»)`);
-    else if (r.corto) fallos.push("riesgo 100/105/110: sigue diciendo «Operación en corto detectada»");
+    else if (!r.sinCalcular) fallos.push("riesgo 100/105/110: la barra de la tarjeta no dice «Plan sin calcular»");
     else if (r.ruina || r.tamano) fallos.push("riesgo 100/105/110: con el plan inválido sigue enseñando cifras del plan (tamaño o riesgo de ruina)");
     else calculadorasVistas++;
 

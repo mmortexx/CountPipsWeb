@@ -133,6 +133,9 @@ MATERIALES CSS (definidos en globals.css):
   Herramientas: cifra principal `.tj-cifra` (36/30 px); deslizador `tj/Deslizador.tsx` o
   `.tj-deslizador-etiqueta` + `.tj-deslizador-valor`; R siempre con `fmtR` («+1,50 R»,
   espacio duro, como la app); elegir entre varios, `.tj-segmentado` y sus variantes.
+  Tarjeta de resultado: `.tj-ficha` > `.tj-ficha-barra` (rótulo | dato) >
+  `.tj-ficha-cuerpo` > `.tj-ficha-barra--pie` («Copiar … | Privado en tu navegador»).
+  Nada por debajo de 12 px en una herramienta fuera de los gráficos (lo vigila escala.mjs).
   Tablas en móvil: fichas por fila (`md:hidden` / `sm:hidden`), nunca desplazamiento
   lateral con «desliza». Gráficos: rellenos planos; color solo para dinero y sesión
   (la serie de referencia va en tinta terciaria discontinua).

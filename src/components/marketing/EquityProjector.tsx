@@ -525,7 +525,7 @@ export function EquityProjector() {
         >
           {/* Cabecera de la herramienta. NO es la barra de titulo de
               una ventana: esto no es una pantalla del programa. */}
-          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-[var(--ficha-division)]">
+          <div className="tj-ficha-barra">
             {/* ── ESTA HERRAMIENTA NO ES UNA PANTALLA DEL PROGRAMA ────
                 Aqui habia una insignia «WINUI3» junto al rotulo «MOTOR
                 CUANTITATIVO DE CAPITAL», y las dos cosas juntas se leian
@@ -541,9 +541,7 @@ export function EquityProjector() {
                 programa. El marco se queda —es la caja de la herramienta—
                 pero el rotulo la nombra por su nombre real, el mismo que
                 usa `src/lib/herramientas.ts` para esta entrada. */}
-            <span className="text-[13px] font-medium text-[var(--ink-2)]">
-              {es ? "Proyector de capital" : "Equity projector"}
-            </span>
+            <span>{es ? "Proyector de capital" : "Equity projector"}</span>
 
             {/* Presets Toolbar en la Barra Superior */}
             {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.
@@ -566,7 +564,7 @@ export function EquityProjector() {
                     }`}
                   >
                     <span>{es ? p.labelEs : p.labelEn}</span>
-                    <span className="text-[11px] font-normal text-[var(--ink-3)]">
+                    <span className="text-[12px] font-normal text-[var(--ink-3)]">
                       {es ? p.tagEs : p.tagEn}
                     </span>
                   </button>
@@ -822,7 +820,7 @@ export function EquityProjector() {
                             terciario. Medido ahi: 4,28:1 en tema oscuro,
                             por debajo del 4,5:1 de AA. Con el secundario
                             sube por encima del listón. */}
-                      <div className="text-[11px] text-[var(--ink-2)] leading-tight mt-0.5">
+                      <div className="text-[12px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Escala con el capital" : "Scales with equity"}
                       </div>
                     </button>
@@ -845,7 +843,7 @@ export function EquityProjector() {
                             terciario. Medido ahi: 4,28:1 en tema oscuro,
                             por debajo del 4,5:1 de AA. Con el secundario
                             sube por encima del listón. */}
-                      <div className="text-[11px] text-[var(--ink-2)] leading-tight mt-0.5">
+                      <div className="text-[12px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Riesgo fijo en base" : "Fixed on starting"}
                       </div>
                     </button>
@@ -860,7 +858,7 @@ export function EquityProjector() {
               {/* Encabezado: Expectancy & Live Status */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--ficha-division)]">
                 <div className="min-w-0">
-                  <div className="tnum text-[11px] font-medium text-[var(--ink-3)]">
+                  <div className="tnum text-[12px] font-medium text-[var(--ink-3)]">
                     {es ? "Expectancy neta por operación" : "Net expectancy per trade"}
                   </div>
                   <div className="flex items-baseline gap-2 mt-1">
@@ -994,11 +992,11 @@ export function EquityProjector() {
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <div>
-                        <span className="text-[var(--ink-3)] text-[11px] mr-1">{es ? "Capital:" : "Equity:"}</span>
+                        <span className="text-[var(--ink-3)] text-[12px] mr-1">{es ? "Capital:" : "Equity:"}</span>
                         <span className="font-semibold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
                       </div>
                       <div>
-                        <span className="text-[var(--ink-3)] text-[11px] mr-1">PnL:</span>
+                        <span className="text-[var(--ink-3)] text-[12px] mr-1">PnL:</span>
                         <span
                           className="font-semibold"
                           style={{
@@ -1278,7 +1276,7 @@ export function EquityProjector() {
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--accent-base))]">
                     {c.fueraDeEscala ? "—" : fmtUsd(c.finalBalance, true)}
                   </div>
-                  <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
+                  <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {c.fueraDeEscala
                       ? es
                         ? "Fuera de escala"
@@ -1304,7 +1302,7 @@ export function EquityProjector() {
                   >
                     {c.fueraDeEscala ? "—" : fmtPct(c.cagr * 100, 1)}
                   </div>
-                  <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
+                  <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {es ? "Crecimiento compuesto" : "Compound growth"}
                   </div>
                 </div>
@@ -1333,7 +1331,7 @@ export function EquityProjector() {
                       </>
                     )}
                   </div>
-                  <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
+                  <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {c.fueraDeEscala ? (
                       es ? "Fuera de escala" : "Off scale"
                     ) : (
@@ -1359,7 +1357,7 @@ export function EquityProjector() {
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[rgb(var(--pnl-neg))]">
                     −{fmtPct(c.estMaxDDpct, 1)}
                   </div>
-                  <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
+                  <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {es
                       ? `Peor racha: ~${fmtInt(c.maxConsecLosses, lang)} pérdidas`
                       : `Streak: ~${fmtInt(c.maxConsecLosses, lang)} losses`}
@@ -1380,7 +1378,7 @@ export function EquityProjector() {
                       ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "mo"}`
                       : "—"}
                   </div>
-                  <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
+                  <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {c.monthsToDouble !== null
                       ? `≈ ${fmtNum(c.monthsToDouble / 12, 1)} ${es ? "años" : "yrs"}`
                       : es ? "Sin crecimiento" : "No growth"}
@@ -1399,7 +1397,7 @@ export function EquityProjector() {
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[var(--ink)]">
                     {fmtNum(c.profitFactor, 2)}
                   </div>
-                  <div className="text-[11px] text-[var(--ink-3)] tnum mt-0.5">
+                  <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {es ? `Medio Kelly: ${fmtPct(c.halfKellyPct, 1)}` : `Half Kelly: ${fmtPct(c.halfKellyPct, 1)}`}
                   </div>
                 </div>
@@ -1434,7 +1432,7 @@ export function EquityProjector() {
 
               {/* Disclaimer */}
               <div className="border-t border-[var(--ficha-division)] pt-3">
-                <p className="medida tnum m-0 text-[11px] leading-relaxed text-[var(--ink-3)]">
+                <p className="medida tnum m-0 text-[12px] leading-relaxed text-[var(--ink-3)]">
                   {es
                     ? `Nota de rigor estadístico: esta proyección asume una expectancy constante. En mercados reales, los regímenes de volatilidad cambian y las rachas perdedoras pueden ser superiores. El drawdown estimado calcula la racha consecutiva al ${fmtPct(CONFIANZA_RACHA * 100, 0)} de confianza estadística.`
                     : `Statistical note: This projection assumes constant mathematical expectancy. In live trading, regimes shift and drawdowns may be larger. Estimated max drawdown models streaks at ${fmtPct(CONFIANZA_RACHA * 100, 0)} confidence.`}

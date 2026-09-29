@@ -35,7 +35,7 @@ export { normalCdf };
  * garantía. El verdadero test es el tiempo + fuera de muestra.
  *
  * ── Material ──────────────────────────────────────────────────────────
- * .tj-paper + .tj-paper-glow. Touch targets ≥44px. Sin overflow mobile.
+ * .tj-ficha con barra, cuerpo y pie. Touch targets ≥44px. Sin overflow mobile.
  */
 export function EdgeSignificanceChecker() {
   const { lang } = useLang();
@@ -265,21 +265,19 @@ export function EdgeSignificanceChecker() {
         </div>
 
         {/* Right: results card */}
-        <div
-          className="tj-paper tj-paper-glow relative lg:sticky lg:top-24"
-          style={{ padding: 24, borderRadius: 3, border: "1px solid transparent" }}
-        >
-          {/* Verdict headline */}
+        <div className="tj-ficha relative lg:sticky lg:top-24">
+          <p className="tj-ficha-barra">
+            <span>{es ? "Veredicto" : "Verdict"}</span>
+            <span>
+              {trades} {es ? "operaciones" : "trades"} · {fmtNum(winRate, 0)}{PCT}
+            </span>
+          </p>
+          <div className="tj-ficha-cuerpo">
           <div className="mb-5">
-            <div className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-              {es ? "Veredicto" : "Verdict"}
-            </div>
-            <div className="flex items-baseline gap-3 mt-1 mb-2">
-              <span className="t-h4" style={{ color: verdict.color }}>
-                {verdict.label}
-              </span>
-            </div>
-            <p className="m-0 text-[14px] leading-[1.6]" style={{ color: "var(--ink)" }}>
+            <p className="t-h4 m-0" style={{ color: verdict.color }}>
+              {verdict.label}
+            </p>
+            <p className="medida m-0 mt-2 text-[14px] leading-[1.6] text-secondary">
               {verdict.text}
             </p>
           </div>
@@ -310,19 +308,19 @@ export function EdgeSignificanceChecker() {
             </span>
             <div className="tj-matriz grid-cols-3 text-center text-xs tnum">
               <div className="py-2.5">
-                <span className="block text-[11px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
+                <span className="block text-[12px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
                 <span className={`font-semibold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample90} ops
                 </span>
               </div>
               <div className="tj-columna-propia py-2.5">
-                <span className="block text-[11px] text-primary font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
+                <span className="block text-[12px] text-primary font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
                 <span className={`font-semibold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
                   {c.minSample95} ops
                 </span>
               </div>
               <div className="py-2.5">
-                <span className="block text-[11px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
+                <span className="block text-[12px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
                 <span className={`font-semibold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample99} ops
                 </span>
@@ -345,9 +343,7 @@ export function EdgeSignificanceChecker() {
                 className="absolute left-0 top-0 h-full"
                 style={{
                   width: `${Math.min(100, (trades / c.minSample) * 100)}%`,
-                  background: c.sampleAdequate
-                    ? "linear-gradient(90deg, color-mix(in oklab, rgb(var(--pnl-pos)) 45%, transparent), rgb(var(--pnl-pos)))"
-                    : "linear-gradient(90deg, color-mix(in oklab, rgb(var(--pnl-neg)) 45%, transparent), rgb(var(--pnl-neg)))",
+                  background: c.sampleAdequate ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                   transition: "width 0.3s var(--ease-suave)",
                 }}
               />
@@ -369,8 +365,8 @@ export function EdgeSignificanceChecker() {
             </p>
           </div>
 
-          {/* Exportar informe */}
-          <div className="mt-4 pt-3 border-t border-[rgb(var(--divider)/0.08)] flex flex-wrap items-center justify-between gap-x-4">
+          </div>
+          <div className="tj-ficha-barra tj-ficha-barra--pie">
             <button
               type="button"
               onClick={() => {
@@ -393,8 +389,8 @@ export function EdgeSignificanceChecker() {
               </svg>
               {copied ? (es ? "Informe copiado" : "Report copied") : (es ? "Copiar informe" : "Copy report")}
             </button>
-            <span className="text-[12px] text-tertiary tnum">
-              {es ? "100 % privado en tu navegador" : "100% private in your browser"}
+            <span className="text-tertiary">
+              {es ? "Privado en tu navegador" : "Private in your browser"}
             </span>
           </div>
         </div>

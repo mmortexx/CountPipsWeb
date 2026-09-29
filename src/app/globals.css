@@ -1236,7 +1236,7 @@
     font-size: clamp(0.86rem, 11cqi, 1.125rem);
   }
   .cifra-sm {
-    font-size: clamp(0.7rem, 9cqi, 0.875rem);
+    font-size: clamp(0.8125rem, 9cqi, 0.9375rem);
   }
 
 }
@@ -3683,16 +3683,6 @@ html:has(.tj-visor[open]) {
 .tj-paper-dense {
   background-color: var(--paper-dense);
 }
-/* Paneles de resultado de las calculadoras: la misma ficha que el resto
-   del sitio —fondo, filete y sombra de `.tj-ficha`— en vez de un bloque
-   de tono sin borde. El `!important` gana a los bordes en línea que
-   traen algunos widgets. */
-.tj-paper-glow {
-  background-color: var(--ficha-fondo) !important;
-  border-color: transparent !important;
-  border-radius: var(--radio-panel) !important;
-  box-shadow: 0 0 0 1px var(--ficha-filo), var(--ficha-sombra);
-}
 /* CAMPO: filete fino y fondo transparente, no un rectángulo relleno.
    Sin clase de capa, así que gana a las utilidades de fondo y borde que
    cada formulario traía escritas a mano. */
@@ -4155,10 +4145,12 @@ select.tj-campo:invalid {
   background: var(--ink);
   transition: opacity 0.2s;
 }
+/* El mismo trazo 5/4 que la serie: con `border dashed` y el radio de la
+   muestra, 16 px daban una raya continua. */
 .tj-curva-leyenda [data-serie="balance"] .tj-curva-muestra {
-  height: 0;
-  background: none;
-  border-top: 2px dashed var(--serie-balance);
+  height: 1.5px;
+  border-radius: 0;
+  background: repeating-linear-gradient(90deg, var(--serie-balance) 0 5px, transparent 5px 9px);
 }
 .tj-curva-leyenda label:has(input:not(:checked)) .tj-curva-muestra {
   opacity: 0.35;
