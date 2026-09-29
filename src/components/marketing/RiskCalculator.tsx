@@ -672,7 +672,7 @@ export function RiskCalculator() {
                 <span aria-hidden className="w-1.5 h-1.5 rounded-[1px] bg-[rgb(var(--pnl-pos))]" />
               </span>
             </div>
-            <div className="relative h-2 rounded-[8px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
+            <div className="relative h-2 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
               {/* Los dos tramos crecen desde el centro, cada uno hacia su
                   lado, y por eso miden la mitad: anclados a los bordes, el
                   mayor de los dos se iba al 100 % del carril y tapaba al

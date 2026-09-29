@@ -102,10 +102,11 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
 
         {/* Tres columnas caben en 358 px si el texto parte línea: sin
             desplazamiento lateral, que cortaba la columna de la nube. */}
-        <div className="tj-ficha relative overflow-hidden">
+        <div className="relative">
           {/* Una `<table>` con `scope` en filas y columnas: al llegar a una
               celda se anuncia «Funciona sin internet · CountPips · Sí». El
-              veredicto va en texto, como en la comparativa de /pricing. */}
+              veredicto va en texto y la tabla va abierta, con filetes y la
+              columna propia en banda, como la comparativa de /pricing. */}
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               {es
@@ -113,47 +114,46 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
                 : "CountPips compared with a cloud-based trading journal"}
             </caption>
             <thead>
-              <tr style={{ borderBottom: "1px solid var(--ficha-division)" }}>
+              <tr style={{ borderBottom: "1px solid var(--line-2)" }}>
                 <th
                   scope="col"
                   className="tnum w-[33%]"
-                  style={{ padding: "12px 0 12px 16px", fontSize: 13, color: "var(--ink-3)", fontWeight: 400 }}
+                  style={{ padding: "14px 0", fontSize: 13, color: "var(--ink-3)", fontWeight: 400 }}
                 >
                   <span className="sr-only">{es ? "Característica" : "Feature"}</span>
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[33%] tj-columna-propia"
-                  style={{ padding: "14px 12px", fontSize: 13, color: "var(--ink)", fontWeight: 600 }}
+                  style={{ padding: "14px 12px", fontSize: 15, color: "var(--ink)", fontWeight: 600 }}
                 >
                   CountPips
                 </th>
                 <th
                   scope="col"
                   className="tnum w-[34%]"
-                  style={{ padding: "14px 16px 14px 12px", fontSize: 13, color: "var(--ink-3)", fontWeight: 500 }}
+                  style={{ padding: "14px 0 14px 12px", fontSize: 15, color: "var(--ink)", fontWeight: 600 }}
                 >
                   {es ? "Diario en la nube" : "Cloud-based journal"}
                 </th>
               </tr>
             </thead>
             <tbody>
-              {compare.map((row, i) => {
-                const borde =
-                  i < compare.length - 1 ? "1px solid var(--ficha-division)" : undefined;
+              {compare.map((row) => {
+                const borde = "1px solid var(--line)";
                 const sello = (valor: boolean) => (valor ? (es ? "Sí" : "Yes") : "No");
                 return (
                   <tr key={row.l} style={{ borderBottom: borde }}>
                     <th
                       scope="row"
-                      style={{ padding: "14px 0 14px 16px", fontSize: 14, color: "var(--ink-2)", fontWeight: 400 }}
+                      style={{ padding: "14px 0", fontSize: 14, color: "var(--ink-2)", fontWeight: 400 }}
                     >
                       {row.l}
                     </th>
                     <td className="tj-columna-propia" style={{ padding: "14px 12px", fontSize: 14, color: "var(--ink)" }}>
                       {typeof row.tj === "boolean" ? sello(row.tj) : row.tj}
                     </td>
-                    <td style={{ padding: "14px 16px 14px 12px", fontSize: 14, color: "var(--ink-2)" }}>
+                    <td style={{ padding: "14px 0 14px 12px", fontSize: 14, color: "var(--ink-2)" }}>
                       {typeof row.cloud === "boolean" ? sello(row.cloud) : row.cloud}
                     </td>
                   </tr>

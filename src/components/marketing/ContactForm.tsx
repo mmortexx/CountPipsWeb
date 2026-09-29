@@ -300,7 +300,7 @@ export function ContactForm() {
                            ink on the medium-lightness gold accent fill — clears
                            AA in both themes; matches the Waitlist + Download CTA
                            treatment). */
-                        className="w-full sm:w-fit sm:min-w-[180px] inline-flex items-center justify-center gap-2 min-h-[44px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 py-2.5 rounded-[4px] text-sm font-semibold transition-[background-color,opacity] duration-200 hover:bg-[rgb(var(--accent-hover))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="cta cta--primario w-full sm:w-fit sm:min-w-[180px] disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {sending
                           ? es ? "Enviando…" : "Sending…"

@@ -136,6 +136,10 @@ MATERIALES CSS (definidos en globals.css):
   Tarjeta de resultado: `.tj-ficha` > `.tj-ficha-barra` (rótulo | dato) >
   `.tj-ficha-cuerpo` > `.tj-ficha-barra--pie` («Copiar … | Privado en tu navegador»).
   Nada por debajo de 12 px en una herramienta fuera de los gráficos (lo vigila escala.mjs).
+  Negrita a 600, nunca el 700 del navegador (regla en `@layer base`, vigila escala.mjs).
+  Todo botón de acción es `.cta .cta--primario` o `--secundario`, no uno hecho a mano.
+  Comparativas en tabla abiertas, con filetes y la columna propia en banda, sin caja.
+  El texto que acompaña a una lámina o a una columna va en las columnas de `.tj-split`.
   Tablas en móvil: fichas por fila (`md:hidden` / `sm:hidden`), nunca desplazamiento
   lateral con «desliza». Gráficos: rellenos planos; color solo para dinero y sesión
   (la serie de referencia va en tinta terciaria discontinua).

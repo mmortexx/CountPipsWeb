@@ -1014,7 +1014,7 @@ export function EquityProjector() {
                   {/* SVG Chart con Renderizado Preciso */}
                   <div
                     ref={cajaGraficoRef}
-                    className="relative cursor-crosshair touch-none select-none rounded-[8px] overflow-hidden"
+                    className="relative cursor-crosshair touch-none select-none rounded-[4px] overflow-hidden"
                     style={{ boxShadow: "inset 0 0 0 1px var(--ficha-division)" }}
                     onMouseMove={(e) => handleSvgMove(e.clientX)}
                     onTouchMove={(e) => {
@@ -1178,7 +1178,7 @@ export function EquityProjector() {
                      es justo lo que la herramienta quiere enseñar.
                    · Los años van en versalitas de tinta, no en acento:
                      el color se reserva para el signo del resultado. */
-                <div className="overflow-x-auto rounded-[8px]">
+                <div className="overflow-x-auto rounded-[4px]">
                   <table className="w-full text-left tnum text-xs">
                     <thead>
                       <tr className="text-[12px] text-[var(--ink-3)]">

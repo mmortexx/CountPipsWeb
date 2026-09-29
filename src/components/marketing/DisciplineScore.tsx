@@ -492,7 +492,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                             style={{
                               minHeight: 48,
                               padding: "12px 14px",
-                              fontSize: 14.5,
+                              fontSize: 15,
                               lineHeight: 1.35,
                               cursor: "pointer",
                               color: activa ? "var(--bg)" : "var(--ink-2)",
@@ -551,10 +551,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   /* Se puede seguir sin responder: obligar a contestar
                      para avanzar convierte un diagnóstico en un peaje.
                      El resultado ya avisa de cuántas faltan. */
-                  className="order-3 inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 sm:order-none"
-                  style={{ minHeight: 44, padding: "10px 18px", fontSize: 14, fontWeight: 600,
-                           cursor: "pointer", color: "rgb(var(--accent-ink))",
-                           background: "rgb(var(--accent-base))" }}
+                  className="cta cta--primario order-3 sm:order-none"
                 >
                   {es ? "Siguiente" : "Next"} <span aria-hidden>→</span>
                 </button>
@@ -597,12 +594,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               {/* Cifra global */}
               <div className="flex items-end gap-3 mb-1">
                 <span
-                  className="tnum"
+                  className="tj-cifra"
                   style={{
-                    fontSize: 46,
-                    fontWeight: 500,
-                    letterSpacing: "-0.03em",
-                    lineHeight: 1,
                     color: level ? level.color : "var(--ink-3)",
                     transition: "color 0.25s ease",
                   }}
@@ -617,7 +610,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   <span
                     className="tnum ml-auto pb-1"
                     style={{
-                      fontSize: 11,
+                      fontSize: 13,
                       fontWeight: 600,
                       color: level.color,
                     }}

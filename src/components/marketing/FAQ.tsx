@@ -272,7 +272,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           filtra al buscar y el «03» pasaba a ser «01». */}
                       <span className="min-w-0 break-words">{item.q}</span>
                     </AccordionTrigger>
-                    <AccordionContent className="medida text-secondary leading-relaxed text-[0.95rem] pb-5">
+                    <AccordionContent className="medida text-secondary leading-relaxed text-[15px] pb-5">
                       {item.a}
                     </AccordionContent>
                   </AccordionItem>

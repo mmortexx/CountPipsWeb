@@ -93,6 +93,7 @@ const fallos = [];
 let titulares = 0;
 let bloques = 0;
 let herramientas = 0;
+let negritas = 0;
 
 for (const ancho of ANCHOS) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
@@ -169,11 +170,21 @@ for (const ancho of ANCHOS) {
             if (px < 11.95) malos.push({ tipo: "texto de herramienta bajo 12", px, texto: el.textContent.trim().slice(0, 50) });
           }
         }
-        return { malos, nt, nb, nh };
+        /* El negrito de la casa es 600: el del navegador (700) pesa más que
+           cualquier titular del sitio. */
+        let nn = 0;
+        for (const el of document.querySelectorAll("strong, b")) {
+          if (!fuera(el) || !visible(el)) continue;
+          nn++;
+          const peso = getComputedStyle(el).fontWeight;
+          if (peso !== "600") malos.push({ tipo: `negrita a ${peso}`, px: parseFloat(getComputedStyle(el).fontSize), texto: el.textContent.trim().slice(0, 50) });
+        }
+        return { malos, nt, nb, nh, nn };
       });
       titulares += r.nt;
       bloques += r.nb;
       herramientas += r.nh;
+      negritas += r.nn;
       for (const m of r.malos) fallos.push({ ruta, ancho, ...m });
     }
     await pag.close();
@@ -184,9 +195,9 @@ for (const ancho of ANCHOS) {
 await navegador.close();
 server.close();
 
-console.log(`[escala] ${rutas.length} páginas × ${ANCHOS.length} anchos: ${titulares} titulares, ${bloques} bloques de texto y ${herramientas} páginas de herramienta medidos`);
-if (!titulares || !bloques || !herramientas) {
-  console.log("[escala] no encontró titulares, bloques o herramientas: la guarda no está mirando");
+console.log(`[escala] ${rutas.length} páginas × ${ANCHOS.length} anchos: ${titulares} titulares, ${bloques} bloques de texto, ${herramientas} páginas de herramienta y ${negritas} negritas medidos`);
+if (!titulares || !bloques || !herramientas || !negritas) {
+  console.log("[escala] no encontró titulares, bloques, herramientas o negritas: la guarda no está mirando");
   process.exit(1);
 }
 if (fallos.length) {

@@ -278,7 +278,7 @@ export function CommissionDragCalculator() {
             <div className="space-y-3 pb-5 border-b border-[var(--line)]">
               <div>
                 <span className="text-xs text-secondary">{es ? "Resultado bruto" : "Gross P&L"}</span>
-                <div className="text-xl tnum text-primary font-medium">
+                <div className="text-base tnum text-primary font-semibold">
                   +{fmtMoney(grossAnnual, lang, { decimals: 0 })}
                 </div>
               </div>

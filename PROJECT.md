@@ -2918,6 +2918,47 @@ calculadoras.
   idéntico y lo que carga pesa 244 bytes menos. Con este ruido, así no se
   puede medir ninguna diferencia.
 
+### Cuadragésima octava tanda: el censo de estilos (2026-09-29)
+
+Se contó con Playwright, sobre todas las páginas en español a 1440 y
+fuera de la demo, qué valores distintos usa el sitio: 6 radios, 5
+sombras, 61 combinaciones de letra y 13 formas de botón. De ahí salió
+lo que sobraba:
+
+- **Negrita a 600.** Todo `strong`/`b` fuera de la demo pintaba el 700
+  del navegador, más grueso que cualquier titular. Una regla en
+  `@layer base` lo deja en 600, y las utilidades siguen mandando donde
+  se piden.
+- **Botones.** «Siguiente» del test, «Enviar» del contacto y «Añadir
+  operación» del flujo de datos eran botones de 44 px hechos a mano.
+  Ahora son `.cta .cta--primario`, el mismo de toda la web. El contador
+  del flujo toma el color del botón en vez de un fondo fijo.
+- **Test de disciplina.** Las opciones pasan de 14,5 a 15 px. La
+  puntuación pasa de 46 px en línea a `.tj-cifra`, la cifra de las
+  herramientas. El nivel pasa de 11 a 13 px.
+- **Radios.** Tres cajas de 8 px (barra R:R del riesgo, gráfico y tabla
+  del proyector) pasan a 2 y 4 px, los de su familia.
+- **Letra.** Las respuestas de las dos FAQ estaban a 15,2 px
+  (`0.95rem`) y pasan a 15. La cifra bruta de comisiones estaba a
+  20/500 y pasa a 16/600, como las demás cifras de su tarjeta.
+- **Tabla de seguridad.** Iba en caja y la comparativa de /pricing
+  abierta. Ahora las dos van abiertas, con filetes y la columna propia
+  en banda, cabeceras a 15/600 en tinta.
+- **Pie de lámina.** El texto bajo las capturas de la portada empezaba
+  en x=643 (rejilla 1/1,6). Ahora usa las columnas de `.tj-split` y
+  arranca en 768, alineado con el resto de secciones partidas.
+- **Guarda nueva** en `scripts/escala.mjs`: toda negrita visible fuera
+  de la demo pesa 600, y la guarda falla si no encuentra ninguna. Se vio
+  en rojo quitando la regla del CSS compilado (20 casos a 700 en legales
+  y significancia) y en verde con ella (28 negritas).
+- **Visto y sin cambio.** El «ES» del menú a 12/600, los pasos 01–04 de
+  la demo (orden real), la cita de /about y las cifras de /metricas en
+  su peldaño `t-*`, el precio a 60/400, la numeración de los legales,
+  la tira CSV centrada en móvil y las cifras con «,00» de prop firms.
+- **Medido.** Arranque correcto en tres pasadas, 346–559 ms con el
+  equipo cargado. El cambio es de estilos y no toca la carga: con este
+  ruido, así no se puede medir.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

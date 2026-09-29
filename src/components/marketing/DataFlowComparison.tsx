@@ -67,8 +67,7 @@ export function DataFlowComparison() {
         <button
           type="button"
           onClick={send}
-          className="mb-8 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-[4px] text-[14px] font-semibold transition-opacity duration-150 hover:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-          style={{ background: "var(--ink)", color: "var(--bg)" }}
+          className="cta cta--primario mb-8"
           aria-label={es ? "Añadir una operación y ver el flujo de datos" : "Add a trade and see the data flow"}
         >
           <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -76,7 +75,7 @@ export function DataFlowComparison() {
           </svg>
           {es ? "Añadir operación" : "Add trade"}
           {pulses > 0 && (
-            <span className="tnum ml-1 px-1.5 py-0.5 rounded-[4px] text-[11px]" style={{ background: "color-mix(in srgb, var(--bg) 22%, transparent)", color: "var(--bg)" }}>
+            <span className="tnum ml-1 px-1.5 py-0.5 rounded-[4px] text-[12px]" style={{ background: "color-mix(in srgb, currentColor 18%, transparent)" }}>
               {fmtInt(pulses, lang)}
             </span>
           )}
