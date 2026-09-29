@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState, type CSSProperties } from "react";
+import { useMemo, useRef, useState } from "react";
+import { Deslizador } from "@/components/tj/Deslizador";
 import { useLang } from "@/lib/i18n";
 import { fmtInt, fmtNum, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
@@ -19,45 +20,6 @@ import {
  */
 const CAIDAS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.75, 0.9];
 const TECHO = CAIDAS[CAIDAS.length - 1] / (1 - CAIDAS[CAIDAS.length - 1]);
-
-function Deslizador({
-  etiqueta,
-  texto,
-  valor,
-  min,
-  max,
-  paso,
-  onValor,
-}: {
-  etiqueta: string;
-  texto: string;
-  valor: number;
-  min: number;
-  max: number;
-  paso: number;
-  onValor: (n: number) => void;
-}) {
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-4">
-        <span className="text-[12px] text-tertiary">{etiqueta}</span>
-        <span className="tnum text-[15px] font-semibold text-primary">{texto}</span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={paso}
-        value={valor}
-        onChange={(e) => onValor(Number(e.target.value))}
-        aria-label={etiqueta}
-        aria-valuetext={texto}
-        className="tj-range w-full"
-        style={{ height: 44, "--pct": `${((valor - min) / (max - min)) * 100}%` } as CSSProperties}
-      />
-    </div>
-  );
-}
 
 export function DrawdownRecovery() {
   const { lang } = useLang();
@@ -203,7 +165,7 @@ export function DrawdownRecovery() {
             </p>
             <div className="tj-ficha-cuerpo">
               <span className="block text-[12px] text-tertiary">{es ? "Hace falta ganar" : "Gain needed"}</span>
-              <div className="tnum mt-1 text-4xl font-semibold leading-none tracking-tight text-primary">
+              <div className="tj-cifra mt-1 text-primary">
                 +{fmtPct(c.ganancia, lang)}
               </div>
               <p className="m-0 mt-2 text-[13px] text-secondary">
@@ -275,11 +237,13 @@ export function DrawdownRecovery() {
                     : "Gain needed and typical-path trades for each drawdown, with your risk, win rate and payoff"}
                 </caption>
                 <thead>
-                  <tr className="text-[12px] text-tertiary">
+                  <tr className="text-[13px] text-tertiary">
                     <th scope="col" className="tj-matriz-cab py-2.5 pr-3 text-left font-medium">
                       {es ? "Caída" : "Drawdown"}
                     </th>
-                    <th scope="col" className="tj-matriz-cab px-3 py-2.5 text-left font-medium">
+                    {/* A la derecha, sobre la cifra: la barra no lleva rótulo
+                        y el título a la izquierda quedaba encima de ella. */}
+                    <th scope="col" className="tj-matriz-cab px-3 py-2.5 text-right font-medium">
                       {es ? "Hace falta ganar" : "Gain needed"}
                     </th>
                     <th scope="col" className="tj-matriz-cab py-2.5 pl-3 text-right font-medium">
@@ -300,7 +264,7 @@ export function DrawdownRecovery() {
                         </th>
                         <td className="px-3 py-2">
                           <div className="flex items-center gap-3">
-                            <span aria-hidden className="relative h-[3px] flex-1 overflow-hidden rounded-[1px] bg-[var(--ficha-division)]">
+                            <span aria-hidden className="relative h-1.5 flex-1 overflow-hidden rounded-[1px] bg-[var(--ficha-division)]">
                               <span
                                 className="absolute inset-y-0 left-0"
                                 style={{

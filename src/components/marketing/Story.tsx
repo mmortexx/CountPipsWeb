@@ -93,7 +93,7 @@ export function Story() {
 
   return (
     <section id="story" className="section relative scroll-mt-24 overflow-clip">
-      <div className="relative z-10 tj-container grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-20 items-start">
+      <div className="relative z-10 tj-container tj-split grid gap-10 items-start">
         {/* LEFT — editorial pull quote (sticky + subtle parallax) */}
         {/* Sin `data-entra`, y no por casualidad: esta columna es
             `sticky`, y una entrada atada a `view()` mide la posición del

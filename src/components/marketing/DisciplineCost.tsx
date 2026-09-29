@@ -226,10 +226,10 @@ export function DisciplineCost() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="disc-trades" className="text-xs font-medium text-secondary">
+                    <label htmlFor="disc-trades" className="tj-deslizador-etiqueta">
                       {es ? "Operaciones al mes" : "Trades per month"}
                     </label>
-                    <span className="tnum text-xs font-semibold text-primary">{totalTrades}</span>
+                    <span className="tj-deslizador-valor">{totalTrades}</span>
                   </div>
                   <input
                     id="disc-trades"
@@ -256,10 +256,10 @@ export function DisciplineCost() {
 
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label htmlFor="disc-breach" className="text-xs font-medium text-secondary">
+                    <label htmlFor="disc-breach" className="tj-deslizador-etiqueta">
                       {es ? "Fuera de plan (fallos)" : "Off-plan (breaches)"}
                     </label>
-                    <span className="tnum text-xs font-semibold text-[rgb(var(--pnl-neg))]">{breachPct}{pctSep(lang)}</span>
+                    <span className="tj-deslizador-valor">{breachPct}{pctSep(lang)}</span>
                   </div>
                   <input
                     id="disc-breach"
@@ -269,15 +269,9 @@ export function DisciplineCost() {
                     step={1}
                     value={breachPct}
                     onChange={(e) => setBreachPct(Number(e.target.value))}
-                    /* El tramo recorrido va en rojo porque lo que mide es
-                       el porcentaje de operaciones FUERA de plan: aquí más
-                       es peor. `--tj-recorrido` existe justamente para
-                       cambiar ese tramo sin reescribir la pista. */
                     className="tj-range w-full"
                     style={
                       {
-                        accentColor: "rgb(var(--pnl-neg))",
-                        "--tj-recorrido": "rgb(var(--pnl-neg))",
                         "--pct": `${((breachPct - 5) / (80 - 5)) * 100}%`,
                       } as CSSProperties
                     }
@@ -448,7 +442,7 @@ export function DisciplineCost() {
                     </div>
                     <div className="relative mt-1.5 h-[3px] overflow-hidden bg-[rgb(var(--divider)/0.10)]">
                       <div
-                        className="h-full bg-[rgb(var(--pnl-neg))] transition-[width] duration-300 ease-[var(--ease-suave)]"
+                        className="h-full bg-[var(--ink-3)] transition-[width] duration-300 ease-[var(--ease-suave)]"
                         style={{ width: `${(row.pct / maxPct) * 100}%` }}
                       />
                     </div>
@@ -464,7 +458,7 @@ export function DisciplineCost() {
                   salirse: era un `text-2xl` fijo y se iba 16 px fuera. */}
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-4">
                 <div className="min-w-0">
-                  <span className="block text-[12px] font-semibold leading-[1.25] text-[rgb(var(--pnl-neg))] [overflow-wrap:anywhere]">
+                  <span className="block text-[14px] font-semibold leading-[1.3] text-primary [overflow-wrap:anywhere]">
                     {es ? "Fuga mensual total" : "Total monthly leak"}
                   </span>
                   <span className="block text-[13px] leading-[1.3] text-tertiary [overflow-wrap:anywhere]">
@@ -472,8 +466,7 @@ export function DisciplineCost() {
                   </span>
                 </div>
                 <span
-                  className="tnum whitespace-nowrap font-semibold text-[rgb(var(--pnl-neg))]"
-                  style={{ fontSize: "clamp(1.05rem, 4.6vw, 1.5rem)" }}
+                  className="tj-cifra text-[rgb(var(--pnl-neg))]"
                 >
                   −{fmtMoney(totalLeakMonthly, lang)}
                 </span>

@@ -125,24 +125,19 @@ export function CommissionDragCalculator() {
 
             {/* Selector de Instrumentos */}
             <div className="mt-6">
-              <label className="block text-[12px] text-tertiary mb-2 tnum">
+              <p className="tj-deslizador-etiqueta m-0 mb-2">
                 {es ? "Instrumento de operativa" : "Trading instrument"}
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              </p>
+              <div className="tj-segmentado tj-segmentado-diez" role="group" aria-label={es ? "Instrumento de operativa" : "Trading instrument"}>
                 {INSTRUMENT_SPECS.map((item) => (
                   <button
                     key={item.id}
                     type="button"
                     onClick={() => handleSelectInstrument(item.id)}
                     aria-pressed={selectedInstId === item.id}
-                    className={`h-10 px-3 rounded-[4px] text-[13px] font-semibold transition-colors text-left flex items-center justify-between ${
-                      selectedInstId === item.id
-                        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary shadow-[inset_0_0_0_1px_var(--line-2)]"
-                        : "shadow-[inset_0_0_0_1px_var(--ficha-filo)] text-secondary hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
-                    }`}
                   >
                     <span className="tnum">{item.id}</span>
-                    <span className={`text-[12px] font-normal ${selectedInstId === item.id ? "opacity-75" : "text-tertiary"}`}>{es && item.category === "futures" ? "futuros" : item.category}</span>
+                    <span className="text-[12px] font-normal text-tertiary">{es && item.category === "futures" ? "futuros" : item.category}</span>
                   </button>
                 ))}
               </div>
@@ -151,11 +146,11 @@ export function CommissionDragCalculator() {
             {/* Sliders de Entrada */}
             <div className="mt-6 space-y-4">
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-secondary font-medium">
+                <div className="flex items-center justify-between">
+                  <span className="tj-deslizador-etiqueta">
                     {es ? "Contratos o lotes por operación" : "Contracts or lots per trade"}
                   </span>
-                  <span className="tnum font-semibold text-primary">{contracts}</span>
+                  <span className="tj-deslizador-valor">{contracts}</span>
                 </div>
                 <input
                   type="range"
@@ -171,11 +166,11 @@ export function CommissionDragCalculator() {
               </div>
 
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-secondary font-medium">
+                <div className="flex items-center justify-between">
+                  <span className="tj-deslizador-etiqueta">
                     {es ? "Operaciones al mes" : "Trades per month"}
                   </span>
-                  <span className="tnum font-semibold text-primary">{monthlyTrades}</span>
+                  <span className="tj-deslizador-valor">{monthlyTrades}</span>
                 </div>
                 <input
                   type="range"
@@ -193,13 +188,13 @@ export function CommissionDragCalculator() {
               {/* Los limites del recorrido salen a variables porque ahora
                   los usa tambien `--pct`, el relleno de la pista. */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-secondary font-medium">
+                <div className="flex items-center justify-between">
+                  <span className="tj-deslizador-etiqueta">
                     {es
                       ? `Ganancia media esperada (${inst.unitNameEs})`
                       : `Expected average gain (${inst.unitNameEn})`}
                   </span>
-                  <span className="tnum font-semibold text-primary">
+                  <span className="tj-deslizador-valor">
                     +{targetUnits} {es ? inst.unitNameEs : inst.unitNameEn}
                   </span>
                 </div>
@@ -289,7 +284,7 @@ export function CommissionDragCalculator() {
                   {es ? "Lo que queda en la cuenta" : "What stays in the account"}
                 </span>
                 <div
-                  className={`text-3xl tnum font-semibold ${
+                  className={`tj-cifra ${
                     netAnnual < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-[rgb(var(--pnl-pos))]"
                   }`}
                 >

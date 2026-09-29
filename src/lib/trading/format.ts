@@ -118,12 +118,15 @@ export function fmtPct(value: number, lang: Lang = "es", decimals = 1): string {
   return `${fmtNum(scaled, lang, decimals)}${PCT_SEP[lang]}`;
 }
 
-/** Format an R-multiple ("+1,50 R" / "−0,80 R" / "+0,00 R").
+/** Format an R-multiple ("+1,50 R" / "−0,80 R" / "0,00 R").
  *
  *  Positive values are prefixed with `+`, negatives with `−` (U+2212,
  *  matching the typographic convention used by `fmtMoney` / `fmtPct`).
  *  Zero is rendered without a sign so the column doesn't flicker
- *  between "+0,00 R" and "−0,00 R" on small floating-point noise. */
+ *  between "+0,00 R" and "−0,00 R" on small floating-point noise.
+ *  The unit goes after a no-break space, as in the desktop app
+ *  (`FormatR` in TradesViewModel.cs): the code wrote "+1,50R" while this
+ *  comment and the app wrote "+1,50 R". */
 export function fmtR(
   value: number,
   lang: Lang = "es",
@@ -131,10 +134,10 @@ export function fmtR(
 ): string {
   const rounded = Number(value.toFixed(decimals));
   if (Object.is(rounded, 0) || Object.is(rounded, -0)) {
-    return `${fmtNum(0, lang, decimals)}R`;
+    return `${fmtNum(0, lang, decimals)}\u00a0R`;
   }
   const sign = rounded > 0 ? "+" : "−";
-  return `${sign}${fmtNum(Math.abs(rounded), lang, decimals)}R`;
+  return `${sign}${fmtNum(Math.abs(rounded), lang, decimals)}\u00a0R`;
 }
 
 /* `useGrouping: "always"` en las tres: sin él, `Intl` en español no agrupa

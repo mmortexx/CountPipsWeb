@@ -3,7 +3,8 @@
 import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { pctSep, fmtNum as fmtNumBase } from "@/lib/trading/format";
+import { Deslizador } from "@/components/tj/Deslizador";
+import { pctSep, fmtR, fmtNum as fmtNumBase } from "@/lib/trading/format";
 import { computeStatisticalPower, normalCdf } from "@/lib/trading/estadistica";
 
 export { normalCdf };
@@ -135,18 +136,8 @@ export function EdgeSignificanceChecker() {
   ) => (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-          {label}
-        </span>
-        <span
-          className="tnum inline-flex items-baseline"
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "var(--ink)",
-            transition: "color 0.18s var(--ease-suave)",
-          }}
-        >
+        <span className="tj-deslizador-etiqueta">{label}</span>
+        <span className="tj-deslizador-valor">
           {fmtNum(value, Number.isInteger(step) ? 0 : 2)}{suffix}
         </span>
       </div>
@@ -215,8 +206,8 @@ export function EdgeSignificanceChecker() {
       <ResultadoAnunciado
         texto={
           es
-            ? `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R en ${trades} operaciones.`
-            : `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R over ${trades} trades.`
+            ? `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} en ${trades} operaciones.`
+            : `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} over ${trades} trades.`
         }
       />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
@@ -253,40 +244,16 @@ export function EdgeSignificanceChecker() {
 
           {/* Detector de sobreajuste / Grados de libertad del setup */}
           <div className="mt-6 border-t border-[var(--ficha-division)] pt-5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="tnum text-[12px] text-tertiary">
-                {es ? "Parámetros o reglas del setup" : "Setup parameters or rules"}
-              </span>
-              <span className="tnum font-semibold text-primary">{parametersCount}</span>
-            </div>
-            <input
-              type="range"
+            <Deslizador
+              etiqueta={es ? "Parámetros o reglas del setup" : "Setup parameters or rules"}
+              texto={String(parametersCount)}
+              valor={parametersCount}
               min={1}
               max={10}
-              step={1}
-              value={parametersCount}
-              onChange={(e) => setParametersCount(parseInt(e.target.value, 10))}
-              aria-label={es ? "Número de parámetros del setup" : "Number of setup parameters"}
-              className="tj-range w-full"
-              /* `height: 44` y no 36: es lo que declara `.tj-range` —«el
-                 control mide lo mismo que su bolita para que quepa
-                 entera»— y lo que pasan los otros cinco deslizadores del
-                 sitio. Este se había quedado en 36, por debajo del mínimo
-                 de toque y desalineado con sus hermanos.
-
-                 Y `--pct`, que también faltaba: sin ella la pista se
-                 pinta con `--pct: 0%` de respaldo, o sea entera de surco.
-                 El tramo recorrido NO se veía nunca, así que el
-                 deslizador no enseñaba por dónde iba. */
-              style={
-                {
-                  accentColor: "rgb(var(--accent-base))",
-                  height: 44,
-                  "--pct": `${((parametersCount - 1) / 9) * 100}%`,
-                } as React.CSSProperties
-              }
+              paso={1}
+              onValor={setParametersCount}
             />
-            <div className="mt-2 flex items-center justify-between text-[12px]">
+            <div className="mt-2 flex items-center justify-between text-[13px]">
               <span className="text-secondary">
                 {es ? "Operaciones por parámetro:" : "Trades per parameter:"} <strong className="tnum text-primary">{fmtNum(c.tradesPerParam, 1)}:1</strong>
               </span>
@@ -308,11 +275,8 @@ export function EdgeSignificanceChecker() {
               {es ? "Veredicto" : "Verdict"}
             </div>
             <div className="flex items-baseline gap-3 mt-1 mb-2">
-              <span className="inline-flex items-center gap-2">
-                <span aria-hidden className="w-1.5 h-1.5 rounded-full" style={{ background: verdict.color }} />
-                <span style={{ fontSize: 14, fontWeight: 600, color: verdict.color }}>
-                  {verdict.label}
-                </span>
+              <span className="t-h4" style={{ color: verdict.color }}>
+                {verdict.label}
               </span>
             </div>
             <p className="m-0 text-[14px] leading-[1.6]" style={{ color: "var(--ink)" }}>
@@ -333,7 +297,7 @@ export function EdgeSignificanceChecker() {
 
           {/* Stats grid */}
           <div className="tj-matriz grid-cols-2 mb-5">
-            <Result label={es ? "Expectancy" : "Expectancy"} value={`${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
+            <Result label={es ? "Expectancy" : "Expectancy"} value={`${fmtR(c.expectancyR, lang, 3)}`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? `p-valor (H₀: 50${PCT})` : `p-value (H₀: 50%)`} value={fmtNum(c.pValue, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? "Potencia (1 − β)" : "Statistical power (1 − β)"} value={`${fmtNum(c.power, 1)}${PCT}`} color={c.power >= 80 ? "rgb(var(--pnl-pos))" : "rgb(var(--accent-base))"} />
             <Result label={es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"} value={`${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`} color="var(--ink)" />
@@ -411,8 +375,8 @@ export function EdgeSignificanceChecker() {
               type="button"
               onClick={() => {
                 const report = es
-                  ? `Informe de Significancia Estadística (CountPips):\n• Muestra analizada: ${trades} operaciones\n• Win Rate observado: ${fmtNum(winRate, 0)}${PCT}\n• IC 95${PCT} Wilson Score: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R\n• z-score: ${fmtNum(c.z, 2)} | p-valor: ${fmtNum(c.pValue, 4)}\n• Veredicto: ${verdict.label} (${c.significant ? "Significativo p < 0,05" : "No significativo"})\n• Muestra 95${PCT} requerida: ${c.minSample95} ops\n• Parámetros del setup: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`
-                  : `Statistical Significance Report (CountPips):\n• Analyzed Sample: ${trades} trades\n• Observed Win Rate: ${fmtNum(winRate, 0)}${PCT}\n• Wilson 95% CI: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${c.expectancyR >= 0 ? "+" : ""}${fmtNum(c.expectancyR, 3)} R\n• z-score: ${fmtNum(c.z, 2)} | p-value: ${fmtNum(c.pValue, 4)}\n• Verdict: ${verdict.label} (${c.significant ? "Significant p < 0.05" : "Not significant"})\n• 95% Min Sample: ${c.minSample95} trades\n• Setup Parameters: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`;
+                  ? `Informe de Significancia Estadística (CountPips):\n• Muestra analizada: ${trades} operaciones\n• Win Rate observado: ${fmtNum(winRate, 0)}${PCT}\n• IC 95${PCT} Wilson Score: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${fmtR(c.expectancyR, lang, 3)}\n• z-score: ${fmtNum(c.z, 2)} | p-valor: ${fmtNum(c.pValue, 4)}\n• Veredicto: ${verdict.label} (${c.significant ? "Significativo p < 0,05" : "No significativo"})\n• Muestra 95${PCT} requerida: ${c.minSample95} ops\n• Parámetros del setup: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`
+                  : `Statistical Significance Report (CountPips):\n• Analyzed Sample: ${trades} trades\n• Observed Win Rate: ${fmtNum(winRate, 0)}${PCT}\n• Wilson 95% CI: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${fmtR(c.expectancyR, lang, 3)}\n• z-score: ${fmtNum(c.z, 2)} | p-value: ${fmtNum(c.pValue, 4)}\n• Verdict: ${verdict.label} (${c.significant ? "Significant p < 0.05" : "Not significant"})\n• 95% Min Sample: ${c.minSample95} trades\n• Setup Parameters: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`;
 
                 if (navigator?.clipboard?.writeText) {
                   navigator.clipboard.writeText(report).then(() => {

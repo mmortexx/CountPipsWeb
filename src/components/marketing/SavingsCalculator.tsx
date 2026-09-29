@@ -108,13 +108,6 @@ export function SavingsCalculator() {
   const cpY = svgH - padY - (c.cpPrice / maxV) * (svgH - padY * 2);
   const cpLineY = Math.max(padY, Math.min(svgH - padY, cpY));
 
-  const chipStyle = (active: boolean) =>
-    `min-h-[44px] px-4 py-2.5 text-[13px] rounded-[4px] transition-colors tnum ${
-      active
-        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary shadow-[inset_0_0_0_1px_var(--line-2)] font-semibold"
-        : "shadow-[inset_0_0_0_1px_var(--ficha-filo)] text-secondary hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
-    }`;
-
   return (
     <section className="section-tight">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:items-start">
@@ -146,16 +139,17 @@ export function SavingsCalculator() {
 
           {/* Plan CountPips */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[12px] text-tertiary">
+            {/* Una elección entre varias: el segmentado de todas las
+                herramientas, no botones sueltos con su propio estilo. */}
+            <div className="tj-deslizador-etiqueta mb-2">
               {es ? "Referencia prevista" : "Planned reference"}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="tj-segmentado" role="group" aria-label={es ? "Referencia prevista" : "Planned reference"}>
               {COUNTPIPS_PLANS.map((p) => (
                 <button
                   key={p.id}
                   type="button"
                   onClick={() => setPlan(p.id)}
-                  className={chipStyle(plan === p.id)}
                   aria-pressed={plan === p.id}
                   aria-label={`${p.label} ${fmtUsd(p.price)}`}
                 >
@@ -167,16 +161,15 @@ export function SavingsCalculator() {
 
           {/* Alternativa suscripción */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[12px] text-tertiary">
+            <div className="tj-deslizador-etiqueta mb-2">
               {es ? "Alternativa por suscripción" : "Subscription alternative"}
             </div>
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="tj-segmentado tj-segmentado-apila mb-3" role="group" aria-label={es ? "Alternativa por suscripción" : "Subscription alternative"}>
               {altPresets.map((a) => (
                 <button
                   key={a.label}
                   type="button"
                   onClick={() => setAltMonthly(a.v)}
-                  className={chipStyle(altMonthly === a.v)}
                   aria-pressed={altMonthly === a.v}
                   aria-label={`${a.label} ${fmtUsd(a.v)} ${es ? "al mes" : "per month"}`}
                 >
@@ -186,18 +179,8 @@ export function SavingsCalculator() {
             </div>
             {/* Slider fino para el precio mensual — unified pill style */}
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {es ? "Precio mensual" : "Monthly price"}
-              </span>
-              <span
-                className="tnum inline-flex items-baseline"
-                style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: "var(--ink)",
-                  transition: "color 0.18s var(--ease-suave)",
-                }}
-              >
+              <span className="tj-deslizador-etiqueta">{es ? "Precio mensual" : "Monthly price"}</span>
+              <span className="tj-deslizador-valor">
                 {fmtUsd(altMonthly)}{es ? "/mes" : "/mo"}
               </span>
             </div>
@@ -231,18 +214,8 @@ export function SavingsCalculator() {
           {/* Años de uso — unified pill style */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {es ? "Años de uso" : "Years of use"}
-              </span>
-              <span
-                className="tnum inline-flex items-baseline"
-                style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: "var(--ink)",
-                  transition: "color 0.18s var(--ease-suave)",
-                }}
-              >
+              <span className="tj-deslizador-etiqueta">{es ? "Años de uso" : "Years of use"}</span>
+              <span className="tj-deslizador-valor">
                 {years} {es ? (years === 1 ? "año" : "años") : years === 1 ? "yr" : "yrs"}
               </span>
             </div>
@@ -291,7 +264,7 @@ export function SavingsCalculator() {
               {es ? "Diferencia ilustrativa" : "Illustrative difference"}
             </div>
             <div className="flex items-baseline gap-3 mt-1">
-              <span className="tnum" style={{ fontSize: 34, fontWeight: 600, color: savingsColor }}>
+              <span className="tj-cifra" style={{ color: savingsColor }}>
                 {fmtUsd(c.savings)}
               </span>
               <span className="tnum" style={{ fontSize: 16, fontWeight: 600, color: savingsColor }}>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { Deslizador } from "@/components/tj/Deslizador";
 import { useLang } from "@/lib/i18n";
 import { fmtInt, fmtNum, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
@@ -22,45 +23,6 @@ const CAMINOS = 2000;
    salía aprobada el 96 % de las veces y la herramienta parecía prometerlo. */
 const DEFECTO: EscenarioFondeo = { tipo: "estatico", objetivo: 8, dd: 10, riesgo: 1, acierto: 40, payoff: 1.6, ops: 200 };
 const sinSuscripcion = () => () => {};
-
-function Deslizador({
-  etiqueta,
-  texto,
-  valor,
-  min,
-  max,
-  paso,
-  onValor,
-}: {
-  etiqueta: string;
-  texto: string;
-  valor: number;
-  min: number;
-  max: number;
-  paso: number;
-  onValor: (n: number) => void;
-}) {
-  return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-4">
-        <span className="text-[12px] text-tertiary">{etiqueta}</span>
-        <span className="tnum text-[15px] font-semibold text-primary">{texto}</span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={paso}
-        value={valor}
-        onChange={(e) => onValor(Number(e.target.value))}
-        aria-label={etiqueta}
-        aria-valuetext={texto}
-        className="tj-range w-full"
-        style={{ height: 44, "--pct": `${((valor - min) / (max - min)) * 100}%` } as CSSProperties}
-      />
-    </div>
-  );
-}
 
 export function PropChallengeSimulator() {
   const { lang } = useLang();
@@ -284,7 +246,7 @@ export function PropChallengeSimulator() {
             </p>
             <div className="tj-ficha-cuerpo">
               <span className="block text-[12px] text-tertiary">{es ? "Aprueba" : "Passes"}</span>
-              <div className="tnum mt-1 text-4xl font-semibold leading-none tracking-tight text-primary">
+              <div className="tj-cifra mt-1 text-primary">
                 {fmtPct(r.aprueba, lang)}
               </div>
               <p className="m-0 mt-2 text-[13px] text-secondary">

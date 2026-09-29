@@ -17,7 +17,7 @@ export function ProductStatus() {
   return (
     <section className="section">
       <div className="tj-container">
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+        <div className="tj-split grid gap-8 lg:items-end">
           <div>
             <h2 className="t-h2 text-primary">
               {es ? (

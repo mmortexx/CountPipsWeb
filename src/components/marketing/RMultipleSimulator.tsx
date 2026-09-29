@@ -136,18 +136,8 @@ export function RMultipleSimulator() {
   ) => (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-          {label}
-        </span>
-        <span
-          className="tnum inline-flex items-baseline"
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            color: "var(--ink)",
-            transition: "color 0.18s var(--ease-suave)",
-          }}
-        >
+        <span className="tj-deslizador-etiqueta">{label}</span>
+        <span className="tj-deslizador-valor">
           {/* El dólar cambia de sitio con el idioma: «10.000 $» en español,
               «$10,000» en inglés. Con el sufijo fijo `" $"` la web inglesa
               componía «10,000 $», la forma española en una página inglesa.
@@ -320,8 +310,8 @@ export function RMultipleSimulator() {
               </div>
               <div className="flex items-baseline gap-3 mt-1">
                 <span
-                  className="tnum"
-                  style={{ fontSize: 26, fontWeight: 600, color: c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
+                  className="tj-cifra"
+                  style={{ color: c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                 >
                   {fmtR(c.expectancyR, lang, 3)}
                 </span>

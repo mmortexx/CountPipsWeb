@@ -33,7 +33,7 @@ export function PricingFAQ() {
       {/* Titular a la izquierda y respuestas en la segunda columna, en
           la línea del resto de la página. Centrada y a 768 px no
           arrancaba en ninguna línea del sistema: una FAQ no es un cierre. */}
-      <div className="relative z-10 tj-container grid gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-x-16 xl:gap-x-24">
+      <div className="relative z-10 tj-container tj-split grid gap-y-8 lg:items-start">
         <SectionHeader
           titulo={es ? (
             <>Lo que casi todos quieren saber.</>

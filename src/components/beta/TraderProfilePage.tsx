@@ -16,6 +16,10 @@ const DATA = {
     titleEn: "Your judgement deserves a data trail.",
     subtitleEs: "Registra la operación, revisa la ejecución y descubre qué setups, horarios y decisiones sostienen de verdad tu ventaja.",
     subtitleEn: "Log the trade, review the execution and discover which setups, sessions and decisions actually support your edge.",
+    preguntaEs: "La pregunta no es cuánto ganaste.",
+    preguntaEn: "The question is not how much you made.",
+    respuestaEs: "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado.",
+    respuestaEn: "It’s which part of your process is worth repeating, and which part needs a rule before you go back to the market.",
     cards: [
       { titleEs: "Métricas que explican", titleEn: "Metrics that explain", textEs: "Expectancy, profit factor, drawdown y distribución de R en el mismo lugar que tus operaciones.", textEn: "Expectancy, profit factor, drawdown and R distribution next to the trades that produced them." },
       { titleEs: "Playbooks vivos", titleEn: "Living playbooks", textEs: "Compara setups con una muestra real y deja de confundir una buena racha con una ventaja.", textEn: "Compare setups against a real sample and stop confusing a good run with an edge." },
@@ -27,6 +31,11 @@ const DATA = {
     titleEn: "Trade with your rules in view.",
     subtitleEs: "La demo enseña un flujo para traders que operan con límites de pérdida, evaluaciones y una disciplina que no admite improvisación.",
     subtitleEn: "The demo shows a workflow for traders working with loss limits, evaluations and discipline that leaves no room for improvisation.",
+    /* Cada perfil, su pregunta: las dos páginas decían la misma. */
+    preguntaEs: "La pregunta no es si pasas hoy.",
+    preguntaEn: "The question is not whether you pass today.",
+    respuestaEs: "Es si tu forma de operar llega al objetivo sin que una sola operación te saque de la evaluación, y qué regla te falta para que no ocurra.",
+    respuestaEn: "It’s whether the way you trade reaches the target without one trade knocking you out of the evaluation, and which rule you still need so it doesn’t.",
     cards: [
       { titleEs: "Riesgo que se ve", titleEn: "Visible risk", textEs: "Revisa drawdown, rachas y exposición antes de que una operación te saque del plan.", textEn: "Review drawdown, streaks and exposure before one trade takes you outside the plan." },
       { titleEs: "Informe de evaluación", titleEn: "Evaluation report", textEs: "Un PDF con el progreso al objetivo, el riesgo disponible hoy y el colchón hasta el límite de pérdida.", textEn: "A PDF with progress to target, risk available today and the buffer to the loss limit." },
@@ -91,15 +100,15 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         <div className="tj-container">
           <SectionHeader
             composicion="partida"
-            titulo={es ? "La pregunta no es cuánto ganaste." : "The question is not how much you made."}
-            entradilla={es ? "Es qué parte de tu proceso merece repetirse, y qué parte necesita una regla antes de volver al mercado." : "It’s which part of your process is worth repeating, and which part needs a rule before you go back to the market."}
+            titulo={es ? data.preguntaEs : data.preguntaEn}
+            entradilla={es ? data.respuestaEs : data.respuestaEn}
           />
           {/* Sin 01/02/03: son tres capacidades, no tres pasos. */}
           <ul className="mt-12 m-0 list-none border-t border-[var(--line)] p-0">
             {data.cards.map(({ titleEs, titleEn, textEs, textEn }) => (
               <li
                 key={titleEs}
-                className="grid gap-y-1 border-b border-[var(--line)] py-5 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] md:items-baseline md:gap-x-6"
+                className="tj-split grid gap-y-1 border-b border-[var(--line)] py-5 md:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] md:items-baseline md:gap-x-6"
               >
                 <h3 className="m-0 t-h3 text-primary">
                   {es ? titleEs : titleEn}

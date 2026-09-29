@@ -124,7 +124,7 @@ export function SectionHeader({
              la misma cantidad de texto. El hueco entre columnas es
              mayor que el de una rejilla normal a propósito — separa dos
              voces distintas, no dos elementos iguales. */
-          "grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24",
+          "tj-split grid gap-y-6",
           /* La entradilla baja un poco respecto al titular para que sus
              primeras líneas no arranquen a la misma altura: alinearlas
              exactamente hace que las dos columnas se lean como una

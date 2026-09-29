@@ -321,7 +321,7 @@ export function RiskCalculator() {
 
           {/* Selector de clase de activo */}
           <div className="mb-5">
-            <div className="tnum mb-2 text-[12px] text-tertiary">
+            <div className="tj-deslizador-etiqueta mb-2">
               {es ? "Mercado / Instrumento" : "Market / Instrument"}
             </div>
             {/* Conmutador, no tres botones sueltos: con `flex-wrap` el
@@ -431,7 +431,7 @@ export function RiskCalculator() {
 
           {/* Chips de plantilla */}
           <div className="mb-4">
-            <div className="tnum mb-2 text-[12px] text-tertiary">
+            <div className="tj-deslizador-etiqueta mb-2">
               {es ? "Plantilla de riesgo" : "Risk preset"}
             </div>
             <div className="tj-segmentado tj-segmentado-apila" role="group">
@@ -450,7 +450,7 @@ export function RiskCalculator() {
 
           {/* Chips de balance */}
           <div>
-            <div className="tnum mb-2 text-[12px] text-tertiary">
+            <div className="tj-deslizador-etiqueta mb-2">
               {es ? "Balance de cuenta" : "Account balance"}
             </div>
             {/* Aqui no hace falta apilar: son cuatro etiquetas de cuatro
@@ -468,29 +468,18 @@ export function RiskCalculator() {
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Tarjeta calculadora */}
-        <div
-          className="tj-paper tj-paper-glow relative p-6"
-        >
+          {/* Riesgo y precios van con el resto de lo que se escribe: estaban
+              dentro de la tarjeta de resultados y la columna de la izquierda
+              acababa a media altura. Tres precios en fila también en móvil:
+              en dos columnas «Objetivo» quedaba solo. */}
           {/* Slider de riesgo */}
-          <div className="mb-5">
+          <div className="mb-5 mt-6">
             <div className="flex items-center justify-between mb-2">
-              <span
-                className="tnum"
-                style={{ fontSize: 13, color: "var(--ink-2)" }}
-              >
+              <span className="tj-deslizador-etiqueta">
                 {es ? "Riesgo por operación" : "Risk per trade"}
               </span>
-              <span
-                className="tnum inline-flex items-baseline gap-1"
-                style={{
-                  fontSize: 22,
-                  fontWeight: 600,
-                  color: "var(--ink)",
-                }}
-              >
+              <span className="tj-deslizador-valor">
                 {fmtNum(riskPct)}
                 {pctSep(lang)}
               </span>
@@ -526,15 +515,21 @@ export function RiskCalculator() {
 
           {/* Entrada / Stop / Target */}
           <div
-            className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-5"
+            className="grid grid-cols-3 gap-2.5"
           >
             {numInput(es ? "Entrada" : "Entry", entry, setEntry, es ? "Precio de entrada" : "Entry price")}
             {numInput(es ? "Stop" : "Stop", stop, setStop, es ? "Precio de stop loss" : "Stop loss price")}
             {numInput(es ? "Objetivo" : "Target", target, setTarget, es ? "Precio objetivo take profit" : "Take profit target price")}
           </div>
+        </div>
 
-          {/* Criterio de Kelly (Medio Kelly institucional) */}
-          <div className="mb-5 border-y border-[var(--line)] py-3">
+        {/* Tarjeta calculadora */}
+        <div
+          className="tj-paper tj-paper-glow relative p-6"
+        >
+          {/* Criterio de Kelly (Medio Kelly institucional). Abre la tarjeta:
+              solo filete debajo. */}
+          <div className="mb-5 border-b border-[var(--line)] pb-3">
             <div className="flex items-center justify-between">
               <button
                 type="button"

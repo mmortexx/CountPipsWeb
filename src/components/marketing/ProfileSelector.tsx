@@ -50,7 +50,7 @@ export function ProfileSelector() {
       {/* En escritorio, cabecera a la izquierda y los dos recorridos
           apilados a la derecha: con la cabecera encima, media anchura se
           quedaba en blanco y la sección pedía dos pantallas de scroll. */}
-      <div className="tj-container lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-16 xl:gap-x-24">
+      <div className="tj-container tj-split lg:grid lg:items-start">
         <div className="max-w-2xl">
           <h2 id="profile-selector-title" className="t-h2 text-primary text-balance">
             {es ? <>Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span></>}

@@ -6,7 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { proyectaCapital, CONFIANZA_RACHA } from "@/lib/trading/proyeccion";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Copy, Check } from "lucide-react";
-import { fmtMoney, pctSep, fmtInt, fmtNum as fmtNumCasa } from "@/lib/trading/format";
+import { fmtMoney, pctSep, fmtInt, fmtR, fmtNum as fmtNumCasa } from "@/lib/trading/format";
 import { siteUrl } from "@/lib/site";
 
 /** Cuántos decimales (0 a `max`) hacen falta para representar `v` sin ceros
@@ -368,7 +368,7 @@ export function EquityProjector() {
       `${es ? "Ventaja" : "Edge"}:`,
       `  • Win rate: ${fmtNum(winRate, 1)}${pctSep(lang)}`,
       `  • ${es ? "Ganancia / pérdida media" : "Average win / loss"}: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
-      `  • ${es ? "Expectancy neta" : "Net expectancy"}: ${c.netExpectancyR >= 0 ? "+" : ""}${fmtNum(c.netExpectancyR, 3)} R`,
+      `  • ${es ? "Expectancy neta" : "Net expectancy"}: ${fmtR(c.netExpectancyR, lang, 3)}`,
       `  • Profit factor: ${fmtNum(c.profitFactor, 2)}`,
       `  • ${es ? "Riesgo por operación" : "Risk per trade"}: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
       "─".repeat(38),
@@ -422,48 +422,17 @@ export function EquityProjector() {
     <div className="space-y-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <span
-            className="tnum text-[12px] font-medium"
-            style={{ color: "var(--ink-2)" }}
-          >
-            {label}
-          </span>
+          <span className="tj-deslizador-etiqueta">{label}</span>
           {badgeHint && (
-            <span
-              className="text-[12px] tnum"
-              style={{ color: "var(--ink-3)" }}
-            >
+            <span className="tnum text-[13px] text-tertiary">
               {badgeHint}
             </span>
           )}
         </div>
-        <span
-          className="tnum text-[14px] font-semibold"
-          style={{ color: "var(--ink)" }}
-        >
-          {/* El dólar cambia de sitio con el idioma: «10.000 $» en español,
-              «$10,000» en inglés. Con el sufijo fijo `" $"` la web inglesa
-              componía «10,000 $», que es la forma española del símbolo en
-              una página en inglés. Las demás unidades —ops, %, R— sí van
-              siempre detrás, así que solo se bifurca el dinero. */}
-          {suffix === " $" ? (
-            es ? (
-              <>
-                {fmtNum(value, 0)}
-                <span className="opacity-75 ml-0.5 text-[11px] font-normal"> $</span>
-              </>
-            ) : (
-              <>
-                <span className="opacity-75 mr-0.5 text-[11px] font-normal">$</span>
-                {fmtNum(value, 0)}
-              </>
-            )
-          ) : (
-            <>
-              {fmtNum(value, Number.isInteger(step) ? 0 : 2)}
-              <span className="opacity-75 ml-0.5 text-[11px] font-normal">{suffix}</span>
-            </>
-          )}
+        {/* El dólar cambia de sitio con el idioma («10.000 $» / «$10,000»):
+            lo resuelve `fmtUsd`. Las demás unidades van siempre detrás. */}
+        <span className="tj-deslizador-valor">
+          {suffix === " $" ? fmtUsd(value) : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`}
         </span>
       </div>
       <input
@@ -572,8 +541,8 @@ export function EquityProjector() {
                 programa. El marco se queda —es la caja de la herramienta—
                 pero el rotulo la nombra por su nombre real, el mismo que
                 usa `src/lib/herramientas.ts` para esta entrada. */}
-            <span className="tnum text-[11px] font-medium text-[var(--ink-3)]">
-              CountPips · {es ? "Proyector de capital" : "Equity projector"}
+            <span className="text-[13px] font-medium text-[var(--ink-2)]">
+              {es ? "Proyector de capital" : "Equity projector"}
             </span>
 
             {/* Presets Toolbar en la Barra Superior */}
@@ -629,7 +598,7 @@ export function EquityProjector() {
               <div className="space-y-3.5">
                 <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
-                    <span className="tnum text-tertiary font-normal">01</span> {es ? "Capital y frecuencia" : "Capital and frequency"}
+                    {es ? "Capital y frecuencia" : "Capital and frequency"}
                   </span>
                   <span className="text-[13px] tnum text-[var(--ink)] font-semibold">
                     {fmtUsd(startBalance)}
@@ -688,10 +657,10 @@ export function EquityProjector() {
                 {/* Aporte mensual */}
                 <div className="pt-2 border-t border-[rgb(var(--divider)/0.08)]">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                    <span className="tj-deslizador-etiqueta">
                       {es ? "Aporte mensual" : "Monthly deposit"}
                     </span>
-                    <span className="text-[12px] tnum text-[rgb(var(--accent-base))] font-semibold">
+                    <span className="tj-deslizador-valor">
                       +{fmtUsd(monthlyContribution)} / {es ? "mes" : "mo"}
                     </span>
                   </div>
@@ -720,7 +689,7 @@ export function EquityProjector() {
               <div className="space-y-3.5 pt-3.5 border-t border-[rgb(var(--divider)/0.12)]">
                 <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
-                    <span className="tnum text-tertiary font-normal">02</span> {es ? "Ventaja" : "Edge"}
+                    {es ? "Ventaja" : "Edge"}
                   </span>
                   <span
                     className="text-[12px] tnum font-semibold"
@@ -764,7 +733,7 @@ export function EquityProjector() {
 
                 {/* Fricción */}
                 <div className="pt-2 border-t border-[rgb(var(--divider)/0.08)] flex items-center justify-between">
-                  <span className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
+                  <span className="tj-deslizador-etiqueta">
                     {es ? "Costes por operación" : "Costs per trade"}
                   </span>
                   <div className="tj-segmentado" role="group">
@@ -780,7 +749,7 @@ export function EquityProjector() {
                             setFrictionR(f);
                           }}
                         >
-                          {f === 0 ? `0${es ? "\u00a0" : ""}R` : `${fmtNum(f, 2)}${es ? "\u00a0" : ""}R`}
+                          {`${f === 0 ? "0" : fmtNum(f, 2)}\u00a0R`}
                         </button>
                       );
                     })}
@@ -792,7 +761,7 @@ export function EquityProjector() {
               <div className="space-y-3.5 pt-3.5 border-t border-[rgb(var(--divider)/0.12)]">
                 <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
-                    <span className="tnum text-tertiary font-normal">03</span> {es ? "Riesgo y horizonte" : "Risk and horizon"}
+                    {es ? "Riesgo y horizonte" : "Risk and horizon"}
                   </span>
                   <span className="text-[12px] tnum text-[var(--ink)] font-semibold">
                     {years} {es ? (years === 1 ? "año" : "años") : (years === 1 ? "year" : "years")}
@@ -846,7 +815,6 @@ export function EquityProjector() {
                     >
                       <div className="text-[13px] tnum font-semibold flex items-center justify-between text-[var(--ink)]">
                         <span>{es ? "Interés compuesto" : "Compounding"}</span>
-                        {reinvestMode === "compound" && <Check aria-hidden className="w-3.5 h-3.5 text-[var(--ink-2)]" />}
                       </div>
                       {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
                             opcion, sobre su propia superficie, que es mas
@@ -870,7 +838,6 @@ export function EquityProjector() {
                     >
                       <div className="text-[13px] tnum font-semibold flex items-center justify-between text-[var(--ink)]">
                         <span>{es ? "Retiro fijo" : "Fixed / withdrawal"}</span>
-                        {reinvestMode === "linear" && <Check aria-hidden className="w-3.5 h-3.5 text-[var(--ink-2)]" />}
                       </div>
                       {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
                             opcion, sobre su propia superficie, que es mas
@@ -898,14 +865,13 @@ export function EquityProjector() {
                   </div>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span
-                      className="tnum text-3xl sm:text-4xl font-semibold tracking-tight whitespace-nowrap"
+                      className="tj-cifra"
                       style={{
                         color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
                         textShadow: "none",
                       }}
                     >
-                      {c.netExpectancyR >= 0 ? "+" : ""}
-                      {fmtNum(c.netExpectancyR, 3)} R
+                      {fmtR(c.netExpectancyR, lang, 3)}
                     </span>
                     <span className="tnum text-xs" style={{ color: "var(--ink-2)" }}>
                       ≈ {fmtUsd(c.expectancyUsdInitial)} / {es ? "op." : "trade"}
@@ -916,10 +882,9 @@ export function EquityProjector() {
                 {/* Badge de Convicción */}
                 <div className="text-left sm:text-right">
                   <div
-                    className="inline-flex items-center gap-1.5 text-[12px] font-medium"
+                    className="text-[13px] font-medium"
                     style={{ color: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }}
                   >
-                    <span className="w-1.5 h-1.5 rounded-[1px]" style={{ background: c.hasEdge ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))" }} />
                     <span>
                       {c.hasEdge
                         ? es
@@ -930,7 +895,7 @@ export function EquityProjector() {
                         : "Negative expectancy"}
                     </span>
                   </div>
-                  <div className="text-[11px] text-[var(--ink-3)] tnum mt-1">
+                  <div className="text-[13px] text-[var(--ink-3)] tnum mt-1">
                     {es ? "Primer año, en teoría:" : "First year, in theory:"}{" "}
                     <span className="text-[var(--ink)] font-semibold">{fmtUsd(c.yearlyUsdInitial)}</span>
                   </div>

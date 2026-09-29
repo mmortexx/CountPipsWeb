@@ -71,7 +71,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           fluidos (clamp(1.25rem, 4vw, 2.25rem)) y el page-w (1080px) de
           globals.css, sustituyendo al `max-w-[1240px] mx-auto px-5 md:px-8`
           hardcodeado. Paridad con StatsBandNew, MetricsShowcaseNew y Values. */}
-      <div className="relative tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+      <div className="relative tj-container tj-split grid grid-cols-1 gap-10 items-start">
         {/* Columna de texto: primero en el documento para que en móvil y en
             un lector de pantalla el titular llegue antes que la ficha; en
             escritorio la ficha pasa a la izquierda con `lg:order-first`.

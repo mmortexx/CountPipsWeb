@@ -2790,6 +2790,71 @@ formato de R) quedan para la tanda siguiente. Lo que se hizo:
     contenido.
   - El botón de subir sigue en escritorio.
 
+### Cuadragésima sexta tanda: las calculadoras y la retícula (2026-09-29)
+
+La otra mitad de los hallazgos de los dos revisores, medida primero con
+Playwright sobre `out/`: cifra principal, deslizadores y botones de las
+diez herramientas, y dónde arranca la segunda columna de cada rejilla
+partida.
+
+- **Cifra principal.** Salía a 22, 24, 26, 30, 34 y 36 px según la
+  calculadora. Ahora `.tj-cifra` (36 px, 30 en móvil, 600, tabular) en
+  ahorro, comisiones, Monte Carlo, fondeo, drawdown, proyector e
+  indisciplina. En significancia la respuesta es un veredicto y no una
+  cifra: pasa a `t-h4` en su color y pierde el punto de color de delante.
+- **Deslizadores.** Había cinco combinaciones de etiqueta y valor (12/400
+  con 15/600, 12/500 con 12/600, 13 con 22, 12 con 11…). Ahora
+  `.tj-deslizador-etiqueta` (13 px, secundario) y `.tj-deslizador-valor`
+  (15 px/600) en las diez. Fondeo y drawdown tenían la misma función
+  `Deslizador` copiada; ahora hay una, `tj/Deslizador.tsx`. El proyector
+  compone el dinero con `fmtUsd` (antes, cifra y símbolo a dos tamaños).
+- **Formato R.** El comentario de `fmtR` y la app de escritorio
+  (`FormatR`, TradesViewModel.cs) escriben «+1,50 R». El código escribía
+  «+1,50R», y el proyector y significancia componían la R a mano con un
+  «+» y un «-» de teclado. Ahora todo pasa por `fmtR`, con espacio duro.
+- **Botones de elección.** Ahorro y comisiones tenían botones sueltos con
+  estilo propio, y los diez instrumentos de comisiones dejaban EURUSD solo
+  en su fila. Ahora usan `.tj-segmentado`; el de instrumentos lleva la
+  variante `-diez` (2 columnas en móvil y 5 desde sm).
+- **Calculadora de riesgo.** El deslizador de riesgo y los tres precios
+  vivían dentro de la tarjeta de resultados, y la columna de entrada
+  acababa a media altura. Ahora todo lo que se escribe está a la
+  izquierda y lo que sale, a la derecha. Los tres precios van en fila
+  también en móvil; en dos columnas «Objetivo» quedaba solo.
+- **Proyector.** Fuera la numeración 01/02/03: son grupos de ajustes, no
+  pasos. Esto corrige lo que dije en la tanda 44. También fuera el rótulo
+  «CountPips · Proyector de capital», el cuadrado de color delante de
+  «Expectancy positiva» y las ✓ del modo de reinversión. Los rótulos de
+  11–12 px, a 13.
+- **Gráficos y tablas.** La tabla de caídas llevaba el título «Hace falta
+  ganar» sobre la barra y no sobre la cifra, y la barra medía 3 px. Ahora
+  el título va sobre la cifra y la barra mide 6 px.
+- **Retícula partida.** Medido a 1440, la segunda columna arrancaba en
+  626, 744, 747, 768 o 788 px según la sección. El cierre, en todas las
+  páginas, caía 20 px a la derecha de las cabeceras de encima. Ahora
+  `.tj-split` (1fr/1fr; 64 px de hueco en lg y 96 en xl) sirve a
+  `SectionHeader`, el cierre, la FAQ de precios, los perfiles, el
+  Guardián, Story y el estado de /beta: veinte rejillas en x=768, antes
+  diez. Guardián y perfiles alinean arriba; antes centraban el titular
+  frente a la columna vecina.
+  La lista de capacidades de los perfiles y el pie de /beta usan la misma
+  rejilla. En /beta, «¿Quieres saber algo antes?» gana la ceja «Preguntas
+  frecuentes» y cae a la altura de su vecino. La nota bajo el formulario
+  ya no va centrada y pasa de 12 a 13 px.
+- **Indisciplina.** El rojo queda solo en el dinero. Las barras de
+  proporción, el deslizador de fallos y el rótulo «Fuga mensual total»
+  pasan a tinta; antes todo el bloque era rojo.
+- **Perfiles.** /traders/manual y /traders/prop-firms tenían la misma
+  pregunta de sección; ahora cada uno tiene la suya.
+- **Visto y sin cambio.**
+  - La reserva de dos renglones de los titulares del bento: uno de los
+    dos sí parte en dos.
+  - El calendario de muestra: sus días vacíos son los de la muestra.
+  - El resultado de indisciplina en móvil: llega tras la tabla, que es lo
+    que lo explica.
+- **Medido.** Arranque con CPU ×4 a 390 px, 3 pasadas: el titular es
+  legible entre 149 y 174 ms (tanda 45: 160–191).
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

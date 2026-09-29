@@ -125,9 +125,14 @@ MATERIALES CSS (definidos en globals.css):
   .tj-pestanas    — pestañas de pantallas (subrayado de 1,5 px, el mismo que la barra)
   .tj-segmentado  — elegir UNO de varios parámetros (bloque continuo)
   .tj-filtro      — encender/apagar filtros sueltos (explorador, glosario); mismo elegido
+  .tj-split       — TODA rejilla partida (cabecera, cierre, secciones de dos columnas):
+                    1fr/1fr, hueco 64/96 px; la segunda columna cae en la misma línea
   .tj-cierre      — bloque de cierre en tinta invertida
   .tj-hero-producto / .tj-lamina-marco — marco de captura real del programa: filete y
                     corte limpio en los dos temas, sin fundido ni bisel
+  Herramientas: cifra principal `.tj-cifra` (36/30 px); deslizador `tj/Deslizador.tsx` o
+  `.tj-deslizador-etiqueta` + `.tj-deslizador-valor`; R siempre con `fmtR` («+1,50 R»,
+  espacio duro, como la app); elegir entre varios, `.tj-segmentado` y sus variantes.
   Tablas en móvil: fichas por fila (`md:hidden` / `sm:hidden`), nunca desplazamiento
   lateral con «desliza». Gráficos: rellenos planos; color solo para dinero y sesión
   (la serie de referencia va en tinta terciaria discontinua).
