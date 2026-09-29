@@ -71,11 +71,11 @@ export function Comparison() {
           titulo={
             es ? (
               <>
-                No es lo mismo <span className="text-gradient">medir que apuntar.</span>
+                No es lo mismo medir que apuntar.
               </>
             ) : (
               <>
-                Measuring is not <span className="text-gradient">writing it down.</span>
+                Measuring is not writing it down.
               </>
             )
           }
@@ -86,8 +86,30 @@ export function Comparison() {
           }
         />
 
-        <Reveal delay={0.08} className="mt-10">
-          <div className="tj-fila-sigue tj-fila-sigue--sin-reserva tj-fila-sigue--hasta-lg relative overflow-x-auto lg:overflow-x-clip">
+        {/* En móvil, una ficha por fila: la tabla de cuatro columnas no
+            cabía y cortaba la de CountPips a mitad de palabra. */}
+        <Reveal delay={0.08} className="mt-8 md:hidden">
+          <div className="border-t border-[var(--line-2)]">
+            {ROWS.map((row) => (
+              <div key={row.labelEs} className="border-b border-[var(--line)] py-4">
+                <h3 className="t-h5 m-0 text-primary">{es ? row.labelEs : row.labelEn}</h3>
+                <dl className="m-0 mt-2.5 grid grid-cols-[minmax(0,8.5rem)_minmax(0,1fr)] gap-x-4 gap-y-1.5">
+                  {cols.map((c, j) => (
+                    <div key={c.key} className="contents">
+                      <dt className={`text-sm ${j === 0 ? "font-medium text-primary" : "text-tertiary"}`}>{c.label}</dt>
+                      <dd className="m-0">
+                        <Celda cell={row.cells[j]} destacada={j === 0} es={es} />
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.08} className="mt-10 hidden md:block">
+          <div className="relative overflow-x-auto lg:overflow-x-clip">
             <div className="relative w-full min-w-[680px]">
               <table className="w-full table-fixed text-sm tnum">
                 <colgroup>
@@ -134,22 +156,11 @@ export function Comparison() {
                 </tbody>
               </table>
             </div>
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 md:hidden"
-              style={{ background: "linear-gradient(to left, color-mix(in srgb, var(--bg) 92%, transparent), transparent)" }}
-            />
-          </div>
-
-          <div className="mt-3 flex items-center justify-center gap-2 text-[12px] text-tertiary md:hidden">
-            <span aria-hidden="true">←</span>
-            <span>{es ? "Desliza para comparar" : "Swipe to compare"}</span>
-            <span aria-hidden="true">→</span>
           </div>
         </Reveal>
 
         <Reveal delay={0.12} className="mt-6">
-          <p className="medida mx-auto text-center text-xs text-tertiary">
+          <p className="medida m-0 text-[13px] text-tertiary">
             {es
               ? "Diarios en la nube: TradeZella, TraderSync, TradesViz y Tradervue, según sus webs en septiembre de 2026; TradesViz y Tradervue tienen además un plan gratuito limitado. Hoja de cálculo sin plantillas avanzadas."
               : "Cloud journals: TradeZella, TraderSync, TradesViz and Tradervue, as published on their websites in September 2026; TradesViz and Tradervue also offer a limited free plan. Spreadsheet without advanced templates."}
@@ -163,33 +174,19 @@ export function Comparison() {
 function Celda({ cell, destacada, es }: { cell: Cell; destacada: boolean; es: boolean }) {
   if (cell === "yes" || cell === "yes-pro") {
     return (
-      <span className="inline-flex items-center gap-2">
-        <svg data-entra="sello" width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-          <path d="M2 6.5l2.5 2.5L10 3.5" stroke="rgb(var(--sig-green))" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className={`text-[14px] ${destacada ? "font-medium text-primary" : "text-secondary"}`}>{es ? "Sí" : "Yes"}</span>
-        {cell === "yes-pro" && <span className="text-[12px] text-tertiary">· Pro</span>}
+      <span className={`text-[14px] ${destacada ? "font-medium text-primary" : "text-secondary"}`}>
+        {cell === "yes-pro" ? (es ? "Sí, en Pro" : "Yes, in Pro") : es ? "Sí" : "Yes"}
       </span>
     );
   }
   if (cell === "no") {
     return (
-      <span className="inline-flex items-center gap-2">
-        <svg data-entra="sello" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-          <path d="M3 3l6 6M9 3l-6 6" stroke="rgb(var(--pnl-neg))" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-        <span className="text-[14px] text-tertiary">No</span>
-      </span>
+      <span className="text-[14px] text-tertiary">No</span>
     );
   }
   if (cell === "partial") {
     return (
-      <span className="inline-flex items-center gap-2">
-        <svg data-entra="sello" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-          <path d="M2.5 6h7" stroke="rgb(var(--pnl-warn))" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-        <span className="text-[14px] text-tertiary">{es ? "Parcial" : "Partial"}</span>
-      </span>
+      <span className="text-[14px] text-tertiary">{es ? "Parcial" : "Partial"}</span>
     );
   }
   return <span className={`text-[14px] ${destacada ? "font-medium text-primary" : "text-secondary"}`}>{es ? cell.es : cell.en}</span>;

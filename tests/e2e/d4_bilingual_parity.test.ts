@@ -114,8 +114,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         "tituloEn",
         "h1Es",
         "h1En",
-        "resaltaEs",
-        "resaltaEn",
         "subtituloEs",
         "subtituloEn",
         "resumenEs",

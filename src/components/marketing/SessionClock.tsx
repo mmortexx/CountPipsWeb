@@ -149,11 +149,11 @@ export function SessionClock() {
             >
               {es ? (
                 <>
-                  ¿Qué plazas están <span className="text-gradient">abiertas ahora?</span>
+                  ¿Qué plazas están abiertas ahora?
                 </>
               ) : (
                 <>
-                  Which markets are <span className="text-gradient">open right now?</span>
+                  Which markets are open right now?
                 </>
               )}
             </h2>

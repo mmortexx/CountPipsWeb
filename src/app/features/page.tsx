@@ -135,8 +135,6 @@ export function FeaturesBody() {
         tono="capitulo"
         titleEs="Todo lo que necesitas para operar con disciplina."
         titleEn="Everything you need to trade with discipline."
-        titleHighlightEs="operar con disciplina."
-        titleHighlightEn="trade with discipline."
         subtitleEs="Métricas institucionales, un guardián de disciplina con semáforo de riesgo y freno opcional, y tus datos en tu equipo. Cada eje tiene su propia página."
         subtitleEn="Institutional metrics, a discipline guardian with a risk light and an optional hard brake, and your data on your machine. Each axis has its own page."
         breadcrumbEs="Características"
@@ -153,7 +151,7 @@ export function FeaturesBody() {
 
       <FeatureExplorer />
 
-      <FinalCTANew />
+      <FinalCTANew variante="producto" />
       <TableOfContents />
     </>
   );

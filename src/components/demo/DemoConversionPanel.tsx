@@ -33,7 +33,7 @@ export function DemoConversionPanel() {
           <Reveal>
             <p className="eyebrow">{es ? "Cómo leer la demo" : "How to read the demo"}</p>
             <h2 className="mt-5 t-h2 text-primary max-w-[24ch]">
-              {es ? <>Una visita corta. <span className="text-gradient tj-frase-nueva">Una decisión más clara.</span></> : <>A short visit. <span className="text-gradient tj-frase-nueva">A clearer decision.</span></>}
+              {es ? <>Una visita corta. <span className="tj-frase-nueva">Una decisión más clara.</span></> : <>A short visit. <span className="tj-frase-nueva">A clearer decision.</span></>}
             </h2>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-secondary md:text-lg">
               {es

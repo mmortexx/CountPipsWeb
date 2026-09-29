@@ -128,11 +128,11 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
             >
               {es ? (
                 <>
-                  Preguntas <span className="text-gradient">frecuentes</span>
+                  Preguntas frecuentes
                 </>
               ) : (
                 <>
-                  Frequently asked <span className="text-gradient">questions</span>
+                  Frequently asked questions
                 </>
               )}
             </h2>

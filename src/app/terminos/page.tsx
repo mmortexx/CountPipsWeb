@@ -58,8 +58,6 @@ export function TerminosBody() {
         tono="documento"
         titleEs="Términos de uso."
         titleEn="Terms of use."
-        titleHighlightEs="de uso."
-        titleHighlightEn="of use."
         subtitleEs="Condiciones de esta web y de sus herramientas. Lo más importante en una línea: las calculadoras calculan lo que tú introduces, y nada de lo que hay aquí es asesoramiento financiero."
         subtitleEn="Conditions for this site and its tools. The important part in one line: the calculators compute what you enter, and nothing here is financial advice."
         breadcrumbEs="Términos"

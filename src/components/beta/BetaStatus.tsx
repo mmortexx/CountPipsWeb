@@ -23,12 +23,12 @@ export function ProductStatus() {
               {es ? (
                 <>
                   Lo que está listo.{" "}
-                  <span className="text-gradient tj-frase-nueva">Y lo que aún estamos comprobando.</span>
+                  <span className="tj-frase-nueva">Y lo que aún estamos comprobando.</span>
                 </>
               ) : (
                 <>
                   What is ready.{" "}
-                  <span className="text-gradient tj-frase-nueva">And what we are still validating.</span>
+                  <span className="tj-frase-nueva">And what we are still validating.</span>
                 </>
               )}
             </h2>

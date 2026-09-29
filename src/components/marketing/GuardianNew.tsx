@@ -88,13 +88,13 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             >
               {es ? (
                 <>
-                  Disciplina que <span className="text-gradient">actúa</span>,
+                  Disciplina que actúa,
                   <br className="hidden sm:block" />
                   {" "}no que sermonea.
                 </>
               ) : (
                 <>
-                  Discipline that <span className="text-gradient">acts</span>,
+                  Discipline that acts,
                   <br className="hidden sm:block" />
                   {" "}not lectures.
                 </>

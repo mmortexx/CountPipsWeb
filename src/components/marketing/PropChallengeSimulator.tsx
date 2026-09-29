@@ -186,11 +186,11 @@ export function PropChallengeSimulator() {
             <h2 data-titular-herramienta className="t-h2 m-0 max-w-[24ch] text-primary">
               {es ? (
                 <>
-                  Cuántas veces <span className="text-gradient">la pasarías.</span>
+                  Cuántas veces la pasarías.
                 </>
               ) : (
                 <>
-                  How often <span className="text-gradient">you would pass.</span>
+                  How often you would pass.
                 </>
               )}
             </h2>

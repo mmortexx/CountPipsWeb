@@ -96,11 +96,11 @@ export function Wrapped({ datos }: { datos: LecturasMuestra }) {
           titulo={
             es ? (
               <>
-                Tus hábitos, <span className="text-gradient">en cifras.</span>
+                Tus hábitos, en cifras.
               </>
             ) : (
               <>
-                Your habits, <span className="text-gradient">in numbers.</span>
+                Your habits, in numbers.
               </>
             )
           }

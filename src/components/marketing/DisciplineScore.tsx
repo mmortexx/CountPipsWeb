@@ -371,11 +371,11 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
           <h2 className="t-h2 m-0 text-primary">
             {es ? (
               <>
-                Mídete. <span className="text-gradient">Por dónde flojeas.</span>
+                Mídete. Por dónde flojeas.
               </>
             ) : (
               <>
-                Measure yourself. <span className="text-gradient">Where you’re weak.</span>
+                Measure yourself. Where you’re weak.
               </>
             )}
           </h2>

@@ -95,11 +95,11 @@ export function TechSpecs() {
           titulo={
             es ? (
               <>
-                Construido <span className="text-gradient">para durar.</span>
+                Construido para durar.
               </>
             ) : (
               <>
-                Built <span className="text-gradient">to last.</span>
+                Built to last.
               </>
             )
           }

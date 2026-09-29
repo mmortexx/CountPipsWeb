@@ -112,11 +112,6 @@ describe("cero degradados", () => {
     expect(css, "vuelve un color que no existe en ninguna paleta").not.toMatch(
       /rgb\(\s*(62 124 177|125 107 176)\s*\//,
     );
-    /* `.text-gradient` es el realce de medio centenar de titulares. Si
-       vuelve a llevar un `background: linear-gradient`, el titular vuelve
-       a cambiar de densidad a lo largo de la palabra. */
-    const realce = /\.text-gradient\s*\{[^}]*linear-gradient/;
-    expect(css, "el realce del titular vuelve a ser un degradado").not.toMatch(realce);
   });
 
   it("no crece el censo de degradados en los componentes", () => {

@@ -38,10 +38,10 @@ export function Footer() {
       links: [
         { label: es ? "Características" : "Features", href: "/features" },
         { label: es ? "Demo" : "Demo", href: "/demo" },
+        { label: es ? "Precios" : "Pricing", href: "/pricing" },
         { label: es ? "Operativa manual" : "Manual trading", href: "/traders/manual" },
         { label: es ? "Prop firms" : "Prop firms", href: "/traders/prop-firms" },
         { label: es ? "Acceso anticipado" : "Early access", href: "/beta" },
-        { label: es ? "Precios" : "Pricing", href: "/pricing" },
         { label: es ? "Novedades" : "Changelog", href: "/about#changelog" },
       ],
     },
@@ -186,32 +186,33 @@ export function Footer() {
         <div className="mt-12 h-px bg-[var(--line)]" />
 
 
-        {/* Barra final: copyright a un lado; fecha, idiomas y
-            preferencias al otro. `data-pie-final` es la marca que mide el
-            botón de subir para quedarse encima al llegar aquí. */}
-        <div data-pie-final className="mt-6 flex flex-col lg:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-secondary">
-            © <span className="tnum">{year}</span> {t("appName")}. {t("rights")}
-          </p>
-          {/* Sin puntos separadores: el hueco separa. La fecha sale del
-              último commit (`publicacion.ts`), no del reloj de quien mira. */}
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-secondary">
+        {/* Barra final: a la izquierda lo que es dato (copyright y fecha),
+            a la derecha lo que se pulsa. A la izquierda también en móvil,
+            como el resto del pie. Sin «ES + EN»: parecía un conmutador y
+            no lo era; el idioma se cambia arriba. `data-pie-final` es la
+            marca que mide el botón de subir para quedarse encima. */}
+        <div data-pie-final className="mt-6 flex flex-col gap-2 text-xs text-secondary lg:flex-row lg:items-center lg:justify-between lg:gap-6">
+          {/* La fecha sale del último commit (`publicacion.ts`), no del
+              reloj de quien mira. */}
+          <p className="m-0 flex flex-wrap gap-x-6 gap-y-1">
+            <span>
+              © <span className="tnum">{year}</span> {t("appName")}. {t("rights")}
+            </span>
             {FECHA_PUBLICACION && (
-              <>
-                <span>
-                  {es ? "Sitio actualizado el " : "Site updated "}
-                  <time dateTime={FECHA_PUBLICACION}>
-                    {new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[es ? "es" : "en"], {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                      timeZone: "UTC",
-                    })}
-                  </time>
-                </span>
-              </>
+              <span>
+                {es ? "Sitio actualizado el " : "Site updated "}
+                <time dateTime={FECHA_PUBLICACION}>
+                  {new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[es ? "es" : "en"], {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    timeZone: "UTC",
+                  })}
+                </time>
+              </span>
             )}
-            <span>ES + EN</span>
+          </p>
+          <div className="flex flex-wrap items-center gap-x-6">
             <a
               href={REPOSITORIO}
               target="_blank"

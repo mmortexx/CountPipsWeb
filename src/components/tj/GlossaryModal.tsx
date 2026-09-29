@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Search, BookOpen, ChevronDown, Clock } from "lucide-react";
+import { Search, BookOpen, ChevronDown } from "lucide-react";
 
 import {
   Dialog,
@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Chip } from "@/components/tj/Chip";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { useLang } from "@/lib/i18n";
 import { paraBuscar } from "@/lib/busqueda";
@@ -31,10 +30,9 @@ import {
  *
  * Features:
  *  - Search input (filters by term name + definition, case-insensitive).
- *  - Category filter chips AND a `<select>` dropdown (both control the same
- *    active category — chips for mouse users, dropdown for keyboard/power users).
+ *  - One row of family filter buttons (`.tj-filtro`).
  *  - Live count of terms matching the current filter.
- *  - Collapsed cards by default; expandable via click or keyboard.
+ *  - Collapsed rows by default; expandable via click or keyboard.
  *  - Keyboard navigation: ArrowUp/ArrowDown moves focus, Enter toggles
  *    expand, Home/End jump to first/last. Roving-tabindex style.
  *  - "Recently viewed" section at the top: the last 3 expanded terms,
@@ -260,12 +258,9 @@ export function GlossaryModal({
         {/* Header — accent eyebrow + bilingual title + subtitle */}
         <DialogHeader className="px-6 pt-6 pb-4 text-left">
           <div className="flex justify-start">
-            <Eyebrow>{es ? "Glosario congelado" : "Frozen glossary"}</Eyebrow>
+            <Eyebrow>{es ? "Glosario" : "Glossary"}</Eyebrow>
           </div>
-          <DialogTitle
-            className="mt-3 font-semibold tracking-[-0.01em] text-primary"
-            style={{ fontSize: "1.5rem" }}
-          >
+          <DialogTitle className="t-h3 mt-3 text-primary">
             {es
               ? "Términos de trading, sin traducir"
               : "Trading terms, in plain words"}
@@ -295,52 +290,28 @@ export function GlossaryModal({
           </div>
         </div>
 
-        {/* Filter row: category chips + native dropdown + live count */}
+        {/* Familias: un solo control. Convivía con un desplegable que hacía
+            lo mismo; los botones ya se recorren con Tab. */}
         <div className="px-6 pb-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex flex-wrap gap-1.5">
-              {GLOSSARY_CATEGORIES.map((c) => {
-                const active = activeCat === c.id;
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    onClick={() => setActiveCat(c.id)}
-                    aria-pressed={active}
-                  >
-                    <Chip variant={active ? "accent" : "neutral"}>
-                      {es ? c.es : c.en}
-                    </Chip>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Native select — alternative entry point for keyboard / power users */}
-            <div className="relative ml-auto">
-              <select
-                value={activeCat}
-                onChange={(e) =>
-                  setActiveCat(e.target.value as GlossaryCategory | "all")
-                }
-                aria-label={es ? "Filtrar por categoría" : "Filter by category"}
-                className="tj-campo appearance-none h-9 pl-3 pr-8 text-sm text-secondary outline-none cursor-pointer"
+          <div
+            className="flex flex-wrap gap-1.5"
+            role="group"
+            aria-label={es ? "Filtrar por familia" : "Filter by family"}
+          >
+            {GLOSSARY_CATEGORIES.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                className="tj-filtro"
+                onClick={() => setActiveCat(c.id)}
+                aria-pressed={activeCat === c.id}
               >
-                {GLOSSARY_CATEGORIES.map((c) => (
-                  <option key={c.id} value={c.id} className="bg-background text-primary">
-                    {es ? c.es : c.en}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 size-4 text-tertiary"
-                aria-hidden="true"
-              />
-            </div>
+                {es ? c.es : c.en}
+              </button>
+            ))}
           </div>
 
-          {/* Live count of matching terms */}
-          <p className="mt-2.5 text-xs text-tertiary tnum">
+          <p className="mt-3 text-[13px] text-tertiary tnum">
             {filtered.length === 0
               ? es
                 ? "0 términos"
@@ -356,18 +327,13 @@ export function GlossaryModal({
           </p>
         </div>
 
-        {/* Hairline divider between controls and list */}
-        <div className="divider-grad" />
-
-        {/* Scrollable list of term cards */}
-        <div className="min-h-0 flex-1 overflow-y-auto custom-scroll px-6 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto custom-scroll border-t border-[var(--ficha-division)] px-6 py-4">
           {/* Recently viewed — last 3 expanded terms, persisted in localStorage */}
           {recentTerms.length > 0 && (
             <div className="mb-4">
-              <div className="flex items-center gap-1.5 mb-2 text-[12px] text-tertiary font-semibold">
-                <Clock className="size-3" aria-hidden="true" />
-                {es ? "Vistos recientemente" : "Recently viewed"}
-              </div>
+              <p className="m-0 mb-2 text-[13px] text-tertiary">
+                {es ? "Vistos hace poco" : "Recently viewed"}
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {recentTerms.map((g) => (
                   <button
@@ -394,8 +360,10 @@ export function GlossaryModal({
                       setExpanded((prev) => new Set(prev).add(g.term));
                     }}
                     aria-label={es ? `Abrir ${g.term}` : `Open ${g.term}`}
+                    className="tj-filtro"
+                    lang="en"
                   >
-                    <Chip variant="accent">{g.term}</Chip>
+                    {g.term}
                   </button>
                 ))}
               </div>
@@ -424,7 +392,7 @@ export function GlossaryModal({
               }
               tabIndex={0}
               onKeyDown={handleListKeyDown}
-              className="grid gap-2.5 outline-none"
+              className="m-0 border-t border-[var(--ficha-division)] p-0 outline-none"
             >
               {filtered.map((g, i) => {
                 const cat = GLOSSARY_CATEGORIES.find((c) => c.id === g.category);
@@ -438,24 +406,18 @@ export function GlossaryModal({
                     aria-selected={isActive}
                     data-glossary-index={i}
                     data-glossary-term={g.term}
+                    /* Filas con filete, no fichas: 57 cajas iguales una
+                       debajo de otra eran más marco que contenido. `min-w-0`
+                       para que la definición recortada no ensanche la lista. */
                     className={[
-                      /* `min-w-0`: la ficha es item de una rejilla, y un
-                         item de rejilla arranca con `min-width: auto`, o
-                         sea que no baja de lo que mide su contenido. La
-                         definicion lleva `truncate` —que es `nowrap`—, asi
-                         que su contenido es la FRASE ENTERA y la columna
-                         crecia con ella. Medido: 1.868 px de lista dentro
-                         de una caja de 670, 1.198 escondidos de lado, y la
-                         definicion cortada a media palabra contra el canto
-                         en vez de con sus puntos suspensivos. */
-                      "tj-paper tj-paper-dense min-w-0 rounded-[4px] border border-[rgb(var(--divider)/0.16)] p-4 transition-[border-color,box-shadow,background-color] cursor-pointer",
+                      "min-w-0 border-b border-[var(--ficha-division)] px-2 py-3.5 transition-colors cursor-pointer",
                       isActive
-                        ? "border-[var(--line-2)] bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
-                        : "hover:border-[rgb(var(--divider)/0.25)]",
+                        ? "bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                        : "hover:bg-[color-mix(in_srgb,var(--ink)_2.5%,transparent)]",
                     ].join(" ")}
                     onClick={() => toggleExpanded(g.term)}
                   >
-                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div className="flex items-baseline justify-between gap-3">
                       <div className="flex items-center gap-1.5 min-w-0">
                         {/* Expansion chevron — rotates when expanded */}
                         <ChevronDown
@@ -467,21 +429,25 @@ export function GlossaryModal({
                         />
                         {/* Term name — always English, accent, bold (frozen glossary) */}
                         <h3
-                          className="text-base font-semibold text-primary tracking-tight truncate"
+                          className="t-h5 m-0 text-primary truncate"
                           lang="en"
                         >
                           {g.term}
                         </h3>
                       </div>
-                      {/* Category chip — bilingual label */}
-                      <Chip variant="neutral">{es ? cat?.es : cat?.en}</Chip>
+                      {/* La familia solo dice algo cuando se ven todas. */}
+                      {activeCat === "all" && (
+                        <span className="shrink-0 text-[13px] text-tertiary">
+                          {es ? cat?.es : cat?.en}
+                        </span>
+                      )}
                     </div>
                     {/* Definition — in the active UI language.
                         Collapsed shows a single-line preview; expanded shows full text. */}
                     <p
                       className={[
-                        "mt-2 text-sm leading-relaxed",
-                        isExpanded ? "text-secondary" : "text-tertiary truncate",
+                        "m-0 mt-1.5 text-sm leading-relaxed",
+                        isExpanded ? "text-secondary" : "text-tertiary line-clamp-2",
                       ].join(" ")}
                     >
                       {es ? g.es : g.en}

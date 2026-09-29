@@ -99,8 +99,8 @@ export default async function TerminoEnPage({ params }: Props) {
         eyebrowEn={familia.en}
         titleEs={t.term}
         titleEn={t.term}
-        subtitleEs={familia.descEs}
-        subtitleEn={familia.descEn}
+        subtitleEs={t.es}
+        subtitleEn={t.en}
         padre={{ href: "/glosario", es: "Glosario", en: "Glossary" }}
         breadcrumbEs={t.term}
         breadcrumbEn={t.term}

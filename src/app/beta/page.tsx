@@ -54,8 +54,6 @@ export function BetaPage({ lang = "es" }: { lang?: "es" | "en" } = {}) {
         tono="registro"
         titleEs="Prueba CountPips antes de la apertura comercial."
         titleEn="Try CountPips before commercial launch."
-        titleHighlightEs="apertura comercial."
-        titleHighlightEn="commercial launch."
         subtitleEs="La demo pública te enseña el flujo. Este acceso anticipado es para quienes quieren llevar sus propios datos a un piloto privado, con invitación y sin pedir credenciales financieras."
         subtitleEn="The public demo shows the workflow. This early access is for people who want to bring their own data into a private pilot, by invitation and without sharing financial credentials."
         breadcrumbEs="Acceso anticipado"

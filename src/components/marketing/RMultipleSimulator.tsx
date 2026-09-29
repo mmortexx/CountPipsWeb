@@ -203,11 +203,11 @@ export function RMultipleSimulator() {
           <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
             {es ? (
               <>
-                El edge existe. <span className="text-gradient tj-frase-nueva">La varianza, también.</span>
+                El edge existe. <span className="tj-frase-nueva">La varianza, también.</span>
               </>
             ) : (
               <>
-                The edge is real. <span className="text-gradient tj-frase-nueva">So is variance.</span>
+                The edge is real. <span className="tj-frase-nueva">So is variance.</span>
               </>
             )}
           </h2>
@@ -350,16 +350,6 @@ export function RMultipleSimulator() {
             </div>
             <div ref={cajaGraficoRef}>
             <svg width={svgW} height={svgH} viewBox={`0 0 ${svgW} ${svgH}`} className="block max-w-full" aria-label={es ? "Abanico de caminos simulados" : "Fan of simulated paths"} role="img">
-              <defs>
-                <linearGradient id="rs-outer-band" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.14" />
-                  <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.04" />
-                </linearGradient>
-                <linearGradient id="rs-inner-band" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.30" />
-                  <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.12" />
-                </linearGradient>
-              </defs>
               {marcasY.map((v) => (
                 <g key={v}>
                   <line x1={padL} x2={svgW - padR} y1={yDe(v)} y2={yDe(v)} stroke="rgb(var(--divider) / 0.08)" strokeWidth="1" />
@@ -384,8 +374,8 @@ export function RMultipleSimulator() {
                 strokeWidth="1"
                 strokeDasharray="3 3"
               />
-              <path d={outerBandPath} fill="url(#rs-outer-band)" />
-              <path d={innerBandPath} fill="url(#rs-inner-band)" />
+              <path d={outerBandPath} fill="rgb(var(--accent-base) / 0.07)" />
+              <path d={innerBandPath} fill="rgb(var(--accent-base) / 0.16)" />
               <path d={toPath("mean")} fill="none" stroke="rgb(var(--accent-base))" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
               <path d={toPath("p50")} fill="none" stroke="var(--ink-2)" strokeWidth="1.5" strokeDasharray="4 3" strokeLinejoin="round" strokeLinecap="round" />
               {[0, Math.round(trades / 2), trades].map((t, i) => (

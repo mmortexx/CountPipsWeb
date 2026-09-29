@@ -75,27 +75,13 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
             definición. Por debajo de `lg` no cambia nada. */}
         <div className="lg:grid lg:grid-cols-[minmax(0,62ch)_minmax(0,17rem)] lg:items-start lg:gap-x-14">
         <div className="w-full max-w-[62ch]">
-          {/* LA DEFINICIÓN ES LA VOZ PRINCIPAL DE ESTA PÁGINA, Y VA A 19 px.
-              Bajarla a los 15 px del cuerpo la iguala con todo lo demás y
-              deja la única cosa que el visitante vino a leer distinguida
-              solo por el color. Es el mismo criterio por el que la
-              entradilla de los documentos legales se queda en 17 px: no es
-              cuerpo, es la entrada del documento. Ambas están escritas como
-              excepción en `tests/tipografias.test.ts`.
-
-              A 19 px el renglón cabe; a 15 px se iba a 92 caracteres —lo
-              cazó `scripts/medida.mjs`—, porque cuanta menos letra, más
-              texto entra en el mismo ancho. */}
-          <Reveal>
-            <p className="m-0 t-lede text-primary">
-              {es ? termino.es : termino.en}
-            </p>
-          </Reveal>
-
+          {/* La definición es la entradilla de la cabecera (PageHeader), a
+              `t-lede` como la de cualquier página: aquí debajo abría un
+              segundo bloque a 150 px del titular. */}
           {/* Fórmula, cuando el término es cuantitativo */}
           {formula && (
             <Reveal delay={0.08}>
-              <figure className="tj-ficha m-0 mt-9">
+              <figure className="tj-ficha m-0">
                 <p className="tj-ficha-barra m-0">{es ? "Fórmula" : "Formula"}</p>
                 <div className="tj-ficha-cuerpo">
                 <p className="m-0 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary">
@@ -160,8 +146,8 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                     </li>
                   ))}
                 </ul>
-                {/* La descripción de la familia ya es el subtítulo de la
-                    página; aquí queda la puerta a la familia entera. */}
+                {/* La familia es la ceja de la página; aquí queda la puerta
+                    a la familia entera. */}
                 <Link
                   href={`/glosario#${termino.category}`}
                   className="cta cta--secundario mt-3 h-11 text-[14px]"

@@ -128,8 +128,6 @@ export function SeguridadBody() {
         tono="capitulo"
         titleEs="Tus datos, en tu equipo."
         titleEn="Your data, on your machine."
-        titleHighlightEs="en tu equipo."
-        titleHighlightEn="on your machine."
         subtitleEs={RESUMEN_SEGURIDAD.es}
         subtitleEn={RESUMEN_SEGURIDAD.en}
         padre={{ href: "/features", es: "Características", en: "Features" }}
@@ -143,7 +141,7 @@ export function SeguridadBody() {
       <Integrations />
 
       <FeaturePageNav current="seguridad" />
-      <FinalCTANew />
+      <FinalCTANew variante="producto" />
       <TableOfContents />
     </>
   );

@@ -48,11 +48,11 @@ export function DataFlowComparison() {
           <h2 className="t-h2 m-0 text-primary">
             {es ? (
               <>
-                Añade una operación. <span className="text-gradient">Mira a dónde va.</span>
+                Añade una operación. Mira a dónde va.
               </>
             ) : (
               <>
-                Add a trade. <span className="text-gradient">Watch where it goes.</span>
+                Add a trade. Watch where it goes.
               </>
             )}
           </h2>

@@ -57,8 +57,6 @@ export function AvisoLegalBody() {
         tono="documento"
         titleEs="Aviso legal."
         titleEn="Legal notice."
-        titleHighlightEs="legal."
-        titleHighlightEn="notice."
         subtitleEs="Quién está detrás de este sitio, para qué existe y en qué condiciones se ofrece."
         subtitleEn="Who is behind this site, what it exists for and on what terms it is offered."
         breadcrumbEs="Aviso legal"

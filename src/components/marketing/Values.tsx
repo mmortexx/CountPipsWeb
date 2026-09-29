@@ -91,11 +91,11 @@ export function Values() {
           titulo={
             es ? (
               <>
-                Lo que <span className="text-gradient">creemos.</span>
+                Lo que creemos.
               </>
             ) : (
               <>
-                What we <span className="text-gradient">believe.</span>
+                What we believe.
               </>
             )
           }

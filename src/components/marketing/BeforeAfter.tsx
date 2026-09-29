@@ -29,15 +29,14 @@ export function BeforeAfter() {
       <div className="tj-container">
         <SectionHeader
           composicion="partida"
-          etiqueta={es ? "Antes y después" : "Before and after"}
           titulo={
             es ? (
               <>
-                El mismo trader. <span className="text-gradient tj-frase-nueva">Otra forma de mirarse.</span>
+                El mismo trader. <span className="tj-frase-nueva">Otra forma de mirarse.</span>
               </>
             ) : (
               <>
-                The same trader. <span className="text-gradient tj-frase-nueva">A different way to look.</span>
+                The same trader. <span className="tj-frase-nueva">A different way to look.</span>
               </>
             )
           }

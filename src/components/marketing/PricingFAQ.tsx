@@ -30,13 +30,15 @@ export function PricingFAQ() {
       className="section-tight relative overflow-clip scroll-mt-24"
     >
 
-      <div className="relative z-10 tj-container">
+      {/* Titular a la izquierda y respuestas en la segunda columna, en
+          la línea del resto de la página. Centrada y a 768 px no
+          arrancaba en ninguna línea del sistema: una FAQ no es un cierre. */}
+      <div className="relative z-10 tj-container grid gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-x-16 xl:gap-x-24">
         <SectionHeader
-          composicion="centrada"
           titulo={es ? (
-            <>Lo que casi todos <span className="text-gradient">quieren saber.</span></>
+            <>Lo que casi todos quieren saber.</>
           ) : (
-            <>What almost everyone <span className="text-gradient">wants to know.</span></>
+            <>What almost everyone wants to know.</>
           )}
           entradilla={es
             ? "Cuatro respuestas rápidas sobre la demo, el alcance y el acceso anticipado."
@@ -44,7 +46,7 @@ export function PricingFAQ() {
         />
 
         <Reveal delay={0.1} y={28}>
-          <div className="mt-10 max-w-3xl mx-auto border-t border-[var(--line)]">
+          <div className="border-t border-[var(--line)]">
             <Accordion
               type="single"
               collapsible
@@ -79,7 +81,7 @@ export function PricingFAQ() {
           {/* Inline CTA to the full FAQ page. */}
           <p
             data-entra="4"
-            className="mt-5 text-center text-sm text-tertiary"
+            className="mt-5 text-sm text-tertiary"
           >
             {es ? "¿Más dudas?" : "More questions?"}{" "}
             <a

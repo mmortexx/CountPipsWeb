@@ -133,8 +133,6 @@ export function MetricasBody() {
         tono="capitulo"
         titleEs="Métricas que separan un edge real de una racha."
         titleEn="Metrics that separate a real edge from a streak."
-        titleHighlightEs="edge real."
-        titleHighlightEn="real edge."
         subtitleEs="40+ ratios institucionales calculados de tus operaciones. Sharpe, Sortino, Calmar, profit factor, expectancy en R. No gráficos bonitos: números con su muestra y su intervalo de confianza."
         subtitleEn="40+ institutional ratios computed from your trades. Sharpe, Sortino, Calmar, profit factor, expectancy in R. Not pretty charts: numbers with their sample size and confidence interval."
         padre={{ href: "/features", es: "Características", en: "Features" }}
@@ -149,7 +147,7 @@ export function MetricasBody() {
 
       <FeaturePageNav current="metricas" />
 
-      <FinalCTANew />
+      <FinalCTANew variante="producto" />
       <TableOfContents />
     </>
   );

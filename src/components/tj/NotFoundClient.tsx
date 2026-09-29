@@ -85,7 +85,7 @@ export function NotFoundClient() {
     >
       <div className="relative text-center max-w-xl mx-auto">
         <div
-          className="tj-alza font-serif font-normal tracking-[-0.03em] leading-[0.9] text-gradient [font-variant-numeric:lining-nums]"
+          className="tj-alza font-serif font-normal tracking-[-0.03em] leading-[0.9] [font-variant-numeric:lining-nums]"
           style={{ fontSize: "clamp(6rem, 18vw, 12rem)" }}
         >
           404
@@ -155,12 +155,12 @@ export function NotFoundClient() {
             <li key={tile.href}>
               <Link
                 href={tile.href}
-                className="link-underline-host block min-h-[56px] rounded-[4px] px-4 py-3.5 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)]"
+                className="link-underline-host block min-h-[56px] py-3.5"
               >
                 <span className="block text-sm font-semibold text-primary">
                   <span className="link-underline">{tile.label}</span>
                 </span>
-                <span className="mt-1 block text-xs text-secondary leading-snug">
+                <span className="mt-1 block text-sm text-secondary leading-snug">
                   {tile.desc}
                 </span>
               </Link>

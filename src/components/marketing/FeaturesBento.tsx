@@ -59,11 +59,11 @@ export function FeaturesBento({
           <h2 className="t-h2 m-0 text-primary text-balance">
             {es ? (
               <>
-                Todo lo que una mesa profesional espera de un <span className="text-gradient">diario</span>.
+                Todo lo que una mesa profesional espera de un diario.
               </>
             ) : (
               <>
-                Everything a professional desk expects from a <span className="text-gradient">journal</span>.
+                Everything a professional desk expects from a journal.
               </>
             )}
           </h2>

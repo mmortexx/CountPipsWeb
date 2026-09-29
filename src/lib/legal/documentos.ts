@@ -300,9 +300,9 @@ const cookies: DocumentoLegal = {
   tituloEs: "Política de cookies",
   tituloEn: "Cookie policy",
   entradaEs:
-    "Las preferencias técnicas se guardan localmente. La analítica opcional solo se activa si la aceptas y puede usar almacenamiento de PostHog para recordar tu consentimiento.",
+    "Abajo está todo lo que se guarda en tu navegador, por qué sale el aviso aunque casi no haya cookies y cómo borrarlo.",
   entradaEn:
-    "Technical preferences are stored locally. Optional analytics only starts if you accept it and may use PostHog storage to remember your consent.",
+    "Below: everything stored in your browser, why the notice appears even though there are hardly any cookies, and how to clear it.",
   descripcionEs:
     "Preferencias locales y analítica opcional de CountPips: qué guarda tu navegador y cómo retirar el consentimiento.",
   descripcionEn:
@@ -555,8 +555,8 @@ const avisoLegal: DocumentoLegal = {
   tituloEs: "Aviso legal",
   tituloEn: "Legal notice",
   entradaEs:
-    "Quién está detrás de este sitio y en qué condiciones se ofrece.",
-  entradaEn: "Who is behind this site and on what terms it is offered.",
+    "Cinco apartados breves: titular, objeto, condiciones de acceso, contenido y legislación aplicable.",
+  entradaEn: "Five short sections: owner, purpose, terms of access, content and governing law.",
   descripcionEs:
     "Identificación del responsable de la web de CountPips y condiciones generales de acceso.",
   descripcionEn:

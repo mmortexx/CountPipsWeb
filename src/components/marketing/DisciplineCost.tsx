@@ -175,11 +175,11 @@ export function DisciplineCost() {
             >
               {es ? (
                 <>
-                  Lo que tu <span className="text-gradient">indisciplina</span> te cuesta.
+                  Lo que tu indisciplina te cuesta.
                 </>
               ) : (
                 <>
-                  What your <span className="text-gradient">indiscipline</span> costs you.
+                  What your indiscipline costs you.
                 </>
               )}
             </h2>

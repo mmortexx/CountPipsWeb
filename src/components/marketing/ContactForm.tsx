@@ -159,9 +159,9 @@ export function ContactForm() {
           <SectionHeader
             etiqueta={es ? "Contacto" : "Contact"}
             titulo={es ? (
-              <>¿No encuentras tu <span className="text-gradient">respuesta?</span></>
+              <>¿No encuentras tu respuesta?</>
             ) : (
-              <>Can’t find your <span className="text-gradient">answer?</span></>
+              <>Can’t find your answer?</>
             )}
             entradilla={es
               ? "Escríbenos. Contesta quien desarrolla CountPips, en español o en inglés."

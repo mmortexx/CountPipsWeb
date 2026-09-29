@@ -88,10 +88,10 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
 
           {titularIncompleto && (
             <Reveal delay={0.05}>
-              <div
-                className="mt-6 border-y border-[var(--line-2)] py-4"
-              >
-                <p className="medida m-0 text-[14px] leading-relaxed text-secondary">
+              {/* La medida va en la caja y no en el párrafo: los filetes
+                  tienen que acabar donde acaba el texto. */}
+              <div className="medida mt-6 border-y border-[var(--line-2)] py-4 text-[14px]">
+                <p className="m-0 leading-relaxed text-secondary">
                   <strong className="text-primary">
                     {es ? "Documento en preparación. " : "Draft document. "}
                   </strong>
@@ -209,23 +209,37 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
 
   const cabeceras = es ? bloque.cabecerasEs : bloque.cabecerasEn;
   return (
-    /* La tabla se desplaza dentro de su propia caja. Una tabla de tres
-       columnas con frases dentro no cabe en 376 px, y sin este envoltorio
-       la que se desplazaría sería la página entera.
-
-       `tj-fila-sigue` añade el aviso de que sigue: sin él, la última
-       columna queda partida contra el canto y eso no se lee como «hay
-       más a la derecha» sino como una tabla cortada. Medido a 390 px:
-       552 px de contenido en 358. */
-    <div className="tj-fila-sigue tj-fila-sigue--sin-reserva -mx-1 overflow-x-auto px-1">
-      <table className="w-full min-w-[34rem] border-collapse text-left text-[14px]">
+    <>
+    {/* En móvil, una ficha por fila: tres columnas con frases dentro no
+        caben en 358 px, y desplazar la tabla de lado dejaba la tercera
+        cortada contra el canto. La primera celda nombra la fila. */}
+    <div className="border-t sm:hidden" style={{ borderColor: "rgb(var(--divider) / 0.16)" }}>
+      {bloque.filas.map((f, i) => {
+        const [nombre, ...resto] = es ? f.es : f.en;
+        return (
+          <div key={i} className="border-b py-3.5" style={{ borderColor: "rgb(var(--divider) / 0.08)" }}>
+            <p className="m-0 text-[14px] font-medium text-primary">{nombre}</p>
+            <dl className="m-0 mt-2 grid gap-y-1.5 text-[14px] leading-[1.6]">
+              {resto.map((c, j) => (
+                <div key={j}>
+                  <dt className="text-[13px] text-tertiary">{cabeceras[j + 1]}</dt>
+                  <dd className="m-0 text-secondary">{c}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        );
+      })}
+    </div>
+    <div className="hidden sm:block">
+      <table className="w-full border-collapse text-left text-[14px]">
         <thead>
           <tr>
             {cabeceras.map((c) => (
               <th
                 key={c}
                 scope="col"
-                className="border-b px-3 py-2.5 align-bottom text-[12px] font-semibold text-tertiary"
+                className="border-b px-3 py-2.5 align-bottom text-[13px] font-medium text-tertiary"
                 style={{ borderColor: "rgb(var(--divider) / 0.16)" }}
               >
                 {c}
@@ -253,5 +267,6 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
         </tbody>
       </table>
     </div>
+    </>
   );
 }

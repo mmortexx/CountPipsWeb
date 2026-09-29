@@ -91,8 +91,6 @@ export default async function HerramientaEnPage({ params }: Props) {
         eyebrowEn="Free tool"
         titleEs={h.h1Es}
         titleEn={h.h1En}
-        titleHighlightEs={h.resaltaEs}
-        titleHighlightEn={h.resaltaEn}
         subtitleEs={h.subtituloEs}
         subtitleEn={h.subtituloEn}
         padre={{ href: "/herramientas", es: "Herramientas", en: "Tools" }}

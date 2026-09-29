@@ -88,30 +88,30 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
     <nav aria-label={es ? "Ejes del producto" : "Product axes"} className="section-tight relative">
       <div className="relative tj-container">
         <p className="eyebrow mb-6">{es ? "Sigue explorando" : "Keep exploring"}</p>
-        <ol className="m-0 border-t border-[var(--line)] p-0">
+        {/* Tres columnas con filete arriba, como los apartados de un
+            informe: en fila de tres filetes horizontales, esta lista, el
+            filete del cierre y el del pie eran tres finales seguidos. */}
+        <ol className="m-0 grid list-none p-0 md:grid-cols-3 md:gap-x-8">
           {ORDER.map((axis) => {
             const isActive = axis === current;
             const a = AXES[axis];
             return (
-              <li
-                key={axis}
-                className="border-b border-[var(--line)]"
-              >
+              <li key={axis} className="border-t border-[var(--line-2)]">
                 <Link
                   href={a.href}
                   aria-current={isActive ? "page" : undefined}
-                  className="group grid min-h-[72px] grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.6)]"
+                  className="group grid min-h-[72px] grid-cols-[minmax(0,1fr)_auto] items-start gap-3 py-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.6)]"
                 >
                   <span className="min-w-0">
-                    <span className="block text-[clamp(1.125rem,1.6vw,1.375rem)] font-medium text-primary transition-colors group-hover:text-secondary">
+                    <span className="t-h4 block text-primary transition-colors group-hover:text-secondary">
                       {es ? a.labelEs : a.labelEn}
                     </span>
-                    <span className="mt-0.5 block text-xs text-secondary leading-snug">
+                    <span className="mt-1 block text-sm text-secondary leading-snug">
                       {es ? a.descEs : a.descEn}
                     </span>
                   </span>
                   {isActive ? (
-                    <span className="tnum shrink-0 text-[12px] font-medium text-tertiary">
+                    <span className="shrink-0 pt-1 text-[13px] text-tertiary">
                       {es ? "Estás aquí" : "You are here"}
                     </span>
                   ) : (

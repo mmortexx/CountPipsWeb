@@ -9,7 +9,10 @@
  *
  *  · todo h1–h4 visible mida lo mismo que algún peldaño de titular;
  *  · todo bloque de texto visible (p, li, dd, blockquote con 40 caracteres
- *    o más) mida un peldaño de texto (11–16 px enteros) o uno de la escala.
+ *    o más) mida un peldaño de texto (11–16 px enteros) o uno de la escala;
+ *  · ningún tramo de un titular pinte otro color que el titular (la regla
+ *    de un solo tono; se quitó `.text-gradient`, y esto mira el color
+ *    calculado, no la clase, para cazar cualquier otra vía).
  *
  * Lo que atrapa es el tamaño escrito a mano: un `clamp()` suelto da
  * 17,28 o 18,72 px, y un `text-[17px]` en un h3 da un peldaño que no
@@ -127,6 +130,17 @@ for (const ancho of ANCHOS) {
           nt++;
           const px = parseFloat(getComputedStyle(el).fontSize);
           if (!vale(px, deTitular)) malos.push({ tipo: el.tagName.toLowerCase(), px, texto: el.textContent.trim().slice(0, 50) });
+          /* Un solo tono: ningún tramo del titular pinta otro color que el
+             titular entero, lo haga con la clase que lo haga. */
+          const tinta = (x) => { const s = getComputedStyle(x); return `${s.color}|${s.webkitTextFillColor}|${s.backgroundClip}`; };
+          const suya = tinta(el);
+          for (const d of el.querySelectorAll("*")) {
+            const conTexto = [...d.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim());
+            if (conTexto && tinta(d) !== suya) {
+              malos.push({ tipo: `${el.tagName.toLowerCase()} de dos tonos`, px, texto: el.textContent.trim().slice(0, 50) });
+              break;
+            }
+          }
         }
         for (const el of document.querySelectorAll("main p, main li, main dd, main blockquote")) {
           if (!fuera(el) || !visible(el) || el.closest("h1,h2,h3,h4")) continue;

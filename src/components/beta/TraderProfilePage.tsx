@@ -14,8 +14,6 @@ const DATA = {
   manual: {
     titleEs: "Tu criterio merece una pista de datos.",
     titleEn: "Your judgement deserves a data trail.",
-    highlightEs: "una pista de datos.",
-    highlightEn: "a data trail.",
     subtitleEs: "Registra la operación, revisa la ejecución y descubre qué setups, horarios y decisiones sostienen de verdad tu ventaja.",
     subtitleEn: "Log the trade, review the execution and discover which setups, sessions and decisions actually support your edge.",
     cards: [
@@ -27,8 +25,6 @@ const DATA = {
   prop: {
     titleEs: "Opera con tus reglas delante.",
     titleEn: "Trade with your rules in view.",
-    highlightEs: "tus reglas delante.",
-    highlightEn: "your rules in view.",
     subtitleEs: "La demo enseña un flujo para traders que operan con límites de pérdida, evaluaciones y una disciplina que no admite improvisación.",
     subtitleEn: "The demo shows a workflow for traders working with loss limits, evaluations and discipline that leaves no room for improvisation.",
     cards: [
@@ -85,8 +81,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
       <PageHeader
         titleEs={data.titleEs}
         titleEn={data.titleEn}
-        titleHighlightEs={data.highlightEs}
-        titleHighlightEn={data.highlightEn}
         subtitleEs={data.subtitleEs}
         subtitleEn={data.subtitleEn}
         breadcrumbEs={profile === "manual" ? "Operativa manual" : "Prop firms"}
@@ -368,7 +362,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         </section>
       )}
 
-      <FinalCTANew />
+      <FinalCTANew variante="empresa" />
     </>
   );
 }

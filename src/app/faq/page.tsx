@@ -108,8 +108,6 @@ export function FaqBody() {
         tono="registro"
         titleEs="Preguntas frecuentes."
         titleEn="Frequently asked questions."
-        titleHighlightEs="frecuentes."
-        titleHighlightEn="questions."
         subtitleEs="Todo lo que necesitas saber antes de probar CountPips o solicitar acceso anticipado."
         subtitleEn="Everything you need to know before trying CountPips or requesting early access."
         breadcrumbEs="FAQ"
@@ -120,7 +118,7 @@ export function FaqBody() {
           de significancia vive en Herramientas. */}
       <ContactForm />
 
-      <FinalCTANew />
+      <FinalCTANew variante="empresa" />
       <TableOfContents />
     </>
   );

@@ -89,8 +89,6 @@ export function DemoBody() {
         tono="instrumento"
         titleEs="La app, en tu navegador."
         titleEn="The app, in your browser."
-        titleHighlightEs="en tu navegador."
-        titleHighlightEn="in your browser."
         subtitleEs="No es un vídeo ni una galería: explora el recorrido esencial de CountPips con datos de muestra, sin registro ni instalación."
         subtitleEn="Not a video or a gallery: explore CountPips' essential workflow with sample data, no sign-up and no installation."
         breadcrumbEs="Demo"

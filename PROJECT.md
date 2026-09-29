@@ -2699,6 +2699,97 @@ desenfoque y sin letra por debajo de 11 px; lo que salió:
   proyector y de /about marca un orden real; la de los legales es su
   índice. Las filas «Sí · Pro» de la comparativa son lecturas de datos.
 
+### Cuadragésima quinta tanda: dos revisores y el cromo (2026-09-29)
+
+Dos revisores (subagentes, solo lectura) miraron capturas de ventana de
+todas las rutas (1440 claro, 390 oscuro) y de los estados del cromo:
+cookies, menú, cajón, glosario, atajos. Entre los dos, cincuenta
+hallazgos. Cada uno se comprobó en el código o en el DOM antes de tocarlo.
+Los de las calculadoras (esqueleto común, deslizadores, cifra principal,
+formato de R) quedan para la tanda siguiente. Lo que se hizo:
+
+- **Superficies flotantes.** En oscuro el velo era pardo, del papel hueso
+  (medido: página 10,12,15 y velo 16,16,15), y aclaraba lo que tenía que
+  tapar. Ahora es neutro. Modales y hoja de atajos pasan a
+  `.tj-cristal--denso`, un escalón sobre la página y con radio 6 (tenían
+  4). El cajón, al mismo tono, y su fundido final con su color. El título
+  del glosario pedía `t-h3` y salía a 18 px: `DialogTitle` traía
+  `text-lg`, y una utilidad gana a la escala. El glosario pierde el
+  desplegable que duplicaba los filtros, las 57 fichas con caja (ahora
+  filas con filete, con la familia solo cuando se ven todas), el reloj de
+  «recientes» y la ceja «Glosario congelado».
+- **Un control de filtro.** `.tj-filtro` sirve al explorador de /features y
+  a las familias del glosario. Tiene el filete y el elegido del
+  segmentado, pero va suelto porque aquí se marca más de uno. El
+  explorador pintaba el elegido en tinta invertida; «Limpiar» deja de
+  llevar ✕.
+- **Captura del producto.** En claro se fundía a blanco en su cuarto de
+  abajo y en oscuro iba en un bisel con sombra de 80 px. Ahora es el mismo
+  marco en los dos temas: filete de 1 px, radio 6 y corte limpio.
+- **Precios.** La FAQ estaba centrada a 768 px y no arrancaba en ninguna
+  línea de la retícula; pasa a dos columnas. Las tarjetas, a ancho de
+  contenedor (antes 960 px centrados). La reserva de dos renglones de la
+  descripción queda solo entre 768 y 1279 px. Las notas, alineadas a la
+  izquierda.
+- **Tablas en móvil.** La comparativa de /pricing cortaba la columna de
+  CountPips a mitad de palabra y escondía la tercera. Ahora, por debajo de
+  768 px, es una ficha por fila. La de /features/seguridad cabe sin
+  desplazarse. Las tablas legales, por debajo de 640 px, también van en
+  fichas. Fuera los «← Desliza →» y los fundidos laterales. Las dos
+  comparativas pierden sus ✓/✕/–, que repetían «Sí/No/Parcial»; «Sí · Pro»
+  pasa a «Sí, en Pro».
+- **Navegación.** Una familia se llamaba «Laboratorio» en el menú y el
+  cajón y «Recursos» en el pie; «Precios» no estaba en la barra; «Acceso»
+  se leía como iniciar sesión; «Recursos» llevaba solo a /faq y «Demo»
+  repetía el botón de al lado. Ahora hay tres familias con el mismo nombre
+  en barra, cajón y pie (Producto, Recursos y Empresa) y la barra queda en
+  Producto▾ · Precios · Manual · Prop firms · Acceso anticipado. El menú
+  Producto se marca también en /herramientas, /glosario, /test y /faq, y
+  suma la FAQ. El cajón pierde su «Ver precios» duplicado. El subrayado
+  activo pasa a 1,5 px, el de las pestañas.
+- **Cierres.** «Deja de operar a ciegas» salía igual en nueve páginas, y en
+  /demo invitaba a explorar la demo. Ahora hay un texto por familia de
+  página: producto, empresa, precios y demo. En los ejes de /features la
+  lista «Sigue explorando» son tres columnas con filete arriba; antes eran
+  tres filetes horizontales justo encima del filete del cierre.
+- **Realce muerto.** Sesenta y tres tramos de titular iban envueltos en
+  `.text-gradient`, apagado por una sola regla, y el `PageHeader` recibía
+  `titleHighlight*` en 19 páginas y dos listas de datos. Quitadas la clase,
+  la prop y los campos. `escala.mjs` compara el color calculado de cada
+  tramo con el de su titular: vista en rojo (202 titulares de dos tonos)
+  sobre la compilación anterior con la clase recoloreada.
+- **Movimiento.** Todo a 12 px sin escala: el panel de la portada llegaba
+  tumbado (giro de 16°, escala 0,94, 90 px, 1,7 s); las secciones subían
+  44 px; los cristales, 32 px con escala; el mapa de calor, desde 0,6 con
+  rebote de muelle; el veredicto del Guardián, con desenfoque. Borrada la
+  entrada lateral de la hoja de ruta, que no usaba nadie.
+- **Detalles.**
+  - La serie «Balance» de la portada era azul, único color de datos que no
+    era dinero ni sesión; pasa a tinta terciaria.
+  - Degradados de los gráficos de ahorro, proyector y simulador R, a
+    rellenos planos.
+  - La definición del término sube a entradilla de su cabecera. La
+    descripción de la familia, igual en todos sus términos, se repetía
+    encima.
+  - Las entradillas de cookies y aviso legal repetían el subtítulo.
+  - La caja «Documento en preparación» tenía los filetes más anchos que su
+    texto.
+  - Ni guiones ni cortes en entradillas y botones a 390 px.
+  - La lista de la 404 queda alineada con el buscador.
+  - La barra final del pie: datos a la izquierda, enlaces a la derecha,
+    sin «ES + EN», que parecía un conmutador.
+  - Fuera dos cejas que repetían su titular: «Elige tu recorrido» y
+    «Antes y después».
+  - La demo conserva su ancho, pero su sombra difusa de 50 px pasa a la
+    corta de lo que flota.
+  - Contadores y rótulos de lectura a 11–12 px, a 13.
+- **Visto y sin cambio.**
+  - La viuda «desk.» del héroe inglés a 390: sigue la decisión de la tanda
+    43.
+  - El aviso de cookies no se alinea a la retícula: es una capa fija, no
+    contenido.
+  - El botón de subir sigue en escritorio.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:

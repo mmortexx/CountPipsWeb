@@ -15,11 +15,11 @@ interface PageHeaderProps {
   eyebrowEn?: string;
   titleEs: string;
   titleEn: string;
-  /** Tramo del titular que va en el tono secundario. */
-  titleHighlightEs?: string;
-  titleHighlightEn?: string;
-  subtitleEs: string;
-  subtitleEn: string;
+  /** Sin subtítulo cuando lo que sigue ya es la entradilla (la ficha de un
+   *  término abre con su definición; la descripción de la familia, igual
+   *  en todos sus términos, repetía una segunda entradilla encima). */
+  subtitleEs?: string;
+  subtitleEn?: string;
   breadcrumbEs: string;
   breadcrumbEn: string;
   /** Nivel intermedio de las migas, enlazado: «Inicio / Glosario / Drawdown». */
@@ -32,8 +32,6 @@ export function PageHeader({
   eyebrowEn,
   titleEs,
   titleEn,
-  titleHighlightEs,
-  titleHighlightEn,
   subtitleEs,
   subtitleEn,
   breadcrumbEs,
@@ -82,16 +80,18 @@ export function PageHeader({
         ) : null}
 
         <h1 data-entra="2" className={`t-h1 max-w-[22ch] text-primary ${eyebrowEs ? "mt-5" : ""}`}>
-          <Palabras texto={es ? titleEs : titleEn} realce={es ? titleHighlightEs : titleHighlightEn} />
+          <Palabras texto={es ? titleEs : titleEn} />
         </h1>
 
-        <p
-          data-entra="3"
-          className="mt-6 t-lede text-secondary"
-          style={{ maxWidth: "var(--medida, 62ch)" }}
-        >
-          {es ? subtitleEs : subtitleEn}
-        </p>
+        {subtitleEs ? (
+          <p
+            data-entra="3"
+            className="mt-6 t-lede text-secondary"
+            style={{ maxWidth: "var(--medida, 62ch)" }}
+          >
+            {es ? subtitleEs : subtitleEn}
+          </p>
+        ) : null}
       </div>
     </section>
   );

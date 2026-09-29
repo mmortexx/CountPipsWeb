@@ -794,6 +794,13 @@
          diversificación. */
       hyphenate-limit-chars: 12 5 4;
     }
+    /* Entradillas y botones, enteros: a 18–20 px el renglón es corto y un
+       guion en la segunda línea de una entradilla, o dentro de un botón del
+       segmentado, se ve más que el hueco que evitaba. */
+    .t-lede, .t-entradilla, .tj-segmentado *, .tj-filtro {
+      hyphens: manual;
+      -webkit-hyphens: manual;
+    }
   }
 
   /* Titular de dos frases: la segunda abre línea.
@@ -995,19 +1002,6 @@
   .text-secondary { color: rgb(var(--txt-secondary)); }
   .text-tertiary { color: rgb(var(--txt-tertiary)); }
 
-  /* ── Titulares de un solo tono (2026-09-26) ──────────────────────
-     `.text-gradient` marcaba la segunda mitad del titular en gris
-     terciario. Repetido en cada página era la firma de una plantilla, y
-     un titular institucional no subraya media frase: se lee entero. La
-     clase se queda —la llevan medio centenar de titulares— pero ya no
-     cambia el tono. Si algún día vuelve el realce, es esta regla. */
-  .text-gradient {
-    color: inherit;
-    -webkit-text-fill-color: currentColor;
-    background: none;
-    font-style: normal;
-  }
-
   /* ══════════════════════════════════════════════════════════════
      RITMO VERTICAL
      ══════════════════════════════════════════════════════════════
@@ -1088,17 +1082,6 @@
      del titular y por debajo de la placa de datos. Se protege lo que hay
      que leer sin tapar lo que hay que ver. */
 
-
-  .divider-grad {
-    height: 1px;
-    /* Filete neutro, con principio y final. Era un degradado que moría en
-       transparente por los dos extremos para que la línea "flotara"; en un
-       libro un filete separador no flota, empieza donde empieza la mancha y
-       acaba donde acaba, y eso es justo lo que lo hace leer como parte de
-       la retícula y no como un adorno superpuesto. Es la misma convención
-       de las tablas booktabs que manda en el resto del sitio. */
-    background-color: rgb(var(--divider) / 0.12);
-  }
 
   /* Aquí estaba `.aurora-bg`: tres manchas radiales superpuestas, una
      de acento y dos de colores que no existen en ninguna paleta de este
@@ -1800,19 +1783,6 @@ textarea:focus-visible,
     margin-right: 0;
   }
 }
-/* Misma idea, otro punto de ruptura: la tabla comparativa de /pricing pasa
-   a `overflow-x: clip` en `lg` —para que sus veintisiete filas cuelguen su
-   `view()` de algo que sí se mueve— y ahí deja de haber desplazamiento que
-   anunciar. Con `clip` tampoco hay puerto de desplazamiento, así que el
-   `position: sticky` del aviso no tendría contra qué anclarse. */
-@media (width >= 64rem) {
-  .tj-fila-sigue--hasta-lg::after {
-    content: none;
-  }
-  .tj-fila-sigue--hasta-lg > :last-child {
-    margin-right: 0;
-  }
-}
 
 @supports (animation-timeline: scroll()) {
   /* Sin nada que desplazar la línea de tiempo queda inactiva y la animación
@@ -2016,6 +1986,47 @@ textarea:focus-visible,
   outline: none;
   color: var(--ink);
   box-shadow: var(--seg-filos), inset 0 0 0 2px rgb(var(--accent-base) / 0.55);
+}
+
+/* FILTRO: botones sueltos que se encienden y apagan (el explorador de
+   /features, las familias del glosario). Mismo filete y mismo elegido
+   que el segmentado, pero separados: aquí se puede marcar más de uno o
+   ninguno, y un bloque continuo diría «elige uno». */
+.tj-filtro {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 0.875rem;
+  border: 1px solid var(--ficha-filo);
+  border-radius: 4px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: background-color 0.16s var(--ease-suave),
+              border-color 0.16s var(--ease-suave),
+              color 0.16s var(--ease-suave);
+}
+.tj-filtro:hover:not([aria-pressed="true"]) {
+  color: var(--ink);
+  border-color: var(--line-2);
+}
+.tj-filtro[aria-pressed="true"] {
+  background-color: color-mix(in srgb, var(--ink) 9%, transparent);
+  border-color: var(--line-2);
+  color: var(--ink);
+  font-weight: 600;
+}
+.tj-filtro:focus-visible {
+  outline: 2px solid rgb(var(--accent-base) / 0.55);
+  outline-offset: 2px;
+}
+@media (pointer: coarse), (max-width: 767px) {
+  .tj-filtro {
+    min-height: 44px;
+  }
 }
 
 /* ============================================================
@@ -2381,13 +2392,6 @@ button.icon-btn:hover > svg,
   .link-underline::after {
     display: none !important;
   }
-  /* Decorative accent hairline dividers collapse to plain white so
-     the underlying content reads cleanly on paper. (aurora-bg is
-     already hidden by step 4.) */
-  .divider-grad {
-    background: #ffffff !important;
-  }
-
   /* 8. Universal reset: solid black text on transparent bg, no
         shadows or borders. Forces P&L colors (which would print
         poorly) to legible black. Extended to `*::before` /
@@ -2412,17 +2416,6 @@ button.icon-btn:hover > svg,
     -webkit-print-color-adjust: economy !important;
   }
 
-  /* 9. Gradient-filled text (`.text-gradient`) relies on
-        background-clip: text which doesn't print — force solid
-        black so headings stay readable. */
-  .text-gradient,
-  .text-gradient * {
-    background: none !important;
-    -webkit-background-clip: initial !important;
-    background-clip: initial !important;
-    color: #000000 !important;
-    -webkit-text-fill-color: #000000 !important;
-  }
 
   /* 10. Reset the page wrapper backgrounds one more time so the
          dark theme baked into `.min-h-screen` / `.flex-1` doesn't
@@ -3289,10 +3282,8 @@ button.icon-btn:hover > svg,
 }
 .tj-lamina-marco {
   overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px var(--line);
-  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  border-radius: var(--radio-panel);
+  box-shadow: 0 0 0 1px var(--ficha-filo), var(--ficha-sombra);
 }
 .tj-lamina-ventana {
   line-height: 0;
@@ -3305,21 +3296,10 @@ button.icon-btn:hover > svg,
   display: none;
 }
 
-/* En tema oscuro la captura oscura va montada entera en un bisel. Sin el
-   desvanecido de abajo: el bisel enmarca la ventana completa y fundirlo se
-   comería su canto inferior. */
-:root:not([data-theme="light"]) .tj-lamina-marco {
-  padding: 10px;
-  border-radius: 8px;
-  background: rgb(255 255 255 / 0.035);
-  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06), 0 40px 80px -48px rgb(0 0 0 / 0.9);
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-:root:not([data-theme="light"]) .tj-lamina-ventana {
-  overflow: hidden;
-  border-radius: 5px;
-}
+/* El mismo marco en los dos temas: filete y corte limpio. Era un fundido a
+   blanco en claro (se comía el pie de la curva y el calendario) y un bisel
+   con sombra de 80 px en oscuro: dos idiomas para el mismo objeto. La
+   captura oscura no trae el filo de Windows y va sin recorte. */
 :root:not([data-theme="light"]) .tj-lamina-ventana img {
   margin: 0;
   width: 100%;
@@ -3549,10 +3529,10 @@ html:has(.tj-visor[open]) {
    página: solo aparecen al invocarlos, así que no salían en ninguna
    captura. Arrastraban tres cosas del estilo anterior:
 
-   1. VELO NEGRO PURO (`bg-black/50`). Sobre un material que imita papel
-      hueso, un negro absoluto no es una sombra: es un agujero. La tinta
-      de este estilo es cálida (#15130F) y el velo tiene que serlo
-      también, o el modal parece recortado de otra web.
+   1. EL VELO. Fue negro puro y luego pardo, del papel hueso; con la
+      paleta en blanco y negro reales el pardo aclaraba y viraba la página
+      en oscuro (medido: fondo 10,12,15 y velo 16,16,15). Un velo solo
+      oscurece: negro neutro en oscuro, tinta de la paleta en claro.
    2. SOMBRAS GRANDES (`shadow-2xl`). El papel no proyecta sombras
       difusas de 40 px; se apila. Un filete y un desplazamiento corto
       dicen "esto está encima" sin inventar una fuente de luz.
@@ -3567,7 +3547,7 @@ html:has(.tj-visor[open]) {
 :root[data-palette="clasico"] .bg-black\/60,
 :root[data-palette="clasico"] .bg-black\/45,
 :root[data-palette="clasico"] .bg-black\/40 {
-  background-color: rgb(21 19 15 / 0.5);
+  background-color: rgb(0 0 0 / 0.6);
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
@@ -3575,11 +3555,10 @@ html:has(.tj-visor[open]) {
 :root[data-theme="light"][data-palette="clasico"] .bg-black\/60,
 :root[data-theme="light"][data-palette="clasico"] .bg-black\/45,
 :root[data-theme="light"][data-palette="clasico"] .bg-black\/40 {
-  /* En papel el velo va más suave: sobre un fondo claro, medio punto de
+  /* En claro va más suave: sobre blanco, algo menos de medio punto de
      tinta ya separa el modal del resto y no apaga la página entera. */
-  background-color: rgb(26 23 20 / 0.38);
+  background-color: rgb(11 15 20 / 0.4);
 }
-:root[data-palette="clasico"] .shadow-2xl,
 :root[data-palette="clasico"] .shadow-lg {
   box-shadow:
     0 1px 0 rgb(var(--divider) / 0.1),
@@ -3862,13 +3841,13 @@ select.tj-campo:invalid {
 }
 
 /* ---- Panel de cifras ------------------------------------------------ */
+/* La serie de referencia va en tinta terciaria y discontinua. Fue azul: el
+   único color de datos del sitio que no era dinero ni sesión, y en la
+   curva más visible de la portada. El trazo ya la distingue. */
 .tj-metricas {
-  --serie-balance: #2a78d6;
+  --serie-balance: var(--ink-3);
   border-radius: var(--radio-panel);
   text-align: left;
-}
-:root:not([data-theme="light"]) .tj-metricas {
-  --serie-balance: #3987e5;
 }
 .tj-metricas-vista {
   margin-top: clamp(1.25rem, 2.2vw, 1.75rem);
@@ -4377,7 +4356,6 @@ select.tj-campo:invalid {
      usuario manda sobre cualquier matiz de la hoja. */
   .text-secondary,
   .text-tertiary,
-  .text-gradient,
   .eyebrow {
     color: rgb(var(--txt-primary)) !important;
   }
@@ -4609,7 +4587,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 @keyframes tj-entra-seccion {
   from {
     opacity: 0;
-    transform: translate3d(0, 44px, 0);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     opacity: 1;
@@ -4732,7 +4710,7 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 @keyframes tj-entra-pieza {
   from {
     opacity: 0;
-    transform: translate3d(0, 30px, 0);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     opacity: 1;
@@ -4741,88 +4719,19 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
 }
 
 /* ── EL SELLO: LO QUE NO SUBE, APARECE ────────────────────────────────
-   Los checks de la tabla comparativa, las insignias y los distintivos no
-   se deslizan hacia arriba como un párrafo: se estampan. Iban en
-   framer-motion con un muelle (`type:"spring", stiffness:320,
-   damping:16`) sobre `scale`, y ése era el único motivo por el que
-   `Comparison.tsx` —cuatro checks— arrastraba la biblioteca entera.
-
-   El rebote del muelle se reproduce con una curva de salida que se pasa
-   de largo y vuelve: `cubic-bezier(.34,1.56,.64,1)` es el equivalente
-   estándar de un muelle poco amortiguado, y a esta escala (de 0,6 a 1 en
-   un elemento de ~18 px) la diferencia con el muelle real no se ve.
-
-   Va con `animation-timeline: view()` como el resto: el sello se estampa
-   cuando la fila entra en pantalla, no al cargar la página. */
+   Las marcas pequeñas (celdas del mapa de calor, días del calendario) no
+   se deslizan como un párrafo: aparecen, con un fundido cuando su fila
+   entra en pantalla. Se estampaban con un muelle de escala (de 0,6 a 1,
+   con rebote): el movimiento de la casa es corto y sin escala.
+   Propiedades por separado y no el atajo `animation`: Lightning CSS se
+   comía el segundo elemento de una lista en el atajo sin avisar. */
 @supports (animation-timeline: view()) {
   [data-entra="sello"] {
-    animation-name: tj-estampa, tj-estampa-tinta;
-    animation-fill-mode: both, both;
-    animation-timeline: view(block), view(block);
-    animation-range: entry 0% entry 33%, entry 0% entry 24%;
-    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1), ease-out;
-  }
-}
-
-/* ── EL MUELLE, AHORA DE VERDAD ───────────────────────────────────────
-   `cubic-bezier(.34,1.56,.64,1)` es un muelle FINGIDO: se pasa de largo
-   una vez y vuelve en línea recta. Un muelle real cruza su destino,
-   vuelve, lo cruza otra vez y se asienta. `linear()` sí sabe describir
-   eso, porque aproxima la curva por puntos en vez de por dos tiradores.
-
-   Los cincuenta puntos de abajo son la solución de un muelle de masa 1
-   con ω₀ = 17,9 rad/s y ζ = 0,608, muestreada a lo largo de 520 ms. La
-   DENSIDAD es lo que decide si se lee como muelle: con once puntos el
-   asentamiento se ve escalonado, con cincuenta se ve continuo.
-
-   El sobreimpulso se ha ajustado al del bezier que sustituye —9 %, dos
-   cruces— A PROPÓSITO: aquí no se viene a hacer el sello más saltarín,
-   que sería el error de marketing que este proyecto lleva tres sesiones
-   evitando, sino a que el mismo gesto se asiente como se asienta un
-   muelle. En un check de 18 px la diferencia es de matiz; se hace
-   porque el matiz es gratis y porque el respaldo es exactamente lo que
-   había.
-
-   ── Y SÓLO SOBRE `transform` ────────────────────────────────────────
-   La regla anterior llevaba `opacity` y `transform` en la MISMA
-   animación, así que la tinta heredaba el sobreimpulso: la opacidad
-   pasaba de 1, se recortaba, y el check quedaba opaco a mitad del
-   recorrido esperando a que la escala terminara de asentarse. Ahora son
-   dos animaciones —la tinta con la curva de la casa y un rango más
-   corto, la escala con el muelle—, que es además la única forma de
-   aplicar un muelle sin que arrastre a lo que no debe.
-
-   ── OJO: NADA DE ATAJO `animation` CON LISTA ────────────────────────
-   Esta regla se escribió primero como `animation: a curva both, b curva
-   both`, y el compilador de estilos del proyecto (Lightning CSS, vía
-   Tailwind v4) **se comió el segundo elemento de la lista sin avisar**:
-   en la hoja servida solo quedaba `tj-estampa`, sin error ni en la
-   consola ni en el build. Con las propiedades por separado —
-   `animation-name`, `animation-fill-mode`, `animation-timeline`,
-   `animation-range`, `animation-timing-function`— las dos sobreviven.
-
-   Vale para cualquier animación múltiple de esta hoja: aquí el atajo
-   con lista no es equivalente a las longhands, es una pérdida
-   silenciosa. */
-@supports (animation-timing-function: linear(0, 1)) {
-  [data-entra="sello"] {
-    animation-timing-function:
-      linear(
-        0, 0.017, 0.061, 0.127, 0.207, 0.296, 0.389, 0.483, 0.574, 0.66,
-        0.739, 0.81, 0.872, 0.926, 0.971, 1.008, 1.037, 1.058, 1.074, 1.084,
-        1.089, 1.09, 1.088, 1.084, 1.078, 1.07, 1.062, 1.054, 1.045, 1.037,
-        1.03, 1.023, 1.016, 1.011, 1.006, 1.002, 0.999, 0.996, 0.995, 0.993,
-        0.992, 0.992, 0.992, 0.992, 0.993, 0.993, 0.994, 0.995, 0.995, 1
-      ),
-      var(--ease-suave);
-  }
-}
-@keyframes tj-estampa {
-  from {
-    transform: scale(0.6);
-  }
-  to {
-    transform: none;
+    animation-name: tj-estampa-tinta;
+    animation-fill-mode: both;
+    animation-timeline: view(block);
+    animation-range: entry 0% entry 24%;
+    animation-timing-function: ease-out;
   }
 }
 @keyframes tj-estampa-tinta {
@@ -4831,62 +4740,6 @@ body[data-drawer-open="true"] [aria-label="Back to top"] {
   }
   to {
     opacity: 1;
-  }
-}
-
-/* ── LA ENTRADA LATERAL DE LA HOJA DE RUTA ────────────────────────────
-   Las tarjetas del changelog entran desde su lado: las de la columna
-   izquierda desde la izquierda y las de la derecha desde la derecha, de
-   modo que el eje vertical del tiempo queda en medio y las fichas se
-   acercan a él. Iba en framer-motion con `initial={{x: ±48}}`.
-
-   Solo desde 768 px: por debajo la línea del tiempo se va al margen
-   izquierdo y las tarjetas se apilan en una sola columna, así que un
-   desplazamiento lateral no tendría a qué acercarse — y en un ancho de
-   390 px, 48 px de recorrido horizontal son el 12 % de la pantalla. */
-@supports (animation-timeline: view()) {
-  @media (min-width: 768px) {
-    [data-entra="izq"],
-    [data-entra="der"] {
-      animation: tj-entra-izq linear both;
-      animation-timeline: view(block);
-      animation-range: entry 0% entry 44%;
-    }
-    [data-entra="der"] {
-      animation-name: tj-entra-der;
-    }
-  }
-}
-@keyframes tj-entra-izq {
-  from {
-    opacity: 0;
-    transform: translate3d(-48px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes tj-entra-der {
-  from {
-    opacity: 0;
-    transform: translate3d(48px, 0, 0);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-/* Por debajo de 768 px las dos se comportan como una pieza normal: la
-   entrada sigue existiendo, pero sube en vez de deslizarse. */
-@supports (animation-timeline: view()) {
-  @media (max-width: 767.98px) {
-    [data-entra="izq"],
-    [data-entra="der"] {
-      animation: tj-entra-pieza linear both;
-      animation-timeline: view(block);
-      animation-range: entry 0% entry 36%;
-    }
   }
 }
 
@@ -5327,8 +5180,8 @@ svg [data-entra="sello"] {
   flex: none;
   background: linear-gradient(
     to top,
-    var(--paper-dense) 12%,
-    color-mix(in srgb, var(--paper-dense) 72%, transparent) 55%,
+    rgb(var(--cristal-tinte)) 12%,
+    color-mix(in srgb, rgb(var(--cristal-tinte)) 72%, transparent) 55%,
     transparent 100%
   );
 }
@@ -5384,7 +5237,7 @@ svg [data-entra="sello"] {
 .tj-emerge {
   opacity: 0;
   visibility: hidden;
-  transform: translateY(8px) scale(0.94);
+  transform: translateY(8px);
   transition:
     opacity 0.18s var(--ease-suave, ease),
     transform 0.18s var(--ease-suave, ease),
@@ -5485,7 +5338,7 @@ svg [data-entra="sello"] {
 @keyframes tj-sube-aviso {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -5572,6 +5425,10 @@ svg [data-entra="sello"] {
    El cajón y el velo transicionan con la curva institucional Fluent 2
    sin generar layout thrashing ni competir con el canvas del fondo. */
 .tj-cajon {
+  /* Un escalón por encima de la página, como los menús y el aviso de
+     cookies: en oscuro, del color de la página, bajo el velo parecía un
+     hueco. */
+  background-color: rgb(var(--cristal-tinte));
   transform: translate3d(100%, 0, 0);
   visibility: hidden;
   will-change: transform;
@@ -5806,7 +5663,7 @@ svg [data-entra="sello"] {
 @keyframes tj-enfoca {
   from {
     opacity: 0.1;
-    transform: translate3d(0, 22px, 0);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     opacity: 1;
@@ -5815,7 +5672,7 @@ svg [data-entra="sello"] {
 }
 @keyframes tj-asienta {
   from {
-    transform: translate3d(0, 32px, 0) scale(0.98);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     transform: none;
@@ -5901,12 +5758,11 @@ svg [data-entra="sello"] {
   .tj-cabecera .tj-container > :nth-child(4) { animation-delay: 0.42s; }
   .tj-hero > .tj-container:first-child > :nth-child(4) { animation-delay: 0.52s; }
   .tj-hero > .tj-container:first-child > :nth-child(n + 5) { animation-delay: 0.62s; }
-  /* El panel se levanta: llega tumbado hacia el fondo y se endereza, como
-     una pantalla que se pone de pie delante de quien mira. */
+  /* El panel sube 12 px, como todo lo demás. Llegaba tumbado (giro de
+     16°, escala 0,94, 90 px y 1,7 s): el único gesto de escaparate de un
+     sitio que por lo demás se mueve poco. */
   .tj-hero > .tj-container:nth-child(2) {
-    animation: tj-carga-panel 1.7s var(--ease-salida) 0.5s both;
-    transform-origin: 50% 0;
-    will-change: transform;
+    animation: tj-carga-panel 0.9s var(--ease-salida) 0.5s both;
   }
 
   /* Los enlaces del desplegable llegan uno detrás de otro. */
@@ -5928,7 +5784,7 @@ svg [data-entra="sello"] {
 @keyframes tj-carga {
   from {
     opacity: 0;
-    transform: translate3d(0, 20px, 0);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     opacity: 1;
@@ -5937,7 +5793,7 @@ svg [data-entra="sello"] {
 }
 @keyframes tj-carga-panel {
   from {
-    transform: perspective(1600px) translate3d(0, 90px, 0) rotateX(16deg) scale(0.94);
+    transform: translate3d(0, 12px, 0);
   }
   to {
     transform: none;
@@ -6143,7 +5999,6 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
 @keyframes tj-d-celda {
   from {
     opacity: 0;
-    transform: scale(0.82);
   }
 }
 @keyframes tj-d-marca {
@@ -6155,7 +6010,6 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   from {
     opacity: 0;
     transform: translate3d(0, 8px, 0);
-    filter: blur(4px);
   }
 }
 

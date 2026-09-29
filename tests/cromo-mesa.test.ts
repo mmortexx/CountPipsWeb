@@ -25,12 +25,16 @@ describe("Cromo de mesa", () => {
     expect(hero).not.toMatch(/tj-range/);
   });
 
-  it("el cajón móvil agrupa Producto, Operativa, Laboratorio y Empresa", () => {
+  /* Las mismas familias que el pie: un grupo no se llama «Laboratorio» en
+     un sitio y «Recursos» en otro. */
+  it("el cajón móvil agrupa Producto, Recursos y Empresa, como el pie", () => {
     const nav = leer("src/components/marketing/Navbar.tsx");
-    expect(nav).toMatch(/id: "producto"/);
-    expect(nav).toMatch(/id: "operativa"/);
-    expect(nav).toMatch(/id: "laboratorio"/);
-    expect(nav).toMatch(/id: "empresa"/);
+    const pie = leer("src/components/marketing/Footer.tsx");
+    expect(nav).toMatch(/id: "producto", es: "Producto"/);
+    expect(nav).toMatch(/id: "recursos", es: "Recursos"/);
+    expect(nav).toMatch(/id: "empresa", es: "Empresa"/);
+    expect(nav).not.toMatch(/Laboratorio|"operativa"/);
+    for (const t of ["Producto", "Recursos", "Empresa"]) expect(pie).toContain(`"${t}"`);
     expect(nav).toMatch(/DRAWER_GRUPOS\.map/);
   });
 
@@ -105,7 +109,8 @@ describe("Cromo de mesa", () => {
     expect(ejes).toMatch(/<ol /);
     // Tres ejes sin orden entre ellos: numerarlos «01/02/03» era plantilla.
     expect(ejes).not.toMatch(/padStart\(2, "0"\)/);
-    expect(ejes).not.toMatch(/md:grid-cols-3/);
+    // Tres columnas con filete arriba sí; tarjetas con caja o carrusel, no.
+    expect(ejes).not.toMatch(/overflow-x-auto|snap-x|rounded-|tj-ficha|tj-cristal/);
     expect(ejes).not.toMatch(/Desliza para explorar/);
   });
 

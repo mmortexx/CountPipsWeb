@@ -127,12 +127,12 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             {es ? (
               <>
                 Dos niveles. Una decisión{" "}
-                <span className="text-gradient">informada.</span>
+                informada.
               </>
             ) : (
               <>
                 Two tiers. One informed{" "}
-                <span className="text-gradient">decision.</span>
+                decision.
               </>
             )}
           </h2>
@@ -144,7 +144,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         </Reveal>
 
         <div className={`relative ${standalone ? "" : "mt-10"}`}>
-          <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 max-w-[60rem] mx-auto items-stretch">
+          <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 items-stretch">
           {plans.map((plan) => (
             <div key={plan.id} className="h-full">
               <PlanCard plan={plan} es={es} />
@@ -164,7 +164,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             está explicado que las condiciones se publican al abrir la
             venta, que hoy es la respuesta verdadera. */}
         <Reveal delay={0.2}>
-          <p className="mt-12 text-center text-[14px] text-tertiary">
+          <p className="mt-10 text-sm text-tertiary">
             {es ? "La demo es pública; la compra se abrirá con el lanzamiento. " : "The demo is public; purchase opens at launch. "}
             <Link
               href="/beta"
@@ -207,7 +207,10 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         </h3>
       </div>
 
-      <p className="mt-2 text-[15px] text-secondary leading-snug min-h-[2.75em]">
+      {/* Reserva de dos renglones solo donde la descripción de Pro parte en
+          dos (768–1279 px), para que los precios queden a la misma altura;
+          en una columna o a lo ancho sobraba y abría un hueco. */}
+      <p className="mt-2 text-[15px] text-secondary leading-snug md:min-h-[2.75em] xl:min-h-0">
         {plan.tagline}
       </p>
 
@@ -269,7 +272,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
 
       </div>
       <div className="flex-1 border-t border-[var(--ficha-division)] px-7 pt-6 pb-7 sm:px-9 sm:pb-9">
-      <p className="m-0 text-[11px] font-medium text-tertiary">
+      <p className="m-0 text-[13px] font-medium text-tertiary">
         {isPro ? (es ? "Todo lo de Core, y además" : "Everything in Core, plus") : (es ? "Incluye" : "Includes")}
       </p>
       <ul className="mt-4 space-y-3">

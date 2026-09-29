@@ -311,14 +311,8 @@ export function SavingsCalculator() {
               </span>
             </div>
             <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ height: "auto", display: "block" }} aria-label={es ? "Comparación de pago acumulado" : "Cumulative cost comparison"} role="img">
-              <defs>
-                <linearGradient id="sv-sub" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="rgb(var(--pnl-neg))" stopOpacity="0.26" />
-                  <stop offset="100%" stopColor="rgb(var(--pnl-neg))" stopOpacity="0.04" />
-                </linearGradient>
-              </defs>
               {/* subscription area (growing) */}
-              <path d={subAreaPath} fill="url(#sv-sub)" />
+              <path d={subAreaPath} fill="rgb(var(--pnl-neg) / 0.1)" />
               <path d={subPath} fill="none" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
               {/* CountPips flat line */}
               <line

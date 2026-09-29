@@ -108,9 +108,9 @@ export function Changelog() {
         <SectionHeader
           composicion="partida"
           titulo={es ? (
-            <>Qué está listo, <span className="text-gradient">qué validamos y qué sigue.</span></>
+            <>Qué está listo, qué validamos y qué sigue.</>
           ) : (
-            <>What’s ready, <span className="text-gradient">what we’re testing and what comes next.</span></>
+            <>What’s ready, what we’re testing and what comes next.</>
           )}
           entradilla={es
             ? "Separado entre entregado, acceso anticipado y futuro. Sin testimonios ni fechas inventadas: actualizamos esta página cuando haya evidencia."

@@ -77,8 +77,6 @@ export function GlosarioBody() {
         tono="registro"
         titleEs="Glosario de trading."
         titleEn="Trading glossary."
-        titleHighlightEs="de trading."
-        titleHighlightEn="glossary."
         /* La cifra sale de la lista: escrita a mano llegó a contradecir
            al contador de la caja de búsqueda. */
         subtitleEs={`${TERMINOS.length} términos, definidos como los usa alguien que opera y no como los define un diccionario. El nombre se queda en inglés a propósito: es como aparecen en tu plataforma y en cualquier comunidad.`}

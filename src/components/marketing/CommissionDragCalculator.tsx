@@ -109,11 +109,11 @@ export function CommissionDragCalculator() {
             <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
               {es ? (
                 <>
-                  Lo que se queda <span className="text-gradient">por el camino.</span>
+                  Lo que se queda por el camino.
                 </>
               ) : (
                 <>
-                  What stays <span className="text-gradient">along the way.</span>
+                  What stays along the way.
                 </>
               )}
             </h2>

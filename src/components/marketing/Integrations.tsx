@@ -35,11 +35,11 @@ export function Integrations() {
           composicion="apilada"
           titulo={es ? (
               <>
-                Importa desde <span className="text-gradient">tu plataforma.</span>
+                Importa desde tu plataforma.
               </>
             ) : (
               <>
-                Import from <span className="text-gradient">your platform.</span>
+                Import from your platform.
               </>
             )}
           entradilla={es

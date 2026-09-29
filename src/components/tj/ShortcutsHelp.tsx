@@ -231,20 +231,20 @@ export function ShortcutsHelp({
                desplazamiento. Los diez últimos atajos no se podían leer.
                Con tope y la lista en su propio desplazamiento, el panel
                nunca pasa de lo que queda de ventana bajo ese `pt`. */
-            className={`tj-hoja-atajos-hoja relative flex max-h-[calc(85svh-2rem)] w-full max-w-md flex-col tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] shadow-2xl overflow-hidden ${
+            className={`tj-hoja-atajos-hoja relative flex max-h-[calc(85svh-2rem)] w-full max-w-md flex-col tj-cristal tj-cristal--denso overflow-hidden ${
               saliendo ? "tj-panel-sale" : "tj-panel-entra"
             }`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b">
+            <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-4 border-b border-[var(--ficha-division)]">
               <div className="min-w-0">
                 <h2
                   id="tj-atajos-titulo"
-                  className="text-sm font-medium tracking-tight text-primary"
+                  className="t-h4 m-0 text-primary"
                 >
                   {es ? "Atajos de teclado" : "Keyboard shortcuts"}
                 </h2>
-                <p id="tj-atajos-sub" className="text-[12px] text-tertiary mt-0.5">
+                <p id="tj-atajos-sub" className="m-0 mt-1 text-sm text-secondary">
                   {es
                     ? "Muévete más rápido por la app."
                     : "Move faster through the app."}
@@ -260,7 +260,7 @@ export function ShortcutsHelp({
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label={es ? "Cerrar" : "Close"}
-                className="tj-no-print icon-btn shrink-0 w-8 h-8 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
+                className="tj-no-print icon-btn -mr-2 -mt-1.5 shrink-0 w-9 h-9 rounded-[4px] flex items-center justify-center text-tertiary hover:text-primary hover:bg-[rgb(var(--divider)/0.08)] transition-colors"
               >
                 <svg
                   width="14"

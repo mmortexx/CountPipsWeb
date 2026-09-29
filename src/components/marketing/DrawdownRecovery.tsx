@@ -140,11 +140,11 @@ export function DrawdownRecovery() {
             <h2 data-titular-herramienta className="t-h2 m-0 max-w-[24ch] text-primary">
               {es ? (
                 <>
-                  Cuesta más subir <span className="text-gradient">que caer.</span>
+                  Cuesta más subir que caer.
                 </>
               ) : (
                 <>
-                  The climb back <span className="text-gradient">is steeper.</span>
+                  The climb back is steeper.
                 </>
               )}
             </h2>

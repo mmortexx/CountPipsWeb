@@ -529,11 +529,11 @@ export function EquityProjector() {
           >
             {es ? (
               <>
-                Tu edge, <span className="text-gradient">compuesto</span> con rigor institucional.
+                Tu edge, compuesto con rigor institucional.
               </>
             ) : (
               <>
-                Your edge, <span className="text-gradient">compounded</span> with institutional rigor.
+                Your edge, compounded with institutional rigor.
               </>
             )}
           </h2>
@@ -1069,18 +1069,6 @@ export function EquityProjector() {
                       style={{ height: "auto", display: "block", shapeRendering: "geometricPrecision", textRendering: "geometricPrecision" }}
                       aria-label={es ? "Gráfico interactivo de proyección" : "Interactive projection chart"}
                     >
-                      <defs>
-                        <linearGradient id="eq-area-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.32" />
-                          <stop offset="60%" stopColor="rgb(var(--accent-base))" stopOpacity="0.10" />
-                          <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.01" />
-                        </linearGradient>
-                        <linearGradient id="eq-cone-grad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="rgb(var(--accent-base))" stopOpacity="0.14" />
-                          <stop offset="100%" stopColor="rgb(var(--accent-base))" stopOpacity="0.03" />
-                        </linearGradient>
-                      </defs>
-
                       {/* Rejilla Horizontal con Labels a la Izquierda */}
                       {chartData.gridYValues.map((gy, idx) => (
                         <g key={idx}>
@@ -1141,7 +1129,7 @@ export function EquityProjector() {
                       {showConfidenceCone && chartData.conePath && (
                         <path
                           d={chartData.conePath}
-                          fill="url(#eq-cone-grad)"
+                          fill="rgb(var(--accent-base) / 0.08)"
                           stroke="color-mix(in oklab, rgb(var(--accent-base)) 35%, transparent)"
                           strokeDasharray="3 3"
                           strokeWidth="1"
@@ -1149,7 +1137,7 @@ export function EquityProjector() {
                       )}
 
                       {/* Relleno & Curva Principal con Glow */}
-                      <path d={chartData.areaPath} fill="url(#eq-area-grad)" />
+                      <path d={chartData.areaPath} fill="rgb(var(--accent-base) / 0.05)" />
                       
                       <path
                         d={chartData.medianPath}

@@ -99,8 +99,9 @@ RADIOS:
 TIPOGRAFÍA:
   --font-sans  → Instrument Sans (400-700 variable) — cuerpo, rótulos, etiquetas y h3
   --font-serif → Newsreader (200-800 variable) — sólo h1 y h2, sin cursiva de realce
-  Letra mínima: 11 px. Titulares de un solo tono: `.text-gradient` ya no realza nada
-  (hereda el color); no se destaca una palabra dentro de un titular.
+  Letra mínima: 11 px (solo ejes y chips numéricos; rótulos de lectura, 13). Titulares
+  de un solo tono: no hay clase ni prop de realce (`.text-gradient` y `titleHighlight*`
+  se retiraron); `scripts/escala.mjs` falla si un tramo de un titular pinta otro color.
   ESCALA (globals.css, capa base; ninguna utilidad de tamaño junto a ella):
     t-display · t-h1 · t-h2 (sección) · t-h3 24/20 px (subsección, y todo h2 que
     titula un panel o un apartado: métricas de portada, /beta, legales, familias
@@ -114,14 +115,22 @@ TIPOGRAFÍA:
 MATERIALES CSS (definidos en globals.css):
   .tj-container   — caja de contenido única (1200 px + márgenes fluidos)
   .tj-paper       — tarjeta opaca (`--raised`)
-  .tj-paper-dense — superficie que flota sobre contenido (barra, cajón, menús; `--bg`)
+  .tj-paper-dense — superficie que flota sobre contenido (barra, menús; `--bg`)
+  Modales y hoja de atajos: `.tj-cristal--denso` (un escalón sobre la página, radio 6);
+  el cajón, del mismo tono. Velo neutro: negro al 60 % en oscuro, tinta al 40 % en claro.
   .tj-hoja        — canto de 1 px y radio 6 px; `.tj-hoja--pliego` añade sombra suave
   .tj-cristal     — hoja opaca de los paneles que flotan (menús, cajón, avisos): canto
                     de 1 px y sombra; sin desenfoque ni transparencia
   .cta / .cta--primario / .cta--secundario — llamadas a la acción
-  .tj-pestanas    — control segmentado de pantallas
+  .tj-pestanas    — pestañas de pantallas (subrayado de 1,5 px, el mismo que la barra)
+  .tj-segmentado  — elegir UNO de varios parámetros (bloque continuo)
+  .tj-filtro      — encender/apagar filtros sueltos (explorador, glosario); mismo elegido
   .tj-cierre      — bloque de cierre en tinta invertida
-  .tj-hero-producto / .tj-lamina-marco — marco de captura real del programa
+  .tj-hero-producto / .tj-lamina-marco — marco de captura real del programa: filete y
+                    corte limpio en los dos temas, sin fundido ni bisel
+  Tablas en móvil: fichas por fila (`md:hidden` / `sm:hidden`), nunca desplazamiento
+  lateral con «desliza». Gráficos: rellenos planos; color solo para dinero y sesión
+  (la serie de referencia va en tinta terciaria discontinua).
 
 TEMAS (Dark + Light, sincronizados):
   Cada token tiene DOBLE declaración en :root (dark) y :root[data-theme="light"].
@@ -383,6 +392,13 @@ MICRO-INTERACCIONES:
 - Enlaces sin flecha: `.link-underline` y `.cta--secundario` llevan un filete tenue
   a la vista que se entinta al pasar; en listas de enlaces, `--al-pasar`. Solo
   llevan flecha los saltos con dirección (Anterior/Siguiente, «desliza»).
+- Familias de navegación, con el mismo nombre en barra, cajón y pie: Producto
+  (Características, Demo, Precios, Operativa manual, Prop firms, Acceso anticipado),
+  Recursos (Test, Herramientas, Glosario, FAQ) y Empresa. La barra: Producto▾ ·
+  Precios · Manual · Prop firms · Acceso anticipado + «Ver la demo»; los recursos
+  viven en el menú Producto, que se marca activo también en sus páginas.
+- Cierre (`FinalCTANew`): un texto por familia de página (general en portada,
+  producto, empresa, precios, demo, herramienta, glosario), no uno para todas.
 - Navegación y pestañas: UN subrayado que viaja entre elementos (`.tj-nav-foco`,
   `SubrayadoPestanas`), no uno que se apaga y otro que se enciende.
 - Llamadas: sin elevación, sombra ni flecha al pasar; toda `.cta` se hunde al pulsar.
@@ -393,8 +409,9 @@ MICRO-INTERACCIONES:
   `aria-describedby`; resumen de 14 px junto al botón; el borde rojo lo pone
   `.tj-campo[aria-invalid="true"]` en globals.css (una utilidad `aria-invalid:`
   no gana a esa regla sin capa). La confirmación es texto, sin sello ni ✓.
-- Entradas (`Aparecer.tsx`): por tiempo, 12 px y fundido, sin escala ni
-  desenfoque, escalonadas entre hermanas; las capturas se abren apenas, como una
+- Entradas (`Aparecer.tsx`, keyframes `tj-*` de globals.css, panel de la portada
+  incluido): 12 px y fundido, sin escala, giro ni desenfoque; las marcas pequeñas
+  (`data-entra="sello"`) solo con fundido; escalonadas entre hermanas; las capturas se abren apenas, como una
   ventana (clip-path de un 3 %). La galería cambia de lámina con un fundido.
   PROHIBIDO: titulares que se enfocan desde borroso y textos que se escriben
   palabra a palabra fuera del h1 de portada.

@@ -221,9 +221,9 @@ export function FeatureExplorer() {
         <SectionHeader
           className="mb-8"
           titulo={es ? (
-            <>Elige el eje. <span className="text-gradient tj-frase-nueva">Sale lo que encaja.</span></>
+            <>Elige el eje. <span className="tj-frase-nueva">Sale lo que encaja.</span></>
           ) : (
-            <>Pick an axis. <span className="text-gradient tj-frase-nueva">See what fits.</span></>
+            <>Pick an axis. <span className="tj-frase-nueva">See what fits.</span></>
           )}
           entradilla={es
             ? "Todo lo que hace el programa. Marca uno o varios ejes y la lista se recorta a lo que hace de verdad en ese terreno."
@@ -241,12 +241,8 @@ export function FeatureExplorer() {
               <button
                 key={t.id}
                 onClick={() => toggle(t.id)}
-                className="inline-flex items-center min-h-[44px] px-3.5 rounded-[4px] border text-[14px] font-medium transition-[background-color,border-color,color] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-                style={{
-                  background: active ? "var(--ink)" : "transparent",
-                  borderColor: active ? "var(--ink)" : "var(--line-2)",
-                  color: active ? "var(--bg)" : "var(--ink-2)",
-                }}
+                type="button"
+                className="tj-filtro"
                 aria-pressed={active}
               >
                 {es ? t.labelEs : t.labelEn}
@@ -255,15 +251,11 @@ export function FeatureExplorer() {
           })}
           {hasSelection && (
             <button
+              type="button"
               onClick={() => setSelected([])}
-              className="inline-flex items-center gap-1.5 min-h-[44px] px-3 rounded-[4px] text-[13px] font-medium transition-colors"
-              style={{ color: "var(--ink-3)" }}
-              aria-label={es ? "Limpiar selección" : "Clear selection"}
+              className="link-underline inline-flex items-center min-h-[36px] px-2 text-sm text-secondary"
             >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-              {es ? "Limpiar" : "Clear"}
+              {es ? "Limpiar selección" : "Clear selection"}
             </button>
           )}
         </div>
@@ -272,7 +264,7 @@ export function FeatureExplorer() {
         {hasSelection ? (
           <div>
             <div className="mb-4 flex items-center justify-between">
-              <span className="tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>
+              <span className="tnum text-[13px] text-tertiary">
                 {es ? "En este recorte" : "In this cut"} · {fmtInt(topMatches.length, lang)}
               </span>
               {topMatches.length === 0 && (
@@ -287,7 +279,7 @@ export function FeatureExplorer() {
           // Empty state — show all features as a static grid
           <div>
             <div className="mb-4">
-              <span className="tnum" style={{ fontSize: 11, color: "var(--ink-3)" }}>
+              <span className="tnum text-[13px] text-tertiary">
                 {fmtInt(FEATURES.length, lang)} {es ? "características" : "features"}
               </span>
             </div>
@@ -317,14 +309,18 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
              La medida la pone ahora `.medida` en el propio párrafo. */
           className="grid content-start gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10 lg:grid-cols-1 lg:gap-1.5"
         >
-          <h3 className="m-0 flex items-baseline gap-2.5 t-h5" style={{ color: "var(--ink)" }}>
-            {es ? f.titleEs : f.titleEn}
+          {/* La insignia va junto al titular, no dentro: dentro, un lector
+              anunciaba «Monte CarloPro» y el titular tenía dos tonos. */}
+          <div className="flex items-baseline gap-2.5">
+            <h3 className="m-0 t-h5" style={{ color: "var(--ink)" }}>
+              {es ? f.titleEs : f.titleEn}
+            </h3>
             {f.pro && (
               <span className="relative -top-px rounded-[4px] border border-[var(--line-2)] px-1.5 py-px text-[11px] font-semibold text-tertiary">
                 Pro
               </span>
             )}
-          </h3>
+          </div>
           <p className="medida m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
             {es ? f.descEs : f.descEn}
           </p>

@@ -37,8 +37,6 @@ export type Herramienta = {
   h1Es: string;
   h1En: string;
   /** Parte del titular que va resaltada. */
-  resaltaEs: string;
-  resaltaEn: string;
   subtituloEs: string;
   subtituloEn: string;
   /** Para el índice y para la ficha del buscador. */
@@ -63,8 +61,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Position size calculator",
     h1Es: "Cuánto puedes arriesgar.",
     h1En: "How much you can risk.",
-    resaltaEs: "arriesgar.",
-    resaltaEn: "risk.",
     subtituloEs:
       "Dime tu capital, el porcentaje que arriesgas y la distancia a tu stop, y te digo el tamaño exacto de la posición. Sin registro y sin que nada de lo que escribas salga de tu navegador.",
     subtituloEn:
@@ -85,8 +81,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Is your edge real, or luck?",
     h1Es: "¿Ventaja real o buena racha?",
     h1En: "Real edge, or a good run?",
-    resaltaEs: "o buena racha?",
-    resaltaEn: "or a good run?",
     subtituloEs:
       "Con veinte operaciones detrás, un buen resultado no significa nada: cabe de sobra dentro de lo que produce el azar. Mete tus números y mira si tu muestra ya dice algo o todavía no.",
     subtituloEn:
@@ -107,8 +101,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Monte Carlo simulator",
     h1Es: "Tu ventaja, trescientas veces.",
     h1En: "Your edge, three hundred times.",
-    resaltaEs: "trescientas veces.",
-    resaltaEn: "three hundred times.",
     subtituloEs:
       "La misma ventaja da resultados muy distintos según el orden en que lleguen las ganancias y las pérdidas. Esto juega trescientas veces tus próximas operaciones, con tu acierto y tu payoff, para enseñarte el abanico completo: no lo que saldrá, sino lo que puede salir.",
     subtituloEn:
@@ -129,8 +121,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Drawdown recovery calculator",
     h1Es: "Cuesta más subir que caer.",
     h1En: "The climb back is steeper.",
-    resaltaEs: "que caer.",
-    resaltaEn: "is steeper.",
     subtituloEs:
       "Una caída del 50\u00a0% no se recupera ganando un 50\u00a0%: hace falta un 100\u00a0%. Mete tu caída, tu riesgo por operación, tu acierto y tu payoff, y mira cuánto tienes que ganar y cuántas operaciones tarda en volver el camino típico.",
     subtituloEn:
@@ -151,8 +141,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Prop firm challenge simulator",
     h1Es: "Cuántas veces la pasarías.",
     h1En: "How often you would pass.",
-    resaltaEs: "la pasarías.",
-    resaltaEn: "you would pass.",
     subtituloEs:
       "Una prueba de fondeo se aprueba o se suspende según lo que llegue antes: el objetivo o el drawdown. Pon sus reglas y tu forma de operar, y mira qué parte de dos mil intentos la supera.",
     subtituloEn:
@@ -173,8 +161,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Equity projector",
     h1Es: "A dónde lleva tu ventaja.",
     h1En: "Where your edge leads.",
-    resaltaEs: "tu ventaja.",
-    resaltaEn: "your edge.",
     subtituloEs:
       "Si mantienes tu expectancy y tu ritmo de operaciones, esta es la curva que sale a varios años. Es aritmética, no una promesa: sirve para ver el efecto del interés compuesto, no para contar con él.",
     subtituloEn:
@@ -195,8 +181,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Cost of indiscipline calculator",
     h1Es: "La factura de tus errores.",
     h1En: "The invoice for your mistakes.",
-    resaltaEs: "tus errores.",
-    resaltaEn: "your mistakes.",
     subtituloEs:
       "¿Cuánto dinero dejas en la mesa cuando rompes tus reglas? Estima la brecha entre tu operativa en plan y fuera de plan, y descubre tu fuga de capital anual.",
     subtituloEn:
@@ -219,8 +203,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Market session clock",
     h1Es: "Qué mercado está abierto.",
     h1En: "Which market is open.",
-    resaltaEs: "está abierto.",
-    resaltaEn: "is open.",
     subtituloEs:
       "Asia, Londres y Nueva York en una misma banda de veinticuatro horas, en hora real. Lo que importa no es cuándo abre cada plaza, sino dónde se solapan: ahí hay dos mercados despiertos a la vez.",
     subtituloEn:
@@ -241,8 +223,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Launch cost scenario",
     h1Es: "Una referencia, no una oferta.",
     h1En: "A reference, not an offer.",
-    resaltaEs: "no una oferta.",
-    resaltaEn: "not an offer.",
     subtituloEs:
       "Core 149\u00a0$ y Pro 249\u00a0$ son precios previstos de lanzamiento. Introduce una alternativa mensual para comparar escenarios, sin que el resultado sea una oferta de compra.",
     subtituloEn:
@@ -263,8 +243,6 @@ export const HERRAMIENTAS: Herramienta[] = [
     tituloEn: "Commission and slippage calculator",
     h1Es: "La factura oculta de tu bróker.",
     h1En: "The hidden bill from your broker.",
-    resaltaEs: "de tu bróker.",
-    resaltaEn: "your broker.",
     subtituloEs:
       "En futuros CME y Forex, comisiones y deslizamiento se comen una parte de cada operación. Introduce tus contratos y mira cuánto necesitas ganar solo para cubrirlos.",
     subtituloEn:

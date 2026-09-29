@@ -85,8 +85,6 @@ export function HerramientasBody() {
         eyebrowEn="Free"
         titleEs="Herramientas que hacen la cuenta por ti."
         titleEn="Tools that do the maths for you."
-        titleHighlightEs="la cuenta por ti."
-        titleHighlightEn="the maths for you."
         subtitleEs={`${herramientasEnLetra("es")} calculadoras y un test de disciplina, que funcionan enteros en tu navegador. Sin registro, sin correo y sin que ninguno de los números que escribas salga de tu equipo.`}
         subtitleEn={`${herramientasEnLetra("en")} calculators and a discipline test, all running entirely in your browser. No sign-up, no email, and none of the numbers you type ever leave your machine.`}
         breadcrumbEs="Herramientas"

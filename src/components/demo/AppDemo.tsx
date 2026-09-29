@@ -305,9 +305,9 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           </div>
           <h2 className="font-medium tracking-[-0.03em] leading-tight" style={{ fontSize: "clamp(1.75rem, 4vw, 3rem)" }}>
             {lang === "es" ? (
-              <>La app, <span className="text-gradient">en tu navegador.</span></>
+              <>La app, en tu navegador.</>
             ) : (
-              <>The app, <span className="text-gradient">in your browser.</span></>
+              <>The app, in your browser.</>
             )}
           </h2>
           <p className="text-lg text-secondary mt-4 leading-relaxed">{t("demoSubtitle")}</p>
@@ -337,10 +337,10 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
             de hoy», la fila de métricas entera— se quedaban a opacidad 0
             para siempre. No es que no entraran con gracia: es que no se
             veían. Medido en el navegador antes y después. */}
-        {/* Sombra desde --sombra, no negro puro: en tema claro un negro
-            fijo pesa más de lo que pide la paleta, y si el sitio ajusta
-            la profundidad algún día, esta ventana la sigue sin tocarla. */}
-        <div className="rounded-[2px] overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[0_2px_8px_rgb(var(--sombra)/0.28),0_18px_50px_-12px_rgb(var(--sombra)/0.55)]">
+        {/* Filete y la sombra corta de todo lo que flota en el sitio. Era
+            una sombra difusa de 50 px, la única del sitio: la ventana ya
+            sobresale de la retícula, no necesita además levantarse. */}
+        <div className="rounded-[2px] overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[var(--cristal-sombra-flota)]">
         <div className="demo-window rounded-[2px] overflow-clip">
           <WindowChrome />
           <TopNav />

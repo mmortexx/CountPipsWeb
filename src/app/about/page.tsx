@@ -92,8 +92,6 @@ export function AboutBody() {
         tono="capitulo"
         titleEs="Hecho para el trader manual serio."
         titleEn="Made for the serious manual trader."
-        titleHighlightEs="manual serio."
-        titleHighlightEn="manual trader."
         subtitleEs="Una app nativa de Windows que vive en tu equipo, sin suscripción ni servidores, con métricas institucionales y una disciplina que se mide en dinero."
         subtitleEn="A native Windows app that lives on your computer, with no subscription and no servers, institutional metrics and discipline measured in money."
         breadcrumbEs="Acerca de"
@@ -111,7 +109,7 @@ export function AboutBody() {
 
       <Changelog />
 
-      <FinalCTANew />
+      <FinalCTANew variante="empresa" />
       <TableOfContents />
     </>
   );

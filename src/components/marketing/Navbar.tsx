@@ -97,7 +97,7 @@ const PRODUCT_ITEMS: {
   labelEn: string;
   descEs: string;
   descEn: string;
-  grupo: "producto" | "laboratorio";
+  grupo: "producto" | "recursos";
 }[] = [
   {
     href: "/features",
@@ -137,7 +137,7 @@ const PRODUCT_ITEMS: {
     labelEn: "Discipline test",
     descEs: "Mídete en cinco ejes, sin email",
     descEn: "Measure yourself across five axes, no email",
-    grupo: "laboratorio",
+    grupo: "recursos",
   },
   {
     href: "/herramientas",
@@ -145,7 +145,7 @@ const PRODUCT_ITEMS: {
     labelEn: "Tools",
     descEs: "Diez calculadoras, gratis y sin registro",
     descEn: "Ten calculators, free and with no sign-up",
-    grupo: "laboratorio",
+    grupo: "recursos",
   },
   {
     href: "/glosario",
@@ -153,18 +153,25 @@ const PRODUCT_ITEMS: {
     labelEn: "Glossary",
     descEs: "57 términos explicados sin rodeos",
     descEn: "57 terms explained without waffle",
-    grupo: "laboratorio",
+    grupo: "recursos",
+  },
+  {
+    href: "/faq",
+    labelEs: "Preguntas frecuentes",
+    labelEn: "FAQ",
+    descEs: "La demo, el alcance y el acceso",
+    descEn: "The demo, scope and access",
+    grupo: "recursos",
   },
 ];
 
 const DRAWER_GRUPOS: {
-  id: "producto" | "operativa" | "laboratorio" | "empresa";
+  id: "producto" | "recursos" | "empresa";
   es: string;
   en: string;
 }[] = [
   { id: "producto", es: "Producto", en: "Product" },
-  { id: "operativa", es: "Operativa", en: "Trading" },
-  { id: "laboratorio", es: "Laboratorio", en: "Lab" },
+  { id: "recursos", es: "Recursos", en: "Resources" },
   { id: "empresa", es: "Empresa", en: "Company" },
 ];
 
@@ -187,22 +194,28 @@ const DRAWER_LINKS: {
     grupo: "producto",
   },
   {
+    href: "/pricing",
+    labelEs: "Precios",
+    labelEn: "Pricing",
+    grupo: "producto",
+  },
+  {
     href: "/traders/manual",
     labelEs: "Operativa manual",
     labelEn: "Manual trading",
-    grupo: "operativa",
+    grupo: "producto",
   },
   {
     href: "/traders/prop-firms",
     labelEs: "Prop firms",
     labelEn: "Prop firms",
-    grupo: "operativa",
+    grupo: "producto",
   },
   {
     href: "/beta",
     labelEs: "Acceso anticipado",
     labelEn: "Early access",
-    grupo: "operativa",
+    grupo: "producto",
   },
   {
     href: "/about",
@@ -214,25 +227,25 @@ const DRAWER_LINKS: {
     href: "/test",
     labelEs: "Test de disciplina",
     labelEn: "Discipline test",
-    grupo: "laboratorio",
+    grupo: "recursos",
   },
   {
     href: "/herramientas",
     labelEs: "Herramientas",
     labelEn: "Tools",
-    grupo: "laboratorio",
+    grupo: "recursos",
   },
   {
     href: "/glosario",
     labelEs: "Glosario",
     labelEn: "Glossary",
-    grupo: "laboratorio",
+    grupo: "recursos",
   },
   {
     href: "/faq",
     labelEs: "FAQ",
     labelEn: "FAQ",
-    grupo: "laboratorio",
+    grupo: "recursos",
   },
 ];
 
@@ -526,7 +539,7 @@ export function Navbar() {
   const activeBar = (
     <span
       aria-hidden
-      className="absolute -bottom-[6px] left-2 right-2 h-[2px]"
+      className="absolute -bottom-[6px] left-2 right-2 h-[1.5px]"
       style={{ background: "rgb(var(--accent-base))" }}
     />
   );
@@ -566,7 +579,11 @@ export function Navbar() {
     );
   };
 
-  const productActive = rutaActual.startsWith("/features");
+  /* Producto también cubre los recursos: están en su menú, y sin esto
+     /glosario o /herramientas no marcaban nada en la barra. */
+  const productActive = ["/features", "/herramientas", "/glosario", "/test", "/faq"].some(
+    (r) => rutaActual === r || rutaActual.startsWith(r + "/"),
+  );
 
   /* Aquí, dentro del JSX, vivía un <style> con alcance de componente que
      neutralizaba las transiciones del navbar bajo prefers-reduced-motion.
@@ -846,9 +863,9 @@ export function Navbar() {
                             </div>
                             <div className="pl-2">
                               <p className="tnum px-2.5 pb-1.5 pt-1 text-[11px] font-semibold text-tertiary">
-                                {es ? "Laboratorio" : "Lab"}
+                                {es ? "Recursos" : "Resources"}
                               </p>
-                              {productItems.filter((i) => i.grupo === "laboratorio").map(fila)}
+                              {productItems.filter((i) => i.grupo === "recursos").map(fila)}
                             </div>
                           </div>
                           <div className="flex items-center justify-between border-t border-[rgb(var(--divider)/0.10)] px-4 py-2.5">
@@ -874,11 +891,13 @@ export function Navbar() {
               )}
             </div>
 
-            {navLink("/demo", "Demo")}
+            {/* Sin «Demo»: es el botón de la derecha. «Recursos» vive en el
+                menú Producto; aquí llevaba solo a /faq. «Acceso» a secas se
+                leía como iniciar sesión en un producto sin cuentas. */}
+            {navLink("/pricing", es ? "Precios" : "Pricing")}
             {navLink("/traders/manual", es ? "Manual" : "Manual")}
             {navLink("/traders/prop-firms", "Prop firms")}
-            {navLink("/beta", es ? "Acceso" : "Access")}
-            {navLink("/faq", es ? "Recursos" : "Resources")}
+            {navLink("/beta", es ? "Acceso anticipado" : "Early access")}
           </div>
 
           {/* ZONA 3 — Utilidades: tema · idioma · CTA · hamburguesa.
@@ -1177,17 +1196,8 @@ export function Navbar() {
                  `safe-bottom` deja sitio a la barra de inicio de iOS. */}
               <div className="safe-bottom shrink-0 border-t border-[rgb(var(--divider)/0.08)] px-4 pt-4">
                 <div className="flex flex-col gap-2 pb-4">
-                  {/* CTA secundario — lleva a precios después de la demo.
-                      Ghost, sin relleno de acento, para no competir con el
-                      recorrido principal. */}
-                  <Link
-                    href="/pricing"
-                    onClick={() => setMobileOpen(false)}
-                    className="flex h-11 w-full items-center justify-center gap-1.5 rounded-[4px] border border-[rgb(var(--divider)/0.18)] text-sm font-semibold outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
-                    style={{ color: "var(--ink)" }}
-                  >
-                    {es ? "Ver precios" : "See pricing"}
-                  </Link>
+                  {/* Una sola llamada: «Precios» ya está en la lista, y un
+                      segundo botón debajo lo repetía. */}
                   {/* CTA primario — la demo es el primer paso del recorrido:
                       rectángulo de 4 px, sin sheen ni sombra de acento. */}
                   <Link

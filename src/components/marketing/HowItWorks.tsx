@@ -45,12 +45,12 @@ export function HowItWorks() {
           titulo={es ? (
               <>
                 Registrar. Medir. Frenar{" "}
-                <span className="text-gradient">a tiempo.</span>
+                a tiempo.
               </>
             ) : (
               <>
                 Log. Measure. Brake{" "}
-                <span className="text-gradient">in time.</span>
+                in time.
               </>
             )}
           entradilla={es

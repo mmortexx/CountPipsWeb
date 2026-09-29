@@ -108,12 +108,12 @@ export function Story() {
               {es ? (
                 <>
                   El diario que{" "}
-                  <span className="text-gradient">faltaba.</span>
+                  faltaba.
                 </>
               ) : (
                 <>
                   The journal that{" "}
-                  <span className="text-gradient">was missing.</span>
+                  was missing.
                 </>
               )}
             </h2>
