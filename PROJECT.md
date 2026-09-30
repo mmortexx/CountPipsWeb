@@ -2560,7 +2560,7 @@ exige que no esté (roja con el código anterior). La guarda de desenfoque
 de `humo.mjs` pedía encontrar alguno «para saber que miraba»; ahora falla
 ante cualquiera y demuestra que mira contando elementos y exigiendo la
 barra (roja con un `blur` inyectado en la barra). `src/components/tj/Escritorio.tsx`
-queda sin uso: pendiente de permiso para borrarlo.
+quedó sin uso y se borró con permiso el 2026-09-30.
 
 ### Cuadragésima tanda: sin flechas ni sellos (2026-09-26)
 
