@@ -138,6 +138,8 @@ MATERIALES CSS (definidos en globals.css):
   Nada por debajo de 12 px en una herramienta fuera de los gráficos (lo vigila escala.mjs).
   Negrita a 600, nunca el 700 del navegador (regla en `@layer base`, vigila escala.mjs).
   Todo botón de acción es `.cta .cta--primario` o `--secundario`, no uno hecho a mano.
+  Nunca dos filetes seguidos sin nada entre ellos: si lo de encima cierra con filete,
+  `<FinalCTANew sinFilete />` (vigila rejillas.mjs). Acordeones al filo de sus filetes.
   Comparativas en tabla abiertas, con filetes y la columna propia en banda, sin caja.
   El texto que acompaña a una lámina o a una columna va en las columnas de `.tj-split`.
   Tablas en móvil: fichas por fila (`md:hidden` / `sm:hidden`), nunca desplazamiento

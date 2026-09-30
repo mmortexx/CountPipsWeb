@@ -259,10 +259,11 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                     value={`item-${i}`}
                     /* Abierta, la pregunta no cambia de caja: sin raíl
                        lateral ni relleno. La marca es la propia respuesta
-                       y el chevrón girado. */
-                    className="border-b border-b-[var(--ficha-division)] last:border-b-0 px-4 md:px-5"
+                       y el chevrón girado. Igual que la de /pricing: texto
+                       al filo de los filetes y la lista cerrada con uno. */
+                    className="border-b border-[var(--line)]"
                   >
-                    <AccordionTrigger className="text-left text-primary hover:text-[rgb(var(--accent-hover))] hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:!text-[rgb(var(--accent-base))] [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)] data-[state=open]:text-[rgb(var(--accent-base))]">
+                    <AccordionTrigger className="text-left text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
                       {/* Wrap the question in a min-w-0 span so the flex
                           trigger (shadcn AccordionTrigger uses
                           flex justify-between) can wrap long questions

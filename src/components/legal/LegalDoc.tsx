@@ -112,8 +112,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
           >
             <nav
               aria-label={es ? "Índice del documento" : "Document contents"}
-              className="mt-10 rounded-[4px] border p-5 lg:mt-0 lg:border-0 lg:p-0"
-              style={{ borderColor: "rgb(var(--divider) / 0.12)" }}
+              className="mt-10 lg:mt-0"
             >
               <p className="eyebrow m-0">{es ? "Contenido" : "Contents"}</p>
               <ol className="mt-1 m-0 flex list-none flex-col p-0">

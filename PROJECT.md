@@ -2959,6 +2959,63 @@ lo que sobraba:
   equipo cargado. El cambio es de estilos y no toca la carga: con este
   ruido, así no se puede medir.
 
+### Cuadragésima novena tanda: repaso visual de todo el sitio (2026-09-30)
+
+Se recorrió cada familia de páginas con capturas de ventana (1440 en
+claro, 390 y oscuro en las que cambian), y lo que se vio se midió en las
+86 páginas españolas antes de tocarlo.
+
+- **Doble filete antes del cierre.** El bloque final (`.tj-cierre`) abre
+  con un filete, y en cinco páginas lo de encima ya acababa en uno: la
+  rejilla de «Lo que creemos» en la portada, la hoja de ruta de /about,
+  la lista de /features, las familias de /glosario y la matriz del
+  playbook en /traders/manual. Eran dos líneas a 106-125 px (66-73 en
+  móvil) con nada entre medias, en los dos idiomas. `FinalCTANew` acepta
+  ahora `sinFilete`, que quita el filete y su relleno. En las
+  calculadoras no hace falta: entre la lista «Otras herramientas» y el
+  cierre está el enlace «Ver todas las herramientas».
+- **Índice de los legales en móvil.** Iba en una caja con borde justo
+  debajo del aviso «Documento en preparación», que ya lleva filetes
+  arriba y abajo: raya, 40 px, caja. Ahora va abierto, como en
+  escritorio.
+- **Rótulos unidos con «·».** Un censo de todo texto visible con «·» y
+  sin cifras dejó dos: «Semáforo de riesgo · nueva operación» (portada y
+  disciplina) pasa a «Semáforo de riesgo», y «Muestra de la demo · curva,
+  reparto de R y ratios» (métricas) a «Curva, reparto de R y ratios de la
+  muestra». El resto son lecturas con dato («Estándar · 1,00 %»).
+- **Monte Carlo.** «Racha perdedora / teórica (simulada: 5)» ocupaba tres
+  líneas en una celda de 120 px. Ahora es «Racha teórica / simulada: 5»,
+  y «en el 5 % de caminos peores» pasa a «en el 5 % peor». Las cuatro
+  celdas quedan en dos líneas. El perfil «Sobre-apalancamiento» se partía
+  por el guion: ahora es «Apalancamiento excesivo».
+- **FAQ igual que la de precios.** La de /faq sangraba las preguntas 20 px
+  respecto a sus filetes, pintaba la abierta con el acento y dejaba la
+  lista sin filete de cierre. Ahora las dos van al filo, en tinta y
+  cerradas.
+- **Seguridad.** «Todo lo que se conecta a internet» iba a 12/600 en
+  gris. Ahora es `.eyebrow`, el rótulo de la casa.
+- **Portada.** «herramientas gratis en la web — sin registro…» dejaba la
+  raya al principio de la segunda línea. Ahora lleva dos puntos, como
+  las otras dos cifras.
+- **Guarda nueva** en `scripts/rejillas.mjs`: dos filetes de sección
+  (300 px o más de ancho) a 40-260 px uno de otro sin nada pintado entre
+  ellos, en ninguna columna, fallan. Cuenta como contenido un titular que
+  arranca a la altura del segundo filete, porque ahí empieza sección.
+  Con la compilación anterior dio 36 casos. La primera versión miraba solo
+  la columna de cada filete y marcaba /features/metricas por error: había
+  una nota en la columna de al lado. Se corrigió antes de darla por buena.
+  Con los arreglos, 2740 filetes medidos y ninguno doble.
+- **Visto y sin cambio.**
+  - El botón «Buscar» dentro del campo de la 404: es la variante compacta
+    de un buscador, no una llamada a la acción.
+  - El veredicto en verde o rojo del playbook manual: va con el semáforo,
+    no con el dinero.
+  - Las cifras con «,00» de prop firms.
+  - Las tarjetas de /features con aire bajo el texto: el pie va anclado
+    abajo a propósito.
+- **Medido.** Batería 19/19. Arranque correcto en tres pasadas
+  (481–562 ms). Los cambios son de marcado y estilo y no tocan la carga.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -2977,7 +3034,7 @@ node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, c
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
-node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, y columnas iguales a compás (todas las páginas, 1440 y 390)
+node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, columnas iguales a compás y ningún filete doble (todas las páginas, 1440 y 390)
 node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en un peldaño t-* de la escala (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco

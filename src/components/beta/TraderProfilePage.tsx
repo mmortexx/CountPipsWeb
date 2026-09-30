@@ -371,7 +371,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         </section>
       )}
 
-      <FinalCTANew variante="empresa" />
+      <FinalCTANew variante="empresa" sinFilete={profile === "manual"} />
     </>
   );
 }

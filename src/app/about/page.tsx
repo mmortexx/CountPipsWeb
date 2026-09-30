@@ -109,7 +109,7 @@ export function AboutBody() {
 
       <Changelog />
 
-      <FinalCTANew variante="empresa" />
+      <FinalCTANew variante="empresa" sinFilete />
       <TableOfContents />
     </>
   );

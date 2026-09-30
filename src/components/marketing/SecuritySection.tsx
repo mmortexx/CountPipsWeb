@@ -83,7 +83,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
 
         <div className="mb-14">
           <div>
-            <p className="text-[12px] font-semibold text-tertiary">
+            <p className="eyebrow m-0">
               {es ? "Todo lo que se conecta a internet" : "Everything that goes online"}
             </p>
             <dl className="mt-3 divide-y divide-[var(--line)] border-y border-[var(--line)] text-[14px]">

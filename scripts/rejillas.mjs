@@ -27,6 +27,12 @@
  * compilación. Las rejillas con filete vertical entre celdas no cuentan:
  * ahí el texto se mide desde el filete y la primera columna no lo tiene.
  *
+ * ── Y el doble filete (2026-09-30) ────────────────────────────────────
+ * Dos líneas horizontales de sección a 40-260 px sin nada entre ellas:
+ * el filete del cierre caía bajo el borde inferior de la lista de encima
+ * en 15 páginas (portada, acerca de, características, glosario, manual y
+ * las diez calculadoras). Visto en rojo con esa compilación.
+ *
  * ── Lo que NO mira ────────────────────────────────────────────────────
  * Flexbox, donde el mismo reparto solo ocurre si alguien lo pide.
  *
@@ -99,6 +105,7 @@ const navegador = await chromium.launch();
 const fallos = new Map();
 let rejillas = 0;
 let columnadasTotal = 0;
+let filetesTotal = 0;
 
 async function medir(pag, ruta, ancho) {
   try {
@@ -165,8 +172,63 @@ async function medir(pag, ruta, ancho) {
         });
       }
     }
-    return { vistos, n, descompases, columnadas };
+    /* Doble filete: dos líneas horizontales de sección a 40-260 px una de
+       otra sin nada pintado entre ellas, en todo el ancho que cubren. */
+    const main = document.querySelector("main");
+    const filetes = [];
+    const cosas = [];
+    if (main) {
+      const sy = window.scrollY;
+      const tiene = (s, lado) => parseFloat(s[`border${lado}Width`]) > 0 && s[`border${lado}Style`] !== "none" && s[`border${lado}Color`] !== "rgba(0, 0, 0, 0)";
+      for (const el of main.querySelectorAll("*")) {
+        if (el.closest("[data-demo-raiz],svg,input,textarea,select,[aria-hidden=true]")) continue;
+        const s = getComputedStyle(el);
+        if (s.visibility === "hidden") continue;
+        const b = el.getBoundingClientRect();
+        if (b.width < 300 || b.height === 0) continue;
+        if (tiene(s, "Top")) filetes.push({ y: b.top + sy, x1: b.left, x2: b.right });
+        if (tiene(s, "Bottom")) filetes.push({ y: b.bottom + sy, x1: b.left, x2: b.right });
+      }
+      const w = document.createTreeWalker(main, NodeFilter.SHOW_TEXT);
+      while (w.nextNode()) {
+        const t = w.currentNode;
+        if (!t.textContent.trim() || t.parentElement?.closest(".sr-only")) continue;
+        const rg = document.createRange();
+        rg.selectNodeContents(t);
+        for (const q of rg.getClientRects()) if (q.width > 0) cosas.push({ t: q.top + sy, b: q.bottom + sy, x1: q.left, x2: q.right });
+      }
+      for (const el of main.querySelectorAll("img,svg,canvas,input,textarea,select,button,video")) {
+        const q = el.getBoundingClientRect();
+        if (q.width > 0 && q.height > 0) cosas.push({ t: q.top + sy, b: q.bottom + sy, x1: q.left, x2: q.right });
+      }
+    }
+    filetes.sort((a, b) => a.y - b.y);
+    const dobles = [];
+    for (let i = 0; i < filetes.length; i++) {
+      for (let j = i + 1; j < filetes.length; j++) {
+        const a = filetes[i];
+        const c = filetes[j];
+        const hueco = c.y - a.y;
+        if (hueco < 40) continue;
+        if (hueco > 260) break;
+        if (Math.min(a.x2, c.x2) - Math.max(a.x1, c.x1) < 200) continue;
+        /* Cuenta lo que haya en cualquier columna, y un titular que arranca
+           a la altura del segundo filete: ahí empieza sección, no hay banda
+           vacía. */
+        if (!cosas.some((k) => k.b > a.y + 1 && k.t < c.y + 8)) {
+          dobles.push({ y: Math.round(a.y), hueco: Math.round(hueco) });
+          break;
+        }
+      }
+    }
+    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length };
   }, TOLERANCIA_PX);
+  filetesTotal += r.nf;
+  for (const d of r.dobles) {
+    const k = "doble filete sin nada entre medias";
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}  en y=${d.y}, el siguiente a ${d.hueco} px`);
+  }
   rejillas += r.n;
   columnadasTotal += r.columnadas;
   for (const v of r.vistos) {
@@ -204,7 +266,11 @@ for (const [clase, casos] of fallos) {
   if (casos.length > 6) console.log(`     … y ${casos.length - 6} más`);
 }
 
-console.log(`\n[rejillas] ${RUTAS.length} páginas × ${ANCHOS.length} anchos · ${rejillas} rejillas de varias filas medidas · ${columnadasTotal} de tres columnas o más, con su compás`);
+console.log(`\n[rejillas] ${RUTAS.length} páginas × ${ANCHOS.length} anchos · ${rejillas} rejillas de varias filas medidas · ${columnadasTotal} de tres columnas o más, con su compás · ${filetesTotal} filetes`);
+if (filetesTotal < 1000) {
+  console.log(`[rejillas] solo ${filetesTotal} filetes: el doble filete no está mirando`);
+  process.exit(1);
+}
 if (columnadasTotal < 20) {
   console.log(`[rejillas] solo ${columnadasTotal} rejillas de tres columnas: el compás no está mirando`);
   process.exit(1);
@@ -216,7 +282,11 @@ if (rejillas < 200) {
 }
 if (fallos.size) {
   const compas = [...fallos.keys()].filter((k) => k.startsWith("compás ")).length;
-  if (fallos.size - compas) {
+  const doble = fallos.has("doble filete sin nada entre medias") ? 1 : 0;
+  if (doble) {
+    console.log("[rejillas] dos filetes seguidos sin contenido entre ellos: si lo de encima ya cierra con filete, `<FinalCTANew sinFilete />`");
+  }
+  if (fallos.size - compas - doble) {
     console.log(`[rejillas] ${fallos.size - compas} rejilla(s) reparten el alto sobrante entre sus filas`);
     console.log("[rejillas] si la ficha debe ir arriba, `content-start` (align-content: start) en ella");
   }
@@ -226,4 +296,4 @@ if (fallos.size) {
   }
   process.exit(1);
 }
-console.log("[rejillas] correcto — ninguna ficha despega su texto para igualar la fila");
+console.log("[rejillas] correcto — ninguna ficha despega su texto para igualar la fila ni hay filetes dobles");

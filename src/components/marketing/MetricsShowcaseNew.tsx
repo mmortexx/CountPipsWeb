@@ -455,7 +455,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
             {titulo}
             {enPagina && (
               <p className="m-0 text-[13px] font-medium text-tertiary">
-                {es ? "Muestra de la demo · curva, reparto de R y ratios" : "Demo sample · curve, R distribution and ratios"}
+                {es ? "Curva, reparto de R y ratios de la muestra" : "Curve, R distribution and ratios for the sample"}
               </p>
             )}
             {!enPagina && (

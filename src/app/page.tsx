@@ -89,7 +89,7 @@ export function HomeBody() {
       <GuardianNew />
       <ProfileSelector />
       <Values />
-      <FinalCTANew />
+      <FinalCTANew sinFilete />
     </>
   );
 }

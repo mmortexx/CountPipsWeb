@@ -52,8 +52,8 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
     {
       v: String(herramientas),
       l: es
-        ? "herramientas gratis en la web — sin registro ni instalación"
-        : "free tools on the site — no sign-up, no install",
+        ? "herramientas gratis en la web: sin registro ni instalación"
+        : "free tools on the site: no sign-up, no install",
     },
   ];
   /* FUENTE Y FECHA DE CORTE. Una cifra suelta se lee como reclamo; con su

@@ -228,7 +228,7 @@ export function RMultipleSimulator() {
                 { label: es ? "Prueba de fondeo" : "Prop challenge", muestra: "riesgo", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
                 { label: es ? "Seguimiento de tendencia" : "Trend following", muestra: "acierto", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
                 { label: es ? "Scalping de reversión" : "Mean-reversion scalp", muestra: "acierto", wr: 65, winR: 1.2, lossR: 1.0, risk: 0.5 },
-                { label: es ? "Sobre-apalancamiento" : "Over-leveraged", muestra: "riesgo", peligro: true, wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
+                { label: es ? "Apalancamiento excesivo" : "Over-leveraged", muestra: "riesgo", peligro: true, wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
               ].map((p) => ({
                 ...p,
                 /* La nota se compone de los campos del perfil: escrita a mano,
@@ -457,14 +457,14 @@ export function RMultipleSimulator() {
                 col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },
               {
-                t: es ? "Racha perdedora" : "Losing streak",
-                sub: es ? `teórica (simulada: ${c.medianMaxLossStreak})` : `theoretical (simulated: ${c.medianMaxLossStreak})`,
+                t: es ? "Racha teórica" : "Theoretical streak",
+                sub: es ? `simulada: ${c.medianMaxLossStreak}` : `simulated: ${c.medianMaxLossStreak}`,
                 v: `~${c.theoreticalMaxLossStreak}`,
                 col: "var(--ink)",
               },
               {
                 t: es ? "Peor racha" : "Worst streak",
-                sub: es ? "en el 5\u00a0% de caminos peores" : "in the worst 5% of paths",
+                sub: es ? "en el 5\u00a0% peor" : "in the worst 5%",
                 v: `${c.p95MaxLossStreak} ${es ? "ops" : "trades"}`,
                 col: "rgb(var(--pnl-neg))",
               },

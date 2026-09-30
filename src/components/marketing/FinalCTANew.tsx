@@ -70,7 +70,14 @@ export function FinalCTANew({
   enDemo = false,
   enPrecios = false,
   variante,
-}: { enDemo?: boolean; enPrecios?: boolean; variante?: keyof typeof TEXTOS } = {}) {
+  sinFilete = false,
+}: {
+  enDemo?: boolean;
+  enPrecios?: boolean;
+  variante?: keyof typeof TEXTOS;
+  /** La sección anterior ya acaba en filete: no se dibuja un segundo. */
+  sinFilete?: boolean;
+} = {}) {
   const { lang } = useLang();
   const es = lang === "es";
   const texto = variante ?? (enDemo ? "demo" : enPrecios ? "precios" : "general");
@@ -79,7 +86,7 @@ export function FinalCTANew({
   return (
     <section className="section relative">
       <div className="tj-container">
-        <div className="tj-cierre">
+        <div className={sinFilete ? "tj-cierre tj-cierre--sin-filete" : "tj-cierre"}>
           {/* `t-h2` y no `t-display`. El cierre es una sección más, y con
               `t-display` medía 84 px cuando el titular de la propia página
               mide 60: en las 79 páginas españolas que lo llevan —y sus 79

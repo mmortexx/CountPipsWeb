@@ -3297,6 +3297,13 @@ button.icon-btn:hover > svg,
     column-gap: 6rem;
   }
 }
+/* Cuando lo de encima ya acaba en filete (una lista, una tabla, una
+   rejilla con borde inferior), el del cierre era un segundo filete a
+   120-220 px del primero, con nada entre los dos. Lo vigila rejillas.mjs. */
+.tj-cierre--sin-filete {
+  border-top: 0;
+  padding-top: 0;
+}
 .tj-cierre-acciones {
   display: grid;
   gap: 1.25rem;

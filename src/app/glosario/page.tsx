@@ -85,7 +85,7 @@ export function GlosarioBody() {
         breadcrumbEn="Glossary"
       />
       <GlosarioIndice />
-      <FinalCTANew variante="glosario" />
+      <FinalCTANew variante="glosario" sinFilete />
     </>
   );
 }

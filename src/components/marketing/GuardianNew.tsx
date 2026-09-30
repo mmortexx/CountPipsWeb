@@ -146,10 +146,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             veredicto—. */}
         <div data-entra className="tj-ficha lg:order-first">
           <p className="tj-ficha-barra">
-            <span>
-              {es ? "Semáforo de riesgo" : "Risk light"}
-              <span className="hidden sm:inline">{es ? " · nueva operación" : " · new trade"}</span>
-            </span>
+            <span>{es ? "Semáforo de riesgo" : "Risk light"}</span>
             {/* Era «En vivo» con un punto verde: es un ejemplo que se puede
                 tocar, no un dato en directo, y el verde es el del dinero. */}
             <span>{es ? "Ejemplo" : "Example"}</span>
