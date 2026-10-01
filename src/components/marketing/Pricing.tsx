@@ -164,7 +164,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
             está explicado que las condiciones se publican al abrir la
             venta, que hoy es la respuesta verdadera. */}
         <Reveal delay={0.2}>
-          <p className="mt-10 text-sm text-tertiary">
+          <p className="mt-10 text-sm leading-[1.6] text-tertiary">
             {es ? "La demo es pública; la compra se abrirá con el lanzamiento. " : "The demo is public; purchase opens at launch. "}
             <Link
               href="/beta"
@@ -210,7 +210,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
       {/* Reserva de dos renglones solo donde la descripción de Pro parte en
           dos (768–1279 px), para que los precios queden a la misma altura;
           en una columna o a lo ancho sobraba y abría un hueco. */}
-      <p className="mt-2 text-[15px] text-secondary leading-snug md:min-h-[2.75em] xl:min-h-0">
+      <p className="mt-2 text-[15px] text-secondary leading-[1.7] md:min-h-[3.4em] xl:min-h-0">
         {plan.tagline}
       </p>
 
@@ -277,7 +277,7 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
       </p>
       <ul className="mt-4 space-y-3">
         {(isPro ? plan.features.slice(1) : plan.features).map((f) => (
-          <li key={f} className="text-[15px] leading-[1.55] text-secondary break-words">
+          <li key={f} className="text-[15px] leading-[1.7] text-secondary break-words">
             {f}
           </li>
         ))}

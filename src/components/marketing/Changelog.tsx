@@ -140,7 +140,7 @@ export function Changelog() {
                   {entry.title}
                 </h3>
                 <p
-                  className={`medida m-0 text-[14px] leading-[1.55] ${
+                  className={`medida m-0 text-[14px] leading-[1.6] ${
                     isPast || isPilot ? "text-secondary" : "text-tertiary"
                   }`}
                 >

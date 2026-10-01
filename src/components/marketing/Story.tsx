@@ -120,7 +120,7 @@ export function Story() {
           </Reveal>
 
           <Reveal delay={0.1}>
-            <blockquote className="mt-8 relative pl-6 border-l-2 border-[rgb(var(--divider)/0.20)]">
+            <blockquote className="mt-8 relative pl-6 border-l-2 border-[var(--line-2)]">
               <p className="t-h3 text-primary leading-snug">{quote}</p>
               <footer className="mt-4 text-sm text-tertiary">
                 — {es ? "filosofía de la app" : "the app’s philosophy"}
@@ -165,7 +165,7 @@ export function Story() {
                   />
                   <div
                     data-entra
-                    className="relative min-w-0 border-b border-[rgb(var(--divider)/0.10)] pb-5"
+                    className="relative min-w-0 border-b border-[var(--line)] pb-5"
                   >
                     <span className={`text-[12px] font-semibold tnum ${toneText[p.tone]}`}>
                       {p.tag}

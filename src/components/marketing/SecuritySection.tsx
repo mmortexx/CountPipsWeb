@@ -90,11 +90,11 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               {conexiones.map(({ nombre, que }) => (
                 <div key={nombre} className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr] sm:gap-6">
                   <dt className="font-medium text-primary">{nombre}</dt>
-                  <dd className="m-0 text-secondary">{que}</dd>
+                  <dd className="m-0 leading-[1.6] text-secondary">{que}</dd>
                 </div>
               ))}
             </dl>
-            <p className="medida mt-3 text-[13px] text-tertiary">
+            <p className="medida mt-3 text-[13px] leading-[1.6] text-tertiary">
               {es ? "Nada más. Las copias locales cifradas y Windows Hello están construidos pero apagados hasta tener su flujo completo." : "Nothing else. Encrypted local backups and Windows Hello are built but switched off until their flow is complete."}
             </p>
           </div>

@@ -126,7 +126,7 @@ export function Wrapped({ datos }: { datos: LecturasMuestra }) {
           ))}
         </dl>
 
-        <p className="medida mt-6 text-[13px] text-tertiary">
+        <p className="medida mt-6 text-[13px] leading-[1.6] text-tertiary">
           {es
             ? "Cifras calculadas sobre las operaciones de muestra de la demo; en tu diario salen las tuyas."
             : "Figures computed from the demo’s sample trades; your journal shows your own."}

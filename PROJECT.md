@@ -2990,8 +2990,10 @@ claro, 390 y oscuro en las que cambian), y lo que se vio se midió en las
   por el guion: ahora es «Apalancamiento excesivo».
 - **FAQ igual que la de precios.** La de /faq sangraba las preguntas 20 px
   respecto a sus filetes, pintaba la abierta con el acento y dejaba la
-  lista sin filete de cierre. Ahora las dos van al filo, en tinta y
-  cerradas.
+  lista sin filete de cierre. Ahora las dos van al filo y en tinta.
+  *Corrección (tanda 50): aquí se dijo también «cerradas», y no lo
+  estaban: la pieza base del acordeón quitaba el filete a la última
+  pregunta (`last:border-b-0`) y ganaba a la clase de la FAQ.*
 - **Seguridad.** «Todo lo que se conecta a internet» iba a 12/600 en
   gris. Ahora es `.eyebrow`, el rótulo de la casa.
 - **Portada.** «herramientas gratis en la web — sin registro…» dejaba la
@@ -3016,6 +3018,73 @@ claro, 390 y oscuro en las que cambian), y lo que se vio se midió en las
 - **Medido.** Batería 19/19. Arranque correcto en tres pasadas
   (481–562 ms). Los cambios son de marcado y estilo y no tocan la carga.
 
+### Quincuagésima tanda: interlineado, filetes y espaciado (2026-10-01)
+
+Censo con Playwright sobre `out/` (31 rutas a 1440 en claro) y capturas
+de ventana de todas a 1440 en claro y a 390 en oscuro. Los colores de
+texto ya eran seis y limpios. Lo que no: once tonos de filete, nueve
+proporciones de interlineado para el mismo párrafo y saltos entre
+secciones que no seguían el ritmo.
+
+- **Interlineado de lectura.** Un párrafo de 13 o 14 px se compone a
+  1,6 y uno de 15 o 16 px a 1,7. Había 1,375, 1,43, 1,5, 1,55, 1,6,
+  1,625 y 1,65 para el mismo papel. Lo más visible: las respuestas de las
+  dos FAQ salían a 1,43, porque `text-[15px]` detrás de `leading-relaxed`
+  se lo quitaba al combinar clases. Cuarenta y cuatro sitios en 34
+  ficheros. La entradilla de «Cómo leer la demo» pasa a `t-entradilla`.
+- **Tono del filete.** Un filete gris sale de `--line` (filas y celdas),
+  `--line-2` (cabecera de tabla o arranque de columna) o
+  `--ficha-division` (dentro de una ficha de resultado). Había 0,06,
+  0,09, 0,12, 0,14, 0,16, 0,18, 0,2 y 0,3 escritos a mano: tabla de
+  indisciplina, ficha técnica e integraciones de /features/seguridad,
+  tablas legales, columnas «Disponible / Por invitación / Previsto»,
+  pasos de /demo, cita de /about, menú y cajón. La cabecera de las tablas
+  del proyector y de la recuperación llevaba filete doble; ninguna otra
+  tabla lo tenía, y pasa a uno solo.
+- **Filetes dobles que la guarda no veía.** Solo miraba pares de 40 px en
+  adelante y contaba el texto de cualquier columna. Había cuatro a 14–24
+  px: el índice lateral de /faq (último filtro y nota del glosario), las
+  dos matrices del Monte Carlo y su nota (también en
+  /features/disciplina), la franja del colchón de /traders/prop-firms y
+  la primera cifra de comisiones en móvil. Ahora las matrices comparten
+  una sola raya y la franja la cierra la matriz de debajo.
+- **FAQ.** Las dos listas cierran con filete (ver la corrección en la
+  tanda 49). La sección de /faq usaba relleno propio, 112 px abajo, y
+  dejaba 184 px hasta el contacto. El resto de páginas deja unos 125. Pasa
+  a `.section`.
+- **Títulos de fila.** Los 57 términos del índice del glosario y las
+  cabeceras de la comparativa eran `text-[15px] font-semibold
+  tracking-tight`. Pasan a `t-h5`. `t-h4` y `t-h5` quedan a −0,015 em, que
+  es lo que ya pintaba un h3 por la regla de la paleta. Los 01–04 de /demo
+  pierden el espaciado de 0,08 em, resto de cuando eran mayúsculas.
+- **Guardas.**
+  - `escala.mjs` exige el interlineado de lectura a 1440 y 390, salvo en
+    las fórmulas en monoespaciada. Roja con la compilación anterior: 1.039
+    párrafos.
+  - `rejillas.mjs` exige que todo filete gris de `main` tenga el tono de un
+    token: roja con 18 tonos sueltos. El doble filete baja a 8 px. Por
+    debajo de 40 px solo cuenta el contenido que cae bajo los dos filetes,
+    y las cajas (campos, segmentados) no cuentan como filete: roja con 9
+    pares. Su primera versión leía todos los tokens iguales: la
+    transición de color devolvía el valor anterior al reutilizar la sonda.
+    Se vio antes de darla por buena.
+  - `corrobora-menus.mjs` llevaba rota desde la tanda 45. Buscaba en la
+    barra un «Demo» que ya no está, y la batería de las tandas 46 a 49 no
+    la contaba. Ahora recorre «Ver la demo», «Precios» y «Manual» y abre el
+    idioma por su botón (la expresión /Idioma/ no encontraba «Cambiar
+    idioma»): 26/26.
+- **Visto y sin cambio.**
+  - Los pies de las tres cifras de la portada a 1,375: es un pie de
+    cifra de dos líneas, no un párrafo.
+  - La cita en cursiva del diario en /features: es una cita.
+  - El rail en degradado de la historia de /about.
+  - La tira de plataformas centrada en móvil (tanda 48).
+- **Medido.** Batería en paralelo 19/20: todo verde (vitest 560 pruebas
+  y 2 omitidas) salvo `corrobora-menus`, que se arregló como se cuenta
+  arriba y dio 26/26 sola; lint repetido después, limpio. Arranque
+  correcto en tres tandas de tres pasadas: titular legible a 132–253 ms.
+  Los cambios son de estilo y no tocan la carga.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -3027,20 +3096,20 @@ node scripts/legible.mjs --serve out  # contraste de TODO el texto sobre fondo p
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible, CPU x4
 node scripts/metadatos.mjs out          # título, descripción, canónico, hreflang, lang y ld+json de las 170
 node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los dos temas
-node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritorio + móvil (vale contra `out/` servido sin modo SPA)
+node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritorio + móvil (vale contra `out/` servido sin modo SPA, p. ej. `npx serve out`); no tiene --serve: si se olvida, no corre
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
 node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, comillas y ortografía británica en /en), restos de plantilla a la vista y flechas añadidas a enlaces
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
-node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, columnas iguales a compás y ningún filete doble (todas las páginas, 1440 y 390)
-node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en un peldaño t-* de la escala (todas las páginas, 1440 y 390)
+node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, columnas iguales a compás y ningún filete doble ni de tono suelto (todas las páginas, 1440 y 390)
+node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en un peldaño t-* de la escala, y el interlineado de lectura (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 53 suites, 561 tests (+2 omitidos)
+npx vitest run                          # 53 suites, 560 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

@@ -168,7 +168,7 @@ export function DrawdownRecovery() {
               <div className="tj-cifra mt-1 text-primary">
                 +{fmtPct(c.ganancia, lang)}
               </div>
-              <p className="m-0 mt-2 text-[13px] text-secondary">
+              <p className="m-0 mt-2 text-[13px] leading-[1.6] text-secondary">
                 {es
                   ? "Sobre lo que queda en la cuenta, no sobre lo que había."
                   : "On what is left in the account, not on what was there."}
@@ -204,7 +204,7 @@ export function DrawdownRecovery() {
                 </div>
               </dl>
 
-              <p className="m-0 mt-5 border-t border-[var(--ficha-division)] pt-4 text-[13px] leading-relaxed text-secondary">
+              <p className="m-0 mt-5 border-t border-[var(--ficha-division)] pt-4 text-[13px] leading-[1.6] text-secondary">
                 {diagnostico}
               </p>
             </div>
@@ -257,7 +257,7 @@ export function DrawdownRecovery() {
                     return (
                       <tr
                         key={f.caida}
-                        className={`border-t border-[rgb(var(--divider)/0.09)] ${propia ? "tj-columna-propia text-primary" : "text-secondary"}`}
+                        className={`border-t border-[var(--ficha-division)] ${propia ? "tj-columna-propia text-primary" : "text-secondary"}`}
                       >
                         <th scope="row" className={`py-2 pr-3 text-left ${propia ? "font-semibold" : "font-normal"}`}>
                           {fmtPct(f.caida, lang, 0)}

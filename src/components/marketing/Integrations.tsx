@@ -47,13 +47,13 @@ export function Integrations() {
               : "Templates for the most common platforms and any other CSV with column mapping. The recipe is saved, so next time there is nothing to map."}
         />
 
-        <div className="mt-10 overflow-clip border-t border-[rgb(var(--divider)/0.14)]">
+        <div className="mt-10 overflow-clip border-t border-[var(--line-2)]">
           <div className="-ml-px grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5">
           {BROKERS.map((b) => (
             <div
               data-entra="ciclo"
               key={b.name}
-              className="group relative p-4 min-w-0 flex flex-col gap-3 border-b border-l border-[rgb(var(--divider)/0.14)]"
+              className="group relative p-4 min-w-0 flex flex-col gap-3 border-b border-l border-[var(--line)]"
             >
               {/* Sin monograma: «IB», «MT»… en una baldosa hacían de
                   logotipo sin serlo. El nombre y cómo entra, nada más. */}

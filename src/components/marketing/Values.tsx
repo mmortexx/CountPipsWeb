@@ -117,7 +117,7 @@ export function Values() {
                 <h3 className="t-h3 text-primary">
                   {es ? v.titleEs : v.titleEn}
                 </h3>
-                <p className="mt-2.5 text-[15px] text-secondary leading-[1.65] max-w-[42em]">
+                <p className="mt-2.5 text-[15px] text-secondary leading-[1.7] max-w-[42em]">
                   {es ? v.descEs : v.descEn}
                 </p>
 

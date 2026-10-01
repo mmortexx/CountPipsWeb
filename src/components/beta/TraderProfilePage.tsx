@@ -113,7 +113,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 <h3 className="m-0 t-h3 text-primary">
                   {es ? titleEs : titleEn}
                 </h3>
-                <p className="medida m-0 text-[15px] leading-[1.6] text-secondary">
+                <p className="medida m-0 text-[15px] leading-[1.7] text-secondary">
                   {es ? textEs : textEn}
                 </p>
               </li>
@@ -176,7 +176,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             </div>
 
             {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
-            <div className="mb-6 border-y border-[var(--ficha-division)] py-4">
+            <div className="border-t border-[var(--ficha-division)] py-4">
               {/* Apilado por debajo de `sm`: en una sola fila, el rotulo y la
                   cifra se metian el uno dentro del otro a 390 px. */}
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">

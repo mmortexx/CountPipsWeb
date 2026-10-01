@@ -167,7 +167,7 @@ export function GlosarioIndice() {
                         {lista.length}
                       </span>
                     </div>
-                    <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-secondary">
+                    <p className="mt-2 max-w-[52ch] text-[15px] leading-[1.7] text-secondary">
                       {es ? meta.descEs : meta.descEn}
                     </p>
                     <ul className="mt-6 grid border-t border-[var(--line)] p-0 lg:grid-cols-2 lg:gap-x-14">
@@ -205,11 +205,11 @@ function TarjetaTermino({
       >
         <span
           lang="en"
-          className="text-[15px] font-semibold tracking-tight text-primary"
+          className="t-h5 text-primary"
         >
           {termino.term}
         </span>
-        <span className="medida block text-[14px] leading-[1.5] text-secondary transition-colors group-hover:text-primary">
+        <span className="medida block text-[14px] leading-[1.6] text-secondary transition-colors group-hover:text-primary">
           {es ? termino.es : termino.en}
         </span>
       </Link>

@@ -221,7 +221,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   <p className="m-0 text-[12px] font-semibold" style={{ color }}>
                     {titulo}
                   </p>
-                  <p className="m-0 mt-2 max-w-[46ch] text-[14px] leading-[1.55] text-secondary">{cuerpo}</p>
+                  <p className="m-0 mt-2 max-w-[46ch] text-[14px] leading-[1.6] text-secondary">{cuerpo}</p>
                 </div>
               );
             })()}

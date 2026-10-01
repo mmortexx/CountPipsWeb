@@ -35,17 +35,17 @@ export function DemoConversionPanel() {
             <h2 className="mt-5 t-h2 text-primary max-w-[24ch]">
               {es ? <>Una visita corta. <span className="tj-frase-nueva">Una decisión más clara.</span></> : <>A short visit. <span className="tj-frase-nueva">A clearer decision.</span></>}
             </h2>
-            <p className="mt-4 max-w-2xl text-base leading-relaxed text-secondary md:text-lg">
+            <p className="mt-4 max-w-2xl t-entradilla text-secondary">
               {es
                 ? "La demo enseña el recorrido que decide si el producto merece un sitio en tu rutina. No intenta fingir que ya tienes una cuenta: te deja entender la herramienta primero."
                 : "The demo shows the workflow that decides whether the product deserves a place in your routine. It does not pretend you already have an account: it lets you understand the tool first."}
             </p>
             <ol className="mt-8 grid gap-5 sm:grid-cols-2">
               {steps.map(([number, title, body]) => (
-                <li key={number} className="border-t border-[rgb(var(--divider)/0.16)] pt-4">
-                  <span className="tnum text-xs font-semibold tracking-[0.08em] text-tertiary">{number}</span>
+                <li key={number} className="border-t border-[var(--line-2)] pt-4">
+                  <span className="tnum text-xs font-semibold text-tertiary">{number}</span>
                   <h3 className="mt-2 t-h5 text-primary">{title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-secondary">{body}</p>
+                  <p className="mt-1.5 text-sm leading-[1.6] text-secondary">{body}</p>
                 </li>
               ))}
             </ol>
@@ -65,7 +65,7 @@ export function DemoConversionPanel() {
                   ? ["No pide email ni tarjeta para explorar.", "Las operaciones no salen del navegador.", "Las funciones no visibles se etiquetan, no se simulan."]
                   : ["No email or card required to explore.", "Trades never leave the browser.", "Unavailable features are labelled, not faked."]
                 ).map((item) => (
-                  <li key={item} className="border-t border-[var(--line)] py-3 last:pb-0">
+                  <li key={item} className="border-t border-[var(--line)] py-3 leading-[1.6] last:pb-0">
                     {item}
                   </li>
                 ))}

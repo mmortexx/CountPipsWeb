@@ -70,7 +70,7 @@ export function PricingFAQ() {
                         chevron off the right edge. */}
                     <span className="min-w-0 break-words">{item.q}</span>
                   </AccordionTrigger>
-                  <AccordionContent className="medida text-secondary leading-relaxed text-[15px] pb-5">
+                  <AccordionContent className="medida text-secondary text-[15px] leading-[1.7] pb-5">
                     {item.a}
                   </AccordionContent>
                 </AccordionItem>

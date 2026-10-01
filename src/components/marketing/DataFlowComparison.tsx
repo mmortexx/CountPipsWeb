@@ -115,7 +115,7 @@ export function DataFlowComparison() {
         </div>
 
         {/* Footer note */}
-        <p className="medida mt-6 text-[13px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
+        <p className="medida mt-6 text-[13px] leading-[1.6]" style={{ color: "var(--ink-3)" }}>
           {es
             ? "Cada punto es una operación. En CountPips se queda en tu equipo: solo sale si activas una función que lo necesita, como la copia cifrada en tu propia nube. Tu historial es tuyo."
             : "Each dot is a trade. In CountPips it stays on your machine: it only leaves if you turn on a feature that needs it, such as the encrypted copy in your own cloud. Your history is yours."}

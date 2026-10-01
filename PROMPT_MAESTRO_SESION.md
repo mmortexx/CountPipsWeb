@@ -110,6 +110,10 @@ TIPOGRAFÍA:
     Cuerpo en píxeles enteros de 11 a 16. Nada de `clamp()` ni `text-[17px]`
     sueltos en titulares o entradillas: `scripts/escala.mjs` lo mide en todas
     las páginas a 1440 y 390.
+    INTERLINEADO DE LECTURA: todo párrafo de dos líneas o más, 1,6 a 13 y 14 px
+    y 1,7 a 15 y 16 px (`leading-[1.6]` / `leading-[1.7]` DETRÁS del tamaño:
+    un `text-[15px]` detrás de `leading-*` se lo come al combinar clases).
+    Títulos de fila o de columna en `t-h5`, nunca `text-[15px] font-semibold`.
   --font-mono  → Geist Mono — código, datos tabulares, métricas
 
 MATERIALES CSS (definidos en globals.css):
@@ -138,8 +142,13 @@ MATERIALES CSS (definidos en globals.css):
   Nada por debajo de 12 px en una herramienta fuera de los gráficos (lo vigila escala.mjs).
   Negrita a 600, nunca el 700 del navegador (regla en `@layer base`, vigila escala.mjs).
   Todo botón de acción es `.cta .cta--primario` o `--secundario`, no uno hecho a mano.
-  Nunca dos filetes seguidos sin nada entre ellos: si lo de encima cierra con filete,
-  `<FinalCTANew sinFilete />` (vigila rejillas.mjs). Acordeones al filo de sus filetes.
+  Nunca dos filetes seguidos sin nada entre ellos, tampoco a 15 px: si lo de encima
+  cierra con filete, `<FinalCTANew sinFilete />`; dos matrices seguidas comparten una
+  raya (vigila rejillas.mjs desde 8 px). Acordeones al filo y cerrados con filete.
+  Tono del filete solo de token: `--line` (filas, celdas), `--line-2` (cabecera de
+  tabla, arranque de columna), `--ficha-division` (dentro de una ficha). Nunca
+  `rgb(var(--divider)/0.14)` a mano (vigila rejillas.mjs). Cabecera de tabla con UN
+  filete, sin el doble de imprenta.
   Comparativas en tabla abiertas, con filetes y la columna propia en banda, sin caja.
   El texto que acompaña a una lámina o a una columna va en las columnas de `.tj-split`.
   Tablas en móvil: fichas por fila (`md:hidden` / `sm:hidden`), nunca desplazamiento

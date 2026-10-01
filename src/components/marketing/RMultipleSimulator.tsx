@@ -390,7 +390,7 @@ export function RMultipleSimulator() {
           {/* El rojo dice «por debajo del capital inicial», no «el peor
               percentil»: con una ventaja sana el P5 también gana, y
               pintarlo de pérdida contradecía la cifra que lleva debajo. */}
-          <div className="tj-matriz mb-4 grid-cols-5 border-b border-[var(--ficha-division)] text-center tnum">
+          <div className="tj-matriz grid-cols-5 text-center tnum">
             {[
               { k: "P5", n: es ? "Cola 5 %" : "Bottom 5%", v: c.finalP5, col: "var(--ink-2)", ref: false },
               { k: "P25", n: "Q1", v: c.finalP25, col: "var(--ink-2)", ref: false },
@@ -492,10 +492,8 @@ export function RMultipleSimulator() {
             ))}
           </div>
 
-          {/* Disclaimer */}
-          <div
-            className="border-t border-[var(--line)] pt-3"
-          >
+          {/* Disclaimer: sin filete propio, lo cierra el de la matriz. */}
+          <div>
             <p className="medida m-0 text-[12px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
               {es
                 ? `${SIM_RUNS} caminos con la semilla ` + seed + ": cada operación gana con un " + fmtNum(winRate, 0) + "\u00a0% de probabilidad, con ganancia y pérdida fijas en R y riesgo compuesto. Ruina es perder en algún momento el " + UMBRAL_RUINA_PCT + "\u00a0% del balance inicial, por pérdidas o por retiros. El mercado real tiene rachas más extremas, así que tu drawdown puede ser peor que el de estos caminos. No es consejo financiero."

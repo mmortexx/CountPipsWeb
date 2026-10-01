@@ -130,7 +130,7 @@ export function Comparison() {
                         className="p-5 text-left align-bottom md:p-6"
                         style={j === 0 ? banda : fondo}
                       >
-                        <div className="text-[15px] font-semibold tracking-tight text-primary">{c.label}</div>
+                        <div className="t-h5 text-primary">{c.label}</div>
                         <div className="mt-0.5 text-[13px] font-normal text-tertiary">{c.sub}</div>
                       </th>
                     ))}
@@ -160,7 +160,7 @@ export function Comparison() {
         </Reveal>
 
         <Reveal delay={0.12} className="mt-6">
-          <p className="medida m-0 text-[13px] text-tertiary">
+          <p className="medida m-0 text-[13px] leading-[1.6] text-tertiary">
             {es
               ? "Diarios en la nube: TradeZella, TraderSync, TradesViz y Tradervue, según sus webs en septiembre de 2026; TradesViz y Tradervue tienen además un plan gratuito limitado. Hoja de cálculo sin plantillas avanzadas."
               : "Cloud journals: TradeZella, TraderSync, TradesViz and Tradervue, as published on their websites in September 2026; TradesViz and Tradervue also offer a limited free plan. Spreadsheet without advanced templates."}

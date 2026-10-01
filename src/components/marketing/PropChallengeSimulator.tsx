@@ -249,7 +249,7 @@ export function PropChallengeSimulator() {
               <div className="tj-cifra mt-1 text-primary">
                 {fmtPct(r.aprueba, lang)}
               </div>
-              <p className="m-0 mt-2 text-[13px] text-secondary">
+              <p className="m-0 mt-2 text-[13px] leading-[1.6] text-secondary">
                 {es
                   ? `Con drawdown ${nombreTipo(otroTipo)}, ${fmtPct(otro.aprueba, lang)}.`
                   : `With a ${nombreTipo(otroTipo)} drawdown, ${fmtPct(otro.aprueba, lang)}.`}
@@ -288,7 +288,7 @@ export function PropChallengeSimulator() {
                 ))}
               </dl>
 
-              <p className="m-0 mt-4 border-t border-[var(--ficha-division)] pt-4 text-[13px] leading-relaxed text-secondary">
+              <p className="m-0 mt-4 border-t border-[var(--ficha-division)] pt-4 text-[13px] leading-[1.6] text-secondary">
                 {diagnostico}
               </p>
               <p className="m-0 mt-3 text-[12px] leading-relaxed text-tertiary">

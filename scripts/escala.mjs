@@ -94,6 +94,7 @@ let titulares = 0;
 let bloques = 0;
 let herramientas = 0;
 let negritas = 0;
+let interlineados = 0;
 
 for (const ancho of ANCHOS) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
@@ -155,6 +156,27 @@ for (const ancho of ANCHOS) {
           const px = parseFloat(getComputedStyle(el).fontSize);
           if (!vale(px, deTexto)) malos.push({ tipo: el.tagName.toLowerCase(), px, texto: propio.slice(0, 50) });
         }
+        /* Interlineado de lectura: un párrafo de dos líneas o más se compone
+           a 1,6 (13 y 14 px) o a 1,7 (15 y 16 px), lo escriba quien lo
+           escriba. Había nueve proporciones para el mismo papel. */
+        let ni = 0;
+        const INTERLINEADO = { 13: 1.6, 14: 1.6, 15: 1.7, 16: 1.7 };
+        for (const el of document.querySelectorAll("main p, main li, main dd, main blockquote, main .medida")) {
+          if (!fuera(el) || !visible(el) || el.closest("h1,h2,h3,h4,button,.cta,svg")) continue;
+          if (/\bt-(display|h\d|lede|entradilla)\b/.test(el.className)) continue;
+          const propio = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
+          if (propio.length < 40) continue;
+          const s = getComputedStyle(el);
+          /* Las fórmulas del glosario van en monoespaciada: son código, no prosa. */
+          if (/mono/i.test(s.fontFamily)) continue;
+          const px = parseFloat(s.fontSize);
+          const esperado = INTERLINEADO[Math.round(px)];
+          if (!esperado || Math.abs(px - Math.round(px)) > 0.05) continue;
+          const lh = parseFloat(s.lineHeight);
+          if (!(el.getBoundingClientRect().height >= lh * 1.8)) continue;
+          ni++;
+          if (Math.abs(lh / px - esperado) > 0.012) malos.push({ tipo: `interlineado ${(lh / px).toFixed(3)} (pide ${esperado})`, px, texto: propio.slice(0, 50) });
+        }
         /* Herramientas: nada por debajo de 12 px fuera de los gráficos, y la
            tarjeta de resultado abre con la barra común (rótulo | dato). */
         let nh = 0;
@@ -179,12 +201,13 @@ for (const ancho of ANCHOS) {
           const peso = getComputedStyle(el).fontWeight;
           if (peso !== "600") malos.push({ tipo: `negrita a ${peso}`, px: parseFloat(getComputedStyle(el).fontSize), texto: el.textContent.trim().slice(0, 50) });
         }
-        return { malos, nt, nb, nh, nn };
+        return { malos, nt, nb, nh, nn, ni };
       });
       titulares += r.nt;
       bloques += r.nb;
       herramientas += r.nh;
       negritas += r.nn;
+      interlineados += r.ni;
       for (const m of r.malos) fallos.push({ ruta, ancho, ...m });
     }
     await pag.close();
@@ -195,9 +218,9 @@ for (const ancho of ANCHOS) {
 await navegador.close();
 server.close();
 
-console.log(`[escala] ${rutas.length} páginas × ${ANCHOS.length} anchos: ${titulares} titulares, ${bloques} bloques de texto, ${herramientas} páginas de herramienta y ${negritas} negritas medidos`);
-if (!titulares || !bloques || !herramientas || !negritas) {
-  console.log("[escala] no encontró titulares, bloques, herramientas o negritas: la guarda no está mirando");
+console.log(`[escala] ${rutas.length} páginas × ${ANCHOS.length} anchos: ${titulares} titulares, ${bloques} bloques de texto, ${herramientas} páginas de herramienta y ${negritas} negritas y ${interlineados} párrafos medidos`);
+if (!titulares || !bloques || !herramientas || !negritas || !interlineados) {
+  console.log("[escala] no encontró titulares, bloques, herramientas, negritas o párrafos: la guarda no está mirando");
   process.exit(1);
 }
 if (fallos.length) {
@@ -207,7 +230,7 @@ if (fallos.length) {
     console.log(`\n  ${clave} — ${casos.length} caso(s)`);
     for (const c of casos.slice(0, 4)) console.log(`     ${c.ruta} a ${c.ancho}  «${c.texto}»`);
   }
-  console.log(`\n[escala] ${fallos.length} tamaño(s) fuera de la escala: usa un peldaño t-* de globals.css, no un tamaño a mano`);
+  console.log(`\n[escala] ${fallos.length} caso(s) fuera de la escala: usa un peldaño t-* de globals.css y el interlineado de lectura, no un valor a mano`);
   process.exit(1);
 }
 console.log("[escala] correcto — todo titular y todo bloque de texto está en un peldaño de la escala");

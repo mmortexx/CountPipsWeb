@@ -91,7 +91,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
               {/* La medida va en la caja y no en el párrafo: los filetes
                   tienen que acabar donde acaba el texto. */}
               <div className="medida mt-6 border-y border-[var(--line-2)] py-4 text-[14px]">
-                <p className="m-0 leading-relaxed text-secondary">
+                <p className="m-0 leading-[1.6] text-secondary">
                   <strong className="text-primary">
                     {es ? "Documento en preparación. " : "Draft document. "}
                   </strong>
@@ -212,17 +212,17 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
     {/* En móvil, una ficha por fila: tres columnas con frases dentro no
         caben en 358 px, y desplazar la tabla de lado dejaba la tercera
         cortada contra el canto. La primera celda nombra la fila. */}
-    <div className="border-t sm:hidden" style={{ borderColor: "rgb(var(--divider) / 0.16)" }}>
+    <div className="border-t border-[var(--line-2)] sm:hidden">
       {bloque.filas.map((f, i) => {
         const [nombre, ...resto] = es ? f.es : f.en;
         return (
-          <div key={i} className="border-b py-3.5" style={{ borderColor: "rgb(var(--divider) / 0.08)" }}>
+          <div key={i} className="border-b border-[var(--line)] py-3.5">
             <p className="m-0 text-[14px] font-medium text-primary">{nombre}</p>
             <dl className="m-0 mt-2 grid gap-y-1.5 text-[14px] leading-[1.6]">
               {resto.map((c, j) => (
                 <div key={j}>
                   <dt className="text-[13px] text-tertiary">{cabeceras[j + 1]}</dt>
-                  <dd className="m-0 text-secondary">{c}</dd>
+                  <dd className="m-0 leading-[1.6] text-secondary">{c}</dd>
                 </div>
               ))}
             </dl>
@@ -238,8 +238,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
               <th
                 key={c}
                 scope="col"
-                className="border-b px-3 py-2.5 align-bottom text-[13px] font-medium text-tertiary"
-                style={{ borderColor: "rgb(var(--divider) / 0.16)" }}
+                className="border-b border-[var(--line-2)] px-3 py-2.5 align-bottom text-[13px] font-medium text-tertiary"
               >
                 {c}
               </th>
@@ -254,8 +253,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
                 {celdas.map((c, j) => (
                   <td
                     key={j}
-                    className="border-b px-3 py-3 align-top leading-[1.6] text-secondary"
-                    style={{ borderColor: "rgb(var(--divider) / 0.08)" }}
+                    className="border-b border-[var(--line)] px-3 py-3 align-top leading-[1.6] text-secondary"
                   >
                     {c}
                   </td>

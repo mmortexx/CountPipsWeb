@@ -446,7 +446,7 @@ export function GlossaryModal({
                         Collapsed shows a single-line preview; expanded shows full text. */}
                     <p
                       className={[
-                        "m-0 mt-1.5 text-sm leading-relaxed",
+                        "m-0 mt-1.5 text-sm leading-[1.6]",
                         isExpanded ? "text-secondary" : "text-tertiary line-clamp-2",
                       ].join(" ")}
                     >

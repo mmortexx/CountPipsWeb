@@ -336,7 +336,7 @@ export function SavingsCalculator() {
                 {c.breakEvenMonths} {c.breakEvenMonths === 1 ? (es ? "mes" : "month") : (es ? "meses" : "months")}
               </span>
             </div>
-            <p className="tnum m-0 text-[13px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
+            <p className="tnum m-0 text-[13px] leading-[1.6]" style={{ color: "var(--ink-2)" }}>
               {!c.seAmortizaDentro
                 ? es
                   ? `Con ${fmtUsd(altMonthly)} al mes, en ${years} ${years === 1 ? "año" : "años"} la suscripción no llega a costar el pago único: lo alcanzaría en el mes ${c.breakEvenMonths ?? "—"}.`

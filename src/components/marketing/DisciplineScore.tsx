@@ -619,7 +619,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   </span>
                 )}
               </div>
-              <p className="m-0 mb-5" style={{ fontSize: 13, lineHeight: 1.5, color: "var(--ink-3)" }}>
+              <p className="m-0 mb-5" style={{ fontSize: 13, lineHeight: 1.6, color: "var(--ink-3)" }}>
                 {level
                   ? es
                     ? level.resumenEs

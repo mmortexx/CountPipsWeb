@@ -83,7 +83,7 @@ export function ProfileSelector() {
                   {profile.eyebrow}
                 </p>
                 <h3 className="mt-5 t-h3 text-primary">{profile.title}</h3>
-                <p className="mt-3 max-w-md text-[15px] leading-relaxed text-secondary">{profile.body}</p>
+                <p className="mt-3 max-w-md text-[15px] leading-[1.7] text-secondary">{profile.body}</p>
                 <span className="mt-6 inline-flex text-[15px] font-medium text-primary">
                   <span className="link-underline">{profile.action}</span>
                 </span>

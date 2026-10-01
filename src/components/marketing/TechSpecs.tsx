@@ -110,7 +110,7 @@ export function TechSpecs() {
           }
         />
         <Reveal delay={0.1} y={28} className="mt-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-[rgb(var(--divider)/0.14)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 border-t border-[var(--line-2)]">
             {rows.map((r) => (
               <dl
                 key={r.labelEn}
@@ -118,7 +118,7 @@ export function TechSpecs() {
                 /* El filete vertical solo en la segunda columna y solo
                    cuando hay dos: en móvil la retícula es una sola
                    columna y una raya a la izquierda no separaría nada. */
-                className="flex flex-col gap-1 min-w-0 py-4 pr-6 border-b border-[rgb(var(--divider)/0.14)] sm:[&:nth-child(even)]:pl-6 sm:[&:nth-child(even)]:border-l sm:[&:nth-child(even)]:border-l-[rgb(var(--divider)/0.14)]"
+                className="flex flex-col gap-1 min-w-0 py-4 pr-6 border-b border-[var(--line)] sm:[&:nth-child(even)]:pl-6 sm:[&:nth-child(even)]:border-l sm:[&:nth-child(even)]:border-l-[var(--line)]"
               >
                 {/* Sin el punto de acento que llevaba delante. Con el
                     acento ya acromático era un lunar gris que no decía

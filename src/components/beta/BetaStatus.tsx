@@ -35,14 +35,14 @@ export function ProductStatus() {
           </div>
           <div data-orden className="grid gap-3 sm:grid-cols-3">
             {rows.map(({ estado, previsto, title, text }) => (
-              <div key={title} className="border-t border-[rgb(var(--divider)/0.18)] pt-4">
+              <div key={title} className="border-t border-[var(--line-2)] pt-4">
                 {previsto ? (
                   <SelloPrevisto es="Previsto" en="Planned" />
                 ) : (
                   <span className="rotulo-estado">{estado}</span>
                 )}
                 <h3 className="mt-3 t-h5 text-primary">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-secondary">{text}</p>
+                <p className="mt-2 text-sm leading-[1.6] text-secondary">{text}</p>
               </div>
             ))}
           </div>

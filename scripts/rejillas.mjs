@@ -33,6 +33,15 @@
  * en 15 páginas (portada, acerca de, características, glosario, manual y
  * las diez calculadoras). Visto en rojo con esa compilación.
  *
+ * ── Y el tono del filete y las rayas juntas (2026-10-01) ──────────────
+ * Ningún filete gris con una opacidad escrita a mano: el tono sale de
+ * `--line`, `--line-2`, `--ficha-division`, `--chip-line` o `--border`.
+ * Había once: 0,06, 0,09, 0,12, 0,14, 0,16, 0,18, 0,2 y 0,3 además de
+ * los tokens. Y el doble filete baja de 40 a 8 px: el índice lateral de
+ * /faq cerraba con dos rayas a 24 px, la tabla de recuperación con dos a
+ * 16 px. Las cajas (campos, segmentados) no cuentan como filete. Vista
+ * en rojo con la compilación anterior (18 tonos y 9 pares).
+ *
  * ── Lo que NO mira ────────────────────────────────────────────────────
  * Flexbox, donde el mismo reparto solo ocurre si alguien lo pide.
  *
@@ -177,6 +186,25 @@ async function medir(pag, ruta, ancho) {
     const main = document.querySelector("main");
     const filetes = [];
     const cosas = [];
+    /* Tono del filete: el gris de un filete sale de un token (`--line`,
+       `--line-2`, `--ficha-division`, `--chip-line`, `--border`), no de
+       una opacidad escrita a mano. Se leen del propio CSS con una sonda
+       nueva por token: si se reutiliza una, la transición de color del
+       sitio devuelve el valor anterior y todos los tonos salen iguales. */
+    const tonos = new Set();
+    const lee = (css, prop) => {
+      const sonda = document.createElement("div");
+      sonda.style.cssText = css;
+      document.body.appendChild(sonda);
+      const v = getComputedStyle(sonda)[prop];
+      sonda.remove();
+      return v;
+    };
+    for (const v of ["--line", "--line-2", "--ficha-division", "--chip-line", "--border"]) {
+      tonos.add(lee(`border-top:1px solid var(${v})`, "borderTopColor"));
+    }
+    const baseFilete = lee("color:rgb(var(--divider))", "color").replace(/^rgb\((.*)\)$/, "$1");
+    const sueltos = [];
     if (main) {
       const sy = window.scrollY;
       const tiene = (s, lado) => parseFloat(s[`border${lado}Width`]) > 0 && s[`border${lado}Style`] !== "none" && s[`border${lado}Color`] !== "rgba(0, 0, 0, 0)";
@@ -185,7 +213,18 @@ async function medir(pag, ruta, ancho) {
         const s = getComputedStyle(el);
         if (s.visibility === "hidden") continue;
         const b = el.getBoundingClientRect();
-        if (b.width < 300 || b.height === 0) continue;
+        if (b.width === 0 || b.height === 0) continue;
+        for (const lado of ["Top", "Bottom", "Left", "Right"]) {
+          if (!tiene(s, lado)) continue;
+          const c = s[`border${lado}Color`];
+          const m = c.match(/^rgba\((\d+, \d+, \d+), ([\d.]+)\)$/);
+          if (m && m[1] === baseFilete && !tonos.has(c)) {
+            sueltos.push({ clase: `<${el.tagName.toLowerCase()} class="${String(el.className).slice(0, 60)}">`, tono: m[2] });
+          }
+        }
+        /* Una caja (campo, control segmentado) no es un filete: su borde
+           inferior no se suma a la línea que venga debajo. */
+        if (b.width < 200 || (tiene(s, "Left") && tiene(s, "Right"))) continue;
         if (tiene(s, "Top")) filetes.push({ y: b.top + sy, x1: b.left, x2: b.right });
         if (tiene(s, "Bottom")) filetes.push({ y: b.bottom + sy, x1: b.left, x2: b.right });
       }
@@ -209,21 +248,31 @@ async function medir(pag, ruta, ancho) {
         const a = filetes[i];
         const c = filetes[j];
         const hueco = c.y - a.y;
-        if (hueco < 40) continue;
+        if (hueco < 8) continue;
         if (hueco > 260) break;
         if (Math.min(a.x2, c.x2) - Math.max(a.x1, c.x1) < 200) continue;
         /* Cuenta lo que haya en cualquier columna, y un titular que arranca
            a la altura del segundo filete: ahí empieza sección, no hay banda
-           vacía. */
-        if (!cosas.some((k) => k.b > a.y + 1 && k.t < c.y + 8)) {
+           vacía. A menos de 40 px, en cambio, solo cuenta lo que cae bajo
+           los dos filetes: dos rayas tan juntas se leen dobles aunque la
+           columna de al lado tenga texto (el índice lateral de /faq). */
+        const lo = Math.max(a.x1, c.x1);
+        const hi = Math.min(a.x2, c.x2);
+        if (!cosas.some((k) => k.b > a.y + 1 && k.t < c.y + 8 && (hueco >= 40 || (k.x2 > lo && k.x1 < hi)))) {
           dobles.push({ y: Math.round(a.y), hueco: Math.round(hueco) });
           break;
         }
       }
     }
-    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length };
+    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size };
   }, TOLERANCIA_PX);
   filetesTotal += r.nf;
+  if (r.nt < 3) fallos.set(`sin tokens de filete ${ruta}`, [`${ancho} ${ruta}: la sonda no leyó los tonos`]);
+  for (const t of r.sueltos) {
+    const k = `filete con tono suelto /${t.tono} ${t.clase}`;
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}`);
+  }
   for (const d of r.dobles) {
     const k = "doble filete sin nada entre medias";
     if (!fallos.has(k)) fallos.set(k, []);
@@ -282,12 +331,16 @@ if (rejillas < 200) {
 }
 if (fallos.size) {
   const compas = [...fallos.keys()].filter((k) => k.startsWith("compás ")).length;
+  const tono = [...fallos.keys()].filter((k) => k.startsWith("filete con tono suelto") || k.startsWith("sin tokens de filete")).length;
   const doble = fallos.has("doble filete sin nada entre medias") ? 1 : 0;
   if (doble) {
     console.log("[rejillas] dos filetes seguidos sin contenido entre ellos: si lo de encima ya cierra con filete, `<FinalCTANew sinFilete />`");
   }
-  if (fallos.size - compas - doble) {
-    console.log(`[rejillas] ${fallos.size - compas} rejilla(s) reparten el alto sobrante entre sus filas`);
+  if (tono) {
+    console.log(`[rejillas] ${tono} filete(s) con una opacidad escrita a mano: usa --line, --line-2 o --ficha-division`);
+  }
+  if (fallos.size - compas - doble - tono) {
+    console.log(`[rejillas] ${fallos.size - compas - doble - tono} rejilla(s) reparten el alto sobrante entre sus filas`);
     console.log("[rejillas] si la ficha debe ir arriba, `content-start` (align-content: start) en ella");
   }
   if (compas) {

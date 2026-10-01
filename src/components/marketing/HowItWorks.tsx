@@ -72,7 +72,7 @@ export function HowItWorks() {
                 </kbd>
               </div>
               <h3 className="mt-10 t-h3 text-primary">{s.title}</h3>
-              <p className="mt-2 text-[15px] text-secondary leading-[1.6]">{s.desc}</p>
+              <p className="mt-2 text-[15px] text-secondary leading-[1.7]">{s.desc}</p>
             </li>
           ))}
         </ol>

@@ -297,7 +297,7 @@ export function BetaApplication() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <div>
           <h2 className="t-h3 text-primary">{es ? "Cuéntanos cómo operas." : "Tell us how you trade."}</h2>
-          <p className="mt-3 max-w-md text-secondary leading-relaxed">
+          <p className="mt-3 max-w-md text-secondary leading-[1.7]">
             {es
               ? "Buscamos un piloto pequeño y útil. No hace falta que tengas una cuenta ni que compartas resultados o datos financieros."
               : "We are building a small, useful private pilot. You won’t need an account, and you won’t be asked for performance or financial data."}
@@ -307,7 +307,7 @@ export function BetaApplication() {
               <li key={item} className="list-none">{item}</li>
             ))}
           </ul>
-          <div className="mt-7 border-t border-[rgb(var(--divider)/0.12)] pt-5 text-xs text-tertiary">
+          <div className="mt-7 border-t border-[var(--line)] pt-5 text-xs text-tertiary">
             <span>{es ? "No pedimos credenciales, saldos ni acceso a tu bróker." : "We never ask for credentials, balances or broker access."}</span>
           </div>
         </div>

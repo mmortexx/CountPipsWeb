@@ -279,7 +279,7 @@ export function DisciplineCost() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[rgb(var(--divider)/0.08)]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[var(--ficha-division)]">
                 <div>
                   <label htmlFor="disc-inplan" className="block text-[12px] text-tertiary mb-1">
                     {es ? "Ganancia media en plan ($/op.)" : "Avg win in-plan ($/trade)"}
@@ -336,7 +336,7 @@ export function DisciplineCost() {
               <div className="overflow-x-auto custom-scroll">
                 <table className="grid w-max min-w-full grid-cols-[minmax(max-content,1.25fr)_minmax(max-content,2.25rem)_minmax(max-content,1fr)_minmax(max-content,1.15fr)] border-collapse">
                 <thead className="contents">
-                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap border-b border-[rgb(var(--divider)/0.06)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
+                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap border-b border-[var(--ficha-division)] px-2.5 py-3 text-sm text-[var(--ink-3)]">
                   <th scope="col" className="tnum text-left text-[12px] font-normal">{es ? "Modo" : "Mode"}</th>
                   <th scope="col" className="tnum text-right text-[12px] font-normal">{es ? "Ops" : "Trades"}</th>
                   <th scope="col" className="tnum text-right text-[12px] font-normal">{es ? "Expectancy" : "Expectancy"}</th>
@@ -346,7 +346,7 @@ export function DisciplineCost() {
                 <tbody className="contents">
 
                 {/* Fila En Plan */}
-                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[var(--ficha-division)] relative group">
                   <th scope="row" className="text-left font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</th>
                   <td className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</td>
                   <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
@@ -358,7 +358,7 @@ export function DisciplineCost() {
                 </tr>
 
                 {/* Fila Fuera de Plan */}
-                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[rgb(var(--divider)/0.06)] relative group">
+                <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[var(--ficha-division)] relative group">
                   <th scope="row" className="text-left font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</th>
                   <td className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</td>
                   <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
@@ -385,7 +385,7 @@ export function DisciplineCost() {
               </div>
             </div>
 
-            <p className="medida mt-3 text-[13px] text-tertiary leading-relaxed">
+            <p className="medida mt-3 text-[13px] text-tertiary leading-[1.6]">
               {es
                 ? "La brecha es el dinero que dejas de ganar en cada operación que rompe las reglas frente a haberla ejecutado con disciplina."
                 : "The gap is the cash lost on every off-plan trade compared to executing cleanly inside your rules."}

@@ -30,9 +30,14 @@ const acabaEn = (ruta) => new RegExp(`${ruta.replace(/[.*+?^${}()|[\]\\/]/g, "\\
 await page.waitForURL(acabaEn("/features/disciplina"), { timeout: 8000 });
 ok("megamenú navega a /features/disciplina", acabaEn("/features/disciplina").test(page.url()));
 
-// 3. Barra: enlaces directos.
+// 3. Barra: enlaces directos. Desde la tanda 45 la barra es Producto▾ ·
+//    Precios · Manual · Prop firms · Acceso anticipado + «Ver la demo»; la
+//    guarda seguía buscando un «Demo» que ya no está y caía por tiempo.
+//    Acaba fuera de /demo: allí Ctrl+K abre la paleta de la demo, y el
+//    paso 4 comprueba que en la web no abre nada.
 for (const [ruta, patron] of [
-  ["/demo", /^Demo$/],
+  ["/demo", /^Ver la demo$/],
+  ["/pricing", /^Precios$/],
   ["/traders/manual", /^Manual$/],
 ]) {
   await page.locator("header").getByRole("link", { name: patron }).first().click();
@@ -90,11 +95,11 @@ if (!(await subir.count())) {
 }
 
 // 9. Cambio de idioma ES → EN con el selector listbox de la barra.
-await page.getByRole("button", { name: /Idioma|Language/ }).first().click().catch(async () => {
-  await page.locator('header [aria-haspopup="listbox"]').first().click();
-});
+// El botón se llama «Cambiar idioma»: la expresión de antes (/Idioma/, con
+// mayúscula) no lo encontraba nunca y dependía de un plan B.
+await page.locator('header button[aria-haspopup="listbox"]:visible').first().click();
 await page.waitForTimeout(500);
-await page.getByRole("option", { name: "English" }).click();
+await page.getByRole("option", { name: /English/ }).click();
 await page.waitForURL("**/en/**", { timeout: 9000 }).catch(() => {});
 const enUrl = /\/en/.test(page.url());
 ok("selector de idioma lleva a /en", enUrl, page.url());

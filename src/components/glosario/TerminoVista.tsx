@@ -139,7 +139,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
                         >
                           {t.term}
                         </span>
-                        <span className="medida block text-[14px] leading-[1.5] text-secondary lg:hidden">
+                        <span className="medida block text-[14px] leading-[1.6] text-secondary lg:hidden">
                           {es ? t.es : t.en}
                         </span>
                       </Link>
@@ -162,7 +162,7 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
           <Reveal delay={0.22} className="lg:col-start-1 lg:row-start-2 lg:max-w-[62ch]">
             <nav
               aria-label={es ? "Recorrer el glosario" : "Browse the glossary"}
-              className="mt-12 flex items-stretch justify-between gap-3 border-t border-[rgb(var(--divider)/0.1)] pt-6"
+              className="mt-12 flex items-stretch justify-between gap-3 border-t border-[var(--line)] pt-6"
             >
               {anterior ? (
                 <Link

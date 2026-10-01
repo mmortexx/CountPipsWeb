@@ -653,7 +653,7 @@ export function EquityProjector() {
                 )}
 
                 {/* Aporte mensual */}
-                <div className="pt-2 border-t border-[rgb(var(--divider)/0.08)]">
+                <div className="pt-2 border-t border-[var(--ficha-division)]">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="tj-deslizador-etiqueta">
                       {es ? "Aporte mensual" : "Monthly deposit"}
@@ -684,7 +684,7 @@ export function EquityProjector() {
               </div>
 
               {/* Sección 2: Edge */}
-              <div className="space-y-3.5 pt-3.5 border-t border-[rgb(var(--divider)/0.12)]">
+              <div className="space-y-3.5 pt-3.5 border-t border-[var(--ficha-division)]">
                 <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
                     {es ? "Ventaja" : "Edge"}
@@ -730,7 +730,7 @@ export function EquityProjector() {
                 </div>
 
                 {/* Fricción */}
-                <div className="pt-2 border-t border-[rgb(var(--divider)/0.08)] flex items-center justify-between">
+                <div className="pt-2 border-t border-[var(--ficha-division)] flex items-center justify-between">
                   <span className="tj-deslizador-etiqueta">
                     {es ? "Costes por operación" : "Costs per trade"}
                   </span>
@@ -756,7 +756,7 @@ export function EquityProjector() {
               </div>
 
               {/* Sección 3: Riesgo y Horizonte */}
-              <div className="space-y-3.5 pt-3.5 border-t border-[rgb(var(--divider)/0.12)]">
+              <div className="space-y-3.5 pt-3.5 border-t border-[var(--ficha-division)]">
                 <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
                     {es ? "Riesgo y horizonte" : "Risk and horizon"}
@@ -800,7 +800,7 @@ export function EquityProjector() {
                 </div>
 
                 {/* Modelo de Reinversión */}
-                <div className="pt-2 border-t border-[rgb(var(--divider)/0.08)]">
+                <div className="pt-2 border-t border-[var(--ficha-division)]">
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
@@ -960,7 +960,7 @@ export function EquityProjector() {
                   aviso, no una curva o una tabla con Infinity dentro. */}
               {c.fueraDeEscala ? (
                 <div
-                  className="border-y border-[var(--ficha-division)] py-6 text-[13px] leading-relaxed text-center"
+                  className="border-y border-[var(--ficha-division)] py-6 text-[13px] leading-[1.6] text-center"
                   style={{ color: "rgb(var(--pnl-neg))" }}
                   role="alert"
                 >
@@ -1201,7 +1201,7 @@ export function EquityProjector() {
                           <tr
                             key={row.year}
                             className={`transition-colors hover:bg-[rgb(var(--divider)/0.06)] ${
-                              ultimo ? "tj-matriz-total" : "border-t border-[rgb(var(--divider)/0.09)]"
+                              ultimo ? "tj-matriz-total" : "border-t border-[var(--ficha-division)]"
                             }`}
                           >
                             <td

@@ -254,7 +254,7 @@ export function SessionClock() {
           </div>
 
           {abiertas.length > 1 && (
-            <p className="m-0 mt-5 border-t border-[var(--line)] pt-4 text-[14px] leading-[1.5] text-primary">
+            <p className="m-0 mt-5 border-t border-[var(--line)] pt-4 text-[14px] leading-[1.6] text-primary">
               <span className="font-semibold">{es ? "Solape en curso: " : "Overlap now: "}</span>
               {abiertas.map(nombre).join(es ? " y " : " and ")}
               {es ? " están abiertas a la vez." : " are open at the same time."}

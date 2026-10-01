@@ -321,7 +321,7 @@ function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
               </span>
             )}
           </div>
-          <p className="medida m-0 text-[14px] leading-[1.5]" style={{ color: "var(--ink-2)" }}>
+          <p className="medida m-0 text-[14px] leading-[1.6]" style={{ color: "var(--ink-2)" }}>
             {es ? f.descEs : f.descEn}
           </p>
         </li>

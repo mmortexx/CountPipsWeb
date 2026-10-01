@@ -854,7 +854,7 @@ export function Navbar() {
                       );
                       return (
                         <>
-                          <div className="relative grid grid-cols-2 divide-x divide-[rgb(var(--divider)/0.10)] p-2">
+                          <div className="relative grid grid-cols-2 divide-x divide-[var(--line)] p-2">
                             <div className="pr-2">
                               <p className="eyebrow m-0 px-2.5 pb-1.5 pt-1">
                                 {es ? "Producto" : "Product"}
@@ -868,7 +868,7 @@ export function Navbar() {
                               {productItems.filter((i) => i.grupo === "recursos").map(fila)}
                             </div>
                           </div>
-                          <div className="flex items-center justify-between border-t border-[rgb(var(--divider)/0.10)] px-4 py-2.5">
+                          <div className="flex items-center justify-between border-t border-[var(--line)] px-4 py-2.5">
                             <span className="tnum text-[12px] text-tertiary">
                               {es
                                 ? "Todo el producto, en una vista"
@@ -1057,7 +1057,7 @@ export function Navbar() {
               className="tj-cajon tj-paper tj-paper-dense safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none min-[1120px]:hidden"
               style={{ position: "fixed" }}
             >
-              <div className="flex h-16 shrink-0 items-center justify-between border-b border-[rgb(var(--divider)/0.06)] px-5">
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-[var(--line)] px-5">
                 <Link
                   href="/"
                   onClick={() => setMobileOpen(false)}
@@ -1194,7 +1194,7 @@ export function Navbar() {
 
               {/* Botonera fija al fondo, separada de la lista por un filete.
                  `safe-bottom` deja sitio a la barra de inicio de iOS. */}
-              <div className="safe-bottom shrink-0 border-t border-[rgb(var(--divider)/0.08)] px-4 pt-4">
+              <div className="safe-bottom shrink-0 border-t border-[var(--line)] px-4 pt-4">
                 <div className="flex flex-col gap-2 pb-4">
                   {/* Una sola llamada: «Precios» ya está en la lista, y un
                       segundo botón debajo lo repetía. */}

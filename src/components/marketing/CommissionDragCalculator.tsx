@@ -321,7 +321,7 @@ export function CommissionDragCalculator() {
 
             {/* Indicadores Clave: Drag %, Break-Even Ticks y Win Rate Exigido */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 pt-4">
-              <div className="border-t border-[var(--line)] pt-3 sm:border-t-0 sm:pt-0">
+              <div>
                 <span className="text-[12px] text-tertiary block mb-1">
                   {es ? "Parte de la ganancia" : "Share of profit"}
                 </span>
@@ -378,7 +378,7 @@ export function CommissionDragCalculator() {
             {/* Diagnóstico Institucional */}
             <div className="mt-5 pt-4 border-t border-[var(--line)]">
               <div>
-                <p className="text-[13px] text-secondary leading-relaxed m-0">
+                <p className="text-[13px] text-secondary leading-[1.6] m-0">
                   {netAnnual < 0
                     ? es
                       ? "Los costes superan la ganancia bruta: con estos números la cuenta pierde aunque cada operación alcance su objetivo."

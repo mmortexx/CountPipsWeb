@@ -93,11 +93,11 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   return (
     <section
       id="faq"
-      /* En `/faq` la cabecera de página ya titula, así que aquí el h2 se
-         vuelve invisible (sigue existiendo para el indice y para SEO).
-         Con el padding completo de `.section` eso dejaba ~145 px de
-         vacio absoluto entre la regla del hero y el buscador. */
-      className={`${standalone ? "pt-10 pb-[clamp(4rem,8vw,7rem)]" : "section"} cv-auto relative overflow-clip scroll-mt-24`}
+      /* En `/faq` la cabecera de página ya titula y aquí el h2 es invisible.
+         Basta `.section`: tras `.tj-cabecera` abre con el mismo aire que el
+         resto de páginas, y el relleno propio que llevaba (112 px abajo)
+         dejaba 184 px hasta el contacto, frente a los ~125 del resto. */
+      className="section cv-auto relative overflow-clip scroll-mt-24"
     >
       <div className="relative z-10 tj-container">
         {/* Encabezado interno — el h2 siempre se renderiza (necesario para
@@ -273,7 +273,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                           filtra al buscar y el «03» pasaba a ser «01». */}
                       <span className="min-w-0 break-words">{item.q}</span>
                     </AccordionTrigger>
-                    <AccordionContent className="medida text-secondary leading-relaxed text-[15px] pb-5">
+                    <AccordionContent className="medida text-secondary text-[15px] leading-[1.7] pb-5">
                       {item.a}
                     </AccordionContent>
                   </AccordionItem>
@@ -290,7 +290,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           delay={0.26}
           className={standalone ? "lg:col-start-1 lg:row-start-2 lg:self-start" : undefined}
         >
-          <div className={`mt-6 ${standalone ? "-ml-3 lg:ml-0 lg:mt-6 lg:border-t lg:border-[var(--line)] lg:pt-5" : "text-center"}`}>
+          <div className={`mt-6 ${standalone ? "-ml-3 lg:ml-0 lg:mt-4" : "text-center"}`}>
             <GlossaryModal
               open={glossaryOpen}
               onOpenChange={setGlossaryOpen}
