@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoUnidad } from "@/components/tj/CampoCifra";
+import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { componerInforme } from "@/lib/informe";
 import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 
@@ -59,7 +61,6 @@ export function DisciplineCost() {
   const [breachPct, setBreachPct] = useState(40);
   const [inPlanExp, setInPlanExp] = useState(29.73);
   const [offPlanExp, setOffPlanExp] = useState(-38.47);
-  const [copied, setCopied] = useState(false);
   const [activePreset, setActivePreset] = useState<string>("custom");
 
   // Cálculos reactivos
@@ -131,23 +132,32 @@ export function DisciplineCost() {
     setOffPlanExp(p.offPlanExp);
   };
 
-  const copiarResumen = () => {
-    /* Las seis cifras del resumen salían de `toFixed`, o sea con punto
-       decimal inglés, dentro de un texto castellano cuyo porcentaje
-       ya llevaba su espacio duro. Es texto que el visitante se lleva:
-       `fmtMoney` pone separador de millares, divisa, y el signo
-       menos tipográfico que usa el resto del sitio. */
-    const eur = (v: number) => fmtMoney(v, lang, { sign: true });
-    const texto = es
-      ? `Factura de Indisciplina (CountPips):\n• Operaciones/mes: ${totalTrades} (${breachPct}\u00a0% fuera de plan)\n• Expectancy en plan: ${eur(inPlanExp)}\n• Expectancy fuera de plan: ${eur(offPlanExp)}\n• Brecha por operación: ${eur(-gap)}\n• Fuga mensual: ${eur(-totalLeakMonthly)}\n• Fuga anual proyectada: ${eur(-totalLeakAnnual)}`
-      : `Indiscipline Invoice (CountPips):\n• Trades/month: ${totalTrades} (${breachPct}% off-plan)\n• In-plan expectancy: ${eur(inPlanExp)}\n• Off-plan expectancy: ${eur(offPlanExp)}\n• Gap per trade: ${eur(-gap)}\n• Monthly leak: ${eur(-totalLeakMonthly)}\n• Projected annual leak: ${eur(-totalLeakAnnual)}`;
-
-    if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(texto).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2200);
-      });
-    }
+  const informe = () => {
+    /* `fmtMoney` pone separador de millares, divisa y el signo menos
+       tipográfico que usa el resto del sitio; `toFixed` dejaba punto
+       decimal inglés en un texto castellano. */
+    const usd = (v: number) => fmtMoney(v, lang, { sign: true });
+    return componerInforme(
+      es ? "Coste de indisciplina" : "Cost of indiscipline",
+      [
+        {
+          lineas: [
+            `${es ? "Operaciones al mes" : "Trades per month"}: ${totalTrades} (${breachPct}${pctSep(lang)} ${es ? "fuera de plan" : "off-plan"})`,
+            `${es ? "Ganancia media en plan, por operación" : "Avg win in-plan, per trade"}: ${usd(inPlanExp)}`,
+            `${es ? "Resultado medio fuera de plan" : "Avg result off-plan"}: ${usd(offPlanExp)}`,
+          ],
+        },
+        {
+          rotulo: es ? "Resultado" : "Result",
+          lineas: [
+            `${es ? "Brecha por operación" : "Gap per trade"}: ${usd(-gap)}`,
+            `${es ? "Fuga mensual" : "Monthly leak"}: ${usd(-totalLeakMonthly)}`,
+            `${es ? "Fuga anual proyectada" : "Projected annual leak"}: ${usd(-totalLeakAnnual)}`,
+          ],
+        },
+      ],
+      `${es ? "" : "/en"}/herramientas/coste-de-indisciplina/`,
+    );
   };
 
   return (
@@ -564,17 +574,11 @@ export function DisciplineCost() {
 
             </div>
             <div className="tj-ficha-barra tj-ficha-barra--pie">
-              <button
-                type="button"
-                onClick={copiarResumen}
-                className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-              >
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-                  <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" strokeWidth="1.3" />
-                </svg>
-                {copied ? (es ? "Resumen copiado" : "Summary copied") : (es ? "Copiar resumen" : "Copy summary")}
-              </button>
+              <BotonCopiar
+                texto={informe}
+                rotulo={es ? "Copiar resumen" : "Copy summary"}
+                hecho={es ? "Resumen copiado" : "Summary copied"}
+              />
               <span className="text-tertiary">
                 {es ? "Privado en tu navegador" : "Private in your browser"}
               </span>

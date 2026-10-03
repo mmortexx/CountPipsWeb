@@ -3195,6 +3195,64 @@ inglés, de las legales, del oscuro de escritorio y de cada pestaña de la demo.
   así, 26/26. Vitest 564 pruebas (2 omitidas), tipos y lint limpios.
   Arranque en tres pasadas: titular legible a 124–154 ms, total 226–435 ms.
 
+### Quincuagésima tercera tanda: lo que se copia y el glosario (2026-10-03)
+
+Capturas a 1440 del glosario (índice y fichas), manual, prop firms, acceso
+anticipado, FAQ e índice de herramientas; y el texto real que deja en el
+portapapeles cada botón «Copiar», leído pulsándolo en el navegador.
+
+- **Un solo «Copiar».** Siete herramientas escribían su resumen cada una a
+  su manera: un título en mayúsculas con marco de «═» (proyector), otro en
+  mayúsculas iniciales a la inglesa («Informe de Significancia
+  Estadística»), viñetas distintas, y la dirección solo en dos. Había
+  fallos: el plan de riesgo decía «Activo: EQUITIES» (el identificador
+  interno), la significancia «Veredicto: No significativo (No
+  significativo)», y quedaban «Win Rate», «ops», «16,7:1 ratio» y
+  «0 $ / mes». Ahora:
+  - `src/lib/informe.ts` (`componerInforme`) compone todos igual:
+    «CountPips · Título», bloques con rótulo separados por una línea en
+    blanco, viñetas «•» y la dirección de la herramienta en el idioma
+    copiado. Cada línea usa el mismo rótulo que la pantalla.
+  - `src/components/tj/BotonCopiar.tsx` es el único botón: mismo tamaño
+    e icono en las siete (el proyector y el test usaban otros), una
+    marca al copiar y, si el navegador niega el portapapeles, «No se pudo
+    copiar» durante 4 s. Antes cuatro de ellas no decían nada. El aviso
+    va además en una región viva aparte que nace vacía: con el rótulo
+    dentro, `anuncios.mjs` cazó que el lector leía «Copiar resumen» al
+    cargar.
+  - El conmutador de activo de la calculadora de riesgo y el plan copiado
+    comparten la lista (`MODOS_ACTIVO`), en minúscula española: «Acciones
+    / cripto», «Forex (lotes)», «Futuros (contratos)».
+- **Glosario.**
+  - En los 38 términos sin fórmula, la columna de la definición empezaba
+    38 px por debajo de «De la misma familia». Sube a su altura.
+  - SQN, Ulcer index, Gain-to-pain ratio y Wilson score interval ganan
+    su fórmula, escrita a partir de lo que calcula el motor
+    (`computeSqn`, `computeUlcerIndex`, `computeGainToPain`,
+    `computeWilsonCI`). A 390 px la de Wilson se parte en dos renglones
+    por un espacio entre términos, no a mitad de símbolo.
+- **Guardas nuevas.**
+  - `tests/informe.test.ts`: el formato del informe, y que solo
+    `BotonCopiar` toque el portapapeles. Roja con el código anterior:
+    nombra las siete herramientas.
+  - `rejillas.mjs`: la ficha del glosario arranca a la altura de su raíl
+    (±16 px) a partir de 1024 px. Roja con la compilación anterior: 76
+    páginas a 38 px.
+  - `copiado.mjs`: la dirección del pie es la del idioma copiado. Además
+    deja fuera la dirección al buscar palabras españolas en el texto
+    inglés: las rutas van en español también en /en. Vista en rojo
+    quitando a mano el «/en» de una herramienta.
+- **Visto y sin cambio.** El índice del glosario, el manual, prop firms,
+  acceso anticipado, la FAQ y el índice de herramientas. La matriz de
+  muestra mínima de la significancia sigue diciendo «ops»: en tres
+  columnas de 110 px a 390, «operaciones» no cabe.
+- **Medido.** Batería en paralelo, 15/19 a la primera: `anuncios` (la
+  región viva), `copiado` (la ruta leída como español), `tinta` (buscaba
+  el rótulo «Copiado», que ya no existe) y `test-infra` (faltaba la fila
+  de la prueba nueva). Arreglado, 19/19 con `corrobora-menus` 26/26 y
+  vitest 575 (2 omitidas). Arranque en tres pasadas: titular legible a
+  116–227 ms, total 212–352 ms.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -3210,16 +3268,16 @@ node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritori
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
 node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, comillas y ortografía británica en /en), restos de plantilla a la vista y flechas añadidas a enlaces
-node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
+node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar», y que la dirección del pie sea la del idioma copiado
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
-node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, columnas iguales a compás, cifras de una fila a la misma altura, segmentados vecinos del mismo alto y ningún filete doble ni de tono suelto (todas las páginas, 1440 y 390)
+node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, columnas iguales a compás, cifras de una fila a la misma altura, segmentados vecinos del mismo alto, la ficha del glosario a la altura de su raíl y ningún filete doble ni de tono suelto (todas las páginas, 1440 y 390)
 node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en un peldaño t-* de la escala, y el interlineado de lectura (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 53 suites, 564 tests (+2 omitidos)
+npx vitest run                          # 54 suites, 575 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

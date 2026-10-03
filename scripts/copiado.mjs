@@ -131,8 +131,14 @@ const RE_ES = new RegExp("\\b(?:" + PALABRAS_ES.join("|") + ")\\b", "gi");
 /* El texto copiado es de renglón corto y separadores propios, así que
    aquí no hay que temer los espacios inventados que sí complican el HTML:
    se mide tal cual llegó al portapapeles. */
-function revisar(texto, en) {
+function revisar(completo, en) {
   const fallos = [];
+  /* La dirección del pie no es prosa: las rutas van en español también en
+     /en («/en/herramientas/calculadora-de-riesgo/»). Lo que sí se exige es
+     que apunte a la versión del idioma en que se copió. */
+  const url = completo.match(/https?:\/\/\S+/)?.[0];
+  if (url && en !== /\/en\//.test(url)) fallos.push({ regla: "dirección del pie en el otro idioma", ejemplo: url });
+  const texto = completo.replace(/https?:\/\/\S+/g, "");
   const anota = (regla, re) => {
     for (const m of texto.matchAll(re)) {
       fallos.push({ regla, ejemplo: texto.slice(Math.max(0, m.index - 24), m.index + m[0].length + 4).trim() });

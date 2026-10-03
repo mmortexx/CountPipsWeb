@@ -97,7 +97,10 @@ export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
 
           {/* Salidas: la herramienta que lo calcula, si existe, y dónde sigue en el programa. */}
           <Reveal delay={0.1}>
-            <div className="mt-6 grid gap-1">
+            {/* Sin fórmula encima, el primer rótulo sube a la altura de la
+                ceja del raíl («De la misma familia»): con `mt-6` y el relleno
+                de la salida caía 38 px más abajo. */}
+            <div className={formula ? "mt-6 grid gap-1" : "-mt-3.5 grid gap-1"}>
               {herramienta && destinoHerramienta && (
                 <Salida
                   href={herramienta}

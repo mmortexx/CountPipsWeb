@@ -4,6 +4,8 @@ import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Deslizador } from "@/components/tj/Deslizador";
+import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { componerInforme } from "@/lib/informe";
 import { pctSep, fmtR, fmtNum as fmtNumBase } from "@/lib/trading/format";
 import { computeStatisticalPower, normalCdf } from "@/lib/trading/estadistica";
 
@@ -50,7 +52,6 @@ export function EdgeSignificanceChecker() {
   const [avgWinR, setAvgWinR] = useState(2.0);
   const [avgLossR, setAvgLossR] = useState(1.0);
   const [parametersCount, setParametersCount] = useState(3);
-  const [copied, setCopied] = useState(false);
 
   const c = useMemo(() => {
     const wr = winRate / 100;
@@ -367,28 +368,35 @@ export function EdgeSignificanceChecker() {
 
           </div>
           <div className="tj-ficha-barra tj-ficha-barra--pie">
-            <button
-              type="button"
-              onClick={() => {
-                const report = es
-                  ? `Informe de Significancia Estadística (CountPips):\n• Muestra analizada: ${trades} operaciones\n• Win Rate observado: ${fmtNum(winRate, 0)}${PCT}\n• IC 95${PCT} Wilson Score: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${fmtR(c.expectancyR, lang, 3)}\n• z-score: ${fmtNum(c.z, 2)} | p-valor: ${fmtNum(c.pValue, 4)}\n• Veredicto: ${verdict.label} (${c.significant ? "Significativo p < 0,05" : "No significativo"})\n• Muestra 95${PCT} requerida: ${c.minSample95} ops\n• Parámetros del setup: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`
-                  : `Statistical Significance Report (CountPips):\n• Analyzed Sample: ${trades} trades\n• Observed Win Rate: ${fmtNum(winRate, 0)}${PCT}\n• Wilson 95% CI: [${fmtNum(c.wilsonLower, 1)}${PCT}, ${fmtNum(c.wilsonUpper, 1)}${PCT}]\n• Expectancy: ${fmtR(c.expectancyR, lang, 3)}\n• z-score: ${fmtNum(c.z, 2)} | p-value: ${fmtNum(c.pValue, 4)}\n• Verdict: ${verdict.label} (${c.significant ? "Significant p < 0.05" : "Not significant"})\n• 95% Min Sample: ${c.minSample95} trades\n• Setup Parameters: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)}:1 ratio)`;
-
-                if (navigator?.clipboard?.writeText) {
-                  navigator.clipboard.writeText(report).then(() => {
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2200);
-                  });
-                }
-              }}
-              className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary hover:text-[rgb(var(--accent-base))] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-                <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" strokeWidth="1.3" />
-              </svg>
-              {copied ? (es ? "Informe copiado" : "Report copied") : (es ? "Copiar informe" : "Copy report")}
-            </button>
+            <BotonCopiar
+              texto={() =>
+                componerInforme(
+                  es ? "Significancia estadística" : "Statistical significance",
+                  [
+                    {
+                      lineas: [
+                        `${es ? "Muestra" : "Sample"}: ${trades} ${es ? "operaciones" : "trades"}`,
+                        `${es ? "Win rate observado" : "Observed win rate"}: ${fmtNum(winRate, 0)}${PCT}`,
+                        `Expectancy: ${fmtR(c.expectancyR, lang, 3)}`,
+                        `${es ? "Parámetros del setup" : "Setup parameters"}: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)} ${es ? "operaciones por parámetro" : "trades per parameter"})`,
+                      ],
+                    },
+                    {
+                      rotulo: es ? "Resultado" : "Result",
+                      lineas: [
+                        `${es ? "Veredicto" : "Verdict"}: ${verdict.label}`,
+                        `z: ${fmtNum(c.z, 2)} · ${es ? "p-valor" : "p-value"}: ${fmtNum(c.pValue, 4)}`,
+                        `${es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"}: ${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`,
+                        `${es ? `Muestra necesaria al 95${PCT}` : "Sample needed at 95%"}: ${c.minSample95} ${es ? "operaciones" : "trades"}`,
+                      ],
+                    },
+                  ],
+                  `${es ? "" : "/en"}/herramientas/significancia-estadistica/`,
+                )
+              }
+              rotulo={es ? "Copiar informe" : "Copy report"}
+              hecho={es ? "Informe copiado" : "Report copied"}
+            />
             <span className="text-tertiary">
               {es ? "Privado en tu navegador" : "Private in your browser"}
             </span>

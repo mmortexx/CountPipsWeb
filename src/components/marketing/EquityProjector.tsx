@@ -5,9 +5,9 @@ import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { proyectaCapital, CONFIANZA_RACHA } from "@/lib/trading/proyeccion";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { Copy, Check } from "lucide-react";
 import { fmtMoney, pctSep, fmtInt, fmtR, fmtNum as fmtNumCasa } from "@/lib/trading/format";
-import { siteUrl } from "@/lib/site";
+import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { componerInforme } from "@/lib/informe";
 
 /** Cuántos decimales (0 a `max`) hacen falta para representar `v` sin ceros
  *  de más: el mismo recorte que hacía `minimumFractionDigits: 0,
@@ -145,7 +145,6 @@ export function EquityProjector() {
   const [viewTab, setViewTab] = useState<ViewTab>("chart");
   const [showConfidenceCone, setShowConfidenceCone] = useState(true);
   const [hoverMonthIndex, setHoverMonthIndex] = useState<number | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const chartRef = useRef<SVGSVGElement | null>(null);
   /* El gráfico se dibuja al ancho real de su caja, en píxeles. Con un
@@ -350,63 +349,45 @@ export function EquityProjector() {
   const activeCoord =
     hoverMonthIndex !== null ? chartData.medianCoords[hoverMonthIndex] : chartData.medianCoords[chartData.medianCoords.length - 1];
 
-  // Copiar resumen al portapapeles
-  const copySummary = useCallback(async () => {
-    if (c.fueraDeEscala) return;
-    const lines = [
-      es ? "PROYECCIÓN DE CURVA DE CAPITAL — CountPips" : "EQUITY CURVE PROJECTION — CountPips",
-      "═".repeat(38),
-      `${es ? "Perfil" : "Profile"}: ${(() => {
-        const p = PRESETS.find((x) => x.id === selectedPreset);
-        return p ? (es ? p.labelEs : p.labelEn) : es ? "Manual" : "Custom";
-      })()}`,
-      `${es ? "Balance inicial" : "Starting balance"}: ${fmtUsd(startBalance)}`,
-      `${es ? "Aporte mensual" : "Monthly deposit"}: ${fmtUsd(monthlyContribution)} / ${es ? "mes" : "mo"}`,
-      `${es ? "Horizonte" : "Time horizon"}: ${years} ${es ? "años" : "years"} (${fmtInt(tradesPerYear * years, lang)} ops)`,
-      `${es ? "Reinversión" : "Compounding mode"}: ${reinvestMode === "compound" ? (es ? "Interés compuesto" : "Compounding") : (es ? "Retiro fijo" : "Fixed")}`,
-      "─".repeat(38),
-      `${es ? "Ventaja" : "Edge"}:`,
-      `  • Win rate: ${fmtNum(winRate, 1)}${pctSep(lang)}`,
-      `  • ${es ? "Ganancia / pérdida media" : "Average win / loss"}: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
-      `  • ${es ? "Expectancy neta" : "Net expectancy"}: ${fmtR(c.netExpectancyR, lang, 3)}`,
-      `  • Profit factor: ${fmtNum(c.profitFactor, 2)}`,
-      `  • ${es ? "Riesgo por operación" : "Risk per trade"}: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
-      "─".repeat(38),
-      `${es ? "Resultados proyectados" : "Projected results"}:`,
-      `  • ${es ? "Balance final" : "Final balance"}: ${fmtUsd(c.finalBalance)}`,
-      `  • ${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
-      `  • CAGR: ${fmtPct(c.cagr * 100, 1)}`,
-      `  • ${es ? "Drawdown máximo estimado" : "Estimated max drawdown"} (${fmtPct(CONFIANZA_RACHA * 100, 0)}): ${fmtPct(c.estMaxDDpct, 1)}`,
-      `  • ${es ? "Tiempo para duplicar" : "Time to double"}: ${c.monthsToDouble ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : "N/A"}`,
-      "═".repeat(38),
-      siteUrl(`${es ? "" : "/en"}/herramientas/proyector-de-capital/`),
-    ];
-
-    try {
-      await navigator.clipboard.writeText(lines.join("\n"));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2400);
-    } catch {
-      // Fallback
-    }
-  }, [
-    es,
-    lang,
-    selectedPreset,
-    startBalance,
-    monthlyContribution,
-    years,
-    tradesPerYear,
-    reinvestMode,
-    winRate,
-    avgWinR,
-    avgLossR,
-    riskPct,
-    c,
-    fmtUsd,
-    fmtNum,
-    fmtPct,
-  ]);
+  const informe = () => {
+    const perfil = PRESETS.find((x) => x.id === selectedPreset);
+    const anos = es ? (years === 1 ? "año" : "años") : years === 1 ? "year" : "years";
+    return componerInforme(
+      es ? "Proyector de capital" : "Equity projector",
+      [
+        {
+          lineas: [
+            `${es ? "Perfil" : "Profile"}: ${perfil ? (es ? perfil.labelEs : perfil.labelEn) : es ? "manual" : "custom"}`,
+            `${es ? "Balance inicial" : "Starting balance"}: ${fmtUsd(startBalance)}`,
+            `${es ? "Aporte mensual" : "Monthly deposit"}: ${fmtUsd(monthlyContribution)}`,
+            `${es ? "Horizonte" : "Time horizon"}: ${years} ${anos} (${fmtInt(tradesPerYear * years, lang)} ${es ? "operaciones" : "trades"})`,
+            `${es ? "Reinversión" : "Reinvestment"}: ${reinvestMode === "compound" ? (es ? "interés compuesto" : "compounding") : es ? "riesgo fijo en base" : "fixed on starting balance"}`,
+          ],
+        },
+        {
+          rotulo: es ? "Ventaja" : "Edge",
+          lineas: [
+            `Win rate: ${fmtNum(winRate, 1)}${pctSep(lang)}`,
+            `${es ? "Ganancia / pérdida media" : "Average win / loss"}: ${fmtNum(avgWinR, 2)} R / ${fmtNum(avgLossR, 2)} R`,
+            `${es ? "Expectancy neta" : "Net expectancy"}: ${fmtR(c.netExpectancyR, lang, 3)}`,
+            `Profit factor: ${fmtNum(c.profitFactor, 2)}`,
+            `${es ? "Riesgo por operación" : "Risk per trade"}: ${fmtNum(riskPct, 2)}${pctSep(lang)}`,
+          ],
+        },
+        {
+          rotulo: es ? "Resultado proyectado" : "Projected result",
+          lineas: [
+            `${es ? "Balance final" : "Final balance"}: ${fmtUsd(c.finalBalance)}`,
+            `${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
+            `CAGR: ${fmtPct(c.cagr * 100, 1)}`,
+            `${es ? "Drawdown máximo estimado" : "Estimated max drawdown"} (${fmtPct(CONFIANZA_RACHA * 100, 0)}): ${fmtPct(c.estMaxDDpct, 1)}`,
+            `${es ? "Tiempo para duplicar" : "Time to double"}: ${c.monthsToDouble !== null ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : es ? "sin crecimiento" : "no growth"}`,
+          ],
+        },
+      ],
+      `${es ? "" : "/en"}/herramientas/proyector-de-capital/`,
+    );
+  };
 
   // Control deslizador estilizado y accesible
   const sliderControl = (
@@ -1403,7 +1384,6 @@ export function EquityProjector() {
                 </div>
               </div>
 
-              {/* Botón de Copiar Resumen y Footer */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <span className="text-[12px] tnum text-[var(--ink-3)]">
                   {es
@@ -1411,23 +1391,12 @@ export function EquityProjector() {
                     : `${reinvestMode === "compound" ? "Compounded" : "Fixed-risk"} projection with an ${fmtPct(CONO_CONFIANZA_PCT, 0)} variance band. Not a promise.`}
                 </span>
 
-                <button
-                  type="button"
-                  onClick={copySummary}
+                <BotonCopiar
+                  texto={informe}
                   disabled={c.fueraDeEscala}
-                  className="toque-comodo -mx-1 px-1 py-2 text-[13px] font-medium transition-colors cursor-pointer flex items-center gap-2 text-primary hover:text-[rgb(var(--accent-base))] disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {copied ? <Check aria-hidden className="w-3.5 h-3.5" /> : <Copy aria-hidden className="w-3.5 h-3.5" />}
-                  <span>
-                    {copied
-                      ? es
-                        ? "Copiado"
-                        : "Copied"
-                      : es
-                      ? "Copiar resumen"
-                      : "Copy summary"}
-                  </span>
-                </button>
+                  rotulo={es ? "Copiar resumen" : "Copy summary"}
+                  hecho={es ? "Resumen copiado" : "Summary copied"}
+                />
               </div>
 
               {/* Disclaimer */}

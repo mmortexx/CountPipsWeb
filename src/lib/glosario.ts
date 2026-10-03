@@ -390,4 +390,31 @@ export const FORMULAS_GLOSARIO: Record<
     variablesEs: "Ratio de asimetría entre la ganancia media y la pérdida media",
     variablesEn: "Asymmetry ratio between average winning trade and average losing trade",
   },
+  /* Las cuatro siguientes escriben lo que calcula el motor (computeSqn,
+     computeUlcerIndex, computeGainToPain y computeWilsonCI en
+     trading/data.ts): la ficha no promete una variante que la demo no usa. */
+  "sqn-system-quality-number": {
+    formulaEs: "SQN = √N × R̄ / σR",
+    formulaEn: "SQN = √N × R̄ / σR",
+    variablesEs: "N: número de operaciones, R̄: R-múltiplo medio, σR: desviación estándar de los R-múltiplos",
+    variablesEn: "N: number of trades, R̄: mean R-multiple, σR: standard deviation of the R-multiples",
+  },
+  "ulcer-index": {
+    formulaEs: "UI = √(Σ DDᵢ² / N)",
+    formulaEn: "UI = √(Σ DDᵢ² / N)",
+    variablesEs: "DDᵢ: caída en % de la curva de capital desde su máximo tras la operación i, N: número de operaciones",
+    variablesEn: "DDᵢ: equity curve decline in % from its peak after trade i, N: number of trades",
+  },
+  "gain-to-pain-ratio": {
+    formulaEs: "GPR = Σ Resultado neto / |Σ Pérdidas|",
+    formulaEn: "GPR = Σ Net result / |Σ Losses|",
+    variablesEs: "Resultado neto de todas las operaciones dividido entre el valor absoluto de la suma de las perdedoras",
+    variablesEn: "Net result of all trades divided by the absolute sum of the losing ones",
+  },
+  "wilson-score-interval": {
+    formulaEs: "IC = (p̂ + z²/2N ± z√(p̂(1 − p̂)/N + z²/4N²)) / (1 + z²/N)",
+    formulaEn: "CI = (p̂ + z²/2N ± z√(p̂(1 − p̂)/N + z²/4N²)) / (1 + z²/N)",
+    variablesEs: "p̂: tasa de acierto observada, N: número de operaciones, z: 1,96 para un 95 % de confianza",
+    variablesEn: "p̂: observed win rate, N: number of trades, z: 1.96 for 95% confidence",
+  },
 };

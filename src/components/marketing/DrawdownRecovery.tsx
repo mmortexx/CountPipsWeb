@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { Deslizador } from "@/components/tj/Deslizador";
+import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { componerInforme } from "@/lib/informe";
 import { useLang } from "@/lib/i18n";
 import { fmtInt, fmtNum, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
@@ -30,8 +32,6 @@ export function DrawdownRecovery() {
   const [riesgo, setRiesgo] = useState(1);
   const [acierto, setAcierto] = useState(45);
   const [payoff, setPayoff] = useState(2);
-  const [copiado, setCopiado] = useState(false);
-  const reloj = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const c = useMemo(() => {
     const d = caida / 100;
@@ -68,16 +68,28 @@ export function DrawdownRecovery() {
       ? `Arriesgando un ${pct(riesgo, 2)} por operación, el camino típico tarda ${fmtInt(c.operaciones!, lang)} operaciones en devolver la cuenta al máximo. Es un ritmo, no un plazo: con una mala racha tarda bastante más.`
       : `Risking ${pct(riesgo, 2)} per trade, the typical path takes ${fmtInt(c.operaciones!, lang)} trades to bring the account back to its peak. It is a pace, not a deadline: a bad run makes it much longer.`;
 
-  const copiar = () => {
-    const texto = es
-      ? `Recuperación de drawdown (CountPips)\n• Caída: ${pct(caida)}\n• Hace falta ganar: +${fmtPct(c.ganancia, lang)}\n• Riesgo por operación: ${pct(riesgo, 2)} · acierto ${pct(acierto)} · payoff ${fmtNum(payoff, lang, 1)}\n• Expectancy: ${fmtR(c.esperanza, lang)} por operación\n• Operaciones para volver, camino típico: ${noVuelve ? "no vuelve" : fmtInt(c.operaciones!, lang)}`
-      : `Drawdown recovery (CountPips)\n• Drawdown: ${pct(caida)}\n• Gain needed: +${fmtPct(c.ganancia, lang)}\n• Risk per trade: ${pct(riesgo, 2)} · win rate ${pct(acierto)} · payoff ${fmtNum(payoff, lang, 1)}\n• Expectancy: ${fmtR(c.esperanza, lang)} per trade\n• Trades to recover, typical path: ${noVuelve ? "never" : fmtInt(c.operaciones!, lang)}`;
-    navigator.clipboard?.writeText(texto).then(() => {
-      setCopiado(true);
-      if (reloj.current) clearTimeout(reloj.current);
-      reloj.current = setTimeout(() => setCopiado(false), 2200);
-    });
-  };
+  const informe = () =>
+    componerInforme(
+      es ? "Recuperación de drawdown" : "Drawdown recovery",
+      [
+        {
+          lineas: [
+            `${es ? "Caída" : "Drawdown"}: ${pct(caida)}`,
+            `${es ? "Riesgo por operación" : "Risk per trade"}: ${pct(riesgo, 2)}`,
+            `${es ? "Acierto" : "Win rate"}: ${pct(acierto)} · payoff ${fmtNum(payoff, lang, 1)}`,
+            `Expectancy: ${fmtR(c.esperanza, lang)} ${es ? "por operación" : "per trade"}`,
+          ],
+        },
+        {
+          rotulo: es ? "Resultado" : "Result",
+          lineas: [
+            `${es ? "Hace falta ganar" : "Gain needed"}: +${fmtPct(c.ganancia, lang)}`,
+            `${es ? "Operaciones para volver, camino típico" : "Trades to recover, typical path"}: ${noVuelve ? (es ? "no vuelve" : "never") : fmtInt(c.operaciones!, lang)}`,
+          ],
+        },
+      ],
+      `${es ? "" : "/en"}/herramientas/recuperacion-de-drawdown/`,
+    );
 
   return (
     <section className="section-tight">
@@ -209,21 +221,11 @@ export function DrawdownRecovery() {
               </p>
             </div>
             <div className="tj-ficha-barra tj-ficha-barra--pie">
-              <button
-                type="button"
-                onClick={copiar}
-                className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary outline-none transition-colors hover:text-[rgb(var(--accent-base))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-              >
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-                  <path
-                    d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                  />
-                </svg>
-                {copiado ? (es ? "Resumen copiado" : "Summary copied") : es ? "Copiar resumen" : "Copy summary"}
-              </button>
+              <BotonCopiar
+                texto={informe}
+                rotulo={es ? "Copiar resumen" : "Copy summary"}
+                hecho={es ? "Resumen copiado" : "Summary copied"}
+              />
               <span className="text-tertiary">{es ? "Privado en tu navegador" : "Private in your browser"}</span>
             </div>
           </div>

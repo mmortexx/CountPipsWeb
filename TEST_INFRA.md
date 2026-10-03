@@ -64,6 +64,7 @@
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |
 | `tipografias.test.ts` | El build no depende de que Google Fonts responda |
 | `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma |
+| `informe.test.ts` | `componerInforme`: el texto que copian las herramientas lleva «CountPips · Título», bloques separados por una línea en blanco, salta líneas y bloques vacíos y cierra con la dirección. Y solo `BotonCopiar` toca el portapapeles: una herramienta que vuelva a escribirlo por su cuenta se salta el formato y el aviso de fallo |
 | `paleta-trampa-tab.test.ts` | `destinoTrampaTab` (trampa de foco de `DemoCommandPalette`): a qué extremo salta Tab/Shift+Tab desde cada posición, incluida la de un único elemento enfocable |
 | `glosario-activedescendant.test.ts` | `idOpcionGlosario` (`aria-activedescendant` del listbox de `GlossaryModal`): id legible, normaliza acentos/símbolos, nunca vacío, único para cada término real de `GLOSSARY` |
 | `valida-plan.test.ts` | `validaPlan`: RiskCalculator ya no da por válido un objetivo que cae al mismo lado de la entrada que el stop; campos no positivos, no finitos o repetidos se rechazan antes de mirar el lado. `excedeApalancamiento`: un stop a un céntimo en acciones (100×) avisa; el tope depende del mercado |

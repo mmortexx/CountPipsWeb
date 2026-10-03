@@ -51,6 +51,13 @@
  * dos líneas) y tamaño (36) en /traders/prop-firms. Vista en rojo con la
  * compilación anterior (3 cifras y 2 pares).
  *
+ * ── Y la ficha del glosario contra su raíl (2026-10-03) ───────────────
+ * A 1.440 px la definición y «De la misma familia» van en dos columnas.
+ * En los 38 términos sin fórmula, el primer rótulo de la izquierda
+ * arrancaba 38 px por debajo de la ceja del raíl. Tolerancia 16 px: con
+ * fórmula, el rótulo «Fórmula» va dentro de su caja, unos 10 px abajo.
+ * Vista en rojo con la compilación anterior: 76 páginas, las dos lenguas.
+ *
  * ── Lo que NO mira ────────────────────────────────────────────────────
  * Flexbox, donde el mismo reparto solo ocurre si alguien lo pide.
  *
@@ -125,6 +132,7 @@ let rejillas = 0;
 let columnadasTotal = 0;
 let filetesTotal = 0;
 let filasCifraTotal = 0;
+let fichasGlosario = 0;
 
 async function medir(pag, ruta, ancho) {
   try {
@@ -312,6 +320,23 @@ async function medir(pag, ruta, ancho) {
   }, TOLERANCIA_PX);
   filetesTotal += r.nf;
   filasCifraTotal += r.filasCifra;
+  /* Ficha del glosario a dos columnas: el primer texto de la columna de
+     la definición arranca a la altura de la ceja del raíl. */
+  const desfase = ancho >= 1024 ? await pag.evaluate(() => {
+    const ceja = [...document.querySelectorAll("p.eyebrow")].find((p) => /^(De la misma familia|Same family)$/.test(p.textContent.trim()));
+    const columna = document.querySelector('nav[aria-label="Recorrer el glosario"], nav[aria-label="Browse the glossary"]')?.closest(".lg\\:grid")?.firstElementChild;
+    if (!ceja || !columna) return null;
+    const primero = [...columna.querySelectorAll("p, span")].find((e) => e.children.length === 0 && e.textContent.trim() && e.getBoundingClientRect().height > 0);
+    return primero ? Math.round(primero.getBoundingClientRect().top - ceja.getBoundingClientRect().top) : null;
+  }) : null;
+  if (desfase !== null) {
+    fichasGlosario++;
+    if (Math.abs(desfase) > 16) {
+      const k = "ficha del glosario descolgada de su raíl";
+      if (!fallos.has(k)) fallos.set(k, []);
+      fallos.get(k).push(`${ancho} ${ruta}  a ${desfase} px de «De la misma familia»`);
+    }
+  }
   for (const d of r.descolgadas) {
     const k = "cifra descolgada de su fila";
     if (!fallos.has(k)) fallos.set(k, []);
@@ -375,6 +400,10 @@ if (filasCifraTotal < 50) {
   console.log(`[rejillas] solo ${filasCifraTotal} filas de cifras: la comprobación de compás de cifras no está mirando`);
   process.exit(1);
 }
+if (fichasGlosario < 100) {
+  console.log(`[rejillas] solo ${fichasGlosario} fichas del glosario medidas: la alineación con el raíl no está mirando`);
+  process.exit(1);
+}
 if (filetesTotal < 1000) {
   console.log(`[rejillas] solo ${filetesTotal} filetes: el doble filete no está mirando`);
   process.exit(1);
@@ -396,6 +425,9 @@ if (fallos.size) {
   const segmento = fallos.has("segmentados vecinos de distinto alto") ? 1 : 0;
   if (cifra) {
     console.log("[rejillas] una cifra cae más abajo que sus vecinas porque su rótulo ocupa dos líneas: celda `flex flex-col` y cifra con `mt-auto`");
+  }
+  if (fallos.has("ficha del glosario descolgada de su raíl")) {
+    console.log("[rejillas] la columna de la definición empieza más abajo que «De la misma familia»: mira el margen superior del primer bloque en `TerminoVista.tsx`");
   }
   if (segmento) {
     console.log("[rejillas] dos controles segmentados en la misma fila con altos distintos: `items-stretch` en el contenedor");

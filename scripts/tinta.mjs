@@ -208,7 +208,7 @@ for (const tema of ["dark", "light"]) {
   await copiar.scrollIntoViewIfNeeded().catch(() => {});
   await copiar.click().catch(() => {});
   await p.waitForTimeout(500);
-  const rc = await p.locator("button").filter({ hasText: /Copiado/ }).first()
+  const rc = await p.locator("button").filter({ hasText: /Resumen copiado/ }).first()
     .evaluate((el) => window.__mide(el, null)).catch((e) => ({ falta: String(e).slice(0, 60) }));
   filas.push({ tema, sitio: "boton Copiado", ...rc });
 

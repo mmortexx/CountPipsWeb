@@ -7,6 +7,8 @@ import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan, type MercadoPlan
 import { fmtPct, fmtMoney, fmtNum as fmtNumBase, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
+import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { componerInforme } from "@/lib/informe";
 
 /**
  * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
@@ -22,6 +24,14 @@ const RISK_MAX = 3;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
 type AssetMode = MercadoPlan;
+
+/* Una sola lista para el conmutador y para el plan copiado, que escribía
+   el identificador interno («EQUITIES»). */
+const MODOS_ACTIVO: { id: AssetMode; labelEs: string; labelEn: string }[] = [
+  { id: "equities", labelEs: "Acciones / cripto", labelEn: "Stocks / Crypto" },
+  { id: "forex", labelEs: "Forex (lotes)", labelEn: "Forex (Lots)" },
+  { id: "futures", labelEs: "Futuros (contratos)", labelEn: "Futures (Contracts)" },
+];
 
 interface FuturesContract {
   id: string;
@@ -72,7 +82,6 @@ export function RiskCalculator() {
   const [stop, setStop] = useState(95);
   const [target, setTarget] = useState(115);
   const [includeFriction, setIncludeFriction] = useState(true);
-  const [copied, setCopied] = useState(false);
   const [showKelly, setShowKelly] = useState(false);
   const [kellyWinRate, setKellyWinRate] = useState(55); // %
 
@@ -261,35 +270,43 @@ export function RiskCalculator() {
     </label>
   );
 
-  const copyPlan = useCallback(async () => {
-    if (!c.valid) return;
-    const lines = [
-      es ? "Plan de operación — CountPips" : "Trade plan — CountPips",
-      "─".repeat(28),
-      `${es ? "Activo" : "Asset"}: ${assetMode.toUpperCase()}`,
-      `${es ? "Balance" : "Balance"}: ${fmtUsd(balance)}`,
-      `${es ? "Riesgo nominal" : "Nominal risk"}: ${fmtNum(riskPct)}${pctSep(lang)} (${fmtUsd(c.riskUsd)})`,
-      `${es ? "Fricción estimada" : "Estimated friction"}: −${fmtUsd(c.estimatedFriction)}`,
-      `${es ? "Riesgo total" : "Total risk"}: ${fmtUsd(c.totalRiskUsd)}`,
-      `${es ? "Entrada" : "Entry"}: ${fmtNum(entry)}`,
-      `${es ? "Stop" : "Stop"}: ${fmtNum(stop)}`,
-      `${es ? "Objetivo" : "Target"}: ${fmtNum(target)}`,
-      `${es ? "Dirección" : "Direction"}: ${c.direction === "short" ? (es ? "Corto" : "Short") : (es ? "Largo" : "Long")}`,
-      "─".repeat(28),
-      `${es ? "Tamaño" : "Size"}: ${fmtNum(c.size, 2)} ${c.sizeLabel}`,
-      `${es ? "Valor pip/punto" : "Pip/Point value"}: ${fmtUsd(c.pipValue)}`,
-      `R:R: ${fmtNum(c.rr, 2)}:1`,
-      `${es ? "Beneficio neto estimado" : "Estimated net profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)}${pctSep(lang)})`,
-      `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.positionValue)}`,
-    ];
-    try {
-      await navigator.clipboard.writeText(lines.join("\n"));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    } catch {
-      // clipboard fallback
-    }
-  }, [c, balance, riskPct, entry, stop, target, assetMode, es, lang, fmtUsd, fmtNum]);
+  const informePlan = () => {
+    const modo = MODOS_ACTIVO.find((m) => m.id === assetMode);
+    return componerInforme(
+      es ? "Plan de operación" : "Trade plan",
+      [
+        {
+          lineas: [
+            modo && `${es ? "Activo" : "Asset"}: ${es ? modo.labelEs : modo.labelEn}`,
+            `${es ? "Dirección" : "Direction"}: ${c.direction === "short" ? (es ? "corto" : "short") : (es ? "largo" : "long")}`,
+            `${es ? "Entrada" : "Entry"}: ${fmtNum(entry)}`,
+            `Stop: ${fmtNum(stop)}`,
+            `${es ? "Objetivo" : "Target"}: ${fmtNum(target)}`,
+          ],
+        },
+        {
+          rotulo: es ? "Riesgo" : "Risk",
+          lineas: [
+            `${es ? "Balance de cuenta" : "Account balance"}: ${fmtUsd(balance)}`,
+            `${es ? "Riesgo nominal" : "Nominal risk"}: ${fmtNum(riskPct)}${pctSep(lang)} (${fmtUsd(c.riskUsd)})`,
+            `${es ? "Fricción estimada" : "Est. friction"}: −${fmtUsd(c.estimatedFriction)}`,
+            `${es ? "Riesgo total" : "Total risk"}: ${fmtUsd(c.totalRiskUsd)}`,
+          ],
+        },
+        {
+          rotulo: es ? "Resultado" : "Result",
+          lineas: [
+            `${es ? "Tamaño de posición" : "Position size"}: ${fmtNum(c.size, 2)} ${c.sizeLabel}`,
+            `${es ? "Valor del pip / punto" : "Pip / point value"}: ${fmtUsd(c.pipValue)}`,
+            `R:R: ${fmtNum(c.rr, 2)}:1`,
+            `${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)}${pctSep(lang)})`,
+            `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.positionValue)}`,
+          ],
+        },
+      ],
+      `${es ? "" : "/en"}/herramientas/calculadora-de-riesgo/`,
+    );
+  };
 
   return (
     <section className="section-tight">
@@ -329,11 +346,7 @@ export function RiskCalculator() {
                 ancho, y tres opciones que son lo mismo se veian como dos
                 cosas y una suelta. Ver `.tj-segmentado`. */}
             <div className="tj-segmentado tj-segmentado-apila" role="group">
-              {[
-                { id: "equities" as const, labelEs: "Acciones / Cripto", labelEn: "Stocks / Crypto" },
-                { id: "forex" as const, labelEs: "Forex (Lotes)", labelEn: "Forex (Lots)" },
-                { id: "futures" as const, labelEs: "Futuros (Contratos)", labelEn: "Futures (Contracts)" },
-              ].map((m) => (
+              {MODOS_ACTIVO.map((m) => (
                 <button
                   key={m.id}
                   type="button"
@@ -766,22 +779,12 @@ export function RiskCalculator() {
 
           </div>
           <div className="tj-ficha-barra tj-ficha-barra--pie">
-          <button
-            type="button"
-            onClick={copyPlan}
+          <BotonCopiar
+            texto={informePlan}
             disabled={!c.valid}
-            className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold transition-colors duration-150 text-primary hover:text-[rgb(var(--accent-base))] disabled:opacity-40 disabled:cursor-not-allowed outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-          >
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-              <path
-                d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"
-                stroke="currentColor"
-                strokeWidth="1.3"
-              />
-            </svg>
-            {copied ? (es ? "Plan copiado" : "Plan copied") : es ? "Copiar plan de operación" : "Copy trade plan"}
-          </button>
+            rotulo={es ? "Copiar plan de operación" : "Copy trade plan"}
+            hecho={es ? "Plan copiado" : "Plan copied"}
+          />
             <span className="text-tertiary">{es ? "Privado en tu navegador" : "Private in your browser"}</span>
           </div>
         </div>

@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { Deslizador } from "@/components/tj/Deslizador";
+import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { componerInforme } from "@/lib/informe";
 import { useLang } from "@/lib/i18n";
 import { fmtInt, fmtNum, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
@@ -47,8 +49,6 @@ export function PropChallengeSimulator() {
   const setAcierto = poner("acierto");
   const setPayoff = poner("payoff");
   const setMaxOps = poner("ops");
-  const [copiado, setCopiado] = useState(false);
-  const reloj = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const c = useMemo(() => {
     const base = {
@@ -115,16 +115,32 @@ export function PropChallengeSimulator() {
     },
   ];
 
-  const copiar = () => {
-    const texto = es
-      ? `Prueba de fondeo simulada (CountPips)\n• Objetivo ${pct(objetivo, 1)} · drawdown ${pct(dd, 1)} ${nombreTipo(tipo)}\n• Riesgo por operación: ${pct(riesgo, 2)} del saldo inicial · acierto ${pct(acierto)} · payoff ${fmtNum(payoff, lang, 1)}\n• Expectancy: ${fmtR(esperanza, lang)} por operación\n• Aprueba ${fmtPct(r.aprueba, lang)} · suspende ${fmtPct(r.suspende, lang)} · sin resolver ${fmtPct(r.sinResolver, lang)} en ${fmtInt(maxOps, lang)} operaciones\n• ${fmtInt(CAMINOS, lang)} intentos simulados`
-      : `Simulated prop firm challenge (CountPips)\n• Target ${pct(objetivo, 1)} · ${nombreTipo(tipo)} drawdown ${pct(dd, 1)}\n• Risk per trade: ${pct(riesgo, 2)} of starting balance · win rate ${pct(acierto)} · payoff ${fmtNum(payoff, lang, 1)}\n• Expectancy: ${fmtR(esperanza, lang)} per trade\n• Passes ${fmtPct(r.aprueba, lang)} · fails ${fmtPct(r.suspende, lang)} · unresolved ${fmtPct(r.sinResolver, lang)} within ${fmtInt(maxOps, lang)} trades\n• ${fmtInt(CAMINOS, lang)} simulated attempts`;
-    navigator.clipboard?.writeText(texto).then(() => {
-      setCopiado(true);
-      if (reloj.current) clearTimeout(reloj.current);
-      reloj.current = setTimeout(() => setCopiado(false), 2200);
-    });
-  };
+  const informe = () =>
+    componerInforme(
+      es ? "Prueba de fondeo simulada" : "Simulated prop firm challenge",
+      [
+        {
+          lineas: [
+            `${es ? "Objetivo" : "Target"}: ${pct(objetivo, 1)}`,
+            `Drawdown: ${pct(dd, 1)} ${nombreTipo(tipo)}`,
+            `${es ? "Riesgo por operación" : "Risk per trade"}: ${pct(riesgo, 2)} ${es ? "del saldo inicial" : "of starting balance"}`,
+            `${es ? "Acierto" : "Win rate"}: ${pct(acierto)} · payoff ${fmtNum(payoff, lang, 1)}`,
+            `Expectancy: ${fmtR(esperanza, lang)} ${es ? "por operación" : "per trade"}`,
+          ],
+        },
+        {
+          rotulo: es
+            ? `Resultado en ${fmtInt(maxOps, lang)} operaciones, ${fmtInt(CAMINOS, lang)} intentos simulados`
+            : `Result within ${fmtInt(maxOps, lang)} trades, ${fmtInt(CAMINOS, lang)} simulated attempts`,
+          lineas: [
+            `${es ? "Aprueba" : "Passes"}: ${fmtPct(r.aprueba, lang)}`,
+            `${es ? "Suspende" : "Fails"}: ${fmtPct(r.suspende, lang)}`,
+            `${es ? "Sin resolver" : "Unresolved"}: ${fmtPct(r.sinResolver, lang)}`,
+          ],
+        },
+      ],
+      `${es ? "" : "/en"}/herramientas/prueba-de-fondeo/`,
+    );
 
   return (
     <section className="section-tight">
@@ -298,21 +314,11 @@ export function PropChallengeSimulator() {
               </p>
             </div>
             <div className="tj-ficha-barra tj-ficha-barra--pie">
-              <button
-                type="button"
-                onClick={copiar}
-                className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary outline-none transition-colors hover:text-[rgb(var(--accent-base))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-              >
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                  <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
-                  <path
-                    d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                  />
-                </svg>
-                {copiado ? (es ? "Resumen copiado" : "Summary copied") : es ? "Copiar resumen" : "Copy summary"}
-              </button>
+              <BotonCopiar
+                texto={informe}
+                rotulo={es ? "Copiar resumen" : "Copy summary"}
+                hecho={es ? "Resumen copiado" : "Summary copied"}
+              />
               <span className="text-tertiary">{es ? "Privado en tu navegador" : "Private in your browser"}</span>
             </div>
           </div>

@@ -3,7 +3,8 @@
 import { useState, useMemo, useId, useEffect } from "react";
 import { useLang } from "@/lib/i18n";
 import { pctSep, fmtInt } from "@/lib/trading/format";
-import { siteUrl } from "@/lib/site";
+import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { componerInforme } from "@/lib/informe";
 import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
 
 /**
@@ -271,31 +272,27 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
     )[0];
   }, [perDim, allAnswered]);
 
-  const [copied, setCopied] = useState(false);
 
-  const copyAssessment = async () => {
-    if (!allAnswered || !level) return;
-    const lines = [
-      es ? "Diagnóstico de disciplina — CountPips" : "Discipline assessment — CountPips",
-      "─".repeat(32),
-      `${es ? "Puntuación global" : "Overall score"}: ${fmtInt(score, lang)} / 100 (${level.label})`,
-      "",
-      es ? "Desglose por ejes:" : "Axis breakdown:",
-      ...perDim.map(({ dim, pct }) => `  · ${es ? dim.es : dim.en}: ${pct}${pctSep(lang)}`),
-      "",
-      `${es ? "Punto a reforzar" : "Priority focus"}: ${weakest ? (es ? weakest.dim.es : weakest.dim.en) : "—"}`,
-      weakest ? (es ? weakest.dim.tipEs : weakest.dim.tipEn) : "",
-      "─".repeat(32),
-      siteUrl(es ? "/test/" : "/en/test/"),
-    ];
-    try {
-      await navigator.clipboard.writeText(lines.join("\n"));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    } catch {
-      // clipboard fallback
-    }
-  };
+  const informe = () =>
+    componerInforme(
+      es ? "Diagnóstico de disciplina" : "Discipline assessment",
+      [
+        {
+          lineas: [
+            level && `${es ? "Puntuación global" : "Overall score"}: ${fmtInt(score, lang)} / 100 (${level.label})`,
+          ],
+        },
+        {
+          rotulo: es ? "Por ejes" : "By axis",
+          lineas: perDim.map(({ dim, pct }) => `${es ? dim.es : dim.en}: ${pct}${pctSep(lang)}`),
+        },
+        {
+          rotulo: es ? "Empieza por aquí" : "Start here",
+          lineas: [weakest && (es ? weakest.dim.tipEs : weakest.dim.tipEn)],
+        },
+      ],
+      es ? "/test/" : "/en/test/",
+    );
 
   const reset = () => setAnswers(QUESTIONS.map(() => null));
 
@@ -673,30 +670,14 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                     <p className="m-0 text-sm leading-relaxed text-secondary">
                       {es ? weakest.dim.tipEs : weakest.dim.tipEn}
                     </p>
+                    <div className="mt-3">
+                      <BotonCopiar
+                        texto={informe}
+                        rotulo={es ? "Copiar diagnóstico completo" : "Copy full assessment"}
+                        hecho={es ? "Diagnóstico copiado" : "Assessment copied"}
+                      />
+                    </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={copyAssessment}
-                    className="mt-2 -ml-1 inline-flex items-center gap-2 min-h-[44px] px-1 text-[14px] font-medium transition-colors duration-150 text-primary hover:text-[rgb(var(--accent-base))] outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] cursor-pointer"
-                  >
-                    {copied ? (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                          <path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        <span>{es ? "Diagnóstico copiado" : "Assessment copied"}</span>
-                      </>
-                    ) : (
-                      <>
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                          <rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-                          <path d="M3 11V3.5A1.5 1.5 0 014.5 2H11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
-                        <span>{es ? "Copiar diagnóstico completo" : "Copy full assessment"}</span>
-                      </>
-                    )}
-                  </button>
                 </>
               ) : (
                 <p className="m-0 text-xs leading-relaxed text-tertiary">
