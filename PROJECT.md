@@ -3257,6 +3257,43 @@ portapapeles cada botón «Copiar», leído pulsándolo en el navegador.
   vitest 576 (2 omitidas). Arranque en tres pasadas: titular legible a
   116–227 ms, total 212–352 ms.
 
+### Quincuagésima cuarta tanda: móvil de las calculadoras (2026-10-03)
+
+Capturas a 390 en claro de riesgo, significancia, proyector, prueba de
+fondeo y Monte Carlo; la demo a 390; el glosario y una ficha en oscuro.
+
+- **Proyector de capital.**
+  - El modo sin reinvertir se llamaba «Retiro fijo», y no retira nada:
+    calcula cada mes con el riesgo sobre el balance inicial
+    (`proyectaCapital`, rama `linear`). Pasa a «Riesgo fijo · Sobre el
+    balance inicial» («Fixed risk · On starting balance»), y lo mismo en
+    el resumen copiado.
+  - Sin aporte, la cabecera decía «+0 $ / mes»: ahora «Sin aporte», como
+    el botón marcado debajo.
+  - «Peor racha: ~13 pérdidas» pasa a «≈ 13», como «≈ 1,5 años» al lado.
+    En inglés decía «Streak», y pasa a «Worst streak».
+- **Monte Carlo.** La racha teórica era «~6» sin unidad y la peor, «8 ops».
+  Las dos dicen ya «pérdidas» («≈ 6 pérdidas», «8 pérdidas»), que es lo
+  que cuentan.
+- **Significancia.** «Necesitas al menos ~20»: el umbral es exacto
+  (n·0,25 ≥ 5, o sea 20), y pierde la virgulilla.
+- **El «≈» va pegado a su cifra** con espacio fijo en las cinco cifras
+  aproximadas del proyector y del Monte Carlo: a 390 px el renglón podía
+  partirse entre «≈» y el número.
+- **Guarda nueva.** `vocabulario.test.ts`: ninguna página española escribe
+  «~» delante de una cifra. Roja con la compilación anterior (metricas,
+  disciplina, Monte Carlo y proyector), verde después.
+- **Visto y sin cambio.** El «ops» de las celdas estrechas (operaciones
+  por año, «35 ops de mediana», la matriz de muestra): en columnas de
+  90-110 px a 390, «operaciones» no cabe. El indicador de «Banda del
+  80 %» es un interruptor (relleno = encendida), no la muestra de color
+  de la banda. La demo a 390 y el glosario en oscuro, sin defectos.
+- **Medido.** Batería en paralelo 18/19: `corrobora-menus` arrancó antes
+  de que respondiera el servidor de pruebas, con la máquina cargada; al
+  relanzarla, 26/26. Vitest 577 (2 omitidas), tipos y lint limpios.
+  Arranque en tres pasadas: total 247–456 ms; los cambios son de texto y
+  no tocan la carga.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -3281,7 +3318,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 54 suites, 576 tests (+2 omitidos)
+npx vitest run                          # 54 suites, 577 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

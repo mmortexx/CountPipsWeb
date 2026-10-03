@@ -459,13 +459,13 @@ export function RMultipleSimulator() {
               {
                 t: es ? "Racha teórica" : "Theoretical streak",
                 sub: es ? `simulada: ${c.medianMaxLossStreak}` : `simulated: ${c.medianMaxLossStreak}`,
-                v: `~${c.theoreticalMaxLossStreak}`,
+                v: `≈\u00a0${c.theoreticalMaxLossStreak} ${es ? "pérdidas" : "losses"}`,
                 col: "var(--ink)",
               },
               {
                 t: es ? "Peor racha" : "Worst streak",
                 sub: es ? "en el 5\u00a0% peor" : "in the worst 5%",
-                v: `${c.p95MaxLossStreak} ${es ? "ops" : "trades"}`,
+                v: `${c.p95MaxLossStreak} ${es ? "pérdidas" : "losses"}`,
                 col: "rgb(var(--pnl-neg))",
               },
             ].map((m) => (

@@ -108,6 +108,14 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
       "y características decían «curva de equity» para la misma gráfica",
   },
   {
+    palabra: /~\s?\d/,
+    nombre: "~ delante de una cifra",
+    porNodo: true,
+    motivo:
+      "el sitio escribe «≈ 1,5 años»; la virgulilla es abreviatura de foro y " +
+      "quedaba en «Peor racha: ~13 pérdidas» y en la racha teórica del Monte Carlo",
+  },
+  {
     palabra: /\bdesviación típica\b/i,
     nombre: "desviación típica",
     motivo:

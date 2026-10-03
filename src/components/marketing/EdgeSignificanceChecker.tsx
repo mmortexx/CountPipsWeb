@@ -171,8 +171,8 @@ export function EdgeSignificanceChecker() {
         label: es ? "Muestra insuficiente" : "Insufficient sample",
         color: "var(--ink-2)",
         text: es
-          ? `Con ${trades} operaciones no se puede hacer un test estadístico fiable. Necesitas al menos ~20 para que la aproximación sea válida.`
-          : `With ${trades} trades a reliable statistical test isn’t possible. You need at least ~20 for the approximation to hold.`,
+          ? `Con ${trades} operaciones no se puede hacer un test estadístico fiable. Necesitas al menos 20 para que la aproximación sea válida.`
+          : `With ${trades} trades a reliable statistical test isn’t possible. You need at least 20 for the approximation to hold.`,
       }
     : !c.significant
       ? {

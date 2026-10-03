@@ -361,7 +361,7 @@ export function EquityProjector() {
             `${es ? "Balance inicial" : "Starting balance"}: ${fmtUsd(startBalance)}`,
             `${es ? "Aporte mensual" : "Monthly deposit"}: ${fmtUsd(monthlyContribution)}`,
             `${es ? "Horizonte" : "Time horizon"}: ${years} ${anos} (${fmtInt(tradesPerYear * years, lang)} ${es ? "operaciones" : "trades"})`,
-            `${es ? "Reinversión" : "Reinvestment"}: ${reinvestMode === "compound" ? (es ? "interés compuesto" : "compounding") : es ? "riesgo fijo en base" : "fixed on starting balance"}`,
+            `${es ? "Reinversión" : "Reinvestment"}: ${reinvestMode === "compound" ? (es ? "interés compuesto" : "compounding") : es ? "riesgo fijo sobre el balance inicial" : "fixed risk on starting balance"}`,
           ],
         },
         {
@@ -630,7 +630,7 @@ export function EquityProjector() {
                   4,
                   setTradesPerYear,
                   es ? " ops" : " trades",
-                  `≈ ${fmtNum(tradesPerYear / 12, 1)} ${es ? "ops/mes" : "trades/mo"}`
+                  `≈\u00a0${fmtNum(tradesPerYear / 12, 1)} ${es ? "ops/mes" : "trades/mo"}`
                 )}
 
                 {/* Aporte mensual */}
@@ -640,7 +640,9 @@ export function EquityProjector() {
                       {es ? "Aporte mensual" : "Monthly deposit"}
                     </span>
                     <span className="tj-deslizador-valor">
-                      +{fmtUsd(monthlyContribution)} / {es ? "mes" : "mo"}
+                      {monthlyContribution > 0
+                        ? `+${fmtUsd(monthlyContribution)} / ${es ? "mes" : "mo"}`
+                        : es ? "Sin aporte" : "None"}
                     </span>
                   </div>
                   <div className="tj-segmentado" role="group">
@@ -816,7 +818,7 @@ export function EquityProjector() {
                       }`}
                     >
                       <div className="text-[13px] tnum font-semibold flex items-center justify-between text-[var(--ink)]">
-                        <span>{es ? "Retiro fijo" : "Fixed / withdrawal"}</span>
+                        <span>{es ? "Riesgo fijo" : "Fixed risk"}</span>
                       </div>
                       {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
                             opcion, sobre su propia superficie, que es mas
@@ -825,7 +827,7 @@ export function EquityProjector() {
                             por debajo del 4,5:1 de AA. Con el secundario
                             sube por encima del listón. */}
                       <div className="text-[12px] text-[var(--ink-2)] leading-tight mt-0.5">
-                        {es ? "Riesgo fijo en base" : "Fixed on starting"}
+                        {es ? "Sobre el balance inicial" : "On starting balance"}
                       </div>
                     </button>
                   </div>
@@ -1340,8 +1342,8 @@ export function EquityProjector() {
                   </div>
                   <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {es
-                      ? `Peor racha: ~${fmtInt(c.maxConsecLosses, lang)} pérdidas`
-                      : `Streak: ~${fmtInt(c.maxConsecLosses, lang)} losses`}
+                      ? `Peor racha: ≈\u00a0${fmtInt(c.maxConsecLosses, lang)} pérdidas`
+                      : `Worst streak: ≈\u00a0${fmtInt(c.maxConsecLosses, lang)} losses`}
                   </div>
                 </div>
 
@@ -1361,7 +1363,7 @@ export function EquityProjector() {
                   </div>
                   <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
                     {c.monthsToDouble !== null
-                      ? `≈ ${fmtNum(c.monthsToDouble / 12, 1)} ${es ? "años" : "yrs"}`
+                      ? `≈\u00a0${fmtNum(c.monthsToDouble / 12, 1)} ${es ? "años" : "yrs"}`
                       : es ? "Sin crecimiento" : "No growth"}
                   </div>
                 </div>
