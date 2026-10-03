@@ -361,8 +361,8 @@ export const FORMULAS_GLOSARIO: Record<
     variablesEn: "Vf: final value, Vi: initial value, t: time in years",
   },
   "r-multiple": {
-    formulaEs: "R = PnL / Riesgo inicial (1R)",
-    formulaEn: "R = PnL / Initial risk (1R)",
+    formulaEs: "R = P&L / Riesgo inicial (1R)",
+    formulaEn: "R = P&L / Initial risk (1R)",
     variablesEs: "Beneficio o pérdida normalizado entre la distancia en dólares al stop loss inicial",
     variablesEn: "Profit or loss normalised by the initial dollar risk to the stop loss",
   },

@@ -87,7 +87,7 @@ export const HERRAMIENTAS: Herramienta[] = [
       "With twenty trades behind it, a good result means nothing: it fits comfortably inside what chance alone produces. Enter your numbers and see whether your sample says anything yet.",
     resumenEs: "Si tu muestra ya distingue una ventaja del azar, o aún no.",
     resumenEn: "Whether your sample can tell an edge from chance yet.",
-    entregaEs: "Ventaja vs azar",
+    entregaEs: "Ventaja o azar",
     entregaEn: "Edge vs chance",
     descripcionEs:
       "Comprueba si tus resultados de trading distinguen una ventaja real del azar, a partir del número de operaciones, el porcentaje de aciertos y el payoff.",

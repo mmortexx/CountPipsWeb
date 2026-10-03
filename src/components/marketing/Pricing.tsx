@@ -33,7 +33,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   const coreFeatures = es
     ? [
         "Diario, 40+ métricas y calendario",
-        "Curva de equity y drawdown",
+        "Curva de capital y drawdown",
         "Gestión de riesgo y freno duro opcional",
         "Psicología y disciplina",
         "Playbook con estadísticas en vivo",

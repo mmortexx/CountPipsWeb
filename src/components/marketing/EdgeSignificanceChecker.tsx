@@ -186,7 +186,7 @@ export function EdgeSignificanceChecker() {
             label: es ? "Ventaja sólida" : "Strong edge",
             color: "rgb(var(--pnl-pos))",
             text: es
-              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí — pero valídalo fuera de muestra.`
+              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí, pero valídalo fuera de muestra.`
               : `A ${fmtNum(winRate, 0)}% over ${trades} trades is very unlikely by chance (p = ${fmtNum(c.pValue, 4)} < 0.01). There’s something real here — but validate out-of-sample.`,
           }
         : {
@@ -231,7 +231,7 @@ export function EdgeSignificanceChecker() {
           </h2>
           <p className="t-entradilla mt-5 mb-7 text-secondary max-w-[34em]">
             {es
-              ? `60${PCT} de aciertos en 20 operaciones suena bien — pero estadísticamente es indistinguible de una moneda. Este test te dice si tu muestra basta para afirmar que tienes un edge.`
+              ? `60${PCT} de aciertos en 20 operaciones suena bien, pero estadísticamente es indistinguible de una moneda. Este test te dice si tu muestra basta para afirmar que tienes un edge.`
               : "60% win rate over 20 trades sounds good — but statistically it’s indistinguishable from a coin. This test tells you if your sample is enough to claim you have an edge."}
           </p>
 
@@ -403,7 +403,7 @@ export function EdgeSignificanceChecker() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="relative min-w-0 px-4 py-4"
+      className="relative flex min-w-0 flex-col px-4 py-4"
     >
       {/* «EXPECTANCY» en versalitas con 0,12em de espaciado mide mas que
           la celda a 320 px: se recortaba. Con el espaciado a cero cuando
@@ -415,8 +415,8 @@ function Result({ label, value, color }: { label: string; value: string; color: 
         {label}
       </div>
       <div
-        className="tnum min-w-0 break-words relative"
-        style={{ fontSize: 18, fontWeight: 600, marginTop: 4, color, transition: "color 0.18s var(--ease-suave)" }}
+        className="tnum mt-auto min-w-0 break-words relative pt-1"
+        style={{ fontSize: 18, fontWeight: 600, color, transition: "color 0.18s var(--ease-suave)" }}
       >
         {value}
       </div>

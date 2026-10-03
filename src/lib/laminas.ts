@@ -197,7 +197,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "Una tabla compara el mes, el trimestre, el año y todo el histórico con el mismo " +
       "criterio, y ninguna fila aparece sin el número de operaciones sobre el que se calcula. " +
       "Abajo, el veredicto: si la expectancy se distingue de cero, con su valor p. Y lo dice " +
-      "explícitamente — no garantiza el futuro, dice que lo conseguido hasta aquí no parece " +
+      "explícitamente: no garantiza el futuro, dice que lo conseguido hasta aquí no parece " +
       "azar.",
     notaEn:
       "A table compares the month, the quarter, the year and the full history by the same " +

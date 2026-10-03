@@ -97,8 +97,8 @@ export function NotFoundClient() {
           className="tj-alza mt-6 text-2xl md:text-3xl font-semibold tracking-tight text-primary text-balance"
         >
           {es
-            ? "Esta página se detuvo como un mal stop loss."
-            : "This page stopped out like a bad stop loss."}
+            ? "Esta página no existe."
+            : "This page does not exist."}
         </h1>
 
         <p
@@ -106,8 +106,8 @@ export function NotFoundClient() {
           className="tj-alza mt-4 t-entradilla text-secondary"
         >
           {es
-            ? "La URL que buscas no existe, se ha movido o nunca estuvo en tu watchlist."
-            : "The URL you’re after doesn’t exist, has moved, or was never on your watchlist."}
+            ? "La dirección se ha movido o nunca existió. Busca una métrica o sigue por una de estas páginas."
+            : "The address has moved or never existed. Search for a metric or carry on from one of these pages."}
         </p>
 
         <form

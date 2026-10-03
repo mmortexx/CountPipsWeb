@@ -1996,8 +1996,8 @@ await sinJs.close();
    mira sobre el export: `next dev` pinta la 404 por su cuenta y ahí el
    error sale aunque la web publicada esté bien. */
 const NO_EXISTE = [
-  { ruta: "/ruta-que-no-existe-humo", lang: "es", texto: /se detuvo/ },
-  { ruta: "/en/ruta-que-no-existe-humo", lang: "en", texto: /stopped out/ },
+  { ruta: "/ruta-que-no-existe-humo", lang: "es", texto: /Esta página no existe/ },
+  { ruta: "/en/ruta-que-no-existe-humo", lang: "en", texto: /This page does not exist/ },
 ];
 let cuatrocientoscuatro = 0;
 let veloLevanta = false;

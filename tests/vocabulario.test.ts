@@ -44,7 +44,7 @@ const RAIZ = process.cwd();
 const SALIDA = join(RAIZ, "out");
 
 /** Palabras que en el texto español del sitio no deben aparecer, y su porqué. */
-const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string }[] = [
+const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: boolean }[] = [
   {
     palabra: /\bjournals?\b/i,
     motivo:
@@ -81,6 +81,32 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string }[] = [
       "el sitio escribe «solo» sin tilde, como pide la RAE desde 2010; convivían " +
       "las dos formas, a veces en la misma respuesta de la FAQ",
   },
+  {
+    /* « — » con espacio a los dos lados es la raya inglesa. En español el
+       inciso va pegado («lo hace —y vive en tu equipo—») o se resuelve con
+       coma o dos puntos. Se mira cada trozo de texto por separado y sin el
+       `<title>`: el separador «Página — CountPips» no es un inciso, y el
+       «—» que ocupa el sitio de una cifra que aún no existe tampoco, pero
+       unido al texto de al lado parecía uno. */
+    palabra: /\S[^\S\n]—[^\S\n]\S/,
+    nombre: "raya con espacio a los dos lados",
+    porNodo: true,
+    motivo:
+      "en español la raya de inciso va pegada al texto que abre y cierra; había " +
+      "nueve en /about, /features, /test, /privacidad y la significancia",
+  },
+  {
+    palabra: /\bPnL\b/,
+    nombre: "PnL",
+    motivo: "el sitio escribe «P&L» en el calendario, la demo y las fichas",
+  },
+  {
+    palabra: /\bcurva de equity\b/i,
+    nombre: "curva de equity",
+    motivo:
+      "la portada, la demo y el proyector la llaman «curva de capital»; precios " +
+      "y características decían «curva de equity» para la misma gráfica",
+  },
 ];
 
 /* NO se prohíbe «Drawdown máx.»: la calculadora de capital lo usa para el
@@ -111,6 +137,17 @@ function textoVisible(html: string): string {
     .replace(/\s+/g, " ");
 }
 
+/** Lo mismo, pero cada nodo de texto en su línea y sin el `<title>`. */
+function textoPorNodos(html: string): string {
+  return html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, "\n")
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "\n")
+    .replace(/<title\b[\s\S]*?<\/title>/gi, "\n")
+    .replace(/<[^>]+>/g, "\n")
+    .replace(/&[a-z]+;|&#\d+;/gi, " ")
+    .replace(/[^\S\n]+/g, " ");
+}
+
 describe.skipIf(!existsSync(SALIDA))(
   "el texto español del sitio usa un solo nombre para cada cosa",
   () => {
@@ -121,7 +158,7 @@ describe.skipIf(!existsSync(SALIDA))(
       ).toBeGreaterThan(50);
     });
 
-    for (const { palabra, motivo, nombre: puesto } of PROHIBIDAS) {
+    for (const { palabra, motivo, nombre: puesto, porNodo } of PROHIBIDAS) {
       /* El título es lo que lee quien rompa esto dentro de un año, así que
          la entrada puede traer su propio `nombre`: derivarlo del patrón
          funciona para «journal», pero un patrón con lookahead se imprimía
@@ -130,7 +167,8 @@ describe.skipIf(!existsSync(SALIDA))(
       it(`ninguna página en español dice «${nombre}» — ${motivo}`, () => {
         const encontrados: string[] = [];
         for (const ruta of paginasEspanolas(SALIDA)) {
-          const texto = textoVisible(readFileSync(ruta, "utf8"));
+          const html = readFileSync(ruta, "utf8");
+          const texto = porNodo ? textoPorNodos(html) : textoVisible(html);
           const hit = texto.match(palabra);
           if (!hit) continue;
           const i = texto.indexOf(hit[0]);

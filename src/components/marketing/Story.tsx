@@ -33,7 +33,7 @@ export function Story() {
       tag: es ? "Mes 1" : "Month 1",
       title: es ? "Registras todo" : "You log everything",
       desc: es
-        ? "Por primera vez ves tu win rate real, tu expectancy real, tu comisión real. La verdad duele un poco — y eso es bueno."
+        ? "Por primera vez ves tu win rate real, tu expectancy real, tu comisión real. La verdad duele un poco, y eso es bueno."
         : "For the first time you see your real win rate, your real expectancy, your real fees. The truth hurts a bit — and that’s good.",
       tone: "warn",
     },
@@ -123,7 +123,7 @@ export function Story() {
             <blockquote className="mt-8 relative pl-6 border-l-2 border-[var(--line-2)]">
               <p className="t-h3 text-primary leading-snug">{quote}</p>
               <footer className="mt-4 text-sm text-tertiary">
-                — {es ? "filosofía de la app" : "the app’s philosophy"}
+                {es ? "—Principio de diseño de CountPips" : "— CountPips design principle"}
               </footer>
             </blockquote>
           </Reveal>
@@ -136,7 +136,7 @@ export function Story() {
                 otherwise stretch it too wide. */}
             <p className="mt-8 text-secondary leading-[1.7] max-w-[44em]">
               {es
-                ? "Cada app de trading que probamos era o una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace — y que vive en tu ordenador."
+                ? "Cada app de trading que probamos era o una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace, y que vive en tu ordenador."
                 : "Every trading app we tried was either a glorified spreadsheet, or a monthly subscription that lost your data if you stopped paying. None of them showed what your own behaviour cost you in money. So we built one that does — and that lives on your computer."}
             </p>
           </Reveal>

@@ -209,10 +209,10 @@ const privacidad: DocumentoLegal = {
         {
           tipo: "lista",
           es: [
-            "Endpoint de admisión — recibe y deduplica solicitudes para el equipo de selección.",
-            "Cloudflare Turnstile — valida que la solicitud procede de una persona cuando el control está activado.",
-            "PostHog EU — recibe eventos técnicos solo tras consentimiento analítico.",
-            "Web3Forms — recibe el formulario de contacto y lo reenvía al correo del titular.",
+            "Endpoint de admisión: recibe y deduplica solicitudes para el equipo de selección.",
+            "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado.",
+            "PostHog EU: recibe eventos técnicos solo tras consentimiento analítico.",
+            "Web3Forms: recibe el formulario de contacto y lo reenvía al correo del titular.",
           ],
           en: [
             "Admission endpoint — receives and deduplicates applications for the selection team.",

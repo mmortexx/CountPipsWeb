@@ -996,7 +996,7 @@ export function EquityProjector() {
                         <span className="font-semibold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
                       </div>
                       <div>
-                        <span className="text-[var(--ink-3)] text-[12px] mr-1">PnL:</span>
+                        <span className="text-[var(--ink-3)] text-[12px] mr-1">{"P&L:"}</span>
                         <span
                           className="font-semibold"
                           style={{

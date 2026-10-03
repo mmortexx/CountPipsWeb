@@ -126,7 +126,7 @@ export const STR = {
   saveDraft: { es: "Guardar borrador", en: "Save draft" },
   tradeRegistered: { es: "Operación registrada", en: "Trade logged" },
   tradeRegisteredDesc: {
-    es: "Guardada localmente — aparece arriba del todo en Operaciones.",
+    es: "Guardada localmente: aparece arriba del todo en Operaciones.",
     en: "Saved locally — shows at the top of Trades.",
   },
   tradeRegisterError: {

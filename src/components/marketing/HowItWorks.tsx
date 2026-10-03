@@ -29,7 +29,7 @@ export function HowItWorks() {
       n: "03",
       title: es ? "Mejora tu disciplina" : "Improve your discipline",
       desc: es
-        ? "El ritual pre/post mercado y el coste de indisciplina te muestran lo que tu comportamiento te cuesta — en dinero real."
+        ? "El ritual pre/post mercado y el coste de indisciplina te muestran, en dinero real, lo que te cuesta tu comportamiento."
         : "The pre/post-market ritual and the cost-of-indiscipline metric show what your behaviour costs you — in real money.",
       kbd: "Ctrl + 4",
     },

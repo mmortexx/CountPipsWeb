@@ -120,8 +120,8 @@ export function TestBody() {
         titleEn="What kind of trader are you?"
         subtitleEs="No es un test de personalidad: son quince preguntas sobre lo que haces de verdad cuando el mercado va en contra. Al final, tu perfil en cinco ejes y el que conviene arreglar primero."
         subtitleEn="Not a personality quiz: fifteen questions about what you actually do when the market turns. At the end, your profile across five axes and the one worth fixing first."
-        breadcrumbEs="Test"
-        breadcrumbEn="Quiz"
+        breadcrumbEs="Test de disciplina"
+        breadcrumbEn="Discipline test"
       />
       <DisciplineScore enPagina />
 

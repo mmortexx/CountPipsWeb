@@ -827,7 +827,7 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
     verdict = lang === "es" ? "Sugerente" : "Suggestive";
     verdictTone = "warn";
     hint = lang === "es"
-      ? "La señal apunta en la dirección correcta pero el intervalo aún incluye al cero — sigue operando para estrecharlo."
+      ? "La señal apunta en la dirección correcta pero el intervalo aún incluye el cero: sigue operando para estrecharlo."
       : "The signal points the right way but the interval still includes zero — keep trading to narrow it.";
   } else {
     verdict = lang === "es" ? "Sin edge" : "No edge";

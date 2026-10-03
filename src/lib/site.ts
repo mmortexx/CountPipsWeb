@@ -144,7 +144,7 @@ export function esquemasGlobales(
   const funciones = es
     ? [
         "Métricas institucionales (Sharpe, Profit Factor, Expectancy, R-multiple)",
-        "Curva de equity y drawdown",
+        "Curva de capital y drawdown",
         "Guardián de disciplina: semáforo de riesgo y freno opcional",
         "Datos en tu equipo, sin cuenta y sin telemetría",
         "Playbooks y plantillas de trading",

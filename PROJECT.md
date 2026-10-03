@@ -3085,6 +3085,70 @@ secciones que no seguían el ritmo.
   correcto en tres tandas de tres pasadas: titular legible a 132–253 ms.
   Los cambios son de estilo y no tocan la carga.
 
+### Quincuagésima primera tanda: alineaciones, rayas y tono (2026-10-03)
+
+Capturas de ventana de 19 rutas a 1440 en claro y de 6 a 390 en oscuro,
+mirando lo que ninguna guarda veía.
+
+- **Cifras descolgadas.** En la calculadora de riesgo (y en
+  /features/metricas, que la monta), «Riesgo de ruina (−50 %)» ocupa dos
+  líneas y bajaba su cifra 16 px respecto a «Valor nocional», «Apalancamiento»
+  y «VaR 95 %». Lo mismo con «Statistical power (1 − β)» a 390 px. Las celdas
+  de resultado de las tres calculadoras que las usan (riesgo, significancia,
+  ahorro) van ahora en columna con la cifra al pie: comparten línea aunque
+  un rótulo se parta.
+- **Selectores de prop firms.** Firma (41 px, dos líneas) y tamaño de cuenta
+  (36) iban uno al lado del otro con altos distintos. El contenedor estira y
+  miden lo mismo.
+- **Bento de /features.** «Rendimiento por hora» dejaba unos 170 px vacíos al
+  pie, porque el calendario de al lado fija el alto de la fila: el gráfico
+  crece con la ficha (mínimo 100 px). «Multi-cuenta» dejaba 159: gana un
+  «Resultado conjunto» al pie (+12.250 $, la suma de las tres cuentas), con
+  la misma cifra que el «Total del mes» del calendario y el mismo filete que
+  el pie del diario. Medido: hueco al pie 0 px en las cinco fichas.
+- **La raya española.** Nueve incisos con « — » (la raya inglesa, con espacio
+  a los dos lados) en /about, /features, /test, /privacidad y la
+  significancia, y ocho más en textos que el navegador pinta después
+  (resultados del test y de la significancia, demo, aviso al guardar, pie
+  de una captura). Pasan a coma, dos puntos o punto y coma según el
+  caso. La atribución de la cita de /about pasa de «— filosofía de la app» a
+  «—Principio de diseño de CountPips».
+- **Un nombre por cosa.** «Curva de equity» (precios, características, FAQ y
+  datos estructurados) pasa a «curva de capital», como la portada, la demo y
+  el proyector. «PnL» (proyector y fórmula del R-multiple) pasa a «P&L».
+  «Ventaja vs azar» pasa a «Ventaja o azar». La miga del test decía «Test» /
+  «Quiz» y sus datos estructurados «Test de disciplina» / «Discipline test»:
+  ahora las dos dicen lo segundo.
+- **La 404, sobria.** «Esta página se detuvo como un mal stop loss» y «nunca
+  estuvo en tu watchlist» eran un chiste en una web que se presenta como
+  mesa institucional. Ahora: «Esta página no existe.» y una línea que dice
+  qué hacer. `humo.mjs` busca el texto nuevo.
+- **Guardas nuevas.**
+  - `rejillas.mjs`: en una fila de celdas «rótulo + cifra» las cifras caen a
+    la misma altura (±2 px), y dos `.tj-segmentado` vecinos en la misma fila
+    miden lo mismo. Roja con la compilación anterior: 3 cifras y 2 pares.
+  - `tests/vocabulario.test.ts`: ni raya con espacio a los dos lados (salvo
+    el separador «— CountPips» de los títulos), ni «PnL», ni «curva de
+    equity» en el texto español compilado.
+- **Visto y sin cambio.**
+  - El espaciado entre letras de los rótulos de la demo en minúscula
+    («Dirección», «Riesgo en $»): copia el `CharacterSpacing 100` del
+    programa, que no escribe en mayúsculas. Lo mismo «3,00R» sin espacio:
+    es como lo escribe la demo en todas sus pantallas.
+  - La ventana de la demo, más ancha que la caja de contenido: es la
+    aplicación, no una tarjeta.
+  - «Email» en los formularios: el sitio dice «email» de forma coherente en
+    todos sus textos.
+- **Medido.** Batería en paralelo 17/18 a la primera: `tipografias.test.ts`
+  cazó que el total nuevo repetía a mano los 22 px del «Total del mes», y
+  los dos totales comparten ahora una sola clase. Después, vitest 563
+  pruebas (2 omitidas) y lint limpios. La regla de la raya dio al principio
+  cinco falsos positivos —separadores de `<title>` y el «—» que marca una
+  cifra vacía, pegados al texto vecino al aplanar el HTML—: mira cada nodo
+  de texto por separado. Vista en rojo inyectando un inciso en la página
+  compilada y en verde al quitarlo. Arranque correcto en tres pasadas
+  (410–482 ms desde la navegación); los cambios no tocan la carga.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -3103,13 +3167,13 @@ node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, c
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar»
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
-node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, columnas iguales a compás y ningún filete doble ni de tono suelto (todas las páginas, 1440 y 390)
+node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para igualar la fila, columnas iguales a compás, cifras de una fila a la misma altura, segmentados vecinos del mismo alto y ningún filete doble ni de tono suelto (todas las páginas, 1440 y 390)
 node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en un peldaño t-* de la escala, y el interlineado de lectura (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 53 suites, 560 tests (+2 omitidos)
+npx vitest run                          # 53 suites, 563 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

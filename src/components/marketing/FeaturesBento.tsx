@@ -50,6 +50,18 @@ export function FeaturesBento({
   const rotulo = "text-[12px] font-medium text-tertiary tnum";
   const titulo = "m-0 t-h3 text-primary";
   const division = "border-[var(--ficha-division)]";
+  /* La cifra de total al pie de ficha: el del mes y el de las cuentas. */
+  const cifraTotal = "tnum m-0 mt-1 text-[22px] font-medium leading-none tracking-[-0.02em]";
+
+  /* El resultado se calcula del saldo y el capital inicial para que no
+     puedan contradecirse: la Topstep «aprobada» tiene que pasar el +6 % de
+     su plantilla. */
+  const cuentas = [
+    { name: "Apex 150k (#1)", inicial: 150000, saldo: 154820, status: es ? "En curso" : "In progress" },
+    { name: "Topstep 50k (#2)", inicial: 50000, saldo: 53240, status: es ? "Aprobada" : "Passed" },
+    { name: "IBKR Futures Core", inicial: 80000, saldo: 84190, status: es ? "Personal" : "Personal" },
+  ];
+  const conjunto = cuentas.reduce((s, c) => s + c.saldo - c.inicial, 0);
 
   return (
     <section id="features" className="section relative overflow-clip">
@@ -107,7 +119,7 @@ export function FeaturesBento({
                 <div className={`flex flex-wrap items-end justify-between gap-x-4 gap-y-3 border-t ${division} pt-4`}>
                 <div>
                   <p className={`${rotulo} m-0`}>{es ? "Total del mes" : "Month total"}</p>
-                  <p className="tnum m-0 mt-1 text-[22px] font-medium leading-none tracking-[-0.02em]" style={{ color: cal.pnlColor }}>
+                  <p className={cifraTotal} style={{ color: cal.pnlColor }}>
                     {cal.pnl[lang]}
                   </p>
                 </div>
@@ -135,11 +147,14 @@ export function FeaturesBento({
               <span>{es ? "Rendimiento por hora" : "Hourly performance"}</span>
               <span>24 h</span>
             </p>
-            <div className="tj-ficha-cuerpo flex-1">
+            <div className="tj-ficha-cuerpo flex-1 flex flex-col">
               <h3 className={`${titulo} md:min-h-[2.5em]`}>
                 {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
               </h3>
-              <div className="relative mt-5 flex gap-[3px]" style={{ height: 100 }} aria-hidden data-dibuja>
+              {/* El gráfico crece con la ficha: en escritorio el calendario
+                  de al lado fija el alto de la fila, y con 100 px fijos
+                  sobraban unos 170 vacíos al pie. */}
+              <div className="relative mt-5 flex min-h-[100px] flex-1 gap-[3px]" aria-hidden data-dibuja>
                 <span className="absolute inset-x-0 h-px bg-[var(--ficha-division)]" style={{ top: `${ZONA_POS}%` }} />
                 {HORAS_R.map((v, i) => (
                   <div key={i} className="flex flex-1 flex-col">
@@ -273,17 +288,10 @@ export function FeaturesBento({
               <span>{es ? "Multi-cuenta" : "Multi-account"}</span>
               <span>{es ? "3 cuentas" : "3 accounts"}</span>
             </p>
-            <div className="tj-ficha-cuerpo flex-1">
+            <div className="tj-ficha-cuerpo flex-1 flex flex-col">
               <h3 className={titulo}>{es ? "Todas tus cuentas, en la misma vista" : "All your accounts, in the same view"}</h3>
-              {/* El resultado se calcula del saldo y el capital inicial para
-                  que no puedan contradecirse: la Topstep «aprobada» tiene
-                  que pasar el +6 % de su plantilla. */}
               <ul className="m-0 mt-3 p-0 list-none tnum">
-                {[
-                  { name: "Apex 150k (#1)", inicial: 150000, saldo: 154820, status: es ? "En curso" : "In progress" },
-                  { name: "Topstep 50k (#2)", inicial: 50000, saldo: 53240, status: es ? "Aprobada" : "Passed" },
-                  { name: "IBKR Futures Core", inicial: 80000, saldo: 84190, status: es ? "Personal" : "Personal" },
-                ].map((acc) => (
+                {cuentas.map((acc) => (
                   <li key={acc.name} className={`flex items-start justify-between gap-3 border-b ${division} py-3 last:border-b-0`}>
                     <div className="min-w-0">
                       <p className="m-0 truncate text-[13px] font-medium text-primary">{acc.name}</p>
@@ -298,9 +306,17 @@ export function FeaturesBento({
                   </li>
                 ))}
               </ul>
-              <p className="m-0 mt-3 text-[11px] text-tertiary">
-                {es ? "Saldo y resultado desde la apertura de cada cuenta." : "Balance and result since each account opened."}
-              </p>
+              {/* El total va al pie, como el del calendario: la fila la mide
+                  la ficha más alta y aquí sobraban unos 160 px vacíos. */}
+              <div className={`mt-auto border-t ${division} pt-4`}>
+                <p className={`${rotulo} m-0`}>{es ? "Resultado conjunto" : "Combined result"}</p>
+                <p className={`${cifraTotal} text-[rgb(var(--pnl-pos))]`}>
+                  {fmtMoney(conjunto, lang, { decimals: 0, sign: true })}
+                </p>
+                <p className="m-0 mt-3 text-[11px] text-tertiary">
+                  {es ? "Saldo y resultado desde la apertura de cada cuenta." : "Balance and result since each account opened."}
+                </p>
+              </div>
             </div>
           </article>
         </div>

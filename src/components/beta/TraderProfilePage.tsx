@@ -139,7 +139,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 mano que ni siquiera coincidían entre sí puestas una al lado
                 de la otra: la de firma pintaba el elegido con el acento y
                 la de importe con la tinta. */}
-            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:flex-wrap sm:items-start sm:gap-4">
+            <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-4">
               <div className="tj-segmentado tj-segmentado-apila sm:max-w-2xl sm:flex-1" role="group">
                 {PROP_FIRMS.map((f) => (
                   <button

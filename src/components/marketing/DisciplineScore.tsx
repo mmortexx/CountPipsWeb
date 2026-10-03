@@ -82,7 +82,7 @@ const DIMS: Dim[] = [
     en: "Record",
     weight: 2,
     tipEs:
-      "Tu punto flaco es el registro. Sin datos propios estás opinando sobre tu operativa, no analizándola — y la memoria guarda las ganadoras y suaviza las perdedoras. Anota cada operación con su motivo y revisa expectancy y R medio con una periodicidad fija.",
+      "Tu punto flaco es el registro. Sin datos propios estás opinando sobre tu operativa, no analizándola, y la memoria guarda las ganadoras y suaviza las perdedoras. Anota cada operación con su motivo y revisa expectancy y R medio con una periodicidad fija.",
     tipEn:
       "Your weak point is the record. Without your own data you are opining about your trading, not analysing it — and memory keeps the winners and softens the losers. Log every trade with its reason and review expectancy and average R on a fixed schedule.",
   },
@@ -92,7 +92,7 @@ const DIMS: Dim[] = [
     en: "Composure",
     weight: 2.5,
     tipEs:
-      "Tu punto flaco es el temple. Sabes qué hacer y dejas de hacerlo justo cuando importa: después de perder, con prisa o con la cuenta en rojo. No se arregla con fuerza de voluntad sino con frenos externos — un tope de pérdida que cierre la sesión y una regla de no operar en la hora siguiente a una pérdida grande.",
+      "Tu punto flaco es el temple. Sabes qué hacer y dejas de hacerlo justo cuando importa: después de perder, con prisa o con la cuenta en rojo. No se arregla con fuerza de voluntad sino con frenos externos: un tope de pérdida que cierre la sesión y una regla de no operar en la hora siguiente a una pérdida grande.",
     tipEn:
       "Your weak point is composure. You know what to do and stop doing it exactly when it counts: after a loss, in a hurry, with the account down. Willpower does not fix this — external brakes do: a loss cap that ends the session, and a rule against trading in the hour after a big loss.",
   },
@@ -384,7 +384,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
             style={{ color: "var(--ink-2)" }}
           >
             {es
-              ? "Quince preguntas sobre cinco ejes: riesgo, plan, registro, temple y constancia. No todas pesan igual — mover un stop en contra dice más de un trader que revisar el diario los domingos. Al final: tu perfil por ejes, la cifra global y qué arreglar primero. Sin email."
+              ? "Quince preguntas sobre cinco ejes: riesgo, plan, registro, temple y constancia. No todas pesan igual: mover un stop en contra dice más de un trader que revisar el diario los domingos. Al final: tu perfil por ejes, la cifra global y qué arreglar primero. Sin email."
               : "Fifteen questions across five axes: risk, plan, record, composure and consistency. They don’t all weigh the same — moving a stop against you says more about a trader than reviewing the journal on Sundays. At the end: your profile by axis, the overall figure and what to fix first. No email."}
           </p>
         </div>

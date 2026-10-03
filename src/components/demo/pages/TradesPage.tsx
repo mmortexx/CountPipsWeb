@@ -516,7 +516,7 @@ function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: "es" | "en"
       : `${ganador[0].toUpperCase()}${ganador.slice(1)} wins, and the difference is not chance: their confidence intervals don’t overlap.`
     : c.veredicto === "solapan"
       ? es
-        ? "Todavía no puedes distinguirlas: sus intervalos de confianza se solapan. Que se solapen no quiere decir que sean iguales — quiere decir que aún faltan operaciones para saberlo."
+        ? "Todavía no puedes distinguirlas: sus intervalos de confianza se solapan. Que se solapen no quiere decir que sean iguales: quiere decir que aún faltan operaciones para saberlo."
         : "You can’t tell them apart yet: their confidence intervals overlap. Overlapping doesn’t mean they’re equal — it means you still need more trades to know."
       : es
         ? "Uno de los dos grupos no tiene operaciones suficientes con R para compararlos con rigor."

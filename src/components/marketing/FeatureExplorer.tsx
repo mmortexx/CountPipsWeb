@@ -42,7 +42,7 @@ const FEATURES: Feature[] = [
   },
   {
     id: "equity",
-    titleEs: "Curva de equity y drawdown",
+    titleEs: "Curva de capital y drawdown",
     titleEn: "Equity curve and drawdown",
     descEs: "Tu capital y tu peor caída, al día con cada operación. El drawdown se mide desde el pico, como en un fondo.",
     descEn: "Your capital and your worst drop, updated with every trade. Drawdown measured from peak, like a fund.",
@@ -269,7 +269,7 @@ export function FeatureExplorer() {
               </span>
               {topMatches.length === 0 && (
                 <span className="text-[13px]" style={{ color: "var(--ink-3)" }}>
-                  {es ? "Nada en esos ejes — prueba otro." : "Nothing on those axes — try another."}
+                  {es ? "Nada en esos ejes. Prueba otro." : "Nothing on those axes — try another."}
                 </span>
               )}
             </div>

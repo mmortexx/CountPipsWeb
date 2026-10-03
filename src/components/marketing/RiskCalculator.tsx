@@ -613,20 +613,20 @@ export function RiskCalculator() {
                comprobado en la hoja construida. */
             className="mb-6 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-[var(--line)] pt-4 sm:grid-cols-4"
           >
-            <div className="caja-cifra">
+            <div className="caja-cifra flex flex-col">
               <div className="tnum text-[12px] leading-[1.3] text-tertiary [hyphens:auto] break-words">
                 {es ? "Valor nocional" : "Notional value"}
               </div>
-              <div className="tnum text-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
+              <div className="tnum text-sm mt-auto pt-0.5 whitespace-nowrap font-semibold text-primary">
                 {siPlan(fmtUsd(c.positionValue))}
               </div>
             </div>
-            <div className="caja-cifra">
+            <div className="caja-cifra flex flex-col">
               <div className="tnum text-[12px] leading-[1.3] text-tertiary [hyphens:auto] break-words">
                 {es ? "Apalancamiento" : "Leverage"}
               </div>
               <div
-                className="tnum text-sm font-semibold mt-0.5"
+                className="tnum text-sm font-semibold mt-auto pt-0.5"
                 style={{
                   color: c.apalancamientoExcesivo ? "rgb(var(--pnl-neg))" : "var(--ink)",
                 }}
@@ -634,20 +634,20 @@ export function RiskCalculator() {
                 {c.valid ? <>{fmtNum(c.leverage, 1)}{"\u00a0×"}</> : "—"}
               </div>
             </div>
-            <div className="caja-cifra">
+            <div className="caja-cifra flex flex-col">
               <div className="tnum text-[12px] leading-[1.3] text-tertiary [hyphens:auto] break-words">
                 {es ? "VaR 95 %" : "95% VaR"}
               </div>
-              <div className="tnum text-sm mt-0.5 whitespace-nowrap font-semibold text-primary">
+              <div className="tnum text-sm mt-auto pt-0.5 whitespace-nowrap font-semibold text-primary">
                 {fmtUsd(c.var95)}
               </div>
             </div>
-            <div className="caja-cifra">
+            <div className="caja-cifra flex flex-col">
               <div className="tnum text-[12px] leading-[1.3] text-tertiary [hyphens:auto] break-words">
                 {es ? `Riesgo de ruina (−${UMBRAL_RUINA_PCT}\u00a0%)` : `Risk of ruin (−${UMBRAL_RUINA_PCT}%)`}
               </div>
               <div
-                className="tnum text-sm font-semibold mt-0.5"
+                className="tnum text-sm font-semibold mt-auto pt-0.5"
                 style={{
                   color: !c.valid ? "var(--ink-2)" : c.riskOfRuin > 1 ? "rgb(var(--pnl-neg))" : "rgb(var(--pnl-pos))",
                 }}
@@ -799,7 +799,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
        esta calculadora vive en la columna estrecha de /features/metricas.
        Una cifra rota en dos lineas deja de leerse como un dato. */
     <div
-      className="caja-cifra relative min-w-0 border-t border-[var(--line)] py-3.5"
+      className="caja-cifra relative flex min-w-0 flex-col border-t border-[var(--line)] py-3.5"
     >
       <div
         className="tnum text-[12px] text-tertiary"
@@ -807,7 +807,7 @@ function Result({ label, value, color }: { label: string; value: string; color: 
         {label}
       </div>
       <div
-        className="tnum cifra-lg min-w-0 break-words font-semibold mt-1"
+        className="tnum cifra-lg min-w-0 break-words font-semibold mt-auto pt-1"
         style={{ color }}
       >
         {value}

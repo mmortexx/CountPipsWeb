@@ -42,6 +42,15 @@
  * 16 px. Las cajas (campos, segmentados) no cuentan como filete. Vista
  * en rojo con la compilación anterior (18 tonos y 9 pares).
  *
+ * ── Y las cifras de una fila, y los segmentados vecinos (2026-10-03) ──
+ * En una fila de celdas «rótulo + cifra», la cifra cae a la misma altura
+ * aunque un rótulo ocupe dos líneas: «Riesgo de ruina (−50 %)» bajaba su
+ * cifra 16 px respecto a las otras tres en la calculadora de riesgo (y en
+ * /features/metricas), y «Statistical power (1 − β)» a 390 px. Y dos
+ * controles segmentados en la misma fila miden lo mismo: firma (41 px,
+ * dos líneas) y tamaño (36) en /traders/prop-firms. Vista en rojo con la
+ * compilación anterior (3 cifras y 2 pares).
+ *
  * ── Lo que NO mira ────────────────────────────────────────────────────
  * Flexbox, donde el mismo reparto solo ocurre si alguien lo pide.
  *
@@ -115,6 +124,7 @@ const fallos = new Map();
 let rejillas = 0;
 let columnadasTotal = 0;
 let filetesTotal = 0;
+let filasCifraTotal = 0;
 
 async function medir(pag, ruta, ancho) {
   try {
@@ -241,6 +251,40 @@ async function medir(pag, ruta, ancho) {
         if (q.width > 0 && q.height > 0) cosas.push({ t: q.top + sy, b: q.bottom + sy, x1: q.left, x2: q.right });
       }
     }
+    /* Cifras a compás: en una fila de celdas «rótulo + cifra», las cifras
+       caen a la misma altura aunque un rótulo ocupe dos líneas. */
+    const descolgadas = [];
+    let filasCifra = 0;
+    const esCelda = (c) => c.children.length === 2 && /\d/.test(c.children[1].textContent || "") && c.children[1].getBoundingClientRect().height > 0;
+    for (const el of document.querySelectorAll("main *")) {
+      if (el.closest("[data-demo-raiz]") || !getComputedStyle(el).display.includes("grid")) continue;
+      const celdas = [...el.children].filter(esCelda);
+      const filas = new Map();
+      for (const c of celdas) {
+        const k = Math.round(c.getBoundingClientRect().top / 3);
+        if (!filas.has(k)) filas.set(k, []);
+        filas.get(k).push(c);
+      }
+      for (const fila of filas.values()) {
+        if (fila.length < 2) continue;
+        filasCifra++;
+        const pies = fila.map((c) => c.children[1].getBoundingClientRect().bottom);
+        if (Math.max(...pies) - Math.min(...pies) > 2) {
+          descolgadas.push({ texto: (fila[0].textContent || "").trim().slice(0, 36), salto: Math.round(Math.max(...pies) - Math.min(...pies)) });
+        }
+      }
+    }
+    /* Controles segmentados uno al lado del otro: el mismo alto. */
+    const desiguales = [];
+    for (const g of document.querySelectorAll("main .tj-segmentado")) {
+      const h = g.nextElementSibling;
+      if (!h?.classList.contains("tj-segmentado")) continue;
+      const a = g.getBoundingClientRect();
+      const b = h.getBoundingClientRect();
+      if (Math.abs(a.top - b.top) < 2 && Math.abs(a.height - b.height) > 1) {
+        desiguales.push({ texto: (g.textContent || "").trim().slice(0, 30), altos: `${Math.round(a.height)}/${Math.round(b.height)}` });
+      }
+    }
     filetes.sort((a, b) => a.y - b.y);
     const dobles = [];
     for (let i = 0; i < filetes.length; i++) {
@@ -264,9 +308,20 @@ async function medir(pag, ruta, ancho) {
         }
       }
     }
-    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size };
+    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales };
   }, TOLERANCIA_PX);
   filetesTotal += r.nf;
+  filasCifraTotal += r.filasCifra;
+  for (const d of r.descolgadas) {
+    const k = "cifra descolgada de su fila";
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}  «${d.texto}» a ${d.salto} px`);
+  }
+  for (const d of r.desiguales) {
+    const k = "segmentados vecinos de distinto alto";
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}  «${d.texto}» ${d.altos} px`);
+  }
   if (r.nt < 3) fallos.set(`sin tokens de filete ${ruta}`, [`${ancho} ${ruta}: la sonda no leyó los tonos`]);
   for (const t of r.sueltos) {
     const k = `filete con tono suelto /${t.tono} ${t.clase}`;
@@ -315,7 +370,11 @@ for (const [clase, casos] of fallos) {
   if (casos.length > 6) console.log(`     … y ${casos.length - 6} más`);
 }
 
-console.log(`\n[rejillas] ${RUTAS.length} páginas × ${ANCHOS.length} anchos · ${rejillas} rejillas de varias filas medidas · ${columnadasTotal} de tres columnas o más, con su compás · ${filetesTotal} filetes`);
+console.log(`\n[rejillas] ${RUTAS.length} páginas × ${ANCHOS.length} anchos · ${rejillas} rejillas de varias filas medidas · ${columnadasTotal} de tres columnas o más, con su compás · ${filetesTotal} filetes · ${filasCifraTotal} filas de cifras`);
+if (filasCifraTotal < 50) {
+  console.log(`[rejillas] solo ${filasCifraTotal} filas de cifras: la comprobación de compás de cifras no está mirando`);
+  process.exit(1);
+}
 if (filetesTotal < 1000) {
   console.log(`[rejillas] solo ${filetesTotal} filetes: el doble filete no está mirando`);
   process.exit(1);
@@ -333,14 +392,22 @@ if (fallos.size) {
   const compas = [...fallos.keys()].filter((k) => k.startsWith("compás ")).length;
   const tono = [...fallos.keys()].filter((k) => k.startsWith("filete con tono suelto") || k.startsWith("sin tokens de filete")).length;
   const doble = fallos.has("doble filete sin nada entre medias") ? 1 : 0;
+  const cifra = fallos.has("cifra descolgada de su fila") ? 1 : 0;
+  const segmento = fallos.has("segmentados vecinos de distinto alto") ? 1 : 0;
+  if (cifra) {
+    console.log("[rejillas] una cifra cae más abajo que sus vecinas porque su rótulo ocupa dos líneas: celda `flex flex-col` y cifra con `mt-auto`");
+  }
+  if (segmento) {
+    console.log("[rejillas] dos controles segmentados en la misma fila con altos distintos: `items-stretch` en el contenedor");
+  }
   if (doble) {
     console.log("[rejillas] dos filetes seguidos sin contenido entre ellos: si lo de encima ya cierra con filete, `<FinalCTANew sinFilete />`");
   }
   if (tono) {
     console.log(`[rejillas] ${tono} filete(s) con una opacidad escrita a mano: usa --line, --line-2 o --ficha-division`);
   }
-  if (fallos.size - compas - doble - tono) {
-    console.log(`[rejillas] ${fallos.size - compas - doble - tono} rejilla(s) reparten el alto sobrante entre sus filas`);
+  if (fallos.size - compas - doble - tono - cifra - segmento) {
+    console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento} rejilla(s) reparten el alto sobrante entre sus filas`);
     console.log("[rejillas] si la ficha debe ir arriba, `content-start` (align-content: start) en ella");
   }
   if (compas) {

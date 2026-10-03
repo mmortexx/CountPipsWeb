@@ -63,7 +63,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
-    a: "Core incluye el diario, las métricas, el calendario y la curva de equity, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y 2 cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.",
+    a: "Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y 2 cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.",
   },
   {
     q: "¿Qué datos pide esta web?",

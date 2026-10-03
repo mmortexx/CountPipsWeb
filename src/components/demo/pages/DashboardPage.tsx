@@ -1307,7 +1307,7 @@ function TodayBriefing() {
       </div>
       <p className="mt-2 text-[12px] text-tertiary leading-relaxed max-w-3xl">
         {es
-          ? "Lo que tu histórico dice de hoy, antes de operar — no una predicción. Cuando la muestra no da para afirmar nada, lo dice."
+          ? "Lo que tu histórico dice de hoy, antes de operar; no una predicción. Cuando la muestra no da para afirmar nada, lo dice."
           : "What your history says about today, before you trade — not a prediction. When the sample cannot support a claim, it says so."}
       </p>
       <div className="mt-4 space-y-2 text-[13px] text-secondary leading-relaxed max-w-3xl">

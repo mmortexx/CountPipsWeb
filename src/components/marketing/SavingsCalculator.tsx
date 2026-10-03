@@ -356,14 +356,14 @@ export function SavingsCalculator() {
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <div
-      className="relative min-w-0 border-t border-[var(--line)] py-3.5"
+      className="relative flex min-w-0 flex-col border-t border-[var(--line)] py-3.5"
     >
       <div className="tnum relative" style={{ fontSize: 12, color: "var(--ink-3)" }}>
         {label}
       </div>
       <div
-        className="tnum min-w-0 break-words relative"
-        style={{ fontSize: 18, fontWeight: 600, marginTop: 4, color, transition: "color 0.18s var(--ease-suave)" }}
+        className="tnum mt-auto min-w-0 break-words relative pt-1"
+        style={{ fontSize: 18, fontWeight: 600, color, transition: "color 0.18s var(--ease-suave)" }}
       >
         {value}
       </div>
