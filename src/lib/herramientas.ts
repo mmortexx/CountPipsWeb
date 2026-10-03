@@ -234,7 +234,7 @@ export const HERRAMIENTAS: Herramienta[] = [
     descripcionEs:
       "Compara un coste mensual con los precios previstos de lanzamiento de CountPips, sin convertir el resultado en una oferta de compra.",
     descripcionEn:
-      "Compare a monthly cost with CountPips' planned launch prices; the result is not a purchase offer.",
+      "Compare a monthly cost with the planned CountPips launch prices; the result is not a purchase offer.",
   },
   {
     slug: "impacto-de-comisiones",

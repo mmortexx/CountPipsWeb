@@ -24,7 +24,7 @@ import {
   type Trade,
   type RankingRow,
 } from "@/lib/trading/data";
-import { fmtMoney, fmtNum, fmtPct, fmtInt, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtPct, fmtInt, fmtOperaciones, pctSep } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -603,10 +603,7 @@ function HistogramLegend({
   symbol: string;
 }) {
   const { lang } = useLang();
-  const tradesLabel =
-    lang === "es"
-      ? `${fmtInt(total, lang)} operaciones`
-      : `${fmtInt(total, lang)} trades`;
+  const tradesLabel = fmtOperaciones(total, lang);
   return (
     <div className="mt-3 flex items-center justify-between gap-3 flex-wrap">
       <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.14em] text-tertiary">
@@ -815,8 +812,8 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
     verdict = lang === "es" ? "Inconcluso" : "Inconclusive";
     verdictTone = "neutral";
     hint = lang === "es"
-      ? `Necesitas al menos ${fmtInt(MUESTRA_MINIMA, lang)} operaciones para emitir un veredicto con confianza estadística.`
-      : `You need at least ${fmtInt(MUESTRA_MINIMA, lang)} trades to reach a verdict with statistical confidence.`;
+      ? `Necesitas al menos ${fmtOperaciones(MUESTRA_MINIMA, lang)} para emitir un veredicto con confianza estadística.`
+      : `You need at least ${fmtOperaciones(MUESTRA_MINIMA, lang)} to reach a verdict with statistical confidence.`;
   } else if (loR > 0) {
     verdict = lang === "es" ? "Edge confirmado" : "Confirmed edge";
     verdictTone = "pos";
@@ -1625,8 +1622,8 @@ export function AnalyticsPage() {
             >
               <p className="text-[11px] text-tertiary leading-relaxed mb-4">
                 {desc(
-                  "R² = cuánta escalera hay en el dibujo; K-Ratio = pendiente alta y estable; pendiente = € por operación según el ajuste.",
-                  "R² = how much staircase is in the chart; K-Ratio = high & stable slope; slope = € per trade from the fit."
+                  "R² = cuánta escalera hay en el dibujo; K-Ratio = pendiente alta y estable; pendiente = $ por operación según el ajuste.",
+                  "R² = how much staircase is in the chart; K-Ratio = high & stable slope; slope = $ per trade from the fit."
                 )}
               </p>
               <div className="space-y-3">
@@ -1664,7 +1661,7 @@ export function AnalyticsPage() {
                       {lang === "es" ? "Pendiente" : "Slope"}
                     </span>
                     <span className="text-[10px] text-tertiary tnum">
-                      {lang === "es" ? "€ / operación" : "$ / trade"}
+                      {lang === "es" ? "$ / operación" : "$ / trade"}
                     </span>
                   </div>
                   <div className="font-semibold tnum text-2xl leading-none">

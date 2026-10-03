@@ -6,7 +6,7 @@ import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { Deslizador } from "@/components/tj/Deslizador";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
-import { pctSep, fmtR, fmtNum as fmtNumBase } from "@/lib/trading/format";
+import { pctSep, fmtR, fmtNum as fmtNumBase, fmtOperaciones } from "@/lib/trading/format";
 import { computeStatisticalPower, normalCdf } from "@/lib/trading/estadistica";
 
 export { normalCdf };
@@ -171,31 +171,31 @@ export function EdgeSignificanceChecker() {
         label: es ? "Muestra insuficiente" : "Insufficient sample",
         color: "var(--ink-2)",
         text: es
-          ? `Con ${trades} operaciones no se puede hacer un test estadístico fiable. Necesitas al menos 20 para que la aproximación sea válida.`
-          : `With ${trades} trades a reliable statistical test isn’t possible. You need at least 20 for the approximation to hold.`,
+          ? `Con ${fmtOperaciones(trades, lang)} no se puede hacer un test estadístico fiable. Necesitas al menos 20 para que la aproximación sea válida.`
+          : `With ${fmtOperaciones(trades, lang)} a reliable statistical test isn’t possible. You need at least 20 for the approximation to hold.`,
       }
     : !c.significant
       ? {
           label: es ? "No significativo" : "Not significant",
           color: "rgb(var(--pnl-neg))",
           text: es
-            ? `Un ${fmtNum(winRate, 0)}${PCT} de aciertos en ${trades} operaciones no es estadísticamente distinto de tirar una moneda (p = ${fmtNum(c.pValue, 3)}). Podría ser suerte. Sigue operando y midiendo.`
-            : `A ${fmtNum(winRate, 0)}% win rate over ${trades} trades is not statistically distinct from a coin flip (p = ${fmtNum(c.pValue, 3)}). It could be luck. Keep trading and measuring.`,
+            ? `Un ${fmtNum(winRate, 0)}${PCT} de aciertos en ${fmtOperaciones(trades, lang)} no es estadísticamente distinto de tirar una moneda (p = ${fmtNum(c.pValue, 3)}). Podría ser suerte. Sigue operando y midiendo.`
+            : `A ${fmtNum(winRate, 0)}% win rate over ${fmtOperaciones(trades, lang)} is not statistically distinct from a coin flip (p = ${fmtNum(c.pValue, 3)}). It could be luck. Keep trading and measuring.`,
         }
       : c.strongSignificant
         ? {
             label: es ? "Ventaja sólida" : "Strong edge",
             color: "rgb(var(--pnl-pos))",
             text: es
-              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí, pero valídalo fuera de muestra.`
-              : `A ${fmtNum(winRate, 0)}% over ${trades} trades is very unlikely by chance (p = ${fmtNum(c.pValue, 4)} < 0.01). There’s something real here — but validate out-of-sample.`,
+              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${fmtOperaciones(trades, lang)} es muy poco probable por azar (p = ${fmtNum(c.pValue, 4)} < 0,01). Hay algo real aquí, pero valídalo fuera de muestra.`
+              : `A ${fmtNum(winRate, 0)}% over ${fmtOperaciones(trades, lang)} is very unlikely by chance (p = ${fmtNum(c.pValue, 4)} < 0.01). There’s something real here — but validate out-of-sample.`,
           }
         : {
             label: es ? "Ventaja moderada" : "Moderate edge",
             color: "rgb(var(--accent-base))",
             text: es
-              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${trades} operaciones es significativo (p = ${fmtNum(c.pValue, 3)} < 0,05). Probablemente hay una ventaja, pero el margen es fino: acumula más operaciones para confirmarlo.`
-              : `A ${fmtNum(winRate, 0)}% over ${trades} trades is significant (p = ${fmtNum(c.pValue, 3)} < 0.05). There’s likely an edge, but the margin is thin: accumulate more trades to confirm.`,
+              ? `Un ${fmtNum(winRate, 0)}${PCT} en ${fmtOperaciones(trades, lang)} es significativo (p = ${fmtNum(c.pValue, 3)} < 0,05). Probablemente hay una ventaja, pero el margen es fino: acumula más operaciones para confirmarlo.`
+              : `A ${fmtNum(winRate, 0)}% over ${fmtOperaciones(trades, lang)} is significant (p = ${fmtNum(c.pValue, 3)} < 0.05). There’s likely an edge, but the margin is thin: accumulate more trades to confirm.`,
           };
 
   return (
@@ -207,8 +207,8 @@ export function EdgeSignificanceChecker() {
       <ResultadoAnunciado
         texto={
           es
-            ? `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} en ${trades} operaciones.`
-            : `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} over ${trades} trades.`
+            ? `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} en ${fmtOperaciones(trades, lang)}.`
+            : `${verdict.label}: p = ${fmtNum(c.pValue, 4)}, expectancy ${fmtR(c.expectancyR, lang, 3)} over ${fmtOperaciones(trades, lang)}.`
         }
       />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
@@ -270,7 +270,7 @@ export function EdgeSignificanceChecker() {
           <p className="tj-ficha-barra">
             <span>{es ? "Veredicto" : "Verdict"}</span>
             <span>
-              {trades} {es ? "operaciones" : "trades"} · {fmtNum(winRate, 0)}{PCT}
+              {fmtOperaciones(trades, lang)} · {fmtNum(winRate, 0)}{PCT}
             </span>
           </p>
           <div className="tj-ficha-cuerpo">
@@ -362,7 +362,7 @@ export function EdgeSignificanceChecker() {
             <p className="tnum m-0 mt-1.5 text-[12px]" style={{ color: "var(--ink-3)" }}>
               {c.sampleAdequate
                 ? (es ? `Muestra suficiente para detectar un ${fmtNum(winRate, 0)}${PCT} real al 95${PCT} de confianza (±5${PCT}).` : `Sample sufficient to detect a real ${fmtNum(winRate, 0)}% at 95% confidence (±5%).`)
-                : (es ? `Te faltan ${c.minSample - trades} operaciones más para detectar un ${fmtNum(winRate, 0)}${PCT} real al 95${PCT} de confianza.` : `You need ${c.minSample - trades} more trades to detect a real ${fmtNum(winRate, 0)}% at 95% confidence.`)}
+                : (es ? `Te faltan ${fmtOperaciones(c.minSample - trades, lang)} más para detectar un ${fmtNum(winRate, 0)}${PCT} real al 95${PCT} de confianza.` : `You need ${c.minSample - trades} more ${c.minSample - trades === 1 ? "trade" : "trades"} to detect a real ${fmtNum(winRate, 0)}% at 95% confidence.`)}
             </p>
           </div>
 
@@ -375,7 +375,7 @@ export function EdgeSignificanceChecker() {
                   [
                     {
                       lineas: [
-                        `${es ? "Muestra" : "Sample"}: ${trades} ${es ? "operaciones" : "trades"}`,
+                        `${es ? "Muestra" : "Sample"}: ${fmtOperaciones(trades, lang)}`,
                         `${es ? "Win rate observado" : "Observed win rate"}: ${fmtNum(winRate, 0)}${PCT}`,
                         `Expectancy: ${fmtR(c.expectancyR, lang, 3)}`,
                         `${es ? "Parámetros del setup" : "Setup parameters"}: ${parametersCount} (${fmtNum(c.tradesPerParam, 1)} ${es ? "operaciones por parámetro" : "trades per parameter"})`,
@@ -387,7 +387,7 @@ export function EdgeSignificanceChecker() {
                         `${es ? "Veredicto" : "Verdict"}: ${verdict.label}`,
                         `z: ${fmtNum(c.z, 2)} · ${es ? "p-valor" : "p-value"}: ${fmtNum(c.pValue, 4)}`,
                         `${es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"}: ${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`,
-                        `${es ? `Muestra necesaria al 95${PCT}` : "Sample needed at 95%"}: ${c.minSample95} ${es ? "operaciones" : "trades"}`,
+                        `${es ? `Muestra necesaria al 95${PCT}` : "Sample needed at 95%"}: ${fmtOperaciones(c.minSample95, lang)}`,
                       ],
                     },
                   ],

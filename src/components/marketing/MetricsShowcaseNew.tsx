@@ -4,7 +4,7 @@ import { useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from 
 import type { Lang } from "@/lib/i18n";
 import { useLang } from "@/lib/i18n";
 import type { CifrasMuestra } from "@/lib/trading/cifras-muestra";
-import { fmtDate, fmtDiaMes, fmtMoney, fmtNum, fmtPct, fmtR } from "@/lib/trading/format";
+import { fmtDate, fmtDiaMes, fmtMoney, fmtNum, fmtOperaciones, fmtPct, fmtR } from "@/lib/trading/format";
 
 /* Toda cifra sale de `cifrasMuestra()`, calculada al construir sobre las
    mismas operaciones deterministas de /demo. Nada escrito a mano. */
@@ -281,7 +281,7 @@ function Distribucion({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: bo
   const b = i === null ? null : BINS[i];
   const acumulado = i === null ? 0 : BINS.slice(0, i + 1).reduce((s, x) => s + x.count, 0);
   const rango = (x: (typeof BINS)[number], y = es ? "a" : "to") => `${fmtR(x.from, lang, 1)} ${y} ${fmtR(x.to, lang, 1)}`;
-  const ops = (n: number) => (es ? `${n} ${n === 1 ? "operación" : "operaciones"}` : `${n} ${n === 1 ? "trade" : "trades"}`);
+  const ops = (n: number) => fmtOperaciones(n, lang);
 
   const lectura = b
     ? {
@@ -308,7 +308,7 @@ function Distribucion({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: bo
         role="group"
         aria-label={
           (es
-            ? `Distribución de R-múltiplo de ${TOTAL_BINS} operaciones de muestra: `
+            ? `Distribución de R-múltiplo de ${fmtOperaciones(TOTAL_BINS, lang)} de muestra: `
             : `R-multiple distribution of ${TOTAL_BINS} sample trades: `) +
           BINS.map((x) => `${rango(x)}, ${ops(x.count)}`).join("; ") +
           (es ? ". Usa las flechas para recorrerla." : ". Use the arrow keys to explore.")
@@ -446,7 +446,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
         <p className="tj-ficha-barra">
           <span>{es ? "Operativa de muestra" : "Sample track record"}</span>
           <span className="tnum">
-            {es ? `${METRICS.closedCount} operaciones · USD` : `${METRICS.closedCount} trades · USD`}
+            {es ? `${fmtOperaciones(METRICS.closedCount, lang)} · USD` : `${fmtOperaciones(METRICS.closedCount, lang)} · USD`}
           </span>
         </p>
         <div className="tj-ficha-cuerpo">
@@ -543,7 +543,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
         )}
         <p className="tj-ficha-barra tj-ficha-barra--pie">
           {es
-            ? `Calculado sobre las ${METRICS.closedCount} operaciones de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
+            ? `Calculado sobre las ${fmtOperaciones(METRICS.closedCount, lang)} de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
             : `Computed over the demo’s ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualised.`}
         </p>
       </div>

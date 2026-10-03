@@ -51,7 +51,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué está listo y qué se está validando?",
-    a: "La demo, el diario, las métricas y los recorridos de riesgo están listos para explorar. El piloto privado valida la instalación y el flujo con usuarios reales; la página de estado explica lo que todavía no prometemos.",
+    a: "La demo, el diario, las métricas y los recorridos de riesgo están listos para explorar. El piloto privado valida la instalación y el flujo con usuarios reales; en Acerca de, «Qué está listo, qué validamos y qué sigue» detalla lo que todavía no prometemos.",
   },
   {
     q: "¿Qué métodos de pago aceptáis?",
@@ -106,7 +106,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What is ready and what is being validated?",
-    a: "The demo, journal, metrics and risk journeys are ready to explore. The private pilot validates installation and workflow with real users; the product status page explains what is not promised yet.",
+    a: "The demo, journal, metrics and risk journeys are ready to explore. The private pilot validates installation and workflow with real users; on the About page, “What’s ready, what we’re testing and what comes next” sets out what is not promised yet.",
   },
   {
     q: "What payment methods do you accept?",

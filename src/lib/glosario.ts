@@ -84,6 +84,100 @@ export function tituloDeTermino(term: string, lang: "es" | "en"): string {
   return sigla;
 }
 
+/**
+ * La descripción de la ficha de un término (meta description, og y
+ * twitter). Se cortaba a 152 caracteres a ciegas y 90 de las 114 fichas
+ * acababan a media palabra («what you suffer at the w…»).
+ *
+ * Ahora es la definición recortada por frases enteras, entre 70 y 155
+ * caracteres. Cuando ninguna frase cierra dentro de ese tramo, un recorte
+ * automático solo puede dejar media idea o un paréntesis abierto: esos
+ * términos llevan su descripción escrita en `DESCRIPCION_A_MANO`, y
+ * `tests/glosario-descripciones.test.ts` falla si a un término nuevo le
+ * hace falta y no la tiene.
+ */
+export const LARGO_MINIMO_DESCRIPCION = 70;
+export const LARGO_MAXIMO_DESCRIPCION = 155;
+
+export function cortePorFrases(definicion: string): string | null {
+  const texto = definicion.trim();
+  if (texto.length <= LARGO_MAXIMO_DESCRIPCION) return texto;
+  /* Fin de frase: punto seguido de mayúscula (o signo) o del final, o un
+     punto y coma, que se cierra con punto. Así «p. ej.» o «0.4» no
+     cuentan como cierre. */
+  let corte = -1;
+  for (const m of texto.matchAll(/[.!?](?=\s+[A-ZÁÉÍÓÚÑ¿¡«+−]|$)|;(?=\s)/g)) {
+    const fin = (m.index ?? 0) + 1;
+    if (fin > LARGO_MAXIMO_DESCRIPCION) break;
+    corte = fin;
+  }
+  if (corte < LARGO_MINIMO_DESCRIPCION) return null;
+  return texto.slice(0, corte).replace(/;$/, ".");
+}
+
+export const DESCRIPCION_A_MANO: Record<string, { es?: string; en?: string }> = {
+  "track-record": {
+    en: "A trader’s real results over time, trade by trade. The longer and more verifiable the record, the more it counts as evidence of an edge.",
+  },
+  "risk-of-ruin": {
+    es: "Probabilidad de que las pérdidas lleven la cuenta al nivel que das por quiebra. Crece exponencialmente con el riesgo por operación.",
+    en: "The probability that losses take the account down to the level you count as ruin. It grows exponentially with risk per trade.",
+  },
+  margin: {
+    es: "Colateral que el broker retiene para cubrir una posición apalancada. Por debajo del margen de mantenimiento llega el margin call o el cierre forzoso.",
+    en: "Collateral the broker holds to cover a leveraged position. Below the maintenance margin comes a margin call or forced liquidation.",
+  },
+  discipline: {
+    es: "Capacidad de seguir el plan de trading de forma consistente. Sin ella, las métricas miden impulsos y no la estrategia.",
+    en: "The ability to follow the trading plan consistently. Without it, the metrics measure impulses, not the strategy.",
+  },
+  "calmar-ratio": {
+    en: "The ratio of annualised return to maximum drawdown: in one number, what you earn against what you suffer at the worst moment.",
+  },
+  "monte-carlo": {
+    es: "Simulación que reordena al azar tus operaciones miles de veces para estimar el rango probable de drawdowns y rentabilidades. Revela la cola de riesgo.",
+    en: "A simulation that reshuffles your trades thousands of times to estimate the probable range of drawdowns and returns. It reveals the risk tail.",
+  },
+  "market-order": {
+    es: "Orden que se ejecuta al instante al mejor precio disponible. Garantiza la ejecución, no el precio: en mercados poco líquidos puede haber slippage.",
+  },
+  leverage: {
+    es: "Relación entre el tamaño de la posición y el capital depositado. Multiplica ganancias y pérdidas por igual y amplifica el riesgo de ruina.",
+    en: "The ratio between position size and deposited capital. It multiplies gains and losses equally and amplifies the risk of ruin.",
+  },
+  "london-session": {
+    es: "Sesión europea: de 08:00 a 16:30, hora de Londres. Concentra, junto con Nueva York, buena parte del volumen de divisas.",
+    en: "European session: 08:00 to 16:30, London time. Together with New York it carries much of the FX volume.",
+  },
+  "ny-session": {
+    es: "Sesión americana: de 09:30 a 16:00, hora de Nueva York. Su solape con Londres suele concentrar el movimiento del día en ES, NQ y EURUSD.",
+    en: "American session: 09:30 to 16:00, New York time. Its overlap with London often carries the day’s movement in ES, NQ and EURUSD.",
+  },
+  "kill-zone": {
+    es: "Ventana de una sesión en la que tus setups han funcionado mejor, como la apertura de Londres o la de Nueva York. Se comprueba con tus operaciones.",
+    en: "A window within a session where your setups have worked best, such as the London or New York open. It is checked against your own trades.",
+  },
+  "drawdown-skewness": {
+    es: "Asimetría estadística de la serie de drawdowns: mide si las caídas son simétricas o tienden a colas pesadas de pérdidas agudas.",
+  },
+  "wald-wolfowitz-runs-test": {
+    es: "Test no paramétrico de rachas: evalúa si la secuencia de ganadoras y perdedoras es aleatoria o muestra agrupamiento o alternancia artificial.",
+    en: "Non-parametric runs test: it checks whether the sequence of wins and losses is random or shows clustering or excessive alternation.",
+  },
+  "wilson-score-interval": {
+    en: "Asymmetric confidence interval for binomial proportions such as win rate. It gives robust bounds on small samples, even near 0% or 100%.",
+  },
+};
+
+export function descripcionDeTermino(t: TerminoGlosario, lang: "es" | "en"): string {
+  const definicion = lang === "es" ? t.es : t.en;
+  return (
+    DESCRIPCION_A_MANO[t.slug]?.[lang] ??
+    cortePorFrases(definicion) ??
+    `${definicion.slice(0, LARGO_MAXIMO_DESCRIPCION - 1).replace(/\s+\S*$/, "")}…`
+  );
+}
+
 /** Nombre visible de cada familia, en los dos idiomas. */
 export const CATEGORIAS: Record<
   GlossaryCategory,

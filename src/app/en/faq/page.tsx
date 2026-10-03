@@ -22,7 +22,7 @@ const breadcrumbSchema = {
 const faqSchema = jsonLdFaq(FAQ_EN);
 
 export const metadata: Metadata = {
-  title: "FAQ — questions before you install",
+  title: "FAQ: questions before you install",
   description:
     "Frequently asked questions about CountPips: price, privacy, compatibility, import, updates and more.",
   alternates: {

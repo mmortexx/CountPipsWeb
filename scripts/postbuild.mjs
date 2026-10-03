@@ -186,17 +186,19 @@ console.log(`[postbuild] ${copias} fichero(s) de precarga copiados con el nombre
    páginas inglesas, unas líneas más arriba.
    ══════════════════════════════════════════════════════════════════════ */
 
-/** `/CountPipsWeb` en producción, vacío en local. */
-const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
-/* El origen se saca del canonical de la propia página y no de una
+/* La raíz se saca del canonical de la propia página y no de una
    constante: Open Graph exige URL ABSOLUTA —las redes no resuelven rutas
    relativas, simplemente descartan la imagen—, y el canonical ya es
-   absoluto y ya es correcto en las 152 páginas. Sacarlo de ahí hace que
-   esto siga funcionando el día que el sitio cambie de dominio. */
-const origenDe = (html) => {
-  const m = html.match(/<link rel="canonical" href="(https?:\/\/[^/]+)/);
-  return m ? m[1] : "";
+   absoluto y ya es correcto en todas las páginas. La raíz es el canonical
+   menos la ruta de la página, no solo su dominio: antes se pegaba el
+   prefijo del entorno al dominio, y compilado sin prefijo el canonical
+   decía «github.io/CountPipsWeb/aviso-legal/» y la tarjeta
+   «github.io/opengraph-image.png», un 404 en 302 páginas. */
+const raizDe = (html, relativa) => {
+  const canonico = html.match(/<link rel="canonical" href="(https?:\/\/[^"]+)"/)?.[1];
+  if (!canonico || !relativa.endsWith("index.html")) return null;
+  const rutaPagina = `/${relativa.slice(0, -"index.html".length)}`;
+  return canonico.endsWith(rutaPagina) ? canonico.slice(0, canonico.length - rutaPagina.length) : null;
 };
 
 async function renombrarTarjetas(dir) {
@@ -224,15 +226,15 @@ const tarjetas = await renombrarTarjetas(OUT);
    «Opera como una mesa institucional» y «tus datos en tu equipo». La
    versión inglesa existía desde siempre y no la usaba nadie. */
 const IMAGEN_POR_IDIOMA = {
-  es: `${PREFIJO}/opengraph-image.png`,
-  en: `${PREFIJO}/en/opengraph-image.png`,
+  es: "/opengraph-image.png",
+  en: "/en/opengraph-image.png",
 };
 
 /* Si una de las dos no está compilada, el reparto de abajo repartiría un
    404 a decenas de páginas y solo se vería al pegar un enlace en un
    chat. Se para aquí. */
 for (const [idioma, rutaImagen] of Object.entries(IMAGEN_POR_IDIOMA)) {
-  const enDisco = join(OUT, rutaImagen.slice(PREFIJO.length).replace(/^\//, ""));
+  const enDisco = join(OUT, rutaImagen.replace(/^\//, ""));
   try {
     await stat(enDisco);
   } catch {
@@ -265,7 +267,12 @@ for (const ruta of htmls) {
        en ese orden. */
     const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
     const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");
-    const imagen = `${origenDe(html)}${IMAGEN_POR_IDIOMA[esIngles ? "en" : "es"]}`;
+    const raiz = raizDe(html, relativa);
+    if (!raiz) {
+      console.error(`[postbuild] ${relativa} no trae imagen social ni un canonical del que sacar la raíz del sitio`);
+      process.exit(1);
+    }
+    const imagen = `${raiz}${IMAGEN_POR_IDIOMA[esIngles ? "en" : "es"]}`;
     const etiquetas =
       (faltaOg
         ? `<meta property="og:image" content="${imagen}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/>`
@@ -305,7 +312,7 @@ for (const ruta of htmls) {
     if (m) {
       const camino = m[1].split("?")[0].replace(/^https?:\/\/[^/]+/, "");
       /* Se busca el segmento `/en/` en cualquier posición y NO
-         `${PREFIJO}/en/`: el prefijo del entorno está vacío en la
+         detrás del prefijo del entorno: ese prefijo está vacío en la
          compilación local mientras las URLs ya lo llevan puesto desde
          `SITE_URL`, así que compararlos daba por equivocadas las diez
          tarjetas inglesas que estaban bien. Ninguna ruta española lleva

@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { fmtCifraCorta, fmtInt, fmtMoney, fmtNum, fmtPrice, fmtR } from "@/lib/trading/format";
+import { fmtCifraCorta, fmtInt, fmtMoney, fmtNum, fmtOperaciones, fmtPrice, fmtR } from "@/lib/trading/format";
+
+describe("el recuento de operaciones concuerda en número", () => {
+  it("singular con una, plural con el resto, millares agrupados", () => {
+    expect(fmtOperaciones(1, "es")).toBe("1 operación");
+    expect(fmtOperaciones(0, "es")).toBe("0 operaciones");
+    expect(fmtOperaciones(2, "es")).toBe("2 operaciones");
+    expect(fmtOperaciones(1234, "es")).toBe("1.234 operaciones");
+    expect(fmtOperaciones(1, "en")).toBe("1 trade");
+    expect(fmtOperaciones(1234, "en")).toBe("1,234 trades");
+  });
+});
 
 /* `Intl` en español no agrupa las cifras de cuatro dígitos («1234»). La web
    mezclaba «2350,00» con «18.200,0» en la misma tabla y «1234,56 $» en una

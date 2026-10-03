@@ -47,7 +47,7 @@ const articleSchema = {
   dateModified: ULTIMA_ACTUALIZACION_ISO,
   // Reuse the OG image (1200×630 PNG, meets Google's 1.91:1 spec).
   // See worklog Task R20-1d (E3) + R20-2d.
-  image: `${SITE_URL}/opengraph-image`,
+  image: `${SITE_URL}/features/disciplina/opengraph-image`,
   // about[] as canonical Thing objects (not plain strings) — slightly
   // improves classification signals. See worklog Task R20-1d (E7).
   about: [
@@ -60,8 +60,8 @@ const articleSchema = {
 };
 
 export const metadata: Metadata = {
-  // `absolute` bypasses layout.tsx's `title.template: "%s · CountPips"`
-  // — a plain string would render "Disciplina — CountPips · CountPips"
+  // `absolute` bypasses layout.tsx's `title.template: "%s — CountPips"`
+  // — a plain string would render "Disciplina — CountPips — CountPips"
   // (double-branded). See worklog Task R22-1d (G1) + R23-2a.
   title: { absolute: "Disciplina — CountPips" },
   description:

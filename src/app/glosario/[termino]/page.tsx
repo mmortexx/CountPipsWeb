@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { CATEGORIAS, TERMINOS, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
+import { CATEGORIAS, TERMINOS, descripcionDeTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -30,18 +30,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = terminoPorSlug(slug);
   if (!t) return {};
 
-  const familia = CATEGORIAS[t.category].es;
   /* El título lleva «qué es» porque es literalmente como se busca esto:
      nadie teclea «Drawdown», se teclea «qué es el drawdown». La cola se
      recorta sola en las voces cuyo nombre trae la expansión dentro —MAE y
-     MFE— para no pasar de los 60 caracteres que muestra el buscador. */
-  const titulo = tituloDeTermino(t.term, "es");
-  /* La descripción es la definición recortada. Google corta sobre los 160
-     caracteres y prefiere una frase entera a una cortada a media palabra. */
-  const desc = t.es.length > 155 ? `${t.es.slice(0, 152).trimEnd()}…` : t.es;
+     MFE— para no pasar de los 60 caracteres que muestra el buscador. El
+     mismo título sirve al buscador y a la tarjeta al compartir. */
+  const titulo = `${tituloDeTermino(t.term, "es")} — CountPips`;
+  const desc = descripcionDeTermino(t, "es");
 
   return {
-    title: { absolute: `${titulo} — CountPips` },
+    title: { absolute: titulo },
     description: desc,
     keywords: undefined,
     alternates: {
@@ -49,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       languages: hreflangDe(`/glosario/${t.slug}`),
     },
     openGraph: {
-      title: `${t.term} — ${familia} | CountPips`,
+      title: titulo,
       description: desc,
       url: `${SITE_URL}/glosario/${t.slug}/`,
       type: "article",
@@ -59,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: `${t.term} — CountPips`,
+      title: titulo,
       description: desc,
     },
   };

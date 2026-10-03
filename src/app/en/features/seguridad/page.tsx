@@ -30,7 +30,7 @@ const articleSchema = {
   timeRequired: `PT${READING_TIME_MIN}M`,
   datePublished: PUBLICACION_ISO,
   dateModified: ULTIMA_ACTUALIZACION_ISO,
-  image: `${SITE_URL}/opengraph-image`,
+  image: `${SITE_URL}/en/features/seguridad/opengraph-image`,
   about: [
     { "@type": "Thing", name: "local-first" },
     { "@type": "Thing", name: "data privacy" },

@@ -2,7 +2,7 @@
 
 import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
-import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/format";
 import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
@@ -159,7 +159,7 @@ export function CommissionDragCalculator() {
                   step="1"
                   value={contracts}
                   onChange={(e) => setContracts(Number(e.target.value))}
-                  aria-label={es ? "Contratos por operacion" : "Contracts per trade"}
+                  aria-label={es ? "Contratos por operación" : "Contracts per trade"}
                   className="tj-range w-full"
                   style={{ "--pct": `${((contracts - 1) / 19) * 100}%` } as CSSProperties}
                 />
@@ -258,7 +258,7 @@ export function CommissionDragCalculator() {
             <p className="tj-ficha-barra">
               <span>{es ? "En un año" : "Over a year"}</span>
               <span>
-                {inst.id} · {fmtNum(monthlyTrades * 12, lang, 0)} {es ? "operaciones" : "trades"}
+                {inst.id} · {fmtOperaciones(monthlyTrades * 12, lang)}
               </span>
             </p>
             <div className="tj-ficha-cuerpo">

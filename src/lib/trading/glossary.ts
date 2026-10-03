@@ -317,7 +317,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Leverage",
-    es: "Relación entre el tamaño de la posición y el capital depositado. Un apalancamiento 10:1 mueve 10 $ por cada 1 $ de margen: multiplica ganancias y pérdidas por igual y amplifica el riesgo de ruin.",
+    es: "Relación entre el tamaño de la posición y el capital depositado. Un apalancamiento 10:1 mueve 10 $ por cada 1 $ de margen: multiplica ganancias y pérdidas por igual y amplifica el riesgo de ruina.",
     en: "The ratio between position size and deposited capital. 10:1 leverage moves $10 for every $1 of margin: it multiplies gains and losses equally and amplifies the risk of ruin.",
     category: "execution",
   },

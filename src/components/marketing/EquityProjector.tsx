@@ -5,7 +5,7 @@ import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { proyectaCapital, CONFIANZA_RACHA } from "@/lib/trading/proyeccion";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { fmtMoney, pctSep, fmtInt, fmtR, fmtNum as fmtNumCasa } from "@/lib/trading/format";
+import { fmtMoney, pctSep, fmtInt, fmtOperaciones, fmtR, fmtNum as fmtNumCasa } from "@/lib/trading/format";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 
@@ -360,7 +360,7 @@ export function EquityProjector() {
             `${es ? "Perfil" : "Profile"}: ${perfil ? (es ? perfil.labelEs : perfil.labelEn) : es ? "manual" : "custom"}`,
             `${es ? "Balance inicial" : "Starting balance"}: ${fmtUsd(startBalance)}`,
             `${es ? "Aporte mensual" : "Monthly deposit"}: ${fmtUsd(monthlyContribution)}`,
-            `${es ? "Horizonte" : "Time horizon"}: ${years} ${anos} (${fmtInt(tradesPerYear * years, lang)} ${es ? "operaciones" : "trades"})`,
+            `${es ? "Horizonte" : "Time horizon"}: ${years} ${anos} (${fmtOperaciones(tradesPerYear * years, lang)})`,
             `${es ? "Reinversión" : "Reinvestment"}: ${reinvestMode === "compound" ? (es ? "interés compuesto" : "compounding") : es ? "riesgo fijo sobre el balance inicial" : "fixed risk on starting balance"}`,
           ],
         },

@@ -5,7 +5,7 @@ import { Deslizador } from "@/components/tj/Deslizador";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 import { useLang } from "@/lib/i18n";
-import { fmtInt, fmtNum, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
   crecimientoPorOperacion,
@@ -65,8 +65,8 @@ export function DrawdownRecovery() {
         ? "La expectancy es positiva, pero con este riesgo la volatilidad se la come y el camino típico sigue cayendo. Con menos riesgo por operación, sí vuelve."
         : "Expectancy is positive, but at this risk volatility eats it and the typical path keeps falling. With less risk per trade, it does come back."
     : es
-      ? `Arriesgando un ${pct(riesgo, 2)} por operación, el camino típico tarda ${fmtInt(c.operaciones!, lang)} operaciones en devolver la cuenta al máximo. Es un ritmo, no un plazo: con una mala racha tarda bastante más.`
-      : `Risking ${pct(riesgo, 2)} per trade, the typical path takes ${fmtInt(c.operaciones!, lang)} trades to bring the account back to its peak. It is a pace, not a deadline: a bad run makes it much longer.`;
+      ? `Arriesgando un ${pct(riesgo, 2)} por operación, el camino típico tarda ${fmtOperaciones(c.operaciones!, lang)} en devolver la cuenta al máximo. Es un ritmo, no un plazo: con una mala racha tarda bastante más.`
+      : `Risking ${pct(riesgo, 2)} per trade, the typical path takes ${fmtOperaciones(c.operaciones!, lang)} to bring the account back to its peak. It is a pace, not a deadline: a bad run makes it much longer.`;
 
   const informe = () =>
     componerInforme(
@@ -96,8 +96,8 @@ export function DrawdownRecovery() {
       <ResultadoAnunciado
         texto={
           es
-            ? `Para recuperar una caída del ${pct(caida)} hace falta ganar un ${fmtPct(c.ganancia, lang)}; ${noVuelve ? "con estos datos, el camino típico no vuelve" : `unas ${fmtInt(c.operaciones!, lang)} operaciones por el camino típico`}.`
-            : `Recovering a ${pct(caida)} drawdown takes a ${fmtPct(c.ganancia, lang)} gain; ${noVuelve ? "with these inputs, the typical path never gets back" : `about ${fmtInt(c.operaciones!, lang)} trades on the typical path`}.`
+            ? `Para recuperar una caída del ${pct(caida)} hace falta ganar un ${fmtPct(c.ganancia, lang)}; ${noVuelve ? "con estos datos, el camino típico no vuelve" : `${c.operaciones === 1 ? "una operación" : `unas ${fmtOperaciones(c.operaciones!, lang)}`} por el camino típico`}.`
+            : `Recovering a ${pct(caida)} drawdown takes a ${fmtPct(c.ganancia, lang)} gain; ${noVuelve ? "with these inputs, the typical path never gets back" : `${c.operaciones === 1 ? "one trade" : `about ${fmtOperaciones(c.operaciones!, lang)}`} on the typical path`}.`
         }
       />
       <div className="tj-container">

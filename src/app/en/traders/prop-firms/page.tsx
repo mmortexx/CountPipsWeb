@@ -3,7 +3,7 @@ import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
 import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Prop firms — evaluations and funded accounts",
+  title: "Prop firms: evaluations and funded accounts",
   description: "Your firm’s rules measured with every trade you log, a warning before you break them and an evaluation report in PDF. Built for funded-account traders.",
   alternates: { canonical: `${SITE_URL}/en/traders/prop-firms/`, languages: hreflangDe("/traders/prop-firms") },
   openGraph: {

@@ -19,7 +19,7 @@ import { addTrade, useAllTrades } from "@/lib/trading/demoStore";
 import { useToast } from "@/hooks/use-toast";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
-import { cifraEditable, fmtInt, fmtNum, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
+import { cifraEditable, fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, leeCifra, LOCALE_FECHA } from "@/lib/trading/format";
 import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Money } from "@/components/tj/Money";
@@ -1103,8 +1103,8 @@ export function DashboardPage() {
                 </div>
                 <div className="mt-1 text-primary font-medium text-base">
                   {es
-                    ? `Últimas ${fmtInt(RECENT_TRADES_COUNT, lang)} operaciones`
-                    : `Last ${fmtInt(RECENT_TRADES_COUNT, lang)} trades`}
+                    ? `Últimas ${fmtOperaciones(RECENT_TRADES_COUNT, lang)}`
+                    : `Last ${fmtOperaciones(RECENT_TRADES_COUNT, lang)}`}
                 </div>
               </div>
               <button
@@ -1318,8 +1318,8 @@ function TodayBriefing() {
         <p>
           {weekday
             ? es
-              ? `Es ${weekday}. Con ${fmtInt(sameWeekdayCount, lang)} operaciones, tus resultados de ese día van de un lado a otro del cero: no hay ventaja ni desventaja que afirmar.`
-              : `It is ${weekday}. Across ${fmtInt(sameWeekdayCount, lang)} trades, your results that day fall on both sides of zero: there is no edge or disadvantage to claim.`
+              ? `Es ${weekday}. Con ${fmtOperaciones(sameWeekdayCount, lang)}, tus resultados de ese día van de un lado a otro del cero: no hay ventaja ni desventaja que afirmar.`
+              : `It is ${weekday}. Across ${fmtOperaciones(sameWeekdayCount, lang)}, your results that day fall on both sides of zero: there is no edge or disadvantage to claim.`
             : " "}
         </p>
         <p>

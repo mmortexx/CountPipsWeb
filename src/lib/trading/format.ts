@@ -147,6 +147,13 @@ export function fmtInt(value: number, lang: Lang = "es"): string {
   return new Intl.NumberFormat(LOCALE[lang], { useGrouping: "always" }).format(value);
 }
 
+/** «1 operación», «2 operaciones» / «1 trade», «2 trades». Nueve textos
+ *  decían «1 operaciones» cuando el filtro o el resultado daba una. */
+export function fmtOperaciones(n: number, lang: Lang = "es"): string {
+  const uno = Math.abs(n) === 1;
+  return `${fmtInt(n, lang)} ${lang === "es" ? (uno ? "operación" : "operaciones") : uno ? "trade" : "trades"}`;
+}
+
 /** Cifra con signo para celdas diminutas (calendario, mapa de calor):
  *  «+845» o «−1,2k». Se escribía con `toFixed`, que daba «1.2k» también
  *  en español. */

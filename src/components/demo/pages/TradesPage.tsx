@@ -23,6 +23,7 @@ import {
   fmtDuration,
   fmtR,
   fmtInt,
+  fmtOperaciones,
   fmtPct,
 } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
@@ -506,8 +507,7 @@ function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: "es" | "en"
   const es = lang === "es";
   const r = (v: number | null) => (v === null ? "—" : fmtR(v, lang, 2));
   const wr = (v: number | null) => (v === null ? "—" : fmtPct(v, lang, 0));
-  const ops = (n: number) =>
-    es ? `${fmtInt(n, lang)} ${n === 1 ? "operación" : "operaciones"}` : `${fmtInt(n, lang)} ${n === 1 ? "trade" : "trades"}`;
+  const ops = (n: number) => fmtOperaciones(n, lang);
   const firme = c.veredicto === "gana-seleccion" || c.veredicto === "gana-resto";
   const ganador = c.veredicto === "gana-seleccion" ? (es ? "esta selección" : "this selection") : es ? "el resto" : "the rest";
   const veredicto = firme
@@ -734,8 +734,8 @@ export function TradesPage() {
       toast({
         title: es ? "Exportación CSV generada" : "CSV export generated",
         description: es
-          ? `${fmtInt(filtered.length, lang)} operaciones descargadas en formato CSV estándar.`
-          : `${fmtInt(filtered.length, lang)} trades downloaded in standard CSV format.`,
+          ? `${fmtOperaciones(filtered.length, lang)} descargadas en formato CSV estándar.`
+          : `${fmtOperaciones(filtered.length, lang)} downloaded in standard CSV format.`,
       });
     } else {
       const jsonContent = JSON.stringify(
@@ -759,8 +759,8 @@ export function TradesPage() {
       toast({
         title: es ? "Snapshot JSON generado" : "JSON snapshot generated",
         description: es
-          ? `Copia completa con métricas y notas de ${fmtInt(filtered.length, lang)} operaciones.`
-          : `Complete copy with metrics and notes for ${fmtInt(filtered.length, lang)} trades.`,
+          ? `Copia completa con métricas y notas de ${fmtOperaciones(filtered.length, lang)}.`
+          : `Complete copy with metrics and notes for ${fmtOperaciones(filtered.length, lang)}.`,
       });
     }
   };
@@ -934,15 +934,15 @@ export function TradesPage() {
   function handleTagAdd(tag: string) {
     toast({
       title: lang === "es"
-        ? `Etiqueta «${tag}» aplicada a ${fmtInt(selectedIds.size, lang)} operaciones`
-        : `Tag “${tag}” applied to ${fmtInt(selectedIds.size, lang)} trades`,
+        ? `Etiqueta «${tag}» aplicada a ${fmtOperaciones(selectedIds.size, lang)}`
+        : `Tag “${tag}” applied to ${fmtOperaciones(selectedIds.size, lang)}`,
     });
   }
   function handleTagRemove(tag: string) {
     toast({
       title: lang === "es"
-        ? `Etiqueta «${tag}» quitada de ${fmtInt(selectedIds.size, lang)} operaciones`
-        : `Tag “${tag}” removed from ${fmtInt(selectedIds.size, lang)} trades`,
+        ? `Etiqueta «${tag}» quitada de ${fmtOperaciones(selectedIds.size, lang)}`
+        : `Tag “${tag}” removed from ${fmtOperaciones(selectedIds.size, lang)}`,
     });
   }
 

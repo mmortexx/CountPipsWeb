@@ -12,7 +12,7 @@ import {
   nivelDisciplina,
   type Trade,
 } from "@/lib/trading/data";
-import { fmtInt, fmtNum, fmtDate, fmtPct, pctSep, LOCALE_FECHA } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtDate, fmtOperaciones, fmtPct, pctSep, LOCALE_FECHA } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -932,7 +932,7 @@ export function JournalPage() {
       const a = TRADES.filter((t) => f(t) >= alto);
       return { low: avg(b), high: avg(a), n: b.length + a.length };
     };
-    const ops = (n: number) => `${fmtInt(n, lang)} ${lang === "es" ? "operaciones" : "trades"}`;
+    const ops = (n: number) => fmtOperaciones(n, lang);
     const s = cruce(sueno, 2, 4);
     const m = cruce((t) => t.dayScore, 2, 4);
     const f = cruce(fisico, 2, 4);

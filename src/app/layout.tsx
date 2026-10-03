@@ -192,7 +192,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "CountPips — Tu operativa, medida.",
-    template: "%s · CountPips",
+    template: "%s — CountPips",
   },
   description:
     "El diario de trading profesional, nativo de Windows. Explora la demo con métricas institucionales, disciplina y tus datos siempre en tu máquina.",

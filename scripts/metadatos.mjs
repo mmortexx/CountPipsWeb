@@ -80,6 +80,12 @@ const paginas = ficheros.map((f) => {
     jsonld: (html.match(/application\/ld\+json/g) || []).length,
     lang: saca(html, /<html[^>]*\blang="([^"]*)"/),
     noindex: /<meta name="robots" content="[^"]*noindex/.test(html),
+    ogTitulo: saca(html, /<meta property="og:title" content="([^"]*)"/),
+    twTitulo: saca(html, /<meta name="twitter:title" content="([^"]*)"/),
+    imagenes: [...html.matchAll(/<meta (?:property="og:image"|name="twitter:image") content="([^"]*)"/g)].map((m) => entidades(m[1])),
+    imagenesLd: [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].flatMap((m) =>
+      [...m[1].matchAll(/"image":"([^"]*)"/g)].map((x) => x[1]),
+    ),
   };
 });
 
@@ -123,6 +129,36 @@ for (const p of indexables) {
       anota("hreflang que apunta a una página que no existe", p.ruta, `hreflang="${a.idioma}" → ${destino}`);
   }
   if (p.jsonld === 0) anota("sin datos estructurados", p.ruta, "ningún bloque ld+json");
+
+  /* La raíz del sitio es el canónico menos la ruta de la página. La
+     tarjeta social tiene que colgar de esa misma raíz y existir en out/:
+     compilado sin prefijo, el canónico decía «/CountPipsWeb/aviso-legal/»
+     y la tarjeta «github.io/opengraph-image.png», un 404. */
+  const raiz = p.canonico && p.canonico.endsWith(p.ruta) ? p.canonico.slice(0, p.canonico.length - p.ruta.length) : null;
+  for (const img of p.imagenes) {
+    const sinConsulta = img.split("?")[0];
+    if (!raiz || !sinConsulta.startsWith(raiz + "/")) {
+      anota("tarjeta social fuera del sitio", p.ruta, `${img} no cuelga de ${raiz ?? "(sin canónico)"}`);
+    } else if (!existsSync(`${dir}${sinConsulta.slice(raiz.length)}`)) {
+      anota("tarjeta social que no existe", p.ruta, `${sinConsulta.slice(raiz.length)} no está en ${dir}/`);
+    }
+  }
+  /* Lo que sale al compartir en X y en el resto de redes es la misma
+     ficha: /beta heredaba el twitter:title de la portada en español. */
+  if (p.ogTitulo && p.twTitulo !== p.ogTitulo)
+    anota("twitter:title distinto del og:title", p.ruta, `«${p.twTitulo}» frente a «${p.ogTitulo}»`);
+  /* Una descripción recortada a máquina acaba en «…» a media palabra. */
+  if (p.desc && p.desc.endsWith("…")) anota("descripción recortada con puntos suspensivos", p.ruta, `«…${p.desc.slice(-40)}»`);
+  /* Una sola marca y un solo separador: «Título — CountPips». */
+  if (p.titulo && (/·\s*CountPips/.test(p.titulo) || (p.titulo.match(/ — /g) || []).length > 1))
+    anota("separador de título que no es «— CountPips»", p.ruta, `«${p.titulo}»`);
+  /* La imagen de los datos estructurados es la misma tarjeta que la
+     página anuncia: las ocho de /features daban la portada española,
+     también las cuatro inglesas. */
+  const tarjeta = p.imagenes[0]?.split("?")[0];
+  for (const img of p.imagenesLd) {
+    if (img.split("?")[0] !== tarjeta) anota("datos estructurados con otra imagen que la tarjeta", p.ruta, `${img} frente a ${tarjeta ?? "(sin og:image)"}`);
+  }
 }
 
 /* Dos páginas indexables con el mismo título o la misma descripción se

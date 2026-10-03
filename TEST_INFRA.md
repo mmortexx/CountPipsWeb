@@ -58,7 +58,9 @@
 | `formulas-glosario.test.ts` | Cada símbolo que explica la leyenda de una fórmula del glosario («σ: desviación…») aparece en la propia fórmula, en los dos idiomas |
 | `ortografia-britanica.test.ts` | Ninguna raíz americana de una lista cerrada (-ize, defense, color, behavior, favor, center, catalog…) aparece en los campos ingleses del glosario, sus fórmulas, la FAQ, las láminas del producto ni `i18n.tsx`, salvo los nombres propios de términos técnicos («Maximum Favorable/Adverse Excursion») |
 | `palabras.test.ts` | El titular palabra a palabra conserva el texto exacto, no deja la puntuación en su propia máscara, realza exactamente su tramo aunque corte una palabra y pega las palabras de una o dos letras a la siguiente con espacio duro |
-| `formato-millares.test.ts` | `fmtInt`, `fmtPrice`, `fmtNum` y `fmtMoney` agrupan millares también con cuatro dígitos, en los dos idiomas; `fmtCifraCorta` escribe «+1,2k» en español |
+| `formato-millares.test.ts` | `fmtInt`, `fmtPrice`, `fmtNum` y `fmtMoney` agrupan millares también con cuatro dígitos, en los dos idiomas; `fmtCifraCorta` escribe «+1,2k» en español; `fmtOperaciones` concuerda en número («1 operación», «0 operaciones», «1 trade») |
+| `plurales.test.ts` | Ningún recuento de operaciones se escribe a mano en `src/` («${n} operaciones», «${n} trades» o el par `"operaciones" : "trades"`): todos pasan por `fmtOperaciones`, que no escribe «1 operaciones» |
+| `glosario-descripciones.test.ts` | La descripción de cada ficha del glosario (buscador y tarjeta al compartir) es una frase entera de 70 a 155 caracteres, sin «…» ni paréntesis abiertos; el recorte por frases no confunde «p. ej.» ni un decimal con un final; las descripciones a mano solo existen donde el recorte no basta |
 | `recuperacion.test.ts` | Recuperación de drawdown: la asimetría, la operación exacta en que se vuelve al máximo, sin ventaja no vuelve, nunca NaN ni Infinity |
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |

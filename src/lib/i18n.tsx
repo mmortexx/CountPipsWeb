@@ -11,7 +11,7 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { sinPrefijoEn } from "@/lib/locale";
-import { fmtInt, fmtMoney } from "@/lib/trading/format";
+import { fmtInt, fmtMoney, fmtOperaciones } from "@/lib/trading/format";
 import { SALDO_INICIAL_MUESTRA } from "@/lib/trading/muestra";
 
 export type Lang = "es" | "en";
@@ -49,7 +49,7 @@ export const STR = {
   demoTitle: { es: "Demo en vivo", en: "Live demo" },
   demoSubtitle: {
     es: "No es un vídeo ni una galería: es el recorrido esencial de CountPips, recreado para que puedas juzgarlo antes de instalar nada.",
-    en: "Not a video or a gallery: it is CountPips' essential workflow, recreated so you can judge it before installing anything.",
+    en: "Not a video or a gallery: it is the essential CountPips workflow, recreated so you can judge it before installing anything.",
   },
   demoOpenFull: { es: "Abrir en pantalla completa", en: "Open full screen" },
   demoCloseFull: { es: "Cerrar", en: "Close" },
@@ -177,8 +177,8 @@ export const STR = {
   tradesEyebrow: { es: "Registro", en: "Capture" },
   tradesTitle: { es: "Operaciones", en: "Trades" },
   tradesCount: {
-    es: (n: number) => `${fmtInt(n, "es")} operaciones`,
-    en: (n: number) => `${fmtInt(n, "en")} trades`,
+    es: (n: number) => fmtOperaciones(n, "es"),
+    en: (n: number) => fmtOperaciones(n, "en"),
   },
   searchPlaceholder: {
     es: "Buscar instrumento, setup o nota…",

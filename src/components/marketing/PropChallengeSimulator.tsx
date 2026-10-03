@@ -5,7 +5,7 @@ import { Deslizador } from "@/components/tj/Deslizador";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 import { useLang } from "@/lib/i18n";
-import { fmtInt, fmtNum, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
+import { fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
   leerEscenario,
@@ -85,11 +85,11 @@ export function PropChallengeSimulator() {
           : "Expectancy is positive, but at this risk the drawdown arrives before the target in most attempts. With less risk per trade, the edge gets more trades to show."
         : r.sinResolver > 0.2
           ? es
-            ? `Más de uno de cada cinco intentos sigue abierto tras ${fmtInt(maxOps, lang)} operaciones: con este riesgo, el objetivo queda lejos para ese plazo.`
-            : `More than one attempt in five is still open after ${fmtInt(maxOps, lang)} trades: at this risk, the target is far for that horizon.`
+            ? `Más de uno de cada cinco intentos sigue abierto tras ${fmtOperaciones(maxOps, lang)}: con este riesgo, el objetivo queda lejos para ese plazo.`
+            : `More than one attempt in five is still open after ${fmtOperaciones(maxOps, lang)}: at this risk, the target is far for that horizon.`
           : es
-            ? `${r.aprueba >= 0.95 ? "Aprobarías casi todos los intentos" : `Aprobarías unos ${fmtInt(Math.round(r.aprueba * 10), lang)} de cada 10 intentos`}${r.medianaAprobar !== null ? `, en ${fmtInt(r.medianaAprobar, lang)} operaciones de mediana` : ""}. Es una simulación con reglas simplificadas, no una promesa.`
-            : `${r.aprueba >= 0.95 ? "You would pass almost every attempt" : `You would pass about ${fmtInt(Math.round(r.aprueba * 10), lang)} in 10 attempts`}${r.medianaAprobar !== null ? `, taking ${fmtInt(r.medianaAprobar, lang)} trades at the median` : ""}. It is a simulation with simplified rules, not a promise.`;
+            ? `${r.aprueba >= 0.95 ? "Aprobarías casi todos los intentos" : `Aprobarías unos ${fmtInt(Math.round(r.aprueba * 10), lang)} de cada 10 intentos`}${r.medianaAprobar !== null ? `, en ${fmtOperaciones(r.medianaAprobar, lang)} de mediana` : ""}. Es una simulación con reglas simplificadas, no una promesa.`
+            : `${r.aprueba >= 0.95 ? "You would pass almost every attempt" : `You would pass about ${fmtInt(Math.round(r.aprueba * 10), lang)} in 10 attempts`}${r.medianaAprobar !== null ? `, taking ${fmtOperaciones(r.medianaAprobar, lang)} at the median` : ""}. It is a simulation with simplified rules, not a promise.`;
 
   const filas = [
     {
@@ -130,8 +130,8 @@ export function PropChallengeSimulator() {
         },
         {
           rotulo: es
-            ? `Resultado en ${fmtInt(maxOps, lang)} operaciones, ${fmtInt(CAMINOS, lang)} intentos simulados`
-            : `Result within ${fmtInt(maxOps, lang)} trades, ${fmtInt(CAMINOS, lang)} simulated attempts`,
+            ? `Resultado en ${fmtOperaciones(maxOps, lang)}, ${fmtInt(CAMINOS, lang)} intentos simulados`
+            : `Result within ${fmtOperaciones(maxOps, lang)}, ${fmtInt(CAMINOS, lang)} simulated attempts`,
           lineas: [
             `${es ? "Aprueba" : "Passes"}: ${fmtPct(r.aprueba, lang)}`,
             `${es ? "Suspende" : "Fails"}: ${fmtPct(r.suspende, lang)}`,
@@ -298,7 +298,7 @@ export function PropChallengeSimulator() {
                     </dt>
                     <dd className="tnum m-0 ml-auto font-semibold text-primary">{fmtPct(f.valor, lang)}</dd>
                     <dd className="tnum m-0 w-[7.5rem] text-right text-[12px] text-tertiary">
-                      {f.ops === null ? "" : es ? `${fmtInt(f.ops, lang)} ops de mediana` : `${fmtInt(f.ops, lang)} trades median`}
+                      {f.ops === null ? "" : es ? `${fmtInt(f.ops, lang)} ops de mediana` : `${fmtOperaciones(f.ops, lang)} median`}
                     </dd>
                   </div>
                 ))}

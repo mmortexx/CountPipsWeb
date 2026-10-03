@@ -52,7 +52,7 @@ const articleSchema = {
      hace año y medio — y la frescura pesa en el posicionamiento. */
   dateModified: ULTIMA_ACTUALIZACION_ISO,
   // Reuse the OG image (1200×630 PNG, meets Google's 1.91:1 spec).
-  image: `${SITE_URL}/opengraph-image`,
+  image: `${SITE_URL}/features/opengraph-image`,
   // about[] as canonical Thing objects (not plain strings) — slightly
   // improves classification signals.
   about: [

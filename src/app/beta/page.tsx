@@ -5,11 +5,15 @@ import { BetaStatus } from "@/components/beta/BetaStatus";
 import { BetaApplicationNote, BetaDetails } from "@/components/beta/BetaDetails";
 import { SITE_URL, hreflangDe, siteUrl, migasSchema } from "@/lib/site";
 
+const TITULO = "Acceso anticipado — CountPips";
+const DESCRIPCION = "Solicita acceso anticipado privado a CountPips para probar la aplicación con tus propios datos.";
+
 export const metadata: Metadata = {
-  title: "Acceso anticipado",
-  description: "Solicita acceso anticipado privado a CountPips para probar la aplicación con tus propios datos.",
+  title: { absolute: TITULO },
+  description: DESCRIPCION,
   alternates: { canonical: `${SITE_URL}/beta/`, languages: hreflangDe("/beta") },
-  openGraph: { title: "Acceso anticipado — CountPips", description: "Solicita acceso anticipado privado a CountPips.", url: `${SITE_URL}/beta/`, type: "website", siteName: "CountPips", locale: "es_ES", alternateLocale: ["en_GB"] },
+  openGraph: { title: TITULO, description: DESCRIPCION, url: `${SITE_URL}/beta/`, type: "website", siteName: "CountPips", locale: "es_ES", alternateLocale: ["en_GB"] },
+  twitter: { card: "summary_large_image", title: TITULO, description: DESCRIPCION },
 };
 
 /* El `WebPage` estaba fijo en la versión española y la inglesa reutiliza

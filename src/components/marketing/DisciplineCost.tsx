@@ -6,7 +6,7 @@ import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
-import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/format";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 
 interface MistakeItem {
@@ -465,7 +465,7 @@ export function DisciplineCost() {
                     {es ? "Fuga mensual total" : "Total monthly leak"}
                   </span>
                   <span className="block text-[13px] leading-[1.3] text-tertiary [overflow-wrap:anywhere]">
-                    {offPlanTrades} {es ? "operaciones indisciplinadas" : "off-plan trades"}
+                    {es ? `${fmtOperaciones(offPlanTrades, lang)} ${offPlanTrades === 1 ? "indisciplinada" : "indisciplinadas"}` : `${offPlanTrades} off-plan ${offPlanTrades === 1 ? "trade" : "trades"}`}
                   </span>
                 </div>
                 <span
