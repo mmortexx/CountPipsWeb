@@ -3231,6 +3231,10 @@ portapapeles cada botón «Copiar», leído pulsándolo en el navegador.
     (`computeSqn`, `computeUlcerIndex`, `computeGainToPain`,
     `computeWilsonCI`). A 390 px la de Wilson se parte en dos renglones
     por un espacio entre términos, no a mitad de símbolo.
+  - La definición del SQN decía «desviación típica»; las fórmulas y las
+    calculadoras, «desviación estándar» (cuatro veces). Queda la segunda,
+    y `vocabulario.test.ts` prohíbe la primera: roja con la compilación
+    anterior (índice y ficha del SQN), verde tras compilar.
 - **Guardas nuevas.**
   - `tests/informe.test.ts`: el formato del informe, y que solo
     `BotonCopiar` toque el portapapeles. Roja con el código anterior:
@@ -3250,7 +3254,7 @@ portapapeles cada botón «Copiar», leído pulsándolo en el navegador.
   región viva), `copiado` (la ruta leída como español), `tinta` (buscaba
   el rótulo «Copiado», que ya no existe) y `test-infra` (faltaba la fila
   de la prueba nueva). Arreglado, 19/19 con `corrobora-menus` 26/26 y
-  vitest 575 (2 omitidas). Arranque en tres pasadas: titular legible a
+  vitest 576 (2 omitidas). Arranque en tres pasadas: titular legible a
   116–227 ms, total 212–352 ms.
 
 ## Herramientas de auditoría propias
@@ -3277,7 +3281,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 54 suites, 575 tests (+2 omitidos)
+npx vitest run                          # 54 suites, 576 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

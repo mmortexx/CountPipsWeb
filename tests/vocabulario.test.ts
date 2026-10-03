@@ -108,6 +108,13 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
       "y características decían «curva de equity» para la misma gráfica",
   },
   {
+    palabra: /\bdesviación típica\b/i,
+    nombre: "desviación típica",
+    motivo:
+      "las fórmulas del glosario y las calculadoras dicen «desviación estándar»; " +
+      "la definición del SQN decía «típica» para lo mismo",
+  },
+  {
     palabra: /[−+-]?\$\s?\d/,
     nombre: "$ delante de la cifra",
     porNodo: true,

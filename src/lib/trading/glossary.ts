@@ -353,7 +353,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "SQN (System Quality Number)",
-    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (expectancy en R / desviación típica de R). En su escala, a partir de 2,5 es bueno y de 3 en adelante, excelente.",
+    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (expectancy en R / desviación estándar de R). En su escala, a partir de 2,5 es bueno y de 3 en adelante, excelente.",
     en: "Van Tharp metric assessing statistical system quality: SQN = √N × (expectancy in R / standard deviation of R). On his scale, 2.5 and up is good and 3 and up is excellent.",
     category: "metrics",
   },
