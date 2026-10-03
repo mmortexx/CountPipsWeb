@@ -107,6 +107,14 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
       "la portada, la demo y el proyector la llaman «curva de capital»; precios " +
       "y características decían «curva de equity» para la misma gráfica",
   },
+  {
+    palabra: /[−+-]?\$\s?\d/,
+    nombre: "$ delante de la cifra",
+    porNodo: true,
+    motivo:
+      "en español la moneda va detrás y separada, «1,24 $»; delante es la forma " +
+      "inglesa, que conservan las páginas de /en",
+  },
 ];
 
 /* NO se prohíbe «Drawdown máx.»: la calculadora de capital lo usa para el

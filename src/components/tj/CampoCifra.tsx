@@ -62,3 +62,32 @@ export function CampoCifra({ valor, onValor, min, max, paso, onFocus, onBlur, on
     />
   );
 }
+
+/**
+ * Campo de cifra con su unidad dentro: el de las calculadoras, del mismo
+ * alto y cuerpo que los de la calculadora de riesgo (44 px y 16 px, que
+ * Safari de iOS no amplía al enfocar). La unidad va centrada en vertical
+ * y del lado que pide el idioma: «1,24 $» en español, «$1.24» en inglés
+ * (`antes`); las que no son divisa («ticks») van siempre detrás.
+ */
+export function CampoUnidad({
+  unidad,
+  antes = false,
+  className = "",
+  ...props
+}: Props & { unidad: string; antes?: boolean }) {
+  return (
+    <div className="relative">
+      <CampoCifra
+        {...props}
+        className={`tj-campo tnum w-full min-h-[44px] text-base font-medium ${antes ? "pl-7 pr-3" : "pl-3 pr-14"} ${className}`}
+      />
+      <span
+        aria-hidden="true"
+        className={`pointer-events-none absolute top-1/2 -translate-y-1/2 text-[13px] text-tertiary ${antes ? "left-3" : "right-3"}`}
+      >
+        {unidad}
+      </span>
+    </div>
+  );
+}

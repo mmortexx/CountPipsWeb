@@ -308,19 +308,19 @@ export function EdgeSignificanceChecker() {
             </span>
             <div className="tj-matriz grid-cols-3 text-center text-xs tnum">
               <div className="py-2.5">
-                <span className="block text-[12px] text-tertiary">{es ? `90${PCT} (z=1,65)` : "90% (z=1.65)"}</span>
+                <span className="block text-[12px] text-tertiary">{es ? `90${PCT} (z = 1,65)` : "90% (z = 1.65)"}</span>
                 <span className={`font-semibold ${trades >= c.minSample90 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample90} ops
                 </span>
               </div>
               <div className="tj-columna-propia py-2.5">
-                <span className="block text-[12px] text-primary font-semibold">{es ? `95${PCT} (z=1,96)` : "95% (z=1.96)"}</span>
+                <span className="block text-[12px] text-primary font-semibold">{es ? `95${PCT} (z = 1,96)` : "95% (z = 1.96)"}</span>
                 <span className={`font-semibold ${trades >= c.minSample95 ? "text-[rgb(var(--pnl-pos))]" : "text-[rgb(var(--accent-base))]"}`}>
                   {c.minSample95} ops
                 </span>
               </div>
               <div className="py-2.5">
-                <span className="block text-[12px] text-tertiary">{es ? `99${PCT} (z=2,58)` : "99% (z=2.58)"}</span>
+                <span className="block text-[12px] text-tertiary">{es ? `99${PCT} (z = 2,58)` : "99% (z = 2.58)"}</span>
                 <span className={`font-semibold ${trades >= c.minSample99 ? "text-[rgb(var(--pnl-pos))]" : "text-primary"}`}>
                   {c.minSample99} ops
                 </span>

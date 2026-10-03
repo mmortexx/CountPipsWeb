@@ -698,7 +698,7 @@ export function TradeDetailPage() {
             </HeroStat>
             <HeroStat label={t("plannedRr")} divider>
               <span className="text-2xl md:text-3xl font-semibold tnum text-primary">
-                {fmtNum(trade.plannedRr, lang, 2)}R
+                {fmtNum(trade.plannedRr, lang, 2)}&nbsp;R
               </span>
             </HeroStat>
           </div>

@@ -914,8 +914,8 @@ const dayMs = 86_400_000;
 /* Secciones de Analítica. Como en la app (AnalyticsPage.xaml, pastillas
    de radio que muestran una sección cada vez), elegir una enseña solo sus
    bloques; antes la barra solo se marcaba y la página lo enseñaba todo.
-   El número tras el nombre es cuántos bloques trae, contado de esta misma
-   lista. «Comportamiento» no está: la demo no tiene esos bloques —la
+   Sin contador tras el nombre: cuántos bloques trae una sección no le dice
+   nada a quien la elige. «Comportamiento» no está: la demo no tiene esos bloques —la
    disciplina vive en su Diario— y una pestaña vacía prometería algo. */
 const SECTIONS = [
   { id: "summary", labelEs: "Resumen", labelEn: "Summary", bloques: ["comparativa", "kpis", "curva"] },
@@ -977,9 +977,6 @@ function SectionBar({
             >
               <span className="flex items-center gap-1.5">
                 {lang === "es" ? s.labelEs : s.labelEn}
-                <span className="text-[9.5px] text-tertiary tnum">
-                  · {s.bloques.length}
-                </span>
               </span>
               {isActive && (
                 <motion.span
@@ -1419,7 +1416,7 @@ export function AnalyticsPage() {
                 <RatioCell label={t("expectancyR")}>
                   <span className={m.expectancyR >= 0 ? "text-pnl-pos" : "text-pnl-neg"}>
                     {m.expectancyR >= 0 ? "+" : "−"}
-                    {fmtNum(Math.abs(m.expectancyR), lang, 2)}R
+                    {fmtNum(Math.abs(m.expectancyR), lang, 2)}&nbsp;R
                   </span>
                 </RatioCell>
               </div>
@@ -1580,7 +1577,7 @@ export function AnalyticsPage() {
                   </span>
                   <span className={`font-semibold tnum text-lg ${edge.expectancyR >= 0 ? "text-pnl-pos" : "text-pnl-neg"}`}>
                     {edge.expectancyR >= 0 ? "+" : "−"}
-                    {fmtNum(Math.abs(edge.expectancyR), lang, 2)}R
+                    {fmtNum(Math.abs(edge.expectancyR), lang, 2)}&nbsp;R
                   </span>
                   <span className="text-[10px] text-tertiary tnum">
                     {edge.expectancyRCi}

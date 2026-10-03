@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { CampoCifra } from "@/components/tj/CampoCifra";
+import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 
@@ -282,36 +282,34 @@ export function DisciplineCost() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[var(--ficha-division)]">
                 <div>
                   <label htmlFor="disc-inplan" className="block text-[12px] text-tertiary mb-1">
-                    {es ? "Ganancia media en plan ($/op.)" : "Avg win in-plan ($/trade)"}
+                    {es ? "Ganancia media en plan, por operación" : "Avg win in-plan, per trade"}
                   </label>
-                  <div className="relative">
-                    <CampoCifra
-                      id="disc-inplan"
-                      paso={1}
-                      min={0}
-                      valor={inPlanExp}
-                      onValor={setInPlanExp}
-                      className="tj-campo w-full h-11 sm:h-9 px-3 text-sm text-primary tnum"
-                    />
-                    <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
-                  </div>
+                  <CampoUnidad
+                    id="disc-inplan"
+                    unidad="$"
+                    antes={!es}
+                    paso={1}
+                    min={0}
+                    valor={inPlanExp}
+                    onValor={setInPlanExp}
+                    className="text-primary"
+                  />
                 </div>
 
                 <div>
                   <label htmlFor="disc-offplan" className="block text-[12px] text-tertiary mb-1">
-                    {es ? "Resultado medio fuera de plan ($)" : "Avg result off-plan ($)"}
+                    {es ? "Resultado medio fuera de plan" : "Avg result off-plan"}
                   </label>
-                  <div className="relative">
-                    <CampoCifra
-                      id="disc-offplan"
-                      paso={1}
-                      max={0}
-                      valor={offPlanExp}
-                      onValor={setOffPlanExp}
-                      className="tj-campo w-full h-11 sm:h-9 px-3 text-sm text-[rgb(var(--pnl-neg))] tnum"
-                    />
-                    <span className="absolute right-3 top-2 text-xs text-tertiary">$</span>
-                  </div>
+                  <CampoUnidad
+                    id="disc-offplan"
+                    unidad="$"
+                    antes={!es}
+                    paso={1}
+                    max={0}
+                    valor={offPlanExp}
+                    onValor={setOffPlanExp}
+                    className="text-[rgb(var(--pnl-neg))]"
+                  />
                 </div>
               </div>
             </div>

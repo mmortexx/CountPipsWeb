@@ -994,7 +994,7 @@ export function TradesPage() {
             </div>
 
             {/* Search — AutoSuggestBox-style on the right. */}
-            <div className="relative flex-1 md:w-72">
+            <div className="relative flex-1 md:w-80">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary pointer-events-none"
                 width="14"
@@ -1024,7 +1024,7 @@ export function TradesPage() {
       </Reveal>
 
       {/* Quick Filter Presets Bar */}
-      <div className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs font-mono">
+      <div className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
         <span className="text-[10px] uppercase tracking-wider text-tertiary mr-1 shrink-0">
           {es ? "Vistas rápidas:" : "Quick views:"}
         </span>
@@ -1362,16 +1362,20 @@ export function TradesPage() {
             />
           </KpiStripCell>
           <KpiStripCell label={t("winRate")} filterSig={filterSig} showHairline>
-            <CountUp to={metrics.winRate * 100} decimals={1} suffix="%" />
+            <CountUp to={metrics.winRate * 100} decimals={1} suffix={lang === "es" ? "\u00a0%" : "%"} />
           </KpiStripCell>
           <KpiStripCell label={t("operations")} filterSig={filterSig} showHairline>
             <CountUp to={metrics.closedCount} decimals={0} />
           </KpiStripCell>
+          {/* «+0,23 R», como la columna R de la tabla: el signo delante y
+              la unidad detrás. Con `prefix="R "` era el único sitio de la
+              demo que escribía «R 0,23». */}
           <KpiStripCell label={t("expectancyR")} filterSig={filterSig} showHairline={false}>
             <CountUp
-              to={metrics.expectancyR}
+              to={Math.abs(metrics.expectancyR)}
               decimals={2}
-              prefix="R "
+              prefix={metrics.expectancyR < 0 ? "−" : "+"}
+              suffix={"\u00a0R"}
               tone={metrics.expectancyR > 0 ? "pos" : "neg"}
             />
           </KpiStripCell>

@@ -682,7 +682,7 @@ function SleepStepper({
   const pct = Math.min(100, (hours / 12) * 100);
   return (
     <div className="space-y-2.5">
-      <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
+      <span className="block text-[11px] uppercase tracking-[0.15em] text-tertiary">
         {lang === "es" ? "Sueño" : "Sleep"}
       </span>
       <div className="flex items-center gap-3">
@@ -756,7 +756,7 @@ function PlanToggle({
   const { lang } = useLang();
   return (
     <div className="space-y-2.5">
-      <span className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
+      <span className="block text-[11px] uppercase tracking-[0.15em] text-tertiary">
         {lang === "es" ? "Plan del día" : "Today’s plan"}
       </span>
       <button

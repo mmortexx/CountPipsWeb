@@ -3133,8 +3133,10 @@ mirando lo que ninguna guarda veía.
 - **Visto y sin cambio.**
   - El espaciado entre letras de los rótulos de la demo en minúscula
     («Dirección», «Riesgo en $»): copia el `CharacterSpacing 100` del
-    programa, que no escribe en mayúsculas. Lo mismo «3,00R» sin espacio:
-    es como lo escribe la demo en todas sus pantallas.
+    programa, que no escribe en mayúsculas. (Aquí decía también que «3,00R»
+    sin espacio era como la demo escribe la R en todas sus pantallas. No era
+    cierto: la tabla de operaciones ya escribía «+1,26 R». Se corrige en la
+    tanda 52.)
   - La ventana de la demo, más ancha que la caja de contenido: es la
     aplicación, no una tarjeta.
   - «Email» en los formularios: el sitio dice «email» de forma coherente en
@@ -3148,6 +3150,50 @@ mirando lo que ninguna guarda veía.
   de texto por separado. Vista en rojo inyectando un inciso en la página
   compilada y en verde al quitarlo. Arranque correcto en tres pasadas
   (410–482 ms desde la navegación); los cambios no tocan la carga.
+
+### Quincuagésima segunda tanda: campos, unidades y la demo (2026-10-03)
+
+Capturas de las nueve calculadoras que la 51 no miró, de las páginas en
+inglés, de las legales, del oscuro de escritorio y de cada pestaña de la demo.
+
+- **Campos con unidad.** Coste de indisciplina y Comisiones ponían el «$»
+  como un rótulo suelto delante del campo, también en español. Un componente
+  nuevo, `CampoUnidad` (en `tj/CampoCifra.tsx`), lleva la unidad dentro del
+  campo: detrás en español («$», «ticks»), delante en inglés. Comisiones
+  pasa a rótulo encima, como el resto de calculadoras. Los rótulos de Coste
+  de indisciplina dicen qué cifra piden: «Ganancia media en plan, por
+  operación» y «Resultado medio fuera de plan».
+- **La R y el % de la demo.** La cabecera de operaciones escribía la
+  esperanza como «R 0,23», la única de la demo con la R delante: ahora
+  «+0,23 R», como la columna R de la tabla, con un menos de verdad cuando
+  es negativa. Las dos esperanzas de análisis y el R:R planificado del panel
+  y de la ficha de operación pasan de «0,23R» a «0,23 R» con espacio fijo.
+  El acierto de la cabecera, «50,5 %». Siguen pegadas, a
+  propósito, las razones («Recompensa · 3,0R», «55 % acierto · 2,0R») y las
+  marcas del eje del histograma: son una proporción o una escala, no un
+  resultado.
+- **Significancia.** «(z=1.65)» pasa a «(z = 1,65)», con coma decimal en
+  español y espacios alrededor del igual.
+- **Demo.**
+  - Los rótulos «Sueño» y «Plan del día» del diario iban en línea y caían
+    más bajos que «Estado mental» y «Estado físico». Medido: los cuatro a
+    770 px.
+  - La barra de vistas rápidas de operaciones iba en monoespaciada, la única
+    de la demo. Ahora usa la letra del sitio.
+  - El buscador de operaciones crece a 320 px y dice qué busca: «Buscar
+    instrumento, setup o nota…».
+  - Las subpestañas de análisis llevaban un contador de bloques a 9,5 px que
+    no ayudaba a elegir: fuera.
+- **Cookies.** El título acaba en punto, como las otras tres legales.
+- **Guarda nueva.** `tests/vocabulario.test.ts`: ninguna página española
+  escribe «$» delante de una cifra. Vista en rojo inyectando «Cuesta $149 al
+  año» en /herramientas compilada y en verde al quitarlo. No hay guarda
+  para la R de la demo: se pinta en el navegador y no está en el HTML
+  compilado.
+- **Medido.** Batería en paralelo 18/19 a la primera: `corrobora-menus`
+  no admite `--serve` y necesita la web servida aparte (`npx serve out`);
+  así, 26/26. Vitest 564 pruebas (2 omitidas), tipos y lint limpios.
+  Arranque en tres pasadas: titular legible a 124–154 ms, total 226–435 ms.
 
 ## Herramientas de auditoría propias
 
@@ -3173,7 +3219,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 53 suites, 563 tests (+2 omitidos)
+npx vitest run                          # 53 suites, 564 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

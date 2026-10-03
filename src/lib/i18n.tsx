@@ -181,8 +181,8 @@ export const STR = {
     en: (n: number) => `${fmtInt(n, "en")} trades`,
   },
   searchPlaceholder: {
-    es: "Buscar por instrumento, setup o nota…",
-    en: "Search by instrument, setup or note…",
+    es: "Buscar instrumento, setup o nota…",
+    en: "Search instrument, setup or note…",
   },
   colInstrument: { es: "Instrumento", en: "Instrument" },
   colSetup: { es: "Setup", en: "Setup" },

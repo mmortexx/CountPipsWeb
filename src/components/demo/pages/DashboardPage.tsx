@@ -454,7 +454,7 @@ export function DashboardPage() {
                               : "text-pnl-neg"
                           }`}
                         >
-                          {fmtNum(plannedRr, lang, 2)}R
+                          {fmtNum(plannedRr, lang, 2)}&nbsp;R
                         </span>
                       </div>
                       {/* Vertical hairline */}

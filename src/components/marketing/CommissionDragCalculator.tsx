@@ -3,7 +3,7 @@
 import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum, fmtPct, pctSep } from "@/lib/trading/format";
-import { CampoCifra } from "@/components/tj/CampoCifra";
+import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
   INSTRUMENT_SPECS,
@@ -216,39 +216,38 @@ export function CommissionDragCalculator() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="tj-campo px-3 py-2.5">
-                  <span className="text-[12px] text-tertiary block mb-1">
+                <div>
+                  <label htmlFor="com-comision" className="block text-[12px] text-tertiary mb-1">
                     {es ? "Comisión ida y vuelta" : "Round-turn fee"}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm tnum text-secondary">$</span>
-                    <CampoCifra
-                      paso={0.05}
-                      min={0}
-                      valor={customCommission}
-                      onValor={setCustomCommission}
-                      aria-label={es ? "Comisión ida y vuelta, en dólares" : "Round-turn fee, in dollars"}
-                      className="w-full bg-transparent tnum text-sm text-primary font-semibold outline-none"
-                    />
-                  </div>
+                  </label>
+                  <CampoUnidad
+                    id="com-comision"
+                    unidad="$"
+                    antes={!es}
+                    paso={0.05}
+                    min={0}
+                    valor={customCommission}
+                    onValor={setCustomCommission}
+                    aria-label={es ? "Comisión ida y vuelta, en dólares" : "Round-turn fee, in dollars"}
+                    className="text-primary"
+                  />
                 </div>
 
-                <div className="tj-campo px-3 py-2.5">
-                  <span className="text-[12px] text-tertiary block mb-1">
+                <div>
+                  <label htmlFor="com-deslizamiento" className="block text-[12px] text-tertiary mb-1">
                     {es ? "Deslizamiento medio" : "Average slippage"}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <CampoCifra
-                      paso={0.5}
-                      min={0}
-                      max={10}
-                      valor={slippageTicks}
-                      onValor={setSlippageTicks}
-                      aria-label={es ? "Deslizamiento medio, en ticks" : "Average slippage, in ticks"}
-                      className="w-full bg-transparent tnum text-sm text-primary font-semibold outline-none"
-                    />
-                    <span className="text-xs tnum text-tertiary">ticks</span>
-                  </div>
+                  </label>
+                  <CampoUnidad
+                    id="com-deslizamiento"
+                    unidad="ticks"
+                    paso={0.5}
+                    min={0}
+                    max={10}
+                    valor={slippageTicks}
+                    onValor={setSlippageTicks}
+                    aria-label={es ? "Deslizamiento medio, en ticks" : "Average slippage, in ticks"}
+                    className="text-primary"
+                  />
                 </div>
               </div>
             </div>
