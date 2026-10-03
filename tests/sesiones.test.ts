@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PLAZAS, estaAbierta, proximaApertura, ventanaUtc } from "@/lib/sesiones";
+import { PLAZAS, cuentaAtras, estaAbierta, proximaApertura, ventanaUtc } from "@/lib/sesiones";
 
 const plaza = (id: string) => PLAZAS.find((p) => p.id === id)!;
 const utc = (iso: string) => new Date(iso);
@@ -30,5 +30,16 @@ describe("plazas de mercado en hora local, como la app", () => {
     const r = proximaApertura(utc("2026-09-12T12:00:00Z"));
     expect(r?.plaza.id).toBe("sydney");
     expect(r?.minutos).toBe(33 * 60);
+  });
+});
+
+describe("cuenta atrás hasta la apertura", () => {
+  it("no arrastra unidades a cero", () => {
+    expect(cuentaAtras(1440)).toBe("1 d");
+    expect(cuentaAtras(33 * 60)).toBe("1 d 9 h");
+    expect(cuentaAtras(120)).toBe("2 h");
+    expect(cuentaAtras(135)).toBe("2 h 15 min");
+    expect(cuentaAtras(45)).toBe("45 min");
+    expect(cuentaAtras(0)).toBe("0 min");
   });
 });

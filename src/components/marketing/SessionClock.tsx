@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 
-import { PLAZAS, estaAbierta, horaLocal, proximaApertura, ventanaUtc, type Plaza } from "@/lib/sesiones";
+import { PLAZAS, cuentaAtras, estaAbierta, horaLocal, proximaApertura, ventanaUtc, type Plaza } from "@/lib/sesiones";
 
 /**
  * Reloj de sesiones con los horarios locales de la app de escritorio: cada plaza
@@ -109,14 +109,6 @@ export function SessionClock() {
     return `${String(Math.floor(t / 60) % 24).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
   };
   const enRef = (h: number) => hora(h + desfaseRef);
-  const falta = (h: number) => {
-    const t = Math.round(h * 60);
-    const dd = Math.floor(t / 1440);
-    const hh = Math.floor((t % 1440) / 60);
-    const mm = t % 60;
-    if (dd > 0) return `${dd} d ${hh} h`;
-    return hh > 0 ? `${hh} h ${mm} min` : `${mm} min`;
-  };
   /* Las zonas de media o cuarto de hora (India, Nepal…) se escriben
      «UTC+5:30», no «UTC+5.5», que es como salían. */
   const desfaseMin = Math.round(Math.abs(desfaseRef) * 60);
@@ -201,7 +193,7 @@ export function SessionClock() {
             {proxima && (
               <span>
                 {es ? "Próxima apertura:" : "Next open:"} <span className="text-primary">{nombre(proxima.plaza)}</span>{" "}
-                {es ? "en" : "in"} {falta(proxima.minutos / 60)}
+                {es ? "en" : "in"} {cuentaAtras(proxima.minutos)}
               </span>
             )}
           </p>

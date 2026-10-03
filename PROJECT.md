@@ -3294,6 +3294,27 @@ fondeo y Monte Carlo; la demo a 390; el glosario y una ficha en oscuro.
   Arranque en tres pasadas: total 247–456 ms; los cambios son de texto y
   no tocan la carga.
 
+### Quincuagésima quinta tanda: el resto del móvil (2026-10-03)
+
+Capturas a 390 en claro de reloj de sesiones, comisiones, ahorro, coste de
+indisciplina, recuperación, la calculadora de riesgo en inglés, precios,
+acerca de y características.
+
+- **Reloj de sesiones.** La cuenta atrás escribía las unidades a cero:
+  «Próxima apertura: Sídney en 1 d 0 h», y «2 h 0 min». Ahora «1 d» y
+  «2 h». El formato sale del componente a `cuentaAtras` en
+  `src/lib/sesiones.ts`, y `sesiones.test.ts` lo prueba: roja con el
+  formato anterior («1 d 0 h»), verde después. Visto en el navegador con
+  la hora fijada a 24 h y a 33 h de la apertura de Sídney: «1 d» y
+  «1 d 9 h», en los dos idiomas.
+- **Visto y sin cambio.** Comisiones, ahorro, coste de indisciplina,
+  recuperación, riesgo en inglés, precios, acerca de y características.
+  En comisiones me pareció leer «a 1.5:1 R:R» con punto decimal: era una
+  captura reducida; la página dice «1,5:1».
+- **Medido.** Batería en paralelo 18/18 a la primera, `corrobora-menus`
+  26/26 con el servidor esperado hasta responder, vitest 578 (2
+  omitidas). Arranque en tres pasadas: total 231–453 ms.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -3318,7 +3339,7 @@ node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no s
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 54 suites, 577 tests (+2 omitidos)
+npx vitest run                          # 54 suites, 578 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

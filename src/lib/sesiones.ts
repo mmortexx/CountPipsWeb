@@ -69,6 +69,17 @@ export function avance(p: Plaza, fecha: Date): number {
   return Math.max(0, Math.min(100, ((minuto - p.abre) / (p.cierra - p.abre)) * 100));
 }
 
+/** «2 h 15 min», «3 d 4 h»: lo que falta para una apertura, sin unidades a cero («1 d 0 h»). */
+export function cuentaAtras(minutos: number): string {
+  const t = Math.max(0, Math.round(minutos));
+  const dd = Math.floor(t / 1440);
+  const hh = Math.floor((t % 1440) / 60);
+  const mm = t % 60;
+  if (dd > 0) return hh > 0 ? `${dd} d ${hh} h` : `${dd} d`;
+  if (hh > 0) return mm > 0 ? `${hh} h ${mm} min` : `${hh} h`;
+  return `${mm} min`;
+}
+
 /** Primera plaza cerrada que abre después de `fecha` y los minutos que faltan (busca hasta 4 días). */
 export function proximaApertura(fecha: Date): { plaza: Plaza; minutos: number } | null {
   const inicio = Math.floor(fecha.getTime() / 60_000);
