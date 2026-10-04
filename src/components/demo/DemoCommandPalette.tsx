@@ -421,7 +421,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
             {/* Search input row — h-12 (48 px) para que el input tenga un
                 área de toque cómoda en móvil (≥44 px) y el kbd de Esc no
                 quede pegado al borde superior en pantallas pequeñas. */}
-            <div className="flex items-center gap-2.5 px-3 h-12 border-b border-[rgb(var(--divider)/0.1)]">
+            <div className="tj-paleta-cabecera flex items-center gap-2.5 px-3 h-12 border-b border-[rgb(var(--divider)/0.1)]">
               <SearchIcon />
               <input
                 ref={inputRef}

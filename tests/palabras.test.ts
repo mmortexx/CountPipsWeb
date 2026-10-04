@@ -34,6 +34,12 @@ describe("titular palabra a palabra", () => {
     expect(mascaras(h)).toBe(2);
   });
 
+  it("en inglés no pega nada: la norma es del español", () => {
+    const h = renderToStaticMarkup(createElement(Palabras, { texto: "Trade like an institutional desk.", lang: "en" }));
+    expect(h).not.toContain(DURO);
+    expect(mascaras(h)).toBe(5);
+  });
+
   it("cada máscara lleva su orden de entrada", () => {
     const orden = [...html("uno dos tres cuatro").matchAll(/--p:(\d+)/g)].map((m) => Number(m[1]));
     expect(orden).toEqual([0, 1, 2, 3]);

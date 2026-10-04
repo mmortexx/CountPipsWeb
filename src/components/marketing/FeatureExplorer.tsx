@@ -45,8 +45,8 @@ const FEATURES: Feature[] = [
     id: "equity",
     titleEs: "Curva de capital y drawdown",
     titleEn: "Equity curve and drawdown",
-    descEs: "Tu capital y tu peor caída, al día con cada operación. El drawdown se mide desde el pico, como en un fondo.",
-    descEn: "Your capital and your worst drop, updated with every trade. Drawdown measured from peak, like a fund.",
+    descEs: "Tu balance y tu peor caída, al día con cada operación. El drawdown se mide desde el pico, como en un fondo.",
+    descEn: "Your balance and your worst drop, updated with every trade. Drawdown measured from peak, like a fund.",
     tags: ["metrics", "speed"],
   },
   {

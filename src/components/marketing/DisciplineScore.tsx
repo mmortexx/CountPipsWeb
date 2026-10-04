@@ -65,7 +65,7 @@ const DIMS: Dim[] = [
     en: "Risk",
     weight: 3,
     tipEs:
-      "Tu punto flaco es el riesgo, y es el que no admite paciencia: una racha normal basta para vaciar una cuenta mal dimensionada. Antes de tocar nada más, fija cuánto pierdes por operación —en dinero, no en sensación— y un tope diario que te saque de la pantalla al tocarlo.",
+      "Tu punto flaco es el riesgo, y es el que no admite paciencia: una racha normal basta para vaciar una cuenta mal dimensionada. Antes de tocar nada más, fija cuánto pierdes por operación —\u2060en dinero, no en sensación\u2060— y un tope diario que te saque de la pantalla al tocarlo.",
     tipEn:
       "Your weak point is risk, and it is the one that grants no patience: an ordinary losing run empties a badly sized account. Before anything else, fix how much you lose per trade — in money, not in feel — and a daily cap that pulls you off the screen when hit.",
   },

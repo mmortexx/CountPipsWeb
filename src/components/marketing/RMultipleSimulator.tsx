@@ -165,7 +165,7 @@ export function RMultipleSimulator() {
           {
             accentColor: "rgb(var(--accent-base))",
             height: 44,
-            "--pct": `${((value - min) / (max - min)) * 100}%`,
+            "--f": ((value - min) / (max - min)),
           } as React.CSSProperties
         }
         aria-label={ariaLabel}

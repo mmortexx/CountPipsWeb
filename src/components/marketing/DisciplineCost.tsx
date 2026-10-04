@@ -279,7 +279,7 @@ export function DisciplineCost() {
                     className="tj-range w-full"
                     style={
                       {
-                        "--pct": `${((totalTrades - 10) / (200 - 10)) * 100}%`,
+                        "--f": ((totalTrades - 10) / (200 - 10)),
                       } as CSSProperties
                     }
                   />
@@ -304,7 +304,7 @@ export function DisciplineCost() {
                     className="tj-range w-full"
                     style={
                       {
-                        "--pct": `${((breachPct - 5) / (80 - 5)) * 100}%`,
+                        "--f": ((breachPct - 5) / (80 - 5)),
                       } as CSSProperties
                     }
                   />

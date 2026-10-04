@@ -154,7 +154,7 @@ export function CommissionDragCalculator() {
                   aria-label={es ? "Contratos o lotes por operación" : "Contracts or lots per trade"}
                   aria-valuetext={fmtNum(contracts, lang, 0)}
                   className="tj-range w-full"
-                  style={{ "--pct": `${((contracts - 1) / 19) * 100}%` } as CSSProperties}
+                  style={{ "--f": ((contracts - 1) / 19) } as CSSProperties}
                 />
               </div>
 
@@ -175,12 +175,12 @@ export function CommissionDragCalculator() {
                   aria-label={es ? "Operaciones al mes" : "Trades per month"}
                   aria-valuetext={fmtOperaciones(monthlyTrades, lang)}
                   className="tj-range w-full"
-                  style={{ "--pct": `${((monthlyTrades - 10) / 290) * 100}%` } as CSSProperties}
+                  style={{ "--f": ((monthlyTrades - 10) / 290) } as CSSProperties}
                 />
               </div>
 
               {/* Los limites del recorrido salen a variables porque ahora
-                  los usa tambien `--pct`, el relleno de la pista. */}
+                  los usa tambien `--f`, el relleno de la pista. */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="tj-deslizador-etiqueta">
@@ -202,7 +202,7 @@ export function CommissionDragCalculator() {
                   className="tj-range w-full"
                   style={
                     {
-                      "--pct": `${((targetUnits - objetivoMin) / (objetivoMax - objetivoMin)) * 100}%`,
+                      "--f": ((targetUnits - objetivoMin) / (objetivoMax - objetivoMin)),
                     } as CSSProperties
                   }
                 />

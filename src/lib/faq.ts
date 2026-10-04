@@ -67,7 +67,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué datos pide esta web?",
-    a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden lo que ves en ellos —el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados, cómo llevas hoy tu diario, qué quieres mejorar primero y una nota opcional—, y el de acceso añade el idioma, la página desde la que lo envías y, si el enlace la trae, la campaña por la que llegaste. La analítica de visitas solo se activa si la aceptas en el aviso de cookies.",
+    a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden lo que ves en ellos —\u2060el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados, cómo llevas hoy tu diario, qué quieres mejorar primero y una nota opcional\u2060—, y el de acceso añade el idioma, la página desde la que lo envías y, si el enlace la trae, la campaña por la que llegaste. La analítica de visitas solo se activa si la aceptas en el aviso de cookies.",
   },
   {
     q: "¿Podré usarlo en varios ordenadores?",
@@ -75,7 +75,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué ocurre si cambio de ordenador durante el piloto?",
-    a: "Crea una copia de seguridad desde el programa —un solo archivo con tus operaciones y tus capturas— y restáurala en el ordenador nuevo. No pediremos credenciales ni datos financieros para hacerlo.",
+    a: "Crea una copia de seguridad desde el programa —\u2060un solo archivo con tus operaciones y tus capturas\u2060— y restáurala en el ordenador nuevo. No pediremos credenciales ni datos financieros para hacerlo.",
   },
 ];
 
@@ -130,7 +130,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What if I change computers during the pilot?",
-    a: "Create a backup from the app —a single file with your trades and your screenshots— and restore it on the new computer. We will not ask for credentials or financial data to do it.",
+    a: "Create a backup from the app —\u2060a single file with your trades and your screenshots\u2060— and restore it on the new computer. We will not ask for credentials or financial data to do it.",
   },
 ];
 

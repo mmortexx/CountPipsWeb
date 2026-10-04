@@ -192,12 +192,12 @@ export function SavingsCalculator() {
               value={altMonthly}
               onChange={(e) => setAltMonthly(parseInt(e.target.value))}
               className="tj-range w-full"
-              /* `--pct` pinta el tramo recorrido dentro de la pista. */
+              /* `--f` pinta el tramo recorrido dentro de la pista. */
               style={
                 {
                   accentColor: "rgb(var(--accent-base))",
                   height: 44,
-                  "--pct": `${((altMonthly - 5) / (50 - 5)) * 100}%`,
+                  "--f": ((altMonthly - 5) / (50 - 5)),
                 } as React.CSSProperties
               }
               aria-label={es ? "Precio mensual de la alternativa por suscripción" : "Monthly price of subscription alternative"}
@@ -225,12 +225,12 @@ export function SavingsCalculator() {
               value={years}
               onChange={(e) => setYears(parseInt(e.target.value))}
               className="tj-range w-full"
-              /* `--pct` pinta el tramo recorrido dentro de la pista. */
+              /* `--f` pinta el tramo recorrido dentro de la pista. */
               style={
                 {
                   accentColor: "rgb(var(--accent-base))",
                   height: 44,
-                  "--pct": `${((years - 1) / (10 - 1)) * 100}%`,
+                  "--f": ((years - 1) / (10 - 1)),
                 } as React.CSSProperties
               }
               aria-label={es ? "Años de uso" : "Years of use"}

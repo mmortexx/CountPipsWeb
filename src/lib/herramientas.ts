@@ -62,17 +62,17 @@ export const HERRAMIENTAS: Herramienta[] = [
     h1Es: "Cuánto puedes arriesgar.",
     h1En: "How much you can risk.",
     subtituloEs:
-      "Dime tu capital, el porcentaje que arriesgas y la distancia a tu stop, y te digo el tamaño exacto de la posición. Sin registro y sin que nada de lo que escribas salga de tu navegador.",
+      "Dime tu balance, el porcentaje que arriesgas y la distancia a tu stop, y te digo el tamaño exacto de la posición. Sin registro y sin que nada de lo que escribas salga de tu navegador.",
     subtituloEn:
-      "Tell me your capital, the percentage you risk and the distance to your stop, and I will tell you the exact position size. No sign-up, and nothing you type leaves your browser.",
+      "Tell me your account balance, the percentage you risk and the distance to your stop, and I will tell you the exact position size. No sign-up, and nothing you type leaves your browser.",
     resumenEs: "El tamaño exacto de la posición a partir de tu riesgo y tu stop.",
     resumenEn: "The exact position size from your risk and your stop.",
     entregaEs: "Lotes y contratos",
     entregaEn: "Lots and contracts",
     descripcionEs:
-      "Calcula el tamaño de posición a partir de tu capital, el porcentaje de riesgo por operación y la distancia al stop. Gratis, sin registro y sin enviar datos.",
+      "Calcula el tamaño de posición a partir de tu balance, el porcentaje de riesgo por operación y la distancia al stop. Gratis, sin registro y sin enviar datos.",
     descripcionEn:
-      "Work out position size from your capital, your risk per trade and the distance to your stop. Free, no sign-up, no data sent.",
+      "Work out position size from your account balance, your risk per trade and the distance to your stop. Free, no sign-up, no data sent.",
   },
   {
     slug: "significancia-estadistica",

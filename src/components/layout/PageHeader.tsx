@@ -80,7 +80,7 @@ export function PageHeader({
         ) : null}
 
         <h1 data-entra="2" className={`t-h1 max-w-[22ch] text-primary ${eyebrowEs ? "mt-5" : ""}`}>
-          <Palabras texto={es ? titleEs : titleEn} />
+          <Palabras lang={lang} texto={es ? titleEs : titleEn} />
         </h1>
 
         {subtitleEs ? (

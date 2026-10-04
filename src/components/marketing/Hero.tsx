@@ -31,7 +31,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
         </p>
 
         <h1 className="t-display mx-auto mt-6 max-w-[15ch] text-balance text-primary">
-          <Palabras texto={es ? "Opera como una mesa institucional." : "Trade like an institutional desk."} />
+          <Palabras lang={lang} texto={es ? "Opera como una mesa institucional." : "Trade like an institutional desk."} />
         </h1>
 
         <p className="mx-auto mt-7 max-w-[40rem] t-lede text-secondary">

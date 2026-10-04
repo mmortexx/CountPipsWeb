@@ -532,16 +532,22 @@ export function RiskCalculator() {
               className="tj-range w-full"
               style={
                 {
-                  "--pct": `${((riskPct - RISK_MIN) / (RISK_MAX - RISK_MIN)) * 100}%`,
+                  "--f": ((riskPct - RISK_MIN) / (RISK_MAX - RISK_MIN)),
                 } as CSSProperties
               }
             />
-            <div className="flex justify-between mt-1 text-[12px] text-tertiary tnum">
-              {/* `0.25%` con punto ingles, en una lista donde la cifra de al
-                  lado dice `3,00%`. La marca salia del numero crudo de
-                  JavaScript, que siempre lleva punto decimal. */}
+            {/* Cada marca bajo el punto donde la bolita marca ese valor
+                (22 px es medio tirador). Repartidas a partes iguales, la
+                bolita en «1,00 %» quedaba a un tercio de la marca «1 %». */}
+            <div className="relative mt-1 h-[18px] text-[12px] text-tertiary tnum">
               {RISK_MARKS.map((m) => (
-                <span key={m}>{fmtPct(m / 100, lang, m < 1 ? 2 : 0)}</span>
+                <span
+                  key={m}
+                  className="absolute top-0 -translate-x-1/2 whitespace-nowrap"
+                  style={{ left: `calc(22px + (100% - 44px) * ${(m - RISK_MIN) / (RISK_MAX - RISK_MIN)})` }}
+                >
+                  {fmtPct(m / 100, lang, m < 1 ? 2 : 0)}
+                </span>
               ))}
             </div>
           </div>
@@ -778,7 +784,7 @@ export function RiskCalculator() {
                   /* `.tj-range` como el resto: con `appearance-none` y sin
                      regla de bolita, en WebKit no se veía la agarradera. */
                   className="tj-range w-full"
-                  style={{ "--pct": `${((kellyWinRate - 35) / 40) * 100}%` } as CSSProperties}
+                  style={{ "--f": ((kellyWinRate - 35) / 40) } as CSSProperties}
                 />
                 <div className="grid grid-cols-3 gap-2 text-center text-[12px] tnum">
                   <div className="py-1">

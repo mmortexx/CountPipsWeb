@@ -3386,6 +3386,54 @@ uno se comprobó en el código o en el navegador antes de tocarlo.
   se solapa con la tanda anterior (231–453 ms): así no se puede medir un
   efecto en tiempo, solo en bytes.
 
+### Quincuagésima séptima tanda: revisión visual (2026-10-04)
+
+Todas las páginas en español a 1440 y 390, en claro y oscuro; una muestra
+de plantillas en inglés; y los estados que no salen al cargar (megamenú,
+idioma, cajón móvil, glosario, paleta y pestañas de la demo, test con
+resultado, calculadoras en los extremos, contacto enviado, errores del
+formulario). Lo que se vio torcido:
+
+- **El tramo negro de los deslizadores no acababa en la bolita.** Llegaba
+  a `f·ancho` y la bolita está en `22 px + (ancho − 44 px)·f`: con valores
+  altos sobresalía y con bajos dejaba hueco gris. Los 13 deslizadores pasan
+  `--f` sin unidad y la pista corta en
+  `calc(22px + (100% − 44px)·f)`.
+- **Las marcas de riesgo (0,25 · 1 · 2 · 3 %) estaban repartidas a partes
+  iguales**, no bajo su valor: la bolita en 1 % quedaba lejos de «1 %».
+  Ahora cada marca va en la posición de su valor.
+- **Deslizadores emparejados a distinta altura** cuando una etiqueta
+  parte en dos líneas (prueba de fondeo, «Riesgo por operación (del
+  balance inicial)»). La celda empuja la pista al pie.
+- **Rayas de inciso que se separan de su palabra** al partir la línea («la
+  mitad / — con un riesgo»). 27 uniones invisibles (`⁠`) entre raya y
+  palabra.
+- **Una palabra sola en la última línea** de dos titulares a 1440
+  («…estamos / comprobando.»). Y el titular palabra a palabra pegaba las
+  palabras cortas también en inglés («an institutional» se iba entero de
+  línea): ahora solo en español.
+- **«Capital» para el dinero de la cuenta** en el proyector, el explorador,
+  el detalle de la demo y dos fichas de herramienta, en los dos idiomas: la
+  decisión de la tanda 56 era «balance» y quedaban 14 sitios.
+- **La ventana del glosario ordenaba las familias distinto** que la página
+  del glosario. Y dos títulos de la demo usaban la raya con espacios
+  («Rendimiento — Cómo va…»): pasan a dos puntos, como el resto.
+- **El anillo de foco del buscador de la paleta** chocaba con el borde de
+  la paleta. El foco se marca ahora en la cabecera entera; con contraste
+  alto vuelve el contorno.
+- **Guardas nuevas, todas vistas en rojo con la compilación anterior.**
+  `deslizadores.mjs` (relleno que no llega a la bolita en 648 posiciones,
+  marcas fuera de su valor en 64, filas desalineadas en 8),
+  `viudas.mjs` (2 titulares), `cifras.mjs` con la raya partible (15) y el
+  «capital» inglés (8), y en Vitest `glosario-familias.test.ts`,
+  `rayas-catalogos.test.ts` (3) y casos nuevos en `vocabulario.test.ts`
+  (3 páginas) y `palabras.test.ts`.
+- **Visto y dejado.** Las capturas clara y oscura de «Resumen» en la
+  portada enseñan días distintos del calendario: vienen así del programa
+  de escritorio. Las tiras de pestañas móviles se cortan en el borde a
+  propósito, para que se vea que siguen. El titular de /beta/ a 390 acaba
+  en «comercial.» solo: lo pegado no cabe en la línea anterior.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -3411,8 +3459,10 @@ node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
 node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/), el test y los buscadores del glosario y la FAQ dicen su resultado a quien no ve la pantalla
+node scripts/deslizadores.mjs --serve out  # el tramo lleno acaba en la bolita, las marcas bajo su valor y los deslizadores de una fila a la misma altura (1440 claro y oscuro, 1024, 390)
+node scripts/viudas.mjs --serve out     # ningún titular deja una palabra sola en su última línea cuando cabía con la anterior (390, 768, 1440)
 node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos (nombre, descripción, botones en su idioma) y capas que devuelven el foco; grupos y pestañas de la demo con una parada y flechas; atajos 1–4 que respetan Ctrl y el foco; paleta como combobox; formulario, Ctrl+G e índice lateral que dejan el foco donde toca
-npx vitest run                          # 59 suites, 625 tests (+2 omitidos)
+npx vitest run                          # 61 suites, 633 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

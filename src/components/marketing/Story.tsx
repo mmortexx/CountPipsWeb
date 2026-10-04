@@ -123,7 +123,7 @@ export function Story() {
             <blockquote className="mt-8 relative pl-6 border-l-2 border-[var(--line-2)]">
               <p className="t-h3 text-primary leading-snug">{quote}</p>
               <footer className="mt-4 text-sm text-tertiary">
-                {es ? "—Principio de diseño de CountPips" : "— CountPips design principle"}
+                {es ? "—\u2060Principio de diseño de CountPips" : "— CountPips design principle"}
               </footer>
             </blockquote>
           </Reveal>

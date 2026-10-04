@@ -131,7 +131,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Risk of ruin",
-    es: "Probabilidad de que las pérdidas lleven la cuenta hasta el nivel que das por quiebra —todo el capital o, como en las calculadoras de esta web, la mitad— con un riesgo fijo por operación. Crece exponencialmente con el riesgo por operación.",
+    es: "Probabilidad de que las pérdidas lleven la cuenta hasta el nivel que das por quiebra —\u2060todo el capital o, como en las calculadoras de esta web, la mitad\u2060— con un riesgo fijo por operación. Crece exponencialmente con el riesgo por operación.",
     en: "The probability that losses take the account down to the level you count as ruin (the whole balance or, as in this site’s calculators, half of it) with a fixed risk per trade. It grows exponentially with risk per trade.",
     category: "risk",
   },
@@ -398,7 +398,7 @@ export const GLOSSARY_CATEGORIES: {
   { id: "all", es: "Todas", en: "All" },
   { id: "basics", es: "Fundamentos", en: "Basics" },
   { id: "risk", es: "Riesgo", en: "Risk" },
-  { id: "psychology", es: "Psicología", en: "Psychology" },
   { id: "metrics", es: "Métricas", en: "Metrics" },
   { id: "execution", es: "Ejecución", en: "Execution" },
+  { id: "psychology", es: "Psicología", en: "Psychology" },
 ];

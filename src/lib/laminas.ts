@@ -90,14 +90,14 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "stop, objetivo y salida, junto a una zona grande donde se arrastran o se pegan las " +
       "capturas del gráfico. Mientras escribes, el riesgo se recalcula en dinero y en " +
       "porcentaje de la cuenta sobre una regla del stop a 1 R, y una nota sitúa tu tamaño " +
-      "frente al medio Kelly. Todo lo demás —el resto de esta pantalla y las otras diez— mide " +
+      "frente al medio Kelly. Todo lo demás —\u2060el resto de esta pantalla y las otras diez\u2060— mide " +
       "lo que se rellena aquí.",
     notaEn:
       "The composer takes the whole screen on purpose: instrument, direction, entry, stop, " +
       "target and exit, beside a large area where chart screenshots are dropped or pasted. As " +
       "you type, the risk recalculates in money and as a share of the account on a ruler " +
       "running from stop to 1 R, and a note places your size against half-Kelly. Everything " +
-      "else —the rest of this screen and the other ten— measures what gets filled in here.",
+      "else —\u2060the rest of this screen and the other ten\u2060— measures what gets filled in here.",
     altEs:
       "Formulario de registro bajo la pregunta «¿Qué has operado hoy?»: a la izquierda, una " +
       "zona para arrastrar o pegar capturas del gráfico; a la derecha, el instrumento, el " +
@@ -143,8 +143,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     altEs:
       "El mismo formulario con más cantidad y el stop más lejos: el riesgo en dólares y en " +
       "porcentaje de la cuenta crece y, debajo, se apilan dos avisos con un triángulo " +
-      "—«Esto no es como tú operas», que compara el riesgo con el habitual, y «Tu tamaño " +
-      "frente a Kelly»— antes de los botones de guardar borrador y registrar la operación.",
+      "—\u2060«Esto no es como tú operas», que compara el riesgo con el habitual, y «Tu tamaño " +
+      "frente a Kelly»\u2060— antes de los botones de guardar borrador y registrar la operación.",
     altEn:
       "The same form with more size and a wider stop: the risk in dollars and as a share of " +
       "the account grows and two notices with a warning triangle stack below —“This isn’t " +
@@ -173,8 +173,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "dos clics.",
     notaEn:
       "Filters by instrument, direction, outcome, rule compliance, setup, behaviour, slippage " +
-      "and session. The table isn’t the point: the row above it is —labelled “what’s on " +
-      "screen”— and it recalculates over whatever survives the filter. Asking “what if I drop " +
+      "and session. The table isn’t the point: the row above it is —\u2060labelled “what’s on " +
+      "screen”\u2060— and it recalculates over whatever survives the filter. Asking “what if I drop " +
       "the days I broke my plan?” stops being a hypothesis and becomes two clicks.",
     altEs:
       "Pantalla de operaciones con doscientos registros: ocho filtros, un buscador, una fila " +
@@ -297,13 +297,13 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "anything. A playbook where everything works in the first month isn’t measuring, it’s " +
       "flattering.",
     altEs:
-      "Pantalla de playbook con cinco fichas —rango, tendencia, ruptura, reversión y " +
-      "pullback—, cada una con su curva en miniatura, P&L total, tamaño de muestra, " +
+      "Pantalla de playbook con cinco fichas —\u2060rango, tendencia, ruptura, reversión y " +
+      "pullback\u2060—, cada una con su curva en miniatura, P&L total, tamaño de muestra, " +
       "expectancy, win rate, un sello de «ventaja sugerente» o «no concluyente», la mejor " +
       "sesión, el cumplimiento, el reparto de R con su mediana y una barra de ganadoras " +
       "frente a perdedoras.",
     altEn:
-      "Playbook screen with five cards —range, trend, breakout, reversal and pullback—, each " +
+      "Playbook screen with five cards —\u2060range, trend, breakout, reversal and pullback\u2060—, each " +
       "with a miniature curve, total P&L, sample size, expectancy, win rate, an “edge " +
       "suggestive” or “inconclusive” stamp, best session, compliance, the R spread with its " +
       "median and a winners-versus-losers bar.",

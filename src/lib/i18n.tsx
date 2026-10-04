@@ -160,8 +160,8 @@ export const STR = {
 
   // ---- Performance ----
   performanceTitle: {
-    es: "Rendimiento — Cómo va tu operativa",
-    en: "Performance — How your trading is going",
+    es: "Rendimiento: cómo va tu operativa",
+    en: "Performance: how your trading is going",
   },
   pnlTotal: { es: "P&L total", en: "Total P&L" },
   winRate: { es: "Win rate", en: "Win rate" },
@@ -267,8 +267,8 @@ export const STR = {
   journalEyebrow: { es: "Reflexión", en: "Reflection" },
   journalTitle: { es: "Diario", en: "Journal" },
   ritualTitle: {
-    es: "Ritual del día — Antes y después de operar",
-    en: "Daily ritual — Before and after trading",
+    es: "Ritual del día: antes y después de operar",
+    en: "Daily ritual: before and after trading",
   },
   preMarket: { es: "Pre-mercado", en: "Pre-market" },
   postMarket: { es: "Post-mercado", en: "Post-market" },

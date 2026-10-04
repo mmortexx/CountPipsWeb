@@ -23,7 +23,9 @@ export function ProductStatus() {
               {es ? (
                 <>
                   Lo que está listo.{" "}
-                  <span className="tj-frase-nueva">Y lo que aún estamos comprobando.</span>
+                  {/* Espacio duro: el equilibrado dejaba «comprobando.» sola
+                      en un tercer renglón a 1440 (`scripts/viudas.mjs`). */}
+                  <span className="tj-frase-nueva">Y lo que aún estamos{" "}comprobando.</span>
                 </>
               ) : (
                 <>

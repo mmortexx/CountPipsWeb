@@ -123,6 +123,18 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
       "la definición del SQN decía «típica» para lo mismo",
   },
   {
+    /* «Curva de capital», «capital invertido», «aporta capital» o el
+       capital de la cuenta en las fichas del glosario (lo que en inglés es
+       «equity») son otra cosa y se quedan. */
+    palabra: /\btu capital\b|\bcapital inicial\b|\bcon el capital\b|\bsaldo\b|\bCapital(?: final|:| y frecuencia)/,
+    nombre: "capital o saldo para el dinero de la cuenta",
+    motivo:
+      "el dinero de la cuenta se llama «balance», como en los campos de las " +
+      "calculadoras; «Dime tu capital» iba encima de un campo rotulado " +
+      "«Balance de cuenta», y el proyector decía «Balance inicial» y «4,2× el " +
+      "capital inicial» en la misma tarjeta",
+  },
+  {
     palabra: /[−+-]?\$\s?\d/,
     nombre: "$ delante de la cifra",
     porNodo: true,

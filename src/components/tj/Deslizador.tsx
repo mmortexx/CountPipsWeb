@@ -22,9 +22,12 @@ export function Deslizador({
   paso: number;
   onValor: (n: number) => void;
 }) {
+  /* La fila de la etiqueta crece y la barra baja al fondo de la celda: si
+     una etiqueta parte en dos líneas, la barra de al lado no se queda más
+     arriba que la suya. */
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-between gap-4">
+    <div className="flex flex-col">
+      <div className="mb-2 flex flex-1 items-start justify-between gap-4">
         <span className="tj-deslizador-etiqueta">{etiqueta}</span>
         <span className="tj-deslizador-valor">{texto}</span>
       </div>
@@ -38,7 +41,7 @@ export function Deslizador({
         aria-label={etiqueta}
         aria-valuetext={texto}
         className="tj-range w-full"
-        style={{ height: 44, "--pct": `${((valor - min) / (max - min)) * 100}%` } as CSSProperties}
+        style={{ height: 44, "--f": ((valor - min) / (max - min)) } as CSSProperties}
       />
     </div>
   );

@@ -57,7 +57,7 @@
 | `almacenamiento-declarado.test.ts` | La tabla de la política de cookies tiene una fila por clave que el código escribe en `localStorage`/`sessionStorage` (más PostHog), y las de «hasta que cierres la pestaña» existen como almacenamiento de sesión |
 | `formulas-glosario.test.ts` | Cada símbolo que explica la leyenda de una fórmula del glosario («σ: desviación…») aparece en la propia fórmula, en los dos idiomas |
 | `ortografia-britanica.test.ts` | Ninguna raíz americana de una lista cerrada (-ize, defense, color, behavior, favor, center, catalog…) aparece en los campos ingleses del glosario, sus fórmulas, la FAQ, las láminas del producto ni `i18n.tsx`, salvo los nombres propios de términos técnicos («Maximum Favorable/Adverse Excursion») |
-| `palabras.test.ts` | El titular palabra a palabra conserva el texto exacto, no deja la puntuación en su propia máscara, realza exactamente su tramo aunque corte una palabra y pega las palabras de una o dos letras a la siguiente con espacio duro |
+| `palabras.test.ts` | El titular palabra a palabra conserva el texto exacto, no deja la puntuación en su propia máscara, realza exactamente su tramo aunque corte una palabra y, solo en español, pega las palabras de una o dos letras a la siguiente con espacio duro (en inglés no pega nada) |
 | `formato-millares.test.ts` | `fmtInt`, `fmtPrice`, `fmtNum` y `fmtMoney` agrupan millares también con cuatro dígitos, en los dos idiomas; `fmtCifraCorta` escribe «+1,2k» en español; `fmtOperaciones` concuerda en número («1 operación», «0 operaciones», «1 trade»); `fmtNum`, `fmtInt` y `fmtPct` escriben el negativo con el menos tipográfico y el cero redondeado sin signo |
 | `plan.test.ts` | `calculaPlan` de la calculadora de riesgo: cada par de forex con su pip y su divisa cotizada (USD/JPY sale a 0,50 lotes, no a 0,0033; EUR/GBP nunca arriesga más de lo pedido); futuros en contratos enteros con el riesgo real por debajo del nominal y el micro sugerido cuando no cabe uno; la fricción suma comisión y un tick; Kelly medio y cuarto son la mitad y la cuarta parte del completo; `fmtPrecio` conserva los decimales del precio |
 | `significancia.test.ts` | `contrasteVentaja`: la hipótesis nula es el acierto de equilibrio que fija el payoff, no el 50 %; un acierto por debajo nunca es «ventaja» (35 % a 1 R : 1 R, 75 % a 0,5 R : 3 R); el empate exacto tampoco; si la muestra alcanza la necesaria al 95 %, el veredicto es significativo; un 52 % frente a un 50 % pide miles de operaciones |
@@ -67,7 +67,7 @@
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |
 | `tipografias.test.ts` | El build no depende de que Google Fonts responda |
-| `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma |
+| `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma, y en español el dinero de la cuenta es «balance», nunca «saldo» ni «capital» (el inglés lo vigila `cifras.mjs`) |
 | `informe.test.ts` | `componerInforme`: el texto que copian las herramientas lleva «CountPips · Título», bloques separados por una línea en blanco, salta líneas y bloques vacíos y cierra con la dirección. Y solo `BotonCopiar` toca el portapapeles: una herramienta que vuelva a escribirlo por su cuenta se salta el formato y el aviso de fallo |
 | `paleta-trampa-tab.test.ts` | `destinoTrampaTab` (trampa de foco de `DemoCommandPalette`): a qué extremo salta Tab/Shift+Tab desde cada posición, incluida la de un único elemento enfocable |
 | `flechas.test.ts` | `destinoConFlechas`, el teclado común de los grupos de opción y las pestañas (test de disciplina, nota del día, dirección, analítica, revisión, barra de la demo): las flechas dan la vuelta en los extremos, Inicio y Fin saltan a ellos, en las pestañas ↑ y ↓ no mueven, y ninguna otra tecla mueve |
@@ -79,6 +79,8 @@
 | `amortizacion.test.ts` | El escenario de coste no habla de un mes de amortización fuera del horizonte elegido como si cayera dentro |
 | `conexiones.test.ts` | Cada texto que resume lo que se conecta a internet (FAQ, entradilla de seguridad) nombra lo que va solo —la licencia—; cada fila de la lista dice en su redacción si depende de ti |
 | `resultado-anunciado-cobertura.test.ts` | Las nueve calculadoras de marketing/ envuelven su resultado principal con `ResultadoAnunciado` |
+| `glosario-familias.test.ts` | La ventana del glosario (`GLOSSARY_CATEGORIES`) y la página del glosario (`ORDEN_CATEGORIAS`) enseñan las mismas familias en el mismo orden |
+| `rayas-catalogos.test.ts` | En el texto español de `STR`, el glosario, las dos FAQ y las láminas del producto, la raya de inciso va pegada a su palabra con unión invisible (`⁠`): ni « — » con espacios ni una raya por la que el navegador pueda partir la línea |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 

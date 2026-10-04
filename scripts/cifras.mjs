@@ -147,6 +147,9 @@ for await (const f of htmls(RAIZ)) {
        coló en la definición de «pullback» del glosario y salía en cinco
        páginas inglesas, porque esa ficha la citan otras cuatro. */
     anota("comillas angulares en la web inglesa", /[«»]/g, ctx);
+    /* El dinero de la cuenta es «balance», como en los campos de las
+       calculadoras; en español lo vigila `tests/vocabulario.test.ts`. */
+    anota("«capital» para el dinero de la cuenta (es «balance»)", /\b(?:your|starting) capital\b|\bCapital and frequency\b/gi, ctx);
     /* EL APÓSTROFO Y LAS COMILLAS DEL TECLADO.
        La web inglesa escribe “…” y don’t con los signos tipográficos, igual
        que la española escribe «…». El 2026-09-25 había 106 apóstrofos
@@ -189,6 +192,21 @@ for await (const f of htmls(RAIZ)) {
   }
   // en los dos: el menos de las cifras es el tipográfico
   anota("menos de teclado en una cifra", /[\s(>]-\d[\d.,]*/g, ctx);
+  /* La raya de inciso va pegada a la palabra («la mitad—»), pero el
+     navegador puede partir la línea a cualquiera de sus dos lados: la
+     calculadora de riesgo de ruina del glosario enseñaba «la mitad» al
+     final de un renglón y «— con un riesgo» al principio del siguiente.
+     Se pega con un U+2060 (unión de palabras), que no se ve ni se copia.
+     Se mira cada nodo de texto por separado: un «—» solo en su `<span>`
+     (el reloj antes de hidratar) no está pegado a nada. */
+  {
+    const RAYA = /[\p{L}\d.,)»]—|—[\p{L}\d(«]/u;
+    let n = 0;
+    for (const m of crudo.replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, "").matchAll(/>([^<]*—[^<]*)</g)) {
+      if (!RAYA.test(m[1])) continue;
+      if (n++ < 3) fallos.push({ ruta, regla: "raya de inciso que se puede separar de su palabra", ejemplo: m[1].trim().slice(0, 60) });
+    }
+  }
 
   /* RESTOS DE PLANTILLA EN EL TEXTO QUE SE LEE.
      Un dato que no llegó deja su hueco escrito con todas las letras:

@@ -692,7 +692,7 @@ export function TradeDetailPage() {
                 />
                 <span className="text-[10px] text-tertiary tnum">
                   {fmtNum(riskPct, lang, 2)}
-                  {pctSep(lang)} {lang === "es" ? "del capital" : "of capital"}
+                  {pctSep(lang)} {lang === "es" ? "de la cuenta" : "of the account"}
                 </span>
               </div>
             </HeroStat>

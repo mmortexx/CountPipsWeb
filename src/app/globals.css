@@ -1519,21 +1519,29 @@ textarea:focus-visible,
   height: 4px;
   border-radius: 999px;
   /* El tramo recorrido se pinta DENTRO de la propia pista, a partir de la
-     variable `--pct` que pone el componente. Antes lo hacía una barra
+     variable `--f` que pone el componente. Antes lo hacía una barra
      aparte colocada encima del control, y se veían dos pistas paralelas
      que el ojo lee como un fallo de montaje. Una sola pista, y el relleno
      es parte de ella.
 
      ESTO NO ES UN DEGRADADO, aunque la función se llame así: las dos
-     paradas caen en el MISMO punto (`--pct`), así que no hay transición
+     paradas caen en el MISMO punto (`--tj-corte`), así que no hay transición
      —hay un corte— y lo que se pinta son dos tramos de tinta plana. Es
      la única forma de rellenar una pista de `input[type=range]` en
      WebKit sin superponer un segundo elemento. Queda escrito para que la
-     próxima revisión de «cero degradados» no lo cuente entre ellos. */
+     próxima revisión de «cero degradados» no lo cuente entre ellos.
+
+     EL CORTE VA DONDE ESTÁ LA BOLITA, no en el porcentaje a secas. El
+     centro de la bolita no recorre la pista entera: va de 22 px (medio
+     tirador) a ancho − 22 px. Cortando en `f · ancho`, al 95 % la barra
+     asomaba por delante de la bolita y al 5 % quedaba un hueco gris por
+     detrás. `--f` es la fracción 0–1 que pone el componente;
+     `scripts/deslizadores.mjs` lo mide en píxeles. */
+  --tj-corte: calc(22px + (100% - 44px) * var(--f, 0));
   background: linear-gradient(
     to right,
-    var(--tj-recorrido) 0 var(--pct, 0%),
-    var(--tj-surco) var(--pct, 0%) 100%
+    var(--tj-recorrido) 0 var(--tj-corte),
+    var(--tj-surco) var(--tj-corte) 100%
   );
 }
 .tj-range::-moz-range-track {
@@ -3735,6 +3743,26 @@ html:has(.tj-visor[open]) {
 .tj-campo[aria-invalid="true"]:focus-visible {
   border-color: rgb(var(--pnl-neg) / 0.9);
   box-shadow: 0 0 0 3px rgb(var(--pnl-neg) / 0.16);
+}
+/* La paleta de la demo: el anillo y el borde de campo alrededor del texto
+   chocaban con el borde superior de la paleta. El foco se marca en la
+   cabecera entera, con una raya de acento en su base. */
+.tj-paleta-cabecera input:focus,
+.tj-paleta-cabecera input:focus-visible {
+  outline: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+.tj-paleta-cabecera:has(input:focus-visible) {
+  box-shadow: inset 0 -2px 0 rgb(var(--accent-base) / 0.6);
+}
+/* Con contraste alto o colores forzados la sombra no basta (en colores
+   forzados ni se pinta): vuelve el contorno, por dentro de la cabecera. */
+@media (prefers-contrast: more), (forced-colors: active) {
+  .tj-paleta-cabecera:has(input:focus-visible) {
+    outline: 3px solid rgb(var(--accent-base));
+    outline-offset: -3px;
+  }
 }
 /* Desplegable sin elegir (`required` con valor vacío es `:invalid`):
    «Selecciona» se lee como marcador, igual que en los campos de texto. */

@@ -1,7 +1,10 @@
 import { Fragment, type CSSProperties } from "react";
 
 /* Una palabra de una o dos letras no cierra renglón en un titular: se pega a
-   la siguiente con un espacio duro, y así sube con ella en la misma máscara. */
+   la siguiente con un espacio duro, y así sube con ella en la misma máscara.
+   Es norma del español. En inglés no se aplica: «an institutional» unido no
+   cabía en un móvil junto a «desk.», y la portada inglesa dejaba «desk.»
+   sola en un tercer renglón (`scripts/viudas.mjs`). */
 const CORTA = /^[a-záéíóúñü]{1,2}$/i;
 export const pegaCortas = (s: string) =>
   s.split(" ").reduce((acc, palabra, k, todas) => (k === 0 ? palabra : acc + (CORTA.test(todas[k - 1]) ? "\u00A0" : " ") + palabra), "");
@@ -12,8 +15,8 @@ export const pegaCortas = (s: string) =>
  * palabra: en su propia máscara el renglón podría partirse antes del punto.
  * Sin tramo realzado: los titulares son de un solo tono.
  */
-export function Palabras({ texto }: { texto: string }) {
-  const palabras = pegaCortas(texto).split(" ");
+export function Palabras({ texto, lang = "es" }: { texto: string; lang?: "es" | "en" }) {
+  const palabras = (lang === "es" ? pegaCortas(texto) : texto).split(" ");
   return (
     <>
       {palabras.map((palabra, k) => (

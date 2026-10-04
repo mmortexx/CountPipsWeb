@@ -535,8 +535,8 @@ function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: "es" | "en"
       <Eyebrow>{es ? "Esta selección frente al resto" : "This selection against the rest"}</Eyebrow>
       <p className="text-xs leading-relaxed text-tertiary max-w-[72ch]">
         {es
-          ? "Filtrar es comparar: lo que has dejado a la vista, medido contra todo lo que has escondido. Se compara la ventaja por operación en R —no el dinero, que premia operar más— y solo se declara ganador si la diferencia no es azar."
-          : "Filtering is comparing: what you left in view, measured against everything you hid. It compares the edge per trade in R —not money, which rewards trading more— and only names a winner if the difference isn’t chance."}
+          ? "Filtrar es comparar: lo que has dejado a la vista, medido contra todo lo que has escondido. Se compara la ventaja por operación en R —\u2060no el dinero, que premia operar más\u2060— y solo se declara ganador si la diferencia no es azar."
+          : "Filtering is comparing: what you left in view, measured against everything you hid. It compares the edge per trade in R —\u2060not money, which rewards trading more\u2060— and only names a winner if the difference isn’t chance."}
       </p>
       <table className="w-full max-w-[560px] tnum text-left [&_td]:py-1 [&_th]:py-1">
         <thead>

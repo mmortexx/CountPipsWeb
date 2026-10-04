@@ -438,7 +438,7 @@ export function EquityProjector() {
           {
             accentColor: "rgb(var(--accent-base))",
             height: 44,
-            "--pct": `${Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100))}%`,
+            "--f": Math.max(0, Math.min(1, ((value - min) / (max - min)))),
           } as React.CSSProperties
         }
         aria-label={label}
@@ -459,7 +459,7 @@ export function EquityProjector() {
               ? "Con estos valores la proyección se sale de cualquier escala realista."
               : "With these values the projection is off any realistic scale."
             : es
-              ? `Capital final: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Drawdown máximo estimado: ${fmtPct(c.estMaxDDpct, 1)}.`
+              ? `Balance final: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Drawdown máximo estimado: ${fmtPct(c.estMaxDDpct, 1)}.`
               : `Final balance: ${fmtUsd(c.finalBalance)} (${fmtPct(c.totalReturnPct, 1)}). Estimated max drawdown: ${fmtPct(c.estMaxDDpct, 1)}.`
         }
       />
@@ -500,8 +500,8 @@ export function EquityProjector() {
             }}
           >
             {es
-              ? "Proyecta tu capital a partir de tu expectancy, tu frecuencia, la fricción del mercado y el interés compuesto, con el margen de variación que cabe esperar. Es un cálculo, no una promesa."
-              : "Project your capital from your expectancy, trading frequency, market friction and compounding, with the range of variation to expect. It is a calculation, not a promise."}
+              ? "Proyecta tu balance a partir de tu expectancy, tu frecuencia, la fricción del mercado y el interés compuesto, con el margen de variación que cabe esperar. Es un cálculo, no una promesa."
+              : "Project your balance from your expectancy, trading frequency, market friction and compounding, with the range of variation to expect. It is a calculation, not a promise."}
           </p>
         </div>
 
@@ -582,7 +582,7 @@ export function EquityProjector() {
               <div className="space-y-3.5">
                 <div className="flex items-center justify-between pb-2 border-b border-[var(--line)]">
                   <span className="text-[14px] font-semibold text-primary flex items-center gap-2">
-                    {es ? "Capital y frecuencia" : "Capital and frequency"}
+                    {es ? "Balance y frecuencia" : "Balance and frequency"}
                   </span>
                   <span className="text-[13px] tnum text-[var(--ink)] font-semibold">
                     {fmtUsd(startBalance)}
@@ -810,7 +810,7 @@ export function EquityProjector() {
                             por debajo del 4,5:1 de AA. Con el secundario
                             sube por encima del listón. */}
                       <div className="text-[12px] text-[var(--ink-2)] leading-tight mt-0.5">
-                        {es ? "Escala con el capital" : "Scales with equity"}
+                        {es ? "Escala con el balance" : "Scales with equity"}
                       </div>
                     </button>
 
@@ -982,7 +982,7 @@ export function EquityProjector() {
 
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
                       <div>
-                        <span className="text-[var(--ink-3)] text-[12px] mr-1">{es ? "Capital:" : "Equity:"}</span>
+                        <span className="text-[var(--ink-3)] text-[12px] mr-1">{es ? "Balance:" : "Balance:"}</span>
                         <span className="font-semibold text-[var(--ink)]">{fmtUsd(activePoint.balance)}</span>
                       </div>
                       <div>
@@ -1272,7 +1272,7 @@ export function EquityProjector() {
                         ? "Fuera de escala"
                         : "Off scale"
                       : startBalance > 0
-                      ? `${fmtNum(c.finalBalance / startBalance, 1)}× ${es ? "el capital inicial" : "starting capital"}`
+                      ? `${fmtNum(c.finalBalance / startBalance, 1)}× ${es ? "el balance inicial" : "starting balance"}`
                       : ""}
                   </div>
                 </div>
