@@ -265,11 +265,12 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 2 Boundary & 
     expect(riskCalc).toContain('"Plan en corto"');
     expect(riskCalc).toContain('"Plan en largo"');
 
-    // DisciplineCost uses explicit + and - prefix signs for P&L values.
-    // El signo es el PRIMER argumento de `usd`, que lo antepone a la cifra;
-    // si alguien lo vacia, la fila solo se distingue por el color.
-    expect(discCost).toContain('usd("+", inPlanExp)');
-    expect(discCost).toContain('usd("−", gap)');
+    // DisciplineCost escribe el signo de cada importe con `usdSigno`, que
+    // lo decide sobre la cifra redondeada; si alguien lo vacía, la fila
+    // solo se distingue por el color.
+    expect(discCost).toContain("usdSigno(inPlanExp)");
+    expect(discCost).toContain("usdSigno(-gap)");
+    expect(discCost).toContain('usd(r > 0 ? "+" : r < 0 ? "−" : "", Math.abs(r))');
     expect(discCost).toMatch(/const usd = useCallback\(\s*\(signo: string/);
 
     // EdgeSignificanceChecker includes textual verdicts and badge indicators

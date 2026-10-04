@@ -176,6 +176,45 @@ for (const herramienta of HERRAMIENTAS) {
   }
 }
 
+/* El test de disciplina no tiene deslizadores: se contesta pregunta a
+   pregunta, y su resultado —la puntuación y el punto flaco— era mudo. Se
+   responde entero y se exige que lo diga, y que no diga nada al cargar. */
+for (const ruta of ["/test/", "/en/test/"]) {
+  const ctx = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  const p = await ctx.newPage();
+  try {
+    await p.goto(base + ruta, { waitUntil: "load", timeout: 30000 });
+    await p.waitForTimeout(ESPERA);
+    const vivos = () =>
+      p.evaluate(() =>
+        [...document.querySelectorAll('[role="status"], [aria-live="polite"]')].map((e) => (e.textContent || "").trim()).filter(Boolean),
+      );
+    const alCargar = await vivos();
+    if (alCargar.length) fallos.push({ ruta, detalle: `habla sola al cargar: «${alCargar[0].slice(0, 60)}»` });
+    let respondidas = 0;
+    for (let i = 0; i < 40; i++) {
+      const opciones = p.locator('[role="radio"]');
+      if (!(await opciones.count())) break;
+      await opciones.last().click();
+      respondidas++;
+      const siguiente = p.getByRole("button", { name: /^(Siguiente|Next)/ });
+      if (!(await siguiente.count())) break;
+      await siguiente.click();
+    }
+    await p.waitForTimeout(ESPERA);
+    const dicho = (await vivos()).join(" · ");
+    if (respondidas < 10) fallos.push({ ruta, detalle: `solo pude responder ${respondidas} preguntas: ¿cambió el test?` });
+    else if (!dicho) fallos.push({ ruta, detalle: "con todo respondido, la puntuación no se anuncia" });
+    else {
+      conAnuncio++;
+      console.log(`  ${ruta.padEnd(44)} «${dicho.slice(0, 62)}»`);
+    }
+  } catch (e) {
+    fallos.push({ ruta, detalle: `la página no se pudo recorrer: ${String(e).slice(0, 80)}` });
+  }
+  await ctx.close();
+}
+
 await navegador.close();
 server.close();
 
@@ -184,7 +223,7 @@ if (fallos.length) {
   for (const f of fallos) console.log(`     ${f.ruta}  ${f.detalle}`);
 }
 
-console.log(`\n[anuncios] ${HERRAMIENTAS.length * 2} páginas · ${conAnuncio} anuncian su resultado`);
+console.log(`\n[anuncios] ${HERRAMIENTAS.length * 2 + 2} páginas · ${conAnuncio} anuncian su resultado`);
 
 if (sinCambios > HERRAMIENTAS.length) {
   console.log("[anuncios] en casi ninguna cambió nada al tocar una entrada: la guarda está rota, no el sitio");

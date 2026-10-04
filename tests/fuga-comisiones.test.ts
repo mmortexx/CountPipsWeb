@@ -64,3 +64,26 @@ describe("valor del objetivo por instrumento", () => {
     }
   });
 });
+
+/* El crudo y el oro arrancaban con un objetivo de 0,5 $ en un deslizador
+   de 5 a 100: el tirador se pintaba fuera de la pista y, al tocarlo, el
+   objetivo saltaba a 5 $ y el resultado anual a millones. */
+describe("el objetivo de cada instrumento cabe en su deslizador", () => {
+  it("el valor inicial está dentro del recorrido y sobre el paso", () => {
+    const fuera: string[] = [];
+    for (const i of INSTRUMENT_SPECS) {
+      const { min, max, paso, inicial } = i.objetivo;
+      const pasos = (inicial - min) / paso;
+      if (!(min < max) || inicial < min || inicial > max || Math.abs(pasos - Math.round(pasos)) > 1e-9) fuera.push(i.id);
+    }
+    expect(fuera).toEqual([]);
+  });
+
+  it("el recorrido entero da un resultado por operación del orden de lo que vale el tick", () => {
+    for (const i of INSTRUMENT_SPECS) {
+      const ticksMax = i.objetivo.max / (i.category === "forex" ? 1 : i.tickSize);
+      expect(ticksMax, i.id).toBeLessThanOrEqual(500);
+      expect(ticksMax, i.id).toBeGreaterThanOrEqual(8);
+    }
+  });
+});

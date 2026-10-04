@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo, useId, useEffect } from "react";
+import { useState, useMemo, useId, useEffect, useRef } from "react";
 import { useLang } from "@/lib/i18n";
 import { pctSep, fmtInt } from "@/lib/trading/format";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { componerInforme } from "@/lib/informe";
 import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
 
@@ -118,6 +119,8 @@ const DIMS: Dim[] = [
 
 /** Puntos máximos de una pregunta: cuatro opciones, de 0 a 3. */
 const MAX_OPT = 3;
+/** Desde aquí, el eje más bajo ya no es un punto flaco sino uno que vigilar. */
+const UMBRAL_SIN_PUNTO_FLACO = 85;
 
 /**
  * Dónde se recuerdan las respuestas. Son quince preguntas: perderlas por
@@ -272,6 +275,47 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
     )[0];
   }, [perDim, allAnswered]);
 
+  /* Con las quince respuestas óptimas salía «Institucional» y debajo «Tu
+     punto flaco es el riesgo»: el eje más bajo siempre existe, aunque
+     esté al 100 %. Por encima del umbral no hay punto flaco que señalar,
+     sino un eje que vigilar. */
+  const sinPuntoFlaco = weakest !== null && weakest.pct >= UMBRAL_SIN_PUNTO_FLACO;
+  const consejo = !weakest
+    ? null
+    : sinPuntoFlaco
+      ? weakest.pct >= 100
+        ? es
+          ? `Los cinco ejes están al 100${pctSep(lang)}. Lo que toca es sostenerlo con datos y no con memoria: revisa cada mes tu ${weakest.dim.es.toLowerCase()}, que es el eje que más pesa y el primero que cede cuando las cosas se tuercen.`
+          : `All five axes are at 100%. The job now is to hold it with data, not memory: review your ${weakest.dim.en.toLowerCase()} every month, the axis that weighs most and the first to give way when things turn.`
+        : es
+          ? `No hay un punto flaco claro: los cinco ejes están en el ${UMBRAL_SIN_PUNTO_FLACO}${pctSep(lang)} o más. Lo que toca es sostenerlo con datos y no con memoria: revisa cada mes tu ${weakest.dim.es.toLowerCase()} (${weakest.pct}${pctSep(lang)}), el eje con menos margen.`
+          : `No clear weak spot: all five axes are at ${UMBRAL_SIN_PUNTO_FLACO}% or above. The job now is to hold it with data, not memory: review your ${weakest.dim.en.toLowerCase()} (${weakest.pct}%) every month, the axis with the least margin.`
+      : es
+        ? weakest.dim.tipEs
+        : weakest.dim.tipEn;
+  const rotuloConsejo = sinPuntoFlaco ? (es ? "Para sostenerlo" : "To keep it") : es ? "Empieza por aquí" : "Start here";
+
+  /* El foco sigue a la pregunta: «Siguiente», «Anterior» y «Empezar de
+     nuevo» cambian lo que hay en pantalla, y el botón pulsado podía
+     desaparecer y dejar el foco en el cuerpo de la página. Solo se mueve
+     tras un gesto, nunca al cargar. */
+  const enunciadoRef = useRef<HTMLParagraphElement>(null);
+  const resultadoRef = useRef<HTMLDivElement>(null);
+  const moverFoco = useRef(false);
+  useEffect(() => {
+    if (!moverFoco.current) return;
+    moverFoco.current = false;
+    enunciadoRef.current?.focus();
+  }, [actual, answers]);
+  const irA = (i: number) => {
+    moverFoco.current = true;
+    setActual(Math.min(QUESTIONS.length - 1, Math.max(0, i)));
+  };
+  const verResultado = () => {
+    resultadoRef.current?.focus();
+    resultadoRef.current?.scrollIntoView({ block: "start" });
+  };
+
 
   const informe = () =>
     componerInforme(
@@ -287,14 +331,19 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
           lineas: perDim.map(({ dim, pct }) => `${es ? dim.es : dim.en}: ${pct}${pctSep(lang)}`),
         },
         {
-          rotulo: es ? "Empieza por aquí" : "Start here",
-          lineas: [weakest && (es ? weakest.dim.tipEs : weakest.dim.tipEn)],
+          rotulo: rotuloConsejo,
+          lineas: [consejo],
         },
       ],
       es ? "/test/" : "/en/test/",
     );
 
-  const reset = () => setAnswers(QUESTIONS.map(() => null));
+  /* Reiniciar vuelve a la pregunta 1: dejaba «Pregunta 15 de 15» con
+     las respuestas a cero. */
+  const reset = () => {
+    setAnswers(QUESTIONS.map(() => null));
+    irA(0);
+  };
 
   const setAnswer = (qi: number, oi: number) =>
     setAnswers((prev) => {
@@ -444,8 +493,10 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                       </span>
                     </div>
                     <p
+                      ref={enunciadoRef}
+                      tabIndex={-1}
                       id={idPregunta(qi)}
-                      className="t-h4 m-0 mb-5"
+                      className="t-h4 m-0 mb-5 outline-none"
                       style={{ color: "var(--ink)" }}
                     >
                       {es ? q.qEs : q.qEn}
@@ -526,7 +577,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
             <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
               <button
                 type="button"
-                onClick={() => setActual((i) => Math.max(0, i - 1))}
+                onClick={() => irA(actual - 1)}
                 disabled={actual === 0}
                 className="order-2 inline-flex items-center gap-2 rounded-[4px] transition-colors duration-200 disabled:opacity-35 disabled:cursor-not-allowed sm:order-none"
                 style={{ minHeight: 44, padding: "10px 16px", fontSize: 14, cursor: "pointer",
@@ -544,7 +595,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               {actual < QUESTIONS.length - 1 ? (
                 <button
                   type="button"
-                  onClick={() => setActual((i) => Math.min(QUESTIONS.length - 1, i + 1))}
+                  onClick={() => irA(actual + 1)}
                   /* Se puede seguir sin responder: obligar a contestar
                      para avanzar convierte un diagnóstico en un peaje.
                      El resultado ya avisa de cuántas faltan. */
@@ -553,9 +604,9 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   {es ? "Siguiente" : "Next"} <span aria-hidden>→</span>
                 </button>
               ) : (
-                <span className="tnum order-3 sm:order-none" style={{ fontSize: 13, color: "var(--ink-3)" }}>
-                  {es ? "Última" : "Last"}
-                </span>
+                <button type="button" onClick={verResultado} className="cta cta--primario order-3 sm:order-none">
+                  {es ? "Ver resultado" : "See result"} <span aria-hidden>→</span>
+                </button>
               )}
             </div>
 
@@ -581,9 +632,18 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
 
           {/* ── Resultado ────────────────────────────────────────────── */}
           <div className="lg:sticky lg:top-24">
-            <div className="tj-ficha">
+            <ResultadoAnunciado
+              texto={
+                allAnswered && level && weakest
+                  ? es
+                    ? `${level.label}: ${fmtInt(score, lang)} de 100. ${sinPuntoFlaco ? "Sin punto flaco claro." : `Punto flaco: ${weakest.dim.es.toLowerCase()}.`}`
+                    : `${level.label}: ${fmtInt(score, lang)} out of 100. ${sinPuntoFlaco ? "No clear weak spot." : `Weak spot: ${weakest.dim.en.toLowerCase()}.`}`
+                  : ""
+              }
+            />
+            <div ref={resultadoRef} tabIndex={-1} aria-labelledby={`${uid}-perfil`} className="tj-ficha scroll-mt-24 outline-none">
               <p className="tj-ficha-barra">
-                <span>{es ? "Tu perfil" : "Your profile"}</span>
+                <span id={`${uid}-perfil`}>{es ? "Tu perfil" : "Your profile"}</span>
                 <span>{es ? "5 ejes" : "5 axes"}</span>
               </p>
               <div className="tj-ficha-cuerpo">
@@ -665,10 +725,10 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 <>
                   <div className="border-t border-[var(--ficha-division)] pt-4">
                     <div className="tnum mb-2 text-[12px] font-medium text-tertiary">
-                      {es ? "Empieza por aquí" : "Start here"}
+                      {rotuloConsejo}
                     </div>
                     <p className="m-0 text-sm leading-relaxed text-secondary">
-                      {es ? weakest.dim.tipEs : weakest.dim.tipEn}
+                      {consejo}
                     </p>
                     <div className="mt-3">
                       <BotonCopiar

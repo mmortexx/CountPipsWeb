@@ -1,5 +1,6 @@
 import { mulberry32 } from "./azar";
 import { computeExpectedMaxLossStreak, computeRiskOfRuin, UMBRAL_RUINA_PCT } from "./estadistica";
+import { LIMITE_PROYECCION_USD } from "./proyeccion";
 
 export type ParametrosMonteCarlo = {
   caminos: number;
@@ -14,7 +15,14 @@ export type ParametrosMonteCarlo = {
 };
 
 /** Operaciones por mes para repartir el retiro periódico. */
-const OPERACIONES_POR_MES = 20;
+export const OPERACIONES_POR_MES = 20;
+
+/** La semilla vive entre 1 y este tope, que es el del deslizador. */
+export const SEMILLA_MAX = 50;
+/** «Otra tirada» da la vuelta al llegar al tope en vez de salirse. */
+export function siguienteSemilla(semilla: number): number {
+  return (semilla % SEMILLA_MAX) + 1;
+}
 
 export function simulaMonteCarlo({
   caminos,
@@ -120,5 +128,8 @@ export function simulaMonteCarlo({
     theoreticalMaxLossStreak: computeExpectedMaxLossStreak(winRate, trades),
     analyticalRuinProb,
     probRuin, probDouble,
+    /* El mismo techo que el proyector de capital: por encima ya no es una
+       cifra, es un desbordamiento, y no se enseña como número. */
+    fueraDeEscala: !Number.isFinite(finalP95) || finalP95 > LIMITE_PROYECCION_USD,
   };
 }

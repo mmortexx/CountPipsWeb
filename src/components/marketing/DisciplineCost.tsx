@@ -67,7 +67,13 @@ export function DisciplineCost() {
   const offPlanTrades = Math.round((totalTrades * breachPct) / 100);
   const inPlanTrades = Math.max(0, totalTrades - offPlanTrades);
 
-  const gap = inPlanExp - offPlanExp;
+  /* Lo que escribe el usuario se guarda tal cual: el campo recortaba en
+     silencio a 0 una pérdida escrita sin signo. Si fuera de plan rinde
+     igual o más que dentro, no hay fuga que facturar y se dice. */
+  const gapBruta = inPlanExp - offPlanExp;
+  const gap = Math.max(0, gapBruta);
+  const sinCoste = gapBruta <= 0;
+  const planPierde = inPlanExp < 0;
   const inPlanTotal = inPlanTrades * inPlanExp;
   const offPlanTotal = offPlanTrades * offPlanExp;
   const totalLeakMonthly = offPlanTrades * gap;
@@ -124,6 +130,19 @@ export function DisciplineCost() {
     [es, lang],
   );
 
+  /* Una cifra con su signo real y su color: «+29,73 $», «−38,47 $», «0,00 $». */
+  const usdSigno = (v: number) => {
+    const r = Number(v.toFixed(2));
+    return usd(r > 0 ? "+" : r < 0 ? "−" : "", Math.abs(r));
+  };
+  const colorSigno = (v: number) =>
+    Number(v.toFixed(2)) > 0 ? "text-[rgb(var(--pnl-pos))]" : Number(v.toFixed(2)) < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-primary";
+  /* Tocar una cifra a mano deja de ser el escenario elegido. */
+  const aMano = <T,>(fijar: (v: T) => void) => (v: T) => {
+    fijar(v);
+    setActivePreset("custom");
+  };
+
   const aplicarPreset = (p: typeof PRESETS[0]) => {
     setActivePreset(p.id);
     setTotalTrades(p.trades);
@@ -143,7 +162,7 @@ export function DisciplineCost() {
         {
           lineas: [
             `${es ? "Operaciones al mes" : "Trades per month"}: ${totalTrades} (${breachPct}${pctSep(lang)} ${es ? "fuera de plan" : "off-plan"})`,
-            `${es ? "Ganancia media en plan, por operación" : "Avg win in-plan, per trade"}: ${usd(inPlanExp)}`,
+            `${es ? "Resultado medio en plan, por operación" : "Avg result in-plan, per trade"}: ${usd(inPlanExp)}`,
             `${es ? "Resultado medio fuera de plan" : "Avg result off-plan"}: ${usd(offPlanExp)}`,
           ],
         },
@@ -248,7 +267,7 @@ export function DisciplineCost() {
                     max={200}
                     step={2}
                     value={totalTrades}
-                    onChange={(e) => setTotalTrades(Number(e.target.value))}
+                    onChange={(e) => aMano(setTotalTrades)(Number(e.target.value))}
                     /* `.tj-range`, como los otros seis deslizadores del
                        sitio. Antes era `appearance-none` con 6 px de alto
                        y sin regla de bolita: en WebKit eso deja el control
@@ -278,7 +297,7 @@ export function DisciplineCost() {
                     max={80}
                     step={1}
                     value={breachPct}
-                    onChange={(e) => setBreachPct(Number(e.target.value))}
+                    onChange={(e) => aMano(setBreachPct)(Number(e.target.value))}
                     className="tj-range w-full"
                     style={
                       {
@@ -292,16 +311,15 @@ export function DisciplineCost() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[var(--ficha-division)]">
                 <div>
                   <label htmlFor="disc-inplan" className="block text-[12px] text-tertiary mb-1">
-                    {es ? "Ganancia media en plan, por operación" : "Avg win in-plan, per trade"}
+                    {es ? "Resultado medio en plan, por operación" : "Avg result in-plan, per trade"}
                   </label>
                   <CampoUnidad
                     id="disc-inplan"
                     unidad="$"
                     antes={!es}
                     paso={1}
-                    min={0}
                     valor={inPlanExp}
-                    onValor={setInPlanExp}
+                    onValor={aMano(setInPlanExp)}
                     className="text-primary"
                   />
                 </div>
@@ -315,10 +333,9 @@ export function DisciplineCost() {
                     unidad="$"
                     antes={!es}
                     paso={1}
-                    max={0}
                     valor={offPlanExp}
-                    onValor={setOffPlanExp}
-                    className="text-[rgb(var(--pnl-neg))]"
+                    onValor={aMano(setOffPlanExp)}
+                    className={offPlanExp < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-primary"}
                   />
                 </div>
               </div>
@@ -357,11 +374,11 @@ export function DisciplineCost() {
                 <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[var(--ficha-division)] relative group">
                   <th scope="row" className="text-left font-medium text-primary text-[14px]">{es ? "En plan" : "In plan"}</th>
                   <td className="tnum text-right text-secondary text-[14px]">{inPlanTrades}</td>
-                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
-                    {usd("+", inPlanExp)}
+                  <td className={`tnum text-right text-[14px] font-semibold ${colorSigno(inPlanExp)}`}>
+                    {usdSigno(inPlanExp)}
                   </td>
-                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-pos))]">
-                    {usd("+", inPlanTotal)}
+                  <td className={`tnum text-right text-[14px] font-semibold ${colorSigno(inPlanTotal)}`}>
+                    {usdSigno(inPlanTotal)}
                   </td>
                 </tr>
 
@@ -369,11 +386,11 @@ export function DisciplineCost() {
                 <tr className="col-span-4 grid grid-cols-subgrid gap-x-3 whitespace-nowrap items-center border-b px-2.5 py-3 text-sm border-[var(--ficha-division)] relative group">
                   <th scope="row" className="text-left font-medium text-primary text-[14px]">{es ? "Fuera de plan" : "Off plan"}</th>
                   <td className="tnum text-right text-secondary text-[14px]">{offPlanTrades}</td>
-                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    {usd(offPlanExp < 0 ? "−" : "", Math.abs(offPlanExp))}
+                  <td className={`tnum text-right text-[14px] font-semibold ${colorSigno(offPlanExp)}`}>
+                    {usdSigno(offPlanExp)}
                   </td>
-                  <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    {usd(offPlanTotal < 0 ? "−" : "", Math.abs(offPlanTotal))}
+                  <td className={`tnum text-right text-[14px] font-semibold ${colorSigno(offPlanTotal)}`}>
+                    {usdSigno(offPlanTotal)}
                   </td>
                 </tr>
 
@@ -382,10 +399,10 @@ export function DisciplineCost() {
                   <th scope="row" className="text-left font-semibold text-primary text-[14px]">{es ? "Brecha" : "Gap"}</th>
                   <td className="tnum text-right text-secondary text-[14px]">—</td>
                   <td className="tnum text-right font-semibold text-[rgb(var(--pnl-neg))] text-[14px]">
-                    {usd("−", gap)}
+                    {usdSigno(-gap)}
                   </td>
                   <td className="tnum text-right text-[14px] font-semibold text-[rgb(var(--pnl-neg))]">
-                    {usd("−", totalLeakMonthly)}
+                    {usdSigno(-totalLeakMonthly)}
                   </td>
                 </tr>
                 </tbody>
@@ -398,6 +415,17 @@ export function DisciplineCost() {
                 ? "La brecha es el dinero que dejas de ganar en cada operación que rompe las reglas frente a haberla ejecutado con disciplina."
                 : "The gap is the cash lost on every off-plan trade compared to executing cleanly inside your rules."}
             </p>
+            {(sinCoste || planPierde) && (
+              <p className="medida mt-2 text-[13px] leading-[1.6] text-secondary">
+                {planPierde
+                  ? es
+                    ? "Con estas cifras, tu plan pierde dinero de media: antes que la disciplina, lo que hay que revisar es el plan."
+                    : "With these numbers your plan loses money on average: before discipline, it is the plan that needs reviewing."
+                  : es
+                    ? "Con estas cifras, fuera de plan rindes igual o más que dentro: saltarte el plan no te cuesta dinero, y la factura queda a cero."
+                    : "With these numbers, off-plan trades do as well as or better than in-plan ones: breaking the plan costs you nothing, and the invoice stays at zero."}
+              </p>
+            )}
           </div>
 
           {/* Factura Dinámica */}
@@ -440,7 +468,7 @@ export function DisciplineCost() {
                           la misma vertical y la columna no baila cuando
                           cambian las cifras. */}
                       <span className="tnum min-w-[4.5rem] whitespace-nowrap text-right font-semibold text-[rgb(var(--pnl-neg))]">
-                        {es ? `−${fmtNum(mistakeCost, lang, 0)}\u00a0$` : `−$${fmtNum(mistakeCost, lang, 0)}`}
+                        {corto(-mistakeCost)}
                       </span>
                     </div>
                     <div className="relative mt-1.5 h-[3px] overflow-hidden bg-[rgb(var(--divider)/0.10)]">
@@ -471,7 +499,7 @@ export function DisciplineCost() {
                 <span
                   className="tj-cifra text-[rgb(var(--pnl-neg))]"
                 >
-                  −{fmtMoney(totalLeakMonthly, lang)}
+                  {fmtMoney(-totalLeakMonthly, lang)}
                 </span>
               </div>
 
@@ -507,7 +535,7 @@ export function DisciplineCost() {
                     return (
                       <div
                         key={yr}
-                        title={`−${fmtMoney(fv, lang)}`}
+                        title={fmtMoney(-fv, lang)}
                         className="caja-cifra min-w-0 px-1.5 py-3"
                       >
                         <span className="block text-[12px] text-tertiary">

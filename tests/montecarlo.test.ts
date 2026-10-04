@@ -55,3 +55,25 @@ describe("ruina en el simulador de Monte Carlo", () => {
     }
   });
 });
+
+/* «Otra tirada» sumaba uno a la semilla sin tope: pasada la 50 el
+   deslizador se quedaba en su máximo con un valor que no podía enseñar. */
+describe("la semilla da la vuelta dentro del deslizador", () => {
+  it("de 1 a 50 y vuelta a 1", async () => {
+    const { siguienteSemilla, SEMILLA_MAX } = await import("@/lib/trading/montecarlo");
+    expect(SEMILLA_MAX).toBe(50);
+    expect(siguienteSemilla(1)).toBe(2);
+    expect(siguienteSemilla(49)).toBe(50);
+    expect(siguienteSemilla(50)).toBe(1);
+  });
+});
+
+/* Con los deslizadores al máximo favorable el balance rondaba 3e20 y la
+   celda pintaba «296.700.000.000.000,00 M $». */
+describe("un balance que ya no es creíble se marca", () => {
+  it("al máximo favorable sale fuera de escala; con los valores iniciales no", () => {
+    const extremo = simulaMonteCarlo({ ...BASE, startBalance: 100_000, trades: 300, winRate: 75, avgWinR: 5, avgLossR: 0.25, riskPct: 3.5 });
+    expect(extremo.fueraDeEscala).toBe(true);
+    expect(simulaMonteCarlo(BASE).fueraDeEscala).toBe(false);
+  });
+});

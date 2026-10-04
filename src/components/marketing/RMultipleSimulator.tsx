@@ -4,9 +4,10 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { simulaMonteCarlo } from "@/lib/trading/montecarlo";
+import { OPERACIONES_POR_MES, SEMILLA_MAX, siguienteSemilla, simulaMonteCarlo } from "@/lib/trading/montecarlo";
+import { LIMITE_PROYECCION_USD } from "@/lib/trading/proyeccion";
 import { UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
-import { fmtMoney, fmtNum as fmtNumBase, fmtR, pctSep } from "@/lib/trading/format";
+import { fmtMoney, fmtNum as fmtNumBase, fmtOperaciones, fmtR, pctSep } from "@/lib/trading/format";
 import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
 
 const SIM_RUNS = CAMINOS_MONTE_CARLO;
@@ -79,12 +80,18 @@ export function RMultipleSimulator() {
   const fmtUsdCorto = (n: number) => {
     const a = Math.abs(n);
     const signo = n < 0 ? "−" : "";
+    /* Por encima del billón ya no es una cifra: con los deslizadores al
+       máximo salía «296.700.000.000.000,00 M $». */
+    if (!Number.isFinite(a) || a > LIMITE_PROYECCION_USD) return "—";
+    if (a >= 1_000_000_000) return es ? `${signo}${fmtNum(a / 1_000_000_000, 1)}\u00a0mil\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000_000, 1)}B`;
     if (a >= 1_000_000) return es ? `${signo}${fmtNum(a / 1_000_000, 2)}\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000, 2)}M`;
     if (a >= 10_000) return es ? `${signo}${fmtNum(a / 1_000, 0)}\u00a0k $` : `${signo}$${fmtNum(a / 1_000, 0)}k`;
     return fmtUsd(n);
   };
 
   const fmtNum = (n: number, dec = 2) => fmtNumBase(n, lang, dec);
+  const enVoz = (n: number) =>
+    !Number.isFinite(n) || Math.abs(n) > LIMITE_PROYECCION_USD ? (es ? "fuera de escala" : "off the scale") : fmtUsd(n);
 
   const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)}${pctSep(lang)}`;
 
@@ -178,8 +185,8 @@ export function RMultipleSimulator() {
       <ResultadoAnunciado
         texto={
           es
-            ? `Mediana: ${fmtUsd(c.finalP50)}. Cola del 5 %: ${fmtUsd(c.finalP5)}. Probabilidad de ruina: ${fmtPct(c.probRuin, 1)}.`
-            : `Median: ${fmtUsd(c.finalP50)}. Bottom 5%: ${fmtUsd(c.finalP5)}. Probability of ruin: ${fmtPct(c.probRuin, 1)}.`
+            ? `Mediana: ${enVoz(c.finalP50)}. Cola del 5 %: ${enVoz(c.finalP5)}. Probabilidad de ruina: ${fmtPct(c.probRuin, 1)}.`
+            : `Median: ${enVoz(c.finalP50)}. Bottom 5%: ${enVoz(c.finalP5)}. Probability of ruin: ${fmtPct(c.probRuin, 1)}.`
         }
       />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
@@ -253,7 +260,7 @@ export function RMultipleSimulator() {
                       setAvgWinR(preset.winR);
                       setAvgLossR(preset.lossR);
                       setRiskPct(preset.risk);
-                      setSeed((s) => s + 1);
+                      setSeed(siguienteSemilla);
                     }}
                   >
                     {/* El nombre reserva DOS lineas aunque ocupe una:
@@ -280,13 +287,13 @@ export function RMultipleSimulator() {
             {slider(es ? "Ganancia media" : "Avg win (R)", avgWinR, 0.5, 5, 0.1, setAvgWinR, " R", es ? "Ganancia media en R" : "Average win in R")}
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
             {slider(es ? "Riesgo por operación" : "Risk per trade", riskPct, 0.25, 3.5, 0.05, setRiskPct, pctSep(lang), es ? "Riesgo por operación" : "Risk per trade")}
-            {slider(es ? "Retiro mensual" : "Monthly withdrawal", monthlyWithdrawal, 0, 5000, 100, setMonthlyWithdrawal, " $", es ? "Retiro mensual de beneficios" : "Monthly profit withdrawal")}
-            {slider(es ? "Semilla" : "Seed", seed, 1, 50, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
+            {slider(es ? `Retiro cada ${fmtOperaciones(OPERACIONES_POR_MES, lang)}` : `Withdrawal every ${fmtOperaciones(OPERACIONES_POR_MES, lang)}`, monthlyWithdrawal, 0, 5000, 100, setMonthlyWithdrawal, " $", es ? `Retiro cada ${fmtOperaciones(OPERACIONES_POR_MES, lang)}, gane o pierda la cuenta` : `Withdrawal every ${fmtOperaciones(OPERACIONES_POR_MES, lang)}, win or lose`)}
+            {slider(es ? "Semilla" : "Seed", seed, 1, SEMILLA_MAX, 1, setSeed, "", es ? "Semilla de simulación determinista" : "Deterministic simulation seed")}
           </div>
 
           <button
             type="button"
-            onClick={() => setSeed((s) => s + 1)}
+            onClick={() => setSeed(siguienteSemilla)}
             className="mt-5 -ml-1 inline-flex items-center gap-2 min-h-[44px] px-1 text-[14px] font-medium text-primary transition-colors duration-150 hover:text-[rgb(var(--accent-base))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             aria-label={es ? "Volver a simular con otra semilla aleatoria" : "Re-simulate with a different random seed"}
           >
@@ -426,6 +433,13 @@ export function RMultipleSimulator() {
               </div>
             ))}
           </div>
+          {c.fueraDeEscala && (
+            <p className="m-0 mt-2 text-[12px] leading-[1.5] text-tertiary">
+              {es
+                ? "Con estos valores, los caminos pasan del billón de dólares: eso ya no es una proyección, es un desbordamiento, y donde ocurre la cifra no se enseña."
+                : "With these values the paths go past a trillion dollars: that is no longer a projection but an overflow, and wherever it happens the figure is not shown."}
+            </p>
+          )}
 
           {/* ── RUINA Y RACHAS ────────────────────────────────────────
               Cuatro rotulos en versalitas con 0,12em de espaciado
@@ -452,7 +466,9 @@ export function RMultipleSimulator() {
               },
               {
                 t: es ? `Ruina (−${UMBRAL_RUINA_PCT}\u00a0%)` : `Ruin (−${UMBRAL_RUINA_PCT}%)`,
-                sub: es ? "por fórmula" : "by formula",
+                /* La fórmula no sabe de retiros: con ellos, las dos cifras
+                   miden cosas distintas y se dice. */
+                sub: monthlyWithdrawal > 0 ? (es ? "por fórmula, sin retiros" : "by formula, no withdrawals") : es ? "por fórmula" : "by formula",
                 v: fmtPct(c.analyticalRuinProb, 1),
                 col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",
               },

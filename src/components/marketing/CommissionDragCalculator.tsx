@@ -26,34 +26,25 @@ export function CommissionDragCalculator() {
   const [selectedInstId, setSelectedInstId] = useState<string>("MNQ");
   const [contracts, setContracts] = useState<number>(2);
   const [monthlyTrades, setMonthlyTrades] = useState<number>(60);
-  const [targetUnits, setTargetUnits] = useState<number>(15); // p. ej. 15 puntos en NQ/MNQ o 15 pips en FX
+  const [targetUnits, setTargetUnits] = useState<number>(
+    () => (INSTRUMENT_SPECS.find((i) => i.id === "MNQ") ?? INSTRUMENT_SPECS[0]).objetivo.inicial,
+  );
   const [slippageTicks, setSlippageTicks] = useState<number>(1); // 1 tick de deslizamiento medio por trade
   const [customCommission, setCustomCommission] = useState<number>(1.24);
 
   const inst = INSTRUMENT_SPECS.find((i) => i.id === selectedInstId) || INSTRUMENT_SPECS[0];
-  /* Los limites del deslizador de objetivo dependen del instrumento, y
-     ahora los necesita tambien `--pct` para pintar el tramo recorrido de
-     la pista. Salen aqui una vez en vez de repetir el ternario. */
-  const esMini = inst.id === "ES" || inst.id === "MES";
-  const objetivoMin = inst.category === "forex" ? 5 : esMini ? 2 : 5;
-  const objetivoMax = inst.category === "forex" ? 80 : esMini ? 40 : 100;
+  /* El recorrido del objetivo es de cada instrumento (ver `objetivo` en
+     INSTRUMENT_SPECS): el crudo se mueve en céntimos y el S&P en puntos. */
+  const { min: objetivoMin, max: objetivoMax, paso: objetivoPaso } = inst.objetivo;
+  const decimalesObjetivo = (String(objetivoPaso).split(".")[1] ?? "").length;
+  const objetivoTxt = fmtNum(targetUnits, lang, Number.isInteger(targetUnits) ? 0 : decimalesObjetivo);
 
   const handleSelectInstrument = (instId: string) => {
     const item = INSTRUMENT_SPECS.find((i) => i.id === instId);
     if (!item) return;
     setSelectedInstId(instId);
     setCustomCommission(item.defaultCommissionRT);
-    if (item.category === "forex") {
-      setTargetUnits(15); // 15 pips
-    } else if (item.id === "ES" || item.id === "MES") {
-      setTargetUnits(6); // 6 puntos en S&P
-    } else if (item.id === "NQ" || item.id === "MNQ") {
-      setTargetUnits(20); // 20 puntos en Nasdaq
-    } else if (item.id === "RTY") {
-      setTargetUnits(10); // 10 puntos en Russell
-    } else {
-      setTargetUnits(0.5); // 50 centavos en CL/GC/MCL/MGC
-    }
+    setTargetUnits(item.objetivo.inicial);
   };
 
   // Cálculos matemáticos
@@ -195,14 +186,14 @@ export function CommissionDragCalculator() {
                       : `Expected average gain (${inst.unitNameEn})`}
                   </span>
                   <span className="tj-deslizador-valor">
-                    +{targetUnits} {es ? inst.unitNameEs : inst.unitNameEn}
+                    +{objetivoTxt} {es ? inst.unitNameEs : inst.unitNameEn}
                   </span>
                 </div>
                 <input
                   type="range"
                   min={objetivoMin}
                   max={objetivoMax}
-                  step={inst.category === "forex" ? 1 : 0.5}
+                  step={objetivoPaso}
                   value={targetUnits}
                   onChange={(e) => setTargetUnits(Number(e.target.value))}
                   aria-label={es ? "Ganancia media esperada" : "Expected average gain"}

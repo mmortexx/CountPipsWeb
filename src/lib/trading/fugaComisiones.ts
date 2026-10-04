@@ -24,6 +24,10 @@ export interface InstrumentConfig {
   defaultCommissionRT: number; // Round turn por contrato en USD
   unitNameEs: string;
   unitNameEn: string;
+  /** Recorrido del objetivo por operación, en las unidades del instrumento.
+   *  El crudo se mueve en céntimos y el S&P en puntos: un mismo 5–100
+   *  dejaba el petróleo y el oro fuera del deslizador. */
+  objetivo: { min: number; max: number; paso: number; inicial: number };
 }
 
 export const INSTRUMENT_SPECS: InstrumentConfig[] = [
@@ -36,6 +40,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 4.5,
     unitNameEs: "puntos",
     unitNameEn: "points",
+    objetivo: { min: 5, max: 100, paso: 0.5, inicial: 20 },
   },
   {
     id: "MNQ",
@@ -46,6 +51,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 1.24,
     unitNameEs: "puntos",
     unitNameEn: "points",
+    objetivo: { min: 5, max: 100, paso: 0.5, inicial: 20 },
   },
   {
     id: "ES",
@@ -56,6 +62,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 4.5,
     unitNameEs: "puntos",
     unitNameEn: "points",
+    objetivo: { min: 2, max: 40, paso: 0.25, inicial: 6 },
   },
   {
     id: "MES",
@@ -66,6 +73,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 1.24,
     unitNameEs: "puntos",
     unitNameEn: "points",
+    objetivo: { min: 2, max: 40, paso: 0.25, inicial: 6 },
   },
   {
     id: "CL",
@@ -76,6 +84,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 4.5,
     unitNameEs: "dólares",
     unitNameEn: "dollars",
+    objetivo: { min: 0.1, max: 5, paso: 0.05, inicial: 0.5 },
   },
   {
     id: "MCL",
@@ -86,6 +95,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 1.24,
     unitNameEs: "dólares",
     unitNameEn: "dollars",
+    objetivo: { min: 0.1, max: 5, paso: 0.05, inicial: 0.5 },
   },
   {
     id: "GC",
@@ -96,6 +106,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 4.5,
     unitNameEs: "dólares",
     unitNameEn: "dollars",
+    objetivo: { min: 1, max: 50, paso: 0.5, inicial: 5 },
   },
   {
     id: "MGC",
@@ -106,6 +117,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 1.24,
     unitNameEs: "dólares",
     unitNameEn: "dollars",
+    objetivo: { min: 1, max: 50, paso: 0.5, inicial: 5 },
   },
   {
     id: "RTY",
@@ -116,6 +128,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 4.5,
     unitNameEs: "puntos",
     unitNameEn: "points",
+    objetivo: { min: 2, max: 50, paso: 0.5, inicial: 10 },
   },
   {
     id: "EURUSD",
@@ -126,6 +139,7 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
     defaultCommissionRT: 5.0,
     unitNameEs: "pips",
     unitNameEn: "pips",
+    objetivo: { min: 5, max: 80, paso: 1, inicial: 15 },
   },
 ];
 
