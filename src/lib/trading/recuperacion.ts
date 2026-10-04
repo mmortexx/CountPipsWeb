@@ -6,6 +6,13 @@
  * pantalla decide cómo decirlo.
  */
 
+import { sinRuido } from "./estadistica";
+
+/** Expectancy en R por operación, con pérdidas de 1 R y ganancias de `payoff`. */
+export function esperanzaPorOperacion(acierto: number, payoff: number): number {
+  return sinRuido(acierto * payoff - (1 - acierto));
+}
+
 /** Ganancia necesaria sobre lo que queda para recuperar la caída. */
 export function gananciaParaRecuperar(caida: number): number | null {
   if (!Number.isFinite(caida) || caida < 0 || caida >= 1) return null;

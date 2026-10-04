@@ -19,6 +19,13 @@ export function tramosRiesgoBeneficio(
   return { riesgo: (r / max) * 50, beneficio: (b / max) * 50 };
 }
 
+/** Un empate exacto —25 % a 0,9 R : 0,3 R, 40 % a 1,5— sale en coma
+ *  flotante como ±1e-16, y se pintaba «Expectancy positiva» con «0,000 R».
+ *  Por debajo de una milmillonésima es cero. */
+export function sinRuido(x: number): number {
+  return Math.abs(x) < 1e-9 ? 0 : x;
+}
+
 /** Parte del balance inicial perdida que las calculadoras cuentan como ruina. */
 export const UMBRAL_RUINA_PCT = 50;
 
@@ -115,33 +122,61 @@ export function normalCdf(x: number): number {
   return x > 0 ? phi : 1 - phi;
 }
 
+/** Valores críticos de una cola: z tal que Φ(z) = confianza. */
+export const Z_UNA_COLA = { 90: 1.2816, 95: 1.6449, 99: 2.3263 } as const;
+/** z de una potencia del 80 %: Φ(0,8416) = 0,80. */
+const Z_POTENCIA_80 = 0.8416;
+
+export type VeredictoVentaja = "sin-ventaja" | "muestra-insuficiente" | "no-significativo" | "moderada" | "solida";
+
 /**
- * Potencia estadística (1 - β) de un test binomial de ventaja vs azar (H0: p = 0.50).
- * Probabilidad de detectar estadísticamente la ventaja al nivel de significación α = 0.05.
+ * ¿Ventaja o azar? Con ganancias de `ganancia` R y pérdidas de `perdida`
+ * R, el acierto que deja la expectancy a cero es
+ * perdida / (ganancia + perdida). Esa es la hipótesis nula —sin
+ * ventaja—, no el 50 %: un 35 % de aciertos a 1 R : 1 R pierde dinero
+ * por lejos que esté del 50 %, y un 40 % a 3 R : 1 R lo gana.
  *
- * k_crit = 0.5 * n + 1.96 * sqrt(n * 0.25)
- * μ_1 = p * n
- * σ_1 = sqrt(n * p * (1 - p))
- * Power = 1 - Φ((k_crit - μ_1) / σ_1)
+ * Contraste de una cola —solo interesa si el acierto SUPERA el de
+ * equilibrio— con la aproximación normal, válida con n·p0·(1−p0) ≥ 5.
+ * La muestra necesaria es la que detecta el acierto observado con una
+ * potencia del 80 %: si la muestra ya la alcanza, el contraste sale
+ * significativo por construcción.
  */
-export function computeStatisticalPower(
-  winRate: number,
-  tradesCount: number,
-  alpha = 0.05
-): number {
-  const n = Math.max(1, Math.floor(tradesCount));
-  const p = winRate > 1 ? winRate / 100 : Math.max(0, Math.min(1, winRate));
-  if (p <= 0.5) return 0;
-  const q = 1 - p;
+export function contrasteVentaja(n: number, aciertoPct: number, ganancia: number, perdida: number) {
+  const p = Math.min(1, Math.max(0, aciertoPct / 100));
+  const equilibrio = perdida / (ganancia + perdida);
+  const q0 = 1 - equilibrio;
+  const sd0 = Math.sqrt(equilibrio * q0);
+  const sd1 = Math.sqrt(p * (1 - p));
+  const diferencia = sinRuido(p - equilibrio);
+  const hayVentaja = diferencia > 0;
+  const minimoValido = Math.ceil(5 / (equilibrio * q0));
+  const valido = n >= minimoValido;
+  const z = sd0 > 0 ? (diferencia * Math.sqrt(n)) / sd0 : 0;
+  const pValor = valido ? 1 - normalCdf(z) : 1;
 
-  const zAlpha = alpha === 0.01 ? 2.576 : 1.96;
-  const kCrit = 0.5 * n + zAlpha * Math.sqrt(n * 0.25);
-  const mu1 = p * n;
-  const sigma1 = Math.sqrt(n * p * q);
+  const muestraPara = (confianza: keyof typeof Z_UNA_COLA): number | null =>
+    hayVentaja
+      ? Math.max(minimoValido, Math.ceil(((Z_UNA_COLA[confianza] * sd0 + Z_POTENCIA_80 * sd1) / diferencia) ** 2))
+      : null;
 
-  if (sigma1 <= 0) return 100;
+  const potencia = !hayVentaja
+    ? 0
+    : sd1 > 0
+      ? normalCdf((diferencia * Math.sqrt(n) - Z_UNA_COLA[95] * sd0) / sd1) * 100
+      : diferencia * Math.sqrt(n) > Z_UNA_COLA[95] * sd0
+        ? 100
+        : 0;
 
-  const zBeta = (kCrit - mu1) / sigma1;
-  const power = 1 - normalCdf(zBeta);
-  return +(Math.min(100, Math.max(0, power * 100))).toFixed(1);
+  const veredicto: VeredictoVentaja = !hayVentaja
+    ? "sin-ventaja"
+    : !valido
+      ? "muestra-insuficiente"
+      : pValor >= 0.05
+        ? "no-significativo"
+        : pValor >= 0.01
+          ? "moderada"
+          : "solida";
+
+  return { equilibrio, z, pValor, valido, minimoValido, potencia, muestraPara, veredicto };
 }

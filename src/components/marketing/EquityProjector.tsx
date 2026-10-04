@@ -119,6 +119,8 @@ const HORIZON_CHIPS = [1, 2, 3, 5, 10];
  *  z-score `z80` del motor cuantitativo (abajo): si este cambia, `z80`
  *  tiene que cambiar con él. */
 const CONO_CONFIANZA_PCT = 80;
+/* Por encima de un siglo, el número de meses ya no dice nada. */
+const MESES_PARA_DUPLICAR_MAX = 1200;
 
 export function EquityProjector() {
   const { lang } = useLang();
@@ -379,9 +381,9 @@ export function EquityProjector() {
           lineas: [
             `${es ? "Balance final" : "Final balance"}: ${fmtUsd(c.finalBalance)}`,
             `${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.finalNetProfit)} (${fmtPct(c.totalReturnPct, 1)})`,
-            `CAGR: ${fmtPct(c.cagr * 100, 1)}`,
+            `CAGR${monthlyContribution > 0 ? (es ? " (sin contar aportes)" : " (excluding deposits)") : ""}: ${c.fueraDeEscala ? "—" : fmtPct(c.cagr * 100, 1)}`,
             `${es ? "Drawdown máximo estimado" : "Estimated max drawdown"} (${fmtPct(CONFIANZA_RACHA * 100, 0)}): ${fmtPct(c.estMaxDDpct, 1)}`,
-            `${es ? "Tiempo para duplicar" : "Time to double"}: ${c.monthsToDouble !== null ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}` : es ? "sin crecimiento" : "no growth"}`,
+            `${es ? "Tiempo para duplicar" : "Time to double"}: ${c.monthsToDouble === null ? (es ? "sin crecimiento" : "no growth") : c.monthsToDouble > MESES_PARA_DUPLICAR_MAX ? `${es ? "más de" : "over"} ${fmtInt(MESES_PARA_DUPLICAR_MAX / 12, lang)} ${es ? "años" : "years"}` : `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "months"}`}`,
           ],
         },
       ],
@@ -1286,7 +1288,9 @@ export function EquityProjector() {
                     {c.fueraDeEscala ? "—" : fmtPct(c.cagr * 100, 1)}
                   </div>
                   <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
-                    {es ? "Crecimiento compuesto" : "Compound growth"}
+                    {monthlyContribution > 0
+                      ? es ? "Sin contar aportes" : "Excluding deposits"
+                      : es ? "Crecimiento compuesto" : "Compound growth"}
                   </div>
                 </div>
 
@@ -1357,14 +1361,18 @@ export function EquityProjector() {
                     {es ? "Tiempo para duplicar" : "Time to double"}
                   </div>
                   <div className="tnum cifra-lg mt-1 whitespace-nowrap font-semibold text-[var(--ink)]">
-                    {c.monthsToDouble !== null
-                      ? `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "mo"}`
-                      : "—"}
+                    {c.monthsToDouble === null
+                      ? "—"
+                      : c.monthsToDouble > MESES_PARA_DUPLICAR_MAX
+                        ? `>\u00a0${fmtInt(MESES_PARA_DUPLICAR_MAX / 12, lang)} ${es ? "años" : "yrs"}`
+                        : `${fmtNum(c.monthsToDouble, 1)} ${es ? "meses" : "mo"}`}
                   </div>
                   <div className="text-[12px] text-[var(--ink-3)] tnum mt-0.5">
-                    {c.monthsToDouble !== null
-                      ? `≈\u00a0${fmtNum(c.monthsToDouble / 12, 1)} ${es ? "años" : "yrs"}`
-                      : es ? "Sin crecimiento" : "No growth"}
+                    {c.monthsToDouble === null
+                      ? es ? "Sin crecimiento" : "No growth"
+                      : c.monthsToDouble > MESES_PARA_DUPLICAR_MAX
+                        ? es ? "Crecimiento casi nulo" : "Almost no growth"
+                        : `≈\u00a0${fmtNum(c.monthsToDouble / 12, 1)} ${es ? "años" : "yrs"}`}
                   </div>
                 </div>
 

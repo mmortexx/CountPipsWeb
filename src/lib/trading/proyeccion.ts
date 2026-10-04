@@ -1,3 +1,5 @@
+import { sinRuido } from "./estadistica";
+
 /** Racha máxima de pérdidas al nivel de confianza fijado en el motor. */
 export const CONFIANZA_RACHA = 0.99;
 
@@ -96,8 +98,8 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   const wr = winRate / 100;
   const lr = 1 - wr;
 
-  const grossExpectancyR = wr * avgWinR - lr * avgLossR;
-  const netExpectancyR = grossExpectancyR - frictionR;
+  const grossExpectancyR = sinRuido(wr * avgWinR - lr * avgLossR);
+  const netExpectancyR = sinRuido(grossExpectancyR - frictionR);
   const hasEdge = netExpectancyR > 0;
 
   const grossWinTotal = wr * avgWinR;
@@ -180,10 +182,18 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
     fueraDeEscala = true;
   }
 
-  const cagr =
-    startBalance > 0 && finalBalance > 0 && years > 0
-      ? Math.pow(finalBalance / startBalance, 1 / years) - 1
-      : -1;
+  /* Tasa anual ponderada por tiempo: se encadena la rentabilidad de cada
+     mes descontando lo que entró como aporte, que es como se mide una
+     estrategia. Dividir el saldo final entre el inicial contaba los
+     aportes como rentabilidad: 130.000 $ ingresados con expectancy
+     negativa daban un CAGR del +20,5 %. */
+  let factorAcumulado = 1;
+  for (let m = 1; m < monthlyPoints.length && factorAcumulado > 0; m++) {
+    const antes = monthlyPoints[m - 1].balance;
+    const resultadoDelMes = monthlyPoints[m].balance - monthlyContribution - antes;
+    factorAcumulado *= antes > 0 ? Math.max(0, 1 + resultadoDelMes / antes) : 0;
+  }
+  const cagr = startBalance > 0 && years > 0 ? Math.pow(factorAcumulado, 1 / years) - 1 : -1;
 
   const totalTrades = tradesPerYear * years;
   const maxConsecLosses =
@@ -196,14 +206,19 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
       ? (1 - Math.pow(1 - perdidaPorOp, maxConsecLosses)) * 100
       : Math.min(100, maxConsecLosses * perdidaPorOp * 100);
 
+  /* Lo que tarda el resultado de la estrategia, sin aportes, en igualar el
+     balance inicial, con la misma regla que dibuja la curva: compuesto
+     multiplica cada mes, riesgo fijo suma cada mes lo mismo. */
   let monthsToDouble: number | null = null;
-  if (hasEdge && growthPerTrade > 0) {
-    const tradesToDouble = Math.log(2) / Math.log(1 + growthPerTrade);
-    monthsToDouble = tradesPerMonth > 0 ? tradesToDouble / tradesPerMonth : null;
+  if (hasEdge && growthPerTrade > 0 && tradesPerMonth > 0) {
+    const meses =
+      reinvestMode === "compound"
+        ? Math.log(2) / Math.log(monthlyGrowthFactor)
+        : 1 / (growthPerTrade * tradesPerMonth);
+    monthsToDouble = Number.isFinite(meses) && meses > 0 ? meses : null;
   }
 
   const expectancyUsdInitial = netExpectancyR * (riskPct / 100) * startBalance;
-  const yearlyUsdInitial = expectancyUsdInitial * tradesPerYear;
 
   const yearlyBreakdown: FilaAnual[] = [];
   for (let y = 1; y <= years; y++) {
@@ -227,6 +242,9 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
       estDrawdownPct: estMaxDDpct,
     });
   }
+  /* El «primer año» que se anuncia arriba es el año 1 de la tabla: antes
+     se sumaba en lineal aunque la curva compusiera (4.750 $ frente a 6.073 $). */
+  const yearlyUsdInitial = yearlyBreakdown[0]?.yearProfit ?? expectancyUsdInitial * tradesPerYear;
 
   return {
     grossExpectancyR,

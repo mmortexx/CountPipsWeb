@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fmtCifraCorta, fmtInt, fmtMoney, fmtNum, fmtOperaciones, fmtPrice, fmtR } from "@/lib/trading/format";
+import { fmtCifraCorta, fmtInt, fmtMoney, fmtNum, fmtOperaciones, fmtPct, fmtPrice, fmtR } from "@/lib/trading/format";
 
 describe("el recuento de operaciones concuerda en número", () => {
   it("singular con una, plural con el resto, millares agrupados", () => {
@@ -43,5 +43,21 @@ describe("la R va tras un espacio duro, como en la app", () => {
     expect(fmtR(1.5, "es")).toBe("+1,50 R");
     expect(fmtR(-0.38, "en", 3)).toBe("−0.380 R");
     expect(fmtR(-0.0001, "es")).toBe("0,00 R");
+  });
+});
+
+/* `Intl` escribe el negativo con el guion corto del teclado (U+002D) y
+   deja «-0,0» cuando la cifra redondea a cero: el proyector pintaba
+   «Rentabilidad -2,5 %» junto a «−247 $». El signo es el menos
+   tipográfico de fmtMoney y fmtR, y el cero no lleva signo. */
+describe("el signo menos es tipográfico y el cero no lo lleva", () => {
+  it("fmtNum y fmtPct, en los dos idiomas", () => {
+    expect(fmtNum(-2.5, "es", 1)).toBe("\u22122,5");
+    expect(fmtNum(-1234.5, "en", 1)).toBe("\u22121,234.5");
+    expect(fmtNum(-0.04, "es", 1)).toBe("0,0");
+    expect(fmtNum(-0, "en", 2)).toBe("0.00");
+    expect(fmtPct(-0.025, "es")).toBe("\u22122,5\u00a0%");
+    expect(fmtPct(-0.0004, "en")).toBe("0.0%");
+    expect(fmtInt(-1234, "es")).toBe("\u22121.234");
   });
 });

@@ -1,9 +1,22 @@
 import { describe, expect, it } from "vitest";
 import {
   crecimientoPorOperacion,
+  esperanzaPorOperacion,
   gananciaParaRecuperar,
   operacionesParaRecuperar,
 } from "@/lib/trading/recuperacion";
+
+/* 40 % de aciertos a 1,5 es un empate exacto, pero en coma flotante da
+   1,1e-16: la casilla marcaba «0,00 R» en verde y el diagnóstico decía
+   «La expectancy es positiva». */
+describe("la expectancy de un empate es cero, no ruido", () => {
+  it("empates exactos y casos con signo", () => {
+    expect(esperanzaPorOperacion(0.4, 1.5)).toBe(0);
+    expect(esperanzaPorOperacion(0.2, 4)).toBe(0);
+    expect(esperanzaPorOperacion(0.45, 2)).toBeCloseTo(0.35, 12);
+    expect(esperanzaPorOperacion(0.3, 2)).toBeCloseTo(-0.1, 12);
+  });
+});
 
 describe("recuperación de una caída", () => {
   it("la asimetría: 20 % pide 25 %, 50 % pide 100 %, 90 % pide 900 %", () => {

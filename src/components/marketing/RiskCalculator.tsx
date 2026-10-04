@@ -3,8 +3,17 @@
 import { useState, useMemo, useCallback, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { computeRiskOfRuin, computeParametricVaR, tramosRiesgoBeneficio, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
-import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan, type MercadoPlan } from "@/lib/trading/validaPlan";
-import { fmtPct, fmtMoney, fmtNum as fmtNumBase, pctSep } from "@/lib/trading/format";
+import { TOPE_APALANCAMIENTO, type MercadoPlan } from "@/lib/trading/validaPlan";
+import {
+  FUTURES_CONTRACTS,
+  PARES_FOREX,
+  UNIDADES_LOTE,
+  calculaPlan,
+  fraccionesKelly,
+  preciosDeFuturo,
+  type TipoLote,
+} from "@/lib/trading/plan";
+import { fmtPct, fmtMoney, fmtNum as fmtNumBase, fmtPrecio, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
@@ -21,6 +30,7 @@ import { componerInforme } from "@/lib/informe";
 
 const RISK_MIN = 0.25;
 const RISK_MAX = 3;
+const RISK_STEP = 0.05;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
 type AssetMode = MercadoPlan;
@@ -33,24 +43,11 @@ const MODOS_ACTIVO: { id: AssetMode; labelEs: string; labelEn: string }[] = [
   { id: "futures", labelEs: "Futuros (contratos)", labelEn: "Futures (Contracts)" },
 ];
 
-interface FuturesContract {
-  id: string;
-  name: string;
-  mult: number;
-  tickSize: number;
-}
-
-export const FUTURES_CONTRACTS: FuturesContract[] = [
-  { id: "es", name: "E-mini S&P 500 (ES) · 50 $/pt", mult: 50, tickSize: 0.25 },
-  { id: "nq", name: "E-mini Nasdaq (NQ) · 20 $/pt", mult: 20, tickSize: 0.25 },
-  { id: "mes", name: "Micro E-mini S&P (MES) · 5 $/pt", mult: 5, tickSize: 0.25 },
-  { id: "mnq", name: "Micro Nasdaq (MNQ) · 2 $/pt", mult: 2, tickSize: 0.25 },
-  { id: "rty", name: "E-mini Russell 2000 (RTY) · 50 $/pt", mult: 50, tickSize: 0.1 },
-  { id: "gc", name: "Gold / Oro (GC) · 100 $/pt", mult: 100, tickSize: 0.1 },
-  { id: "cl", name: "Crude Oil (CL) · 1.000 $/pt", mult: 1000, tickSize: 0.01 },
+const LOTES: { id: TipoLote; labelEs: string; labelEn: string }[] = [
+  { id: "standard", labelEs: "Estándar (100k)", labelEn: "Standard (100k)" },
+  { id: "mini", labelEs: "Mini (10k)", labelEn: "Mini (10k)" },
+  { id: "micro", labelEs: "Micro (1k)", labelEn: "Micro (1k)" },
 ];
-
-type ForexLotType = "standard" | "mini" | "micro";
 
 export function RiskCalculator() {
   const { lang } = useLang();
@@ -75,7 +72,9 @@ export function RiskCalculator() {
   // ── Estado editable: la operación del usuario ─────────────────────
   const [assetMode, setAssetMode] = useState<AssetMode>("equities");
   const [futuresContractId, setFuturesContractId] = useState("es");
-  const [forexLotType, setForexLotType] = useState<ForexLotType>("standard");
+  const [forexLotType, setForexLotType] = useState<TipoLote>("standard");
+  const [parForexId, setParForexId] = useState("EUR/USD");
+  const [tipoReferencia, setTipoReferencia] = useState<number | null>(null);
   const [riskPct, setRiskPct] = useState(1.0);
   const [balance, setBalance] = useState(10000);
   const [entry, setEntry] = useState(100);
@@ -90,106 +89,46 @@ export function RiskCalculator() {
     [futuresContractId]
   );
 
-  const lotMultiplier = useMemo(() => {
-    if (forexLotType === "micro") return 1000;
-    if (forexLotType === "mini") return 10000;
-    return 100000;
-  }, [forexLotType]);
+  const parForex = useMemo(() => PARES_FOREX.find((p) => p.id === parForexId) ?? PARES_FOREX[0], [parForexId]);
 
   // ── Cálculo en vivo adaptado al activo ───────────────────────────
   const c = useMemo(() => {
-    const riskPerShare = Math.abs(entry - stop);
-    const rewardPerShare = Math.abs(target - entry);
-    const { valido: valid, motivo: motivoInvalido } = validaPlan(entry, stop, target);
-    const rr = valid ? rewardPerShare / riskPerShare : 0;
-    const riskUsd = (balance * riskPct) / 100;
-
-    // Criterio de Kelly: f* = (p*b - q) / b
-    const p = kellyWinRate / 100;
-    const q = 1 - p;
-    const b = rr > 0 ? rr : 1;
-    const fullKellyPct = b > 0 ? Math.max(0, ((p * b - q) / b) * 100) : 0;
-    const halfKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 2)) : 0;
-    const quarterKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 4)) : 0;
-
-    let size = 0;
-    let sizeLabel = "u";
-    let positionValue = 0;
-    let pipValue = 0;
-
-    if (valid) {
-      if (assetMode === "equities") {
-        size = riskUsd / riskPerShare;
-        sizeLabel = es ? "unidades" : "units";
-        positionValue = size * entry;
-        pipValue = size * 0.01;
-      } else if (assetMode === "forex") {
-        const units = riskUsd / riskPerShare;
-        const lots = units / lotMultiplier;
-        size = lots;
-        sizeLabel =
-          forexLotType === "micro"
-            ? (es ? "micro lotes (1k)" : "micro lots (1k)")
+    const plan = calculaPlan({
+      mercado: assetMode,
+      balance,
+      riesgoPct: riskPct,
+      entrada: entry,
+      stop,
+      objetivo: target,
+      friccion: includeFriction,
+      futuro: selectedFutures,
+      lote: forexLotType,
+      par: parForex,
+      tipoReferencia,
+    });
+    const kelly = fraccionesKelly(kellyWinRate, plan.rr);
+    /* «1 contrato», no «1 contratos»: el singular solo con un entero. */
+    const uno = plan.decimalesTamano === 0 && plan.tamano === 1;
+    const sizeLabel =
+      assetMode === "futures"
+        ? es ? (uno ? "contrato" : "contratos") : uno ? "contract" : "contracts"
+        : assetMode === "forex"
+          ? forexLotType === "micro"
+            ? es ? (uno ? "micro lote (1k)" : "micro lotes (1k)") : uno ? "micro lot (1k)" : "micro lots (1k)"
             : forexLotType === "mini"
               ? (es ? "mini lotes (10k)" : "mini lots (10k)")
-              : (es ? "lotes estándar (100k)" : "standard lots (100k)");
-        positionValue = units * entry;
-        pipValue = (units * 0.0001); // Para pares EUR/USD base 0.0001
-      } else {
-        const pointRisk = riskPerShare * selectedFutures.mult;
-        const contracts = pointRisk > 0 ? riskUsd / pointRisk : 0;
-        size = contracts;
-        sizeLabel = es ? "contratos" : "contracts";
-        positionValue = contracts * entry * selectedFutures.mult;
-        pipValue = contracts * selectedFutures.tickSize * selectedFutures.mult;
-      }
-    }
-
-    // Fricción de ejecución estimada (comisiones ida y vuelta + 1 tick slippage)
-    const commissionPerUnit = assetMode === "futures" ? 4.5 : (assetMode === "forex" ? (lotMultiplier / 100000) * 5.0 : 0.005);
-    const estimatedFriction = valid && includeFriction ? size * commissionPerUnit : 0;
-
-    const grossProfit = valid
-      ? (assetMode === "futures"
-          ? size * rewardPerShare * selectedFutures.mult
-          : assetMode === "forex"
-            ? (size * lotMultiplier) * rewardPerShare
-            : size * rewardPerShare)
-      : 0;
-
-    const netProfit = Math.max(0, grossProfit - estimatedFriction);
-    const totalRiskUsd = riskUsd + estimatedFriction;
-    const profitPct = (netProfit / balance) * 100;
-    const positionPct = (positionValue / balance) * 100;
-    const direction = entry > 0 && stop > entry ? "short" : "long";
-
+              : (es ? "lotes estándar (100k)" : "standard lots (100k)")
+          : (es ? "unidades" : "units");
     return {
-      riskPerShare,
-      rewardPerShare,
-      valid,
-      motivoInvalido,
-      rr,
-      riskUsd,
-      totalRiskUsd,
-      estimatedFriction,
-      size,
+      ...plan,
+      valid: plan.valido,
       sizeLabel,
-      profit: netProfit,
-      grossProfit,
-      profitPct,
-      positionValue,
-      positionPct,
-      pipValue,
-      direction,
-      fullKellyPct,
-      halfKellyPct,
-      quarterKellyPct,
-      riskOfRuin: computeRiskOfRuin(kellyWinRate, rr, riskPct, UMBRAL_RUINA_PCT),
+      profitPct: balance > 0 ? (plan.beneficioNeto / balance) * 100 : 0,
+      kelly,
+      riskOfRuin: computeRiskOfRuin(kellyWinRate, plan.rr, riskPct, UMBRAL_RUINA_PCT),
       var95: computeParametricVaR(balance, riskPct, 95),
-      leverage: valid && balance > 0 ? positionValue / balance : 0,
-      apalancamientoExcesivo: valid && balance > 0 && excedeApalancamiento(assetMode, positionValue / balance),
     };
-  }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, lotMultiplier, includeFriction, kellyWinRate, es]);
+  }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, parForex, tipoReferencia, includeFriction, kellyWinRate, es]);
 
   /* Los helpers de format.ts, no un `Intl.NumberFormat` propio: el propio
      agrupaba sin millares «1234,56 $» en español y ponía «-» en vez de «−»,
@@ -201,53 +140,84 @@ export function RiskCalculator() {
     [lang],
   );
 
-  const tramos = c.valid ? tramosRiesgoBeneficio(c.riskUsd, c.profit) : { riesgo: 0, beneficio: 0 };
+  const tramos = c.valid ? tramosRiesgoBeneficio(c.riesgoReal, Math.max(0, c.beneficioNeto)) : { riesgo: 0, beneficio: 0 };
   /* Sin un plan válido, lo que depende de él no se enseña: un tamaño de 0
      junto a «riesgo de ruina 100 %» se lee como un resultado, no como un
      hueco. El VaR sí se enseña, porque solo depende del balance y del %. */
   const siPlan = (s: string) => (c.valid ? s : "—");
+  /* El mismo número en la tarjeta, en el anuncio y en el plan copiado:
+     la tarjeta decía «0,0 contratos» y la copia «0,03». */
+  const tamanoTxt = `${fmtNum(c.tamano, c.decimalesTamano)} ${c.sizeLabel}`;
+  /* Medio Kelly ajustado al paso y a los extremos del control de riesgo. */
+  const kellyAplicable =
+    c.kelly.medio > 0 ? Math.min(RISK_MAX, Math.max(RISK_MIN, Number((Math.round(c.kelly.medio / RISK_STEP) * RISK_STEP).toFixed(2)))) : 0;
+  const kellyTopado = c.kelly.medio > 0 && Math.abs(kellyAplicable - c.kelly.medio) > RISK_STEP / 2;
+  const friccionTxt = !includeFriction
+    ? (es ? "Desactivada" : "Off")
+    : c.friccion > 0
+      ? `−${fmtUsd(c.friccion)}`
+      : fmtUsd(0);
 
-  const handleAssetChange = useCallback((mode: AssetMode) => {
-    setAssetMode(mode);
-    if (mode === "futures") {
-      setEntry(5800);
-      setStop(5780);
-      setTarget(5840);
-    } else if (mode === "forex") {
-      setEntry(1.0850);
-      setStop(1.0820);
-      setTarget(1.0910);
-    } else {
-      setEntry(100);
-      setStop(95);
-      setTarget(115);
-    }
+  const ponPrecios = useCallback(([e, s, t]: [number, number, number]) => {
+    setEntry(e);
+    setStop(s);
+    setTarget(t);
   }, []);
 
-  const handleFuturesChange = useCallback((id: string) => {
-    setFuturesContractId(id);
-    if (id === "es" || id === "mes") {
-      setEntry(5800);
-      setStop(5780);
-      setTarget(5840);
-    } else if (id === "nq" || id === "mnq") {
-      setEntry(20500);
-      setStop(20400);
-      setTarget(20700);
-    } else if (id === "rty") {
-      setEntry(2200);
-      setStop(2185);
-      setTarget(2230);
-    } else if (id === "gc") {
-      setEntry(2650);
-      setStop(2635);
-      setTarget(2680);
-    } else if (id === "cl") {
-      setEntry(75.00);
-      setStop(74.20);
-      setTarget(76.60);
-    }
-  }, []);
+  /* Al volver a un mercado, los precios de ejemplo son los del contrato o
+     el par que sigue elegido: volvía a Futuros con CL marcado y precios
+     de ES, y salía «0,0 contratos». */
+  const handleAssetChange = useCallback(
+    (mode: AssetMode) => {
+      setAssetMode(mode);
+      if (mode === "futures") ponPrecios(preciosDeFuturo(futuresContractId));
+      else if (mode === "forex") ponPrecios(parForex.precios);
+      else ponPrecios([100, 95, 115]);
+    },
+    [futuresContractId, parForex, ponPrecios],
+  );
+
+  const handleFuturesChange = useCallback(
+    (id: string) => {
+      setFuturesContractId(id);
+      ponPrecios(preciosDeFuturo(id));
+    },
+    [ponPrecios],
+  );
+
+  const handleParChange = useCallback(
+    (id: string) => {
+      const par = PARES_FOREX.find((p) => p.id === id) ?? PARES_FOREX[0];
+      setParForexId(par.id);
+      setTipoReferencia(null);
+      ponPrecios(par.precios);
+    },
+    [ponPrecios],
+  );
+
+  const microSugerido = selectedFutures.micro ? FUTURES_CONTRACTS.find((f) => f.id === selectedFutures.micro) : undefined;
+  const avisoNoCabe = !c.valid || !c.noCabe
+    ? null
+    : assetMode === "futures"
+      ? es
+        ? `Con ${fmtUsd(c.riesgoNominal)} de riesgo no cabe ni un contrato de ${selectedFutures.simbolo}: uno solo arriesga ${fmtUsd(c.riesgoDeUno)} con este stop.${microSugerido ? ` Prueba el micro (${microSugerido.simbolo}).` : " Acerca el stop o sube el riesgo."}`
+        : `With ${fmtUsd(c.riesgoNominal)} at risk not even one ${selectedFutures.simbolo} contract fits: a single one risks ${fmtUsd(c.riesgoDeUno)} with this stop.${microSugerido ? ` Try the micro (${microSugerido.simbolo}).` : " Tighten the stop or raise the risk."}`
+      : es
+        ? `Con ${fmtUsd(c.riesgoNominal)} de riesgo no cabe ni un micro lote (${fmtNum(UNIDADES_LOTE.micro, 0)} unidades): uno solo arriesga ${fmtUsd(c.riesgoDeUno)} con este stop.`
+        : `With ${fmtUsd(c.riesgoNominal)} at risk not even one micro lot (${fmtNum(UNIDADES_LOTE.micro, 0)} units) fits: a single one risks ${fmtUsd(c.riesgoDeUno)} with this stop.`;
+
+  const rotuloFriccion =
+    assetMode === "futures"
+      ? es
+        ? `Comisión de ${fmtUsd(selectedFutures.comision)} por contrato y un tick de deslizamiento (${fmtUsd(selectedFutures.tickSize * selectedFutures.mult)} en ${selectedFutures.simbolo})`
+        : `${fmtUsd(selectedFutures.comision)} commission per contract and one tick of slippage (${fmtUsd(selectedFutures.tickSize * selectedFutures.mult)} on ${selectedFutures.simbolo})`
+      : assetMode === "forex"
+        ? es
+          ? `Comisión de ${fmtUsd(5)} por lote estándar y un pip de deslizamiento`
+          : `${fmtUsd(5)} commission per standard lot and one pip of slippage`
+        : es
+          ? `Comisión de ${fmtMoney(0.005, lang, { decimals: 3 })} por unidad y un céntimo de deslizamiento`
+          : `${fmtMoney(0.005, lang, { decimals: 3 })} commission per unit and one cent of slippage`;
 
   /* Aqui vivia `chipStyle`, que vestia a mano cada opcion de los tres
      grupos de esta calculadora. Ya no hace falta: los grupos son
@@ -278,29 +248,32 @@ export function RiskCalculator() {
         {
           lineas: [
             modo && `${es ? "Activo" : "Asset"}: ${es ? modo.labelEs : modo.labelEn}`,
-            `${es ? "Dirección" : "Direction"}: ${c.direction === "short" ? (es ? "corto" : "short") : (es ? "largo" : "long")}`,
-            `${es ? "Entrada" : "Entry"}: ${fmtNum(entry)}`,
-            `Stop: ${fmtNum(stop)}`,
-            `${es ? "Objetivo" : "Target"}: ${fmtNum(target)}`,
+            assetMode === "futures" && `${es ? "Contrato" : "Contract"}: ${selectedFutures.nombre}`,
+            assetMode === "forex" && `${es ? "Par" : "Pair"}: ${parForex.id}`,
+            `${es ? "Dirección" : "Direction"}: ${c.direccion === "short" ? (es ? "corto" : "short") : (es ? "largo" : "long")}`,
+            `${es ? "Entrada" : "Entry"}: ${fmtPrecio(entry, lang)}`,
+            `Stop: ${fmtPrecio(stop, lang)}`,
+            `${es ? "Objetivo" : "Target"}: ${fmtPrecio(target, lang)}`,
           ],
         },
         {
           rotulo: es ? "Riesgo" : "Risk",
           lineas: [
             `${es ? "Balance de cuenta" : "Account balance"}: ${fmtUsd(balance)}`,
-            `${es ? "Riesgo nominal" : "Nominal risk"}: ${fmtNum(riskPct)}${pctSep(lang)} (${fmtUsd(c.riskUsd)})`,
-            `${es ? "Fricción estimada" : "Est. friction"}: −${fmtUsd(c.estimatedFriction)}`,
-            `${es ? "Riesgo total" : "Total risk"}: ${fmtUsd(c.totalRiskUsd)}`,
+            `${es ? "Riesgo nominal" : "Nominal risk"}: ${fmtNum(riskPct)}${pctSep(lang)} (${fmtUsd(c.riesgoNominal)})`,
+            `${es ? "Riesgo con el tamaño redondeado" : "Risk at the rounded size"}: ${fmtUsd(c.riesgoReal)}`,
+            `${es ? "Fricción estimada" : "Est. friction"}: ${friccionTxt}`,
+            `${es ? "Riesgo total" : "Total risk"}: ${fmtUsd(c.riesgoTotal)}`,
           ],
         },
         {
           rotulo: es ? "Resultado" : "Result",
           lineas: [
-            `${es ? "Tamaño de posición" : "Position size"}: ${fmtNum(c.size, 2)} ${c.sizeLabel}`,
-            `${es ? "Valor del pip / punto" : "Pip / point value"}: ${fmtUsd(c.pipValue)}`,
+            `${es ? "Tamaño de posición" : "Position size"}: ${tamanoTxt}`,
+            `${es ? "Valor del pip / punto" : "Pip / point value"}: ${fmtUsd(c.valorPip)}`,
             `R:R: ${fmtNum(c.rr, 2)}:1`,
-            `${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.profit)} (${fmtNum(c.profitPct, 1)}${pctSep(lang)})`,
-            `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.positionValue)}`,
+            `${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.beneficioNeto)} (${fmtPct(c.profitPct / 100, lang, 1)})`,
+            `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.nocional)}`,
           ],
         },
       ],
@@ -362,14 +335,16 @@ export function RiskCalculator() {
           {/* Subselector para futuros */}
           {assetMode === "futures" && (
             <div className="mb-5 border-y border-[var(--ficha-division)] py-3">
-              <span className="block text-[12px] text-tertiary mb-2">
+              <span id="riesgo-contrato" className="block text-[12px] text-tertiary mb-2">
                 {es ? "Contrato de futuros" : "Futures contract"}
               </span>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5" role="group" aria-labelledby="riesgo-contrato">
                 {FUTURES_CONTRACTS.map((fc) => (
                   <button
                     key={fc.id}
                     type="button"
+                    aria-pressed={futuresContractId === fc.id}
+                    title={fc.nombre}
                     onClick={() => handleFuturesChange(fc.id)}
                     className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
                       futuresContractId === fc.id
@@ -377,38 +352,75 @@ export function RiskCalculator() {
                         : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
                     }`}
                   >
-                    {fc.name}
+                    {fc.simbolo} · {fmtMoney(fc.mult, lang, { decimals: 0 })}/pt
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Subselector para Forex */}
+          {/* Subselector para Forex: el par fija el tamaño del pip y la
+              divisa en que se cobra; sin él, USD/JPY salía a 0,0033 lotes. */}
           {assetMode === "forex" && (
-            <div className="mb-5 border-y border-[var(--ficha-division)] py-3">
-              <span className="block text-[12px] text-tertiary mb-2">
-                {es ? "Tipo de lote Forex" : "Forex lot sizing"}
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {[
-                  { id: "standard" as const, labelEs: "Estándar (100k)", labelEn: "Standard (100k)" },
-                  { id: "mini" as const, labelEs: "Mini (10k)", labelEn: "Mini (10k)" },
-                  { id: "micro" as const, labelEs: "Micro (1k)", labelEn: "Micro (1k)" },
-                ].map((lot) => (
-                  <button
-                    key={lot.id}
-                    type="button"
-                    onClick={() => setForexLotType(lot.id)}
-                    className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
-                      forexLotType === lot.id
-                        ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
-                        : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
-                    }`}
-                  >
-                    {es ? lot.labelEs : lot.labelEn}
-                  </button>
-                ))}
+            <div className="mb-5 border-y border-[var(--ficha-division)] py-3 space-y-3">
+              <div>
+                <span id="riesgo-par" className="block text-[12px] text-tertiary mb-2">
+                  {es ? "Par de divisas" : "Currency pair"}
+                </span>
+                <div className="flex flex-wrap gap-1.5" role="group" aria-labelledby="riesgo-par">
+                  {PARES_FOREX.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      aria-pressed={parForex.id === p.id}
+                      onClick={() => handleParChange(p.id)}
+                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                        parForex.id === p.id
+                          ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
+                          : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
+                      }`}
+                    >
+                      {p.id}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {parForex.referencia && (
+                <label className="flex items-center justify-between gap-3">
+                  <span className="text-[12px] text-tertiary">
+                    {es
+                      ? `Tipo ${parForex.referencia.id} para pasar a dólares`
+                      : `${parForex.referencia.id} rate to convert to dollars`}
+                  </span>
+                  <CampoCifra
+                    min={0.0001}
+                    valor={tipoReferencia ?? parForex.referencia.defecto}
+                    onValor={setTipoReferencia}
+                    className="tj-campo tnum w-28 min-h-[44px] px-3 text-base font-medium text-primary"
+                  />
+                </label>
+              )}
+              <div>
+                <span id="riesgo-lote" className="block text-[12px] text-tertiary mb-2">
+                  {es ? "Tipo de lote" : "Lot size"}
+                </span>
+                <div className="flex flex-wrap gap-1.5" role="group" aria-labelledby="riesgo-lote">
+                  {LOTES.map((lot) => (
+                    <button
+                      key={lot.id}
+                      type="button"
+                      aria-pressed={forexLotType === lot.id}
+                      onClick={() => setForexLotType(lot.id)}
+                      className={`h-7 px-2.5 rounded-[4px] text-xs tnum transition-all ${
+                        forexLotType === lot.id
+                          ? "bg-[color-mix(in_srgb,var(--ink)_9%,transparent)] text-primary font-semibold shadow-[inset_0_0_0_1px_var(--line-2)]"
+                          : "text-secondary shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:text-primary hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)]"
+                      }`}
+                    >
+                      {es ? lot.labelEs : lot.labelEn}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
@@ -420,7 +432,7 @@ export function RiskCalculator() {
                 {es ? "Deducir fricción de ejecución" : "Deduct execution friction"}
               </span>
               <span className="block text-[12px] text-tertiary">
-                {es ? "Comisiones estimadas + 1 tick de slippage" : "Estimated commissions + 1 tick slippage"}
+                {rotuloFriccion}
               </span>
             </div>
             <button
@@ -444,10 +456,10 @@ export function RiskCalculator() {
 
           {/* Chips de plantilla */}
           <div className="mb-4">
-            <div className="tj-deslizador-etiqueta mb-2">
+            <div id="riesgo-plantilla" className="tj-deslizador-etiqueta mb-2">
               {es ? "Plantilla de riesgo" : "Risk preset"}
             </div>
-            <div className="tj-segmentado tj-segmentado-apila" role="group">
+            <div className="tj-segmentado tj-segmentado-apila" role="group" aria-labelledby="riesgo-plantilla">
               {presets.map((p) => (
                 <button
                   key={p.label}
@@ -461,14 +473,24 @@ export function RiskCalculator() {
             </div>
           </div>
 
-          {/* Chips de balance */}
+          {/* Balance: se escribe; los cuatro importes son atajos. Solo con
+              los atajos, quien tuviera 5.000 $ o 250.000 $ no podía
+              calcular su caso. */}
           <div>
-            <div className="tj-deslizador-etiqueta mb-2">
-              {es ? "Balance de cuenta" : "Account balance"}
-            </div>
+            <label className="flex items-center justify-between gap-3 mb-2">
+              <span id="riesgo-balance" className="tj-deslizador-etiqueta">
+                {es ? "Balance de cuenta ($)" : "Account balance ($)"}
+              </span>
+              <CampoCifra
+                min={100}
+                valor={balance}
+                onValor={setBalance}
+                className="tj-campo tnum w-36 min-h-[44px] px-3 text-base font-medium text-primary text-right"
+              />
+            </label>
             {/* Aqui no hace falta apilar: son cuatro etiquetas de cuatro
                 caracteres y caben en fila hasta en 390 px. */}
-            <div className="tj-segmentado" role="group">
+            <div className="tj-segmentado" role="group" aria-labelledby="riesgo-balance">
               {balances.map((b) => (
                 <button
                   key={b.label}
@@ -501,7 +523,7 @@ export function RiskCalculator() {
               type="range"
               min={RISK_MIN}
               max={RISK_MAX}
-              step={0.05}
+              step={RISK_STEP}
               value={riskPct}
               onChange={(e) => setRiskPct(parseFloat(e.target.value))}
               aria-label={es ? "Porcentaje de riesgo por operación" : "Risk percentage per trade"}
@@ -543,7 +565,7 @@ export function RiskCalculator() {
             <span>
               {!c.valid
                 ? (es ? "Plan sin calcular" : "Plan not calculated")
-                : c.direction === "short"
+                : c.direccion === "short"
                   ? (es ? "Plan en corto" : "Short plan")
                   : (es ? "Plan en largo" : "Long plan")}
             </span>
@@ -562,8 +584,8 @@ export function RiskCalculator() {
               !c.valid
                 ? ""
                 : es
-                  ? `Tamaño: ${fmtNum(c.size)} ${c.sizeLabel}. Riesgo: ${fmtUsd(c.totalRiskUsd)}. Beneficio en el objetivo: ${fmtUsd(c.profit)}. Ratio ${fmtNum(c.rr, 1)} a 1.`
-                  : `Size: ${fmtNum(c.size)} ${c.sizeLabel}. Risk: ${fmtUsd(c.totalRiskUsd)}. Profit at target: ${fmtUsd(c.profit)}. Ratio ${fmtNum(c.rr, 1)} to 1.`
+                  ? avisoNoCabe ?? `Tamaño: ${tamanoTxt}. Riesgo: ${fmtUsd(c.riesgoTotal)}. Beneficio en el objetivo: ${fmtUsd(c.beneficioNeto)}. Ratio ${fmtNum(c.rr, 1)} a 1.`
+                  : avisoNoCabe ?? `Size: ${tamanoTxt}. Risk: ${fmtUsd(c.riesgoTotal)}. Profit at target: ${fmtUsd(c.beneficioNeto)}. Ratio ${fmtNum(c.rr, 1)} to 1.`
             }
           />
 
@@ -582,6 +604,16 @@ export function RiskCalculator() {
                   : "Entry, stop and target must be distinct and positive to calculate size."}
             </div>
           ) : null}
+          {/* Sin `role`: el anuncio de arriba ya lo lee, y dos anuncios a
+              la vez se pisan. */}
+          {avisoNoCabe ? (
+            <p
+              className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
+              style={{ color: "rgb(var(--pnl-neg))" }}
+            >
+              {avisoNoCabe}
+            </p>
+          ) : null}
           {c.apalancamientoExcesivo ? (
             <p
               className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
@@ -589,8 +621,8 @@ export function RiskCalculator() {
               role="status"
             >
               {es
-                ? `La posición equivale a ${fmtNum(c.leverage, 1)} veces tu balance, por encima del ${TOPE_APALANCAMIENTO[assetMode]}:1 que se suele permitir en este mercado. Con el stop tan cerca de la entrada el tamaño se dispara: revisa la distancia.`
-                : `The position is ${fmtNum(c.leverage, 1)} times your balance, above the ${TOPE_APALANCAMIENTO[assetMode]}:1 usually allowed in this market. With the stop this close to entry the size balloons: check the distance.`}
+                ? `La posición equivale a ${fmtNum(c.apalancamiento, 1)} veces tu balance, por encima del ${TOPE_APALANCAMIENTO[assetMode]}:1 que se suele permitir en este mercado. Con el stop tan cerca de la entrada el tamaño se dispara: revisa la distancia.`
+                : `The position is ${fmtNum(c.apalancamiento, 1)} times your balance, above the ${TOPE_APALANCAMIENTO[assetMode]}:1 usually allowed in this market. With the stop this close to entry the size balloons: check the distance.`}
             </p>
           ) : null}
 
@@ -610,12 +642,12 @@ export function RiskCalculator() {
               herramienta a 768; 2 en movil— y baja a 2 solo en el caso
               que se rompia. */}
           <div className="grid grid-cols-[repeat(auto-fit,minmax(8.25rem,1fr))] gap-x-4 mb-2">
-            <Result label={es ? "Riesgo total" : "Total risk"} value={siPlan(fmtUsd(c.totalRiskUsd))} color={c.valid ? "rgb(var(--pnl-neg))" : "var(--ink-2)"} />
-            <Result label={es ? "Beneficio neto" : "Net profit"} value={siPlan(fmtUsd(c.profit))} color={c.valid ? "rgb(var(--pnl-pos))" : "var(--ink-2)"} />
-            <Result label={es ? "Tamaño de posición" : "Position size"} value={siPlan(`${fmtNum(c.size, assetMode === "forex" ? 2 : (assetMode === "futures" ? 1 : 2))} ${c.sizeLabel}`)} color="var(--ink)" />
+            <Result label={es ? "Riesgo total" : "Total risk"} value={siPlan(fmtUsd(c.riesgoTotal))} color={c.valid && c.riesgoTotal > 0 ? "rgb(var(--pnl-neg))" : "var(--ink-2)"} />
+            <Result label={es ? "Beneficio neto" : "Net profit"} value={siPlan(fmtUsd(c.beneficioNeto))} color={!c.valid || c.beneficioNeto === 0 ? "var(--ink-2)" : c.beneficioNeto > 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
+            <Result label={es ? "Tamaño de posición" : "Position size"} value={siPlan(tamanoTxt)} color={c.noCabe ? "rgb(var(--pnl-neg))" : "var(--ink)"} />
             <Result label="R:R" value={siPlan(`${fmtNum(c.rr, 2)}:1`)} color="var(--ink)" />
-            <Result label={es ? "Valor del pip / punto" : "Pip / point value"} value={siPlan(fmtUsd(c.pipValue))} color="var(--ink)" />
-            <Result label={es ? "Fricción estimada" : "Est. friction"} value={siPlan(`−${fmtUsd(c.estimatedFriction)}`)} color="var(--ink-2)" />
+            <Result label={es ? "Valor del pip / punto" : "Pip / point value"} value={siPlan(fmtUsd(c.valorPip))} color="var(--ink)" />
+            <Result label={es ? "Fricción estimada" : "Est. friction"} value={siPlan(friccionTxt)} color="var(--ink-2)" />
           </div>
 
           {/* Stats adicionales: valor posición, apalancamiento, VaR 95% y riesgo de ruina */}
@@ -631,7 +663,7 @@ export function RiskCalculator() {
                 {es ? "Valor nocional" : "Notional value"}
               </div>
               <div className="tnum text-sm mt-auto pt-0.5 whitespace-nowrap font-semibold text-primary">
-                {siPlan(fmtUsd(c.positionValue))}
+                {siPlan(fmtUsd(c.nocional))}
               </div>
             </div>
             <div className="caja-cifra flex flex-col">
@@ -644,7 +676,7 @@ export function RiskCalculator() {
                   color: c.apalancamientoExcesivo ? "rgb(var(--pnl-neg))" : "var(--ink)",
                 }}
               >
-                {c.valid ? <>{fmtNum(c.leverage, 1)}{"\u00a0×"}</> : "—"}
+                {c.valid ? <>{fmtNum(c.apalancamiento, 1)}{"\u00a0×"}</> : "—"}
               </div>
             </div>
             <div className="caja-cifra flex flex-col">
@@ -704,9 +736,9 @@ export function RiskCalculator() {
               />
             </div>
             <div className="mt-2 flex items-center justify-between tnum text-[12px] text-secondary">
-              <span>{siPlan(fmtUsd(c.riskUsd))}</span>
-              <span className="text-tertiary">{siPlan(`${fmtNum(c.profitPct, 1)}${PCT}`)} {es ? "del balance" : "of balance"}</span>
-              <span>{siPlan(fmtUsd(c.profit))}</span>
+              <span>{siPlan(fmtUsd(c.riesgoReal))}</span>
+              <span className="text-tertiary">{siPlan(fmtPct(c.profitPct / 100, lang, 1))} {es ? "del balance" : "of balance"}</span>
+              <span>{siPlan(fmtUsd(c.beneficioNeto))}</span>
             </div>
           </div>
 
@@ -726,7 +758,7 @@ export function RiskCalculator() {
               </button>
               <span className="text-[12px] tnum text-tertiary">
                 {es ? "Medio Kelly: " : "Half-Kelly: "}
-                <strong className="text-primary font-semibold">{fmtNum(c.halfKellyPct)}{PCT}</strong>
+                <strong className="text-primary font-semibold">{siPlan(`${fmtNum(c.kelly.medio)}${PCT}`)}</strong>
               </span>
             </div>
 
@@ -752,26 +784,35 @@ export function RiskCalculator() {
                 <div className="grid grid-cols-3 gap-2 text-center text-[12px] tnum">
                   <div className="py-1">
                     <div className="text-tertiary">{es ? "Kelly completo" : "Full Kelly"}</div>
-                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.fullKellyPct)}{PCT}</div>
+                    <div className="font-semibold text-primary mt-0.5">{siPlan(`${fmtNum(c.kelly.completo)}${PCT}`)}</div>
                   </div>
                   <div className="py-1">
                     <div className="text-[rgb(var(--accent-base))] font-semibold">{es ? "Medio Kelly" : "Half Kelly"}</div>
-                    <div className="font-semibold text-[rgb(var(--accent-base))] mt-0.5">{fmtNum(c.halfKellyPct)}{PCT}</div>
+                    <div className="font-semibold text-[rgb(var(--accent-base))] mt-0.5">{siPlan(`${fmtNum(c.kelly.medio)}${PCT}`)}</div>
                   </div>
                   <div className="py-1">
                     <div className="text-tertiary">{es ? "Cuarto de Kelly" : "Quarter Kelly"}</div>
-                    <div className="font-semibold text-primary mt-0.5">{fmtNum(c.quarterKellyPct)}{PCT}</div>
+                    <div className="font-semibold text-primary mt-0.5">{siPlan(`${fmtNum(c.kelly.cuarto)}${PCT}`)}</div>
                   </div>
                 </div>
+                {kellyTopado && (
+                  <p className="m-0 text-[12px] leading-[1.5] text-tertiary">
+                    {es
+                      ? `El control de riesgo va del ${fmtNum(RISK_MIN)}${PCT} al ${fmtNum(RISK_MAX)}${PCT}. Kelly da por exacta una ventaja que solo es una estimación: por encima del tope, arriesgar más no compensa el error de esa estimación.`
+                      : `The risk control runs from ${fmtNum(RISK_MIN)}% to ${fmtNum(RISK_MAX)}%. Kelly treats an estimated edge as exact: above the cap, risking more does not make up for the error in that estimate.`}
+                  </p>
+                )}
                 <button
                   type="button"
-                  disabled={c.halfKellyPct <= 0}
-                  onClick={() => c.halfKellyPct > 0 && setRiskPct(Number(c.halfKellyPct.toFixed(2)))}
+                  disabled={kellyAplicable <= 0}
+                  onClick={() => kellyAplicable > 0 && setRiskPct(kellyAplicable)}
                   className="toque-comodo w-full py-2 text-[13px] tnum font-medium tj-campo text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  {c.halfKellyPct <= 0
+                  {kellyAplicable <= 0
                     ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
-                    : (es ? `Usar medio Kelly (${fmtNum(c.halfKellyPct)}${PCT} de riesgo)` : `Apply Half-Kelly recommendation (${fmtNum(c.halfKellyPct)}% risk)`)}
+                    : kellyTopado
+                      ? (es ? `Usar medio Kelly con el tope del control (${fmtNum(kellyAplicable)}${PCT} de riesgo)` : `Apply Half-Kelly at the control’s limit (${fmtNum(kellyAplicable)}% risk)`)
+                      : (es ? `Usar medio Kelly (${fmtNum(kellyAplicable)}${PCT} de riesgo)` : `Apply Half-Kelly (${fmtNum(kellyAplicable)}% risk)`)}
                 </button>
               </div>
             )}

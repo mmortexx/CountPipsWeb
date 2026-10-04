@@ -3,6 +3,22 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
 import { validaPlan } from "@/lib/trading/validaPlan";
+import { contrasteVentaja } from "@/lib/trading/estadistica";
+import { FUTURES_CONTRACTS, PARES_FOREX, calculaPlan } from "@/lib/trading/plan";
+
+const calculaPlanSinStop = calculaPlan({
+  mercado: "equities",
+  balance: 10000,
+  riesgoPct: 1,
+  entrada: 100,
+  stop: 100,
+  objetivo: 110,
+  friccion: true,
+  futuro: FUTURES_CONTRACTS[0],
+  lote: "standard",
+  par: PARES_FOREX[0],
+  tipoReferencia: null,
+});
 
 /**
  * Dimension D11 & D12: Shortcuts, Error Handling & Resilience
@@ -82,9 +98,10 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
     const equityProj = readSrc("src/components/marketing/EquityProjector.tsx");
     const edgeChecker = readSrc("src/components/marketing/EdgeSignificanceChecker.tsx");
 
-    // RiskCalculator delega la validación en validaPlan (comportamiento,
-    // no una línea de código concreta) y sigue mostrando alerta si no es válido.
-    expect(riskCalc).toContain("validaPlan(");
+    // RiskCalculator delega el cálculo en calculaPlan, que valida con
+    // validaPlan, y sigue mostrando alerta si no es válido.
+    expect(riskCalc).toContain("calculaPlan(");
+    expect(calculaPlanSinStop.valido).toBe(false);
     expect(riskCalc).toContain('role="alert"');
     expect(validaPlan(0, 95, 115).valido).toBe(false);
     expect(validaPlan(100, 100, 115).valido).toBe(false);
@@ -105,8 +122,10 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
     expect(equityProj).toContain("!c.hasEdge &&");
     expect(equityProj).toContain('role="alert"');
 
-    // EdgeSignificanceChecker checks sufficient sample size
-    expect(edgeChecker).toContain("const canTest = np0 >= 5;");
+    // EdgeSignificanceChecker no da veredicto por debajo de n·p0·(1−p0) ≥ 5
+    expect(edgeChecker).toContain("contrasteVentaja(");
+    expect(contrasteVentaja(15, 70, 1, 1).veredicto).toBe("muestra-insuficiente");
+    expect(contrasteVentaja(20, 70, 1, 1).veredicto).not.toBe("muestra-insuficiente");
   });
 });
 

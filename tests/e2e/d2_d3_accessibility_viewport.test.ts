@@ -261,7 +261,7 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 2 Boundary & 
 
     // RiskCalculator dice la dirección con palabras en la barra de la
     // tarjeta («Plan en corto» / «Plan en largo»), no con color.
-    expect(riskCalc).toContain('c.direction === "short"');
+    expect(riskCalc).toContain('c.direccion === "short"');
     expect(riskCalc).toContain('"Plan en corto"');
     expect(riskCalc).toContain('"Plan en largo"');
 

@@ -54,3 +54,62 @@ describe("proyectaCapital", () => {
     expect(r.finalBalance).toBeLessThan(LIMITE_PROYECCION_USD);
   });
 });
+
+const PERFIL = {
+  startBalance: 10000,
+  tradesPerYear: 250,
+  winRate: 56,
+  avgWinR: 1.5,
+  avgLossR: 1.0,
+  riskPct: 0.5,
+  years: 5,
+  reinvestMode: "compound" as const,
+  monthlyContribution: 0,
+  frictionR: 0.02,
+};
+
+/* El mes en que la curva llega al doble del balance inicial. */
+const mesDelDoble = (r: ReturnType<typeof proyectaCapital>, inicio: number) =>
+  r.monthlyPoints.find((p) => p.balance - (p.totalDeposited - inicio) >= 2 * inicio)?.month ?? null;
+
+describe("proyectaCapital: la tasa anual mide la estrategia, no los ingresos", () => {
+  it("con expectancy cero, aportar dinero no da rentabilidad", () => {
+    const r = proyectaCapital({ ...PERFIL, winRate: 50, avgWinR: 1, avgLossR: 1, frictionR: 0, monthlyContribution: 1000, years: 10 });
+    expect(r.cagr).toBeCloseTo(0, 10);
+  });
+
+  it("con expectancy negativa y aportes la tasa anual es negativa", () => {
+    const r = proyectaCapital({ ...PERFIL, winRate: 50, avgWinR: 1, avgLossR: 1, frictionR: 0.06, riskPct: 1, monthlyContribution: 1000, years: 10 });
+    expect(r.cagr).toBeLessThan(0);
+  });
+
+  it("en interés compuesto la tasa anual es la misma con y sin aportes", () => {
+    const sin = proyectaCapital(PERFIL).cagr;
+    const con = proyectaCapital({ ...PERFIL, monthlyContribution: 250 }).cagr;
+    expect(con).toBeCloseTo(sin, 10);
+  });
+});
+
+describe("proyectaCapital: el tiempo para duplicar cuadra con la curva", () => {
+  for (const reinvestMode of ["compound", "linear"] as const) {
+    it(`en modo ${reinvestMode} la curva cruza el doble en el mes que anuncia la casilla`, () => {
+      const r = proyectaCapital({ ...PERFIL, reinvestMode, years: 10 });
+      expect(r.monthsToDouble).not.toBeNull();
+      expect(mesDelDoble(r, PERFIL.startBalance)).toBe(Math.ceil(r.monthsToDouble!));
+    });
+  }
+
+  it("un empate con ruido de coma flotante no es ventaja ni tarda «∞ meses»", () => {
+    const r = proyectaCapital({ ...PERFIL, winRate: 25, avgWinR: 0.9, avgLossR: 0.3, frictionR: 0 });
+    expect(r.netExpectancyR).toBe(0);
+    expect(r.hasEdge).toBe(false);
+    expect(r.monthsToDouble).toBeNull();
+  });
+
+  it("el «primer año» es el año 1 de la tabla", () => {
+    for (const reinvestMode of ["compound", "linear"] as const) {
+      const r = proyectaCapital({ ...PERFIL, reinvestMode, monthlyContribution: 500 });
+      expect(r.yearlyUsdInitial).toBeCloseTo(r.yearlyBreakdown[0].yearProfit, 6);
+    }
+  });
+});

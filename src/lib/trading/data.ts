@@ -1000,5 +1000,4 @@ export {
   computeExpectedMaxLossStreak,
   computeParametricVaR,
   normalCdf,
-  computeStatisticalPower,
 } from "./estadistica.ts";

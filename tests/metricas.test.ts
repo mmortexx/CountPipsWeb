@@ -238,47 +238,29 @@ describe("Anualización en días calendario: CAGR y Ratio de Calmar", () => {
   });
 });
 
-describe("Criterio de Kelly (Puro, Medio y Cuarto) y clamping", () => {
-  function computeKelly(winRatePct: number, rr: number) {
-    const p = winRatePct / 100;
-    const q = 1 - p;
-    const b = rr > 0 ? rr : 1;
-    const fullKellyPct = b > 0 ? Math.max(0, ((p * b - q) / b) * 100) : 0;
-    const halfKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 2)) : 0;
-    const quarterKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 4)) : 0;
-    return { fullKellyPct, halfKellyPct, quarterKellyPct };
-  }
+/* Antes probaba una copia de la fórmula escrita aquí mismo, con el tope
+   del 3 % dentro: las fracciones salían iguales y la prueba lo daba por
+   bueno. Ahora prueba la función que usa la calculadora. */
+describe("Criterio de Kelly (completo, medio y cuarto)", () => {
+  it("calcula Kelly correctamente para sistemas con ventaja ganadora", async () => {
+    const { fraccionesKelly } = await import("@/lib/trading/plan");
+    // WR = 60%, RR = 2:1 -> f* = (0.60 * 2 - 0.40) / 2 = 40%
+    const k1 = fraccionesKelly(60, 2);
+    expect(k1.completo).toBeCloseTo(40, 5);
+    expect(k1.medio).toBeCloseTo(20, 5);
+    expect(k1.cuarto).toBeCloseTo(10, 5);
 
-  it("calcula Kelly correctamente para sistemas con ventaja ganadora", () => {
-    // WR = 60%, RR = 2:1 -> f* = (0.60 * 2 - 0.40) / 2 = 0.80 / 2 = 40%
-    const k1 = computeKelly(60, 2);
-    expect(k1.fullKellyPct).toBeCloseTo(40, 5);
-    // Half Kelly = min(3.0, 40 / 2) = 3.0%
-    expect(k1.halfKellyPct).toBe(3.0);
-    // Quarter Kelly = min(3.0, 40 / 4) = 3.0%
-    expect(k1.quarterKellyPct).toBe(3.0);
-
-    // WR = 51%, RR = 1:1 -> f* = (0.51 * 1 - 0.49) / 1 = 2%
-    const k2 = computeKelly(51, 1);
-    expect(k2.fullKellyPct).toBeCloseTo(2.0, 5);
-    // Half Kelly = 2 / 2 = 1.0% (dentro de [0.25, 3.0])
-    expect(k2.halfKellyPct).toBeCloseTo(1.0, 5);
-    // Quarter Kelly = 2 / 4 = 0.5% (dentro de [0.25, 3.0])
-    expect(k2.quarterKellyPct).toBeCloseTo(0.5, 5);
+    // WR = 51%, RR = 1:1 -> f* = 2%
+    const k2 = fraccionesKelly(51, 1);
+    expect(k2.completo).toBeCloseTo(2.0, 5);
+    expect(k2.medio).toBeCloseTo(1.0, 5);
+    expect(k2.cuarto).toBeCloseTo(0.5, 5);
   });
 
-  it("devuelve estrictamente 0% para sistemas sin ventaja o perdedores (f* <= 0)", () => {
-    // WR = 40%, RR = 1:1 -> f* = (0.40 - 0.60) / 1 = -20% <= 0
-    const losing = computeKelly(40, 1);
-    expect(losing.fullKellyPct).toBe(0);
-    expect(losing.halfKellyPct).toBe(0);
-    expect(losing.quarterKellyPct).toBe(0);
-
-    // WR = 50%, RR = 1:1 (moneda al aire, esperanza cero) -> f* = 0
-    const coin = computeKelly(50, 1);
-    expect(coin.fullKellyPct).toBe(0);
-    expect(coin.halfKellyPct).toBe(0);
-    expect(coin.quarterKellyPct).toBe(0);
+  it("devuelve estrictamente 0% para sistemas sin ventaja o perdedores (f* <= 0)", async () => {
+    const { fraccionesKelly } = await import("@/lib/trading/plan");
+    expect(fraccionesKelly(40, 1)).toEqual({ completo: 0, medio: 0, cuarto: 0 });
+    expect(fraccionesKelly(50, 1)).toEqual({ completo: 0, medio: 0, cuarto: 0 });
   });
 });
 
@@ -312,11 +294,21 @@ describe("Ratio Omega y Asimetría de Drawdown", () => {
 
 describe("Multiplicadores de futuros institucionales y multi-activo", () => {
   it("incluye el contrato E-mini Russell 2000 (RTY) a 50 $/punto y tickSize 0.1", async () => {
-    const { FUTURES_CONTRACTS } = await import("@/components/marketing/RiskCalculator");
+    const { FUTURES_CONTRACTS } = await import("@/lib/trading/plan");
     const rty = FUTURES_CONTRACTS.find((c) => c.id === "rty");
     expect(rty).toBeDefined();
     expect(rty?.mult).toBe(50);
     expect(rty?.tickSize).toBe(0.1);
+  });
+
+  it("la calculadora de riesgo y el motor de la demo dan el mismo multiplicador a cada contrato", async () => {
+    const { FUTURES_CONTRACTS } = await import("@/lib/trading/plan");
+    const { INSTRUMENT_MULTIPLIERS } = await import("@/lib/trading/data");
+    const distintos = FUTURES_CONTRACTS.filter(
+      (f) => INSTRUMENT_MULTIPLIERS[f.simbolo] !== undefined && INSTRUMENT_MULTIPLIERS[f.simbolo] !== f.mult,
+    ).map((f) => `${f.simbolo}: ${f.mult} frente a ${INSTRUMENT_MULTIPLIERS[f.simbolo]}`);
+    expect(distintos).toEqual([]);
+    expect(FUTURES_CONTRACTS.filter((f) => INSTRUMENT_MULTIPLIERS[f.simbolo] !== undefined).length).toBeGreaterThanOrEqual(7);
   });
 
   it("resuelve multiplicadores oficiales en data.ts para todas las clases de activo", async () => {
@@ -596,20 +588,6 @@ describe("Modelos Institucionales de Ruina, Rachas y Valor en Riesgo", () => {
     expect(normalCdf(1.96)).toBeCloseTo(0.975, 3);
     expect(normalCdf(-1.96)).toBeCloseTo(0.025, 3);
     expect(normalCdf(2.576)).toBeCloseTo(0.995, 3);
-  });
-
-  it("computeStatisticalPower devuelve 0% sin ventaja y crece monótonamente con la muestra", async () => {
-    const { computeStatisticalPower } = await import("@/lib/trading/data");
-    // Win rate <= 50% -> Potencia 0% (H0 es cierta)
-    expect(computeStatisticalPower(50, 100)).toBe(0);
-    expect(computeStatisticalPower(45, 100)).toBe(0);
-    // Win rate 60% con N=30 vs N=100 vs N=300
-    const p30 = computeStatisticalPower(60, 30);
-    const p100 = computeStatisticalPower(60, 100);
-    const p300 = computeStatisticalPower(60, 300);
-    expect(p30).toBeLessThan(p100);
-    expect(p100).toBeLessThan(p300);
-    expect(p300).toBeGreaterThanOrEqual(80); // Muestra suficiente para potencia institucional >=80%
   });
 });
 

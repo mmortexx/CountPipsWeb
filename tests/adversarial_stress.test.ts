@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { computeMetrics, drawdownRecoveryRequired, type Trade } from "@/lib/trading/data";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
-import { FUTURES_CONTRACTS } from "@/components/marketing/RiskCalculator";
+import { FUTURES_CONTRACTS } from "@/lib/trading/plan";
 
 // Helper to construct synthetic test trades
 function makeTrade(overrides: Partial<Trade> & { id: number; netPnl: number; closedAt: Date }): Trade {

@@ -9,6 +9,7 @@ import { fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, pctSep } from "@/lib/trad
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
   crecimientoPorOperacion,
+  esperanzaPorOperacion,
   gananciaParaRecuperar,
   operacionesParaRecuperar,
 } from "@/lib/trading/recuperacion";
@@ -42,7 +43,7 @@ export function DrawdownRecovery() {
       ganancia: gananciaParaRecuperar(d) ?? 0,
       operaciones: operacionesParaRecuperar(d, r, p, payoff),
       crecimiento: Math.expm1(g),
-      esperanza: p * payoff - (1 - p),
+      esperanza: esperanzaPorOperacion(p, payoff),
       filas: CAIDAS.map((x) => ({
         caida: x,
         ganancia: gananciaParaRecuperar(x) ?? 0,
@@ -52,8 +53,10 @@ export function DrawdownRecovery() {
     };
   }, [caida, riesgo, acierto, payoff]);
 
-  const conSigno = (v: number, dec: number) =>
-    `${v > 0 ? "+" : v < 0 ? "−" : ""}${fmtPct(Math.abs(v), lang, dec)}`;
+  /* El signo se decide sobre la cifra ya redondeada: decidido antes, un
+     −0,00004 se pintaba «−0,00 %» en rojo. */
+  const redondeado = (v: number, dec: number) => Number((v * 100).toFixed(dec));
+  const conSigno = (v: number, dec: number) => `${redondeado(v, dec) > 0 ? "+" : ""}${fmtPct(v, lang, dec)}`;
   const noVuelve = c.operaciones === null;
 
   const diagnostico = noVuelve
@@ -199,7 +202,7 @@ export function DrawdownRecovery() {
                 <div className="px-3 py-3 sm:px-4">
                   <dt className="text-[12px] text-tertiary">{es ? "Crecimiento" : "Growth"}</dt>
                   <dd
-                    className={`tnum m-0 mt-1 text-lg font-semibold ${c.crecimiento < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-primary"}`}
+                    className={`tnum m-0 mt-1 text-lg font-semibold ${redondeado(c.crecimiento, 2) < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-primary"}`}
                   >
                     {conSigno(c.crecimiento, 2)}
                   </dd>

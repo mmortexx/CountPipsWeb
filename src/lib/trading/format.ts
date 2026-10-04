@@ -44,16 +44,27 @@ export function fmtMoney(
   return formatted;
 }
 
+/** `Intl` escribe el negativo con el guion del teclado (U+002D) y deja
+ *  «-0,0» cuando la cifra redondea a cero. El signo de la casa es el menos
+ *  tipográfico (U+2212), como en fmtMoney y fmtR, y el cero va sin signo. */
+function menosTipografico(texto: string): string {
+  if (!texto.startsWith("-")) return texto;
+  const cuerpo = texto.slice(1);
+  return /[1-9]/.test(cuerpo) ? `−${cuerpo}` : cuerpo;
+}
+
 export function fmtNum(
   value: number,
   lang: Lang = "es",
   decimals = 2
 ): string {
-  return new Intl.NumberFormat(LOCALE[lang], {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-    useGrouping: "always",
-  }).format(value);
+  return menosTipografico(
+    new Intl.NumberFormat(LOCALE[lang], {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+      useGrouping: "always",
+    }).format(value),
+  );
 }
 
 /** Una cifra para un campo EDITABLE: coma decimal en español, punto en
@@ -144,7 +155,7 @@ export function fmtR(
    las cifras de cuatro dígitos y la tabla de la demo ponía «2350,00» en una
    fila y «18.200,0» en la siguiente. */
 export function fmtInt(value: number, lang: Lang = "es"): string {
-  return new Intl.NumberFormat(LOCALE[lang], { useGrouping: "always" }).format(value);
+  return menosTipografico(new Intl.NumberFormat(LOCALE[lang], { useGrouping: "always" }).format(value));
 }
 
 /** «1 operación», «2 operaciones» / «1 trade», «2 trades». Nueve textos
@@ -163,12 +174,22 @@ export function fmtCifraCorta(value: number, lang: Lang = "es"): string {
   return abs >= 1000 ? `${signo}${fmtNum(abs / 1000, lang, 1)}k` : `${signo}${abs}`;
 }
 
+/** Un precio con los decimales que trae (al menos dos, como mucho ocho):
+ *  el plan copiado escribía 1,085 como «1,09» y 0,000012 como «0,00». */
+export function fmtPrecio(value: number, lang: Lang = "es"): string {
+  if (!Number.isFinite(value)) return "—";
+  const decimales = (value.toFixed(8).replace(/0+$/, "").split(".")[1] ?? "").length;
+  return fmtNum(value, lang, Math.max(2, decimales));
+}
+
 export function fmtPrice(value: number, decimals = 2, lang: Lang = "es"): string {
-  return new Intl.NumberFormat(LOCALE[lang], {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-    useGrouping: "always",
-  }).format(value);
+  return menosTipografico(
+    new Intl.NumberFormat(LOCALE[lang], {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+      useGrouping: "always",
+    }).format(value),
+  );
 }
 
 export function fmtDuration(minutes: number, _lang: Lang = "es"): string {
