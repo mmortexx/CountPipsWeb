@@ -109,6 +109,12 @@ export function SessionClock() {
     return `${String(Math.floor(t / 60) % 24).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
   };
   const enRef = (h: number) => hora(h + desfaseRef);
+  /* Hasta que el navegador da la hora, ninguna franja ni ningún estado: el
+     HTML compilado los calculaba con el 1 de enero de 1970 (Nueva York en
+     horario de invierno, las cuatro plazas «Cerrada») y contradecía al
+     párrafo de horarios, que sí es fijo. Quien lee sin JavaScript, o un
+     buscador, se queda con ese párrafo. */
+  const franja = (desde: number, hasta: number) => (listo ? `${enRef(desde)}–${enRef(hasta)}` : "—");
   /* Las zonas de media o cuarto de hora (India, Nepal…) se escriben
      «UTC+5:30», no «UTC+5.5», que es como salían. */
   const desfaseMin = Math.round(Math.abs(desfaseRef) * 60);
@@ -174,12 +180,10 @@ export function SessionClock() {
               <li key={p.id} className="border-t border-[var(--line)] py-4 pr-4 sm:pr-6">
                 <div className="flex items-center gap-2 text-[13px]" style={{ color: open ? "var(--ink)" : "var(--ink-3)" }}>
                   <span aria-hidden className="h-2 w-2 rounded-[2px]" style={{ background: open ? "var(--ink)" : "color-mix(in srgb, var(--ink) 20%, transparent)" }} />
-                  {open ? (es ? "Abierta" : "Open") : (es ? "Cerrada" : "Closed")}
+                  {!listo ? "—" : open ? (es ? "Abierta" : "Open") : es ? "Cerrada" : "Closed"}
                 </div>
                 <div className="mt-2 text-[20px] font-semibold tracking-[-0.01em] text-primary">{nombre(p)}</div>
-                <div className="tnum mt-1 text-[13px] text-tertiary">
-                  {enRef(p.desdeUtc)}–{enRef(p.hastaUtc)}
-                </div>
+                <div className="tnum mt-1 text-[13px] text-tertiary">{franja(p.desdeUtc, p.hastaUtc)}</div>
               </li>
             );
           })}
@@ -188,7 +192,8 @@ export function SessionClock() {
         <div className="tj-ficha mb-10">
           <p className="tj-ficha-barra">
             <span>
-              {es ? "Las 24 horas" : "The 24 hours"} · {etiquetaDesfase}
+              {es ? "Las 24 horas" : "The 24 hours"}
+              {listo && ` · ${etiquetaDesfase}`}
             </span>
             {proxima && (
               <span>
@@ -203,7 +208,7 @@ export function SessionClock() {
             {[0, 6, 12, 18, 24].map((h) => (
               <div key={h} aria-hidden className="absolute top-0 bottom-0 w-px" style={{ left: `${pct(h)}%`, background: "var(--line)" }} />
             ))}
-            {plazas.map((p, i) => {
+            {listo && plazas.map((p, i) => {
               const open = p.abierta;
               const ts = tramos(norm(p.desdeUtc + desfaseRef), norm(p.hastaUtc + desfaseRef));
               const principal = ts.length > 1 && ts[1][1] - ts[1][0] > ts[0][1] - ts[0][0] ? 1 : 0;
@@ -217,7 +222,7 @@ export function SessionClock() {
                     width: `${pct(b - a)}%`,
                     background: `color-mix(in oklab, var(--ink) ${open ? 55 : p.tintaCerrada}%, transparent)`,
                   }}
-                  aria-label={k === principal ? `${nombre(p)} ${enRef(p.desdeUtc)}–${enRef(p.hastaUtc)}` : undefined}
+                  aria-label={k === principal ? `${nombre(p)} ${franja(p.desdeUtc, p.hastaUtc)}` : undefined}
                   aria-hidden={k !== principal || undefined}
                 >
                   {k === principal && (
@@ -266,9 +271,7 @@ export function SessionClock() {
                     {nombre(v)}
                     {activa && <span className="ml-2 text-[12px] font-normal text-[rgb(var(--accent-base))]">{es ? "ahora" : "now"}</span>}
                   </span>
-                  <span className="tnum text-[13px] text-tertiary">
-                    {enRef(v.desdeUtc)}–{enRef(v.hastaUtc)}
-                  </span>
+                  <span className="tnum text-[13px] text-tertiary">{franja(v.desdeUtc, v.hastaUtc)}</span>
                 </div>
                 <p className="m-0 mt-1 text-[13px] leading-[1.55] text-tertiary">{es ? v.notaEs : v.notaEn}</p>
               </li>

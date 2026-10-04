@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useId, useRef } from "react";
 import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
@@ -42,6 +42,7 @@ const SIM_RUNS = CAMINOS_MONTE_CARLO;
  *
  */
 export function RMultipleSimulator() {
+  const idPerfiles = useId();
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -131,6 +132,12 @@ export function RMultipleSimulator() {
   const innerBandPath = banda("p75", "p25");
 
   // Reusable slider
+  /* El dólar cambia de sitio con el idioma: «10.000 $» en español,
+     «$10,000» en inglés; lo resuelve `fmtUsd`. Las demás unidades —%, R,
+     operaciones— van siempre detrás. El lector oye el mismo texto. */
+  const textoDeslizador = (value: number, step: number, suffix: string) =>
+    suffix === " $" ? fmtUsd(value) : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`;
+
   const slider = (
     label: string,
     value: number,
@@ -144,15 +151,7 @@ export function RMultipleSimulator() {
     <div>
       <div className="flex items-center justify-between mb-2">
         <span className="tj-deslizador-etiqueta">{label}</span>
-        <span className="tj-deslizador-valor">
-          {/* El dólar cambia de sitio con el idioma: «10.000 $» en español,
-              «$10,000» en inglés. Con el sufijo fijo `" $"` la web inglesa
-              componía «10,000 $», la forma española en una página inglesa.
-              Las demás unidades —%, R, operaciones— van siempre detrás. */}
-          {suffix === " $" && !es
-            ? `$${fmtNum(value, 0)}`
-            : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`}
-        </span>
+        <span className="tj-deslizador-valor">{textoDeslizador(value, step, suffix)}</span>
       </div>
       <input
         type="range"
@@ -170,9 +169,7 @@ export function RMultipleSimulator() {
           } as React.CSSProperties
         }
         aria-label={ariaLabel}
-        aria-valuemin={min}
-        aria-valuemax={max}
-        aria-valuenow={value}
+        aria-valuetext={textoDeslizador(value, step, suffix)}
       />
     </div>
   );
@@ -185,7 +182,7 @@ export function RMultipleSimulator() {
       <ResultadoAnunciado
         texto={
           es
-            ? `Mediana: ${enVoz(c.finalP50)}. Cola del 5 %: ${enVoz(c.finalP5)}. Probabilidad de ruina: ${fmtPct(c.probRuin, 1)}.`
+            ? `Mediana: ${enVoz(c.finalP50)}. Cola del 5\u00a0%: ${enVoz(c.finalP5)}. Probabilidad de ruina: ${fmtPct(c.probRuin, 1)}.`
             : `Median: ${enVoz(c.finalP50)}. Bottom 5%: ${enVoz(c.finalP5)}. Probability of ruin: ${fmtPct(c.probRuin, 1)}.`
         }
       />
@@ -227,10 +224,10 @@ export function RMultipleSimulator() {
               de alargar el nombre entre parentesis — es el patron que ya
               usan los presets del proyector. */}
           <div className="mb-6">
-            <span className="mb-2 block tnum text-[12px] text-tertiary">
+            <span id={idPerfiles} className="mb-2 block tnum text-[12px] text-tertiary">
               {es ? "Perfiles de ejemplo" : "Example profiles"}
             </span>
-            <div className="tj-segmentado tj-segmentado-rejilla" role="group">
+            <div className="tj-segmentado tj-segmentado-rejilla" role="group" aria-labelledby={idPerfiles}>
               {[
                 { label: es ? "Prueba de fondeo" : "Prop challenge", muestra: "riesgo", wr: 55, winR: 1.8, lossR: 1.0, risk: 0.75 },
                 { label: es ? "Seguimiento de tendencia" : "Trend following", muestra: "acierto", wr: 42, winR: 3.2, lossR: 1.0, risk: 1.0 },
@@ -399,11 +396,11 @@ export function RMultipleSimulator() {
               pintarlo de pérdida contradecía la cifra que lleva debajo. */}
           <div className="tj-matriz grid-cols-5 text-center tnum">
             {[
-              { k: "P5", n: es ? "Cola 5 %" : "Bottom 5%", v: c.finalP5, col: "var(--ink-2)", ref: false },
+              { k: "P5", n: es ? "Cola 5\u00a0%" : "Bottom 5%", v: c.finalP5, col: "var(--ink-2)", ref: false },
               { k: "P25", n: "Q1", v: c.finalP25, col: "var(--ink-2)", ref: false },
               { k: "P50", n: es ? "Mediana" : "Median", v: c.finalP50, col: "rgb(var(--accent-base))", ref: true },
               { k: "P75", n: "Q3", v: c.finalP75, col: "var(--ink-2)", ref: false },
-              { k: "P95", n: es ? "Cima 5 %" : "Top 5%", v: c.finalP95, col: "var(--ink-2)", ref: false },
+              { k: "P95", n: es ? "Cima 5\u00a0%" : "Top 5%", v: c.finalP95, col: "var(--ink-2)", ref: false },
             ].map((p) => ({ ...p, col: p.v < startBalance ? "rgb(var(--pnl-neg))" : p.col })).map((p) => (
               <div
                 key={p.k}

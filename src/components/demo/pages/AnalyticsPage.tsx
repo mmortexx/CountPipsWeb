@@ -34,6 +34,7 @@ import { Histogram } from "@/components/charts/Histogram";
 import { Heatmap } from "@/components/charts/Heatmap";
 import { EquityCurve } from "@/components/charts/EquityCurve";
 import { useDemo } from "@/components/demo/DemoContext";
+import { moverConFlechas } from "@/lib/flechas";
 
 /* ============================================================
  * Small primitives
@@ -818,8 +819,8 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
     verdict = lang === "es" ? "Edge confirmado" : "Confirmed edge";
     verdictTone = "pos";
     hint = lang === "es"
-      ? "El intervalo de confianza del 95 % de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa."
-      : "The 95 % confidence interval for R expectancy excludes zero: your edge is statistically significant.";
+      ? "El intervalo de confianza del 95\u00a0% de la expectativa R excluye al cero: tu ventaja es estadísticamente significativa."
+      : "The 95% confidence interval for R expectancy excludes zero: your edge is statistically significant.";
   } else if (loR > -0.1) {
     verdict = lang === "es" ? "Sugerente" : "Suggestive";
     verdictTone = "warn";
@@ -952,20 +953,7 @@ function SectionBar({
               aria-controls="analitica-panel"
               tabIndex={isActive ? 0 : -1}
               onClick={() => onChange(s.id)}
-              onKeyDown={(e) => {
-                // Flechas, Inicio y Fin, como pide el patrón de pestañas.
-                const n = SECTIONS.length;
-                const destino =
-                  e.key === "ArrowRight" ? (i + 1) % n
-                  : e.key === "ArrowLeft" ? (i - 1 + n) % n
-                  : e.key === "Home" ? 0
-                  : e.key === "End" ? n - 1
-                  : -1;
-                if (destino < 0) return;
-                e.preventDefault();
-                onChange(SECTIONS[destino].id);
-                (e.currentTarget.parentElement?.children[destino] as HTMLElement | undefined)?.focus();
-              }}
+              onKeyDown={(e) => moverConFlechas(e, i, (d) => onChange(SECTIONS[d].id))}
               className={`relative whitespace-nowrap px-3 py-1.5 text-xs font-medium transition-colors rounded-[2px] ${
                 isActive
                   ? "text-primary"
@@ -1287,7 +1275,7 @@ export function AnalyticsPage() {
                       {t("profitFactor")}
                     </th>
                     <th className="px-2 py-2 text-[10px] uppercase tracking-[0.14em] text-tertiary font-medium text-right">
-                      {lang === "es" ? "Máx. caída" : "Max fall"}
+                      {lang === "es" ? "Máx. caída" : "Max drawdown"}
                     </th>
                   </tr>
                 </thead>
@@ -1475,7 +1463,7 @@ export function AnalyticsPage() {
                 </RatioCell>
                 <RatioCell
                   label="Half Kelly"
-                  hint={desc("Criterio de Kelly al 50 % (riesgo óptimo)", "Half Kelly sizing (optimal fraction)")}
+                  hint={desc("Criterio de Kelly al 50\u00a0% (riesgo óptimo)", "Half Kelly sizing (optimal fraction)")}
                 >
                   <span className={adv.halfKelly > 0 ? "text-pnl-pos" : "text-pnl-warn"}>
                     {fmtNum(adv.halfKelly, lang, 1)}{pctSep(lang)}
@@ -1506,7 +1494,7 @@ export function AnalyticsPage() {
                   </span>
                 </RatioCell>
                 <RatioCell
-                  label={lang === "es" ? "Úlcer" : "Ulcer"}
+                  label={lang === "es" ? "Úlcera" : "Ulcer"}
                   hint={desc("Índice de Úlcera (Peter Martin)", "Ulcer Index (Peter Martin)")}
                 >
                   <span className="text-pnl-warn">
@@ -1515,7 +1503,7 @@ export function AnalyticsPage() {
                 </RatioCell>
                 <RatioCell
                   label="CAGR"
-                  hint={desc("Tasa anualizada time-weighted", "Time-weighted annualised return")}
+                  hint={desc("Rentabilidad anualizada, ponderada en el tiempo", "Time-weighted annualised return")}
                 >
                   <span className={adv.cagr >= 0 ? "text-pnl-pos" : "text-pnl-neg"}>
                     {adv.cagr >= 0 ? "+" : "−"}

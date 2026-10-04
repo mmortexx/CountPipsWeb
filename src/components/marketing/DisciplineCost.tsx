@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState, type CSSProperties } from "react";
+import { useCallback, useId, useMemo, useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoUnidad } from "@/components/tj/CampoCifra";
@@ -53,6 +53,7 @@ const PRESETS = [
  * mensual desglosada por tipología de fallo y la fuga anual de capital.
  */
 export function DisciplineCost() {
+  const idEscenarios = useId();
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -226,7 +227,7 @@ export function DisciplineCost() {
 
             {/* Presets rápidos */}
             <div className="mb-6">
-              <span className="block text-[12px] text-tertiary mb-2">
+              <span id={idEscenarios} className="block text-[12px] text-tertiary mb-2">
                 {es ? "Escenarios rápidos" : "Quick scenarios"}
               </span>
               {/* Elegir entre tres escenarios es elegir uno de tres, y eso
@@ -235,7 +236,7 @@ export function DisciplineCost() {
                   sueltos con hueco entre ellos, que es lo que se usa para
                   tres acciones distintas, no para tres opciones de lo
                   mismo. */}
-              <div className="tj-segmentado tj-segmentado-apila" role="group">
+              <div className="tj-segmentado tj-segmentado-apila" role="group" aria-labelledby={idEscenarios}>
                 {PRESETS.map((p) => (
                   <button
                     key={p.id}
@@ -258,7 +259,7 @@ export function DisciplineCost() {
                     <label htmlFor="disc-trades" className="tj-deslizador-etiqueta">
                       {es ? "Operaciones al mes" : "Trades per month"}
                     </label>
-                    <span className="tj-deslizador-valor">{totalTrades}</span>
+                    <span className="tj-deslizador-valor">{fmtNum(totalTrades, lang, 0)}</span>
                   </div>
                   <input
                     id="disc-trades"
@@ -268,6 +269,7 @@ export function DisciplineCost() {
                     step={2}
                     value={totalTrades}
                     onChange={(e) => aMano(setTotalTrades)(Number(e.target.value))}
+                    aria-valuetext={fmtOperaciones(totalTrades, lang)}
                     /* `.tj-range`, como los otros seis deslizadores del
                        sitio. Antes era `appearance-none` con 6 px de alto
                        y sin regla de bolita: en WebKit eso deja el control
@@ -288,7 +290,7 @@ export function DisciplineCost() {
                     <label htmlFor="disc-breach" className="tj-deslizador-etiqueta">
                       {es ? "Fuera de plan (fallos)" : "Off-plan (breaches)"}
                     </label>
-                    <span className="tj-deslizador-valor">{breachPct}{pctSep(lang)}</span>
+                    <span className="tj-deslizador-valor">{fmtPct(breachPct / 100, lang, 0)}</span>
                   </div>
                   <input
                     id="disc-breach"
@@ -298,6 +300,7 @@ export function DisciplineCost() {
                     step={1}
                     value={breachPct}
                     onChange={(e) => aMano(setBreachPct)(Number(e.target.value))}
+                    aria-valuetext={fmtPct(breachPct / 100, lang, 0)}
                     className="tj-range w-full"
                     style={
                       {

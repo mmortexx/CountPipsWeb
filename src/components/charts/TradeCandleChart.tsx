@@ -178,11 +178,16 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           </div>
 
           {/* Timeframe selector */}
-          <div className="flex items-center rounded-[4px] bg-[rgb(var(--divider)/0.06)] p-0.5 border border-[rgb(var(--divider)/0.1)]">
+          <div
+            className="flex items-center rounded-[4px] bg-[rgb(var(--divider)/0.06)] p-0.5 border border-[rgb(var(--divider)/0.1)]"
+            role="group"
+            aria-label={es ? "Marco temporal" : "Timeframe"}
+          >
             {(["1m", "5m", "15m"] as const).map((tf) => (
               <button
                 key={tf}
                 type="button"
+                aria-pressed={timeframe === tf}
                 onClick={() => {
                   setTimeframe(tf);
                   setReplayIdx(candles.length);
@@ -199,9 +204,10 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           </div>
 
           {/* Indicators toggles */}
-          <div className="flex items-center gap-1 text-[10.5px] font-mono">
+          <div className="flex items-center gap-1 text-[10.5px] font-mono" role="group" aria-label={es ? "Indicadores" : "Indicators"}>
             <button
               type="button"
+              aria-pressed={showSma}
               onClick={() => setShowSma(!showSma)}
               className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[4px] border inline-flex items-center justify-center transition-colors ${
                 showSma
@@ -213,6 +219,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             </button>
             <button
               type="button"
+              aria-pressed={showVwap}
               onClick={() => setShowVwap(!showVwap)}
               className={`min-h-[44px] sm:min-h-0 px-2.5 sm:px-2 py-2 sm:py-0.5 rounded-[4px] border inline-flex items-center justify-center transition-colors ${
                 showVwap

@@ -314,7 +314,7 @@ export function FeaturesBento({
                   {fmtMoney(conjunto, lang, { decimals: 0, sign: true })}
                 </p>
                 <p className="m-0 mt-3 text-[11px] text-tertiary">
-                  {es ? "Saldo y resultado desde la apertura de cada cuenta." : "Balance and result since each account opened."}
+                  {es ? "Balance y resultado desde la apertura de cada cuenta." : "Balance and result since each account opened."}
                 </p>
               </div>
             </div>

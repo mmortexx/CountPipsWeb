@@ -18,6 +18,7 @@ import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
 import { CountUp } from "@/components/tj/CountUp";
 import { Reveal } from "@/components/tj/Reveal";
+import { moverConFlechas } from "@/lib/flechas";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -180,12 +181,14 @@ function DayScoreDots({
             type="button"
             role="radio"
             aria-checked={isSelected}
+            tabIndex={isSelected ? 0 : -1}
             aria-label={
               n === 0
                 ? lang === "es" ? "Sin nota" : "No score"
                 : lang === "es" ? `Nota ${fmtInt(n, lang)}` : `Score ${fmtInt(n, lang)}`
             }
             onClick={() => onChange(n)}
+            onKeyDown={(e) => moverConFlechas(e, n, onChange)}
             whileTap={{ scale: 0.8 }}
             whileHover={{ scale: 1.18 }}
             className="relative w-5 h-5"
@@ -640,8 +643,10 @@ function SegmentedMeter({
               type="button"
               role="radio"
               aria-checked={isSelected}
+              tabIndex={isSelected ? 0 : -1}
               aria-label={`${label} ${n}`}
               onClick={() => onChange(n)}
+              onKeyDown={(e) => moverConFlechas(e, n - 1, (i) => onChange(i + 1))}
               whileTap={{ scale: 0.92 }}
               className="relative h-8 rounded-[2px] border transition-colors"
               style={{
@@ -1480,7 +1485,7 @@ export function JournalPage() {
               aria-label={t("review2")}
               className="relative inline-flex bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] p-1"
             >
-              {(["weekly", "monthly"] as const).map((key) => {
+              {(["weekly", "monthly"] as const).map((key, i, claves) => {
                 const active = tab === key;
                 return (
                   <button
@@ -1489,7 +1494,9 @@ export function JournalPage() {
                     role="tab"
                     aria-selected={active}
                     aria-controls="review-tabpanel"
+                    tabIndex={active ? 0 : -1}
                     onClick={() => setTab(key)}
+                    onKeyDown={(e) => moverConFlechas(e, i, (j) => setTab(claves[j]))}
                     className="relative px-4 py-1.5 text-xs font-medium"
                   >
                     {active && (

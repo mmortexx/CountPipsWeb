@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useId, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { usePathname } from "next/navigation";
 import { useLang, type Lang } from "@/lib/i18n";
@@ -735,8 +735,12 @@ export function Navbar() {
                   setHovered("product");
                   if (megaWrapRef.current) mueveFoco(megaWrapRef.current, productActive, 15);
                 }}
+                /* Un desplegable de enlaces, no un `role="menu"`: el menú
+                   promete al lector un teclado (flechas desde el
+                   disparador, foco dentro) que una navegación no tiene,
+                   y en NVDA/JAWS además cambia el modo de lectura. */
                 aria-expanded={megaOpen}
-                aria-haspopup="menu"
+                aria-controls={megaOpen ? "navbar-producto-panel" : undefined}
                 className="relative z-10 inline-flex cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-[15px] py-[9px] text-sm outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                 style={{
                   color:
@@ -772,8 +776,7 @@ export function Navbar() {
                   biblioteca de animación a las 155 páginas del sitio. */}
               {megaOpen && (
                   <div
-                    role="menu"
-                    aria-labelledby="navbar-producto-trigger"
+                    id="navbar-producto-panel"
                     /* Navegación con flechas. Un menú abierto tiene que
                        poder recorrerse con ↑ y ↓ — es lo que espera
                        cualquiera que use el teclado, y su ausencia es de
@@ -823,21 +826,13 @@ export function Navbar() {
                         <Link
                           key={item.href}
                           href={item.href}
-                          role="menuitem"
                           onClick={() => setMegaOpen(false)}
                           className="group flex gap-[11px] rounded-[4px] px-2.5 py-[9px] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                           style={{ color: "var(--ink)" }}
-                          onMouseEnter={() => {
-                            const id = "prefetch-" + item.href.replace(/[^a-z0-9]/gi, "-");
-                            if (!document.getElementById(id)) {
-                              const link = document.createElement("link");
-                              link.id = id;
-                              link.rel = "prefetch";
-                              link.href = item.href;
-                              link.as = "document";
-                              document.head.appendChild(link);
-                            }
-                          }}
+                          /* Sin precarga a mano: el `Link` ya precarga con el
+                             prefijo de despliegue y el idioma. La manual pedía
+                             «/features» a secas, que en GitHub Pages es otro
+                             sitio (404) y en /en/ la página española. */
                         >
                           <span>
                             <span className="block text-[14px] font-semibold">
@@ -876,7 +871,6 @@ export function Navbar() {
                             </span>
                             <Link
                               href="/demo"
-                              role="menuitem"
                               onClick={() => setMegaOpen(false)}
                               className="group inline-flex items-center gap-1.5 text-[13px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                               style={{ color: "rgb(var(--accent-base))" }}
@@ -1273,9 +1267,11 @@ function IconButton({
  * como se hace bien: quien busca su idioma lo reconoce aunque no
  * entienda el idioma actual de la página.
  *
- * Accesibilidad: `aria-haspopup="listbox"` + `aria-expanded`, cada
- * opción con `role="option"` y `aria-selected`, Escape cierra y devuelve
- * el foco al disparador, y el clic fuera cierra.
+ * Accesibilidad: un desplegable con `aria-expanded` y `aria-controls`, y
+ * dentro un grupo de botones con `aria-pressed` y el `lang` de cada idioma
+ * (el lector pronuncia «English» en inglés). Era un `role="listbox"` sin
+ * flechas: prometía un teclado que no existía. Escape cierra y devuelve el
+ * foco al disparador, y el clic fuera cierra.
  */
 const LANGUAGES: { code: Lang; code2: string; native: string }[] = [
   { code: "es", code2: "ES", native: "Español" },
@@ -1288,6 +1284,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
+  const panelId = useId();
   // `size` solo controla la altura del disparador: "sm" (h-9, 36 px) para
   // el clúster de escritorio donde comparte fila con otros cuadrados de
   // 36 px; "md" (h-11, 44 px) para el drawer móvil, donde rige el suelo
@@ -1323,8 +1320,8 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
         ref={btnRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        aria-haspopup="listbox"
         aria-expanded={open}
+        aria-controls={open ? panelId : undefined}
         aria-label={es ? "Cambiar idioma" : "Change language"}
         title={es ? "Cambiar idioma" : "Change language"}
         className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
@@ -1353,7 +1350,9 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
       {open && (
           <div
             ref={popRef}
-            role="listbox"
+            id={panelId}
+            data-panel-idiomas=""
+            role="group"
             aria-label={es ? "Idiomas" : "Languages"}
             // El mismo material que el menú «Producto»: antes llevaba el suyo
             // propio, con una sombra negra al 70 % que en claro pesaba más
@@ -1367,8 +1366,8 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
                 <button
                   key={l.code}
                   type="button"
-                  role="option"
-                  aria-selected={activo}
+                  lang={l.code}
+                  aria-pressed={activo}
                   onClick={() => {
                     setLang(l.code);
                     setOpen(false);

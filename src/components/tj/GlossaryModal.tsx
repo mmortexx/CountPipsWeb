@@ -6,12 +6,14 @@ import { Search, BookOpen, ChevronDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Eyebrow } from "@/components/tj/Eyebrow";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { useLang } from "@/lib/i18n";
 import { paraBuscar } from "@/lib/busqueda";
 import {
@@ -229,10 +231,11 @@ export function GlossaryModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       {/* `trigger={false}` = el disparador lo pone el llamante y vive
-          FUERA de este componente. Lo usa `GlossaryLauncher`, que pinta
-          el enlace sin cargar el glosario y solo trae este módulo cuando
-          alguien lo abre de verdad. Sin este caso habría que renderizar
-          un disparador de mentira y esconderlo. */}
+          FUERA de este componente. Lo usa `OverlayHost`, el único que
+          monta el glosario: los disparadores (pie, FAQ, Ctrl+G) solo
+          piden abrirlo con `openGlossary`, sin cargar este módulo. Sin
+          este caso habría que renderizar un disparador de mentira y
+          esconderlo. */}
       {trigger !== false && (
         <DialogTrigger asChild>
           {trigger ?? (
@@ -265,11 +268,11 @@ export function GlossaryModal({
               ? "Términos de trading, sin traducir"
               : "Trading terms, in plain words"}
           </DialogTitle>
-          <p className="text-sm text-secondary leading-relaxed">
+          <DialogDescription className="text-sm text-secondary leading-relaxed">
             {es
               ? "Los términos se mantienen en inglés aunque la app esté en español: es la lengua franca de los mercados. Solo la definición cambia de idioma."
               : "Every term the app uses, defined the way someone who trades uses it rather than the way a dictionary does."}
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         {/* Search input */}
@@ -325,6 +328,15 @@ export function GlossaryModal({
                 : " · filter applied"
               : ""}
           </p>
+          <ResultadoAnunciado
+            texto={
+              filtered.length === 0
+                ? es ? "Ningún término con ese filtro." : "No terms match that filter."
+                : es
+                  ? `${filtered.length} ${filtered.length === 1 ? "término" : "términos"}`
+                  : `${filtered.length} ${filtered.length === 1 ? "term" : "terms"}`
+            }
+          />
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto custom-scroll border-t border-[var(--ficha-division)] px-6 py-4">

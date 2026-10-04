@@ -38,6 +38,7 @@ export function CommissionDragCalculator() {
   const { min: objetivoMin, max: objetivoMax, paso: objetivoPaso } = inst.objetivo;
   const decimalesObjetivo = (String(objetivoPaso).split(".")[1] ?? "").length;
   const objetivoTxt = fmtNum(targetUnits, lang, Number.isInteger(targetUnits) ? 0 : decimalesObjetivo);
+  const objetivoConUnidad = `+${objetivoTxt} ${es ? inst.unitNameEs : inst.unitNameEn}`;
 
   const handleSelectInstrument = (instId: string) => {
     const item = INSTRUMENT_SPECS.find((i) => i.id === instId);
@@ -141,7 +142,7 @@ export function CommissionDragCalculator() {
                   <span className="tj-deslizador-etiqueta">
                     {es ? "Contratos o lotes por operación" : "Contracts or lots per trade"}
                   </span>
-                  <span className="tj-deslizador-valor">{contracts}</span>
+                  <span className="tj-deslizador-valor">{fmtNum(contracts, lang, 0)}</span>
                 </div>
                 <input
                   type="range"
@@ -150,7 +151,8 @@ export function CommissionDragCalculator() {
                   step="1"
                   value={contracts}
                   onChange={(e) => setContracts(Number(e.target.value))}
-                  aria-label={es ? "Contratos por operación" : "Contracts per trade"}
+                  aria-label={es ? "Contratos o lotes por operación" : "Contracts or lots per trade"}
+                  aria-valuetext={fmtNum(contracts, lang, 0)}
                   className="tj-range w-full"
                   style={{ "--pct": `${((contracts - 1) / 19) * 100}%` } as CSSProperties}
                 />
@@ -161,7 +163,7 @@ export function CommissionDragCalculator() {
                   <span className="tj-deslizador-etiqueta">
                     {es ? "Operaciones al mes" : "Trades per month"}
                   </span>
-                  <span className="tj-deslizador-valor">{monthlyTrades}</span>
+                  <span className="tj-deslizador-valor">{fmtNum(monthlyTrades, lang, 0)}</span>
                 </div>
                 <input
                   type="range"
@@ -171,6 +173,7 @@ export function CommissionDragCalculator() {
                   value={monthlyTrades}
                   onChange={(e) => setMonthlyTrades(Number(e.target.value))}
                   aria-label={es ? "Operaciones al mes" : "Trades per month"}
+                  aria-valuetext={fmtOperaciones(monthlyTrades, lang)}
                   className="tj-range w-full"
                   style={{ "--pct": `${((monthlyTrades - 10) / 290) * 100}%` } as CSSProperties}
                 />
@@ -185,9 +188,7 @@ export function CommissionDragCalculator() {
                       ? `Ganancia media esperada (${inst.unitNameEs})`
                       : `Expected average gain (${inst.unitNameEn})`}
                   </span>
-                  <span className="tj-deslizador-valor">
-                    +{objetivoTxt} {es ? inst.unitNameEs : inst.unitNameEn}
-                  </span>
+                  <span className="tj-deslizador-valor">{objetivoConUnidad}</span>
                 </div>
                 <input
                   type="range"
@@ -197,6 +198,7 @@ export function CommissionDragCalculator() {
                   value={targetUnits}
                   onChange={(e) => setTargetUnits(Number(e.target.value))}
                   aria-label={es ? "Ganancia media esperada" : "Expected average gain"}
+                  aria-valuetext={objetivoConUnidad}
                   className="tj-range w-full"
                   style={
                     {
@@ -360,7 +362,7 @@ export function CommissionDragCalculator() {
                     : fmtPct(breakEvenWinRate / 100, lang)}
                 </span>
                 <span className="text-[12px] text-tertiary block mt-0.5">
-                  {es ? `a ${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)}:1 R:R` : `at ${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)}:1 R:R`}
+                  {es ? `a 1:${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)} R:R` : `at 1:${fmtNum(RATIO_RR_EQUILIBRIO, lang, 1)} R:R`}
                 </span>
               </div>
             </div>

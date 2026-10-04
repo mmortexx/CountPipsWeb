@@ -158,11 +158,11 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
   const rotulo =
     i === null
       ? es
-        ? `Saldo tras ${N - 1} operaciones`
+        ? `Balance tras ${N - 1} operaciones`
         : `Balance after ${N - 1} trades`
       : k === 0
         ? es
-          ? "Saldo inicial"
+          ? "Balance inicial"
           : "Starting balance"
         : `${es ? "Operación" : "Trade"} ${k} ${es ? "de" : "of"} ${N - 1}${fecha ? ` · ${fmtDate(fecha, lang)}` : ""}`;
 

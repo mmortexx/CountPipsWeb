@@ -218,7 +218,21 @@ for (const d of DIALOGOS) {
   await p.waitForTimeout(700);
   const abierto = await p.evaluate(() => {
     const dl = document.querySelector('[role="dialog"][data-state="open"], [role="dialog"][data-visible="true"]') || document.querySelector('[role="dialog"]');
-    return dl ? { hay: true, etiquetado: !!(dl.getAttribute("aria-label") || dl.getAttribute("aria-labelledby")), dentro: dl.contains(document.activeElement) } : { hay: false };
+    if (!dl) return { hay: false };
+    /* Lo que el lector lee al abrir: el nombre, la descripción a la que
+       apunta (Radix la declara aunque no exista) y los botones. Hasta el
+       2026-10-04 el glosario español decía «Close» y apuntaba a una
+       descripción que no estaba en la página. */
+    const id = dl.getAttribute("aria-describedby");
+    const nombres = [...dl.querySelectorAll("button")].map((b) => (b.getAttribute("aria-label") || b.textContent || b.getAttribute("title") || "").trim());
+    return {
+      hay: true,
+      etiquetado: !!(dl.getAttribute("aria-label") || dl.getAttribute("aria-labelledby")),
+      dentro: dl.contains(document.activeElement),
+      describeANada: !!id && !document.getElementById(id),
+      sinNombre: nombres.filter((n) => !n).length,
+      enIngles: document.documentElement.lang === "es" ? nombres.filter((n) => /^(close|dismiss)$/i.test(n)) : [],
+    };
   });
   if (!abierto.hay) {
     fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» no expone ningún role="dialog" al abrirse` });
@@ -227,6 +241,9 @@ for (const d of DIALOGOS) {
   }
   if (!abierto.etiquetado) fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» se abre sin nombre: un lector lo anuncia como «diálogo» y ya` });
   if (!abierto.dentro) fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» se abre y el foco se queda fuera` });
+  if (abierto.describeANada) fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» apunta con aria-describedby a una descripción que no existe` });
+  if (abierto.sinNombre) fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» tiene ${abierto.sinNombre} botón(es) sin nombre` });
+  if (abierto.enIngles.length) fallos.push({ ruta: d.ruta, detalle: `«${d.nombre}» nombra en inglés, en una página española: ${abierto.enIngles.join(", ")}` });
 
   // Más pulsaciones que enfocables: si no, la trampa rota nunca se alcanza.
   const enfocables = await p.evaluate(() => {
@@ -328,6 +345,22 @@ for (const idioma of ["es", "en"]) {
     fallos.push({ ruta, detalle: "Ctrl+K con el foco dentro de la demo no abre su paleta" });
   } else {
     recorridos++;
+    /* Combobox: el foco se queda en el campo y aria-activedescendant dice
+       qué comando está resaltado. Eran botones enfocables y Enter ejecutaba
+       el resaltado aunque el foco estuviera en otro. */
+    const combo = () => p.evaluate(() => {
+      const i = document.querySelector('[role="dialog"] input[role="combobox"]');
+      const id = i?.getAttribute("aria-activedescendant") ?? null;
+      const o = id ? document.getElementById(id) : null;
+      return { id, vale: o?.getAttribute("role") === "option" && o.getAttribute("aria-selected") === "true", foco: !!i && document.activeElement === i };
+    });
+    const c0 = await combo();
+    await p.keyboard.press("ArrowDown");
+    await p.waitForTimeout(150);
+    const c1 = await combo();
+    if (!c0.vale || !c1.vale || c0.id === c1.id || !c1.foco) {
+      fallos.push({ ruta, detalle: `la paleta de la demo no dice qué comando está resaltado (aria-activedescendant «${c0.id ?? "nada"}» → «${c1.id ?? "nada"}», foco en el campo: ${c1.foco})` });
+    }
     const { fuera, pulsaciones } = await atrapa(p, PALETA);
     if (fuera) fallos.push({ ruta, detalle: `el Tab se escapa de la paleta de la demo: ${fuera} de ${pulsaciones} pulsaciones acabaron fuera` });
     await p.keyboard.press("Escape");
@@ -347,6 +380,92 @@ for (const idioma of ["es", "en"]) {
     await p.keyboard.press("Escape");
     await p.waitForTimeout(500);
     if (!(await focoVuelve(p))) fallos.push({ ruta, detalle: "al cerrar la ayuda de la demo, el foco no vuelve a donde estaba" });
+  }
+  // (c) grupos de opción y pestañas, y los atajos 1–4
+  /* Un lector anuncia «1 de 4» al entrar en un grupo: una sola parada de
+     tabulador y las flechas moviendo la elección. Y las cifras sueltas solo
+     con el foco dentro de la demo y sin Ctrl, que es el cambio de pestaña
+     del navegador. El 2026-10-04 la dirección y la nota del día eran seis
+     paradas sin flechas, y Ctrl+1 cambiaba la página de la demo. */
+  if (es) {
+    const pestana = () => p.evaluate(() => document.querySelector('[data-demo-raiz] [role="tab"][aria-selected="true"]')?.textContent?.trim() ?? "");
+    /* La barra de pestañas de la demo queda fuera: moverla cambia de página
+       y con ella los grupos que se estaban recorriendo. Se prueba aparte. */
+    const revisaGrupos = async (pagina) => {
+      const n = await p.evaluate(() => {
+        document.querySelectorAll("[data-grupo-k]").forEach((x) => x.removeAttribute("data-grupo-k"));
+        const gs =[...document.querySelectorAll('[data-demo-raiz] [role="radiogroup"], [data-demo-raiz] [role="tablist"]:not(#demo-tablist)')]
+          .filter((g) => g.offsetParent !== null);
+        gs.forEach((g, k) => g.setAttribute("data-grupo-k", String(k)));
+        return gs.length;
+      });
+      let bien = 0;
+      for (let k = 0; k < n; k++) {
+        const g = p.locator(`[data-grupo-k="${k}"]`);
+        if (!(await g.count())) {
+          fallos.push({ ruta, detalle: `${pagina}: el grupo ${k + 1} desapareció mientras se probaba` });
+          continue;
+        }
+        const info = await g.evaluate((el) => {
+          const rol = el.getAttribute("role") === "tablist" ? "tab" : "radio";
+          const ops = [...el.querySelectorAll(`[role="${rol}"]`)];
+          const paradas = ops.filter((o) => o.tabIndex >= 0);
+          document.querySelectorAll("[data-parada-grupo]").forEach((x) => x.removeAttribute("data-parada-grupo"));
+          paradas[0]?.setAttribute("data-parada-grupo", "");
+          return { nombre: el.getAttribute("aria-label") || "?", paradas: paradas.length, total: ops.length };
+        });
+        if (info.paradas !== 1) {
+          fallos.push({ ruta, detalle: `${pagina}: el grupo «${info.nombre}» tiene ${info.paradas} paradas de tabulador para ${info.total} opciones; debe tener una` });
+          continue;
+        }
+        await p.focus("[data-parada-grupo]");
+        await p.keyboard.press("ArrowRight");
+        await p.waitForTimeout(300);
+        const tras = await g.evaluate((el) => {
+          const a = document.activeElement;
+          return {
+            dentro: el.contains(a),
+            otra: !!a && !a.hasAttribute("data-parada-grupo"),
+            elegida: a?.getAttribute("aria-checked") === "true" || a?.getAttribute("aria-selected") === "true",
+          };
+        });
+        if (!tras.dentro || !tras.otra || !tras.elegida) fallos.push({ ruta, detalle: `${pagina}: la flecha → no mueve el foco y la elección dentro de «${info.nombre}»` });
+        else bien++;
+        await p.keyboard.press("ArrowLeft");
+        await p.waitForTimeout(300);
+      }
+      return { n, bien };
+    };
+    const resumen = await revisaGrupos("Resumen");
+    await boton.focus();
+    await p.keyboard.press("4");
+    await p.waitForTimeout(600);
+    const trasCuatro = await pestana();
+    const diario = await revisaGrupos("Diario");
+    await boton.focus();
+    await p.keyboard.press("Control+1");
+    await p.waitForTimeout(400);
+    const trasControl = await pestana();
+    await p.locator("header a:visible").first().focus();
+    await p.keyboard.press("1");
+    await p.waitForTimeout(400);
+    const trasFuera = await pestana();
+    await p.focus('#demo-tablist [role="tab"][aria-selected="true"]');
+    await p.keyboard.press("ArrowRight");
+    await p.waitForTimeout(600);
+    const trasVuelta = await p.evaluate(() => {
+      const a = document.activeElement;
+      return a?.getAttribute("role") === "tab" && a.getAttribute("aria-selected") === "true" ? a.textContent.trim() : `foco en «${(a?.textContent || "").trim().slice(0, 20)}»`;
+    });
+    const medidos = resumen.n + diario.n;
+    const antes = fallos.length;
+    if (!/Resumen/.test(trasVuelta)) fallos.push({ ruta, detalle: `→ en la última pestaña de la demo no vuelve a la primera (${trasVuelta})` });
+    if (!/Diario/.test(trasCuatro)) fallos.push({ ruta, detalle: `la tecla 4 con el foco en la demo no abre el Diario (pestaña activa «${trasCuatro}»)` });
+    if (trasControl !== trasCuatro) fallos.push({ ruta, detalle: `Ctrl+1 cambia la página de la demo («${trasCuatro}» → «${trasControl}»): pisa el cambio de pestaña del navegador` });
+    if (trasFuera !== trasCuatro) fallos.push({ ruta, detalle: `la tecla 1 con el foco fuera de la demo cambia su página («${trasCuatro}» → «${trasFuera}»)` });
+    if (medidos < 4) fallos.push({ ruta, detalle: `solo ${medidos} grupos de opción o pestañas en el Resumen y el Diario: la guarda no está midiendo lo que cree` });
+    if (fallos.length === antes && resumen.bien + diario.bien === medidos) recorridos++;
+    console.log(`  demo ${idioma}: ${resumen.bien + diario.bien} de ${medidos} grupos se recorren con flechas; atajos 1–4 probados`);
   }
   console.log(`  demo ${idioma}: paleta y ayuda de atajos`);
   await ctx.close();
@@ -478,9 +597,94 @@ for (const idioma of ["es", "en"]) {
   }
   await ctx.close();
 }
-console.log(`  capas, aviso de cookies, glosario, megamenú y formulario: ${recorridos} de 9 recorridos completos`);
-if (recorridos < 9 && !fallos.length) {
-  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 9 recorridos llegaron a medirse` });
+// (g) al enviarse, el foco va a la confirmación
+/* El `<form>` entero se desmonta al enviarse y el foco, que estaba en el
+   botón, caía al `<body>`: quien no ve la pantalla no sabía si el mensaje
+   había salido. Aquí el servicio de envío se sustituye por una respuesta
+   de éxito; la ruta que lo aborta en `nueva` queda debajo de esta. */
+{
+  const { ctx, p } = await nueva("/faq/");
+  await ctx.route(/web3forms/i, (r) =>
+    r.request().method() === "OPTIONS"
+      ? r.fulfill({ status: 204, headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "POST" } })
+      : r.fulfill({ status: 200, contentType: "application/json", headers: { "access-control-allow-origin": "*" }, body: JSON.stringify({ success: true }) }),
+  );
+  if (!(await p.locator("#cf-email").count())) {
+    fallos.push({ ruta: "/faq/", detalle: "no encontré el formulario de contacto (#cf-email)" });
+  } else {
+    await p.fill("#cf-name", "Prueba de teclado");
+    await p.fill("#cf-email", "prueba@example.com");
+    await p.fill("#cf-msg", "Mensaje de prueba de la guarda de teclado, que nunca se envía.");
+    await p.locator("form:has(#cf-email) button[type=submit]").first().focus();
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(800);
+    const r = await p.evaluate(() => {
+      const a = document.activeElement;
+      return {
+        enviado: !document.getElementById("cf-email"),
+        rol: a && a !== document.body ? a.getAttribute("role") : null,
+        foco: a === document.body ? "<body>" : (a?.textContent || "").trim().slice(0, 30),
+      };
+    });
+    if (!r.enviado) fallos.push({ ruta: "/faq/", detalle: "no pude simular el envío del formulario: ¿falta la clave de envío al compilar?" });
+    else if (r.rol !== "status") fallos.push({ ruta: "/faq/", detalle: `tras enviar el formulario, el foco no está en la confirmación (está en «${r.foco}»)` });
+    else recorridos++;
+  }
+  await ctx.close();
+}
+// (h) el glosario abierto con Ctrl+G devuelve el foco al cerrarse
+/* Sin disparador propio, Radix no sabe adónde devolverlo y lo dejaba en
+   `<body>`: el siguiente Tab arrancaba desde el final del documento. */
+{
+  const { ctx, p } = await nueva("/");
+  await p.locator("header a:visible").first().focus();
+  await marcaFoco(p);
+  await p.keyboard.press("Control+g");
+  await p.waitForTimeout(900);
+  const abierto = await p.evaluate(() => !!document.querySelector('[role="dialog"]'));
+  if (!abierto) {
+    fallos.push({ ruta: "/", detalle: "Ctrl+G no abre el glosario" });
+  } else {
+    await p.keyboard.press("Escape");
+    await p.waitForTimeout(600);
+    if (!(await focoVuelve(p))) {
+      const donde = await p.evaluate(() => (document.activeElement === document.body ? "<body>" : (document.activeElement?.textContent || "").trim().slice(0, 30)));
+      fallos.push({ ruta: "/", detalle: `al cerrar el glosario abierto con Ctrl+G, el foco no vuelve a donde estaba (está en «${donde}»)` });
+    } else recorridos++;
+  }
+  await ctx.close();
+}
+// (i) el índice lateral lleva el punto de partida del tabulador a la sección
+/* El enlace evita el salto nativo para suavizar el desplazamiento, y el
+   foco se quedaba en el índice: el siguiente Tab recorría los demás
+   enlaces del índice y saltaba al pie, esquivando la sección. */
+{
+  const { ctx, p } = await nueva("/features/", { ancho: 1680 });
+  const enlaces = p.locator('nav[aria-label="Índice de la página"] a:visible');
+  if ((await enlaces.count()) < 2) {
+    fallos.push({ ruta: "/features/", detalle: "no encontré el índice lateral con dos enlaces o más a 1680 px" });
+  } else {
+    const destino = ((await enlaces.nth(1).getAttribute("href")) ?? "").replace(/^.*#/, "");
+    await enlaces.nth(1).focus();
+    await p.keyboard.press("Enter");
+    await p.waitForTimeout(1200);
+    /* El foco tiene que estar YA en la sección: «después de ella» no
+       basta, porque el índice va al final del documento y el Tab desde su
+       último enlace cae en el pie, que también está después. Así aprobaba
+       en falso el día que se escribió. */
+    const r = await p.evaluate((id) => {
+      const s = document.getElementById(id);
+      const a = document.activeElement;
+      return { bien: !!s && !!a && (s === a || s.contains(a)), foco: (a?.textContent || a?.tagName || "").trim().slice(0, 30) };
+    }, destino);
+    if (!r.bien) fallos.push({ ruta: "/features/", detalle: `tras ir a «#${destino}» desde el índice, el foco no está en la sección (sigue en «${r.foco}»): el siguiente Tab la esquiva` });
+    else recorridos++;
+  }
+  await ctx.close();
+}
+console.log(`  capas, aviso de cookies, glosario, megamenú, formulario e índice: ${recorridos} de 13 recorridos completos`);
+if (recorridos < 13 && !fallos.length) {
+  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 13 recorridos llegaron a medirse` });
 }
 
 await navegador.close();

@@ -6,11 +6,12 @@
  * con la lengua y que se escapan de los formateadores en cuanto alguien
  * compone un número —o una frase— a mano en el JSX:
  *
- *   · EL PORCENTAJE. Español: espacio antes del signo. Inglés: pegado.
- *     (El espacio DURO, U+00A0, es lo correcto en una columna estrecha —lo
- *     pone `pctSep`— pero no se exige aquí: en un párrafo corrido el
- *     espacio normal no rompe nada, y acusarlo llenaría la salida de ruido
- *     que taparía los fallos de idioma, que sí importan.)
+ *   · EL PORCENTAJE. Español: espacio DURO (U+00A0) antes del signo, el
+ *     que pone `pctSep`. Inglés: pegado. Hasta el 2026-10-04 aquí se
+ *     aceptaba el espacio normal «en un párrafo corrido», y es justo ahí
+ *     donde rompe: el navegador puede partir la línea entre «70» y «%» y
+ *     dejar el signo solo al principio de la siguiente. Había ocho casos,
+ *     del glosario a la demo.
  *   · EL DÓLAR. Español detrás de la cifra («10.000 $»), inglés delante
  *     («$10,000»).
  *   · EL SIGNO MENOS. El tipográfico (U+2212) en toda cifra negativa, no
@@ -178,6 +179,7 @@ for await (const f of htmls(RAIZ)) {
     );
   } else {
     anota("% pegado en español", /\d%/g, ctx);
+    anota("% que puede quedarse solo en la línea siguiente (espacio normal, no duro)", /\d %/g, ctx);
     /* El lookbehind evita el falso positivo de una fila de importes
        españoles: en «0 $ 5.000 $ 10.000 $» —o «10 k $ 25 k $»— el símbolo
        va DETRÁS de cada cifra, pero visto de izquierda a derecha parece ir
@@ -237,7 +239,7 @@ console.log(`\n[cifras] ${paginas} páginas revisadas, ${elementosLista} element
 /* Si no encontró ninguna lista, la regla de marcas no estaba mirando. */
 if (!elementosLista) fallos.push({ ruta: "—", regla: "no se encontró ningún elemento de lista", ejemplo: "" });
 if (fallos.length) {
-  console.log(`[cifras] ${fallos.length} caso(s) con la convención del otro idioma`);
+  console.log(`[cifras] ${fallos.length} caso(s) escritos fuera de la convención de su idioma`);
   console.log("[cifras] el separador del porcentaje sale de `pctSep(lang)`; el dólar, de `fmtMoney`");
   console.log("[cifras] una palabra española en /en es un literal sin bifurcar: `es ? \"…\" : \"…\"`");
   console.log("[cifras] un enlace se reconoce por su subrayado (`.link-underline`), no por una flecha");

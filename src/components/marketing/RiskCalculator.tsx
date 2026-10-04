@@ -271,7 +271,7 @@ export function RiskCalculator() {
           lineas: [
             `${es ? "Tamaño de posición" : "Position size"}: ${tamanoTxt}`,
             `${es ? "Valor del pip / punto" : "Pip / point value"}: ${fmtUsd(c.valorPip)}`,
-            `R:R: ${fmtNum(c.rr, 2)}:1`,
+            `R:R: 1:${fmtNum(c.rr, 2)}`,
             `${es ? "Beneficio neto" : "Net profit"}: ${fmtUsd(c.beneficioNeto)} (${fmtPct(c.profitPct / 100, lang, 1)})`,
             `${es ? "Valor nocional" : "Notional value"}: ${fmtUsd(c.nocional)}`,
           ],
@@ -305,20 +305,20 @@ export function RiskCalculator() {
 
           <p className="t-entradilla mt-5 mb-7 text-secondary max-w-[34em]">
             {es
-              ? "Introduce tu capital y la distancia a tu stop. Calculamos el tamaño exacto en unidades, lotes o contratos según el mercado que operes."
+              ? "Introduce tu balance y la distancia a tu stop. Calculamos el tamaño exacto en unidades, lotes o contratos según el mercado que operes."
               : "Enter your balance and stop distance. We work out the exact sizing in units, lots or contracts tailored to your market."}
           </p>
 
           {/* Selector de clase de activo */}
           <div className="mb-5">
-            <div className="tj-deslizador-etiqueta mb-2">
+            <div id="riesgo-mercado" className="tj-deslizador-etiqueta mb-2">
               {es ? "Mercado / Instrumento" : "Market / Instrument"}
             </div>
             {/* Conmutador, no tres botones sueltos: con `flex-wrap` el
                 tercero se quedaba solo en una segunda fila y con otro
                 ancho, y tres opciones que son lo mismo se veian como dos
                 cosas y una suelta. Ver `.tj-segmentado`. */}
-            <div className="tj-segmentado tj-segmentado-apila" role="group">
+            <div className="tj-segmentado tj-segmentado-apila" role="group" aria-labelledby="riesgo-mercado">
               {MODOS_ACTIVO.map((m) => (
                 <button
                   key={m.id}
@@ -514,10 +514,7 @@ export function RiskCalculator() {
               <span className="tj-deslizador-etiqueta">
                 {es ? "Riesgo por operación" : "Risk per trade"}
               </span>
-              <span className="tj-deslizador-valor">
-                {fmtNum(riskPct)}
-                {pctSep(lang)}
-              </span>
+              <span className="tj-deslizador-valor">{`${fmtNum(riskPct)}${PCT}`}</span>
             </div>
             <input
               type="range"
@@ -527,6 +524,7 @@ export function RiskCalculator() {
               value={riskPct}
               onChange={(e) => setRiskPct(parseFloat(e.target.value))}
               aria-label={es ? "Porcentaje de riesgo por operación" : "Risk percentage per trade"}
+              aria-valuetext={`${fmtNum(riskPct)}${PCT}`}
               /* `.tj-range`, como los otros deslizadores del sitio. Era
                  `appearance-none` con 8 px de alto y sin regla de bolita:
                  en WebKit eso deja el control sin agarradera visible, y
@@ -645,7 +643,7 @@ export function RiskCalculator() {
             <Result label={es ? "Riesgo total" : "Total risk"} value={siPlan(fmtUsd(c.riesgoTotal))} color={c.valid && c.riesgoTotal > 0 ? "rgb(var(--pnl-neg))" : "var(--ink-2)"} />
             <Result label={es ? "Beneficio neto" : "Net profit"} value={siPlan(fmtUsd(c.beneficioNeto))} color={!c.valid || c.beneficioNeto === 0 ? "var(--ink-2)" : c.beneficioNeto > 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? "Tamaño de posición" : "Position size"} value={siPlan(tamanoTxt)} color={c.noCabe ? "rgb(var(--pnl-neg))" : "var(--ink)"} />
-            <Result label="R:R" value={siPlan(`${fmtNum(c.rr, 2)}:1`)} color="var(--ink)" />
+            <Result label="R:R" value={siPlan(`1:${fmtNum(c.rr, 2)}`)} color="var(--ink)" />
             <Result label={es ? "Valor del pip / punto" : "Pip / point value"} value={siPlan(fmtUsd(c.valorPip))} color="var(--ink)" />
             <Result label={es ? "Fricción estimada" : "Est. friction"} value={siPlan(friccionTxt)} color="var(--ink-2)" />
           </div>
@@ -710,7 +708,7 @@ export function RiskCalculator() {
                 {es ? "Riesgo" : "Risk"}
               </span>
               <span className="tnum font-semibold text-[rgb(var(--accent-base))]">
-                {siPlan(`${fmtNum(c.rr, 2)}:1`)} R:R
+                {siPlan(`1:${fmtNum(c.rr, 2)}`)} R:R
               </span>
               <span className="tnum inline-flex items-center gap-1.5 text-tertiary">
                 {es ? "Beneficio" : "Profit"}
@@ -721,7 +719,7 @@ export function RiskCalculator() {
               {/* Los dos tramos crecen desde el centro, cada uno hacia su
                   lado, y por eso miden la mitad: anclados a los bordes, el
                   mayor de los dos se iba al 100 % del carril y tapaba al
-                  otro entero —con 3:1 la parte roja desaparecía—. */}
+                  otro entero —con 1:3 la parte roja desaparecía—. */}
               <div
                 className="absolute top-0 h-full bg-[rgb(var(--pnl-neg))]"
                 style={{ right: "50%", width: `${tramos.riesgo}%` }}
@@ -776,6 +774,7 @@ export function RiskCalculator() {
                   value={kellyWinRate}
                   onChange={(e) => setKellyWinRate(parseInt(e.target.value, 10))}
                   aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
+                  aria-valuetext={`${fmtNum(kellyWinRate, 0)}${PCT}`}
                   /* `.tj-range` como el resto: con `appearance-none` y sin
                      regla de bolita, en WebKit no se veía la agarradera. */
                   className="tj-range w-full"

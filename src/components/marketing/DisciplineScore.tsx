@@ -6,6 +6,7 @@ import { pctSep, fmtInt } from "@/lib/trading/format";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { componerInforme } from "@/lib/informe";
+import { moverConFlechas } from "@/lib/flechas";
 import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
 
 /**
@@ -359,41 +360,6 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
   const uid = useId();
   const idPregunta = (qi: number) => `${uid}-q${qi}`;
 
-  /* Flechas dentro de un grupo de opciones. Es el comportamiento que un
-     lector de pantalla ANUNCIA al entrar en el grupo ("1 de 4"), así que
-     si no estuviera implementado estaríamos prometiendo algo que no
-     ocurre. Home/End saltan a los extremos; la selección sigue al foco,
-     que es como se comporta un grupo de opción nativo. */
-  const onKeyOption = (
-    e: React.KeyboardEvent<HTMLButtonElement>,
-    qi: number,
-    oi: number,
-    total: number,
-  ) => {
-    let destino: number;
-    switch (e.key) {
-      case "ArrowRight":
-      case "ArrowDown":
-        destino = (oi + 1) % total;
-        break;
-      case "ArrowLeft":
-      case "ArrowUp":
-        destino = (oi - 1 + total) % total;
-        break;
-      case "Home":
-        destino = 0;
-        break;
-      case "End":
-        destino = total - 1;
-        break;
-      default:
-        return;
-    }
-    e.preventDefault();
-    setAnswer(qi, destino);
-    const grupo = e.currentTarget.parentElement;
-    grupo?.querySelectorAll<HTMLButtonElement>('[role="radio"]')[destino]?.focus();
-  };
 
   const barColor = (pct: number) =>
     pct < 40
@@ -535,7 +501,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                             aria-checked={activa}
                             tabIndex={enfocable ? 0 : -1}
                             onClick={() => setAnswer(qi, oi)}
-                            onKeyDown={(e) => onKeyOption(e, qi, oi, q.options.length)}
+                            onKeyDown={(e) => moverConFlechas(e, oi, (d) => setAnswer(qi, d))}
                             className="text-left rounded-[4px] transition-[background-color,color] duration-200 hover:text-[var(--ink)]"
                             style={{
                               minHeight: 48,

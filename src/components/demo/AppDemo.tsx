@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { Toaster } from "@/components/ui/toaster";
 import { MotionConfig } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { DemoProvider, useDemo, type DemoPage } from "./DemoContext";
@@ -135,6 +137,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
       }
       // Never hijack browser-owned combos (Cmd/Ctrl/Alt + F = find, etc.).
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      // Una tecla sola, solo con el foco dentro de la demo (WCAG 2.1.4).
+      if (!target?.closest("[data-demo-raiz]")) return;
       // Defer to the command palette / shortcuts overlay when they're open.
       if (document.querySelector("[cmdk-root]")) return;
       if (document.body.dataset.shortcutsHelpOpen === "true") return;
@@ -439,6 +443,14 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
         </div>
         </div>
       </div>
+      {/* Solo la demo lanza avisos, y la librería viaja con ella: este
+          módulo se descarga al montarse la demo. Montado en el layout, lo
+          cargaban las 175 páginas con una región «Notifications (F8)» vacía
+          y en inglés; montado en la página /demo, lo arrastraba la precarga
+          de /demo desde la barra de todas. Al `body` por portal: un
+          ancestro con `contain` o `transform` encerraría su `position:
+          fixed`. */}
+      {createPortal(<Toaster />, document.body)}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useDemo, type DemoPage } from "./DemoContext";
 import { useLang } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
+import { destinoConFlechas } from "@/lib/flechas";
 
 /*
  * Menú superior — réplica del NavigationView en modo Top de la app real
@@ -75,32 +76,17 @@ export function TopNav() {
     const root = document.getElementById("demo-tablist");
     if (!root) return;
     const buttons = root.querySelectorAll<HTMLButtonElement>('[role="tab"]');
-    const clamped = Math.max(0, Math.min(NAV_ITEMS.length - 1, index));
-    buttons[clamped]?.focus();
-    setPage(NAV_ITEMS[clamped].key);
+    buttons[index]?.focus();
+    setPage(NAV_ITEMS[index].key);
   };
 
+  /* Las mismas teclas que el resto de pestañas y grupos del sitio: dan la
+     vuelta en los extremos, como pide el patrón. Antes se topaban. */
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    switch (e.key) {
-      case "ArrowRight":
-        e.preventDefault();
-        focusTab(activeIndex + 1);
-        break;
-      case "ArrowLeft":
-        e.preventDefault();
-        focusTab(activeIndex - 1);
-        break;
-      case "Home":
-        e.preventDefault();
-        focusTab(0);
-        break;
-      case "End":
-        e.preventDefault();
-        focusTab(NAV_ITEMS.length - 1);
-        break;
-      default:
-        break;
-    }
+    const destino = destinoConFlechas(e.key, activeIndex, NAV_ITEMS.length, true);
+    if (destino === null) return;
+    e.preventDefault();
+    focusTab(destino);
   };
 
   // Atajos 1–4, el equivalente web del Ctrl+1..4 de la app (los
@@ -120,6 +106,14 @@ export function TopNav() {
           return;
         }
       }
+      /* Ctrl/Cmd/Alt + cifra es el cambio de pestaña del navegador y no se
+         toca. Y una tecla sola solo actúa con el foco dentro de la demo
+         (WCAG 2.1.4): pulsar «2» en otra parte de la página no cambia
+         nada, ni con la paleta o la ayuda de atajos abiertas. */
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!target?.closest("[data-demo-raiz]")) return;
+      const capas = document.body.dataset;
+      if (capas.demoPaletteOpen === "true" || capas.demoShortcutsOpen === "true" || capas.shortcutsHelpOpen === "true") return;
       const num = Number.parseInt(e.key, 10);
       if (Number.isInteger(num) && num >= 1 && num <= NAV_ITEMS.length) {
         e.preventDefault();

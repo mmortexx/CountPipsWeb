@@ -37,7 +37,7 @@ export function TechSpecs() {
     {
       labelEs: "Plataforma",
       labelEn: "Platform",
-      valueEs: "Windows 10/11 (64-bit), nativa: WinUI 3",
+      valueEs: "Windows 10/11 (64 bits), nativa: WinUI 3",
       valueEn: "Windows 10/11 (64-bit), native: WinUI 3",
     },
     {

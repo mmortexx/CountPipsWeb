@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { OPEN_GLOSSARY, OPEN_SHORTCUTS_HELP } from "@/lib/overlays";
 
 /**
@@ -10,7 +10,12 @@ import { OPEN_GLOSSARY, OPEN_SHORTCUTS_HELP } from "@/lib/overlays";
  * ── El problema que resuelve ──────────────────────────────────────────
  * `ShortcutsHelp` y `GlossaryModal` estaban montados en el layout o en
  * componentes sueltos. Al centralizarlos aquí bajo demanda, ningún
- * overlay descarga su JavaScript hasta el primer gesto o atajo.
+ * overlay descarga su JavaScript hasta que alguien lo pide: atajo, o un
+ * disparador que llama a `openGlossary` / `openShortcutsHelp`.
+ *
+ * Antes se precargaban en el primer gesto (mover el ratón, tocar la
+ * pantalla): cualquier visita a un aviso legal pagaba unos 71 KB de
+ * ventanas que casi nunca se abren. Ahora se piden al abrirlas.
  */
 
 
@@ -23,27 +28,6 @@ const GlossaryModal = dynamic(
   () => import("@/components/tj/GlossaryModal").then((m) => m.GlossaryModal),
   { ssr: false }
 );
-
-function prefetchOverlays() {
-  if (typeof window === "undefined") return;
-  let pedido = false;
-  const load = () => {
-    if (pedido) return;
-    pedido = true;
-    quitar();
-    import("@/components/tj/ShortcutsHelp");
-    import("@/components/tj/GlossaryModal");
-  };
-  const opts = { passive: true, once: true } as const;
-  const quitar = () => {
-    window.removeEventListener("pointermove", load);
-    window.removeEventListener("touchstart", load);
-    window.removeEventListener("keydown", load);
-  };
-  window.addEventListener("pointermove", load, opts);
-  window.addEventListener("touchstart", load, opts);
-  window.addEventListener("keydown", load, { once: true });
-}
 
 /* Margen que se le da a la animación de salida antes de arrancar el
    overlay del árbol. Cubre los 180 ms que dura el fundido más un
@@ -62,9 +46,22 @@ export function OverlayHost() {
     setHelpOpen(next);
   }, []);
 
+  /* Sin disparador propio (atajo o evento), Radix no sabe adónde devolver
+     el foco al cerrar y lo deja en `<body>`: el siguiente Tab arrancaba
+     desde el final del documento. Se recuerda dónde estaba y se le
+     devuelve, después del repintado que suelta la trampa de foco. */
+  const anclaGlosario = useRef<HTMLElement | null>(null);
+  const glosarioAbiertoRef = useRef(false);
+
   const openGlossaryModal = useCallback((next: boolean) => {
+    glosarioAbiertoRef.current = next;
     setGlossaryMounted(true);
     setGlossaryOpen(next);
+    if (!next) {
+      const ancla = anclaGlosario.current;
+      anclaGlosario.current = null;
+      if (ancla) requestAnimationFrame(() => ancla.isConnected && ancla.focus());
+    }
   }, []);
 
   useEffect(() => {
@@ -80,7 +77,10 @@ export function OverlayHost() {
   }, [glossaryOpen, glossaryMounted]);
 
   useEffect(() => {
-    prefetchOverlays();
+    const recuerdaFoco = () => {
+      const a = document.activeElement as HTMLElement | null;
+      if (a && a !== document.body && !a.closest('[role="dialog"]')) anclaGlosario.current = a;
+    };
 
     // ⌘G / ⌃G — glosario
     const onKey = (e: KeyboardEvent) => {
@@ -100,8 +100,8 @@ export function OverlayHost() {
 
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "g") {
         e.preventDefault();
-        setGlossaryMounted(true);
-        setGlossaryOpen((o) => !o);
+        if (!glosarioAbiertoRef.current) recuerdaFoco();
+        openGlossaryModal(!glosarioAbiertoRef.current);
       }
     };
 
@@ -110,9 +110,11 @@ export function OverlayHost() {
       setHelpOpen(true);
     };
 
-    const onGlossary = () => {
-      setGlossaryMounted(true);
-      setGlossaryOpen(true);
+    const onGlossary = (e: Event) => {
+      const ancla = (e as CustomEvent<{ ancla: HTMLElement | null } | null>).detail?.ancla;
+      if (ancla) anclaGlosario.current = ancla;
+      else recuerdaFoco();
+      openGlossaryModal(true);
     };
 
     window.addEventListener("keydown", onKey);
@@ -123,7 +125,7 @@ export function OverlayHost() {
       window.removeEventListener(OPEN_SHORTCUTS_HELP, onHelp);
       window.removeEventListener(OPEN_GLOSSARY, onGlossary);
     };
-  }, []);
+  }, [openGlossaryModal]);
 
   return (
     <>

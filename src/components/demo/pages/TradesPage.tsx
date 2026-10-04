@@ -949,6 +949,18 @@ export function TradesPage() {
   const allVisibleSelected = shown.length > 0 && shown.every((tr) => selectedIds.has(tr.id));
   const someVisibleSelected = shown.some((tr) => selectedIds.has(tr.id)) && !allVisibleSelected;
 
+  /* Una sola fuente para «qué vista está puesta»: la usan el color del
+     botón y su aria-pressed. */
+  const vista = {
+    todas: filters.instrument === "all" && filters.direction === "all" && filters.compliance === "all" && outcome === "all" && setupSel === "all",
+    ganadoras: outcome === "win",
+    perdidas: outcome === "loss",
+    fueraDePlan: filters.compliance === "no",
+    enPlan: filters.compliance === "yes",
+    nq: filters.instrument === "NQ",
+    es: filters.instrument === "ES",
+  };
+
   return (
     <div className="p-5 md:p-6 space-y-5">
       {/* ===== Header (eyebrow + title + count + search) ===== */}
@@ -1024,8 +1036,12 @@ export function TradesPage() {
       </Reveal>
 
       {/* Quick Filter Presets Bar */}
-      <div className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
-        <span className="text-[10px] uppercase tracking-wider text-tertiary mr-1 shrink-0">
+      <div
+        className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs"
+        role="group"
+        aria-label={es ? "Vistas rápidas" : "Quick views"}
+      >
+        <span className="text-[10px] uppercase tracking-wider text-tertiary mr-1 shrink-0" aria-hidden="true">
           {es ? "Vistas rápidas:" : "Quick views:"}
         </span>
         <button
@@ -1035,8 +1051,9 @@ export function TradesPage() {
             setOutcome("all");
             setSetupSel("all");
           }}
+          aria-pressed={vista.todas}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
-            filters.instrument === "all" && filters.direction === "all" && filters.compliance === "all" && outcome === "all" && setupSel === "all"
+            vista.todas
               ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
@@ -1050,8 +1067,9 @@ export function TradesPage() {
             clearFilters();
             setOutcome("win");
           }}
+          aria-pressed={vista.ganadoras}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
-            outcome === "win"
+            vista.ganadoras
               ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
@@ -1065,8 +1083,9 @@ export function TradesPage() {
             clearFilters();
             setOutcome("loss");
           }}
+          aria-pressed={vista.perdidas}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
-            outcome === "loss"
+            vista.perdidas
               ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
@@ -1081,8 +1100,9 @@ export function TradesPage() {
             setFilters({ compliance: "no" });
             setOutcome("all");
           }}
+          aria-pressed={vista.fueraDePlan}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
-            filters.compliance === "no"
+            vista.fueraDePlan
               ? "bg-[rgb(var(--pnl-neg))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
@@ -1097,8 +1117,9 @@ export function TradesPage() {
             setFilters({ compliance: "yes" });
             setOutcome("all");
           }}
+          aria-pressed={vista.enPlan}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
-            filters.compliance === "yes"
+            vista.enPlan
               ? "bg-[rgb(var(--pnl-pos))] text-[rgb(var(--pnl-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
@@ -1113,8 +1134,9 @@ export function TradesPage() {
             setFilters({ instrument: "NQ" });
             setOutcome("all");
           }}
+          aria-pressed={vista.nq}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
-            filters.instrument === "NQ"
+            vista.nq
               ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}
@@ -1129,8 +1151,9 @@ export function TradesPage() {
             setFilters({ instrument: "ES" });
             setOutcome("all");
           }}
+          aria-pressed={vista.es}
           className={`h-7 px-2.5 rounded-[2px] border transition-colors shrink-0 ${
-            filters.instrument === "ES"
+            vista.es
               ? "bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold border-transparent"
               : "border-[rgb(var(--divider)/0.12)] bg-[rgb(var(--divider)/0.03)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.25)]"
           }`}

@@ -21,7 +21,7 @@ describe("el texto que copian las herramientas", () => {
       "Plan de operación",
       [
         { lineas: ["Entrada: 100,00", false, "", "Stop: 95,00"] },
-        { rotulo: "Resultado", lineas: ["R:R: 3,00:1"] },
+        { rotulo: "Resultado", lineas: ["R:R: 1:3,00"] },
         { rotulo: "Vacío", lineas: [null, undefined] },
       ],
       "/herramientas/calculadora-de-riesgo/",
@@ -34,7 +34,7 @@ describe("el texto que copian las herramientas", () => {
         "• Stop: 95,00",
         "",
         "Resultado:",
-        "• R:R: 3,00:1",
+        "• R:R: 1:3,00",
         "",
         `${SITE_URL}/herramientas/calculadora-de-riesgo/`,
       ].join("\n"),

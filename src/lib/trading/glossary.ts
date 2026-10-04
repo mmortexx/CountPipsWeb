@@ -231,7 +231,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Win rate",
-    es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70 % de aciertos con payoff 0,4 pierde dinero; un 35 % con payoff 3 gana.",
+    es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70\u00a0% de aciertos con payoff 0,4 pierde dinero; un 35\u00a0% con payoff 3 gana.",
     en: "The percentage of winning trades out of the total. Misleading on its own: a 70% hit rate with a 0.4 payoff loses money; 35% with a 3 payoff wins.",
     category: "metrics",
   },

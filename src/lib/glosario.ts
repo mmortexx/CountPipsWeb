@@ -1,4 +1,5 @@
 import { GLOSSARY, type GlossaryCategory, type GlossaryTerm } from "@/lib/trading/glossary";
+import { herramientaPorSlug } from "@/lib/herramientas";
 
 /**
  * El glosario, convertido en secciones del sitio.
@@ -508,7 +509,41 @@ export const FORMULAS_GLOSARIO: Record<
   "wilson-score-interval": {
     formulaEs: "IC = (p̂ + z²/2N ± z√(p̂(1 − p̂)/N + z²/4N²)) / (1 + z²/N)",
     formulaEn: "CI = (p̂ + z²/2N ± z√(p̂(1 − p̂)/N + z²/4N²)) / (1 + z²/N)",
-    variablesEs: "p̂: tasa de acierto observada, N: número de operaciones, z: 1,96 para un 95 % de confianza",
+    variablesEs: "p̂: tasa de acierto observada, N: número de operaciones, z: 1,96 para un 95\u00a0% de confianza",
     variablesEn: "p̂: observed win rate, N: number of trades, z: 1.96 for 95% confidence",
   },
 };
+
+/**
+ * Lo que enseña la ficha de un término, resuelto en el servidor. La vista es
+ * de cliente (cambia con el idioma), y si llamara ella a `relacionados` o a
+ * `vecinos` se llevaría al navegador los 57 términos en dos idiomas —unos
+ * 24 KB por copia— para pintar seis enlaces.
+ */
+export type FichaTermino = {
+  termino: TerminoGlosario;
+  familia: (typeof CATEGORIAS)[GlossaryCategory];
+  seguir: (typeof SEGUIR_LEYENDO)[GlossaryCategory];
+  herramienta?: { href: string; esTest: boolean; tituloEs: string; tituloEn: string };
+  formula?: (typeof FORMULAS_GLOSARIO)[string];
+  cercanos: TerminoGlosario[];
+  anterior?: TerminoGlosario;
+  siguiente?: TerminoGlosario;
+};
+
+export function fichaDeTermino(t: TerminoGlosario): FichaTermino {
+  const href = HERRAMIENTA_DE[t.slug];
+  const esTest = href === "/test";
+  const ficha = href && !esTest ? herramientaPorSlug(href.split("/").pop() ?? "") : undefined;
+  const { anterior, siguiente } = vecinos(t.slug);
+  return {
+    termino: t,
+    familia: CATEGORIAS[t.category],
+    seguir: SEGUIR_LEYENDO[t.category],
+    herramienta: href && (esTest || ficha) ? { href, esTest, tituloEs: ficha?.tituloEs ?? "", tituloEn: ficha?.tituloEn ?? "" } : undefined,
+    formula: FORMULAS_GLOSARIO[t.slug],
+    cercanos: relacionados(t.slug),
+    anterior,
+    siguiente,
+  };
+}

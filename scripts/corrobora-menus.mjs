@@ -18,11 +18,11 @@ await page.waitForTimeout(3500);
 // 1. Megamenú Producto: hover abre.
 await page.getByRole("button", { name: "Producto" }).hover();
 await page.waitForTimeout(600);
-const menuItems = await page.getByRole("menuitem").count();
+const menuItems = await page.locator("#navbar-producto-panel a[href]").count();
 ok("megamenú abre al hover", menuItems >= 4, `${menuItems} entradas`);
 
 // 2. Navega por una entrada del megamenú.
-await page.getByRole("menuitem").filter({ hasText: /Disciplina|Discipline/ }).first().click();
+await page.locator("#navbar-producto-panel a[href]").filter({ hasText: /Disciplina|Discipline/ }).first().click();
 /* Con o sin barra final: el servidor de desarrollo sirve «/demo» y la
    exportación estática, que es lo que se publica, «/demo/». Exigir la
    primera hacía que esta guarda no pudiera pasar nunca contra `out/`. */
@@ -94,12 +94,12 @@ if (!(await subir.count())) {
   ok("volver arriba funciona", y < 60, `scrollY=${Math.round(y)}`);
 }
 
-// 9. Cambio de idioma ES → EN con el selector listbox de la barra.
+// 9. Cambio de idioma ES → EN con el selector de la barra.
 // El botón se llama «Cambiar idioma»: la expresión de antes (/Idioma/, con
 // mayúscula) no lo encontraba nunca y dependía de un plan B.
-await page.locator('header button[aria-haspopup="listbox"]:visible').first().click();
+await page.locator('header button[aria-label="Cambiar idioma"]:visible').first().click();
 await page.waitForTimeout(500);
-await page.getByRole("option", { name: /English/ }).click();
+await page.locator("[data-panel-idiomas] button").filter({ hasText: /English/ }).first().click();
 await page.waitForURL("**/en/**", { timeout: 9000 }).catch(() => {});
 const enUrl = /\/en/.test(page.url());
 ok("selector de idioma lleva a /en", enUrl, page.url());

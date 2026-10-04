@@ -39,6 +39,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     archivo: "app-resumen.webp",
     ancho: 1576,
     alto: 836,
+    anchoMovil: 706,
+    altoMovil: 432,
     roman: "I",
     pestanaEs: "Resumen",
     pestanaEn: "Overview",
@@ -76,6 +78,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     archivo: "app-registro.webp",
     ancho: 1576,
     alto: 836,
+    anchoMovil: 720,
+    altoMovil: 255,
     roman: "II",
     pestanaEs: "Registro",
     pestanaEn: "Logging",
@@ -117,6 +121,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     archivo: "app-guardian.webp",
     ancho: 1576,
     alto: 836,
+    anchoMovil: 720,
+    altoMovil: 262,
     roman: "III",
     pestanaEs: "Guardián",
     pestanaEn: "Guardian",
@@ -152,6 +158,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     archivo: "app-operaciones.webp",
     ancho: 1576,
     alto: 836,
+    anchoMovil: 830,
+    altoMovil: 340,
     roman: "IV",
     pestanaEs: "Operaciones",
     pestanaEn: "Trades",
@@ -188,6 +196,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     archivo: "app-analitica.webp",
     ancho: 1576,
     alto: 836,
+    anchoMovil: 706,
+    altoMovil: 324,
     roman: "V",
     pestanaEs: "Analítica",
     pestanaEn: "Analytics",
@@ -225,6 +235,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     archivo: "app-diario.webp",
     ancho: 1576,
     alto: 836,
+    anchoMovil: 880,
+    altoMovil: 372,
     roman: "VI",
     pestanaEs: "Diario",
     pestanaEn: "Journal",
@@ -264,6 +276,8 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     archivo: "app-playbook.webp",
     ancho: 1576,
     alto: 924,
+    anchoMovil: 483,
+    altoMovil: 398,
     roman: "VII",
     pestanaEs: "Playbook",
     pestanaEn: "Playbook",
@@ -271,13 +285,13 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     tituloEn: "Each setup, judged on its own",
     notaEs:
       "Cinco estrategias con su curva, su muestra, su expectancy, su win rate, su porcentaje " +
-      "de cumplimiento y el reparto de R con la mediana y el 50 % central. En esta muestra " +
+      "de cumplimiento y el reparto de R con la mediana y el 50\u00a0% central. En esta muestra " +
       "tres salen con «ventaja sugerente» y dos «no concluyente», aunque una de esas dos gana " +
       "dinero: el sello no premia el resultado, mide si la muestra basta para afirmar algo. " +
       "Un playbook donde todo funciona el primer mes no está midiendo, está halagando.",
     notaEn:
       "Five strategies with their curve, sample, expectancy, win rate, compliance rate and R " +
-      "spread with its median and central 50 %. In this sample three come out “edge " +
+      "spread with its median and central 50%. In this sample three come out “edge " +
       "suggestive” and two “inconclusive”, even though one of those two makes money: the " +
       "stamp doesn’t reward the result, it measures whether the sample is enough to claim " +
       "anything. A playbook where everything works in the first month isn’t measuring, it’s " +

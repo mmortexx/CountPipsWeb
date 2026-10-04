@@ -3,16 +3,7 @@
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
-import {
-  CATEGORIAS,
-  HERRAMIENTA_DE,
-  SEGUIR_LEYENDO,
-  FORMULAS_GLOSARIO,
-  relacionados,
-  vecinos,
-  type TerminoGlosario,
-} from "@/lib/glosario";
-import { herramientaPorSlug } from "@/lib/herramientas";
+import type { FichaTermino } from "@/lib/glosario";
 
 
 /** Una salida de la ficha: rótulo pequeño encima y el destino subrayado. */
@@ -46,21 +37,16 @@ function Salida({ href, rotulo, destino }: { href: string; rotulo: string; desti
  * El resultado además cumple otra función: ninguna de las páginas es
  * un callejón sin salida. Se puede entrar por cualquiera y seguir.
  */
-export function TerminoVista({ termino }: { termino: TerminoGlosario }) {
+export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  const familia = CATEGORIAS[termino.category];
-  const seguir = SEGUIR_LEYENDO[termino.category];
-  const herramienta = HERRAMIENTA_DE[termino.slug];
-  const esTest = herramienta === "/test";
-  const fichaHerramienta = herramienta && !esTest ? herramientaPorSlug(herramienta.split("/").pop() ?? "") : undefined;
-  const destinoHerramienta = esTest
-    ? es ? "Test de disciplina" : "Discipline test"
-    : fichaHerramienta && (es ? fichaHerramienta.tituloEs : fichaHerramienta.tituloEn);
-  const formula = FORMULAS_GLOSARIO[termino.slug];
-  const cercanos = relacionados(termino.slug);
-  const { anterior, siguiente } = vecinos(termino.slug);
+  const { termino, familia, seguir, formula, cercanos, anterior, siguiente } = ficha;
+  const herramienta = ficha.herramienta?.href;
+  const esTest = ficha.herramienta?.esTest ?? false;
+  const destinoHerramienta =
+    ficha.herramienta &&
+    (esTest ? (es ? "Test de disciplina" : "Discipline test") : es ? ficha.herramienta.tituloEs : ficha.herramienta.tituloEn);
 
   return (
     <section

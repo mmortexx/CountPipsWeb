@@ -94,6 +94,25 @@ describe("las capturas de la app y el marco que las enseña", () => {
     }
   });
 
+  it("cada recorte móvil declara las medidas que tiene, en los dos temas", () => {
+    /* `ProductPlate` las pone en el `<source>` del móvil. El recorte tiene
+       otra proporción que la captura de escritorio (de 35 % a 82 % de alto
+       sobre ancho, frente a 53 %): sin ellas el navegador reservaba la de
+       escritorio y la página saltaba al llegar la imagen. */
+    for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {
+      for (const sufijo of ["-movil", "-oscuro-movil"]) {
+        const nombre = lamina.archivo.replace(/\.webp$/, `${sufijo}.webp`);
+        const { w, h } = medirWebp(join(DIR, nombre));
+        expect(
+          `${lamina.anchoMovil}x${lamina.altoMovil}`,
+          `«${clave}» declara ${lamina.anchoMovil}×${lamina.altoMovil} para el ` +
+            `móvil y ${nombre} mide ${w}×${h}. Actualiza \`anchoMovil\` y ` +
+            `\`altoMovil\` en \`laminas.ts\`.`,
+        ).toBe(`${w}x${h}`);
+      }
+    }
+  });
+
   it("cada lámina del catálogo apunta a ficheros que existen, y también su recorte móvil", () => {
     const presentes = new Set(readdirSync(DIR));
     for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {

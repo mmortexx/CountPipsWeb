@@ -34,7 +34,7 @@
 |---|---|
 | `adversarial_stress.test.ts` | Casos límite adversariales del motor de métricas y contratos de futuros |
 | `campo-cifra.test.ts` | Las cifras de los campos editables: coma o punto según idioma, sin millares, ida y vuelta exacta |
-| `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida |
+| `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida, y que el recorte móvil declare las suyas: tiene otra proporción, y sin ellas la página saltaba al llegar la imagen |
 | `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts` |
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
 | `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
@@ -70,6 +70,7 @@
 | `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma |
 | `informe.test.ts` | `componerInforme`: el texto que copian las herramientas lleva «CountPips · Título», bloques separados por una línea en blanco, salta líneas y bloques vacíos y cierra con la dirección. Y solo `BotonCopiar` toca el portapapeles: una herramienta que vuelva a escribirlo por su cuenta se salta el formato y el aviso de fallo |
 | `paleta-trampa-tab.test.ts` | `destinoTrampaTab` (trampa de foco de `DemoCommandPalette`): a qué extremo salta Tab/Shift+Tab desde cada posición, incluida la de un único elemento enfocable |
+| `flechas.test.ts` | `destinoConFlechas`, el teclado común de los grupos de opción y las pestañas (test de disciplina, nota del día, dirección, analítica, revisión, barra de la demo): las flechas dan la vuelta en los extremos, Inicio y Fin saltan a ellos, en las pestañas ↑ y ↓ no mueven, y ninguna otra tecla mueve |
 | `glosario-activedescendant.test.ts` | `idOpcionGlosario` (`aria-activedescendant` del listbox de `GlossaryModal`): id legible, normaliza acentos/símbolos, nunca vacío, único para cada término real de `GLOSSARY` |
 | `valida-plan.test.ts` | `validaPlan`: RiskCalculator ya no da por válido un objetivo que cae al mismo lado de la entrada que el stop; campos no positivos, no finitos o repetidos se rechazan antes de mirar el lado. `excedeApalancamiento`: un stop a un céntimo en acciones (100×) avisa; el tope depende del mercado |
 | `proyeccion-capital.test.ts` | `proyectaCapital`: con expectancy, riesgo y frecuencia altos a 10 años el balance en bruto no está acotado (no se recorta en silencio) y la función marca `fueraDeEscala` cuando deja de ser una cifra creíble; con parámetros razonables no la marca. La tasa anual se pondera por tiempo (aportar dinero con expectancy cero no da rentabilidad); el tiempo para duplicar cuadra con el mes en que la curva cruza el doble, en compuesto y en riesgo fijo; un empate con ruido de coma flotante no es ventaja; el «primer año» es el año 1 de la tabla |

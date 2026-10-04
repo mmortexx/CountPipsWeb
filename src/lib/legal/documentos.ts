@@ -98,8 +98,8 @@ const privacidad: DocumentoLegal = {
     },
     {
       id: "what",
-      tituloEs: "Qué se recoge, y solo si tú lo escribes",
-      tituloEn: "What is collected, and only if you type it",
+      tituloEs: "Qué se recoge",
+      tituloEn: "What is collected",
       bloques: [
         {
           tipo: "parrafo",

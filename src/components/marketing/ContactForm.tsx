@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -81,6 +81,13 @@ export function ContactForm() {
   const ready = useHydrated();
 
   const sent = status === "sent";
+  /* Al enviarse, el `<form>` entero —con el botón enfocado— se desmonta y
+     el foco caía al `<body>`: quien no ve la pantalla no sabía si el
+     mensaje había salido. Se lleva a la confirmación, como en /beta. */
+  const enviadoRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (sent) enviadoRef.current?.focus();
+  }, [sent]);
   const sending = status === "sending";
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -175,7 +182,7 @@ export function ContactForm() {
                     que se estampa ni marca que se dibuja. Entra con el
                     mismo fundido corto que el resto del sitio. */}
                 {sent ? (
-                    <div className="tj-sube-ya py-8" role="status" aria-live="polite">
+                    <div ref={enviadoRef} tabIndex={-1} className="tj-sube-ya py-8 outline-none" role="status">
                       <p className="t-h4 m-0 text-primary">
                         {es ? "Mensaje enviado." : "Message sent."}
                       </p>

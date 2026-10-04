@@ -215,6 +215,52 @@ for (const ruta of ["/test/", "/en/test/"]) {
   await ctx.close();
 }
 
+/* Los buscadores del glosario y de la FAQ cambian la lista con cada letra.
+   Hasta el 2026-10-04 no decían cuántos resultados quedaban ni que no
+   quedaba ninguno: había que recorrer la lista para saberlo. Se busca algo
+   que no existe y algo que sí, y se exige oír las dos cosas. */
+const BUSCADORES = [
+  { ruta: "/glosario/", campo: "#glos-q", existe: "drawdown", nada: /Ningún término/ },
+  { ruta: "/en/glosario/", campo: "#glos-q", existe: "drawdown", nada: /No terms/ },
+  { ruta: "/faq/", campo: '#faq input[type="search"]', existe: "Windows", nada: /No se encontraron/ },
+  { ruta: "/en/faq/", campo: '#faq input[type="search"]', existe: "Windows", nada: /No results/ },
+];
+for (const b of BUSCADORES) {
+  const ctx = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
+  const p = await ctx.newPage();
+  const ruta = b.ruta;
+  try {
+    await p.goto(base + ruta, { waitUntil: "load", timeout: 30000 });
+    await p.waitForTimeout(ESPERA);
+    const vivos = () =>
+      p.evaluate(() =>
+        [...document.querySelectorAll('[role="status"], [aria-live="polite"]')].map((e) => (e.textContent || "").trim()).filter(Boolean).join(" · "),
+      );
+    const alCargar = await vivos();
+    if (alCargar) fallos.push({ ruta, detalle: `habla sola al cargar: «${alCargar.slice(0, 60)}»` });
+    const campo = p.locator(b.campo).first();
+    if (!(await campo.count())) {
+      fallos.push({ ruta, detalle: `no encontré el buscador (${b.campo})` });
+    } else {
+      await campo.fill("qzxwv");
+      await p.waitForTimeout(ESPERA);
+      const sinNada = await vivos();
+      await campo.fill(b.existe);
+      await p.waitForTimeout(ESPERA);
+      const conAlgo = await vivos();
+      if (!b.nada.test(sinNada)) fallos.push({ ruta, detalle: `buscar algo que no existe no se anuncia (se oye «${sinNada.slice(0, 50)}»)` });
+      else if (!/\d/.test(conAlgo)) fallos.push({ ruta, detalle: `buscar «${b.existe}» no anuncia cuántos resultados quedan (se oye «${conAlgo.slice(0, 50)}»)` });
+      else {
+        conAnuncio++;
+        console.log(`  ${ruta.padEnd(44)} «${sinNada.slice(0, 28)}» / «${conAlgo.slice(0, 28)}»`);
+      }
+    }
+  } catch (e) {
+    fallos.push({ ruta, detalle: `la página no se pudo recorrer: ${String(e).slice(0, 80)}` });
+  }
+  await ctx.close();
+}
+
 await navegador.close();
 server.close();
 
@@ -223,7 +269,7 @@ if (fallos.length) {
   for (const f of fallos) console.log(`     ${f.ruta}  ${f.detalle}`);
 }
 
-console.log(`\n[anuncios] ${HERRAMIENTAS.length * 2 + 2} páginas · ${conAnuncio} anuncian su resultado`);
+console.log(`\n[anuncios] ${HERRAMIENTAS.length * 2 + 2 + BUSCADORES.length} páginas · ${conAnuncio} anuncian su resultado`);
 
 if (sinCambios > HERRAMIENTAS.length) {
   console.log("[anuncios] en casi ninguna cambió nada al tocar una entrada: la guarda está rota, no el sitio");

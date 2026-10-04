@@ -140,7 +140,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 de la otra: la de firma pintaba el elegido con el acento y
                 la de importe con la tinta. */}
             <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-4">
-              <div className="tj-segmentado tj-segmentado-apila sm:max-w-2xl sm:flex-1" role="group">
+              <div className="tj-segmentado tj-segmentado-apila sm:max-w-2xl sm:flex-1" role="group" aria-label={es ? "Firma de fondeo" : "Prop firm"}>
                 {PROP_FIRMS.map((f) => (
                   <button
                     key={f.id}
@@ -157,7 +157,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                 ))}
               </div>
 
-              <div className="tj-segmentado" role="group">
+              <div className="tj-segmentado" role="group" aria-label={es ? "Tamaño de la cuenta" : "Account size"}>
                 {PROP_BALANCES.map((bal) => (
                   <button
                     key={bal}
@@ -292,7 +292,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             />
 
             {/* Selector de setup manual */}
-            <div className="tj-segmentado tj-segmentado-apila mb-6 sm:max-w-xl" role="group">
+            <div className="tj-segmentado tj-segmentado-apila mb-6 sm:max-w-xl" role="group" aria-label={es ? "Setup del playbook" : "Playbook setup"}>
               {[
                 { id: "breakout" as const, labelEs: "Ruptura de rango", labelEn: "Range Breakout" },
                 { id: "sweep" as const, labelEs: "Barrido de liquidez", labelEn: "Liquidity Sweep" },

@@ -170,5 +170,12 @@ export function irASeccion(id: string): boolean {
   if (!el) return false;
   const margen = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
   irA(el.getBoundingClientRect().top + window.scrollY - margen);
+  /* Quien llama evita el salto nativo para suavizarlo, y con él se perdía
+     lo que el ancla hace sola: mover el punto de partida del tabulador.
+     Tras ir a una sección con Enter, el siguiente Tab seguía en el índice
+     y saltaba al pie, esquivando la sección entera (WCAG 2.4.3). */
+  if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+  el.setAttribute("data-destino-salto", "");
+  el.focus({ preventScroll: true });
   return true;
 }

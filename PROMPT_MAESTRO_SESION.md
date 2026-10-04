@@ -275,7 +275,7 @@ COMPONENTES TJ (infraestructura):
 - CountUp — Conteo animado
 - Eyebrow — Ceja tipográfica (minúscula de frase, 13 px, terciario)
 - GlobalShortcuts (9 KB) — Listener global de atajos
-- GlossaryLauncher / GlossaryModal (18 KB) — Glosario modal Ctrl+G
+- GlossaryModal (18 KB) — Glosario modal; lo monta solo OverlayHost, y el pie, la FAQ y Ctrl+G lo piden con `openGlossary`
 - MagneticButton — enlace o botón sin efecto (el imán se retiró; queda por compatibilidad)
 - Money — Formateador monetario
 - NotFoundClient (11 KB) — Cliente 404

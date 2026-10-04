@@ -27,6 +27,7 @@ import { EquityCurve } from "@/components/charts/EquityCurve";
 import { MiniCalendar } from "@/components/charts/MiniCalendar";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
+import { moverConFlechas } from "@/lib/flechas";
 
 // Equity-curve timeframe selector — filters the chart to the last N days
 // of trades so the user can zoom into 1M / 3M / 6M windows. The sample
@@ -293,7 +294,14 @@ export function DashboardPage() {
               The number animates softly when the value changes (entry/stop/qty
               edits) — same live-readout language as the WinUI app. */}
           <Reveal delay={0.08}>
-            <div className="flex items-baseline justify-between gap-3 border-t border-[rgb(var(--divider)/0.12)] pt-2.5 sm:block sm:shrink-0 sm:border-0 sm:pt-0 sm:text-right">
+            {/* La región viva es el contenedor, que no cambia: la cifra se
+                vuelve a montar en cada valor (por su `key`) y una región
+                que nace ya rellena no la anuncian los lectores. */}
+            <div
+              aria-live="polite"
+              aria-atomic="true"
+              className="flex items-baseline justify-between gap-3 border-t border-[rgb(var(--divider)/0.12)] pt-2.5 sm:block sm:shrink-0 sm:border-0 sm:pt-0 sm:text-right"
+            >
               <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                 {t("riskUsd")}
               </div>
@@ -302,7 +310,6 @@ export function DashboardPage() {
                 initial={{ opacity: 0.55, y: 3 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 320, damping: 22 }}
-                aria-live="polite"
                 /* En la tira apilada la cifra va a 22 px y sin margen
                    superior, porque comparte linea con su rotulo. */
                 className="text-[22px] font-semibold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
@@ -497,7 +504,7 @@ export function DashboardPage() {
                       role="radiogroup"
                       aria-label={es ? "Dirección" : "Direction"}
                     >
-                      {(["long", "short"] as Direction[]).map((d) => {
+                      {(["long", "short"] as Direction[]).map((d, i, dirs) => {
                         const active = direction === d;
                         return (
                           <button
@@ -505,7 +512,9 @@ export function DashboardPage() {
                             type="button"
                             role="radio"
                             aria-checked={active}
+                            tabIndex={active ? 0 : -1}
                             onClick={() => setDirection(d)}
+                            onKeyDown={(e) => moverConFlechas(e, i, (j) => setDirection(dirs[j]))}
                             className={`relative h-11 rounded-[2px] border text-sm font-medium transition-colors ${
                               active
                                 ? d === "long"

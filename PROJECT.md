@@ -3315,6 +3315,77 @@ acerca de y características.
   26/26 con el servidor esperado hasta responder, vitest 578 (2
   omitidas). Arranque en tres pasadas: total 231–453 ms.
 
+### Quincuagésima sexta tanda: la auditoría de cuatro frentes (2026-10-04)
+
+Cuatro revisores leyeron el sitio por separado —robustez de las
+calculadoras, accesibilidad, peso y textos— y dejaron 56 hallazgos. Cada
+uno se comprobó en el código o en el navegador antes de tocarlo.
+
+- **Robustez (15, en los commits aa60f9f, f8eba72 y a941993).** Las
+  calculadoras dicen la verdad en los casos límite: significancia con
+  contraste de una cola contra el acierto de equilibrio, proyector con
+  tasa ponderada por tiempo, calculadora de riesgo por mercado (pip y
+  divisa del par, contratos enteros, fricción), comisiones con recorrido
+  por instrumento, test de disciplina con foco y anuncio, coste de
+  indisciplina sin pérdidas pintadas como ahorro, Monte Carlo sin cifras
+  desbordadas. Fichas y títulos de cada página, plurales y descripciones
+  del glosario.
+- **Accesibilidad (15).** Grupos de opciones con nombre y botones con
+  estado (`aria-pressed`) en proyector, calculadora, perfiles y demo.
+  Veintiséis deslizadores leen su valor con unidad («10.000 $», no
+  «10000»). El formulario de contacto lleva el foco a la confirmación. El
+  megamenú y el idioma dejan de prometer un teclado de menú que no tenían
+  (desplegables de navegación). Radios y pestañas de la demo con una sola
+  parada y flechas, con un manejador común (`src/lib/flechas.ts`). El
+  glosario abierto con Ctrl+G y el índice lateral devuelven y llevan el
+  foco. Los buscadores del glosario y la FAQ y el explorador anuncian
+  cuántos resultados quedan. El diálogo dice «Cerrar» en español y tiene
+  su descripción. La paleta de la demo es un combobox. Los atajos 1–4 ya
+  no pisan Ctrl+1–4 ni actúan con el foco fuera de la demo. Los
+  contadores animados no encolan ochenta lecturas.
+- **Peso (5).** La librería de avisos sale del layout y viaja con el
+  módulo de la demo (`AppDemo`, pintada en `body` con un portal): ni
+  siquiera la precarga del enlace a /demo la trae ya. El glosario se carga
+  en un solo sitio (`OverlayHost`) y solo al abrirlo: ni la FAQ ni el
+  primer movimiento del ratón lo traen ya, y las fichas de término reciben
+  su contenido resuelto en el servidor. El menú deja de precargar
+  direcciones sin prefijo. Las capturas móviles declaran su proporción.
+  JavaScript al cargar, página mediana: 742,4 → 639,3 KB sin comprimir
+  (`equipaje.mjs`, compilación anterior y nueva). En el navegador, tres
+  pasadas idénticas por compilación, con seis segundos de reposo y luego
+  un gesto: /terminos/ 764 → 747 KB al cargar y 65 KB → 0 al primer
+  gesto; /faq/ 858 → 792 KB y 32 KB → 0; /glosario/expectancy/
+  980 → 920 KB y 65 KB → 0. /demo/ sube 45 KB al cargar (los avisos van
+  con ella) y deja de pedir 65 KB al primer gesto.
+- **Textos (15).** El ratio se escribe siempre 1:N, como lo define el
+  glosario. «Balance» para el dinero de la cuenta (fuera «saldo» y
+  «capital» en ese sentido). El aviso de privacidad ya no promete «solo
+  si tú lo escribes» encima de una tabla con idioma y UTM. El reloj de
+  sesiones no pinta horas de 1970 antes de hidratar. Porcentajes con
+  espacio duro. Fuera «Max fall», «time-weighted», «Úlcer» y «64-bit».
+- **Guardas nuevas, todas vistas en rojo con la compilación anterior.**
+  `rotulos.mjs` (221 fallos antes, 0 después), `equipaje.mjs` (288
+  casos de página que carga un módulo que no usa, 0 después),
+  `cifras.mjs` con el porcentaje partible (21 casos antes),
+  `anuncios.mjs` con los cuatro buscadores, `teclado.mjs` con recorridos
+  nuevos (formulario, Ctrl+G, índice, paleta, grupos, pestañas y atajos
+  de la demo, diálogo; 13 recorridos en total), y en Vitest
+  `flechas.test.ts` y el recorte móvil en `capturas.test.ts`.
+- **Un falso verde cazado.** El recorrido del índice lateral aprobaba con
+  el código viejo: la segunda entrada era la última del índice y el Tab
+  caía en el pie, que también está «después» de la sección. Ahora exige
+  el foco dentro de la sección.
+- **Un fallo mío que cazó la batería.** El proyector de f8eba72 escribía
+  el «Primer año» desbordado («377.436.393…») cuando la curva se salía de escala;
+  `humo.mjs` lo vio y ahora pinta «—», como el resto de cifras fuera de
+  escala.
+- **Medido.** Batería de navegador en paralelo en verde (humo y anuncios
+  tras sus arreglos), `teclado`, `rotulos` y `equipaje` repetidas sobre la
+  compilación final, vitest 625 en 59 ficheros (2 omitidas), tsc y lint
+  limpios. Arranque en tres pasadas: titular 160–190 ms, total 420–482 ms;
+  se solapa con la tanda anterior (231–453 ms): así no se puede medir un
+  efecto en tiempo, solo en bytes.
+
 ## Herramientas de auditoría propias
 
 Antes de dar por terminado un cambio visible, correr lo que aplique:
@@ -3329,7 +3400,9 @@ node scripts/tinta.mjs --serve out      # texto sobre fondo lleno de P&L, en los
 node scripts/corrobora-menus.mjs --base <url>  # navegación y menús, escritorio + móvil (vale contra `out/` servido sin modo SPA, p. ej. `npx serve out`); no tiene --serve: si se olvida, no corre
 node scripts/medida.mjs --serve out     # caracteres por línea (tope 85, textos de 2+ líneas)
 node scripts/papel.mjs --serve out      # que lo impreso salga entero, sin huecos por animación
-node scripts/cifras.mjs out             # convención de idioma (y apóstrofo, comillas y ortografía británica en /en), restos de plantilla a la vista y flechas añadidas a enlaces
+node scripts/cifras.mjs out             # convención de idioma (espacio duro antes del % en español; apóstrofo, comillas y ortografía británica en /en), restos de plantilla a la vista y flechas añadidas a enlaces
+node scripts/rotulos.mjs out            # lo que oye un lector en el HTML compilado: grupos de opciones con nombre, nombres que apuntan a algo, botones con nombre, elecciones con estado, deslizadores con su unidad y ningún rótulo en inglés en /es
+node scripts/equipaje.mjs out           # el JS que cada página carga sin pedirlo: la librería de avisos en ninguna (va con el módulo de la demo) y el diccionario del glosario solo en su índice
 node scripts/copiado.mjs --serve out    # lo mismo, sobre el texto que copian los 7 botones «Copiar», y que la dirección del pie sea la del idioma copiado
 node scripts/enlaces.mjs out            # ningún enlace roto, ninguno que cambie de idioma, ningún botón a su propia página
 node scripts/pesos.mjs --serve out      # nadie pide a la serif un grosor que su eje ya no trae
@@ -3337,9 +3410,9 @@ node scripts/rejillas.mjs --serve out   # ninguna ficha despega su texto para ig
 node scripts/escala.mjs --serve out     # todo titular y todo bloque de texto en un peldaño t-* de la escala, y el interlineado de lectura (todas las páginas, 1440 y 390)
 node scripts/movimiento.mjs --serve out # con «reducir movimiento» activo no se desplaza nada
 node scripts/tema.mjs --serve out       # manda la elección, luego el sistema, y sin fogonazo blanco
-node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/) dicen su resultado a quien no ve la pantalla
-node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos y capas que devuelven el foco
-npx vitest run                          # 54 suites, 578 tests (+2 omitidos)
+node scripts/anuncios.mjs --serve out   # las herramientas que calculan (las saca de out/), el test y los buscadores del glosario y la FAQ dicen su resultado a quien no ve la pantalla
+node scripts/teclado.mjs --serve out    # el sitio sin ratón: foco visible, menús, diálogos (nombre, descripción, botones en su idioma) y capas que devuelven el foco; grupos y pestañas de la demo con una parada y flechas; atajos 1–4 que respetan Ctrl y el foco; paleta como combobox; formulario, Ctrl+G e índice lateral que dejan el foco donde toca
+npx vitest run                          # 59 suites, 625 tests (+2 omitidos)
 npx tsc --noEmit && npm run lint        # `npm run lint` es `eslint .` — incluye scripts/, como el CI
 ```
 

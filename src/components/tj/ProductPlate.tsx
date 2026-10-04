@@ -79,6 +79,11 @@ export type LaminaProducto = {
   /** Medidas reales de esa captura ya recortada, en píxeles. */
   ancho: number;
   alto: number;
+  /** Las del recorte móvil (`-movil.webp`), que tiene OTRA proporción: sin
+   *  ellas el navegador reservaba la de escritorio y, al llegar la imagen,
+   *  la página saltaba entre 30 y 80 px. Las comprueba `capturas.test.ts`. */
+  anchoMovil: number;
+  altoMovil: number;
   /** Ordinal romano de la captura (hoy no se pinta). */
   roman: string;
   /**
@@ -125,7 +130,7 @@ const TEMAS = [
 export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
   const { lang } = useLang();
   const es = lang === "es";
-  const { archivo, ancho, alto, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
+  const { archivo, ancho, alto, anchoMovil, altoMovil, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
   const alt = es ? altEs : altEn;
 
   /* Los cuatro ficheros de cada lámina: pantalla y detalle, en los dos
@@ -175,6 +180,8 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
               <source
                 media={`(max-width: ${CORTE_MOVIL_PX}px)`}
                 srcSet={asset(`/img/${variante(`${sufijo}-movil`)}`)}
+                width={anchoMovil}
+                height={altoMovil}
               />
               <img
                 src={asset(`/img/${variante(sufijo)}`)}

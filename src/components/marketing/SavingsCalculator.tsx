@@ -201,9 +201,7 @@ export function SavingsCalculator() {
                 } as React.CSSProperties
               }
               aria-label={es ? "Precio mensual de la alternativa por suscripción" : "Monthly price of subscription alternative"}
-              aria-valuemin={5}
-              aria-valuemax={50}
-              aria-valuenow={altMonthly}
+              aria-valuetext={`${fmtUsd(altMonthly)} ${es ? "al mes" : "per month"}`}
             />
             <div className="flex items-center justify-between mt-1">
               <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>{es ? "5\u00a0$" : "$5"}</span>
@@ -236,9 +234,7 @@ export function SavingsCalculator() {
                 } as React.CSSProperties
               }
               aria-label={es ? "Años de uso" : "Years of use"}
-              aria-valuemin={1}
-              aria-valuemax={10}
-              aria-valuenow={years}
+              aria-valuetext={`${years} ${es ? (years === 1 ? "año" : "años") : years === 1 ? "year" : "years"}`}
             />
           </div>
         </div>

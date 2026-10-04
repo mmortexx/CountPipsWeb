@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { CATEGORIAS, TERMINOS, descripcionDeTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
+import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -112,7 +112,7 @@ export default async function TerminoEnPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(terminoSchema) }}
       />
-      <TerminoVista termino={t} />
+      <TerminoVista ficha={fichaDeTermino(t)} />
       <FinalCTANew variante="glosario" />
     </>
   );

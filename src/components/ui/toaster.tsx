@@ -1,6 +1,7 @@
 "use client"
 
 import { useToast } from "@/hooks/use-toast"
+import { useLang } from "@/lib/i18n"
 import {
   Toast,
   ToastClose,
@@ -12,9 +13,11 @@ import {
 
 export function Toaster() {
   const { toasts } = useToast()
+  const { lang } = useLang()
+  const es = lang === "es"
 
   return (
-    <ToastProvider>
+    <ToastProvider label={es ? "Aviso" : "Notification"}>
       {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast key={id} {...props}>
@@ -25,11 +28,11 @@ export function Toaster() {
               )}
             </div>
             {action}
-            <ToastClose />
+            <ToastClose aria-label={es ? "Cerrar aviso" : "Dismiss"} />
           </Toast>
         )
       })}
-      <ToastViewport />
+      <ToastViewport label={es ? "Avisos ({hotkey})" : "Notifications ({hotkey})"} />
     </ToastProvider>
   )
 }

@@ -5,6 +5,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { paraBuscar } from "@/lib/busqueda";
 import { Reveal } from "@/components/tj/Reveal";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
   CATEGORIAS,
   ORDEN_CATEGORIAS,
@@ -48,6 +49,15 @@ export function GlosarioIndice() {
         paraBuscar(es ? x.es : x.en).includes(t),
     );
   }, [q, activeCategory, es]);
+
+  const recuento = filtrados
+    ? `${filtrados.length} ${filtrados.length === 1 ? (es ? "término" : "term") : es ? "términos" : "terms"}`
+    : `${TERMINOS.length} ${es ? "términos en cinco familias" : "terms across five families"}`;
+  /* La lista cambia con cada letra y cada familia; quien no ve la pantalla
+     tenía que recorrerla para saber cuántos quedaban, o que no quedaba
+     ninguno. */
+  const anuncio =
+    filtrados?.length === 0 ? (es ? "Ningún término con ese nombre." : "No terms by that name.") : recuento;
 
   return (
     <section
@@ -98,19 +108,8 @@ export function GlosarioIndice() {
               })}
             </div>
 
-            <p className="mt-3 text-[13px] text-tertiary">
-              {filtrados
-                ? `${filtrados.length} ${
-                    filtrados.length === 1
-                      ? es
-                        ? "término"
-                        : "term"
-                      : es
-                        ? "términos"
-                        : "terms"
-                  }`
-                : `${TERMINOS.length} ${es ? "términos en cinco familias" : "terms across five families"}`}
-            </p>
+            <p className="mt-3 text-[13px] text-tertiary">{recuento}</p>
+            <ResultadoAnunciado texto={anuncio} />
           </div>
         </Reveal>
 

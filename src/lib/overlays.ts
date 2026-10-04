@@ -22,7 +22,11 @@ export function openShortcutsHelp() {
   window.dispatchEvent(new CustomEvent(OPEN_SHORTCUTS_HELP));
 }
 
-/** Pide abrir el glosario modal. La escucha `OverlayHost`. */
-export function openGlossary() {
-  window.dispatchEvent(new CustomEvent(OPEN_GLOSSARY));
+/** Pide abrir el glosario modal. La escucha `OverlayHost`, que es el ÚNICO
+ *  sitio que lo carga: con un `dynamic()` en cada disparador, el bundler
+ *  sacaba una copia del glosario por disparador. `ancla` es adónde vuelve
+ *  el foco al cerrar; hace falta pasarlo porque Safari no enfoca un botón
+ *  al pulsarlo con el ratón. */
+export function openGlossary(ancla?: HTMLElement | null) {
+  window.dispatchEvent(new CustomEvent(OPEN_GLOSSARY, { detail: { ancla: ancla ?? null } }));
 }

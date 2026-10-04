@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLang } from "@/lib/i18n";
 import { useTheme, type PaletteName } from "@/lib/theme";
@@ -104,6 +104,13 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  /* Patrón de combobox, como el glosario: el foco no sale del campo y
+     `aria-activedescendant` dice qué opción está resaltada. Antes cada
+     opción era un botón enfocable y Enter, capturado en `window`, ejecutaba
+     la resaltada aunque el foco estuviera en otra; con lector, ↓ no
+     anunciaba nada. */
+  const idLista = useId();
+  const idOpcion = (i: number) => `${idLista}-${i}`;
 
   /* ---- "Open" markers (cmdk-root + body dataset) ---- */
   useEffect(() => {
@@ -208,7 +215,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
       },
       {
         id: "filter-compliant",
-        labelEs: "Filtrar: Operaciones en plan (100% disciplina)",
+        labelEs: "Filtrar: Operaciones en plan (100\u00a0% disciplina)",
         labelEn: "Filter: In-plan trades (100% disciplined)",
         section: "actions",
         icon: <FilterIcon />,
@@ -314,6 +321,10 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
      the displayed + Enter-targeted index is always valid. */
   const safeActive =
     filtered.length === 0 ? 0 : Math.min(active, filtered.length - 1);
+
+  useEffect(() => {
+    if (open) document.getElementById(idOpcion(safeActive))?.scrollIntoView({ block: "nearest" });
+  });
 
   /* ---- Keyboard navigation (capture phase so we beat any bubble
           listeners, including the global Cmd+K toggler). ---- */
@@ -422,6 +433,11 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
                 }}
                 placeholder={es ? "Escribe un comando…" : "Type a command…"}
                 aria-label={es ? "Buscar comando" : "Search command"}
+                role="combobox"
+                aria-expanded="true"
+                aria-autocomplete="list"
+                aria-controls={idLista}
+                aria-activedescendant={filtered.length ? idOpcion(safeActive) : undefined}
                 className="flex-1 h-full bg-transparent text-sm text-primary placeholder:text-tertiary focus:outline-none tnum"
                 autoComplete="off"
                 spellCheck={false}
@@ -432,51 +448,67 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
             </div>
 
             {/* Command list */}
-            <ul className="max-h-[min(50vh,320px)] overflow-y-auto custom-scroll py-1.5">
-              {filtered.length === 0 ? (
-                <li className="px-4 py-6 text-center text-sm text-tertiary">
-                  {es ? "Sin resultados." : "No results."}
-                </li>
-              ) : (
+            <p className="sr-only" role="status">
+              {filtered.length === 0
+                ? es ? "Sin resultados." : "No results."
+                : es
+                  ? `${filtered.length} ${filtered.length === 1 ? "comando" : "comandos"}`
+                  : `${filtered.length} ${filtered.length === 1 ? "command" : "commands"}`}
+            </p>
+            {filtered.length === 0 && (
+              <p className="px-4 py-6 text-center text-sm text-tertiary" aria-hidden="true">
+                {es ? "Sin resultados." : "No results."}
+              </p>
+            )}
+            <ul
+              id={idLista}
+              role="listbox"
+              aria-label={es ? "Comandos" : "Commands"}
+              className="max-h-[min(50vh,320px)] overflow-y-auto custom-scroll py-1.5 empty:hidden"
+            >
+              {filtered.length === 0 ? null : (
                 filtered.map((cmd, i) => {
                   const isActive = i === safeActive;
                   const label = es ? cmd.labelEs : cmd.labelEn;
                   return (
-                    <li key={`${cmd.section}-${cmd.id}`}>
-                      <button
-                        type="button"
-                        onMouseEnter={() => setActive(i)}
-                        onClick={() => {
-                          cmd.run();
-                          onClose();
-                        }}
-                        aria-current={isActive ? "true" : undefined}
-                        className={`w-full flex items-center gap-3 px-3 min-h-[44px] py-2.5 text-left transition-colors ${
-                          isActive
-                            ? "bg-[rgb(var(--divider)/0.1)] text-primary"
-                            : "text-secondary hover:bg-[rgb(var(--divider)/0.04)]"
+                    <li
+                      key={`${cmd.section}-${cmd.id}`}
+                      id={idOpcion(i)}
+                      role="option"
+                      aria-selected={isActive}
+                      onMouseEnter={() => setActive(i)}
+                      /* El foco se queda en el campo: sin esto, el clic
+                         se lo llevaba al `<li>`. */
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        cmd.run();
+                        onClose();
+                      }}
+                      className={`w-full flex items-center gap-3 px-3 min-h-[44px] py-2.5 text-left cursor-pointer transition-colors ${
+                        isActive
+                          ? "bg-[rgb(var(--divider)/0.1)] text-primary"
+                          : "text-secondary hover:bg-[rgb(var(--divider)/0.04)]"
+                      }`}
+                      style={
+                        isActive
+                          ? { boxShadow: "inset 2px 0 0 rgb(var(--accent-base))" }
+                          : undefined
+                      }
+                    >
+                      <span
+                        className={`w-5 h-5 flex items-center justify-center shrink-0 ${
+                          isActive ? "text-[rgb(var(--accent-base))]" : "text-tertiary"
                         }`}
-                        style={
-                          isActive
-                            ? { boxShadow: "inset 2px 0 0 rgb(var(--accent-base))" }
-                            : undefined
-                        }
+                        aria-hidden="true"
                       >
-                        <span
-                          className={`w-5 h-5 flex items-center justify-center shrink-0 ${
-                            isActive ? "text-[rgb(var(--accent-base))]" : "text-tertiary"
-                          }`}
-                          aria-hidden="true"
-                        >
-                          {cmd.icon}
-                        </span>
-                        <span className="flex-1 text-[13px] truncate">{label}</span>
-                        {cmd.hint ? (
-                          <kbd className="bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] rounded px-1.5 py-0.5 text-[10px] font-mono tnum text-tertiary">
-                            {cmd.hint}
-                          </kbd>
-                        ) : null}
-                      </button>
+                        {cmd.icon}
+                      </span>
+                      <span className="flex-1 text-[13px] truncate">{label}</span>
+                      {cmd.hint ? (
+                        <kbd className="bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] rounded px-1.5 py-0.5 text-[10px] font-mono tnum text-tertiary">
+                          {cmd.hint}
+                        </kbd>
+                      ) : null}
                     </li>
                   );
                 })

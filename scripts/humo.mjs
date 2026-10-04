@@ -1233,7 +1233,7 @@ for (const pantalla of PANTALLAS) {
           const abierto = () =>
             pagina.evaluate(
               () =>
-                !!document.querySelector('[aria-labelledby="navbar-producto-trigger"]')
+                !!document.getElementById("navbar-producto-panel")
             );
           const caja = await disparador.boundingBox();
           const cx = caja.x + caja.width / 2;
@@ -1313,12 +1313,12 @@ for (const pantalla of PANTALLAS) {
           );
           await pagina.keyboard.press("Enter");
           await pagina.waitForTimeout(320);
-          const deMenus = [["Producto", await opacidadEnTemas('[aria-labelledby="navbar-producto-trigger"]')]];
+          const deMenus = [["Producto", await opacidadEnTemas("#navbar-producto-panel")]];
           await pagina.keyboard.press("Escape");
           await pagina.waitForTimeout(240);
-          await pagina.locator('button[aria-haspopup="listbox"]:visible').first().click();
-          await pagina.waitForSelector('[role="listbox"]', { timeout: 5000 }).catch(() => {});
-          deMenus.push(["idioma", await opacidadEnTemas('[role="listbox"]')]);
+          await pagina.locator('header button[aria-label="Cambiar idioma"]:visible').first().click();
+          await pagina.waitForSelector("[data-panel-idiomas]", { timeout: 5000 }).catch(() => {});
+          deMenus.push(["idioma", await opacidadEnTemas("[data-panel-idiomas]")]);
           await pagina.keyboard.press("Escape");
           for (const [nombre, o] of deMenus) {
             if (!o) {

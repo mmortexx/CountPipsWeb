@@ -93,6 +93,9 @@ export function EdgeSignificanceChecker() {
      escribía «1234,5» sin millares en español, distinto del resto de la web. */
   const fmtNum = (n: number, dec = 2) => fmtNumBase(n, lang, dec);
 
+  const textoDeslizador = (value: number, step: number, suffix: string) =>
+    `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`;
+
   // Reusable slider — label + accent value pill + ≥44px touch row.
   // Unified across all interactive tools (Risk/Equity/RMultiple/Savings/Edge).
   const slider = (
@@ -108,9 +111,7 @@ export function EdgeSignificanceChecker() {
     <div>
       <div className="flex items-center justify-between mb-2">
         <span className="tj-deslizador-etiqueta">{label}</span>
-        <span className="tj-deslizador-valor">
-          {fmtNum(value, Number.isInteger(step) ? 0 : 2)}{suffix}
-        </span>
+        <span className="tj-deslizador-valor">{textoDeslizador(value, step, suffix)}</span>
       </div>
       <input
         type="range"
@@ -129,9 +130,7 @@ export function EdgeSignificanceChecker() {
           } as React.CSSProperties
         }
         aria-label={ariaLabel}
-        aria-valuemin={min}
-        aria-valuemax={max}
-        aria-valuenow={value}
+        aria-valuetext={textoDeslizador(value, step, suffix)}
       />
     </div>
   );

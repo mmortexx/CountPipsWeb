@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect, useId } from "react";
 import { marcasRedondas } from "@/lib/marcasEje";
 import { useLang } from "@/lib/i18n";
 import { proyectaCapital, CONFIANZA_RACHA } from "@/lib/trading/proyeccion";
@@ -123,6 +123,8 @@ const CONO_CONFIANZA_PCT = 80;
 const MESES_PARA_DUPLICAR_MAX = 1200;
 
 export function EquityProjector() {
+  const idAporte = useId();
+  const idCostes = useId();
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -391,6 +393,11 @@ export function EquityProjector() {
     );
   };
 
+  /* Lo que se pinta junto a la barra es también lo que oye el lector:
+     «10.000 $», no «10000». */
+  const textoDeslizador = (value: number, step: number, suffix: string) =>
+    suffix === " $" ? fmtUsd(value) : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`;
+
   // Control deslizador estilizado y accesible
   const sliderControl = (
     label: string,
@@ -414,9 +421,7 @@ export function EquityProjector() {
         </div>
         {/* El dólar cambia de sitio con el idioma («10.000 $» / «$10,000»):
             lo resuelve `fmtUsd`. Las demás unidades van siempre detrás. */}
-        <span className="tj-deslizador-valor">
-          {suffix === " $" ? fmtUsd(value) : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`}
-        </span>
+        <span className="tj-deslizador-valor">{textoDeslizador(value, step, suffix)}</span>
       </div>
       <input
         type="range"
@@ -437,9 +442,7 @@ export function EquityProjector() {
           } as React.CSSProperties
         }
         aria-label={label}
-        aria-valuemin={min}
-        aria-valuemax={max}
-        aria-valuenow={value}
+        aria-valuetext={textoDeslizador(value, step, suffix)}
       />
     </div>
   );
@@ -594,7 +597,7 @@ export function EquityProjector() {
                     un píxel, que es como este sitio separa las celdas de
                     sus cuadros de cifras. Ver `.tj-segmentado`. */}
                 <div>
-                  <div className="tj-segmentado tj-segmentado-seis" role="group">
+                  <div className="tj-segmentado tj-segmentado-seis" role="group" aria-label={es ? "Balances de partida" : "Starting balance presets"}>
                     {CAPITAL_CHIPS.map((chip) => {
                       const active = startBalance === chip.v;
                       return (
@@ -638,7 +641,7 @@ export function EquityProjector() {
                 {/* Aporte mensual */}
                 <div className="pt-2 border-t border-[var(--ficha-division)]">
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="tj-deslizador-etiqueta">
+                    <span id={idAporte} className="tj-deslizador-etiqueta">
                       {es ? "Aporte mensual" : "Monthly deposit"}
                     </span>
                     <span className="tj-deslizador-valor">
@@ -647,7 +650,7 @@ export function EquityProjector() {
                         : es ? "Sin aporte" : "None"}
                     </span>
                   </div>
-                  <div className="tj-segmentado" role="group">
+                  <div className="tj-segmentado" role="group" aria-labelledby={idAporte}>
                     {[0, 250, 500, 1000].map((amt) => {
                       const active = monthlyContribution === amt;
                       return (
@@ -716,10 +719,10 @@ export function EquityProjector() {
 
                 {/* Fricción */}
                 <div className="pt-2 border-t border-[var(--ficha-division)] flex items-center justify-between">
-                  <span className="tj-deslizador-etiqueta">
+                  <span id={idCostes} className="tj-deslizador-etiqueta">
                     {es ? "Costes por operación" : "Costs per trade"}
                   </span>
-                  <div className="tj-segmentado" role="group">
+                  <div className="tj-segmentado" role="group" aria-labelledby={idCostes}>
                     {[0.0, 0.02, 0.04, 0.06].map((f) => {
                       const active = frictionR === f;
                       return (
@@ -764,7 +767,7 @@ export function EquityProjector() {
 
                 {/* Horizonte */}
                 <div>
-                  <div className="tj-segmentado" role="group">
+                  <div className="tj-segmentado" role="group" aria-label={es ? "Horizonte" : "Horizon"}>
                     {HORIZON_CHIPS.map((y) => {
                       const active = years === y;
                       return (
@@ -786,9 +789,10 @@ export function EquityProjector() {
 
                 {/* Modelo de Reinversión */}
                 <div className="pt-2 border-t border-[var(--ficha-division)]">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2" role="group" aria-label={es ? "Modelo de reinversión" : "Reinvestment model"}>
                     <button
                       type="button"
+                      aria-pressed={reinvestMode === "compound"}
                       onClick={() => setReinvestMode("compound")}
                       className={`toque-comodo p-2.5 text-left rounded-[4px] transition-colors cursor-pointer ${
                         reinvestMode === "compound"
@@ -812,6 +816,7 @@ export function EquityProjector() {
 
                     <button
                       type="button"
+                      aria-pressed={reinvestMode === "linear"}
                       onClick={() => setReinvestMode("linear")}
                       className={`toque-comodo p-2.5 text-left rounded-[4px] transition-colors cursor-pointer ${
                         reinvestMode === "linear"
@@ -880,7 +885,7 @@ export function EquityProjector() {
                   </div>
                   <div className="text-[13px] text-[var(--ink-3)] tnum mt-1">
                     {es ? "Primer año, en teoría:" : "First year, in theory:"}{" "}
-                    <span className="text-[var(--ink)] font-semibold">{fmtUsd(c.yearlyUsdInitial)}</span>
+                    <span className="text-[var(--ink)] font-semibold">{c.fueraDeEscala ? "—" : fmtUsd(c.yearlyUsdInitial)}</span>
                   </div>
                 </div>
               </div>
@@ -901,7 +906,7 @@ export function EquityProjector() {
 
               {/* Selector de Pestaña */}
               <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
-                <div className="tj-segmentado" role="group">
+                <div className="tj-segmentado" role="group" aria-label={es ? "Vista del resultado" : "Result view"}>
                   <button
                     type="button"
                     onClick={() => setViewTab("chart")}

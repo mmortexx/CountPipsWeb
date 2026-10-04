@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/marketing/Navbar";
 import { Footer } from "@/components/marketing/Footer";
@@ -434,7 +433,6 @@ export default function RootLayout({
             <Footer />
             <BackToTop />
           </div>
-          <Toaster />
         </Providers>
       </body>
     </html>

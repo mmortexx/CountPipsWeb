@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { fmtInt } from "@/lib/trading/format";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { arranqueMedido } from "@/lib/producto";
 
 /** Índice de funciones de /features: se filtra por ejes y marca lo que es exclusivo de Pro. */
@@ -261,6 +262,15 @@ export function FeatureExplorer() {
         </div>
 
         {/* Results */}
+        <ResultadoAnunciado
+          texto={
+            !hasSelection
+              ? ""
+              : topMatches.length === 0
+                ? es ? "Nada en esos ejes." : "Nothing on those axes."
+                : `${fmtInt(topMatches.length, lang)} ${es ? (topMatches.length === 1 ? "función" : "funciones") : topMatches.length === 1 ? "feature" : "features"} ${es ? "en este recorte" : "in this cut"}`
+          }
+        />
         {hasSelection ? (
           <div>
             <div className="mb-4 flex items-center justify-between">

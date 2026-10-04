@@ -91,19 +91,17 @@ export function CountUp({
       : "";
 
   return (
-    <span
-      ref={ref}
-      // aria-live="polite" announces the final settled value to assistive
-      // tech without interrupting — the count-up animation runs once per
-      // mount, so the live region only fires when the value stabilises
-      // (the rapid intermediate values are throttled by the screen reader).
-      aria-live="polite"
-      data-cuenta=""
-      className={`tnum ${toneClass} ${className}`}
-    >
-      {prefix}
-      {fmtNum(reduced ? to : val, lang, decimals)}
-      {suffix}
+    <span ref={ref} data-cuenta="" className={`tnum ${toneClass} ${className}`}>
+      {/* La cifra que corre es para la vista; el lector lee la final, una
+          vez. Era una región `aria-live` que cambiaba en cada fotograma, y
+          los lectores no se quedan con la última: encolan las ochenta
+          intermedias de cada contador. */}
+      <span aria-hidden="true">
+        {prefix}
+        {fmtNum(reduced ? to : val, lang, decimals)}
+        {suffix}
+      </span>
+      <span className="sr-only">{`${prefix}${fmtNum(to, lang, decimals)}${suffix}`}</span>
     </span>
   );
 }

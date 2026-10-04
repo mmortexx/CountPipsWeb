@@ -2,7 +2,7 @@
 
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
-import { GlossaryLauncher } from "@/components/tj/GlossaryLauncher";
+import { openGlossary } from "@/lib/overlays";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { reopenConsent } from "@/lib/consent";
 import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
@@ -158,16 +158,15 @@ export function Footer() {
                   <li key={`${col.title}-${l.href}-${l.label}`}>
                     {l.glossary ? (
                       /* El glosario se carga al pulsarlo, no al pintar el
-                         pie — que sale en las nueve rutas. Ver el
-                         encabezado de GlossaryLauncher. */
-                      <GlossaryLauncher>
-                        <button
-                          type="button"
-                          className="link-underline-host inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-left text-sm text-secondary hover:text-primary transition-colors duration-200"
-                        >
-                          <span className="link-underline link-underline--al-pasar">{l.label}</span>
-                        </button>
-                      </GlossaryLauncher>
+                         pie, que sale en todas las páginas: lo trae
+                         `OverlayHost`. Ver `openGlossary`. */
+                      <button
+                        type="button"
+                        onClick={(e) => openGlossary(e.currentTarget)}
+                        className="link-underline-host inline-flex items-center min-h-[44px] [@media(pointer:fine)]:min-h-[34px] w-full text-left text-sm text-secondary hover:text-primary transition-colors duration-200"
+                      >
+                        <span className="link-underline link-underline--al-pasar">{l.label}</span>
+                      </button>
                     ) : (
                       <Link
                         href={l.href}

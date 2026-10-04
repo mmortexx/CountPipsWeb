@@ -8,7 +8,8 @@ import { FAQ_ES, FAQ_EN, type QA } from "@/lib/faq";
 import { paraBuscar } from "@/lib/busqueda";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
-import { GlossaryModal } from "@/components/tj/GlossaryModal";
+import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
+import { openGlossary } from "@/lib/overlays";
 import {
   Accordion,
   AccordionItem,
@@ -27,7 +28,9 @@ import {
  * Search behaviour:
  *  - Filters question + answer text, case-insensitive, in the active language.
  *  - When the query yields no matches, shows a "no results" panel with a
- *    button that opens the GlossaryModal (controlled by FAQ's own state).
+ *    button that opens the glossary. Lo pinta `OverlayHost`: importarlo
+ *    aquí metía el glosario entero y Radix Dialog en el arranque de /faq
+ *    (unos 57 KB) para un botón que casi nadie pulsa.
  *  - The accordion auto-collapses while a query is active so multiple matches
  *    can be scanned at a glance; the first match opens by default.
  */
@@ -41,9 +44,6 @@ import {
 export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   const { t, lang } = useLang();
   const es = lang === "es";
-
-  // GlossaryModal is controlled by FAQ so the "no results" link can open it.
-  const [glossaryOpen, setGlossaryOpen] = React.useState(false);
 
   const [query, setQuery] = React.useState("");
   const [activeCategory, setActiveCategory] = React.useState<"all" | "security" | "access" | "product">("all");
@@ -89,6 +89,9 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   // While searching or filtering, force a fresh `key` so the first match opens by default
   const hasQuery = query.trim() !== "" || activeCategory !== "all";
   const noResults = filtered.length === 0;
+  const anuncio = noResults
+    ? es ? "No se encontraron resultados." : "No results found."
+    : `${filtered.length} ${filtered.length === 1 ? (es ? "pregunta" : "question") : es ? "preguntas" : "questions"}`;
 
   return (
     <section
@@ -224,8 +227,9 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               justo lo que hacía que esta caja se viera apagada al lado
               de las secciones de papel de la misma página. */}
           <div className={`relative mt-8 max-w-3xl border-t border-[var(--line)] ${standalone ? "lg:max-w-none" : "mx-auto"}`}>
+            <ResultadoAnunciado texto={anuncio} />
             {noResults ? (
-              /* ───── No-results panel — links to the GlossaryModal ───── */
+              /* ───── No-results panel — opens the glossary ───── */
               <div className="relative px-4 py-12 text-center">
                 <p className="text-base font-medium text-primary">
                   {es
@@ -239,7 +243,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                 </p>
                 <button
                   type="button"
-                  onClick={() => setGlossaryOpen(true)}
+                  onClick={(e) => openGlossary(e.currentTarget)}
                   className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-[rgb(var(--accent-hover))] hover:underline transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px]"
                 >
                   {es ? "Abrir el glosario" : "Open the glossary"}
@@ -284,40 +288,34 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
         </Reveal>
 
 
-        {/* Glossary trigger — reinforces the frozen-glossary philosophy.
-            Same controlled instance powers the "no results" link above. */}
+        {/* Glossary trigger — reinforces the frozen-glossary philosophy. */}
         <Reveal
           delay={0.26}
           className={standalone ? "lg:col-start-1 lg:row-start-2 lg:self-start" : undefined}
         >
           <div className={`mt-6 ${standalone ? "-ml-3 lg:ml-0 lg:mt-4" : "text-center"}`}>
-            <GlossaryModal
-              open={glossaryOpen}
-              onOpenChange={setGlossaryOpen}
-              trigger={
-                <button
-                  type="button"
-                  /* `min-h-[44px] px-3` — es un botón de verdad, no un
-                     enlace suelto en mitad de un párrafo, y medía 20 px
-                     de alto. El relleno lateral además separa el foco
-                     del texto para que el anillo no lo estrangule. */
-                  className={`link-underline-host min-h-[44px] px-3 text-sm text-tertiary transition-colors inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px] ${
-                    standalone ? "text-left" : ""
-                  }`}
-                >
-                  {/* Abre el glosario: se subraya como cualquier enlace del
-                      sitio, que antes solo lo delataba el cambio de color al
-                      pasar. */}
-                  <span>
-                    {es ? "¿Buscas un término? " : "Looking for a term? "}
-                    <span className="link-underline text-secondary">
-                      {es ? "Consulta el glosario" : "Browse the glossary"}
-                    </span>
-                    .
-                  </span>
-                </button>
-              }
-            />
+            <button
+              type="button"
+              onClick={(e) => openGlossary(e.currentTarget)}
+              /* `min-h-[44px] px-3` — es un botón de verdad, no un
+                 enlace suelto en mitad de un párrafo, y medía 20 px
+                 de alto. El relleno lateral además separa el foco
+                 del texto para que el anillo no lo estrangule. */
+              className={`link-underline-host min-h-[44px] px-3 text-sm text-tertiary transition-colors inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px] ${
+                standalone ? "text-left" : ""
+              }`}
+            >
+              {/* Abre el glosario: se subraya como cualquier enlace del
+                  sitio, que antes solo lo delataba el cambio de color al
+                  pasar. */}
+              <span>
+                {es ? "¿Buscas un término? " : "Looking for a term? "}
+                <span className="link-underline text-secondary">
+                  {es ? "Consulta el glosario" : "Browse the glossary"}
+                </span>
+                .
+              </span>
+            </button>
           </div>
         </Reveal>
         </div>

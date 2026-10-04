@@ -123,7 +123,7 @@ export function PropChallengeSimulator() {
           lineas: [
             `${es ? "Objetivo" : "Target"}: ${pct(objetivo, 1)}`,
             `Drawdown: ${pct(dd, 1)} ${nombreTipo(tipo)}`,
-            `${es ? "Riesgo por operación" : "Risk per trade"}: ${pct(riesgo, 2)} ${es ? "del saldo inicial" : "of starting balance"}`,
+            `${es ? "Riesgo por operación" : "Risk per trade"}: ${pct(riesgo, 2)} ${es ? "del balance inicial" : "of starting balance"}`,
             `${es ? "Acierto" : "Win rate"}: ${pct(acierto)} · payoff ${fmtNum(payoff, lang, 1)}`,
             `Expectancy: ${fmtR(esperanza, lang)} ${es ? "por operación" : "per trade"}`,
           ],
@@ -215,7 +215,7 @@ export function PropChallengeSimulator() {
                 onValor={setDd}
               />
               <Deslizador
-                etiqueta={es ? "Riesgo por operación (del saldo inicial)" : "Risk per trade (of starting balance)"}
+                etiqueta={es ? "Riesgo por operación (del balance inicial)" : "Risk per trade (of starting balance)"}
                 texto={pct(riesgo, 2)}
                 valor={riesgo}
                 min={RANGOS_FONDEO.riesgo[0]}
@@ -309,7 +309,7 @@ export function PropChallengeSimulator() {
               </p>
               <p className="m-0 mt-3 text-[12px] leading-relaxed text-tertiary">
                 {es
-                  ? `Expectancy ${fmtR(esperanza, lang)} por operación. El dinámico sigue al máximo del saldo hasta el saldo inicial. No incluye el límite de pérdida diaria ni reglas de consistencia.`
+                  ? `Expectancy ${fmtR(esperanza, lang)} por operación. El dinámico sigue al máximo del balance hasta el balance inicial. No incluye el límite de pérdida diaria ni reglas de consistencia.`
                   : `Expectancy ${fmtR(esperanza, lang)} per trade. The trailing floor follows the balance high up to the starting balance. Daily loss limits and consistency rules are not included.`}
               </p>
             </div>
