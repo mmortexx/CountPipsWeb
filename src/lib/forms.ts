@@ -49,8 +49,6 @@ const WAITLIST_URL = (process.env.NEXT_PUBLIC_WAITLIST_URL ?? "").trim();
  * configura, reutiliza el Apps Script de la lista con el mismo contrato. */
 const BETA_API_URL = (process.env.NEXT_PUBLIC_BETA_API_URL ?? WAITLIST_URL).trim();
 
-/** `false` mientras no se haya configurado la URL de la lista. */
-export const waitlistConfigured = WAITLIST_URL.length > 0;
 export const betaConfigured = BETA_API_URL.length > 0;
 
 /**
@@ -176,10 +174,6 @@ export async function submitForm(fields: FormFields): Promise<SubmitResult> {
   return { ok: true };
 }
 
-export type WaitlistResult =
-  | { ok: true; priority: number | null; duplicate: boolean; count: number | null }
-  | { ok: false; reason: SubmitFailure };
-
 export type BetaApplicationData = {
   email: string;
   profile: "manual" | "prop";
@@ -229,169 +223,4 @@ export async function joinBetaApplication(
   const data = res.data as { ok?: boolean; duplicate?: boolean } | null;
   if (!data?.ok) return { ok: false, reason: "rejected" };
   return { ok: true, duplicate: data.duplicate === true };
-}
-
-/**
- * Da de alta un email en la lista de espera y devuelve su puesto en la cola.
- *
- * `priority` es el número de fila en la hoja. Puede volver `null` si la
- * respuesta no lo trae: en ese caso el alta ES válida y la interfaz
- * simplemente no enseña el puesto, en vez de inventarse uno.
- *
- * `duplicate` indica que ese email ya estaba apuntado. No es un error —
- * el resultado deseado (estar en la lista) se cumple igual —, pero
- * permite darle un mensaje distinto a quien se apunta dos veces.
- *
- * Misma regla que `submitForm`: nunca `ok: true` si el alta no se registró.
- */
-export async function joinWaitlist(
-  email: string,
-  opts: { lang?: string; botcheck?: string } = {}
-): Promise<WaitlistResult> {
-  if (!waitlistConfigured) {
-    return { ok: false, reason: "unconfigured" };
-  }
-
-  const res = await postJson(
-    WAITLIST_URL,
-    {
-      email: email.trim(),
-      lang: opts.lang ?? "",
-      botcheck: opts.botcheck ?? "",
-      // Desde qué página se apuntó, para saber qué sección convierte.
-      source: typeof window === "undefined" ? "" : window.location.pathname,
-    },
-    "text/plain;charset=utf-8"
-  );
-
-  if (!res) return { ok: false, reason: "network" };
-  if (!res.ok) return { ok: false, reason: "rejected" };
-
-  // El script responde `{ ok, position, duplicate, count }`. Un `ok: false`
-  // ahí significa que llegó pero no guardó (email inválido, error de la hoja).
-  const data = res.data as {
-    ok?: boolean;
-    position?: number;
-    duplicate?: boolean;
-    count?: number;
-  } | null;
-  if (!data?.ok) return { ok: false, reason: "rejected" };
-
-  return {
-    ok: true,
-    priority: asCount(data.position),
-    duplicate: data.duplicate === true,
-    count: asCount(data.count),
-  };
-}
-
-/* ============================================================
-   CONTADOR DE LA LISTA DE ESPERA
-   ============================================================ */
-
-/**
- * Normaliza un valor que llega de la red a un entero >= 0, o `null`.
- *
- * Todo lo que venga de fuera se trata como sospechoso: un `"12"`, un
- * `NaN`, un `-3` o un `1.5` no pueden acabar pintados en pantalla como
- * si fueran un recuento. Preferimos `null` (no se enseña nada) antes que
- * un número que no signifique lo que dice.
- */
-function asCount(value: unknown): number | null {
-  const n = typeof value === "string" ? Number(value) : value;
-  if (typeof n !== "number" || !Number.isFinite(n) || n < 0) return null;
-  return Math.floor(n);
-}
-
-/** Corte para el contador: es una cifra decorativa, no bloquea nada. */
-const COUNT_TIMEOUT_MS = 8_000;
-
-/**
- * Lee cuánta gente hay apuntada. Devuelve `null` si no se puede saber —
- * nunca un número inventado ni un cero de relleno.
- *
- * Dos vías, en este orden:
- *
- *  1. `fetch` normal. Apps Script sirve la respuesta del GET con
- *     `Access-Control-Allow-Origin: *`, así que en un navegador sano
- *     esto basta y no ejecuta código de terceros.
- *
- *  2. JSONP (una etiqueta `<script>`) solo si la primera falla. Hay dos
- *     escenarios reales en los que falla: extensiones de privacidad que
- *     cortan la petición entre dominios, y navegadores que se atragantan
- *     con la redirección de `script.google.com` a
- *     `script.googleusercontent.com`. La etiqueta no está sujeta a CORS,
- *     así que atraviesa ambos casos.
- *
- * El JSONP ejecuta lo que responda el endpoint, de modo que solo se usa
- * contra la URL configurada en build — nunca contra una que venga del
- * usuario o de la barra de direcciones.
- */
-export async function fetchWaitlistCount(): Promise<number | null> {
-  if (!waitlistConfigured) return null;
-  const viaFetch = await countViaFetch();
-  if (viaFetch !== null) return viaFetch;
-  return countViaJsonp();
-}
-
-async function countViaFetch(): Promise<number | null> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), COUNT_TIMEOUT_MS);
-  try {
-    const res = await fetch(WAITLIST_URL, {
-      method: "GET",
-      signal: controller.signal,
-      // El contador puede quedarse 30 s atrás sin que se note; evitar el
-      // viaje completo en cada montaje es mejor que la exactitud al
-      // segundo, y protege la cuota diaria de Apps Script.
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    const data = (await res.json().catch(() => null)) as
-      | { ok?: boolean; count?: number }
-      | null;
-    if (!data?.ok) return null;
-    return asCount(data.count);
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
-/** Contador incremental: evita colisiones si hay dos lecturas en vuelo. */
-let jsonpSeq = 0;
-
-function countViaJsonp(): Promise<number | null> {
-  if (typeof document === "undefined") return Promise.resolve(null);
-
-  return new Promise((resolve) => {
-    const name = `__tjWaitlistCount${++jsonpSeq}`;
-    const script = document.createElement("script");
-    let settled = false;
-
-    const cleanup = () => {
-      clearTimeout(timer);
-      delete (window as unknown as Record<string, unknown>)[name];
-      script.remove();
-    };
-    const finish = (value: number | null) => {
-      if (settled) return;
-      settled = true;
-      cleanup();
-      resolve(value);
-    };
-
-    const timer = setTimeout(() => finish(null), COUNT_TIMEOUT_MS);
-
-    (window as unknown as Record<string, unknown>)[name] = (payload: unknown) => {
-      const data = payload as { ok?: boolean; count?: number } | null;
-      finish(data?.ok ? asCount(data.count) : null);
-    };
-
-    script.src = `${WAITLIST_URL}${WAITLIST_URL.includes("?") ? "&" : "?"}callback=${name}`;
-    script.async = true;
-    script.onerror = () => finish(null);
-    document.head.appendChild(script);
-  });
 }

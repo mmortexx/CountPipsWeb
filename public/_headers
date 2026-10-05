@@ -43,7 +43,9 @@
   # conexiones y frames, a los dominios que el sitio usa de verdad:
   # Turnstile (verificación anti-bot de /beta), PostHog EU (analítica con
   # consentimiento), Web3Forms (contacto/newsletter) y el Apps Script de
-  # Google (lista de espera y su fallback de /beta). Todo lo demás queda
+  # Google (respaldo de /beta; responde redirigiendo a
+  # script.googleusercontent.com, por eso los dos van en connect-src y
+  # ninguno en script-src). Todo lo demás queda
   # bloqueado — así un XSS reflejado o almacenado no puede cargar un
   # <script src="dominio-arbitrario">.
   #
@@ -51,7 +53,7 @@
   # no un descuido: esta es una exportación estática de Next.js App
   # Router (output: "export"), que hornea en cada página scripts inline
   # sin nonce (hidratación RSC, anti-FOUC de tema, corrección de idioma
-  # bajo /en) y atributos style="" inline (gradientes, Framer Motion). Sin
+  # bajo /en) y atributos style="" inline (gradientes, variables CSS). Sin
   # servidor dinámico no hay forma de emitir un nonce por petición, y
   # enumerar hashes para docenas de scripts que cambian en cada build no
   # es viable sin tooling adicional.
@@ -73,7 +75,7 @@
   # bajo un dominio de Cloudflare, no un `*` abierto: sigue prohibiendo
   # cualquier otro destino. Cuando el Worker tenga dominio propio, se
   # añade aquí ese origen y se puede retirar el comodín.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://eu-assets.i.posthog.com https://script.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://script.google.com https://challenges.cloudflare.com https://eu.i.posthog.com https://*.workers.dev https://api.countpips.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://eu-assets.i.posthog.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://script.google.com https://script.googleusercontent.com https://challenges.cloudflare.com https://eu.i.posthog.com https://*.workers.dev https://api.countpips.com; frame-src https://challenges.cloudflare.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
   # ── AQUÍ NO VA `Cache-Control`, Y CONVIENE DEJARLO ESCRITO ──────────
   # La tentación es poner aquí "no cachear" y dejar que las reglas de
