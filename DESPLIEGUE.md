@@ -59,7 +59,8 @@ subdirectorio que no existe y **todos los enlaces y recursos darán 404**.
 Las que sí hay que añadir, en *Settings → Environment variables*:
 
 - `NEXT_PUBLIC_WEB3FORMS_KEY` — destino de los formularios de contacto.
-- `NEXT_PUBLIC_WAITLIST_URL` — script que recoge las altas de la lista.
+- `NEXT_PUBLIC_WAITLIST_URL` — Apps Script de respaldo para `/beta`
+  (`docs/waitlist-apps-script.js`).
 - `NEXT_PUBLIC_BETA_API_URL` — URL de `POST /v1/applications` del Worker
   `services/beta-api`. Sin ella, el formulario de `/beta` cae al mismo
   Apps Script que la lista de espera (mismo contrato, sin panel interno

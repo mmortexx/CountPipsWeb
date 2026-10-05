@@ -1,104 +1,27 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# Dependencias
 node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
 
-# testing
-/coverage
-
-# next.js
+# Compilación de Next.js y exportación estática
 /.next/
 /out/
+next-env.d.ts
+*.tsbuildinfo
 
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
+# Variables de entorno: sólo viaja la plantilla
 .env*
-# ...salvo la plantilla, que documenta qué variables hacen falta.
 !.env.example
-# secretos locales de `wrangler dev` (services/beta-api) — no coinciden
-# con el patrón .env* de arriba.
+
+# Estado local de `wrangler dev` (services/beta-api): secretos y D1/KV simulados
 .dev.vars
 .dev.vars.*
-# estado local de D1/KV simulado por `wrangler dev` (services/beta-api) —
-# incluye datos de prueba en SQLite, no es código ni configuración.
 .wrangler/
 
-# vercel
-.vercel
-
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-local-*
+# Configuración local de herramientas
 .claude
-.z-ai-config
+.vercel
+/coverage
+
+# Sistema y registros
+.DS_Store
+*.pem
 *.log
-dev.log
-dev.out.log
-# Anclados a la RAÍZ con la barra inicial, y no es un detalle de estilo.
-# Sin ella, `test` ignora CUALQUIER fichero o carpeta con ese nombre a
-# cualquier profundidad. Se llevó por delante `src/app/test/` —la página
-# del diagnóstico— sin decir nada: el commit salió limpio, el despliegue
-# en verde, y el sitio quedó publicado con un enlace en el menú a una
-# página que no existía, porque el menú y el mapa del sitio SÍ viajaron y
-# la página no. Un 404 servido con toda naturalidad.
-#
-# Estas dos entradas eran para ficheros sueltos de trabajo en la raíz; ahí
-# se quedan.
-/test
-/prompt
-
-server.log
-# Skills directory
-/skills/
-# Temp screenshots / tool-results / agent context (not for repo)
-screenshots/
-tool-results/
-agent-ctx/
-.zscripts/dev.pid
---clip
-r3*.png
-*.png.bak
-download/
-upload/
-db/custom.db
-
-# Sandbox-only helpers (not part of the project)
-.zscripts/run-dev.sh
-.zscripts/dev.log
-.zscripts/dev.pid
-.zscripts/start-dev-persistent.sh
-
-# fuentes que scripts/generate-og.py descarga y cachea (no se versionan)
-/scripts/.fonts/
-
-# Bitacora historica de trabajo: 2,87 MB, el 92 % del peso de todo lo
-# versionado. Es un registro, no codigo ni documentacion operativa, y
-# cada clon lo arrastraba. Se conserva en disco; deja de viajar.
-worklog.md
-
-# Session debris and agent workspaces (not for repo)
-.agents/
-.snapshots/
-.mimosa/
-
