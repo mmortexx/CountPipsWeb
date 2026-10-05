@@ -154,9 +154,6 @@ function buildMarketingFixture() {
 }
 
 /** Acceso tipado por sección (azúcar sobre el bundle). */
-export function getKpis() {
-  return buildMarketingFixture().kpis;
-}
 export function getCal() {
   return buildMarketingFixture().cal;
 }

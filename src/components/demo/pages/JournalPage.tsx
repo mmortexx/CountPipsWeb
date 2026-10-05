@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useMemo, useState, type CSSProperties } from "react";
+import { useAlVer } from "@/hooks/use-al-ver";
+import { Viajero } from "../Viajero";
 import { useLang } from "@/lib/i18n";
 import {
   TRADES,
@@ -19,8 +20,6 @@ import { Money } from "@/components/tj/Money";
 import { CountUp } from "@/components/tj/CountUp";
 import { Reveal } from "@/components/tj/Reveal";
 import { moverConFlechas } from "@/lib/flechas";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 /* ============================================================
    Static bilingual content (no i18n keys for these)
@@ -89,19 +88,17 @@ function CheckMark({ checked }: { checked: boolean }) {
       aria-hidden="true"
       className="overflow-visible"
     >
-      <motion.path
+      <path
         d="M5 12.5 L10 17.5 L19 7"
         fill="none"
         stroke="currentColor"
         strokeWidth={2.5}
         strokeLinecap="round"
         strokeLinejoin="round"
-        initial={{ pathLength: 0, opacity: 0 }}
-        animate={{
-          pathLength: checked ? 1 : 0,
-          opacity: checked ? 1 : 0,
-        }}
-        transition={{ duration: 0.32, ease: EASE }}
+        pathLength={1}
+        strokeDasharray={1}
+        style={{ strokeDashoffset: checked ? 0 : 1, opacity: checked ? 1 : 0 }}
+        className={`motion-safe:transition-[stroke-dashoffset,opacity] motion-safe:duration-[320ms] motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] ${checked ? "tj-dm-traza" : ""}`}
       />
     </svg>
   );
@@ -176,7 +173,7 @@ function DayScoreDots({
         const active = n <= value;
         const isSelected = n === value;
         return (
-          <motion.button
+          <button
             key={n}
             type="button"
             role="radio"
@@ -189,29 +186,23 @@ function DayScoreDots({
             }
             onClick={() => onChange(n)}
             onKeyDown={(e) => moverConFlechas(e, n, onChange)}
-            whileTap={{ scale: 0.8 }}
-            whileHover={{ scale: 1.18 }}
-            className="relative w-5 h-5"
+            style={{ "--dm-pulsa": 0.8 } as CSSProperties}
+            className="tj-dm-crece tj-dm-pulsa relative w-5 h-5"
           >
             <span
               className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.10)]"
             />
-            <motion.span
-              className="absolute inset-0 rounded-[2px] bg-[rgb(var(--accent-base))]"
-              animate={{
-                opacity: active ? 1 : 0,
-                scale: active ? 1 : 0.7,
-              }}
-              transition={{ type: "spring", stiffness: 360, damping: 22 }}
+            <span
+              className="absolute inset-0 rounded-[2px] bg-[rgb(var(--accent-base))] motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)]"
+              style={{ opacity: active ? 1 : 0, transform: active ? "none" : "scale(0.7)" }}
             />
             {isSelected && (
-              <motion.span
-                layoutId={`${idPrefix}-day-score-ring`}
+              <Viajero
+                clave={`${idPrefix}-day-score-ring`}
                 className="absolute -inset-1 rounded-[2px] border border-[rgb(var(--accent-base)/0.55)]"
-                transition={{ type: "spring", stiffness: 320, damping: 26 }}
               />
             )}
-          </motion.button>
+          </button>
         );
       })}
     </div>
@@ -308,7 +299,7 @@ function RitualColumn({
 
 function ComplianceRing({ pct, label }: { pct: number; label: string }) {
   const { lang } = useLang();
-  const reduce = useReducedMotion();
+  const alVer = useAlVer<HTMLDivElement>();
   const R = 52;
   const C = 2 * Math.PI * R;
   const targetOffset = C * (1 - pct);
@@ -329,12 +320,10 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
       ? "text-pnl-warn"
       : "text-pnl-neg";
   return (
-    <motion.div
-      className="relative w-40 h-40 md:w-44 md:h-44 mx-auto"
-      initial={reduce ? undefined : { scale: 0.92, opacity: 0.5 }}
-      whileInView={{ scale: 1, opacity: 1 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, ease: EASE }}
+    <div
+      ref={alVer}
+      className="tj-dm-entra relative w-40 h-40 md:w-44 md:h-44 mx-auto"
+      style={{ "--dm-s": 0.92, "--dm-o": 0.5 } as CSSProperties}
     >
       <svg
         viewBox="0 0 120 120"
@@ -349,7 +338,8 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
           stroke="rgb(var(--divider) / 0.14)"
           strokeWidth={8}
         />
-        <motion.circle
+        {/* Se pasa un poco del valor y vuelve a él. */}
+        <circle
           cx="60"
           cy="60"
           r={R}
@@ -358,29 +348,8 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
           strokeWidth={8}
           strokeLinecap="round"
           strokeDasharray={C}
-          initial={{ strokeDashoffset: C }}
-          whileInView={
-            reduce
-              ? { strokeDashoffset: targetOffset }
-              : {
-                  strokeDashoffset: [
-                    C,
-                    overshootOffset,
-                    targetOffset,
-                  ],
-                }
-          }
-          viewport={{ once: true, margin: "-40px" }}
-          transition={
-            reduce
-              ? { duration: 1.4, ease: EASE, delay: 0.15 }
-              : {
-                  duration: 1.9,
-                  ease: EASE,
-                  delay: 0.15,
-                  times: [0, 0.62, 1],
-                }
-          }
+          className="tj-dm-anillo-rebasa"
+          style={{ strokeDashoffset: targetOffset, "--dm-anillo": C, "--dm-rebase": overshootOffset } as CSSProperties}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -391,7 +360,7 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
           {label}
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -433,16 +402,13 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
           const active = l.key === level;
           return (
             <div key={l.key} className="relative w-2.5 h-2.5">
-              <motion.span
-                className="absolute inset-0 rounded-[1px]"
+              <span
+                className="absolute inset-0 rounded-[1px] motion-safe:transition-[opacity,transform] motion-safe:duration-300"
                 style={{
                   backgroundColor: l.color,
-                }}
-                animate={{
                   opacity: active ? 1 : 0.22,
-                  scale: active ? 1 : 0.7,
+                  transform: active ? "none" : "scale(0.7)",
                 }}
-                transition={{ duration: 0.3 }}
               />
               <span
                 aria-hidden
@@ -474,22 +440,17 @@ function DivergingBar({
   const maxAbs = Math.max(Math.abs(inPlan), Math.abs(outPlan), 1);
   const inPct = (Math.abs(inPlan) / maxAbs) * 50;
   const outPct = (Math.abs(outPlan) / maxAbs) * 50;
+  const alVer = useAlVer<HTMLDivElement>();
   return (
-    <div className="relative h-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden">
+    <div ref={alVer} className="relative h-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden">
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
-      <motion.div
-        className="absolute top-0 bottom-0 right-1/2 bg-pnl-pos/80"
-        initial={{ width: 0 }}
-        whileInView={{ width: `${inPct}%` }}
-        viewport={{ once: true, margin: "-20px" }}
-        transition={{ duration: 0.9, ease: EASE, delay: 0.4 }}
+      <div
+        className="tj-dm-ancho absolute top-0 bottom-0 right-1/2 bg-pnl-pos/80"
+        style={{ width: `${inPct}%`, "--dm-retardo": "0.4s" } as CSSProperties}
       />
-      <motion.div
-        className="absolute top-0 bottom-0 left-1/2 bg-pnl-neg/80"
-        initial={{ width: 0 }}
-        whileInView={{ width: `${outPct}%` }}
-        viewport={{ once: true, margin: "-20px" }}
-        transition={{ duration: 0.9, ease: EASE, delay: 0.55 }}
+      <div
+        className="tj-dm-ancho absolute top-0 bottom-0 left-1/2 bg-pnl-neg/80"
+        style={{ width: `${outPct}%`, "--dm-retardo": "0.55s" } as CSSProperties}
       />
     </div>
   );
@@ -518,11 +479,9 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
           >
             <div className="relative w-full flex-1">
               <div className="absolute left-0 right-0 top-1/2 h-px bg-[rgb(var(--divider)/0.1)] -translate-y-1/2" />
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: `${pct / 2}%`, opacity: 1 }}
-                transition={{ duration: 0.7, delay: 0.04 * i, ease: EASE }}
-                className={`absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] group-hover:w-4/5 transition-[width] ${
+              <div
+                style={{ height: `${pct / 2}%`, "--dm-retardo": `${0.04 * i}s` } as CSSProperties}
+                className={`tj-dm-alto absolute left-1/2 -translate-x-1/2 w-2/3 rounded-[2px] group-hover:w-4/5 transition-[width] ${
                   isPos
                     ? "bottom-1/2 bg-pnl-pos/80"
                     : "top-1/2 bg-pnl-neg/80"
@@ -638,7 +597,7 @@ function SegmentedMeter({
           const active = n <= value;
           const isSelected = n === value;
           return (
-            <motion.button
+            <button
               key={n}
               type="button"
               role="radio"
@@ -647,25 +606,24 @@ function SegmentedMeter({
               aria-label={`${label} ${n}`}
               onClick={() => onChange(n)}
               onKeyDown={(e) => moverConFlechas(e, n - 1, (i) => onChange(i + 1))}
-              whileTap={{ scale: 0.92 }}
-              className="relative h-8 rounded-[2px] border transition-colors"
+              className="tj-dm-pulsa relative h-8 rounded-[2px] border transition-colors"
               style={{
+                "--dm-pulsa": 0.92,
                 backgroundColor: active
                   ? "rgb(var(--accent-base) / 0.55)"
                   : "rgb(var(--divider) / 0.06)",
                 borderColor: active
                   ? "rgb(var(--accent-base) / 0.75)"
                   : "rgb(var(--divider) / 0.16)",
-              }}
+              } as CSSProperties}
             >
               {isSelected && (
-                <motion.span
-                  layoutId={`segmented-ring-${label}`}
+                <Viajero
+                  clave={`segmented-ring-${label}`}
                   className="absolute -inset-px rounded-[2px] border border-[rgb(var(--accent-base)/0.55)] pointer-events-none"
-                  transition={{ type: "spring", stiffness: 320, damping: 26 }}
                 />
               )}
-            </motion.button>
+            </button>
           );
         })}
       </div>
@@ -683,7 +641,6 @@ function SleepStepper({
   onPlus: () => void;
 }) {
   const { lang } = useLang();
-  const reduce = useReducedMotion();
   const pct = Math.min(100, (hours / 12) * 100);
   return (
     <div className="space-y-2.5">
@@ -691,12 +648,12 @@ function SleepStepper({
         {lang === "es" ? "Sueño" : "Sleep"}
       </span>
       <div className="flex items-center gap-3">
-        <motion.button
+        <button
           type="button"
-          whileTap={{ scale: 0.9 }}
+          style={{ "--dm-pulsa": 0.9 } as CSSProperties}
           onClick={onMinus}
           aria-label={lang === "es" ? "Restar 0,5 h" : "Subtract 0.5 h"}
-          className="shrink-0 w-9 h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
+          className="tj-dm-pulsa shrink-0 w-9 h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
         >
           <svg
             width="14"
@@ -710,27 +667,25 @@ function SleepStepper({
           >
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-        </motion.button>
+        </button>
         <div className="flex-1 space-y-1.5 text-center">
           <div className="text-2xl font-semibold tnum text-primary leading-none">
             {fmtNum(hours, lang, 1)}
             <span className="text-xs text-tertiary font-normal ml-1">h</span>
           </div>
           <div className="relative h-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] overflow-hidden">
-            <motion.div
-              className="absolute inset-y-0 left-0 rounded-[2px] bg-[rgb(var(--accent-base))]"
-              initial={reduce ? undefined : { width: 0 }}
-              animate={{ width: `${pct}%` }}
-              transition={{ duration: 0.6, ease: EASE }}
+            <div
+              className="tj-dm-ancho absolute inset-y-0 left-0 rounded-[2px] bg-[rgb(var(--accent-base))]"
+              style={{ width: `${pct}%`, "--dm-dur": "0.6s" } as CSSProperties}
             />
           </div>
         </div>
-        <motion.button
+        <button
           type="button"
-          whileTap={{ scale: 0.9 }}
+          style={{ "--dm-pulsa": 0.9 } as CSSProperties}
           onClick={onPlus}
           aria-label={lang === "es" ? "Sumar 0,5 h" : "Add 0.5 h"}
-          className="shrink-0 w-9 h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
+          className="tj-dm-pulsa shrink-0 w-9 h-9 rounded-[2px] border border-[rgb(var(--divider)/0.15)] text-secondary hover:text-primary hover:border-[rgb(var(--divider)/0.3)] transition-colors flex items-center justify-center"
         >
           <svg
             width="14"
@@ -745,7 +700,7 @@ function SleepStepper({
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-        </motion.button>
+        </button>
       </div>
     </div>
   );
@@ -776,10 +731,8 @@ function PlanToggle({
             on ? "bg-[rgb(var(--accent-base))]" : "bg-pnl-warn/40"
           }`}
         >
-          <motion.span
-            layout
-            transition={{ type: "spring", stiffness: 380, damping: 28 }}
-            className={`absolute top-0.5 ${
+          <span
+            className={`absolute top-0.5 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] ${
               on ? "left-[1.375rem]" : "left-0.5"
             } w-5 h-5 rounded-[2px] ${
               // La manecilla se define por CONTRASTE con su propia pista, no
@@ -862,7 +815,7 @@ function CrossCell({
 
 export function JournalPage() {
   const { t, lang } = useLang();
-  const reduce = useReducedMotion();
+  const alVer = useAlVer<HTMLElement>();
 
   // Check-in state — mirrors the real app's JournalViewModel.
   const [sleepHours, setSleepHours] = useState(7.0);
@@ -1306,13 +1259,10 @@ export function JournalPage() {
                     {t("costOfIndiscipline")}
                   </span>
                 </div>
-                <motion.div
-                  className={`relative font-semibold tracking-tight text-4xl md:text-5xl tnum ${headlineTone}`}
-                  initial={reduce ? undefined : { opacity: 0.55, scale: 0.94 }}
-                  whileInView={reduce ? undefined : { opacity: 1, scale: 1 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
-                  style={{ textShadow: headlineShadow }}
+                <div
+                  ref={alVer}
+                  className={`tj-dm-entra relative font-semibold tracking-tight text-4xl md:text-5xl tnum ${headlineTone}`}
+                  style={{ textShadow: headlineShadow, "--dm-o": 0.55, "--dm-s": 0.94, "--dm-dur": "0.7s", "--dm-retardo": "0.15s" } as CSSProperties}
                 >
                   <CountUp
                     to={headlineValue}
@@ -1321,7 +1271,7 @@ export function JournalPage() {
                     suffix={headlineSuffix}
                     duration={2.4}
                   />
-                </motion.div>
+                </div>
                 <div className="mt-2 text-[11px] text-tertiary max-w-[15rem]">
                   {isRealCost
                     ? lang === "es" ? COST_COPY.es.cost : COST_COPY.en.cost
@@ -1426,20 +1376,18 @@ export function JournalPage() {
               </div>
               <ul className="space-y-2">
                 {complianceTrend.map((row, i) => (
-                  <motion.li
+                  <li
                     key={row.label}
-                    initial={{ opacity: 0, x: -8 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-20px" }}
-                    transition={{ duration: 0.35, delay: i * 0.04, ease: EASE }}
-                    className="grid grid-cols-[3rem_1fr_2.5rem] gap-3 items-center"
+                    ref={alVer}
+                    style={{ "--dm-x": "-8px", "--dm-dur": "0.35s", "--dm-retardo": `${i * 0.04}s` } as CSSProperties}
+                    className="tj-dm-entra grid grid-cols-[3rem_1fr_2.5rem] gap-3 items-center"
                   >
                     <span className="text-[11px] text-secondary tnum">
                       {row.label}
                     </span>
                     <div className="relative h-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.08)] overflow-hidden">
-                      <motion.div
-                        className="absolute inset-y-0 left-0 rounded-[2px]"
+                      <div
+                        className="tj-dm-ancho absolute inset-y-0 left-0 rounded-[2px]"
                         style={{
                           backgroundColor:
                             row.fraction > 0.7
@@ -1447,17 +1395,16 @@ export function JournalPage() {
                               : row.fraction > 0.5
                               ? "rgb(var(--pnl-warn))"
                               : "rgb(var(--pnl-neg))",
-                        }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${row.fraction * 100}%` }}
-                        viewport={{ once: true, margin: "-20px" }}
-                        transition={{ duration: 0.7, ease: EASE, delay: 0.1 + i * 0.04 }}
+                          width: `${row.fraction * 100}%`,
+                          "--dm-dur": "0.7s",
+                          "--dm-retardo": `${0.1 + i * 0.04}s`,
+                        } as CSSProperties}
                       />
                     </div>
                     <span className="text-[11px] text-tertiary tnum text-right">
                       {fmtPct(row.fraction, lang, 0)}
                     </span>
-                  </motion.li>
+                  </li>
                 ))}
               </ul>
             </div>
@@ -1500,14 +1447,9 @@ export function JournalPage() {
                     className="relative px-4 py-1.5 text-xs font-medium"
                   >
                     {active && (
-                      <motion.span
-                        layoutId="review-tab-pill"
+                      <Viajero
+                        clave="review-tab-pill"
                         className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.2)]"
-                        transition={{
-                          type: "spring",
-                          stiffness: 360,
-                          damping: 28,
-                        }}
                       />
                     )}
                     <span
@@ -1523,24 +1465,22 @@ export function JournalPage() {
             </div>
           </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={tab}
-              role="tabpanel"
-              id="review-tabpanel"
-              aria-label={tab === "weekly" ? t("weekly") : t("monthly")}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.28, ease: EASE }}
-            >
-              {tab === "weekly" ? (
-                <PnlBarChart data={weekly} />
-              ) : (
-                <PnlBarChart data={monthly} />
-              )}
-            </motion.div>
-          </AnimatePresence>
+          {/* Al cambiar de pestaña el panel nuevo entra; el viejo no se
+              despide (antes esperaba 0,28 s a que se fuera). */}
+          <div
+            key={tab}
+            role="tabpanel"
+            id="review-tabpanel"
+            aria-label={tab === "weekly" ? t("weekly") : t("monthly")}
+            className="tj-dm-entra"
+            style={{ "--dm-y": "8px", "--dm-dur": "0.28s" } as CSSProperties}
+          >
+            {tab === "weekly" ? (
+              <PnlBarChart data={weekly} />
+            ) : (
+              <PnlBarChart data={monthly} />
+            )}
+          </div>
 
           <div className="mt-4 flex items-center justify-center gap-4 text-[10px] text-tertiary uppercase tracking-[0.14em]">
             <span className="flex items-center gap-1.5">
@@ -1592,18 +1532,11 @@ export function JournalPage() {
                   ? t("partial")
                   : t("notComplied");
               return (
-                <motion.li
+                <li
                   key={entry.key}
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-30px" }}
-                  transition={{
-                    duration: 0.5,
-                    delay: 0.06 * i,
-                    ease: EASE,
-                  }}
-                  whileHover={{ y: -2, transition: { type: "spring", stiffness: 300, damping: 24 } }}
-                  className={`demo-card border-l-2 ${borderColor} p-4`}
+                  ref={alVer}
+                  style={{ "--dm-x": "-10px", "--dm-dur": "0.5s", "--dm-retardo": `${0.06 * i}s` } as CSSProperties}
+                  className={`tj-dm-entra tj-dm-alza demo-card border-l-2 ${borderColor} p-4`}
                 >
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
@@ -1674,7 +1607,7 @@ export function JournalPage() {
                       </div>
                     </div>
                   </div>
-                </motion.li>
+                </li>
               );
             })}
           </ul>

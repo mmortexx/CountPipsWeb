@@ -65,6 +65,7 @@
 | `glosario-descripciones.test.ts` | La descripción de cada ficha del glosario (buscador y tarjeta al compartir) es una frase entera de 70 a 155 caracteres, sin «…» ni paréntesis abiertos; el recorte por frases no confunde «p. ej.» ni un decimal con un final; las descripciones a mano solo existen donde el recorte no basta |
 | `recuperacion.test.ts` | Recuperación de drawdown: la asimetría, la operación exacta en que se vuelve al máximo, sin ventaja no vuelve, nunca NaN ni Infinity |
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
+| `sin-framer.test.ts` | Ningún fichero de `src/` importa `framer-motion` y la dependencia no está en `package.json`: volver a traerla devolvería unos 40 KB comprimidos a /demo sin que nada se viera distinto |
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |
 | `tipografias.test.ts` | El build no depende de que Google Fonts responda |
 | `vocabulario.test.ts` | El sitio se nombra a sí mismo de una sola forma, por idioma, y en español el dinero de la cuenta es «balance», nunca «saldo» ni «capital» (el inglés lo vigila `cifras.mjs`) |

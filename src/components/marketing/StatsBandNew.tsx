@@ -58,7 +58,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
   ];
   /* FUENTE Y FECHA DE CORTE. Una cifra suelta se lee como reclamo; con su
      llamada y la fecha a la que vale, como dato. Es lo que hacen las
-     gestoras (docs/analisis-referentes.md, recomendación 1). La fecha es
+     gestoras. La fecha es
      la de la publicación, no la del reloj de quien mira. */
   const enlace = (href: string, texto: string) => (
     <Link href={href} className="link-underline-host text-secondary hover:text-primary">

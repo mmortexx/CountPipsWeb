@@ -29,10 +29,8 @@ import {
  *   user's agency and matches the GDPR-style consent affordance the rest
  *   of the chrome (footer, navbar) implies.
  * - Reveal/dismiss: pure opacity fade in/out, no slide. Minimal, clean.
- * - `MotionConfig reducedMotion="user"` makes framer-motion respect
- *   `prefers-reduced-motion: reduce` automatically — transforms and layout
- *   animations are disabled, the opacity fade is preserved (it's not a
- *   motion-sickness trigger).
+ * - Reduced motion: the blanket `prefers-reduced-motion` rule in
+ *   globals.css covers it, so nothing is configured per component.
  *
  * Width: clamped to `min(22rem, 100vw - 7rem)` via inline style. The 7 rem
  * right gutter (112 px) clears the global BackToTop button (44 px wide +

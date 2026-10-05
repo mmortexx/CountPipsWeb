@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { Viajero } from "../Viajero";
 import { useLang } from "@/lib/i18n";
 import {
   TRADES,
@@ -305,24 +305,22 @@ export function DashboardPage() {
               <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary">
                 {t("riskUsd")}
               </div>
-              <motion.div
+              <div
                 key={`risk-${riskUsdLive.toFixed(2)}`}
-                initial={{ opacity: 0.55, y: 3 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 320, damping: 22 }}
                 /* En la tira apilada la cifra va a 22 px y sin margen
                    superior, porque comparte linea con su rotulo. */
-                className="text-[22px] font-semibold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
+                className="tj-dm-entra text-[22px] font-semibold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
+                style={{ "--dm-o": 0.55, "--dm-y": "3px", "--dm-dur": "0.35s" } as CSSProperties}
               >
                 <Money value={riskUsdLive} />
-              </motion.div>
+              </div>
             </div>
           </Reveal>
         </div>
 
         {/* Composer card — 2-col grid (image left, data right) */}
         <Reveal delay={0.1}>
-          <motion.div
+          <div
             className="demo-card p-5 md:p-6 relative overflow-hidden"
           >
             <div className="relative z-10">
@@ -524,18 +522,13 @@ export function DashboardPage() {
                             }`}
                           >
                             {active && (
-                              <motion.span
-                                layoutId="dir-pill"
+                              <Viajero
+                                clave="dir-pill"
                                 className={`absolute inset-0 rounded-[2px] ${
                                   d === "long"
                                     ? "bg-pnl-pos/15 border border-pnl-pos/40"
                                     : "bg-pnl-neg/15 border border-pnl-neg/40"
                                 }`}
-                                transition={{
-                                  type: "spring",
-                                  stiffness: 400,
-                                  damping: 32,
-                                }}
                               />
                             )}
                             <span className="relative flex items-center justify-center gap-2">
@@ -543,9 +536,9 @@ export function DashboardPage() {
                                   Larger + glowing when active so the direction
                                   reads at-a-glance, mirroring the real app's
                                   PnlPositiveDot / PnlNegativeDot. */}
-                              <motion.span
-                                animate={{
-                                  scale: active ? 1.15 : 1,
+                              <span
+                                style={{
+                                  transform: active ? "scale(1.15)" : "none",
                                   boxShadow: active
                                     ? d === "long"
                                       ? "0 0 8px 1px rgb(var(--pnl-pos) / 0.6)"
@@ -555,8 +548,7 @@ export function DashboardPage() {
                                     // degradado hacia "negro transparente".
                                     : "0 0 0px 0px rgb(var(--sombra) / 0)",
                                 }}
-                                transition={{ duration: 0.25 }}
-                                className={`inline-block w-2 h-2 rounded-[1px] ${
+                                className={`inline-block w-2 h-2 rounded-[1px] motion-safe:transition-[transform,box-shadow] motion-safe:duration-[250ms] ${
                                   d === "long" ? "bg-pnl-pos" : "bg-pnl-neg"
                                 }`}
                                 aria-hidden="true"
@@ -813,11 +805,9 @@ export function DashboardPage() {
 
                 {/* Action buttons */}
                 <div className="flex flex-wrap gap-2">
-                  <motion.button
+                  <button
                     type="button"
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
-                    className="h-11 px-4 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
+                    className="tj-dm-alza tj-dm-pulsa h-11 px-4 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] text-secondary font-medium text-sm flex items-center gap-2 hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors"
                   >
                     <svg
                       width="14"
@@ -834,13 +824,11 @@ export function DashboardPage() {
                       <path d="M5 3v3h5V3M5 11h6V8H5z" />
                     </svg>
                     {t("saveDraft")}
-                  </motion.button>
-                  <motion.button
+                  </button>
+                  <button
                     type="submit"
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.97, transition: { type: "spring", stiffness: 400, damping: 25 } }}
                     title={`${mando}+Enter`}
-                    className="group h-11 min-w-[200px] px-4 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
+                    className="tj-dm-alza tj-dm-pulsa group h-11 min-w-[200px] px-4 rounded-[2px] bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] font-semibold text-sm flex items-center justify-center gap-2 hover:bg-[rgb(var(--accent-hover))] transition-colors shadow-[0_2px_8px_rgb(var(--sombra)/0.18)]"
                   >
                     <svg
                       width="14"
@@ -869,12 +857,12 @@ export function DashboardPage() {
                       <span>{mando}</span>
                       <span>↵</span>
                     </kbd>
-                  </motion.button>
+                  </button>
                 </div>
               </div>
               </form>
             </div>
-          </motion.div>
+          </div>
         </Reveal>
       </section>
 
@@ -1068,14 +1056,9 @@ export function DashboardPage() {
                           }`}
                         >
                           {active && (
-                            <motion.span
-                              layoutId="tf-pill"
+                            <Viajero
+                              clave="tf-pill"
                               className="absolute inset-0 rounded bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)]"
-                              transition={{
-                                type: "spring",
-                                stiffness: 380,
-                                damping: 30,
-                              }}
                             />
                           )}
                           <span className="relative">{mode}</span>
@@ -1131,17 +1114,11 @@ export function DashboardPage() {
               {recentTrades.map((tr, i) => {
                 const trInst = INSTRUMENTS.find((x) => x.symbol === tr.instrument);
                 return (
-                  <motion.button
+                  <button
                     key={tr.id}
                     type="button"
                     onClick={() => goDetail(tr.id)}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: Math.min(i * 0.04, 0.24),
-                      duration: 0.3,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
+                    style={{ "--dm-y": "4px", "--dm-dur": "0.3s", "--dm-retardo": `${Math.min(i * 0.04, 0.24)}s` } as CSSProperties}
                     /* `flex-wrap` en móvil, y no por gusto. Las cinco celdas
                        llevan `shrink-0`, así que NINGUNA puede ceder: a 390px
                        sumaban 319 en una fila de 207 útiles y la cifra de
@@ -1156,7 +1133,7 @@ export function DashboardPage() {
                        fila pasa a dos líneas en móvil (47 → 79px): arriba
                        instrumento y dirección, abajo R y resultado a la
                        derecha. En sm+ vuelve a ser una sola línea. */
-                    className="group w-full flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-2.5 hover:bg-[rgb(var(--divider)/0.05)] -mx-2 px-2 rounded-[2px] transition-colors text-left"
+                    className="tj-dm-entra group w-full flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-2.5 hover:bg-[rgb(var(--divider)/0.05)] -mx-2 px-2 rounded-[2px] transition-colors text-left"
                   >
                     {/* 80px se quedaba corto: "BTC/USDT" mide 79px de texto
                         él solo, y a eso hay que sumarle el icono + el hueco
@@ -1214,7 +1191,7 @@ export function DashboardPage() {
                         strokeLinejoin="round"
                       />
                     </svg>
-                  </motion.button>
+                  </button>
                 );
               })}
             </div>

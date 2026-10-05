@@ -14,8 +14,8 @@ export function Hero({ producto }: { producto?: ReactNode }) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  /* Las tres diferencias que no tiene ningún diario de la competencia
-     (docs/analisis-referentes.md), juntas y en voz baja. «Windows» ya lo
+  /* Las tres diferencias que no tiene ningún diario de la competencia,
+     juntas y en voz baja. «Windows» ya lo
      dice la etiqueta de encima. «Previsto» porque la venta no está abierta. */
   const datos = es
     ? "Pago único previsto, sin suscripción. Sin servidores: tus datos, en tu equipo. Demo sin registro."

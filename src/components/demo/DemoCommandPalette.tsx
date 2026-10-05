@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { usePresencia } from "@/hooks/use-presencia";
 import { useLang } from "@/lib/i18n";
 import { useTheme, type PaletteName } from "@/lib/theme";
 import { useDemo } from "./DemoContext";
@@ -104,6 +104,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const [active, setActive] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
+  const { montado, saliendo } = usePresencia(open, 180);
   /* Patrón de combobox, como el glosario: el foco no sale del campo y
      `aria-activedescendant` dice qué opción está resaltada. Antes cada
      opción era un botón enfocable y Enter, capturado en `window`, ejecutaba
@@ -387,36 +388,27 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     return () => window.removeEventListener("keydown", onKey, true);
   }, [open, filtered, safeActive, onClose]);
 
+  if (!montado) return null;
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="absolute inset-0 z-40 flex items-start justify-center pt-[12vh] px-4"
+        <div
+          className={`absolute inset-0 z-40 flex items-start justify-center pt-[12vh] px-4 ${saliendo ? "tj-velo-sale pointer-events-none" : "tj-velo-entra"}`}
           role="dialog"
           aria-modal="true"
           aria-label={es ? "Paleta de comandos" : "Command palette"}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+          inert={saliendo}
         >
-          {/* Backdrop — subtle blur + fade-in. Click anywhere to close. */}
-          <motion.div
+          {/* Backdrop. Click anywhere to close. */}
+          <div
             className="absolute inset-0 bg-black/50"
             onClick={onClose}
             aria-hidden="true"
           />
 
-          {/* Panel — fluent acrylic depth-4 with hardware acceleration */}
-          <motion.div
+          <div
             ref={rootRef}
             tabIndex={-1}
-            style={{ contain: "layout paint", willChange: "transform, opacity" }}
-            className="relative w-full max-w-lg tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-[var(--ficha-sombra)] overflow-hidden"
-            initial={{ opacity: 0, scale: 0.985, y: -6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.985, y: -4 }}
-            transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+            style={{ contain: "layout paint" }}
+            className={`relative w-full max-w-lg tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-[var(--ficha-sombra)] overflow-hidden ${saliendo ? "tj-panel-sale" : "tj-panel-entra"}`}
           >
             {/* Search input row — h-12 (48 px) para que el input tenga un
                 área de toque cómoda en móvil (≥44 px) y el kbd de Esc no
@@ -531,10 +523,8 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
                 <span>{es ? "cerrar" : "close"}</span>
               </span>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </div>
+        </div>
   );
 }
 

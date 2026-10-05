@@ -3030,7 +3030,7 @@ button.icon-btn:hover > svg,
   letter-spacing: -0.022em !important;
   /* A tamaño de cartel el titular principal baja a 420: es el registro de
      las serif de las gestoras más cuidadas (Citadel 400, Addepar Light,
-     Robinhood 400; ver docs/analisis-referentes.md). A 84 px la serif
+     Robinhood 400). A 84 px la serif
      aguanta ese peso sin volverse frágil; los h2, más pequeños, siguen
      en 500. */
   font-weight: 420 !important;
@@ -6194,6 +6194,192 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   from {
     opacity: 0;
     transform: scale(0.96);
+  }
+}
+
+/* ── EL MOVIMIENTO DE LAS PÁGINAS DE LA DEMO ──────────────────────────
+   Lo que antes hacía framer-motion, en CSS. Cada pieza lleva su clase y,
+   donde cambia algo, variables en línea: `--dm-retardo`, `--dm-dur`, y el
+   punto de partida de la entrada (`--dm-x`, `--dm-y`, `--dm-s`, `--dm-o`).
+   Las animaciones rellenan solo hacia atrás (`backwards`): al acabar manda
+   el estilo de la pieza, y las barras que cambian de valor después lo
+   hacen con su transición. Con movimiento reducido nada se mueve: cada
+   pieza nace en su sitio y cambia de valor sin recorrido. */
+@media (prefers-reduced-motion: no-preference) {
+  .tj-dm-entra {
+    animation: tj-dm-entra var(--dm-dur, 0.6s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+  }
+  .tj-dm-ancho {
+    animation: tj-dm-ancho var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+    transition: width var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+  .tj-dm-alto {
+    animation: tj-dm-alto var(--dm-dur, 0.7s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+    transition: height var(--dm-dur, 0.7s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+  .tj-dm-crece-x {
+    transform-origin: 0 50%;
+    animation: tj-d-crece-h var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+  }
+  /* Sin origen propio: cada barra lo pone en línea (las del histograma
+     crecen desde la línea del cero, hacia arriba o hacia abajo). */
+  .tj-dm-crece-y {
+    animation: tj-d-crece-v var(--dm-dur, 0.9s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+  }
+  .tj-dm-anillo {
+    animation: tj-dm-anillo var(--dm-dur, 1.3s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+    transition: stroke-dashoffset var(--dm-dur, 1.3s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1));
+  }
+  .tj-dm-anillo-rebasa {
+    animation: tj-dm-anillo-rebasa 1.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s backwards;
+  }
+  .tj-dm-traza {
+    animation: tj-dm-traza var(--dm-dur, 0.32s) var(--dm-curva, cubic-bezier(0.22, 1, 0.36, 1)) var(--dm-retardo, 0s) backwards;
+  }
+  /* Estas piezas llevan además `transition-colors` de Tailwind, que esta
+     regla (fuera de capa) pisaría: los colores van en la misma lista. */
+  .tj-dm-alza,
+  .tj-dm-pulsa,
+  .tj-dm-crece {
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.15s ease,
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      opacity 0.15s ease;
+  }
+  @media (hover: hover) {
+    .tj-dm-alza:hover {
+      transform: translateY(-2px);
+    }
+    .tj-dm-crece:hover {
+      transform: scale(1.18);
+    }
+  }
+  .tj-dm-pulsa:active {
+    transform: scale(var(--dm-pulsa, 0.97));
+    transition-duration: 0.1s;
+  }
+  @media (hover: hover) {
+    .tj-dm-alza.tj-dm-pulsa:active {
+      transform: translateY(-2px) scale(var(--dm-pulsa, 0.97));
+    }
+  }
+}
+/* El globo de atajos de la demo sube desde la barra de estado y vuelve a
+   ella al cerrarse (180 ms, los de `usePresencia`). */
+@media (prefers-reduced-motion: no-preference) {
+  .tj-dm-globo-entra {
+    animation: tj-dm-globo 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .tj-dm-globo-sale {
+    animation: tj-dm-globo-sale 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-dm-globo-sale {
+    visibility: hidden;
+  }
+}
+@keyframes tj-dm-globo {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.97);
+  }
+}
+@keyframes tj-dm-globo-sale {
+  to {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0) scale(0.97);
+  }
+}
+@keyframes tj-dm-entra {
+  from {
+    opacity: var(--dm-o, 0);
+    transform: translate3d(var(--dm-x, 0px), var(--dm-y, 0px), 0) scale(var(--dm-s, 1)) rotate(var(--dm-r, 0deg));
+  }
+}
+/* El destello de una cifra que acaba de cambiar: nace a 0,28 y se apaga.
+   En reposo, y con movimiento reducido, no se ve. */
+.tj-dm-destello {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tj-dm-destello {
+    animation: tj-dm-destello 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* La barra de acciones de la selección se despliega desde arriba y se
+     pliega al vaciarse (240 ms, los de `usePresencia`). */
+  .tj-dm-despliega {
+    animation: tj-dm-despliega 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .tj-dm-pliega {
+    animation: tj-dm-pliega 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tj-dm-pliega {
+    display: none;
+  }
+}
+.tj-dm-despliega,
+.tj-dm-pliega {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.tj-dm-despliega > *,
+.tj-dm-pliega > * {
+  min-height: 0;
+  overflow: hidden;
+}
+@keyframes tj-dm-destello {
+  from {
+    opacity: 0.28;
+  }
+}
+@keyframes tj-dm-despliega {
+  from {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+}
+@keyframes tj-dm-pliega {
+  to {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+  }
+}
+@keyframes tj-dm-ancho {
+  from {
+    width: 0;
+  }
+}
+@keyframes tj-dm-alto {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+}
+@keyframes tj-dm-anillo {
+  from {
+    stroke-dashoffset: var(--dm-anillo);
+  }
+}
+@keyframes tj-dm-anillo-rebasa {
+  from {
+    stroke-dashoffset: var(--dm-anillo);
+  }
+  62% {
+    stroke-dashoffset: var(--dm-rebase);
+  }
+}
+@keyframes tj-dm-traza {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0;
   }
 }
 

@@ -243,14 +243,6 @@ export function fmtDateTime(date: Date, lang: Lang = "es"): string {
   }).format(date);
 }
 
-export function fmtTime(date: Date, lang: Lang = "es"): string {
-  return new Intl.DateTimeFormat(LOCALE_FECHA[lang], {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "UTC",
-  }).format(date);
-}
-
 /** P&L sign → semantic tone. */
 export function pnlTone(value: number): "pos" | "neg" | "neutral" {
   if (value > 0) return "pos";

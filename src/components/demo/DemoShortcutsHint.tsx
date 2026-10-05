@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { usePresencia } from "@/hooks/use-presencia";
 import { useLang } from "@/lib/i18n";
 import { useDemo } from "./DemoContext";
 import { PESTANAS_NUMERADAS } from "./TopNav";
@@ -57,6 +57,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   const mando = useTeclaMando();
   const caja = useRef<HTMLDivElement>(null);
   const cerrarRef = useRef<HTMLButtonElement>(null);
+  const { montado, saliendo } = usePresencia(open, 180);
 
   /* Va anclada encima de la barra de estado, junto al icono que también la
      abre. Con `?` esa esquina puede estar fuera de la pantalla (a 1440×900
@@ -161,19 +162,15 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
     },
   ];
 
+  if (!montado) return null;
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
+        <div
           ref={caja}
-          className="absolute bottom-9 right-2 z-30 w-[17rem] max-w-[calc(100%-1rem)]"
+          className={`absolute bottom-9 right-2 z-30 w-[17rem] max-w-[calc(100%-1rem)] ${saliendo ? "tj-dm-globo-sale pointer-events-none" : "tj-dm-globo-entra"}`}
           role="dialog"
           aria-modal="false"
           aria-label={es ? "Atajos de teclado" : "Keyboard shortcuts"}
-          initial={{ opacity: 0, y: 6, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 6, scale: 0.97 }}
-          transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          inert={saliendo}
         >
           {/* Backdrop — invisible click-catcher that closes the popover when
               the user clicks anywhere outside it. pointer-events-auto only
@@ -242,9 +239,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
                 : "Work while on the demo · press ? anytime"}
             </div>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
   );
 }
 

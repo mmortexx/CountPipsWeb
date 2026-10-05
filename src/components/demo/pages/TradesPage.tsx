@@ -1,7 +1,8 @@
 "use client";
 
-import { memo, useEffect, useMemo, useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
+import { usePresencia } from "@/hooks/use-presencia";
+import { Viajero } from "../Viajero";
 import { useLang } from "@/lib/i18n";
 import {
   TRADES,
@@ -129,18 +130,16 @@ function SortHeader({
       </span>
       {/* Sort arrow — animate the swap between ascending / descending
           with a rotate so the user feels the column toggle. */}
-      <motion.span
+      <span
         key={active ? `${dir}` : "idle"}
-        initial={{ opacity: 0, scale: 0.6, rotate: active && dir === "asc" ? -90 : 0 }}
-        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-        className={`text-[9.5px] leading-none transition-colors ${
+        style={{ "--dm-s": 0.6, "--dm-r": active && dir === "asc" ? "-90deg" : "0deg", "--dm-dur": "0.18s" } as CSSProperties}
+        className={`tj-dm-entra inline-block text-[9.5px] leading-none transition-colors ${
           active ? "text-primary" : "text-tertiary/50 group-hover/sort:text-secondary"
         }`}
         aria-hidden="true"
       >
         {active ? (dir === "asc" ? "▲" : "▼") : "⇅"}
-      </motion.span>
+      </span>
     </button>
   );
 }
@@ -155,7 +154,6 @@ function SortHeader({
  * ============================================================ */
 const TradeRow = memo(function TradeRow({
   trade,
-  index,
   isCustom,
   goDetail,
   onDelete,
@@ -166,7 +164,6 @@ const TradeRow = memo(function TradeRow({
   onToggleSelect,
 }: {
   trade: (typeof TRADES)[number];
-  index: number;
   isCustom: boolean;
   goDetail: (tradeId: number) => void;
   onDelete: (tradeId: number) => void;
@@ -184,17 +181,7 @@ const TradeRow = memo(function TradeRow({
   const isConfirming = confirmingId === trade.id;
 
   return (
-    <motion.tr
-      key={trade.id}
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{
-        delay: Math.min(index * 0.025, 0.4),
-        duration: 0.35,
-        ease: [0.22, 1, 0.36, 1],
-      }}
+    <tr
       onClick={() => !isConfirming && goDetail(trade.id)}
       data-operacion={trade.id}
       className={`group relative cursor-pointer border-b border-[rgb(var(--divider)/0.06)] last:border-b-0 transition-[background-color,box-shadow] duration-150 ${
@@ -356,7 +343,7 @@ const TradeRow = memo(function TradeRow({
             ))}
         </div>
       </td>
-    </motion.tr>
+    </tr>
   );
 });
 
@@ -379,21 +366,16 @@ const PnlCell = memo(function PnlCell({
       : "156 163 175";
   return (
     <span className="relative inline-block">
-      <motion.span
+      <span
         key={`flash-${filterSig}-${value}`}
         aria-hidden
-        className="pointer-events-none absolute -inset-x-2 -inset-y-0.5 rounded-[2px]"
+        className="tj-dm-destello pointer-events-none absolute -inset-x-2 -inset-y-0.5 rounded-[2px]"
         style={{ backgroundColor: `rgb(${colorTriple})` }}
-        initial={{ opacity: 0.28 }}
-        animate={{ opacity: 0 }}
-        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       />
-      <motion.span
+      <span
         key={value}
-        initial={{ opacity: 0.4, y: -3 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25 }}
-        className="relative inline-block"
+        style={{ "--dm-o": 0.4, "--dm-y": "-3px", "--dm-dur": "0.25s" } as CSSProperties}
+        className="tj-dm-entra relative inline-block"
       >
         <Money
           value={value}
@@ -401,7 +383,7 @@ const PnlCell = memo(function PnlCell({
           sign
           className="text-sm font-semibold"
         />
-      </motion.span>
+      </span>
     </span>
   );
 });
@@ -431,22 +413,21 @@ function FilterChip({
   label: string;
 }) {
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
       aria-label={label}
-      whileTap={{ scale: 0.96 }}
-      className="relative inline-flex items-center"
+      style={{ "--dm-pulsa": 0.96 } as CSSProperties}
+      className="tj-dm-pulsa relative inline-flex items-center"
     >
       {/* El fondo del activo se desliza entre chips del mismo grupo
-          (layoutId compartido) — el equivalente animado del cambio de
-          VisualState del RadioButton. */}
+          (`Viajero`) — el equivalente animado del cambio de VisualState
+          del RadioButton. */}
       {active && (
-        <motion.span
-          layoutId={`trade-filter-${group}`}
+        <Viajero
+          clave={`trade-filter-${group}`}
           className="pointer-events-none absolute inset-0 rounded-[2px] bg-[rgb(var(--accent-base)/0.16)]"
-          transition={{ type: "spring", stiffness: 380, damping: 30 }}
         />
       )}
       <span
@@ -458,7 +439,7 @@ function FilterChip({
       >
         {children}
       </span>
-    </motion.button>
+    </button>
   );
 }
 
@@ -667,6 +648,34 @@ function BulkActionBar({
   );
 }
 
+/* Las filas se recolocan sin saltos al filtrar, ordenar o cargar más (lo
+   que hacían `layout` y `AnimatePresence`): la que sigue y cambia de sitio
+   se desliza desde donde estaba, y la que llega entra 8 px más abajo, en
+   cascada. Las del primer pintado no, porque ya entra la página entera; y
+   la que se va desaparece sin más. Se mide con `offsetTop`, que no cambia
+   al desplazar la ventana de la demo. */
+const CURVA = "cubic-bezier(0.22, 1, 0.36, 1)";
+function useRecolocar(cuerpo: RefObject<HTMLTableSectionElement | null>, firma: string) {
+  const previas = useRef<Map<string, number> | null>(null);
+  useLayoutEffect(() => {
+    const el = cuerpo.current;
+    if (!el) return;
+    const filas = [...el.querySelectorAll<HTMLElement>(":scope > tr[data-operacion]")];
+    const ahora = new Map(filas.map((f) => [f.dataset.operacion ?? "", f.offsetTop]));
+    const antes = previas.current;
+    previas.current = ahora;
+    if (!antes || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    filas.forEach((f, i) => {
+      const desde = antes.get(f.dataset.operacion ?? "");
+      if (desde === undefined) {
+        f.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 350, delay: Math.min(i * 25, 400), easing: CURVA, fill: "backwards" });
+      } else if (Math.abs(desde - f.offsetTop) > 0.5) {
+        f.animate([{ transform: `translateY(${desde - f.offsetTop}px)` }, { transform: "none" }], { duration: 350, easing: CURVA });
+      }
+    });
+  }, [cuerpo, firma]);
+}
+
 export function TradesPage() {
   const { t, tf, lang } = useLang();
   const es = lang === "es";
@@ -678,6 +687,10 @@ export function TradesPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [confirmingId, setConfirmingId] = useState<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const barra = usePresencia(selectedIds.size > 0, 240);
+  const [ultimaSeleccion, setUltimaSeleccion] = useState(0);
+  if (selectedIds.size && selectedIds.size !== ultimaSeleccion) setUltimaSeleccion(selectedIds.size);
+  const cuerpoTabla = useRef<HTMLTableSectionElement>(null);
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   // Tercera fila de filtros de la app (TradesPage.xaml L107-213):
@@ -854,6 +867,7 @@ export function TradesPage() {
 
   const shown = sorted.slice(0, visibleCount);
   const hasMore = visibleCount < sorted.length;
+  useRecolocar(cuerpoTabla, shown.map((tr) => tr.id).join());
 
   const filterActive =
     filters.instrument !== "all" ||
@@ -1533,13 +1547,11 @@ export function TradesPage() {
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                <AnimatePresence mode="popLayout" initial={false}>
-                  {shown.map((trade, i) => (
+              <tbody ref={cuerpoTabla}>
+                  {shown.map((trade) => (
                     <TradeRow
                       key={trade.id}
                       trade={trade}
-                      index={i}
                       isCustom={customIds.has(trade.id)}
                       goDetail={goDetail}
                       onDelete={handleDelete}
@@ -1550,7 +1562,6 @@ export function TradesPage() {
                       onToggleSelect={toggleSelect}
                     />
                   ))}
-                </AnimatePresence>
 
                 {/* Empty state — no trades match the filters. */}
                 {filtered.length === 0 && (
@@ -1633,32 +1644,22 @@ export function TradesPage() {
           <div className="pointer-events-none absolute left-[88px] top-0 bottom-0 w-4 bg-gradient-to-r from-[rgb(var(--sombra)/0.14)] to-transparent md:hidden" aria-hidden />
         </div>
 
-        {/* Bulk action bar — only when rows are selected. Spring in
-            from the top with a subtle slide + opacity + height so the bar
-            reads as a contextual strip rather than a sudden panel. */}
-        <AnimatePresence>
-          {selectedIds.size > 0 && (
-            <motion.div
-              initial={{ opacity: 0, height: 0, y: -8 }}
-              animate={{ opacity: 1, height: "auto", y: 0 }}
-              exit={{ opacity: 0, height: 0, y: -8 }}
-              transition={{
-                duration: 0.24,
-                ease: [0.22, 1, 0.36, 1],
-                opacity: { duration: 0.18 },
-              }}
-              className="overflow-hidden"
-            >
+        {/* Bulk action bar — only when rows are selected. It unfolds
+            from the top and folds back when the selection empties; while
+            it folds it keeps the last count instead of reading «0». */}
+        {barra.montado && (
+          <div className={barra.saliendo ? "tj-dm-pliega" : "tj-dm-despliega"} inert={barra.saliendo}>
+            <div>
               <BulkActionBar
-                count={selectedIds.size}
+                count={selectedIds.size || ultimaSeleccion}
                 onClear={clearSelection}
                 onTagAdd={handleTagAdd}
                 onTagRemove={handleTagRemove}
                 lang={lang}
               />
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        )}
 
         {/* Load more — mirrors TradesPage.xaml's GhostButtonStyle
             "Load more" footer (lines 704-713). */}

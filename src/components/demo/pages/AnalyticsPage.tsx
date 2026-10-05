@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useAlVer } from "@/hooks/use-al-ver";
+import { Viajero } from "../Viajero";
 import { useLang } from "@/lib/i18n";
 import {
   TRADES,
@@ -160,12 +161,13 @@ function WinnersDonut({
   const cy = 70;
   const circ = 2 * Math.PI * r;
   const winLen = winFrac * circ;
+  const alVer = useAlVer<SVGSVGElement>();
   return (
     <div
       className="relative mx-auto"
       style={{ width: 140, height: 140 }}
     >
-      <svg viewBox="0 0 140 140" width={140} height={140} aria-hidden="true">
+      <svg ref={alVer} viewBox="0 0 140 140" width={140} height={140} aria-hidden="true">
         <circle
           cx={cx}
           cy={cy}
@@ -174,7 +176,7 @@ function WinnersDonut({
           stroke="rgb(var(--pnl-neg) / 0.22)"
           strokeWidth={12}
         />
-        <motion.circle
+        <circle
           key={`donut-arc-${reKey}`}
           cx={cx}
           cy={cy}
@@ -185,10 +187,8 @@ function WinnersDonut({
           strokeLinecap="round"
           transform={`rotate(-90 ${cx} ${cy})`}
           strokeDasharray={`${winLen} ${circ}`}
-          initial={{ strokeDashoffset: circ }}
-          whileInView={{ strokeDashoffset: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.3, ease: [0.22, 1, 0.36, 1] }}
+          className="tj-dm-anillo"
+          style={{ strokeDashoffset: 0, "--dm-anillo": circ } as CSSProperties}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -267,7 +267,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
           const color =
             sign === 1 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
           return (
-            <motion.rect
+            <rect
               key={t.id}
               x={x}
               y={y}
@@ -276,17 +276,11 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
               rx={1}
               fill={color}
               fillOpacity={0.85}
-              initial={{ scaleY: 0 }}
-              animate={{ scaleY: 1 }}
-              transition={{
-                delay: Math.min(0.6, i * 0.012),
-                duration: 0.5,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              style={{ transformOrigin: `center ${baselineY}px` }}
+              className="tj-dm-crece-y"
+              style={{ transformOrigin: `0 ${baselineY}px`, "--dm-retardo": `${Math.min(0.6, i * 0.012)}s`, "--dm-dur": "0.5s" } as CSSProperties}
             >
               <title>{`R ${t.rMultiple >= 0 ? "+" : ""}${fmtNum(t.rMultiple, lang, 2)}`}</title>
-            </motion.rect>
+            </rect>
           );
         })}
       </svg>
@@ -318,22 +312,16 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
                   resuelve el compositor. La barra se pinta ya a su tamaño
                   final y se revela desde la izquierda con
                   `transform-origin`, que es el mismo gesto a la vista. */}
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  delay: i * 0.05,
-                  duration: 0.7,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                className="h-full rounded-[2px]"
+              <div
+                className="tj-dm-crece-x h-full rounded-[2px]"
                 style={{
+                  "--dm-retardo": `${i * 0.05}s`,
+                  "--dm-dur": "0.7s",
                   width: `${pct}%`,
-                  transformOrigin: "left",
                   backgroundColor: pos
                     ? "rgb(var(--pnl-pos) / 0.7)"
                     : "rgb(var(--pnl-neg) / 0.7)",
-                }}
+                } as CSSProperties}
               />
             </div>
             <div
@@ -403,7 +391,7 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
             : "rgb(var(--pnl-neg))";
           return (
             <g key={`${r.month}-${i}`}>
-              <motion.rect
+              <rect
                 x={x}
                 y={y}
                 width={barW}
@@ -411,17 +399,11 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
                 rx={2}
                 fill={color}
                 fillOpacity={0.85}
-                initial={{ scaleY: 0 }}
-                animate={{ scaleY: 1 }}
-                transition={{
-                  delay: i * 0.05,
-                  duration: 0.6,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-                style={{ transformOrigin: `center ${baselineY}px` }}
+                className="tj-dm-crece-y"
+                style={{ transformOrigin: `0 ${baselineY}px`, "--dm-retardo": `${i * 0.05}s`, "--dm-dur": "0.6s" } as CSSProperties}
               >
                 <title>{`${r.month}: ${fmtMoney(r.pnl, lang, { sign: true })}`}</title>
-              </motion.rect>
+              </rect>
               <text
                 x={x + barW / 2}
                 y={H - 4}
@@ -503,22 +485,16 @@ function RankingCard({
                 <div className="h-2 bg-[rgb(var(--divider)/0.03)] rounded-[2px] overflow-hidden ml-5">
                   {/* Mismo motivo que la barra de arriba: `scaleX`, no
                       `width`. */}
-                  <motion.div
-                    initial={{ scaleX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{
-                      delay: i * 0.06,
-                      duration: 0.7,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    className="h-full rounded-[2px]"
+                  <div
+                    className="tj-dm-crece-x h-full rounded-[2px]"
                     style={{
+                      "--dm-retardo": `${i * 0.06}s`,
+                      "--dm-dur": "0.7s",
                       width: `${pct}%`,
-                      transformOrigin: "left",
                       backgroundColor: pos
                         ? "rgb(var(--pnl-pos) / 0.7)"
                         : "rgb(var(--pnl-neg) / 0.7)",
-                    }}
+                    } as CSSProperties}
                   />
                 </div>
               </div>
@@ -964,10 +940,9 @@ function SectionBar({
                 {lang === "es" ? s.labelEs : s.labelEn}
               </span>
               {isActive && (
-                <motion.span
-                  layoutId="analytics-section-underline"
+                <Viajero
+                  clave="analytics-section-underline"
                   className="absolute left-2 right-2 -bottom-0.5 h-[2px] rounded-[1px] bg-[rgb(var(--accent-base))]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
             </button>

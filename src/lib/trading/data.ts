@@ -773,8 +773,6 @@ export function computeRunsTest(trades: Trade[]): RunsTestResult {
   };
 }
 
-export const runsTest = computeRunsTest;
-
 export const METRICS = computeMetrics(TRADES);
 export const INITIAL_BALANCE_CONST = INITIAL_BALANCE;
 
@@ -993,7 +991,6 @@ export function dailyPnlForMonth(
 }
 
 export const WEEKDAYS_SHORT = ["Lun", "Mar", "Mié", "Jue", "Vie"];
-export const WEEKDAYS_FULL = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 
 export {
   computeRiskOfRuin,

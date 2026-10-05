@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { Viajero } from "../Viajero";
 import { useLang, type Lang } from "@/lib/i18n";
 import {
   TRADES,
@@ -34,8 +34,6 @@ import { Money } from "@/components/tj/Money";
 import { CountUp } from "@/components/tj/CountUp";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { TradeCandleChart } from "@/components/charts/TradeCandleChart";
-
-const EASE = [0.22, 1, 0.36, 1] as const;
 
 /** Lado de la ejecución («Anatomía»), traducido — ENTRY/EXIT y BUY/SELL
  *  se quedaban en inglés en la versión española de la ficha. */
@@ -317,17 +315,13 @@ function ExcursionBar({ mae, mfe }: { mae: number; mfe: number }) {
   return (
     <div className="relative h-2 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden">
       <div className="absolute left-1/2 top-0 bottom-0 w-px bg-[rgb(var(--divider)/0.25)] z-10" />
-      <motion.div
-        className="absolute top-0 bottom-0 right-1/2 bg-pnl-neg/80"
-        initial={{ width: 0 }}
-        animate={{ width: `${maePct}%` }}
-        transition={{ duration: 0.9, ease: EASE, delay: 0.5 }}
+      <div
+        className="tj-dm-ancho absolute top-0 bottom-0 right-1/2 bg-pnl-neg/80"
+        style={{ width: `${maePct}%`, "--dm-retardo": "0.5s" } as CSSProperties}
       />
-      <motion.div
-        className="absolute top-0 bottom-0 left-1/2 bg-pnl-pos/80"
-        initial={{ width: 0 }}
-        animate={{ width: `${mfePct}%` }}
-        transition={{ duration: 0.9, ease: EASE, delay: 0.65 }}
+      <div
+        className="tj-dm-ancho absolute top-0 bottom-0 left-1/2 bg-pnl-pos/80"
+        style={{ width: `${mfePct}%`, "--dm-retardo": "0.65s" } as CSSProperties}
       />
     </div>
   );
@@ -354,17 +348,13 @@ function RiskRewardBar({
         </span>
       </div>
       <div className="relative h-2.5 rounded-[2px] bg-[rgb(var(--divider)/0.05)] overflow-hidden flex">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${riskFraction * 100}%` }}
-          transition={{ duration: 0.9, delay: 0.7, ease: EASE }}
-          className="h-full bg-pnl-neg/80 shrink-0"
+        <div
+          className="tj-dm-ancho h-full bg-pnl-neg/80 shrink-0"
+          style={{ width: `${riskFraction * 100}%`, "--dm-retardo": "0.7s" } as CSSProperties}
         />
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${rewardFraction * 100}%` }}
-          transition={{ duration: 0.9, delay: 1.0, ease: EASE }}
-          className="h-full bg-pnl-pos/80 shrink-0"
+        <div
+          className="tj-dm-ancho h-full bg-pnl-pos/80 shrink-0"
+          style={{ width: `${rewardFraction * 100}%`, "--dm-retardo": "1s" } as CSSProperties}
         />
       </div>
     </div>
@@ -545,11 +535,9 @@ export function TradeDetailPage() {
   return (
     <div className="relative p-5 md:p-6 space-y-5">
       {/* ===== HEADER: back + symbol + direction + closed date ===== */}
-      <motion.section
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: EASE }}
-        className="flex items-center justify-between gap-3 flex-wrap"
+      <section
+        className="tj-dm-entra flex items-center justify-between gap-3 flex-wrap"
+        style={{ "--dm-y": "12px", "--dm-dur": "0.5s" } as CSSProperties}
       >
         <button
           type="button"
@@ -640,16 +628,14 @@ export function TradeDetailPage() {
             </svg>
           </button>
         </div>
-      </motion.section>
+      </section>
 
       {/* ===== HERO: net P&L | R | risk amount | planned RR + MAE/MFE
                 excursion bar + planned risk:reward bar =====
                 Mirrors the real app's hero card layout. */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: EASE }}
-        className="relative overflow-hidden demo-card p-6"
+      <section
+        className="tj-dm-entra relative overflow-hidden demo-card p-6"
+        style={{ "--dm-y": "16px", "--dm-dur": "0.6s" } as CSSProperties}
       >
         <div className="relative space-y-6">
           {/* Hero stat row: Net | R | Risk | Planned RR (with hairlines) */}
@@ -736,31 +722,24 @@ export function TradeDetailPage() {
             <RiskRewardBar plannedRr={trade.plannedRr} lang={lang} />
           </div>
         </div>
-      </motion.section>
+      </section>
 
       {/* ===== INTERACTIVE CANDLESTICK REPLAY CHART ===== */}
-      <motion.section
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
+      <section
+        className="tj-dm-entra"
+        style={{ "--dm-y": "16px", "--dm-dur": "0.6s", "--dm-retardo": "0.25s" } as CSSProperties}
       >
         <TradeCandleChart trade={trade} decimals={decimals} />
-      </motion.section>
+      </section>
 
       {/* ===== 2-COLUMN GRID: left (5fr) | right (4fr) ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-[5fr_4fr] gap-5">
         {/* ===== LEFT COLUMN ===== */}
         <div className="flex flex-col gap-5 min-w-0">
           {/* Execution card */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
-            whileHover={{
-              y: -2,
-              transition: { type: "spring", stiffness: 300, damping: 24 },
-            }}
-            className="demo-card p-5"
+          <div
+            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            style={{ "--dm-y": "16px", "--dm-retardo": "0.35s" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("execution")}</Eyebrow>
             <dl className="grid grid-cols-3 gap-y-3.5 gap-x-4">
@@ -793,19 +772,13 @@ export function TradeDetailPage() {
                 <span className="text-primary">{nombreSetup(trade.setup, lang)}</span>
               </Detail>
             </dl>
-          </motion.div>
+          </div>
 
           {/* Anatomy card — executions table (mirrors the real app's
               "Anatomía: las ejecuciones reales" card). */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: EASE }}
-            whileHover={{
-              y: -2,
-              transition: { type: "spring", stiffness: 300, damping: 24 },
-            }}
-            className="demo-card p-5"
+          <div
+            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            style={{ "--dm-y": "16px", "--dm-retardo": "0.4s" } as CSSProperties}
           >
             <div className="flex items-center gap-3 mb-4">
               <Eyebrow>
@@ -833,12 +806,10 @@ export function TradeDetailPage() {
                 {fills.map((f, i) => {
                   const isEntry = f.dir === "ENTRY";
                   return (
-                    <motion.li
+                    <li
                       key={i}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.35, delay: 0.5 + i * 0.08, ease: EASE }}
-                      className="grid grid-cols-[3.5rem_1fr_3.5rem_4rem_3rem_3.5rem] gap-x-3 py-2 items-center text-xs min-w-[24rem]"
+                      className="tj-dm-entra grid grid-cols-[3.5rem_1fr_3.5rem_4rem_3rem_3.5rem] gap-x-3 py-2 items-center text-xs min-w-[24rem]"
+                      style={{ "--dm-x": "-8px", "--dm-dur": "0.35s", "--dm-retardo": `${0.5 + i * 0.08}s` } as CSSProperties}
                     >
                     <div className="flex flex-col">
                       <span
@@ -865,25 +836,19 @@ export function TradeDetailPage() {
                     </span>
                     <span className="tnum text-tertiary text-right">{f.fee}</span>
                     <span className="tnum text-tertiary text-right">{f.cumulative}</span>
-                  </motion.li>
+                  </li>
                 );
               })}
             </ul>
             </div>
-          </motion.div>
+          </div>
 
           {/* Day-context card — mirrors the real app's "Dónde cayó
               dentro del día" card (revenge warning, ordinal, since
               previous, P&L before). */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45, ease: EASE }}
-            whileHover={{
-              y: -2,
-              transition: { type: "spring", stiffness: 300, damping: 24 },
-            }}
-            className="demo-card p-5"
+          <div
+            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            style={{ "--dm-y": "16px", "--dm-retardo": "0.45s" } as CSSProperties}
           >
             <Eyebrow className="mb-4">
               {lang === "es" ? "Dónde cayó dentro del día" : "Where it fell in the day"}
@@ -928,19 +893,13 @@ export function TradeDetailPage() {
                 />
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Plan card + Context card (compact 2-up) */}
           <div className="grid sm:grid-cols-2 gap-5">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.55, ease: EASE }}
-              whileHover={{
-                y: -2,
-                transition: { type: "spring", stiffness: 300, damping: 24 },
-              }}
-              className="demo-card p-5"
+            <div
+              className="tj-dm-entra tj-dm-alza demo-card p-5"
+              style={{ "--dm-y": "16px", "--dm-retardo": "0.55s" } as CSSProperties}
             >
               <Eyebrow className="mb-4">{t("plan")}</Eyebrow>
               <dl className="grid grid-cols-2 gap-y-3.5 gap-x-4">
@@ -965,17 +924,11 @@ export function TradeDetailPage() {
                   </span>
                 </Detail>
               </dl>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6, ease: EASE }}
-              whileHover={{
-                y: -2,
-                transition: { type: "spring", stiffness: 300, damping: 24 },
-              }}
-              className="demo-card p-5"
+            <div
+              className="tj-dm-entra tj-dm-alza demo-card p-5"
+              style={{ "--dm-y": "16px", "--dm-retardo": "0.6s" } as CSSProperties}
             >
               <Eyebrow className="mb-4">{t("context")}</Eyebrow>
               <dl className="grid grid-cols-2 gap-y-3.5 gap-x-4">
@@ -994,7 +947,7 @@ export function TradeDetailPage() {
                   <span className="text-primary tnum">{fmtInt(trade.dayScore, lang)}/5</span>
                 </Detail>
               </dl>
-            </motion.div>
+            </div>
           </div>
 
           {/* Dates row */}
@@ -1029,15 +982,9 @@ export function TradeDetailPage() {
         {/* ===== RIGHT COLUMN ===== */}
         <div className="flex flex-col gap-5 min-w-0">
           {/* Screenshots card */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4, ease: EASE }}
-            whileHover={{
-              y: -2,
-              transition: { type: "spring", stiffness: 300, damping: 24 },
-            }}
-            className="demo-card p-5"
+          <div
+            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            style={{ "--dm-y": "16px", "--dm-retardo": "0.4s" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("screenshots")}</Eyebrow>
             <div className="border-2 border-dashed border-[rgb(var(--divider)/0.1)] rounded-[2px] p-4 text-center text-xs text-tertiary mb-3 transition-colors hover:border-[rgb(var(--divider)/0.2)] hover:bg-[rgb(var(--divider)/0.02)]">
@@ -1065,19 +1012,13 @@ export function TradeDetailPage() {
                 <MiniCandles seed={trade.id * 13 + 5} win={isWin} />
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Tags card — mirrors the real app's "Etiquetas" card
               (error / acierto / emocion / libre, with remove buttons). */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45, ease: EASE }}
-            whileHover={{
-              y: -2,
-              transition: { type: "spring", stiffness: 300, damping: 24 },
-            }}
-            className="demo-card p-5"
+          <div
+            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            style={{ "--dm-y": "16px", "--dm-retardo": "0.45s" } as CSSProperties}
           >
             <Eyebrow className="mb-4">
               {lang === "es" ? "Etiquetas" : "Tags"}
@@ -1124,18 +1065,12 @@ export function TradeDetailPage() {
                 {lang === "es" ? "Añadir" : "Add"}
               </button>
             </div>
-          </motion.div>
+          </div>
 
           {/* Review card */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5, ease: EASE }}
-            whileHover={{
-              y: -2,
-              transition: { type: "spring", stiffness: 300, damping: 24 },
-            }}
-            className="demo-card p-5"
+          <div
+            className="tj-dm-entra tj-dm-alza demo-card p-5"
+            style={{ "--dm-y": "16px", "--dm-retardo": "0.5s" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("review")}</Eyebrow>
 
@@ -1194,14 +1129,9 @@ export function TradeDetailPage() {
                     }`}
                   >
                     {active && (
-                      <motion.span
-                        layoutId="review-pill"
+                      <Viajero
+                        clave="review-pill"
                         className="absolute inset-0 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.2)]"
-                        transition={{
-                          type: "spring",
-                          stiffness: 400,
-                          damping: 30,
-                        }}
                       />
                     )}
                     <span className={`relative ${active ? optTone : ""}`}>
@@ -1244,7 +1174,7 @@ export function TradeDetailPage() {
                 {t("saveChanges")}
               </MagneticButton>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>
