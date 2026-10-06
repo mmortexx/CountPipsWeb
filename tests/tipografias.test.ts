@@ -3,25 +3,11 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * COMPILAR NO PUEDE DEPENDER DE QUE GOOGLE CONTESTE.
- *
- * `next/font/google` no deja una etiqueta apuntando a un CDN: Next se
- * descarga el binario DURANTE LA COMPILACIÓN y luego lo sirve desde el
- * propio dominio. Eso es bueno para quien visita la web y malo para quien
- * la publica — si `fonts.gstatic.com` devuelve un 404, `bun run build`
- * falla, y el fallo no depende de nada que esté en este repositorio. Ya
- * ocurrió una vez y tumbó un despliegue.
- *
- * Las cuatro caras viven ahora en `src/app/fonts/` y se cargan con
- * `next/font/local`. Esta barrera existe porque el defecto que evita es
- * INVISIBLE mientras el tercero funcione: volver a escribir un
- * `next/font/google` compila en verde en local y en el 99 % de los
- * despliegues, y solo revienta el día que no toca.
- *
- * Se rompió a propósito para comprobar que salta, en las dos direcciones:
- * reponiendo el `import { Newsreader } from "next/font/google"` en
- * `layout.tsx` (falla la primera prueba) y renombrando
- * `fonts/Newsreader.woff2` (falla la segunda).
+ * Compilar no puede depender de que Google conteste: `next/font/google`
+ * descarga la fuente durante el build, y un 404 de `fonts.gstatic.com` tumba
+ * el despliegue sin que cambie nada del repositorio. Las cuatro caras viven en
+ * `src/app/fonts/` y se cargan con `next/font/local`; reponer un import de
+ * Google compila en verde casi siempre, de ahí esta barrera.
  */
 
 const RAIZ = process.cwd();
@@ -38,8 +24,7 @@ const CARAS = [
   { fichero: "GeistMono.woff2", papel: "cara de datos (--font-geist-mono)" },
 ];
 
-/** Todos los `.ts`/`.tsx` de `src/`, recorridos a mano para no depender
- *  de ninguna utilidad de globbing. */
+/** Todos los `.ts`/`.tsx` de `src/`. */
 function fuentesDelProyecto(dir: string, acc: string[] = []): string[] {
   for (const entrada of readdirSync(dir)) {
     const ruta = join(dir, entrada);
@@ -50,13 +35,8 @@ function fuentesDelProyecto(dir: string, acc: string[] = []): string[] {
 }
 
 /**
- * Se busca la IMPORTACIÓN, no la mención. La primera versión de esta
- * prueba buscaba la subcadena suelta y señalaba a `layout.tsx`, cuyo
- * comentario nombra el módulo justo para explicar por qué ya no se usa:
- * una barrera que prohíbe hablar del defecto obliga a borrar la
- * explicación para pasar en verde, que es lo contrario de lo que quiere
- * este proyecto. Cubre las dos formas con las que un módulo puede
- * entrar de verdad — `from "…"` y `require("…")`.
+ * Se busca la importación (`from "…"` o `require("…")`), no la mención: un
+ * comentario puede nombrar el módulo para explicar por qué ya no se usa.
  */
 const IMPORTACION = /(?:from\s*|require\s*\(\s*)["']next\/font\/google["']/;
 
@@ -72,9 +52,7 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
 
   it.each(CARAS)("$fichero está versionada — $papel", ({ fichero }) => {
     const tam = statSync(join(DIR_FUENTES, fichero)).size;
-    // Un woff2 de una familia completa no baja de 15 KB. El umbral no
-    // busca el tamaño exacto: busca que nadie deje en su sitio un fichero
-    // vacío o un HTML de error renombrado y se quede tan tranquilo.
+    // Un woff2 completo no baja de 15 KB: el umbral caza un fichero vacío o un HTML de error renombrado.
     expect(tam).toBeGreaterThan(15_000);
   });
 
@@ -86,29 +64,11 @@ describe("las tipografías son del repositorio, no de un tercero", () => {
 });
 
 /**
- * LA ESCALA DE CUERPO ESTÁ ESCRITA EN EL COMENTARIO DE `@theme` DE
- * `globals.css` — 10 · 11 · 12 · 13 · 14 · 15 px— y esa lista es la que
- * manda, no la memoria de quien la escribió. Sin una prueba que lea el
- * código, nada impide que aparezca un séptimo escalón la próxima vez que
- * un texto se ve «un pelín pequeño» y alguien teclea un número nuevo.
- *
- * EXCEPCIONES: cada entrada de abajo es un `{fichero, valor}` puntual, no
- * un permiso genérico para ese tamaño en cualquier sitio — un
- * `text-[17px]` nuevo en un fichero que no está en la lista sigue
- * rompiendo esta prueba, y también lo hace un `text-[17px]` DE MÁS en un
- * fichero que ya tenía uno permitido, porque se compara ocurrencia a
- * ocurrencia, no solo por fichero.
- *
- *  · 22px y 28px (DashboardPage, FeaturesBento): cifras protagonistas de
- *    la demo y de una ficha, no cuerpo. Es una decisión tomada.
- *  · 17px (FeaturesBento, GuardianNew, Navbar) y 20px (SessionClock):
- *    una franja horaria, el símbolo «NQ», el nombre de la marca y la hora
- *    del reloj. Son cifras y rótulos, no bloques de texto.
- *  · Lo que sí era texto salió de aquí en la tanda 44: la definición del
- *    glosario (19px) y la entradilla legal (17px) pasaron a `t-lede` y
- *    `t-entradilla`; los titulares de familia del glosario (22px) y de
- *    SecuritySection (17px), a `t-h3` y `t-h4`. Los titulares y los
- *    bloques de texto los vigila en el DOM `scripts/escala.mjs`.
+ * La escala de cuerpo es la del comentario de `@theme` de `globals.css`
+ * (10 a 15 px). Cada excepción es un `{fichero, valor}` y se compara ocurrencia
+ * a ocurrencia: un `text-[17px]` de más en un fichero que ya tenía uno rompe la
+ * prueba. Las excepciones son cifras protagonistas y rótulos, no bloques de
+ * texto; esos los vigila en el DOM `scripts/escala.mjs`.
  */
 const ESCALA_CUERPO = [10, 11, 12, 13, 14, 15];
 
@@ -123,7 +83,7 @@ const EXCEPCIONES: Array<{ fichero: string; valor: number }> = [
   { fichero: "components/marketing/SessionClock.tsx", valor: 20 },
 ];
 
-/** Todos los `.tsx` de `src/`, recorridos a mano igual que `fuentesDelProyecto`. */
+/** Todos los `.tsx` de `src/`. */
 function tsxDelProyecto(dir: string, acc: string[] = []): string[] {
   for (const entrada of readdirSync(dir)) {
     const ruta = join(dir, entrada);
@@ -133,9 +93,7 @@ function tsxDelProyecto(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-/** Cada `text-[Npx]` fuera de la escala, como `"N px en fichero"`, en el
- *  mismo orden en que aparece — así una lista y otra se pueden comparar
- *  ocurrencia a ocurrencia y no solo por conjunto. */
+/** Cada `text-[Npx]` fuera de la escala, como `"Npx en fichero"`, una entrada por ocurrencia. */
 function huerfanosDelCuerpo(): string[] {
   const huerfanos: string[] = [];
   for (const fichero of tsxDelProyecto(join(RAIZ, "src"))) {

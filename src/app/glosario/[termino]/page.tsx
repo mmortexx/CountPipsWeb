@@ -7,20 +7,17 @@ import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, terminoPorS
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /glosario/[termino] — una página por cada término del registro.
- *
- * `generateStaticParams` las genera todas durante la compilación, que es
- * lo que exige el modo de exportación estática: no hay servidor que pueda
- * resolver una dirección desconocida más tarde.
+ * /glosario/[termino]: una página por término. `generateStaticParams` las
+ * genera todas en la compilación (la exportación estática no tiene servidor
+ * que resuelva una dirección desconocida después).
  */
 
 export function generateStaticParams() {
   return TERMINOS.map((t) => ({ termino: t.slug }));
 }
 
-/* Sin esto, cualquier dirección que no esté en la lista de arriba
-   intentaría resolverse en ejecución, y con exportación estática eso es
-   un error de compilación en vez de un 404 limpio. */
+// Sin esto, una dirección fuera de la lista se intentaría resolver en
+// ejecución y con exportación estática da error de compilación, no un 404.
 export const dynamicParams = false;
 
 type Props = { params: Promise<{ termino: string }> };
@@ -30,11 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = terminoPorSlug(slug);
   if (!t) return {};
 
-  /* El título lleva «qué es» porque es literalmente como se busca esto:
-     nadie teclea «Drawdown», se teclea «qué es el drawdown». La cola se
-     recorta sola en las voces cuyo nombre trae la expansión dentro —MAE y
-     MFE— para no pasar de los 60 caracteres que muestra el buscador. El
-     mismo título sirve al buscador y a la tarjeta al compartir. */
+  // El título lleva «qué es» porque así se busca; se recorta solo en las voces
+  // con la expansión dentro (MAE, MFE) para no pasar de 60 caracteres.
   const titulo = `${tituloDeTermino(t.term, "es")} — CountPips`;
   const desc = descripcionDeTermino(t, "es");
 
@@ -85,9 +79,7 @@ export default async function TerminoPage({ params }: Props) {
     ],
   };
 
-  /* `DefinedTerm` con `inDefinedTermSet` apuntando al índice: así el
-     buscador entiende que esta página es una entrada de un glosario, no un
-     artículo suelto que casualmente define una palabra. */
+  // `inDefinedTermSet` apunta al índice: es una entrada de glosario, no un artículo suelto.
   const terminoSchema = {
     "@context": "https://schema.org",
     "@type": "DefinedTerm",

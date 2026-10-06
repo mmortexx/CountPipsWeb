@@ -11,7 +11,7 @@ interface HistogramProps {
   formatX?: (x: number | string) => string;
 }
 
-/** Generic animated bar histogram. */
+/** Histograma de barras genérico y animado. */
 export const Histogram = memo(function Histogram({
   data,
   height = 140,
@@ -23,24 +23,10 @@ export const Histogram = memo(function Histogram({
 
   const maxCount = useMemo(() => Math.max(...data.map((d) => d.count), 1), [data]);
 
-  /* ── CON MUCHAS BARRAS, UN ROTULO SI Y OTRO NO ─────────────────────
-     El rotulo del eje llevaba `truncate`, asi que a 320 px —donde cada
-     columna mide unos 20 px y «−1,5R» pide 29— se cortaban TODOS: el eje
-     entero quedaba ilegible.
-
-     Truncar reparte el dano entre todos; saltarse uno de cada dos lo
-     concentra en la mitad y deja la otra mitad entera, que es como se
-     comporta cualquier eje de verdad cuando no cabe. Solo por debajo de
-     `sm`: de ahi para arriba caben todos.
-
-     Y uno de cada dos no siempre basta. Con nueve barras en 237 px —el
-     ancho del panel de la demo a 390— cinco rotulos de «431 US$» suman
-     176 px y se quedan a 4 px unos de otros, que se lee como un solo
-     renglon corrido. El salto se decide por lo LARGO que sea el rotulo
-     mas largo, que es el dato que gobierna si caben: hasta seis
-     caracteres, uno de cada dos; por encima, uno de cada cuatro. El
-     ultimo se pinta siempre, porque un eje sin su extremo derecho no
-     dice donde acaba. */
+  /* Con muchas barras, un rótulo sí y otro no (solo por debajo de `sm`): truncar
+     todos los dejaría ilegibles. El salto depende del rótulo más largo: hasta
+     seis caracteres, uno de cada dos; por encima, uno de cada cuatro. El último
+     se pinta siempre para que el eje diga dónde acaba. */
   const denso = data.length > 8;
   const largoMax = useMemo(
     () => Math.max(...data.map((d) => formatX(d.x).length), 0),
@@ -49,7 +35,7 @@ export const Histogram = memo(function Histogram({
   const salto = denso ? (largoMax > 6 ? 4 : 2) : 1;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  // Hovered bar: index + anchor point (px, relative to container).
+  // Barra señalada: índice y punto de anclaje (px, relativo al contenedor).
   const [hovered, setHovered] = useState<{ i: number; x: number; y: number } | null>(null);
 
   return (
@@ -99,22 +85,10 @@ export const Histogram = memo(function Histogram({
                   opacity: hovered && hovered.i === i ? 1 : 0.9,
                 }}
               />
-              {/* ── LOS DOS EXTREMOS SE ALINEAN CON SU CANTO ──────────
-                  El rótulo va centrado en una columna que a 390 px mide
-                  23 px, y «431 US$» pide 36: sobra por los dos lados. En
-                  las columnas de en medio eso no importa —el vecino está
-                  oculto y el hueco está libre—, pero en la ÚLTIMA la
-                  sobra cae fuera de la tarjeta, que lleva
-                  `overflow-hidden`, y la cifra se corta contra el canto.
-                  Medido en el histograma de P&L de la Analítica de la
-                  demo a 390 px: 13 px de «431 US$» por fuera del borde
-                  derecho. Y `text-align` no basta: cuando el texto es MÁS
-                  ancho que su caja, la línea arranca igual en el canto
-                  izquierdo y la sobra sigue saliendo por la derecha
-                  (medido: los mismos 13 px). Los dos extremos pasan a
-                  caja del tamaño de su contenido, anclada a su propio
-                  lado, que es como se rotula cualquier eje: la sobra se
-                  va hacia dentro, donde hay sitio. */}
+              {/* Los dos extremos se anclan a su canto con una caja del tamaño del
+                  contenido (`w-max`): el rótulo centrado es más ancho que la
+                  columna y en la última sobresale de la tarjeta (`overflow-hidden`);
+                  `text-align` no lo arregla si el texto es más ancho que su caja. */}
               <div
                 className={`mt-1 whitespace-nowrap text-[9.5px] tnum text-tertiary ${
                   i === 0
@@ -135,7 +109,7 @@ export const Histogram = memo(function Histogram({
         })}
       </div>
 
-      {/* Tooltip flotante sobre papel denso — bucket range + count */}
+      {/* Tooltip: rango del tramo y recuento. */}
       {hovered && data[hovered.i] && (
         <div
           className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"

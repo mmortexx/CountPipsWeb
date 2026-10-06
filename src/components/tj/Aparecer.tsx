@@ -22,20 +22,16 @@ export function Aparecer() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const main = document.getElementById("main-content");
     if (!main || typeof IntersectionObserver === "undefined") return;
-    /* En una sola columna las piezas de una lista no asoman a la vez, que es
-       para lo que existe el escalonado: cada una entraba sola, y al deslizar
-       el glosario había seis o diez transiciones en curso. Medido en móvil
-       (CPU ×4, gráfica real, 6 pasadas por lado): fotogramas de más de 33 ms
-       del 3,5–9,9 % al 0,9–3,1 %. Por debajo de 768 px llegan con su bloque. */
+    // En una sola columna las piezas no asoman a la vez y cada una entraría
+    // sola (decenas de transiciones en el glosario): por debajo de 768 px
+    // llegan con su bloque.
     const conPiezas = matchMedia("(min-width: 768px)").matches;
     document.documentElement.classList.add("tj-mov");
     // Lo que depende de hidratar solo entra si hidrata pronto: tarde sería un parpadeo.
     if (performance.now() < 1500) document.documentElement.classList.add("tj-mov-pronto");
 
-    // El escalonado se reparte entre HERMANAS que asoman a la vez, en orden
-    // de lectura (fila y luego columna). Contado sobre todo el lote, una
-    // cabecera de sección heredaba el retardo de piezas de otra sección que
-    // entraban en el mismo fotograma: medido, 280 ms de espera muerta.
+    // El escalonado se reparte entre hermanas que asoman a la vez, en orden de
+    // lectura; contado sobre todo el lote, una cabecera heredaría el retardo de otra sección.
     const io = new IntersectionObserver(
       (entradas) => {
         const grupos = new Map<Element | null, IntersectionObserverEntry[]>();

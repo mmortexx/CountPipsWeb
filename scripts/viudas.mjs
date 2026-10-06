@@ -1,25 +1,11 @@
 /**
- * VIUDAS — ningún titular acaba en una palabra sola si podía no hacerlo
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Un titular cuyo último renglón es una sola palabra («comprobando.»,
- * «desk.») se lee como un corte torpe, y `text-wrap: balance` no lo
- * evita: iguala los anchos de los renglones, y a veces la línea más
- * igualada es justo la que deja una palabra colgando.
- *
- * Solo se acusa la viuda EVITABLE: la que cabría en el renglón de arriba
- * si bajara con ella el último bloque de ese renglón (un bloque son las
- * palabras unidas por espacio duro, que no se pueden separar). Si ni así
- * cabe, el ancho manda y no hay arreglo tipográfico.
- *
- * Mira h1, h2 y h3 visibles de cuatro palabras o más, en las dos lenguas,
- * a 390, 768 y 1440 px.
- *
- * ── Qué encontró el día que se escribió (2026-10-04) ──────────────────
- * «Lo que está listo. Y lo que aún estamos / comprobando.» en precios y
- * acceso anticipado a 1440, y «Trade like / an institutional / desk.» en
- * la portada inglesa a 390: la regla que pega las palabras de una o dos
- * letras a la siguiente, que es del español, unía «an institutional».
+ * VIUDAS: comprueba que ningún titular acaba en una palabra sola si podía
+ * evitarlo. `text-wrap: balance` iguala los renglones y a veces deja justo una
+ * palabra colgando. Solo se acusa la viuda evitable: la que cabría arriba si
+ * bajara con ella el último bloque del renglón anterior (un bloque son las
+ * palabras unidas por espacio duro); si ni así cabe, manda el ancho. Mira los
+ * h1, h2 y h3 visibles de cuatro palabras o más, en las dos lenguas, a 390,
+ * 768 y 1440 px.
  *
  * Uso:  node scripts/viudas.mjs --serve out
  */
@@ -64,8 +50,7 @@ async function servir(raiz) {
   return { server, base: `http://127.0.0.1:${server.address().port}${PREFIJO}` };
 }
 
-/* Todas las páginas salvo las fichas del glosario, que comparten plantilla:
-   de esas basta una muestra por idioma. */
+// Todas las páginas salvo las fichas del glosario, que comparten plantilla: basta una muestra.
 const MUESTRA_GLOSARIO = /\/glosario\/(expectancy|risk-of-ruin|wald-wolfowitz-runs-test)\/$/;
 const RUTAS = ["/"];
 async function recorre(d, ruta) {
@@ -107,11 +92,9 @@ for (const ancho of [390, 768, 1440]) {
       let vistos = 0;
       for (const h of document.querySelectorAll("h1, h2, h3")) {
         const caja = h.getBoundingClientRect();
-        /* Los títulos ocultos para lectores de pantalla miden 1 px y
-           apilan cada palabra en su renglón: no se ven. */
+        // Los títulos ocultos a lectores miden 1 px y apilan cada palabra: no se ven.
         if (!h.offsetParent || caja.width < 40) continue;
-        /* Un bloque = lo que va entre espacios normales; el espacio duro
-           lo mantiene unido. Se mide cada bloque con su rango. */
+        // Un bloque es lo que va entre espacios normales; el espacio duro lo mantiene unido.
         const bloques = [];
         const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
         let n;

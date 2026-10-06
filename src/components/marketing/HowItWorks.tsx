@@ -3,7 +3,7 @@
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 
-/** 3-step "how it works" — capture, analyze, improve. */
+/** Cómo funciona en tres pasos: registrar, analizar y mejorar. */
 export function HowItWorks() {
   const { lang } = useLang();
   const es = lang === "es";
@@ -38,7 +38,6 @@ export function HowItWorks() {
   return (
     <section className="section relative overflow-clip">
       <div className="relative z-10 tj-container">
-        {/* Header */}
         <SectionHeader
           composicion="partida"
           etiqueta={es ? "El ciclo de sesión" : "The session cycle"}

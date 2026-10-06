@@ -3,19 +3,13 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * TODA VARIABLE CSS QUE SE LEE TIENE QUE ESTAR DECLARADA EN ALGÚN SITIO.
+ * Toda variable CSS que se lee debe estar declarada: una `var(--nombre)` sin
+ * declarar no falla, la propiedad cae a su valor inicial (un fondo queda
+ * transparente) y ni el compilador ni el build lo ven.
  *
- * Una `var(--nombre)` sin declarar no falla: el navegador la trata como
- * «inválida en tiempo de cálculo» y la propiedad cae a su valor inicial.
- * Para un fondo eso es TRANSPARENTE. Así estuvo la ventana de comparar
- * operaciones de la demo, con `bg-[var(--surface-1)]`: el panel dejaba ver
- * la página de detrás, y la leyenda del gráfico de velas igual. Ni el
- * compilador, ni los tipos, ni el build lo ven.
- *
- * Declarada cuenta si aparece como `--nombre:` en una hoja, o como clave
- * `"--nombre"` en un objeto de estilo o en `setProperty`. Una lectura con
- * valor de reserva, `var(--nombre, algo)`, es legítima sin declaración.
- * Los comentarios se quitan antes: explicar una variable no la declara.
+ * Declarada: `--nombre:` en una hoja, o clave `"--nombre"` en un objeto de
+ * estilo o `setProperty`. `var(--nombre, algo)` es legítima. Se quitan los
+ * comentarios antes: explicar una variable no la declara.
  */
 
 const RAIZ = join(import.meta.dirname, "..");

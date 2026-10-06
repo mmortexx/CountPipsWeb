@@ -1,24 +1,17 @@
 /**
- * Comprobación de humo en navegador real.
- *
- * No sustituye a las pruebas de `tests/`: aquellas vigilan cálculos y
- * contratos de datos, y ésta vigila lo que solo se ve cuando la página se
- * pinta de verdad — que el titular exista y esté visible, que el idioma
- * declarado sea el que toca, que nada se salga por el lado en un móvil
- * estrecho, y que la consola no escupa errores.
- *
- * El caso que la motivó: el `h1` de todas las páginas interiores se
- * servía con opacidad cero y solo aparecía si arrancaba el JavaScript.
- * Ninguna comprobación de tipos ni de código lo habría visto; un
- * navegador con el JavaScript apagado lo ve en el primer intento.
+ * Comprobación de humo en navegador real: lo que solo se ve cuando la página
+ * se pinta de verdad (titular visible, idioma declarado, desbordes en móvil
+ * estrecho, errores de consola, contraste, menús, capas). Complementa a
+ * `tests/`, que vigila cálculos y contratos de datos. Cada comprobación
+ * guarda lo que midió para que «pasó» no signifique «no miró nada».
  *
  * Uso:
  *   node scripts/humo.mjs                    (contra http://localhost:3000)
  *   node scripts/humo.mjs --base http://…    (contra otra dirección)
+ *   node scripts/humo.mjs --serve out        (sirve la exportación estática)
  *   node scripts/humo.mjs --shots <carpeta>  (además, guarda capturas)
  *
- * Sale con código 1 si algo falla, para poder colgarlo de la integración
- * continua.
+ * Sale con código 1 si algo falla, para colgarlo de la integración continua.
  */
 import { chromium } from "playwright";
 import { createServer } from "node:http";
@@ -34,8 +27,7 @@ const arg = (nombre, pordefecto) => {
 
 let BASE = arg("--base", "http://localhost:3000").replace(/\/$/, "");
 const SHOTS = arg("--shots", null);
-/** Carpeta estática a servir. Con esto la comprobación no necesita nada
- *  fuera del proyecto: ni `serve`, ni `wait-on`, ni un servidor aparte. */
+/** Carpeta estática a servir: no hace falta ningún servidor aparte. */
 const SERVIR = arg("--serve", null);
 
 const TIPOS = {
@@ -53,27 +45,11 @@ const TIPOS = {
 };
 
 /**
- * Servidor estático mínimo para el export.
- *
- * Traduce `/features` y `/features/` a `features/index.html`, que es
- * como Next deja las páginas con `trailingSlash: true`. Sin esa
- * traducción, todas las rutas darían 404 y la comprobación fallaría por
- * el motivo equivocado.
+ * Servidor estático mínimo para el export. Traduce `/features` y `/features/`
+ * a `features/index.html` (`trailingSlash: true`); sin eso todo daría 404.
+ * En CI el HTML pide `/CountPipsWeb/_next/...` (`NEXT_PUBLIC_BASE_PATH`): se
+ * quita ese prefijo para servir la carpeta desde la raíz.
  */
-/* ── EL PREFIJO DE GITHUB PAGES ──────────────────────────────────────
-   El sitio no se publica en la raíz de un dominio sino en
-   `usuario.github.io/CountPipsWeb/`, así que el flujo de Actions
-   construye con `NEXT_PUBLIC_BASE_PATH=/CountPipsWeb` y el HTML sale
-   pidiendo `/CountPipsWeb/_next/...`. Este servidor servía la carpeta en
-   la raíz, de modo que en CI TODAS esas peticiones daban 404: sin hoja
-   de estilos la barra se monta sobre sí misma, el contenido desborda a
-   lo ancho y el cajón no abre. Cuarenta y tantos fallos que no eran de
-   la página sino de cómo se la estaba sirviendo — y la comprobación que
-   existe para no desplegar roto era justo la que impedía desplegar.
-
-   Se neutraliza el prefijo: si la petición empieza por él, se atiende
-   igual. En local `NEXT_PUBLIC_BASE_PATH` no está definido y esto no
-   hace nada, así que las dos formas de ejecutarlo coinciden. */
 const PREFIJO = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").replace(/\/$/, "");
 
 async function levantarServidor(raiz) {
@@ -145,23 +121,12 @@ const RUTAS = [
   { ruta: "/en/pricing", lang: "en" },
   { ruta: "/en/features", lang: "en" },
   { ruta: "/en/beta", lang: "en" },
-  /* Las tres de abajo entraron con la comprobación de idioma: la lista
-     tenía cuatro rutas inglesas de las diez que existen, y las que
-     faltaban eran justo donde vivía el problema — `/en/demo` enseñaba
-     «Ruptura», «Reversión» y «Tendencia» en la tabla de operaciones, en
-     el diario y en el detalle de cada una. Una comprobación de idioma que
-     no visita la página del idioma no comprueba nada. */
+  // Las rutas inglesas cubren donde vive la comprobación de idioma.
   { ruta: "/en/demo", lang: "en" },
   { ruta: "/en/about", lang: "en" },
   { ruta: "/en/faq", lang: "en" },
-  /* ── UNA DE CADA FAMILIA GENERADA ────────────────────────────────
-     Las de arriba son las páginas escritas a mano. El build exporta
-     154, y las 139 restantes salen de cuatro plantillas —glosario,
-     herramientas, traders y las legales—, así que un defecto en una
-     plantilla afecta a decenas de páginas a la vez y ninguna de las
-     rutas de arriba lo vería. Se añade una muestra de cada: no cubre
-     las 154, pero sí cubre las cuatro FORMAS que existen, que es lo que
-     de verdad se puede romper de golpe. */
+  // Una de cada familia generada (glosario, herramientas, traders, legales):
+  // un defecto de plantilla afecta a decenas de páginas a la vez.
   { ruta: "/glosario/drawdown", lang: "es" },
   { ruta: "/herramientas/monte-carlo", lang: "es" },
   { ruta: "/traders/prop-firms", lang: "es" },
@@ -169,30 +134,11 @@ const RUTAS = [
 ];
 
 /**
- * Palabras que solo pueden estar en una página española.
- *
- * ── Por qué palabras función y no un diccionario ──────────────────────
- * Buscar sustantivos («operación», «ganancia») caza el texto traducido a
- * medias pero se le escapa el que nunca se tradujo, y encima falla con
- * los términos que en trading se dicen igual en los dos idiomas. Las
- * palabras de abajo —artículos, preposiciones, conjunciones— aparecen en
- * cualquier frase española de más de tres palabras y en ninguna inglesa,
- * así que detectan la frase entera sin depender de su tema.
- *
- * ── Ninguna palabra de dos letras ─────────────────────────────────────
- * La lista llevaba «el», «la», «un», «es», «su», «tu». Todas se fueron:
- * la comparación tiene que ser insensible a mayúsculas —hay rótulos con
- * `text-transform: uppercase`, y ahí es donde apareció el lema del
- * cargador en español— y en mayúsculas una palabra de dos letras es
- * indistinguible de una sigla. El pie dice «ES + EN» para anunciar los
- * dos idiomas, y ese «ES» contaba como la palabra «es» en las diez
- * páginas inglesas: una marca falsa, permanente y en todas, que es el
- * tipo de ruido por el que una comprobación acaba apagada.
- *
- * Basta UNA para dar el fallo. Ninguna de las que quedan existe en
- * inglés ni es un símbolo del mercado, así que su presencia no admite
- * segunda lectura — y exigir dos dejaba pasar frases cortas como
- * «Hecho para el trader manual serio», que solo aporta «para».
+ * Palabras que solo existen en español (artículos, preposiciones, conjunciones):
+ * aparecen en toda frase española de más de tres palabras y en ninguna inglesa;
+ * los sustantivos de trading son iguales en los dos idiomas. Ninguna de dos
+ * letras: la comparación ignora mayúsculas y «ES» del pie «ES + EN» contaría
+ * como «es». Basta una para fallar.
  */
 const PALABRAS_ESPANOLAS =
   /(?:^|[\s"'“”(¡¿—–-])(para|por|sin|más|que|del|con|una|unos|unas|los|las|sus|como|cuando|desde|hasta|pero|también|según|cada|todo|todos|todas|entre|sobre|está|están|este|esta|esto|nuestro|nuestra|qué|cómo|dónde|hecho|hasta|muy|aquí|así)(?=[\s".,;:!?)"'”—–-]|$)/giu;
@@ -205,99 +151,68 @@ function marcasEspanolas(texto) {
 }
 
 /**
- * Milisegundos que puede tardar el titular en ser legible desde que la
- * página termina de cargar. La portada tiene una secuencia de intro que
- * llegó a costar unos 3 s; con ella apretada queda sobre 1,8 s. El
- * margen deja sitio para la variabilidad de una máquina cargada sin
- * dejar que el gesto vuelva a crecer en silencio.
+ * Milisegundos que puede tardar el titular en ser legible tras cargar la
+ * página: deja margen a una máquina cargada sin permitir que la secuencia de
+ * intro de la portada vuelva a crecer en silencio.
  */
 const PRESUPUESTO_H1_MS = 2500;
 
 /** Escritorio ancho y el móvil estrecho de referencia. */
 const PANTALLAS = [
   { nombre: "escritorio", width: 1440, height: 900 },
-  // Justo por encima del umbral (1.120 px) donde la barra completa
-  // vuelve a mostrarse: es el ancho en el que va más apretada y donde
-  // cualquier elemento que crezca volverá a provocar solapes.
+  // Justo por encima del umbral (1.120 px) de la barra completa: es donde va
+  // más apretada y cualquier elemento que crezca provoca solapes.
   { nombre: "portatil", width: 1180, height: 800 },
-  // Por debajo del umbral: aquí debe salir el cajón lateral. Es el ancho
-  // en el que la barra completa se montaba sobre sí misma — la marca
-  // sobre el primer enlace, el menú sobre el reloj, el reloj sobre el
-  // idioma — sin que nada lo delatara.
+  // Por debajo del umbral: debe salir el cajón lateral (la barra completa se
+  // montaba sobre sí misma a este ancho).
   { nombre: "tableta", width: 820, height: 1180 },
   { nombre: "movil", width: 390, height: 844 },
 ];
 
 const fallos = [];
 const avisos = [];
-/** Cada contraste que se ha llegado a medir, para poder auditar la propia
-    comprobación: una que no mide nada también sale en verde. */
+// Lo que cada comprobación llegó a medir, para auditar la propia comprobación:
+// una que no mide nada también sale en verde.
+/** Contrastes medidos. */
 const contrastesMedidos = [];
-/** Ídem para las láminas del producto: si la ruta con capturas se cae de la
-    lista, la comprobación de legibilidad en móvil pasa a no mirar nada. */
+/** Láminas del producto vistas (sin ellas, la legibilidad en móvil no mira nada). */
 const laminasVistas = [];
-/** Lo que enseñó cada lámina en tema oscuro, para que el informe diga que se miró. */
+/** Lo que enseñó cada lámina en tema oscuro. */
 const temasLaminaVistos = [];
 /** Dónde se abrió la ayuda de atajos de la demo, por pantalla. */
 const ayudasDemo = [];
-/** Ídem para el idioma: cuántos caracteres se han llegado a leer en cada
-    página inglesa. Un `innerText` vacío pasaría la comprobación en verde
-    sin haber mirado una sola palabra. */
+/** Caracteres leídos en cada página inglesa (un `innerText` vacío pasaría en verde). */
 const idiomasRevisados = [];
-/** Ídem para la vuelta a la cabecera: de dónde salió, dónde apareció y
-    dónde acabó. Sin el dato, «pasó» no distingue un salto de un viaje. */
+/** Vuelta a la cabecera: de dónde salió, dónde apareció y dónde acabó. */
 const vueltasArriba = [];
-/** Ídem para el cajón de navegación: dónde acabó y con qué opacidad. */
+/** Cajón de navegación: dónde acabó y con qué opacidad. */
 const cajonesVistos = [];
-/** Ídem para el material del papel: qué tinte llegó de verdad al
-    elemento. «Pasó» sin decir qué se miró es lo que dejó que este
-    defecto viviera tanto tiempo. */
+/** Material del papel: qué tinte llegó de verdad al elemento. */
 const papelesVistos = [];
-/** Ídem para la opacidad al final del scroll: cuántas rutas se llegaron
-    a mirar. Cero rutas miradas también sale en verde. */
+/** Opacidad al final del scroll: cuántas rutas se miraron. */
 const opacidadesFinales = [];
-/** Ídem para la llamada a la acción de la portada: dónde acaba respecto
-    al pliegue, en cada una de las cuatro pantallas. */
+/** Llamada a la acción de la portada respecto al pliegue, por pantalla. */
 const pliegues = [];
-/** Ídem para el contenido servido dentro de bloques ocultos sin
-    JavaScript: cuántos caracteres había y sobre cuántos del documento. */
+/** Contenido servido dentro de bloques ocultos sin JavaScript. */
 const ocultosVistos = [];
-/** Ídem para el velo del fondo sin JavaScript: cuántos elementos
-    decorativos conservaron su opacidad y cuántos ceros se rescataron. */
+/** Velo del fondo sin JavaScript: opacidades conservadas y ceros rescatados. */
 const velosVistos = [];
-/** Ídem para las entradas atadas al scroll: cuántas llegan a entrar de
-    verdad sobre el total. Cero también sale en verde si nadie mira. */
+/** Entradas atadas al scroll: cuántas entran de verdad sobre el total. */
 const entradasVistas = [];
-/** Ídem para el menú de «Producto»: qué hace al pasar el ratón y qué
-    hace al pulsarlo con el ratón ya encima. */
+/** Menú de «Producto»: qué hace al pasar el ratón y al pulsarlo. */
 const menusVistos = [];
-/** Ídem para la holgura de la barra superior: cuánto pide y cuánto hay. */
+/** Holgura de la barra superior: cuánto pide y cuánto hay. */
 const presupuestosBarra = [];
-/** Ídem para el botón principal del cierre en móvil: sin ninguno medido,
-    la comprobación no protege nada. */
+/** Botón principal del cierre en móvil. */
 const cierresMedidos = [];
 
 /**
- * Contraste de un texto contra el fondo que DE VERDAD tiene debajo.
- *
- * POR QUÉ SE MIDEN PÍXELES Y NO EL CSS COMPUTADO. La primera versión de
- * esta comprobación componía el fondo subiendo por los ancestros y
- * mezclando sus `background-color`. Daba veinticinco fallos, todos falsos:
- * no entendía `color-mix()` —que el navegador devuelve como
- * `color(srgb …)`—, ni los fondos declarados en `background-image` (que es
- * justo cómo está hecho el velo de sección), ni los estilos en línea de la
- * maqueta de la aplicación. Llegó a informar de 1,04:1 en un texto que se
- * lee sin esfuerzo.
- *
- * Una comprobación que se equivoca en la dirección alarmista se acaba
- * desactivando, y entonces no protege nada. Así que se hace lo caro y
- * fiable: se captura la caja del texto, se mete el PNG de vuelta en la
- * página, se dibuja en un canvas y se leen sus píxeles. El fondo es la
- * luminancia más frecuente de la caja —la mayoría de los píxeles de una
- * línea de texto no son letra— y el peor caso, el percentil de la cola
- * que se acerca al color del texto, que es donde el grabado ensucia.
- *
- * Devuelve null si la captura no se puede hacer (elemento fuera de vista).
+ * Contraste de un texto contra el fondo que de verdad tiene debajo. Se miden
+ * píxeles y no el CSS computado, que no entiende `color-mix()` ni
+ * `background-image` y daba falsos fallos. Se captura la caja del texto en un
+ * canvas: el fondo es la luminancia más frecuente y el peor caso, el percentil
+ * de la cola más cercana al color del texto. Devuelve null si el elemento está
+ * fuera de vista.
  */
 async function mideContraste(pagina, cand) {
   const { x, y, w, h } = cand.caja;
@@ -344,24 +259,12 @@ async function mideContraste(pagina, cand) {
       for (let i = 1; i < 256; i++) if (hist[i] > hist[moda]) moda = i;
       const Lfondo = moda / 255;
 
-      /* ── EL COLOR LO RESUELVE EL NAVEGADOR, NO UNA EXPRESIÓN REGULAR ──
-         Aquí había `color.match(/[\d.]+/g)` y luego se tomaban los tres
-         primeros números como RGB. Falla en silencio con los espacios de
-         color modernos, que es lo que Chromium devuelve para cualquier
-         color de Tailwind con opacidad en este sitio:
-
-           oklab(0.81038 -0.00504845 -0.0102674 / 0.86)
-
-         El regex se come los signos menos y entrega [0.81, 0.005, 0.010],
-         que interpretados como RGB son negro casi puro. La comprobación
-         seguía en verde porque los cuatro selectores que mira resuelven
-         hoy a `rgb()` plano; bastaba cambiar un selector o una clase para
-         que empezara a mentir sin avisar.
-
-         Un lienzo de 1×1 acepta CUALQUIER color que el navegador
-         entienda —`oklab`, `color()`, `lab`, `hwb`, nombres— y devuelve
-         los canales ya resueltos. Y si el color trae transparencia, se
-         compone sobre el fondo medido en vez de darlo por opaco. */
+      // El color lo resuelve el navegador, no una expresión regular: Chromium
+      // devuelve `oklab(0.81 -0.005 -0.010 / 0.86)` para los colores de Tailwind
+      // con opacidad, y un regex sobre esos números da negro casi puro. Un
+      // lienzo de 1×1 acepta cualquier color que el navegador entienda y
+      // devuelve los canales resueltos; si trae transparencia, se compone
+      // sobre el fondo medido.
       const lienzo = document.createElement("canvas");
       lienzo.width = lienzo.height = 1;
       const cl = lienzo.getContext("2d", { willReadFrequently: true });
@@ -371,10 +274,8 @@ async function mideContraste(pagina, cand) {
       cl.fillRect(0, 0, 1, 1);
       const px = cl.getImageData(0, 0, 1, 1).data;
       const alfa = px[3] / 255;
-      /* El gris del fondo dominante, para componer un texto translúcido.
-         `Lfondo` es luminancia LINEAL, así que hay que volver a codificar
-         en gamma para obtener el nivel sRGB equivalente; usar `moda` tal
-         cual daría un gris bastante más oscuro del real. */
+      // Gris del fondo dominante para componer un texto translúcido: `Lfondo`
+      // es luminancia lineal y hay que volver a codificarla en gamma sRGB.
       const gris =
         255 *
         (Lfondo <= 0.0031308
@@ -389,8 +290,7 @@ async function mideContraste(pagina, cand) {
 
       lums.sort((a, b) => a - b);
       const pct = (q) => lums[Math.floor((lums.length - 1) * q)];
-      // Si el texto es oscuro, el fondo que peor le va es el más oscuro
-      // del lado claro; y al revés.
+      // Con texto oscuro, el peor fondo es el más oscuro del lado claro; y al revés.
       const Lpeor = Ltexto < Lfondo ? pct(0.35) : pct(0.65);
 
       const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
@@ -400,23 +300,13 @@ async function mideContraste(pagina, cand) {
   );
 }
 
-/* Ruido de terceros y del servidor de desarrollo que no dice nada del
-   sitio. Se filtra para que un fallo real no se pierda entre él.
-
-   El último trozo —`__next.…txt?_rsc=`— es el que costó una tanda entera.
-   Son las cargas de prefetch de segmento que el enrutador de Next pide al
-   pasar el ratón por un enlace. Al exportar en WINDOWS, Next las escribe
-   como carpeta (`/beta/__next.beta/__PAGE__.txt`) mientras el cliente las
-   pide en plano (`/beta/__next.beta.__PAGE__.txt`): 404 en todas, en todas
-   las páginas, 17 por ruta. Compilando en LINUX —que es lo que hace la
-   integración continua— sale el fichero plano y no falla ninguna;
-   comprobado contra el sitio publicado, donde ese fichero devuelve 200.
-   O sea: es un artefacto de la máquina que compila, no del sitio, y sin
-   este filtro esta puerta NO PUEDE PASAR en un portátil Windows, que es
-   justo donde se trabaja. Si algún día hay que volver a mirarlo, el
-   comando es
-     find out -name "__next.*.__PAGE__.txt" | wc -l
-   sobre la exportación: cero significa que quien compiló fue Windows. */
+/* Ruido de terceros y del servidor de desarrollo que no dice nada del sitio.
+   El último trozo (`__next.…txt?_rsc=`) son los prefetch de segmento de Next:
+   al exportar en Windows se escriben como carpeta y el cliente los pide en
+   plano, así que dan 404 en todas las páginas; compilando en Linux (CI) sale
+   el fichero plano y no falla. Es un artefacto de la máquina que compila.
+   Para comprobarlo: `find out -name "__next.*.__PAGE__.txt" | wc -l` sobre la
+   exportación; cero significa que compiló Windows. */
 const RUIDO =
   /favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|posthog|challenges\.cloudflare|\[Fast Refresh\]|webpack-hmr|Warning: Extra attributes from the server|__next\.[^"'\s]*\.txt(\?|$)/i;
 
@@ -433,9 +323,7 @@ for (const pantalla of PANTALLAS) {
   for (const { ruta, lang } of RUTAS) {
     const pagina = await contexto.newPage();
     const errores = [];
-    /* Un 404 en consola no dice QUÉ ha faltado, y sin eso el aviso es
-       inútil. Se captura la URL de la respuesta y se recorta a la parte
-       que identifica el recurso. */
+    // Un 404 en consola no dice qué faltó: se captura la URL de la respuesta.
     pagina.on("response", (r) => {
       if (r.status() === 404) {
         const u = r.url().replace(BASE, "");
@@ -444,8 +332,7 @@ for (const pantalla of PANTALLAS) {
     });
     pagina.on("console", (m) => {
       const t = m.text();
-      // El "Failed to load resource" ya lo reporta el manejador de arriba
-      // con la URL concreta; aquí solo estorbaría duplicado y sin ella.
+      // «Failed to load resource» ya lo reporta el manejador de arriba, con su URL.
       if (m.type() === "error" && !RUIDO.test(t) && !/Failed to load resource/i.test(t)) {
         errores.push(t);
       }
@@ -466,24 +353,15 @@ for (const pantalla of PANTALLAS) {
         continue;
       }
 
-      /* ── PRESUPUESTO DEL TITULAR ────────────────────────────────────
-         No basta con mirar la opacidad una vez: la portada tiene una
-         secuencia de intro y el titular llega con retardo. Lo que
-         importa no es si acaba visible —acaba— sino CUÁNTO TARDA, porque
-         es el elemento más grande de la primera pantalla y por tanto lo
-         que el navegador mide como tiempo de carga percibido.
-
-         Se sondea hasta que sea legible y se compara con el presupuesto.
-         Así, si alguien vuelve a alargar la intro, la comprobación lo
-         dice en vez de dejarlo pasar. */
+      // Presupuesto del titular: no importa si acaba visible sino cuánto tarda
+      // (es lo más grande de la primera pantalla). Se sondea hasta que sea
+      // legible y se compara con el presupuesto.
       const t0 = Date.now();
       let visibleEn = null;
       while (Date.now() - t0 < PRESUPUESTO_H1_MS + 1500) {
-        /* Desde que el titular entra palabra a palabra (`Palabras.tsx`), el
-           h1 está opaco desde el primer fotograma y lo que se mueve son sus
-           palabras: mirar solo su opacidad daba «legible a los 0 ms» y
-           dejaba esta comprobación ciega. Una palabra cuenta como leída
-           cuando le queda menos del 5 % de su alto por subir. */
+        // El h1 está opaco desde el primer fotograma y lo que se mueve son sus
+        // palabras (`Palabras.tsx`): una palabra cuenta como leída cuando le
+        // queda menos del 5 % de su alto por subir.
         const op = await pagina
           .evaluate(() => {
             const h1 = document.querySelector("h1");
@@ -511,14 +389,9 @@ for (const pantalla of PANTALLAS) {
         );
       }
 
-      /* LAS LÁMINAS SE MIDEN CUANDO HAN CARGADO, NO ANTES.
-         `currentSrc` está vacío mientras la imagen no se ha descargado, y
-         la comprobación de más abajo caía entonces en `src` —el fichero de
-         escritorio— y denunciaba que en móvil se sirve la pantalla entera.
-         Era mentira: la lámina de `/features` es perezosa y todavía no
-         había pedido nada. Aquí se la trae al viewport y se espera a que
-         complete; si no carga en 3 s, se sigue y el informe dirá lo que
-         haya, que para eso es un guardián y no un adorno. */
+      // Las láminas se miden cuando han cargado: `currentSrc` está vacío hasta
+      // la descarga y las perezosas aún no habían pedido nada. Se fuerza la
+      // carga y se espera hasta 3 s; si no llega, el informe dirá lo que haya.
       await pagina
         .evaluate(async () => {
           const imgs = Array.from(document.querySelectorAll(".tj-lamina-ventana img")).filter(
@@ -550,45 +423,22 @@ for (const pantalla of PANTALLAS) {
           h1Count: h1s.length,
           h1Texto: primero ? (primero.getAttribute("aria-label") || primero.innerText).trim() : "",
           h1Opacidad: estilo ? Number(estilo.opacity) : 0,
-          // Desbordamiento horizontal: el documento no debe ser más ancho
-          // que la ventana. Se deja 1 px de margen por redondeos.
+          // El documento no debe ser más ancho que la ventana (1 px de margen por redondeos).
           desborda: document.documentElement.scrollWidth > window.innerWidth + 1,
           scrollWidth: document.documentElement.scrollWidth,
           innerWidth: window.innerWidth,
           main: !!document.querySelector("main"),
           titulo: document.title,
-          /* ── SOLAPES EN LA BARRA SUPERIOR ──────────────────────────
-             La rejilla de la barra era `1fr auto 1fr`, y como en CSS
-             `1fr` no puede encogerse por debajo de su contenido, la
-             navegación central se quedaba sin sitio y desbordaba encima
-             de la marca: a 1.267 px «CountPips» acababa en 212 y
-             «Producto» empezaba en 199. No lo caza ninguna comprobación
-             de desbordamiento del documento, porque nada se sale de la
-             página — los elementos se pisan entre ellos y ya está.
-             Aquí se compara caja contra caja. */
-          /* ── EL PRESUPUESTO DE LA BARRA ────────────────────────────
-             El solape de abajo solo salta cuando dos cajas YA se pisan, y
-             con 1 px de tolerancia. Eso deja pasar el estado previo, que
-             es el que de verdad avisa: la barra pedía 1.100 px de
-             contenido dentro de un tope de 1.080, la zona central se
-             salía diez píxeles por cada lado y la marca quedaba a SEIS
-             del primer enlace teniendo un canal declarado de dieciséis.
-             Seis es positivo, así que la comprobación decía «correcto»
-             mientras el margen era cero. Bastó con que una etiqueta
-             creciera veintidós píxeles para que se volviera negativo — y
-             entonces saltaron diecinueve rutas de golpe, que es cómo se
-             entera uno de un problema que llevaba ahí desde antes.
-
-             Aquí se mide lo que las tres zonas PIDEN contra lo que la
-             rejilla les DA. Es la magnitud que gobierna el solape, así
-             que se pone roja antes, con un número que dice cuánto falta,
-             y no cuando ya se ve. */
+          // Presupuesto de la barra: lo que las tres zonas piden frente a lo que
+          // la rejilla les da. El solape de abajo solo salta cuando dos cajas ya
+          // se pisan (con 1 px de tolerancia) y deja pasar el margen cero; esto
+          // se pone rojo antes, con un número que dice cuánto falta.
           presupuestoBarra: (() => {
             const rejilla = document.querySelector("header .grid");
             if (!rejilla || rejilla.children.length < 3) return null;
             const zonas = [...rejilla.children];
-            // Se mide el ancho NATURAL de cada zona, no el que la rejilla
-            // le concedió: lo segundo nunca delata que no cabía.
+            // Se mide el ancho natural de cada zona, no el concedido: el
+            // concedido nunca delata que no cabía.
             const natural = (el) => {
               const c = el.cloneNode(true);
               c.style.cssText =
@@ -608,6 +458,9 @@ for (const pantalla of PANTALLAS) {
             return { pide: Math.round(pide), hay: Math.round(hay), canal };
           })(),
 
+          // Solapes en la barra: ninguna comprobación de desbordamiento del
+          // documento los ve (nada se sale de la página), así que se compara
+          // caja contra caja.
           solapesBarra: (() => {
             const cabecera = document.querySelector("header");
             if (!cabecera) return [];
@@ -625,12 +478,12 @@ for (const pantalla of PANTALLAS) {
                   h: b.height,
                 };
               })
-              // Solo lo visible y solo la primera fila de la barra.
+              // Solo lo visible y la primera fila de la barra.
               .filter((c) => c.w > 0 && c.h > 0 && c.cy < 80)
               .sort((a, b) => a.l - b.l);
             const out = [];
             for (let i = 1; i < cajas.length; i++) {
-              // 1 px de tolerancia por redondeos de subpíxel.
+              // 1 px de tolerancia por subpíxeles.
               if (cajas[i].l < cajas[i - 1].r - 1) {
                 out.push(`"${cajas[i - 1].t}" se monta sobre "${cajas[i].t}"`);
               }
@@ -638,38 +491,24 @@ for (const pantalla of PANTALLAS) {
             return out;
           })(),
 
-          /* ── LA CAPTURA DEL PRODUCTO, A 390 px ──────────────────────
-             La lámina afirma estar enseñando la densidad real del
-             programa. Durante un tiempo, en móvil enseñaba la pantalla
-             entera reducida al 0,23 de su tamaño: no se leía ni una
-             cifra, y el componente seguía diciendo que demostraba algo.
-
-             Se comprueba lo que el navegador DESCARGA (`currentSrc`),
-             no lo que declara el `srcSet`: un `<picture>` mal escrito
-             tiene buena pinta en el fuente y sirve el fichero
-             equivocado. */
+          // La captura del producto a 390 px: en móvil no puede servir la pantalla
+          // entera reducida (no se leería una cifra). Se mira lo que el navegador
+          // descarga (`currentSrc`), no lo que declara el `srcSet`.
           laminas: [...document.querySelectorAll(".tj-lamina-ventana img")]
-            /* Cada lámina monta DOS capturas —tema claro y tema oscuro— y
-               el CSS esconde la que no toca. La escondida ni se descarga
-               (ancho 0, `currentSrc` vacío), así que medirla daba «se ve al
-               0 %» en cada página: se mide la que el visitante ve. */
+            // Cada lámina monta dos capturas (clara y oscura) y el CSS esconde
+            // la que no toca, que ni se descarga: se mide la que el visitante ve.
             .filter((img) => img.getBoundingClientRect().width > 0)
             .map((img) => ({
-              /* `currentSrc` y NO `|| src`: el `src` es el fichero de
-                 escritorio siempre, así que ese respaldo convertía «no ha
-                 cargado todavía» en «sirve el fichero equivocado». Si está
-                 vacío, que lo diga con esas palabras. */
+              // `currentSrc` y no `|| src`: `src` es siempre el de escritorio y
+              // convertiría «aún no cargó» en «sirve el fichero equivocado».
               sirve: (img.currentSrc || "").split("/").pop() || "(sin descargar)",
               nativo: img.naturalWidth,
               mostrado: Math.round(img.getBoundingClientRect().width),
             })),
 
-          /* Candidatos para la medición de contraste, que se hace fuera
-             (ver `mideContraste`): los textos MÁS PEQUEÑOS que están
-             sobre el fondo grabado, que son los que se quedan sin margen
-             cuando alguien mueve el velo. Aquí solo se eligen; medirlos
-             desde el CSS computado no funciona —hay que leer píxeles—, y
-             el porqué está escrito en `mideContraste`. */
+          // Candidatos para la medición de contraste (se mide fuera, en
+          // `mideContraste`): los textos más pequeños sobre el fondo grabado,
+          // los que se quedan sin margen si alguien mueve el velo.
           candidatosContraste: (() => {
             const out = [];
             const sobrePapel = (el) =>
@@ -690,48 +529,22 @@ for (const pantalla of PANTALLAS) {
                 texto: (el.textContent || "").trim().slice(0, 24),
               });
             }
-            // Los dos más pequeños: son el peor caso por definición.
+            // Los dos más pequeños: el peor caso.
             return out.sort((a, b) => a.tam - b.tam).slice(0, 2);
           })(),
 
-          /* ── ¿EL PAPEL LLEGÓ A LA HOJA COMPILADA? ───────────────────
-             Una declaración CSS que el compilador descarta no avisa: no
-             hay error, no hay traza, y la web simplemente se ve peor sin
-             que nada explique por qué.
+          // (El papel llegó a la hoja compilada: se mide en el estilo computado de
+          // los dos temas, fuera de este informe; ver «la tarjeta, opaca en los
+          // dos temas» más abajo.)
 
-             Pasó, y estuvo pasando bastante tiempo: el bloque de
-             `.tj-paper` con el tinte translúcido, el grano de fibra y la
-             luz de borde no llegaba al CSS del tema oscuro. Las
-             superficies salían con un color plano — el aspecto de «esto
-             está un poco soso» que abrió la revisión, sin una sola línea
-             de código que se pudiera señalar. La variante clara sí
-             llegaba, así que ni siquiera había una diferencia escrita
-             entre los dos temas que apuntara al problema.
-
-             Se comprueba en el ESTILO COMPUTADO y no leyendo el CSS
-             generado: lo que importa no es que la regla exista en algún
-             fichero, sino que le llegue al elemento.
-
-             La medición vive FUERA de este informe (ver «el papel, en los
-             dos temas» más abajo): aquí solo se miraba el tema con el que
-             arranca el documento —`data-theme="light"`—, y el defecto que
-             se acaba de describir estaba en el OSCURO. El guardián que
-             vigilaba el fallo no visitaba el tema donde ocurrió. */
-
-          /* ── EL IDIOMA DE LO QUE SE LEE Y DE LO QUE SE DECLARA ───────
-             Dos textos distintos y los dos importan: el que ve la
-             persona y el que ve el buscador. El segundo estuvo mal en
-             las 76 páginas inglesas —los tres esquemas del sitio se
-             emitían desde el layout raíz en español— y ninguna
-             comprobación lo miraba, porque el `lang` del documento sí
-             era correcto. Declarar `lang="en"` y describirse en español
-             es peor que no describirse. */
+          // Idioma de lo que se lee y de lo que se declara: el texto visible y los
+          // datos estructurados que ve el buscador. Declarar `lang="en"` y
+          // describirse en español es peor que no describirse.
           textoVisible: (document.body.innerText || "").slice(0, 60000),
           textoDatos: [...document.querySelectorAll('script[type="application/ld+json"]')]
             .map((s) => {
-              // Solo los valores de texto: las claves de schema.org y las
-              // URLs son inglesas por definición y no dicen nada del
-              // idioma de la página.
+              // Solo los valores de texto: las claves de schema.org y las URLs
+              // son inglesas por definición.
               try {
                 const textos = [];
                 const recorrer = (v) => {
@@ -765,15 +578,9 @@ for (const pantalla of PANTALLAS) {
       }
       if (!informe.main) avisos.push(`${etiqueta}: sin elemento <main>`);
 
-      /* ── LA LLAMADA A LA ACCIÓN, DENTRO DE LA PRIMERA PANTALLA ─────
-         El hero alineaba su contenido abajo para dejar sitio a la
-         figura, y en un portátil corriente eso empujaba el botón
-         principal justo al borde: medido a 900 px de alto, el botón
-         acababa a 810. Quien no baja, no lo ve.
-
-         No basta con mirarlo en una pantalla: el hero mide una ventana
-         completa, así que el problema aparece y desaparece según la
-         altura. Se comprueba en las cuatro. */
+      // La llamada a la acción dentro de la primera pantalla: quien no baja, no
+      // la ve. El hero mide una ventana completa y el problema depende de la
+      // altura, así que se comprueba en las cuatro pantallas.
       if (ruta === "/") {
         const pliegue = await pagina.evaluate(() => {
           const cta = [...document.querySelectorAll("main a")].find((a) =>
@@ -795,11 +602,9 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── LA TARJETA, OPACA EN LOS DOS TEMAS ────────────────────────
-         `.tj-paper` es la tarjeta del sitio: su texto se mide contra su
-         propio fondo, así que tiene que tapar lo que hay detrás. Se fuerzan
-         los dos temas sobre el mismo documento —lo mismo que hace el
-         conmutador: `data-theme` más la clase `dark`— y se mide en cada uno. */
+      // La tarjeta, opaca en los dos temas: `.tj-paper` debe tapar lo que hay
+      // detrás porque su texto se mide contra su propio fondo. Se fuerzan los
+      // dos temas como el conmutador (`data-theme` más la clase `dark`).
       if (pantalla.nombre === "escritorio") {
         const papeles = await pagina.evaluate(async () => {
           const raiz = document.documentElement;
@@ -808,8 +613,7 @@ for (const pantalla of PANTALLAS) {
           for (const tema of ["light", "dark"]) {
             raiz.dataset.theme = tema;
             raiz.classList.toggle("dark", tema === "dark");
-            // Un fotograma: el estilo computado no refleja el cambio de
-            // atributo hasta que el navegador recalcula.
+            // Un fotograma: el estilo computado no refleja el cambio hasta recalcular.
             await new Promise((r) => requestAnimationFrame(() => r()));
             const el = document.querySelector(".tj-paper:not(.tj-paper-dense)");
             salida[tema] = el
@@ -818,15 +622,9 @@ for (const pantalla of PANTALLAS) {
                 }
               : null;
           }
-          /* Se restaura el estado EXACTO, incluida la ausencia del
-             atributo. `dataset.theme = undefined` escribe la cadena
-             "undefined", y con `data-theme="undefined"` no casa ni el
-             bloque claro ni el oscuro: todas las comprobaciones
-             posteriores de esta misma iteración —tinta al final del
-             scroll, cajón, vuelta arriba, contraste sobre captura—
-             medirían un tema que no existe. Hoy no puede pasar porque el
-             layout fija `data-theme="light"` en el servidor, pero está a
-             un atributo de distancia y el fallo sería mudo. */
+          // Se restaura el estado exacto, incluida la ausencia del atributo:
+          // `dataset.theme = undefined` escribe «undefined» y ninguna regla de
+          // tema casaría, así que las comprobaciones siguientes medirían un tema inexistente.
           if (original === undefined) delete raiz.dataset.theme;
           else raiz.dataset.theme = original;
           raiz.classList.toggle("dark", original === "dark");
@@ -846,12 +644,9 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── CADA TEMA, SU CAPTURA, Y SOLO UNA ──────────────────────────
-         La lámina monta la captura clara y la oscura, y el CSS esconde la
-         que no toca (ProductPlate.tsx). Si esa regla se pierde o cambia
-         de nombre, nada falla: en oscuro se ve la clara, o se ven las dos
-         una encima de otra. Se fuerza cada tema como hace el botón y se
-         mira qué fichero enseña cada ventana. */
+      // Cada tema, su captura y solo una: el CSS esconde la que no toca
+      // (ProductPlate.tsx); si esa regla se pierde, en oscuro se ve la clara o
+      // las dos a la vez. Se fuerza cada tema y se mira qué fichero enseña cada ventana.
       const temasLamina = await pagina.evaluate(async () => {
         const ventanas = [...document.querySelectorAll(".tj-lamina-ventana")];
         if (!ventanas.length) return null;
@@ -903,11 +698,9 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── LA AYUDA DE LA DEMO SE ABRE DONDE SE VE ────────────────────
-         Va anclada a la barra de estado de la demo, y a 1440×900 esa
-         esquina quedaba debajo del borde: `?` la abría sin que se viera
-         nada. Se abre como lo haría alguien —foco en la demo y `?`— y se
-         exige que quepa entera en la ventana. */
+      // La ayuda de la demo se abre donde se ve: va anclada a la barra de estado
+      // y a 1440×900 quedaba bajo el borde. Se abre con foco en la demo y `?`,
+      // y se exige que quepa entera en la ventana.
       if (ruta.endsWith("/demo")) {
         const pestana = pagina.locator(".demo-window [role=tab]").first();
         if (await pestana.count()) {
@@ -936,26 +729,14 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── NADA SE QUEDA A MEDIO ENCENDER AL FINAL DEL SCROLL ────────
-         Las entradas de sección son ahora CSS atado a la posición del
-         elemento en la ventana (`animation-timeline: view()`), y eso
-         trae un riesgo propio que el mecanismo anterior no tenía: el
-         progreso de la animación no se «completa», se MAPEA. Un
-         elemento que nunca llegue al final de su rango —porque está
-         tan abajo que el documento se acaba antes— se quedaría en un
-         fotograma intermedio de forma PERMANENTE: a media opacidad y
-         unos píxeles desplazado, sin que nada lo devuelva a su sitio.
-
-         Es exactamente el mismo defecto que se acaba de corregir
-         —contenido servido a media tinta— por un camino distinto, así
-         que se comprueba en vez de suponerse: se baja al final del
-         documento y se exige que todo lo visible esté a plena
-         opacidad. */
+      // Nada a medio encender al final del scroll: las entradas de sección usan
+      // `animation-timeline: view()`, cuyo progreso se mapea y no se «completa»;
+      // un elemento que nunca llega al final de su rango se queda a media
+      // opacidad. Se baja al final y se exige que todo lo visible esté opaco.
       if (pantalla.nombre === "escritorio") {
         const tenues = await pagina.evaluate(async () => {
           window.scrollTo(0, document.documentElement.scrollHeight);
-          // Dos fotogramas y un respiro: el timeline se resuelve en el
-          // compositor y el estilo computado tarda en reflejarlo.
+          // El timeline se resuelve en el compositor y el estilo computado tarda en reflejarlo.
           await new Promise((r) => setTimeout(r, 700));
           const out = [];
           for (const el of document.querySelectorAll("[data-entra], #main-content section")) {
@@ -976,30 +757,12 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── LAS ENTRADAS TIENEN QUE ENTRAR ───────────────────────────
-         Las piezas marcadas con `data-entra` se encienden conforme
-         asoman, con `animation-timeline: view()`. Ese mecanismo falla en
-         SILENCIO: si la línea de tiempo queda inactiva, la animación no
-         aplica nada y el elemento se queda en su estado base, que es
-         «visible». La página se ve bien y el gesto simplemente no está.
-
-         Pasó, y en masa: `view()` ancla su línea de tiempo al contenedor
-         de desplazamiento más cercano, y `overflow: hidden` crea uno.
-         Con las secciones en `overflow-hidden`, recorriendo la página
-         entera no llegaba a verse a media tinta NI UNA pieza en
-         /features (0 de 33) ni en /pricing (0 de 94). Con `overflow:
-         clip`, 21 y 62.
-
-         Se recorre la página en saltos de un tercio de ventana y se
-         cuenta cuántas piezas distintas se han visto entrando alguna
-         vez. El umbral es el 25 %, no el 100 %: las secciones con
-         `content-visibility: auto` no actualizan las animaciones de su
-         contenido mientras el navegador lo salta, y eso es correcto —lo
-         que se vigila es que el mecanismo esté vivo, no que ninguna
-         pieza se lo pierda.
-
-         Comprobado contra el fallo devolviendo `overflow-hidden` a las
-         secciones: cae a 0 y salta. */
+      // Las entradas tienen que entrar: `animation-timeline: view()` falla en
+      // silencio (con la línea de tiempo inactiva la pieza queda «visible» y el
+      // gesto no está), y `overflow: hidden` la inactiva; `overflow: clip` no.
+      // Se recorre la página por tercios de ventana y se cuentan las piezas vistas
+      // entrando. Umbral del 25 %: `content-visibility: auto` salta animaciones;
+      // se vigila que el mecanismo esté vivo, no que ninguna pieza se pierda.
       if (pantalla.nombre === "escritorio" && ruta === "/features") {
         const entradas = await pagina.evaluate(async () => {
           const esperar = () => new Promise((r) => setTimeout(r, 200));
@@ -1029,46 +792,14 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── NINGUNA ENTRADA ENJAULADA ─────────────────────────────────
-         La comprobación de arriba cuenta cuántas piezas se encienden, y
-         un porcentaje es ciego a la erosión: con el 25 % de umbral,
-         `/features` estuvo dando 24 de 36 —ocho piezas muertas— y pasando
-         en verde. Ocho más en `/features/seguridad` y dieciocho en
-         `/features/disciplina`, todas por lo mismo.
-
-         La causa es siempre la misma y es ESTRUCTURAL, así que se
-         comprueba como tal en vez de calibrar un número: `view()` ancla
-         su línea de tiempo al contenedor de desplazamiento más cercano,
-         y `overflow: hidden` crea uno. Una pieza dentro de un `div` con
-         `overflow-hidden` que no se desplaza nunca se queda clavada en su
-         estado final, sin error, sin aviso y sin que se note al mirar la
-         página — solo se nota que «no entra».
-
-         `overflow: clip` recorta exactamente igual y no crea contenedor.
-         Por eso la regla no es «no recortes», es «recorta con clip».
-
-         ── LO QUE NO CUENTA COMO JAULA, Y POR QUÉ ────────────────────
-         La regla en crudo —cualquier ancestro con `overflow` distinto de
-         `visible`— tiene dos falsos positivos, los dos comprobados en el
-         navegador antes de descartarlos:
-
-          · Un `<svg>`. Su `overflow: hidden` es el valor por defecto del
-            elemento, no una decisión de nadie. Medido en `/pricing`
-            llevando los sellos al centro: `ViewTimeline` activa y
-            progreso 1,00. Funcionan.
-          · Un contenedor que SÍ se desplaza —un carrusel, una tabla con
-            scroll horizontal—. Ahí la línea de tiempo se ancla a algo
-            que de verdad se mueve, que es justo lo que hace falta.
-
-         Lo que rompe es la combinación exacta: recorta Y no se desplaza
-         nunca. Entonces el progreso se queda clavado y la pieza no entra
-         jamás. Eso es lo que se busca aquí. */
+      // Ninguna entrada enjaulada: un porcentaje es ciego a la erosión, así que se
+      // comprueba la causa estructural: una pieza dentro de un contenedor que
+      // recorta y nunca se desplaza se queda clavada en su estado final
+      // (`overflow: clip` recorta sin crear contenedor). No cuentan un `<svg>`
+      // (`overflow: hidden` por defecto) ni un contenedor que sí se desplaza.
       const enjauladas = await pagina.evaluate(async () => {
-        /* Antes de juzgar si una pieza está apagada, se le da la
-           oportunidad de encenderse: un barrido de la página como el que
-           haría cualquiera al leerla. Sin esto, lo que se mide es «aún no
-           ha asomado», que no es lo mismo que «no se enciende nunca» — y
-           en `/demo` daba cuatro falsos positivos. */
+        // Antes de juzgar una pieza apagada se hace un barrido de la página
+        // como al leerla: «aún no asomó» no es «no se enciende nunca».
         const alto = document.documentElement.scrollHeight;
         for (let y = 0; y < alto; y += Math.round(window.innerHeight * 0.75)) {
           window.scrollTo(0, y);
@@ -1097,17 +828,12 @@ for (const pantalla of PANTALLAS) {
         const nombre = ([p, jaula]) =>
           `${p.tagName.toLowerCase()}[data-entra="${p.getAttribute("data-entra")}"] dentro de ` +
           `${jaula.tagName.toLowerCase()}.${(jaula.className || "").toString().split(/\s+/).filter(Boolean).slice(0, 3).join(".")}`;
-        /* Enjaulada y APAGADA es un agujero en la página: el visitante no
-           ve ese contenido y nada avisa. Enjaulada y encendida solo se
-           pierde el gesto de entrada — molesto, no grave, y por eso va
-           como aviso y no tumba el guardián. */
+        // Enjaulada y apagada es un agujero en la página (fallo); enjaulada y
+        // encendida solo pierde el gesto de entrada (aviso).
         const apagadas = presas.filter(([p]) => Number(getComputedStyle(p).opacity) < 0.98);
-        /* Lo mismo con `Aparecer.tsx`, que no usa `view()` sino un
-           IntersectionObserver: tras recorrer la página entera, una pieza
-           que sigue en `data-tj-ap="0"` no ha asomado nunca. Pasó con las
-           cifras de una matriz que recorta: el desplazamiento previo de
-           32 px las sacaba enteras del recorte, el observador las veía
-           con intersección cero y se quedaban invisibles para siempre. */
+        // `Aparecer.tsx` usa un IntersectionObserver: tras recorrer la página,
+        // una pieza que sigue en `data-tj-ap="0"` no asomó nunca (intersección
+        // cero por un desplazamiento previo que la sacaba del recorte).
         const atascadas = [...document.querySelectorAll('[data-tj-ap="0"]')]
           .filter((e) => e.offsetHeight > 0)
           .map((e) => `${e.tagName.toLowerCase()}.${(e.className || "").toString().split(/\s+/).filter(Boolean).slice(0, 3).join(".")} «${e.textContent.trim().slice(0, 30)}»`);
@@ -1139,18 +865,10 @@ for (const pantalla of PANTALLAS) {
         );
       }
 
-      /* ── EL CAJÓN LATERAL, ABIERTO ─────────────────────────────────
-         Todo lo que se comprueba arriba mira la página en reposo, y el
-         cajón de navegación solo existe cuando alguien lo abre: ni su
-         posición ni su opacidad ni el texto que tapa entran en ninguna
-         de las otras comprobaciones. Se abre y se mide.
-
-         Lo que se busca es que quepa. Al abrirlo, el cuerpo de la
-         página pasa a `position: fixed` para que no se desplace por
-         detrás —ver el porqué en `Navbar.tsx`—, y ese cambio reordena
-         el ancho contra el que se ancla un elemento fijo. Si el cálculo
-         se desvía, el cajón se sale por la derecha y sus entradas
-         aparecen cortadas a media palabra. */
+      // El cajón lateral, abierto: solo existe cuando alguien lo abre, así que
+      // las demás comprobaciones no lo miden. Debe caber: al abrirlo el cuerpo
+      // pasa a `position: fixed` (ver `Navbar.tsx`) y, si el ancho de anclaje
+      // se desvía, se sale por la derecha con las entradas cortadas.
       if (ruta === "/" && (pantalla.nombre === "movil" || pantalla.nombre === "tableta")) {
         const cajon = await pagina.evaluate(async () => {
           const abrir = [...document.querySelectorAll("button")].find((b) =>
@@ -1158,8 +876,7 @@ for (const pantalla of PANTALLAS) {
           );
           if (!abrir) return { abrir: false };
           abrir.click();
-          // La entrada dura 320 ms; se espera al doble para medir la
-          // posición final y no un fotograma de la animación.
+          // La entrada dura 320 ms: se espera al doble para medir la posición final.
           await new Promise((r) => setTimeout(r, 700));
           const panel = document.querySelector(".tj-paper-dense.fixed");
           if (!panel) return { abrir: true, panel: false };
@@ -1187,9 +904,8 @@ for (const pantalla of PANTALLAS) {
               `${etiqueta}: el cajón se sale de la pantalla — ocupa de ${cajon.izq} a ${cajon.der} en ${cajon.ventana}px`
             );
           }
-          /* Un cajón translúcido deja leer la página por debajo de sus
-             entradas. Se admite hasta un 4 % de paso, que es el alfa
-             que el propio token de superficie ya trae. */
+          // Un cajón translúcido deja leer la página por debajo: se admite hasta
+          // un 4 % de paso, el alfa que ya trae el token de superficie.
           const alfa = cajon.fondo.match(/[\d.]+\s*\)$/);
           const paso = alfa && cajon.fondo.includes("/") ? 1 - parseFloat(alfa[0]) : 0;
           if (paso > 0.04) {
@@ -1198,33 +914,16 @@ for (const pantalla of PANTALLAS) {
             );
           }
         }
-        // Se recarga: la página queda con el cuerpo bloqueado y el
-        // resto de comprobaciones de esta pantalla medirían otra cosa.
+        // Se recarga: la página queda con el cuerpo bloqueado.
         await pagina.reload({ waitUntil: "networkidle" });
       }
 
-      /* ── EL MENÚ DE «PRODUCTO», CON UN RATÓN DE VERDAD ─────────────
-         El disparador se abre al pasar el ratón por encima Y responde al
-         clic. Con esas dos cosas juntas hay una secuencia que ocurre
-         SIEMPRE con un ratón —acercar el cursor y pulsar— y que estuvo
-         rota: el hover abría el panel, el clic alternaba el estado, y el
-         resultado de pulsar «Producto» era que el menú desaparecía. Y no
-         volvía mientras el cursor siguiera encima, porque estando quieto
-         el hover ya no dispara nada.
-
-         Esto NO se puede comprobar con `elemento.click()`: un clic
-         sintético no mueve el puntero, así que no hay hover previo y la
-         secuencia que falla no llega a producirse. Por eso aquí se usa
-         el ratón real de Playwright —`mouse.move` y luego `mouse.click`—
-         que es lo mismo que hace una mano.
-
-         Se comprueban las tres formas de llegar al menú:
-           · ratón encima          → abre
-           · ratón encima + clic   → SIGUE abierto  (el fallo)
-           · solo teclado (Enter)  → abre
-
-         Comprobado contra el defecto devolviendo el `onClick` a
-         `setMegaOpen((o) => !o)`: la segunda salta. */
+      // El menú de «Producto» con un ratón de verdad: el hover lo abre y el clic
+      // alterna, así que acercar el cursor y pulsar lo cerraba, y ya no volvía
+      // con el cursor quieto. Un `elemento.click()` sintético no mueve el
+      // puntero y no reproduce la secuencia: se usan `mouse.move` y `mouse.click`.
+      // Se miran tres entradas: ratón encima (abre), ratón y clic (sigue abierto)
+      // y teclado (abre).
       if (ruta === "/" && pantalla.nombre === "escritorio") {
         const disparador = await pagina.$("#navbar-producto-trigger");
         if (!disparador) {
@@ -1239,8 +938,7 @@ for (const pantalla of PANTALLAS) {
           const cx = caja.x + caja.width / 2;
           const cy = caja.y + caja.height / 2;
 
-          // 1) El ratón se acerca. Se sale antes, para que el movimiento
-          //    sea una ENTRADA de verdad y no un puntero ya quieto encima.
+          // 1) Se parte de fuera para que sea una entrada y no un puntero ya quieto encima.
           await pagina.mouse.move(cx, cy + 240);
           await pagina.mouse.move(cx, cy);
           await pagina.waitForTimeout(320);
@@ -1251,7 +949,7 @@ for (const pantalla of PANTALLAS) {
             );
           }
 
-          // 2) Y ahora se pulsa, con el puntero donde ya estaba.
+          // 2) Se pulsa con el puntero donde estaba.
           await pagina.mouse.click(cx, cy);
           await pagina.waitForTimeout(320);
           const trasClic = await abierto();
@@ -1263,8 +961,7 @@ for (const pantalla of PANTALLAS) {
           }
           menusVistos.push(`hover ${trasHover ? "abre" : "NO abre"} · clic ${trasClic ? "mantiene" : "CIERRA"}`);
 
-          // 3) Y por teclado, donde no hay hover que valga: ahí el clic
-          //    sí tiene que alternar, porque es el único gesto que hay.
+          // 3) Por teclado no hay hover: el único gesto es abrir y cerrar.
           await pagina.mouse.move(cx, cy + 240);
           await pagina.keyboard.press("Escape");
           await pagina.waitForTimeout(240);
@@ -1284,12 +981,9 @@ for (const pantalla of PANTALLAS) {
             fallos.push(`${etiqueta}: el menú de Producto no se cierra con Escape`);
           }
 
-          /* ── LOS DESPLEGABLES NO TRANSPARENTAN EL TITULAR ────────────
-             Se abren sobre el h1 del héroe. Con el fondo al 0,74 de
-             opacidad, sus letras de 90 px se leían como un borrón detrás
-             de la lista. Se mide el fondo en los dos temas; la regla que
-             lo sube es de una clase (`tj-cristal--menu`) que basta con
-             olvidar en un panel nuevo. */
+          // Los desplegables no transparentan el titular: se abren sobre el h1 y un
+          // fondo poco opaco lo deja como un borrón tras la lista. Se mide el fondo
+          // en los dos temas; la regla (`tj-cristal--menu`) se olvida fácil en un panel nuevo.
           const opacidadEnTemas = (selector) =>
             pagina.evaluate((sel) => {
               const el = document.querySelector(sel);
@@ -1339,29 +1033,19 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── LA BARRA SUPERIOR NO CAMBIA DE ALTURA AL DESPLAZAR ────────
-         Se condensaba de 68 a 56 px en cuanto se bajaban diez píxeles.
-         Eso mueve doce píxeles hacia arriba la marca, la navegación y
-         el CTA justo cuando el ojo va a por un enlace, y descuadra el
-         destino de los anclajes: `scroll-padding-top` es una constante
-         y el obstáculo que esquiva medía dos cosas distintas según el
-         momento.
-
-         Se mide la altura REAL de la barra en tres posiciones, porque
-         la constante puede quedarse escrita en el código y aun así
-         llegar rota a pantalla — una transición, un `@media` o una
-         clase que gane por especificidad valen para deshacerlo.
-
-         En los dos anchos, no solo en escritorio: la barra móvil tiene
-         su propia rejilla y su propio cajón. */
+      // La barra superior no cambia de altura al desplazar: condensarla mueve la
+      // marca y el CTA justo al ir a por un enlace, y descuadra los anclajes
+      // (`scroll-padding-top` es una constante). Se mide la altura real en tres
+      // posiciones, porque una transición, un `@media` o una clase más
+      // específica la deshacen aunque la constante siga en el código. En
+      // escritorio y móvil: la barra móvil tiene su propia rejilla.
       if (pantalla.nombre === "escritorio" || pantalla.nombre === "movil") {
         const alturas = await pagina.evaluate(async () => {
           const barra = document.querySelector("[data-navbar-root] nav");
           if (!barra) return null;
           const mide = async (y) => {
             window.scrollTo(0, y);
-            // Más que de sobra para los 340 ms que duraba la transición
-            // de altura: si algo aún interpola, aquí ya ha terminado.
+            // Margen de sobra sobre cualquier transición de altura.
             await new Promise((r) => setTimeout(r, 600));
             return Math.round(barra.getBoundingClientRect().height);
           };
@@ -1387,16 +1071,10 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── LA VUELTA ARRIBA NO PUEDE REBOBINAR LA PÁGINA ─────────────
-         `html` llevaba `scroll-behavior: smooth`, y con él volver a la
-         cabecera desde el pie de la portada animaba las diez pantallas
-         de recorrido: el sitio entero pasando hacia atrás. Aquí se
-         MIDEN las posiciones intermedias, que es lo único que distingue
-         un salto de un rebobinado — el destino es el mismo en los dos
-         casos, así que comprobar dónde acaba no habría cazado nada.
-
-         Solo en la portada y en escritorio: es la página más larga del
-         sitio y donde el botón aparece antes. */
+      // La vuelta arriba no rebobina la página: con `scroll-behavior: smooth`
+      // volver a la cabecera animaba el recorrido entero. Se miden las
+      // posiciones intermedias, porque el destino es el mismo con salto y con
+      // rebobinado. Solo en la portada y en escritorio, la página más larga.
       if (ruta === "/" && pantalla.nombre === "escritorio") {
         const viaje = await pagina.evaluate(async () => {
           window.scrollTo(0, document.documentElement.scrollHeight);
@@ -1416,8 +1094,7 @@ for (const pantalla of PANTALLAS) {
             boton: true,
             desde,
             final: Math.round(window.scrollY),
-            /* El primer sitio en el que se ve la página tras pulsar. Si
-               está a diez pantallas del destino, se recorrieron. */
+            // Primera posición vista tras pulsar: si está lejos del destino, se recorrió.
             primera: posiciones[0] ?? null,
             fotogramas: posiciones.length,
             alto: window.innerHeight,
@@ -1434,9 +1111,7 @@ for (const pantalla of PANTALLAS) {
               `${etiqueta}: volver arriba deja la página en ${viaje.final}px, no en la cabecera`
             );
           }
-          // Tres pantallas de margen: el aterrizaje son 220 px, y el
-          // umbral deja sitio a una animación algo más larga sin dar
-          // por bueno un recorrido de verdad.
+          // Tres pantallas de margen: admite un aterrizaje animado, no un recorrido.
           if (viaje.primera !== null && viaje.primera > viaje.alto * 3) {
             fallos.push(
               `${etiqueta}: volver arriba recorre la página — primera parada a ${viaje.primera}px de ${viaje.desde}px`
@@ -1445,8 +1120,7 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* Una sola pantalla basta: el idioma no depende del ancho, y
-         repetirlo cuatro veces solo multiplicaría el mismo fallo. */
+      // Una sola pantalla basta: el idioma no depende del ancho.
       if (lang === "en" && pantalla.nombre === "escritorio") {
         const enPantalla = marcasEspanolas(informe.textoVisible);
         const enDatos = marcasEspanolas(informe.textoDatos);
@@ -1479,8 +1153,7 @@ for (const pantalla of PANTALLAS) {
         } else if (l.sirve.includes("-movil")) {
           fallos.push(`${etiqueta}: la lámina sirve el recorte de móvil en ${pantalla.nombre}`);
         }
-        /* Por debajo de 0,4 la cifra más grande de la captura deja de
-           leerse. Es el umbral por el que existe el recorte. */
+        // Por debajo de 0,4 la cifra más grande de la captura deja de leerse.
         const escala = l.mostrado / l.nativo;
         if (escala < 0.4) {
           fallos.push(
@@ -1490,30 +1163,13 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* ── TEXTO QUE SE SALE POR EL CANTO ──────────────────────────────
-         El fallo que motivó esto: en la demo, la tira «Riesgo de esta
-         operación» usaba `grid-cols-[1fr_1px_1fr_1px_1fr]`. Un `1fr`
-         pelado es `minmax(auto,1fr)`, así que la columna NO encoge por
-         debajo de su contenido: con «520,00 US$» dentro, la tira medía
-         262px en un hueco de 224 y el «5,20 %» quedaba cortado por el
-         canto de la tarjeta, que tiene `overflow:hidden`. Nada fallaba
-         —ni consola, ni tests, ni el ancho del documento, porque el
-         recorte se come el desbordamiento— y solo se veía mirando la
-         página en un teléfono.
-
-         Se busca justo esa forma: un elemento CON TEXTO que sobresale
-         del rectángulo del ancestro más cercano que recorta.
-
-         Por qué solo en móvil: es donde el ancho aprieta y donde una
-         rejilla que no encoge revienta. En escritorio sobra sitio y
-         estas mismas rejillas caben.
-
-         Acotado para que no mienta: solo hojas de texto (si un hijo
-         también tiene texto, el desbordamiento se le imputa al hijo y no
-         se cuenta dos veces), nada marcado `aria-hidden` —lo decorativo
-         se sale a propósito—, nada dentro de un contenedor que se pueda
-         desplazar en horizontal a propósito, y un margen de 2px para el
-         redondeo subpíxel. */
+      // Texto que se sale por el canto: una columna `1fr` pelada no encoge por
+      // debajo de su contenido y el recorte del contenedor se come el
+      // desbordamiento, sin error en consola ni en el ancho del documento.
+      // Se busca un elemento con texto que sobresale del ancestro más cercano
+      // que recorta. Solo en móvil, donde el ancho aprieta. Acotado: solo hojas
+      // de texto, nada `aria-hidden`, nada en contenedores desplazables y 2 px
+      // de margen por el redondeo subpíxel.
       if (pantalla.nombre === "movil") {
         const cortados = await pagina.evaluate(() => {
           const salida = [];
@@ -1533,27 +1189,12 @@ for (const pantalla of PANTALLAS) {
             if ([...el.children].some((c) => (c.textContent || "").trim())) continue;
             const r = el.getBoundingClientRect();
             if (r.width === 0 || r.height === 0) continue;
-            /* ── SÓLO SE DESCARTA LO QUE NO ESTÁ MAQUETADO ──────────────
-               Aquí hay una distinción que costó una prueba contra el fallo.
-
-               El primer intento descartaba todo lo que `checkVisibility`
-               diera por invisible, con las tres banderas puestas. Eso quitó
-               los seis falsos positivos de /about —secciones con
-               `content-visibility:auto` que el navegador ni siquiera
-               maqueta, así que su geometría no significa nada— pero de paso
-               DESACTIVÓ la comprobación entera en /demo: las filas de la
-               tabla entran con `opacity:0` y solo suben a 1 cuando el
-               scroller interno las revela, así que el fallo real de la
-               tabla dejó de detectarse. Se comprobó revirtiendo el arreglo
-               a propósito: la comprobación decía «correcto».
-
-               La diferencia que importa no es «se ve ahora», es «está
-               maquetado»: un elemento a opacidad 0 por una animación de
-               entrada SÍ se va a ver, y su caja ya es la definitiva; uno
-               saltado por `content-visibility` no está renderizado y su
-               caja es una estimación del navegador. Por eso solo se pasa la
-               bandera `contentVisibilityAuto` y NO las de opacidad y
-               visibilidad. */
+            // Solo se descarta lo que no está maquetado, no lo que no se ve ahora:
+            // un elemento a opacidad 0 por una animación de entrada ya tiene su
+            // caja definitiva, y descartarlo desactivaba la comprobación en las
+            // filas de la tabla de /demo. Lo saltado por `content-visibility`
+            // tiene una geometría estimada. Por eso solo se pasa
+            // `contentVisibilityAuto`, no las banderas de opacidad y visibilidad.
             if (
               typeof el.checkVisibility === "function" &&
               !el.checkVisibility({ contentVisibilityAuto: true })
@@ -1563,21 +1204,16 @@ for (const pantalla of PANTALLAS) {
             let p = el.parentElement;
             let caja = null;
             while (p && p !== document.body) {
-              // Una tira desplazable a mano no es un fallo: ahí el
-              // contenido SE PUEDE alcanzar. El fallo es lo recortado.
+              // Una tira desplazable a mano no es un fallo: el contenido se alcanza.
               if (desplazable(p)) { caja = null; break; }
               if (recorta(p)) { caja = p; break; }
               p = p.parentElement;
             }
             if (!caja) continue;
             const cr = caja.getBoundingClientRect();
-            /* El texto solo para lectores de pantalla (`.sr-only`) vive a
-               propósito dentro de una caja de 1×1 px con `overflow:hidden`:
-               ahí el contenido SIEMPRE sobresale, y está bien que lo haga.
-               Se descarta por la geometría y no por el nombre de la clase,
-               que puede cambiar. Encontrado al probar esto: daba «"informada."
-               se sale 246px» en /pricing, que era el titular del lector de
-               pantalla haciendo exactamente su trabajo. */
+            // El texto `.sr-only` vive a propósito en una caja de 1×1 px con
+            // `overflow:hidden` y siempre sobresale: se descarta por la
+            // geometría y no por el nombre de la clase.
             if (cr.width <= 1 || cr.height <= 1) continue;
             const fuera = Math.round(Math.max(r.right - cr.right, cr.left - r.left));
             if (fuera > 2) {
@@ -1592,10 +1228,8 @@ for (const pantalla of PANTALLAS) {
           );
         }
 
-        /* El botón principal del cierre de página va a todo el ancho en
-           móvil, como el del héroe. Con `justify-items: start` en su
-           rejilla medía unos 280 de los 350 px disponibles y quedaba
-           descolgado del borde derecho del titular. */
+        // El botón principal del cierre va a todo el ancho en móvil, como el del
+        // héroe; con `justify-items: start` quedaba descolgado del titular.
         const cierre = await pagina.evaluate(() => {
           const boton = document.querySelector(".tj-cierre .cta--primario");
           const bloque = boton?.closest(".tj-cierre");
@@ -1615,14 +1249,11 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      /* El contraste solo se mide en escritorio: la composición de capas
-         es la misma en las cuatro pantallas y leer píxeles cuesta una
-         captura por elemento. */
+      // El contraste solo se mide en escritorio: las capas son las mismas en las
+      // cuatro pantallas y leer píxeles cuesta una captura por elemento.
       if (pantalla.nombre === "escritorio") {
         if (informe.candidatosContraste.length === 0) {
-          /* Una comprobación que no encuentra nada que comprobar pasa en
-             verde y no protege nada. Si una ruta deja de tener textos
-             pequeños sobre el fondo, que se sepa. */
+          // Sin candidatos la comprobación pasaría en verde sin proteger nada.
           avisos.push(`${etiqueta}: ningún texto pequeño sobre el fondo que medir`);
         }
         for (const c of informe.candidatosContraste) {
@@ -1642,11 +1273,9 @@ for (const pantalla of PANTALLAS) {
       for (const s of informe.solapesBarra) {
         fallos.push(`${etiqueta}: barra superior — ${s}`);
       }
-      /* La holgura mínima es un canal entero. Menos que eso significa que
-         la zona central ya se ha salido de su columna y está comiéndose
-         el aire de sus vecinas: el solape es cuestión de que una fuente
-         renderice unos píxeles más ancha, que es exactamente lo que pasó
-         entre esta máquina y la de integración continua. */
+      // Holgura mínima, un canal entero: con menos, la zona central se sale de su
+      // columna y basta una fuente unos píxeles más ancha (otra máquina, el CI)
+      // para que se solape.
       if (informe.presupuestoBarra) {
         const { pide, hay, canal } = informe.presupuestoBarra;
         presupuestosBarra.push(`${pantalla.nombre} pide ${pide} de ${hay}`);
@@ -1664,10 +1293,8 @@ for (const pantalla of PANTALLAS) {
       }
 
       if (SHOTS) {
-        // Esperar a que la cortina de la intro se haya retirado del DOM y
-        // a que no queden animaciones corriendo: si no, la captura sale a
-        // mitad de la transición, con la barra superior medio tapada, y
-        // no sirve para juzgar nada.
+        // Se espera a que se retire la cortina de la intro y no queden
+        // animaciones corriendo: si no, la captura sale a mitad de transición.
         await pagina
           .waitForFunction(() => !document.getElementById("tj-loader"), null, { timeout: 6000 })
           .catch(() => {});
@@ -1692,22 +1319,11 @@ for (const pantalla of PANTALLAS) {
   await contexto.close();
 }
 
-/* ── Sin JavaScript ──────────────────────────────────────────────────
-   La comprobación que motivó todo esto. Se repite solo en escritorio:
-   el problema no dependía del tamaño de la ventana.
-
-   RECORRE LA LISTA COMPLETA, NO LAS OCHO PRIMERAS. Llevaba
-   `RUTAS.slice(0, 8)`, y ese corte dejaba fuera las siete inglesas por
-   un motivo que no estaba escrito en ninguna parte. Las páginas
-   inglesas se componen con los mismos componentes, así que cualquier
-   defecto de esta familia aparece en ellas igual; simplemente nadie
-   miraba.
-
-   Lo que esto NO es: una revisión de las 154 páginas que exporta el
-   build. Son 19 rutas — las escritas a mano más una muestra de cada
-   plantilla generada. Decirlo importa: un `loading` reintroducido en un
-   componente que solo aparezca en, digamos, `/glosario/gap` seguiría
-   sin verse aquí. */
+// Sin JavaScript, solo en escritorio (el tamaño de ventana no influye). Si
+// falla, un visitante o un buscador que no ejecute la página ve contenido
+// ausente u oculto. Recorre todas las rutas de `RUTAS`, inglesas incluidas,
+// pero no el export entero: un defecto en un componente que solo aparece en
+// una plantilla no muestreada no se vería aquí.
 const sinJs = await navegador.newContext({
   javaScriptEnabled: false,
   viewport: { width: 1440, height: 900 },
@@ -1715,36 +1331,15 @@ const sinJs = await navegador.newContext({
 for (const { ruta } of RUTAS) {
   const pagina = await sinJs.newPage();
   try {
-    /* ── SONDEAR, NO ESPERAR UN RATO ────────────────────────────────
-       Aquí hubo primero `domcontentloaded` sin espera, y después una
-       espera fija de 600 ms. Las dos daban falsos negativos: hasta que
-       la hoja de estilos no se aplica, el titular no tiene caja de
-       maquetación, `getClientRects()` devuelve 0 y la comprobación
-       falla por un motivo que no existe. Con la espera fija fallaba de
-       forma INTERMITENTE según la carga de la máquina, que es todavía
-       peor: una comprobación que a veces miente deja de creerse, y
-       entonces ya no sirve para nada.
-
-       Se sondea hasta que el titular sea visible o se agote el plazo.
-       Si se agota, el fallo es real. */
     await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
-    // Espera de reloj, no de página: con el JavaScript desactivado,
-    // `waitForFunction` no puede evaluarse dentro del documento, se agota
-    // sin esperar nada y se vuelve al problema de medir demasiado pronto.
-    // Se intentó y dio ocho falsos negativos estables, que engañan más
-    // que los intermitentes porque parecen un hallazgo.
+    // Espera de reloj, no de página: sin JavaScript `waitForFunction` no se
+    // evalúa, se agota sin esperar y se mediría demasiado pronto (falsos
+    // negativos estables). Antes de aplicarse la hoja el titular no tiene caja.
     await pagina.waitForTimeout(1500);
-    /* ── SE MIDE LO QUE SE VE, NO LO QUE DICE EL ELEMENTO ────────────
-       Esta comprobación miraba `getComputedStyle(h1)` — opacidad,
-       `visibility`, `display` — SOBRE EL PROPIO `h1`. Eso no sirve: un
-       ancestro con `hidden`, `display:none` o un `<div>` de Suspense
-       deja al `h1` con sus tres valores perfectos y aun así invisible.
-       Daba verde con la página en blanco.
-
-       `checkVisibility` recorre la cadena de ancestros; `getClientRects`
-       confirma que ocupa sitio de verdad. Y se comprueba además que el
-       texto del titular esté dentro de `<main>`, para que no baste con
-       que exista escondido en el árbol. */
+    // Se mide lo que se ve, no lo que dice el elemento: `checkVisibility`
+    // recorre los ancestros (un `hidden` o un `<div>` de Suspense dejan al h1
+    // con estilos perfectos e invisible) y `getClientRects` confirma que ocupa
+    // sitio. Además el texto del titular debe estar dentro de `<main>`.
     const r = await pagina.evaluate(() => {
       const h1 = document.querySelector("h1");
       if (!h1) return { hay: false };
@@ -1754,21 +1349,8 @@ for (const { ruta } of RUTAS) {
           ? h1.checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true })
           : h1.getClientRects().length > 0;
       const main = document.querySelector("main");
-      /* ── SE COMPARA TEXTO RENDERIZADO CONTRA TEXTO RENDERIZADO ──────
-         `textContent` e `innerText` no producen la misma cadena para el
-         mismo elemento: un `<br>` no aporta nada al primero y vale un
-         salto de línea en el segundo. El titular de la portada
-         —«Opera como una<br/>mesa institucional.»— salía como
-         "…unamesa…" por un lado y "…una\nmesa…" por el otro, así que la
-         comparación no podía coincidir NUNCA. Eso dejó un aviso
-         permanente que no señalaba nada de la página, y un aviso que
-         siempre está encendido deja de leerse.
-
-         Ahora los dos lados se obtienen por la misma vía (`innerText`) y
-         se les colapsa la secuencia de espacios. Lo que la comprobación
-         sigue detectando es lo que importaba: que el texto del titular
-         esté DENTRO de `<main>` y no escondido en otra rama del árbol.
-         Se comprueba contra el fallo moviendo el h1 fuera de `<main>`. */
+      // Los dos lados se leen con `innerText`: `textContent` ignora el `<br>` y
+      // la comparación no coincidiría nunca (aviso permanente, que deja de leerse).
       const norm = (s) => (s || "").replace(/\s+/g, " ").trim();
       const textoRender = norm(h1.innerText || h1.textContent);
       const textoMain = norm(main && main.innerText);
@@ -1781,32 +1363,15 @@ for (const { ruta } of RUTAS) {
         enMain: Boolean(main && textoRender && textoMain.includes(textoRender.slice(0, 24))),
       };
     });
-    /* Estas dos SÍ son fallos: si el titular no está en el HTML o no
-       tiene texto, no hay nada que discutir. */
+    // Sin h1 o sin texto es fallo seguro.
     if (!r.hay) fallos.push(`sin-JS ${ruta}: no hay h1 en el HTML`);
     else if (!r.texto) fallos.push(`sin-JS ${ruta}: el h1 no tiene texto`);
     else if (!r.visible) {
-      /* ── POR QUÉ ESTO ES UN AVISO Y NO UN FALLO ────────────────────
-         La visibilidad medida aquí NO es de fiar todavía, y decirlo es
-         más útil que fingir lo contrario.
-
-         Medida con este script, el titular sale invisible en las ocho
-         rutas. Medido con un script aparte contra el MISMO sitio
-         construido y el mismo navegador —contexto nuevo, espera de
-         1,2 s— sale visible: `checkVisibility()` verdadero, una caja de
-         maquetación y ningún ancestro oculto. Las dos mediciones no
-         pueden ser ciertas a la vez, así que una de las dos está mal
-         montada y no he cerrado cuál.
-
-         Mientras eso no se resuelva, esto no puede tumbar la
-         compilación: una barrera que se dispara sin que nadie sepa por
-         qué se acaba desactivando entera, y entonces se pierden también
-         las comprobaciones que sí valen. Queda como aviso, con los
-         valores medidos delante, para que quien lo retome no empiece de
-         cero. Lo que hay que averiguar es por qué difieren las dos
-         formas de medir; el candidato es cómo se crea el contexto sin
-         JavaScript en este script (uno solo para las ocho rutas) frente
-         al de la prueba aislada (uno por ruta). */
+      // Aviso y no fallo, a propósito: esta medición no es de fiar. Aquí el
+      // titular sale invisible, y con un script aparte (contexto nuevo por ruta)
+      // sale visible; sin cerrar cuál está mal, tumbar el build con una barrera
+      // que nadie entiende acaba desactivándola entera. Sospecha: el contexto
+      // sin JavaScript compartido entre rutas.
       avisos.push(
         `sin-JS ${ruta}: el h1 se mide como no visible — PENDIENTE de confirmar, una medición aislada dice lo contrario ` +
           `(rects=${r.rects}, checkVisibility=${r.checkVis})`
@@ -1815,40 +1380,12 @@ for (const { ruta } of RUTAS) {
       avisos.push(`sin-JS ${ruta}: el titular no aparece en el texto de <main>`);
     }
 
-    /* ── NADA DE CONTENIDO DENTRO DE UN BLOQUE OCULTO ────────────────
-       Un `loading` en `next/dynamic` abre un límite de Suspense, y React
-       resuelve un límite durante el prerenderizado escribiendo el hueco
-       en su sitio y el contenido REAL al final del <body>, dentro de un
-       `<div hidden>` que un script devuelve a su lugar al hidratar. Sin
-       JavaScript ese script no corre y el contenido no existe para el
-       visitante — ni para un buscador que no ejecute la página.
-
-       Medido en el HTML compilado antes del arreglo: la portada servía
-       37.921 de sus 118.707 caracteres de MARCADO en bloques ocultos (el
-       32 %) y /features 61.865 de 128.953 (el 48 %), repartidos por 18
-       páginas.
-
-       SE MIDE MARCADO Y NO TEXTO, y la diferencia importa. La primera
-       versión contaba `textContent`, que para esas mismas páginas daba
-       2.627 caracteres en «/» y 2.445 en «/en» — dos órdenes de magnitud
-       por debajo del daño real, porque una sección escondida se lleva
-       consigo su estructura entera. Con el umbral en 40 caracteres de
-       texto, `/demo` ya tenía una sección de 47: estaba a siete
-       caracteres de escaparse. `innerHTML` mide lo mismo que el
-       comentario de arriba usa para justificar el cambio.
-
-       El umbral es 200 caracteres de marcado. No es cero porque React
-       deja un `<div hidden>` VACÍO por cada `ssr:false` —el atlas del
-       fondo—, y ése no esconde nada.
-
-       LA POBLACIÓN NO PUEDE QUEDAR VACÍA. Si el marcador cambia y
-       `[hidden]` deja de encontrar nada, esto informaría «0» para siempre
-       y seguiría en verde sin mirar. Por eso se exige encontrar al menos
-       un `[hidden]`: React emite uno por cada `ssr:false`, y el atlas del
-       fondo está en las quince rutas.
-
-       Comprobado contra el fallo devolviendo los seis
-       `{ loading: () => sectionFallback }` a `src/app/page.tsx`. */
+    // Nada de contenido dentro de un bloque oculto: un `loading` en `next/dynamic`
+    // hace que React escriba el contenido real en un `<div hidden>` que solo un
+    // script devuelve a su sitio; sin JavaScript no existe para el visitante ni
+    // para un buscador. Se mide marcado y no texto (una sección escondida se lleva
+    // su estructura). Umbral de 200 caracteres: React deja un `<div hidden>` vacío
+    // por cada `ssr:false`. Y se exige algún `[hidden]`, o la cuenta daría 0 siempre.
     const ocultos = await pagina.evaluate(() => {
       const todos = [...document.querySelectorAll("[hidden]")];
       const bloques = todos
@@ -1881,26 +1418,12 @@ for (const { ruta } of RUTAS) {
       );
     }
 
-    /* ── LA RED DE SEGURIDAD NO PUEDE ESTROPEAR LA PÁGINA ────────────
-       El `<noscript>` del layout sube a opacidad plena todo lo que lleve
-       `opacity:0` en línea, para que ninguna animación de entrada deje
-       una sección invisible sin JavaScript. Pero `[style*="opacity:0"]`
-       es una comparación de SUBCADENA: también casaba con `opacity:0.045`
-       —el grano del papel— y con `opacity:0.34` —la viñeta—, y los subía
-       a tinta plena por encima del texto.
-
-       Aquí se miden las dos caras a la vez, y las dos hacen falta:
-
-         · lo DECIMAL tiene que conservar su valor (si no, el remedio es
-           peor que la enfermedad);
-         · el CERO EXACTO tiene que acabar en 1 (si no, la red de
-           seguridad ya no existe y nadie se entera).
-
-       Sin la segunda mitad, «arreglar» el selector rompiéndolo del todo
-       —por ejemplo dejando de emitir el <noscript>— pasaría en verde.
-       Comprobado contra el fallo en las dos direcciones: con el selector
-       antiguo salta la primera; borrando el bloque <noscript> entero,
-       la segunda. */
+    // La red de seguridad no puede estropear la página: el `<noscript>` del
+    // layout sube a opacidad plena lo que lleve `opacity:0` en línea, pero el
+    // selector es de subcadena y casaba con `opacity:0.045` (el grano) y
+    // `opacity:0.34` (la viñeta). Se miden las dos caras: lo decimal conserva su
+    // valor y el cero exacto acaba en 1. Sin la segunda, borrar el `<noscript>`
+    // pasaría en verde.
     const velo = await pagina.evaluate(() => {
       const pisados = [];
       let decimales = 0;
@@ -1914,21 +1437,9 @@ for (const { ruta } of RUTAS) {
           pisados.push(`${el.tagName}.${el.className.toString().slice(0, 20)} ${declarada}→${computada}`);
         }
       }
-      /* ── LA SONDA ────────────────────────────────────────────────
-         Al retirar framer-motion de las páginas, los `opacity:0` en
-         línea desaparecieron: la red de seguridad dejó de tener casos
-         reales que rescatar y esta mitad del guardián pasó a medir cero
-         elementos, es decir, a no poder fallar nunca.
-
-         Eso no significa que la red sobre. Sigue ahí para el día en que
-         alguien vuelva a escribir una entrada con opacidad cero en
-         línea, y ese día tiene que funcionar. Así que en vez de esperar
-         a que aparezca un caso, se fabrica uno: se inserta un elemento
-         con `opacity:0` en línea y se comprueba que la regla del
-         <noscript> lo sube a tinta plena.
-
-         Comprobado contra el fallo vaciando el bloque <noscript>: la
-         sonda sale a 0 y salta. */
+      // La sonda: hoy las páginas no llevan `opacity:0` en línea y esta mitad
+      // mediría cero elementos, sin poder fallar. En vez de esperar a un caso
+      // real se inserta uno y se comprueba que el `<noscript>` lo sube a 1.
       const sonda = document.createElement("div");
       sonda.setAttribute("style", "opacity:0");
       sonda.textContent = "sonda";
@@ -1942,12 +1453,8 @@ for (const { ruta } of RUTAS) {
         if (!/opacity:\s*0\s*(?:;|$)/.test(el.getAttribute("style") || "")) continue;
         cerosTotal++;
         const cs = getComputedStyle(el);
-        /* LAS TRES DECLARACIONES, NO SÓLO LA OPACIDAD. La regla del
-           <noscript> rescata `opacity`, `transform` y `visibility`, y
-           antes esto solo miraba la primera: quitar el `transform:none`
-           dejaba las secciones desplazadas sin JavaScript y nada se
-           ponía rojo. Una animación de entrada típica combina las tres,
-           así que vigilar una de tres no protege de dos tercios. */
+        // Las tres declaraciones que rescata el `<noscript>` (`opacity`,
+        // `transform`, `visibility`): una animación de entrada típica las combina.
         const roto = [];
         if (parseFloat(cs.opacity) < 0.99) roto.push(`opacidad ${cs.opacity}`);
         if (cs.transform !== "none") roto.push(`transform ${cs.transform.slice(0, 24)}`);
@@ -1988,13 +1495,10 @@ for (const { ruta } of RUTAS) {
 }
 await sinJs.close();
 
-/* ── LA 404 EN LOS DOS IDIOMAS ──────────────────────────────────────
-   GitHub Pages sirve un único `404.html`, compilado en español, para
-   cualquier dirección que no exista, también bajo `/en/`. Si el
-   proveedor de idioma hidrata con el de la URL en vez del compilado,
-   React no casa el HTML (error #418) y rehace el árbol entero. Solo se
-   mira sobre el export: `next dev` pinta la 404 por su cuenta y ahí el
-   error sale aunque la web publicada esté bien. */
+// La 404 en los dos idiomas: GitHub Pages sirve un único `404.html`, compilado
+// en español, también bajo `/en/`. Si el idioma hidrata con el de la URL en
+// vez del compilado, React no casa el HTML (error #418). Solo sobre el export:
+// `next dev` pinta su propia 404 y da el error aunque la web publicada esté bien.
 const NO_EXISTE = [
   { ruta: "/ruta-que-no-existe-humo", lang: "es", texto: /Esta página no existe/ },
   { ruta: "/en/ruta-que-no-existe-humo", lang: "en", texto: /This page does not exist/ },
@@ -2030,10 +1534,9 @@ if (SERVIR) {
     await pagina.close();
   }
 
-  /* Bajo `/en/` el español compilado no se pinta mientras React no llega,
-     y si no llega nunca la página aparece sola al segundo y medio. Se
-     corta el JavaScript de la aplicación para verlo: el script embebido
-     que pone `lang="en"` sí corre. */
+  // Bajo `/en/` el español compilado no se pinta mientras React no llega, y si
+  // no llega la página aparece sola al segundo y medio. Se corta el JavaScript
+  // de la aplicación; el script embebido que pone `lang="en"` sí corre.
   const velo = await ctx404.newPage();
   await velo.route("**/_next/static/**/*.js", (r) => r.abort());
   try {
@@ -2052,13 +1555,10 @@ if (SERVIR) {
   await ctx404.close();
 }
 
-/* ── LAS CALCULADORAS NO DAN POR BUENO LO IMPOSIBLE ─────────────────
-   Hasta el 2026-09-25 la calculadora de riesgo daba 100/105/110 por un
-   corto con 199,90 $ de beneficio (el objetivo estaba del lado del stop),
-   y con el plan inválido seguía enseñando «riesgo de ruina 100 %» y un
-   tamaño 0. El proyector, con los controles al máximo, pintaba un capital
-   de 87 cifras. Las funciones puras tienen sus pruebas; esto mira lo que
-   llega a la pantalla. */
+// Las calculadoras no dan por bueno lo imposible: con el objetivo del lado del
+// stop la de riesgo debe avisar y no enseñar cifras del plan, y el proyector
+// con los controles al máximo no pinta una cifra desorbitada. Las funciones
+// puras tienen sus pruebas; esto mira lo que llega a la pantalla.
 let calculadorasVistas = 0;
 if (SERVIR) {
   const ctxCalc = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
@@ -2107,12 +1607,10 @@ if (SERVIR) {
   }
 }
 
-/* ── NADA DESENFOCA SU FONDO ───────────────────────────────────────
-   Desenfocar el fondo se recalcula en cada fotograma del scroll (el
-   2026-09-25 las tarjetas de /pricing daban un p95 de 33 ms al deslizar),
-   y el 2026-09-26 el cristal se retiró entero: las superficies que flotan
-   son hojas opacas. Cualquier `backdrop-filter: blur` que vuelva es un
-   resto. Para no dar verde sin mirar, cuenta lo recorrido y exige la barra. */
+// Nada desenfoca su fondo: `backdrop-filter: blur` se recalcula en cada
+// fotograma del scroll y las superficies que flotan son hojas opacas, así que
+// cualquier blur que vuelva es un resto. Para no dar verde sin mirar, cuenta
+// lo recorrido y exige encontrar la barra.
 let desenfoquesVistos = 0;
 let elementosMirados = 0;
 if (SERVIR) {
@@ -2150,12 +1648,10 @@ if (SERVIR) {
   if (elementosMirados < 1000) fallos.push(`desenfoque: solo ${elementosMirados} elementos recorridos en 5 rutas: la guarda no está mirando`);
 }
 
-/* ── EL ACORDEÓN SE PLIEGA, NO SALTA ───────────────────────────────
-   Hasta el 2026-09-26 las respuestas de /faq y /pricing se abrían y
-   cerraban de golpe: con `forceMount` Radix mide la altura después de
-   pintar y la animación iba de 0 a `auto`, que no se interpola. Se
-   muestrea la altura fotograma a fotograma: tiene que pasar por valores
-   intermedios al abrir y al cerrar, y plegada no se ve ni se enfoca. */
+// El acordeón se pliega, no salta: con `forceMount` Radix mide la altura tras
+// pintar y la animación iba de 0 a `auto`, que no se interpola. Se muestrea la
+// altura fotograma a fotograma: debe pasar por valores intermedios al abrir y
+// al cerrar, y plegada no se ve ni se enfoca.
 const acordeones = [];
 {
   const ctxPliegue = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
@@ -2208,10 +1704,9 @@ const acordeones = [];
   await ctxPliegue.close();
 }
 
-/* ── LA PÁGINA NUEVA ENTRA UNA VEZ ─────────────────────────────────
-   Con transición de vista, el fundido de `.page-enter` se sumaba al de
-   la vista y a la entrada de la cabecera: el contenido subía 28 px con
-   doble fundido. Al navegar de / a /pricing no pueden correr los dos. */
+// La página nueva entra una vez: con transición de vista, el fundido de
+// `.page-enter` se sumaba al de la vista (doble fundido). Al navegar de / a
+// /pricing no pueden correr los dos.
 let navegacionMirada = false;
 {
   const ctxNav = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
@@ -2249,11 +1744,9 @@ let navegacionMirada = false;
   await ctxNav.close();
 }
 
-/* ── EL BOTÓN DE SUBIR NO TAPA EL PIE ──────────────────────────────
-   Al final de la página el botón flotante se aparta hacia arriba. Subía
-   una cantidad fija (104 px) calculada cuando la barra final del pie era
-   una línea; con tres, en un móvil caía sobre «Todos los derechos
-   reservados.». Se mide cada trozo de texto del pie contra el botón. */
+// El botón de subir no tapa el pie: al final de la página se aparta hacia
+// arriba, y una cantidad fija dejaba de bastar cuando la barra final del pie
+// ocupaba más líneas en móvil. Se mide cada trozo de texto del pie contra el botón.
 let subirMedidos = 0;
 if (SERVIR) {
   for (const [ancho, alto] of [[390, 844], [375, 667], [768, 1024]]) {
@@ -2262,8 +1755,7 @@ if (SERVIR) {
     const pagina = await ctxSubir.newPage();
     for (const ruta of ["/faq/", "/demo/", "/glosario/drawdown/"]) {
       try {
-        /* Sin esperas fijas: en la máquina de GitHub la primera página de
-           cada contexto tardaba más en hidratar y el botón aún no estaba. */
+        // Sin esperas fijas: en el CI la primera página de cada contexto tarda más en hidratar.
         await pagina.goto(`${BASE}${ruta}`, { waitUntil: "networkidle", timeout: 30000 });
         await pagina.mouse.wheel(0, 100000);
         await pagina
@@ -2319,9 +1811,8 @@ if (fallos.length) {
   for (const f of fallos) console.error(`  ✗ ${f}`);
   process.exit(1);
 }
-/* El peor contraste medido, dicho en voz alta. Es la diferencia entre
-   "la comprobación pasó" y "la comprobación miró N sitios y el más justo
-   iba por aquí": lo segundo se puede seguir en el tiempo, lo primero no. */
+// Se imprime el peor contraste medido: «miró N sitios y el más justo iba por
+// aquí» se puede seguir en el tiempo, un simple «pasó» no.
 if (contrastesMedidos.length) {
   const peor = contrastesMedidos
     .map((s) => ({ s, v: parseFloat(s.split(" ").pop()) }))
@@ -2390,10 +1881,7 @@ if (opacidadesFinales.length) {
 }
 
 if (papelesVistos.length) {
-  /* Dos entradas por ruta —una por tema—, así que el número de entradas
-     NO es el número de rutas. El rótulo decía «30 rutas» cuando eran 15
-     en dos temas: un dato inflado al doble en el sitio donde se va a
-     mirar si la comprobación cubre lo que dice cubrir. */
+  // Hay dos entradas por ruta (una por tema): se cuentan por tema, no en total.
   const claros = papelesVistos.filter((s) => s.includes(" light ")).length;
   const oscuros = papelesVistos.filter((s) => s.includes(" dark ")).length;
   console.log(
@@ -2429,11 +1917,8 @@ if (ocultosVistos.length) {
 }
 
 if (velosVistos.length) {
-  /* `?.[1] ?? 0` y no `.exec(s)[1]`: el resumen corre DESPUÉS de que
-     todas las comprobaciones hayan pasado, así que un `TypeError` aquí
-     por un cambio de formato en la cadena se leería como si la
-     comprobación hubiera fallado. Un resumen no puede tumbar la
-     compilación. */
+  // `?.[1] ?? 0`: el resumen corre tras las comprobaciones y un `TypeError`
+  // por un cambio de formato se leería como un fallo de la comprobación.
   const cuenta = (re) => velosVistos.reduce((n, s) => n + Number(re.exec(s)?.[1] ?? 0), 0);
   const velos = cuenta(/(\d+) velo/);
   const ceros = cuenta(/(\d+) cero/);

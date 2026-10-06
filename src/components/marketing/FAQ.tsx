@@ -18,28 +18,13 @@ import {
 } from "@/components/ui/accordion";
 
 /**
- * FAQ — accordion of common questions (ES/EN) with real-time search.
+ * Preguntas frecuentes (ES/EN) en acordeón, con búsqueda en vivo sobre
+ * pregunta y respuesta en el idioma activo. Sin resultados, ofrece abrir el
+ * glosario, que pinta `OverlayHost`: importarlo aquí metería el glosario y
+ * Radix Dialog en el arranque de /faq.
  *
- * Premium motion layer:
- *  - Open accordion item gets a subtle accent border glow (via data-state).
- *  - Chevron rotation already handled by shadcn Accordion (rotate-180).
- *  - Question text shifts to accent color on hover.
- *
- * Search behaviour:
- *  - Filters question + answer text, case-insensitive, in the active language.
- *  - When the query yields no matches, shows a "no results" panel with a
- *    button that opens the glossary. Lo pinta `OverlayHost`: importarlo
- *    aquí metía el glosario entero y Radix Dialog en el arranque de /faq
- *    (unos 57 KB) para un botón que casi nadie pulsa.
- *  - The accordion auto-collapses while a query is active so multiple matches
- *    can be scanned at a glance; the first match opens by default.
- */
-
-/**
- * @param standalone En la página /faq el `PageHeader` ya titula
- * "Preguntas frecuentes." — con esta bandera la sección omite su
- * encabezado interno (que duplicaba el titular) y entra directa al
- * buscador y la lista.
+ * @param standalone En /faq el `PageHeader` ya titula: la sección omite su
+ * encabezado visible y entra directa al buscador y la lista.
  */
 export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   const { t, lang } = useLang();
@@ -48,8 +33,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   const [query, setQuery] = React.useState("");
   const [activeCategory, setActiveCategory] = React.useState<"all" | "security" | "access" | "product">("all");
 
-  // Pre-fill the search from `?q=` (e.g. the 404 page's search box) on mount.
-  // SSR-safe: guarded against `window` being undefined during server render.
+  // Rellena la búsqueda desde `?q=` (p. ej. la caja de la página 404).
   React.useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
@@ -59,11 +43,10 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
   const items: QA[] = es ? FAQ_ES : FAQ_EN;
 
-  // Real-time filter on question + answer text + category (active language).
+  // Filtro por texto y categoría; las categorías son índices en la lista.
   const filtered = React.useMemo(() => {
     const q = paraBuscar(query.trim());
     return items.filter((it, idx) => {
-      // Category classification
       if (activeCategory === "security") {
         if (![1, 2, 10, 12].includes(idx)) return false;
       } else if (activeCategory === "access") {
@@ -86,7 +69,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
     { id: "product" as const, labelEs: "Producto y funciones", labelEn: "Product & features" },
   ];
 
-  // While searching or filtering, force a fresh `key` so the first match opens by default
+  // Al buscar o filtrar, la `key` del acordeón cambia para abrir la primera coincidencia.
   const hasQuery = query.trim() !== "" || activeCategory !== "all";
   const noResults = filtered.length === 0;
   const anuncio = noResults
@@ -96,16 +79,13 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   return (
     <section
       id="faq"
-      /* En `/faq` la cabecera de página ya titula y aquí el h2 es invisible.
-         Basta `.section`: tras `.tj-cabecera` abre con el mismo aire que el
-         resto de páginas, y el relleno propio que llevaba (112 px abajo)
-         dejaba 184 px hasta el contacto, frente a los ~125 del resto. */
+      /* Basta `.section`: tras `.tj-cabecera` abre con el mismo aire que el
+         resto de páginas. */
       className="section cv-auto relative overflow-clip scroll-mt-24"
     >
       <div className="relative z-10 tj-container">
-        {/* Encabezado interno — el h2 siempre se renderiza (necesario para
-            el TOC + SEO); en modo standalone (/faq) se omite el eyebrow
-            porque el PageHeader ya aporta su propio kicker arriba. */}
+        {/* Encabezado interno: en `standalone` se omite el eyebrow (lo aporta el
+            PageHeader). */}
         <div className="relative max-w-3xl mx-auto text-center">
           {!standalone && (
             <Reveal>
@@ -114,13 +94,8 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               </div>
             </Reveal>
           )}
-          {/* En /faq el PageHeader ya titula "Preguntas frecuentes.", así
-              que este h2 se repetía A LA VISTA dos veces seguidas. El
-              comentario de arriba tiene razón en que el h2 debe seguir
-              EXISTIENDO (lo consumen el índice lateral y el esquema de
-              encabezados para SEO), pero eso no obliga a mostrarlo: con
-              `sr-only` sigue en el documento y en el árbol de
-              accesibilidad, y deja de duplicar el titular en pantalla. */}
+          {/* El h2 debe existir (índice lateral y encabezados SEO); en `standalone`
+              va `sr-only` para no duplicar el titular del PageHeader. */}
           <Reveal delay={0.06}>
             <h2
               className={
@@ -142,15 +117,10 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           </Reveal>
         </div>
 
-        {/* En `/faq` el bloque entero medía 768 px y se quedaba pegado al
-            margen izquierdo: a 1.440 px la mitad derecha de la página
-            estaba vacía mientras el formulario de contacto de más abajo
-            sí ocupaba las dos columnas. Desde `lg` el buscador, los
-            filtros y el enlace al glosario se van a un raíl estrecho a la
-            izquierda y las preguntas ocupan el resto. La
-            colocación se hace por rejilla para no duplicar el JSX: en el
-            documento el orden sigue siendo buscador → lista → glosario,
-            que es como se lee sin CSS y como se tabula. */}
+        {/* En `/faq`, desde `lg`, buscador, filtros y enlace al glosario van a un
+            raíl izquierdo y las preguntas ocupan el resto. Se coloca por
+            rejilla sin duplicar JSX: el orden del documento (y del tabulador)
+            sigue siendo buscador, lista, glosario. */}
         <div
           className={
             standalone
@@ -158,7 +128,6 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               : "contents"
           }
         >
-        {/* Search input — filters FAQ items in real time */}
         <Reveal
           delay={0.1}
           y={24}
@@ -179,7 +148,6 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
               className="tj-campo w-full h-11 pl-10 pr-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none transition-[border-color,box-shadow,background-color] duration-200 hover:border-[rgb(var(--divider)/0.25)] focus-visible:border-[rgb(var(--accent-base)/0.50)] focus-visible:bg-[rgb(var(--divider)/0.07)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.20)] focus-visible:ring-offset-0"
             />
             </div>
-            {/* Category Pills */}
             <div
               className={`flex flex-wrap items-center gap-1.5 mt-3.5 ${
                 standalone
@@ -217,19 +185,10 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
           y={32}
           className={standalone ? "lg:col-start-2 lg:row-start-1 lg:row-span-2" : undefined}
         >
-          {/* Pasa de cristal a papel, pero NO a retícula: dentro hay un
-              acordeón de trece preguntas que se abren y se cierran, y una
-              superficie es lo que dice «aquí se actúa». Una retícula
-              desnuda es para leer un dato, no para operar sobre él.
-
-              El cristal, además, no era cristal: la paleta viva le quita
-              el desenfoque y lo deja en un fondo plano sin grano, que es
-              justo lo que hacía que esta caja se viera apagada al lado
-              de las secciones de papel de la misma página. */}
           <div className={`relative mt-8 max-w-3xl border-t border-[var(--line)] ${standalone ? "lg:max-w-none" : "mx-auto"}`}>
             <ResultadoAnunciado texto={anuncio} />
             {noResults ? (
-              /* ───── No-results panel — opens the glossary ───── */
+              /* Sin resultados: ofrece el glosario. */
               <div className="relative px-4 py-12 text-center">
                 <p className="text-base font-medium text-primary">
                   {es
@@ -261,20 +220,14 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
                   <AccordionItem
                     key={item.q}
                     value={`item-${i}`}
-                    /* Abierta, la pregunta no cambia de caja: sin raíl
-                       lateral ni relleno. La marca es la propia respuesta
-                       y el chevrón girado. Igual que la de /pricing: texto
-                       al filo de los filetes y la lista cerrada con uno. */
+                    /* Abierta, la pregunta no cambia de caja (como en /pricing):
+                       la marca es la respuesta y el chevrón girado. */
                     className="border-b border-[var(--line)]"
                   >
                     <AccordionTrigger className="text-left text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
-                      {/* Wrap the question in a min-w-0 span so the flex
-                          trigger (shadcn AccordionTrigger uses
-                          flex justify-between) can wrap long questions
-                          like "What's the difference between Core and Pro?"
-                          on a 375px viewport without pushing the chevron
-                          off the right edge. Sin número delante: la lista se
-                          filtra al buscar y el «03» pasaba a ser «01». */}
+                      {/* `min-w-0` para que preguntas largas se partan en 375 px sin
+                          empujar el chevrón. Sin número delante: la lista se
+                          filtra al buscar y se renumeraría. */}
                       <span className="min-w-0 break-words">{item.q}</span>
                     </AccordionTrigger>
                     <AccordionContent className="medida text-secondary text-[15px] leading-[1.7] pb-5">
@@ -288,7 +241,6 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
         </Reveal>
 
 
-        {/* Glossary trigger — reinforces the frozen-glossary philosophy. */}
         <Reveal
           delay={0.26}
           className={standalone ? "lg:col-start-1 lg:row-start-2 lg:self-start" : undefined}
@@ -297,17 +249,12 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
             <button
               type="button"
               onClick={(e) => openGlossary(e.currentTarget)}
-              /* `min-h-[44px] px-3` — es un botón de verdad, no un
-                 enlace suelto en mitad de un párrafo, y medía 20 px
-                 de alto. El relleno lateral además separa el foco
-                 del texto para que el anillo no lo estrangule. */
+              /* `min-h-[44px] px-3`: suelo táctil, y el relleno separa el foco
+                 del texto. */
               className={`link-underline-host min-h-[44px] px-3 text-sm text-tertiary transition-colors inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent rounded-[4px] ${
                 standalone ? "text-left" : ""
               }`}
             >
-              {/* Abre el glosario: se subraya como cualquier enlace del
-                  sitio, que antes solo lo delataba el cambio de color al
-                  pasar. */}
               <span>
                 {es ? "¿Buscas un término? " : "Looking for a term? "}
                 <span className="link-underline text-secondary">

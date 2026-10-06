@@ -5,18 +5,12 @@ import { FAQ_ES, PRICING_FAQ_ES } from "@/lib/faq";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 
 /**
- * LA RAYA DE INCISO EN EL TEXTO ESPAÑOL DE LOS CATÁLOGOS.
+ * La raya de inciso en el texto español de los catálogos. `vocabulario.test.ts`
+ * y `scripts/cifras.mjs` leen el HTML compilado, pero la demo se pinta en el
+ * navegador y sus textos no están ahí: se miran los catálogos de origen.
  *
- * `tests/vocabulario.test.ts` y `scripts/cifras.mjs` leen el HTML compilado,
- * y la demo se pinta en el navegador: sus textos no están en ese HTML. La
- * revisión visual encontró «Ritual del día — Antes y después de operar» en
- * el Diario de la demo, con la raya inglesa (espaciada) en mitad de un
- * título español. Aquí se miran los catálogos de los que sale ese texto.
- *
- * Dos reglas: la raya no lleva espacio a los dos lados (eso es inglés), y
- * la que va pegada a una palabra lleva U+2060 para que el renglón no la
- * separe de ella («la mitad» al final de una línea y «— con…» en la
- * siguiente).
+ * Dos reglas: la raya no lleva espacio a los dos lados (eso es inglés) y la
+ * pegada a una palabra lleva U+2060 para que el renglón no la separe de ella.
  */
 const textos: { origen: string; texto: string }[] = [
   ...Object.entries(STR).map(([k, v]) => ({ origen: `i18n.${k}`, texto: (v as { es: string }).es })),

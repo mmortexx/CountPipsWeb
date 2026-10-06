@@ -3,22 +3,14 @@ import type { ReactNode } from "react";
 interface EyebrowProps {
   children: ReactNode;
   className?: string;
-  /**
-   * Leading mark. Defaults to `"line"` (a 6×1px hairline). `"dot"` renders a
-   * 4px filled dot in the accent color — useful when the eyebrow sits on a
-   * tight cluster where a hairline would compete with surrounding dividers.
-   * `"none"` omits the mark entirely. Backward-compatible: callers that
-   * don't pass `mark` keep the original hairline.
-   */
+  /** Marca inicial: `"line"` (filete de 6×1 px), `"dot"` (punto de 4 px con el
+   *  acento) o `"none"` (por defecto). */
   mark?: "line" | "dot" | "none";
 }
 
 /**
- * Eyebrow — rótulo pequeño sobre una sección: minúscula normal, sin
- * espaciado, 13 px, tinta terciaria (`.eyebrow` en globals.css). The
- * leading mark is a 6×1px hairline at 60% opacity by default —
- * a whisper, not a rule. Mark variants let callers swap to a dot or omit
- * the mark without losing the consistent typography.
+ * Rótulo pequeño sobre una sección: minúscula normal, sin espaciado, 13 px,
+ * tinta terciaria (`.eyebrow` en globals.css).
  */
 export function Eyebrow({ children, className = "", mark = "none" }: EyebrowProps) {
   return (

@@ -4,11 +4,9 @@ import { join } from "node:path";
 import { FAQ_EN, FAQ_ES } from "@/lib/faq";
 import { documentoPorSlug } from "@/lib/legal/documentos";
 
-/* La FAQ y la política de privacidad dicen qué pide el formulario de
-   acceso anticipado. La FAQ se quedó en cinco campos cuando el formulario
-   tenía siete: prometía pedir menos de lo que pedía. Se cuentan los campos
-   del HTML compilado —lo que el visitante rellena— y se comparan con las
-   dos listas. */
+// La FAQ y la política de privacidad dicen qué pide el formulario de acceso
+// anticipado. Se cuentan los campos del HTML compilado (lo que el visitante
+// rellena) y se comparan con las dos listas.
 
 const BETA = join(process.cwd(), "out", "beta", "index.html");
 
@@ -34,8 +32,8 @@ function elementos(lista: string, y: RegExp): number {
   return lista.split(/,\s*/).flatMap((p) => p.split(y)).filter((p) => p.trim()).length;
 }
 
-/* `skipIf` salta las pruebas pero ejecuta igual el cuerpo del `describe`:
-   leer aquí arriba rompía el CI, que pasa las pruebas antes de compilar. */
+// `skipIf` salta las pruebas pero ejecuta el cuerpo del `describe`: leer `out/`
+// aquí rompe el CI, que pasa las pruebas antes de compilar.
 describe.skipIf(!existsSync(BETA))("lo que se dice que pide el formulario es lo que pide", () => {
   let n = 0;
   beforeAll(() => {

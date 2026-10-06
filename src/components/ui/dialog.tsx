@@ -113,9 +113,8 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      /* Un peldaño de la escala y no `text-lg`: una utilidad gana a los
-         `t-*` (van en `@layer base`), así que quien pasaba `t-h3` seguía
-         viendo 18 px. Por defecto `t-h4`; quien pase su peldaño, manda. */
+      /* Un peldaño `t-*` y no `text-lg`: una utilidad gana a los `t-*` (van en
+         `@layer base`). Por defecto `t-h4`; quien pase el suyo, manda. */
       className={cn(className || "t-h4 text-primary")}
       {...props}
     />

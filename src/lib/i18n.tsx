@@ -53,7 +53,7 @@ export const STR = {
   },
   demoOpenFull: { es: "Abrir en pantalla completa", en: "Open full screen" },
   demoCloseFull: { es: "Cerrar", en: "Close" },
-  // Windows 11 caption-button aria-labels (title bar Min/Max/Close).
+  // aria-label de los botones de la barra de título (minimizar, maximizar, cerrar).
   winMinimize: { es: "Minimizar", en: "Minimise" },
   winMaximize: { es: "Maximizar", en: "Maximise" },
   winRestore: { es: "Restaurar", en: "Restore" },
@@ -82,17 +82,13 @@ export const STR = {
   pageAnalytics: { es: "Analítica", en: "Analytics" },
   pageJournal: { es: "Diario", en: "Journal" },
   pagePlaybook: { es: "Playbook", en: "Playbook" },
-  // R25-1a: 3 missing tabs from the real app's NavigationView
-  // (MainWindow.xaml L205-214) — Experimentos, Fiscal, Negocio.
   pageExperiments: { es: "Experimentos", en: "Experiments" },
   pageFiscal: { es: "Fiscal", en: "Fiscal" },
   pageBusiness: { es: "Negocio", en: "Business" },
   pageSettings: { es: "Ajustes", en: "Settings" },
 
-  // ---- Title bar (demo) — matches the real app's TitleBar_* strings
-  // (Strings/{es-ES,en-GB}/Resources.resw L11-12). The LED's aria-label /
-  // tooltip is "Local-first · sin nube" — slightly longer than the
-  // visible "Local-first" text, mirrors the native WinUI tooltip.
+  // ---- Title bar (demo) ----
+  // Como las cadenas TitleBar_* de la app real; el tooltip del LED es más largo que el texto visible.
   titleLocalFirstLed: {
     es: "Local-first · tus datos en tu equipo",
     en: "Local-first · your data on your machine",
@@ -190,8 +186,7 @@ export const STR = {
   colClosed: { es: "Cierre", en: "Closed" },
   colNetPnl: { es: "P&L neto", en: "Net P&L" },
   colR: { es: "R", en: "R" },
-  // Literal de la app (Trades_SummaryEyebrow): la franja de KPIs de
-  // Operaciones mide LO QUE ESTÁ A LA VISTA tras filtrar, no "el filtro".
+  // Literal de la app (Trades_SummaryEyebrow): los KPIs miden lo que está a la vista tras filtrar.
   summary: { es: "Lo que hay en pantalla", en: "What is on screen" },
   selectTrade: { es: "Seleccionar operación", en: "Select trade" },
   selectAll: { es: "Seleccionar todas las visibles", en: "Select all visible" },
@@ -318,8 +313,7 @@ export const STR = {
   },
 
   // ---- Accent palette names ----
-  // Tras el rediseño solo hay una paleta (verde). Las claves quedan para
-  // no romper referencias pero ya no se renderizan en la UI.
+  // Las claves se conservan por compatibilidad; ya no se renderizan.
   palGold: { es: "Verde", en: "Green" },
   palEmerald: { es: "Verde", en: "Green" },
   palOnyx: { es: "Verde", en: "Green" },
@@ -353,10 +347,7 @@ export const STR = {
   },
 
   // ---- Accessibility ----
-  // Skip-to-content link — first focusable element on every page. Visually
-  // hidden until focused, then surfaces as an accent pill at the top-left
-  // of the viewport so keyboard users can bypass the navbar + footer and
-  // jump straight into the main content (a11y best practice).
+  // Enlace de salto al contenido: primer elemento enfocable, visible solo al enfocarlo.
   skipToContent: { es: "Saltar al contenido", en: "Skip to content" },
 } as const;
 
@@ -392,11 +383,10 @@ function langDeRuta(pathname: string): Lang {
 
 const sinSuscripcion = () => () => {};
 
-/* La 404 es un único `404.html`, compilado en español, que GitHub Pages
-   sirve también bajo `/en/…`. Hidratarlo con el idioma de la URL no
-   casaba con el HTML y React tiraba el árbol entero (error #418). Se
-   hidrata con el idioma con el que se compiló —la meta que declara
-   `not-found.tsx`— y justo después pasa al de la dirección. */
+/* La 404 es un único `404.html` compilado en español que GitHub Pages sirve
+   también bajo `/en/…`: hidratarlo con el idioma de la URL rompe la hidratación
+   (error #418). Se hidrata con el idioma de compilación (la meta de
+   `not-found.tsx`) y luego pasa al de la dirección. */
 function langHidratacion(deRuta: Lang): Lang {
   if (typeof document === "undefined") return deRuta;
   const marca = document.querySelector<HTMLMetaElement>('meta[name="tj-idioma-compilado"]')?.content;
@@ -404,32 +394,10 @@ function langHidratacion(deRuta: Lang): Lang {
 }
 
 /**
- * LanguageProvider — el idioma ya NO es un interruptor en memoria, es la
- * dirección.
- *
- * ── Qué cambió, y por qué ─────────────────────────────────────────────
- * Antes `lang` era un `useState("es")`: cambiar de idioma mutaba una
- * variable sin tocar la URL, así que Google veía siempre la misma
- * dirección con el mismo contenido —español—, y una recarga o un enlace
- * compartido volvían a caer en español aunque el visitante hubiera
- * elegido inglés. Es justo el motivo por el que el inglés, pese a estar
- * escrito entero, no existía para ningún buscador.
- *
- * Ahora `lang` se DEDUCE de `usePathname()`: estar en `/en/pricing` es lo
- * que hace que la página se lea en inglés, y estar en `/pricing` es lo
- * que hace que se lea en español. `setLang`/`toggle` ya no cambian un
- * estado — NAVEGAN a la dirección equivalente en el otro idioma. El
- * selector de idioma de la barra no tuvo que tocarse: sigue llamando a
- * los mismos `setLang`/`toggle` de siempre, solo que ahora hacen otra
- * cosa por dentro.
- *
- * Al derivarse del pathname en cada render —no de un estado que se fija
- * después en un efecto— no hay parpadeo: el primer pintado ya sabe en
- * qué idioma está, tanto al compilar como al hidratarse.
- *
- * Se conservan el `search` y el `hash` al cambiar de idioma: cambiar
- * de idioma en `/faq?q=stop+loss` lleva a `/en/faq?q=stop+loss`, no a la
- * FAQ inglesa en blanco.
+ * El idioma es la dirección: `lang` se deduce de `usePathname()` en cada
+ * render (sin parpadeo) y `setLang`/`toggle` navegan a la ruta equivalente del
+ * otro idioma, conservando `search` y `hash`. Así cada idioma tiene su URL
+ * para los buscadores y los enlaces compartidos.
  */
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -437,12 +405,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const deRuta = langDeRuta(pathname);
   const lang = useSyncExternalStore(sinSuscripcion, () => deRuta, () => langHidratacion(deRuta));
 
-  // Mantiene sincronizado el `lang` del documento para lectores de
-  // pantalla y buscadores. El script embebido en `layout.tsx` ya fija el
-  // valor correcto ANTES del primer pintado (mismo patrón que el tema);
-  // este efecto es el respaldo para cuando el idioma cambia sin recargar
-  // —caso que hoy no ocurre, porque cambiar de idioma navega a otra
-  // página, pero cubre cualquier futuro cambio de cliente sin recarga—.
+  // El script de `layout.tsx` ya fija `lang` antes del primer pintado; esto
+  // lo mantiene al día si el idioma cambia sin recargar.
   useEffect(() => {
     if (typeof document === "undefined") return;
     document.documentElement.lang = lang;

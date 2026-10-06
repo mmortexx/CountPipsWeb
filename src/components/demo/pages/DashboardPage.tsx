@@ -29,25 +29,21 @@ import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { moverConFlechas } from "@/lib/flechas";
 
-// Equity-curve timeframe selector — filters the chart to the last N days
-// of trades so the user can zoom into 1M / 3M / 6M windows. The sample
-// data spans ~180 days, so "6M" is effectively "All".
+// Ventanas de la curva de capital: últimos N días. La muestra cubre ~180, así que «6M» equivale a todo.
 type Timeframe = "1M" | "3M" | "6M";
 const TIMEFRAMES: Timeframe[] = ["1M", "3M", "6M"];
 const TF_DAYS: Record<Timeframe, number> = { "1M": 30, "3M": 90, "6M": 180 };
 
-// Cuántas operaciones recientes se listan bajo el rendimiento — una sola
-// fuente para el `slice` y para el rótulo "Últimas N operaciones".
+// Una sola fuente para el `slice` y para el rótulo «Últimas N operaciones».
 const RECENT_TRADES_COUNT = 6;
 
 /** Riesgo de partida del registro rápido: el que se supone sin stop ni
  *  cantidad, el que usa «Calcular tamaño» y el umbral del aviso ámbar. */
 const RIESGO_POR_DEFECTO = 0.01;
 
-/** Slice a Metrics snapshot to the last N days of trades — keeps the
- *  equityCurve + drawdownCeiling arrays in sync so the chart redraws
- *  without changing the underlying sample data. Returns the original
- *  metrics object if the slice would be empty or cover everything. */
+/** Recorta las métricas a los últimos N días manteniendo sincronizados
+ *  equityCurve y drawdownCeiling. Devuelve el mismo objeto si el recorte
+ *  quedaría vacío o abarcaría todo. */
 function sliceMetricsByDays(m: Metrics, days: number): Metrics {
   if (!m.equityCurve.length) return m;
   const last = m.equityCurve[m.equityCurve.length - 1].date.getTime();
@@ -66,76 +62,44 @@ function sliceMetricsByDays(m: Metrics, days: number): Metrics {
 }
 
 const inputCls =
-  /* `min-w-0` en la clase compartida: `w-full` no basta. Un
-     `<input>` trae un ancho intrinseco del navegador y, como
-     elemento de reticula, su `min-width: auto` impide que la celda baje
-     de ahi — a 320 px se salia 14 px. Aqui vale para todos los campos de
-     la demo de una vez. */
+  /* `min-w-0` aquí vale para todos los campos: un `<input>` trae ancho
+     intrínseco y, como hijo de rejilla, su `min-width:auto` impide
+     encoger la celda (a 320 px se salía 14 px). */
   "w-full min-w-0 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
 const labelCls =
   "block text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1.5";
 
 /**
- * Dashboard / "Resumen" page of the native CountPips app,
- * recreated for the browser demo. Mirrors the WinUI DashboardPage.xaml
- * layout (post 17/07/2026 redesign):
- *
- *   ┌─ Section 1 — REGISTRAR OPERACIÓN (protagonist, full width) ────┐
- *   │  Header: eyebrow + title (left) │ live Risk $ 28px (right)      │
- *   │  Composer card ─ 2-col grid                                     │
- *   │    ┌── Left col ──────────┐  ┌── Right col ──────────────────┐ │
- *   │    │ Screenshot dropzone  │  │ Long/Short toggle              │ │
- *   │    │ (380px fixed height) │  │ Instrument                     │ │
- *   │    ├──────────────────────┤  │ Entry + Exit                   │ │
- *   │    │ Risk $ │ R:R │ %     │  │ Quantity + calc                │ │
- *   │    │ (hairline dividers)  │  │ Stop + Target                  │ │
- *   │    └──────────────────────┘  │ Setup + Note                   │ │
- *   │                              └────────────────────────────────┘ │
- *   │  Footer: session count (left) │ Save draft + Register (right)   │
- *   └──────────────────────────────────────────────────────────────────┘
- *   ┌─ Section 2 — RENDIMIENTO (full width below) ──────────────────┐
- *   │  Header: eyebrow + title                                       │
- *   │  KPI strip — 7 cells with vertical hairline dividers (no card) │
- *   │  Equity curve │ Calendar — 50/50 side-by-side                  │
- *   └──────────────────────────────────────────────────────────────────┘
- *
- * The composer is the protagonist — full-width and centered, with a
- * generous 2-column layout (image left, data right) so a pasted chart
- * screenshot reads LARGE while the trader fills in the trade alongside.
- * Performance (KPIs + equity + calendar) lives below, no longer
- * competing for space with the composer.
+ * Página «Resumen» de la demo, reflejo de DashboardPage.xaml de la app.
+ * Arriba el registro de operación (captura a la izquierda, datos a la
+ * derecha); debajo el rendimiento: parte de hoy, KPI, aviso de realidad,
+ * curva de capital y calendario.
  */
 export function DashboardPage() {
   const { t, lang } = useLang();
   const { toast } = useToast();
   const { goDetail, setPage } = useDemo();
   const es = lang === "es";
-  // La tecla de mando de ESTE teclado. Ver `useTeclaMando`.
   const mando = useTeclaMando();
 
-  // ----- equity-curve timeframe -----
   const [tfSel, setTfSel] = useState<Timeframe>("6M");
   const slicedMetrics = useMemo(
     () => sliceMetricsByDays(METRICS, TF_DAYS[tfSel]),
     [tfSel]
   );
 
-  // ----- recent trades (sample + custom, newest first) -----
-  // useAllTrades subscribes to localStorage so trades logged via the
-  // composer above appear here instantly without a manual refresh.
+  // useAllTrades se suscribe a localStorage: lo registrado arriba aparece aquí al instante.
   const allTrades = useAllTrades(TRADES);
   const recentTrades = useMemo(
     () => allTrades.slice(0, RECENT_TRADES_COUNT),
     [allTrades]
   );
 
-  // ----- composer form state -----
   const [direction, setDirection] = useState<Direction>("long");
   const [instrumentSymbol, setInstrumentSymbol] = useState(INSTRUMENTS[0].symbol);
   const [setupName, setSetupName] = useState<string>(SETUP_NAMES[1]);
-  /* Los precios del formulario se escriben y se leen como el idioma de la
-     página: «21500,00» en español. Con `toFixed` y `parseFloat` salía el
-     punto inglés, y una coma escrita a mano se leía como corte: «1,08» → 1. */
+  /* Los precios se escriben y leen en el idioma de la página («21500,00»).
+     Con `toFixed`/`parseFloat` salía el punto inglés y «1,08» se leía como 1. */
   const precio = (n: number, dec: number) => cifraEditable(n, lang, dec, dec);
   const num = (s: string) => leeCifra(s) ?? Number.NaN;
   const [entry, setEntry] = useState<string>(
@@ -163,37 +127,26 @@ export function DashboardPage() {
   const qtyNum = num(quantity) || 0;
 
   const stopDist = Math.abs(entryNum - stopNum);
-  // planned R:R = |target - entry| / |entry - stop| (real app's TradeRrDisplay).
+  // R:R planificado = |objetivo − entrada| / |entrada − stop|.
   const plannedRr = stopDist > 0 ? Math.abs(targetNum - entryNum) / stopDist : 0;
 
-  // ----- risk-$ calculation (real app: % of equity by default) -----
-  // The real app moved the sizing CALCULATOR into its own dialog — the
-  // composer itself just shows the resulting risk $/R:R/% derived from
-  // entry/stop/qty. The demo defaults to a 1% risk posture on the
-  // initial $10,000 balance; once entry/stop/qty are all set, the risk
-  // is computed directly from stop-distance × qty × multiplier so the
-  // footer reads a real number, not a placeholder.
+  // Riesgo en $: distancia al stop × cantidad × multiplicador; sin stop o
+  // cantidad válidos, el riesgo por defecto sobre el saldo inicial.
   const riskUsdLive = useMemo(() => {
-    // If we have a real stop + qty, compute risk from the trade itself
-    // (matches the real app's "Risk $" footer cell, which is derived
-    // from entry/stop/cantidad — not a separate sizing input).
     if (stopDist > 0 && qtyNum > 0) {
       const multiplier = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
       return stopDist * qtyNum * multiplier;
     }
-    // Fallback: 1% of the initial balance (the demo's default posture).
     return INITIAL_BALANCE_CONST * RIESGO_POR_DEFECTO;
   }, [stopDist, qtyNum, instrumentSymbol, inst.assetClass]);
 
   const riskPct = INITIAL_BALANCE_CONST > 0 ? riskUsdLive / INITIAL_BALANCE_CONST : 0;
 
-  // ----- handlers -----
   function handleRegister() {
     const entryN = num(entry);
     const stopN = num(stop);
     const exitParsed = num(exitPrice);
-    // Exit isn't strictly required — fall back to entry so a missing exit
-    // records a scratch trade (P&L = 0, R = 0) instead of NaN poisoning.
+    // Sin salida se usa la entrada: queda una operación en tablas (P&L = 0, R = 0), no NaN.
     const exitN = Number.isFinite(exitParsed) ? exitParsed : entryN;
     const qtyN = num(quantity);
 
@@ -212,14 +165,13 @@ export function DashboardPage() {
       return;
     }
 
-    // Calculate realized P&L and R-multiple.
-    // priceDiff is signed: positive for a winning move, negative for a loser.
+    // priceDiff lleva signo: positivo si el movimiento gana.
     const stopDistLocal = Math.abs(entryN - stopN);
     const priceDiff =
       direction === "long" ? exitN - entryN : entryN - exitN;
     const rMultiple = stopDistLocal > 0 ? +(priceDiff / stopDistLocal).toFixed(2) : 0;
 
-    // Position-value multiplier per asset class — matches demoStore.ts.
+    // Mismo multiplicador por clase de activo que demoStore.ts.
     const multiplier = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
     const safeQty = Number.isFinite(qtyN) && qtyN > 0 ? qtyN : 1;
     const netPnl = +(priceDiff * safeQty * multiplier).toFixed(2);
@@ -233,7 +185,7 @@ export function DashboardPage() {
       qty: +safeQty.toFixed(inst.assetClass === "forex" ? 2 : 3),
       netPnl,
       rMultiple,
-      // A trade logged with a defined stop = followed plan, by convention.
+      // Con stop definido se da por seguido el plan.
       compliance: "yes",
       closedAt: new Date().toISOString(),
       note: note.trim(),
@@ -257,46 +209,32 @@ export function DashboardPage() {
     setTarget(precio(next.basePrice * 1.024, next.decimals));
   }
 
-  // session count: trades logged "today" (demo: any custom trade this session).
+  // Operaciones registradas en esta sesión (las que no son de la muestra).
   const sessionCount = allTrades.length - TRADES.length;
 
   return (
     <div className="p-5 md:p-6 space-y-8 relative">
-      {/* ============ SECTION 1: REGISTRAR OPERACIÓN (protagonist) ============ */}
       <section className="relative">
-        {/* ── CABECERA ──────────────────────────────────────────────
-            Titular a la izquierda y lectura de riesgo a la derecha, en
-            una fila. A 320 px eso no cabe: la cifra a 28 px se lleva 185
-            de los 280 utiles y al titular le quedan 100, donde «operado»
-            no entra — se salia 35 px de su caja.
-
-            Por debajo de `sm` se apilan, que es lo que hace una ventana
-            de verdad al encogerse: el titular a todo el ancho y la
-            lectura debajo como una tira de rotulo e importe separada por
-            un filete. Ni se recorta nada ni se esconde un dato. */}
+        {/* Por debajo de `sm` titular y cifra se apilan: en fila, a 320 px la
+            cifra de 28 px deja 100 px al titular y «operado» se salía 35 px.
+            La lectura queda debajo como tira de rótulo e importe con filete. */}
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div className="min-w-0">
             <Reveal delay={0}>
               <Eyebrow>{t("captureEyebrow")}</Eyebrow>
             </Reveal>
             <Reveal delay={0.04}>
-              {/* h2 y no h1: esta es una pantalla SIMULADA dentro de la página de
-                  la demo. El h1 del documento es el titular de esa página, y dos
-                  h1 rompen el esquema de encabezados —lectores de pantalla y
-                  buscadores lo usan para entender la jerarquía—. */}
+              {/* h2 y no h1: es una pantalla simulada dentro de la página de la
+                  demo, cuyo h1 es el del documento; dos h1 rompen la jerarquía. */}
               <h2 className="mt-2 font-medium tracking-[-0.02em] text-primary text-2xl md:text-[28px] leading-tight">
                 {t("captureHeadline")}
               </h2>
             </Reveal>
           </div>
-          {/* Riesgo en vivo: una sola cifra protagonista por pantalla.
-              Reads "Risk in $" eyebrow + 28px Money value, right-aligned.
-              The number animates softly when the value changes (entry/stop/qty
-              edits) — same live-readout language as the WinUI app. */}
           <Reveal delay={0.08}>
             {/* La región viva es el contenedor, que no cambia: la cifra se
-                vuelve a montar en cada valor (por su `key`) y una región
-                que nace ya rellena no la anuncian los lectores. */}
+                remonta en cada valor (por su `key`) y una región que nace
+                ya rellena no la anuncian los lectores de pantalla. */}
             <div
               aria-live="polite"
               aria-atomic="true"
@@ -307,8 +245,7 @@ export function DashboardPage() {
               </div>
               <div
                 key={`risk-${riskUsdLive.toFixed(2)}`}
-                /* En la tira apilada la cifra va a 22 px y sin margen
-                   superior, porque comparte linea con su rotulo. */
+                /* En la tira apilada: 22 px y sin margen, comparte línea con el rótulo. */
                 className="tj-dm-entra text-[22px] font-semibold leading-none tnum text-primary sm:mt-1 sm:text-[28px]"
                 style={{ "--dm-o": 0.55, "--dm-y": "3px", "--dm-dur": "0.35s" } as CSSProperties}
               >
@@ -318,21 +255,14 @@ export function DashboardPage() {
           </Reveal>
         </div>
 
-        {/* Composer card — 2-col grid (image left, data right) */}
         <Reveal delay={0.1}>
           <div
             className="demo-card p-5 md:p-6 relative overflow-hidden"
           >
             <div className="relative z-10">
-              {/* R26-1d: wrap the composer inputs + footer actions in a real
-                  <form> so Enter-to-submit works from any field, the form
-                  landmark is exposed to SR, and browser autofill heuristics
-                  have proper form context. The screenshot dropzone, Save
-                  draft, direction toggle and calc-method buttons all carry
-                  type="button" so they don't accidentally submit. The
-                  Register button is now type="submit" and triggers
-                  handleRegister via the form's onSubmit (after
-                  preventDefault). */}
+              {/* <form> real: Enter envía desde cualquier campo, se expone como
+                  landmark y el autocompletado tiene contexto. Los demás botones
+                  llevan type="button"; solo Registrar es submit. */}
               <form
                 className="contents"
                 onSubmit={(e) => {
@@ -340,46 +270,20 @@ export function DashboardPage() {
                   handleRegister();
                 }}
               >
-              {/* `min-w-0` en las dos columnas, y no es cosmético: un hijo de
-                  grid trae `min-width:auto`, o sea que NO puede encogerse por
-                  debajo del ancho mínimo de su contenido. Medido en 390×844:
-                  la columna del formulario se plantaba en 262px dentro de una
-                  celda de 223 y la tarjeta —que tiene `overflow:hidden`— le
-                  cortaba 39px por la derecha. Es decir, en el teléfono los
-                  campos de la columna derecha de cada par («Salida»,
-                  «Objetivo») salían seccionados por el canto. No lo delataba
-                  nada: el recorte se come el desbordamiento, así que ni la
-                  consola, ni los tests, ni el ancho del documento se
-                  enteraban. Lo vigila ahora `humo.mjs`. */}
-              {/* `minmax(0,1fr)` por lo mismo que la reticula de entrada y
-                  salida: un `<input>` no baja de su ancho
-                  intrinseco y arrastraba la columna. */}
+              {/* `min-w-0` y `minmax(0,1fr)` no son cosméticos: un hijo de rejilla
+                  trae `min-width:auto` y no encoge bajo su contenido. A 390 px la
+                  tarjeta (`overflow:hidden`) cortaba 39 px de la columna derecha
+                  sin que consola ni tests lo notaran. Lo vigila `humo.mjs`. */}
               <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                {/* ============ LEFT COLUMN: image + risk footer ============ */}
                 <div className="flex flex-col min-w-0">
-                  {/* Screenshot dropzone — 380px FIXED height (matches the
-                      WinUI RowDefinition Height="380"). Independent of the
-                      form column's height: never resizes when fields
-                      change. Empty-state shows a drop affordance; the demo
-                      doesn't actually paste images but the affordance
-                      communicates the workflow. */}
+                  {/* Zona de captura de altura fija, independiente del formulario.
+                      La demo no pega imágenes: solo muestra el flujo. */}
                   <button
                     type="button"
                     aria-label={t("dropScreens")}
-                    // Responsive height: 380px fixed was the WinUI RowDefinition,
-                    // but on a 316px mobile card it filled the entire viewport.
-                    // 320px sm → 380px md+ (desktop parity).
-                    //
-                    // En móvil ya no son 260px sino 104. Medido en 390×844: con
-                    // 260px, el primer control del formulario —el toggle
-                    // Long/Short— empezaba en el píxel 606 de un panel de 480,
-                    // o sea FUERA de la vista. Lo único que veía quien abre la
-                    // demo en el teléfono era un rectángulo punteado para
-                    // arrastrar un archivo, que es justo lo que un teléfono no
-                    // puede hacer. La demo prometía «la app en tu navegador» y
-                    // enseñaba una zona de soltar vacía. Compacta sigue
-                    // comunicando que el flujo admite capturas, sin robarle la
-                    // pantalla a lo que de verdad hay que ver.
+                    // Altura: 104 px en móvil (con 260 el primer control del
+                    // formulario quedaba fuera de la vista), 320 en sm y 380 en
+                    // md+, como en la app.
                     className="w-full border border-dashed border-[rgb(var(--divider)/0.15)] rounded-[2px] flex flex-col items-center justify-center gap-2 text-tertiary hover:text-secondary hover:border-[rgb(var(--divider)/0.3)] hover:bg-[rgb(var(--divider)/0.05)] transition-colors group h-[104px] sm:h-[320px] md:h-[380px]"
                   >
                     <svg
@@ -400,11 +304,8 @@ export function DashboardPage() {
                     <span className="text-sm font-medium text-secondary text-center px-6">
                       {t("dropScreens")}
                     </span>
-                    {/* La pista de Ctrl+V solo donde ese atajo existe. En un
-                        teléfono no hay ni Ctrl ni arrastrar un fichero: dejarla
-                        ahí era prometer una interacción imposible en el propio
-                        dispositivo desde el que se lee, y esta página presume
-                        de no simular lo que no hay. */}
+                    {/* La pista de Ctrl+V solo donde el atajo existe: un teléfono no
+                        tiene Ctrl ni arrastrar ficheros. */}
                     <span className="hidden sm:block text-[11px] text-tertiary text-center px-6">
                       {es
                         ? "Pega con Ctrl+V o arrastra una imagen del gráfico"
@@ -412,25 +313,14 @@ export function DashboardPage() {
                     </span>
                   </button>
 
-                  {/* Risk footer — 3 cells (Risk $ / R:R / %) separated by
-                      vertical hairlines, anchored to the bottom of the
-                      left column. Top border = hairline divider. Mirrors
-                      the WinUI VerticalHairlineStyle strip. */}
                   <div className="mt-4 pt-4 border-t border-[rgb(var(--divider)/0.1)]">
                     <div className="text-[11px] uppercase tracking-[0.15em] text-tertiary mb-3">
                       {es ? "Riesgo de esta operación" : "Trade risk"}
                     </div>
-                    {/* `minmax(0,1fr)` y no `1fr`: un `1fr` pelado equivale a
-                        `minmax(auto,1fr)`, así que la columna NO puede
-                        encoger por debajo de su contenido. Con «520,00 US$»
-                        dentro, la primera celda se plantaba en 96px, la tira
-                        entera medía 262 en un hueco de 224 y el «5,20 %» se
-                        salía por el canto de la tarjeta —que recorta— en
-                        390px de ancho. Medido en 390×844. El gap también baja
-                        a 8px en móvil: cuatro huecos de 16 se comían 64 de
-                        los 224 disponibles. */}
+                    {/* `minmax(0,1fr)` y no `1fr`, que no encoge bajo su contenido: a
+                        390 px el «5,20 %» se salía de la tarjeta. El gap baja a 8 px en
+                        móvil porque cuatro huecos de 16 se comían 64 de 224 px. */}
                     <div className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)_1px_minmax(0,1fr)] gap-x-2 sm:gap-x-4 items-stretch">
-                      {/* Risk $ */}
                       <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                         <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                           {t("riskUsd")}
@@ -440,12 +330,10 @@ export function DashboardPage() {
                           className="text-lg font-semibold text-primary"
                         />
                       </div>
-                      {/* Vertical hairline — full height */}
                       <div
                         className="self-stretch w-px bg-[rgb(var(--divider)/0.12)]"
                         aria-hidden="true"
                       />
-                      {/* R:R planned */}
                       <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                         <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                           {t("rr")}
@@ -462,12 +350,10 @@ export function DashboardPage() {
                           {fmtNum(plannedRr, lang, 2)}&nbsp;R
                         </span>
                       </div>
-                      {/* Vertical hairline */}
                       <div
                         className="self-stretch w-px bg-[rgb(var(--divider)/0.12)]"
                         aria-hidden="true"
                       />
-                      {/* % of account */}
                       <div className="flex flex-col items-center justify-center gap-1 text-center py-1 rounded-[2px] transition-colors hover:bg-[rgb(var(--divider)/0.03)]">
                         <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                           {es ? "% cuenta" : "% acct"}
@@ -488,11 +374,7 @@ export function DashboardPage() {
                   </div>
                 </div>
 
-                {/* ============ RIGHT COLUMN: trade data form ============ */}
                 <div className="flex flex-col gap-3 min-w-0">
-                  {/* Long/Short toggle — 2-col grid with semantic P&L dots.
-                      Sliding pill animates between Long (green) and Short
-                      (red) via shared layoutId. */}
                   <div>
                     <span className={labelCls}>
                       {es ? "Dirección" : "Direction"}
@@ -532,10 +414,6 @@ export function DashboardPage() {
                               />
                             )}
                             <span className="relative flex items-center justify-center gap-2">
-                              {/* P&L semantic dot — green for Long, red for Short.
-                                  Larger + glowing when active so the direction
-                                  reads at-a-glance, mirroring the real app's
-                                  PnlPositiveDot / PnlNegativeDot. */}
                               <span
                                 style={{
                                   transform: active ? "scale(1.15)" : "none",
@@ -544,8 +422,7 @@ export function DashboardPage() {
                                       ? "0 0 8px 1px rgb(var(--pnl-pos) / 0.6)"
                                       : "0 0 8px 1px rgb(var(--pnl-neg) / 0.6)"
                                     // Transparente desde --sombra, no negro puro: algunos
-                                    // navegadores tiñen de gris el paso intermedio del
-                                    // degradado hacia "negro transparente".
+                                    // navegadores tiñen de gris el degradado.
                                     : "0 0 0px 0px rgb(var(--sombra) / 0)",
                                 }}
                                 className={`inline-block w-2 h-2 rounded-[1px] motion-safe:transition-[transform,box-shadow] motion-safe:duration-[250ms] ${
@@ -561,7 +438,6 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Instrument — full-width select */}
                   <div>
                     <label htmlFor="d-inst" className={labelCls}>
                       {t("instrument")}
@@ -583,12 +459,8 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Entry + Exit — 2-col grid.
-                      `minmax(0,1fr)` y no `1fr`: un `<input>`
-                      trae un ancho intrinseco del navegador, y en una
-                      reticula una columna `1fr` no baja de el por mucho
-                      `w-full` que lleve el campo. A 320 px se salia 14 px
-                      de su celda. */}
+                  {/* `minmax(0,1fr)` y no `1fr`: un `<input>` no baja de su ancho
+                      intrínseco aunque lleve `w-full` (a 320 px se salía 14 px). */}
                   <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                     <div>
                       <label htmlFor="d-entry" className={labelCls}>
@@ -620,7 +492,6 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Quantity — full-width input with realized R readout on right */}
                   <div className="grid grid-cols-[1fr_auto] gap-3">
                     <div>
                       <label htmlFor="d-qty" className={labelCls}>
@@ -636,13 +507,9 @@ export function DashboardPage() {
                         className={inputCls}
                       />
                     </div>
-                    {/* "Calcular tamaño" va pegado a Cantidad, como en la
-                        app (DashboardPage.xaml L466): la calculadora de
-                        tamaño de posición vive en su propio diálogo y al
-                        confirmar rellena este campo. En la demo el botón
-                        deja la cifra que ya calcula el propio composer —
-                        el gesto es el mismo, sin abrir un diálogo que
-                        aquí no aporta nada. */}
+                    {/* «Calcular tamaño» junto a Cantidad, como en la app
+                        (DashboardPage.xaml L466). En la app abre un diálogo; aquí
+                        deja directamente la cifra que ya calcula el composer. */}
                     <div>
                       <span className={labelCls} aria-hidden="true">
                         &nbsp;
@@ -679,8 +546,6 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Stop + Target — 2-col grid (InitialStop / InitialTarget
-                      in the real app — gives the planned R:R). */}
                   <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
                     <div>
                       <label htmlFor="d-stop" className={labelCls}>
@@ -712,7 +577,6 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Setup — full-width select */}
                   <div>
                     <label htmlFor="d-setup" className={labelCls}>
                       {t("setup")}
@@ -734,7 +598,6 @@ export function DashboardPage() {
                     </div>
                   </div>
 
-                  {/* Note — textarea */}
                   <div className="flex-1 flex flex-col">
                     <label htmlFor="d-note" className={labelCls}>
                       {es ? "Nota" : "Note"}
@@ -750,14 +613,9 @@ export function DashboardPage() {
                     />
                   </div>
 
-                  {/* Modo avanzado — el interruptor que cierra el composer
-                      en la app (Capture_AdvancedModeLabel). Abre el
-                      registro por tramos: varias entradas o varias
-                      salidas en la misma operación, que es lo que
-                      distingue un diario serio de una hoja de cálculo.
-                      En la demo declara la capacidad; el desglose por
-                      tramos se ve entero en el detalle de la operación,
-                      en la tabla "Anatomía". */}
+                  {/* Modo avanzado (Capture_AdvancedModeLabel en la app): registro por
+                      tramos, con varias entradas o salidas. Aquí solo declara la
+                      capacidad; el desglose está en la tabla «Anatomía» del detalle. */}
                   <label className="flex items-center gap-2.5 cursor-pointer select-none pt-1">
                     <input
                       type="checkbox"
@@ -788,12 +646,7 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              {/* ============ FOOTER — session count + register ============
-                  Top-border hairline (mirrors the WinUI DividerStroke).
-                  Left: session count. Right: Save draft + Register
-                  (accent, min-width 200, Ctrl+Enter). */}
               <div className="mt-6 pt-4 border-t border-[rgb(var(--divider)/0.1)] flex flex-wrap items-center gap-3 justify-between">
-                {/* Session count */}
                 <div className="flex items-center gap-2 text-xs">
                   <span className="text-sm font-semibold tnum text-primary">
                     {fmtInt(sessionCount, lang)}
@@ -803,7 +656,6 @@ export function DashboardPage() {
                   </span>
                 </div>
 
-                {/* Action buttons */}
                 <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
@@ -844,12 +696,8 @@ export function DashboardPage() {
                       <path d="M3 8h10M8 3v10" />
                     </svg>
                     {t("registerTrade")}
-                    {/* El distintivo de tecla rápida, igual que en la app
-                        real. Decía `⌘↵` mientras el `title` del MISMO
-                        botón decía «Ctrl+Enter»: dos teclas distintas
-                        para la misma acción, y ninguna de las dos elegida
-                        por el teclado de quien mira. Ver
-                        `useTeclaMando`. */}
+                    {/* Distintivo con la misma tecla de mando que el `title` del
+                        botón. Ver `useTeclaMando`. */}
                     <kbd
                       className="hidden sm:inline-flex items-center gap-0.5 h-5 px-1.5 rounded-[2px] bg-[rgb(var(--accent-ink)/0.12)] text-[10px] font-semibold text-[rgb(var(--accent-ink)/0.75)] tabular-nums group-hover:bg-[rgb(var(--accent-ink)/0.18)] transition-colors"
                       aria-hidden="true"
@@ -866,9 +714,7 @@ export function DashboardPage() {
         </Reveal>
       </section>
 
-      {/* ============ SECTION 2: RENDIMIENTO (full width below) ============ */}
       <section className="space-y-5">
-        {/* Section header */}
         <div>
           <Reveal delay={0}>
             <Eyebrow>{t("performance")}</Eyebrow>
@@ -880,24 +726,13 @@ export function DashboardPage() {
           </Reveal>
         </div>
 
-        {/* El parte de hoy — la primera tarjeta del Resumen en la app
-            (DashboardPage.xaml L637-670). Es lo que el histórico dice del
-            día ANTES de operar, y lo dice con la muestra en la mano: si no
-            da para afirmar nada, lo declara en vez de inventarse una
-            ventaja. La demo no la tenía, y es justo la pieza que hace que
-            el Resumen se reconozca como esta app y no como un panel
-            genérico de métricas. */}
         <Reveal delay={0.06}>
           <TodayBriefing />
         </Reveal>
 
-        {/* KPI strip — 7 cells with vertical hairline dividers (no card).
-            Mirrors the WinUI Grid with VerticalHairlineStyle borders
-            between columns. Each cell: small caption + 18px tabular value. */}
         <Reveal delay={0.08}>
-          {/* Mobile: horizontal-scroll strip with min-w cells (so the 7 KPIs
-              stay readable instead of collapsing to ~25px each inside the
-              316px panel). Desktop: same 7-col grid as before, no scroll. */}
+          {/* Móvil: tira con scroll horizontal y celdas de ancho mínimo (los 7 KPI
+              no caben a ~25 px). Escritorio: rejilla de 7 columnas, sin scroll. */}
           <div className="tj-fila-sigue tj-fila-sigue--solo-movil flex md:grid md:grid-cols-[repeat(7,minmax(5.5rem,1fr))] gap-x-4 px-1 py-2 overflow-x-auto custom-scroll">
             <KpiCell
               label={t("pnlTotal")}
@@ -998,25 +833,13 @@ export function DashboardPage() {
           </div>
         </Reveal>
 
-        {/* Aviso de realidad — el InfoBar que la app pinta bajo la franja
-            de KPIs (Summary_Reality*, Resources.resw L1612-1615). Pone la
-            racha y la caída actuales frente a lo que el AZAR produce con
-            ese porcentaje de acierto: sin esa referencia, tres pérdidas
-            seguidas se leen como "algo va mal" cuando son lo normal. Es
-            la pieza que convierte el panel en un antídoto contra el tilt. */}
         <Reveal delay={0.12}>
           <RealityCheck />
         </Reveal>
 
-        {/* Equity curve + Calendar — 50/50 side-by-side. The real app's
-            ColumnDefinition Width="*" / Width="*" — both halves equal.
-            (Previous demo was 2/3 + 1/3.) */}
         <div className="grid lg:grid-cols-2 gap-4 md:gap-5">
-          {/* Equity curve card */}
           <Reveal delay={0.1}>
-            {/* Sin halo decorativo: la app no ilumina las esquinas de sus
-                tarjetas, y ese resplandor blanco era otra marca de "esto es
-                una web", no una ventana de escritorio. */}
+            {/* Sin halo decorativo: la app no ilumina las esquinas de sus tarjetas. */}
             <div className="demo-card p-5 relative overflow-hidden h-full">
               <div className="relative z-10">
                 <div className="flex items-start justify-between mb-3 gap-3 flex-wrap">
@@ -1039,7 +862,6 @@ export function DashboardPage() {
                       </span>
                     </div>
                   </div>
-                  {/* Timeframe selector — 1M / 3M / 6M */}
                   <div className="flex items-center gap-0.5 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] p-0.5">
                     {TIMEFRAMES.map((mode) => {
                       const active = tfSel === mode;
@@ -1072,19 +894,14 @@ export function DashboardPage() {
             </div>
           </Reveal>
 
-          {/* P&L calendar card — MiniCalendar renders its own
-              liquid-glass card with month header + nav arrows + daily
-              P&L heat-map cells. */}
           <Reveal delay={0.14}>
             <MiniCalendar trades={TRADES} className="h-full" />
           </Reveal>
         </div>
       </section>
 
-      {/* ============ RECENT TRADES — kept below performance ============
-          A thin "last 6 trades" list at the bottom: not in the WinUI
-          DashboardPage (it lives in Diario / Operaciones), but useful in
-          the demo so a logged trade is immediately visible. */}
+      {/* No está en el Resumen de la app (vive en Diario / Operaciones): aquí
+          hace visible al instante lo registrado. */}
       <Reveal delay={0.1}>
         <div className="demo-card p-5 relative overflow-hidden">
           <div className="relative z-10">
@@ -1119,27 +936,14 @@ export function DashboardPage() {
                     type="button"
                     onClick={() => goDetail(tr.id)}
                     style={{ "--dm-y": "4px", "--dm-dur": "0.3s", "--dm-retardo": `${Math.min(i * 0.04, 0.24)}s` } as CSSProperties}
-                    /* `flex-wrap` en móvil, y no por gusto. Las cinco celdas
-                       llevan `shrink-0`, así que NINGUNA puede ceder: a 390px
-                       sumaban 319 en una fila de 207 útiles y la cifra de
-                       resultado acababa en el píxel 384 con la tarjeta
-                       cortando en 315. O sea que en el teléfono el P&L —el
-                       dato por el que se mira una lista de operaciones— salía
-                       seccionado o directamente invisible.
-                       Envolver es lo único que no obliga a tirar información:
-                       truncar el instrumento devolvía el "XAU/U…" que ya se
-                       corrigió a propósito (ver el ancho de 100px de abajo), y
-                       esconder la dirección o la R es perder un dato. Así la
-                       fila pasa a dos líneas en móvil (47 → 79px): arriba
-                       instrumento y dirección, abajo R y resultado a la
-                       derecha. En sm+ vuelve a ser una sola línea. */
+                    /* `flex-wrap` en móvil: las cinco celdas son `shrink-0` y a 390 px
+                       sumaban 319 en 207 útiles, con el P&L cortado. Envolver no
+                       pierde datos (truncar devolvía «XAU/U…»); en sm+ vuelve a una
+                       sola línea. */
                     className="tj-dm-entra group w-full flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 py-2.5 hover:bg-[rgb(var(--divider)/0.05)] -mx-2 px-2 rounded-[2px] transition-colors text-left"
                   >
-                    {/* 80px se quedaba corto: "BTC/USDT" mide 79px de texto
-                        él solo, y a eso hay que sumarle el icono + el hueco
-                        antes de la letra — se cortaba en "EURU…" y "XAU/U…"
-                        en el ancho de un teléfono. 100px es lo que pide el
-                        símbolo más largo del catálogo, con margen. */}
+                    {/* 100 px: «BTC/USDT» mide 79 px solo de texto, más icono y hueco;
+                        con 80 se cortaba en «XAU/U…». */}
                     <div className="flex items-center gap-2 min-w-0 w-[100px] sm:w-[110px] shrink-0">
                       <AssetMark assetClass={trInst?.assetClass} />
                       <span className="font-medium text-primary truncate min-w-0">
@@ -1163,10 +967,8 @@ export function DashboardPage() {
                     >
                       {fmtR(tr.rMultiple, lang, 2)}
                     </div>
-                    {/* `ml-auto` solo en móvil: es lo que manda el resultado al
-                        canto derecho de la segunda línea cuando la fila
-                        envuelve. En sm+ la fila es una sola línea y el hueco
-                        ya lo reparte la columna del setup con `flex-1`. */}
+                    {/* `ml-auto` solo en móvil: manda el resultado al canto derecho
+                        de la segunda línea. En sm+ reparte el hueco el setup (`flex-1`). */}
                     <div className="shrink-0 w-20 sm:w-24 text-right ml-auto sm:ml-0">
                       <Money
                         value={tr.netPnl}
@@ -1202,9 +1004,7 @@ export function DashboardPage() {
   );
 }
 
-/** Single KPI cell — small caption above + 18px tabular SemiBold value below.
- *  No card, no hover lift: the strip is a flat band of statistics with
- *  hairline dividers, mirroring the WinUI strip. */
+/** Celda de KPI: rótulo y valor tabular, sin tarjeta. */
 function KpiCell({
   label,
   value,
@@ -1217,70 +1017,42 @@ function KpiCell({
       <div className="text-[10px] uppercase tracking-[0.12em] text-tertiary truncate max-w-full">
         {label}
       </div>
-      {/* Tabular-nums + SemiBold enforced on the cell wrapper so all 7
-          cells share the exact same numeric typography, regardless of
-          whether the value is a <Money> span, a plain number, or a streak
-          chip — keeps the row's baseline perfectly aligned. */}
-      {/* La celda es su propio contenedor de medida: «+6807,72 US$»
-          a `text-lg` fijo se salia 15 px a 768 px, que es donde esta
-          reticula pasa a varias columnas. */}
-      {/* `w-full` NO es decorativo: `caja-cifra` declara
-          `container-type: inline-size`, y un contenedor de medida sobre una
-          caja que se dimensiona por su CONTENIDO —esta lo hace, porque su
-          padre es `flex flex-col items-center`— colapsa a cero. Con ancho
-          cero, `11cqi` vale cero y `break-words` parte la cifra en un
-          caracter por renglon: a 390 px «+6807,72 US$» se pintaba en
-          vertical, letra a letra, en la PRIMERA pantalla de la demo. Es la
-          trampa que la septima tanda dejo escrita: esa utilidad solo sirve
-          cuando el ancho lo pone el padre.
-
-          Y `whitespace-nowrap` en vez de `break-words`: el valor llega con
-          `text-lg` propio, que gana a `cifra-lg`, asi que la consulta de
-          contenedor NO puede encogerlo y a cualquier ancho acabaria
-          partiendo «US$» por la mitad. La tira ya se desplaza de lado
-          (`overflow-x-auto`), que es justo para lo que se puso. */}
+      {/* `tnum` y semibold en el contenedor: las 7 celdas comparten tipografía
+          numérica sea cual sea el valor. `caja-cifra` es contenedor de medida
+          propio (a 768 px «+6807,72 US$» se salía 15 px). `w-full` es
+          imprescindible: un contenedor de medida cuyo ancho depende de su
+          contenido colapsa a cero y `break-words` partía la cifra letra a letra.
+          `whitespace-nowrap` porque el `text-lg` del valor gana a `cifra-lg` y
+          partiría «US$»; la tira ya hace scroll lateral. */}
       <div className="caja-cifra w-full min-w-0 whitespace-nowrap [&>*]:cifra-lg [&>*]:font-semibold [&>span]:tnum">{value}</div>
     </div>
   );
 }
 
 /**
- * TodayBriefing — "El parte de hoy" (DashboardPage.xaml L637-670).
+ * «El parte de hoy» (DashboardPage.xaml L637-670): lo que el histórico dice
+ * del día de la semana actual y de la racha, con las cadenas de la app
+ * (Summary_Briefing*, Resources.resw L608-617). Con muestra corta o
+ * resultados a ambos lados del cero declara que no hay ventaja que afirmar.
  *
- * Cuatro líneas que la app compone a partir del histórico REAL del
- * trader: qué deja su operación típica en el día de la semana que es
- * hoy, si ya ha cerrado algo, cómo va su cadencia y en qué racha llega.
- * Lo que la hace distinta de un widget de métricas cualquiera es que
- * declara cuándo NO puede afirmar nada: con muestra corta o con
- * resultados a ambos lados del cero, lo dice en vez de fabricar una
- * ventaja. Se reproducen aquí las cadenas literales de la app
- * (Summary_Briefing*, Resources.resw L608-617).
- *
- * El día de la semana se calcula tras montar, no en el render inicial:
- * la fecha del servidor y la del visitante no coinciden y el desajuste
- * rompería la hidratación (mismo motivo que el reloj del título).
+ * El día se calcula tras montar: la fecha del servidor y la del visitante no
+ * coinciden y romperían la hidratación.
  */
 function TodayBriefing() {
   const { lang } = useLang();
   const es = lang === "es";
-  // `useHydrated` en vez de estado + efecto: el día de la semana es un
-  // valor derivado del cliente, no estado propio. Con el efecto había que
-  // guardarlo en useState y eso disparaba un render en cascada al montar
-  // (regla react-hooks/set-state-in-effect). Así se calcula durante el
-  // render, pero solo cuando ya estamos en el navegador.
+  // `useHydrated` y no estado + efecto (regla react-hooks/set-state-in-effect).
   const hydrated = useHydrated();
   const weekday = hydrated
     ? new Date().toLocaleDateString(LOCALE_FECHA[lang], { weekday: "long" })
     : null;
 
-  // Operaciones de la muestra que cayeron en el mismo día de la semana:
-  // es la cifra con la que la app decide si puede afirmar algo o no.
+  // Operaciones de la muestra en el mismo día de la semana: con ella la app decide si afirma algo.
   const sameWeekdayCount = useMemo(() => {
     if (!weekday) return 0;
     const target = new Date().getDay();
-    /* La operación se fecha en UTC (ver la cabecera de `data.ts`); el
-       «hoy» del visitante es su día local, que es lo que él llama hoy.
-       Cada lado se lee en su propio huso a propósito. */
+    /* La operación se fecha en UTC (ver `data.ts`) y «hoy» es el día local
+       del visitante: cada lado se lee en su huso a propósito. */
     return TRADES.filter((tr) => tr.closedAt.getUTCDay() === target).length;
   }, [weekday]);
 
@@ -1297,10 +1069,7 @@ function TodayBriefing() {
           : "What your history says about today, before you trade — not a prediction. When the sample cannot support a claim, it says so."}
       </p>
       <div className="mt-4 space-y-2 text-[13px] text-secondary leading-relaxed max-w-3xl">
-        {/* Línea del día de la semana. En la muestra de la demo los
-            resultados de cualquier día caen a los dos lados del cero, así
-            que se usa la variante "ruidosa" — la que declara que no hay
-            ventaja que afirmar. */}
+        {/* En la muestra, cualquier día cae a ambos lados del cero: variante «ruidosa». */}
         <p>
           {weekday
             ? es
@@ -1313,9 +1082,7 @@ function TodayBriefing() {
             ? "Todavía no has cerrado ninguna operación hoy."
             : "You have not closed any trade today."}
         </p>
-        {/* Con una sola operación no hay "racha" que anunciar: decir
-            "1 ganadora seguidas" es la clase de descuido que delata que
-            el texto lo compone una plantilla. */}
+        {/* Con una sola operación no hay racha que anunciar. */}
         {streak.kind !== "none" && streak.count > 1 && (
           <p>
             {es
@@ -1333,18 +1100,16 @@ function TodayBriefing() {
 }
 
 /**
- * RealityCheck — el aviso de la app bajo la franja de KPIs
- * (Summary_RealityStreakNormal / Summary_RealityDrawdownNormal).
+ * Aviso de realidad bajo los KPI (Summary_RealityStreakNormal /
+ * Summary_RealityDrawdownNormal): compara racha y caída actuales con lo que
+ * produce el azar con ese acierto, para que tres pérdidas seguidas no se lean
+ * como «algo va mal».
  *
- * Los dos umbrales NO son cifras inventadas para la demo: salen de la
- * estadística de rachas. Con n operaciones y probabilidad de fallo q, la
- * racha perdedora más larga que cabe esperar es log(n)/log(1/q), y el
- * listón que el azar solo supera 1 de cada 20 veces es
- * log(n / ln(1/0,95))/log(1/q). Con los 200 trades y el 50 % de acierto
- * de la muestra dan 7 y 11 — los mismos números que enseña la app.
- *
- * La caída "típica" se deriva de ahí: una racha esperada de pérdidas
- * medias, medida contra el balance inicial.
+ * Umbrales de la estadística de rachas, con n operaciones y probabilidad de
+ * fallo q: racha esperada log(n)/log(1/q); racha que el azar solo supera 1 de
+ * cada 20 veces log(n / ln(1/0,95))/log(1/q). Con los 200 trades y el 50 % de
+ * la muestra dan 7 y 11, como en la app. La caída típica es la racha esperada
+ * de pérdidas medias sobre el balance inicial.
  */
 function RealityCheck() {
   const { lang } = useLang();
@@ -1361,18 +1126,13 @@ function RealityCheck() {
     Math.log(n / Math.log(1 / 0.95)) / Math.log(1 / q)
   );
 
-  // Caída típica: la racha esperada de pérdidas medias sobre el balance
-  // de partida. Es el mismo orden de magnitud que la simulación de la app.
   const typicalDd =
     (expectedStreak * Math.abs(METRICS.avgLoss)) / INITIAL_BALANCE_CONST;
   const rareDd = (rareStreak * Math.abs(METRICS.avgLoss)) / INITIAL_BALANCE_CONST;
 
-  /* Las dos frases son INDEPENDIENTES y cada una tiene su condición,
-     exactamente como en LoadRealityCheck (PerformanceViewModel.cs
-     L396-432): de la racha solo se habla si está EN una racha perdedora
-     — en mitad de una buena racha nadie necesita que le tranquilicen, y
-     decirlo entonces convierte el aviso en ruido que se aprende a
-     saltar. De la caída, solo si hay una vigente. */
+  /* Las dos frases son independientes, como en LoadRealityCheck
+     (PerformanceViewModel.cs L396-432): la racha solo se menciona si es
+     perdedora y la caída solo si hay una vigente. */
   const parts: string[] = [];
 
   if (streak.kind === "loss" && streak.count > 0) {
@@ -1416,27 +1176,19 @@ function RealityCheck() {
   );
 }
 
-/** Vertical hairline divider between KPI cells — matches the WinUI
- *  VerticalHairlineStyle (1px column, full height, low-opacity stroke
- *  with a subtle top/bottom fade for premium feel). */
+/** Filete vertical entre celdas de KPI. */
 function KpiDivider() {
   return (
     <div
-      // `md:hidden` — at md+ the parent switches from `flex` to a 7-col
-      // CSS Grid (`md:grid md:grid-cols-[repeat(7,minmax(0,1fr))]`). The
-      // 7 KpiDividers would otherwise become extra grid items (13 children
-      // in a 7-col grid → wraps to 2 rows of KPIs). Hiding them on md+
-      // leaves exactly 7 grid children (one per KpiCell) so the strip
-      // stays a single row; the `gap-x-4` provides the optical separation
-      // the dividers were painting on mobile.
+      // `md:hidden`: en md+ el padre es una rejilla de 7 columnas y los
+      // separadores serían hijos extra (la tira pasaría a dos filas).
       className="self-stretch w-px shrink-0 justify-self-center bg-[rgb(var(--divider)/0.12)] md:hidden"
       aria-hidden="true"
     />
   );
 }
 
-/** Tiny direction chip — pos/neg colored pill with the long/short label.
- *  Kept inline (not importing Chip) so this file stays self-contained. */
+/** Chip de dirección long/short, en línea para no depender de `Chip`. */
 function DirectionChip({
   direction,
   t,
@@ -1447,11 +1199,8 @@ function DirectionChip({
   const isLong = direction === "long";
   return (
     <span
-      /* El rojo usa `--pnl-neg-on-tint` y no el token normal: el texto va
-         sobre un fondo teñido de su MISMO color, y ahí el #FF4D4D se
-         quedaba en 4,03:1 para 10 px (hace falta 4,5:1). Ver la nota del
-         token en globals.css con las alternativas medidas. El verde no lo
-         necesita: sobre su tinte va sobrado. */
+      /* El rojo usa `--pnl-neg-on-tint`: sobre su propio tinte el token normal
+         daba 4,03:1 a 10 px (hacen falta 4,5:1). Ver globals.css. */
       className={`inline-flex items-center gap-1 px-1.5 h-5 rounded text-[10px] font-medium uppercase tracking-wider ${
         isLong
           ? "bg-pnl-pos/15 text-pnl-pos"
@@ -1469,7 +1218,7 @@ function DirectionChip({
   );
 }
 
-/** Native-select chevron overlay (since appearance-none strips it). */
+/** Chevron superpuesto al select, que con `appearance-none` pierde el suyo. */
 function ChevronDown() {
   return (
     <span

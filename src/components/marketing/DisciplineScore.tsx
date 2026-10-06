@@ -10,49 +10,22 @@ import { moverConFlechas } from "@/lib/flechas";
 import { QUESTIONS, type DimId } from "@/lib/trading/disciplineQuestions";
 
 /**
- * DisciplineScore — diagnóstico de disciplina operativa.
+ * Diagnóstico de disciplina operativa: cinco ejes (riesgo, plan, registro,
+ * temple y constancia) con tres preguntas cada uno.
  *
- * ── Qué cambió, y por qué ─────────────────────────────────────────────
- * Era un test de seis preguntas con una única cifra al final. Gustaba,
- * pero medía poco: todas las respuestas valían lo mismo y el resultado no
- * distinguía a quien lleva un registro impecable y arriesga a ciegas de
- * quien gestiona el riesgo de libro y no anota nada. Dos traders con
- * problemas opuestos salían con la misma puntuación y el mismo consejo.
- *
- * Ahora mide CINCO EJES por separado, con tres preguntas cada uno:
- *
- *   RIESGO      lo que decide si la cuenta sobrevive
- *   PLAN        si hay una decisión antes de la operación
- *   REGISTRO    si existen datos propios sobre los que decidir
- *   TEMPLE      qué pasa cuando el mercado va en contra
- *   CONSTANCIA  si lo anterior se sostiene en el tiempo
- *
- * ── Las preguntas NO pesan igual ──────────────────────────────────────
- * Mover el stop en contra revela mucho más sobre un trader que revisar el
- * diario los domingos: lo primero vacía cuentas y lo segundo las mejora
- * despacio. Cada pregunta lleva su peso (1 a 3) y la puntuación de cada
- * eje es la media ponderada de las suyas. La cifra global es la media de
- * los ejes ponderada por la importancia del eje, no la suma de aciertos.
- *
- * Consecuencia buscada: un punto flaco grave en riesgo hunde el resultado
- * aunque todo lo demás esté bien. Es lo que pasa en la realidad.
- *
- * ── El resultado dice DÓNDE, no solo CUÁNTO ───────────────────────────
- * Una cifra sola no es accionable. Se devuelve el perfil de los cinco
- * ejes en barras, el eje más débil señalado, y una recomendación escrita
- * para ESE eje — no un consejo genérico por tramo de puntuación.
- *
- * ── Material ──────────────────────────────────────────────────────────
- * .tj-ficha con barra de cabecera. Objetivos táctiles ≥44 px. Sin desbordes en
- * móvil: las opciones se apilan y el perfil es de una columna.
+ * Las preguntas pesan distinto (1 a 3). El eje puntúa con la media ponderada
+ * de las suyas y la cifra global es la media de los ejes ponderada por el
+ * peso del eje, no la suma de aciertos: un fallo grave en riesgo hunde el
+ * resultado. El resultado muestra el perfil por ejes, el más débil y una
+ * recomendación escrita para ese eje.
  */
 
 type Dim = {
   id: DimId;
   es: string;
   en: string;
-  /* Peso del eje en la cifra global. Riesgo pesa el doble que constancia
-     porque un fallo ahí no se corrige con tiempo: se paga en el momento. */
+  /* Peso del eje en la cifra global: un fallo en riesgo se paga al momento,
+     no se corrige con tiempo. */
   weight: number;
   tipEs: string;
   tipEn: string;
@@ -111,27 +84,16 @@ const DIMS: Dim[] = [
   },
 ];
 
-/* Las quince preguntas (tipo `Q` incluido) viven en
-   `@/lib/trading/disciplineQuestions.ts`, no aquí. Un componente con
-   `"use client"` no puede exportar datos planos hacia un componente de
-   servidor —en el servidor el módulo se sustituye por un sustituto que
-   solo sabe hacer de componente—, y `/test` necesita este mismo array
-   para construir el `Quiz` que exige Google. */
+/* Las quince preguntas viven en `@/lib/trading/disciplineQuestions.ts`: un
+   módulo `"use client"` no puede exportar datos a un componente de servidor,
+   y `/test` necesita el mismo array para el `Quiz` de Google. */
 
 /** Puntos máximos de una pregunta: cuatro opciones, de 0 a 3. */
 const MAX_OPT = 3;
 /** Desde aquí, el eje más bajo ya no es un punto flaco sino uno que vigilar. */
 const UMBRAL_SIN_PUNTO_FLACO = 85;
 
-/**
- * Dónde se recuerdan las respuestas. Son quince preguntas: perderlas por
- * recargar, cambiar de idioma o volver desde otra página es motivo
- * suficiente para no rehacer el test, y el test es la pieza que más
- * engancha del sitio.
- *
- * Vive en el navegador de quien responde y no sale de ahí — el sitio no
- * tiene servidor donde guardarlo ni falta que hace.
- */
+/** Dónde se recuerdan las respuestas (solo en el navegador de quien responde). */
 const CLAVE_GUARDADO = "tj-test-disciplina-v1";
 
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
@@ -140,33 +102,22 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
   const es = lang === "es";
   const [answers, setAnswers] = useState<(number | null)[]>(QUESTIONS.map(() => null));
 
-  /* ── Una pregunta por pantalla ────────────────────────────────────
-     El test enseñaba las quince preguntas apiladas. Con sesenta
-     opciones a la vista de golpe, lo primero que hace quien llega no
-     es responder: es calcular cuánto le va a costar. Y ese cálculo es
-     el que hace que se vaya. Un diagnóstico se contesta de una en una
-     —es como funciona cualquier cuestionario serio— y además concentra
-     la atención en la pregunta que toca en lugar de repartirla entre
-     quince.
-     El índice vive aparte de las respuestas: se puede volver atrás a
-     revisar sin perder nada de lo contestado. */
+  /* Una pregunta por pantalla. El índice va aparte de las respuestas para
+     poder volver atrás sin perder lo contestado. */
   const [actual, setActual] = useState(0);
 
-  /* Recuperar lo respondido. Va en un efecto y no en el estado inicial a
-     propósito: el HTML se genera en el build, sin navegador, y leer el
-     almacenamiento durante el primer pintado haría que servidor y cliente
-     dibujaran cosas distintas — React lo detecta y descarta el árbol.
-     Primero se pinta el test vacío, después se rellena. */
+  /* Recuperar lo respondido, en un efecto y no en el estado inicial: el HTML
+     se genera en el build, y leer el almacenamiento al primer pintado haría
+     que servidor y cliente dibujaran cosas distintas. */
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
       const crudo = localStorage.getItem(CLAVE_GUARDADO);
       if (!crudo) return;
       const guardado: unknown = JSON.parse(crudo);
-      /* La comprobación de longitud NO es paranoia de más: el día que se
-         añada o quite una pregunta, un guardado antiguo encajaría a medias
-         y desplazaría cada respuesta a la pregunta equivocada, dando un
-         diagnóstico falso sin que nada fallara a la vista. */
+      /* La longitud se comprueba: si cambia el número de preguntas, un
+         guardado antiguo desplazaría las respuestas y daría un diagnóstico
+         falso sin error visible. */
       if (
         Array.isArray(guardado) &&
         guardado.length === QUESTIONS.length &&
@@ -177,8 +128,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
         setAnswers(guardado as (number | null)[]);
       }
     } catch {
-      /* Almacenamiento bloqueado (modo privado, cookies de terceros) o
-         dato corrupto. El test funciona igual, solo que sin memoria. */
+      /* Almacenamiento bloqueado o dato corrupto: el test sigue sin memoria. */
     }
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
@@ -187,16 +137,15 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
     try {
       localStorage.setItem(CLAVE_GUARDADO, JSON.stringify(answers));
     } catch {
-      /* Sin almacenamiento no se guarda, y no pasa nada más. */
+      /* Sin almacenamiento no se guarda. */
     }
   }, [answers]);
 
   const answeredCount = answers.filter((a) => a !== null).length;
   const allAnswered = answeredCount === QUESTIONS.length;
 
-  /* Puntuación por eje: media ponderada de sus preguntas, en 0-100. Las
-     preguntas sin responder no cuentan ni a favor ni en contra, así que el
-     perfil ya dice algo antes de terminar. */
+  /* Puntuación por eje: media ponderada de sus preguntas, en 0-100. Las no
+     respondidas no cuentan, así que el perfil ya dice algo antes de terminar. */
   const perDim = useMemo(() => {
     const acc: Record<DimId, { got: number; max: number }> = {
       riesgo: { got: 0, max: 0 },
@@ -218,9 +167,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
     }));
   }, [answers]);
 
-  /* Cifra global: media de los ejes ponderada por la importancia del eje.
-     NO es el porcentaje de aciertos — un fallo en riesgo pesa el doble
-     que uno en constancia, igual que en la operativa real. */
+  /* Cifra global: media de los ejes ponderada por su peso, no el porcentaje
+     de aciertos. */
   const score = useMemo(() => {
     let got = 0;
     let max = 0;
@@ -266,9 +214,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
     };
   }, [allAnswered, score, es]);
 
-  /* El eje más flojo, que es de lo que va la recomendación. A igualdad de
-     porcentaje gana el de más peso: si riesgo y constancia empatan, lo
-     urgente es riesgo. */
+  /* El eje más flojo, sobre el que va la recomendación. En empate gana el de
+     más peso. */
   const weakest = useMemo(() => {
     if (!allAnswered) return null;
     return [...perDim].sort(
@@ -276,10 +223,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
     )[0];
   }, [perDim, allAnswered]);
 
-  /* Con las quince respuestas óptimas salía «Institucional» y debajo «Tu
-     punto flaco es el riesgo»: el eje más bajo siempre existe, aunque
-     esté al 100 %. Por encima del umbral no hay punto flaco que señalar,
-     sino un eje que vigilar. */
+  /* El eje más bajo siempre existe, aunque esté al 100 %. Por encima del
+     umbral no hay punto flaco que señalar, sino un eje que vigilar. */
   const sinPuntoFlaco = weakest !== null && weakest.pct >= UMBRAL_SIN_PUNTO_FLACO;
   const consejo = !weakest
     ? null
@@ -296,10 +241,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
         : weakest.dim.tipEn;
   const rotuloConsejo = sinPuntoFlaco ? (es ? "Para sostenerlo" : "To keep it") : es ? "Empieza por aquí" : "Start here";
 
-  /* El foco sigue a la pregunta: «Siguiente», «Anterior» y «Empezar de
-     nuevo» cambian lo que hay en pantalla, y el botón pulsado podía
-     desaparecer y dejar el foco en el cuerpo de la página. Solo se mueve
-     tras un gesto, nunca al cargar. */
+  /* El foco sigue a la pregunta (el botón pulsado puede desaparecer). Solo se
+     mueve tras un gesto, nunca al cargar. */
   const enunciadoRef = useRef<HTMLParagraphElement>(null);
   const resultadoRef = useRef<HTMLDivElement>(null);
   const moverFoco = useRef(false);
@@ -339,8 +282,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
       es ? "/test/" : "/en/test/",
     );
 
-  /* Reiniciar vuelve a la pregunta 1: dejaba «Pregunta 15 de 15» con
-     las respuestas a cero. */
+  /* Reiniciar vuelve a la pregunta 1. */
   const reset = () => {
     setAnswers(QUESTIONS.map(() => null));
     irA(0);
@@ -353,10 +295,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
       return next;
     });
 
-  /* `useId` y no un contador: si algún día el diagnóstico saliera dos
-     veces en la misma página, dos `id="q-0"` romperían la asociación
-     entre la pregunta y su grupo de respuestas — y el fallo sería
-     invisible salvo con lector de pantalla. */
+  /* `useId` y no un contador: con dos diagnósticos en una página, los `id`
+     repetidos romperían la asociación pregunta-respuestas para el lector. */
   const uid = useId();
   const idPregunta = (qi: number) => `${uid}-q${qi}`;
 
@@ -411,10 +351,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                   className="tnum"
                   style={{ fontSize: 12, color: "var(--ink-3)" }}
                 >
-                  {/* «Respondidas», no «Progreso»: justo debajo hay otro
-                      contador con el mismo formato —la pregunta en curso— y
-                      los dos juntos, «0 / 15» y «1 / 15», se leían como una
-                      contradiccion. */}
+                  {/* «Respondidas» y no «Progreso»: otro contador con el mismo
+                      formato (la pregunta en curso) se leería como contradicción. */}
                   {es ? "Respondidas" : "Answered"}
                 </span>
                 <span className="tnum" style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-2)" }}>
@@ -435,11 +373,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
 
             <ol className="list-none p-0 m-0 flex flex-col gap-5">
               {QUESTIONS.map((q, qi) => {
-                /* Solo se dibuja la pregunta en curso. Se recorre el
-                   array entero en vez de indexar directamente para no
-                   tocar nada del cuerpo que ya funciona —índices,
-                   accesibilidad, teclado—: lo único que cambia es
-                   cuántas se pintan. */
+                /* Solo se dibuja la pregunta en curso. */
                 if (qi !== actual) return null;
                 const dim = DIMS.find((d) => d.id === q.dim);
                 return (
@@ -467,22 +401,10 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                     >
                       {es ? q.qEs : q.qEn}
                     </p>
-                    {/* Una columna en móvil y dos desde `sm`: las respuestas
-                        son frases, no etiquetas, y en 390 px apiladas se
-                        leen sin cortes.
-
-                        `radiogroup` + `radio`, y no cuatro botones con
-                        `aria-pressed` como estaba: `aria-pressed` describe
-                        un interruptor que se queda hundido, así que quien
-                        usa lector de pantalla oía cuatro interruptores
-                        independientes —sin saber que son excluyentes, ni
-                        cuántos hay, ni a qué pregunta responden—. Con el
-                        grupo se anuncia la pregunta al entrar y cada
-                        opción como "2 de 4".
-
-                        El tabulador, además, pasaba por las 60 opciones
-                        del test una a una. Ahora cada grupo es UNA parada
-                        y dentro se elige con las flechas: 60 → 15. */}
+                    {/* Una columna en móvil y dos desde `sm`. `radiogroup` + `radio`
+                        y no `aria-pressed`: el lector anuncia la pregunta y cada
+                        opción como «2 de 4», y cada grupo es una sola parada de
+                        tabulador (dentro, con flechas). */}
                     <div
                       role="radiogroup"
                       aria-labelledby={idPregunta(qi)}
@@ -490,8 +412,8 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                     >
                       {q.options.map((o, oi) => {
                         const activa = answers[qi] === oi;
-                        /* Un grupo de opción tiene UNA parada de tabulador:
-                           la elegida, o la primera si aún no hay ninguna. */
+                        /* Una parada de tabulador por grupo: la elegida, o la
+                           primera si aún no hay ninguna. */
                         const enfocable = answers[qi] === null ? oi === 0 : activa;
                         return (
                           <button
@@ -510,8 +432,6 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                               lineHeight: 1.35,
                               cursor: "pointer",
                               color: activa ? "var(--bg)" : "var(--ink-2)",
-                              /* Opción con filete, no una pastilla gris: la
-                                 elegida se rellena de tinta. */
                               background: activa ? "var(--ink)" : "transparent",
                               boxShadow: activa ? "none" : "inset 0 0 0 1px var(--ficha-filo)",
                             }}
@@ -526,20 +446,10 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
               })}
             </ol>
 
-            {/* ── Recorrido ────────────────────────────────────────────
-                Anterior y Siguiente, más la posición en el conjunto. El
-                avance NO es automático al responder: en un test de
-                autodiagnóstico la gente cambia de opinión sobre la
-                marcha, y saltar solo al tocar una opción impide
-                corregir sin tener que retroceder. Se avanza cuando uno
-                decide que ha terminado con la pregunta. */}
-            {/* A 320 px —un móvil pequeño, o un portátil con el zoom al
-                400 %, que es el criterio de accesibilidad— los tres no
-                caben en una línea: «Siguiente →» se salía 14 px y
-                empujaba la página entera de lado. En inglés cabía, así
-                que solo se rompía en español. Por debajo de `sm` el
-                contador se lleva su propia línea y los dos botones se
-                reparten la de abajo; de `sm` en adelante, nada cambia. */}
+            {/* El avance no es automático al responder: permite cambiar de
+                opinión sin retroceder. Por debajo de `sm` el contador ocupa su
+                línea y los botones se reparten la de abajo; a 320 px no caben
+                los tres en una línea y empujaban la página de lado. */}
             <div className="mt-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
               <button
                 type="button"
@@ -562,9 +472,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                 <button
                   type="button"
                   onClick={() => irA(actual + 1)}
-                  /* Se puede seguir sin responder: obligar a contestar
-                     para avanzar convierte un diagnóstico en un peaje.
-                     El resultado ya avisa de cuántas faltan. */
+                  /* Se puede seguir sin responder; el resultado avisa de las que faltan. */
                   className="cta cta--primario order-3 sm:order-none"
                 >
                   {es ? "Siguiente" : "Next"} <span aria-hidden>→</span>
@@ -623,7 +531,7 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                     transition: "color 0.25s ease",
                   }}
                 >
-                  {/* Sin respuestas no hay cifra: un «0» se leía como nota. */}
+                  {/* Sin respuestas no hay cifra: un «0» se leería como nota. */}
                   {answeredCount > 0 ? fmtInt(score, lang) : "—"}
                 </span>
                 <span className="tnum" style={{ fontSize: 15, color: "var(--ink-3)", paddingBottom: 4 }}>

@@ -3,7 +3,6 @@ import { computeMetrics, drawdownRecoveryRequired, type Trade } from "@/lib/trad
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
 import { FUTURES_CONTRACTS } from "@/lib/trading/plan";
 
-// Helper to construct synthetic test trades
 function makeTrade(overrides: Partial<Trade> & { id: number; netPnl: number; closedAt: Date }): Trade {
   const isWin = overrides.netPnl > 0;
   const entry = overrides.entry ?? 100;
@@ -95,8 +94,8 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
     expect(mWin.wins).toBe(1);
     expect(mWin.losses).toBe(0);
     expect(mWin.profitFactor).toBe(350);
-    expect(mWin.sharpe).toBe(0); // sd=0 for n=1
-    expect(mWin.sortino).toBe(0); // downside=0
+    expect(mWin.sharpe).toBe(0); // con n = 1 la desviación es 0
+    expect(mWin.sortino).toBe(0); // sin pérdidas, la desviación a la baja es 0
     expect(mWin.maxDrawdown).toBe(0);
     expect(mWin.finalBalance).toBe(10350);
 
@@ -128,11 +127,11 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
     expect(mWins.winRate).toBe(1.0);
     expect(mWins.losses).toBe(0);
     expect(mWins.avgLoss).toBe(0);
-    expect(mWins.sortino).toBe(0); // Zero downside deviation guard
+    expect(mWins.sortino).toBe(0); // desviación a la baja 0: no divide
     expect(mWins.maxDrawdown).toBe(0);
     expect(mWins.maxDrawdownPct).toBe(0);
-    expect(mWins.calmar).toBe(0); // Calmar division by zero guard
-    expect(mWins.omega).toBe(100); // Fallback omega for 0 gross loss
+    expect(mWins.calmar).toBe(0); // drawdown 0: no divide
+    expect(mWins.omega).toBe(100); // sin pérdida bruta, omega vale 100
     expect(Number.isFinite(mWins.sharpe)).toBe(true);
 
     const losses100 = Array.from({ length: n }, (_, i) =>
@@ -155,8 +154,8 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
       makeTrade({ id: i + 1, netPnl: 75, rMultiple: 1.0, closedAt: new Date(baseDate.getTime() + i * 86400000) })
     );
     const mFlat = computeMetrics(flatPnls);
-    expect(mFlat.sharpe).toBe(0); // sd=0
-    expect(mFlat.sortino).toBe(0); // downside=0
+    expect(mFlat.sharpe).toBe(0); // desviación 0
+    expect(mFlat.sortino).toBe(0); // desviación a la baja 0
     expect(mFlat.expectancy).toBe(75);
     expect(mFlat.expectancyR).toBe(1.0);
 
@@ -199,7 +198,7 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
     expect(Number.isFinite(m.sharpe)).toBe(true);
     expect(Number.isFinite(m.sortino)).toBe(true);
     expect(Number.isFinite(m.calmar)).toBe(true);
-    expect(duration).toBeLessThan(1000); // Under 1000ms
+    expect(duration).toBeLessThan(1000); // menos de 1 s para 10.000 operaciones
   });
 
   it("ADV-6: Half Kelly Position Sizing [0.25%, 3.0%] and Quarter Kelly Bounds", () => {
@@ -213,42 +212,42 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
       return { fullKellyPct, halfKellyPct, quarterKellyPct };
     }
 
-    // Infinite payoff (b -> infinity): f* -> p
+    // Payoff infinito (b -> ∞): f* -> p.
     const kInf = calcKelly(50, 1e9);
     expect(kInf.fullKellyPct).toBeCloseTo(50.0, 3);
-    expect(kInf.halfKellyPct).toBe(3.0); // Clamped to 3.0% max
-    expect(kInf.quarterKellyPct).toBe(3.0); // Clamped to 3.0% max
+    expect(kInf.halfKellyPct).toBe(3.0); // topado al 3 %
+    expect(kInf.quarterKellyPct).toBe(3.0);
 
-    // Zero payoff (b -> 0): f* -> 0
+    // Payoff cero (b -> 0): f* -> 0.
     const kZero = calcKelly(99, 1e-9);
     expect(kZero.fullKellyPct).toBe(0);
     expect(kZero.halfKellyPct).toBe(0);
     expect(kZero.quarterKellyPct).toBe(0);
 
-    // Negative payoff / edge: f* <= 0 -> clamped to 0%
+    // Ventaja negativa: f* <= 0 se queda en 0.
     const kNeg = calcKelly(40, 1.0);
     expect(kNeg.fullKellyPct).toBe(0);
     expect(kNeg.halfKellyPct).toBe(0);
     expect(kNeg.quarterKellyPct).toBe(0);
 
-    // Break-even edge: f* = 0 -> clamped to 0%
+    // Ventaja nula: f* = 0.
     const kEven = calcKelly(50, 1.0);
     expect(kEven.fullKellyPct).toBe(0);
     expect(kEven.halfKellyPct).toBe(0);
 
-    // Micro-edge: f* = 0.2% -> Half Kelly = 0.1% -> clamped to min 0.25%
+    // Ventaja mínima: f* = 0,2 % -> medio Kelly 0,1 %, que sube al mínimo de 0,25 %.
     const kMicro = calcKelly(50.1, 1.0);
     expect(kMicro.fullKellyPct).toBeCloseTo(0.2, 4);
     expect(kMicro.halfKellyPct).toBe(0.25);
     expect(kMicro.quarterKellyPct).toBe(0.25);
 
-    // Moderate edge: 52% WR, 1.5 RR -> f* = (0.52 * 1.5 - 0.48) / 1.5 = 0.30 / 1.5 = 20%
+    // Ventaja moderada: 52 % y RR 1,5 -> f* = (0,52·1,5 − 0,48) / 1,5 = 20 %.
     const kMod = calcKelly(52, 1.5);
     expect(kMod.fullKellyPct).toBeCloseTo(20.0, 4);
-    expect(kMod.halfKellyPct).toBe(3.0); // 10% clamped to 3.0%
-    expect(kMod.quarterKellyPct).toBe(3.0); // 5% clamped to 3.0%
+    expect(kMod.halfKellyPct).toBe(3.0); // 10 % topado al 3 %
+    expect(kMod.quarterKellyPct).toBe(3.0); // 5 % topado al 3 %
 
-    // Small edge: 51% WR, 1.0 RR -> f* = 2% -> Half Kelly = 1.0%, Quarter Kelly = 0.5%
+    // Ventaja pequeña: 51 % y RR 1 -> f* = 2 %; medio 1 %, cuarto 0,5 %.
     const kSmall = calcKelly(51, 1.0);
     expect(kSmall.fullKellyPct).toBeCloseTo(2.0, 4);
     expect(kSmall.halfKellyPct).toBeCloseTo(1.0, 4);
@@ -268,30 +267,30 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
       return { wilsonLower, wilsonUpper, center: center * 100, margin: margin * 100 };
     }
 
-    // Boundary p = 0: Lower = 0, Upper = 1 - 1/(1 + z^2/n) ~ z^2/(n + z^2)
+    // p = 0: inferior 0, superior z² / (n + z²).
     const w0 = calcWilson(0, 10);
     expect(w0.wilsonLower).toBe(0);
     expect(w0.wilsonUpper).toBeCloseTo((1.96 * 1.96 / (10 + 1.96 * 1.96)) * 100, 4);
     expect(w0.wilsonUpper).toBeLessThan(30);
 
-    // Boundary p = 1: Upper = 100%, Lower ~ 100 - Upper(p=0)
+    // p = 1: superior 100 %, inferior 100 − superior(p = 0).
     const w1 = calcWilson(100, 10);
     expect(w1.wilsonUpper).toBe(100);
     expect(w1.wilsonLower).toBeCloseTo(100 - w0.wilsonUpper, 4);
 
-    // Boundary n = 1: Valid finite non-NaN interval
+    // n = 1: intervalo finito y sin NaN.
     const wN1 = calcWilson(100, 1);
     expect(wN1.wilsonUpper).toBe(100);
     expect(wN1.wilsonLower).toBeGreaterThan(0);
     expect(Number.isFinite(wN1.wilsonLower)).toBe(true);
 
-    // Asymptotic n -> infinity: Margin -> 0, interval collapses to observed p
+    // n -> ∞: el margen tiende a 0 y el intervalo se cierra sobre p.
     const wInf = calcWilson(58, 1000000);
     expect(wInf.wilsonLower).toBeCloseTo(58.0, 0);
     expect(wInf.wilsonUpper).toBeCloseTo(58.0, 0);
     expect(wInf.wilsonUpper - wInf.wilsonLower).toBeLessThan(0.25);
 
-    // Monotonicity of sample size: larger n -> narrower confidence interval
+    // A mayor n, intervalo más estrecho.
     const w50 = calcWilson(55, 50);
     const w200 = calcWilson(55, 200);
     const w1000 = calcWilson(55, 1000);
@@ -303,7 +302,7 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
   });
 
   it("ADV-8: Abramowitz & Stegun Normal CDF (7.1.26) Precision & Asymptotics", () => {
-    // Reference tabulated values from NIST DLMF / Abramowitz & Stegun Handbook
+    // Valores tabulados de referencia (NIST DLMF y Abramowitz & Stegun).
     const standardTable = [
       { z: 0.0, phi: 0.5000000 },
       { z: 0.25, phi: 0.5987063 },
@@ -325,11 +324,9 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
     for (const { z, phi } of standardTable) {
       const computed = normalCdf(z);
       expect(Math.abs(computed - phi)).toBeLessThan(1.5e-5);
-      // Symmetry test
       expect(Math.abs(normalCdf(z) + normalCdf(-z) - 1.0)).toBeLessThan(1e-7);
     }
 
-    // Monotonicity check across dense grid
     let prev = 0;
     for (let z = -5.0; z <= 5.0; z += 0.1) {
       const cur = normalCdf(z);
@@ -339,7 +336,7 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
       prev = cur;
     }
 
-    // Extreme z values without overflow/underflow or NaN
+    // z extremas sin desbordamiento ni NaN.
     expect(normalCdf(10)).toBeCloseTo(1.0, 7);
     expect(normalCdf(-10)).toBeCloseTo(0.0, 7);
     expect(normalCdf(100)).toBe(1.0);
@@ -358,7 +355,7 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
       };
     }
 
-    // Two instances with the same seed generate bitwise identical sequence
+    // Dos instancias con la misma semilla dan la misma secuencia.
     const rngA = mulberry32(20260716);
     const rngB = mulberry32(20260716);
     const sampleSize = 50000;
@@ -372,14 +369,14 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
       sum += valA;
     }
 
-    // Uniform distribution check: mean should be ~0.5 (+/- 0.01)
+    // Distribución uniforme: la media ronda 0,5 (±0,01).
     const sampleMean = sum / sampleSize;
     expect(sampleMean).toBeGreaterThan(0.49);
     expect(sampleMean).toBeLessThan(0.51);
   });
 
   it("ADV-10: Drawdown recovery formula drawdownRecoveryRequired handles all percentages and fractions", () => {
-    // Percentage input (e.g. 10 for 10%)
+    // Entrada en porcentaje (10 para el 10 %).
     expect(drawdownRecoveryRequired(0)).toBe(0);
     expect(drawdownRecoveryRequired(10)).toBeCloseTo(11.1111, 4);
     expect(drawdownRecoveryRequired(20)).toBeCloseTo(25.0, 4);
@@ -391,12 +388,11 @@ describe("Adversarial Stress Test: Quantitative Mathematical Models", () => {
     expect(drawdownRecoveryRequired(100)).toBe(Infinity);
     expect(drawdownRecoveryRequired(105)).toBe(Infinity);
 
-    // Fraction input (e.g. 0.10 for 10%)
+    // Entrada en fracción (0,10 para el 10 %).
     expect(drawdownRecoveryRequired(0.10)).toBeCloseTo(0.10 / 0.90, 4);
     expect(drawdownRecoveryRequired(0.50)).toBeCloseTo(1.0, 4);
     expect(drawdownRecoveryRequired(1.0)).toBe(Infinity);
 
-    // Negative input guard
     expect(drawdownRecoveryRequired(-10)).toBe(0);
   });
 

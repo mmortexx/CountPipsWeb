@@ -14,9 +14,8 @@ export function Hero({ producto }: { producto?: ReactNode }) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  /* Las tres diferencias que no tiene ningún diario de la competencia,
-     juntas y en voz baja. «Windows» ya lo
-     dice la etiqueta de encima. «Previsto» porque la venta no está abierta. */
+  /* Las tres diferencias frente a otros diarios, juntas y en voz baja.
+     «Previsto» porque la venta no está abierta. */
   const datos = es
     ? "Pago único previsto, sin suscripción. Sin servidores: tus datos, en tu equipo. Demo sin registro."
     : "Planned one-time payment, no subscription. No servers: your data, on your machine. Demo without sign-up.";
@@ -55,15 +54,13 @@ export function Hero({ producto }: { producto?: ReactNode }) {
       <div className="tj-container relative mt-[clamp(2.25rem,4vw,3rem)]">
         {producto}
 
-        {/* En fila desde `lg`: a 820 px, rótulo y nombres en la misma línea
-            no cabían y «Bybit» bajaba solo a un segundo renglón. */}
+        {/* En fila desde `lg`: a 820 px, rótulo y nombres no caben en una línea. */}
         <div className="flex flex-col items-center gap-4 py-[clamp(2.5rem,5vw,3.5rem)] text-center lg:flex-row lg:justify-between lg:text-left">
           <p className="m-0 text-[13px] text-tertiary">
             {es ? "Plantillas de importación CSV para" : "CSV import templates for"}
           </p>
-          {/* Cinco nombres en dos columnas dejan uno suelto, y suelto en su
-              columna se centra a la izquierda del bloque: parecía
-              descolocado. El último ocupa las dos y se centra de verdad. */}
+          {/* Con cinco nombres en dos columnas, el último ocupa las dos para
+              centrarse de verdad. */}
           <ul className="m-0 grid grid-cols-2 gap-x-8 gap-y-2 p-0 text-[15px] font-semibold tracking-[-0.01em] text-secondary [&>li:last-child:nth-child(odd)]:col-span-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center">
             {compatibles.map((c) => (
               <li key={c}>{c}</li>

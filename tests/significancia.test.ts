@@ -1,11 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { contrasteVentaja } from "@/lib/trading/estadistica";
 
-/* La herramienta comparaba el acierto con el 50 % sin mirar el payoff y
-   con un contraste de dos colas: un 35 % de aciertos con 1 R : 1 R salía
-   «Ventaja sólida» mientras la expectancy de al lado decía −0,300 R. La
-   hipótesis nula es el acierto de equilibrio, el que deja la expectancy
-   a cero. */
+// La hipótesis nula es el acierto de equilibrio (el que deja la expectancy a
+// cero según el payoff), no el 50 %.
 describe("contrasteVentaja: ventaja frente al acierto de equilibrio", () => {
   it("un acierto por debajo del equilibrio nunca es una ventaja, por grande que sea la muestra", () => {
     expect(contrasteVentaja(200, 35, 1, 1).veredicto).toBe("sin-ventaja");

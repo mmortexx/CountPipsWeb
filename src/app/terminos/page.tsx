@@ -5,14 +5,9 @@ import { documentoPorSlug } from "@/lib/legal/documentos";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /terminos — condiciones de uso de la web y de sus herramientas.
- *
- * La cláusula que de verdad importa aquí no es la de propiedad
- * intelectual: es la de que nada de esto es asesoramiento financiero. La
- * web ofrece siete calculadoras, un simulador de Monte Carlo y datos de
- * operaciones de muestra que parecen reales porque están calculados de
- * verdad. Sin esa cláusula, alguien podría entender que se le está
- * recomendando operar de una forma concreta.
+ * /terminos: condiciones de uso de la web y sus herramientas. La cláusula clave
+ * es que nada de esto es asesoramiento financiero: las calculadoras y los
+ * datos de muestra podrían entenderse como una recomendación.
  */
 
 const doc = documentoPorSlug("terminos")!;

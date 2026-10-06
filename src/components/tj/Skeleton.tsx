@@ -1,20 +1,14 @@
 import type { CSSProperties, ReactNode } from "react";
 
 /**
- * Skeleton primitives for loading placeholders.
- *
- * The base `Skeleton` matches the spec exactly (a pulse-breathing rounded
- * block) and accepts an optional `shimmer` flag that layers an accent-tinted
- * gradient sweep on top — the premium "polish" used by `SkeletonCard` and the
- * demo's loading state. The sweep is driven by the `.tj-shimmer` utility in
- * globals.css so it stays in sync with the active accent palette.
- *
- * No hooks → safe to render from Server or Client components.
+ * Marcadores de carga. `Skeleton` es un bloque que pulsa; con `shimmer` añade
+ * el barrido de `.tj-shimmer` (globals.css). Sin hooks: valen en servidor y
+ * en cliente.
  */
 
 interface SkeletonProps {
   className?: string;
-  /** When true, adds an accent-tinted gradient sweep overlay. */
+  /** Añade el barrido de degradado con el acento. */
   shimmer?: boolean;
   style?: CSSProperties;
 }
@@ -40,11 +34,7 @@ export function Skeleton({ className = "", shimmer = false, style }: SkeletonPro
   );
 }
 
-/**
- * A few skeleton lines of varying width — mimics a paragraph or title block.
- * Widths are pre-baked Tailwind arbitrary classes so the component stays
- * hook-free and SSR-stable.
- */
+// Anchos fijos en clases de Tailwind, para que sea estable en SSR y sin hooks.
 const TEXT_WIDTHS = ["w-full", "w-[92%]", "w-[78%]", "w-[88%]", "w-[65%]", "w-[95%]", "w-[70%]"];
 
 interface SkeletonTextProps {
@@ -67,17 +57,13 @@ export function SkeletonText({
   );
 }
 
-/**
- * A glass card with skeleton content inside — the canonical loading block
- * for any dashboard tile. Includes a shimmering title bar, a few text lines,
- * and a larger chart-ish block. Children can override the default content.
- */
+/** Ficha de carga: barra de título, líneas de texto y un bloque de gráfico; `children` sustituye el contenido. */
 interface SkeletonCardProps {
   className?: string;
   children?: ReactNode;
-  /** Show the shimmering title bar at the top of the card. */
+  /** Barra de título arriba. */
   showTitle?: boolean;
-  /** Show the bottom "chart area" skeleton block. */
+  /** Bloque de gráfico abajo. */
   showChart?: boolean;
 }
 

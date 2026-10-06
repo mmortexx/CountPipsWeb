@@ -12,13 +12,8 @@ const breadcrumbSchema = {
   ],
 };
 
-/* Debe coincidir palabra por palabra con las preguntas EN visibles en
-   `FAQ.tsx` — copiadas de ahí, no traducidas de nuevo. */
-/* El dato estructurado sale de la MISMA lista que pinta el acordeon,
-   no de una copia a mano. Aqui habia trece respuestas escritas aparte
-   que ya no coincidian con la pagina: a la pregunta por los metodos de
-   pago se le declaraba a Google tarjeta y PayPal cuando no hay compra
-   posible. Ver src/lib/faq.ts. */
+// Sale de la misma lista que pinta el acordeón (src/lib/faq.ts), para no
+// declarar a Google respuestas que la página no da.
 const faqSchema = jsonLdFaq(FAQ_EN);
 
 export const metadata: Metadata = {

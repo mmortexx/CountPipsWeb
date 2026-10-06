@@ -5,18 +5,15 @@ import { useLang } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
 
 /**
- * First decision on the landing page. Both profiles have the same visual
- * weight and lead to a purpose-built narrative; the page never guesses which
- * trader the visitor is.
+ * Primera decisión de la portada. Los dos perfiles pesan lo mismo y llevan a
+ * un recorrido propio; la página no adivina qué trader es el visitante.
  */
 export function ProfileSelector() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  /* Los antetítulos van en caja normal, nunca en mayúsculas literales:
-     algunos lectores de pantalla deletrean letra a letra lo que viene
-     todo en mayúsculas («O-P-E-R-A-T-I-V-A»). Desde el 2026-09-26 el
-     sitio tampoco los pone en mayúsculas por CSS (ver `.eyebrow`). */
+  /* Antetítulos en caja normal, nunca en mayúsculas literales: algunos lectores
+     las deletrean letra a letra. */
   const profiles = [
     {
       id: "manual",
@@ -32,11 +29,8 @@ export function ProfileSelector() {
       id: "prop",
       href: "/traders/prop-firms",
       eyebrow: "Prop firms",
-      /* «For operating under rules» era calco doble. En inglés de
-         mercados el verbo es «trade», no «operate» —«operating» se lee
-         como «funcionar»—, y además rompía el paralelismo con la tarjeta
-         hermana de aquí arriba, que dice «To read your process clearly».
-         Las dos son ahora «To + verbo», que es como se leen juntas. */
+      /* En inglés de mercados el verbo es «trade», no «operate»; y «To + verbo»
+         mantiene el paralelismo con la tarjeta hermana. */
       title: es ? "Para operar con reglas que importan" : "To trade under rules that matter",
       body: es
         ? "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar."
@@ -47,18 +41,16 @@ export function ProfileSelector() {
 
   return (
     <section className="section-tight" aria-labelledby="profile-selector-title">
-      {/* En escritorio, cabecera a la izquierda y los dos recorridos
-          apilados a la derecha: con la cabecera encima, media anchura se
-          quedaba en blanco y la sección pedía dos pantallas de scroll. */}
+      {/* En escritorio, cabecera a la izquierda y los dos recorridos apilados a
+          la derecha. */}
       <div className="tj-container tj-split lg:grid lg:items-start">
         <div className="max-w-2xl">
           <h2 id="profile-selector-title" className="t-h2 text-primary text-balance">
             {es ? <>Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span></>}
           </h2>
           <p className="mt-4 t-entradilla text-secondary">
-            {/* Decía «adapta la demostración», y ninguno de los dos
-                recorridos toca la demo: son páginas propias. Se promete
-                lo que hay al otro lado del enlace. */}
+            {/* Promete lo que hay tras el enlace: los recorridos son páginas
+                propias, no tocan la demo. */}
             {es
               ? "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan."
               : "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated."}

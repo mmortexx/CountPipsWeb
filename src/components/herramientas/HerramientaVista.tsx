@@ -7,16 +7,11 @@ import { Reveal } from "@/components/tj/Reveal";
 import { HERRAMIENTAS, type Herramienta } from "@/lib/herramientas";
 
 /**
- * Resuelve el componente de cada herramienta y lo monta.
- *
- * ── Por qué el mapa está aquí y no en `herramientas.ts` ───────────────
- * Ese archivo son DATOS y lo importa el mapa del sitio, que se genera en
- * el servidor. Si llevara dentro los `import()` de seis componentes de
- * cliente, cada uno con sus animaciones, el mapa del sitio arrastraría
- * medio paquete de la web para escribir un XML de catorce líneas.
- *
- * Aquí, en cambio, se cargan bajo demanda: quien abre la calculadora de
- * riesgo no descarga el simulador de Monte Carlo.
+ * Resuelve el componente de cada herramienta y lo monta bajo demanda (quien
+ * abre una calculadora no descarga las demás). El mapa vive aquí y no en
+ * `herramientas.ts`: ese archivo son datos que importa el mapa del sitio en el
+ * servidor, y los `import()` de componentes de cliente arrastrarían medio
+ * paquete de la web.
  */
 const COMPONENTES = {
   RiskCalculator: dynamic(() =>
@@ -70,10 +65,8 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
       </div>
 
 
-      {/* Aviso obligado en una web de trading: estas calculadoras devuelven
-          lo que se deduce de los números que introduce el visitante, y
-          nada más. Sin esta línea, una herramienta que dice «arriesga
-          este tamaño» se puede leer como una recomendación. */}
+      {/* Aviso obligado: sin él, una herramienta que dice «arriesga este tamaño»
+          se puede leer como una recomendación. */}
       <section
         className="section-tight"
       >
@@ -95,7 +88,6 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
               </p>
             </Reveal>
 
-            {/* Otras herramientas — ninguna página es un callejón. */}
             <Reveal delay={0.08}>
               <div className="mt-12">
                 <p className="eyebrow m-0">
@@ -119,10 +111,8 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                   ))}
                 </ul>
                 <p className="mt-5 text-[14px]">
-                  {/* `-my-3 py-3` y no `-my-2 py-2`: con el relleno menor
-                      la zona tocable se quedaba en 36 px de alto. El
-                      margen negativo devuelve lo que suma el relleno, así
-                      que crece la zona y no se mueve la línea. */}
+                  {/* `-my-3 py-3` (no `-my-2 py-2`, que dejaba 36 px de zona
+                      tocable): el margen negativo compensa el relleno. */}
                   <Link
                     href="/herramientas"
                     className="link-underline-host group -my-3 inline-flex items-center gap-1.5 py-3 text-secondary transition-colors hover:text-primary"

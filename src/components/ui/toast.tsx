@@ -30,10 +30,8 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: "border bg-background text-foreground",
-        // El marcado siempre fue éste; lo que faltaba era el token al otro
-        // lado. Ver `--destructive-foreground` en globals.css: sin declarar,
-        // el aviso de error heredaba la tinta del tema y salía oscuro sobre
-        // rojo oscuro (1,79:1) justo cuando había algo que leer.
+        // Necesita `--destructive-foreground` en globals.css: sin él la letra
+        // heredaba la tinta del tema y quedaba oscura sobre rojo.
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
       },

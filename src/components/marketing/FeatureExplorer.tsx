@@ -178,10 +178,6 @@ const FEATURES: Feature[] = [
     titleEs: "Heatmap por día y hora",
     titleEn: "Day/hour heatmap",
     descEs: "¿Rindes mejor a primera hora o por la tarde? ¿Los lunes o los viernes? El mapa de calor cruza día y hora con tu resultado.",
-    /* El español pregunta «¿Rindes mejor…?» y el inglés se había dejado
-       el verbo por el camino: «Better early or in the afternoon?» no
-       dice quién rinde ni qué se compara, y «early» a secas no tiene
-       contra qué. */
     descEn: "Do you perform better first thing or in the afternoon? On Mondays or Fridays? The heatmap crosses day and hour with your result.",
     tags: ["metrics"],
   },
@@ -203,7 +199,7 @@ export function FeatureExplorer() {
   const toggle = (t: Tag) =>
     setSelected((s) => (s.includes(t) ? s.filter((x) => x !== t) : [...s, t]));
 
-  // Score + sort
+  // Puntúa por la fracción de ejes marcados que cumple cada función y ordena.
   const scored = useMemo(() => {
     if (selected.length === 0) return FEATURES.map((f) => ({ ...f, score: 0, matches: [] as Tag[] }));
     return FEATURES.map((f) => {
@@ -228,13 +224,9 @@ export function FeatureExplorer() {
           )}
           entradilla={es
             ? "Todo lo que hace el programa. Marca uno o varios ejes y la lista se recorta a lo que hace de verdad en ese terreno."
-            /* «in that ground» es «en ese terreno» traducido palabra por
-               palabra; en inglés no significa nada. Y «the list trims
-               to» tampoco se dice: una lista «narrows», no «trims». */
             : "Everything the program does. Mark one or more axes and the list narrows to what it actually does there."}
         />
 
-        {/* Tag chips */}
         <div className="flex flex-wrap gap-2 mb-8">
           {TAGS.map((t) => {
             const active = selected.includes(t.id);
@@ -261,7 +253,6 @@ export function FeatureExplorer() {
           )}
         </div>
 
-        {/* Results */}
         <ResultadoAnunciado
           texto={
             !hasSelection
@@ -286,7 +277,7 @@ export function FeatureExplorer() {
             <ListaFunciones items={topMatches} es={es} />
           </div>
         ) : (
-          // Empty state — show all features as a static grid
+          // Sin selección: todas las funciones.
           <div>
             <div className="mb-4">
               <span className="tnum text-[13px] text-tertiary">
@@ -303,24 +294,18 @@ export function FeatureExplorer() {
 
 function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
   return (
-    /* En escritorio, dos columnas: en una sola, veintinueve filas eran
-       1.800 px de lista con el tercio derecho de la página vacío. */
+    /* En escritorio, dos columnas: en una sola la lista sería muy larga. */
     <ul className="m-0 grid border-t border-[var(--line)] p-0 lg:grid-cols-2 lg:gap-x-14">
       {items.map((f) => (
         <li
           key={f.id}
-          /* La descripción se acota en caracteres, no en fracciones: con
-             `1.8fr` corría hasta el final del contenedor.
-
-             El `72ch` que había aquí no servía: estaba en la CELDA, y `ch`
-             se mide con la tipografía del elemento que lo escribe, no con
-             la del párrafo de 14 px que lleva dentro. Medido: 122
-             caracteres, más de los cien que este comentario decía evitar.
-             La medida la pone ahora `.medida` en el propio párrafo. */
+          /* La medida de la descripción la pone `.medida` en el propio párrafo:
+             `ch` en la celda se mediría con la tipografía de la celda, no la
+             del párrafo. */
           className="grid content-start gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10 lg:grid-cols-1 lg:gap-1.5"
         >
-          {/* La insignia va junto al titular, no dentro: dentro, un lector
-              anunciaba «Monte CarloPro» y el titular tenía dos tonos. */}
+          {/* La insignia va junto al titular, no dentro: dentro, el lector leería
+              «Monte CarloPro». */}
           <div className="flex items-baseline gap-2.5">
             <h3 className="m-0 t-h5" style={{ color: "var(--ink)" }}>
               {es ? f.titleEs : f.titleEn}

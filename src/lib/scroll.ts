@@ -1,43 +1,15 @@
 /**
- * Cómo se mueve la página cuando el sitio decide moverla.
- *
- * ── El problema que resuelve ──────────────────────────────────────────
- * `html { scroll-behavior: smooth }` estaba puesto para todo el
- * documento, y con él cualquier salto —un ancla del menú, el botón de
- * volver arriba, el índice lateral— se animaba de principio a fin. En un
- * ancla cercana eso se agradece. Desde el pie de una página larga hasta
- * la cabecera son ocho o diez pantallas, y el navegador las recorre
- * todas: se ve el sitio entero pasar hacia atrás a toda velocidad, con
- * las secciones apareciendo y desapareciendo por el camino. No es una
- * transición, es un rebobinado.
- *
- * ── Lo que se hace en su lugar ────────────────────────────────────────
- * Un solo criterio, por distancia:
- *
- *   · **Menos de dos pantallas** — suave de verdad. Es un
- *     desplazamiento que el ojo puede seguir, y seguirlo es lo que le
- *     dice al visitante que no ha cambiado de página.
- *   · **Más de dos pantallas** — se salta hasta un palmo del destino y
- *     solo ese palmo se anima. Ese último tramo llega en el mismo gesto
- *     que un recorrido corto, así que la llegada se lee igual de
- *     asentada; lo que desaparece es el viaje por en medio, que era la
- *     parte que no aportaba nada.
- *
- * Y por encima de todo, `prefers-reduced-motion`: quien lo pide no ve
- * ninguna animación, ni siquiera el tramo corto.
+ * Desplazamientos de página decididos por el sitio, con un criterio por
+ * distancia: menos de dos pantallas se anima entero; más, se salta hasta un
+ * tramo del destino y solo ese tramo se anima (un `scroll-behavior: smooth`
+ * global rebobinaría diez pantallas). Con `prefers-reduced-motion` no se
+ * anima nada.
  */
 
-/** A partir de aquí el recorrido deja de ser legible y pasa a ser ruido. */
-const LARGO_MAXIMO = 2; // pantallas
+/** Distancia, en pantallas, a partir de la cual el recorrido deja de ser legible. */
+const LARGO_MAXIMO = 2;
 
-/**
- * El tramo final que sí se anima cuando el salto es largo.
- *
- * 220 px es algo más de un palmo en pantalla: suficiente para que el
- * movimiento se perciba como una llegada y no como un parpadeo, y lo
- * bastante corto para que ninguna sección intermedia entre y salga por
- * el camino.
- */
+/** Tramo final que se anima cuando el salto es largo. */
 const ATERRIZAJE_PX = 220;
 
 /** Duración del tramo animado, en milisegundos. */
@@ -55,22 +27,10 @@ function sinMovimiento(): boolean {
 let animacion = 0;
 
 /**
- * Anima el tramo corto a mano, fotograma a fotograma.
- *
- * ── Por qué no `behavior: "smooth"` ───────────────────────────────────
- * Porque encadenado no funciona. La secuencia es «salta hasta un palmo
- * del destino y anima ese palmo», y medido en Chrome sobre la portada
- * —de 10.751 px a 0— el salto se aplicaba y la animación siguiente se
- * descartaba sin más: la página se quedaba clavada en el punto de
- * aterrizaje, a 220 px del destino. El navegador trata los dos
- * desplazamientos como uno solo y se queda con el primero, y eso no es
- * algo que se pueda pedir de otra manera.
- *
- * Hacerlo a mano cuesta veinte líneas y a cambio la duración es la que
- * se decide aquí —no la que el navegador estime por distancia—, así que
- * la llegada dura lo mismo venga de donde venga. Y se puede rendir al
- * primer gesto del visitante, que el scroll suave nativo tampoco deja
- * hacer.
+ * Anima el tramo corto a mano. No vale `behavior: "smooth"`: encadenado tras
+ * el salto, Chrome trata los dos desplazamientos como uno, descarta el
+ * segundo y la página se queda en el punto de aterrizaje. A mano, además, la
+ * duración es fija y se puede abandonar al primer gesto del visitante.
  */
 function animarHasta(destino: number): void {
   const inicio = window.scrollY;
@@ -79,8 +39,7 @@ function animarHasta(destino: number): void {
 
   cancelAnimationFrame(animacion);
 
-  /* Si el visitante toca la rueda, la pantalla o el teclado, la página
-     es suya: se abandona donde esté en ese momento. */
+  // Si el visitante toca la rueda, la pantalla o el teclado, se abandona donde esté.
   const rendirse = () => {
     cancelAnimationFrame(animacion);
     quitar();
@@ -97,8 +56,7 @@ function animarHasta(destino: number): void {
 
   const paso = (ahora: number) => {
     const t = Math.min(1, (ahora - t0) / DURACION_MS);
-    // Salida suave (cúbica): arranca a velocidad plena y frena al final,
-    // que es como se detiene un objeto con inercia.
+    // Salida cúbica: arranca a velocidad plena y frena al final.
     const e = 1 - Math.pow(1 - t, 3);
     window.scrollTo(0, Math.round(inicio + salto * e));
     if (t < 1) animacion = requestAnimationFrame(paso);
@@ -107,13 +65,7 @@ function animarHasta(destino: number): void {
   animacion = requestAnimationFrame(paso);
 }
 
-/**
- * Lleva la página a una posición vertical concreta.
- *
- * `top` se recorta a los límites reales del documento: pedir un destino
- * fuera de rango dejaría la fase de aterrizaje esperando un movimiento
- * que el navegador no puede hacer.
- */
+/** Lleva la página a una posición vertical; `top` se recorta a los límites reales del documento. */
 export function irA(top: number): void {
   if (typeof window === "undefined") return;
 
@@ -135,10 +87,8 @@ export function irA(top: number): void {
   }
 
   if (distancia > window.innerHeight * LARGO_MAXIMO) {
-    /* Salto. El punto de aterrizaje se coloca del lado del que se venía
-       —por debajo del destino si subimos, por encima si bajamos—, así
-       que el tramo que queda va en la misma dirección que el gesto y no
-       hay un cambio de sentido a mitad de camino. */
+    /* Salto: el aterrizaje queda del lado del que se venía, para que el tramo
+       final siga la dirección del gesto. */
     const sentido = destino > desde ? -1 : 1;
     const intermedio = Math.min(
       Math.max(0, destino + sentido * ATERRIZAJE_PX),
@@ -157,12 +107,8 @@ export function irArriba(): void {
 }
 
 /**
- * Lleva la página a una sección por su identificador.
- *
- * Respeta el `scroll-margin-top` que la sección declare, que es lo que
- * evita que la barra de navegación fija tape su titular al llegar.
- * Devuelve `false` si la sección no existe, para que quien llama pueda
- * dejar que el navegador haga lo suyo.
+ * Lleva la página a una sección por su id, respetando su `scroll-margin-top`.
+ * Devuelve `false` si no existe, para que quien llama deje actuar al navegador.
  */
 export function irASeccion(id: string): boolean {
   if (typeof document === "undefined") return false;
@@ -170,10 +116,8 @@ export function irASeccion(id: string): boolean {
   if (!el) return false;
   const margen = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
   irA(el.getBoundingClientRect().top + window.scrollY - margen);
-  /* Quien llama evita el salto nativo para suavizarlo, y con él se perdía
-     lo que el ancla hace sola: mover el punto de partida del tabulador.
-     Tras ir a una sección con Enter, el siguiente Tab seguía en el índice
-     y saltaba al pie, esquivando la sección entera (WCAG 2.4.3). */
+  /* Sin el salto nativo se pierde lo que el ancla hace sola: mover el punto
+     de partida del tabulador; si no, el siguiente Tab esquiva la sección (WCAG 2.4.3). */
   if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
   el.setAttribute("data-destino-salto", "");
   el.focus({ preventScroll: true });

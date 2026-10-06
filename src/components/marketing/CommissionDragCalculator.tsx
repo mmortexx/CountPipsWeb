@@ -12,8 +12,7 @@ import {
   ticksAUnidades,
 } from "@/lib/trading/fugaComisiones";
 
-/** Umbral de fuga alta: una sola cifra para el aviso visual y para el
- *  texto del diagnóstico, no una repetida a mano en cada sitio. */
+/** Umbral de fuga alta, común al aviso visual y al texto del diagnóstico. */
 const UMBRAL_DRAG_ALTO = 25;
 /** Ratio objetivo:riesgo usado para el win rate de equilibrio de la ficha. */
 const RATIO_RR_EQUILIBRIO = 1.5;
@@ -22,18 +21,17 @@ export function CommissionDragCalculator() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Estado editable
   const [selectedInstId, setSelectedInstId] = useState<string>("MNQ");
   const [contracts, setContracts] = useState<number>(2);
   const [monthlyTrades, setMonthlyTrades] = useState<number>(60);
   const [targetUnits, setTargetUnits] = useState<number>(
     () => (INSTRUMENT_SPECS.find((i) => i.id === "MNQ") ?? INSTRUMENT_SPECS[0]).objetivo.inicial,
   );
-  const [slippageTicks, setSlippageTicks] = useState<number>(1); // 1 tick de deslizamiento medio por trade
+  const [slippageTicks, setSlippageTicks] = useState<number>(1); // ticks de deslizamiento medio por operación
   const [customCommission, setCustomCommission] = useState<number>(1.24);
 
   const inst = INSTRUMENT_SPECS.find((i) => i.id === selectedInstId) || INSTRUMENT_SPECS[0];
-  /* El recorrido del objetivo es de cada instrumento (ver `objetivo` en
+  /* El recorrido del objetivo es de cada instrumento (`objetivo` en
      INSTRUMENT_SPECS): el crudo se mueve en céntimos y el S&P en puntos. */
   const { min: objetivoMin, max: objetivoMax, paso: objetivoPaso } = inst.objetivo;
   const decimalesObjetivo = (String(objetivoPaso).split(".")[1] ?? "").length;
@@ -48,7 +46,6 @@ export function CommissionDragCalculator() {
     setTargetUnits(item.objetivo.inicial);
   };
 
-  // Cálculos matemáticos
   const grossProfitPerTrade = resultadoBrutoPorOperacion(inst, targetUnits, contracts);
   const grossMonthly = grossProfitPerTrade * monthlyTrades;
 
@@ -78,7 +75,7 @@ export function CommissionDragCalculator() {
       : 0;
   const breakEvenUnitsPerTrade = ticksAUnidades(inst, breakEvenTicksPerTrade);
 
-  // Win rate de equilibrio al ratio objetivo:riesgo declarado arriba
+  // Win rate de equilibrio al ratio objetivo:riesgo `RATIO_RR_EQUILIBRIO`.
   const nominalStopPerTrade = grossProfitPerTrade / RATIO_RR_EQUILIBRIO;
   const breakEvenWinRate =
     nominalStopPerTrade + grossProfitPerTrade > 0
@@ -88,7 +85,6 @@ export function CommissionDragCalculator() {
   return (
     <section className="section-tight">
       <div className="tj-container">
-        {/* Cabecera */}
         <div className="inline-flex items-center gap-3 mb-5">
           <span className="eyebrow" data-titular-herramienta>
             {es ? "Calculadora de costes" : "Cost calculator"}
@@ -96,7 +92,6 @@ export function CommissionDragCalculator() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-10 items-start">
-          {/* Columna Izquierda: Configuración */}
           <div>
             <h2 data-titular-herramienta className="t-h2 m-0 text-primary max-w-[24ch]">
               {es ? (
@@ -179,8 +174,6 @@ export function CommissionDragCalculator() {
                 />
               </div>
 
-              {/* Los limites del recorrido salen a variables porque ahora
-                  los usa tambien `--f`, el relleno de la pista. */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="tj-deslizador-etiqueta">
@@ -246,7 +239,6 @@ export function CommissionDragCalculator() {
             </div>
           </div>
 
-          {/* Columna Derecha: Tarjeta de Resultados */}
           <div className="tj-ficha lg:sticky lg:top-24">
             <p className="tj-ficha-barra">
               <span>{es ? "En un año" : "Over a year"}</span>
@@ -256,8 +248,6 @@ export function CommissionDragCalculator() {
             </p>
             <div className="tj-ficha-cuerpo">
 
-            {/* El resultado que resume la tarjeta, dicho en voz alta para
-                quien no ve la pantalla: ver ResultadoAnunciado. */}
             <ResultadoAnunciado
               texto={
                 es
@@ -266,7 +256,6 @@ export function CommissionDragCalculator() {
               }
             />
 
-            {/* P&L Neto vs Bruto */}
             <div className="space-y-3 pb-5 border-b border-[var(--line)]">
               <div>
                 <span className="text-xs text-secondary">{es ? "Resultado bruto" : "Gross P&L"}</span>
@@ -289,7 +278,6 @@ export function CommissionDragCalculator() {
               </div>
             </div>
 
-            {/* Matriz de Fuga por Costes */}
             <div className="py-4 space-y-2.5 border-b border-[var(--line)] text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-secondary">{es ? "Comisiones" : "Fees"}</span>
@@ -311,7 +299,6 @@ export function CommissionDragCalculator() {
               </div>
             </div>
 
-            {/* Indicadores Clave: Drag %, Break-Even Ticks y Win Rate Exigido */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-3 pt-4">
               <div>
                 <span className="text-[12px] text-tertiary block mb-1">
@@ -367,7 +354,6 @@ export function CommissionDragCalculator() {
               </div>
             </div>
 
-            {/* Diagnóstico Institucional */}
             <div className="mt-5 pt-4 border-t border-[var(--line)]">
               <div>
                 <p className="text-[13px] text-secondary leading-[1.6] m-0">

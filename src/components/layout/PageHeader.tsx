@@ -8,16 +8,12 @@ import { Palabras } from "@/components/tj/Palabras";
 export type TonoPagina = "capitulo" | "instrumento" | "registro" | "tarifa" | "documento";
 
 interface PageHeaderProps {
-  /** Solo si dice algo que las migas no dicen (la familia de un término,
-   *  que la herramienta es gratis). Repetir «Legal» bajo «Inicio / Términos»
-   *  era un rótulo de plantilla. */
+  /** Solo si dice algo que las migas no dicen (la familia de un término, «Gratis»). */
   eyebrowEs?: string;
   eyebrowEn?: string;
   titleEs: string;
   titleEn: string;
-  /** Sin subtítulo cuando lo que sigue ya es la entradilla (la ficha de un
-   *  término abre con su definición; la descripción de la familia, igual
-   *  en todos sus términos, repetía una segunda entradilla encima). */
+  /** Sin subtítulo cuando lo que sigue ya es la entradilla (la ficha de un término). */
   subtitleEs?: string;
   subtitleEn?: string;
   breadcrumbEs: string;

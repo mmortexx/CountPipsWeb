@@ -21,8 +21,8 @@ import {
  * que el resultado no baile al mover un control: lo que cambia es tuyo.
  */
 const CAMINOS = 2000;
-/* Una ventaja pequeña (+0,04 R), la de la mayoría: con +0,35 R la prueba
-   salía aprobada el 96 % de las veces y la herramienta parecía prometerlo. */
+/* Ventaja pequeña (+0,04 R), la de la mayoría: con +0,35 R la prueba salía
+   aprobada el 96 % de las veces y parecía una promesa. */
 const DEFECTO: EscenarioFondeo = { tipo: "estatico", objetivo: 8, dd: 10, riesgo: 1, acierto: 40, payoff: 1.6, ops: 200 };
 const sinSuscripcion = () => () => {};
 
@@ -31,9 +31,8 @@ export function PropChallengeSimulator() {
   const es = lang === "es";
   const pct = (v: number, dec = 0) => `${fmtNum(v, lang, dec)}${pctSep(lang)}`;
 
-  /* Un escenario compartido llega en la dirección. En el servidor no hay
-     dirección —el HTML estático se genera sin ella— y la lectura da vacío;
-     en el navegador, la de verdad. Encima va solo lo que el visitante toca. */
+  /* Un escenario compartido llega en la URL; en el servidor (HTML estático) la
+     lectura da vacío. Encima va solo lo que el visitante toca. */
   const busqueda = useSyncExternalStore(sinSuscripcion, () => window.location.search, () => "");
   const [cambios, setCambios] = useState<Partial<EscenarioFondeo>>({});
   const esc: EscenarioFondeo = { ...DEFECTO, ...leerEscenario(busqueda), ...cambios };

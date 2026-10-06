@@ -1,36 +1,13 @@
 /**
- * TECLADO — el sitio entero sin ratón
+ * TECLADO: recorre el sitio compilado sin ratón. Comprueba que cada parada del
+ * tabulador se ve (WCAG 2.4.7), que el megamenú se abre con Enter, se cierra
+ * con Escape y devuelve el foco, que los diálogos lo atrapan y lo sueltan, y
+ * varios recorridos de capas, formulario, glosario e índice lateral. Un fallo
+ * es un control sin indicador de foco, un foco perdido o una trampa rota.
  *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Tres cosas que se rompen por separado y que ninguna revisión visual
- * encuentra, porque con el ratón todas funcionan:
- *
- *  1. Que cada parada del tabulador se VEA. Un control al que se llega
- *     sin que nada lo señale deja a quien navega con teclado sin saber
- *     dónde está: es el criterio 2.4.7 de WCAG, y basta un `outline:
- *     none` suelto para perderlo en un sitio y en ningún otro.
- *  2. Que el megamenú se abra con Enter, se cierre con Escape y
- *     devuelva el foco a su disparador. Si no vuelve, el foco cae al
- *     principio del documento y hay que volver a recorrerlo entero.
- *  3. Que los diálogos atrapen el foco mientras están abiertos. Un
- *     modal del que el tabulador se escapa deja a la persona navegando
- *     por detrás de una capa que no puede ver ni cerrar.
- *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * Nada. 57 paradas en la portada, todas con indicador; el megamenú
- * correcto; y los tres diálogos —glosario, ayuda de atajos y cajón
- * móvil— atrapando el foco y devolviéndolo. Se escribió porque nada de
- * eso estaba sostenido por ninguna comprobación: la de la demo existía,
- * la del sitio de marketing no.
- *
- * ── Un falso positivo que conviene no volver a perseguir ──────────────
- * El diálogo del glosario NO lleva `aria-modal="true"` y los otros dos
- * sí. No es una incoherencia que arreglar: ese lo monta Radix, que a
- * propósito esconde el resto del documento con `aria-hidden` —se
- * midieron 14 elementos— en vez de declarar `aria-modal`, porque el
- * soporte de ese atributo en los lectores reales es irregular. Por eso
- * esta guarda comprueba el COMPORTAMIENTO (el foco queda dentro, Escape
- * cierra) y no la presencia del atributo.
+ * El diálogo del glosario no lleva `aria-modal` a propósito: Radix oculta el
+ * resto con `aria-hidden`. Por eso se comprueba el comportamiento (el foco
+ * queda dentro, Escape cierra) y no el atributo.
  *
  * Uso:  node scripts/teclado.mjs --serve out
  */
@@ -86,7 +63,7 @@ const navegador = await chromium.launch();
 const fallos = [];
 let paradasTotales = 0;
 
-// ── 1. cada parada del tabulador se ve ────────────────────────────────
+// 1. Cada parada del tabulador se ve.
 for (const ruta of RUTAS) {
   const ctx = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const p = await ctx.newPage();
@@ -106,9 +83,7 @@ for (const ruta of RUTAS) {
     const r = await p.evaluate(() => {
       const a = document.activeElement;
       if (!a || a === document.body) return { fin: true };
-      /* La marca va en el ELEMENTO, no en su nombre: dos botones que se
-         llaman igual son dos paradas distintas, y cortar por nombre
-         repetido hacía creer que el recorrido se atascaba. */
+      // La marca va en el elemento, no en su nombre: dos botones con el mismo nombre son dos paradas.
       if (a.dataset.tabVisto === "1") return { ciclo: true };
       a.dataset.tabVisto = "1";
       const cs = getComputedStyle(a);
@@ -137,7 +112,7 @@ for (const ruta of RUTAS) {
   await ctx.close();
 }
 
-// ── 2. el megamenú ────────────────────────────────────────────────────
+// 2. El megamenú.
 {
   const ctx = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const p = await ctx.newPage();
@@ -167,7 +142,7 @@ for (const ruta of RUTAS) {
   await ctx.close();
 }
 
-// ── 3. los diálogos atrapan el foco y lo devuelven ────────────────────
+// 3. Los diálogos atrapan el foco y lo devuelven.
 const DIALOGOS = [
   {
     nombre: "glosario",
@@ -219,10 +194,7 @@ for (const d of DIALOGOS) {
   const abierto = await p.evaluate(() => {
     const dl = document.querySelector('[role="dialog"][data-state="open"], [role="dialog"][data-visible="true"]') || document.querySelector('[role="dialog"]');
     if (!dl) return { hay: false };
-    /* Lo que el lector lee al abrir: el nombre, la descripción a la que
-       apunta (Radix la declara aunque no exista) y los botones. Hasta el
-       2026-10-04 el glosario español decía «Close» y apuntaba a una
-       descripción que no estaba en la página. */
+    // Lo que lee el lector al abrir: nombre, descripción a la que apunta (Radix la declara aunque no exista) y botones.
     const id = dl.getAttribute("aria-describedby");
     const nombres = [...dl.querySelectorAll("button")].map((b) => (b.getAttribute("aria-label") || b.textContent || b.getAttribute("title") || "").trim());
     return {
@@ -273,18 +245,13 @@ for (const d of DIALOGOS) {
   await ctx.close();
 }
 
-// ── 4. las capas devuelven el foco, y el aviso de cookies no lo roba ──
-/* Seis recorridos que el 2026-09-25 fallaban: el Tab se escapaba de la
-   paleta de la demo, la ayuda de la demo se abría sin llevarse el foco, el
-   aviso de cookies reabierto desde el pie no lo recibía, el glosario no
-   decía qué opción estaba activa, el megamenú se quedaba abierto al salir
-   de él con Tab y el formulario señalaba el error en los tres campos. */
+// 4. Las capas devuelven el foco y el aviso de cookies no lo roba.
 const nueva = async (ruta, { ancho = 1280, consentimiento = "declined" } = {}) => {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
   if (consentimiento) {
     await ctx.addInitScript((v) => { try { localStorage.setItem("tj-cookie-consent", v); } catch {} }, consentimiento);
   }
-  // Nada de esta guarda puede llegar a enviar un mensaje de verdad.
+  // Esta guarda nunca debe enviar un mensaje de verdad.
   await ctx.route(/web3forms/i, (r) => r.abort());
   const p = await ctx.newPage();
   await p.goto(base + ruta, { waitUntil: "load", timeout: 30000 });
@@ -304,10 +271,9 @@ const dialogo = (p, nombre) => p.evaluate((n) => {
   const a = document.activeElement;
   return { dentro: d.contains(a), foco: a?.getAttribute("aria-label") || (a?.textContent || "").trim().slice(0, 30) };
 }, nombre);
-/* Recorre MÁS paradas que enfocables tiene la capa, primero hacia delante y
-   luego hacia atrás: una trampa rota solo se ve al pasar del último (o del
-   primero). Con un número fijo de pulsaciones, una paleta de 15 botones
-   aprobaba sin trampa ninguna porque nunca se llegaba al final. */
+/* Recorre más paradas que enfocables tiene la capa, hacia delante y hacia
+   atrás: una trampa rota solo se ve al pasar del último (o del primero). Con un
+   número fijo de pulsaciones, una capa grande aprobaría sin trampa. */
 const atrapa = async (p, nombre) => {
   const n = await p.evaluate((x) => {
     const d = [...document.querySelectorAll('[role="dialog"]')].find((e) => e.getAttribute("aria-label") === x);
@@ -345,9 +311,7 @@ for (const idioma of ["es", "en"]) {
     fallos.push({ ruta, detalle: "Ctrl+K con el foco dentro de la demo no abre su paleta" });
   } else {
     recorridos++;
-    /* Combobox: el foco se queda en el campo y aria-activedescendant dice
-       qué comando está resaltado. Eran botones enfocables y Enter ejecutaba
-       el resaltado aunque el foco estuviera en otro. */
+    // Combobox: el foco se queda en el campo y aria-activedescendant dice qué comando está resaltado.
     const combo = () => p.evaluate(() => {
       const i = document.querySelector('[role="dialog"] input[role="combobox"]');
       const id = i?.getAttribute("aria-activedescendant") ?? null;
@@ -382,15 +346,12 @@ for (const idioma of ["es", "en"]) {
     if (!(await focoVuelve(p))) fallos.push({ ruta, detalle: "al cerrar la ayuda de la demo, el foco no vuelve a donde estaba" });
   }
   // (c) grupos de opción y pestañas, y los atajos 1–4
-  /* Un lector anuncia «1 de 4» al entrar en un grupo: una sola parada de
-     tabulador y las flechas moviendo la elección. Y las cifras sueltas solo
-     con el foco dentro de la demo y sin Ctrl, que es el cambio de pestaña
-     del navegador. El 2026-10-04 la dirección y la nota del día eran seis
-     paradas sin flechas, y Ctrl+1 cambiaba la página de la demo. */
+  /* Un grupo debe tener una sola parada de tabulador y las flechas mueven la
+     elección. Las cifras sueltas solo valen con el foco dentro de la demo y sin
+     Ctrl, que es el cambio de pestaña del navegador. */
   if (es) {
     const pestana = () => p.evaluate(() => document.querySelector('[data-demo-raiz] [role="tab"][aria-selected="true"]')?.textContent?.trim() ?? "");
-    /* La barra de pestañas de la demo queda fuera: moverla cambia de página
-       y con ella los grupos que se estaban recorriendo. Se prueba aparte. */
+    // La barra de pestañas de la demo queda fuera: moverla cambia de página y de grupos. Se prueba aparte.
     const revisaGrupos = async (pagina) => {
       const n = await p.evaluate(() => {
         document.querySelectorAll("[data-grupo-k]").forEach((x) => x.removeAttribute("data-grupo-k"));
@@ -584,10 +545,7 @@ for (const idioma of ["es", "en"]) {
     await p.waitForTimeout(500);
     const r = await p.evaluate(() => ["cf-name", "cf-email", "cf-msg"].map((id) => document.getElementById(id)?.getAttribute("aria-describedby") ?? null));
     const aviso = r[1] ? await p.evaluate((id) => document.getElementById(id)?.textContent?.trim() ?? "", r[1]) : "";
-    /* El borde se mide con el foco fuera de los dos campos: el anillo de
-       foco también cambia el borde y taparía la diferencia. Hasta la
-       tanda 44 el campo inválido llevaba el mismo filete que el válido
-       (la regla sin capa de `.tj-campo` ganaba al `aria-invalid:`). */
+    // El borde se mide con el foco fuera de los dos campos: el anillo de foco también lo cambia.
     await p.locator("form:has(#cf-email) button[type=submit]").first().focus();
     const [bordeValido, bordeInvalido] = await p.evaluate(() => ["cf-name", "cf-email"].map((id) => getComputedStyle(document.getElementById(id)).borderTopColor));
     if (r[1] !== "cf-email-error" || !aviso) fallos.push({ ruta: "/faq/", detalle: `el correo inválido no apunta a un aviso con texto (aria-describedby=«${r[1]}», aviso «${aviso}»)` });
@@ -598,10 +556,9 @@ for (const idioma of ["es", "en"]) {
   await ctx.close();
 }
 // (g) al enviarse, el foco va a la confirmación
-/* El `<form>` entero se desmonta al enviarse y el foco, que estaba en el
-   botón, caía al `<body>`: quien no ve la pantalla no sabía si el mensaje
-   había salido. Aquí el servicio de envío se sustituye por una respuesta
-   de éxito; la ruta que lo aborta en `nueva` queda debajo de esta. */
+/* El `<form>` se desmonta al enviarse y el foco debe pasar a la confirmación,
+   no caer al `<body>`. El servicio de envío se sustituye por un éxito simulado;
+   la ruta que lo aborta en `nueva` queda debajo de esta. */
 {
   const { ctx, p } = await nueva("/faq/");
   await ctx.route(/web3forms/i, (r) =>
@@ -633,8 +590,7 @@ for (const idioma of ["es", "en"]) {
   await ctx.close();
 }
 // (h) el glosario abierto con Ctrl+G devuelve el foco al cerrarse
-/* Sin disparador propio, Radix no sabe adónde devolverlo y lo dejaba en
-   `<body>`: el siguiente Tab arrancaba desde el final del documento. */
+// Sin disparador propio, Radix no sabe adónde devolver el foco y lo deja en `<body>`.
 {
   const { ctx, p } = await nueva("/");
   await p.locator("header a:visible").first().focus();
@@ -655,9 +611,7 @@ for (const idioma of ["es", "en"]) {
   await ctx.close();
 }
 // (i) el índice lateral lleva el punto de partida del tabulador a la sección
-/* El enlace evita el salto nativo para suavizar el desplazamiento, y el
-   foco se quedaba en el índice: el siguiente Tab recorría los demás
-   enlaces del índice y saltaba al pie, esquivando la sección. */
+// El enlace evita el salto nativo; el foco debe acabar en la sección, no en el índice.
 {
   const { ctx, p } = await nueva("/features/", { ancho: 1680 });
   const enlaces = p.locator('nav[aria-label="Índice de la página"] a:visible');
@@ -668,10 +622,7 @@ for (const idioma of ["es", "en"]) {
     await enlaces.nth(1).focus();
     await p.keyboard.press("Enter");
     await p.waitForTimeout(1200);
-    /* El foco tiene que estar YA en la sección: «después de ella» no
-       basta, porque el índice va al final del documento y el Tab desde su
-       último enlace cae en el pie, que también está después. Así aprobaba
-       en falso el día que se escribió. */
+    // El foco debe estar ya en la sección: «después de ella» no basta, el pie también lo está.
     const r = await p.evaluate((id) => {
       const s = document.getElementById(id);
       const a = document.activeElement;
@@ -697,9 +648,7 @@ if (fallos.length) {
 
 console.log(`\n[teclado] ${RUTAS.length} rutas recorridas · ${paradasTotales} paradas de tabulador · ${DIALOGOS.length} diálogos`);
 
-/* Esta guarda comprueba sobre todo AUSENCIAS —nada sin indicador, nada
-   que se escape—, y una guarda así aprueba siempre en cuanto deja de
-   recorrer. Si apenas ha encontrado paradas, no ha mirado el sitio. */
+// Esta guarda vigila ausencias y aprobaría siempre si dejara de recorrer: sin paradas, no ha mirado el sitio.
 if (paradasTotales < RUTAS.length * PARADAS_MINIMAS) {
   console.log(`[teclado] solo ${paradasTotales} paradas en ${RUTAS.length} rutas: la guarda no está recorriendo el sitio, así que su respuesta no vale`);
   process.exit(1);

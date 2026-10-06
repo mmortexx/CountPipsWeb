@@ -6,28 +6,11 @@ import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 import { STR } from "@/lib/i18n";
 
 /**
- * ORTOGRAFÍA BRITÁNICA EN EL TEXTO INGLÉS VISIBLE.
- *
- * ── Qué vigila ─────────────────────────────────────────────────────────
- * El inglés de CountPips se declara británico (openGraph en_GB, "Minimise"
- * en los botones de Windows). Una lista cerrada de raíces americanas
- * conocidas —"-ize", "defense", "color", "behavior", "favor", "center",
- * "catalog"— no puede aparecer en ningún campo `en` / `Es`-menos de los
- * catálogos de contenido: el glosario, sus fórmulas, la FAQ, las láminas
- * del producto y las cadenas de `i18n.tsx`.
- *
- * ── Excepciones ────────────────────────────────────────────────────────
- * Los nombres propios de términos técnicos que llevan la ortografía
- * americana congelada en el propio nombre («MFE (Maximum Favorable
- * Excursion)», «MAE (Maximum Adverse Excursion)») se excluyen explícita y
- * únicamente por ese literal — no abren la puerta a nuevas excepciones sin
- * tocar esta lista.
- *
- * ── Qué la deja ciega ──────────────────────────────────────────────────
- * Esta prueba solo ve las raíces de la lista cerrada. Una palabra
- * americana que no esté en ella (p. ej. "modeling" con una "l", o
- * "program" en vez de "programme") pasa desapercibida. Ensancharla es
- * trabajo manual cada vez que se detecta una nueva a mano.
+ * El inglés de CountPips es británico (openGraph en_GB): una lista cerrada de
+ * raíces americanas no puede aparecer en los campos ingleses del glosario, la
+ * FAQ, las láminas ni `i18n.tsx`. «Maximum Favorable / Adverse Excursion» se
+ * excluye solo por ese literal. Punto ciego: una palabra americana fuera de
+ * la lista ("modeling", "program") pasa.
  */
 
 const RAICES_AMERICANAS = [
@@ -72,10 +55,8 @@ function agregar(origen: string, texto: unknown): void {
 }
 
 GLOSSARY.forEach((t, i) => {
-  // `term` es siempre inglés (ver la cabecera de glossary.ts): también se
-  // recorre, y es lo que hace que la lista de EXCEPCIONES tenga un caso
-  // real que probar — «MFE (Maximum Favorable Excursion)» solo pasa
-  // gracias a ella.
+  // `term` es siempre inglés y también se recorre: «MFE (Maximum Favorable
+  // Excursion)» solo pasa gracias a EXCEPCIONES.
   agregar(`glossary.ts GLOSSARY[${i}].term`, t.term);
   agregar(`glossary.ts GLOSSARY[${i}] "${t.term}".en`, t.en);
 });
@@ -116,8 +97,7 @@ Object.entries(STR).forEach(([clave, valor]) => {
 
 describe("ortografía británica del texto inglés visible", () => {
   it("recorre al menos los campos ingleses de los cinco catálogos", () => {
-    // Guarda contra un cambio de forma en los datos que vacíe el barrido
-    // sin que ningún otro assert se entere.
+    // Un cambio de forma en los datos que vacíe el barrido no debe pasar en verde.
     expect(CAMPOS.length).toBeGreaterThan(200);
   });
 

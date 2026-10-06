@@ -3,10 +3,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { documentoPorSlug } from "@/lib/legal/documentos";
 
-/* La política de cookies promete «todo lo que se guarda, sin excepción».
-   Declaró durante semanas una clave de sesión («si ya viste la animación de
-   entrada») que el rediseño de la portada había quitado. Se cuentan las
-   claves que el código escribe en el navegador y las filas de la tabla. */
+// La política de cookies promete «todo lo que se guarda, sin excepción»: se
+// cuentan las claves que el código escribe en el navegador y las filas de la tabla.
 
 function fuentes(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {

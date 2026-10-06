@@ -3,13 +3,9 @@ import { METRICS, TRADES, computeMetrics, nivelDisciplina } from "@/lib/trading/
 import { getRDistribution } from "@/lib/trading/fixtures";
 
 /**
- * El motor de métricas y la distribución que alimenta la portada.
- *
- * Estas pruebas existen por un fallo concreto: la sección insignia de la
- * home dibujaba su histograma con nueve alturas escritas a mano y elegía
- * el color por el ÍNDICE de la barra, no por el signo de la operación. El
- * resultado era que las pérdidas salían verdes y las ganancias rojas, en
- * un diario de trading, durante meses.
+ * El motor de métricas y la distribución de R de la portada. El histograma
+ * elegía el color por el índice de la barra y no por el signo de la
+ * operación: las pérdidas salían verdes.
  */
 
 describe("motor de métricas", () => {
@@ -48,9 +44,8 @@ describe("motor de métricas", () => {
   });
 
   it("la muestra es plausible: ni un sistema milagroso ni uno roto", () => {
-    // No fija cifras exactas —cambiarían al tocar el generador— pero sí
-    // marca el rango de lo defendible en una web pública. Una muestra que
-    // se saliera de aquí sería propaganda, no demostración.
+    // No fija cifras exactas (cambiarían al tocar el generador) sino el rango
+    // defendible en una web pública.
     expect(METRICS.winRate).toBeGreaterThan(0.3);
     expect(METRICS.winRate).toBeLessThan(0.75);
     expect(METRICS.profitFactor).toBeLessThan(4);
@@ -96,10 +91,7 @@ describe("distribución de R que dibuja la portada", () => {
   });
 
   it("EL FALLO QUE HUBO: marca como pérdida todo cubo que acabe en cero o menos", () => {
-    // Este es el invariante que faltaba. El componente pinta en rojo si
-    // `losing` y en verde si no; si esta bandera se calculara otra vez por
-    // posición en la lista en vez de por el signo de la R, esta prueba
-    // falla antes de que nadie lo vea en pantalla.
+    // El componente pinta en rojo si `losing`; la bandera debe salir del signo de la R, no de la posición.
     for (const b of bins) {
       expect(b.losing).toBe(b.to <= 0);
     }
@@ -119,9 +111,7 @@ describe("distribución de R que dibuja la portada", () => {
   });
 
   it("el reparto de ganadoras del gráfico coincide con el del motor", () => {
-    // La contradicción original: el gráfico dibujaba un 63 % de ganadoras
-    // y el pie declaraba 50 %. Al salir los dos del mismo cálculo ya no
-    // pueden discrepar, y esta prueba lo deja fijado.
+    // Gráfico y pie deben salir del mismo cálculo.
     const total = bins.reduce((s, b) => s + b.count, 0);
     const ganadoras = bins.filter((b) => !b.losing).reduce((s, b) => s + b.count, 0);
     expect(ganadoras / total).toBeCloseTo(METRICS.winRate, 2);
@@ -238,9 +228,7 @@ describe("Anualización en días calendario: CAGR y Ratio de Calmar", () => {
   });
 });
 
-/* Antes probaba una copia de la fórmula escrita aquí mismo, con el tope
-   del 3 % dentro: las fracciones salían iguales y la prueba lo daba por
-   bueno. Ahora prueba la función que usa la calculadora. */
+// Prueba la función que usa la calculadora, no una copia de la fórmula.
 describe("Criterio de Kelly (completo, medio y cuarto)", () => {
   it("calcula Kelly correctamente para sistemas con ventaja ganadora", async () => {
     const { fraccionesKelly } = await import("@/lib/trading/plan");
@@ -528,10 +516,8 @@ describe("Modelos Institucionales de Ruina, Rachas y Valor en Riesgo", () => {
     expect(r3).toBeLessThanOrEqual(100);
   });
 
-  /* La aproximación de difusión e^(−2·E·U/σ²) falla con pagos muy
-     asimétricos: con un 50 % de acierto y ganancias de 1.500 R daba un
-     87 % de ruina a una operación que solo se arruina con 50 pérdidas
-     seguidas. Ahora es exacta para ganancias y pérdidas fijas. */
+  // La aproximación de difusión e^(−2·E·U/σ²) fallaba con pagos muy
+  // asimétricos; la fórmula actual es exacta para ganancias y pérdidas fijas.
   it("computeRiskOfRuin con payoff 1 es la ruina del jugador: (q/p)^U", async () => {
     const { computeRiskOfRuin } = await import("@/lib/trading/data");
     // p = 0,55, riesgo 5 % y umbral 50 % → U = 10 unidades.

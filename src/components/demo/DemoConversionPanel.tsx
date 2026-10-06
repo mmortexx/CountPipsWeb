@@ -4,9 +4,8 @@ import { Reveal } from "@/components/tj/Reveal";
 import { useLang } from "@/lib/i18n";
 
 /**
- * The bridge after the interactive window: how to read the demo and the
- * honest boundary around sample data. The next steps live in the closing
- * block right below.
+ * Puente tras la ventana interactiva: cómo leer la demo y el límite honesto
+ * de los datos de muestra. Los siguientes pasos están en el bloque de cierre.
  */
 export function DemoConversionPanel() {
   const { lang } = useLang();
@@ -52,11 +51,7 @@ export function DemoConversionPanel() {
           </Reveal>
 
           <div className="relative">
-            {/* Sin el candado en su baldosa ni los ticks en verde: el verde
-                es el color de la ganancia, no el de «sí», y la baldosa con
-                icono era el único adorno de plantilla que quedaba en /demo.
-                Tres afirmaciones separadas por filetes, como el resto del
-                sitio. */}
+            {/* Sin ticks verdes: el verde es el color de la ganancia, no el de «sí». */}
             <aside className="tj-cristal relative rounded-[8px] p-6 sm:p-8">
               <p className="eyebrow">{es ? "Límite honesto" : "Honest boundary"}</p>
               <h3 className="mt-3 t-h4 text-primary">{es ? "Datos de muestra, cero riesgo." : "Sample data, zero risk."}</h3>

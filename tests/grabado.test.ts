@@ -3,27 +3,13 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * Las reglas del estilo, escritas donde una máquina las puede comprobar.
+ * Reglas de estilo del registro grabado que ni el compilador ni el lint
+ * pueden cazar, así que se comprueban leyendo el fuente:
  *
- * «El registro grabado» tiene cuatro reglas duras que ninguna prueba
- * vigilaba, y las cuatro se habían roto sin que nada avisara:
- *
- *   · CERO DEGRADADOS. Había 45 en globals.css y 67 más en componentes,
- *     incluidos tres radiales de un azul y un violeta que no existen en
- *     ninguna paleta del sitio.
- *   · PAPEL, NO CRISTAL. La decisión se aplicó a `.glass` y a
- *     `.liquid-glass` pero se saltó `.tj-paper`, que es la superficie que
- *     llevan la barra de navegación y el cajón móvil — o sea, la más
- *     visible de las tres.
- *   · UN VALOR, UN SITIO. `.bg-veil` acabó con siete declaraciones y
- *     cuatro valores distintos, dos de ellos muertos, y el resultado neto
- *     era el CONTRARIO del que buscaba el último que las escribió.
- *   · NADA DE INSTRUMENT SERIF, que es una de las tres caras que la
- *     crítica de diseño ficha como delatoras de web hecha en masa.
- *
- * Ninguna de las cuatro la puede cazar el compilador ni el lint: son
- * reglas de estilo, no de sintaxis. Así que se comprueban leyendo el
- * fuente, que es feo pero es lo único que funciona.
+ *   · cero degradados de pintura (salvo los velos y máscaras justificados);
+ *   · papel, no cristal: `.tj-paper` (barra y cajón móvil) no difumina;
+ *   · un valor, un sitio: nada de `.bg-veil` con declaraciones repetidas;
+ *   · nada de Instrument Serif.
  */
 
 const RAIZ = join(import.meta.dirname, "..", "src");
@@ -41,17 +27,10 @@ function ficheros(exts: string[], dir = RAIZ): string[] {
 }
 
 /**
- * Vacía los comentarios conservando los saltos de línea.
- *
- * Sin esto la prueba se dispara con sus propias notas: este proyecto
- * documenta lo que RETIRA tanto como lo que pone —media docena de bloques
- * empiezan por "aquí estaba X y se fue porque…"— y una prueba que confunde
- * la nota necrológica con el difunto obliga a borrar la explicación para
- * ponerse en verde, que es exactamente al revés de lo que interesa.
- *
- * Se sustituye cada carácter del comentario por un espacio en vez de
- * borrarlo, así los números de línea que se reportan siguen siendo los del
- * fichero de verdad.
+ * Vacía los comentarios conservando los saltos de línea: las notas que
+ * documentan lo retirado nombran lo retirado y dispararían la prueba. Cada
+ * carácter pasa a espacio para que los números de línea sigan siendo los del
+ * fichero.
  */
 function soloCodigo(texto: string): string {
   const blancos = (s: string) => s.replace(/[^\n]/g, " ");
@@ -78,37 +57,22 @@ function cssAplicado(): string {
 }
 
 describe("cero degradados", () => {
-  /* Una máscara NO es un degradado de pintura: recorta, no colorea. Y el
-     relleno de la pista de un `input[type=range]` tampoco, aunque use la
-     misma función: sus dos paradas caen en el mismo punto, así que son dos
-     tramos de tinta plana con un corte, no una transición. */
+  // Una máscara recorta, no colorea; y el relleno de `input[type=range]` tiene
+  // dos paradas en el mismo punto (tinta plana con un corte, no transición).
   const ESMASCARA = /mask|--tw-|@supports/;
 
-  /* LO QUE SE QUEDA, Y POR QUÉ, para que la próxima revisión no lo
-     vuelva a contar como infracción:
-
-       · `.page-header-scrim` y `.hero-side-scrim` — velos de
-         legibilidad. No pintan densidad decorativa: protegen una lectura
-         sobre el dibujo del fondo, y un velo que tiene que dejar de
-         existir donde empieza la lámina necesita un sitio donde dejar de
-         existir; el corte duro se vería como una costura vertical en
-         mitad de la página. Mismo criterio que salva a las máscaras.
-       · `.bg-veil` — el desvanecido de 96 px por arriba y por abajo es
-         lo que impide que la mancha de la página termine en un canto
-         seco contra el papel grabado.
-       · `.tj-range` — dos paradas en el mismo punto: corte, no
-         transición (ver la nota en globals.css).
-       · `.glass` / `.liquid-glass` — la paleta `clasico` los anula
-         enteros; el código sigue ahí para las paletas que no se usan.
-       · `.demo-card` y `#tj-loader` — viven dentro de la ventana de la
-         demo, que replica la aplicación de escritorio. La lámina
-         enmarca el producto; no le reescribe el idioma. */
+  /* Degradados que se quedan a propósito (no son infracción):
+       · `.page-header-scrim` y `.hero-side-scrim`: velos de legibilidad; un
+         corte duro se vería como costura.
+       · `.bg-veil`: el desvanecido evita un canto seco contra el papel.
+       · `.tj-range`: dos paradas en el mismo punto (ver globals.css).
+       · `.glass` / `.liquid-glass`: la paleta `clasico` los anula.
+       · `.demo-card` y `#tj-loader`: viven en la ventana de la demo, que
+         replica la aplicación de escritorio. */
 
   it("no reaparece ningún degradado de acento, halo o aurora", () => {
     const css = cssAplicado();
-    /* Los tres colores que se fueron con `.aurora-bg`: un azul y un
-       violeta que no salen de ninguna paleta declarada. Que vuelvan a
-       aparecer significa que alguien copió el bloque de vuelta. */
+    // Colores de `.aurora-bg` que no salen de ninguna paleta declarada.
     expect(css, "vuelve un color que no existe en ninguna paleta").not.toMatch(
       /rgb\(\s*(62 124 177|125 107 176)\s*\//,
     );
@@ -119,11 +83,8 @@ describe("cero degradados", () => {
     const hallados = lineasQueCasan(tsx, /(linear|radial|conic)-gradient\(/).filter(
       (sitio) => !ESMASCARA.test(sitio),
     );
-    /* Número, no lista: los que quedan viven casi todos dentro de la
-       ventana de la demo, que replica la aplicación de escritorio y tiene
-       su propio idioma — la lámina enmarca el producto, no lo reescribe.
-       Lo que esta prueba impide es que la cifra suba sin que nadie lo
-       decida. Si baja, se baja el tope aquí y queda constancia. */
+    // Tope numérico: casi todos viven en la ventana de la demo. Impide que
+    // la cifra suba sin decidirlo; si baja, se baja el tope.
     expect(hallados.length, `degradados en componentes:\n${hallados.join("\n")}`)
       .toBeLessThanOrEqual(67);
   });
@@ -164,30 +125,20 @@ describe("la tipografía que se descartó", () => {
 describe("lo que se retiró por no usarse", () => {
   it("no vuelven el foco que sigue al cursor ni el barrido de luz", () => {
     const todos = [...ficheros([".tsx", ".ts", ".css"])];
-    /* Las dos clases existían con su CSS completo y su componente de
-       apoyo, y NINGÚN elemento del sitio las llevaba: `DecorFX` escuchaba
-       `pointermove` en las 155 páginas para buscar tarjetas `.tj-spot`
-       que no existían. Si vuelven, que sea con algo que las use. */
+    // Efectos retirados por no llevarlos ningún elemento: si vuelven, que sea con algo que los use.
     const sitios = lineasQueCasan(todos, /tj-spot|tj-cta-sheen|aurora-bg/);
     expect(sitios, "ha vuelto un efecto que nadie aplica").toEqual([]);
   });
 });
 
 describe("las láminas del producto", () => {
-  /* La regla del fichero es que solo se describe lo que se ha abierto y
-     mirado. Eso una prueba no lo puede comprobar. Lo que SÍ puede es cazar
-     las dos formas en que esa regla se rompe sin querer: una captura que
-     entra en `public/img/` y nadie describe —cuatro de las ocho llevaban
-     así desde el principio, sin que ningún componente las enseñara— y una
-     entrada a medio rellenar. */
+  // Solo se describe lo que se ha abierto y mirado (eso no lo comprueba una
+  // prueba); sí se cazan una captura sin describir y una entrada a medias.
   it("toda captura de public/img tiene su entrada, y al revés", async () => {
     const { LAMINAS_PRODUCTO } = await import("@/lib/laminas");
     const dir = join(import.meta.dirname, "..", "public", "img");
-    /* Cada lámina son CUATRO ficheros: pantalla y detalle, en tema claro y
-       en tema oscuro. El catálogo nombra solo el de escritorio claro y los
-       otros tres se derivan de él, así que aquí se comparan quitando los
-       sufijos — si no, las variantes oscuras contarían como capturas
-       huérfanas. */
+    // Cada lámina son cuatro ficheros (pantalla y detalle, claro y oscuro); el
+    // catálogo nombra el de escritorio claro, así que se quitan los sufijos.
     const enDisco = readdirSync(dir)
       .filter((f) => /^app-.*\.webp$/.test(f) && !f.includes("-movil") && !f.includes("-oscuro"))
       .sort();
@@ -225,8 +176,7 @@ describe("las láminas del producto", () => {
         const v = (l as unknown as Record<string, string>)[c];
         if (!v || !v.trim()) huecos.push(`${clave}.${c}`);
       }
-      /* Un alt que repite el título no describe la imagen: la nombra. Quien
-         navega con lector de pantalla se queda sin saber qué hay dentro. */
+      // Un alt que repite el título nombra la imagen pero no la describe.
       if (l.altEs.length < 80) huecos.push(`${clave}.altEs es demasiado corto para describir nada`);
     }
     expect(huecos).toEqual([]);
@@ -234,21 +184,14 @@ describe("las láminas del producto", () => {
 
   it("las capturas ya no llevan el cromo de la ventana recortado por CSS", () => {
     const css = cssAplicado();
-    /* El recorte vive en el fichero desde `scripts/capturas.py`. Si vuelve
-       el `overflow:hidden` con el margen negativo, vuelve también el
-       problema que no arreglaba: el JSON-LD sirviendo las capturas enteras
-       con el nombre viejo y el sello de desarrollo dentro. */
+    // El recorte vive en el fichero (`scripts/capturas.py`); el recorte por CSS dejaba el JSON-LD con la captura entera.
     const regla = /\.tj-lamina-ventana\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
     expect(regla, "vuelve el recorte por CSS").not.toMatch(/overflow:\s*hidden/);
   });
 });
 
 describe("una sola forma de decir «todavía no»", () => {
-  /* El sitio decía «esto aún no existe» de cinco maneras distintas —un chip
-     ámbar de aviso, un chip con borde discontinuo, un círculo gris vacío, un
-     sufijo en gris terciario junto al precio y una barra de tres columnas—
-     sin que ninguna supiera de las otras. Cinco dialectos para un concepto
-     obligan al visitante a aprenderlos todos, y ninguno se le queda. */
+  // «Todavía no» se dice con un solo componente, `SelloPrevisto`.
 
   it("el sello se usa en los tres sitios donde el estado importa", async () => {
     const usan = ["marketing/Pricing.tsx", "marketing/Changelog.tsx", "beta/BetaStatus.tsx"];
@@ -259,16 +202,13 @@ describe("una sola forma de decir «todavía no»", () => {
   });
 
   it("lo previsto no se anuncia con color de aviso", () => {
-    /* `Chip variant="warn"` es ámbar: el color de "cuidado con esto". Una
-       entrega planificada no es una advertencia, y usarlo aquí gasta el
-       único color de alarma que le queda al sitio para cuando haga falta. */
+    // `Chip variant="warn"` es ámbar, el único color de alarma del sitio: una entrega planificada no es una advertencia.
     const src = readFileSync(join(RAIZ, "components", "marketing", "Changelog.tsx"), "utf8");
     expect(soloCodigo(src)).not.toMatch(/variant=["']warn["']/);
   });
 
   it("el sello tiene tinta propia y no atenúa lo que envuelve", () => {
-    /* Desde el rediseño sin recuadros el sello es texto, no una placa: se
-       distingue por su tinta y su detalle, no por un marco. */
+    // El sello es texto, no una placa: se distingue por su tinta, no por un marco.
     const css = cssAplicado();
     const regla = /\.sello-previsto\s*\{([^}]*)\}/.exec(css)?.[1] ?? "";
     expect(regla, "el sello ha perdido su tinta").toMatch(/color:/);

@@ -1,21 +1,8 @@
 /**
- * Trading glossary — bilingual (ES / EN) definitions.
- *
- * FROZEN GLOSSARY PHILOSOPHY
- * ---------------------------
- * The `term` field is ALWAYS English. Even when the app UI is in Spanish,
- * trading terms stay in English: it is the lingua franca of the markets,
- * every prop firm / charting platform / community uses them, and
- * translating "stop loss" -> "pérdida de parada" only confuses the trader.
- *
- * The *definition* is the only field that changes with the active language.
- *
- * Categories:
- *  - basics      : vocabulary every trader must know
- *  - risk        : protecting capital
- *  - psychology  : the trader's mind
- *  - metrics     : the numbers that decide if you have an edge
- *  - execution   : how you actually get in and out
+ * Glosario de trading con definiciones en español e inglés. El `term` va
+ * siempre en inglés, también en la interfaz en español: es la lengua franca de
+ * los mercados y traducirlo solo confunde. Lo único que cambia con el idioma
+ * es la definición.
  */
 
 export type GlossaryCategory =
@@ -26,17 +13,16 @@ export type GlossaryCategory =
   | "execution";
 
 export interface GlossaryTerm {
-  /** Always English — the frozen term name. */
+  /** Siempre en inglés. */
   term: string;
-  /** Spanish definition (1-2 sentences, precise and professional). */
+  /** Definición en español (una o dos frases). */
   es: string;
-  /** English definition (1-2 sentences, precise and professional). */
+  /** Definición en inglés (una o dos frases). */
   en: string;
   category: GlossaryCategory;
 }
 
 export const GLOSSARY: GlossaryTerm[] = [
-  // ────────────────────────────── BASICS ──────────────────────────────
   {
     term: "Long",
     es: "Posición comprada: ganas si el precio sube. Se abre comprando el activo con la expectativa de venderlo más caro.",
@@ -116,7 +102,6 @@ export const GLOSSARY: GlossaryTerm[] = [
     category: "basics",
   },
 
-  // ────────────────────────────── RISK ────────────────────────────────
   {
     term: "Stop loss",
     es: "Orden que cierra una posición automáticamente cuando el precio alcanza un nivel predeterminado, limitando la pérdida máxima por operación. Es la herramienta principal del control de riesgo.",
@@ -166,7 +151,6 @@ export const GLOSSARY: GlossaryTerm[] = [
     category: "risk",
   },
 
-  // ──────────────────────────── PSYCHOLOGY ────────────────────────────
   {
     term: "FOMO",
     es: "Miedo a perder una oportunidad (Fear Of Missing Out). Empuja a entrar tarde en operaciones que ya se han movido, normalmente justo antes de reversiones.",
@@ -192,7 +176,6 @@ export const GLOSSARY: GlossaryTerm[] = [
     category: "psychology",
   },
 
-  // ───────────────────────────── METRICS ──────────────────────────────
   {
     term: "Expectancy",
     es: "Beneficio o pérdida promedio esperado por operación, considerando win rate y payoff. Indica cuánto ganas (o pierdes) por cada dólar arriesgado a largo plazo.",
@@ -272,7 +255,6 @@ export const GLOSSARY: GlossaryTerm[] = [
     category: "metrics",
   },
 
-  // ──────────────────────────── EXECUTION ─────────────────────────────
   {
     term: "Take profit",
     es: "Orden que cierra una posición automáticamente cuando se alcanza un objetivo de beneficio prefijado. Permite salir de la operación sin requerir tu atención constante.",
@@ -389,7 +371,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
 ];
 
-/** Category metadata: id, ES/EN label, accent variant for the chip. */
+/** Metadatos de categoría: id, rótulo en español e inglés y variante de acento de la etiqueta. */
 export const GLOSSARY_CATEGORIES: {
   id: GlossaryCategory | "all";
   es: string;

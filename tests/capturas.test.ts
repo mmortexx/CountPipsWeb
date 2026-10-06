@@ -4,26 +4,12 @@ import { join } from "node:path";
 import { LAMINAS_PRODUCTO, ORDEN_LAMINAS } from "@/lib/laminas";
 
 /**
- * EL MARCO DE VENTANA TIENE QUE MEDIR LO QUE MIDE LA CAPTURA.
- *
- * ── El fallo que cierra ───────────────────────────────────────────────
- * Un componente fijaba la proporción de la captura a mano y su comentario
- * afirmaba que era «el tamaño real». Lo fue, hasta que
- * `scripts/capturas.py` cambió el recorte dentro del propio fichero: la
- * imagen salía con franjas vacías dentro de un marco cuya razón de existir
- * era que se leyera entera. Nada falla, nada avisa, y solo se ve mirando
- * la página con atención.
- *
- * Un número afirmado en un comentario deja de ser documentación en cuanto
- * lo decide otro fichero. Así que esto no lee comentarios ni componentes:
- * lee la cabecera binaria de los WEBP servidos y la compara con lo que
- * declara el catálogo.
- *
- * ── Y de paso, el catálogo ────────────────────────────────────────────
- * `laminas.ts` cataloga las capturas con su texto alternativo. Un fichero
- * que se renombre o desaparezca deja ahí una entrada que apunta a un 404
- * — y una imagen rota en la página no la ve nadie hasta que la ve un
- * visitante.
+ * El marco de ventana debe medir lo que mide la captura. Si
+ * `scripts/capturas.py` cambia el recorte, la imagen sale con franjas vacías
+ * y nada avisa; por eso se lee la cabecera binaria de los WEBP servidos y se
+ * compara con lo que declara `laminas.ts`, que además cataloga las capturas
+ * con su texto alternativo (un fichero renombrado deja una entrada que apunta
+ * a un 404).
  */
 
 const RAIZ = process.cwd();
@@ -64,9 +50,7 @@ describe("las capturas de la app y el marco que las enseña", () => {
   });
 
   it("cada lámina declara las medidas que de verdad tiene su fichero", () => {
-    /* `ProductPlate` pone esas dos cifras en el `width`/`height` del `img`.
-       Si mienten, el navegador reserva un hueco de un tamaño y luego pinta
-       otro: la página da un salto al cargar la imagen, y nada avisa. */
+    // `ProductPlate` las pone en el `width`/`height` del `img`: si mienten, la página salta al cargar la imagen.
     for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {
       const { w, h } = medirWebp(join(DIR, lamina.archivo));
       expect(
@@ -80,8 +64,7 @@ describe("las capturas de la app y el marco que las enseña", () => {
   });
 
   it("las dos variantes de tema de una lámina miden lo mismo", () => {
-    /* Se intercambian en el sitio con un único `width`/`height` declarado.
-       Si la oscura fuera más alta, cambiar de tema movería la página. */
+    // Se intercambian con un único `width`/`height`: si la oscura fuera más alta, cambiar de tema movería la página.
     for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {
       const claro = medirWebp(join(DIR, lamina.archivo));
       const oscuro = medirWebp(join(DIR, lamina.archivo.replace(/\.webp$/, "-oscuro.webp")));
@@ -95,10 +78,8 @@ describe("las capturas de la app y el marco que las enseña", () => {
   });
 
   it("cada recorte móvil declara las medidas que tiene, en los dos temas", () => {
-    /* `ProductPlate` las pone en el `<source>` del móvil. El recorte tiene
-       otra proporción que la captura de escritorio (de 35 % a 82 % de alto
-       sobre ancho, frente a 53 %): sin ellas el navegador reservaba la de
-       escritorio y la página saltaba al llegar la imagen. */
+    // `ProductPlate` las pone en el `<source>` del móvil, cuyo recorte tiene otra
+    // proporción que el de escritorio: sin ellas la página salta al llegar la imagen.
     for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {
       for (const sufijo of ["-movil", "-oscuro-movil"]) {
         const nombre = lamina.archivo.replace(/\.webp$/, `${sufijo}.webp`);
@@ -116,10 +97,8 @@ describe("las capturas de la app y el marco que las enseña", () => {
   it("cada lámina del catálogo apunta a ficheros que existen, y también su recorte móvil", () => {
     const presentes = new Set(readdirSync(DIR));
     for (const [clave, lamina] of Object.entries(LAMINAS_PRODUCTO)) {
-      /* El recorte móvil no está declarado en el catálogo: `ProductPlate`
-         lo deriva del nombre del de escritorio. Un derivado que no exista
-         no da error en ninguna parte — el navegador se queda con la
-         imagen de escritorio o con nada, según el `srcSet`. */
+      // El catálogo no declara los derivados: `ProductPlate` los deduce del
+      // nombre del de escritorio y, si faltan, no hay error en ninguna parte.
       const derivados = ["-movil", "-oscuro", "-oscuro-movil"].map((s) =>
         lamina.archivo.replace(/\.webp$/, `${s}.webp`),
       );

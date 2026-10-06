@@ -5,19 +5,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { OPEN_GLOSSARY, OPEN_SHORTCUTS_HELP } from "@/lib/overlays";
 
 /**
- * OverlayHost — el portero de las ventanas de overlay globales.
- *
- * ── El problema que resuelve ──────────────────────────────────────────
- * `ShortcutsHelp` y `GlossaryModal` estaban montados en el layout o en
- * componentes sueltos. Al centralizarlos aquí bajo demanda, ningún
- * overlay descarga su JavaScript hasta que alguien lo pide: atajo, o un
- * disparador que llama a `openGlossary` / `openShortcutsHelp`.
- *
- * Antes se precargaban en el primer gesto (mover el ratón, tocar la
- * pantalla): cualquier visita a un aviso legal pagaba unos 71 KB de
- * ventanas que casi nunca se abren. Ahora se piden al abrirlas.
+ * Monta bajo demanda las ventanas globales (`ShortcutsHelp` y `GlossaryModal`):
+ * su JavaScript no se descarga hasta que alguien las pide con un atajo o con
+ * `openGlossary` / `openShortcutsHelp` (`@/lib/overlays`).
  */
-
 
 const ShortcutsHelp = dynamic(
   () => import("@/components/tj/ShortcutsHelp").then((m) => m.ShortcutsHelp),
@@ -29,13 +20,11 @@ const GlossaryModal = dynamic(
   { ssr: false }
 );
 
-/* Margen que se le da a la animación de salida antes de arrancar el
-   overlay del árbol. Cubre los 180 ms que dura el fundido más un
-   respiro. */
+// Margen para la animación de salida antes de quitar el overlay del árbol
+// (el fundido dura 180 ms).
 const EXIT_MS = 260;
 
 export function OverlayHost() {
-  // `mounted` decide si el overlay existe en el árbol de React.
   const [helpMounted, setHelpMounted] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [glossaryMounted, setGlossaryMounted] = useState(false);
@@ -46,10 +35,8 @@ export function OverlayHost() {
     setHelpOpen(next);
   }, []);
 
-  /* Sin disparador propio (atajo o evento), Radix no sabe adónde devolver
-     el foco al cerrar y lo deja en `<body>`: el siguiente Tab arrancaba
-     desde el final del documento. Se recuerda dónde estaba y se le
-     devuelve, después del repintado que suelta la trampa de foco. */
+  // Sin disparador propio, Radix deja el foco en `<body>` al cerrar: se recuerda
+  // dónde estaba y se devuelve tras el repintado que suelta la trampa de foco.
   const anclaGlosario = useRef<HTMLElement | null>(null);
   const glosarioAbiertoRef = useRef(false);
 
@@ -82,9 +69,8 @@ export function OverlayHost() {
       if (a && a !== document.body && !a.closest('[role="dialog"]')) anclaGlosario.current = a;
     };
 
-    // ⌘G / ⌃G — glosario
+    // ⌘G / ⌃G abre el glosario, salvo al escribir en un campo.
     const onKey = (e: KeyboardEvent) => {
-      // Si el usuario escribe en un campo de texto, no interceptar Ctrl+G si es búsqueda u otro
       const target = e.target as HTMLElement | null;
       if (target) {
         const tag = target.tagName;

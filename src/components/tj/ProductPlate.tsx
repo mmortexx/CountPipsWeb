@@ -6,68 +6,18 @@ import { useLang } from "@/lib/i18n";
 import { asset } from "@/lib/asset";
 
 /**
- * ProductPlate — la captura real del producto, presentada como lámina.
+ * La captura real del producto como lámina: marco de 1 px (`.tj-lamina-marco`)
+ * y un pie que dice qué se ve. El recorte (sin barra de título ni de estado)
+ * vive en los ficheros, generados con `scripts/capturas.py`.
  *
- * ── Por qué existe ────────────────────────────────────────────────────
- * La web no enseñaba el producto. Ni una vez, en 155 páginas, mientras
- * `layout.tsx` le declaraba tres capturas a Google en el JSON-LD y ocho
- * ficheros reales dormían sin usar en `public/img/`. Una web de software
- * de escritorio que no enseña su ventana está pidiendo un acto de fe.
+ * En móvil se sirve un recorte dedicado (detalle) por `<picture>`, porque la
+ * pantalla entera a 390 px no se lee; el pie avisa de que es un detalle. No hay
+ * cifras anotadas fuera de la captura: las de la app y las del motor web salen
+ * de datos de muestra distintos.
  *
- * La captura va en un marco de 1 px con sombra suave (`.tj-lamina-marco`),
- * el mismo que la de la portada, y un pie que dice qué se está viendo.
- *
- * ── EL RECORTE YA NO ES COSA DE ESTE COMPONENTE ───────────────────────
- * Aquí había una maquinaria para tapar por CSS la barra de título —dice
- * «Trading Journal», el nombre anterior al renombrado— y la de estado
- * —dice «✓ Compilación de desarrollo»—: un contenedor con `overflow`
- * oculto, un alto forzado en porcentaje y un `margin-top` negativo con su
- * conversión de unidades, porque los porcentajes verticales se resuelven
- * contra el ANCHO.
- *
- * Funcionaba, y arreglaba exactamente una cosa: la página pintada. El
- * JSON-LD del layout seguía entregándole a Google los ficheros ENTEROS, con
- * el nombre viejo y el sello de desarrollo dentro, desde las 155 páginas; y
- * quien abría la imagen directamente los veía igual. Ahora el recorte vive
- * en el fichero (`scripts/capturas.py`, con los originales archivados en
- * `assets/capturas-originales/`), así que no hay nada que tapar en ningún
- * sitio y este componente se limita a colocar una imagen.
- *
- * ── EN MÓVIL NO SE ENSEÑA LA PANTALLA: SE ENSEÑA UN DETALLE ───────────
- * A 390 px la lámina mide unos 350, y una captura de 1500 se ve al 0,23 de
- * su tamaño: no se lee ni una cifra. El componente decía estar demostrando
- * densidad real y en el teléfono no demostraba nada.
- *
- * Reducir más no arregla nada y el scroll horizontal es pedirle trabajo al
- * visitante. Lo que se sirve es un recorte dedicado —una región elegida
- * mirando cada captura, no una reducción— y el pie dice qué se está
- * mirando, porque enseñar un trozo sin avisar de que es un trozo es la otra
- * manera de mentir con una captura.
- *
- * Se resuelve con `<picture>`: la elección la hace el navegador antes de
- * descargar, así que el escritorio nunca pide la versión móvil ni al revés.
- *
- * ── Las cifras se quedan DENTRO de la captura ─────────────────────────
- * A propósito no hay cifras anotadas encima ni al lado. Las de la app y
- * las del motor de la web salen de juegos de datos de muestra distintos,
- * y ponerlas juntas enseñaría dos verdades que no cuadran. Dentro de la
- * captura, un número es «lo que este programa calcula»; fuera, en un
- * titular, se lee como un resultado prometido.
- */
-
-/**
- * Las capturas NO miden todas lo mismo, y por eso las medidas viajan en cada
- * lámina en vez de estar aquí como dos constantes. El playbook enseña cinco
- * fichas de setup: en la ventana con la que se capturó el resto, las dos de
- * abajo salían cortadas por la mitad, así que esa pantalla está capturada en
- * una ventana más alta. Declarar un alto único obligaba a elegir entre una
- * lámina con franjas o una lámina con las fichas serradas.
- *
- * Lo que sí se exige —y lo comprueba `tests/capturas.test.ts` leyendo la
- * cabecera de los ficheros— es que los cuatro ficheros de UNA lámina (los
- * dos temas × pantalla y detalle) encajen con lo que declara: si no, el
- * navegador reserva un hueco de un tamaño y luego pinta otro, y la página
- * pega un salto al cargar.
+ * Las medidas viajan en cada lámina porque las capturas no miden lo mismo.
+ * `tests/capturas.test.ts` exige que los cuatro ficheros de una lámina
+ * (dos temas × pantalla y detalle) encajen con ellas, o la página salta al cargar.
  */
 
 /** Por debajo de aquí se sirve el detalle en lugar de la pantalla entera. */
@@ -79,19 +29,12 @@ export type LaminaProducto = {
   /** Medidas reales de esa captura ya recortada, en píxeles. */
   ancho: number;
   alto: number;
-  /** Las del recorte móvil (`-movil.webp`), que tiene OTRA proporción: sin
-   *  ellas el navegador reservaba la de escritorio y, al llegar la imagen,
-   *  la página saltaba entre 30 y 80 px. Las comprueba `capturas.test.ts`. */
+  /** Las del recorte móvil (`-movil.webp`), de otra proporción. Las comprueba `capturas.test.ts`. */
   anchoMovil: number;
   altoMovil: number;
   /** Ordinal romano de la captura (hoy no se pinta). */
   roman: string;
-  /**
-   * El nombre corto de la pantalla —el mismo que lleva en la barra de
-   * navegación del programa—, para la galería de `/features`. El título de
-   * la lámina no sirve ahí: es una frase, y una pestaña necesita una
-   * palabra.
-   */
+  /** Nombre corto de la pantalla (el de la barra del programa), para la galería de `/features`. */
   pestanaEs: string;
   pestanaEn: string;
   tituloEs: string;
@@ -102,26 +45,15 @@ export type LaminaProducto = {
   /** Texto alternativo: describe el CONTENIDO, no el continente. */
   altEs: string;
   altEn: string;
-  /**
-   * Cómo se llama el fragmento que se enseña en pantalla estrecha, para
-   * poder decirlo en el pie: «detalle: el calendario del mes». Sin esto el
-   * visitante de móvil ve un recorte y no sabe que lo es.
-   */
+  /** Nombre del fragmento que se enseña en pantalla estrecha, para el pie. */
   detalleEs: string;
   detalleEn: string;
 };
 
-/* CADA TEMA, SU CAPTURA. Hasta septiembre de 2026 iba la clara en los dos:
-   se escribió que la oscura «perdía el contraste al reducirse», pero medido
-   (desviación de luminancia a tamaño de lámina) la oscura tiene tanto o más
-   que la clara en las siete pantallas, y en tema oscuro la clara era un
-   bloque blanco en mitad de la página.
-
-   Las dos van en el HTML y el CSS oculta la que no toca
-   (`.tj-captura-clara` / `.tj-captura-oscura`, globals.css): el tema lo
-   elige el botón de la web y no solo el sistema, así que un
-   `<source media="(prefers-color-scheme)">` se equivocaría con el botón.
-   Con `loading="lazy"` el navegador no descarga la que está oculta. */
+// Cada tema, su captura. Las dos van en el HTML y el CSS oculta la que no toca
+// (`.tj-captura-clara` / `.tj-captura-oscura`): el tema lo elige también el
+// botón de la web, y `<source media="(prefers-color-scheme)">` no lo vería.
+// Con `loading="lazy"` no se descarga la oculta.
 const TEMAS = [
   { sufijo: "", clase: "tj-captura-clara" },
   { sufijo: "-oscuro", clase: "tj-captura-oscura" },
@@ -133,14 +65,12 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
   const { archivo, ancho, alto, anchoMovil, altoMovil, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
   const alt = es ? altEs : altEn;
 
-  /* Los cuatro ficheros de cada lámina: pantalla y detalle, en los dos
-     temas. Los nombres los fija `scripts/capturas.py` y los comprueba
-     `tests/capturas.test.ts`; aquí solo se derivan. */
+  // Los nombres de los cuatro ficheros los fija `scripts/capturas.py` y los
+  // comprueba `tests/capturas.test.ts`; aquí solo se derivan.
   const variante = (sufijo: string) => archivo.replace(/\.webp$/, `${sufijo}.webp`);
 
-  /* Visor: la captura entera a su tamaño, en un `<dialog>` nativo (foco,
-     Escape y capa superior los pone el navegador). La imagen grande solo se
-     pide al abrir. */
+  // Visor en un `<dialog>` nativo (foco, Escape y capa superior los pone el
+  // navegador). La imagen grande solo se pide al abrir.
   const visor = useRef<HTMLDialogElement>(null);
   const [abierto, setAbierto] = useState(false);
   const abrir = () => {
@@ -150,16 +80,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
   const cerrar = () => visor.current?.close();
 
   return (
-    /* ── LA LÁMINA TAMBIÉN ENTRA ──────────────────────────────────────
-       Todo lo que la rodea —la etiqueta, el titular, la entradilla, el
-       pie— entra al asomar, y la captura, que es el asunto entero de la
-       sección, aparecía de golpe ya puesta. En una página donde hasta un
-       filete se traza, la pieza principal era la única sin gesto.
-
-       Va con `data-entra`, el mismo mecanismo que el resto (una línea de
-       tiempo de scroll, cero JavaScript), y con el escalón 2 para que
-       llegue justo después de su cabecera y no a la vez: primero se lee
-       de qué va, y entonces aparece. */
+    // `data-entra="2"`: entra con el resto de la sección, justo después de su cabecera.
     <figure className="tj-lamina-producto" data-entra="2">
       <div className="tj-lamina-marco">
         <button
@@ -168,13 +89,9 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
           onClick={abrir}
           aria-label={es ? `Ampliar captura: ${tituloEs}` : `Enlarge screenshot: ${tituloEn}`}
         >
-          {/* `img` y no `next/image`: el build es `output: "export"` con
-              `images.unoptimized`, así que next/image no optimizaría nada
-              y sí añadiría envoltorio.
-
-              Sin carga prioritaria: la lámina de la portada empieza a unos
-              2340 px (medido a 1440, 1920 y 390), y pedirla al cargar le
-              quitaba ancho de banda a lo que sí se ve. */}
+          {/* `img` y no `next/image`: con `output: "export"` e
+              `images.unoptimized` no optimizaría nada. Sin carga
+              prioritaria: la lámina queda muy por debajo del primer pliegue. */}
           {TEMAS.map(({ sufijo, clase }) => (
             <picture key={clase} className={clase}>
               <source

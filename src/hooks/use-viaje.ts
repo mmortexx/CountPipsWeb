@@ -3,15 +3,14 @@
 import { useLayoutEffect, useRef } from "react";
 
 /**
- * Una pieza que viaja de una opción a otra en vez de apagarse en una y
- * encenderse en la siguiente: la píldora de un selector, la barrita de la
- * pestaña activa. Es lo que hacía `layoutId` de framer-motion, con la
- * técnica de siempre (FLIP): la pieza vieja apunta dónde estaba al irse,
- * la nueva nace en su sitio definitivo y se anima desde allí hasta él.
+ * Una pieza que viaja de una opción a otra en vez de apagarse y encenderse: la
+ * píldora de un selector, la barrita de la pestaña activa. Técnica FLIP: la
+ * pieza vieja apunta dónde estaba al irse y la nueva nace en su sitio y se
+ * anima desde allí.
  *
- * Solo hay viaje si la pieza vieja se fue en el mismo cambio en que nace la
- * nueva (`VIGENCIA` ms). Sin ese límite, volver a una página dejaba que la
- * píldora llegara volando desde donde estaba hacía un minuto.
+ * Solo hay viaje si la vieja se fue en el mismo cambio en que nace la nueva
+ * (`VIGENCIA` ms); sin límite, la píldora llegaría desde donde estuvo un
+ * minuto antes.
  */
 const VIGENCIA = 120;
 const ultimas = new Map<string, { caja: Caja; t: number }>();
@@ -40,8 +39,7 @@ export function useViaje<T extends HTMLElement>(clave: string, ms = 350, curva =
       const salto = saltoViaje(previa.caja, el.getBoundingClientRect());
       if (salto) el.animate([{ transformOrigin: "0 0", transform: salto }, { transformOrigin: "0 0", transform: "none" }], { duration: ms, easing: curva });
     }
-    /* React limpia este efecto antes de quitar el nodo del documento: la
-       caja que se mide aquí es la de la pieza aún en su sitio. */
+    // React limpia el efecto antes de quitar el nodo: la caja medida es la de la pieza aún en su sitio.
     return () => {
       const { left, top, width, height } = el.getBoundingClientRect();
       ultimas.set(clave, { caja: { left, top, width, height }, t: performance.now() });

@@ -37,12 +37,7 @@ import { EquityCurve } from "@/components/charts/EquityCurve";
 import { useDemo } from "@/components/demo/DemoContext";
 import { moverConFlechas } from "@/lib/flechas";
 
-/* ============================================================
- * Small primitives
- * ============================================================ */
-
-/** Section card — premium card border with eyebrow header. Mirrors
- *  AnalyticsPage.xaml's PremiumCardBorderStyle + EyebrowTextStyle. */
+/** Tarjeta de sección con cabecera de eyebrow (PremiumCardBorderStyle de AnalyticsPage.xaml). */
 function SectionCard({
   eyebrow,
   title,
@@ -78,9 +73,7 @@ function SectionCard({
   );
 }
 
-/** Compact ratio cell — label (xs uppercase tertiary) + value (lg semibold
- *  tnum). No box, no border. Mirrors the inner StackPanel of the XAML
- *  RatioTile / DataCaptionTextStyle + DataLargeTextStyle pairs. */
+/** Celda de ratio compacta (RatioTile del XAML): rótulo y valor, sin caja. */
 function RatioCell({
   label,
   children,
@@ -102,9 +95,7 @@ function RatioCell({
   );
 }
 
-/** KPI strip cell — loose on canvas, vertical hairline separator.
- *  Mirrors AnalyticsPage.xaml lines 187-246 (summary strip with
- *  VerticalHairlineStyle separators, no enclosing box). */
+/** Celda de la franja de KPI, sin caja y con filete vertical (AnalyticsPage.xaml L187-246). */
 function KpiStripCell({
   label,
   children,
@@ -136,14 +127,7 @@ function KpiStripCell({
   );
 }
 
-/* Aquí vivía `Sparkline`, la curva en miniatura de las fichas de KPI, y
-   más arriba `FilterChip`. Ninguno de los dos se monta desde que las
-   fichas pasaron a mostrar solo la cifra y los filtros a usar `Chip`
-   directamente. Se van con sus tres `useMemo` de datos. */
-
-/* ============================================================
- * Donut: winners vs losers — draw-in arc.
- * ============================================================ */
+/** Anillo de ganadoras frente a perdedoras, con el arco que se dibuja al entrar. */
 function WinnersDonut({
   wins,
   losses,
@@ -208,9 +192,7 @@ function WinnersDonut({
   );
 }
 
-/* ============================================================
- * R-multiple over time — animated bar chart.
- * ============================================================ */
+/** Barras del múltiplo R de cada operación a lo largo del tiempo. */
 function ROverTimeChart({ trades }: { trades: Trade[] }) {
   const { lang } = useLang();
   const H = 150;
@@ -288,9 +270,7 @@ function ROverTimeChart({ trades }: { trades: Trade[] }) {
   );
 }
 
-/* ============================================================
- * P&L by weekday — horizontal bars
- * ============================================================ */
+/** P&L por día de la semana, en barras horizontales. */
 function WeekdayBars({ trades }: { trades: Trade[] }) {
   const { lang } = useLang();
   const rows = useMemo(() => weekdayBreakdown(trades, lang), [trades, lang]);
@@ -307,11 +287,8 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
           <div key={r.day} className="flex items-center gap-3">
             <div className="w-8 text-[11px] text-tertiary tnum">{r.day}</div>
             <div className="flex-1 h-5 bg-[rgb(var(--divider)/0.03)] rounded-[2px] overflow-hidden relative">
-              {/* `scaleX` y no `width`: animar el ancho obliga al navegador
-                  a rehacer la maquetación en cada fotograma; escalar lo
-                  resuelve el compositor. La barra se pinta ya a su tamaño
-                  final y se revela desde la izquierda con
-                  `transform-origin`, que es el mismo gesto a la vista. */}
+              {/* `scaleX` y no `width`: animar el ancho rehace la maquetación en cada
+                  fotograma; escalar lo resuelve el compositor. */}
               <div
                 className="tj-dm-crece-x h-full rounded-[2px]"
                 style={{
@@ -338,9 +315,7 @@ function WeekdayBars({ trades }: { trades: Trade[] }) {
   );
 }
 
-/* ============================================================
- * P&L by month — vertical bars
- * ============================================================ */
+/** P&L por mes, en barras verticales. */
 function MonthlyBars({ trades }: { trades: Trade[] }) {
   const { lang } = useLang();
   const rows = useMemo(() => monthlyBreakdown(trades, lang), [trades, lang]);
@@ -421,9 +396,7 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
   );
 }
 
-/* ============================================================
- * Ranking card (setups / instruments by expectancy)
- * ============================================================ */
+/** Ranking de setups o instrumentos por expectativa. */
 function RankingCard({
   title,
   rows,
@@ -459,9 +432,7 @@ function RankingCard({
                     <span className="text-[10px] text-tertiary tnum w-3">
                       {i + 1}
                     </span>
-                    {/* Se parte, no se trunca: a 320 px «Tendencia»
-                        quedaba en «Tenden…», y es el nombre del setup, o
-                        sea la clave de la fila. */}
+                    {/* Se parte y no se trunca: es el nombre del setup, la clave de la fila. */}
                     <span className="min-w-0 text-xs font-medium leading-[1.3] text-primary [overflow-wrap:anywhere]">
                       {r.name}
                     </span>
@@ -483,8 +454,6 @@ function RankingCard({
                   </div>
                 </div>
                 <div className="h-2 bg-[rgb(var(--divider)/0.03)] rounded-[2px] overflow-hidden ml-5">
-                  {/* Mismo motivo que la barra de arriba: `scaleX`, no
-                      `width`. */}
                   <div
                     className="tj-dm-crece-x h-full rounded-[2px]"
                     style={{
@@ -506,9 +475,7 @@ function RankingCard({
   );
 }
 
-/* ============================================================
- * Heatmap legend
- * ============================================================ */
+/** Leyenda del mapa de calor. */
 function HeatmapLegend({ trades }: { trades: Trade[] }) {
   const { lang } = useLang();
   const maxAbs = useMemo(() => {
@@ -524,8 +491,7 @@ function HeatmapLegend({ trades }: { trades: Trade[] }) {
     const t = i / 8;
     const intensity = Math.abs(t - 0.5) * 2;
     const pos = t >= 0.5;
-    // Misma escala que Heatmap.tsx — la leyenda tiene que enseñar el
-    // tinte que las celdas usan de verdad, no uno más intenso.
+    // Misma escala que Heatmap.tsx: la leyenda muestra el tinte real de las celdas.
     return pos
       ? `rgb(var(--pnl-pos) / ${0.12 + intensity * 0.18})`
       : `rgb(var(--pnl-neg) / ${0.12 + intensity * 0.18})`;
@@ -567,9 +533,7 @@ function HeatmapLegend({ trades }: { trades: Trade[] }) {
   );
 }
 
-/* ============================================================
- * Histogram legend
- * ============================================================ */
+/** Leyenda de los histogramas. */
 function HistogramLegend({
   kind,
   total,
@@ -609,11 +573,7 @@ function HistogramLegend({
   );
 }
 
-/* ============================================================
- * Period row — slice trades by time window and compute per-period
- * summary metrics. Mirrors AnalyticsPage.xaml's PeriodRow grid
- * (lines 133-184): Period | Count | Net | Win% | PF | MaxDD%.
- * ============================================================ */
+/** Fila por periodo (PeriodRow de AnalyticsPage.xaml L133-184): operaciones, neto, % acierto, PF y DD máx. */
 interface PeriodRow {
   label: string;
   count: number;
@@ -645,7 +605,7 @@ function buildPeriodRows(trades: Trade[]): PeriodRow[] {
     const grossLoss = Math.abs(losses.reduce((s, t) => s + t.netPnl, 0));
     const netPnl = slice.reduce((s, t) => s + t.netPnl, 0);
 
-    // Max drawdown % over the slice's equity curve (starting at $10,000).
+    // Caída máxima sobre la curva de capital del tramo, desde el saldo inicial.
     let peak = INITIAL_BALANCE_CONST;
     let bal = INITIAL_BALANCE_CONST;
     let maxDdPct = 0;
@@ -670,10 +630,7 @@ function buildPeriodRows(trades: Trade[]): PeriodRow[] {
   });
 }
 
-/* ============================================================
- * Equity quality — R², K-Ratio, slope of the equity curve.
- * Mirrors AnalyticsPage.xaml's EquityQualityCard (lines 560-591).
- * ============================================================ */
+/** Calidad de la curva de capital: R², K-Ratio y pendiente (EquityQualityCard, AnalyticsPage.xaml L560-591). */
 function computeEquityQuality(trades: Trade[]) {
   if (trades.length < 3) {
     return { r2: 0, kRatio: 0, slope: 0 };
@@ -702,7 +659,7 @@ function computeEquityQuality(trades: Trade[]) {
   const slope = sxx > 0 ? sxy / sxx : 0;
   const ssRes = Math.max(0, syy - slope * sxy);
   const r2 = syy > 0 ? 1 - ssRes / syy : 0;
-  // Residual stddev for K-Ratio approximation.
+  // Desviación residual para aproximar el K-Ratio.
   const residVar = ssRes / Math.max(1, n - 2);
   const residStd = Math.sqrt(residVar);
   const stderrSlope = residStd / Math.sqrt(sxx || 1);
@@ -710,17 +667,13 @@ function computeEquityQuality(trades: Trade[]) {
   return { r2, kRatio, slope };
 }
 
-/* ============================================================
- * Edge verdict — bootstrap CI approximation. With <30 trades the
- * verdict is "Inconclusive"; with 30-100 it's "Suggestive" if the
- * CI excludes zero; with 100+ it's "Confirmed".
- * ============================================================ */
-/** Mínimo de operaciones para un veredicto con confianza estadística.
- *  Único origen: se usa tanto en `computeEdge` como en el aviso de
- *  «muestra corta» del componente principal, así el texto y el corte
- *  numérico nunca pueden desincronizarse. */
+/** Mínimo de operaciones para un veredicto con confianza estadística. Único
+ *  origen del corte en `computeEdge` y del aviso de «muestra corta». */
 const MUESTRA_MINIMA = 30;
 
+/** Veredicto de ventaja con IC del 95 % de la R media (aproximación normal):
+ *  inconcluso bajo `MUESTRA_MINIMA`; límite inferior > 0, confirmada; > -0,1,
+ *  sugerente; si no, sin ventaja. */
 function computeEdge(trades: Trade[], lang: "es" | "en") {
   const n = trades.length;
   if (n < 5) {
@@ -746,12 +699,10 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
     rs.reduce((s, v) => s + (v - meanR) ** 2, 0) / Math.max(1, n - 1);
   const stdR = Math.sqrt(varR);
   const seR = stdR / Math.sqrt(n);
-  // 95 % CI bounds.
   const loR = meanR - 1.96 * seR;
   const hiR = meanR + 1.96 * seR;
-  // Approximate two-sided p-value from z-score (normal approximation).
+  // p bilateral por aproximación normal: 2 * (1 - Φ(|z|)).
   const z = seR > 0 ? Math.abs(meanR) / seR : 0;
-  // Survival function approximation: 2 * (1 - Φ(|z|)).
   const pValue = z > 0 ? 2 * (1 - normCdf(z)) : 1;
 
   const wins = trades.filter((t) => t.netPnl > 0).length;
@@ -828,7 +779,7 @@ function computeEdge(trades: Trade[], lang: "es" | "en") {
   };
 }
 
-/** Standard-normal CDF approximation (Abramowitz & Stegun 26.2.17). */
+/** Aproximación de la CDF normal estándar (Abramowitz y Stegun 26.2.17). */
 function normCdf(z: number): number {
   const t = 1 / (1 + 0.2316419 * z);
   const d = 0.3989423 * Math.exp(-z * z / 2);
@@ -840,19 +791,15 @@ function normCdf(z: number): number {
   return 1 - p;
 }
 
-/* ============================================================
- * Advanced metrics — SQN, Ulcer index, CAGR. Local computations
- * (the demo Metrics object doesn't expose them).
- * ============================================================ */
+/** SQN, índice Ulcer, CAGR, medio Kelly y Omega, calculados aquí porque `Metrics` no los expone. */
 function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: number }) {
   const n = trades.length;
   if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: 0, omega: 1 };
 
-  // SQN and Ulcer index via canonical pure quantitative functions
   const sqn = computeSqn(trades);
   const ulcer = computeUlcerIndex(trades, INITIAL_BALANCE_CONST);
 
-  // CAGR — time-weighted, ~180 days of history.
+  // CAGR ponderado por el tiempo que abarca la muestra.
   const chrono = [...trades].sort(
     (a, b) => a.closedAt.getTime() - b.closedAt.getTime()
   );
@@ -868,7 +815,6 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
       ? (Math.pow(final / INITIAL_BALANCE_CONST, 1 / yearsSpan) - 1) * 100
       : 0;
 
-  // Fractional Kelly criterion (Half Kelly)
   const p = mStats?.winRate ?? (trades.filter((t) => t.netPnl > 0).length / n);
   const wins = trades.filter((t) => t.netPnl > 0);
   const losses = trades.filter((t) => t.netPnl < 0);
@@ -877,7 +823,7 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
   const b = mStats?.payoff ?? (avgL > 0 ? avgW / avgL : 1);
   const halfKelly = computeHalfKelly(p, b);
 
-  // Omega ratio: Keating & Shadwick con umbral L = 0
+  // Omega de Keating y Shadwick con umbral L = 0.
   const omega = computeOmega(trades, 0);
 
   return { sqn, ulcer, cagr, halfKelly, omega };
@@ -885,12 +831,9 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
 
 const dayMs = 86_400_000;
 
-/* Secciones de Analítica. Como en la app (AnalyticsPage.xaml, pastillas
-   de radio que muestran una sección cada vez), elegir una enseña solo sus
-   bloques; antes la barra solo se marcaba y la página lo enseñaba todo.
-   Sin contador tras el nombre: cuántos bloques trae una sección no le dice
-   nada a quien la elige. «Comportamiento» no está: la demo no tiene esos bloques —la
-   disciplina vive en su Diario— y una pestaña vacía prometería algo. */
+/* Secciones de Analítica: como en la app (AnalyticsPage.xaml), elegir una
+   enseña solo sus bloques. «Comportamiento» no está: la demo no tiene esos
+   bloques (la disciplina vive en el Diario) y una pestaña vacía prometería algo. */
 const SECTIONS = [
   { id: "summary", labelEs: "Resumen", labelEn: "Summary", bloques: ["comparativa", "kpis", "curva"] },
   { id: "risk", labelEs: "Riesgo", labelEn: "Risk", bloques: ["ganadorasRiesgo", "ventaja"] },
@@ -954,11 +897,7 @@ function SectionBar({
   );
 }
 
-/* ============================================================
- * ComboBox-style filter — small header label above a native select.
- * Mirrors AnalyticsPage.xaml's ComboBox-with-Header filter row
- * (lines 68-105).
- * ============================================================ */
+/** Filtro con rótulo sobre un select nativo (ComboBox con Header, AnalyticsPage.xaml L68-105). */
 function FilterSelect({
   header,
   value,
@@ -1007,9 +946,6 @@ function FilterSelect({
   );
 }
 
-/* ============================================================
- * Main page
- * ============================================================ */
 export function AnalyticsPage() {
   const { t, lang } = useLang();
   const { filters, setFilters, clearFilters } = useDemo();
@@ -1040,9 +976,8 @@ export function AnalyticsPage() {
   const rHist = useMemo(() => rHistogram(filteredTrades), [filteredTrades]);
   const pnlHist = useMemo(() => pnlHistogram(filteredTrades), [filteredTrades]);
   const durHist = useMemo(() => durationHistogram(filteredTrades), [filteredTrades]);
-  /* Se agrupa por la CLAVE del setup y se rotula después: agrupar por el
-     texto traducido haría que el mismo setup contase como dos si alguna
-     vez se cambiase de idioma sin recargar. */
+  /* Se agrupa por la clave del setup y se rotula después: con el texto traducido
+     el mismo setup contaría como dos al cambiar de idioma sin recargar. */
   const setupRanks = useMemo(
     () =>
       rankByExpectancy(filteredTrades, (tr) => tr.setup).map((r) => ({
@@ -1061,11 +996,6 @@ export function AnalyticsPage() {
   const adv = useMemo(() => computeAdvanced(filteredTrades, m), [filteredTrades, m]);
 
   const filterSig = `${filters.instrument}|${filters.setup}|${filters.direction}|${filters.compliance}`;
-
-  /* Aquí se calculaban `sparkPnl`, `sparkR` y `sparkEquity` para el
-     componente `Sparkline`, que ya no dibuja nadie. Dos de los tres
-     ordenaban una copia del array de operaciones en cada cambio de filtro
-     para tirar el resultado. */
 
   const filterActive =
     filters.instrument !== "all" ||
@@ -1095,34 +1025,24 @@ export function AnalyticsPage() {
 
   return (
     <div className="p-5 md:p-6 space-y-5">
-      {/* ============ HEADER ============ */}
-      {/* Cabecera desnuda: eyebrow + titular y nada más, como en la app
-          (AnalyticsPage.xaml L27-30). Se han retirado el halo radial de
-          acento — la app no ilumina sus cabeceras — y el párrafo
-          descriptivo, que la pantalla real no tiene: en Analítica el
-          espacio va a las pestañas de sección, que empiezan justo
-          debajo del titular. */}
+      {/* Cabecera desnuda, como en la app (AnalyticsPage.xaml L27-30): eyebrow y titular. */}
       <section>
         <Reveal>
           <Eyebrow>{t("analyticsEyebrow")}</Eyebrow>
-          {/* h2 y no h1: esta es una pantalla SIMULADA dentro de la página de
-              la demo. El h1 del documento es el titular de esa página, y dos
-              h1 rompen el esquema de encabezados —lectores de pantalla y
-              buscadores lo usan para entender la jerarquía—. */}
+          {/* h2 y no h1: es una pantalla simulada dentro de la página de la
+              demo, cuyo h1 es el del documento; dos h1 rompen la jerarquía. */}
           <h2 className="mt-2 font-medium tracking-[-0.02em] text-primary text-2xl md:text-3xl">
             {t("analyticsTitle")}
           </h2>
         </Reveal>
       </section>
 
-      {/* ============ SECTION NAV (SelectorBar) ============ */}
       <SectionBar
         active={activeSection}
         onChange={setActiveSection}
         lang={lang}
       />
 
-      {/* ============ FILTER BAR — ComboBox-with-header style ============ */}
       <div className="space-y-2">
         <div className="flex flex-wrap items-end gap-3">
           <FilterSelect
@@ -1188,7 +1108,6 @@ export function AnalyticsPage() {
         </div>
       </div>
 
-      {/* ============ EMPTY STATE ============ */}
       {filteredTrades.length === 0 && (
         <SectionCard>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
@@ -1225,7 +1144,6 @@ export function AnalyticsPage() {
 
       {filteredTrades.length > 0 && (
         <div role="tabpanel" id="analitica-panel" aria-labelledby={`analitica-tab-${activeSection}`} className="space-y-5">
-          {/* ============ PERIOD COMPARISON CARD ============ */}
           {ver("comparativa") && (
           <SectionCard
             eyebrow={lang === "es" ? "De un vistazo" : "At a glance"}
@@ -1294,7 +1212,6 @@ export function AnalyticsPage() {
           </SectionCard>
           )}
 
-          {/* ============ KPI STRIP — loose, vertical hairlines ============ */}
           {ver("kpis") && (
           <div className="space-y-2">
             <Eyebrow>
@@ -1340,13 +1257,9 @@ export function AnalyticsPage() {
           </div>
           )}
 
-          {/* ============ WIN/LOSS + RISK/QUALITY 2-CARD ROW (3:4 ratio) ============ */}
           {ver("ganadorasRiesgo") && (
           <div className="grid grid-cols-1 lg:grid-cols-7 gap-5 min-w-0">
-            {/* Win/loss card — 3×2 grid. Mobile: 3 cols is tight at 320px;
-                the RatioCells are centered so they read fine even when
-                each cell is ~90px wide. Added min-w-0 so the grid can
-                shrink within the card without forcing overflow. */}
+            {/* `min-w-0` deja encoger la rejilla dentro de la tarjeta sin desbordar. */}
             <SectionCard
               eyebrow={lang === "es" ? "Ganadoras vs perdedoras" : "Winners vs losers"}
               className="lg:col-span-3 min-w-0"
@@ -1382,7 +1295,6 @@ export function AnalyticsPage() {
               </div>
             </SectionCard>
 
-            {/* Risk/quality card — 4×3 grid. */}
             <SectionCard
               eyebrow={lang === "es" ? "Riesgo, calidad y rachas" : "Risk, quality & streaks"}
               className="lg:col-span-4 min-w-0"
@@ -1490,13 +1402,11 @@ export function AnalyticsPage() {
           </div>
           )}
 
-          {/* ============ EDGE CARD — verdict + CI intervals ============ */}
           {ver("ventaja") && (
           <SectionCard
             eyebrow={lang === "es" ? "¿Ventaja real o suerte?" : "Real edge or luck?"}
           >
             <div className="space-y-4">
-              {/* Verdict row — LED + label + p-value pill. */}
               <div className="flex flex-wrap items-center gap-3">
                 <span className="relative inline-flex items-center justify-center">
                   <span
@@ -1513,12 +1423,10 @@ export function AnalyticsPage() {
                 </Chip>
               </div>
 
-              {/* Hint sentence. */}
               <p className="text-sm text-secondary leading-relaxed max-w-3xl">
                 {edge.hint}
               </p>
 
-              {/* 4 intervals grid. */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-1">
                 <div className="flex flex-col gap-1 items-center text-center">
                   <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
@@ -1570,7 +1478,6 @@ export function AnalyticsPage() {
           </SectionCard>
           )}
 
-          {/* ============ EQUITY CURVE + EQUITY QUALITY (2:1) ============ */}
           {ver("curva") && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <SectionCard
@@ -1636,7 +1543,6 @@ export function AnalyticsPage() {
           </div>
           )}
 
-          {/* ============ WINNERS DONUT + R-OVER-TIME ============ */}
           {ver("donutR") && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <SectionCard
@@ -1694,20 +1600,10 @@ export function AnalyticsPage() {
           </div>
           )}
 
-          {/* ============ DISTRIBUTIONS (3 cards) ============
-              The Histogram component (`src/components/charts/Histogram.tsx`)
-              lays its bars out as `flex-1` children of a `flex items-end`
-              row. By default flex items don't shrink below their content's
-              min-content width, so on narrow viewports the P&L histogram
-              labels ("431 US$", "1.2K US$"…) push the bars past the card's
-              right edge and overflow the demo panel. We can't edit the
-              Histogram component (not in this task's owned files), so we
-              pass a className with a Tailwind arbitrary descendant variant
-              that sets `min-w-0` on every `.flex-1` bar wrapper inside the
-              chart — that lets the bars shrink below their labels' min
-              width, which in turn lets the labels' `truncate w-full`
-              actually truncate. `overflow-hidden` is the safety net so no
-              bar can ever escape the card, even mid-animation. */}
+          {/* Histogram reparte sus barras como `flex-1`, que no encogen bajo el ancho
+              de su etiqueta: en estrecho las etiquetas del P&L sacaban las barras de
+              la tarjeta. `[&_.flex-1]:min-w-0` las deja encoger (y truncar) y
+              `overflow-hidden` es la red de seguridad. */}
           {ver("distribuciones") && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <SectionCard eyebrow={t("rDistribution")}>
@@ -1755,7 +1651,6 @@ export function AnalyticsPage() {
           </div>
           )}
 
-          {/* ============ WEEKDAY + MONTH ============ */}
           {ver("semanaMes") && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <SectionCard eyebrow={t("pnlByWeekday")}>
@@ -1767,7 +1662,6 @@ export function AnalyticsPage() {
           </div>
           )}
 
-          {/* ============ HEATMAP + LEGEND ============ */}
           {ver("calor") && (
           <SectionCard
             eyebrow={t("heatmapTitle")}
@@ -1782,7 +1676,6 @@ export function AnalyticsPage() {
           </SectionCard>
           )}
 
-          {/* ============ RANKINGS ============ */}
           {ver("rankings") && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             <RankingCard
@@ -1800,7 +1693,6 @@ export function AnalyticsPage() {
         </div>
       )}
 
-      {/* Footer spacer. */}
       <div className="h-2" aria-hidden="true" />
     </div>
   );

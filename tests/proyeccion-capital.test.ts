@@ -2,12 +2,10 @@ import { describe, expect, it } from "vitest";
 import { proyectaCapital, LIMITE_PROYECCION_USD } from "../src/lib/trading/proyeccion";
 
 /**
- * Con win rate 80 %, ganancia media 6 R, pérdida media 0,25 R, riesgo 3 %,
- * 600 operaciones/año, sin fricción, 10 años e interés compuesto, el motor
- * mensual multiplica el balance por un factor tan grande cada mes que se
- * desborda a Infinity antes de terminar la simulación. Son valores que se
- * alcanzan con los propios deslizadores de la herramienta (todos dentro de
- * sus límites), no un caso forzado desde fuera.
+ * Con acierto del 80 %, ganancia media de 6 R, pérdida media de 0,25 R,
+ * riesgo del 3 %, 600 operaciones al año, sin fricción, 10 años y interés
+ * compuesto, el balance se desborda a Infinity antes de terminar. Son valores
+ * que alcanzan los propios deslizadores, dentro de sus límites.
  */
 const PARAMS_EXTREMOS = {
   startBalance: 10000,
@@ -25,9 +23,8 @@ const PARAMS_EXTREMOS = {
 describe("proyectaCapital", () => {
   it("con estos extremos el balance en bruto no está acotado: el crecimiento no se recorta en silencio", () => {
     const r = proyectaCapital(PARAMS_EXTREMOS);
-    // Si esto empezara a pasar (finalBalance finito y por debajo del
-    // límite) sin que `fueraDeEscala` avisara, sería porque alguien
-    // clampó el crecimiento por dentro sin decirlo — justo lo prohibido.
+    // Un balance finito por debajo del límite sin que avise `fueraDeEscala`
+    // significaría que alguien recortó el crecimiento en silencio.
     expect(!Number.isFinite(r.finalBalance) || r.finalBalance > LIMITE_PROYECCION_USD).toBe(true);
   });
 
@@ -68,7 +65,7 @@ const PERFIL = {
   frictionR: 0.02,
 };
 
-/* El mes en que la curva llega al doble del balance inicial. */
+// Mes en que la curva llega al doble del balance inicial, sin contar los ingresos.
 const mesDelDoble = (r: ReturnType<typeof proyectaCapital>, inicio: number) =>
   r.monthlyPoints.find((p) => p.balance - (p.totalDeposited - inicio) >= 2 * inicio)?.month ?? null;
 

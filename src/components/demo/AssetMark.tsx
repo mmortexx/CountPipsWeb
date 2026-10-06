@@ -1,23 +1,9 @@
 /**
- * Marca de clase de activo — cripto · divisas · acciones · futuros.
- *
- * Antes eran cuatro puntos de color de la paleta genérica de Tailwind
- * (`bg-amber-400`, `bg-emerald-400`, `bg-rose-400`, `bg-teal-400`). Dos
- * problemas, y el segundo es el grave:
- *
- *  1. La marca es acromática a propósito: el verde y el rojo son del P&L y
- *     de nada más. Cuatro colores decorativos rompen esa regla.
- *  2. Esmeralda y rosa son, a 6 px, los mismos tonos que ganancia y
- *     pérdida. El punto de «acciones» se leía como pérdida y el de
- *     «divisas» como ganancia, justo en una tabla de operaciones donde la
- *     mirada busca precisamente eso. Medido sobre papel claro: 1,53:1 y
- *     1,58:1 — por debajo del 3:1 que pide una señal gráfica.
- *
- * La clase se codifica por FORMA, en tinta terciaria: rombo, triángulo,
- * marco y cuadrado. Sin discos: un círculo aquí se leía como píldora
- * de estado, no como clase de activo. Se distinguen sin color —también
- * con daltonismo, y en una impresión en blanco y negro— y el color
- * queda libre para el dato.
+ * Marca de clase de activo (cripto, divisas, acciones, futuros, materias
+ * primas). Se codifica por forma y en tinta terciaria, nunca por color: el
+ * verde y el rojo son solo del P&L, y a 6 px los tonos de la paleta se leían
+ * como ganancia o pérdida (contraste de 1,5:1, bajo el 3:1 de una señal
+ * gráfica). Sin discos, que se leen como píldora de estado.
  */
 
 const FORMA: Record<string, string> = {
@@ -39,9 +25,7 @@ export function AssetMark({
 }) {
   const forma = FORMA[assetClass ?? "stock"] ?? FORMA.stock;
   return (
-    // El envoltorio fija la caja a 10×10: el rombo sobresale de su propio
-    // cuadro al girar, y sin caja fija desalinearía la columna respecto a
-    // las otras tres formas.
+    // Caja fija de 10×10: el rombo sobresale de su cuadro al girar y desalinearía la columna.
     <span
       className={`inline-grid place-items-center w-[10px] h-[10px] shrink-0 ${className}`}
       aria-hidden="true"

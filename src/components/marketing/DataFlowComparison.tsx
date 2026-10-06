@@ -5,32 +5,16 @@ import { useLang } from "@/lib/i18n";
 import { fmtInt } from "@/lib/trading/format";
 
 /**
- * DataFlowComparison — visualización animada de a dónde van tus datos.
- *
- * Dos columnas: CountPips (local) vs Herramienta en la nube. Al pulsar
- * "Añadir operación" un punto viaja:
- *   · CountPips: del formulario al archivo local .sqlite. Corta, directa,
- *     sin salir del equipo.
- *   · Nube: del formulario → internet → servidor del proveedor → vuelta
- *     (latencia, dependencia, exposición).
- *
- * Refuerza el value prop de /features/seguridad: "tus datos no salen de
- * tu equipo. Nunca." De forma visual, no con texto.
- *
- * ── Por qué animado y no estático ─────────────────────────────────────
- * Un diagrama estático dice "es local". Una animación que se ejecuta
- * ante tus ojos MUESTRA la diferencia: un salto corto vs un viaje de
- * ida y vuelta. Es la forma más honesta de visualizar el riesgo de la
- * nube sin sermones.
- *
- * ── Material ──────────────────────────────────────────────────────────
- * .tj-paper. Touch targets ≥44px. Sin overflow mobile.
+ * A dónde van tus datos, en dos columnas: CountPips (local) y una herramienta
+ * en la nube. Al pulsar «Añadir operación» un punto viaja por los pasos de
+ * cada columna: un salto corto al archivo local frente a un viaje de ida y
+ * vuelta por un servidor ajeno.
  */
 export function DataFlowComparison() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Cada "envío" incrementa un contador; el punto animado viaja.
+  // Cada envío incrementa el contador y relanza el punto animado.
   const [pulses, setPulses] = useState(0);
 
   const send = useCallback(() => setPulses((p) => p + 1), []);
@@ -38,7 +22,6 @@ export function DataFlowComparison() {
   return (
     <section className="section-tight">
       <div className="tj-container">
-        {/* Header */}
         <div className="max-w-2xl mb-8">
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow">
@@ -63,7 +46,6 @@ export function DataFlowComparison() {
           </p>
         </div>
 
-        {/* Trigger button */}
         <button
           type="button"
           onClick={send}
@@ -81,9 +63,7 @@ export function DataFlowComparison() {
           )}
         </button>
 
-        {/* Two-column flow diagram */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* ─── CountPips (local) ─── */}
           <FlowColumn
             title="CountPips"
             subtitle={es ? "En tu equipo" : "On your machine"}
@@ -97,7 +77,6 @@ export function DataFlowComparison() {
             travelMs={500}
           />
 
-          {/* ─── Cloud ─── */}
           <FlowColumn
             title={es ? "Herramienta en la nube" : "Cloud tool"}
             subtitle={es ? "Servidor ajeno" : "Third-party server"}
@@ -114,7 +93,6 @@ export function DataFlowComparison() {
           />
         </div>
 
-        {/* Footer note */}
         <p className="medida mt-6 text-[13px] leading-[1.6]" style={{ color: "var(--ink-3)" }}>
           {es
             ? "Cada punto es una operación. En CountPips se queda en tu equipo: solo sale si activas una función que lo necesita, como la copia cifrada en tu propia nube. Tu historial es tuyo."
@@ -125,7 +103,7 @@ export function DataFlowComparison() {
   );
 }
 
-/* ── FlowColumn — una columna del diagrama con pasos conectados ── */
+/* Una columna del diagrama con pasos conectados. */
 function FlowColumn({
   title,
   subtitle,
@@ -134,10 +112,6 @@ function FlowColumn({
   pulseKey,
   pulseId,
   travelMs,
-  /* Sin `travelPath` ni `es`: las dos llegaban y ninguna se leía. La
-     distinción recta/ramificada ya la marca el número de `steps` (dos
-     pasos en local, cuatro en la nube — ése ES el argumento del
-     diagrama), y los textos entran ya traducidos desde arriba. */
 }: {
   title: string;
   subtitle: string;
@@ -149,8 +123,6 @@ function FlowColumn({
 }) {
   return (
     <div className="tj-ficha">
-      {/* La barra lleva el nombre y dónde acaba el dato; el color, solo en
-          el punto que lo marca. */}
       <p className="tj-ficha-barra">
         <span className="text-primary">{title}</span>
         <span className="inline-flex items-center gap-2">
@@ -159,11 +131,9 @@ function FlowColumn({
         </span>
       </p>
 
-      {/* Steps with animated dot */}
       <div className="tj-ficha-cuerpo relative">
         {steps.map((step, i) => (
           <div key={i} data-entra="ciclo" className="relative flex items-start gap-3" style={{ marginBottom: i < steps.length - 1 ? 28 : 0 }}>
-            {/* Node */}
             <div className="relative shrink-0">
               <div
                 className="flex items-center justify-center rounded-[4px] text-secondary"
@@ -175,7 +145,6 @@ function FlowColumn({
               >
                 <StepIcon name={step.icon} />
               </div>
-              {/* Animated pulse dot — appears at this node when the pulse reaches it */}
               <PulseDot
                 pulseKey={pulseKey}
                 pulseId={`${pulseId}-${i}`}
@@ -183,12 +152,10 @@ function FlowColumn({
                 color={color}
               />
             </div>
-            {/* Label */}
             <div className="pt-1.5 min-w-0">
               <div className="text-[14px] font-medium" style={{ color: "var(--ink)" }}>{step.label}</div>
               {step.sub && <div className="text-[12px]" style={{ color: "var(--ink-3)" }}>{step.sub}</div>}
             </div>
-            {/* Connector line to next step */}
             {i < steps.length - 1 && (
               <div
                 aria-hidden
@@ -209,21 +176,12 @@ function FlowColumn({
   );
 }
 
-/* ── PulseDot — el punto animado que viaja por los nodos ── */
+/* Punto animado que viaja por los nodos; no se pinta hasta la primera pulsación. */
 function PulseDot({ pulseKey, pulseId, delay, color }: { pulseKey: number; pulseId: string; delay: number; color: string }) {
-  // Only render the dot when there's been at least one pulse AND the key matches
-  // The dot animates in (scale 0→1→0) at the calculated delay after the button press
   if (pulseKey === 0) return null;
-  /* La `key` cambia con cada pulsación, así que React sustituye el
-     elemento por uno nuevo y la animación CSS vuelve a empezar desde el
-     primer fotograma. Es lo mismo que conseguía `AnimatePresence`
-     —reiniciar el pulso en cada disparo— sin necesitar la biblioteca:
-     aquí no hay salida que animar, el punto se apaga solo al final de su
-     propio recorrido de opacidad.
-
-     El retardo viene en milisegundos y se pasa como estilo en línea
-     porque es distinto para cada nodo de la cadena: es el que escalona
-     el viaje del punto de un nodo al siguiente. */
+  /* La `key` cambia en cada pulsación: React sustituye el elemento y la
+     animación CSS reinicia. El retardo (ms) va en línea porque escalona el
+     viaje de un nodo al siguiente. */
   return (
     <span
       key={`${pulseId}-${pulseKey}`}
@@ -239,7 +197,7 @@ function PulseDot({ pulseKey, pulseId, delay, color }: { pulseKey: number; pulse
   );
 }
 
-/* ── StepIcon — iconos SVG inline para cada tipo de nodo ── */
+/* Iconos SVG inline de cada tipo de nodo. */
 function StepIcon({ name }: { name: string }) {
   const s = 18;
   switch (name) {

@@ -1,49 +1,28 @@
 /**
- * METADATOS — la ficha con la que cada página se presenta fuera del sitio
+ * METADATOS: comprueba, en todas las páginas compiladas, la ficha con la que
+ * se presentan fuera del sitio: título, descripción, canónico, `hreflang`,
+ * idioma, datos estructurados y tarjeta social. No se ve abriendo el sitio,
+ * sino en un buscador o al pegar un enlace.
  *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * El título, la descripción, el canónico, los `hreflang`, el idioma y los
- * datos estructurados de TODAS las páginas compiladas. Nada de esto se ve
- * abriendo el sitio: se ve en el resultado de una búsqueda, en la tarjeta
- * que aparece al pegar un enlace en un chat, y en lo que un buscador
- * decide indexar. Por eso se rompe sin que nadie lo note.
+ * Límites: título ≤ 60 caracteres (si no, se recorta con puntos suspensivos)
+ * y descripción entre 70 y 160 (el corte real es por anchura en píxeles, así
+ * que 160 es un borde prudente). Son criterio, no física: si cambian, se
+ * cambian aquí.
  *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * Cinco descripciones que Google corta a mitad de frase. Dos de ellas
- * —`/features/disciplina/` y su gemela inglesa— llegaban a 193 y 191
- * caracteres, así que el resultado de búsqueda perdía justo la frase con
- * la que la página se vendía: «Indisciplina medida en dinero.»
- *
- * ── Los números y de dónde salen ──────────────────────────────────────
- * · Título ≤ 60: por encima, el buscador lo recorta con puntos suspensivos.
- * · Descripción entre 70 y 160: por debajo desaprovecha el espacio, por
- *   encima se corta. El corte real es por anchura en píxeles, no por
- *   letras, así que 160 es el borde prudente, no una frontera exacta.
- * Los dos son criterio, no física: si cambian, se cambian AQUÍ y se
- * explica por qué, en vez de ir dejando excepciones sueltas.
- *
- * ── Por qué el 404 queda fuera de casi todas las reglas ───────────────
- * No queda fuera por ser el 404: queda fuera porque se declara
- * `noindex`, y a una página que pide no ser indexada no se le puede
- * exigir la ficha con la que se presentaría en un buscador. La guarda lo
- * comprueba página a página — el día que alguien le quite el `noindex`,
- * empieza a exigírsela sin que haya que tocar nada aquí.
+ * El 404 queda fuera de casi todas las reglas solo porque se declara
+ * `noindex`; si alguien se lo quita, se le empieza a exigir la ficha.
  *
  * Uso:  node scripts/metadatos.mjs out
  */
 import { readFileSync, globSync, existsSync } from "node:fs";
 
-/* Acepta tanto `out` como `--serve out`: seis de estas guardas levantan
-   un servidor y usan la segunda forma, y confundirlas reventaba con una
-   traza de Node sobre un directorio llamado «--serve». */
+// Acepta `out` y `--serve out`, la forma de otras guardas.
 const dir = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
 if (!existsSync(dir)) {
   console.log(`[metadatos] no encuentro el directorio «${dir}». ¿Falta compilar el sitio con \`npm run build\`?`);
   process.exit(1);
 }
-/* El sitio cuelga de un subdirectorio en GitHub Pages, así que el
-   canónico que se escribe en el HTML lleva ese prefijo y la ruta del
-   fichero no. Sin descontarlo, las 168 páginas parecerían mal. */
+// En GitHub Pages el sitio cuelga de un subdirectorio: el canónico lleva ese prefijo y la ruta del fichero no.
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "/CountPipsWeb";
 
 const TITULO_MAX = 60;
@@ -73,9 +52,7 @@ const paginas = ficheros.map((f) => {
     titulo: saca(html, /<title>([^<]*)<\/title>/),
     desc: saca(html, /<meta name="description" content="([^"]*)"/),
     canonico: saca(html, /<link rel="canonical" href="([^"]*)"/),
-    /* Next escribe el atributo en camelCase —`hrefLang`—, que el HTML
-       normaliza a minúsculas al analizarlo. Buscarlo sin `i` daba 168
-       páginas «sin hreflang» que lo tenían delante. */
+    // Next escribe `hrefLang` en camelCase: la búsqueda va sin distinguir mayúsculas.
     alternos: [...html.matchAll(/<link rel="alternate"[^>]*hreflang="([^"]*)"[^>]*href="([^"]*)"/gi)].map((m) => ({ idioma: m[1], destino: m[2] })),
     jsonld: (html.match(/application\/ld\+json/g) || []).length,
     lang: saca(html, /<html[^>]*\blang="([^"]*)"/),
@@ -94,7 +71,7 @@ const rutasQueExisten = new Set(paginas.map((p) => p.ruta.replace(/\/$/, "") || 
 const fallos = [];
 const anota = (regla, ruta, detalle) => fallos.push({ regla, ruta, detalle });
 
-/* Solo las que piden ser indexadas responden por su ficha. */
+// Solo las páginas indexables responden por su ficha.
 const indexables = paginas.filter((p) => !p.noindex);
 
 for (const p of paginas) {
@@ -120,9 +97,7 @@ for (const p of indexables) {
   }
 
   if (p.alternos.length === 0) anota("sin hreflang", p.ruta, "el sitio es bilingüe y esta página no dice dónde está su gemela");
-  /* Un hreflang que apunta a una página inexistente es peor que no
-     ponerlo: el buscador sigue el enlace, se come un 404, y deja de
-     fiarse del resto del grupo de idiomas. */
+  // Un hreflang a una página inexistente es peor que no ponerlo: el buscador deja de fiarse del grupo.
   for (const a of p.alternos) {
     const destino = a.destino.replace(/^https?:\/\/[^/]+/, "").replace(new RegExp(`^${PREFIJO}`), "") || "/";
     if (!rutasQueExisten.has(destino.replace(/\/$/, "") || "/"))
@@ -130,10 +105,7 @@ for (const p of indexables) {
   }
   if (p.jsonld === 0) anota("sin datos estructurados", p.ruta, "ningún bloque ld+json");
 
-  /* La raíz del sitio es el canónico menos la ruta de la página. La
-     tarjeta social tiene que colgar de esa misma raíz y existir en out/:
-     compilado sin prefijo, el canónico decía «/CountPipsWeb/aviso-legal/»
-     y la tarjeta «github.io/opengraph-image.png», un 404. */
+  // La raíz es el canónico menos la ruta de la página; la tarjeta social debe colgar de ella y existir en out/.
   const raiz = p.canonico && p.canonico.endsWith(p.ruta) ? p.canonico.slice(0, p.canonico.length - p.ruta.length) : null;
   for (const img of p.imagenes) {
     const sinConsulta = img.split("?")[0];
@@ -143,27 +115,22 @@ for (const p of indexables) {
       anota("tarjeta social que no existe", p.ruta, `${sinConsulta.slice(raiz.length)} no está en ${dir}/`);
     }
   }
-  /* Lo que sale al compartir en X y en el resto de redes es la misma
-     ficha: /beta heredaba el twitter:title de la portada en español. */
+  // X y el resto de redes comparten la misma ficha.
   if (p.ogTitulo && p.twTitulo !== p.ogTitulo)
     anota("twitter:title distinto del og:title", p.ruta, `«${p.twTitulo}» frente a «${p.ogTitulo}»`);
-  /* Una descripción recortada a máquina acaba en «…» a media palabra. */
+  // Una descripción recortada a máquina acaba en «…» a media palabra.
   if (p.desc && p.desc.endsWith("…")) anota("descripción recortada con puntos suspensivos", p.ruta, `«…${p.desc.slice(-40)}»`);
-  /* Una sola marca y un solo separador: «Título — CountPips». */
+  // Una sola marca y un solo separador: «Título — CountPips».
   if (p.titulo && (/·\s*CountPips/.test(p.titulo) || (p.titulo.match(/ — /g) || []).length > 1))
     anota("separador de título que no es «— CountPips»", p.ruta, `«${p.titulo}»`);
-  /* La imagen de los datos estructurados es la misma tarjeta que la
-     página anuncia: las ocho de /features daban la portada española,
-     también las cuatro inglesas. */
+  // La imagen de los datos estructurados es la misma tarjeta que anuncia la página.
   const tarjeta = p.imagenes[0]?.split("?")[0];
   for (const img of p.imagenesLd) {
     if (img.split("?")[0] !== tarjeta) anota("datos estructurados con otra imagen que la tarjeta", p.ruta, `${img} frente a ${tarjeta ?? "(sin og:image)"}`);
   }
 }
 
-/* Dos páginas indexables con el mismo título o la misma descripción se
-   canibalizan en el buscador: compiten por la misma consulta y ninguna
-   gana. Las no indexables pueden repetirse libremente. */
+// Dos páginas indexables con el mismo título o descripción compiten por la misma consulta; las no indexables pueden repetirse.
 const agrupa = (campo) => {
   const m = new Map();
   for (const p of indexables) {
@@ -186,10 +153,7 @@ for (const [regla, casos] of Object.entries(porRegla)) {
 
 console.log(`\n[metadatos] ${paginas.length} páginas · ${indexables.length} indexables · ${paginas.length - indexables.length} con noindex`);
 
-/* El sitio tiene 84 páginas por idioma. Si esta guarda encuentra un
-   puñado, no es que todo esté bien: es que está mirando un `out/` viejo,
-   vacío o a medio compilar, y una guarda que no mira nada aprueba
-   siempre. */
+// Un puñado de páginas indica un `out/` viejo, vacío o a medio compilar; una guarda que no mira nada aprueba siempre.
 if (paginas.length < 100) {
   console.log(`[metadatos] solo ${paginas.length} páginas: se esperaban más de 150. ¿Está compilado el sitio?`);
   process.exit(1);

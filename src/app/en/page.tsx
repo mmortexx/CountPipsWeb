@@ -4,15 +4,9 @@ import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
 import { SUPPORT_EMAIL } from "@/lib/forms";
 
 /**
- * `/en` — la portada en inglés.
- *
- * El CUERPO es literalmente el mismo que `/`: `HomeBody`, importado del
- * fichero hermano. No hay nada que traducir aquí porque cada sección ya
- * lee `useLang()` por su cuenta y elige entre sus props `...Es`/`...En` —
- * es la misma composición de componentes, montada bajo una dirección que
- * hace que `LanguageProvider` derive "en" en vez de "es". Lo único que
- * este fichero aporta es la metadata: lo que un buscador o un enlace
- * compartido ven ANTES de que se ejecute una sola línea de React.
+ * `/en`: la portada en inglés. El cuerpo es `HomeBody` de `../page`; cada
+ * sección elige idioma con `useLang()`, que deriva "en" de esta dirección. Este
+ * fichero solo aporta los metadatos que ven buscadores y enlaces compartidos.
  */
 const PAGE_DESCRIPTION =
   "Windows-native trading journal. Explore an interactive demo with institutional metrics, discipline and your data on your machine.";
@@ -44,9 +38,7 @@ export const metadata: Metadata = {
 export default function HomeEn() {
   return (
     <>
-      {/* Mismos tres esquemas que `/`, en inglés. Que existan DOS llamadas
-          —una por portada— y no una sola en el layout es justo el
-          arreglo: un layout no sabe en qué idioma está la ruta. */}
+      {/* Mismos esquemas que `/`, en inglés: el layout no sabe el idioma de la ruta. */}
       {esquemasGlobales("en", { soporte: SUPPORT_EMAIL }).map((s, i) => (
         <script
           key={i}

@@ -2,13 +2,9 @@ import { describe, expect, it } from "vitest";
 import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan } from "../src/lib/trading/validaPlan";
 
 /**
- * RiskCalculator daba por válido un plan cuyo objetivo cae en el MISMO lado
- * de la entrada que el stop: entrada 100, stop 105 (por encima → corto),
- * objetivo 110 (también por encima) pasaba como corto con R:R 2:1, cuando
- * un corto con el objetivo por encima del stop no es una operación posible.
- *
- * `validaPlan` exige, además de los tres positivos y distintos, que el
- * objetivo quede al lado contrario de la entrada que el stop.
+ * `validaPlan` exige, además de tres precios positivos y distintos, que el
+ * objetivo quede al lado contrario de la entrada que el stop: un corto con
+ * stop y objetivo por encima de la entrada no es una operación posible.
  */
 describe("validaPlan", () => {
   it("rechaza el objetivo que cae al mismo lado que el stop (el caso que colaba)", () => {

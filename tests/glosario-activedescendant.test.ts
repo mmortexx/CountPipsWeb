@@ -2,11 +2,8 @@ import { describe, expect, it } from "vitest";
 import { idOpcionGlosario } from "@/components/tj/GlossaryModal";
 import { GLOSSARY } from "@/lib/trading/glossary";
 
-// `aria-activedescendant` del listbox del glosario apunta al `id` de la
-// opción activa. Ese id lo calcula `idOpcionGlosario` a partir del
-// término — tiene que ser válido como id HTML y, sobre todo, único: dos
-// términos con el mismo id dejarían a `aria-activedescendant` apuntando
-// a la opción equivocada (o a las dos a la vez).
+// `aria-activedescendant` apunta al id que calcula `idOpcionGlosario`: debe
+// ser válido como id HTML y único, o apuntaría a la opción equivocada.
 describe("idOpcionGlosario", () => {
   it("compone un id legible a partir del término", () => {
     expect(idOpcionGlosario("Long")).toBe("glosario-opcion-long");

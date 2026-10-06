@@ -35,8 +35,7 @@ import { CountUp } from "@/components/tj/CountUp";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { TradeCandleChart } from "@/components/charts/TradeCandleChart";
 
-/** Lado de la ejecución («Anatomía»), traducido — ENTRY/EXIT y BUY/SELL
- *  se quedaban en inglés en la versión española de la ficha. */
+/** Lado de la ejecución («Anatomía») traducido: ENTRY/EXIT y BUY/SELL. */
 function dirLabel(dir: FillRow["dir"], lang: Lang): string {
   if (lang !== "es") return dir;
   return dir === "ENTRY" ? "ENTRADA" : "SALIDA";
@@ -45,8 +44,6 @@ function sideLabel(side: FillRow["side"], lang: Lang): string {
   if (lang !== "es") return side;
   return side === "BUY" ? "COMPRA" : "VENTA";
 }
-
-/* ---------- helpers ---------- */
 
 function ordinalEn(n: number): string {
   const d = n % 100;
@@ -62,7 +59,7 @@ function seededRnd(seed: number) {
   };
 }
 
-/** Tiny deterministic candlestick mini-chart for screenshot thumbnails. */
+/** Miniatura determinista de velas para las capturas de ejemplo. */
 function MiniCandles({ seed, win }: { seed: number; win: boolean }) {
   const rnd = seededRnd(seed);
   const n = 9;
@@ -129,13 +126,9 @@ function MiniCandles({ seed, win }: { seed: number; win: boolean }) {
   );
 }
 
-/* ---------- Anatomy (executions table) ----------
- * Mirrors the real app's "Anatomía: las ejecuciones reales" card —
- * a compact fills table showing each entry/exit leg with time, qty,
- * price, fee and running cumulative qty. Built deterministically
- * from the trade's data so the same trade always shows the same
- * shape (single-fill / 2-tranche scale-in / 3-tranche scale-out).
- */
+/* Anatomía (tarjeta «las ejecuciones reales» de la app): tramos de entrada y
+ * salida con hora, cantidad, precio, comisión y acumulado. Se construye de forma
+ * determinista desde la operación (entrada escalonada o salida escalonada). */
 interface FillRow {
   dir: "ENTRY" | "EXIT";
   side: "BUY" | "SELL";
@@ -153,8 +146,7 @@ function buildFills(trade: Trade, decimals: number, lang: Lang): FillRow[] {
   const opened = trade.openedAt;
   const mid = new Date(opened.getTime() + trade.durationMin * 30000);
   const closed = trade.closedAt;
-  // En UTC, como la apertura y el cierre de la misma ficha (`fmtDateTime`):
-  // sin `timeZone`, las ejecuciones salían en la hora de quien mira.
+  // En UTC, como la apertura y el cierre de la ficha (`fmtDateTime`).
   const fmtT = (d: Date) =>
     new Intl.DateTimeFormat(LOCALE_FECHA[lang], {
       hour: "2-digit",
@@ -164,9 +156,7 @@ function buildFills(trade: Trade, decimals: number, lang: Lang): FillRow[] {
       timeZone: "UTC",
     }).format(d);
   const totalQty = trade.qty;
-  // Split: 2 entries (60% + 40%) and 1 exit, OR 1 entry + 2 exits
-  // depending on which side has the larger excursion — keeps the
-  // table small and varied but always consistent.
+  // Dos entradas (60 % y 40 %) y una salida, o una entrada y dos salidas, según la excursión favorable.
   const splitEntry = trade.mfe > 1.2;
   if (splitEntry) {
     const q1 = +(totalQty * 0.6).toFixed(3);
@@ -205,7 +195,6 @@ function buildFills(trade: Trade, decimals: number, lang: Lang): FillRow[] {
       },
     ];
   }
-  // 1 entry + 2 exits (scale-out).
   const q1 = +(totalQty * 0.5).toFixed(3);
   return [
     {
@@ -242,7 +231,6 @@ function buildFills(trade: Trade, decimals: number, lang: Lang): FillRow[] {
   ];
 }
 
-/* ---------- Detail cell ---------- */
 function Detail({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
@@ -277,7 +265,6 @@ function SummaryRow({
   );
 }
 
-/* ---------- Hero stat (with optional left hairline) ---------- */
 function HeroStat({
   label,
   children,
@@ -303,11 +290,8 @@ function HeroStat({
   );
 }
 
-/* ---------- MAE/MFE excursion diverging bar ----------
- * Mirrors the real app's "Excursión MAE/MFE en R" diverging bar —
- * red on the left (how far it went against you), green on the right
- * (how far it went in your favour), both at the same R scale.
- */
+/** Barra divergente de excursión MAE/MFE en R (como la app): rojo a la izquierda
+ *  lo que fue en contra, verde a la derecha lo que fue a favor, a la misma escala. */
 function ExcursionBar({ mae, mfe }: { mae: number; mfe: number }) {
   const maxAbs = Math.max(Math.abs(mae), Math.abs(mfe), 1);
   const maePct = (Math.abs(mae) / maxAbs) * 50;
@@ -327,9 +311,7 @@ function ExcursionBar({ mae, mfe }: { mae: number; mfe: number }) {
   );
 }
 
-/* ---------- Barra de riesgo : recompensa planificado ----------
-   Rotulada como en la app ("Riesgo · 1R" / "Recompensa · 2,0R"): estaba
-   en inglés dentro de una demo en español. */
+/** Barra de riesgo:recompensa planificado, rotulada como en la app («Riesgo · 1R» / «Recompensa · 2,0R»). */
 function RiskRewardBar({
   plannedRr,
   lang,
@@ -361,7 +343,6 @@ function RiskRewardBar({
   );
 }
 
-/* ---------- Tag pill ---------- */
 type TagKind = "error" | "win" | "emotion" | "custom";
 function TagPill({
   kind,
@@ -421,8 +402,6 @@ function TagPill({
   );
 }
 
-/* ---------- main component ---------- */
-
 export function TradeDetailPage() {
   const { t, lang } = useLang();
   const { selectedTradeId, goBack, goDetail } = useDemo();
@@ -444,7 +423,7 @@ export function TradeDetailPage() {
     trade?.compliance ?? "yes"
   );
 
-  // Tags state (mirrors the real app's tags: error / acierto / emocion / libre).
+  // Etiquetas como las de la app: error, acierto, emoción y libre.
   const [tags, setTags] = useState<
     { kind: TagKind; label: string }[]
   >([
@@ -452,10 +431,8 @@ export function TradeDetailPage() {
     { kind: "emotion", label: lang === "es" ? "Calma" : "Calm" },
   ]);
 
-  // Instrument decimals + fills table. Computed BEFORE the early
-  // return so the hook order is stable across renders (satisfies
-  // react-hooks/rules-of-hooks). When `trade` is undefined the fills
-  // memo returns an empty array.
+  // Decimales y ejecuciones, antes del `return` temprano para mantener el orden
+  // de hooks (rules-of-hooks); sin operación, las ejecuciones son una lista vacía.
   const decimals = useMemo(() => {
     if (!trade) return 2;
     const instrument = INSTRUMENTS.find((i) => i.symbol === trade.instrument);
@@ -502,13 +479,11 @@ export function TradeDetailPage() {
   const isLong = trade.direction === "long";
   const tone = pnlTone(trade.netPnl);
 
-  // Risk amount in $ = the 1R dollar amount (already in trade.riskUsd).
+  // Riesgo en $ = el valor de 1R, que ya trae `trade.riskUsd`.
   const riskAmount = trade.riskUsd;
   const riskPct = (riskAmount / INITIAL_BALANCE_CONST) * 100;
 
-  /* «Dónde cayó dentro del día», calculado del día de la operación. Antes
-     eran marcadores fijos: toda operación era la tercera del día, ocho
-     minutos después de otra y con −84,60 $ previos. */
+  // «Dónde cayó dentro del día», calculado a partir del día de la operación.
   const dia = contextoDelDia(trade, allTrades);
   const mercado = contextoDeMercado(trade);
   const dayOrdinal =
@@ -526,15 +501,8 @@ export function TradeDetailPage() {
   const dayPnlBefore = dia.pnlPrevio;
   const isRevengeCandidate = dia.revancha;
 
-  /* Se van cuatro cálculos que no leía nadie: `instrument` (la búsqueda en
-     el catálogo, sustituida por el símbolo que ya trae la operación), las
-     dos fracciones del riesgo:recompensa —la barra proporcional que las
-     usaba se sustituyó por la cifra de R— y `complianceVariant`, que hoy
-     resuelve el propio `Chip`. */
-
   return (
     <div className="relative p-5 md:p-6 space-y-5">
-      {/* ===== HEADER: back + symbol + direction + closed date ===== */}
       <section
         className="tj-dm-entra flex items-center justify-between gap-3 flex-wrap"
         style={{ "--dm-y": "12px", "--dm-dur": "0.5s" } as CSSProperties}
@@ -559,18 +527,12 @@ export function TradeDetailPage() {
           </svg>
           {t("back")}
         </button>
-        {/* `w-full` por debajo de `sm`: los tres grupos van en una fila con
-            `flex-wrap`, y el del centro llevaba `flex-1 min-w-0` pero su `h2`
-            —24 px, monoespaciada— no encoge, asi que a 390 px desbordaba su
-            propia caja y, al ir centrado, se derramaba por los DOS lados: el
-            simbolo tapaba el boton de volver a la izquierda y la insignia de
-            direccion pisaba el numero de operacion a la derecha. Con el ancho
-            completo baja a su propia linea y no compite con nadie. */}
+        {/* `w-full` bajo `sm`: el `h2` monoespaciado no encoge y, al ir centrado, a
+            390 px se derramaba por los dos lados y tapaba el botón de volver y el
+            número de operación. En su propia línea no compite con nadie. */}
         <div className="order-last sm:order-none flex items-center gap-3 w-full sm:w-auto sm:flex-1 min-w-0 justify-start sm:justify-center">
-          {/* h2 y no h1: esta es una pantalla SIMULADA dentro de la página de
-              la demo. El h1 del documento es el titular de esa página, y dos
-              h1 rompen el esquema de encabezados —lectores de pantalla y
-              buscadores lo usan para entender la jerarquía—. */}
+          {/* h2 y no h1: es una pantalla simulada dentro de la página de la demo,
+              cuyo h1 es el del documento; dos h1 rompen la jerarquía. */}
           <h2 className="text-2xl md:text-3xl font-mono font-medium tracking-[-0.01em] text-primary tnum min-w-0 truncate">
             {trade.instrument}
           </h2>
@@ -630,22 +592,14 @@ export function TradeDetailPage() {
         </div>
       </section>
 
-      {/* ===== HERO: net P&L | R | risk amount | planned RR + MAE/MFE
-                excursion bar + planned risk:reward bar =====
-                Mirrors the real app's hero card layout. */}
       <section
         className="tj-dm-entra relative overflow-hidden demo-card p-6"
         style={{ "--dm-y": "16px", "--dm-dur": "0.6s" } as CSSProperties}
       >
         <div className="relative space-y-6">
-          {/* Hero stat row: Net | R | Risk | Planned RR (with hairlines) */}
+          {/* Las cuatro cifras de cabecera llevan los nombres de la app
+              (TradeDetailPage.xaml): P&L neto, R múltiplo, Riesgo y RR planeado. */}
           <div className="flex flex-wrap items-center gap-x-2 gap-y-5">
-            {/* Las cuatro cifras de cabecera son, con sus nombres, las de
-                la app (TradeDetailPage.xaml): "P&L neto", "R múltiplo",
-                "Riesgo" y "RR planeado". La demo las llamaba "Cierre",
-                "R" y "Entrada + stop" — nombres que no dicen lo que hay
-                debajo: la primera cifra no es la fecha de cierre, es el
-                resultado neto de la operación. */}
             <HeroStat label={lang === "es" ? "P&L neto" : "Net P&L"}>
               <div className="flex items-baseline gap-2">
                 <CountUp
@@ -689,7 +643,6 @@ export function TradeDetailPage() {
             </HeroStat>
           </div>
 
-          {/* MAE/MFE excursion diverging bar */}
           <div className="space-y-2 pt-2 border-t border-[rgb(var(--divider)/0.1)]">
             <div className="flex items-center justify-between">
               <Eyebrow>
@@ -717,14 +670,12 @@ export function TradeDetailPage() {
             <ExcursionBar mae={trade.mae} mfe={trade.mfe} />
           </div>
 
-          {/* Planned risk:reward bar */}
           <div className="space-y-2 pt-2 border-t border-[rgb(var(--divider)/0.1)]">
             <RiskRewardBar plannedRr={trade.plannedRr} lang={lang} />
           </div>
         </div>
       </section>
 
-      {/* ===== INTERACTIVE CANDLESTICK REPLAY CHART ===== */}
       <section
         className="tj-dm-entra"
         style={{ "--dm-y": "16px", "--dm-dur": "0.6s", "--dm-retardo": "0.25s" } as CSSProperties}
@@ -732,11 +683,8 @@ export function TradeDetailPage() {
         <TradeCandleChart trade={trade} decimals={decimals} />
       </section>
 
-      {/* ===== 2-COLUMN GRID: left (5fr) | right (4fr) ===== */}
       <div className="grid grid-cols-1 lg:grid-cols-[5fr_4fr] gap-5">
-        {/* ===== LEFT COLUMN ===== */}
         <div className="flex flex-col gap-5 min-w-0">
-          {/* Execution card */}
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "0.35s" } as CSSProperties}
@@ -764,18 +712,13 @@ export function TradeDetailPage() {
               <Detail label={t("fees")}>
                 <Money value={-trade.fees} />
               </Detail>
-              {/* El rótulo es «Setup» en los dos idiomas —es el término del
-                  oficio—, pero su VALOR no lo era: aquí se pintaba la clave
-                  cruda, y en español eso dejaba «Breakout» en una ficha por
-                  lo demás traducida. */}
+              {/* El rótulo «Setup» es igual en los dos idiomas; el valor se traduce. */}
               <Detail label="Setup">
                 <span className="text-primary">{nombreSetup(trade.setup, lang)}</span>
               </Detail>
             </dl>
           </div>
 
-          {/* Anatomy card — executions table (mirrors the real app's
-              "Anatomía: las ejecuciones reales" card). */}
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "0.4s" } as CSSProperties}
@@ -788,11 +731,8 @@ export function TradeDetailPage() {
                 {fmtInt(fills.length, lang)} {lang === "es" ? "ejecuciones" : "fills"}
               </Chip>
             </div>
-            {/* Table header — wrapped in overflow-x-auto so the fixed
-                column widths (3.5rem + 1fr + 3.5rem + 4rem + 3rem + 3.5rem
-                = ~296px + 5×12px gaps = ~356px) scroll horizontally inside
-                the card on narrow viewports instead of forcing the column
-                past its track. */}
+            {/* Con `overflow-x-auto` las columnas fijas (~356 px) se desplazan dentro
+                de la tarjeta en estrecho en vez de forzar la columna. */}
             <div className="overflow-x-auto custom-scroll -mx-1 px-1">
               <div className="grid grid-cols-[3.5rem_1fr_3.5rem_4rem_3rem_3.5rem] gap-x-3 pb-2 min-w-[24rem] text-[10px] uppercase tracking-[0.14em] text-tertiary border-b border-[rgb(var(--divider)/0.1)]">
                 <div>{lang === "es" ? "Lado" : "Side"}</div>
@@ -843,9 +783,6 @@ export function TradeDetailPage() {
             </div>
           </div>
 
-          {/* Day-context card — mirrors the real app's "Dónde cayó
-              dentro del día" card (revenge warning, ordinal, since
-              previous, P&L before). */}
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "0.45s" } as CSSProperties}
@@ -895,7 +832,6 @@ export function TradeDetailPage() {
             </div>
           </div>
 
-          {/* Plan card + Context card (compact 2-up) */}
           <div className="grid sm:grid-cols-2 gap-5">
             <div
               className="tj-dm-entra tj-dm-alza demo-card p-5"
@@ -950,7 +886,6 @@ export function TradeDetailPage() {
             </div>
           </div>
 
-          {/* Dates row */}
           <div className="flex items-center gap-6 flex-wrap text-xs">
             <div>
               <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-0.5">
@@ -979,9 +914,7 @@ export function TradeDetailPage() {
           </div>
         </div>
 
-        {/* ===== RIGHT COLUMN ===== */}
         <div className="flex flex-col gap-5 min-w-0">
-          {/* Screenshots card */}
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "0.4s" } as CSSProperties}
@@ -1014,8 +947,6 @@ export function TradeDetailPage() {
             </div>
           </div>
 
-          {/* Tags card — mirrors the real app's "Etiquetas" card
-              (error / acierto / emocion / libre, with remove buttons). */}
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "0.45s" } as CSSProperties}
@@ -1067,14 +998,12 @@ export function TradeDetailPage() {
             </div>
           </div>
 
-          {/* Review card */}
           <div
             className="tj-dm-entra tj-dm-alza demo-card p-5"
             style={{ "--dm-y": "16px", "--dm-retardo": "0.5s" } as CSSProperties}
           >
             <Eyebrow className="mb-4">{t("review")}</Eyebrow>
 
-            {/* Notes — entry / management / close */}
             <div className="space-y-3 mb-5">
               <div>
                 <div className="text-[10px] uppercase tracking-[0.15em] text-tertiary mb-1">
@@ -1106,7 +1035,6 @@ export function TradeDetailPage() {
 
             <p className="text-sm text-secondary mb-3">{t("followedPlan")}</p>
 
-            {/* Compliance toggle */}
             <div className="grid grid-cols-3 gap-2 mb-5">
               {(["yes", "partial", "no"] as Compliance[]).map((opt) => {
                 const active = review === opt;
@@ -1142,7 +1070,6 @@ export function TradeDetailPage() {
               })}
             </div>
 
-            {/* Summary */}
             <div className="space-y-2.5 border-t border-[rgb(var(--divider)/0.1)] pt-4">
               <SummaryRow
                 label={t("rr")}
@@ -1164,7 +1091,6 @@ export function TradeDetailPage() {
               />
             </div>
 
-            {/* Save button */}
             <div className="mt-5">
               <MagneticButton
                 type="button"

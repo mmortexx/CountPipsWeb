@@ -9,12 +9,12 @@ interface MoneyProps {
   decimals?: number;
   compact?: boolean;
   colorizeSign?: boolean;
-  /** Force a tone (overrides colorizeSign coloring of the value itself). */
+  /** Fuerza un tono (anula el color de `colorizeSign`). */
   tone?: "pos" | "neg" | "neutral";
   className?: string;
 }
 
-/** Currency-formatted value with optional semantic P&L coloring. */
+/** Importe formateado como divisa, con color semántico de P&L opcional. */
 export function Money({
   value,
   sign = false,

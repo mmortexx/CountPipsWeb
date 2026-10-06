@@ -1,12 +1,7 @@
 /**
- * Todo lo que el programa conecta a internet, en un solo sitio.
- *
- * La tabla de /features/seguridad sale de aquí, y las promesas que la
- * resumen (la FAQ, la entradilla de esa página) tienen que nombrar cada
- * conexión que va SOLA, sin que el usuario la active. En septiembre de
- * 2026 tres textos decían «lo que se conecta a internet lo activas tú»
- * con la licencia, que se comprueba sola una vez al día, en la fila de
- * al lado. `tests/conexiones.test.ts` lo ata.
+ * Todo lo que el programa conecta a internet. La tabla de /features/seguridad
+ * sale de aquí, y los textos que la resumen (FAQ, entradilla) deben nombrar
+ * cada conexión que va sola; `tests/conexiones.test.ts` lo exige.
  */
 
 type Texto = { nombre: string; que: string };

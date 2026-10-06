@@ -6,12 +6,8 @@ import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 
 /**
- * Values — los cuatro principios del producto: local siempre, demo
- * honesta, disciplina por encima de métricas, y hecho por alguien que
- * opera. Retícula 2×2 de filetes —no de tarjetas— con su afirmación y el
- * sitio donde el visitante puede ir a comprobarla. Sin iconos: un candado
- * o una brújula sobre cada principio no decían nada que el titular no
- * dijera ya.
+ * Los cuatro principios del producto en una retícula 2×2 de filetes: cada uno
+ * con su afirmación y el sitio donde el visitante puede comprobarla.
  */
 
 interface Value {
@@ -49,10 +45,6 @@ const VALUES: Value[] = [
     pruebaEn: "Walk the whole demo",
   },
   {
-    /* Se escribía «Disciplina > métricas». Entre tres titulares que son
-       frases —«Local siempre», «Demo honesta, sin atajos», «Hecho por un
-       trader, para traders»— un operador suelto se lee como código a
-       medio escribir, no como un principio. */
     titleEs: "Disciplina antes que métricas",
     titleEn: "Discipline before metrics",
     descEs:
@@ -64,8 +56,7 @@ const VALUES: Value[] = [
     pruebaEn: "How the brake works",
   },
   {
-    /* Antes «Hecho por un trader, para traders»: nada en el producto lo
-       demuestra, y un principio tiene que poder comprobarse. */
+    /* Un principio tiene que poder comprobarse: este se comprueba en la ficha técnica. */
     titleEs: "Hecha para tenerla abierta mientras operas",
     titleEn: "Built to stay open while you trade",
     descEs:
@@ -121,10 +112,8 @@ export function Values() {
                   {es ? v.descEs : v.descEn}
                 </p>
 
-                {/* `mt-auto`: los cuerpos miden dos o tres líneas, así que
-                    los dos enlaces de una misma fila se quedaban a
-                    distinta altura. Pegados al fondo de la celda, la
-                    rejilla vuelve a tener renglones. */}
+                {/* `mt-auto`: los enlaces de una fila quedan a la misma altura aunque
+                    los cuerpos midan dos o tres líneas. */}
                 <Link
                   href={v.href}
                   className="link-underline-host mt-auto pt-2 inline-flex min-h-[44px] items-center text-sm font-medium text-primary outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"

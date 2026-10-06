@@ -12,9 +12,7 @@ describe("el recuento de operaciones concuerda en número", () => {
   });
 });
 
-/* `Intl` en español no agrupa las cifras de cuatro dígitos («1234»). La web
-   mezclaba «2350,00» con «18.200,0» en la misma tabla y «1234,56 $» en una
-   calculadora con «12.345,67 $» en otra. Toda cifra agrupa igual. */
+// `Intl` en español no agrupa las cifras de cuatro dígitos («1234»): toda cifra debe agrupar igual.
 describe("los formateadores agrupan millares también con cuatro dígitos", () => {
   it("en español", () => {
     expect(fmtInt(1234, "es")).toBe("1.234");
@@ -36,8 +34,7 @@ describe("los formateadores agrupan millares también con cuatro dígitos", () =
   });
 });
 
-/* La app de escritorio escribe «+1,50 R» (FormatR, TradesViewModel.cs). La web
-   escribía «+1,50R», y dos calculadoras componían la R a mano. */
+// La app de escritorio escribe «+1,50 R» (FormatR, TradesViewModel.cs).
 describe("la R va tras un espacio duro, como en la app", () => {
   it("con signo y en los dos idiomas", () => {
     expect(fmtR(1.5, "es")).toBe("+1,50 R");
@@ -46,10 +43,8 @@ describe("la R va tras un espacio duro, como en la app", () => {
   });
 });
 
-/* `Intl` escribe el negativo con el guion corto del teclado (U+002D) y
-   deja «-0,0» cuando la cifra redondea a cero: el proyector pintaba
-   «Rentabilidad -2,5 %» junto a «−247 $». El signo es el menos
-   tipográfico de fmtMoney y fmtR, y el cero no lleva signo. */
+// `Intl` escribe el negativo con el guion del teclado (U+002D) y deja «-0,0»
+// al redondear a cero: el signo es el menos tipográfico y el cero no lo lleva.
 describe("el signo menos es tipográfico y el cero no lo lleva", () => {
   it("fmtNum y fmtPct, en los dos idiomas", () => {
     expect(fmtNum(-2.5, "es", 1)).toBe("\u22122,5");

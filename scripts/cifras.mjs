@@ -1,49 +1,16 @@
 /**
- * CIFRAS — ¿está cada número, y cada palabra, escrito en su idioma?
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Recorre el sitio compilado y comprueba cuatro convenciones que cambian
- * con la lengua y que se escapan de los formateadores en cuanto alguien
- * compone un número —o una frase— a mano en el JSX:
- *
- *   · EL PORCENTAJE. Español: espacio DURO (U+00A0) antes del signo, el
- *     que pone `pctSep`. Inglés: pegado. Hasta el 2026-10-04 aquí se
- *     aceptaba el espacio normal «en un párrafo corrido», y es justo ahí
- *     donde rompe: el navegador puede partir la línea entre «70» y «%» y
- *     dejar el signo solo al principio de la siguiente. Había ocho casos,
- *     del glosario a la demo.
- *   · EL DÓLAR. Español detrás de la cifra («10.000 $»), inglés delante
- *     («$10,000»).
- *   · EL SIGNO MENOS. El tipográfico (U+2212) en toda cifra negativa, no
- *     el guion del teclado: en una columna de cifras tabulares el guion
- *     es más corto y descoloca la alineación.
- *   · LA PALABRA SUELTA EN ESPAÑOL dentro de la web inglesa. Una etiqueta
- *     que nadie bifurcó por idioma no rompe nada, no sale en ninguna
- *     prueba y se queda ahí para siempre; pero al lector inglés le dice
- *     que la página está traducida a medias. Se busca una lista corta de
- *     palabras que no existen en inglés —artículos, preposiciones y el
- *     vocabulario del dominio— sobre el texto visible de /en.
- *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * 11 porcentajes a la española en la web inglesa —«Win rate 55 %»—, y el
- * dólar detrás de la cifra en los deslizadores y en la tabla de coste de
- * indisciplina de /en. Una página en inglés que escribe «32 %» y
- * «10,000 $» se lee como traducida del español, que es exactamente lo que
- * un portal bilingüe no puede parecer.
- *
- * Además, en los dos idiomas: ningún enlace ni botón termina en una
- * flecha añadida («Ver precios →»). El 2026-09-26 se quitaron las que
- * quedaban; el enlace se reconoce por su subrayado. Solo la llevan los
- * saltos con dirección (Anterior / Siguiente). Y ningún elemento de lista
- * empieza por un ✓, un ✕ o un icono (tanda 44).
- *
- * Y, con la cuarta regla, «218.2x capital inicial» bajo el balance
- * proyectado del proyector de capital inglés, en dos páginas: el literal
- * era el único del componente que nadie había bifurcado por idioma.
- *
- * ── Lo que NO cuenta ──────────────────────────────────────────────────
- * Los atributos de estilo (`color-mix(... 22%)`) y el CSS embebido, que
- * llevan porcentajes que no son texto. Se recortan antes de medir.
+ * CIFRAS: comprueba, sobre el sitio compilado, que cada número y cada palabra
+ * usan la convención de su idioma. Los formateadores no cubren lo que se
+ * compone a mano en el JSX. Reglas:
+ *   - Porcentaje: español con espacio duro (U+00A0) antes del signo (`pctSep`),
+ *     inglés pegado. El espacio normal deja el «%» solo al partir la línea.
+ *   - Dólar: detrás de la cifra en español, delante en inglés.
+ *   - Menos: el tipográfico (U+2212) en toda cifra negativa.
+ *   - Palabras españolas sueltas, comillas, apóstrofos, ortografía americana y
+ *     «operate» en /en; restos de plantilla; flechas añadidas a enlaces; marcas
+ *     o iconos delante de elementos de lista.
+ * Se recortan antes de medir los atributos de estilo y el CSS embebido.
+ * Un fallo es un literal sin bifurcar por idioma o fuera de convención.
  *
  * Uso:  node scripts/cifras.mjs [out]
  */
@@ -51,11 +18,7 @@ import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
-/* Seis de estas guardas levantan un servidor y se invocan `--serve out`;
-   ésta lee los ficheros directamente y se invoca `out`. Confundirlas daba
-   una traza de Node de doce líneas sobre un directorio llamado
-   «--serve», así que acepta las dos formas y, si el directorio no está,
-   lo dice con una frase. */
+// Otras guardas se invocan `--serve out`; esta lee ficheros. Acepta las dos formas.
 const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
 if (!existsSync(RAIZ)) {
   console.log(`[cifras] no encuentro el directorio «${RAIZ}». ¿Falta compilar el sitio con \`npm run build\`?`);
@@ -70,21 +33,9 @@ async function* htmls(dir) {
   }
 }
 
-/** Texto visible, y con MUCHO cuidado con los espacios que se inventan.
- *
- *  Aplanar el HTML metiendo un espacio en el sitio de cada etiqueta crea
- *  separaciones que en pantalla no existen, y aquí eso es justo lo que se
- *  está midiendo. Dos fuentes de espacios falsos:
- *
- *   · LOS COMENTARIOS DE REACT. React escribe `<!-- -->` entre dos nodos
- *     de texto contiguos para poder volver a distinguirlos al hidratar.
- *     `0.50<!-- -->%` se ve «0.50%», pero sustituyendo el comentario por
- *     un espacio se lee «0.50 %» y se acusa un fallo que no existe.
- *   · LAS ETIQUETAS EN LÍNEA. `<span>60</span><span>%</span>` tampoco
- *     pinta ningún espacio entre las dos.
- *
- *  Así que los comentarios y las etiquetas en línea se borran sin dejar
- *  nada, y sólo las de bloque dejan un separador. */
+/** Texto visible sin espacios inventados: los comentarios de React (`0.50<!-- -->%`)
+ *  y las etiquetas en línea (`<span>60</span><span>%</span>`) no pintan espacio
+ *  y se borran sin dejar nada; solo las de bloque dejan un separador. */
 const EN_LINEA = /<\/?(?:span|b|strong|em|i|sup|sub|small|code|abbr|time|a|label|bdi|mark|u|s)\b[^>]*>/gi;
 
 function soloTexto(html) {
@@ -101,11 +52,9 @@ function soloTexto(html) {
     .replace(/[ \t]+/g, " ");
 }
 
-/* Palabras que no son palabras inglesas y que, apareciendo en /en, sólo
-   pueden venir de un literal sin bifurcar. La lista es corta a propósito:
-   cada entrada se probó contra las 84 páginas inglesas y ninguna produce
-   un falso positivo. Si alguna lo diera algún día —un nombre propio, una
-   cita— se quita de aquí antes que relajar la regla entera. */
+/* Palabras que no existen en inglés: en /en solo pueden venir de un literal sin
+   bifurcar. Lista corta a propósito; si una da un falso positivo, se quita de
+   aquí antes que relajar la regla. */
 const PALABRAS_ES = [
   "del", "las", "los", "una", "unas", "unos", "por", "para", "pero", "porque",
   "cuando", "donde", "según", "también", "además", "aunque", "mientras", "hacia",
@@ -139,42 +88,26 @@ for await (const f of htmls(RAIZ)) {
   const ctx = (texto, x) => texto.slice(Math.max(0, x.index - 26), x.index + x[0].length + 4).trim();
 
   if (en) {
-    // inglés: nada de espacio antes del %, nada de dólar detrás
+    // Inglés: sin espacio antes del %, sin dólar detrás.
     anota("% con espacio en inglés", /\d[ \u00a0]%/g, ctx);
     anota("dólar detrás en inglés", /\d[\d.,]*[ \u00a0]\$(?!\d)/g, ctx);
     anota("palabra española en la web inglesa", RE_ES, ctx);
-    /* Las comillas angulares son españolas: en inglés no existen. Una se
-       coló en la definición de «pullback» del glosario y salía en cinco
-       páginas inglesas, porque esa ficha la citan otras cuatro. */
+    // Las comillas angulares son españolas.
     anota("comillas angulares en la web inglesa", /[«»]/g, ctx);
-    /* El dinero de la cuenta es «balance», como en los campos de las
-       calculadoras; en español lo vigila `tests/vocabulario.test.ts`. */
+    // El dinero de la cuenta es «balance»; en español lo vigila `tests/vocabulario.test.ts`.
     anota("«capital» para el dinero de la cuenta (es «balance»)", /\b(?:your|starting) capital\b|\bCapital and frequency\b/gi, ctx);
-    /* EL APÓSTROFO Y LAS COMILLAS DEL TECLADO.
-       La web inglesa escribe “…” y don’t con los signos tipográficos, igual
-       que la española escribe «…». El 2026-09-25 había 106 apóstrofos
-       rectos repartidos por 31 ficheros, y ninguna prueba los veía porque
-       la mayoría vive en JSX, no en los catálogos. */
+    // Apóstrofo y comillas tipográficos (“…”, don’t); la mayoría vive en JSX, no en los catálogos.
     anota("apóstrofo recto en la web inglesa", /[A-Za-z]'[A-Za-z]/g, ctx);
     anota("comillas rectas en la web inglesa", /"/g, ctx);
-    /* ORTOGRAFÍA BRITÁNICA. `tests/ortografia-britanica.test.ts` vigila los
-       catálogos; esto vigila lo que de verdad se publica, incluido el texto
-       escrito dentro de los componentes. El nombre propio del término
-       «Maximum Favorable Excursion» se respeta. */
+    // Ortografía británica: `tests/ortografia-britanica.test.ts` vigila los
+    // catálogos y esto lo publicado. Se respeta «Maximum Favorable Excursion».
     anota(
       "ortografía americana en la web inglesa",
       /\b\w*(?:penaliz|annualiz|summariz|normaliz|optimiz|analyz|realiz|recogniz|organiz|minimiz|maximiz|standardiz|prioritiz|customiz|visualiz|categoriz|behavior|defense)\w*\b|\b(?:colors?|centers?|catalogs?)\b|\bfavor(?!able Excursion)\w*/gi,
       ctx,
     );
-    /* «OPERAR» NO SE DICE «OPERATE».
-       En inglés de mercados el verbo es «trade»; «operate» se lee como
-       «manejar una máquina» o «funcionar». Es el calco que más veces
-       apareció al leer el sitio —una tarjeta de la portada decía «For
-       operating under rules that matter» y el glosario, «The trader
-       operates with the firm's money»— y no lo caza ninguna revisión
-       ortográfica, porque las dos frases están perfectamente escritas.
-       El patrón va acotado a quien opera, para no acusar a un «operating
-       system» ni a un programa que «operates» correctamente. */
+    // «Operar» es «trade», no «operate» (calco que la ortografía no caza). El
+    // patrón se acota a quien opera para no acusar a «operating system».
     anota(
       "«operar» traducido como «operate» en la web inglesa",
       /\b(?:trader|traders|you|we|they)\s+operates?\b|\boperating\s+(?:under|with|in)\b/gi,
@@ -183,22 +116,15 @@ for await (const f of htmls(RAIZ)) {
   } else {
     anota("% pegado en español", /\d%/g, ctx);
     anota("% que puede quedarse solo en la línea siguiente (espacio normal, no duro)", /\d %/g, ctx);
-    /* El lookbehind evita el falso positivo de una fila de importes
-       españoles: en «0 $ 5.000 $ 10.000 $» —o «10 k $ 25 k $»— el símbolo
-       va DETRÁS de cada cifra, pero visto de izquierda a derecha parece ir
-       delante de la siguiente. Sólo se acusa un «$» que no venga precedido
-       de una cifra o de su abreviatura de escala. */
+    // El lookbehind evita acusar una fila de importes («0 $ 5.000 $»): solo se
+    // acusa un «$» no precedido de una cifra o su abreviatura de escala.
     anota("dólar delante en español", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
   }
-  // en los dos: el menos de las cifras es el tipográfico
+  // En los dos idiomas: el menos de las cifras es el tipográfico.
   anota("menos de teclado en una cifra", /[\s(>]-\d[\d.,]*/g, ctx);
-  /* La raya de inciso va pegada a la palabra («la mitad—»), pero el
-     navegador puede partir la línea a cualquiera de sus dos lados: la
-     calculadora de riesgo de ruina del glosario enseñaba «la mitad» al
-     final de un renglón y «— con un riesgo» al principio del siguiente.
-     Se pega con un U+2060 (unión de palabras), que no se ve ni se copia.
-     Se mira cada nodo de texto por separado: un «—» solo en su `<span>`
-     (el reloj antes de hidratar) no está pegado a nada. */
+  /* La raya de inciso pegada a una palabra debe llevar un U+2060 (unión de
+     palabras) para que la línea no se parta a su lado. Se mira cada nodo de
+     texto por separado: un «—» solo en su `<span>` no está pegado a nada. */
   {
     const RAYA = /[\p{L}\d.,)»]—|—[\p{L}\d(«]/u;
     let n = 0;
@@ -208,20 +134,10 @@ for await (const f of htmls(RAIZ)) {
     }
   }
 
-  /* RESTOS DE PLANTILLA EN EL TEXTO QUE SE LEE.
-     Un dato que no llegó deja su hueco escrito con todas las letras:
-     «undefined», «NaN», «[object Object]» o «Invalid Date» pintados en
-     medio de una frase. No rompen nada, no salen en consola y nadie los
-     busca, pero el visitante los lee.
-
-     Esto lo vigilaba `deep_audit.mjs`, que exigía `class="undefined"`
-     —es decir, sólo cazaba el caso en el que el resto cae dentro de un
-     atributo, nunca el de una frase— y sólo en 64 rutas escritas a mano.
-     Aquí se mira el texto visible de las 168, que es donde se ve. */
+  // Restos de plantilla en el texto visible («undefined», «NaN», «[object Object]»).
   anota("resto de plantilla a la vista", /\b(?:undefined|NaN|Invalid Date)\b|\[object [A-Z]\w*\]/g, ctx);
 
-  /* FLECHA AÑADIDA A UN ENLACE O BOTÓN. Se lee el HTML, no el texto
-     plano: hace falta saber que la flecha cierra un `<a>` o un `<button>`. */
+  // Flecha añadida a un enlace o botón: se lee el HTML para saber que cierra un `<a>` o `<button>`.
   for (const m of crudo.matchAll(/<(a|button)\b[^>]*>([\s\S]*?)<\/\1>/gi)) {
     const dentro = soloTexto(m[2]).replace(/\s+/g, " ").trim();
     if (/[→↗]$/.test(dentro) && !/\b(?:Siguiente|Anterior|Next|Previous)\b/i.test(dentro)) {
@@ -229,11 +145,7 @@ for await (const f of htmls(RAIZ)) {
     }
   }
 
-  /* MARCA DELANTE DE UN ELEMENTO DE LISTA. Un ✓, un ✕ o un icono que
-     abre cada renglón repite lo que ya dicen el rótulo de la lista
-     («Incluye») o el estado escrito al lado («Cumple»). Hasta la tanda 44
-     los llevaban las listas de /pricing, el antes y después de
-     /features/disciplina y las filas del Guardián. */
+  // Marca delante de un elemento de lista: un ✓, ✕ o icono repite lo que ya dice el rótulo.
   for (const m of crudo.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)) {
     elementosLista++;
     const inicio = m[1].replace(/^(\s*<(?:span|div)\b[^>]*>)+/i, "");
@@ -254,7 +166,7 @@ for (const [regla, casos] of Object.entries(porRegla)) {
 }
 
 console.log(`\n[cifras] ${paginas} páginas revisadas, ${elementosLista} elementos de lista`);
-/* Si no encontró ninguna lista, la regla de marcas no estaba mirando. */
+// Sin ninguna lista, la regla de marcas no estaba mirando.
 if (!elementosLista) fallos.push({ ruta: "—", regla: "no se encontró ningún elemento de lista", ejemplo: "" });
 if (fallos.length) {
   console.log(`[cifras] ${fallos.length} caso(s) escritos fuera de la convención de su idioma`);

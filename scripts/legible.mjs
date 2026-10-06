@@ -1,33 +1,15 @@
 /**
- * LEGIBLE — ¿se lee TODO el texto del sitio?
- *
- * ── Qué mide, y en qué se diferencia de `humo.mjs` ────────────────────
- * `humo.mjs` ya vigila el contraste de los textos MÁS PEQUEÑOS que caen
- * sobre el fondo grabado, y lo hace bien: lee píxeles de una captura. Es
- * una muestra deliberada —los casos peores— y por tanto no dice nada del
- * resto: un párrafo terciario sobre una tarjeta, la cabecera de una tabla,
- * el pie de una lámina.
- *
- * Esto recorre TODO el texto visible de cada página y comprueba dos cosas
- * por cada trozo:
- *
- *   · CONTRASTE — contra el fondo real, compuesto recorriendo la cadena de
- *     ancestros y mezclando cada capa translúcida sobre la siguiente. El
- *     umbral es el de WCAG AA: 4,5:1, o 3:1 si el texto es grande (≥24 px,
- *     o ≥18,66 px en negrita).
- *   · TAMAÑO — el suelo es 9,5 px. No es un número de la norma: WCAG no
- *     fija un mínimo. Sale de mirar dónde estaba el sitio y qué se lee de
- *     verdad — una etiqueta de eje o una celda de calendario con
- *     `tabular-nums` a 9,5 px se lee; a 8 px, que es donde estaban algunas,
- *     no. El texto que NO es figura va más alto por decisión propia (la
- *     ficha técnica del hero está a 10,5).
- *
- * ── Lo que NO puede medir, dicho aquí para que nadie se confíe ─────────
- * Cuando el fondo efectivo lleva imagen o degradado —el papel grabado, las
- * bandas con velo—, componer colores planos no basta y el resultado sería
- * inventado. Esos casos se cuentan aparte y se dejan a `humo.mjs`, que sí
- * lee píxeles. Aquí se informan como «sin fondo plano», nunca como
- * aprobados.
+ * LEGIBLE: recorre todo el texto visible de cada página y comprueba, por cada
+ * trozo, el contraste contra el fondo real y el tamaño. `humo.mjs` solo lee
+ * píxeles de los textos pequeños más difíciles; esto cubre el resto.
+ *   - Contraste: el fondo se compone recorriendo los ancestros y mezclando cada
+ *     capa translúcida. Umbral WCAG AA: 4,5:1, o 3:1 si el texto es grande
+ *     (≥24 px, o ≥18,66 px en negrita).
+ *   - Tamaño: suelo de 9,5 px. No es de la norma (WCAG no fija mínimo): es lo
+ *     que se lee de verdad en etiquetas de eje o cifras tabulares.
+ * No puede medir los textos sobre imagen o degradado (papel grabado, bandas
+ * con velo): componer colores planos inventaría el resultado. Se cuentan como
+ * «sin fondo plano», nunca como aprobados, y los mide `humo.mjs`.
  *
  * Uso:  node scripts/legible.mjs --serve out
  */
@@ -53,13 +35,8 @@ const RUTAS = [
   "/traders/manual",
   "/glosario",
   "/herramientas",
-  /* Las OCHO calculadoras, las cuatro legales, el acceso, el test, una
-     ficha de glosario y el 404. Ninguna estaba aqui, y son la mitad de
-     las paginas escritas a mano del sitio: el barrido decia "12 rutas"
-     y las herramientas solo entraban por su indice, que es la unica de
-     las nueve que NO tiene una calculadora dentro. Las fichas y los
-     documentos legales salen de plantilla, asi que con una de cada
-     familia se cubre la forma entera. */
+  // Las calculadoras, los documentos legales, el acceso, el test y una ficha de
+  // glosario; las fichas y los legales salen de plantilla y con una de cada familia basta.
   "/herramientas/calculadora-de-riesgo",
   "/herramientas/significancia-estadistica",
   "/herramientas/monte-carlo",
@@ -173,12 +150,9 @@ function auditar() {
   const CORTE = 0.0001;
   for (const el of document.querySelectorAll("body *")) {
     if (el.closest("svg")) continue;
-    /* Lo decorativo no se lee, y por tanto no se juzga: un folio romano
-       de 72 px al 4 % de tinta es una marca de agua, no un texto. Si algo
-       lleva `aria-hidden` y resulta que SÍ había que leerlo, el problema
-       no es el contraste — es el `aria-hidden`. */
+    // Lo decorativo (`aria-hidden`) no se juzga: si había que leerlo, el problema es el `aria-hidden`, no el contraste.
     if (el.closest("[aria-hidden='true']")) continue;
-    // solo elementos con texto PROPIO
+    // Solo elementos con texto propio.
     const texto = [...el.childNodes]
       .filter((n) => n.nodeType === 3)
       .map((n) => n.textContent.trim())
@@ -189,7 +163,7 @@ function auditar() {
     const s = getComputedStyle(el);
     if (s.display === "none" || s.visibility === "hidden") continue;
     const op = Number(s.opacity);
-    if (op < 0.99) continue; // en plena animación de entrada: no es su estado final
+    if (op < 0.99) continue; // En plena animación de entrada: no es su estado final.
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) continue;
 
@@ -240,7 +214,7 @@ for (const pantalla of PANTALLAS) {
   for (const tema of ["dark", "light"]) {
     const ctx = await navegador.newContext({
       viewport: { width: pantalla.width, height: pantalla.height },
-      reducedMotion: "reduce", // el estado final, no un fotograma intermedio
+      reducedMotion: "reduce", // El estado final, no un fotograma intermedio.
     });
     await ctx.addInitScript(
       (t) => window.localStorage.setItem("tj-theme", t),
@@ -251,7 +225,7 @@ for (const pantalla of PANTALLAS) {
       await pagina.goto(`${base}${ruta}`, { waitUntil: "load" });
       await pagina.evaluate((t) => document.documentElement.setAttribute("data-theme", t), tema);
       await pagina.waitForTimeout(400);
-      // recorre la página para que entre lo diferido
+      // Recorre la página para que entre lo diferido.
       await pagina.evaluate(async () => {
         const alto = document.documentElement.scrollHeight;
         for (let y = 0; y < alto; y += Math.round(window.innerHeight * 0.8)) {
@@ -261,13 +235,9 @@ for (const pantalla of PANTALLAS) {
         window.scrollTo(0, 0);
         await new Promise((r) => setTimeout(r, 200));
       });
-      /* ── SIN CSS NO HAY NADA QUE MEDIR ──────────────────────────
-         Servir el export sin el prefijo de despliegue devuelve 404 en
-         todas las hojas de estilo, y entonces esto mide una página en
-         negro sobre blanco con los tamaños por defecto del navegador: da
-         números, no da información. Pasó en la primera pasada de este
-         guion —9.412 trozos «medidos» y cero fondos con imagen— y solo
-         se notó al comparar con la corrida anterior. */
+      // Sin CSS no hay nada que medir: servir el export sin el prefijo de
+      // despliegue da 404 en las hojas de estilo y se mediría una página sin
+      // estilo, con números pero sin información.
       const hojas = await pagina.evaluate(() => document.styleSheets.length);
       if (!hojas) {
         console.error(
@@ -297,8 +267,7 @@ console.log(
 console.log(`[legible] ${totalSinFondo} sobre fondo con imagen o degradado — esos los mide humo.mjs`);
 
 if (fallos.length) {
-  /* Se agrupan: el mismo componente aparece en muchas rutas y no aporta
-     leerlo cuarenta veces. */
+  // Se agrupan: el mismo componente aparece en muchas rutas.
   const unicos = [...new Set(fallos.map((f) => f.split(" · ").slice(1).join(" · ")))];
   console.log(`
 [legible] ${fallos.length} aviso(s), ${unicos.length} distinto(s):`);

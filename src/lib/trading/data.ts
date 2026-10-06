@@ -1,35 +1,20 @@
 /*
- * Deterministic demo-data generator + metrics calculator.
- * Mirrors CountPips.Data/DemoData/DemoDataGenerator.cs:
- *   9 instruments across 4 asset classes, 5 setups, 3 sessions,
- *   ~200 trades over 180 days, ~50% win rate, payoff ~1.5, PF ~1.5,
- *   expectancy ~0.25R, max DD ~8%, annualized Sharpe ~3.3.
- * Account: "Cuenta demo", $10,000 initial.
- * Every metric is COMPUTED from the trades so table = curve = KPIs.
+ * Generador determinista de datos de demo y calculadora de métricas, réplica
+ * de CountPips.Data/DemoData/DemoDataGenerator.cs: 9 instrumentos de 4 clases
+ * de activo, 5 setups, 3 sesiones, ~200 operaciones en 180 días, ~50 % de
+ * acierto, payoff y PF ~1,5, expectativa ~0,25 R, caída máxima ~8 %. Cuenta
+ * «Cuenta demo» de 10.000 $. Toda métrica se calcula desde las operaciones,
+ * así tabla, curva y KPI coinciden.
  *
- * DETERMINISM: `mulberry32` with fixed seed (20260716). Same trades,
- * same metrics, same chart on every load — no Math.random() anywhere.
+ * Determinismo: `mulberry32` con semilla fija (20260716), sin Math.random().
  *
- * ── Y DETERMINISTA TAMBIÉN ENTRE ZONAS HORARIAS ───────────────────────
- * Ese «no hay azar» era cierto y aun así no bastaba. Las horas de cierre
- * se fijaban con `setHours`, que trabaja en la HORA LOCAL de quien
- * ejecuta el código, y se leían después con `getDay`/`getHours`/
- * `getMonth`, que también. El sitio se compila en un servidor en UTC y se
- * mira desde el navegador del visitante: dos husos distintos, dos
- * conjuntos de operaciones distintos, los mismos 200 números de partida.
- *
- * Lo que llegaba a pantalla era un desajuste de hidratación en la portada
- * publicada —`Minified React error #418`, dos veces— con la peor caída
- * anunciada como −10,6 % en el HTML servido y −10,0 % un instante
- * después. Y no se veía en local: quien compila y quien mira están en el
- * mismo huso, así que la única forma de reproducirlo era abrir el sitio
- * ya publicado.
- *
- * Todo lo que toca el calendario va en UTC, al escribir y al leer. La
- * hora de una operación de demo no significa «las nueve donde tú estés»:
- * significa la apertura de Londres, que es una hora concreta del reloj
- * mundial. Lo fija `tests/husos.test.ts`, que recalcula el conjunto
- * entero bajo tres husos y exige el mismo resultado.
+ * También entre zonas horarias: todo lo que toca el calendario va en UTC, al
+ * escribir y al leer. Con la hora local, el servidor (UTC) y el navegador del
+ * visitante generaban operaciones distintas y la portada publicada fallaba al
+ * hidratar (error #418 de React), sin reproducirse en local. La hora de una
+ * operación es un instante del reloj mundial (la apertura de Londres), no «las
+ * nueve donde estés». Lo fija `tests/husos.test.ts`, que recalcula el conjunto
+ * bajo tres husos y exige el mismo resultado.
  */
 
 import { SETUP_NAMES, type SetupName } from "./setups.ts";
@@ -171,8 +156,6 @@ function buildTrades(): Trade[] {
   const dayMs = 86400000;
   let id = 1;
 
-  // 200 trades ≈ ~1.5 trades / business day over 180 days — realistic
-  // cadence for an active retail day-trader running 1–3 setups per session.
   for (let i = 0; i < OPERACIONES_MUESTRA; i++) {
     const inst = INSTRUMENTS[Math.floor(rnd() * INSTRUMENTS.length)];
     const setup = SETUP_NAMES[Math.floor(rnd() * SETUP_NAMES.length)];
@@ -180,23 +163,19 @@ function buildTrades(): Trade[] {
     const session = SESSIONS[Math.floor(rnd() * SESSIONS.length)];
 
     const balance = INITIAL_BALANCE + trades.reduce((s, t) => s + t.netPnl, 0);
-    // Risk 0.5–1.5 % of current balance per trade — slightly below the
-    // classic 2 % rule, mirrors a disciplined retail trader who scales
-    // down risk after drawdowns and up during winning streaks.
+    // Riesgo del 0,5 al 1,5 % del saldo actual por operación.
     const riskPct = 0.5 + rnd() * 1.0;
     const riskUsd = +(balance * (riskPct / 100)).toFixed(2);
 
-    // 50 % win rate, payoff ~1.5 → PF ~1.5, expectancy ~0.25R, edge +.
+    // 50 % de acierto con payoff ~1,5: PF ~1,5 y expectativa ~0,25 R.
     const isWin = rnd() < 0.50;
     const r = isWin ? +(0.5 + rnd() * 2.0).toFixed(2) : +(-(0.8 + rnd() * 0.4)).toFixed(2);
     const plannedRr = +(1.5 + rnd() * 2.0).toFixed(2);
 
     const netPnl = +(riskUsd * r).toFixed(2);
-    // Fees scale with trade size (typical broker commission + slippage):
-    // ~3–7 % of the absolute P&L magnitude. Always a positive cost.
+    // Comisiones del 3 al 7 % del P&L absoluto; siempre un coste positivo.
     const fees = +(Math.abs(netPnl) * (0.03 + rnd() * 0.04)).toFixed(2);
-    // gross = net + fees (fees are deducted from gross to get net, so
-    // gross is bigger than net for winners and LESS negative for losers).
+    // bruto = neto + comisiones.
     const grossPnl = +(netPnl + fees).toFixed(2);
 
     const entry = +inst.basePrice.toFixed(inst.decimals);
@@ -226,10 +205,9 @@ function buildTrades(): Trade[] {
     const enPlan = isWin ? 0.8 : 0.6;
     const compliance: Compliance = cr < enPlan ? "yes" : cr < enPlan + 0.15 ? "partial" : "no";
 
-    // Close timestamps aligned to the session's real UTC window:
-    //   London 08:00–11:00, NY 14:00–17:00, Asia 23:00–03:00 (Tokyo open).
-    // Asia hour is computed modulo 24 to avoid `setUTCHours(24+)` rolling
-    // the date into the next day.
+    // Cierre dentro de la ventana UTC de la sesión: Londres 08:00–11:00, NY
+    // 14:00–17:00, Asia 23:00–03:00. La hora de Asia va módulo 24 para que
+    // `setUTCHours(24+)` no adelante el día.
     const hourBase =
       session === "London"
         ? 8 + Math.floor(rnd() * 3)
@@ -237,11 +215,7 @@ function buildTrades(): Trade[] {
         ? 14 + Math.floor(rnd() * 3)
         : (23 + Math.floor(rnd() * 4)) % 24;
     const closedAt = new Date(now.getTime() - rnd() * 180 * dayMs);
-    /* UTC, no local: la ventana de sesión que este bloque acaba de
-       calcular ya está en UTC —«Londres 08:00–11:00» es UTC—, así que
-       escribirla con `setHours` la reinterpretaba como hora local y
-       desplazaba la operación tantas horas como huso tuviera la máquina.
-       Ver la cabecera del fichero. */
+    // UTC y no local: la ventana ya está en UTC. Ver la cabecera del fichero.
     closedAt.setUTCHours(hourBase, Math.floor(rnd() * 60), 0, 0);
     // Con el mercado cerrado solo cotiza la cripto: el sábado pasa al
     // viernes y el domingo al lunes, sin gastar sorteo.
@@ -294,7 +268,6 @@ function buildTrades(): Trade[] {
 
 export const TRADES: Trade[] = buildTrades();
 
-/* ===== Metrics calculator ===== */
 export interface Metrics {
   closedCount: number;
   netPnl: number;
@@ -360,9 +333,7 @@ export function computeMetrics(trades: Trade[]): Metrics {
   let maxDd = 0;
   let maxDdPct = 0;
   const equityCurve: { date: Date; balance: number; perf: number }[] = [];
-  // Running peak alongside equityCurve — replaces the previous O(n²)
-  // `equityCurve.filter(x => x.date <= e.date)` lookup that became
-  // noticeable at n ≥ 200 trades.
+  // Máximo acumulado junto a equityCurve, para no recorrerla entera en cada punto.
   const drawdownCeiling: number[] = [];
   for (const t of sorted) {
     bal += t.netPnl;
@@ -396,11 +367,8 @@ export function computeMetrics(trades: Trade[]): Metrics {
       (rets.length || 1)
   );
 
-  // Annualize per-trade Sharpe / Sortino by sqrt(trades_per_year) so the
-  // demo's AnalyticsPage values match the marketing copy ("Sharpe 3,34")
-  // and the conventional definition a trader expects. trades_per_year is
-  // derived from the actual sample calendar span (n trades over `spanDays`),
-  // assuming 365.25 calendar days / year.
+  // Sharpe y Sortino por operación, anualizados por sqrt(operaciones por año),
+  // que sale del tramo real de la muestra (n operaciones en `spanDays`, año de 365,25 días).
   const spanMs =
     n > 1
       ? sorted[n - 1].closedAt.getTime() - sorted[0].closedAt.getTime()
@@ -411,9 +379,8 @@ export function computeMetrics(trades: Trade[]): Metrics {
   const sharpe = sd ? (mean / sd) * annFactor : 0;
   const sortino = downside ? (mean / downside) * annFactor : 0;
 
-  // Calmar = CAGR / |Max DD %| (standard definition, both unitless).
-  // CAGR computed from the actual span in years (spanDays / 365.25). Falls back to 0 if
-  // there's no drawdown or the balance never moved.
+  // Calmar = CAGR / |DD máx. %|, con el CAGR sobre el tramo real en años. Es 0
+  // si no hay caída o el saldo no se movió.
   const years = spanDays / 365.25;
   const cagr =
     years > 0 && bal > 0 && INITIAL_BALANCE > 0
@@ -503,25 +470,11 @@ export function computeMetrics(trades: Trade[]): Metrics {
 }
 
 /**
- * Keating & Shadwick Omega Ratio (Ω).
- *
- * Definición matemática continua:
- *   Ω(L) = ∫[L, +∞] (1 - F(r)) dr / ∫[-∞, L] F(r) dr
- *
- * Formulación discreta empírica para n operaciones con umbral objetivo L:
+ * Omega de Keating y Shadwick (Ω), forma discreta con umbral L:
  *   Ω(L) = ∑ max(r_i - L, 0) / ∑ max(L - r_i, 0)
- *
- * Donde:
- *  - r_i: PnL neto o retorno de la operación i.
- *  - L: Umbral de rentabilidad mínima exigida (MAR / tasa libre de riesgo / benchmark).
- *  - Numerador: masa ponderada de retornos que superan el umbral L.
- *  - Denominador: masa ponderada de caídas/pérdidas por debajo del umbral L.
- *
- * En el caso particular de distribución discreta sobre PnL con umbral L = 0:
- *   ∑ max(netPnl_i, 0) = Gross Win (beneficio bruto total)
- *   ∑ max(-netPnl_i, 0) = Gross Loss (pérdida bruta total)
- * El ratio coincide algebraicamente con el Profit Factor para L = 0.
- * Para L > 0, penaliza con exactitud asimétrica cualquier operación por debajo del umbral.
+ * con r_i el P&L neto de la operación i. Con L = 0 coincide con el Profit
+ * Factor. Sin operaciones devuelve 0; sin pérdidas bajo el umbral, 100 si hay
+ * ganancia y 0 si no.
  */
 export function computeOmega(trades: Trade[], threshold = 0): number {
   if (trades.length === 0) return 0;
@@ -544,9 +497,9 @@ export function computeOmega(trades: Trade[], threshold = 0): number {
 }
 
 /**
- * Van Tharp System Quality Number (SQN).
- * SQN = sqrt(N) * mean(R) / std(R)
- * Mide la calidad estadística de un sistema independiente del tamaño de la cuenta.
+ * SQN de Van Tharp = sqrt(N) * mean(R) / std(R): calidad estadística del
+ * sistema, independiente del tamaño de la cuenta. Con menos de 2 R válidas o
+ * desviación nula devuelve 0.
  */
 export function computeSqn(trades: Trade[]): number {
   const rs = trades.map((t) => t.rMultiple).filter((r) => Number.isFinite(r));
@@ -559,9 +512,8 @@ export function computeSqn(trades: Trade[]): number {
 }
 
 /**
- * Peter Martin Ulcer Index (UI).
- * UI = sqrt( (1/N) * sum(DD%_i^2) )
- * Mide el estrés y profundidad cuadrática de los periodos de drawdown.
+ * Índice Ulcer de Peter Martin = sqrt((1/N) * sum(DD%_i^2)): profundidad
+ * cuadrática de las caídas, en puntos porcentuales. Sin operaciones, 0.
  */
 export function computeUlcerIndex(trades: Trade[], initialBalance = INITIAL_BALANCE): number {
   const sorted = [...trades].sort((a, b) => a.closedAt.getTime() - b.closedAt.getTime());
@@ -579,10 +531,7 @@ export function computeUlcerIndex(trades: Trade[], initialBalance = INITIAL_BALA
   return +Math.sqrt(sumSq / n).toFixed(4);
 }
 
-/**
- * Asimetría de la serie de Drawdowns (Drawdown Skewness).
- * Cuantifica la propensión a caídas en cola pesada.
- */
+/** Asimetría de la serie de caídas (en %): propensión a caídas de cola pesada. Con menos de 3 operaciones o desviación nula, 0. */
 export function computeDrawdownSkewness(trades: Trade[], initialBalance = INITIAL_BALANCE): number {
   const sorted = [...trades].sort((a, b) => a.closedAt.getTime() - b.closedAt.getTime());
   const n = sorted.length;
@@ -604,10 +553,7 @@ export function computeDrawdownSkewness(trades: Trade[], initialBalance = INITIA
   return +skew.toFixed(4);
 }
 
-/**
- * Criterio de Half Kelly (%) = max(0, f* / 2) * 100
- * donde f* = (p*b - q) / b
- */
+/** Medio Kelly en % = max(0, f* / 2) * 100, con f* = (p*b - q) / b. Acepta el acierto como fracción o como porcentaje. */
 export function computeHalfKelly(winRate: number, payoff: number): number {
   const p = winRate > 1 ? winRate / 100 : winRate;
   const q = 1 - p;
@@ -616,9 +562,7 @@ export function computeHalfKelly(winRate: number, payoff: number): number {
   return fullKelly > 0 ? +(Math.max(0, fullKelly / 2) * 100).toFixed(2) : 0;
 }
 
-/**
- * Wilson Score Interval al 95% (o parámetro z).
- */
+/** Intervalo de Wilson al 95 % (o el `z` dado), en %. Con `total` ≤ 0, todo a 0. */
 export function computeWilsonCI(
   wins: number,
   total: number,
@@ -640,10 +584,7 @@ export function computeWilsonCI(
   };
 }
 
-/**
- * Gain-to-Pain Ratio (Jack Schwager)
- * GPR = sum(NetPnL) / sum(|Losses|)
- */
+/** Gain-to-Pain de Jack Schwager = sum(P&L neto) / sum(|pérdidas|); sin pérdidas, 100 si hay ganancia y 0 si no. */
 export function computeGainToPain(trades: Trade[]): number {
   const netPnl = trades.reduce((s, t) => s + t.netPnl, 0);
   const losses = trades.filter((t) => t.netPnl < 0);
@@ -653,20 +594,18 @@ export function computeGainToPain(trades: Trade[]): number {
 }
 
 /**
- * Calcula la ganancia requerida para recuperar una caída (drawdown) dada.
- * Fórmula: R_req = dd / (1 - dd)
- * Ejemplos: 10% -> 11.11%, 20% -> 25%, 50% -> 100%
+ * Ganancia necesaria para recuperar una caída: dd / (1 - dd). Un 10 % pide un
+ * 11,11 %, un 20 % un 25 % y un 50 % un 100 %. Acepta fracción (0,10) o
+ * porcentaje (10); una caída del 100 % o más es irrecuperable (Infinity).
  */
 export function drawdownRecoveryRequired(ddPct: number): number {
   if (ddPct <= 0) return 0;
   if (ddPct >= 100 || ddPct === 1) return Infinity;
-  // Si se pasa como número porcentual (ej. 10 para 10%)
   if (ddPct > 1) {
     const d = ddPct / 100;
     if (d >= 1) return Infinity;
     return (d / (1 - d)) * 100;
   }
-  // Si se pasa como fracción (0.10)
   return ddPct / (1 - ddPct);
 }
 
@@ -686,9 +625,10 @@ export interface RunsTestResult {
 }
 
 /**
- * Wald-Wolfowitz Runs Test para independencia estadística de secuencias de trades.
- * Evalúa si las rachas de ganancias y pérdidas son consistentes con un paseo aleatorio (H0: i.i.d.)
- * o si existe clustering/persistencia temporal (z < -1.96, p < 0.05) o alternancia excesiva (z > 1.96, p < 0.05).
+ * Test de rachas de Wald-Wolfowitz: contrasta si las rachas de ganancias y
+ * pérdidas son compatibles con el azar (H0: i.i.d.) o muestran agrupamiento
+ * (z < -1,96, p < 0,05) o alternancia excesiva (z > 1,96, p < 0,05). Ignora
+ * las operaciones a cero; sin ambos signos o con n < 2 resulta aleatorio.
  */
 export function computeRunsTest(trades: Trade[]): RunsTestResult {
   const binarySequence: number[] = [];
@@ -776,9 +716,8 @@ export function computeRunsTest(trades: Trade[]): RunsTestResult {
 export const METRICS = computeMetrics(TRADES);
 export const INITIAL_BALANCE_CONST = INITIAL_BALANCE;
 
-/** Temporalidad y régimen de mercado de una operación de muestra. La
- *  muestra no los trae, así que se deducen de lo que sí trae —duración y
- *  setup— en vez de escribir «5m» y «Tendencia» para las 200. */
+/** Temporalidad y régimen de mercado de una operación de muestra, deducidos de
+ *  su duración y su setup, que la muestra no trae. */
 export function contextoDeMercado(trade: Trade): {
   temporalidad: string;
   regimen: { es: string; en: string };
@@ -850,7 +789,6 @@ export function cumplimientoMensual(
   });
 }
 
-/* ===== Analytics distributions ===== */
 export function rHistogram(trades: Trade[], bins = 9): { x: number; count: number }[] {
   const vals = trades.map((t) => t.rMultiple).filter(Number.isFinite);
   const min = -1.5, max = 3.5;

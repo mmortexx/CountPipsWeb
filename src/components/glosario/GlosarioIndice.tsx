@@ -14,17 +14,9 @@ import {
 } from "@/lib/glosario";
 
 /**
- * El índice del glosario: las cinco familias y sus términos.
- *
- * Lleva buscador porque con medio centenar de entradas la alternativa es que el visitante
- * recorra la página entera con la vista. Filtra por nombre Y por
- * definición: quien no recuerda cómo se llama algo lo busca por lo que
- * hace («cuánto puedo perder», «racha»), y así también lo encuentra.
- *
- * El buscador NO es el de la ventana emergente que ya existía. Aquel sigue
- * en su sitio para consultar sin salir de la página; éste es la puerta de
- * entrada de quien llega desde un buscador, que es gente distinta llegando
- * por un camino distinto.
+ * El índice del glosario: las cinco familias y sus términos, con buscador por
+ * nombre y por definición. Es independiente del `GlossaryModal`, que sirve
+ * para consultar sin salir de la página.
  */
 export function GlosarioIndice() {
   const { lang } = useLang();
@@ -53,9 +45,7 @@ export function GlosarioIndice() {
   const recuento = filtrados
     ? `${filtrados.length} ${filtrados.length === 1 ? (es ? "término" : "term") : es ? "términos" : "terms"}`
     : `${TERMINOS.length} ${es ? "términos en cinco familias" : "terms across five families"}`;
-  /* La lista cambia con cada letra y cada familia; quien no ve la pantalla
-     tenía que recorrerla para saber cuántos quedaban, o que no quedaba
-     ninguno. */
+  // Texto para `ResultadoAnunciado`: cuántos quedan, o que no queda ninguno.
   const anuncio =
     filtrados?.length === 0 ? (es ? "Ningún término con ese nombre." : "No terms by that name.") : recuento;
 
@@ -64,7 +54,6 @@ export function GlosarioIndice() {
       className="section-tight"
     >
       <div className="tj-container">
-        {/* Buscador */}
         <Reveal>
           <div className="tj-no-print max-w-2xl">
             <label htmlFor="glos-q" className="sr-only">
@@ -82,7 +71,6 @@ export function GlosarioIndice() {
               }
               className="h-12 w-full tj-campo px-5 text-base sm:text-[15px] text-primary outline-none transition-colors placeholder:text-tertiary focus:border-[var(--line-2)] focus:bg-[var(--bg)]"
             />
-            {/* El mismo filtro que el glosario del modal: `.tj-filtro`. */}
             <div className="flex flex-wrap items-center gap-2 mt-4" role="group" aria-label={es ? "Familia" : "Family"}>
               <button
                 type="button"
@@ -113,13 +101,9 @@ export function GlosarioIndice() {
           </div>
         </Reveal>
 
-        {/* Resultados de búsqueda */}
         {filtrados && (
           <div className="mt-10">
             {filtrados.length === 0 ? (
-              /* Alineado a la izquierda, bajo los controles que lo han
-                 provocado, y con la salida a mano: centrado en un contenedor
-                 vacío se quedaba flotando lejos del buscador. */
               <div className="border-t border-[var(--line)] pt-6">
                 <p className="m-0 text-[15px] text-secondary">
                   {es
@@ -149,7 +133,6 @@ export function GlosarioIndice() {
           </div>
         )}
 
-        {/* Listado por familias */}
         {!filtrados && (
           <div className="mt-14 flex flex-col gap-14">
             {ORDEN_CATEGORIAS.map((cat, i) => {
@@ -196,10 +179,8 @@ function TarjetaTermino({
     <li className="border-b border-[var(--line)]">
       <Link
         href={`/glosario/${termino.slug}`}
-        /* Los `66ch` de la columna se miden con la tipografía de ESTE enlace,
-           no con la del texto de 14 px que lleva dentro: daban 119 caracteres
-           de definición. La columna pasa a repartir ancho y punto; la medida
-           del texto la pone `.medida` en el `span`. Ver la nota en globals.css. */
+        /* Las columnas solo reparten ancho: `ch` se mediría con la tipografía de
+           este enlace. La medida del texto la pone `.medida` (ver globals.css). */
         className="group grid min-h-[56px] grid-cols-1 items-baseline gap-1 py-4 transition-colors duration-150 focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6 lg:grid-cols-1 lg:gap-1.5"
       >
         <span

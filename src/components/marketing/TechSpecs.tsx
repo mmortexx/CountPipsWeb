@@ -6,7 +6,7 @@ import { SectionHeader } from "@/components/layout/SectionHeader";
 import { arranqueMedido } from "@/lib/producto";
 
 interface SpecRow {
-  /** Bilingual label and value. */
+  /** Rótulo y valor bilingües. */
   labelEs: string;
   labelEn: string;
   valueEs: string;
@@ -15,19 +15,10 @@ interface SpecRow {
 }
 
 /**
- * Ficha técnica — plataforma, almacenamiento, RAM, importación y
- * exportación, idiomas, actualizaciones y privacidad.
- *
- * Se publica como RETÍCULA, no como tarjeta: ocho pares etiqueta/valor
- * en una cuadrícula de filetes, sin fondo, sin sombra y sin esquina. El
- * marcado sigue siendo `<dl>` / `<dt>` / `<dd>`, que es lo que
- * corresponde a un par término-definición.
- *
- * Los filetes: `border-t` en el contenedor cierra la retícula por
- * arriba, cada celda pone su `border-b`, y la segunda columna añade un
- * `border-l` solo a partir de `sm` — en móvil hay una sola columna y esa
- * raya no separaría nada. Ninguna celda descuelga su borde inferior: el
- * último trazo es el que cierra la cuadrícula.
+ * Ficha técnica como retícula de filetes con ocho pares etiqueta/valor
+ * (`<dl>`/`<dt>`/`<dd>`). `border-t` en el contenedor cierra por arriba, cada
+ * celda pone su `border-b` y la segunda columna añade `border-l` solo desde
+ * `sm` (en móvil hay una columna).
  */
 export function TechSpecs() {
   const { lang } = useLang();
@@ -115,14 +106,8 @@ export function TechSpecs() {
               <dl
                 key={r.labelEn}
                 data-entra="ciclo"
-                /* El filete vertical solo en la segunda columna y solo
-                   cuando hay dos: en móvil la retícula es una sola
-                   columna y una raya a la izquierda no separaría nada. */
                 className="flex flex-col gap-1 min-w-0 py-4 pr-6 border-b border-[var(--line)] sm:[&:nth-child(even)]:pl-6 sm:[&:nth-child(even)]:border-l sm:[&:nth-child(even)]:border-l-[var(--line)]"
               >
-                {/* Sin el punto de acento que llevaba delante. Con el
-                    acento ya acromático era un lunar gris que no decía
-                    nada, y en una retícula el separador es el filete. */}
                 <dt className="text-tertiary text-[12px]">
                   {es ? r.labelEs : r.labelEn}
                 </dt>

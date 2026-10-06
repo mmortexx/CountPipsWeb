@@ -3,11 +3,9 @@ import { simulaMonteCarlo, type ParametrosMonteCarlo } from "@/lib/trading/monte
 import { computeRiskOfRuin, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
 
 /**
- * Con riesgo compuesto el saldo decae hacia 0 sin tocarlo nunca, así que
- * «ruina = saldo a 0» salía 0,0 % con la cuenta en fracciones de céntimo
- * y la fórmula de al lado en 100 %. La ruina es tocar el umbral
- * (`UMBRAL_RUINA_PCT` del balance inicial perdido), el mismo que usa la
- * calculadora de riesgo.
+ * Con riesgo compuesto el saldo decae hacia 0 sin tocarlo nunca: la ruina es
+ * tocar el umbral `UMBRAL_RUINA_PCT` del balance inicial perdido, el mismo que
+ * usa la calculadora de riesgo, no llegar a 0.
  */
 
 const BASE: ParametrosMonteCarlo = {
@@ -56,8 +54,7 @@ describe("ruina en el simulador de Monte Carlo", () => {
   });
 });
 
-/* «Otra tirada» sumaba uno a la semilla sin tope: pasada la 50 el
-   deslizador se quedaba en su máximo con un valor que no podía enseñar. */
+// «Otra tirada» suma uno a la semilla: pasado el máximo del deslizador, vuelve a 1.
 describe("la semilla da la vuelta dentro del deslizador", () => {
   it("de 1 a 50 y vuelta a 1", async () => {
     const { siguienteSemilla, SEMILLA_MAX } = await import("@/lib/trading/montecarlo");
@@ -68,8 +65,7 @@ describe("la semilla da la vuelta dentro del deslizador", () => {
   });
 });
 
-/* Con los deslizadores al máximo favorable el balance rondaba 3e20 y la
-   celda pintaba «296.700.000.000.000,00 M $». */
+// Con los deslizadores al máximo favorable el balance ronda 3e20.
 describe("un balance que ya no es creíble se marca", () => {
   it("al máximo favorable sale fuera de escala; con los valores iniciales no", () => {
     const extremo = simulaMonteCarlo({ ...BASE, startBalance: 100_000, trades: 300, winRate: 75, avgWinR: 5, avgLossR: 0.25, riskPct: 3.5 });

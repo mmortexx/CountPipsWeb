@@ -1,41 +1,16 @@
 /**
- * ENLACES — ¿te deja un enlace tirado en el otro idioma?
+ * ENLACES: recorre el sitio compilado y comprueba que ninguna página inglesa
+ * enlaza al español cuando existe la versión inglesa, que ninguna española
+ * enlaza a `/en/…`, que todo enlace interno lleva a una página que existe y
+ * que ningún botón de acción (`.cta`) lleva a la página en la que está.
  *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Recorre el sitio compilado y comprueba:
+ * Se comprueba contra los ficheros de `out/`, no contra la lista de rutas del
+ * código. No cuentan los recursos (`/_next/…`, imágenes, fuentes), las
+ * direcciones externas, los `mailto:` ni las anclas sueltas.
  *
- *   · Ninguna página INGLESA enlaza a una ruta española que SÍ tiene
- *     versión inglesa. Si existe `/en/faq/`, un enlace a `/faq/` desde
- *     `/en/pricing/` saca al visitante de su idioma sin avisarle.
- *   · Ninguna página ESPAÑOLA enlaza a una ruta `/en/…`.
- *   · Todo enlace interno lleva a una página que existe.
- *   · Ningún botón de acción (`.cta`) lleva a la página en la que está.
- *
- * No se comprueba contra la lista de rutas del código, sino contra los
- * FICHEROS que hay en `out/`: que exista `out/en/faq/index.html` es un
- * hecho; que la lista diga que debería existir es una intención. Si el
- * día de mañana alguien borra la página inglesa, esta guarda deja de
- * exigir el enlace —correctamente— sin que nadie tenga que tocarla.
- *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * Un enlace: «More questions? → See full FAQ» en `/en/pricing/`, que
- * llevaba a la FAQ española. Y detrás, la causa de verdad: la función
- * que decide el idioma del destino comparaba rutas como texto, y su
- * lista dice «/faq» sin barra final, así que «/faq/» —con barra— no
- * encajaba y el enlace se quedaba en español. Un solo carácter, en la
- * página que más importa vender, y ninguna prueba lo veía.
- *
- * ── Lo que NO cuenta ──────────────────────────────────────────────────
- * Los recursos (`/_next/…`, imágenes, fuentes, manifiesto), las
- * direcciones externas, los `mailto:` y las anclas sueltas.
- *
- * ── Si algún día falla por el selector de idioma ──────────────────────
- * El selector es el único sitio donde un enlace al otro idioma es
- * correcto por definición. Hoy no aparece en el HTML estático —se
- * construye al abrirlo—, así que no hace falta excluirlo. Si un día
- * cambia y esta guarda empieza a acusarlo, la salida correcta es
- * marcarlo en el HTML (`data-cambio-idioma`) y exceptuarlo aquí, no
- * relajar la regla.
+ * El selector de idioma, el único enlace correcto al otro idioma, no aparece
+ * en el HTML estático. Si algún día lo acusa, hay que marcarlo
+ * (`data-cambio-idioma`) y exceptuarlo aquí, no relajar la regla.
  *
  * Uso:  node scripts/enlaces.mjs [out]
  */
@@ -43,9 +18,7 @@ import { existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 
-/* Acepta tanto `out` como `--serve out`: seis de estas guardas usan la
-   segunda forma y confundirlas reventaba con una traza de Node sobre un
-   directorio llamado «--serve». */
+// Acepta `out` y `--serve out`, la forma de otras guardas.
 const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
 if (!existsSync(RAIZ)) {
   console.log(`[enlaces] no encuentro el directorio «${RAIZ}». ¿Falta compilar el sitio con \`npm run build\`?`);
@@ -74,9 +47,7 @@ async function existe(ruta) {
   return false;
 }
 
-/* El `<body>`, sin scripts: el payload de hidratación de Next lleva
-   dentro las direcciones de los dos idiomas y acusaría a todas las
-   páginas de todo. */
+// El `<body>` sin scripts: el payload de hidratación de Next lleva las direcciones de los dos idiomas.
 function cuerpo(html) {
   const i = html.indexOf("<body");
   const cuerpoBruto = i >= 0 ? html.slice(i) : html;
@@ -98,11 +69,7 @@ function enlacesInternos(html) {
   return [...salida];
 }
 
-/* UNA LLAMADA QUE TE DEJA DONDE ESTÁS.
-   Añadido el 2026-09-22: el cierre de `/pricing/` ofrecía «Ver precios»,
-   que recargaba la misma página. Un botón de acción (`.cta`) cuyo destino
-   es la página en la que está no lleva a ningún sitio. Las anclas a una
-   sección de la misma página (`#…`) sí son un destino y no cuentan. */
+// Un botón de acción (`.cta`) cuyo destino es la propia página no lleva a ningún sitio; las anclas (`#…`) sí son destino.
 function llamadasASiMisma(html, ruta) {
   const aqui = ruta.replace(/\/+$/, "") || "/";
   const salida = [];
@@ -134,23 +101,14 @@ for await (const f of htmls(RAIZ)) {
 
   for (const h of enlacesInternos(html)) {
     enlaces++;
-    /* UN ENLACE QUE NO LLEVA A NINGUNA PARTE.
-       Esto no lo vigilaba nadie. `deep_audit.mjs` prometía en su cabecera
-       «inexistencia de enlaces rotos internos» y no seguía ni un enlace:
-       pedía sus 64 rutas escritas a mano y comprobaba que respondieran.
-       Un `href` mal escrito en una página que su lista no incluía —o a un
-       destino que se renombró— daba 404 al visitante y verde en la
-       auditoría. Aquí se comprueba contra los ficheros de `out/`, que es
-       lo que se publica. */
+    // Enlace roto: se comprueba contra los ficheros de `out/`, que es lo que se publica.
     if (!(await existe(h))) {
       fallos.push({ ruta, regla: "enlace que no lleva a ninguna parte", detalle: `${h} — no hay página compilada ahí` });
       continue;
     }
     if (en) {
       if (h === "/en" || h.startsWith("/en/")) continue; // ya está en inglés
-      /* Solo es un fallo si la versión inglesa EXISTE. Un enlace a una
-         página que nunca se tradujo es deliberado: volver al español es
-         mejor que un 404. */
+      // Solo es fallo si la versión inglesa existe; sin traducir, volver al español es deliberado.
       const hermana = h === "/" ? "/en" : `/en${h}`;
       if (await existe(hermana)) {
         fallos.push({ ruta, regla: "página inglesa que enlaza al español", detalle: `${h} → existe ${hermana}` });

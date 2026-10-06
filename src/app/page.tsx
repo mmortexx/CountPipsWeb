@@ -9,10 +9,6 @@ import { HERRAMIENTAS } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
 import { SUPPORT_EMAIL } from "@/lib/forms";
 
-// PNG (not SVG) — see layout.tsx for the rationale (social platforms
-// silently fail to render SVG OG images). Absolute URL bypasses the
-// metadataBase + basePath double-resolution issue (also see layout.tsx).
-
 const PAGE_DESCRIPTION =
   "Diario de trading nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y datos 100 % locales.";
 
@@ -41,24 +37,10 @@ export const metadata: Metadata = {
 };
 
 
-// LAS SECCIONES PESADAS SIGUEN EN SU PROPIO TROZO DE JAVASCRIPT, PERO YA
-// NO LLEVAN `loading`.
-//
-// Un `loading` en `next/dynamic` abre un límite de Suspense, y React
-// resuelve un límite de Suspense durante el prerenderizado escribiendo el
-// hueco en su sitio y el contenido REAL al final del <body>, dentro de un
-// <div hidden> que solo un script sabe devolver a su lugar. Sin
-// JavaScript ese script no corre: medido en el HTML compilado, la portada
-// servía 37.921 de sus 118.707 caracteres —el 32 %— dentro de bloques
-// ocultos, y /features 61.865 de 128.953, el 48 %.
-//
-// Sin `loading` no hay límite, el contenido se escribe donde va y el
-// reparto en trozos se conserva intacto: medido tras el cambio, la
-// portada pide los mismos 17 scripts y los mismos 948 KB. El salto de
-// maquetación que el hueco venía a evitar tampoco ocurre — no hay hueco,
-// porque la sección ya viene escrita.
-//
-// Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
+// Sin `loading` en `next/dynamic`: un `loading` abre un límite de Suspense y el
+// prerenderizado escribe el contenido real en un `<div hidden>` al final del
+// body, que sin JavaScript no vuelve a su sitio. Lo vigila `scripts/humo.mjs`
+// («contenido en bloques ocultos»).
 
 const StatsBandNew = dynamic(
   () => import("@/components/marketing/StatsBandNew").then((m) => m.StatsBandNew)
@@ -74,11 +56,9 @@ const FinalCTANew = dynamic(
 );
 
 /**
- * Portada: promesa y cifras de la muestra en la primera pantalla, lo que
- * la sostiene, las pantallas reales y cómo frena; después, para quién es
- * (los dos recorridos) y en qué cree. Primero qué es, luego si es para ti.
- * Una idea por sección y un solo cierre.
- * `app/en/page.tsx` reutiliza este cuerpo; cada sección lee `useLang()`.
+ * Portada: primero qué es (promesa, pantallas reales, cómo frena) y luego si
+ * es para ti. `app/en/page.tsx` reutiliza este cuerpo; cada sección lee
+ * `useLang()`.
  */
 export function HomeBody() {
   return (
@@ -97,9 +77,7 @@ export function HomeBody() {
 export default function Home() {
   return (
     <>
-      {/* Los tres datos estructurados del sitio, en español. Estaban en el
-          layout raíz, que los repetía en las 155 páginas —76 de ellas en
-          inglés— con el texto español fijo. Ver `esquemasGlobales()`. */}
+      {/* Datos estructurados del sitio, en español (ver `esquemasGlobales()`). */}
       {esquemasGlobales("es", { soporte: SUPPORT_EMAIL }).map((s, i) => (
         <script
           key={i}

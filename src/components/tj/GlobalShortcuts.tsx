@@ -9,46 +9,18 @@ import { openShortcutsHelp } from "@/lib/overlays";
 import { G_NAV_MAP } from "@/lib/saltos-teclado";
 
 /**
- * GlobalShortcuts — invisible global keyboard shortcut router.
+ * Enrutador invisible de atajos globales: `T` cambia el tema, `L` el idioma,
+ * `?` abre la ayuda y `g` + letra navega (tabla `G_NAV_MAP` en
+ * `@/lib/saltos-teclado`). El prefijo `g` dura 1 s y muestra una pista
+ * flotante.
  *
- * Listens for:
- *  - `T`  → toggle theme (dark/light)
- *  - `L`  → toggle language (ES/EN)
- *  - `?` (Shift+/) → open the ShortcutsHelp overlay
- *  - `g` + letter → navigate to a page (GitHub-style two-key sequence):
- *      `g h` → /            (home)
- *      `g f` → /features    (features overview)
- *      `g m` → /features/metricas
- *      `g d` → /features/disciplina
- *      `g s` → /features/seguridad
- *      `g p` → /pricing
- *      `g e` → /demo        (e for "experiencia"/demo)
- *      `g a` → /about
- *      `g q` → /faq         (q for "questions")
- *
- * The `g` prefix sets a 1-second window; if no valid second key arrives
- * in time, the prefix expires silently. While the prefix is active, a
- * small floating hint chip ("g _") appears at the bottom-center of the
- * viewport so the user knows the next key is being captured — this
- * makes the power-user feature discoverable without a help overlay.
- *
- * All listeners are skipped when:
- *  - The user is typing in an INPUT, TEXTAREA, SELECT, or contentEditable
- *    element (so we don't hijack regular typing).
- *  - The demo's command palette is open (detected via the `[cmdk-root]`
- *    attribute that `DemoCommandPalette` sets on its modal root while open).
- *    La paleta global de la web se retiró; este guardia protege la de /demo.
- *  - The ShortcutsHelp overlay itself is open (`body[data-shortcuts-help-open]`
- *    is set by ShortcutsHelp while it's mounted open).
- *  - A meta/ctrl/alt modifier is held (so we never swallow Cmd+T, Ctrl+L, etc.
- *    which the browser owns). Shift is allowed so `?` and uppercase `T`/`L`
- *    work naturally.
+ * Se ignoran las teclas al escribir en un campo, con la paleta de /demo
+ * abierta (`[cmdk-root]`), con la ayuda abierta
+ * (`body[data-shortcuts-help-open]`) o con meta/ctrl/alt (son del navegador);
+ * Shift sí vale, para `?`, `T` y `L` en mayúscula.
  */
 
-const G_PREFIX_TIMEOUT = 1000; // ms — how long the `g` prefix stays active
-
-/* `G_NAV_MAP` vive en `@/lib/saltos-teclado` junto a los nombres que
-   enseña la ayuda de atajos: eran dos tablas paralelas y ahora es una. */
+const G_PREFIX_TIMEOUT = 1000; // ms que dura el prefijo `g`
 
 export function GlobalShortcuts() {
   const { lang, toggle: toggleLang } = useLang();
@@ -57,22 +29,14 @@ export function GlobalShortcuts() {
   const router = useRouter();
   const gPrefixActive = useRef(false);
   const gPrefixTimer = useRef<number | null>(null);
-  // Chip visibility — separate state so the hint shows/hides without
-  // re-rendering the whole component tree. Only flips true/false on
-  // prefix arm/expire, not on every keystroke.
   const [showHint, setShowHint] = useState(false);
-  /* La pista no entra en el árbol hasta que alguien pulsa `g` por
-     primera vez, y desde entonces se queda. Es el mismo patrón que el
-     cajón de navegación y por el mismo motivo: lo que se monta en el
-     layout viaja en el HTML de las 155 páginas, y esto lo ve quien usa
-     atajos de teclado — una minoría que, además, ya ha interactuado. */
+  // La pista no entra en el árbol hasta la primera pulsación de `g`; luego se queda.
   const [pistaMontada, setPistaMontada] = useState(false);
 
   useEffect(() => {
     const armPrefix = () => {
       gPrefixActive.current = true;
-      /* Montar y mostrar en fotogramas distintos: en el mismo render la
-         pista nacería ya visible y no habría transición que interpolar. */
+      // Montar y mostrar en fotogramas distintos, o no habría transición.
       setPistaMontada(true);
       requestAnimationFrame(() => setShowHint(true));
       if (gPrefixTimer.current) window.clearTimeout(gPrefixTimer.current);
@@ -93,7 +57,6 @@ export function GlobalShortcuts() {
     };
 
     const onKey = (e: KeyboardEvent) => {
-      // 1) Skip when typing in a form field or editable region.
       const target = e.target as HTMLElement | null;
       if (target) {
         const tag = target.tagName;
@@ -107,18 +70,12 @@ export function GlobalShortcuts() {
         }
       }
 
-      // 2) Skip when the demo's command palette is open.
       if (document.querySelector("[cmdk-root]")) return;
-
-      // 3) Skip when the ShortcutsHelp overlay is open.
       if (document.body.dataset.shortcutsHelpOpen === "true") return;
-
-      // 4) Never hijack browser shortcuts that involve meta/ctrl/alt.
       if (e.metaKey || e.ctrlKey || e.altKey) return;
 
       const key = e.key;
 
-      // `?` opens the help overlay.
       if (
         key === "?" ||
         (e.shiftKey && (key === "/" || e.code === "Slash"))
@@ -128,30 +85,23 @@ export function GlobalShortcuts() {
         return;
       }
 
-      // Escape cancels an active 'g' prefix explicitly — so the user
-      // can disarm the two-key sequence without waiting for the 1s
-      // timeout. No-op if the prefix isn't armed.
+      // Escape cancela el prefijo `g` sin esperar al plazo.
       if (key === "Escape" && gPrefixActive.current) {
         e.preventDefault();
         disarmPrefix();
         return;
       }
 
-      // Single-character keys only.
       if (key.length !== 1) return;
 
       const lower = key.toLowerCase();
 
-      // `g` prefix handling — GitHub-style two-key navigation.
       if (gPrefixActive.current) {
         disarmPrefix();
         const dest = G_NAV_MAP[lower];
         if (dest) {
           e.preventDefault();
-          // `withLocale`: los atajos `g`+letra navegan directamente con
-          // `router.push`, sin pasar por `LocaleLink`, así que `g p`
-          // debe llevar a `/en/pricing` y no a `/pricing` si el
-          // visitante está leyendo en inglés.
+          // `withLocale`: no pasa por `LocaleLink`, y `g p` debe ir a `/en/pricing` en inglés.
           router.push(withLocale(dest, lang));
         }
         return;
@@ -180,10 +130,7 @@ export function GlobalShortcuts() {
   }, [toggleTheme, toggleLang, router, lang]);
 
   return (
-    /* Montado siempre, visible por atributo. La pista es un nodo
-       diminuto y así la entrada y la salida son una transición CSS en
-       vez de una biblioteca de animación en el paquete de las 155
-       páginas — ver `.tj-emerge` en globals.css. */
+    // Visible por atributo: entrada y salida son una transición CSS (`.tj-emerge`).
     pistaMontada ? (
     <div
       className="tj-emerge fixed bottom-6 left-1/2 z-50 pointer-events-none"
@@ -192,19 +139,16 @@ export function GlobalShortcuts() {
       aria-hidden="true"
     >
           <div className="tj-paper tj-paper-dense rounded-[4px] pl-3 pr-3.5 py-1.5 flex items-center gap-2 border border-[rgb(var(--divider)/0.15)]">
-            {/* Label — tells the user what the prefix does */}
             <span className="text-[12px] text-tertiary font-medium hidden sm:inline">
               {es ? "navegación" : "navigation"}
             </span>
             <span className="hidden sm:inline w-px h-3 bg-[rgb(var(--divider)/0.2)]" aria-hidden />
-            {/* The 'g' key — already pressed, shown as "active" */}
             <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-[rgb(var(--divider)/0.15)] bg-[rgb(var(--divider)/0.06)] text-[12px] font-mono text-secondary tnum">
               g
             </kbd>
             <span className="text-[12px] text-tertiary font-medium">
               +
             </span>
-            {/* Accent placeholder for the next key */}
             <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border border-dashed border-[rgb(var(--accent-base)/0.5)] text-[12px] font-mono text-[rgb(var(--accent-base))] tnum">
               ?
             </span>

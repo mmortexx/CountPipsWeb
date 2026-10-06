@@ -13,10 +13,8 @@ function fuentes(dir: string, out: string[] = []): string[] {
   return out;
 }
 
-/* La demo era lo único que cargaba framer-motion (120 KB, 40 KB
-   comprimidos, un tercio de lo que bajaba /demo) y todo lo que hacía lo
-   hacen ya el CSS (`.tj-dm-*`) y `src/hooks/use-viaje.ts`. Volver a importarla devolvería
-   ese peso sin que nada se viera distinto. */
+// La animación de la demo la hacen el CSS (`.tj-dm-*`) y `src/hooks/use-viaje.ts`:
+// volver a importar la librería devolvería su peso sin cambiar nada visible.
 describe("sin framer-motion", () => {
   it("ningún fichero de src/ la importa", () => {
     const importan = fuentes(join(RAIZ, "src"))

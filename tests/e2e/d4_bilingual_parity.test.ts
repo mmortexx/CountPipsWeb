@@ -9,29 +9,13 @@ import { sinPrefijoEn, tieneVersionEn, withLocale } from "@/lib/locale";
 import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 
 /**
- * Dimension D4: Bilingual Parity (ES / EN)
- *
- * Requirements tested:
- * - Tier 1: Feature Coverage (>= 5 tests)
- *   1. 100% key parity in `STR` dictionary (`src/lib/i18n.tsx`)
- *   2. Glossary parity across all 51 terms and categories (`glosario.ts` & `glossary.ts`)
- *   3. Interactive tools parity across all tool definitions (`herramientas.ts`)
- *   4. FAQ parity across main FAQs and pricing FAQs (`faq.ts`)
- *   5. Legal documents parity across all 4 mandatory legal routes (`documentos.ts`)
- * - Tier 2: Boundary & Corner Cases (>= 5 tests)
- *   1. Translation helper fallback & parameter interpolation (`t()`, `tf()`)
- *   2. Zero empty or whitespace-only strings across all dictionaries & data structures
- *   3. Interpolation placeholder symmetry (`{0}`, `{1}`, `{name}`, etc.)
- *   4. Spanish institutional vocabulary integrity (no spurious raw anglicisms)
- *   5. English technical grammar & no untranslated Spanish text leakage
- *   6. Route and link localization helpers (`sinPrefijoEn`, `tieneVersionEn`, `withLocale`)
+ * Dimensión D4: paridad bilingüe (ES / EN). Tier 1 exige las dos versiones en
+ * `STR`, glosario, herramientas, FAQ y documentos legales; Tier 2 cubre
+ * `t()` / `tf()`, cadenas vacías, simetría de marcadores, anglicismos en
+ * español, español filtrado en inglés y helpers de ruta.
  */
 
 describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
-  // =========================================================================
-  // TIER 1: FEATURE COVERAGE
-  // =========================================================================
-
   describe("Tier 1: Feature Coverage", () => {
     it("D4-T1-1: 100% key parity in STR dictionary (every key has valid ES and EN strings)", () => {
       const keys = Object.keys(STR) as StrKey[];
@@ -63,11 +47,9 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     });
 
     it("D4-T1-2: Glossary parity across all 57 terms and all 5 categories", () => {
-      // 1. Total count check (exactly 57 frozen terms)
       expect(GLOSSARY.length).toBe(57);
       expect(TERMINOS.length).toBe(57);
 
-      // 2. Categories integrity check
       const expectedCategories: GlossaryCategory[] = [
         "basics",
         "risk",
@@ -83,7 +65,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         expect(CATEGORIAS[cat].descEn.trim().length).toBeGreaterThan(0);
       }
 
-      // 3. Each glossary term has valid bilingual content and slug
       const seenSlugs = new Set<string>();
       const seenTerms = new Set<string>();
 
@@ -133,7 +114,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         expect(seenSlugs.has(tool.slug), `Duplicate tool slug: ${tool.slug}`).toBe(false);
         seenSlugs.add(tool.slug);
 
-        // Verify title & description differ between ES and EN
         expect(tool.tituloEs).not.toEqual(tool.tituloEn);
         expect(tool.subtituloEs).not.toEqual(tool.subtituloEn);
         expect(tool.descripcionEs).not.toEqual(tool.descripcionEn);
@@ -141,7 +121,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     });
 
     it("D4-T1-4: FAQ parity across main FAQs and pricing FAQs", () => {
-      // Main FAQ parity
       expect(FAQ_ES.length).toBe(13);
       expect(FAQ_EN.length).toBe(13);
 
@@ -154,12 +133,11 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         expect(en.q.trim().length).toBeGreaterThan(5);
         expect(en.a.trim().length).toBeGreaterThan(15);
 
-        // Questions and answers must not be identical across languages
+        // Una traducción idéntica es una traducción pendiente.
         expect(es.q).not.toEqual(en.q);
         expect(es.a).not.toEqual(en.a);
       }
 
-      // Pricing FAQ parity
       expect(PRICING_FAQ_ES.length).toBe(4);
       expect(PRICING_FAQ_EN.length).toBe(4);
 
@@ -228,13 +206,8 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     });
   });
 
-  // =========================================================================
-  // TIER 2: BOUNDARY & CORNER CASES
-  // =========================================================================
-
   describe("Tier 2: Boundary & Corner Cases", () => {
     it("D4-T2-1: Translation helper t() and tf() handle valid keys and formatters accurately", () => {
-      // 1. Nominal string resolution
       expect(t("appName", "es")).toBe("CountPips");
       expect(t("appName", "en")).toBe("CountPips");
       expect(t("tagline", "es")).toBe("Tu operativa, medida.");
@@ -242,7 +215,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
       expect(t("buyNow", "es")).toBe("Solicitar acceso anticipado");
       expect(t("buyNow", "en")).toBe("Request early access");
 
-      // 2. Both languages return defined string for every key in STR
       for (const key of Object.keys(STR) as StrKey[]) {
         const valEs = t(key, "es");
         const valEn = t(key, "en");
@@ -258,7 +230,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     it("D4-T2-2: Zero empty or whitespace-only strings across all dictionaries & data structures", () => {
       const whitespaceViolations: string[] = [];
 
-      // Check STR
       for (const [k, v] of Object.entries(STR)) {
         const item = v as Record<string, unknown>;
         for (const lang of ["es", "en"] as const) {
@@ -269,14 +240,12 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         }
       }
 
-      // Check GLOSSARY
       for (const t of GLOSSARY) {
         if (t.term.trim().length === 0) whitespaceViolations.push(`GLOSSARY term '${t.term}' has empty name`);
         if (t.es.trim().length === 0) whitespaceViolations.push(`GLOSSARY term '${t.term}' has empty ES definition`);
         if (t.en.trim().length === 0) whitespaceViolations.push(`GLOSSARY term '${t.term}' has empty EN definition`);
       }
 
-      // Check HERRAMIENTAS
       for (const h of HERRAMIENTAS) {
         for (const [field, val] of Object.entries(h)) {
           if (typeof val === "string" && val.trim().length === 0) {
@@ -285,7 +254,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         }
       }
 
-      // Check FAQs
       for (let i = 0; i < FAQ_ES.length; i++) {
         if (FAQ_ES[i].q.trim().length === 0) whitespaceViolations.push(`FAQ_ES[${i}].q is empty`);
         if (FAQ_ES[i].a.trim().length === 0) whitespaceViolations.push(`FAQ_ES[${i}].a is empty`);
@@ -305,7 +273,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         return matches.sort();
       }
 
-      // Check STR
       for (const [k, v] of Object.entries(STR)) {
         const item = v as Record<string, unknown>;
         if (typeof item.es === "string" && typeof item.en === "string") {
@@ -317,7 +284,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         }
       }
 
-      // Check FAQ
       for (let i = 0; i < FAQ_ES.length; i++) {
         const phEsQ = extractPlaceholders(FAQ_ES[i].q);
         const phEnQ = extractPlaceholders(FAQ_EN[i].q);
@@ -335,10 +301,7 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     });
 
     it("D4-T2-4: Spanish institutional vocabulary integrity (no spurious raw anglicisms)", () => {
-      // Forbidden untranslated anglicisms in Spanish copy:
-      // - "journal" / "journals" (must be "diario")
-      // - "override" / "overrides" (must be "excepción" / "excepciones")
-      // - "command palette" (must be "paleta de comandos")
+      // En español: «diario», «excepción» y «paleta de comandos».
       const forbiddenAnglicisms = [
         { regex: /\bjournals?\b/i, name: "journal" },
         { regex: /\boverrides?\b/i, name: "override" },
@@ -347,7 +310,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
 
       const violations: string[] = [];
 
-      // Check Spanish strings in STR
       for (const [k, v] of Object.entries(STR)) {
         const item = v as Record<string, unknown>;
         if (typeof item.es === "string") {
@@ -359,7 +321,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         }
       }
 
-      // Check Spanish strings in HERRAMIENTAS
       for (const h of HERRAMIENTAS) {
         const texts = [h.tituloEs, h.h1Es, h.subtituloEs, h.resumenEs, h.descripcionEs];
         for (const t of texts) {
@@ -371,7 +332,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         }
       }
 
-      // Check Spanish strings in FAQ_ES
       for (let i = 0; i < FAQ_ES.length; i++) {
         const text = `${FAQ_ES[i].q} ${FAQ_ES[i].a}`;
         for (const { regex, name } of forbiddenAnglicisms) {
@@ -385,7 +345,7 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     });
 
     it("D4-T2-5: English technical grammar & no untranslated Spanish copy in English fields", () => {
-      // Common Spanish marker words that should never appear in English copy
+      // Palabras españolas que no deben aparecer en el texto inglés.
       const spanishMarkers = [
         /\bdiario\b/i,
         /\boperativa\b/i,
@@ -401,7 +361,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
 
       const englishViolations: string[] = [];
 
-      // Check STR English strings
       for (const [k, v] of Object.entries(STR)) {
         const item = v as Record<string, unknown>;
         if (typeof item.en === "string") {
@@ -413,7 +372,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         }
       }
 
-      // Check HERRAMIENTAS English strings
       for (const h of HERRAMIENTAS) {
         const texts = [h.tituloEn, h.h1En, h.subtituloEn, h.resumenEn, h.descripcionEn];
         for (const t of texts) {
@@ -425,7 +383,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
         }
       }
 
-      // Check FAQ_EN
       for (let i = 0; i < FAQ_EN.length; i++) {
         const text = `${FAQ_EN[i].q} ${FAQ_EN[i].a}`;
         for (const marker of spanishMarkers) {
@@ -439,7 +396,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
     });
 
     it("D4-T2-6: Route and link localization helpers handle edge cases (sinPrefijoEn, tieneVersionEn, withLocale)", () => {
-      // 1. sinPrefijoEn
       expect(sinPrefijoEn("/en")).toBe("/");
       expect(sinPrefijoEn("/en/")).toBe("/");
       expect(sinPrefijoEn("/en/pricing")).toBe("/pricing");
@@ -447,7 +403,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
       expect(sinPrefijoEn("/pricing")).toBe("/pricing");
       expect(sinPrefijoEn("/")).toBe("/");
 
-      // 2. tieneVersionEn
       expect(tieneVersionEn("/")).toBe(true);
       expect(tieneVersionEn("/pricing")).toBe(true);
       expect(tieneVersionEn("/features/metricas")).toBe(true);
@@ -455,7 +410,6 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
       expect(tieneVersionEn("/herramientas/calculadora-de-riesgo")).toBe(true);
       expect(tieneVersionEn("/non-existent-page-xyz")).toBe(false);
 
-      // 3. withLocale
       expect(withLocale("/pricing", "es")).toBe("/pricing");
       expect(withLocale("/pricing", "en")).toBe("/en/pricing");
       expect(withLocale("/", "en")).toBe("/en");

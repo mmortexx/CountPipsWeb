@@ -1,18 +1,8 @@
 /**
- * El contrato entre quien PIDE abrir un overlay y quien lo pinta.
- *
- * Vive aparte por una razón muy concreta de peso de página. El disparador
- * (`openShortcutsHelp`) es una línea que despacha un evento; la ventana de
- * ayuda son 370 líneas más `framer-motion`. Mientras los dos compartieron
- * archivo, cualquiera que quisiera el disparador —`GlobalShortcuts`, que
- * está montado en todas las páginas— se llevaba la ventana entera detrás,
- * y eso anulaba en la práctica la carga diferida de `OverlayHost`: el
- * módulo pesado volvía a entrar en el arranque por la puerta de atrás.
- *
- * Separándolos, pedir la apertura no cuesta nada y solo pinta quien
- * escucha. El nombre del evento se declara UNA vez y se importa: si
- * estuviera escrito a mano en cada extremo, bastaría una errata para que
- * la tecla dejara de abrir nada y sin ningún error que lo delatara.
+ * Contrato entre quien pide abrir un overlay y quien lo pinta. Vive aparte
+ * para que los disparadores (montados en todas las páginas) no arrastren la
+ * ventana entera y anulen la carga diferida de `OverlayHost`. El nombre del
+ * evento se declara una vez: una errata en un extremo no daría ningún error.
  */
 export const OPEN_SHORTCUTS_HELP = "tj:open-shortcuts-help";
 export const OPEN_GLOSSARY = "tj:open-glossary";
@@ -22,11 +12,9 @@ export function openShortcutsHelp() {
   window.dispatchEvent(new CustomEvent(OPEN_SHORTCUTS_HELP));
 }
 
-/** Pide abrir el glosario modal. La escucha `OverlayHost`, que es el ÚNICO
- *  sitio que lo carga: con un `dynamic()` en cada disparador, el bundler
- *  sacaba una copia del glosario por disparador. `ancla` es adónde vuelve
- *  el foco al cerrar; hace falta pasarlo porque Safari no enfoca un botón
- *  al pulsarlo con el ratón. */
+/** Pide abrir el glosario modal; lo escucha `OverlayHost`, único sitio que lo
+ *  carga (un `dynamic()` por disparador duplicaba el glosario). `ancla` es
+ *  adónde vuelve el foco al cerrar: Safari no enfoca un botón al pulsarlo. */
 export function openGlossary(ancla?: HTMLElement | null) {
   window.dispatchEvent(new CustomEvent(OPEN_GLOSSARY, { detail: { ancla: ancla ?? null } }));
 }

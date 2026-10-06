@@ -1,30 +1,14 @@
 import { TITULAR, LEGAL_ACTUALIZADO } from "@/lib/legal/titular";
 
 /**
- * El texto de las cuatro páginas legales, en los dos idiomas.
+ * Texto de las cuatro páginas legales, en los dos idiomas. Cada afirmación
+ * debe describir algo que el sitio hace de verdad: formularios (`forms.ts`:
+ * contacto a Web3Forms, acceso anticipado al endpoint de admisión), PostHog
+ * solo tras consentimiento y en la UE, tipografías propias y el
+ * almacenamiento local listado en la tabla de cookies.
  *
- * ── POR QUÉ ESTÁ ESCRITO ASÍ ──────────────────────────────────────────
- * No es una plantilla. Cada afirmación describe algo que este sitio hace
- * de verdad y que se ha comprobado en el código:
- *
- *  · El formulario de contacto envía a Web3Forms (`src/lib/forms.ts:19`).
- *  · La solicitud de acceso anticipado se envía al endpoint de admisión configurado
- *    (`src/lib/forms.ts`, `docs/waitlist-apps-script.js`).
- *  · La analítica PostHog solo se carga después del consentimiento explícito
- *    y en su región europea; la web no envía respuestas ni datos financieros.
- *  · Las tipografías se sirven desde el propio dominio (`next/font`), así
- *    que ni siquiera hay una petición a Google Fonts que registre una IP.
- *  · Lo único que queda en el navegador son siete claves de almacenamiento
- *    local, listadas una a una más abajo. NINGUNA es una cookie.
- *
- * La política distingue las preferencias técnicas de la medición opcional,
- * para que el visitante pueda aceptar, rechazar o retirar ese consentimiento.
- *
- * ── LO QUE ESTO NO ES ─────────────────────────────────────────────────
- * Un borrador redactado por quien construye el sitio, no por un abogado.
- * Sirve para publicar una web informativa con demo pública y acceso anticipado privado. Antes de
- * cobrar un solo euro hay que pasarlo por un profesional, sobre todo los
- * términos de venta y la licencia del programa.
+ * Es un borrador del autor del sitio, no de un abogado: debe revisarlo un
+ * profesional antes de cobrar nada, sobre todo términos de venta y licencia.
  */
 
 export type Bloque =
@@ -62,9 +46,7 @@ const CONTACTO_ES =
 const CONTACTO_EN =
   "You can exercise them by writing through the contact form on the FAQ page. We will reply within the period the law allows.";
 
-/* ════════════════════════════════════════════════════════════════════
-   PRIVACIDAD
-   ════════════════════════════════════════════════════════════════════ */
+/* ---- Privacidad ---- */
 
 const privacidad: DocumentoLegal = {
   slug: "privacidad",
@@ -86,11 +68,7 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          /* NO se remite al aviso legal «donde figuran los datos completos»:
-             allí los tres campos —nombre fiscal, NIF y domicilio— están
-             vacíos a propósito hasta que exista la entrega comercial (ver
-             `titular.ts`). Mandar al lector a buscar un dato que no está es
-             peor que decirle que todavía no está. */
+          // No remite al aviso legal: nombre fiscal, NIF y domicilio siguen vacíos (ver `titular.ts`).
           es: `El responsable del tratamiento es el titular de ${TITULAR.nombreComercial}. Los datos identificativos completos se publicarán en el aviso legal cuando se abra la entrega comercial; mientras tanto, el contacto es el formulario de contacto de la página de preguntas frecuentes.`,
           en: `The data controller is the owner of ${TITULAR.nombreComercial}. Full identifying details will be published in the legal notice when commercial delivery opens; until then, the contact is the contact form on the FAQ page.`,
         },
@@ -291,9 +269,7 @@ const privacidad: DocumentoLegal = {
   ],
 };
 
-/* ════════════════════════════════════════════════════════════════════
-   COOKIES
-   ════════════════════════════════════════════════════════════════════ */
+/* ---- Cookies ---- */
 
 const cookies: DocumentoLegal = {
   slug: "cookies",
@@ -399,9 +375,7 @@ const cookies: DocumentoLegal = {
   ],
 };
 
-/* ════════════════════════════════════════════════════════════════════
-   TÉRMINOS
-   ════════════════════════════════════════════════════════════════════ */
+/* ---- Términos ---- */
 
 const terminos: DocumentoLegal = {
   slug: "terminos",
@@ -546,9 +520,7 @@ const terminos: DocumentoLegal = {
   ],
 };
 
-/* ════════════════════════════════════════════════════════════════════
-   AVISO LEGAL
-   ════════════════════════════════════════════════════════════════════ */
+/* ---- Aviso legal ---- */
 
 const avisoLegal: DocumentoLegal = {
   slug: "aviso-legal",

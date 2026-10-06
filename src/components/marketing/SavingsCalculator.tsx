@@ -8,33 +8,14 @@ import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 
 /**
- * SavingsCalculator — illustrative post-beta cost scenario.
- *
- * Uses the planned Core/Pro reference prices only as an illustrative
- * scenario; it does not represent a live offer or purchase flow.
- *
- * El trader ajusta:
- *   · planned reference tier (Core $149 / Pro $249)
- *   · precio mensual de la alternativa por suscripción
- *   · años de uso
- *
- * Y ve: reference cost, subscription cost (cumulative), illustrative saving
- * total $ y %, y una mini-curva que muestra cómo el ahorro crece con
- * el tiempo mientras la suscripción sigue cobrando cada mes.
- *
- * ── Material ──────────────────────────────────────────────────────────
- * .tj-ficha con barra de cabecera y cuerpo.
- * Touch targets ≥44px. Sin overflow en mobile.
+ * Escenario de coste ilustrativo posterior a la beta: compara los precios de
+ * referencia previstos de Core y Pro con una alternativa por suscripción a lo
+ * largo de N años. No representa una oferta ni un flujo de compra.
  */
-/* Los planes viven FUERA del componente por dos motivos, y ninguno es estético.
-   Uno: sus nombres son de marca, iguales en español y en inglés, así que no
-   tenían nada que hacer dentro de un render que depende del idioma. Dos: al
-   declararse dentro se creaban de nuevo en cada render, y como la lista figura
-   entre las dependencias del cálculo de abajo, el `useMemo` se rehacía siempre
-   y no memorizaba nada. Aquí arriba la identidad es estable.
-
-   El tipo de `id` se declara en vez de dejarlo inferir: inferido salía como
-   texto libre y no encajaba con el estado, que solo admite estos dos valores. */
+/* Los planes viven fuera del componente: sus nombres son de marca (iguales en
+   los dos idiomas) y, declarados dentro, la lista se recrearía en cada render
+   y el `useMemo` de abajo no memorizaría nada. `id` va tipado (`PlanId`) para
+   encajar con el estado. */
 type PlanId = "core" | "pro";
 
 const COUNTPIPS_PLANS: { id: PlanId; label: string; price: number }[] = [
@@ -46,7 +27,7 @@ export function SavingsCalculator() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Alternativas SaaS típicas (rango 15-30 $/mes)
+  // Alternativas por suscripción típicas (15-30 $/mes).
   const altPresets = [
     { label: es ? "Básico" : "Basic", v: 15 },
     { label: es ? "Estándar" : "Standard", v: 25 },
@@ -64,8 +45,8 @@ export function SavingsCalculator() {
     const savingsPct = altTotal > 0 ? (savings / altTotal) * 100 : 0;
     const { meses: breakEvenMonths, dentro: seAmortizaDentro } = amortizacion(cpPrice, altMonthly, years);
 
-    // Proyección del ahorro reinvertido a TASA_REINVERSION_ANUAL, con interés compuesto mensual
-    // Aporte mensual de altMonthly durante years * 12 meses
+    // Aporte mensual de `altMonthly` reinvertido a TASA_REINVERSION_ANUAL, con
+    // interés compuesto mensual.
     const monthlyRate = TASA_REINVERSION_ANUAL / 12;
     const totalMonths = years * 12;
     let compoundInvested = 0;
@@ -74,7 +55,7 @@ export function SavingsCalculator() {
     }
     const compoundAdvantage = Math.max(0, compoundInvested - cpPrice);
 
-    // Curva año a año: suscripción acumulada vs línea plana CountPips
+    // Curva año a año: suscripción acumulada frente a la línea plana de CountPips.
     const curve: { year: number; sub: number; cp: number }[] = [];
     for (let y = 0; y <= years; y++) {
       curve.push({ year: y, sub: altMonthly * 12 * y, cp: cpPrice });
@@ -82,17 +63,14 @@ export function SavingsCalculator() {
     return { cpPrice, altTotal, savings, savingsPct, breakEvenMonths, seAmortizaDentro, compoundInvested, compoundAdvantage, curve };
   }, [plan, altMonthly, years]);
 
-  // A precios más altos, el escenario mínimo (años=1, alternativa=5$/mes)
-  // puede dar una diferencia negativa real (la suscripción barata sale más
-  // económica en ese extremo) — matemáticamente correcto, así que el color
-  // sigue el signo en vez de estar fijo en verde.
+  // En el extremo (1 año, 5 $/mes) la diferencia puede ser negativa de verdad:
+  // el color sigue el signo, no es fijo.
   const savingsColor = c.savings >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
 
   const fmtUsd = (n: number) => fmtMoney(n, lang, { decimals: 0 });
 
   const fmtNum = (n: number, dec = 0) => fmtNumBase(n, lang, dec);
 
-  // SVG curva: suscripción (creciente) vs CountPips (plano)
   const svgW = 520;
   const svgH = 130;
   const padX = 8;
@@ -111,7 +89,6 @@ export function SavingsCalculator() {
   return (
     <section className="section-tight">
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:items-start">
-        {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow" data-titular-herramienta>
@@ -137,10 +114,7 @@ export function SavingsCalculator() {
             )}
           </p>
 
-          {/* Plan CountPips */}
           <div className="mb-5">
-            {/* Una elección entre varias: el segmentado de todas las
-                herramientas, no botones sueltos con su propio estilo. */}
             <div className="tj-deslizador-etiqueta mb-2">
               {es ? "Referencia prevista" : "Planned reference"}
             </div>
@@ -159,7 +133,6 @@ export function SavingsCalculator() {
             </div>
           </div>
 
-          {/* Alternativa suscripción */}
           <div className="mb-5">
             <div className="tj-deslizador-etiqueta mb-2">
               {es ? "Alternativa por suscripción" : "Subscription alternative"}
@@ -177,7 +150,6 @@ export function SavingsCalculator() {
                 </button>
               ))}
             </div>
-            {/* Slider fino para el precio mensual — unified pill style */}
             <div className="flex items-center justify-between mb-2">
               <span className="tj-deslizador-etiqueta">{es ? "Precio mensual" : "Monthly price"}</span>
               <span className="tj-deslizador-valor">
@@ -209,7 +181,6 @@ export function SavingsCalculator() {
             </div>
           </div>
 
-          {/* Años de uso — unified pill style */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <span className="tj-deslizador-etiqueta">{es ? "Años de uso" : "Years of use"}</span>
@@ -239,7 +210,6 @@ export function SavingsCalculator() {
           </div>
         </div>
 
-        {/* Right: results card */}
         <div className="tj-ficha relative">
           <p className="tj-ficha-barra">
             <span>{es ? "Frente a una suscripción" : "Against a subscription"}</span>
@@ -248,8 +218,6 @@ export function SavingsCalculator() {
             </span>
           </p>
           <div className="tj-ficha-cuerpo">
-          {/* El resultado que resume la tarjeta, dicho en voz alta para
-              quien no ve la pantalla: ver ResultadoAnunciado. */}
           <ResultadoAnunciado
             texto={
               es
@@ -258,7 +226,6 @@ export function SavingsCalculator() {
             }
           />
 
-          {/* Headline savings */}
           <div className="mb-5">
             <div className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
               {es ? "Diferencia ilustrativa" : "Illustrative difference"}
@@ -270,13 +237,11 @@ export function SavingsCalculator() {
               <span className="tnum" style={{ fontSize: 16, fontWeight: 600, color: savingsColor }}>
                 {fmtNum(Math.abs(c.savingsPct), 0)}
                 {pctSep(lang)}{" "}
-                {/* Un «72 %» suelto no decía de qué. */}
                 {c.savings >= 0 ? (es ? "menos" : "less") : (es ? "más" : "more")}
               </span>
             </div>
           </div>
 
-          {/* Comparison bar chart SVG */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
@@ -284,10 +249,8 @@ export function SavingsCalculator() {
               </span>
             </div>
             <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full" style={{ height: "auto", display: "block" }} aria-label={es ? "Comparación de pago acumulado" : "Cumulative cost comparison"} role="img">
-              {/* subscription area (growing) */}
               <path d={subAreaPath} fill="rgb(var(--pnl-neg) / 0.1)" />
               <path d={subPath} fill="none" stroke="rgb(var(--pnl-neg))" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-              {/* CountPips flat line */}
               <line
                 x1={padX}
                 y1={cpLineY}
@@ -297,7 +260,6 @@ export function SavingsCalculator() {
                 strokeWidth="2"
                 strokeDasharray="5 3"
               />
-              {/* start baseline */}
               <line x1={padX} y1={svgH - padY} x2={svgW - padX} y2={svgH - padY} stroke="rgb(var(--divider) / 0.16)" strokeWidth="1" />
             </svg>
             <div className="flex items-center gap-4 mt-2 tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
@@ -312,7 +274,6 @@ export function SavingsCalculator() {
             </div>
           </div>
 
-          {/* Result tiles */}
           <div className="grid grid-cols-2 gap-3.5 mb-4">
             <Result label={es ? "Referencia CountPips" : "CountPips reference"} value={fmtUsd(c.cpPrice)} color="rgb(var(--accent-base))" />
             <Result label={es ? "Alternativa acumulada" : "Cumulative alternative"} value={fmtUsd(c.altTotal)} color="rgb(var(--pnl-neg))" />
@@ -320,7 +281,6 @@ export function SavingsCalculator() {
             <Result label={es ? `Reinvertido al ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} anual` : `Compounded at ${fmtPct(TASA_REINVERSION_ANUAL, lang, 0)} p.a.`} value={fmtUsd(c.compoundAdvantage)} color="rgb(var(--pnl-pos))" />
           </div>
 
-          {/* Break-even note */}
           <div
             className="border-t border-[var(--line)] pt-4"
           >

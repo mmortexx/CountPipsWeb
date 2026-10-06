@@ -4,62 +4,16 @@ import { useLang } from "@/lib/i18n";
 import { METRICS, nivelDisciplina } from "@/lib/trading/data";
 import { fmtPct } from "@/lib/trading/format";
 
-/* ------------------------------------------------------------------ */
-/* StatusBar (institutional WinUI 3 / Bloomberg-style status bar —    */
-/* restructured R25-1a to match the real app's MainWindow.xaml L286-331) */
-/* ------------------------------------------------------------------ */
-
 /**
- * StatusBar — institutional WinUI 3 / Bloomberg-Terminal-style status
- * bar that sits below the demo's tabpanel. Restructured in R25-1a to
- * match the real app's status bar (MainWindow.xaml L286-331), which
- * has three regions:
- *
- *   ┌──────────────────────────────────────────────────────────────────────┐
- *   │ ● Disciplina: 84 %        Guardado automático en este navegador    v0.1.0 │
- *   └──────────────────────────────────────────────────────────────────────┘
- *
- *   LEFT    — discipline pip + "Disciplina: NN %" text. The
- *             % is the deterministic demo's compliancePct — the share
- *             of trades that respected the plan. Reads as the
- *             institutional "are you trading well?" heartbeat the real
- *             app shows (the real app's text + color are managed by
- *             RefreshRiskStatus() in code-behind; the demo uses a
- *             stable deterministic value).
- *   CENTER  — "Guardado automático en este navegador" / "Auto-saved on your
- *             machine" (the real app's Status_DataNote resource,
- *             Strings/{es-ES,en-GB}/Resources.resw L31). Replaces the
- *             pre-R25-1a live mini-metrics ticker (cycling Net P&L /
- *             Win Rate / Expectancy / Trades every 4 s) — the real app
- *             doesn't have a metrics ticker in the status bar.
- *   RIGHT   — version text "v0.1.0" with tabular numerals (mirrors the
- *             real app's VersionText, managed by code-behind from the
- *             assembly). Replaces the pre-R25-1a clock + data text +
- *             keyboard / fullscreen / share / reset icon buttons — the
- *             real app doesn't have those in the status bar (fullscreen
- *             is via the title bar's Maximize button, keyboard
- *             shortcuts are still accessible via the `?` key, no
- *             share/reset affordance in the native chrome).
- *
- * Layout: `.liquid-glass border-t border-[rgb(var(--divider)/0.1)] h-7 flex items-center
- * justify-between px-3 text-[11px] text-tertiary tnum` — the
- * institutional status-bar pattern. The bottom corners are rounded
- * automatically by the parent window's `overflow-hidden` +
- * `rounded-[2px]`.
- *
- * The pre-R25-1a `onOpenShortcuts` + `onReset` props are removed — the
- * buttons that used them are gone (the keyboard-shortcuts overlay is
- * still accessible via the `?` key, handled by AppDemo's capture-phase
- * keydown listener; reset is handled by clicking the Dashboard tab).
+ * Barra de estado bajo el panel de la demo, como la de la app
+ * (MainWindow.xaml L286-331), con tres zonas: pip de disciplina con
+ * «Disciplina: NN %» (el cumplimiento de la muestra), nota de guardado
+ * (recurso Status_DataNote de la app) y la versión.
  */
 export function StatusBar() {
   const { t, lang } = useLang();
 
-  // Compliance % from the deterministic demo metrics — the share of
-  // trades that respected the plan. Used as the "discipline" status
-  // value, mirroring the real app's RefreshRiskStatus() output (which
-  // derives text + color from a similar compliance calculation against
-  // real trades). Capped at [0, 1] for safety.
+  // Cumplimiento de la muestra, acotado a [0, 1].
   const compliance = Math.max(0, Math.min(1, METRICS.compliancePct));
   const nivel = nivelDisciplina(compliance);
   const isHealthy = nivel === "alta";
@@ -67,8 +21,7 @@ export function StatusBar() {
 
   return (
     <div className="demo-chrome demo-hairline border-t relative flex items-center justify-between px-3 sm:px-4 h-7 text-[11px] text-tertiary select-none gap-2">
-      {/* LEFT — pip de disciplina + texto. Estático, como el
-          DisciplineStatus de la app: indicador, no navegación. */}
+      {/* Estático, como el DisciplineStatus de la app: indicador, no navegación. */}
       <span
         className="flex items-center gap-2 min-w-0"
         title={`${t("discipline")}: ${complianceLabel}`}
@@ -87,27 +40,16 @@ export function StatusBar() {
         </span>
       </span>
 
-      {/* CENTRO — nota de guardado */}
       <div className="hidden sm:flex items-center gap-3 truncate ml-3">
         <span>{t("autoSaved")}</span>
       </div>
 
-      {/* DERECHA — versión, en texto terciario y cifras tabulares, igual
-          que el VersionText de la app. */}
       <span className="tnum tabular-nums ml-auto shrink-0 font-mono">v0.1.0</span>
     </div>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* DisciplineLED                                                      */
-/* ------------------------------------------------------------------ */
-
-/**
- * DisciplineLED — pip fijo, sin pulso ni halo. Verde = disciplina
- * sana, ámbar = aviso. Un disco redondo aquí se leía como semáforo
- * de consumo; el canto de 1 px es el del resto de la mesa.
- */
+/** Pip fijo, sin pulso ni halo: verde con disciplina sana, ámbar con aviso. Canto de 1 px, como el resto. */
 function DisciplineLED({ healthy }: { healthy: boolean }) {
   const colorVar = healthy ? "--pnl-pos" : "--pnl-warn";
   return (

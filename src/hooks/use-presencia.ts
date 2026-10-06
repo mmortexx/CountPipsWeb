@@ -3,60 +3,34 @@
 import { useEffect, useState } from "react";
 
 /**
- * Mantiene un elemento en el árbol el tiempo justo para que se despida.
+ * Mantiene un elemento en el árbol el tiempo justo para que se despida: React
+ * lo quita en cuanto la condición pasa a falso y lo que no está no se anima.
  *
- * ── EL PROBLEMA QUE RESUELVE ──────────────────────────────────────────
- * Una animación de ENTRADA no necesita nada: la clase ya está puesta
- * cuando el elemento nace. Una de SALIDA sí, porque React quita el
- * elemento del árbol en el mismo instante en que la condición pasa a
- * falso, y lo que no está no se puede animar.
+ * `montado` pasa a true en cuanto `abierto` lo hace y vuelve a false pasados
+ * `ms`; `saliendo` marca ese intervalo para ponerle la clase de despedida. El
+ * temporizador se cancela si se reabre antes, para no desmontar el overlay
+ * recién reabierto.
  *
- * Eso es lo único que hacía `AnimatePresence` de framer-motion en los
- * overlays de este sitio, y era la razón por la que la paleta de
- * comandos y la ayuda de atajos arrastraban la biblioteca entera.
- *
- * ── CÓMO ──────────────────────────────────────────────────────────────
- * `montado` se pone a true en cuanto `abierto` lo hace, y solo vuelve a
- * false cuando ha pasado `ms`. `saliendo` marca ese intervalo, para que
- * el componente pueda ponerle la clase de despedida.
- *
- * El temporizador se cancela si el elemento vuelve a abrirse antes de
- * tiempo: sin eso, abrir y cerrar rápido dejaba un temporizador vivo que
- * desmontaba el overlay recién reabierto.
- *
- * ── «REDUCIR MOVIMIENTO» ──────────────────────────────────────────────
- * No se consulta aquí a propósito. Quien pide menos movimiento no pide
- * menos ESPERA: si se acortara el plazo, la clase de salida seguiría
- * puesta y el navegador la ignoraría igualmente por el `@media` de la
- * hoja. El coste de mantener 180 ms un elemento que ya no se ve es
- * ninguno; el de tener dos fuentes de verdad para la misma duración, sí.
+ * No consulta «reducir movimiento» a propósito: eso no pide menos espera, y el
+ * `@media` de la hoja ya ignora la clase de salida. Acortar el plazo aquí sería
+ * una segunda fuente de verdad para la misma duración.
  */
 export function usePresencia(abierto: boolean, ms = 180) {
   const [montado, setMontado] = useState(abierto);
   const [anterior, setAnterior] = useState(abierto);
 
-  /* EL MONTAJE SE AJUSTA DURANTE EL RENDER, NO EN UN EFECTO.
-     Hacerlo en un efecto significa un render con el panel aún ausente y
-     otro con él dentro: el visitante ve un fotograma en blanco entre que
-     pulsa ⌘K y aparece la paleta. React admite ajustar estado durante el
-     render comparándolo con el valor anterior —vuelve a renderizar antes
-     de pintar nada—, y es además lo que pide la regla
-     `react-hooks/set-state-in-effect`, que marcaba la primera versión de
-     este hook. */
+  /* El montaje se ajusta durante el render, no en un efecto: con efecto hay un
+     render con el panel ausente y se ve un fotograma en blanco al abrir. Es
+     además lo que exige `react-hooks/set-state-in-effect`. */
   if (abierto !== anterior) {
     setAnterior(abierto);
     if (abierto) setMontado(true);
   }
 
   useEffect(() => {
-    // El desmontaje sí es diferido por naturaleza: hay que esperar a que
-    // la despedida termine. El `setState` va dentro del temporizador, no
-    // en el cuerpo del efecto.
+    // El desmontaje espera a que termine la despedida; el `setState` va en el temporizador.
     if (abierto || !montado) return;
     const t = setTimeout(() => setMontado(false), ms);
-    // Si vuelve a abrirse antes de tiempo, el temporizador se cancela:
-    // sin esto, abrir y cerrar rápido dejaba uno vivo que desmontaba el
-    // overlay recién reabierto.
     return () => clearTimeout(t);
   }, [abierto, montado, ms]);
 

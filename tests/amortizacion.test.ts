@@ -2,9 +2,8 @@ import { describe, expect, it } from "vitest";
 import { amortizacion } from "@/lib/precios";
 
 /**
- * Con Pro, 5 $/mes y 1 año, el escenario de coste decía «A partir del mes
- * 50, la suscripción ya ha costado más que el pago único» con el gráfico
- * acabando en el mes 12 y la cifra grande diciendo lo contrario.
+ * El mes de amortización fuera del horizonte elegido (por ejemplo Pro, 5 $/mes
+ * y 1 año) debe decirlo, y no contradecir al gráfico.
  */
 describe("amortizacion", () => {
   it("fuera del horizonte elegido lo dice", () => {

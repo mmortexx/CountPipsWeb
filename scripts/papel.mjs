@@ -1,26 +1,12 @@
 /**
- * PAPEL — ¿sale entero lo que se imprime?
- *
- * ── El fallo que existe para cazar ────────────────────────────────────
- * El sistema de aparición del sitio deja cada pieza en `opacity: 0` hasta
- * que entra en el viewport. Al imprimir, el navegador NO recorre la
- * página: compone el documento tal como está en ese instante. Todo lo que
- * el visitante no hubiera bajado a ver salía EN BLANCO, y salía como un
- * hueco del tamaño del bloque — que es peor que no salir, porque el papel
- * parece completo y no lo está.
- *
- * Medido el 2026-09-20 sobre /privacidad recién cargada: las listas de
- * «Qué NO se recoge» y «Quién más los ve» —las que dicen qué hace y qué no
- * hace la web con tus datos— se imprimían vacías. Un PDF de la política de
- * privacidad al que le faltan cláusulas.
- *
- * ── Qué comprueba ─────────────────────────────────────────────────────
- * Carga cada página SIN desplazarse —que es como llega alguien que pulsa
- * «Imprimir» nada más entrar—, emula `media: print` y busca texto que
- * exista en el documento pero no vaya a dejar tinta: apagado por
- * `opacity`, por `visibility`, o por un ancestro en cualquiera de esas
- * dos. Lo que está oculto a propósito con `display: none` o marcado
- * `.tj-no-print` no cuenta: eso es una decisión, no una pérdida.
+ * PAPEL: comprueba que sale entero lo que se imprime. El sistema de aparición
+ * deja cada pieza en `opacity: 0` hasta que entra en el viewport, y al imprimir
+ * el navegador compone el documento tal como está, sin recorrerlo: lo que no se
+ * hubiera bajado a ver saldría en blanco, con el papel pareciendo completo.
+ * La guarda carga cada página sin desplazarse, emula `media: print` y busca
+ * texto apagado por `opacity`, `visibility` o un ancestro. Lo oculto a
+ * propósito (`display: none`, `.tj-no-print`) no cuenta. Un fallo se arregla en
+ * el bloque `@media print` del final de `globals.css`.
  *
  * Uso:  node scripts/papel.mjs --serve out
  */
@@ -33,9 +19,7 @@ const args = process.argv.slice(2);
 const dir = args.includes("--serve") ? args[args.indexOf("--serve") + 1] : "out";
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-/* Lo que la gente imprime o guarda en PDF: los cuatro documentos legales,
-   el glosario y su ficha. Se comprueban los dos idiomas de un legal y del
-   glosario, porque las plantillas son las mismas pero el contenido no. */
+// Lo que se imprime o guarda en PDF: los documentos legales, el glosario y su ficha, en los dos idiomas.
 const RUTAS = [
   "/aviso-legal",
   "/privacidad",
@@ -135,7 +119,7 @@ let fallos = 0;
 for (const ruta of RUTAS) {
   const pag = await ctx.newPage();
   try {
-    // A propósito SIN desplazarse: así llega quien imprime nada más entrar.
+    // Sin desplazarse, a propósito: así llega quien imprime nada más entrar.
     await pag.goto(base + ruta, { waitUntil: "networkidle" });
     await pag.emulateMedia({ media: "print" });
     await pag.waitForTimeout(500);

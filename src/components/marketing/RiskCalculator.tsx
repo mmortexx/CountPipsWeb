@@ -20,12 +20,8 @@ import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 
 /**
- * RiskCalculator — calculadora de tamaño de posición institucional y multi-activo.
- *
- * Admite:
- *  - Acciones / Cripto (unidades o monedas)
- *  - Forex (Lotes estándar, mini y micro)
- *  - Futuros (Contratos con multiplicador por punto como ES, NQ, MES, MNQ, GC, CL)
+ * Calculadora de tamaño de posición: acciones/cripto (unidades), forex (lotes
+ * estándar, mini y micro) y futuros (contratos con multiplicador por punto).
  */
 
 const RISK_MIN = 0.25;
@@ -35,8 +31,7 @@ const RISK_MARKS = [0.25, 1, 2, 3];
 
 type AssetMode = MercadoPlan;
 
-/* Una sola lista para el conmutador y para el plan copiado, que escribía
-   el identificador interno («EQUITIES»). */
+/* Una sola lista para el conmutador y para el plan copiado. */
 const MODOS_ACTIVO: { id: AssetMode; labelEs: string; labelEn: string }[] = [
   { id: "equities", labelEs: "Acciones / cripto", labelEn: "Stocks / Crypto" },
   { id: "forex", labelEs: "Forex (lotes)", labelEn: "Forex (Lots)" },
@@ -51,9 +46,8 @@ const LOTES: { id: TipoLote; labelEs: string; labelEn: string }[] = [
 
 export function RiskCalculator() {
   const { lang } = useLang();
-  /* El espacio duro antes del signo en espanol, pegado en ingles, es
-     `PCT_SEP` de lib/trading/format.ts: aqui se llama a traves de
-     `pctSep(lang)`, sin repetirlo. */
+  /* Separador antes del %: espacio duro en español, pegado en inglés
+     (`PCT_SEP` de lib/trading/format.ts). */
   const PCT = pctSep(lang);
   const es = lang === "es";
 
@@ -69,7 +63,6 @@ export function RiskCalculator() {
     { label: es ? "100\u00a0k $" : "$100k", v: 100000 },
   ];
 
-  // ── Estado editable: la operación del usuario ─────────────────────
   const [assetMode, setAssetMode] = useState<AssetMode>("equities");
   const [futuresContractId, setFuturesContractId] = useState("es");
   const [forexLotType, setForexLotType] = useState<TipoLote>("standard");
@@ -91,7 +84,6 @@ export function RiskCalculator() {
 
   const parForex = useMemo(() => PARES_FOREX.find((p) => p.id === parForexId) ?? PARES_FOREX[0], [parForexId]);
 
-  // ── Cálculo en vivo adaptado al activo ───────────────────────────
   const c = useMemo(() => {
     const plan = calculaPlan({
       mercado: assetMode,
@@ -130,9 +122,8 @@ export function RiskCalculator() {
     };
   }, [entry, stop, target, balance, riskPct, assetMode, selectedFutures, forexLotType, parForex, tipoReferencia, includeFriction, kellyWinRate, es]);
 
-  /* Los helpers de format.ts, no un `Intl.NumberFormat` propio: el propio
-     agrupaba sin millares «1234,56 $» en español y ponía «-» en vez de «−»,
-     distinto del resto de la web. */
+  /* Helpers de format.ts, no un `Intl.NumberFormat` propio: dan millares y el
+     signo «−» como el resto de la web. */
   const fmtUsd = useCallback((n: number) => fmtMoney(n, lang), [lang]);
 
   const fmtNum = useCallback(
@@ -141,12 +132,10 @@ export function RiskCalculator() {
   );
 
   const tramos = c.valid ? tramosRiesgoBeneficio(c.riesgoReal, Math.max(0, c.beneficioNeto)) : { riesgo: 0, beneficio: 0 };
-  /* Sin un plan válido, lo que depende de él no se enseña: un tamaño de 0
-     junto a «riesgo de ruina 100 %» se lee como un resultado, no como un
-     hueco. El VaR sí se enseña, porque solo depende del balance y del %. */
+  /* Sin plan válido no se enseña lo que depende de él. El VaR sí, porque solo
+     depende del balance y del %. */
   const siPlan = (s: string) => (c.valid ? s : "—");
-  /* El mismo número en la tarjeta, en el anuncio y en el plan copiado:
-     la tarjeta decía «0,0 contratos» y la copia «0,03». */
+  /* El mismo número en la tarjeta, en el anuncio y en el plan copiado. */
   const tamanoTxt = `${fmtNum(c.tamano, c.decimalesTamano)} ${c.sizeLabel}`;
   /* Medio Kelly ajustado al paso y a los extremos del control de riesgo. */
   const kellyAplicable =
@@ -164,9 +153,8 @@ export function RiskCalculator() {
     setTarget(t);
   }, []);
 
-  /* Al volver a un mercado, los precios de ejemplo son los del contrato o
-     el par que sigue elegido: volvía a Futuros con CL marcado y precios
-     de ES, y salía «0,0 contratos». */
+  /* Al volver a un mercado, los precios de ejemplo son los del contrato o par
+     que sigue elegido. */
   const handleAssetChange = useCallback(
     (mode: AssetMode) => {
       setAssetMode(mode);
@@ -218,12 +206,6 @@ export function RiskCalculator() {
         : es
           ? `Comisión de ${fmtMoney(0.005, lang, { decimals: 3 })} por unidad y un céntimo de deslizamiento`
           : `${fmtMoney(0.005, lang, { decimals: 3 })} commission per unit and one cent of slippage`;
-
-  /* Aqui vivia `chipStyle`, que vestia a mano cada opcion de los tres
-     grupos de esta calculadora. Ya no hace falta: los grupos son
-     conmutadores segmentados y el estilo del elegido lo pone
-     `.tj-segmentado` a partir de `aria-pressed`, que es ademas lo que
-     un lector de pantalla necesita para anunciarlo. */
 
   const numInput = (label: string, value: number, onChange: (n: number) => void, ariaLabel: string) => (
     <label className="block min-w-0">
@@ -314,10 +296,8 @@ export function RiskCalculator() {
             <div id="riesgo-mercado" className="tj-deslizador-etiqueta mb-2">
               {es ? "Mercado / Instrumento" : "Market / Instrument"}
             </div>
-            {/* Conmutador, no tres botones sueltos: con `flex-wrap` el
-                tercero se quedaba solo en una segunda fila y con otro
-                ancho, y tres opciones que son lo mismo se veian como dos
-                cosas y una suelta. Ver `.tj-segmentado`. */}
+            {/* Conmutador segmentado (`.tj-segmentado`): el estilo del elegido
+                sale de `aria-pressed`. */}
             <div className="tj-segmentado tj-segmentado-apila" role="group" aria-labelledby="riesgo-mercado">
               {MODOS_ACTIVO.map((m) => (
                 <button
@@ -359,8 +339,8 @@ export function RiskCalculator() {
             </div>
           )}
 
-          {/* Subselector para Forex: el par fija el tamaño del pip y la
-              divisa en que se cobra; sin él, USD/JPY salía a 0,0033 lotes. */}
+          {/* Subselector de Forex: el par fija el tamaño del pip y la divisa en
+              que se cobra. */}
           {assetMode === "forex" && (
             <div className="mb-5 border-y border-[var(--ficha-division)] py-3 space-y-3">
               <div>
@@ -473,9 +453,7 @@ export function RiskCalculator() {
             </div>
           </div>
 
-          {/* Balance: se escribe; los cuatro importes son atajos. Solo con
-              los atajos, quien tuviera 5.000 $ o 250.000 $ no podía
-              calcular su caso. */}
+          {/* Balance: se escribe; los cuatro importes son atajos. */}
           <div>
             <label className="flex items-center justify-between gap-3 mb-2">
               <span id="riesgo-balance" className="tj-deslizador-etiqueta">
@@ -488,8 +466,6 @@ export function RiskCalculator() {
                 className="tj-campo tnum w-36 min-h-[44px] px-3 text-base font-medium text-primary text-right"
               />
             </label>
-            {/* Aqui no hace falta apilar: son cuatro etiquetas de cuatro
-                caracteres y caben en fila hasta en 390 px. */}
             <div className="tj-segmentado" role="group" aria-labelledby="riesgo-balance">
               {balances.map((b) => (
                 <button
@@ -504,11 +480,8 @@ export function RiskCalculator() {
             </div>
           </div>
 
-          {/* Riesgo y precios van con el resto de lo que se escribe: estaban
-              dentro de la tarjeta de resultados y la columna de la izquierda
-              acababa a media altura. Tres precios en fila también en móvil:
-              en dos columnas «Objetivo» quedaba solo. */}
-          {/* Slider de riesgo */}
+          {/* Riesgo y precios van con lo que se escribe, en la columna izquierda.
+              Los tres precios van en fila también en móvil. */}
           <div className="mb-5 mt-6">
             <div className="flex items-center justify-between mb-2">
               <span className="tj-deslizador-etiqueta">
@@ -525,10 +498,8 @@ export function RiskCalculator() {
               onChange={(e) => setRiskPct(parseFloat(e.target.value))}
               aria-label={es ? "Porcentaje de riesgo por operación" : "Risk percentage per trade"}
               aria-valuetext={`${fmtNum(riskPct)}${PCT}`}
-              /* `.tj-range`, como los otros deslizadores del sitio. Era
-                 `appearance-none` con 8 px de alto y sin regla de bolita:
-                 en WebKit eso deja el control sin agarradera visible, y
-                 8 px no se cogen con el dedo. */
+              /* `.tj-range` trae la bolita y los 44 px; sin ella WebKit deja el
+                 control sin agarradera visible. */
               className="tj-range w-full"
               style={
                 {
@@ -536,9 +507,8 @@ export function RiskCalculator() {
                 } as CSSProperties
               }
             />
-            {/* Cada marca bajo el punto donde la bolita marca ese valor
-                (22 px es medio tirador). Repartidas a partes iguales, la
-                bolita en «1,00 %» quedaba a un tercio de la marca «1 %». */}
+            {/* Cada marca bajo el punto donde la bolita marca ese valor (22 px
+                es medio tirador); repartirlas a partes iguales las descuadra. */}
             <div className="relative mt-1 h-[18px] text-[12px] text-tertiary tnum">
               {RISK_MARKS.map((m) => (
                 <span
@@ -578,11 +548,9 @@ export function RiskCalculator() {
             </span>
           </p>
           <div className="tj-ficha-cuerpo">
-          {/* Lo que se ha venido a saber, en una frase, para quien no ve
-              la pantalla: el panel son doce líneas y leerlas todas en
-              cada tecla sería ruido. Cuando la entrada no es válida no
-              se dice nada — de eso ya avisa el `role="alert"` de abajo,
-              y dos anuncios a la vez se pisan. */}
+          {/* Resumen en una frase para el lector de pantalla. Con entrada
+              inválida no se dice nada: ya avisa el `role="alert"` de abajo y
+              dos anuncios a la vez se pisan. */}
           <ResultadoAnunciado
             texto={
               !c.valid
@@ -608,8 +576,7 @@ export function RiskCalculator() {
                   : "Entry, stop and target must be distinct and positive to calculate size."}
             </div>
           ) : null}
-          {/* Sin `role`: el anuncio de arriba ya lo lee, y dos anuncios a
-              la vez se pisan. */}
+          {/* Sin `role`: el anuncio de arriba ya lo lee. */}
           {avisoNoCabe ? (
             <p
               className="mb-4 border-y border-[var(--ficha-division)] py-2.5 text-[13px] leading-[1.5]"
@@ -630,21 +597,10 @@ export function RiskCalculator() {
             </p>
           ) : null}
 
-          {/* Resultados — la rejilla cuenta sus columnas contra SU ancho,
-              no contra el de la ventana. Con `sm:grid-cols-3` pedia tres
-              columnas siempre que la ventana pasara de 640, y en
-              /features/metricas esta calculadora vive en una columna
-              estrecha: a 1024 px de ventana la rejilla medía 324 px, la
-              celda 100 y el hueco de la cifra 66, mientras «100,10 US$»
-              pedia 84 — se partia en dos lineas. A 1280 y a 1440 la misma
-              rejilla mide 432 y va sobrada, que es por lo que no se veia
-              mirando solo los extremos.
-
-              `auto-fit` + `minmax(8.25rem, 1fr)` deja que sea el ancho
-              real quien lo decida. Medido, da el mismo reparto de siempre
-              donde ya estaba bien —3 columnas a 1280, 1440 y en la
-              herramienta a 768; 2 en movil— y baja a 2 solo en el caso
-              que se rompia. */}
+          {/* Resultados: la rejilla cuenta sus columnas contra su propio ancho, no
+              el de la ventana (`auto-fit` + `minmax(8.25rem, 1fr)`). En
+              /features/metricas la calculadora vive en una columna estrecha y
+              con `sm:grid-cols-3` las cifras se partían en dos líneas. */}
           <div className="grid grid-cols-[repeat(auto-fit,minmax(8.25rem,1fr))] gap-x-4 mb-2">
             <Result label={es ? "Riesgo total" : "Total risk"} value={siPlan(fmtUsd(c.riesgoTotal))} color={c.valid && c.riesgoTotal > 0 ? "rgb(var(--pnl-neg))" : "var(--ink-2)"} />
             <Result label={es ? "Beneficio neto" : "Net profit"} value={siPlan(fmtUsd(c.beneficioNeto))} color={!c.valid || c.beneficioNeto === 0 ? "var(--ink-2)" : c.beneficioNeto > 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
@@ -656,10 +612,8 @@ export function RiskCalculator() {
 
           {/* Stats adicionales: valor posición, apalancamiento, VaR 95% y riesgo de ruina */}
           <div
-            /* La clase va en CADA celda y no como variante `[&>div]:`:
-               Tailwind no compone una clase propia dentro de un variante
-               arbitrario y ahi no llegaba a generar regla ninguna —
-               comprobado en la hoja construida. */
+            /* La clase va en cada celda y no como variante `[&>div]:`: Tailwind
+               no genera regla para una clase propia dentro de ese variante. */
             className="mb-6 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-[var(--line)] pt-4 sm:grid-cols-4"
           >
             <div className="caja-cifra flex flex-col">
@@ -722,10 +676,8 @@ export function RiskCalculator() {
               </span>
             </div>
             <div className="relative h-2 rounded-[2px] overflow-hidden bg-[rgb(var(--divider)/0.13)]">
-              {/* Los dos tramos crecen desde el centro, cada uno hacia su
-                  lado, y por eso miden la mitad: anclados a los bordes, el
-                  mayor de los dos se iba al 100 % del carril y tapaba al
-                  otro entero —con 1:3 la parte roja desaparecía—. */}
+              {/* Los dos tramos crecen desde el centro y miden la mitad cada
+                  uno; anclados a los bordes, el mayor taparía al otro. */}
               <div
                 className="absolute top-0 h-full bg-[rgb(var(--pnl-neg))]"
                 style={{ right: "50%", width: `${tramos.riesgo}%` }}
@@ -781,8 +733,7 @@ export function RiskCalculator() {
                   onChange={(e) => setKellyWinRate(parseInt(e.target.value, 10))}
                   aria-label={es ? "Win rate para Kelly" : "Win rate for Kelly"}
                   aria-valuetext={`${fmtNum(kellyWinRate, 0)}${PCT}`}
-                  /* `.tj-range` como el resto: con `appearance-none` y sin
-                     regla de bolita, en WebKit no se veía la agarradera. */
+                  /* `.tj-range`: sin ella WebKit no muestra la agarradera. */
                   className="tj-range w-full"
                   style={{ "--f": ((kellyWinRate - 35) / 40) } as CSSProperties}
                 />
@@ -841,12 +792,9 @@ export function RiskCalculator() {
 
 function Result({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    /* `caja-cifra` + `cifra-lg`: la cifra se mide contra el ancho de SU
-       celda y encoge de 18 a 13,8 px antes que partirse. Con cuerpo fijo
-       se partia por la mitad —«0,20 US|$», «$100.1|0», «20,00 accion|es»—
-       en cuanto la celda bajaba de unos 100 px, que es lo que pasa cuando
-       esta calculadora vive en la columna estrecha de /features/metricas.
-       Una cifra rota en dos lineas deja de leerse como un dato. */
+    /* `caja-cifra` + `cifra-lg`: la cifra se mide contra el ancho de su celda y
+       encoge (de 18 a 13,8 px) antes que partirse, como en la columna
+       estrecha de /features/metricas. */
     <div
       className="caja-cifra relative flex min-w-0 flex-col border-t border-[var(--line)] py-3.5"
     >

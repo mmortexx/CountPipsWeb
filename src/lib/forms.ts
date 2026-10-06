@@ -1,19 +1,11 @@
 /**
- * forms.ts — envío real de formularios desde un sitio estático.
+ * Envío de formularios desde un sitio estático (`output: "export"`, sin
+ * servidor propio): van a Web3Forms, que los reenvía al buzón de la access key.
+ * La key es pública por diseño (identifica el buzón, no autoriza a leer) y se
+ * lee de `NEXT_PUBLIC_WEB3FORMS_KEY` para poder rotarla sin tocar componentes.
  *
- * El sitio se publica con `output: "export"` en GitHub Pages, así que no hay
- * servidor propio donde recibir un POST. Los envíos van a Web3Forms, que
- * reenvía cada formulario al buzón asociado a la access key.
- *
- * Sobre la access key: en Web3Forms es pública por diseño — identifica el
- * buzón de destino, no autoriza a leer nada. Aun así se lee de
- * `NEXT_PUBLIC_WEB3FORMS_KEY` (inlineada en build) en vez de estar escrita
- * en el código, para poder rotarla sin tocar componentes.
- *
- * Regla de oro de este módulo: nunca devolver `ok: true` si el mensaje no
- * salió de verdad. Si no hay key, si la red falla o si Web3Forms rechaza el
- * envío, el llamante recibe un fallo y debe decírselo al usuario. Antes los
- * dos formularios animaban un "✓ enviado" sin mandar nada.
+ * Nunca se devuelve `ok: true` si el mensaje no salió de verdad: sin key, con
+ * la red caída o con un rechazo, el llamante recibe el fallo y debe decirlo.
  */
 
 const ENDPOINT = "https://api.web3forms.com/submit";
@@ -21,50 +13,28 @@ const ENDPOINT = "https://api.web3forms.com/submit";
 /** Cortamos a los 15 s: más allá, el usuario ya ha asumido que no va. */
 const TIMEOUT_MS = 15_000;
 
-/**
- * Debe escribirse como acceso literal completo a `process.env.X` para que
- * Next lo sustituya por el valor en build. Destructurarlo rompe el inlining.
- */
+// Acceso literal a `process.env.X`: Next solo lo sustituye en build así; destructurarlo rompe el inlining.
 const ACCESS_KEY = (process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? "").trim();
 
-/**
- * `false` cuando no se ha configurado la key (p. ej. en local sin
- * `.env.local`). Los formularios lo usan para avisar en desarrollo en vez de
- * fingir un envío correcto.
- */
+/** `false` sin key (p. ej. en local sin `.env.local`): los formularios avisan en vez de fingir un envío. */
 export const formsConfigured = ACCESS_KEY.length > 0;
 
 /**
- * URL del script de Google que guarda las altas en la hoja de cálculo
- * (la que devuelve Apps Script al implementar; termina en /exec). El
- * script vive en docs/waitlist-apps-script.js, con sus instrucciones.
- *
- * Es pública por el mismo motivo que la clave de Web3Forms: viaja en el
- * cliente porque el navegador tiene que llamarla. Solo permite añadir
- * filas, nunca leer la hoja.
+ * URL del Apps Script que guarda las altas en la hoja (termina en /exec; el
+ * script vive en docs/waitlist-apps-script.js). Es pública como la key de
+ * Web3Forms: solo permite añadir filas, nunca leer la hoja.
  */
 const WAITLIST_URL = (process.env.NEXT_PUBLIC_WAITLIST_URL ?? "").trim();
 
-/** Endpoint opcional para la aplicación cualificada de beta. Si no se
- * configura, reutiliza el Apps Script de la lista con el mismo contrato. */
+/** Endpoint opcional de la solicitud de beta; sin configurar, reutiliza el Apps Script de la lista. */
 const BETA_API_URL = (process.env.NEXT_PUBLIC_BETA_API_URL ?? WAITLIST_URL).trim();
 
 export const betaConfigured = BETA_API_URL.length > 0;
 
 /**
- * Buzón de soporte. ÚNICO sitio del proyecto donde se escribe.
- *
- * No es solo el respaldo cuando falla un envío: es la dirección que sale
- * en la tarjeta de contacto, al pie de la FAQ y en la llamada de "¿no
- * encuentras tu respuesta?". Esas tres la llevaban copiada a mano
- * mientras el formulario y la lista de espera sí importaban esta
- * constante — media web centralizada y media duplicada, que es como
- * empiezan estas cosas.
- *
- * Hoy no hay buzón: la web enseñaba una dirección que no existía y los
- * correos se perdían en silencio. Mientras sea `null`, el único canal es
- * el formulario (que sí llega) y ninguna pantalla muestra una dirección.
- * Cuando exista el buzón, se escribe AQUÍ y vuelve a aparecer solo.
+ * Buzón de soporte: único sitio donde se escribe (contacto, FAQ y formularios
+ * lo importan). Mientras sea `null` no hay buzón: el único canal es el
+ * formulario y ninguna pantalla muestra una dirección.
  */
 export const SUPPORT_EMAIL: string | null = null;
 
@@ -95,21 +65,16 @@ export type FormFields = {
 };
 
 /**
- * POST de JSON con timeout, compartido por los dos envíos.
- *
- * Devuelve `null` cuando la petición ni siquiera llegó a completarse (red
- * caída, CORS, timeout); en ese caso el llamante reporta "network". Si hubo
- * respuesta, entrega el status y el cuerpo ya parseado para que cada
- * servicio aplique su propio criterio de éxito.
+ * POST de JSON con timeout, compartido por los dos envíos. Devuelve `null` si
+ * la petición no llegó a completarse (red, CORS, timeout); si hubo respuesta,
+ * status y cuerpo parseado para que cada servicio aplique su criterio de éxito.
  */
 async function postJson(
   url: string,
   payload: unknown,
   /**
-   * `text/plain` convierte la petición en "simple" para el navegador: no
-   * hay comprobación previa (OPTIONS) y la respuesta se puede leer. Es
-   * obligatorio para Google Apps Script, que no sabe responder a esa
-   * comprobación. El cuerpo sigue siendo JSON en ambos casos.
+   * `text/plain` hace la petición "simple": sin OPTIONS previo y con
+   * respuesta legible. Obligatorio para Apps Script; el cuerpo sigue siendo JSON.
    */
   contentType: "application/json" | "text/plain;charset=utf-8" = "application/json"
 ): Promise<{ status: number; ok: boolean; data: unknown } | null> {
@@ -166,8 +131,7 @@ export async function submitForm(fields: FormFields): Promise<SubmitResult> {
 
   if (!res) return { ok: false, reason: "network" };
 
-  // Web3Forms devuelve 200 con `success: false` en algunos rechazos, así
-  // que no basta con mirar el status HTTP.
+  // Web3Forms devuelve 200 con `success: false` en algunos rechazos.
   const data = res.data as { success?: boolean } | null;
   if (!res.ok || !data?.success) return { ok: false, reason: "rejected" };
 
@@ -193,9 +157,7 @@ export type BetaApplicationResult =
   | { ok: true; duplicate: boolean }
   | { ok: false; reason: SubmitFailure };
 
-/** Envía una solicitud cualificada sin enviar datos financieros ni valores
- * de calculadoras. El endpoint definitivo puede ser un Worker; el fallback
- * al Apps Script permite probar el flujo antes de migrar la infraestructura. */
+/** Envía una solicitud de beta, sin datos financieros ni valores de calculadoras. */
 export async function joinBetaApplication(
   application: BetaApplicationData,
 ): Promise<BetaApplicationResult> {

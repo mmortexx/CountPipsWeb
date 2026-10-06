@@ -8,27 +8,9 @@ import { FECHA_PUBLICACION } from "@/lib/publicacion";
 import { LOCALE_FECHA } from "@/lib/trading/format";
 
 /**
- * StatsBandNew — la banda de credenciales de la home: tres cifras que
- * definen el producto (métricas calculadas · datos que no salen del
- * equipo · calculadoras abiertas).
- *
- * El encabezado de este fichero describía «4 columnas» y enumeraba
- * «30 días garantía / 149 $ pago único», dos datos que ya no existen:
- * la garantía se retiró porque no se ofrecen reembolsos, y el precio
- * nunca estuvo en esta banda. Un comentario que describe algo que el
- * código dejó de hacer engaña más que la falta de comentario, sobre
- * todo en un fichero donde lo que se documenta son CIFRAS.
- *
- * R24-1d — alineada con el vocabulario de tokens del sistema de
- * marketing (text-primary / text-tertiary en vez de los tokens
- * --ink / --ink-3 del "HTML de referencia" de Claude Design), con
- * utility classes del design system (.section-tight, .border-b,
- * .max-w-page) en vez de estilos inline hardcodeados, `tnum` en los
- * números grandes, una animación de entrada Reveal escalonada, y un
- * pequeño acento verde (accent dot) encima de cada estadística que
- * ancla visualmente la banda a la paleta de acento del resto de la
- * página (mismo patrón que los dots de reassurance pills en
- * PricingFAQ y los dots de value chip en ValueTestimonials).
+ * Banda de credenciales de la home: tres cifras que definen el producto
+ * (métricas calculadas, datos que no salen del equipo y calculadoras abiertas),
+ * cada una con su nota de fuente y la fecha de corte.
  */
 export function StatsBandNew({ herramientas }: { herramientas: number }) {
   const { lang } = useLang();
@@ -36,19 +18,8 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
   const stats = [
     { v: "40+", l: es ? "métricas institucionales calculadas con cada operación" : "institutional metrics computed with every trade" },
     { v: "0", l: es ? "servidores de CountPips con tus operaciones: viven en tu equipo" : "CountPips servers holding your trades: they live on your machine" },
-    /* ── LA TERCERA CIFRA ERA UNA FLECHA ──────────────────────────────
-       La cuarta estadística era «30 días de garantía» y se retiró bien:
-       ya no se ofrecen reembolsos. Pero el hueco se tapó con el glifo
-       «↗», renderizado al mismo tamaño que «40+» y «0 bytes», en fila
-       con ellos y con la misma tipografía de cifra. Una flecha no es un
-       dato, y puesta en el sitio de un dato el visitante la lee como si
-       lo fuera durante medio segundo — que es justo el medio segundo
-       que cuesta la credibilidad.
-
-       Se sustituye por un número REAL y comprobable: las calculadoras
-       abiertas que hay en la web, ahora mismo, sin registrarse. Sale de
-       `HERRAMIENTAS` (lo pasa la página al construir), así que si mañana se añade o se quita una, la
-       cifra cambia sola en vez de quedarse mintiendo. */
+    /* La tercera cifra es real y comprobable: las herramientas abiertas hoy.
+       La pasa la página al construir (`HERRAMIENTAS`), así que cambia sola. */
     {
       v: String(herramientas),
       l: es
@@ -56,10 +27,8 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
         : "free tools on the site: no sign-up, no install",
     },
   ];
-  /* FUENTE Y FECHA DE CORTE. Una cifra suelta se lee como reclamo; con su
-     llamada y la fecha a la que vale, como dato. Es lo que hacen las
-     gestoras. La fecha es
-     la de la publicación, no la del reloj de quien mira. */
+  /* Fuente y fecha de corte: una cifra con su llamada y su fecha se lee como
+     dato. La fecha es la de publicación, no la del reloj de quien mira. */
   const enlace = (href: string, texto: string) => (
     <Link href={href} className="link-underline-host text-secondary hover:text-primary">
       {texto}
@@ -83,10 +52,8 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
   return (
     <section className="section-tight relative">
       <div className="tj-container">
-        {/* Filete ENCIMA de cada cifra y no entre ellas: se lee como el
-            cuadro de un informe anual, no como tres tarjetas. */}
-        {/* En móvil, cifra y texto en la misma fila: apiladas, las tres
-            cifras eran casi una pantalla entera. */}
+        {/* Filete encima de cada cifra, no entre ellas. En móvil, cifra y texto
+            en la misma fila para no ocupar una pantalla entera. */}
         <div className="grid grid-cols-1 gap-y-5 sm:grid-cols-3 sm:gap-x-8">
           {stats.map((s, i) => (
             <Reveal key={s.v} delay={i * 0.06} y={10} className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-x-4 border-t border-[var(--line-2)] pt-5 sm:flex sm:flex-col sm:items-stretch sm:pt-6">

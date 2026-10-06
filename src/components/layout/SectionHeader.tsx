@@ -5,43 +5,14 @@ import { Reveal } from "@/components/tj/Reveal";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 
 /**
- * SectionHeader — la cabecera de una sección, con variantes de COMPOSICIÓN.
+ * Cabecera de sección con tres composiciones, que se alternan a lo largo de la
+ * página para que las secciones no parezcan un molde repetido.
  *
- * ── Por qué existe ────────────────────────────────────────────────────
- * Dieciocho secciones del sitio escribían su cabecera a mano, y las
- * dieciocho salían iguales: etiqueta, titular, párrafo, todo alineado a
- * la izquierda dentro de un `max-w-2xl`, con los mismos retardos de
- * aparición. Ese molde repetido es la razón principal de que la web se
- * lea como una plantilla — no los colores ni la tipografía, que ya
- * estaban resueltos, sino que cada sección se presenta exactamente igual
- * que la anterior durante todo el recorrido.
- *
- * Aquí no se trata de centralizar por centralizar: se trata de que
- * exista un sitio donde la composición sea una DECISIÓN y no una copia.
- *
- * ── Las variantes, y cuándo usar cada una ─────────────────────────────
- * No son estilos intercambiables: cada una dice algo distinto sobre lo
- * que viene debajo.
- *
- *  · `apilada` — el titular y su entradilla en bloque, a la izquierda.
- *    Es la de por defecto y la correcta cuando lo que sigue es una
- *    rejilla: la cabecera se aparta y deja que mande el contenido.
- *
- *  · `partida` — titular a la izquierda, entradilla en una segunda
- *    columna a la derecha. Usa el ancho real de la pantalla en vez de
- *    dejar medio lienzo vacío, y crea la asimetría que rompe la
- *    cadencia. Es la que usan las revistas para abrir un reportaje.
- *    Solo tiene sentido si hay entradilla y es de dos líneas o más.
- *
- *  · `centrada` — para un cierre o un momento de énfasis. Centrar es
- *    una decisión fuerte y por eso se reserva: si se centra todo, deja
- *    de significar nada.
- *
- * ── La regla que hace que esto sirva ──────────────────────────────────
- * La variante NO se elige sección por sección al gusto. Se ALTERNA a lo
- * largo de la página para que el recorrido tenga cadencia: si dos
- * secciones seguidas usan la misma, el lector vuelve a percibir el
- * molde y no habremos arreglado nada.
+ *  · `apilada` (por defecto): titular y entradilla en bloque a la izquierda;
+ *    la correcta cuando debajo hay una rejilla.
+ *  · `partida`: titular a la izquierda y entradilla en una segunda columna.
+ *    Solo con entradilla de dos líneas o más.
+ *  · `centrada`: para cierres o énfasis; se reserva para que siga significando algo.
  */
 
 export type ComposicionSeccion = "apilada" | "partida" | "centrada";
@@ -54,12 +25,7 @@ interface Props {
   /** La entradilla. En `partida` es la que ocupa la segunda columna. */
   entradilla?: ReactNode;
   composicion?: ComposicionSeccion;
-  /**
-   * Nivel del encabezado. Por defecto `h2`, que es lo correcto para una
-   * sección dentro de una página que ya tiene su `h1`. Se puede bajar a
-   * `h3` cuando la sección va anidada dentro de otra, para no romper el
-   * orden del árbol de accesibilidad.
-   */
+  /** Nivel del encabezado; `h3` cuando la sección va anidada en otra. */
   como?: "h2" | "h3";
   /** Clases extra para el contenedor. */
   className?: string;
@@ -79,10 +45,7 @@ export function SectionHeader({
   const esPartida = composicion === "partida" && Boolean(entradilla);
   const esCentrada = composicion === "centrada";
 
-  /* La medida se acota en `ch` y no en `em`: `ch` mide en anchos de
-     carácter, que es la unidad en la que de verdad se define cuántas
-     letras caben en una línea. Un titular admite menos medida que un
-     párrafo porque su cuerpo es mucho mayor. */
+  // Medida en `ch`; el titular admite menos que un párrafo por su cuerpo mayor.
   const bloqueTitulo = (
     <>
       {etiqueta ? (
@@ -103,9 +66,7 @@ export function SectionHeader({
       <p
         className={[
           "medida t-entradilla text-secondary",
-          /* En `partida` la entradilla es su propia columna y no lleva
-             separación superior: se alinea ópticamente con el titular.
-             En las otras dos va debajo, y sí. */
+          // En `partida` es su propia columna y no lleva separación superior.
           esPartida ? "" : "mt-4",
           esCentrada ? "mx-auto" : "",
         ].join(" ")}
@@ -119,16 +80,9 @@ export function SectionHeader({
     return (
       <div
         className={[
-          /* Dos columnas desde `lg`, con la del titular más estrecha:
-             un titular grande necesita menos ancho que un párrafo para
-             la misma cantidad de texto. El hueco entre columnas es
-             mayor que el de una rejilla normal a propósito — separa dos
-             voces distintas, no dos elementos iguales. */
+          // Dos columnas desde `lg`, la del titular más estrecha.
           "tj-split grid gap-y-6",
-          /* La entradilla baja un poco respecto al titular para que sus
-             primeras líneas no arranquen a la misma altura: alinearlas
-             exactamente hace que las dos columnas se lean como una
-             tabla en vez de como una apertura. */
+          // La entradilla baja un poco: alineadas, las columnas se leerían como tabla.
           "lg:items-end",
           className,
         ].join(" ")}

@@ -6,13 +6,9 @@ import { Reveal } from "@/components/tj/Reveal";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 
 /**
- * El índice de herramientas se lee como un catálogo de instrumentos,
- * no como una parrilla de tarjetas: nombre, qué entrega y un disparador.
- * Quien llega aquí busca una calculadora concreta, y la lista densa se
- * recorre más rápido que una parrilla de recuadros.
- *
- * Sin código de catálogo («H-01»…): numeraba un orden que no existe, y
- * era la columna que más pesaba de la fila sin decir nada.
+ * Índice de herramientas como catálogo denso: nombre, qué entrega y un
+ * disparador por fila. Sin código de catálogo («H-01»…): numeraría un orden
+ * que no existe.
  */
 
 const COLUMNAS = "sm:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_4.5rem]";
@@ -52,8 +48,7 @@ export function HerramientasIndice() {
             <span className="text-[12px] font-medium text-tertiary">
               {es ? "Resultado" : "Output"}
             </span>
-            {/* La tercera columna no lleva rótulo: decía «Abrir» encima de
-                celdas que ya dicen «Abrir». */}
+            {/* La tercera columna no lleva rótulo: sus celdas ya dicen «Abrir». */}
             <span />
           </div>
 

@@ -12,39 +12,20 @@ import { Z_UNA_COLA, contrasteVentaja, normalCdf } from "@/lib/trading/estadisti
 export { normalCdf };
 
 /**
- * EdgeSignificanceChecker — ¿tu edge es real o suerte?
+ * ¿Tu edge es real o suerte? A partir de N operaciones, win rate y R medios
+ * calcula la expectancy, el acierto de equilibrio, z y p-valor de un contraste
+ * de una cola frente a ese equilibrio (`contrasteVentaja`) y la muestra que
+ * detectaría ese acierto con potencia del 80 %.
  *
- * El trader introduce: número de operaciones (N), win rate observado,
- * ganancia/pérdida media en R. El componente calcula:
- *   · expectancy en R
- *   · el acierto de equilibrio, el que deja la expectancy a cero
- *   · z y p-valor de un contraste de una cola frente a ese equilibrio
- *     (`contrasteVentaja`): con 1 R : 1 R es tirar una moneda, con
- *     2 R : 1 R basta un 33 %
- *   · la muestra que detectaría ese acierto con una potencia del 80 %
- *
- * ── Por qué aquí ──────────────────────────────────────────────────────
- * Responde a la pregunta más frecuente de un trader novato: "tengo un
- * 60% de aciertos en 20 operaciones, ¿tengo un edge?". Ganando lo mismo
- * que pierde, la respuesta honesta es NO — 20 operaciones no bastan para
- * distinguir un 60% real de una moneda. Este tool lo muestra con
- * números, no con opiniones.
- *
- * ── Honestidad estadística ────────────────────────────────────────────
- * El test binomial asume independencia e identica distribución (iid),
- * lo cual NUNCA es del todo cierto en trading (regímenes cambian,
- * correlación entre operaciones). El copy lo dice: es una COTA, no una
- * garantía. El verdadero test es el tiempo + fuera de muestra.
- *
- * ── Material ──────────────────────────────────────────────────────────
- * .tj-ficha con barra, cuerpo y pie. Touch targets ≥44px. Sin overflow mobile.
+ * El test asume operaciones independientes e idénticamente distribuidas, lo
+ * que en trading nunca es del todo cierto: el texto lo dice, es una cota y no
+ * una garantía.
  */
 export function EdgeSignificanceChecker() {
   const { lang } = useLang();
   const es = lang === "es";
-  /* El espacio duro antes del signo en espanol, pegado en ingles, es
-     `PCT_SEP` de lib/trading/format.ts: aqui se llama a traves de
-     `pctSep(lang)`, sin repetirlo. */
+  /* Separador antes del %: espacio duro en español, pegado en inglés
+     (`PCT_SEP` de lib/trading/format.ts). */
   const PCT = pctSep(lang);
 
   const [trades, setTrades] = useState(50);
@@ -59,7 +40,7 @@ export function EdgeSignificanceChecker() {
     const expectancyR = wr * avgWinR - (1 - wr) * avgLossR;
     const k = contrasteVentaja(n, winRate, avgWinR, avgLossR);
 
-    // Intervalo de confianza Wilson Score (al 95% con z=1.96)
+    // Intervalo de Wilson al 95 % (z = 1,96).
     const z95 = 1.96;
     const zSq = z95 * z95;
     const denom = 1 + zSq / n;
@@ -70,7 +51,7 @@ export function EdgeSignificanceChecker() {
 
     const minSample95 = k.muestraPara(95);
 
-    // Detector de Sobreajuste (Overfitting): Ratio de trades por parámetro (mínimo institucional 20:1)
+    // Riesgo de sobreajuste: menos de 20 operaciones por parámetro.
     const tradesPerParam = n / Math.max(1, parametersCount);
     const overfittingRisk = tradesPerParam < 20;
 
@@ -89,15 +70,13 @@ export function EdgeSignificanceChecker() {
     };
   }, [trades, winRate, avgWinR, avgLossR, parametersCount]);
 
-  /* El helper de format.ts, no un `Intl.NumberFormat` propio: el propio
-     escribía «1234,5» sin millares en español, distinto del resto de la web. */
+  /* Helper de format.ts, no un `Intl.NumberFormat` propio: da millares como el
+     resto de la web. */
   const fmtNum = (n: number, dec = 2) => fmtNumBase(n, lang, dec);
 
   const textoDeslizador = (value: number, step: number, suffix: string) =>
     `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`;
 
-  // Reusable slider — label + accent value pill + ≥44px touch row.
-  // Unified across all interactive tools (Risk/Equity/RMultiple/Savings/Edge).
   const slider = (
     label: string,
     value: number,
@@ -182,10 +161,7 @@ export function EdgeSignificanceChecker() {
 
   return (
     <section className="section-tight">
-      {/* El veredicto, para quien no ve la pantalla. Se reutiliza el
-          rótulo que ya compone la herramienta en vez de inventar otro
-          vocabulario, y se acompaña de las dos cifras que lo sostienen:
-          el resto del panel sigue disponible leyéndolo. */}
+      {/* El veredicto para el lector de pantalla, con las cifras que lo sostienen. */}
       <ResultadoAnunciado
         texto={
           es
@@ -194,7 +170,6 @@ export function EdgeSignificanceChecker() {
         }
       />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-        {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow" data-titular-herramienta>
@@ -225,7 +200,7 @@ export function EdgeSignificanceChecker() {
             {slider(es ? "Pérdida media" : "Avg loss (R)", avgLossR, 0.25, 3, 0.05, setAvgLossR, " R", es ? "Pérdida media en R" : "Average loss in R")}
           </div>
 
-          {/* Detector de sobreajuste / Grados de libertad del setup */}
+          {/* Detector de sobreajuste: operaciones por parámetro del setup. */}
           <div className="mt-6 border-t border-[var(--ficha-division)] pt-5">
             <Deslizador
               etiqueta={es ? "Parámetros o reglas del setup" : "Setup parameters or rules"}
@@ -247,7 +222,6 @@ export function EdgeSignificanceChecker() {
           </div>
         </div>
 
-        {/* Right: results card */}
         <div className="tj-ficha relative lg:sticky lg:top-24">
           <p className="tj-ficha-barra">
             <span>{es ? "Veredicto" : "Verdict"}</span>
@@ -265,7 +239,6 @@ export function EdgeSignificanceChecker() {
             </p>
           </div>
 
-          {/* Gaussian Bell Curve Distribution Chart */}
           <div className="mb-5 border-t border-[var(--ficha-division)] pt-3">
             <div className="flex flex-wrap justify-between gap-x-4 text-[12px] tnum text-tertiary mb-1">
               <span className="whitespace-nowrap">{es ? "Campana de Gauss (H₀: sin ventaja)" : "Bell curve (H₀: no edge)"}</span>
@@ -279,7 +252,6 @@ export function EdgeSignificanceChecker() {
             />
           </div>
 
-          {/* Stats grid */}
           <div className="tj-matriz grid-cols-2 mb-5">
             <Result label={es ? "Expectancy" : "Expectancy"} value={`${fmtR(c.expectancyR, lang, 3)}`} color={c.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
             <Result label={es ? `p-valor (H₀: ${equilibrioTxt})` : `p-value (H₀: ${equilibrioTxt})`} value={c.pValor < 0.0001 ? `< ${fmtNum(0.0001, 4)}` : fmtNum(c.pValor, 4)} color={c.significant ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} />
@@ -287,7 +259,6 @@ export function EdgeSignificanceChecker() {
             <Result label={es ? `IC Wilson 95${PCT}` : "Wilson 95% CI"} value={`${fmtNum(c.wilsonLower, 1)}–${fmtNum(c.wilsonUpper, 1)}${PCT}`} color="var(--ink)" />
           </div>
 
-          {/* Matriz de Muestra Mínima */}
           <div className="mb-5">
             <span className="block text-[12px] text-tertiary mb-2">
               {es ? `Muestra para distinguir tu ventaja del azar (potencia 80${PCT})` : "Sample to tell your edge from chance (80% power)"}
@@ -310,7 +281,6 @@ export function EdgeSignificanceChecker() {
             </div>
           </div>
 
-          {/* Sample-size adequacy bar */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
@@ -388,9 +358,8 @@ function Result({ label, value, color }: { label: string; value: string; color: 
     <div
       className="relative flex min-w-0 flex-col px-4 py-4"
     >
-      {/* «EXPECTANCY» en versalitas con 0,12em de espaciado mide mas que
-          la celda a 320 px: se recortaba. Con el espaciado a cero cuando
-          no cabe y permiso para partir, se lee entero. */}
+      {/* `[overflow-wrap:anywhere]`: rótulos largos («Expectancy») se parten en
+          vez de recortarse a 320 px. */}
       <div
         className="tnum relative leading-[1.3] [overflow-wrap:anywhere]"
         style={{ fontSize: 12, color: "var(--ink-3)" }}
@@ -415,7 +384,7 @@ function GaussianBellCurve({ z, color }: { z: number; color: string }) {
   const plotW = W - padX * 2;
   const plotH = H - padY * 2;
 
-  // Generate normal curve points from x = -3.5 to +3.5
+  // Curva normal de -3,5 a +3,5.
   const points: { x: number; y: number; val: number }[] = [];
   const steps = 60;
   for (let i = 0; i <= steps; i++) {
@@ -428,7 +397,6 @@ function GaussianBellCurve({ z, color }: { z: number; color: string }) {
 
   const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" ");
 
-  // Clamped z position
   const clampedZ = Math.max(-3.4, Math.min(3.4, z));
   const zX = padX + ((clampedZ - (-3.5)) / 7.0) * plotW;
   const critRightX = padX + ((Z_UNA_COLA[95] - (-3.5)) / 7.0) * plotW;
@@ -441,13 +409,11 @@ function GaussianBellCurve({ z, color }: { z: number; color: string }) {
 
         <line x1={critRightX} y1={padY} x2={critRightX} y2={H - padY} stroke="rgb(var(--divider)/0.2)" strokeDasharray="2 2" vectorEffect="non-scaling-stroke" />
 
-        {/* Center baseline */}
         <line x1={padX} y1={H - padY} x2={W - padX} y2={H - padY} stroke="rgb(var(--divider)/0.25)" vectorEffect="non-scaling-stroke" />
 
-        {/* Gaussian curve line */}
         <path d={pathD} fill="none" stroke="var(--ink-3)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
 
-        {/* User's observed z-score marker */}
+        {/* Marca del z observado. */}
         <line
           x1={zX}
           y1={padY}

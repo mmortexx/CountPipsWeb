@@ -8,23 +8,9 @@ import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 
 /**
- * Custom 404 — full-screen premium error page.
- *
- * Vive en su propio fichero de cliente porque `src/app/not-found.tsx`
- * pasó a ser un componente de servidor: es el único sitio del árbol de
- * rutas donde `metadata` tiene que declararse a mano —con `robots:
- * noindex` y sin la canónica que hereda el layout, que apuntaba a la
- * portada— y una directiva `"use client"` en ese fichero lo habría
- * impedido.
- *
- * Copy:
- *  - Trading-themed headline: "stopped out like a bad stop loss".
- *  - Bilingual subhead explaining the page is missing.
- *  - Índice numerado a las tres destinos principales (Características,
- *    Demo, Precios) más el CTA de inicio.
- *  - Inline search box that routes to the FAQ page with the query as the
- *    `q` search param (the FAQ's real-time search picks it up on load) so
- *    users can find what they were looking for in one keystroke.
+ * Cuerpo de la 404. Vive aparte porque `src/app/not-found.tsx` es de servidor
+ * (para exportar su `metadata`). El buscador lleva a la FAQ con `?q=`, que su
+ * buscador recoge al cargar.
  */
 export function NotFoundClient() {
   const { lang } = useLang();
@@ -59,23 +45,17 @@ export function NotFoundClient() {
   function onSubmitSearch(e: React.FormEvent) {
     e.preventDefault();
     const term = q.trim();
-    // No query → just land on FAQ; otherwise pre-fill the search box.
-    // `withLocale` para que quien busca desde una 404 en inglés aterrice
-    // en `/en/faq`, no en la FAQ española con el buscador en el idioma
-    // que no pidió. `router.push` no pasa por `LocaleLink`, así que aquí
-    // hay que aplicarlo a mano.
+    // `withLocale` a mano: `router.push` no pasa por `LocaleLink`.
     router.push(withLocale(term ? `/faq?q=${encodeURIComponent(term)}` : "/faq", lang));
   }
 
   return (
     <>
-    {/* `404.html` sale en español; bajo `/en/…` React lo pasa a inglés justo
-        tras hidratar (ver `langHidratacion` en i18n.tsx) y esta hoja se va
-        con el español. Mientras tanto la página no se pinta; si el
-        JavaScript no llega, se muestra igual al segundo y medio. Vive aquí
-        y no en globals.css porque como `html:has(...)` obligaba a revisar
-        el estilo de todo el documento en cada nodo insertado, en todas las
-        páginas inglesas. */}
+    {/* `404.html` sale en español; bajo `/en/…` React lo pasa a inglés tras
+        hidratar (`langHidratacion` en i18n.tsx) y esta hoja se va con el
+        español. Mientras tanto no se pinta; sin JavaScript se muestra a los
+        1,5 s. Va aquí y no en globals.css: como `html:has(...)` obligaba a
+        revisar el estilo de todo el documento en las páginas inglesas. */}
     {es && (
       <style>{`html[lang="en"] body{visibility:hidden;animation:tj-404-espera 0s 1.5s forwards}@keyframes tj-404-espera{to{visibility:visible}}`}</style>
     )}
@@ -132,8 +112,7 @@ export function NotFoundClient() {
                   : "Metric or question…"
               }
               aria-label={es ? "Buscar" : "Search"}
-              /* El relleno derecho es el botón (≈ 92 px) más su aire: con
-                 `pr-28` a 390 px el texto de ayuda se cortaba a media palabra. */
+              /* El relleno derecho es el botón (≈ 92 px) más su aire. */
               className="w-full h-14 rounded-[4px] bg-transparent pl-11 pr-[6.25rem] text-[15px] text-primary placeholder:text-tertiary outline-none focus-visible:outline-none"
             />
             <button
@@ -145,8 +124,7 @@ export function NotFoundClient() {
           </div>
         </form>
 
-        {/* Sin 01/02/03: tres destinos no son una secuencia. Mismo ancho que
-            el buscador de encima para que los dos bloques compartan cantos. */}
+        {/* Mismo ancho que el buscador para que compartan cantos. */}
         <ul
           style={{ animationDelay: "0.4s" }}
           className="tj-alza mx-auto mt-8 mb-0 max-w-md list-none p-0 text-left"

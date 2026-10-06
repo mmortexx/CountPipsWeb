@@ -3,26 +3,13 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
 /**
- * EL COMENTARIO QUE EXPLICA LOS RADIOS TIENE QUE DECIR LOS RADIOS QUE HAY.
- *
- * La escala de radios está escrita DOS veces: la base en `@theme` y la de
- * `:root[data-palette="clasico"]`, que la redefine entera. El sitio fuerza
- * siempre esa paleta, así que la segunda es la que se ve en pantalla y la
- * primera no la ve nadie.
- *
- * El comentario de cabecera de `@theme` avisaba de ese doble sitio y daba
- * el valor efectivo — y durante meses dijo «2 px» cuando lo que mandaba
- * eran 3/4/6/6/8. Un comentario sobre un token es documentación normativa:
- * quien lo lee no vuelve a medir. Esta prueba lo ata al código.
- *
- * QUÉ LA HACE FALLAR (se ha visto fallar por los tres motivos):
- *  · cambiar un radio del bloque de la paleta sin tocar el comentario;
- *  · cambiar el comentario sin tocar los radios;
- *  · borrar el bloque de la paleta o el renglón del comentario.
- *
- * Por qué no lee el navegador: esto no comprueba que el navegador calcule
- * bien —eso ya lo hace—, sino que la documentación y la fuente digan lo
- * mismo. Es una comprobación de texto sobre texto, y por eso vale leerlos.
+ * El comentario de `@theme` debe decir los radios que hay. La escala está
+ * escrita dos veces: la base en `@theme` y la de
+ * `:root[data-palette="clasico"]`, que la redefine entera; el sitio fuerza esa
+ * paleta, así que es la que se ve. Esta prueba ata el renglón del comentario
+ * al código (texto contra texto, sin navegador). Falla si cambia un radio sin
+ * tocar el comentario, si cambia el comentario sin tocar los radios o si se
+ * borra el bloque o el renglón.
  */
 
 const CSS = readFileSync(join(import.meta.dirname, "..", "src", "app", "globals.css"), "utf8");
@@ -67,18 +54,10 @@ describe("escala de radios", () => {
   });
 
   /**
-   * EL TOPE TAMBIÉN VALE PARA LO QUE SE ESCRIBE A MANO.
-   *
-   * Las cuatro pruebas de arriba miran las VARIABLES, y por eso no vieron
-   * cinco superficies con `rounded-[12px]` puesto directamente en el JSX
-   * —la tarjeta de precio, el megamenú, el aviso de cookies, el panel de
-   * conversión y la calculadora de riesgo—: pasaban por encima del tope
-   * sin tocar ningún token. Una prueba que solo mira la declaración deja
-   * fuera justo el sitio por donde se escapa.
-   *
-   * Solo se vigila el TOPE, no la escala entera: los cantos de 1 y 2 px
-   * de la demo son deliberados —replican la ventana de la app de
-   * escritorio— y afilar por debajo del sistema nunca fue el problema.
+   * El tope también vale para lo escrito a mano: las pruebas de arriba miran
+   * las variables y no ven un `rounded-[12px]` puesto en el JSX. Solo se
+   * vigila el tope, no la escala: los cantos de 1 y 2 px de la demo replican
+   * la ventana de la app de escritorio.
    */
   it("ningún canto escrito a mano en el JSX pasa de 8px", () => {
     const raizSrc = join(import.meta.dirname, "..", "src");

@@ -1,4 +1,11 @@
-// Corroboración funcional de menús y navegación de toda la web.
+/**
+ * CORROBORA-MENÚS: comprobación funcional de la navegación contra un servidor
+ * ya en marcha (no lo levanta): megamenú, barra, atajos Ctrl+G y «?», pie,
+ * volver arriba, cambio de idioma, cajón móvil y desbordamiento horizontal a
+ * 390 px. Un fallo es una interacción que ya no lleva adonde debe.
+ *
+ * Uso:  node scripts/corrobora-menus.mjs [--base http://localhost:3000]
+ */
 import { chromium } from "playwright";
 
 const args = process.argv.slice(2);
@@ -10,7 +17,7 @@ const ok = (nombre, cond, detalle = "") =>
 
 const browser = await chromium.launch();
 
-/* ─────────── Escritorio ─────────── */
+// Escritorio.
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.goto(BASE + "/", { waitUntil: "domcontentloaded" });
 await page.waitForTimeout(3500);
@@ -23,18 +30,13 @@ ok("megamenú abre al hover", menuItems >= 4, `${menuItems} entradas`);
 
 // 2. Navega por una entrada del megamenú.
 await page.locator("#navbar-producto-panel a[href]").filter({ hasText: /Disciplina|Discipline/ }).first().click();
-/* Con o sin barra final: el servidor de desarrollo sirve «/demo» y la
-   exportación estática, que es lo que se publica, «/demo/». Exigir la
-   primera hacía que esta guarda no pudiera pasar nunca contra `out/`. */
+// Con o sin barra final: el servidor de desarrollo sirve «/demo» y el export estático, «/demo/».
 const acabaEn = (ruta) => new RegExp(`${ruta.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}/?$`);
 await page.waitForURL(acabaEn("/features/disciplina"), { timeout: 8000 });
 ok("megamenú navega a /features/disciplina", acabaEn("/features/disciplina").test(page.url()));
 
-// 3. Barra: enlaces directos. Desde la tanda 45 la barra es Producto▾ ·
-//    Precios · Manual · Prop firms · Acceso anticipado + «Ver la demo»; la
-//    guarda seguía buscando un «Demo» que ya no está y caía por tiempo.
-//    Acaba fuera de /demo: allí Ctrl+K abre la paleta de la demo, y el
-//    paso 4 comprueba que en la web no abre nada.
+// 3. Barra: enlaces directos. Acaba fuera de /demo, donde Ctrl+K abre la paleta
+//    de la demo; el paso 4 comprueba que en la web no abre nada.
 for (const [ruta, patron] of [
   ["/demo", /^Ver la demo$/],
   ["/pricing", /^Precios$/],
@@ -45,10 +47,7 @@ for (const [ruta, patron] of [
   ok(`barra navega a ${ruta}`, page.url().includes(ruta));
 }
 
-// 4. La paleta de comandos ⌘K se retiro del sitio: un sitio de
-//    marketing con siete enlaces de navegacion no tenia que buscar. Lo
-//    que queda es comprobar que el atajo NO abre nada, para que no vuelva
-//    a colarse por descuido.
+// 4. La web no tiene paleta de comandos: el atajo no debe abrir nada.
 await page.keyboard.press("Control+k");
 await page.waitForTimeout(700);
 ok("Ctrl+K ya no abre ninguna paleta", (await page.getByRole("combobox").count()) === 0);
@@ -94,9 +93,7 @@ if (!(await subir.count())) {
   ok("volver arriba funciona", y < 60, `scrollY=${Math.round(y)}`);
 }
 
-// 9. Cambio de idioma ES → EN con el selector de la barra.
-// El botón se llama «Cambiar idioma»: la expresión de antes (/Idioma/, con
-// mayúscula) no lo encontraba nunca y dependía de un plan B.
+// 9. Cambio de idioma ES → EN con el selector de la barra («Cambiar idioma»).
 await page.locator('header button[aria-label="Cambiar idioma"]:visible').first().click();
 await page.waitForTimeout(500);
 await page.locator("[data-panel-idiomas] button").filter({ hasText: /English/ }).first().click();
@@ -109,17 +106,13 @@ if (enUrl) {
   ok("<html lang> corrige a en", htmlLang === "en", htmlLang);
   const h1 = await page.locator("h1").first().innerText();
   ok("h1 en inglés", !/[áéíóúñ]/.test(h1), h1.slice(0, 44));
-  // Lo que comprobaba la paleta en ingles —que se puede llegar a
-  // /en/pricing desde la version inglesa— lo comprueba ahora la barra,
-  // que es por donde se navega desde que la paleta se retiro.
-  // «Precios» no es un enlace de primer nivel de la barra: vive en el
-  // megamenu y en el pie. Se busca en toda la pagina.
+  // Se llega a /en/pricing desde la barra inglesa; el enlace se busca en toda la página.
   await page.getByRole("link", { name: /^Pricing$/ }).first().click();
   await page.waitForURL("**/en/pricing**", { timeout: 8000 }).catch(() => {});
   ok("la barra EN navega a /en/pricing", /\/en\/pricing/.test(page.url()), page.url());
 }
 
-/* ─────────── Móvil 390×844 ─────────── */
+// Móvil 390×844.
 const mob = await browser.newPage({ viewport: { width: 390, height: 844 } });
 await mob.goto(BASE + "/", { waitUntil: "domcontentloaded" });
 await mob.waitForTimeout(3000);

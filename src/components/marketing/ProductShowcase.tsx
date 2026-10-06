@@ -7,39 +7,15 @@ import { ProductPlate } from "@/components/tj/ProductPlate";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 
 /**
- * ProductShowcase — la sección que enseña el programa en la portada.
- *
- * ── LO QUE HABÍA AQUÍ, Y POR QUÉ SE VA ────────────────────────────────
- * Cuatro fotomontajes de estudio: un monitor curvo en una oficina de
- * noche, con la aplicación reducida al 20 % de su tamaño dentro de la
- * pantalla y un rótulo blanco encima que hablaba de «monitor curvo
- * ultrawide». O sea, la sección que existe para enseñar el producto
- * enseñaba MOBILIARIO, y del producto no se leía una cifra.
- *
- * No era falta de material: las siete pantallas reales llevaban meses
- * en `public/img/`, recortadas, en los dos temas y con recorte de móvil
- * aparte, montadas solo en `/features`. La portada —que es donde llega
- * quien no conoce el programa— era la única página que no lo enseñaba.
- *
- * ── POR QUÉ ENTRAN POR LA PUERTA DE `ProductPlate` ────────────────────
- * Porque ya hay una: numeración, filete doble y pie que dice qué se
- * está viendo, con el `<picture>` que sirve la captura del tema activo
- * y un recorte dedicado en pantalla estrecha. Montar aquí un segundo
- * marco —con su degradado negro y su ficha flotante— no solo repetiría
- * el trabajo: sobre una captura real, ese degradado tapa justo la parte
- * baja de la interfaz, que es donde el programa pone las cifras.
- *
- * ── POR QUÉ SIGUEN LAS PESTAÑAS ───────────────────────────────────────
- * Cuatro capturas apiladas son cuatro pantallas de scroll en una portada
- * que ya mide diez mil píxeles. La barra imita la del propio programa
- * —que es como se cambia de sección dentro de él—, así que además de
- * ahorrar recorrido enseña cómo se navega. Se monta solo la activa: el
- * resto se descarga cuando se pide.
+ * Sección de la portada que enseña el programa con capturas reales, una cada
+ * vez en pestañas (imitan la barra de la app y ahorran scroll; solo se monta
+ * la activa). Las láminas entran por `ProductPlate`, que ya sirve la captura
+ * del tema activo y un recorte para pantalla estrecha: un marco propio
+ * taparía con su degradado la parte baja de la interfaz, donde van las cifras.
  */
 
-/** Las cuatro pantallas que sostienen el argumento en la portada: el
-    parte de la mañana, el registro de la operación, el histórico y la
-    analítica. El guardián tiene sección propia más abajo. */
+/** Las cuatro pantallas de la portada: resumen, registro, histórico y
+    analítica. El guardián tiene sección propia. */
 const PANTALLAS_PORTADA = ["resumen", "registro", "operaciones", "analitica"] as const;
 
 export function ProductShowcase() {

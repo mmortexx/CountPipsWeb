@@ -3,11 +3,9 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 /**
- * SavingsCalculator y CommissionDragCalculator recalculaban su resultado
- * principal en cada tecla sin avisar a un lector de pantalla: las otras
- * siete calculadoras de marketing/ ya envuelven su resultado con
- * `ResultadoAnunciado` (ver su cabecera en components/tj/ResultadoAnunciado)
- * y estas dos se habían quedado fuera.
+ * Todas las calculadoras de marketing/ envuelven su resultado principal con
+ * `ResultadoAnunciado` (ver components/tj/ResultadoAnunciado), para que un
+ * lector de pantalla lo anuncie al recalcular.
  */
 const CALCULADORAS = [
   "RiskCalculator",

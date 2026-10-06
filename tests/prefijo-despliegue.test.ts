@@ -3,32 +3,12 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 /**
- * El prefijo de despliegue (`basePath`), probado CON valor.
+ * El prefijo de despliegue (`basePath`), probado con valor: en local va vacío
+ * y duplicarlo pasa en verde, pero en producción daba 404 en cada enlace.
  *
- * ── Por qué existe este fichero ───────────────────────────────────────
- * El 11/08/2026 la web publicada no navegaba: pulsar cualquier enlace del
- * menú, del pie o de las tarjetas llevaba a la página 404. La causa era de
- * una sola línea, en el interceptor de clics que anima el cambio de página
- * (`TransicionPagina`): pasaba a `router.push()` una ruta que YA llevaba el
- * prefijo `/CountPipsWeb`, y Next se lo añadía otra vez, publicando
- * `/CountPipsWeb/CountPipsWeb/demo`.
- *
- * Y la suite entera no podía verlo, por escrito: `tests/atlas.test.ts` deja
- * anotado que «el subdirectorio de despliegue NO se prueba aquí a
- * propósito» porque en local la variable va vacía. Con la variable vacía,
- * duplicar el prefijo es duplicar la cadena vacía: todo pasa en verde y en
- * producción no funciona nada.
- *
- * Así que la regla que fija este fichero no es una función concreta: es que
- * al menos UNA prueba corra con el prefijo REAL puesto. Cualquier código
- * que mezcle las dos convenciones cae aquí.
- *
- * ── Las dos convenciones, que es lo que hay que tener claro ───────────
- * LLEVAN el prefijo: `location.pathname`, el `.href` resuelto de un `<a>`,
- * el `href` que Next escribe en el HTML, y las rutas de recursos que se
- * arman a mano (para eso está `asset()`).
- * NO lo llevan: `usePathname()`, `router.push()` y `<Link href>` — Next lo
- * pone él.
+ * Llevan el prefijo: `location.pathname`, el `.href` de un `<a>`, el `href`
+ * que Next escribe en el HTML y los recursos a mano (`asset()`). No lo llevan
+ * `usePathname()`, `router.push()` ni `<Link href>`: Next lo pone.
  */
 
 const PREFIJO = "/CountPipsWeb";
@@ -55,7 +35,7 @@ describe("rutaDeRouter — lo que se le pasa a router.push()", () => {
   it("quita el prefijo de una ruta salida del navegador", async () => {
     const { rutaDeRouter } = await conPrefijo();
 
-    // El caso exacto que rompió el sitio: el `.href` de <a href="/CountPipsWeb/demo/">.
+    // El `.href` de <a href="/CountPipsWeb/demo/"> que rompió el sitio.
     expect(rutaDeRouter("/CountPipsWeb/demo/")).toBe("/demo/");
     expect(rutaDeRouter("/CountPipsWeb/traders/prop-firms/")).toBe("/traders/prop-firms/");
     expect(rutaDeRouter("/CountPipsWeb/en/pricing/")).toBe("/en/pricing/");
@@ -64,7 +44,7 @@ describe("rutaDeRouter — lo que se le pasa a router.push()", () => {
   it("la raíz del sitio es la raíz del router, no una cadena vacía", async () => {
     const { rutaDeRouter } = await conPrefijo();
 
-    // Sin este caso, la portada llamaría a router.push("") y no navegaría.
+    // Con cadena vacía la portada llamaría a router.push("") y no navegaría.
     expect(rutaDeRouter("/CountPipsWeb")).toBe("/");
     expect(rutaDeRouter("/CountPipsWeb/")).toBe("/");
   });
@@ -104,25 +84,11 @@ describe("asset y rutaDeRouter son la ida y la vuelta", () => {
 });
 
 /**
- * ── Y AHORA SOBRE EL HTML QUE DE VERDAD SE PUBLICA ────────────────────
- * Todo lo de arriba prueba las dos funciones que traducen entre
- * convenciones, y eso solo protege al código que se acuerda de usarlas.
- * El fallo siguiente no pasó por ninguna de las dos: `MagneticButton`
- * pintaba un `<a href="/beta">` a pelo, así que el botón «Solicitar
- * acceso anticipado» de los dos planes de la página de precios —el
- * último clic del embudo, el que pulsa quien ya ha decidido— apuntaba a
- * la raíz del dominio y daba 404 en el sitio publicado. Comprobado en
- * producción, en español y en inglés.
+ * Lo anterior solo protege al código que usa las dos funciones. Esto mira el
+ * HTML publicado y exige que toda ruta interna lleve el prefijo, venga de
+ * donde venga (un `<a href="/beta">` a pelo daba 404 en producción).
  *
- * Ninguna prueba de esta suite podía verlo, porque el defecto no está en
- * `asset()` ni en `rutaDeRouter()`: está en un componente que no las
- * llama. Así que esto no mira código — mira el resultado. Recorre el
- * export y exige que TODA ruta interna escrita en el HTML lleve el
- * prefijo, venga de donde venga.
- *
- * Se salta si no hay `out/`: las pruebas tienen que poder correr sin
- * compilar. Cuando lo hay —y en integración continua siempre lo hay,
- * porque el build va antes— la barrera es total.
+ * Se salta si no hay `out/`: las pruebas deben poder correr sin compilar.
  */
 const SALIDA = join(process.cwd(), "out");
 
@@ -137,16 +103,10 @@ function htmlsDelExport(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-/* El export se compila con el prefijo real en integración continua y sin
-   él en local. Se lee del propio HTML en vez de suponerlo: si la
-   compilación no llevaba prefijo, no hay nada que exigir.
-
-   TODO ESTO SE CALCULA DENTRO DE CADA PRUEBA, no en el cuerpo del
-   `describe`. `describe.skipIf` marca las pruebas como saltadas pero
-   EJECUTA igualmente el cuerpo para recolectarlas, así que leer `out/`
-   ahí revienta la suite entera en cualquier máquina que aún no haya
-   compilado — que en integración continua es siempre, porque las pruebas
-   van antes que el build. Costó un despliegue en rojo. */
+// El prefijo se lee del propio HTML (en local se compila sin él).
+// Se calcula dentro de cada prueba: `describe.skipIf` ejecuta igualmente el
+// cuerpo, y leer `out/` ahí revienta la suite en CI, donde las pruebas van
+// antes que el build.
 function leerExport() {
   const paginas = htmlsDelExport(SALIDA);
   const indice = readFileSync(join(SALIDA, "index.html"), "utf8");

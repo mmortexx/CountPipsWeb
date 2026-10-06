@@ -1,20 +1,6 @@
 /**
- * Las herramientas del sitio, con dirección propia.
- *
- * ── Por qué ──────────────────────────────────────────────────────────
- * Había seis calculadoras interactivas, todas funcionando y calculando de
- * verdad, metidas dentro de otras páginas: la de riesgo a media página de
- * métricas, el Monte Carlo al final de disciplina, la de ahorro dentro de
- * precios. Nadie puede enlazar «la calculadora de tamaño de posición de
- * CountPips» porque no existe tal dirección, y son justo el tipo de pieza
- * que la gente enlaza y comparte.
- *
- * Aquí no se escribe una calculadora nueva: se reutilizan exactamente los
- * mismos componentes, que siguen apareciendo donde ya aparecían.
- *
- * ── Sobre el orden ───────────────────────────────────────────────────
- * De más buscado a menos. La de tamaño de posición es, de largo, la
- * consulta más frecuente de quien empieza a gestionar riesgo.
+ * Las herramientas del sitio, cada una con su dirección propia y reutilizando
+ * los componentes que ya aparecen en otras páginas. Van de más buscada a menos.
  */
 
 export type Herramienta = {
@@ -49,8 +35,7 @@ export type Herramienta = {
   descripcionEn: string;
 };
 
-/** Caminos que juega el simulador de Monte Carlo. El titular de su página
- *  lo dice en letra: si cambia, `tests/contratos.test.ts` lo exige allí. */
+/** Caminos del simulador de Monte Carlo; su titular lo dice en letra y `tests/contratos.test.ts` lo exige. */
 export const CAMINOS_MONTE_CARLO = 300;
 
 export const HERRAMIENTAS: Herramienta[] = [
@@ -185,8 +170,6 @@ export const HERRAMIENTAS: Herramienta[] = [
       "¿Cuánto dinero dejas en la mesa cuando rompes tus reglas? Estima la brecha entre tu operativa en plan y fuera de plan, y descubre tu fuga de capital anual.",
     subtituloEn:
       "How much money do you leave on the table when breaking your rules? Estimate the gap between your in-plan and off-plan trades, and discover your annual capital leak.",
-    /* «Entre A o B» es un error en los dos idiomas —es «entre A y B» y
-       «between A and B»—; nació en el español y la traducción lo copió. */
     resumenEs: "La brecha real de dinero entre operar según tu plan y romper tus reglas.",
     resumenEn: "The real cash gap between trading your plan and breaking your rules.",
     entregaEs: "Fuga anual",
@@ -263,9 +246,7 @@ const EN_LETRA: Record<"es" | "en", string[]> = {
   en: ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"],
 };
 
-/** Cuántas herramientas hay, en letra y con mayúscula inicial. Los textos
- *  que lo dicen salen de aquí: escritos a mano se quedaban en «Ocho» al
- *  publicar la novena. */
+/** Cuántas herramientas hay, en letra y con mayúscula inicial; los textos que lo dicen salen de aquí. */
 export function herramientasEnLetra(lang: "es" | "en"): string {
   const n = HERRAMIENTAS.length;
   const p = EN_LETRA[lang][n] ?? String(n);

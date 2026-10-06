@@ -7,30 +7,12 @@ import {
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
 
 /**
- * Dimension D1: Quantitative & Financial Math Accuracy
- *
- * Requirements tested:
- * - Tier 1: Feature Coverage
- *   1. Sharpe Ratio (annualized via sqrt(trades_per_year) with 365.25d base)
- *   2. Sortino Ratio (MAR=0 downside deviation annualized via sqrt(trades_per_year))
- *   3. Calmar Ratio (365.25d base, CAGR / maxDrawdownPct)
- *   4. Profit Factor & Delta Method Asymptotic Confidence Intervals
- *   5. Expectancy R, Expectancy USD, and Payoff Ratio
- *   6. Kelly Criterion (Pure, Half, Quarter with clamping f*=0)
- *   7. Binomial Test CDF (Abramowitz & Stegun 7.1.26 approximation)
- *   8. Monte Carlo Simulation (Mulberry32 PRNG determinism & percentile bands)
- *   9. Guardian Recovery Plan (Capital preservation, leak attribution & license ROI)
- * - Tier 2: Boundary & Corner Cases
- *   1. n = 0 trades (empty array, zero-division guards)
- *   2. n = 1 trade (single winner / single loser)
- *   3. 100% Win Rate (zero losses, zero drawdown, Sortino downside = 0)
- *   4. 100% Loss Rate (zero wins, profit factor = 0, payoff = 0)
- *   5. Flat equity curve / Zero standard deviation
- *   6. Extreme leverage & high magnitude R multiples
- *   7. Negative or zero account balance resilience
+ * Dimensión D1: exactitud de las matemáticas financieras. Tier 1 contrasta
+ * cada métrica con un cálculo independiente (base de 365,25 días); Tier 2
+ * cubre bordes: sin operaciones, una sola, todo ganancias, todo pérdidas,
+ * curva plana, desviación nula y R extremas.
  */
 
-// Helper to create synthetic test trades with precise parameters
 function createTestTrade(overrides: Partial<Trade> & { id: number; netPnl: number; closedAt: Date }): Trade {
   const isWin = overrides.netPnl > 0;
   const entry = overrides.entry ?? 100;
@@ -71,7 +53,6 @@ function createTestTrade(overrides: Partial<Trade> & { id: number; netPnl: numbe
 
 describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
   it("D1-T1.1: Sharpe Ratio matches independent oracle and annualizes correctly with 365.25d base", () => {
-    // Construct a controlled 10-trade series over 30 days
     const baseDate = new Date("2026-01-01T12:00:00Z");
     const testTrades: Trade[] = [];
     const pnls = [120, -50, 200, -80, 150, -40, 90, 180, -60, 110];
@@ -84,7 +65,7 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     const metrics = computeMetrics(testTrades);
     const n = testTrades.length;
 
-    // Independent Oracle Calculation
+    // Cálculo independiente de referencia.
     const mean = pnls.reduce((sum, p) => sum + p, 0) / n;
     const variance = pnls.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / n;
     const stdDev = Math.sqrt(variance);
@@ -113,7 +94,6 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     const n = testTrades.length;
     const mean = pnls.reduce((sum, p) => sum + p, 0) / n;
 
-    // Downside deviation with MAR = 0
     const losingPnls = pnls.filter((p) => p < 0);
     const downsideVariance = losingPnls.reduce((sum, p) => sum + Math.pow(p, 2), 0) / n;
     const downsideDev = Math.sqrt(downsideVariance);
@@ -125,7 +105,7 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     const expectedSortino = (mean / downsideDev) * annFactor;
 
     expect(metrics.sortino).toBeCloseTo(expectedSortino, 6);
-    // Because upside variance is huge, Sortino is significantly higher than Sharpe
+    // Con tanta varianza al alza, Sortino supera a Sharpe.
     expect(metrics.sortino).toBeGreaterThan(metrics.sharpe);
   });
 
@@ -161,7 +141,6 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
   });
 
   it("D1-T1.4: Profit Factor and Delta Method Asymptotic Confidence Interval", () => {
-    // Verify Profit Factor = grossWin / grossLoss
     const metrics = computeMetrics(TRADES);
     const wins = TRADES.filter((t) => t.netPnl > 0);
     const losses = TRADES.filter((t) => t.netPnl < 0);
@@ -170,10 +149,8 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
 
     expect(metrics.profitFactor).toBeCloseTo(grossWin / grossLoss, 6);
 
-    // Delta Method Confidence Interval for PF:
-    // Let W_bar = mean win, L_bar = mean loss, nw = count wins, nl = count losses
-    // PF = (nw * W_bar) / (nl * L_bar)
-    // Var(ln PF) ≈ s_w^2 / (nw * W_bar^2) + s_l^2 / (nl * L_bar^2)
+    // Método delta para el intervalo del PF:
+    // Var(ln PF) ≈ s_w² / (nw·W̄²) + s_l² / (nl·L̄²), con W̄ y L̄ las medias de ganancia y pérdida.
     const nw = wins.length;
     const nl = losses.length;
     const meanW = grossWin / nw;
@@ -188,7 +165,6 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     const ciLower = metrics.profitFactor * Math.exp(-z95 * seLnPf);
     const ciUpper = metrics.profitFactor * Math.exp(z95 * seLnPf);
 
-    // Mathematical Invariants:
     expect(ciLower).toBeGreaterThan(0);
     expect(ciUpper).toBeGreaterThan(ciLower);
     expect(metrics.profitFactor).toBeGreaterThan(ciLower);
@@ -202,16 +178,15 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
 
     expect(metrics.expectancyR).toBeCloseTo(expectedExpR, 6);
 
-    // Expectancy equation: E = WinRate * AvgWin - LossRate * AvgLoss
+    // E = WinRate·AvgWin − LossRate·AvgLoss
     const derivedExpUsd = metrics.winRate * metrics.avgWin - (1 - metrics.winRate) * metrics.avgLoss;
     expect(metrics.expectancy).toBeCloseTo(derivedExpUsd, 2);
 
-    // Payoff = AvgWin / AvgLoss
     expect(metrics.payoff).toBeCloseTo(metrics.avgWin / metrics.avgLoss, 6);
   });
 
   it("D1-T1.6: Kelly Criterion Sizing (Pure, Half, Quarter with clamping f*=0)", () => {
-    // Pure Kelly: f* = (p*b - q) / b where p = winRate, q = 1-p, b = payoff
+    // Kelly puro: f* = (p·b − q) / b, con p = acierto, q = 1 − p, b = payoff.
     const calcKelly = (winRatePct: number, payoff: number) => {
       const p = winRatePct / 100;
       const q = 1 - p;
@@ -222,23 +197,19 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
       return { fullKellyPct, halfKellyPct, quarterKellyPct };
     };
 
-    // Case A: 60% win rate, payoff 2.0 -> Edge = 0.60*2 - 0.40 = 0.80 -> f* = 0.80 / 2 = 40%
+    // A: 60 % de acierto y payoff 2 -> f* = (0,60·2 − 0,40) / 2 = 40 %; mitad y cuarto topan al 3 %.
     const resA = calcKelly(60, 2.0);
     expect(resA.fullKellyPct).toBeCloseTo(40.0, 4);
-    // Half Kelly clamped to 3.0% max institutional ceiling
     expect(resA.halfKellyPct).toBe(3.0);
-    // Quarter Kelly is 40 / 4 = 10% clamped to 3.0%
     expect(resA.quarterKellyPct).toBe(3.0);
 
-    // Case B: 52% win rate, payoff 1.0 -> Edge = 0.52*1 - 0.48 = 0.04 -> f* = 4%
+    // B: 52 % y payoff 1 -> f* = 4 %; mitad 2 % y cuarto 1 %, dentro de [0,25; 3].
     const resB = calcKelly(52, 1.0);
     expect(resB.fullKellyPct).toBeCloseTo(4.0, 4);
-    // Half Kelly: 4 / 2 = 2.0% (within [0.25, 3.0])
     expect(resB.halfKellyPct).toBeCloseTo(2.0, 4);
-    // Quarter Kelly: 4 / 4 = 1.0% (within [0.25, 3.0])
     expect(resB.quarterKellyPct).toBeCloseTo(1.0, 4);
 
-    // Case C: 40% win rate, payoff 1.0 -> Negative edge -> f* clamped to 0%
+    // C: 40 % y payoff 1 -> ventaja negativa, f* se queda en 0.
     const resC = calcKelly(40, 1.0);
     expect(resC.fullKellyPct).toBe(0);
     expect(resC.halfKellyPct).toBe(0);
@@ -246,13 +217,12 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
   });
 
   it("D1-T1.7: Binomial Test CDF via Abramowitz & Stegun 7.1.26 matches standard normal distribution", () => {
-    // Check known statistical critical values
     expect(normalCdf(0)).toBeCloseTo(0.5, 6);
     expect(normalCdf(1.95996)).toBeCloseTo(0.9750, 4); // 95% two-sided critical z
     expect(normalCdf(2.57583)).toBeCloseTo(0.9950, 4); // 99% two-sided critical z
     expect(normalCdf(-1.95996)).toBeCloseTo(0.0250, 4);
 
-    // Test binomial significance logic for 100 trades, 60% win rate vs H0: p=0.5
+    // 100 operaciones con 60 % de acierto frente a H0: p = 0,5.
     const n = 100;
     const wr = 0.60;
     const p0 = 0.5;
@@ -264,7 +234,7 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     expect(pValue).toBeCloseTo(0.0455, 3);
     expect(pValue).toBeLessThan(0.05); // Significant at alpha = 0.05
 
-    // Minimum sample size required to detect 60% win rate within e=0.05 margin at 95% confidence
+    // Muestra mínima para estimar un 60 % con margen de 0,05 al 95 %.
     const minSample = Math.ceil((1.96 * 1.96 * wr * (1 - wr)) / (0.05 * 0.05));
     expect(minSample).toBe(369);
   });
@@ -316,7 +286,7 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
       return { p10, p50, p90, mean, ruinRate: ruinCount / runs };
     };
 
-    // Test exact determinism: running twice with same seed produces identical results
+    // Misma semilla, mismo resultado.
     const sim1 = runSimulation(42);
     const sim2 = runSimulation(42);
     expect(sim1.p10).toBe(sim2.p10);
@@ -324,15 +294,13 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     expect(sim1.p90).toBe(sim2.p90);
     expect(sim1.mean).toBe(sim2.mean);
 
-    // Quantile monotonicity: P10 <= P50 <= P90
     expect(sim1.p10).toBeLessThanOrEqual(sim1.p50);
     expect(sim1.p50).toBeLessThanOrEqual(sim1.p90);
     expect(sim1.p50).toBeGreaterThan(10000); // 55% WR with 2:1 R has positive expectancy
   });
 
   it("D1-T1.9: Guardian Recovery Plan Capital & ROI Projector", () => {
-    // 60 trades/mo, 40% breach rate = 24 off-plan trades
-    // In-plan expectancy: +$29.73, Off-plan expectancy: -$38.47
+    // 60 operaciones al mes con 40 % fuera de plan = 24; esperanza en plan +29,73 $, fuera de plan −38,47 $.
     const totalTrades = 60;
     const breachPct = 40;
     const inPlanExp = 29.73;
@@ -348,14 +316,14 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     expect(totalLeakMonthly).toBeCloseTo(1636.80, 2);
     expect(totalLeakAnnual).toBeCloseTo(19641.60, 2);
 
-    // 60% recovery via Guardian
+    // Recuperación del 60 % con el Guardián.
     const monthlyRecovery60 = totalLeakMonthly * 0.6; // 982.08
     const dailyRecovery = monthlyRecovery60 / 30; // 32.736
     const licenseCost = 149;
     const paybackDays = Math.max(1, Math.round(licenseCost / dailyRecovery));
 
     expect(monthlyRecovery60).toBeCloseTo(982.08, 2);
-    expect(paybackDays).toBe(5); // Amortized in 5 trading days
+    expect(paybackDays).toBe(5); // se amortiza en 5 días de trading
   });
 });
 
@@ -384,7 +352,7 @@ describe("D1: Quantitative & Financial Math - Tier 2 Boundary & Corner Cases", (
     expect(metrics.finalBalance).toBe(10000);
     expect(metrics.roiPct).toBe(0);
 
-    // Ensure absolutely no NaN or Infinity anywhere in metrics
+    // Ni NaN ni Infinity en ninguna métrica.
     for (const [key, val] of Object.entries(metrics)) {
       if (typeof val === "number") {
         expect(Number.isFinite(val), `Key ${key} was not finite`).toBe(true);
@@ -406,8 +374,8 @@ describe("D1: Quantitative & Financial Math - Tier 2 Boundary & Corner Cases", (
     expect(winMetrics.avgLoss).toBe(0);
     expect(winMetrics.maxDrawdown).toBe(0);
     expect(winMetrics.maxDrawdownPct).toBe(0);
-    expect(winMetrics.profitFactor).toBe(250); // grossWin when grossLoss is 0
-    expect(winMetrics.sharpe).toBe(0); // Std dev is 0 for n=1
+    expect(winMetrics.profitFactor).toBe(250); // sin pérdidas devuelve la ganancia bruta
+    expect(winMetrics.sharpe).toBe(0); // con n = 1 la desviación es 0
     expect(winMetrics.sortino).toBe(0);
 
     const singleLoss = [
@@ -439,9 +407,9 @@ describe("D1: Quantitative & Financial Math - Tier 2 Boundary & Corner Cases", (
     expect(metrics.avgLoss).toBe(0);
     expect(metrics.maxDrawdown).toBe(0);
     expect(metrics.maxDrawdownPct).toBe(0);
-    expect(metrics.calmar).toBe(0); // Max DD is 0 -> Calmar guards against division by 0
-    expect(metrics.sortino).toBe(0); // Downside dev is 0 -> Sortino guards against division by 0
-    expect(metrics.profitFactor).toBe(450); // grossLoss is 0 -> returns grossWin
+    expect(metrics.calmar).toBe(0); // drawdown 0: no divide entre 0
+    expect(metrics.sortino).toBe(0); // desviación a la baja 0: no divide entre 0
+    expect(metrics.profitFactor).toBe(450); // sin pérdidas devuelve la ganancia bruta
     expect(Number.isFinite(metrics.sharpe)).toBe(true);
   });
 
@@ -462,7 +430,7 @@ describe("D1: Quantitative & Financial Math - Tier 2 Boundary & Corner Cases", (
     expect(metrics.maxDrawdown).toBe(300);
     expect(metrics.maxDrawdownPct).toBeCloseTo(300 / 10000, 4);
     expect(Number.isFinite(metrics.sortino)).toBe(true);
-    expect(metrics.sortino).toBeLessThan(0); // Negative return yields negative Sortino
+    expect(metrics.sortino).toBeLessThan(0);
   });
 
   it("D1-T2.5: Zero drawdown and flat equity curve (all breakeven trades)", () => {
@@ -496,7 +464,7 @@ describe("D1: Quantitative & Financial Math - Tier 2 Boundary & Corner Cases", (
 
     expect(metrics.netPnl).toBe(150);
     expect(metrics.expectancy).toBe(50);
-    // Standard deviation is 0 -> Sharpe ratio gracefully clamped to 0 without throwing NaN/Infinity
+    // Desviación 0: Sharpe se queda en 0, sin NaN ni Infinity.
     expect(metrics.sharpe).toBe(0);
     expect(metrics.sortino).toBe(0);
   });

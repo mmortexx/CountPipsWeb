@@ -41,9 +41,7 @@ describe("el texto que copian las herramientas", () => {
     );
   });
 
-  /* Siete herramientas escribían su propio portapapeles, y cuatro no
-     decían nada si el navegador lo negaba. Una herramienta nueva que
-     vuelva a hacerlo por su cuenta se salta el formato y el aviso. */
+  // Una herramienta que escriba su propio portapapeles se salta el formato y el aviso si el navegador lo niega.
   it("solo el botón común toca el portapapeles", () => {
     const propias = fuentes(join(RAIZ, "src"))
       .filter((f) => /navigator\??\.clipboard/.test(readFileSync(f, "utf8").replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, "")))

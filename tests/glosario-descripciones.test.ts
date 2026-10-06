@@ -8,9 +8,8 @@ import {
   descripcionDeTermino,
 } from "@/lib/glosario";
 
-/* La descripción de cada ficha del glosario es lo que se lee en el
-   buscador y al compartir el enlace. Se recortaba a 152 caracteres a
-   ciegas: 90 de 114 acababan en «…» a media palabra. */
+// La descripción es lo que se lee en el buscador y al compartir el enlace:
+// debe ser una frase entera, no un recorte a media palabra.
 describe("la descripción de cada término es una frase entera", () => {
   it("entre 70 y 155 caracteres, cerrada, sin puntos suspensivos ni paréntesis abiertos", () => {
     const malas: string[] = [];

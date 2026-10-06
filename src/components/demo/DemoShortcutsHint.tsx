@@ -7,48 +7,21 @@ import { useDemo } from "./DemoContext";
 import { PESTANAS_NUMERADAS } from "./TopNav";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
 
-/* ------------------------------------------------------------------ */
-/* DemoShortcutsHint — in-demo keyboard shortcuts overlay             */
-/* ------------------------------------------------------------------ */
-
 interface DemoShortcutsHintProps {
   open: boolean;
   onClose: () => void;
 }
 
 /**
- * DemoShortcutsHint — small liquid-glass popover anchored bottom-right
- * INSIDE the demo window (just above the status bar). Lists the demo's
- * keyboard shortcuts:
+ * Ayuda de atajos dentro de la ventana de la demo, anclada abajo a la derecha
+ * sobre la barra de estado (`bottom-9` deja 8 px sobre ella). Lista las
+ * pestañas con 1–n (el detalle no tiene número), la paleta de comandos, `?`,
+ * Esc y `/` (solo en Operaciones).
  *
- *   1–4     switch tabs (Dashboard / Trades / Analytics / Journal — see
- *           TopNav's NAV_ITEMS, the Trade-detail drill-down has no number)
- *   ⌘/Ctrl K  command palette (demo-scoped)
- *   ?       this help
- *   Esc     close
- *   /       focus search (only when on the Trades page)
- *
- * Opens when the user presses `?` while the demo is "active" (hovered or
- * focused-within) — the AppDemo component owns a capture-phase keydown
- * listener that intercepts `?` and opens this overlay, preventing the
- * global ShortcutsHelp from also opening. Also opens when the keyboard
- * icon in the status bar is clicked.
- *
- * Replaces the prior static section card that lived below the demo on the
- * /demo page — the in-demo overlay is more discoverable (always reachable
- * via the keyboard icon in the status bar) and matches how Linear / VS
- * Code surface their shortcut hints.
- *
- * While open, sets `body[data-demo-shortcuts-open="true"]` so other global
- * listeners (and the AppDemo `?` interceptor) can suppress their own keys
- * while this overlay is mounted.
- *
- * Refined kbd styling: `<kbd>` elements with `bg-[rgb(var(--divider)/0.1)] border
- * border-[rgb(var(--divider)/0.15)] rounded px-1.5 py-0.5 text-xs font-mono tnum`.
- *
- * Positioning: `absolute bottom-9 right-2 z-30` — anchored to the
- * bottom-right of the demo window, just above the h-7 (28px) status bar.
- * `bottom-9` (36px) gives an 8px gap between the popover and the bar.
+ * Se abre con `?` cuando la demo está bajo el ratón o con foco: el listener de
+ * captura de AppDemo lo intercepta e impide que se abra la ayuda global.
+ * Abierta, pone `body[data-demo-shortcuts-open="true"]` para que los demás
+ * listeners suspendan sus teclas.
  */
 export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   const { lang } = useLang();
@@ -59,10 +32,8 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   const cerrarRef = useRef<HTMLButtonElement>(null);
   const { montado, saliendo } = usePresencia(open, 180);
 
-  /* Va anclada encima de la barra de estado, junto al icono que también la
-     abre. Con `?` esa esquina puede estar fuera de la pantalla (a 1440×900
-     quedaba 94 px por debajo del borde) y la ayuda se abría sin que nadie
-     la viera: se desplaza lo justo para enseñarla entera. */
+  /* Con `?` la esquina anclada puede quedar fuera de la pantalla (a 1440×900,
+     94 px bajo el borde): se desplaza lo justo para enseñarla entera. */
   useEffect(() => {
     if (!open) return;
     const id = requestAnimationFrame(() => {
@@ -72,12 +43,9 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
     return () => cancelAnimationFrame(id);
   }, [open]);
 
-  /* Foco: se abre con `?` o con el icono de la barra de estado, así que
-     hay que decírselo a quien usa lector de pantalla. Se mueve al botón
-     de cerrar DESPUÉS del `scrollIntoView` del efecto anterior — React
-     ejecuta los efectos en el orden en que se declaran, y este va
-     declarado justo debajo — y con `preventScroll` para no desplazar la
-     página una segunda vez. Al cerrar, el foco vuelve a quien lo tenía. */
+  /* Foco al botón de cerrar, para lectores de pantalla. Tiene que ir declarado
+     después del efecto del `scrollIntoView` (React los ejecuta en orden) y con
+     `preventScroll`. Al cerrar, el foco vuelve a quien lo tenía. */
   useEffect(() => {
     if (!open) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
@@ -90,9 +58,8 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
     };
   }, [open]);
 
-  // While open: mark body so the AppDemo `?` interceptor + GlobalShortcuts
-  // can skip their own keys, and capture Escape on the way down so any
-  // bubble-phase Escape handlers can't swallow it.
+  // Abierta, marca el body para que el interceptor de `?` y GlobalShortcuts se
+  // aparten, y captura Escape antes de que lo absorban los manejadores en burbuja.
   useEffect(() => {
     if (!open) return;
     document.body.dataset.demoShortcutsOpen = "true";
@@ -110,9 +77,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
     };
   }, [open, onClose]);
 
-  // The `/` shortcut only makes sense on the Trades page (where the search
-  // input lives). Hide it elsewhere so the list doesn't lie about what's
-  // available.
+  // `/` solo existe donde está el buscador; en otras páginas se oculta para no mentir.
   const showSearch = page === "trades" || page === "detail";
 
   const shortcuts: {
@@ -135,8 +100,7 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
     {
       keys: (
         <>
-          {/* La tecla del teclado que tiene delante quien lee, no la de
-              un Mac por defecto. Ver `useTeclaMando`. */}
+          {/* La tecla de mando del teclado real. Ver `useTeclaMando`. */}
           <Kbd>{mando}</Kbd>
           <Kbd>K</Kbd>
         </>
@@ -172,16 +136,13 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
           aria-label={es ? "Atajos de teclado" : "Keyboard shortcuts"}
           inert={saliendo}
         >
-          {/* Backdrop — invisible click-catcher that closes the popover when
-              the user clicks anywhere outside it. pointer-events-auto only
-              on this layer; the popover itself sits above via z-30. */}
+          {/* Capa invisible que cierra la ayuda al hacer clic fuera. */}
           <div
             className="fixed inset-0 z-[-1]"
             onClick={onClose}
             aria-hidden="true"
           />
           <div className="tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] p-4 shadow-[var(--ficha-sombra)]">
-            {/* Header */}
             <div className="flex items-center justify-between gap-2 mb-3">
               <div className="flex items-center gap-2 min-w-0">
                 <KeyboardIcon />
@@ -213,7 +174,6 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
               </button>
             </div>
 
-            {/* Shortcuts list */}
             <ul className="space-y-2">
               {shortcuts
                 .filter((s) => s.show !== false)
@@ -232,7 +192,6 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
                 ))}
             </ul>
 
-            {/* Footer */}
             <div className="mt-3 pt-3 border-t border-[rgb(var(--divider)/0.1)] text-[10px] text-tertiary leading-snug">
               {es
                 ? "Funcionan sobre la demo · pulsa ? cuando quieras"
@@ -243,12 +202,6 @@ export function DemoShortcutsHint({ open, onClose }: DemoShortcutsHintProps) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Small inline primitives                                            */
-/* ------------------------------------------------------------------ */
-
-/** Refined kbd keycap — `bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] rounded
- *  px-1.5 py-0.5 text-xs font-mono tnum`. */
 function Kbd({ children }: { children: ReactNode }) {
   return (
     <kbd className="inline-flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded bg-[rgb(var(--divider)/0.1)] border border-[rgb(var(--divider)/0.15)] text-[10px] font-mono tnum text-secondary">

@@ -25,8 +25,7 @@ describe("Cromo de mesa", () => {
     expect(hero).not.toMatch(/tj-range/);
   });
 
-  /* Las mismas familias que el pie: un grupo no se llama «Laboratorio» en
-     un sitio y «Recursos» en otro. */
+  // Las mismas familias que el pie: un grupo no cambia de nombre entre sitios.
   it("el cajón móvil agrupa Producto, Recursos y Empresa, como el pie", () => {
     const nav = leer("src/components/marketing/Navbar.tsx");
     const pie = leer("src/components/marketing/Footer.tsx");
@@ -54,8 +53,7 @@ describe("Cromo de mesa", () => {
     expect(log).not.toMatch(/rounded-full bg-\[rgb\(var\(--accent-base\)\)\]/);
   });
 
-  /* Filas, no tarjetas de icono. Sin 01/02/03: son capacidades, no pasos
-     (tanda 35); la numeración queda para lo que tiene orden de verdad. */
+  // Filas, no tarjetas de icono, y sin 01/02/03: son capacidades, no pasos.
   it("traders no pinta tres tarjetas de icono; usa filas sin numerar", () => {
     const traders = sinComentarios(
       leer("src/components/beta/TraderProfilePage.tsx"),
@@ -91,7 +89,7 @@ describe("Cromo de mesa", () => {
     const err = sinComentarios(leer("src/app/error.tsx"));
     expect(nf).not.toMatch(/blur-\[130px\]/);
     expect(err).not.toMatch(/blur-\[130px\]/);
-    /* Tres destinos en filas, sin numerar: no son una secuencia. */
+    // Tres destinos en filas, sin numerar: no son una secuencia.
     expect(nf).toMatch(/<ul[\s>]/);
     expect(nf).not.toMatch(/padStart\(2, "0"\)/);
     expect(nf).not.toMatch(/hover:shadow-\[0_12px_32px_-8px_rgb\(var\(--accent-base\)/);

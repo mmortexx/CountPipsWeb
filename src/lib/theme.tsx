@@ -12,20 +12,9 @@ import {
 import { flushSync } from "react-dom";
 
 export type Theme = "dark" | "light";
-/* ---- Estilo único: "clasico" ----------------------------------------
-   El sitio tiene UN estilo. `data-palette` sobrevive como el gancho del
-   que cuelgan sus tokens y sus reglas en globals.css, pero ya no es una
-   elección: siempre vale "clasico".
-
-   Antes hubo dos —"grafito", el terminal institucional del producto, y
-   este— con un conmutador en la barra. Se retiró por decisión del dueño:
-   una identidad no se elige desde un menú. Lo que quedaba del estilo
-   anterior (el iris WebGL del fondo, el acento champagne, los titulares
-   en sans mayúscula) está en el historial de git.
-
-   El tipo se conserva como union de un solo miembro a propósito: si
-   algún día vuelve a haber más de un estilo, se añade aquí y el resto
-   del sistema —persistencia, anti-FOUC, `data-palette`— ya funciona. */
+/* Estilo único. `data-palette` es el gancho del que cuelgan los tokens y
+   reglas de globals.css y siempre vale "clasico". El tipo es una unión de un
+   solo miembro a propósito: un segundo estilo solo exigiría añadirlo aquí. */
 export type PaletteName = "clasico";
 
 export const PALETTES: {
@@ -33,9 +22,8 @@ export const PALETTES: {
   light: string;
   dark: string;
 }[] = [
-  /* El swatch es el acento del estilo, verificado contra WCAG AA sobre
-     sus propios fondos (grafito nardo #131D26 → 9,61:1 sobre la chapa
-     #CBD0D4; la plata #CDD9E4 → 10,27:1 sobre el nocturno #0C1116). */
+  /* Acento del estilo, con contraste WCAG AA sobre sus fondos (#131D26 sobre
+     #CBD0D4: 9,61:1; #CDD9E4 sobre #0C1116: 10,27:1). */
   { name: "clasico", light: "#131D26", dark: "#CDD9E4" },
 ];
 
@@ -49,28 +37,12 @@ interface ThemeCtx {
 
 const Ctx = createContext<ThemeCtx | null>(null);
 
-/* QUIÉN DECIDE EL TEMA, Y EN QUÉ ORDEN.
- *
- * 1. Lo que el visitante eligió con el interruptor. Manda siempre, y se
- *    guarda; si eligió papel teniendo el sistema en oscuro, es porque
- *    quería papel.
- * 2. Si no ha elegido nunca, lo que pida su sistema operativo.
- * 3. Y si su sistema no dice nada, el papel: es el estado natural de
- *    este estilo, y la primera visita debe abrir en el material que
- *    define la marca, no en su variante nocturna.
- *
- * El paso 2 es nuevo. Antes se abría en claro pasara lo que pasara, con
- * el argumento de la marca. Pero el sitio atiende a rajatabla la otra
- * preferencia del sistema —«reducir movimiento», que `globals.css`
- * respeta en todas sus reglas— y no hay motivo para tratar ésta de otro
- * modo: quien pone el sistema en oscuro suele hacerlo por la vista, no
- * por gusto, y recibía un fogonazo blanco. Con el sistema en claro —la
- * mayoría— no cambia nada.
- *
- * La clave `tj-theme` pasa a significar «esto lo eligió una persona».
- * Antes se reescribía en cada carga, así que bastaba una primera visita
- * para que el sistema no volviera a contar nunca; por eso el `setItem`
- * ya no vive en el efecto de sincronización, sino en el interruptor. */
+/* Quién decide el tema, en este orden: 1) lo que el visitante eligió con el
+ * interruptor; 2) si nunca ha elegido, lo que pida su sistema; 3) si el
+ * sistema no dice nada, el papel (el material que define la marca).
+ * `tj-theme` significa «lo eligió una persona»: solo la escribe el interruptor,
+ * no el efecto de sincronización, o una primera visita anularía al sistema
+ * para siempre. */
 const CLAVE_TEMA = "tj-theme";
 
 function temaDelSistema(): Theme {
@@ -96,21 +68,16 @@ function readSavedTheme(): Theme {
   return temaElegido() ?? temaDelSistema();
 }
 function readSavedPalette(): PaletteName {
-  // Estilo único. Se sigue escribiendo en el DOM y en localStorage para
-  // que los visitantes con un valor antiguo guardado ("verde", "oro",
-  // "grafito"…) migren solos en la próxima visita, en vez de quedarse
-  // con un `data-palette` que ya no tiene bloque de tokens detrás.
+  // Siempre "clasico": se reescribe en el DOM y en localStorage para que los
+  // valores antiguos guardados migren solos.
   return "clasico";
 }
 
 /**
- * Aplica un cambio de tema dentro de una transición de vista, si el
- * navegador la tiene y el visitante no ha pedido menos movimiento. El DOM
- * se toca DENTRO del callback —atributo y clase a mano, y el estado de
- * React vaciado con `flushSync`— porque el navegador fotografía la página
- * justo antes y justo después de ese callback; un cambio que llegara en un
- * efecto posterior quedaría fuera de la foto. La clase `tj-tema-cambia`
- * enciende el fundido en globals.css solo mientras dura.
+ * Cambia el tema dentro de una transición de vista, si el navegador la tiene
+ * y no se pidió menos movimiento. El DOM se toca dentro del callback
+ * (atributo, clase y `flushSync`) porque el navegador fotografía la página
+ * antes y después de él. `tj-tema-cambia` enciende el fundido de globals.css.
  */
 function cambiarTemaConFundido(next: Theme, aplicar: () => void) {
   const doc = document as Document & {
@@ -138,24 +105,20 @@ function cambiarTemaConFundido(next: Theme, aplicar: () => void) {
     pintar();
     return;
   }
-  /* `finished` RECHAZA si el navegador salta la transición (pestaña
-     oculta, otra transición en curso): se limpia igual y sin dejar una
-     promesa rechazada en la consola. */
+  // `finished` rechaza si el navegador salta la transición (pestaña oculta,
+  // otra en curso): se limpia igual y sin promesa rechazada en consola.
   const fin = () => root.classList.remove("tj-tema-cambia");
   vt.finished.then(fin, fin);
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Start with defaults on both server and client to avoid hydration mismatch.
-  // The inline script in layout.tsx already applied the DOM attributes before
-  // paint, so there's no visual flash. We sync to localStorage after mount.
+  // Servidor y cliente arrancan con los valores por defecto para no romper la
+  // hidratación; el script de layout.tsx ya aplicó el DOM antes del pintado.
   const [theme, setTheme] = useState<Theme>("light");
   const [palette, setPalette] = useState<PaletteName>("clasico");
   const [mounted, setMounted] = useState(false);
 
-  // Read saved preferences once after mount (standard theme hydration pattern).
-  // This is the canonical SSR-safe theme initialization: render default on
-  // server + first client paint, then sync to stored value after hydration.
+  // Se lee lo guardado una vez tras montar (inicialización segura con SSR).
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     setTheme(readSavedTheme());
@@ -170,10 +133,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.toggle("dark", theme === "dark");
   }, [theme, mounted]);
 
-  /* Mientras el visitante no haya elegido, el tema sigue a su sistema
-     también EN VIVO: quien tiene el cambio automático al anochecer ve la
-     página cambiar con el resto de su escritorio, sin recargar. En
-     cuanto toca el interruptor, esto deja de mandar. */
+  // Mientras no haya elección, el tema sigue al sistema también en vivo.
   useEffect(() => {
     if (!mounted) return;
     let mq: MediaQueryList;
@@ -195,12 +155,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     try {
       localStorage.setItem("tj-palette", palette);
     } catch {
-      // Storage unavailable or quota exceeded
+      // Almacenamiento no disponible o lleno.
     }
   }, [palette, mounted]);
 
-  /* Tocar el interruptor es lo ÚNICO que escribe la preferencia. Mientras
-     nadie lo toque, la clave no existe y el sistema sigue mandando. */
+  // Solo el interruptor escribe la preferencia.
   const elegir = useCallback((t: Theme) => {
     try {
       localStorage.setItem(CLAVE_TEMA, t);

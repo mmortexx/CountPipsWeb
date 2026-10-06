@@ -23,7 +23,7 @@ const BROKERS: Broker[] = [
   { name: "Bybit", via: "CSV" },
 ];
 
-/** Logo wall of broker / import integrations. Bilingual. */
+/** Plantillas de importación por plataforma, en español e inglés. */
 export function Integrations() {
   const { lang } = useLang();
   const es = lang === "es";
@@ -55,8 +55,6 @@ export function Integrations() {
               key={b.name}
               className="group relative p-4 min-w-0 flex flex-col gap-3 border-b border-l border-[var(--line)]"
             >
-              {/* Sin monograma: «IB», «MT»… en una baldosa hacían de
-                  logotipo sin serlo. El nombre y cómo entra, nada más. */}
               <p className="t-h4 m-0 text-primary">{b.name}</p>
               <span className="text-[12px] font-medium text-tertiary">{b.via}</span>
             </div>
@@ -64,7 +62,6 @@ export function Integrations() {
           </div>
         </div>
 
-        {/* Universal-CSV reminder line. */}
         <Reveal delay={0.15} className="mt-8">
           <p className="medida text-sm text-tertiary leading-[1.6]">
             {es ? (

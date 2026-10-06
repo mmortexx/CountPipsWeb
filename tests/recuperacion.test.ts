@@ -6,9 +6,8 @@ import {
   operacionesParaRecuperar,
 } from "@/lib/trading/recuperacion";
 
-/* 40 % de aciertos a 1,5 es un empate exacto, pero en coma flotante da
-   1,1e-16: la casilla marcaba «0,00 R» en verde y el diagnóstico decía
-   «La expectancy es positiva». */
+// 40 % de aciertos a 1,5 es un empate exacto, pero en coma flotante da 1,1e-16
+// y el diagnóstico diría «positiva».
 describe("la expectancy de un empate es cero, no ruido", () => {
   it("empates exactos y casos con signo", () => {
     expect(esperanzaPorOperacion(0.4, 1.5)).toBe(0);

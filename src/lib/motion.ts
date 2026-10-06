@@ -1,25 +1,9 @@
 /**
- * Puente entre las curvas de movimiento del CSS y las que necesita
- * JavaScript.
- *
- * ── POR QUÉ HACE FALTA ────────────────────────────────────────────────
- * Las curvas viven en `globals.css` como `--ease-suave`, `--ease-salida`
- * y `--ease-entrada-salida`, para no tenerlas repetidas a mano por la
- * hoja. Pero la Web Animations API (`el.animate()`) NO resuelve
- * variables CSS en su campo `easing`: recibe la cadena tal cual, y si le
- * llega `var(--ease-suave)` lanza
- *
- *   TypeError: Failed to execute 'animate' on 'Element':
- *   'var(--ease-suave)' is not a valid value for easing
- *
- * y la animación entera no llega a existir. Lo pilló la comprobación de
- * humo (`scripts/humo.mjs`) en las doce rutas a la vez.
- *
- * Aquí se resuelve el valor REAL leyéndolo del documento, así que sigue
- * habiendo una sola fuente de verdad —la hoja de estilos— y JavaScript
- * recibe la cadena literal que la API espera. Se memoriza porque
- * `SectionReveal` puede animar decenas de elementos y `getComputedStyle`
- * fuerza al navegador a calcular estilos.
+ * Puente entre las curvas del CSS (`--ease-suave`, `--ease-salida`,
+ * `--ease-entrada-salida` en `globals.css`) y JavaScript: `el.animate()` no
+ * resuelve `var(--…)` en `easing` y lanza un TypeError. Se lee el valor real
+ * del documento, así la hoja de estilos sigue siendo la única fuente, y se
+ * memoriza porque `getComputedStyle` fuerza el cálculo de estilos.
  */
 
 /** Valores de respaldo, por si se pide la curva antes de que haya CSS. */

@@ -31,7 +31,6 @@ const DATA = {
     titleEn: "Trade with your rules in view.",
     subtitleEs: "La demo enseña un flujo para traders que operan con límites de pérdida, evaluaciones y una disciplina que no admite improvisación.",
     subtitleEn: "The demo shows a workflow for traders working with loss limits, evaluations and discipline that leaves no room for improvisation.",
-    /* Cada perfil, su pregunta: las dos páginas decían la misma. */
     preguntaEs: "La pregunta no es si pasas hoy.",
     preguntaEn: "The question is not whether you pass today.",
     respuestaEs: "Es si tu forma de operar llega al objetivo sin que una sola operación te saque de la evaluación, y qué regla te falta para que no ocurra.",
@@ -47,8 +46,8 @@ const DATA = {
 /** Riesgo por operación del ejemplo, en %: la ficha, su colchón y el enlace al simulador. */
 const RIESGO_PCT = 0.75;
 
-/* Los mismos valores que las plantillas del programa (`PropFirmTemplates.cs`,
-   revisadas el 22/07/2026): la variante más común de cada firma. */
+// Los mismos valores que las plantillas del programa (`PropFirmTemplates.cs`):
+// la variante más común de cada firma.
 const PROP_FIRMS = [
   { id: "ftmo" as const, name: "FTMO", typeEs: "Drawdown estático", typeEn: "Static drawdown", dailyPct: 5, maxDDPct: 10, phase1Pct: 10, phase2Pct: 0, trailingType: "static" },
   { id: "topstep" as const, name: "Topstep", typeEs: "Drawdown dinámico", typeEn: "Trailing drawdown", dailyPct: 2, maxDDPct: 4, phase1Pct: 6, phase2Pct: 0, trailingType: "trailing" },
@@ -62,15 +61,13 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
   const es = lang === "es";
   const data = DATA[profile];
 
-  // Estado interactivo para prop firm
   const [selectedFirm, setSelectedFirm] = useState<"ftmo" | "topstep" | "the5ers">("ftmo");
   const [propBalance, setPropBalance] = useState(100000);
-  const [currentEquity, setCurrentEquity] = useState(103500); // Simulando beneficio acumulado
+  const [currentEquity, setCurrentEquity] = useState(103500); // beneficio acumulado simulado
   const [manualSetup, setManualSetup] = useState<"breakout" | "sweep" | "reversion">("breakout");
 
   const firm = PROP_FIRMS.find((f) => f.id === selectedFirm) || PROP_FIRMS[0];
 
-  // Cálculos de reglas de prop firm
   const dailyLossLimit = propBalance * (firm.dailyPct / 100);
   const maxTrailingLoss = propBalance * (firm.maxDDPct / 100);
   const phase1Target = propBalance * (firm.phase1Pct / 100);
@@ -103,7 +100,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
             titulo={es ? data.preguntaEs : data.preguntaEn}
             entradilla={es ? data.respuestaEs : data.respuestaEn}
           />
-          {/* Sin 01/02/03: son tres capacidades, no tres pasos. */}
           <ul className="mt-12 m-0 list-none border-t border-[var(--line)] p-0">
             {data.cards.map(({ titleEs, titleEn, textEs, textEn }) => (
               <li
@@ -122,7 +118,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
         </div>
       </section>
 
-      {/* SECCIÓN INTERACTIVA ESPECÍFICA POR PERFIL */}
       {profile === "prop" ? (
         <section className="section">
           <div className="tj-container">
@@ -133,12 +128,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               className="mb-10"
             />
 
-            {/* Selectores: Firma y Balance. Los dos son ya el conmutador
-                segmentado del sitio —el mismo que el selector de setups de
-                más abajo y los del proyector—. Eran dos fichas hechas a
-                mano que ni siquiera coincidían entre sí puestas una al lado
-                de la otra: la de firma pintaba el elegido con el acento y
-                la de importe con la tinta. */}
             <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-4">
               <div className="tj-segmentado tj-segmentado-apila sm:max-w-2xl sm:flex-1" role="group" aria-label={es ? "Firma de fondeo" : "Prop firm"}>
                 {PROP_FIRMS.map((f) => (
@@ -175,10 +164,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
             </div>
 
-            {/* Monitor de Trailing Drawdown y Distancia al Umbral */}
             <div className="border-t border-[var(--ficha-division)] py-4">
-              {/* Apilado por debajo de `sm`: en una sola fila, el rotulo y la
-                  cifra se metian el uno dentro del otro a 390 px. */}
+              {/* Apilado por debajo de `sm`: en una fila, rótulo y cifra se solapan en móvil. */}
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs mb-2">
                 <span className="font-semibold text-primary">
                   {es ? "Colchón hasta el límite de pérdida total" : "Buffer to the overall loss limit"}
@@ -207,7 +194,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
             </div>
 
-            {/* Matriz de parámetros de prop firm */}
             <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] sm:grid-cols-2 lg:grid-cols-4">
               <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
@@ -265,8 +251,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </div>
             </div>
 
-            {/* Las reglas de la firma elegida viajan en la dirección: el
-                simulador abre ya con su objetivo, su drawdown y su tipo. */}
+            {/* Las reglas de la firma viajan en la dirección: el simulador abre con ellas. */}
             <p className="mt-6 text-[14px]">
               <Link
                 href={`/herramientas/prueba-de-fondeo?objetivo=${firm.phase1Pct}&dd=${firm.maxDDPct}&tipo=${firm.trailingType === "static" ? "estatico" : "dinamico"}&riesgo=${RIESGO_PCT}`}
@@ -291,7 +276,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               className="mb-10"
             />
 
-            {/* Selector de setup manual */}
             <div className="tj-segmentado tj-segmentado-apila mb-6 sm:max-w-xl" role="group" aria-label={es ? "Setup del playbook" : "Playbook setup"}>
               {[
                 { id: "breakout" as const, labelEs: "Ruptura de rango", labelEn: "Range Breakout" },
@@ -310,7 +294,6 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               ))}
             </div>
 
-            {/* Tarjeta de métricas del setup */}
             <div className="tj-matriz grid-cols-1 border-b border-[var(--ficha-division)] md:grid-cols-3">
               <div className="caja-cifra p-5">
                 <span className="text-xs text-tertiary block mb-2">{es ? "Expectancy en R" : "Expectancy in R"}</span>
@@ -350,12 +333,8 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
                   className="whitespace-nowrap font-semibold text-primary tnum">
                   {(manualSetup === "breakout" ? "92" : manualSetup === "sweep" ? "86" : "74") + (es ? "\u00a0%" : "%")}
                 </span>
-                {/* El color seguia al rotulo y no al mensaje: estaba fijo en
-                    rojo mientras el texto cambia de aviso a elogio segun el
-                    setup, asi que "Proceso estable y repetible" salia
-                    pintado de perdida en dos de los tres casos. Y va en la
-                    familia del semaforo, no en la del P&L: esto es un
-                    veredicto sobre el proceso, no una cifra de dinero. */}
+                {/* El color sigue al mensaje y va en la familia del semáforo, no
+                    en la del P&L: es un veredicto sobre el proceso, no dinero. */}
                 <span className={`text-xs block mt-2 ${
                   manualSetup === "reversion"
                     ? "text-[rgb(var(--sig-red))]"

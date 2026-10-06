@@ -3,10 +3,8 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 /**
- * TEST_INFRA.md es el índice de lo que vigila cada prueba. Cuatro ficheros
- * llegaron a existir sin fila (barra-riesgo, saltos-teclado, sesiones,
- * variables): una guarda que nadie sabe que existe no se mantiene, y quien
- * la rompe no sabe qué estaba protegiendo.
+ * TEST_INFRA.md es el índice de lo que vigila cada prueba: una guarda que
+ * nadie sabe que existe no se mantiene, y quien la rompe no sabe qué protegía.
  */
 const RAIZ = join(import.meta.dirname, "..");
 const indice = readFileSync(join(RAIZ, "TEST_INFRA.md"), "utf8");

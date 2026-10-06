@@ -5,13 +5,9 @@ import { documentoPorSlug } from "@/lib/legal/documentos";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /aviso-legal — quién está detrás del sitio.
- *
- * Hoy la página se publica sin los datos fiscales del titular, y lo dice
- * abiertamente en pantalla en lugar de disimularlo. Es defendible mientras
- * la web solo informa y recoge correos; deja de serlo en cuanto haya
- * venta, porque entonces la ley obliga a identificar al prestador. Ver
- * `src/lib/legal/titular.ts`.
+ * /aviso-legal: quién está detrás del sitio. Sin los datos fiscales del
+ * titular lo avisa en pantalla; con venta la ley exige identificar al
+ * prestador (ver `src/lib/legal/titular.ts`).
  */
 
 const doc = documentoPorSlug("aviso-legal")!;

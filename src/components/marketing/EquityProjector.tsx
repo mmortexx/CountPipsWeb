@@ -9,10 +9,7 @@ import { fmtMoney, pctSep, fmtInt, fmtOperaciones, fmtR, fmtNum as fmtNumCasa } 
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 
-/** Cuántos decimales (0 a `max`) hacen falta para representar `v` sin ceros
- *  de más: el mismo recorte que hacía `minimumFractionDigits: 0,
- *  maximumFractionDigits: max`, pero para pasarlo al formateador de la
- *  casa en vez de a `toLocaleString` directamente. */
+/** Decimales (0 a `max`) necesarios para representar `v` sin ceros de más. */
 function decimalesSinCeros(v: number, max: number): number {
   const factor = 10 ** max;
   let n = Math.round(Math.abs(v) * factor);
@@ -25,11 +22,9 @@ function decimalesSinCeros(v: number, max: number): number {
 }
 
 /**
- * EquityProjector — Proyector de curva de capital de alta resolución.
- *
- * Modelo estocástico con cono de varianza analítico (p10–p90), cálculo
- * institucional de expectancy neta, profit factor, drawdown al 99% de
- * confianza, simulador mensual y matriz de retorno año a año.
+ * Proyector de curva de capital: cono de varianza analítico (p10–p90),
+ * expectancy neta, profit factor, drawdown de la peor racha y matriz anual.
+ * El cálculo vive en `lib/trading/proyeccion.ts`.
  */
 
 type PresetKey = "propfirm" | "daytrader" | "swing" | "scalper" | "custom";
@@ -109,15 +104,9 @@ const CAPITAL_CHIPS = [5000, 10000, 25000, 50000, 100000, 250000].map((v) => ({ 
 
 const HORIZON_CHIPS = [1, 2, 3, 5, 10];
 
-/* El nivel de confianza de la peor racha (abajo, en el motor cuantitativo)
-   y el de la banda de varianza del gráfico se citan cada uno en tres
-   textos distintos. Una sola constante para cada uno: si el nivel
-   cambiara, los textos lo siguen solos en vez de quedar tres números
-   sueltos por corregir a mano. `CONFIANZA_RACHA` en sí vive en
-   `lib/trading/proyeccion.ts`, que es quien la usa para calcular. */
 /** Ancho de la banda p10–p90 del cono de varianza. Va emparejado con el
- *  z-score `z80` del motor cuantitativo (abajo): si este cambia, `z80`
- *  tiene que cambiar con él. */
+ *  z-score `z80` del motor (`lib/trading/proyeccion.ts`): si cambia uno,
+ *  cambia el otro. Los textos citan esta constante y `CONFIANZA_RACHA`. */
 const CONO_CONFIANZA_PCT = 80;
 /* Por encima de un siglo, el número de meses ya no dice nada. */
 const MESES_PARA_DUPLICAR_MAX = 1200;
@@ -129,11 +118,8 @@ export function EquityProjector() {
   const es = lang === "es";
 
   // ── Estado ────────────────────────────────────────────────────────
-  /* Se abre con el perfil más prudente y a tres años. Con «Day trading» a
-     cinco años la primera cifra que veía el visitante era +21.721 %: la
-     aritmética era correcta, pero una web que habla como un departamento
-     de riesgo no puede abrir con eso. Los valores salen del perfil, así
-     que el perfil marcado y sus cifras no pueden discrepar. */
+  /* Se abre con el perfil más prudente y a tres años; los valores salen del
+     perfil, así que el perfil marcado y sus cifras no discrepan. */
   const inicial = PRESETS[0];
   const [selectedPreset, setSelectedPreset] = useState<PresetKey>(inicial.id);
   const [startBalance, setStartBalance] = useState(10000);
@@ -151,9 +137,8 @@ export function EquityProjector() {
   const [hoverMonthIndex, setHoverMonthIndex] = useState<number | null>(null);
 
   const chartRef = useRef<SVGSVGElement | null>(null);
-  /* El gráfico se dibuja al ancho real de su caja, en píxeles. Con un
-     lienzo fijo de 900 escalado a la caja, en un móvil de 390 todo se
-     reducía a un tercio y las cifras de los ejes quedaban en 3–4 px. */
+  /* El gráfico se dibuja al ancho real de su caja: con un lienzo fijo
+     escalado, las cifras de los ejes quedaban diminutas en móvil. */
   const cajaGraficoRef = useRef<HTMLDivElement | null>(null);
   const [anchoGrafico, setAnchoGrafico] = useState(900);
   useEffect(() => {
@@ -219,10 +204,7 @@ export function EquityProjector() {
   // ── Formateadores de Alta Fidelidad ──────────────────────────────
   const fmtUsd = useCallback(
     (n: number, compact = false) => {
-      /* Las abreviadas escribian «$2,18M» tambien en castellano: la
-         divisa delante, que es la convencion inglesa, al lado de un
-         «2.182.131 US$» de la casilla vecina que sale de `Intl` y la
-         pone detras. Ahora cada idioma abrevia como escribe. */
+      // Cada idioma abrevia como escribe: divisa detrás en español, delante en inglés.
       if (compact && Math.abs(n) >= 1_000_000) {
         const valor = n / 1_000_000;
         const cifra = fmtNumCasa(valor, lang, decimalesSinCeros(valor, 2));
@@ -243,10 +225,8 @@ export function EquityProjector() {
     [lang],
   );
 
-  /* El espacio antes del signo es ESPANOL. En ingles el signo va pegado;
-     la casa lo tiene decidido en `PCT_SEP` de lib/trading/format.ts y aqui
-     se escribia siempre con espacio, en los dos idiomas. Espacio duro para
-     que el signo no se quede solo al principio de la linea siguiente. */
+  /* Espacio duro antes del % solo en español (`PCT_SEP` de
+     lib/trading/format.ts); así el signo no queda solo en la línea siguiente. */
   const fmtPct = useCallback(
     (n: number, dec = 1) => `${fmtNum(n, dec)}${es ? "\u00a0%" : "%"}`,
     [fmtNum, es],
@@ -393,8 +373,7 @@ export function EquityProjector() {
     );
   };
 
-  /* Lo que se pinta junto a la barra es también lo que oye el lector:
-     «10.000 $», no «10000». */
+  /* Lo que se pinta junto a la barra es lo que oye el lector. */
   const textoDeslizador = (value: number, step: number, suffix: string) =>
     suffix === " $" ? fmtUsd(value) : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`;
 
@@ -419,8 +398,8 @@ export function EquityProjector() {
             </span>
           )}
         </div>
-        {/* El dólar cambia de sitio con el idioma («10.000 $» / «$10,000»):
-            lo resuelve `fmtUsd`. Las demás unidades van siempre detrás. */}
+        {/* El dólar cambia de sitio con el idioma (lo resuelve `fmtUsd`); las
+            demás unidades van siempre detrás. */}
         <span className="tj-deslizador-valor">{textoDeslizador(value, step, suffix)}</span>
       </div>
       <input
@@ -449,9 +428,8 @@ export function EquityProjector() {
 
   return (
     <section className="section-tight relative overflow-hidden">
-      {/* Dónde acaba el capital y a costa de qué: sin el drawdown, la
-          cifra final sola es la mitad de la historia y la mitad
-          optimista. */}
+      {/* Resultado anunciado al lector: el drawdown acompaña siempre a la
+          cifra final. */}
       <ResultadoAnunciado
         texto={
           c.fueraDeEscala
@@ -469,13 +447,8 @@ export function EquityProjector() {
         <div className="max-w-3xl mb-8">
           <div className="inline-flex items-center gap-3 mb-3">
             <span className="eyebrow" data-titular-herramienta>
-              {/* Decia «TERMINAL CUANTITATIVO · SIMULADOR DE CAPITAL».
-                  «Terminal» vuelve a sugerir una pieza de producto, y
-                  «Simulador» es peor que vago: es el nombre de una
-                  pantalla que la app SI tiene y que no es esta, asi que
-                  quien lo lea puede creer que esta viendo aquella. Se
-                  nombra la herramienta por su nombre real, el mismo del
-                  rotulo del marco y el de `herramientas.ts`. */}
+              {/* Nombre real de la herramienta, el de `herramientas.ts`:
+                  «Simulador» es una pantalla de la app que no es esta. */}
               {es ? "Proyector de capital" : "Equity projector"}
             </span>
           </div>
@@ -509,31 +482,13 @@ export function EquityProjector() {
         <div
           className="w-full tj-ficha overflow-hidden"
         >
-          {/* Cabecera de la herramienta. NO es la barra de titulo de
-              una ventana: esto no es una pantalla del programa. */}
+          {/* Cabecera de la herramienta, no de una pantalla del programa: la app
+              no tiene este proyector. */}
           <div className="tj-ficha-barra">
-            {/* ── ESTA HERRAMIENTA NO ES UNA PANTALLA DEL PROGRAMA ────
-                Aqui habia una insignia «WINUI3» junto al rotulo «MOTOR
-                CUANTITATIVO DE CAPITAL», y las dos cosas juntas se leian
-                como una captura de la aplicacion de escritorio. No lo es:
-                la app no tiene ningun proyector con deslizadores de win
-                rate, R medio y horizonte, ni publica CAGR proyectado,
-                retorno total ni tiempo para duplicar. Lo que si tiene es
-                el Simulador, que contesta la misma pregunta sorteando
-                entre las operaciones REALES del trader.
-
-                Era ademas la unica de las ocho herramientas de la web con
-                marco de aplicacion; las otras siete no fingen ser el
-                programa. El marco se queda —es la caja de la herramienta—
-                pero el rotulo la nombra por su nombre real, el mismo que
-                usa `src/lib/herramientas.ts` para esta entrada. */}
             <span>{es ? "Proyector de capital" : "Equity projector"}</span>
 
-            {/* Presets Toolbar en la Barra Superior */}
-            {/* `tj-fila-sigue`: la fila no cabe y se desplaza de lado.
-                Sin aviso, la ultima entrada queda partida contra el canto
-                y eso no se lee como «hay mas a la derecha» sino como un
-                texto cortado. Medido a 390 px: 838 px de contenido en 316. */}
+            {/* `tj-fila-sigue`: la fila no cabe en móvil y se desplaza de lado;
+                avisa de que hay más a la derecha. */}
             <div className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-0.5 sm:pb-0">
               {PRESETS.map((p) => {
                 const active = selectedPreset === p.id;
@@ -589,13 +544,7 @@ export function EquityProjector() {
                   </span>
                 </div>
 
-                {/* Capital inicial — conmutador segmentado.
-                    Eran seis botones sueltos con 4 px de hueco y un
-                    filete cada uno: seis rectángulos en fila, que no se
-                    leen como UNA elección de seis posibilidades. Ahora
-                    son un bloque con su filete exterior y divisiones de
-                    un píxel, que es como este sitio separa las celdas de
-                    sus cuadros de cifras. Ver `.tj-segmentado`. */}
+                {/* Capital inicial: conmutador segmentado (`.tj-segmentado`). */}
                 <div>
                   <div className="tj-segmentado tj-segmentado-seis" role="group" aria-label={es ? "Balances de partida" : "Starting balance presets"}>
                     {CAPITAL_CHIPS.map((chip) => {
@@ -803,12 +752,8 @@ export function EquityProjector() {
                       <div className="text-[13px] tnum font-semibold flex items-center justify-between text-[var(--ink)]">
                         <span>{es ? "Interés compuesto" : "Compounding"}</span>
                       </div>
-                      {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
-                            opcion, sobre su propia superficie, que es mas
-                            clara que el velo contra el que se calibro el
-                            terciario. Medido ahi: 4,28:1 en tema oscuro,
-                            por debajo del 4,5:1 de AA. Con el secundario
-                            sube por encima del listón. */}
+                      {/* `--ink-2` y no `--ink-3`: sobre la superficie de la opción
+                          el terciario da 4,28:1 en oscuro, bajo el 4,5:1 de AA. */}
                       <div className="text-[12px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Escala con el balance" : "Scales with equity"}
                       </div>
@@ -827,12 +772,8 @@ export function EquityProjector() {
                       <div className="text-[13px] tnum font-semibold flex items-center justify-between text-[var(--ink)]">
                         <span>{es ? "Riesgo fijo" : "Fixed risk"}</span>
                       </div>
-                      {/* `--ink-2` y no `--ink-3`: esta linea vive DENTRO de la
-                            opcion, sobre su propia superficie, que es mas
-                            clara que el velo contra el que se calibro el
-                            terciario. Medido ahi: 4,28:1 en tema oscuro,
-                            por debajo del 4,5:1 de AA. Con el secundario
-                            sube por encima del listón. */}
+                      {/* `--ink-2` y no `--ink-3`: sobre la superficie de la opción
+                          el terciario da 4,28:1 en oscuro, bajo el 4,5:1 de AA. */}
                       <div className="text-[12px] text-[var(--ink-2)] leading-tight mt-0.5">
                         {es ? "Sobre el balance inicial" : "On starting balance"}
                       </div>
@@ -945,9 +886,8 @@ export function EquityProjector() {
                 )}
               </div>
 
-              {/* El balance ya no es una cifra creíble: ni el gráfico ni
-                  la tabla dicen nada fiable, así que en su sitio va el
-                  aviso, no una curva o una tabla con Infinity dentro. */}
+              {/* Con el balance fuera de escala se muestra el aviso, no una
+                  curva o tabla con Infinity. */}
               {c.fueraDeEscala ? (
                 <div
                   className="border-y border-[var(--ficha-division)] py-6 text-[13px] leading-[1.6] text-center"
@@ -1146,28 +1086,10 @@ export function EquityProjector() {
 
               {/* VISTA 2: Matriz Anual */}
               {viewTab === "table" && (
-                /* ── LA MATRIZ, COMO UN CUADRO DE UN INFORME ──────────
-                   Era una tabla correcta y sin voz: cabecera con un
-                   fondo gris, filas separadas por una línea al 8 % y
-                   nada que dijera dónde acaba la cuenta. Cinco filas de
-                   cifras que se leen todas igual de importantes.
-
-                   Ahora sigue las convenciones de un cuadro impreso, que
-                   son las mismas que ya usa el resto del sitio:
-
-                   · La cabecera se remata con FILETE DOBLE —el mismo de
-                     los pies de lámina—, no con una banda de color.
-                   · El último ejercicio es el RESULTADO, y va marcado
-                     como tal: filete doble encima y tinta plena. Es la
-                     cifra a la que se viene, y antes se perdía entre las
-                     demás.
-                   · Cada fila lleva su BARRA de balance, dibujada al
-                     fondo de la celda final en proporción al mayor de la
-                     serie. No es adorno: convierte una columna de
-                     números en una curva que se lee de un vistazo, que
-                     es justo lo que la herramienta quiere enseñar.
-                   · Los años van en versalitas de tinta, no en acento:
-                     el color se reserva para el signo del resultado. */
+                /* Matriz como cuadro de informe: cabecera con filete doble, último
+                   ejercicio marcado como resultado (`tj-matriz-total`) y barra de
+                   balance al fondo de la celda final, proporcional al mayor de
+                   la serie. El color se reserva para el signo del resultado. */
                 <div className="overflow-x-auto rounded-[4px]">
                   <table className="w-full text-left tnum text-xs">
                     <thead>
@@ -1221,9 +1143,7 @@ export function EquityProjector() {
                             >
                               {fmtPct(row.yearReturnPct, 1)}
                             </td>
-                            {/* La barra vive detrás de la cifra, anclada a
-                                la derecha, para que crezca hacia donde se
-                                lee el número. */}
+                            {/* Barra detrás de la cifra, anclada a la derecha. */}
                             <td className="relative py-2 px-3 text-right font-semibold text-[var(--ink)]">
                               <span
                                 aria-hidden
@@ -1245,19 +1165,13 @@ export function EquityProjector() {
                 </>
               )}
 
-              {/* ── LAS SEIS CIFRAS, EN UNA RETICULA DE FILETES ────────
-                  Eran seis tarjetas sueltas con 10 px de hueco, borde y
-                  sombra cada una: seis objetos que por casualidad estan
-                  juntos. Son las seis lecturas de UNA proyeccion, y se
-                  presentan como tales — el mismo cuadro de filetes que
-                  usa la portada para sus metricas (`.tj-matriz`). */}
+              {/* Las seis cifras en una retícula de filetes (`.tj-matriz`). Cada
+                  casilla (`caja-cifra`) es el contenedor contra el que se mide
+                  su cifra: «2.182.131 US$» a cuerpo fijo se salía a 320 px. */}
               <div
                 className="tj-matriz grid-cols-2 border-b border-[var(--ficha-division)] sm:grid-cols-3"
               >
                 <div
-                  /* Cada casilla es el contenedor contra el que se mide
-                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
-                     salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
@@ -1278,9 +1192,6 @@ export function EquityProjector() {
                 </div>
 
                 <div
-                  /* Cada casilla es el contenedor contra el que se mide
-                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
-                     salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
@@ -1300,9 +1211,6 @@ export function EquityProjector() {
                 </div>
 
                 <div
-                  /* Cada casilla es el contenedor contra el que se mide
-                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
-                     salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
@@ -1336,9 +1244,6 @@ export function EquityProjector() {
                 </div>
 
                 <div
-                  /* Cada casilla es el contenedor contra el que se mide
-                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
-                     salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
@@ -1357,9 +1262,6 @@ export function EquityProjector() {
                 </div>
 
                 <div
-                  /* Cada casilla es el contenedor contra el que se mide
-                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
-                     salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">
@@ -1382,9 +1284,6 @@ export function EquityProjector() {
                 </div>
 
                 <div
-                  /* Cada casilla es el contenedor contra el que se mide
-                     su propia cifra: «2.182.131 US$» a cuerpo fijo se
-                     salia 33 px a 320 px. */
                   className="caja-cifra p-3.5"
                 >
                   <div className="tnum text-[12px] text-[var(--ink-3)] font-semibold">

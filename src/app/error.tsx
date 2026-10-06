@@ -4,11 +4,7 @@ import { useEffect } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 
-/**
- * Root error boundary — must be a client component.
- * Receives `{ error, reset }` from Next.js. `reset()` re-renders the error
- * segment; the home link offers a hard exit back to the root route.
- */
+/** Límite de error raíz (debe ser de cliente). `reset()` vuelve a pintar el segmento fallido. */
 export default function Error({
   error,
   reset,
@@ -19,7 +15,7 @@ export default function Error({
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Surface unexpected runtime errors to the console in development for observability.
+  // El error solo se vuelca a la consola fuera de producción.
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") {
       console.error("Root error boundary caught:", error);
@@ -58,7 +54,6 @@ export default function Error({
             : "An unexpected error occurred. You can try again or head back home."}
         </p>
 
-        {/* Discrete digest for support / debugging */}
         {error?.digest ? (
           <p
             style={{ animationDelay: "0.3s" }}
@@ -76,11 +71,7 @@ export default function Error({
             <button
               type="button"
               onClick={reset}
-              /* `group` + `min-h-[44px]`: el icono llevaba
-                 `group-hover:-rotate-45` sin ningún padre `group`, así que
-                 nunca rotaba; y con `py-2` el botón medía ~36 px, por
-                 debajo del objetivo táctil de 44 px que exige R2 en
-                 cualquier control interactivo. */
+              /* `group` para el giro del icono y `min-h-[44px]` de objetivo táctil. */
               className="group inline-flex min-h-[44px] items-center bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] px-6 rounded-[4px] text-sm font-semibold hover:bg-[rgb(var(--accent-hover))] transition-colors"
             >
               <svg

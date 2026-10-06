@@ -3,47 +3,16 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 /**
- * EL SITIO SE LLAMA A SÍ MISMO DE UNA SOLA MANERA EN CADA IDIOMA.
- *
- * ── El fallo que cierra ───────────────────────────────────────────────
- * La web se presenta como «el diario de trading profesional» y el menú de
- * la demo llama Diario a esa pantalla. Y a la vez, en español, decía «no
- * es otro journal», «antes del journal», «journals en la nube»,
- * «migración desde otros journals», «cómo llevas el journal hoy»,
- * «Journal completo + 40+ métricas», «el núcleo del journal». Once
- * sitios, dos nombres para el mismo producto, uno de ellos sin traducir
- * en mitad de una frase en español.
- *
- * No es purismo. El vocabulario de una web es la señalización de quien la
- * recorre: si la cosa que va a comprar se llama de dos maneras, tiene que
- * pararse a decidir si son la misma.
- *
- * ── Por qué mira el HTML y no el código ───────────────────────────────
- * Se intentó primero sobre las fuentes, y no se sostiene. La mitad del
- * sitio escribe sus textos como `es ? "…" : "…"`, muchas veces repartido
- * en varias líneas, y lo único que distingue la rama española de la
- * inglesa es el ORDEN. Leyendo línea a línea, la rama inglesa se acusa
- * sola: doce falsos positivos en el primer intento, todos ellos texto
- * inglés perfectamente correcto. Y una barrera que da falsos positivos se
- * desactiva a la semana.
- *
- * El HTML compilado no tiene esa ambigüedad: en `out/` las páginas
- * españolas contienen texto español y nada más. Se mira eso, que además
- * es exactamente lo que el visitante lee.
- *
- * ── Lo que NO mira ────────────────────────────────────────────────────
- * · `out/en/**` — el sitio en inglés.
- * · `<script>` y `<style>` — ahí viven los datos estructurados, cuyas
- *   palabras clave para buscadores SÍ van en inglés a propósito, y el
- *   JavaScript de la página, que no es texto que se lea.
- * · Se salta entera si no hay `out/`: las pruebas tienen que poder correr
- *   sin compilar.
+ * El sitio se llama a sí mismo de una sola manera en cada idioma. Mira el HTML
+ * compilado y no el código (los textos van como `es ? "…" : "…"` y leer línea
+ * a línea daba falsos positivos). No mira `out/en/**` ni `<script>` / `<style>`
+ * (los datos estructurados llevan inglés a propósito). Se salta si no hay `out/`.
  */
 
 const RAIZ = process.cwd();
 const SALIDA = join(RAIZ, "out");
 
-/** Palabras que en el texto español del sitio no deben aparecer, y su porqué. */
+/** Palabras que no deben aparecer en el texto español del sitio, y su motivo. */
 const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: boolean }[] = [
   {
     palabra: /\bjournals?\b/i,
@@ -62,10 +31,8 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
     motivo: "en español es «la paleta de comandos»",
   },
   {
-    /* Sólo con mayúscula inicial, que es como se escribe una ETIQUETA de
-       métrica. «tu esperanza matemática», en minúscula y dentro de una
-       frase, es español correcto y se deja: el lookahead lo excluye
-       también cuando va en mayúscula al empezar una oración. */
+    // Solo con mayúscula inicial (etiqueta de métrica): «tu esperanza
+    // matemática» en una frase es correcto, y el lookahead lo excluye.
     palabra: /\bEsperanza\b(?!\s+matem)/,
     nombre: "Esperanza, como etiqueta de métrica",
     motivo:
@@ -82,12 +49,9 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
       "las dos formas, a veces en la misma respuesta de la FAQ",
   },
   {
-    /* « — » con espacio a los dos lados es la raya inglesa. En español el
-       inciso va pegado («lo hace —y vive en tu equipo—») o se resuelve con
-       coma o dos puntos. Se mira cada trozo de texto por separado y sin el
-       `<title>`: el separador «Página — CountPips» no es un inciso, y el
-       «—» que ocupa el sitio de una cifra que aún no existe tampoco, pero
-       unido al texto de al lado parecía uno. */
+    // « — » con espacios es la raya inglesa; en español el inciso va pegado.
+    // Se mira por nodo y sin `<title>`: el separador «Página — CountPips» y el
+    // «—» de una cifra pendiente no son incisos.
     palabra: /\S[^\S\n]—[^\S\n]\S/,
     nombre: "raya con espacio a los dos lados",
     porNodo: true,
@@ -123,9 +87,7 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
       "la definición del SQN decía «típica» para lo mismo",
   },
   {
-    /* «Curva de capital», «capital invertido», «aporta capital» o el
-       capital de la cuenta en las fichas del glosario (lo que en inglés es
-       «equity») son otra cosa y se quedan. */
+    // «Curva de capital», «capital invertido» o «aporta capital» son otra cosa y se quedan.
     palabra: /\btu capital\b|\bcapital inicial\b|\bcon el capital\b|\bsaldo\b|\bCapital(?: final|:| y frecuencia)/,
     nombre: "capital o saldo para el dinero de la cuenta",
     motivo:
@@ -144,11 +106,8 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
   },
 ];
 
-/* NO se prohíbe «Drawdown máx.»: la calculadora de capital lo usa para el
-   drawdown ESTIMADO a 99 %, que es otra métrica y lleva su propio rótulo
-   descriptivo. Lo que se arregló fue la portada, que llamaba «Drawdown
-   máx.» y «Max drawdown» a la MISMA cifra con treinta píxeles de
-   diferencia; eso no lo caza una lista de palabras, sino leerlo. */
+// No se prohíbe «Drawdown máx.»: la calculadora de capital lo usa para el
+// drawdown estimado a 99 %, que es otra métrica.
 
 function paginasEspanolas(dir: string, acc: string[] = []): string[] {
   for (const n of readdirSync(dir)) {
@@ -194,10 +153,7 @@ describe.skipIf(!existsSync(SALIDA))(
     });
 
     for (const { palabra, motivo, nombre: puesto, porNodo } of PROHIBIDAS) {
-      /* El título es lo que lee quien rompa esto dentro de un año, así que
-         la entrada puede traer su propio `nombre`: derivarlo del patrón
-         funciona para «journal», pero un patrón con lookahead se imprimía
-         como «Esperanza(!\s+matem)», que no dice nada. */
+      // `nombre` propio en la entrada: derivarlo de un patrón con lookahead da un título ilegible.
       const nombre = puesto ?? palabra.source.replace(/\\b|\?/g, "");
       it(`ninguna página en español dice «${nombre}» — ${motivo}`, () => {
         const encontrados: string[] = [];

@@ -3,13 +3,9 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /**
- * El hero no lleva deslizadores. Las micro-calculadoras que ocupaban
- * el centro de la primera pantalla —dos pistas con bolita, sin gráfico—
- * se retiraron: tapaban el grabado del atlas y se leían como un widget
- * de consumo delante de una mesa institucional.
- *
- * Las fórmulas (esperanza en R y recuperación de drawdown) siguen
- * vivas en las herramientas; aquí se vigila que no vuelvan al hero.
+ * El hero no lleva deslizadores: las micro-calculadoras se retiraron. Las
+ * fórmulas (esperanza en R y recuperación de drawdown) siguen en las
+ * herramientas; aquí se vigila que no vuelvan al hero.
  */
 
 const RAIZ = join(import.meta.dirname, "..");

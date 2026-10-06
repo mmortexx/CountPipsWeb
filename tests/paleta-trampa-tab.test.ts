@@ -1,11 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { destinoTrampaTab } from "@/components/demo/DemoCommandPalette";
 
-// La trampa de Tab de DemoCommandPalette decide, en cada pulsación de Tab
-// o Shift+Tab, si el foco debe saltar a un extremo del panel o seguir su
-// curso normal. `destinoTrampaTab` es la decisión pura, sin DOM: dado
-// dónde está el foco y qué tecla se pulsó, dice a qué extremo saltar (o
-// `null` si el Tab no necesita intervención).
+// `destinoTrampaTab` es la decisión pura (sin DOM) de la trampa de Tab de
+// DemoCommandPalette: dice a qué extremo saltar o `null` si no hace falta.
 describe("destinoTrampaTab", () => {
   it("Tab en el último elemento salta al primero", () => {
     expect(
@@ -29,8 +26,7 @@ describe("destinoTrampaTab", () => {
   });
 
   it("si el foco está fuera del panel, Tab lo trae de vuelta al primero y Shift+Tab al último", () => {
-    // Esto es lo que le pasaría a un foco que se ha escapado del panel
-    // (el fallo original: sin trampa, Tab sale del diálogo entero).
+    // Un foco escapado del panel: sin trampa, Tab saldría del diálogo entero.
     expect(
       destinoTrampaTab({ dentro: false, esPrimero: false, esUltimo: false, shiftKey: false })
     ).toBe("primero");

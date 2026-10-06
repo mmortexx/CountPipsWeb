@@ -5,14 +5,7 @@ import { AppDemoClient } from "@/components/demo/AppDemoClient";
 import { DemoConversionPanel } from "@/components/demo/DemoConversionPanel";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
-// PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
-// silently fail to render SVG OG images. See layout.tsx for the full note.
-
-/**
- * Breadcrumb structured data — page-specific. Lists just [Home, Demo]
- * so Google renders a correct breadcrumb rich result for the actual
- * page hierarchy.
- */
+/** Migas de pan de esta página: Inicio y Demo. */
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -57,24 +50,10 @@ export const metadata: Metadata = {
   },
 };
 
-// LAS SECCIONES PESADAS SIGUEN EN SU PROPIO TROZO DE JAVASCRIPT, PERO YA
-// NO LLEVAN `loading`.
-//
-// Un `loading` en `next/dynamic` abre un límite de Suspense, y React
-// resuelve un límite de Suspense durante el prerenderizado escribiendo el
-// hueco en su sitio y el contenido REAL al final del <body>, dentro de un
-// <div hidden> que solo un script sabe devolver a su lugar. Sin
-// JavaScript ese script no corre: medido en el HTML compilado, la portada
-// servía 37.921 de sus 118.707 caracteres —el 32 %— dentro de bloques
-// ocultos, y /features 61.865 de 128.953, el 48 %.
-//
-// Sin `loading` no hay límite, el contenido se escribe donde va y el
-// reparto en trozos se conserva intacto: medido tras el cambio, la
-// portada pide los mismos 17 scripts y los mismos 948 KB. El salto de
-// maquetación que el hueco venía a evitar tampoco ocurre — no hay hueco,
-// porque la sección ya viene escrita.
-//
-// Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
+// Sin `loading` en `next/dynamic`: un `loading` abre un límite de Suspense y el
+// prerenderizado escribe el contenido real en un `<div hidden>` al final del
+// body, que sin JavaScript no vuelve a su sitio. Lo vigila `scripts/humo.mjs`
+// («contenido en bloques ocultos»).
 
 const FinalCTANew = dynamic(
   () => import("@/components/marketing/FinalCTANew").then((m) => m.FinalCTANew)
@@ -95,9 +74,7 @@ export function DemoBody() {
         breadcrumbEn="Demo"
       />
       <section id="demo" className="section scroll-mt-16">
-        {/* `hideHeader`: el PageHeader de arriba ya titula "La app, en tu
-            navegador." y repite el mismo subtítulo, así que sin esta
-            bandera el visitante leía el titular dos veces seguidas. */}
+        {/* `hideHeader`: el PageHeader de arriba ya pone titular y subtítulo. */}
         <AppDemoClient hideHeader />
       </section>
       <DemoConversionPanel />

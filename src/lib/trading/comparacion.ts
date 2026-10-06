@@ -1,13 +1,11 @@
 import type { Trade } from "./data";
 
 /* «Esta selección frente al resto», como en la pantalla Operaciones de la app
-   (SliceComparisonCalculator + SetupComparisonCalculator): se enfrenta lo
-   filtrado a su complemento por la ventaja por operación en R, y solo se
-   declara ganador si los intervalos del 95 % no se solapan. Solaparse no es
-   empatar, por eso no hay veredicto de «iguales».
-   La app saca el intervalo por bootstrap; aquí va la aproximación normal
-   para que la demo dé siempre la misma cifra. El mínimo de muestra es el
-   suyo (SignificanceCalculator.MinSample). */
+   (SliceComparisonCalculator + SetupComparisonCalculator): lo filtrado contra su
+   complemento por la R media, con ganador solo si los IC del 95 % no se solapan
+   (solaparse no es empatar, así que no hay veredicto de «iguales»).
+   La app calcula el IC por bootstrap; aquí, con la aproximación normal, para que
+   la cifra sea siempre la misma. El mínimo de muestra es el suyo (SignificanceCalculator.MinSample). */
 export const MUESTRA_MINIMA_COMPARAR = 20;
 
 export interface LadoComparado {

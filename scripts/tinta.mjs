@@ -1,15 +1,17 @@
 /**
- * TINTA — ¿se lee el texto que va ENCIMA de un fondo lleno de P&L?
+ * TINTA: mide el contraste del texto que va encima de un fondo lleno del color
+ * de un resultado (verde o rojo): filtros de la demo, etiquetas SL y TP de las
+ * velas, botón de copiado, sellos de marca y botón de cerrar en hover. En los
+ * gráficos ese fondo es un `<rect>` hermano y no un antepasado CSS, así que
+ * `legible.mjs` lo da por «sin fondo plano». Umbral 4,5:1 (3:1 para texto
+ * grande y gráficos). Un fallo es un par tinta/fondo bajo el umbral, o un
+ * sitio que no llegó a medirse.
  *
- * Mide los sitios donde el sitio pinta un rectángulo del color de un
- * resultado (verde/rojo) y escribe texto encima. En los gráficos ese fondo
- * es un <rect> HERMANO, no el de un antepasado CSS, así que `legible.mjs`
- * no puede verlo: lo da por «sin fondo plano». Este banco lo mide a mano.
+ * Sirve `out` sin fallback de SPA y lo comprueba pidiendo tres rutas y
+ * mirando el `<title>`: un servidor que devuelve la portada para todo mediría
+ * siempre la misma página.
  *
- * Sirve `out` SIN la bandera de SPA, y lo comprueba pidiendo tres rutas y
- * mirando el <title>.
- *
- * Uso:  node tinta.mjs --serve out
+ * Uso:  node scripts/tinta.mjs --serve out
  */
 import { chromium } from "playwright";
 import { createServer } from "node:http";
@@ -48,7 +50,7 @@ async function servir(raiz) {
   return { server, base: `http://127.0.0.1:${server.address().port}` };
 }
 
-/* La sonda de contraste vive en la página, instalada antes de cada carga. */
+// La sonda de contraste vive en la página, instalada antes de cada carga.
 const SONDA = () => {
   const rgba = (c) => {
     const m = String(c).match(/rgba?\(([^)]+)\)/);
@@ -68,9 +70,7 @@ const SONDA = () => {
     a: 1,
   });
   const esSvg = (n) => n.namespaceURI === "http://www.w3.org/2000/svg";
-  /* Lo que pinta un elemento SVG es su relleno, salvo que no tenga: un
-     trazo (el ✓ de un sello, la linea de un grafico) va en `stroke`, y
-     leerle el `fill` devuelve «none» y deja la medida sin hacer. */
+  // Un elemento SVG pinta con su relleno, salvo un trazo (✓ de un sello, línea de gráfico): va en `stroke`.
   const pinta = (s) => (s.fill && s.fill !== "none" ? s.fill : s.stroke);
 
   window.__mide = (elTexto, elFondo) => {
@@ -98,15 +98,13 @@ const { server, base } = await servir(dir);
 const nav = await chromium.launch();
 const ctx = await nav.newContext({
   viewport: { width: 1440, height: 900 },
-  /* El boton de copiar solo entra en su estado «Copiado» —el que se pinta
-     de verde— si el portapapeles responde. Sin este permiso el banco no
-     llega nunca a medir ese estado. */
+  // Sin este permiso el botón de copiar no entra en su estado «Copiado», el que se pinta de verde.
   permissions: ["clipboard-read", "clipboard-write"],
 });
 ctx.setDefaultTimeout(8000);
 await ctx.addInitScript(SONDA);
 
-/* ── Trampa conocida: el servidor que devuelve la portada para todo ── */
+// Trampa: un servidor que devuelve la portada para todo.
 {
   const p = await ctx.newPage();
   const rutas = ["/", "/pricing/", "/demo/"];
@@ -125,21 +123,16 @@ for (const tema of ["dark", "light"]) {
   await p.addInitScript((t) => { try { localStorage.setItem("tj-theme", t); } catch {} }, tema);
   const fijaTema = () => p.evaluate((t) => document.documentElement.setAttribute("data-theme", t), tema);
 
-  /* ── /demo → Operaciones: los cuatro filtros de resultado ── */
+  // /demo, Operaciones: los cuatro filtros de resultado.
   await p.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
   await p.waitForTimeout(2500);
   await fijaTema();
   await p.locator("button").filter({ hasText: /^Operaciones$/ }).first().click().catch(() => {});
   await p.waitForTimeout(700);
 
-  /* El separador del signo de porcentaje es un espacio DURO en espanol
-     (U+00A0, la regla de `PCT_SEP`), asi que "100% en plan" escrito con
-     un espacio normal no casa con nada y el filtro se quedaba sin medir.
-     Se busca por el trozo estable del rotulo. */
+  // El porcentaje en español lleva espacio duro (U+00A0, `PCT_SEP`): se busca por el trozo estable del rótulo.
   for (const rotulo of ["Ganadoras", "Pérdidas", "Fuera de plan (fallo)", "en plan"]) {
-    /* Texto literal, no expresion regular: hay dos botones «Ganadoras»
-       —el filtro rapido y el selector de resultado— y el primero en el
-       DOM es el que se pinta con el fondo lleno de P&L. */
+    // Texto literal: hay dos botones «Ganadoras» y el primero en el DOM es el que se pinta con el fondo lleno de P&L.
     const b = p.locator("button").filter({ hasText: rotulo }).first();
     await b.click().catch(() => {});
     await p.waitForTimeout(250);
@@ -147,7 +140,7 @@ for (const tema of ["dark", "light"]) {
     filas.push({ tema, sitio: `filtro ${rotulo}`, ...r });
   }
 
-  /* ── /demo → detalle: etiquetas SL y TP del gráfico de velas ── */
+  // /demo, detalle: etiquetas SL y TP del gráfico de velas.
   await p.locator("button").filter({ hasText: /^Ganadoras$/ }).first().click().catch(() => {});
   await p.waitForTimeout(300);
   // La fila de una operación, no la de cualquier tabla: con un filtro activo
@@ -165,13 +158,11 @@ for (const tema of ["dark", "light"]) {
     filas.push({ tema, sitio: `etiqueta ${pref} (velas)`, ...r });
   }
 
-  /* ── El boton de cerrar del chrome de la demo, en hover ── */
+  // El botón de cerrar de la ventana de la demo, en hover.
   await p.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
   await p.waitForTimeout(2500);
   await fijaTema();
-  /* El banner de consentimiento se planta encima del canto inferior de la
-     ventana y se come el hover del boton de cerrar: sin retirarlo, el banco
-     mide el estado en reposo creyendo medir el hover. */
+  // El banner de consentimiento tapa el hover del botón: sin retirarlo se mediría el reposo.
   await p.locator("button").filter({ hasText: "Solo necesarias" }).first().click().catch(() => {});
   await p.waitForTimeout(500);
   const cerrar = p.locator('button[aria-label="Cerrar"]').first();
@@ -185,8 +176,7 @@ for (const tema of ["dark", "light"]) {
     tema,
     sitio: "boton Cerrar (hover)",
     ...(await cerrar.evaluate((el) => {
-      /* El glifo es un SVG con `stroke: currentColor`, asi que lo que se
-         lee es el `color` del boton contra su fondo en hover. */
+      // El glifo es un SVG con `stroke: currentColor`: se lee el `color` del botón contra su fondo en hover.
       const s = getComputedStyle(el);
       const falso = document.createElement("span");
       falso.style.color = s.color;
@@ -200,7 +190,7 @@ for (const tema of ["dark", "light"]) {
     }).catch((e) => ({ falta: String(e).slice(0, 60) }))),
   });
 
-  /* ── /herramientas/proyector-de-capital ── */
+  // /herramientas/proyector-de-capital.
   await p.goto(base + "/herramientas/proyector-de-capital/", { waitUntil: "domcontentloaded" });
   await p.waitForTimeout(2500);
   await fijaTema();
@@ -216,12 +206,9 @@ for (const tema of ["dark", "light"]) {
     document.querySelectorAll('svg path[d="M1 1L9 9M9 1L1 9"]').length);
   console.log(`${tema} · controles de ventana decorativos en el proyector: ${restos} ${restos === 0 ? "OK" : "SIGUEN"}`);
 
-  /* ── Sellos: una marca trazada ENCIMA de un disco relleno ──────────
-     El mismo defecto que las etiquetas, en forma de dibujo: el disco y
-     el trazo salian los dos en `currentColor` y daban 1,00:1, o sea que
-     el ✓ no existia. Aqui la puerta es 3:1 —es un elemento grafico, no
-     texto— y se barre cualquier <svg> que tenga un circulo relleno y un
-     trazo dentro, sin saber de que pagina es. */
+  // Sellos: una marca trazada sobre un disco relleno. Si ambos salen en `currentColor`
+  // dan 1,00:1 y el ✓ no existe. Puerta de 3:1 (elemento gráfico); se barre cualquier
+  // `<svg>` con un círculo relleno y un trazo dentro.
   for (const ruta of ["/pricing/", "/"]) {
     await p.goto(base + ruta, { waitUntil: "domcontentloaded" });
     await p.waitForTimeout(2200);
@@ -234,10 +221,7 @@ for (const tema of ["dark", "light"]) {
         if (!disco || !trazo) continue;
         const sd = getComputedStyle(disco);
         if (!sd.fill || sd.fill === "none") continue;
-        /* Que haya un circulo y un trazo en el mismo <svg> no significa
-           que uno vaya ENCIMA del otro: en un icono de dos piezas cada
-           una ocupa su sitio y comparten color a proposito. Solo cuenta
-           como sello si el trazo cae dentro del disco. */
+        // Círculo y trazo en el mismo `<svg>` no implican superposición: solo es sello si el trazo cae dentro del disco.
         const a = trazo.getBoundingClientRect(), b = disco.getBoundingClientRect();
         if (!b.width || !b.height) continue;
         const dentro = a.left >= b.left - 1 && a.right <= b.right + 1 &&
@@ -245,8 +229,7 @@ for (const tema of ["dark", "light"]) {
         if (!dentro) continue;
         const m = window.__mide(trazo, disco);
         if (m.falta) continue;
-        /* Un mismo icono se repite en toda la lista: interesa el par de
-           colores distinto, no cuantas veces aparece. */
+        // Un icono se repite por toda la lista: interesa cada par de colores, no cuántas veces aparece.
         const clave = `${m.tinta}|${m.fondo}`;
         if (!vistos.has(clave)) vistos.set(clave, { ...m, veces: 0 });
         vistos.get(clave).veces++;
@@ -265,7 +248,7 @@ let mal = 0;
 for (const f of filas) {
   if (f.falta) { console.log(`${f.tema.padEnd(6)} ${f.sitio.padEnd(25)} NO MEDIDO (${f.falta})`); mal++; continue; }
   const grande = f.px >= 24 || (f.px >= 18.66 && Number(f.peso) >= 700);
-  /* Un glifo no es texto: WCAG le pide 3:1, no 4,5:1. */
+  // Un glifo no es texto: WCAG le pide 3:1.
   const puerta = f.grafico || grande ? 3 : 4.5;
   const ok = f.ratio >= puerta;
   if (!ok) mal++;

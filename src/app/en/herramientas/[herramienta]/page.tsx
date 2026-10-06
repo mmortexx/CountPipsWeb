@@ -6,9 +6,7 @@ import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { HERRAMIENTAS, herramientaPorSlug } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
-/** English counterpart of /herramientas/[herramienta]. Same 7 static
- *  params: the tool data (`tituloEn`/`descripcionEn`/...) already exists,
- *  this route only needed its own address and English metadata/schema. */
+/** Versión inglesa de /herramientas/[herramienta], con los mismos parámetros estáticos. */
 export function generateStaticParams() {
   return HERRAMIENTAS.map((h) => ({ herramienta: h.slug }));
 }

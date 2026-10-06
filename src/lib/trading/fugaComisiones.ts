@@ -2,13 +2,7 @@
  *  `costDragPct` va en escala 0–100 (ya multiplicado, no un ratio 0–1). */
 export type NivelFugaComisiones = "alto" | "moderado" | "bajo";
 
-/**
- * El color de «Parte de la ganancia» (rojo / ámbar / verde) no llevaba
- * palabra: quien no distingue el color por daltonismo o porque su lector de
- * pantalla no anuncia el estilo, no se enteraba de si el dato era bueno o
- * malo. Misma frontera que ya pintaba el componente: >30 alto, >15
- * moderado, el resto bajo.
- */
+/** La palabra que acompaña al color de «Parte de la ganancia», para quien no lo distingue: >30 alto, >15 moderado, el resto bajo. */
 export function clasificaFugaComisiones(costDragPct: number): NivelFugaComisiones {
   if (costDragPct > 30) return "alto";
   if (costDragPct > 15) return "moderado";
@@ -24,9 +18,7 @@ export interface InstrumentConfig {
   defaultCommissionRT: number; // Round turn por contrato en USD
   unitNameEs: string;
   unitNameEn: string;
-  /** Recorrido del objetivo por operación, en las unidades del instrumento.
-   *  El crudo se mueve en céntimos y el S&P en puntos: un mismo 5–100
-   *  dejaba el petróleo y el oro fuera del deslizador. */
+  /** Recorrido del objetivo por operación, en las unidades del instrumento (el crudo se mueve en céntimos y el S&P en puntos). */
   objetivo: { min: number; max: number; paso: number; inicial: number };
 }
 
@@ -143,10 +135,8 @@ export const INSTRUMENT_SPECS: InstrumentConfig[] = [
   },
 ];
 
-/* El objetivo se escribe en puntos o dólares de precio en futuros y en
-   pips en forex, donde un pip ES un tick. Todo sale de `tickSize` y
-   `tickValue`: con un tercer dato (el valor del punto) el forex llegó a
-   multiplicar los pips por el tamaño del lote, 10.000 veces de más. */
+// El objetivo va en puntos o dólares de precio en futuros y en pips en forex, donde un pip es un tick.
+// Todo sale de `tickSize` y `tickValue`; no hay un tercer dato (valor del punto).
 function unidadesPorTick(inst: InstrumentConfig): number {
   return inst.category === "forex" ? 1 : inst.tickSize;
 }

@@ -1,33 +1,13 @@
 /**
- * COPIADO — el texto que se llevan al portapapeles, ¿está en su idioma?
+ * COPIADO: pulsa el botón «Copiar» de cada herramienta en un navegador y lee el
+ * portapapeles. El resumen se construye en JavaScript, así que `cifras.mjs`
+ * (que lee el HTML compilado) no lo ve. Aplica sobre el texto copiado las
+ * reglas de `cifras.mjs`: porcentaje con espacio duro en español y pegado en
+ * inglés, dólar detrás en español y delante en inglés, menos tipográfico
+ * (U+2212) y ninguna palabra española en la versión inglesa.
  *
- * ── Por qué existe aparte de `cifras.mjs` ─────────────────────────────
- * `cifras.mjs` lee el HTML compilado, y el resumen de una calculadora no
- * está ahí: se construye en JavaScript cuando alguien pulsa «Copiar». Es
- * el único texto del sitio que el visitante se lleva fuera —lo pega en
- * su diario, en un chat, en un correo— y el único que ninguna guarda
- * miraba. Así que aquí se pulsa el botón de verdad, en un navegador, y
- * se lee lo que quedó en el portapapeles.
- *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * Tres renglones del proyector de capital salían SIEMPRE en español, aun
- * en la web inglesa: «Ratio Ganancia / Pérdida», «Expectancy Neta» y
- * «Riesgo / Op». Y dos convenciones cruzadas: el plan de la calculadora
- * de riesgo escribía «1,00 %» con espacio también en inglés y restaba
- * con el guion del teclado, y el diagnóstico de disciplina pegaba el
- * porcentaje también en español.
- *
- * ── Las reglas ────────────────────────────────────────────────────────
- * Las mismas que `cifras.mjs`, sobre el texto copiado: el porcentaje con
- * espacio duro en español y pegado en inglés, el dólar detrás en español
- * y delante en inglés, el menos tipográfico (U+2212) en toda cifra
- * negativa, y ni una palabra española en la versión inglesa.
- *
- * ── Por qué no puede quedarse ciega ───────────────────────────────────
- * La lista de herramientas es fija y cada una DEBE encontrar su botón y
- * un texto copiado que no esté vacío. Si alguien renombra el botón, mueve
- * la ruta o rompe el copiado, la guarda falla en vez de pasar en verde
- * sin haber comprobado nada.
+ * No puede quedarse ciega: cada herramienta de la lista debe encontrar su
+ * botón y un texto no vacío; si no, la guarda falla en vez de pasar en verde.
  *
  * Uso:  node scripts/copiado.mjs --serve out
  */
@@ -40,9 +20,8 @@ const args = process.argv.slice(2);
 const dir = args.includes("--serve") ? args[args.indexOf("--serve") + 1] : "out";
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-/* Las herramientas con botón de copiar. `preparar` deja la página
-   en el estado en que ese botón existe: el test de disciplina no lo
-   muestra hasta haber respondido las preguntas. */
+// Herramientas con botón de copiar. `preparar` deja la página en el estado en que
+// existe: el test de disciplina no lo muestra hasta responder las preguntas.
 const HERRAMIENTAS = [
   { ruta: "/herramientas/proyector-de-capital", nombre: "proyector de capital" },
   { ruta: "/herramientas/calculadora-de-riesgo", nombre: "calculadora de riesgo" },
@@ -89,11 +68,9 @@ async function servir(raiz) {
   return { server, base: `http://127.0.0.1:${server.address().port}${PREFIJO}` };
 }
 
-/** Responde el cuestionario —una pregunta por pantalla: cuatro opciones y
- *  un «Siguiente»— marcando la primera opción y avanzando, hasta que
- *  aparezca el botón de copiar. El tope evita un bucle infinito si alguien
- *  cambia el flujo; quedarse sin preguntas sin haber llegado al botón lo
- *  denuncia el propio bucle principal, que exige encontrarlo. */
+/** Responde el cuestionario (una pregunta por pantalla) marcando la primera
+ *  opción y avanzando hasta que aparece el botón de copiar. El tope evita un
+ *  bucle infinito; si no llega al botón, lo denuncia el bucle principal. */
 async function responderTest(pag) {
   for (let i = 0; i < 40; i++) {
     if (await pag.locator("button", { hasText: /copiar|copy/i }).count()) return;
@@ -102,10 +79,7 @@ async function responderTest(pag) {
       await opcion.click({ timeout: 4000 }).catch(() => {});
       await pag.waitForTimeout(100);
     }
-    /* El patrón va ANCLADO al principio del texto: sin el ancla, «resultado»
-       encajaba también con «Solo el resultado» —un selector de vista de la
-       página de resultados— y el recorrido se quedaba dando vueltas en la
-       primera pregunta sin que nada lo denunciara. */
+    // Patrón anclado al principio: «resultado» sin ancla casaría con «Solo el resultado», un selector de vista.
     const avanzar = pag
       .locator("button", { hasText: /^(?:siguiente|next|ver resultado|see result)/i })
       .filter({ hasNot: pag.locator("[disabled]") })
@@ -128,14 +102,11 @@ const PALABRAS_ES = [
 ];
 const RE_ES = new RegExp("\\b(?:" + PALABRAS_ES.join("|") + ")\\b", "gi");
 
-/* El texto copiado es de renglón corto y separadores propios, así que
-   aquí no hay que temer los espacios inventados que sí complican el HTML:
-   se mide tal cual llegó al portapapeles. */
+// El texto se mide tal cual llegó al portapapeles.
 function revisar(completo, en) {
   const fallos = [];
-  /* La dirección del pie no es prosa: las rutas van en español también en
-     /en («/en/herramientas/calculadora-de-riesgo/»). Lo que sí se exige es
-     que apunte a la versión del idioma en que se copió. */
+  // La dirección del pie no es prosa (las rutas van en español también en /en);
+  // solo se exige que apunte a la versión del idioma en que se copió.
   const url = completo.match(/https?:\/\/\S+/)?.[0];
   if (url && en !== /\/en\//.test(url)) fallos.push({ regla: "dirección del pie en el otro idioma", ejemplo: url });
   const texto = completo.replace(/https?:\/\/\S+/g, "");
@@ -173,8 +144,7 @@ for (const h of HERRAMIENTAS) {
     const ruta = (idioma === "en" ? "/en" : "") + h.ruta;
     const pag = await ctx.newPage();
     await pag.goto(`${base}${ruta}/`, { waitUntil: "networkidle" });
-    /* El aviso de cookies vive fijo abajo a la izquierda y puede quedar
-       encima del botón; se contesta lo más conservador y desaparece. */
+    // El aviso de cookies puede tapar el botón: se contesta lo más conservador.
     const cookies = pag.locator("button", { hasText: /^(?:solo necesarias|necessary only)/i }).first();
     if (await cookies.count()) await cookies.click({ timeout: 3000 }).catch(() => {});
     if (h.preparar) await h.preparar(pag);

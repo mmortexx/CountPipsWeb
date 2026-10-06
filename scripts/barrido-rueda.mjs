@@ -1,4 +1,11 @@
-// Barrido de rueda por rejilla de puntos en cada ruta: ningún recuadro debe atrapar.
+/**
+ * BARRIDO-RUEDA: contra un servidor ya en marcha, gira la rueda sobre una
+ * rejilla de puntos del viewport en varias posiciones de cada ruta. Un fallo es
+ * un punto donde ni la página ni un recuadro con scroll interno se mueven:
+ * un recuadro que atrapa la rueda.
+ *
+ * Uso:  node scripts/barrido-rueda.mjs [--base http://localhost:3000]
+ */
 import { chromium } from "playwright";
 
 const args = process.argv.slice(2);
@@ -16,15 +23,14 @@ for (const ruta of RUTAS) {
   await page.goto(BASE + ruta, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(2600);
   const alto = await page.evaluate(() => document.documentElement.scrollHeight);
-  // Toma hasta 5 posiciones de página repartidas por el documento.
+  // Hasta 6 posiciones repartidas por el documento.
   const paradas = [0];
   for (let s = 900; s < alto - 400; s += Math.max(900, Math.floor((alto - 900) / 4))) paradas.push(s);
   for (const parada of paradas.slice(0, 6)) {
     await page.evaluate((y) => window.scrollTo(0, y), parada);
     await page.waitForTimeout(500);
-    // Rejilla de 8 puntos del viewport. Cada sonda parte de la MISMA
-    // posición (las sondas acumulaban scroll y las últimas caían donde
-    // ya no quedaba página que bajar).
+    // Rejilla de 9 puntos del viewport; cada sonda parte de la misma posición,
+    // o el scroll acumulado dejaría a las últimas sin página que bajar.
     for (const [fx, fy] of [[0.15, 0.2], [0.5, 0.2], [0.85, 0.2], [0.15, 0.5], [0.5, 0.5], [0.85, 0.5], [0.15, 0.8], [0.5, 0.8], [0.85, 0.8]]) {
       const x = Math.round(1440 * fx);
       const y = Math.round(900 * fy);
@@ -47,7 +53,7 @@ for (const ruta of RUTAS) {
       );
       totalPuntos++;
       const delta = despues[0] - antes[0];
-      // Algo se mueve (página o un scrollable interno): el gesto vive.
+      // Si algo se mueve (página o un scroll interno), el gesto no queda atrapado.
       const internoSeMueve = despues.some((d, i) => i > 0 && antes[i] !== undefined && d !== antes[i]);
       if (delta < 60 && !internoSeMueve) {
         const info = await page.evaluate(([px, py]) => {

@@ -12,18 +12,17 @@ interface HeatmapProps {
 
 const HOUR_LABELS = ["00–04", "04–08", "08–12", "12–16", "16–20", "20–24"];
 
-/** Day × hour P&L heatmap. Green = positive, red = negative, intensity by magnitude. */
+/** Mapa de calor de P&L por día y franja horaria: verde positivo, rojo negativo, intensidad por magnitud. */
 export const Heatmap = memo(function Heatmap({ trades, className = "" }: HeatmapProps) {
   const { lang } = useLang();
   const grid = useMemo(() => heatmap(trades), [trades]);
 
-  // Trade counts per cell — matches the heatmap bucketing (Mon–Fri, 4-hour columns).
+  // Operaciones por celda, con la misma partición que el mapa (lun–vie, franjas de 4 h).
   const countGrid = useMemo(() => {
     const out = Array.from({ length: 5 }, () => Array(6).fill(0));
     for (const t of trades) {
-      /* En UTC, igual que `heatmap()`: si las dos rejillas se contaran en
-         husos distintos, el número de operaciones de una celda no sería
-         el de la cifra que esa misma celda enseña. */
+      /* En UTC, como `heatmap()`: con husos distintos el recuento de una celda
+         no sería el de su cifra. */
       const d = t.closedAt.getUTCDay();
       if (d === 0 || d === 6) continue;
       const row = d - 1;
@@ -40,7 +39,7 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
   }, [grid]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  // Hovered cell: grid coords + anchor point (px, relative to container).
+  // Celda señalada: coordenadas y punto de anclaje (px, relativo al contenedor).
   const [hovered, setHovered] = useState<{ r: number; c: number; x: number; y: number } | null>(null);
 
   return (
@@ -55,24 +54,20 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
       style={{ transformOrigin: "center" }}
     >
       <div className="flex gap-1.5">
-        {/* Day labels */}
         <div className="flex flex-col gap-1 justify-around pr-1">
           {WEEKDAYS_SHORT.map((d) => (
             <div key={d} className="text-[10px] text-tertiary font-medium h-8 flex items-center">{d}</div>
           ))}
         </div>
-        {/* Grid */}
         <div className="flex-1 grid grid-rows-5 gap-1">
           {grid.map((row, r) => (
             <div key={r} className="grid grid-cols-6 gap-1">
               {row.map((v, c) => {
                 const intensity = Math.abs(v) / maxAbs;
                 const pos = v >= 0;
-                // Tope a 0,30 de pico (antes 0,72). La cifra de la celda es
-                // texto de 9px — pide 4,5:1, no 3:1 — y en el peor de los
-                // cuatro casos (tinta sobre positivo, tema oscuro) el tinte
-                // deja de bastar a partir de 0,33. Medido con el fondo real
-                // de la tarjeta, en los dos temas y las dos direcciones.
+                // Tinte con tope de 0,30: la cifra es texto de 9 px (pide 4,5:1) y
+                // en el peor caso (tinta sobre positivo, tema oscuro) el tinte
+                // deja de bastar a partir de 0,33.
                 const bg = v === 0
                   ? "rgb(var(--divider) / 0.04)"
                   : pos
@@ -98,14 +93,8 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
                     onMouseLeave={() => setHovered(null)}
                   >
                     {intensity > 0.4 && (
-                      // Tinta del sistema, no el color de ganancia/pérdida: la
-                      // celda ya está teñida con ese mismo color, así que
-                      // escribir en él es tinta sobre su propio tinte. El
-                      // filtro `brightness` que había antes lo intentaba
-                      // arreglar sin tocar el color y se quedaba corto en
-                      // celdas intensas (hasta 1,87:1). El resultado ya lo
-                      // dicen el tinte y la posición de la celda; la cifra
-                      // solo tiene que leerse.
+                      // Tinta del sistema, no el color de ganancia/pérdida: la celda
+                      // ya está teñida con él y el texto no contrastaría.
                       <span className="relative z-10 text-primary">
                         {fmtCifraCorta(v, lang)}
                       </span>
@@ -117,14 +106,13 @@ export const Heatmap = memo(function Heatmap({ trades, className = "" }: Heatmap
           ))}
         </div>
       </div>
-      {/* Hour labels */}
       <div className="flex gap-1 mt-1 ml-7">
         {HOUR_LABELS.map((h) => (
           <div key={h} className="flex-1 text-[9.5px] text-tertiary text-center">{h}</div>
         ))}
       </div>
 
-      {/* Tooltip flotante sobre papel denso — day · hour, P&L, trade count */}
+      {/* Tooltip: día y franja, P&L y recuento. */}
       {hovered && (
         <div
           className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"

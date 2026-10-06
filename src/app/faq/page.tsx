@@ -6,14 +6,7 @@ import { FAQ } from "@/components/marketing/FAQ";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
-// PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
-// silently fail to render SVG OG images. See layout.tsx for the full note.
-
-/**
- * Breadcrumb structured data — page-specific. Lists just [Home, FAQ]
- * so Google renders a correct breadcrumb rich result for the actual
- * page hierarchy.
- */
+/** Migas de pan de esta página: Inicio y FAQ. */
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -33,19 +26,9 @@ const breadcrumbSchema = {
   ],
 };
 
-/**
- * FAQ structured data — mirrors the ES questions/answers shown in the
- * FAQ component below so Google can render FAQ rich snippets on the SERP.
- * Lives on this page ONLY (not in `layout.tsx`): Google's structured data
- * guidelines require FAQ schema to appear on pages where the Q&A is
- * actually visible to the user, and emitting it on every page can trigger
- * a manual-action penalty.
- */
-/* El dato estructurado sale de la MISMA lista que pinta el acordeon,
-   no de una copia a mano. Aqui habia trece respuestas escritas aparte
-   que ya no coincidian con la pagina: a la pregunta por los metodos de
-   pago se le declaraba a Google tarjeta y PayPal cuando no hay compra
-   posible. Ver src/lib/faq.ts. */
+// El FAQPage va solo en esta página (Google lo exige donde las preguntas se
+// ven) y sale de la misma lista que pinta el acordeón (src/lib/faq.ts), para
+// no declarar respuestas que la página no da.
 const faqSchema = jsonLdFaq(FAQ_ES);
 
 export const metadata: Metadata = {
@@ -73,24 +56,10 @@ export const metadata: Metadata = {
   },
 };
 
-// LAS SECCIONES PESADAS SIGUEN EN SU PROPIO TROZO DE JAVASCRIPT, PERO YA
-// NO LLEVAN `loading`.
-//
-// Un `loading` en `next/dynamic` abre un límite de Suspense, y React
-// resuelve un límite de Suspense durante el prerenderizado escribiendo el
-// hueco en su sitio y el contenido REAL al final del <body>, dentro de un
-// <div hidden> que solo un script sabe devolver a su lugar. Sin
-// JavaScript ese script no corre: medido en el HTML compilado, la portada
-// servía 37.921 de sus 118.707 caracteres —el 32 %— dentro de bloques
-// ocultos, y /features 61.865 de 128.953, el 48 %.
-//
-// Sin `loading` no hay límite, el contenido se escribe donde va y el
-// reparto en trozos se conserva intacto: medido tras el cambio, la
-// portada pide los mismos 17 scripts y los mismos 948 KB. El salto de
-// maquetación que el hueco venía a evitar tampoco ocurre — no hay hueco,
-// porque la sección ya viene escrita.
-//
-// Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
+// Sin `loading` en `next/dynamic`: un `loading` abre un límite de Suspense y el
+// prerenderizado escribe el contenido real en un `<div hidden>` al final del
+// body, que sin JavaScript no vuelve a su sitio. Lo vigila `scripts/humo.mjs`
+// («contenido en bloques ocultos»).
 
 const ContactForm = dynamic(
   () => import("@/components/marketing/ContactForm").then((m) => m.ContactForm)
@@ -114,8 +83,6 @@ export function FaqBody() {
         breadcrumbEn="FAQ"
       />
       <FAQ standalone />
-      {/* Preguntas, un único bloque de contacto y el cierre. La calculadora
-          de significancia vive en Herramientas. */}
       <ContactForm />
 
       <FinalCTANew variante="empresa" />

@@ -7,10 +7,8 @@ import {
 } from "../src/lib/trading/fugaComisiones";
 
 /**
- * «Parte de la ganancia» en CommissionDragCalculator se coloreaba rojo,
- * ámbar o verde sin ninguna palabra: mismas fronteras que ya pintaba el
- * componente (>30 alto, >15 moderado, resto bajo), ahora en una función
- * pura para no repetir el umbral suelto en dos sitios.
+ * Fronteras de «Parte de la ganancia» en CommissionDragCalculator (>30 alto,
+ * >15 moderado, resto bajo), en una función pura para no repetir el umbral.
  */
 describe("clasificaFugaComisiones", () => {
   it("por debajo de 15 es bajo", () => {
@@ -31,10 +29,8 @@ describe("clasificaFugaComisiones", () => {
 });
 
 /**
- * Con EUR/USD la calculadora multiplicaba los pips por el tamaño del lote
- * (100.000) en vez de por lo que vale un pip (10 $): 15 pips con 2 lotes
- * salían 3.000.000 $ por operación. Y el equilibrio en pips salía
- * multiplicado por 0,0001. Cifras de mercado a mano, no derivadas.
+ * Los pips se multiplican por lo que vale un pip (10 $ en EUR/USD), no por el
+ * tamaño del lote (100.000). Cifras de mercado escritas a mano, no derivadas.
  */
 describe("valor del objetivo por instrumento", () => {
   const inst = (id: string) => INSTRUMENT_SPECS.find((i) => i.id === id)!;
@@ -65,9 +61,7 @@ describe("valor del objetivo por instrumento", () => {
   });
 });
 
-/* El crudo y el oro arrancaban con un objetivo de 0,5 $ en un deslizador
-   de 5 a 100: el tirador se pintaba fuera de la pista y, al tocarlo, el
-   objetivo saltaba a 5 $ y el resultado anual a millones. */
+// Un objetivo inicial fuera del recorrido pinta el tirador fuera de la pista y salta al tocarlo.
 describe("el objetivo de cada instrumento cabe en su deslizador", () => {
   it("el valor inicial está dentro del recorrido y sobre el paso", () => {
     const fuera: string[] = [];

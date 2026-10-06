@@ -4,28 +4,22 @@ interface ChipProps {
   children: ReactNode;
   variant?: "default" | "pos" | "neg" | "warn" | "accent" | "neutral" | "stat" | "count" | "selection";
   className?: string;
-  /** Tamaño del texto. `"default"` (0.72rem) es el histórico; `sm`/`xs`
-   *  cubren las etiquetas más pequeñas de las páginas de demo. */
+  /** Tamaño del texto: `"default"` 0.72rem; `sm`/`xs` para etiquetas más pequeñas. */
   size?: "default" | "sm" | "xs";
-  /** Radio de esquina. `"default"` (4px) es el histórico; `sm` (2px)
-   *  replica el canto de la ventana de la app de escritorio. */
+  /** Radio de esquina: `"default"` 4px; `sm` 2px, como la ventana de la app. */
   rounded?: "default" | "sm";
-  /**
-   * When `as="button"`, the chip renders as a `<button>` with the same
-   * etiqueta styling, a 44px minimum touch target, and focus-visible ring —
-   * for filter / toggle chips the visitor can press. Default `"span"` keeps
-   * the legacy non-interactive badge behavior. Backward-compatible.
-   */
+  /** `"button"` pinta un botón de 44 px con anillo de foco, para chips de
+   *  filtro; `"span"` (por defecto) es la insignia estática. */
   as?: "span" | "button";
-  /** Button-only: forwarded to the underlying <button>. */
+  /** Solo botones. */
   onClick?: () => void;
-  /** Button-only: pressed state for aria-pressed toggle chips. */
+  /** Solo botones: estado de `aria-pressed`. */
   pressed?: boolean;
-  /** Button-only: forwarded to the underlying <button>. */
+  /** Solo botones. */
   ariaLabel?: string;
-  /** Button-only: type attribute, defaults to "button". */
+  /** Solo botones; por defecto "button". */
   type?: "button" | "submit" | "reset";
-  /** Button-only: disabled state. */
+  /** Solo botones. */
   disabled?: boolean;
 }
 
@@ -52,9 +46,7 @@ export function Chip({
     warn: "bg-pnl-warn/15 text-pnl-warn border border-pnl-warn/25",
     accent: "bg-[rgb(var(--divider)/0.08)] text-primary border border-[rgb(var(--divider)/0.20)]",
     neutral: "bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.08)]",
-    // Tonos usados solo en páginas de demo (AnalyticsPage, JournalPage,
-    // TradeDetailPage, TradesPage): opacidades ligeramente distintas de
-    // "default"/"neutral"/"accent" que ya existían ahí antes de centralizar.
+    // Tonos de las páginas de demo, con opacidades algo distintas de default/neutral/accent.
     stat: "bg-[rgb(var(--divider)/0.08)] text-tertiary border border-[rgb(var(--divider)/0.12)]",
     count: "bg-[rgb(var(--divider)/0.05)] text-tertiary border border-[rgb(var(--divider)/0.1)]",
     selection: "bg-[rgb(var(--accent-base)/0.15)] text-primary border border-[rgb(var(--accent-base)/0.35)]",
@@ -78,7 +70,6 @@ export function Chip({
         aria-pressed={pressed}
         aria-label={ariaLabel}
         disabled={disabled}
-        // 44px min touch target + focus-visible ring for keyboard users.
         className={`inline-flex items-center justify-center min-h-[44px] py-2 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-1 focus-visible:ring-offset-[rgb(var(--bg))] ${cls}`}
       >
         {children}

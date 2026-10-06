@@ -1,37 +1,14 @@
 import type { Lang } from "@/lib/i18n";
 
 /**
- * Las rutas que existen en inglés, y la única lista de la que dependen
- * tres cosas distintas: qué enlaces se prefijan con `/en`, qué páginas
- * genera `app/en/**`, y qué entradas dobla el mapa del sitio.
+ * Rutas fijas que existen en inglés: de esta lista dependen los enlaces que
+ * se prefijan con `/en`, las páginas de `app/en/**` y el sitemap. El español
+ * va sin prefijo (son las direcciones ya indexadas) y el inglés lleva `/en`.
  *
- * ── Por qué español va sin prefijo e inglés lleva `/en` ────────────────
- * El mercado principal es español, así que se queda en la raíz —son las
- * direcciones que ya está indexando el buscador— e inglés entra como
- * añadido. Es el patrón habitual cuando un sitio ya tiene un idioma
- * establecido y suma el segundo, frente al patrón simétrico
- * `/es/...` + `/en/...` que tiene más sentido cuando ningún idioma es
- * "el de siempre".
- *
- * ── El glosario y las herramientas se añaden solos ─────────────────────
- * Sus 51 + 6 páginas ya tenían texto en inglés en los datos —igual que el
- * resto del sitio—; lo único que faltaba era la dirección `/en/...` de
- * cada una (`app/en/glosario/[termino]`, `app/en/herramientas/
- * [herramienta]`). Con esas rutas ya creadas, esta lista las deriva de
- * `TERMINOS`/`HERRAMIENTAS` en vez de copiarlas a mano: si mañana se
- * añade un término o una herramienta, el selector de idioma, el mapa del
- * sitio y `app/en/**` crecen con él sin que nadie tenga que acordarse de
- * tocar tres sitios a la vez.
- *
- * La lista completa vive en `rutas-en.ts`, no aquí: este módulo lo carga
- * cada página (barra, enlaces) y derivarla aquí metía el glosario entero
- * en el JavaScript de todas. Aquí basta con saber que toda ficha de
- * glosario o herramienta tiene su versión inglesa.
- *
- * Mientras tanto, un enlace hacia una ruta que NO está en esta lista se
- * queda en español aunque se pulse desde una página en inglés — es la
- * `/faq` real, no una `/en/faq` que no existe. Volver a la sesión en
- * español al tocar algo aún no traducido es preferible a un 404.
+ * Las fichas de glosario y herramientas no se listan: se cubren por familia
+ * (`FAMILIAS_EN`) para no cargar el glosario entero en el JavaScript de todas
+ * las páginas; su lista completa vive en `rutas-en.ts`. Un enlace a una ruta
+ * que no esté aquí se queda en español en vez de dar un 404.
  */
 export const RUTAS_FIJAS_EN: readonly string[] = [
   "/",
@@ -59,18 +36,9 @@ const LOCALIZED_SET = new Set(RUTAS_FIJAS_EN);
 const FAMILIAS_EN = ["/glosario/", "/herramientas/"];
 
 /**
- * ¿Existe una versión en inglés de esta ruta (sin query ni hash)?
- *
- * LA BARRA FINAL NO PUEDE DECIDIR EL IDIOMA. Esta lista está escrita sin
- * ella —«/faq»—, y la comparación es de texto, así que un enlace escrito
- * «/faq/» no encajaba y se quedaba en español: el visitante inglés que
- * pulsaba «More questions?» en la página de precios acababa en la FAQ
- * española. Un solo carácter, en la página que más importa vender.
- *
- * El arreglo va aquí y no en el enlace porque el que falla es este
- * criterio: mientras compare cadenas, cualquiera que mañana escriba la
- * barra volverá a caer igual y en silencio. `scripts/enlaces.mjs` recorre
- * el sitio compilado y lo caza si vuelve a pasar.
+ * ¿Existe una versión en inglés de esta ruta (sin query ni hash)? La barra
+ * final no decide: la lista va sin ella y «/faq/» debe casar igual.
+ * `scripts/enlaces.mjs` caza en el sitio compilado un enlace que se quede en español.
  */
 export function tieneVersionEn(pathnameLimpio: string): boolean {
   const ruta = pathnameLimpio.length > 1 ? pathnameLimpio.replace(/\/+$/, "") || "/" : pathnameLimpio;
@@ -81,13 +49,8 @@ export function tieneVersionEn(pathnameLimpio: string): boolean {
 }
 
 /**
- * `/en/pricing` → `/pricing`. `/en` → `/`. Cualquier otra ruta, sin
- * tocar — ya está en español.
- *
- * La usan `LanguageProvider` (para saber a dónde navegar al cambiar de
- * idioma) y `Navbar` (para comparar la ruta activa sin que el prefijo
- * `/en` haga que ningún enlace se marque como activo estando en inglés).
- * Una sola función, no dos copias que puedan desincronizarse.
+ * `/en/pricing` → `/pricing`, `/en` → `/`; el resto, sin tocar. La usan
+ * `LanguageProvider` (destino al cambiar de idioma) y `Navbar` (ruta activa).
  */
 export function sinPrefijoEn(pathname: string): string {
   if (pathname === "/en") return "/";
@@ -96,15 +59,9 @@ export function sinPrefijoEn(pathname: string): string {
 }
 
 /**
- * Antepone `/en` a una dirección interna cuando el idioma activo es
- * inglés Y esa dirección tiene versión en inglés. En cualquier otro caso
- * —español, dirección externa, `mailto:`, ancla suelta, o una ruta sin
- * traducir— la devuelve tal cual.
- *
- * Separa el `hash` y la `query` antes de decidir, y los reconstruye
- * después: un enlace como `/terminos#no-advice` no tiene versión en
- * inglés porque `/terminos` no la tiene, así que se queda intacto con su
- * ancla — nunca se prefija solo la mitad de la dirección.
+ * Antepone `/en` a una dirección interna si el idioma es inglés y la ruta
+ * tiene versión inglesa; en cualquier otro caso la devuelve tal cual.
+ * Separa `hash` y `query` antes de decidir y los reconstruye después.
  */
 export function withLocale(href: string, lang: Lang): string {
   if (lang !== "en") return href;

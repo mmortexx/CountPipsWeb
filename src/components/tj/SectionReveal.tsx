@@ -5,47 +5,19 @@ import { usePathname } from "next/navigation";
 import { curva } from "@/lib/motion";
 
 /**
- * SectionReveal — el RESPALDO de la entrada de sección, para los
- * navegadores sin `animation-timeline: view()`.
- *
- * ── Por qué ya no es el mecanismo principal ───────────────────────────
- * Porque estaba apagando el texto que el visitante ya estaba leyendo.
- *
- * La animación va de opacidad 0 a 1 y la disparaba un
- * IntersectionObserver montado en un efecto: no empieza cuando la
- * sección aparece, sino cuando React ha hidratado. En `/features` eso
- * son más de dos segundos, y durante ese rato la cabecera está pintada
- * y legible. Al arrancar el observador, el primer fotograma la manda a
- * opacidad 0 y la vuelve a subir. Medido: el titular y su párrafo a
- * 0,409 de opacidad acumulada, con el contraste caído de 11:1 a 2,5:1.
- * Lo que se veía no era una entrada elegante; era una página que se
- * apagaba sola.
- *
- * El mecanismo principal es ahora CSS —ver el bloque «ENTRADA DE
- * SECCIÓN» de globals.css—, donde el progreso de la animación ES la
- * posición de la sección en la ventana: lo que ya está en pantalla nace
- * en su estado final, sin nada que esperar.
- *
- * ── Las dos reglas que este respaldo respeta ──────────────────────────
- *  1. No hace nada si el navegador soporta el timeline de scroll. Los
- *     dos mecanismos a la vez animarían la misma opacidad dos veces.
- *  2. **No anima lo que ya está en pantalla.** Es la regla que faltaba,
- *     y la que convertía un adorno en un defecto de legibilidad. Una
- *     entrada solo tiene sentido para lo que el visitante todavía no ha
- *     visto.
- *
- * Implementación con Web Animations API (`el.animate()`) en lugar de
- * estilos inline: WAAPI no toca los atributos del DOM, así que no
- * provoca mismatches de hidratación con las secciones que llegan en
- * diferido vía next/dynamic. El estado "ya animado" vive en un WeakSet
- * por el mismo motivo.
+ * Respaldo de la entrada de sección para navegadores sin
+ * `animation-timeline: view()` (el mecanismo principal es CSS, en globals.css).
+ * Reglas: no hace nada si el CSS puede, y no anima lo que ya está en pantalla
+ * (animarlo apagaría texto que se está leyendo). Usa Web Animations API y un
+ * WeakSet porque no tocan el DOM y no desajustan la hidratación de las
+ * secciones diferidas.
  */
 export function SectionReveal() {
   const pathname = usePathname();
 
   useEffect(() => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // Regla 1: si el CSS puede, el CSS manda.
+    // Si el CSS puede, el CSS manda.
     if (CSS.supports("animation-timeline", "view()")) return;
     const main = document.getElementById("main-content");
     if (!main) return;
@@ -63,8 +35,7 @@ export function SectionReveal() {
               { opacity: 0, transform: "translateY(22px)" },
               { opacity: 1, transform: "none" },
             ],
-            // `curva()` resuelve el token del CSS: la Web Animations API
-            // no admite `var(...)` aquí (ver src/lib/motion.ts).
+            // `curva()` resuelve el token: WAAPI no admite `var(...)` (src/lib/motion.ts).
             { duration: 650, easing: curva("--ease-suave") }
           );
         });
@@ -82,10 +53,7 @@ export function SectionReveal() {
         )
         .forEach((el) => {
           seen.add(el);
-          /* Regla 2: lo que ya asoma en la ventana en el momento de
-             registrarlo no se anima — se da por entrado. Se marca como
-             visto igualmente para que el re-escaneo del MutationObserver
-             no lo reconsidere. */
+          // Lo que ya asoma no se anima, pero se marca visto para el re-escaneo.
           if (el.getBoundingClientRect().top < window.innerHeight) return;
           io.observe(el);
         });

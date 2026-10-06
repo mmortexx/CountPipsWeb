@@ -68,9 +68,8 @@ export function DisciplineCost() {
   const offPlanTrades = Math.round((totalTrades * breachPct) / 100);
   const inPlanTrades = Math.max(0, totalTrades - offPlanTrades);
 
-  /* Lo que escribe el usuario se guarda tal cual: el campo recortaba en
-     silencio a 0 una pérdida escrita sin signo. Si fuera de plan rinde
-     igual o más que dentro, no hay fuga que facturar y se dice. */
+  /* Lo que escribe el usuario se guarda tal cual. Si fuera de plan rinde igual
+     o más que dentro, no hay fuga que facturar y se dice. */
   const gapBruta = inPlanExp - offPlanExp;
   const gap = Math.max(0, gapBruta);
   const sinCoste = gapBruta <= 0;
@@ -88,27 +87,17 @@ export function DisciplineCost() {
     { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
   ], []);
 
-  /** El error mas gordo, que es contra el que se miden las barras. */
+  /** El error mayor, contra el que se miden las barras. */
   const maxPct = useMemo(() => Math.max(...mistakes.map((m) => m.pct)), [mistakes]);
 
-  /* ── IMPORTE CORTO PARA CELDAS ESTRECHAS ──────────────────────────
-     Las fichas de proyeccion miden 85 px a 320 px de ancho y
-     «−121.068,70 US$» no cabe: se salia 52 px. La cifra exacta se
-     conserva en el `title` de cada ficha.
-
-     La abreviatura se escribe A MANO y no con `notation: "compact"` de
-     Intl, porque en espanol eso devuelve «121,1 mil», que ocupa MAS que
-     el numero entero — comprobado, empeoraba el desborde en vez de
-     arreglarlo. «k» y «M» son ademas como se abrevian las cifras
-     agregadas en una mesa, en los dos idiomas. */
+  /* Importe corto para celdas estrechas (85 px a 320 px de ancho); la cifra
+     exacta queda en el `title` de cada ficha. La abreviatura es manual:
+     `notation: "compact"` da «121,1 mil» en español, más largo que el número. */
   const corto = useCallback(
     (v: number) => {
       const a = Math.abs(v);
       const signo = v < 0 ? "−" : "";
-      /* «$» y no «US$» en las abreviadas: la ficha mide 73 px de
-         contenido a 320 px y los dos caracteres de mas eran justo lo que
-         no cabia. El importe completo, con su divisa, esta en el `title`
-         de la ficha y en el resumen que se copia. */
+      /* «$» y no «US$»: a 320 px la ficha no admite dos caracteres más. */
       const corto = (cifra: string, sufijo: string) =>
         lang === "es" ? `${signo}${cifra}${sufijo ? `\u00a0${sufijo}` : ""}\u00a0$` : `${signo}$${cifra}${sufijo}`;
       if (a >= 1_000_000) return corto(fmtNum(a / 1_000_000, lang, 1), "M");
@@ -118,13 +107,9 @@ export function DisciplineCost() {
     [lang],
   );
 
-  /* La divisa cambia de sitio con el idioma: «29,73 $» en español y
-     «$29.73» en inglés. Las seis celdas de esta tabla lo escribían a mano
-     con el sufijo « $» fijo, así que la versión inglesa componía
-     «29.73 $» — la forma española del símbolo en una página en inglés.
-     El signo se pasa aparte porque estas celdas fuerzan «+» o «−» con
-     independencia del valor: la fila de fuera de plan es negativa por
-     definición aunque la cifra que la alimenta sea positiva. */
+  /* La divisa cambia de sitio con el idioma («29,73 $» / «$29.73»). El signo
+     se pasa aparte porque estas celdas lo fuerzan con independencia del
+     valor: la fila de fuera de plan es negativa por definición. */
   const usd = useCallback(
     (signo: string, v: number) =>
       es ? `${signo}${fmtNum(v, lang, 2)}\u00a0$` : `${signo}$${fmtNum(v, lang, 2)}`,
@@ -153,9 +138,7 @@ export function DisciplineCost() {
   };
 
   const informe = () => {
-    /* `fmtMoney` pone separador de millares, divisa y el signo menos
-       tipográfico que usa el resto del sitio; `toFixed` dejaba punto
-       decimal inglés en un texto castellano. */
+    /* `fmtMoney` pone millares, divisa y el signo menos tipográfico de la casa. */
     const usd = (v: number) => fmtMoney(v, lang, { sign: true });
     return componerInforme(
       es ? "Coste de indisciplina" : "Cost of indiscipline",
@@ -182,8 +165,7 @@ export function DisciplineCost() {
 
   return (
     <section className="section-tight">
-      {/* La factura, en el mismo vocabulario que usa el resumen que se
-          copia al portapapeles: «fuga mensual» y «fuga anual». */}
+      {/* Mismo vocabulario que el resumen copiado: «fuga mensual» y «fuga anual». */}
       <ResultadoAnunciado
         texto={
           es
@@ -230,12 +212,8 @@ export function DisciplineCost() {
               <span id={idEscenarios} className="block text-[12px] text-tertiary mb-2">
                 {es ? "Escenarios rápidos" : "Quick scenarios"}
               </span>
-              {/* Elegir entre tres escenarios es elegir uno de tres, y eso
-                  en este sitio es el conmutador segmentado —el mismo de la
-                  calculadora de riesgo y del proyector—. Eran tres botones
-                  sueltos con hueco entre ellos, que es lo que se usa para
-                  tres acciones distintas, no para tres opciones de lo
-                  mismo. */}
+              {/* Una elección entre tres: conmutador segmentado, como en la
+                  calculadora de riesgo y el proyector. */}
               <div className="tj-segmentado tj-segmentado-apila" role="group" aria-labelledby={idEscenarios}>
                 {PRESETS.map((p) => (
                   <button
@@ -270,12 +248,8 @@ export function DisciplineCost() {
                     value={totalTrades}
                     onChange={(e) => aMano(setTotalTrades)(Number(e.target.value))}
                     aria-valuetext={fmtOperaciones(totalTrades, lang)}
-                    /* `.tj-range`, como los otros seis deslizadores del
-                       sitio. Antes era `appearance-none` con 6 px de alto
-                       y sin regla de bolita: en WebKit eso deja el control
-                       SIN AGARRADERA —no se ve qué se arrastra— y 6 px no
-                       se cogen con el dedo. La clase trae los 44 px, la
-                       bolita y la pista de dos tramos. */
+                    /* `.tj-range` trae los 44 px, la bolita y la pista de dos
+                       tramos; sin ella WebKit deja el control sin agarradera. */
                     className="tj-range w-full"
                     style={
                       {
@@ -348,19 +322,12 @@ export function DisciplineCost() {
             <div
               className="tj-ficha overflow-hidden"
             >
-              {/* Es una <table> real con display:grid, no una rejilla de <div>:
-                  un lector de pantalla necesita asociar cada cifra con su
-                  columna («Neto») y con su fila («Brecha»), cosa que una rejilla
-                  de <div> no ofrece por más ARIA que se le ponga. `display:
-                  grid` sobre <table>/<tr> es la técnica estándar para
-                  conservar `subgrid` sin perder esa semántica: el navegador
-                  sustituye el algoritmo de layout de tabla por el de rejilla,
-                  pero <thead>/<tbody> deben quedar en `contents` para que los
-                  <tr> sigan siendo hijos directos de la rejilla y el subgrid
-                  encuentre las columnas del padre. Las columnas, como antes,
-                  se miden con la cifra más ancha de todas las filas, así que
-                  un importe grande ensancha la tabla (y se desliza) en vez de
-                  pisar la columna vecina. */}
+              {/* <table> real con `display: grid` (no una rejilla de <div>) para
+                  que el lector asocie cada cifra con su columna y su fila.
+                  <thead>/<tbody> van en `contents` para que los <tr> sean hijos
+                  directos de la rejilla y el subgrid encuentre las columnas.
+                  Las columnas se miden con la cifra más ancha: un importe grande
+                  ensancha la tabla (y se desliza) en vez de pisar la vecina. */}
               <div className="overflow-x-auto custom-scroll">
                 <table className="grid w-max min-w-full grid-cols-[minmax(max-content,1.25fr)_minmax(max-content,2.25rem)_minmax(max-content,1fr)_minmax(max-content,1.15fr)] border-collapse">
                 <thead className="contents">
@@ -439,27 +406,17 @@ export function DisciplineCost() {
             </p>
             <div className="tj-ficha-cuerpo">
 
-            {/* ── EL DESGLOSE, COMO UN LIBRO DE CUENTAS ──────────────
-                Tres columnas declaradas: concepto, porcentaje e importe.
-                El concepto es la única elástica (`minmax(0,1fr)`) y las
-                otras dos van a su ancho natural sin partirse. Antes era
-                un `justify-between` con los tres apilados en un flex, y
-                a 320 px el importe salía 45 px fuera de la caja.
-
-                La barra se mide contra el error MAYOR, no contra un
-                multiplicador inventado: estaba en `pct * 2.5`, que da la
-                barra llena justo en el 40 % y por encima se recorta en
-                silencio. Con el máximo real, la más larga siempre llega
-                al borde y la comparación entre ellas es honesta. */}
+            {/* Desglose en tres columnas: concepto (elástica, `minmax(0,1fr)`),
+                porcentaje e importe a su ancho natural. La barra se mide contra
+                el error mayor (`maxPct`): con un multiplicador fijo se recortaría
+                en silencio por encima de cierto valor. */}
             <ul className="m-0 mb-5 list-none space-y-3.5 p-0">
               {mistakes.map((row) => {
                 const mistakeCost = (totalLeakMonthly * row.pct) / 100;
                 return (
                   <li key={row.id}>
                     <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-2.5 text-xs">
-                      {/* Se parte en dos lineas, no se trunca: «Tamaño
-                          excesivo (oversize)» con puntos suspensivos no
-                          dice nada, y a 320 px se cortaba siempre. */}
+                      {/* Se parte en dos líneas, no se trunca: cortado no dice nada. */}
                       <span className="min-w-0 font-medium leading-[1.3] text-primary [overflow-wrap:anywhere]">
                         {es ? row.labelEs : row.labelEn}
                       </span>
@@ -467,9 +424,7 @@ export function DisciplineCost() {
                         {row.pct}
                         {pctSep(lang)}
                       </span>
-                      {/* Ancho mínimo común: los cinco importes acaban en
-                          la misma vertical y la columna no baila cuando
-                          cambian las cifras. */}
+                      {/* Ancho mínimo común: la columna no baila al cambiar las cifras. */}
                       <span className="tnum min-w-[4.5rem] whitespace-nowrap text-right font-semibold text-[rgb(var(--pnl-neg))]">
                         {corto(-mistakeCost)}
                       </span>
@@ -487,9 +442,8 @@ export function DisciplineCost() {
 
             {/* Totales: Mensual y Anual */}
             <div className="pt-1 border-t border-[var(--ficha-division)]">
-              {/* El total. El rotulo es la unica columna elastica y la
-                  cifra lleva `clamp`, asi que a 320 px encoge en vez de
-                  salirse: era un `text-2xl` fijo y se iba 16 px fuera. */}
+              {/* El rótulo es la única columna elástica y la cifra lleva `clamp`:
+                  a 320 px encoge en vez de salirse. */}
               <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-4">
                 <div className="min-w-0">
                   <span className="block text-[14px] font-semibold leading-[1.3] text-primary [overflow-wrap:anywhere]">
@@ -506,18 +460,8 @@ export function DisciplineCost() {
                 </span>
               </div>
 
-              {/* Proyecciones compuestas 1, 3, 5 años */}
-              {/* PROYECCION A 1, 3 Y 5 ANOS
-                  Tres cifras de seis digitos en tres columnas de 90 px a
-                  320 px de ancho: se salian hasta 52 px. Dos cambios y
-                  deja de poder pasar:
-                    - notacion CORTA («−121 k US$» en vez de
-                      «−121.068,70 US$»), que ademas es como se leen las
-                      cifras agregadas en una mesa de verdad; el importe
-                      exacto queda en el `title`,
-                    - cuerpo con `clamp`, que encoge antes que desbordar.
-                  El parentesis del rotulo pasa a segunda linea: era parte
-                  del titular y lo partia en cualquier ancho estrecho. */}
+              {/* Proyección a 1, 3 y 5 años: notación corta (`corto`, importe exacto
+                  en el `title`) y cuerpo con `clamp` para no desbordar a 320 px. */}
               <div className="border-t border-[var(--ficha-division)] pt-4">
                 <span className="block text-[12px] font-semibold text-primary">
                   {es ? "Capital fugado acumulado" : "Cumulative leaked capital"}
@@ -573,9 +517,7 @@ export function DisciplineCost() {
                     ? `Si evitaras el 60\u00a0% de tus operaciones fuera de plan, dejarías de perder unos ${fmtMoney(Math.round(totalLeakMonthly * 0.6), lang, { decimals: 0 })} al mes. Es una estimación con tus cifras, no una promesa de resultado.`
                     : `If you avoided 60% of your off-plan trades, you would stop losing about ${fmtMoney(Math.round(totalLeakMonthly * 0.6), lang, { decimals: 0 })} a month. It is an estimate from your numbers, not a promise of results.`}
                 </p>
-                {/* Mismo tratamiento que la proyeccion: el «al mes» baja a
-                    su propia linea en vez de alargar una cifra que ya no
-                    cabia a 320 px. */}
+                {/* Como la proyección: el «al mes» baja a su propia línea. */}
                 <div className="tj-matriz grid-cols-2 text-center tnum">
                   {[0.5, 0.8].map((f) => (
                     <div

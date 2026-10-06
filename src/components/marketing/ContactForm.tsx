@@ -9,31 +9,17 @@ import { submitForm, SUPPORT_EMAIL, type SubmitFailure } from "@/lib/forms";
 import { useHydrated } from "@/hooks/use-hydrated";
 
 /**
- * ContactForm — compact contact form (ES/EN) wired to a real endpoint.
- *
- * Behaviour:
- *  - Three controlled fields: name, email, message (textarea).
- *  - Client-side validation: required fields + simple email regex.
- *      On error, a small helper line lists the offending fields.
- *  - On submit the message is POSTed through `@/lib/forms` (Web3Forms) and
- *    lands in the support inbox. The success state is only shown once the
- *    endpoint confirms delivery — a failed send shows the reason plus a
- *    mailto fallback, never a fake checkmark.
- *  - On success: la confirmación entra por partes — el disco se estampa,
- *    la marca de verificación se dibuja encima y el texto sube detrás,
- *    con animaciones CSS y sin biblioteca. Ver el comentario largo junto
- *    al bloque, que explica qué se conservó y qué se dejó ir.
- *
- * Estilo: lámina de papel a canto vivo, entradas como en el resto de la
- * web (relleno `rgb(var(--divider)/0.05)` + filete `rgb(var(--divider)/0.10)`,
- * foco en el acento). Sin más color que el del sistema.
+ * Formulario de contacto (ES/EN) con tres campos (nombre, email, mensaje),
+ * validación en cliente y envío por `@/lib/forms` (Web3Forms) al buzón de
+ * soporte. La confirmación solo sale cuando el endpoint confirma la entrega;
+ * si falla, se muestra el motivo y un `mailto` de reserva.
  */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Status = "idle" | "sending" | "sent";
 
-/** Copy por tipo de fallo. El usuario necesita saber si reintentar o escribir directo. */
+/** Texto por tipo de fallo: reintentar o escribir directo. */
 function failureCopy(reason: SubmitFailure, es: boolean): string {
   switch (reason) {
     case "network":
@@ -48,12 +34,7 @@ function failureCopy(reason: SubmitFailure, es: boolean): string {
   }
 }
 
-/* Aquí ponía «Te respondemos en menos de 24 h» y «Te responderemos en
-   24h». Es un compromiso de servicio que este proyecto YA había decidido
-   retirar —está escrito en `ContactSupport.tsx`, la tarjeta que vive en
-   la misma sección de la misma página— porque no hay nadie detrás que
-   pueda cumplirlo hoy. La decisión se aplicó a un componente y se olvidó
-   el de al lado, así que la página prometía las dos cosas a la vez. */
+/* Sin plazo de respuesta prometido: hoy nadie puede cumplirlo. */
 export function ContactForm() {
   const { lang } = useLang();
   const es = lang === "es";
@@ -64,7 +45,7 @@ export function ContactForm() {
   const [botcheck, setBotcheck] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
-  /** Cuando el fallo es nuestro, ofrecemos el buzón de soporte como salida. */
+  /** Si el fallo es nuestro, se ofrece el buzón de soporte como salida. */
   const [showFallback, setShowFallback] = useState(false);
   /** Qué campo concreto está mal, para marcarlo solo a él. */
   const [invalidos, setInvalidos] = useState({ name: false, email: false, message: false });
@@ -73,17 +54,15 @@ export function ContactForm() {
   const messageRef = useRef<HTMLTextAreaElement>(null);
 
   /**
-   * El envío depende por completo de JS: el <form> no tiene `action`, así que
-   * un submit nativo (antes de hidratar, o con JS caído) recargaría la página
-   * y perdería el mensaje sin avisar. El botón sigue deshabilitado hasta que
-   * React puede interceptar el submit.
+   * El <form> no tiene `action`: un submit nativo (antes de hidratar o sin JS)
+   * recargaría la página y perdería el mensaje. El botón queda deshabilitado
+   * hasta que React puede interceptar el submit.
    */
   const ready = useHydrated();
 
   const sent = status === "sent";
-  /* Al enviarse, el `<form>` entero —con el botón enfocado— se desmonta y
-     el foco caía al `<body>`: quien no ve la pantalla no sabía si el
-     mensaje había salido. Se lleva a la confirmación, como en /beta. */
+  /* Al enviar se desmonta el `<form>` con el botón enfocado: el foco se lleva
+     a la confirmación (como en /beta) para que el lector sepa que salió. */
   const enviadoRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (sent) enviadoRef.current?.focus();
@@ -94,18 +73,8 @@ export function ContactForm() {
     e.preventDefault();
     if (sent || sending) return;
 
-    /* ── QUÉ CAMPO FALLA, Y NO «ALGO FALLA» ────────────────────────────
-       Antes esto solo componía un texto de aviso y salía. Los tres
-       campos llevaban `aria-invalid={!!error}`, es decir, el MISMO
-       valor: si solo el correo estaba mal, un lector de pantalla
-       anunciaba también el nombre y el mensaje como erróneos. Y no se
-       movía el foco a ninguna parte, así que quien navega con teclado
-       se quedaba donde estaba, con un aviso arriba que quizá ni veía.
-
-       Es un incumplimiento de WCAG 3.3.1 (identificar el error) en el
-       mismo proyecto donde el formulario de acceso anticipado sí lo
-       cumple — dos criterios distintos para lo mismo. Ahora se marca
-       campo a campo y el foco viaja al primero que falla. */
+    /* Cada campo se marca por separado (`aria-invalid`, WCAG 3.3.1) y el foco
+       viaja al primero que falla, como en el formulario de /beta. */
     const fallan = {
       name: !name.trim(),
       email: !email.trim() || !EMAIL_RE.test(email.trim()),
@@ -148,8 +117,7 @@ export function ContactForm() {
       return;
     }
 
-    // Vuelta a "idle": el formulario sigue relleno para que se pueda
-    // reintentar sin volver a escribirlo todo.
+    // Vuelta a "idle" con el formulario relleno para poder reintentar.
     setStatus("idle");
     setError(failureCopy(result.reason, es));
     setShowFallback(result.reason !== "network");
@@ -178,9 +146,6 @@ export function ContactForm() {
           <Reveal delay={0.14} y={20}>
             <div className="tj-ficha p-6 sm:p-9 relative overflow-hidden">
               <div className="min-h-[360px] flex flex-col justify-center">
-                {/* La confirmación es texto, como la de /beta: sin disco
-                    que se estampa ni marca que se dibuja. Entra con el
-                    mismo fundido corto que el resto del sitio. */}
                 {sent ? (
                     <div ref={enviadoRef} tabIndex={-1} className="tj-sube-ya py-8 outline-none" role="status">
                       <p className="t-h4 m-0 text-primary">
@@ -247,14 +212,10 @@ export function ContactForm() {
                         />
                       </Field>
 
-                      {/* Honeypot — invisible para personas, tentador para bots.
-                          Si llega relleno, Web3Forms descarta el envío. No usa
-                          `display:none` porque algunos bots ignoran esos campos.
-                          Tampoco usa `aria-hidden`: esconder de la accesibilidad
-                          un campo enfocable es justo lo que marcan las auditorías
-                          (WCAG 4.1.2). La etiqueta la lee un lector de pantalla y
-                          le dice a la persona que lo deje vacío; un robot lo
-                          rellena igual, que es lo que importa. */}
+                      {/* Honeypot: si llega relleno, Web3Forms descarta el envío. Sin
+                          `display:none` (algunos bots ignoran esos campos) ni
+                          `aria-hidden` (ocultar un campo enfocable incumple WCAG
+                          4.1.2); su etiqueta pide a las personas dejarlo vacío. */}
                       <div className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
                         <label htmlFor="cf-botcheck">
                           {es ? "No rellenar" : "Leave this field blank"}
@@ -295,18 +256,7 @@ export function ContactForm() {
                         type="submit"
                         disabled={sending || !ready}
                         aria-busy={sending}
-                        /* T2g — `min-h-[44px]` guarantees the ≥44 px touch target
-                           regardless of label line-height; the previous `py-2.5`
-                           alone produced a 40 px button on mobile (real touch-target
-                           fix, same class of bug as T2d's Guardian buttons).
-                           `w-full sm:w-fit sm:min-w-[180px]` makes the button
-                           auto-width on tablet/desktop (≤260 px content) instead
-                           of stretching as a full-width bar; on mobile it stays
-                           full-width inside the max-w-xl card so it reads as the
-                           primary action. Text color kept as #1A1917 (always-dark
-                           ink on the medium-lightness gold accent fill — clears
-                           AA in both themes; matches the Waitlist + Download CTA
-                           treatment). */
+                        /* Ancho completo en móvil y `sm:w-fit` desde tableta. */
                         className="cta cta--primario w-full sm:w-fit sm:min-w-[180px] disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         {sending
@@ -330,8 +280,7 @@ export function ContactForm() {
   );
 }
 
-/* Etiqueta, campo y aviso con las mismas medidas que el formulario de
-   /beta: 14 px en la etiqueta, 12 px en el aviso, pegado a su campo. */
+/* Etiqueta, campo y aviso con las medidas del formulario de /beta. */
 function Field({
   label,
   htmlFor,

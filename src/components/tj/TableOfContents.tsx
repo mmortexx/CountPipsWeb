@@ -5,27 +5,10 @@ import { useLang } from "@/lib/i18n";
 import { irASeccion } from "@/lib/scroll";
 
 /**
- * TableOfContents — sticky sidebar TOC for feature subpages.
- *
- * Renders a vertical list of the page's main section headings (h2 inside
- * `section`/`[id]`), tracks the active one via a single
- * IntersectionObserver (rootMargin clears the sticky navbar at 60px + a
- * 45% band), and smooth-scrolls on click (respecting reduced-motion).
- *
- * - Desktop-only (hidden below 2xl / 1536px) to avoid cluttering mobile
- *   and to guarantee the TOC never overlaps the page content (which is
- *   capped at max-w-page=1200px; below 1536px there isn't enough right
- *   margin to float the 200px panel without covering text).
- * - Sits at `right-[22px]` mirroring the BackToTop pattern but lower on the
- *   page (top-1/2) and only on feature subpages.
- * - Active item gets an accent left-border + filled dot; inactive items
- *   get a hollow dot that fills on hover.
- * - Theme-aware via --divider, --accent-base, text-tertiary/secondary/primary.
- *
- * The component scans the DOM on mount for `[id] h2` headings (the
- * canonical section-heading pattern in this project) and builds the list
- * from their text + parent id. If fewer than 2 sections are found, the
- * TOC hides itself (no point showing a single-entry nav).
+ * Índice lateral fijo de la página. Al montar escanea los `h2` de las
+ * `section` con `[id]` y marca el activo con un `IntersectionObserver`. Solo
+ * desde 2xl (1536 px): por debajo no hay margen para el panel de 200 px sin
+ * tapar texto. Si hay menos de 2 secciones, no se pinta.
  */
 interface TocItem {
   id: string;
@@ -39,21 +22,13 @@ export function TableOfContents() {
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
-    // Scan for the page's main content headings. We look for h2 elements
-    // inside <section> tags, but EXCLUDE the last section (FinalCTA) and
-    // the FeaturePageNav section (they're not content the reader wants
-    // to jump to). For each h2, we find the closest element with an id
-    // (the section wrapper, e.g. #guardian, #metrics). Anchors are
-    // authored by their owning section; mutating a server-rendered
-    // heading here would create a hydration mismatch in React.
+    // Los anclas las pone cada sección: mutar aquí un encabezado renderizado
+    // en servidor daría un desajuste de hidratación. Se excluye la sección de
+    // navegación entre páginas (FeaturePageNav), que se detecta por su texto.
     const allSections = Array.from(document.querySelectorAll("section"));
-    // Drop the last 2 sections: FinalCTANew + the FeaturePageNav section.
-    // (FeaturePageNav has class and contains "Sigue explorando" /
-    // "Keep exploring" text — we detect it by that signature.)
     const contentSections = allSections.filter((sec) => {
       const txt = sec.textContent || "";
       if (txt.includes("Sigue explorando") || txt.includes("Keep exploring")) return false;
-      // Legacy CTAs can still appear in archived sections.
       if (txt.includes("Empieza hoy") || txt.includes("Start today")) return false;
       return true;
     });
@@ -67,20 +42,11 @@ export function TableOfContents() {
     const found: TocItem[] = [];
     const seenIds = new Set<string>();
     headings.forEach((h) => {
-      // Find closest element with a real id (not main-content).
       const target: HTMLElement | null = h.closest("[id]") as HTMLElement | null;
       let id = target?.id;
-      /* Un id existente no basta: tiene que servir de ANCLA. React reparte
-         ids propios a algunos contenedores —del estilo `S:1`— y los dos
-         puntos no son válidos en un `href="#..."` sin escapar, así que el
-         enlace del índice apuntaba a un destino inexistente y al pulsarlo
-         no ocurría nada. Se coló porque el id SÍ estaba en el DOM: la
-         comprobación de "existe" pasaba y la de "funciona" no la hacía
-         nadie. Aquí se veía en el índice de `/about`, con la misma lámina
-         dos veces, una con su slug y otra con el id de React.
-
-         Si el id no vale como ancla, se descarta. El componente no debe
-         parchear el DOM después de SSR para inventar destinos. */
+      // El id debe servir de ancla: React reparte ids del estilo `S:1` y los
+      // dos puntos no valen en un `href="#..."` sin escapar. Si no vale, se
+      // descarta; no se parchea el DOM tras SSR.
       if (id && !/^[A-Za-z][\w-]*$/.test(id)) id = undefined;
       if (!id || id === "main-content") return;
       if (seenIds.has(id)) return;
@@ -115,14 +81,11 @@ export function TableOfContents() {
     return () => observer.disconnect();
   }, []);
 
-  // Don't render if there aren't enough sections to justify a TOC.
   if (items.length < 2) return null;
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
-    /* El índice de una página legal salta entre epígrafes que pueden
-       estar a media docena de pantallas: mismo motivo que en el raíl de
-       la portada. Ver `src/lib/scroll.ts`. */
+    // Los saltos pueden ser largos: ver `src/lib/scroll.ts`.
     if (!irASeccion(id)) return;
     history.replaceState(null, "", `#${id}`);
   };

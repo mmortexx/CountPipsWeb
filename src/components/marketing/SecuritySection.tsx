@@ -4,9 +4,9 @@ import { useLang } from "@/lib/i18n";
 import { CONEXIONES } from "@/lib/conexiones";
 
 /**
- * SecuritySection — sección `#security` del HTML. Local-first:
- * 3 tarjetas (100 % en local, archivo .sqlite, export/import)
- * + tabla comparativa "Diario en la nube vs CountPips".
+ * Sección `#security`: tres principios (en local, archivo SQLite, exportar e
+ * importar), la lista de lo que se conecta a internet y la comparativa con un
+ * diario en la nube.
  */
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
 export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {}) {
@@ -61,9 +61,6 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               : "A native Windows app that stores your trades in a SQLite database on your disk. What leaves the machine is listed below, connection by connection."}
           </p>
         </div>
-        {/* Tres principios en columnas con filete arriba, como los
-            apartados de un informe: sin caja alrededor ni icono en un
-            cuadradito, que es el vocabulario de una plantilla. */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-8 mb-14">
           {cards.map((c) => {
             return (
@@ -100,13 +97,12 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
           </div>
         </div>
 
-        {/* Tres columnas caben en 358 px si el texto parte línea: sin
-            desplazamiento lateral, que cortaba la columna de la nube. */}
+        {/* Las tres columnas caben en 358 px si el texto parte línea: sin
+            desplazamiento lateral. */}
         <div className="relative">
-          {/* Una `<table>` con `scope` en filas y columnas: al llegar a una
-              celda se anuncia «Funciona sin internet · CountPips · Sí». El
-              veredicto va en texto y la tabla va abierta, con filetes y la
-              columna propia en banda, como la comparativa de /pricing. */}
+          {/* `<table>` con `scope` en filas y columnas: al llegar a una celda se
+              anuncia «Funciona sin internet · CountPips · Sí». El veredicto va
+              en texto, como en la comparativa de /pricing. */}
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">
               {es

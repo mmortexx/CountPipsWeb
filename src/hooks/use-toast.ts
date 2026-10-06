@@ -1,6 +1,6 @@
 "use client"
 
-// Inspired by react-hot-toast library
+// Basado en react-hot-toast.
 import * as React from "react"
 
 import type {
@@ -18,12 +18,6 @@ type ToasterToast = ToastProps & {
   action?: ToastActionElement
 }
 
-/* Esto era un objeto `as const` del que solo se leía el TIPO (`typeof
-   actionTypes`). El objeto viajaba al navegador en cada página sin que
-   ninguna línea lo consultara: cuatro cadenas cuyo único trabajo era
-   existir para que TypeScript las mirara. Escrito como tipo hace
-   exactamente lo mismo y no llega al paquete. */
-
 let count = 0
 
 function genId() {
@@ -31,6 +25,7 @@ function genId() {
   return count.toString()
 }
 
+// Tipo y no objeto `as const`: solo se lee el tipo y así no llega al paquete.
 type ActionType = {
   ADD_TOAST: "ADD_TOAST"
   UPDATE_TOAST: "UPDATE_TOAST"
@@ -97,8 +92,7 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
+      // Efecto secundario dentro del reducer; podría ser una acción dismissToast().
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {

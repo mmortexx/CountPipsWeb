@@ -2,12 +2,9 @@
    importarlas no genera las 200 operaciones de /demo. */
 
 /**
- * Los dos tramos de la barra riesgo/beneficio crecen desde el CENTRO del
- * carril, cada uno hacia su lado, así que ninguno puede pasar del 50 %.
- *
- * Anclados a los bordes con la escala entera —que es como estaba— el mayor
- * de los dos se iba al 100 % del carril y tapaba al otro por completo: con
- * un 3:1 la parte roja no se veía.
+ * Los dos tramos de la barra riesgo/beneficio crecen desde el centro del
+ * carril, cada uno hacia su lado, así que ninguno pasa del 50 %. Anclados a
+ * los bordes, el mayor tapaba al otro (con 3:1 no se veía la parte roja).
  */
 export function tramosRiesgoBeneficio(
   riesgo: number,
@@ -19,9 +16,8 @@ export function tramosRiesgoBeneficio(
   return { riesgo: (r / max) * 50, beneficio: (b / max) * 50 };
 }
 
-/** Un empate exacto —25 % a 0,9 R : 0,3 R, 40 % a 1,5— sale en coma
- *  flotante como ±1e-16, y se pintaba «Expectancy positiva» con «0,000 R».
- *  Por debajo de una milmillonésima es cero. */
+/** Un empate exacto (25 % a 0,9 R : 0,3 R, 40 % a 1,5) sale en coma flotante
+ *  como ±1e-16 y no debe leerse como ventaja: por debajo de 1e-9 es cero. */
 export function sinRuido(x: number): number {
   return Math.abs(x) < 1e-9 ? 0 : x;
 }
@@ -36,10 +32,9 @@ export const UMBRAL_RUINA_PCT = 50;
  *
  * E = p · b − q. Si E ≤ 0 la ruina es segura (100 %). Si no,
  * P(ruina) = z^U, con U = ruinDdPct / riskPct y z la raíz en (q, 1) de
- * p · z^b + q / z = 1: la ruina del jugador generalizada, exacta cuando
- * las pérdidas son de una unidad. La aproximación de difusión
- * e^(−2·E·U/σ²), que es la que había, falla con pagos asimétricos: con
- * un 50 % de acierto y ganancias de 1.500 R daba un 87 % de ruina.
+ * p · z^b + q / z = 1: la ruina del jugador generalizada, exacta con pérdidas
+ * de una unidad. No vale la aproximación de difusión e^(−2·E·U/σ²), que falla
+ * con pagos asimétricos.
  */
 export function computeRiskOfRuin(
   winRate: number,
@@ -58,8 +53,7 @@ export function computeRiskOfRuin(
   if (q <= 0) return 0;
 
   const g = (z: number) => p * Math.pow(z, b) + q / z - 1;
-  /* g(1) = 0 y g'(1) = E > 0, así que g es negativa justo por debajo de 1;
-     y g(q) = p·q^b > 0. La raíz buscada queda entre q y ese punto. */
+  // g(1) = 0 y g'(1) = E > 0: g es negativa justo bajo 1 y g(q) = p·q^b > 0, así que la raíz queda entre q y ese punto.
   let hi = 1 - 1e-6;
   while (g(hi) >= 0 && 1 - hi > 1e-15) hi = 1 - (1 - hi) / 10;
   if (g(hi) >= 0) return 100;
@@ -90,11 +84,7 @@ export function computeExpectedMaxLossStreak(winRate: number, tradesCount: numbe
   return Math.min(n, Math.max(1, Math.round(streak)));
 }
 
-/**
- * Valor en Riesgo (VaR) paramétrico 1-Day / 1-Trade en dólares.
- * 95% CI -> z = 1.645
- * 99% CI -> z = 2.326
- */
+/** VaR paramétrico de una operación, en dólares: 1 R por z, con z = 1,645 al 95 % y 2,326 al 99 %. */
 export function computeParametricVaR(
   balance: number,
   riskPct: number,
@@ -105,10 +95,7 @@ export function computeParametricVaR(
   return +(oneR * z).toFixed(2);
 }
 
-/**
- * Función de Distribución Acumulada (CDF) de la distribución normal estándar N(0, 1).
- * Aproximación analítica de alta precisión vía erf (Abramowitz & Stegun 7.1.26, error máximo < 1.5e-7).
- */
+/** CDF de la normal estándar N(0, 1) vía erf (Abramowitz y Stegun 7.1.26, error máximo < 1,5e-7). */
 export function normalCdf(x: number): number {
   if (x === 0) return 0.5;
   const z = Math.abs(x) / Math.SQRT2;

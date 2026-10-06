@@ -6,9 +6,6 @@ import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
 export function ProductStatus() {
   const { lang } = useLang();
   const es = lang === "es";
-  /* Las tres columnas se marcan con una palabra en la misma voz. Antes eran
-     un ✓ verde, un reloj y la palabra «Previsto»: tres dialectos para una
-     sola escala, y el ojo leía el color del primero antes que su estado. */
   const rows = [
     { estado: es ? "Disponible" : "Available", previsto: false, title: es ? "Listo para probar" : "Ready to test", text: es ? "Demo navegable, métricas y diario local." : "Clickable demo, metrics and local journal." },
     { estado: es ? "Por invitación" : "By invitation", previsto: false, title: es ? "Piloto privado" : "Private pilot", text: es ? "Flujos de disciplina, riesgo y prop firm con usuarios invitados." : "Discipline, risk and prop-firm workflows with invited users." },
@@ -23,8 +20,7 @@ export function ProductStatus() {
               {es ? (
                 <>
                   Lo que está listo.{" "}
-                  {/* Espacio duro: el equilibrado dejaba «comprobando.» sola
-                      en un tercer renglón a 1440 (`scripts/viudas.mjs`). */}
+                  {/* Espacio duro: evita la viuda «comprobando.» (`scripts/viudas.mjs`). */}
                   <span className="tj-frase-nueva">Y lo que aún estamos{" "}comprobando.</span>
                 </>
               ) : (
@@ -54,6 +50,5 @@ export function ProductStatus() {
   );
 }
 
-/** Backwards-compatible export for internal imports while the public copy
- * moves from beta language to private early access. */
+/** Alias para los imports internos que aún usan el nombre anterior. */
 export const BetaStatus = ProductStatus;

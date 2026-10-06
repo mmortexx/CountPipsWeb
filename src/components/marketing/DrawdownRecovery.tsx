@@ -53,8 +53,8 @@ export function DrawdownRecovery() {
     };
   }, [caida, riesgo, acierto, payoff]);
 
-  /* El signo se decide sobre la cifra ya redondeada: decidido antes, un
-     −0,00004 se pintaba «−0,00 %» en rojo. */
+  /* El signo se decide sobre la cifra ya redondeada: si no, −0,00004 se pinta
+     «−0,00 %» en rojo. */
   const redondeado = (v: number, dec: number) => Number((v * 100).toFixed(dec));
   const conSigno = (v: number, dec: number) => `${redondeado(v, dec) > 0 ? "+" : ""}${fmtPct(v, lang, dec)}`;
   const noVuelve = c.operaciones === null;
@@ -110,8 +110,8 @@ export function DrawdownRecovery() {
           </span>
         </div>
 
-        {/* En móvil, el resultado va entre los controles y la tabla: lejos
-            de los controles, quien mueve un deslizador no ve qué cambia. */}
+        {/* En móvil el resultado va entre los controles y la tabla, para ver qué
+            cambia al mover un deslizador. */}
         <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr]">
           <div className="lg:col-start-1 lg:row-start-1">
             <h2 data-titular-herramienta className="t-h2 m-0 max-w-[24ch] text-primary">
@@ -246,8 +246,7 @@ export function DrawdownRecovery() {
                     <th scope="col" className="tj-matriz-cab py-2.5 pr-3 text-left font-medium">
                       {es ? "Caída" : "Drawdown"}
                     </th>
-                    {/* A la derecha, sobre la cifra: la barra no lleva rótulo
-                        y el título a la izquierda quedaba encima de ella. */}
+                    {/* A la derecha, sobre la cifra: la barra no lleva rótulo. */}
                     <th scope="col" className="tj-matriz-cab px-3 py-2.5 text-right font-medium">
                       {es ? "Hace falta ganar" : "Gain needed"}
                     </th>

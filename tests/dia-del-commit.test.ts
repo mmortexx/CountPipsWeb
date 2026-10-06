@@ -2,9 +2,8 @@ import { describe, expect, it } from "vitest";
 import { diaDelCommit } from "@/lib/dia-del-commit";
 
 /**
- * El pie dice «Sitio actualizado el …» y firma el copyright con el año de
- * este día. El 2026-09-25 decía «24 de septiembre» de un commit hecho el 25
- * a la 01:40 en España, porque el día se sacaba en UTC.
+ * El pie dice «Sitio actualizado el …» con el día del commit en hora de
+ * España, no en UTC (un commit de la 01:40 caía en el día anterior).
  */
 describe("diaDelCommit", () => {
   it("el día es el del commit, no el de UTC", () => {

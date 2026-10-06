@@ -1,46 +1,18 @@
 /**
- * MOVIMIENTO — ¿se mueve algo cuando el visitante ha pedido que nada se mueva?
+ * MOVIMIENTO: abre cada ruta con `prefers-reduced-motion: reduce`, la recorre
+ * entera para disparar las animaciones de entrada y vigila fotograma a
+ * fotograma si algún elemento cambia de posición o si una cifra marcada con
+ * `data-cuenta` (`CountUp`, en la pestaña Operaciones de la demo) cuenta en
+ * vez de salir ya en su valor. Un fallo es movimiento que escapa a la regla
+ * global de `globals.css`, típicamente animado por JavaScript.
  *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * El sistema operativo tiene una casilla —«reducir movimiento»— que la
- * gente con trastornos vestibulares activa porque el contenido que se
- * desliza o se acerca les provoca mareo real, no incomodidad. El
- * navegador la expone como `prefers-reduced-motion`.
+ * Solo la posición, no la opacidad: los fundidos no marean y medirlos daba
+ * falsos positivos.
  *
- * Esta guarda abre cada página CON esa preferencia puesta, la recorre
- * entera para disparar las animaciones de entrada, y vigila fotograma a
- * fotograma si algún elemento cambia de POSICIÓN.
- *
- * ── Por qué solo la posición, y no la opacidad ────────────────────────
- * Un fundido no marea a nadie: lo que provoca el mareo es el movimiento
- * y el escalado. Por eso `reducedMotion: "user"` de framer-motion apaga
- * las animaciones de posición y deja pasar las de opacidad a propósito,
- * y por eso esta guarda hace lo mismo. Medir las dos juntas daba ocho
- * falsos positivos en `/demo/` —los ocho, fundidos correctos—.
- *
- * ── Por qué hay una pasada de CONTROL, y por qué puede fallar ─────────
- * Una guarda que busca una AUSENCIA es la más fácil de dejar ciega: el
- * día que el detector deje de detectar, pasa a aprobarlo todo y nadie se
- * entera. Así que se recorre el sitio DOS veces: una con la preferencia,
- * donde no debe moverse nada, y otra SIN ella, donde tiene que moverse
- * bastante. Si en la segunda no encuentra movimiento, la guarda se
- * declara rota y falla — porque eso significa que su primera respuesta
- * no valía nada.
- *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * Nada. Cero elementos con movimiento de posición en siete rutas, frente
- * a 15–91 por ruta en la pasada de control. Se escribió precisamente
- * porque el resultado era bueno y nada lo sostenía: `globals.css` lo
- * resuelve con una regla global que cualquiera puede esquivar sin querer
- * animando por JavaScript, que es lo que la regla de CSS no alcanza.
- *
- * ── Los números que cuentan (2026-09-26) ──────────────────────────────
- * Las cifras de la demo suben de 0 a su valor (`CountUp`, marcado con
- * `data-cuenta`). Con la preferencia tienen que salir ya en su valor. No
- * lo hacían: el componente empezaba en el valor final y aun así lanzaba
- * la animación desde 0. Ninguna posición cambiaba, así que esta guarda no
- * lo veía. Ahora también vigila el texto de esos números, en la pestaña
- * Operaciones de la demo, con su propia pasada de control.
+ * La pasada de control recorre el sitio otra vez sin la preferencia, donde
+ * debe haber mucho movimiento: si no lo encuentra, el detector está roto y su
+ * respuesta con la preferencia no vale (una guarda de ausencias se queda verde
+ * si deja de detectar).
  *
  * Uso:  node scripts/movimiento.mjs --serve out
  */
@@ -57,15 +29,12 @@ if (!existsSync(dir)) {
 }
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-/* Las rutas donde vive la animación: la portada y las de producto, que
-   la usan para presentar cada sección; la demo, que es la que más tiene;
-   y una inglesa, porque el árbol de componentes no es el mismo. */
+// Rutas con animación: portada y producto, la demo (la que más tiene) y una inglesa, de árbol distinto.
 const RUTAS = ["/", "/features/", "/pricing/", "/demo/", "/about/", "/herramientas/", "/en/"];
 
-/* Cuántos fotogramas seguidos tiene que cambiar un elemento para que
-   cuente como animación. Uno solo es un salto —así aparece un botón con
-   `motion-reduce:transition-none`, sin transición ninguna—, y contarlo
-   daba un falso positivo en las seis rutas. Cuatro son unos 66 ms. */
+/* Fotogramas seguidos que debe cambiar un elemento para contar como animación.
+   Uno solo es un salto sin transición (un botón con `motion-reduce:transition-none`).
+   Cuatro son unos 66 ms. */
 const FOTOGRAMAS_MINIMOS = 4;
 
 const TIPOS = {
@@ -97,8 +66,7 @@ async function servir(raiz) {
   return { server, base: `http://127.0.0.1:${server.address().port}${PREFIJO}` };
 }
 
-/* Se inyecta ANTES de que cargue la página: una animación de entrada
-   dura menos que el tiempo que tardaría en instalarse después. */
+// Se inyecta antes de que cargue la página: una animación de entrada dura menos que instalarlo después.
 const ESPIA = `
 window.__mov = new Map();
 window.__cuenta = new Map();
@@ -149,21 +117,18 @@ async function recorrer(ctx, ruta, base) {
     return null;
   }
   await p.waitForTimeout(900);
-  /* Las animaciones de entrada esperan a que la sección aparezca, así
-     que hay que bajar por la página entera para provocarlas todas. */
+  // Las animaciones de entrada esperan a que la sección aparezca: hay que bajar la página entera.
   for (let i = 0; i < 8; i++) {
     await p.evaluate(() => window.scrollBy(0, window.innerHeight * 0.8));
     await p.waitForTimeout(260);
   }
   await p.waitForTimeout(600);
-  /* En la demo, además, la pestaña Operaciones: su franja de cifras es
-     de números que cuentan. */
+  // En la demo, además, la pestaña Operaciones: su franja de cifras cuenta.
   if (ruta === "/demo/") {
     await p.evaluate(() => window.scrollTo(0, 0));
     await p.getByRole("tab", { name: "Operaciones", exact: true }).first().click().catch(() => {});
     await p.waitForTimeout(400);
-    /* Cuentan al verse: sin desplazarse hasta ellas se quedan en su
-       valor de partida y la pasada de control no vería nada. */
+    // Cuentan al verse: sin desplazarse hasta ellas la pasada de control no vería nada.
     await p.locator("[data-cuenta]").first().evaluate((el) => el.scrollIntoView({ block: "center" })).catch(() => {});
     await p.waitForTimeout(2000);
   }
@@ -224,10 +189,7 @@ if (fallos.length) {
 
 console.log(`\n[movimiento] ${RUTAS.length} rutas · control: ${controlTotal} elementos con movimiento y ${controlCuentas} cifras que cuentan cuando se permite`);
 
-/* La pasada de control es la que impide que esta guarda se quede verde
-   para siempre. Si el sitio se moviera en menos de la mitad de sus
-   rutas con el movimiento permitido, o casi nada en total, lo que ha
-   detectado —o dejado de detectar— en la otra pasada no significa nada. */
+// La pasada de control evita que la guarda se quede verde: sin movimiento permitido, la otra pasada no significa nada.
 if (sinControl.length > RUTAS.length / 2 || controlTotal < 20) {
   console.log(`[movimiento] el detector no ve movimiento ni cuando está permitido (${sinControl.length} ruta(s) a cero, ${controlTotal} en total)`);
   console.log("[movimiento] eso no dice que el sitio esté quieto: dice que esta guarda está rota y no vale su respuesta");
@@ -240,7 +202,7 @@ if (controlCuentas === 0) {
 if (fallos.length) {
   console.log(`[movimiento] ${fallos.length} elemento(s) se mueven o cuentan con «reducir movimiento» activo`);
   console.log("[movimiento] las transiciones de CSS las apaga la regla de `globals.css`; lo que anima por JavaScript, no");
-  console.log("[movimiento] framer-motion necesita `<MotionConfig reducedMotion=\"user\">` por encima, o `useReducedMotion()` en el componente");
+  console.log("[movimiento] lo que anime por JavaScript (WAAPI, `useViaje`) tiene que consultar `matchMedia(\"(prefers-reduced-motion: reduce)\")` antes de moverse");
   process.exit(1);
 }
 console.log("[movimiento] correcto — con «reducir movimiento» activo no se desplaza nada; solo quedan fundidos, que no marean");

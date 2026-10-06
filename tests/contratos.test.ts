@@ -6,29 +6,19 @@ import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 import { tieneVersionEn, withLocale } from "@/lib/locale";
 
 /**
- * Contratos que atraviesan varios ficheros y que ninguna comprobación de
- * tipos puede vigilar: la paridad entre los dos idiomas, la
- * correspondencia entre las rutas declaradas y las que existen de verdad,
- * y el nombre de un campo que un lado escribe y el otro lee.
- *
- * El último parece trivial hasta que pasa: el formulario de acceso
- * anticipado enviaba su campo trampa como `botcheck` y el Worker leía
- * `payload.honeypot`. La comprobación antibot no se disparó ni una sola
- * vez desde el día que se escribió, y figuraba en la política de
- * privacidad como una medida que existía.
+ * Contratos que atraviesan varios ficheros y que los tipos no vigilan: paridad
+ * entre idiomas, rutas declaradas frente a reales y campos que un lado escribe
+ * y el otro lee (el campo trampa del formulario de acceso anticipado se enviaba
+ * como `botcheck` y el Worker leía `payload.honeypot`).
  */
 
 const RAIZ = join(import.meta.dirname, "..");
 const leer = (rel: string) => readFileSync(join(RAIZ, rel), "utf8");
 
 /**
- * Devuelve el fichero SIN comentarios.
- *
- * Hace falta de verdad: estas pruebas afirman cosas como "el Worker ya no
- * lee `payload.honeypot`", y el propio código lleva un comentario largo
- * explicando que antes lo leía. Sin quitar los comentarios, la prueba se
- * dispara con la explicación del arreglo en vez de con el arreglo, que es
- * exactamente el falso positivo que la haría inútil.
+ * Devuelve el fichero sin comentarios: estas pruebas afirman ausencias (por
+ * ejemplo, que el Worker ya no lee `payload.honeypot`) y no deben dispararse
+ * con el comentario que explica el arreglo.
  */
 function sinComentarios(fuente: string): string {
   return fuente
@@ -120,12 +110,7 @@ describe("rutas declaradas frente a rutas reales", () => {
     expect(tieneVersionEn("/traders/no-existe")).toBe(false);
   });
 
-  /* Esta prueba decía que `/glosario/` NO tenía versión inglesa, y la
-     tenía: `out/en/glosario/index.html` existe desde el principio. Lo
-     que estaba escrito aquí no era el contrato, era el fallo — la lista
-     se escribe sin barra final y la comparación era de texto, así que
-     cualquier enlace escrito con barra se quedaba en español. Pasó de
-     verdad en «More questions?» de la página de precios inglesa. */
+  // La lista se escribe sin barra final: un enlace con barra no puede quedarse en español.
   it("la barra final no decide el idioma", () => {
     for (const ruta of ["/faq", "/glosario", "/herramientas", "/pricing", "/beta"]) {
       expect(tieneVersionEn(ruta), ruta).toBe(true);
@@ -166,25 +151,17 @@ describe("contrato del formulario de acceso anticipado", () => {
   });
 
   it("el límite de peticiones no se desactiva solo si falta su almacén", () => {
-    // Devolvía `true` —puerta abierta— cuando el binding KV no estaba
-    // configurado, y hoy no lo está. Ahora solo se salta si el propio
-    // despliegue lo pide a propósito, y el rechazo lleva un código que
-    // dice «mal configurado», no «demasiadas peticiones».
+    // Sin el binding KV no debe devolver `true` (puerta abierta): solo se salta
+    // si el despliegue lo pide, y el rechazo dice «mal configurado».
     expect(worker).toMatch(/RATE_LIMIT_OPTIONAL/);
     expect(worker).not.toMatch(/if \(!env\.RATE_LIMIT\) return true;/);
     expect(worker).toMatch(/service_misconfigured/);
   });
 
   it("consulta la cuota antes de Turnstile, pero la descuenta después", () => {
-    /* Las dos mitades importan y por motivos distintos:
-       — consultar antes evita gastar una llamada de red a Cloudflare en
-         quien ya ha superado su límite;
-       — descontar después evita que un fallo anti-bot queme el intento y
-         deje al solicitante con un «demasiadas peticiones» que no
-         describe lo que pasó.
-       Estuvieron juntas en una sola función y el segundo efecto era un
-       callejón sin salida. `await nombre(` solo aparece en las LLAMADAS:
-       las definiciones son `async function nombre(`. */
+    // Consultar antes evita una llamada a Cloudflare por quien ya superó el
+    // límite; descontar después evita que un fallo anti-bot queme el intento.
+    // `await nombre(` solo aparece en las llamadas, no en las definiciones.
     const iConsulta = worker.indexOf("await rateLimitDisponible(");
     const iTurnstile = worker.indexOf("await verifyTurnstile(");
     const iConsumo = worker.indexOf("await consumirCuota(");
@@ -198,23 +175,18 @@ describe("contrato del formulario de acceso anticipado", () => {
 
 describe("analítica y consentimiento", () => {
   const posthog = leerCodigo("src/components/analytics/PostHog.tsx");
-  const legal = leer("src/lib/legal/documentos.ts");
 
   it("no se activa la grabación de sesión, que la política no declara", () => {
     expect(posthog).toMatch(/disable_session_recording:\s*true/);
   });
 
-  it("no se escriben cookies: la política afirma que no hay ninguna", () => {
-    // `documentos.ts` dice literalmente que ninguna de las claves
-    // guardadas es una cookie. Si alguien devuelve la persistencia a
-    // "localStorage+cookie", esa afirmación pasa a ser falsa.
-    expect(posthog).not.toMatch(/persistence:\s*"[^"]*cookie/);
-    expect(legal).toMatch(/NINGUNA es una cookie|ninguna es una cookie/i);
+  it("PostHog guarda en localStorage y no en cookies", () => {
+    // Sin `persistence` explícito, PostHog usa "localStorage+cookie" y escribe cookies.
+    expect(posthog).toMatch(/persistence:\s*"(localStorage|memory|sessionStorage)"/);
   });
 
   it("la clave de consentimiento no está repetida a mano por ahí", () => {
-    // Vivía escrita como literal en tres módulos. Con copias, retirar el
-    // consentimiento en un sitio dejaba los otros leyendo el valor viejo.
+    // Con copias, retirar el consentimiento en un sitio dejaba a los otros leyendo el valor viejo.
     const copias = ["src/components/analytics/PostHog.tsx", "src/lib/analytics.ts"]
       .filter((f) => leerCodigo(f).includes('"tj-cookie-consent"'));
     expect(copias).toEqual([]);
@@ -222,18 +194,10 @@ describe("analítica y consentimiento", () => {
 });
 
 /**
- * El ancho del título en el buscador.
- *
- * El patrón «{término}: qué es y por qué importa — CountPips» cuesta 41
- * caracteres fijos. Con 51 voces en dos idiomas, basta una cuyo nombre
- * traiga la expansión dentro —«MAE (Maximum Adverse Excursion)»— para que
- * el título salga de 76 caracteres y Google lo corte a mitad de la
- * promesa. Eran cuatro de las 155 páginas del sitio, y las únicas cuatro
- * que se pasaban.
- *
- * Esto no lo puede vigilar el humo, que solo recorre doce rutas y ninguna
- * del glosario: hay que mirar las 102 páginas generadas, y eso se hace
- * aquí, sin navegador.
+ * El patrón «{término}: qué es y por qué importa — CountPips» ya cuesta 41
+ * caracteres; un término con la expansión dentro, como «MAE (Maximum Adverse
+ * Excursion)», hace que Google corte el título. El humo no recorre el
+ * glosario, así que se comprueban aquí todas las páginas generadas.
  */
 describe("los títulos del glosario caben en el buscador", () => {
   it("ninguna de las 102 páginas pasa de 60 caracteres", async () => {
@@ -252,9 +216,7 @@ describe("los títulos del glosario caben en el buscador", () => {
 
   it("el título sigue diciendo «qué es», que es como se busca", async () => {
     const { TERMINOS, tituloDeTermino } = await import("@/lib/glosario");
-    /* El recorte no puede llevarse por delante la intención: si un día el
-       ajuste automático deja los 51 títulos en el término pelado, el
-       buscador deja de encontrarlos por la pregunta que la gente teclea. */
+    // El recorte no puede llevarse la intención: sin «qué es» el buscador deja de encontrarlos.
     const conPregunta = TERMINOS.filter((t) => tituloDeTermino(t.term, "es").includes("qué es"));
     expect(conPregunta.length / TERMINOS.length).toBeGreaterThan(0.95);
   });
@@ -269,33 +231,16 @@ describe("los títulos del glosario caben en el buscador", () => {
 
 describe("el precio es el mismo en todas partes", () => {
   /**
-   * ── Por qué esta prueba y no interpolar la cifra en cada texto ────────
-   * Las dos cifras aparecen en trece archivos, y en la mayoría van
-   * DENTRO de una frase: «Core $149 y Pro $249 son precios de
-   * lanzamiento previstos», la respuesta de una FAQ, la descripción de
-   * una calculadora, un metadato para el buscador. Sustituirlas por
-   * `${PRECIO_CORE}` deja los textos ilegibles en el código y, con
-   * ellos, la revisión de copy — que es humana y se hace leyendo.
-   *
-   * El riesgo, en cambio, es real y es el peor de su clase: el precio es
-   * el número más comprobable del sitio, porque cualquiera puede abrir
-   * dos páginas y compararlas. Trece copias es la clase de cosa que se
-   * desincroniza el día que se retoca una y se olvidan doce.
-   *
-   * Así que el texto se queda como está y lo que se ata es la
-   * COHERENCIA: cualquier cifra de tres dígitos precedida de `$` en el
-   * código fuente tiene que ser uno de los dos precios declarados. Si
-   * mañana Core pasa a 179 y alguien cambia solo `precios.ts`, las doce
-   * frases que sigan diciendo 149 hacen fallar esto con su ruta y su
-   * línea delante.
+   * Las cifras van escritas dentro de frases en muchos archivos (interpolarlas
+   * deja los textos ilegibles), así que se ata la coherencia: toda cifra de
+   * tres dígitos precedida de `$` en el código fuente debe ser uno de los dos
+   * precios declarados. Si cambia solo `precios.ts`, falla con ruta y línea.
    */
   it("no hay ninguna cifra en dólares que no sea un precio declarado", async () => {
     const { PRECIO_CORE, PRECIO_PRO } = await import("@/lib/precios");
     const permitidos = new Set([String(PRECIO_CORE), String(PRECIO_PRO)]);
 
-    /* Se recorren los mismos archivos que compila el sitio. Los `.ts` de
-       datos entran igual que los componentes: `herramientas.ts` y
-       `legal/documentos.ts` también citan el precio. */
+    // Entran también los `.ts` de datos: `herramientas.ts` y `legal/documentos.ts` citan el precio.
     const fuentes: string[] = [];
     const recorrer = (dir: string) => {
       for (const entrada of readdirSync(join(RAIZ, dir))) {
@@ -309,9 +254,7 @@ describe("el precio es el mismo en todas partes", () => {
     const sueltas: string[] = [];
     for (const rel of fuentes) {
       if (rel.endsWith("/precios.ts")) continue;
-      // Sin comentarios: las notas explican de dónde VENÍA un precio, y
-      // una prueba que confunde la nota con el dato obliga a borrar la
-      // explicación para ponerse en verde.
+      // Sin comentarios: las notas pueden citar precios antiguos.
       const lineas = sinComentarios(leer(rel)).split("\n");
       lineas.forEach((linea, i) => {
         // «$154,820» es una cifra con miles, no un precio de tres dígitos.
@@ -331,9 +274,7 @@ describe("el precio es el mismo en todas partes", () => {
   });
 
   it("las dos cifras siguen apareciendo en la tabla de precios", async () => {
-    /* La comprobación de arriba pasa sola si un día NADIE menciona un
-       precio: cero cifras sueltas es cero fallos. Esto exige que la
-       página que existe para decir el precio siga diciéndolo. */
+    // La prueba anterior pasa sola si nadie menciona un precio: esta exige que la tabla lo diga.
     const { PRECIO_CORE, PRECIO_PRO } = await import("@/lib/precios");
     const tabla = leerCodigo("src/components/marketing/Pricing.tsx");
     expect(tabla).toContain("PRECIO_CORE");
@@ -344,18 +285,9 @@ describe("el precio es el mismo en todas partes", () => {
 
 describe("lo que se le dice al buscador es lo que dice la página", () => {
   /**
-   * El fallo que trajo estas pruebas: las trece preguntas frecuentes
-   * estaban escritas dos veces —una en el acordeón que se ve, otra a mano
-   * en el `FAQPage` de datos estructurados— y habían divergido. A «¿Qué
-   * métodos de pago aceptáis?» la página respondía lo cierto (la compra
-   * se abrirá más adelante, el acceso anticipado no es una preventa)
-   * mientras el marcado le declaraba a Google «Tarjeta de crédito/débito
-   * y PayPal. Emitimos factura con IVA si procede.».
-   *
-   * Es la peor forma del fallo: mirando la página no se ve, porque la
-   * afirmación falsa solo existe en el canal que la publica en los
-   * resultados de búsqueda. Doce de las trece respuestas declaradas no
-   * existían en la página.
+   * Las preguntas frecuentes estaban escritas dos veces (el acordeón y el
+   * `FAQPage` de datos estructurados) y divergieron: el marcado declaraba a
+   * Google respuestas falsas que la página no mostraba.
    */
   const PAGINAS_FAQ = [
     "src/app/faq/page.tsx",
@@ -365,10 +297,7 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
   ];
 
   it("ninguna respuesta del buscador se escribe a mano en la página", () => {
-    /* `acceptedAnswer` a mano en estos cuatro ficheros es exactamente la
-       forma que tenía el fallo: una segunda copia que nadie compara con
-       la primera. Deben construirlo con `jsonLdFaq()` a partir de la
-       misma lista que pinta el acordeón. */
+    // `acceptedAnswer` a mano es una segunda copia: debe salir de `jsonLdFaq()`.
     const aMano = PAGINAS_FAQ.filter((rel) =>
       leerCodigo(rel).includes("acceptedAnswer"),
     );
@@ -382,9 +311,7 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
   });
 
   it("las preguntas que se publican son las que se pintan", async () => {
-    /* Comprobar que el generador existe no basta: podría llamarse con una
-       lista distinta. Se exige que cada página cite la MISMA constante que
-       importa el componente del acordeón. */
+    // Cada página debe citar la misma constante que el acordeón, no otra lista.
     const acordeon = leerCodigo("src/components/marketing/FAQ.tsx");
     const acordeonPrecios = leerCodigo(
       "src/components/marketing/PricingFAQ.tsx",
@@ -406,13 +333,8 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
   });
 
   it("no se anuncia una forma de pago que no existe", async () => {
-    /* El invariante del producto: /demo es pública sin registro, el acceso
-       anticipado es privado por invitación y 149/249 son precios
-       PREVISTOS — no hay compra posible ni pasarela integrada. Nombrar una
-       marca de pago concreta en el código solo puede significar dos cosas:
-       o se ha integrado de verdad (y entonces esta prueba obliga a
-       revisar a conciencia lo que promete la web), o se está prometiendo
-       algo que no se puede cumplir, que es lo que pasó. */
+    // No hay compra ni pasarela integrada (los precios son previstos): nombrar
+    // una marca de pago obliga a revisar lo que promete la web.
     const MARCAS = /\b(paypal|stripe|braintree|checkout\.com)\b/i;
     const fuentes: string[] = [];
     const recorrer = (dir: string) => {
@@ -440,15 +362,9 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
 });
 
 /**
- * La marca vive en cinco ficheros y solo uno la calcula.
- *
- * `scripts/generate-brand.py` toma la geometría del logo «Corte» del
- * generador de la aplicación de escritorio y de ahí salen `logo.png`,
- * `apple-icon.png`, `favicon.ico`, `src/app/icon.svg` y las constantes
- * incrustadas en `src/components/tj/BrandGlyph.tsx`. Las dos últimas son
- * texto plano que alguien puede tocar a mano sin que falle ni el
- * compilador ni el linter, y entonces la web enseñaría un logotipo y la
- * pestaña otro.
+ * `scripts/generate-brand.py` genera `logo.png`, `apple-icon.png`,
+ * `favicon.ico`, `src/app/icon.svg` y las constantes de `BrandGlyph.tsx`. Las
+ * dos últimas son texto plano editable a mano sin que falle nada.
  */
 describe("el logotipo y su generador dibujan lo mismo", () => {
   const constante = (fuente: string, nombre: string) => {
@@ -484,9 +400,7 @@ describe("el logotipo y su generador dibujan lo mismo", () => {
 });
 
 describe("el menú cuenta lo que hay", () => {
-  /* El menú decía «Siete calculadoras» con ocho publicadas y «51 términos»
-     con 57. El menú es de cliente y no importa los datos a propósito (no
-     viajan al navegador), así que la cifra va escrita y aquí se ata. */
+  // El menú es de cliente y no importa los datos (no viajan al navegador): la cifra va escrita y aquí se ata.
   const NUMEROS: Record<string, number> = { siete: 7, ocho: 8, nueve: 9, diez: 10, seven: 7, eight: 8, nine: 9, ten: 10 };
   const navbar = leer("src/components/marketing/Navbar.tsx");
   const cifra = (re: RegExp) =>
@@ -499,8 +413,7 @@ describe("el menú cuenta lo que hay", () => {
     for (const n of vistas) expect(n).toBe(HERRAMIENTAS.length);
   });
 
-  /* Fuera del menú, la cifra sale de `herramientasEnLetra`. Al publicar la
-     novena, cinco textos de la página de herramientas seguían en «Ocho». */
+  // Fuera del menú, la cifra sale de `herramientasEnLetra`.
   it("fuera del menú nadie escribe a mano cuántas herramientas hay", async () => {
     const { herramientasEnLetra, HERRAMIENTAS } = await import("@/lib/herramientas");
     expect(NUMEROS[herramientasEnLetra("es").toLowerCase()]).toBe(HERRAMIENTAS.length);
@@ -530,9 +443,7 @@ describe("el menú cuenta lo que hay", () => {
 });
 
 describe("ningún enlace apunta a un dominio que aún no existe", () => {
-  /* `countpips.com` no está comprado. Los resúmenes que se copian del
-     proyector y del test lo llevaban escrito: el visitante pegaba en su
-     diario un enlace que no resuelve. La dirección sale de `SITE_URL`. */
+  // `countpips.com` aún no existe: la dirección sale de `SITE_URL`.
   it("el dominio propio solo aparece en site.ts", () => {
     const fuentes: string[] = [];
     const recorrer = (dir: string) => {
@@ -550,8 +461,7 @@ describe("ningún enlace apunta a un dominio que aún no existe", () => {
 });
 
 describe("los escapes de JavaScript no llegan a pantalla", () => {
-  /* En un atributo JSX entre comillas («subtitleEs="…"») no se interpretan
-     los escapes: «barra u 00a0» se pinta tal cual. Pasó en la cabecera de Precios. */
+  // En un atributo JSX entre comillas no se interpretan los escapes: «barra u 00a0» se pinta tal cual.
   it("ningún atributo JSX con comillas lleva un escape unicode", () => {
     const fuentes: string[] = [];
     const recorrer = (dir: string) => {
@@ -568,11 +478,8 @@ describe("los escapes de JavaScript no llegan a pantalla", () => {
 });
 
 describe("lo que el titular del Monte Carlo promete", () => {
-  /* Decía «Mil versiones de tu año» y el simulador jugaba 300 caminos; su
-     ficha para buscadores hablaba de «miles de reordenaciones». El número
-     vive en `CAMINOS_MONTE_CARLO` y aquí se exige que el titular y las
-     descripciones lo digan en letra. Si el número cambia, esta tabla no
-     lo conoce y la prueba falla hasta que alguien reescriba el titular. */
+  // El número vive en `CAMINOS_MONTE_CARLO` y los textos lo dicen en letra.
+  // Si cambia, esta tabla no lo conoce y falla hasta reescribir el titular.
   const EN_LETRA: Record<number, { es: string; en: string }> = {
     300: { es: "trescientas", en: "three hundred" },
   };
@@ -591,8 +498,7 @@ describe("lo que el titular del Monte Carlo promete", () => {
 });
 
 describe("el glosario enlaza herramientas que existen", () => {
-  /* Si un destino no casa, la ficha del término se queda sin su enlace en
-     silencio. `/test` es el único destino que no es una calculadora. */
+  // Un destino que no casa deja la ficha sin enlace en silencio. `/test` es el único que no es calculadora.
   it("cada destino de HERRAMIENTA_DE es una herramienta con ficha o el test", async () => {
     const { HERRAMIENTA_DE } = await import("@/lib/glosario");
     const { herramientaPorSlug } = await import("@/lib/herramientas");
@@ -606,9 +512,7 @@ describe("el glosario enlaza herramientas que existen", () => {
 });
 
 describe("los campos de cifra escriben como el idioma de la página", () => {
-  /* `type="number"` enseña y lee el decimal según el idioma del NAVEGADOR:
-     en la web española salía «1.24» junto a «43.200 $». Los campos de
-     cifra van por `CampoCifra` o, si guardan texto, por `leeCifra`. */
+  // `type="number"` usa el decimal del idioma del navegador, no el de la página: van por `CampoCifra` o `leeCifra`.
   it("ningún componente usa type=\"number\"", () => {
     const tsx: string[] = [];
     const recorrer = (dir: string) => {

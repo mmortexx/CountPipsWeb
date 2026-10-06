@@ -7,11 +7,9 @@ import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
 
 /**
- * Tier 3: Cross-Feature Pairwise Combinations
- *
- * 16 comprehensive pairwise interaction test cases verifying integration
- * across multiple dimensions (Tokens, Math, Viewport, Accessibility, Shortcuts,
- * Storage, I18n, Error Handling, and Simulation).
+ * Nivel 3: 16 combinaciones de dos funciones (tema, matemáticas, viewport,
+ * accesibilidad, atajos, almacenamiento, idioma y simulación) que se
+ * comprueban juntas.
  */
 
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -31,7 +29,7 @@ function contrastRatio(lum1: number, lum2: number): number {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-// PRNG implementation matching RMultipleSimulator
+// Misma PRNG que RMultipleSimulator.
 function createPrng(seed: number) {
   let a = (seed * 7919 + 1) >>> 0;
   return () => {
@@ -44,17 +42,15 @@ function createPrng(seed: number) {
 
 describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
   it("Pairwise 1: Theme switching (Dark ↔ Light) + P&L Token Contrast Stability", () => {
-    // Dark Theme tokens
     const darkSurfaceLum = relativeLuminance(12, 17, 22);
     const darkPnlPosLum = relativeLuminance(0, 245, 160);
     const darkPnlNegLum = relativeLuminance(255, 77, 77);
 
-    // Light Theme tokens
     const lightSurfaceLum = relativeLuminance(248, 250, 252);
     const lightPnlPosLum = relativeLuminance(30, 122, 76);
     const lightPnlNegLum = relativeLuminance(153, 27, 27);
 
-    // Both themes must maintain >= 4.5:1 contrast for positive and negative financial indicators
+    // Los dos temas mantienen 4,5:1 en los indicadores positivo y negativo.
     expect(contrastRatio(darkPnlPosLum, darkSurfaceLum)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(darkPnlNegLum, darkSurfaceLum)).toBeGreaterThanOrEqual(4.5);
 
@@ -93,9 +89,8 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     const sim2 = simulate(seed);
     const simDiffSeed = simulate(seed + 1);
 
-    // Deterministic with same seed
+    // Misma semilla, mismo resultado; otra semilla, otro.
     expect(sim1).toEqual(sim2);
-    // Diverges with different seed
     expect(sim1).not.toEqual(simDiffSeed);
   });
 
@@ -121,7 +116,7 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
   });
 
   it("Pairwise 4: LocalStorage failure (SecurityError) + Tool calculation resilience", () => {
-    // Simulate localStorage SecurityError in private browsing
+    // SecurityError de localStorage en modo privado.
     const mockStorageThrows = () => {
       throw new Error("SecurityError: storage disabled in private mode");
     };
@@ -138,7 +133,7 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     const defaultTheme = safeGetItem("tj-theme", "light");
     expect(defaultTheme).toBe("light");
 
-    // Financial calculations proceed normally without storage dependency
+    // El cálculo no depende del almacenamiento.
     const wr = 0.6;
     const avgWin = 2.0;
     const avgLoss = 1.0;
@@ -150,12 +145,10 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     const glossaryModal = readSrc("src/components/tj/GlossaryModal.tsx");
     const shortcutsHelp = readSrc("src/components/tj/ShortcutsHelp.tsx");
 
-    // Roving tabindex and dialog content structure
     expect(glossaryModal).toContain('role="listbox"');
     expect(glossaryModal).toContain("tabIndex={0}");
     expect(glossaryModal).toContain('role="option"');
 
-    // Dialog content wraps with mobile safe layout
     expect(shortcutsHelp).toContain("pt-[15vh]");
     expect(shortcutsHelp).toContain("max-w-md");
   });
@@ -185,14 +178,12 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
   });
 
   it("Pairwise 7: Language toggle + Frozen Glossary English terms preservation", () => {
-    // 57 glossary terms maintain untranslated English term across both languages
     expect(GLOSSARY).toHaveLength(57);
 
     for (const item of GLOSSARY) {
       expect(item.term).toBeTruthy();
       expect(item.es).toBeTruthy();
       expect(item.en).toBeTruthy();
-      // Spanish and English definitions are both non-empty
       expect(item.es.trim().length).toBeGreaterThan(10);
       expect(item.en.trim().length).toBeGreaterThan(10);
     }
@@ -209,26 +200,26 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     const rewardPerShare = Math.abs(target - entry); // 15
     const rr = rewardPerShare / riskPerShare; // 3.0
 
-    // Kelly criterion: f* = (p*b - q) / b
+    // Kelly: f* = (p·b − q) / b
     const winRate = 0.55;
     const q = 1 - winRate;
     const fullKelly = ((winRate * rr - q) / rr) * 100; // ~40%
-    const halfKelly = Math.max(0.25, Math.min(3.0, fullKelly / 2)); // clamped to 3.0%
+    const halfKelly = Math.max(0.25, Math.min(3.0, fullKelly / 2)); // topado al 3 %
 
     expect(halfKelly).toBe(3.0);
 
-    // 1. Equities sizing
+    // Acciones.
     const equityUnits = riskUsd / riskPerShare;
     expect(equityUnits).toBe(100);
 
-    // 2. Forex sizing (1 lot = 100,000 units)
+    // Forex (1 lote = 100.000 unidades).
     const forexLots = equityUnits / 100000;
     expect(forexLots).toBe(0.001);
 
-    // 3. Futures sizing (ES multiplier = 50 $/pt)
+    // Futuros (ES a 50 $ por punto).
     const esMult = 50;
     const pointRisk = riskPerShare * esMult; // 5 * 50 = $250
-    const contracts = riskUsd / pointRisk; // $500 / $250 = 2 contracts
+    const contracts = riskUsd / pointRisk; // $500 / $250 = 2 contratos
     expect(contracts).toBe(2);
   });
 
@@ -286,24 +277,24 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
   });
 
   it("Pairwise 12: Savings calculator plan change + Break-even month calculation", () => {
-    const altMonthly = 25; // $/month
+    const altMonthly = 25; // $ al mes
     const corePrice = 149;
     const proPrice = 249;
 
     const coreBreakEven = Math.ceil(corePrice / altMonthly);
     const proBreakEven = Math.ceil(proPrice / altMonthly);
 
-    expect(coreBreakEven).toBe(6); // 149 / 25 = 5.96 -> 6 months
-    expect(proBreakEven).toBe(10); // 249 / 25 = 9.96 -> 10 months
+    expect(coreBreakEven).toBe(6); // 149 / 25 = 5,96 -> 6 meses
+    expect(proBreakEven).toBe(10); // 249 / 25 = 9,96 -> 10 meses
   });
 
   it("Pairwise 13: High variance Monte Carlo parameters + Probability of ruin bounds", () => {
     const startBalance = 10000;
     const trades = 100;
-    const winRate = 0.35; // Bad edge
+    const winRate = 0.35; // ventaja negativa
     const winR = 1.0;
     const lossR = 2.0;
-    const riskPct = 3.5; // Aggressive risk
+    const riskPct = 3.5; // riesgo agresivo
     const runs = 100;
 
     const rng = createPrng(1234);
@@ -332,7 +323,7 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     expect(probDouble).toBeGreaterThanOrEqual(0);
     expect(probDouble).toBeLessThanOrEqual(100);
     expect(finals).toHaveLength(runs);
-    // With negative edge (35% win, 1:2 payoff), mean final balance is strictly less than initial
+    // Con ventaja negativa (35 % de acierto, payoff 1:2) el balance medio final baja del inicial.
     const meanFinal = finals.reduce((s, v) => s + v, 0) / runs;
     expect(meanFinal).toBeLessThan(startBalance);
   });
@@ -341,9 +332,8 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
     const discCost = readSrc("src/components/marketing/DisciplineCost.tsx");
     const globalsCss = readSrc("src/app/globals.css");
 
-    /* Una sola rejilla con filas en subgrid y columnas que no bajan de su
-       cifra mas ancha: un importe grande ensancha la tabla y se desliza,
-       no pisa la columna vecina. */
+    // Una sola rejilla con filas en subgrid: un importe grande ensancha la
+    // tabla y se desliza, no pisa la columna vecina.
     expect(discCost).toMatch(/grid w-max min-w-full grid-cols-\[(minmax\(max-content,[^)]+\)_?){4}\]/);
     expect(discCost).toContain("grid-cols-subgrid");
     expect(discCost).toContain("overflow-x-auto");
@@ -359,7 +349,6 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
       history.push(currentTheme);
     };
 
-    // Cycle 5 times
     for (let i = 0; i < 5; i++) {
       toggle();
     }
@@ -371,7 +360,7 @@ describe("Tier 3: Cross-Feature Pairwise Combinations", () => {
   it("Pairwise 16: Mobile touch target compliance (>= 44px) + Input font size (>= 16px)", () => {
     const riskCalc = readSrc("src/components/marketing/RiskCalculator.tsx");
 
-    // Both touch target min-h-[44px] and font size 16px (text-base) co-exist on the numeric inputs
+    // Área táctil de 44 px y fuente de 16 px conviven en los campos numéricos.
     expect(riskCalc).toContain("min-h-[44px]");
     expect(riskCalc.includes("text-base") || riskCalc.includes("fontSize: 16")).toBe(true);
   });

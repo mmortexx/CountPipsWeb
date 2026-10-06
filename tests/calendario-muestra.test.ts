@@ -6,9 +6,7 @@ import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 const CRIPTO = new Set(["BTC/USDT", "ETH/USDT"]);
 const AHORA = new Date("2026-07-16T18:00:00Z");
 
-/* El calendario de /features ponía el 1 de julio de 2026 en sábado y
-   terminaba en el 30: el desfase iba escrito a mano, y con él salían
-   operaciones en fin de semana. */
+// El desfase del calendario de /features no puede ir escrito a mano.
 describe("el calendario de muestra es un mes de verdad", () => {
   const { cells, label } = getCal();
   const dias = cells.filter((c) => c.day !== "");
@@ -25,12 +23,8 @@ describe("el calendario de muestra es un mes de verdad", () => {
   });
 });
 
-/* El generador repartía los cierres por los 180 días sin mirar el
-   calendario: 58 de 200 caían en sábado o domingo, con el índice, el
-   oro o el EURUSD cerrados. Solo la cripto cotiza el fin de semana. */
-/* La ficha de playbooks era una maqueta con +2,1R por operación. Ahora
-   sale de la muestra, y su titular promete «cuáles no»: tiene que haber
-   alguno que no dé ventaja. */
+// La ficha de playbooks sale de la muestra, y su titular promete «cuáles no»:
+// tiene que haber algún setup sin ventaja.
 describe("los setups de /features son los de la muestra", () => {
   const setups = getSetups();
 
@@ -61,14 +55,12 @@ describe("la muestra no opera con el mercado cerrado", () => {
     expect(TRADES.every((t) => t.closedAt.getTime() <= AHORA.getTime())).toBe(true);
   });
 
-  /* El cierre de las fichas del glosario cita la cifra sin cargar TRADES. */
+  // El glosario cita la cifra sin cargar TRADES.
   it("la constante del tamaño de la muestra es el tamaño de la muestra", () => {
     expect(TRADES).toHaveLength(OPERACIONES_MUESTRA);
   });
 });
 
-/* «Cumplimiento mensual» del diario llevaba cinco meses inventados y, bajo
-   «Jul», el cumplimiento de los 180 días. */
 describe("el cumplimiento mensual sale de la muestra", () => {
   const meses = cumplimientoMensual(TRADES);
 
@@ -92,8 +84,6 @@ describe("el cumplimiento mensual sale de la muestra", () => {
   });
 });
 
-/* «Dónde cayó dentro del día» era igual para las 200 operaciones: tercera
-   del día, ocho minutos después de otra, −84,60 $ previos. */
 describe("el contexto del día sale de las operaciones de ese día", () => {
   const base = TRADES[0];
   const op = (id: number, abre: string, cierra: string, netPnl: number, instrument = "ES") => ({

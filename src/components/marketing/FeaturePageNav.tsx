@@ -6,19 +6,9 @@ import { useEffect } from "react";
 import { useLang } from "@/lib/i18n";
 
 /**
- * FeaturePageNav — cross-navigation section for feature subpages.
- * Sits between the page content and FinalCTANew. Provides:
- *  - A "Compartir" (Share) button using the Web Share API with a
- *    clipboard-copy fallback (graceful on desktop browsers without
- *    Web Share).
- *  - Prev / Next links to the other feature subpages so visitors can
- *    browse the three deep-dive axes (Métricas → Disciplina → Seguridad)
- *    without going back to the /features overview.
- *  - Un índice "Sigue explorando" con los tres ejes, marcado el actual.
- *
- * The component is fully theme-aware (uses --divider, --surface, text-primary/
- * secondary/tertiary tokens) and matches the site's tj-paper material
- * language.
+ * Navegación cruzada de las subpáginas de /features, entre el contenido y
+ * `FinalCTANew`: un índice «Sigue explorando» con los tres ejes (Métricas,
+ * Disciplina, Seguridad), marcado el actual, y atajos Alt + flechas.
  */
 
 type Axis = "metricas" | "disciplina" | "seguridad";
@@ -65,10 +55,8 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
   const next = currentIdx < ORDER.length - 1 ? ORDER[currentIdx + 1] : null;
   const router = useRouter();
 
-  // Keyboard navigation: Alt + ArrowLeft/ArrowRight to browse between
-  // feature subpages without scrolling to the bottom nav. Respects
-  // reduced-motion users (no smooth scroll, just route change). Skips
-  // when the user is typing in an input/textarea/contenteditable.
+  // Alt + flecha izquierda/derecha cambia de subpágina; no actúa mientras se
+  // escribe en un campo.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!e.altKey) return;
@@ -88,9 +76,8 @@ export function FeaturePageNav({ current }: FeaturePageNavProps) {
     <nav aria-label={es ? "Ejes del producto" : "Product axes"} className="section-tight relative">
       <div className="relative tj-container">
         <p className="eyebrow mb-6">{es ? "Sigue explorando" : "Keep exploring"}</p>
-        {/* Tres columnas con filete arriba, como los apartados de un
-            informe: en fila de tres filetes horizontales, esta lista, el
-            filete del cierre y el del pie eran tres finales seguidos. */}
+        {/* Tres columnas con filete arriba, para no encadenar tres filetes
+            horizontales con el del cierre y el del pie. */}
         <ol className="m-0 grid list-none p-0 md:grid-cols-3 md:gap-x-8">
           {ORDER.map((axis) => {
             const isActive = axis === current;

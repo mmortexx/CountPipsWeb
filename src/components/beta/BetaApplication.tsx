@@ -27,27 +27,14 @@ declare global {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/* `text-base sm:text-sm` y no `text-sm` a secas — el mismo modismo que
-   ya usa `ContactForm`.
-
-   Safari de iOS hace ZOOM al enfocar un campo cuya letra mide menos de
-   16 px, y al hacerlo deja la página desencuadrada y al visitante
-   pellizcando para volver. Con `text-sm` (14 px) los seis campos de este
-   formulario lo provocaban — y éste es el formulario de alta, o sea el
-   sitio donde menos conviene que el móvil dé un salto.
-
-   De 640 px para arriba vuelve a 14 px, que es la densidad que pide un
-   formulario largo en escritorio. */
+// `text-base sm:text-sm`: Safari de iOS hace zoom al enfocar un campo con
+// letra menor de 16 px. Desde 640 px vuelve a 14 px.
 const campoBase =
   "tj-campo min-h-12 w-full px-3.5 text-base sm:text-sm text-primary outline-none transition-colors placeholder:text-tertiary";
 
 const inputClass = `mt-2 ${campoBase}`;
 
-/* Los tres desplegables llevaban la flecha del sistema operativo al lado
-   de campos con el borde y el foco del sitio: dos lenguajes distintos en
-   la misma fila. Con `appearance-none` y el galon propio quedan como el
-   resto —y como los desplegables de la demo y del glosario, que ya lo
-   hacian asi—. */
+// `appearance-none` y galón propio, en vez de la flecha del sistema operativo.
 const selectClass = `${campoBase} appearance-none cursor-pointer pr-10`;
 const galonSelect = (
   <ChevronDown
@@ -56,12 +43,9 @@ const galonSelect = (
   />
 );
 
-/* WCAG 3.3.1 (identificación de errores): el resumen general en
-   role="alert" dice que "algo falta", pero no cuál — quien usa lector de
-   pantalla tenía que recorrer los 6 campos a ciegas. `aria-invalid` +
-   `aria-describedby` identifican el campo exacto al llegar a él por
-   teclado, sin disparar 6 alertas simultáneas y superpuestas. El borde
-   rojo lo pone `.tj-campo[aria-invalid]` en globals.css. */
+// WCAG 3.3.1: `aria-invalid` + `aria-describedby` identifican el campo exacto
+// sin disparar varias alertas a la vez. El borde rojo lo pone
+// `.tj-campo[aria-invalid]` en globals.css.
 function FieldError({ id, show, message }: { id: string; show: boolean; message: string }) {
   if (!show) return null;
   return (
@@ -109,19 +93,13 @@ export function BetaApplication() {
   const workflowRef = useRef<HTMLSelectElement>(null);
   const goalRef = useRef<HTMLSelectElement>(null);
   const privacyRef = useRef<HTMLInputElement>(null);
-  /* El aviso de error recibe el foco cuando lo que falla no es un campo
-     —hoy solo el caso de la verificación anti-bot—, para que el mensaje
-     que explica la salida sea lo siguiente que se lee. `tabIndex={-1}`
-     lo hace enfocable por código sin meterlo en el orden de tabulación. */
+  // El aviso de error recibe el foco cuando lo que falla no es un campo (la
+  // verificación anti-bot). `tabIndex={-1}`: enfocable por código, fuera del orden de tabulación.
   const errorRef = useRef<HTMLParagraphElement>(null);
-  /* Se pide el foco ANTES de que exista el elemento: `setError` solo
-     programa un repintado, así que en ese instante `errorRef.current`
-     todavía es null. Esta bandera lo aplaza a después del render. */
+  // `setError` solo programa un repintado y `errorRef.current` aún es null:
+  // esta bandera aplaza el foco a después del render.
   const pedirFocoAviso = useRef(false);
-  /* Lo mismo al terminar: el `<form>` entero se desmonta y lo sustituye
-     el mensaje de éxito, así que el foco —que estaba en el botón de
-     enviar— se cae al principio del documento. Quien navega con teclado
-     o con lector de pantalla se queda sin saber que ha funcionado. */
+  // Al terminar el `<form>` se desmonta y el foco se perdería: pasa al mensaje de éxito.
   const exitoRef = useRef<HTMLDivElement>(null);
   const turnstileSiteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "").trim();
 
@@ -178,24 +156,13 @@ export function BetaApplication() {
       !workflow ||
       !goal ||
       !privacy;
-    /* La verificación anti-bot se cuenta aparte de los campos: no es un
-       campo que el visitante pueda rellenar. */
+    // La verificación anti-bot se cuenta aparte: no es un campo rellenable.
     const faltaVerificacion = Boolean(turnstileSiteKey) && !turnstileToken;
 
     if (faltanCampos || faltaVerificacion) {
-      /* ── EL CALLEJÓN SIN SALIDA ────────────────────────────────────
-         Antes había un solo mensaje —«Completa los campos
-         obligatorios»— y una cascada de foco que solo contemplaba los
-         campos. Si el formulario estaba entero relleno y lo único que
-         faltaba era el token de Turnstile (un bloqueador de anuncios,
-         una red corporativa o una CSP que corte `challenges.
-         cloudflare.com` bastan), el resultado era: mensaje pidiendo
-         rellenar campos ya rellenos, foco que no se mueve a ninguna
-         parte, y ninguna pista de qué hacer. El visitante cualificado
-         que llega hasta el final del formulario se queda fuera sin
-         saber por qué.
-
-         Ahora se distinguen los dos casos y el mensaje dice cuál es. */
+      // Se distinguen campos incompletos y falta de token de Turnstile (un
+      // bloqueador o una CSP que corte `challenges.cloudflare.com` basta), para
+      // no dejar sin salida a quien rellenó todo.
       setError(
         faltanCampos
           ? es
@@ -222,8 +189,7 @@ export function BetaApplication() {
                     ? privacyRef
                     : null;
       if (firstInvalidRef) firstInvalidRef.current?.focus();
-      // Nada que corregir en los campos: el foco va al aviso, que es
-      // donde está la explicacion y la salida.
+      // Sin campos que corregir, el foco va al aviso.
       else pedirFocoAviso.current = true;
       return;
     }
@@ -247,12 +213,8 @@ export function BetaApplication() {
     const result = await joinBetaApplication(payload);
 
     if (!result.ok) {
-      /* Los tokens de Turnstile son de un solo uso: tras un envío
-         fallido el que hay en memoria ya no vale, y sin reiniciar el
-         widget el segundo intento fallaba SIEMPRE con el mismo error,
-         pareciendo un problema del servidor que no se arregla nunca.
-         Se reinicia y se olvida el token para que reintentar signifique
-         algo. */
+      // Los tokens de Turnstile son de un solo uso: se reinicia el widget y se
+      // olvida el token, o el reintento fallaría siempre.
       window.turnstile?.reset?.();
       setTurnstileToken("");
       setError(failureCopy(result.reason, es));
@@ -392,10 +354,8 @@ export function BetaApplication() {
             <textarea className={`${inputClass} min-h-24 resize-y py-3`} value={notes} onChange={(e) => setNotes(e.target.value)} maxLength={800} />
           </label>
 
-          {/* Honeypot antispam: sin aria-hidden, porque esconder de la accesibilidad
-              un campo enfocable es justo lo que marcan las auditorías (WCAG 4.1.2).
-              La etiqueta la lee un lector de pantalla y le dice a la persona que lo
-              deje vacío; un robot lo rellena igual, que es lo que importa. */}
+          {/* Honeypot antispam, sin aria-hidden (WCAG 4.1.2: un campo enfocable no
+              se oculta a la accesibilidad); su etiqueta pide dejarlo vacío. */}
           <div className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
             <label htmlFor="beta-botcheck">{es ? "No rellenar" : "Leave this field blank"}<input id="beta-botcheck" tabIndex={-1} autoComplete="off" value={botcheck} onChange={(e) => setBotcheck(e.target.value)} /></label>
           </div>

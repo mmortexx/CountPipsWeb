@@ -3,10 +3,8 @@ import { CONEXIONES, LO_QUE_VA_SOLO, RESUMEN_SEGURIDAD } from "@/lib/conexiones"
 import { FAQ_EN, FAQ_ES } from "@/lib/faq";
 
 /**
- * «Lo que se conecta a internet lo activas tú» era falso: la licencia se
- * comprueba sola. Cada texto que resume la lista de conexiones tiene que
- * nombrar las que van solas, y cada fila tiene que decir en su propia
- * redacción si depende de ti o no.
+ * La licencia se comprueba sola, así que cada texto que resume las conexiones
+ * debe nombrar las que van solas y cada fila debe decir si depende del usuario.
  */
 
 const CONDICION = {

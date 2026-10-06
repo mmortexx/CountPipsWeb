@@ -14,16 +14,15 @@ type Plan = {
   name: string;
   price: number;
   popular?: boolean;
-  /** One-line positioning tagline shown under the plan name. */
+  /** Frase de posicionamiento bajo el nombre del plan. */
   tagline: string;
   features: string[];
   cta: string;
 };
 
 /**
- * @param standalone Cuando la sección vive en su propia página bajo un
- * `PageHeader` que ya dice "Lo compras una vez…", oculta el encabezado
- * interno para no repetir el mismo titular dos veces en una pantalla.
+ * @param standalone En /pricing el `PageHeader` ya titula: se oculta el
+ * encabezado interno para no repetirlo.
  */
 export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   const { t, lang } = useLang();
@@ -107,16 +106,10 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
     >
 
       <div className="relative z-10 tj-container">
-        {/* Header — centered, matches Stripe / Linear / Vercel pricing
-            pages. El h2 siempre se renderiza (necesario para el TOC + SEO);
-            en modo standalone (/pricing) se omiten el eyebrow y el lead
-            porque el PageHeader ya aporta su propio kicker + subtítulo. */}
+        {/* En `standalone` se omiten eyebrow y lead (los aporta el PageHeader) y
+            el h2 va `sr-only`: debe existir para el índice y el SEO. */}
         <Reveal className="text-center max-w-3xl mx-auto">
           {!standalone && <Eyebrow className="justify-center">{t("pricingEyebrow")}</Eyebrow>}
-          {/* Mismo caso que en FAQ: en /pricing el PageHeader ya titula
-              "Lo compras una vez. Es tuyo para siempre.", así que este h2
-              repetía el titular en pantalla. Se conserva en el documento
-              (índice + SEO) pero oculto a la vista con `sr-only`. */}
           <h2
             className={
               standalone
@@ -154,15 +147,8 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         </div>
 
 
-        {/* La garantía de 30 días se retiró de aquí y no se sustituyó por
-            nada, así que la página quedó sin decir UNA palabra sobre
-            devoluciones. Para un pago único sin prueba gratuita, ese
-            silencio es fricción: quien duda, no compra.
-
-            No invento la política —es una decisión legal y comercial que
-            no me corresponde— pero sí cierro el hueco enlazando a donde
-            está explicado que las condiciones se publican al abrir la
-            venta, que hoy es la respuesta verdadera. */}
+        {/* Sin política de devoluciones inventada: se enlaza a donde se explica
+            que las condiciones se publican al abrir la venta. */}
         <Reveal delay={0.2}>
           <p className="mt-10 text-sm leading-[1.6] text-tertiary">
             {es ? "La demo es pública; la compra se abrirá con el lanzamiento. " : "The demo is public; purchase opens at launch. "}
@@ -170,8 +156,6 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
               href="/beta"
               className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
             >
-              {/* No repite la etiqueta de los dos botones que tiene justo
-                  encima: dice a dónde lleva, que es otra cosa. */}
               <span className="link-underline">
                 {es ? "Cómo funciona el acceso anticipado" : "How early access works"}
               </span>
@@ -198,8 +182,8 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
       data-entra
       className="tj-cristal relative flex h-full flex-col"
     >
-      {/* Dos zonas, como una ficha: arriba el nivel, el precio y la
-          acción; debajo, tras un filete de borde a borde, lo que incluye. */}
+      {/* Dos zonas: arriba nivel, precio y acción; debajo, tras un filete, lo
+          que incluye. */}
       <div className="p-7 sm:p-9">
       <div className="flex items-center justify-between gap-3">
         <h3 className="t-h3 text-primary min-w-0 break-words">
@@ -207,21 +191,14 @@ function PlanCard({ plan, es }: { plan: Plan; es: boolean }) {
         </h3>
       </div>
 
-      {/* Reserva de dos renglones solo donde la descripción de Pro parte en
-          dos (768–1279 px), para que los precios queden a la misma altura;
-          en una columna o a lo ancho sobraba y abría un hueco. */}
+      {/* Reserva dos renglones solo entre 768 y 1279 px, donde la descripción de
+          Pro parte en dos, para alinear los precios. */}
       <p className="mt-2 text-[15px] text-secondary leading-[1.7] md:min-h-[3.4em] xl:min-h-0">
         {plan.tagline}
       </p>
 
-      {/* EL ORDEN LO PONE EL DOM, NO `flex-row-reverse`.
-          En español el símbolo va detrás («149 $») y en inglés delante
-          («$149»), y eso se conseguía invirtiendo la fila con CSS: en
-          pantalla salía bien, pero en el documento el símbolo seguía
-          delante. Un lector de pantalla leía «dólar, ciento cuarenta y
-          nueve» en la página española, y quien copiara el precio se
-          llevaba «$149». El orden visual y el orden leído tienen que ser
-          el mismo. */}
+      {/* El orden del símbolo lo pone el DOM, no `flex-row-reverse`: el orden
+          visual y el leído (y el copiado) tienen que coincidir. */}
       <div className="mt-8 flex items-baseline min-w-0 gap-1">
         {es ? (
           <>

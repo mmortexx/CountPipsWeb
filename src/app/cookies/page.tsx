@@ -5,15 +5,9 @@ import { documentoPorSlug } from "@/lib/legal/documentos";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /cookies — la lista de todo lo que la web deja en tu navegador.
- *
- * El aviso de cookies pedía consentimiento sin ofrecer nada que
- * consultar, que es justo lo que la norma no permite. Ahora enlaza aquí.
- *
- * La página tiene además un valor comercial que conviene no desaprovechar:
- * este producto vende que tus datos no salen de tu máquina, y ésta es la
- * única página donde eso se puede demostrar con una lista cerrada en vez
- * de con un eslogan.
+ * /cookies: la lista cerrada de todo lo que la web guarda en el navegador. El
+ * aviso de cookies enlaza aquí, y es donde se demuestra que los datos no salen
+ * del equipo.
  */
 
 const doc = documentoPorSlug("cookies")!;

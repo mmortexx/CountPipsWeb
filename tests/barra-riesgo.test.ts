@@ -2,15 +2,10 @@ import { describe, expect, it } from "vitest";
 import { tramosRiesgoBeneficio } from "../src/lib/trading/estadistica";
 
 /**
- * La barra riesgo/beneficio de la calculadora tenía los dos tramos anclados a
- * los bordes del carril y escalados de 0 a 100. Con eso, el mayor de los dos
- * ocupaba el carril entero y tapaba al otro: con un 3:1 —100 $ de riesgo
- * frente a 300 $ de beneficio— la parte roja no se veía.
- *
- * Ahora los dos crecen desde el centro, cada uno hacia su lado, así que
- * ninguno puede pasar del 50 % y ninguno puede esconder al otro. Lo que estas
- * pruebas vigilan es justo eso: el techo del 50 %, que los dos se vean
- * siempre que valgan algo, y que la proporción entre ellos sea la del R:R.
+ * Los dos tramos de la barra riesgo/beneficio crecen desde el centro, cada
+ * uno hacia su lado (antes el mayor ocupaba el carril entero y tapaba al
+ * otro). Se vigila el techo del 50 %, que los dos se vean siempre que valgan
+ * algo y que su proporción sea la del R:R.
  */
 describe("Tramos de la barra riesgo/beneficio", () => {
   it("con 3:1 el riesgo ocupa la tercera parte de lo que ocupa el beneficio", () => {

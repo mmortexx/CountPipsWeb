@@ -1,24 +1,12 @@
 /**
- * Los datos del responsable del sitio, en UN solo lugar.
+ * Datos del responsable del sitio, en un solo lugar: las cuatro páginas
+ * legales los leen de aquí para no contradecirse.
  *
- * Las cuatro páginas legales los leen de aquí. Escribirlos a mano en cada
- * una garantizaría que algún día dejen de coincidir, y cuatro documentos
- * legales que se contradicen entre sí son peores que ninguno.
- *
- * ── LO QUE FALTA, Y HASTA CUÁNDO SE PUEDE ESPERAR ─────────────────────
- * `NOMBRE_FISCAL`, `NIF` y `DOMICILIO` están vacíos a propósito: no me los
- * puedo inventar, y un dato fiscal falso en un aviso legal es peor que la
- * ausencia del dato.
- *
- * Mientras la web solo informa y recoge correos para una lista de espera,
- * las páginas se publican sin ellos y lo dicen abiertamente en pantalla.
- * En cuanto haya venta —que es actividad económica— la ley de servicios de
- * la sociedad de la información obliga a identificar al prestador con
- * nombre, identificación fiscal y domicilio. Rellenar esto es, por tanto,
- * requisito para abrir la pasarela de pago, no para publicar el sitio.
- *
- * Las páginas detectan solas si un campo está vacío y muestran un aviso en
- * su lugar; no hay que tocar nada más que este archivo.
+ * `nombreFiscal`, `nif` y `domicilio` están vacíos a propósito: un dato fiscal
+ * falso es peor que su ausencia. Mientras la web solo informa, las páginas lo
+ * dicen en pantalla (detectan solas el campo vacío). Rellenarlos es requisito
+ * de la ley de servicios de la sociedad de la información para abrir la
+ * venta, no para publicar el sitio.
  */
 
 export type DatosTitular = {
@@ -28,7 +16,7 @@ export type DatosTitular = {
   nif: string;
   /** Domicilio a efectos de notificaciones. */
   domicilio: string;
-  /** Nombre comercial del producto. Este sí lo sabemos. */
+  /** Nombre comercial del producto. */
   nombreComercial: string;
   /** Jurisdicción cuyos tribunales conocen de los conflictos. */
   jurisdiccion: string;
@@ -49,11 +37,5 @@ export const TITULAR: DatosTitular = {
 export const titularIncompleto =
   !TITULAR.nombreFiscal.trim() || !TITULAR.nif.trim() || !TITULAR.domicilio.trim();
 
-/**
- * Fecha de la última revisión de los textos legales.
- *
- * Va a mano y no con la fecha del sistema: un documento legal que cambia
- * de fecha en cada compilación, sin que su contenido cambie, no informa de
- * nada. Se actualiza cuando se revise el texto.
- */
+/** Fecha de la última revisión de los textos legales; va a mano y se actualiza al revisarlos. */
 export const LEGAL_ACTUALIZADO = "2026-09-26";

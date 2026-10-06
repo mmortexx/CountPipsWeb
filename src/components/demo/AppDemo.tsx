@@ -16,22 +16,16 @@ import { TradeDetailPage } from "./pages/TradeDetailPage";
 import { AnalyticsPage } from "./pages/AnalyticsPage";
 import { JournalPage } from "./pages/JournalPage";
 
-/** The demo: a windowed recreation of the native app, fully interactive. */
 /**
- * @param hideHeader Oculta la cabecera interna (eyebrow + titular +
- * subtítulo). La sección HomeDemo ya pinta su propio titular antes de
- * incrustar el demo, así que sin esta bandera el visitante veía DOS
- * veces seguidas "La app, en tu navegador." — uno alineado a la
- * izquierda y otro centrado. La ruta /demo sí usa la cabecera interna.
+ * La demo: recreación interactiva de la app nativa dentro de una ventana.
+ * @param hideHeader Oculta la cabecera interna (eyebrow, titular y subtítulo);
+ * HomeDemo ya pinta su propio titular, y la ruta /demo sí usa la interna.
  */
 export function AppDemo({ hideHeader = false }: { hideHeader?: boolean } = {}) {
-  /* El movimiento de la demo es CSS (`.tj-dm-*` en globals.css) y la pieza
-     que viaja entre opciones (`useViaje`): los dos respetan «reducir
-     movimiento» por su cuenta, sin un ajuste que lo reparta. */
+  /* El movimiento es CSS (`.tj-dm-*` en globals.css) y `useViaje`; los dos
+     respetan «reducir movimiento» por su cuenta. */
   return (
     <DemoProvider>
-      {/* La bandera tiene que BAJAR hasta AppDemoInner: la cabecera se
-          pinta ahí dentro, no en este envoltorio. */}
       <AppDemoInner hideHeader={hideHeader} />
     </DemoProvider>
   );
@@ -41,10 +35,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
   const { t, lang } = useLang();
   const { page, fullscreen, setFullscreen, setPage, goBack } = useDemo();
 
-  /* La primera página no entra animada: el esqueleto de AppDemoClient ya
-     dibuja su silueta, y animarla la dejaba medio segundo invisible y con un
-     salto de 28 px sobre ese esqueleto (la cifra principal se veía a los
-     ≈1000 ms en escritorio y ≈1700 en móvil). La animación es del CAMBIO. */
+  /* La primera página no entra animada: el esqueleto de AppDemoClient ya dibuja
+     su silueta y animarla la dejaba medio segundo invisible. Solo anima el cambio. */
   const [paginaPrevia, setPaginaPrevia] = useState(page);
   const [haCambiado, setHaCambiado] = useState(false);
   if (page !== paginaPrevia) {
@@ -52,24 +44,15 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     setHaCambiado(true);
   }
 
-  // Demo-scoped command palette + shortcuts-overlay open state. Lifted here
-  // so the capture-phase keydown listener (below) can toggle them, and so
-  // the overlays render inside the demo window's positioning context.
-  // (R25-1a: the StatusBar's keyboard-icon button used to also toggle
-  // `shortcutsOpen` — that button was removed when the StatusBar was
-  // restructured to match the real app; the `?` key is now the only way
-  // to open the shortcuts overlay.)
+  // Estado de la paleta y de la ayuda de atajos, aquí para que el listener de
+  // captura los abra y los paneles queden dentro de la ventana de la demo.
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
-  // Ref on the demo window's outer wrapper — used (a) as the positioning
-  // context for the absolute overlays and (b) to gate the Cmd+K / `?`
-  // capture-phase interceptor (only fires when the demo is hovered or
-  // focused-within, so the global CommandPalette / ShortcutsHelp keep
-  // working when the user isn't interacting with the demo).
+  // Contexto de posición de los paneles y condición del interceptor de Cmd+K / `?`
+  // (solo actúa con la demo bajo el ratón o con foco, para no pisar los globales).
   const demoRootRef = useRef<HTMLDivElement>(null);
 
-  // Label the scrollable panel with the active page name (used by role="tabpanel").
   const panelLabelKey =
     page === "detail"
       ? "pageTrades"
@@ -79,9 +62,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           | "pageAnalytics"
           | "pageJournal");
 
-  // Exit fullscreen on Escape — listener attaches only while fullscreen is
-  // active. The `setFullscreen(false)` call lives inside the event handler,
-  // not in the effect body, so we don't trip the set-state-in-effect rule.
+  // Escape sale de pantalla completa. El setState va en el manejador, no en el
+  // cuerpo del efecto (regla set-state-in-effect).
   useEffect(() => {
     if (!fullscreen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -94,15 +76,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [fullscreen, setFullscreen]);
 
-  /* ----------------------------------------------------------------
-     F key — toggles fullscreen from anywhere on the page (when not
-     typing in a form field and no modifiers are held, so we never
-     hijack the browser's Cmd/Ctrl+F find-in-page). Also skipped while
-     the CommandPalette or ShortcutsHelp overlay is open so those
-     surfaces keep owning the keyboard. Mirrors the Escape listener's
-     pattern: re-attaches whenever `fullscreen` flips so the handler
-     closure always reads the current value.
-     ---------------------------------------------------------------- */
+  // Tecla F: pantalla completa. No actúa al escribir en un campo, con modificadores
+  // (no pisa Ctrl+F del navegador) ni con una paleta o ayuda abierta.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -117,11 +92,9 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           return;
         }
       }
-      // Never hijack browser-owned combos (Cmd/Ctrl/Alt + F = find, etc.).
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       // Una tecla sola, solo con el foco dentro de la demo (WCAG 2.1.4).
       if (!target?.closest("[data-demo-raiz]")) return;
-      // Defer to the command palette / shortcuts overlay when they're open.
       if (document.querySelector("[cmdk-root]")) return;
       if (document.body.dataset.shortcutsHelpOpen === "true") return;
       if (document.body.dataset.demoPaletteOpen === "true") return;
@@ -136,28 +109,15 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [fullscreen, setFullscreen]);
 
-  /* ----------------------------------------------------------------
-     Demo-scoped Cmd+K (palette) + `?` (shortcuts overlay) interceptor.
-     Capture-phase listener on `window` so it fires BEFORE the global
-     CommandPalette / ShortcutsHelp bubble-phase listeners — calling
-     `stopPropagation` prevents those global handlers from also firing,
-     so the demo gets its own palette / overlay instead of the site-wide
-     ones whenever the demo is "active" (hovered or focused-within).
-
-     The `:hover, :focus-within` gate on `demoRootRef` is what scopes
-     the interception: when the user isn't interacting with the demo,
-     the global Cmd+K / `?` keep working as before. Skipped while typing
-     in a form field, while any modifiers are held (so Cmd+Shift+K etc.
-     pass through), and while either demo overlay is already open
-     (their own Escape handlers own the close action).
-     ---------------------------------------------------------------- */
+  // Interceptor de Cmd+K (paleta) y `?` (atajos) propios de la demo. Va en fase de
+  // captura y con `stopPropagation` para que no salten los globales; solo actúa con
+  // la demo bajo el ratón o con foco, y no al escribir en un campo ni con un
+  // panel de la demo ya abierto (su Escape lo cierra).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const root = demoRootRef.current;
       if (!root) return;
-      // Only intercept when the demo is "active".
       if (!root.matches(":hover, :focus-within")) return;
-      // Skip when typing in a form field.
       const target = e.target as HTMLElement | null;
       if (target) {
         const tag = target.tagName;
@@ -170,16 +130,12 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           return;
         }
       }
-      // Cmd+K / Ctrl+K → open the demo command palette.
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         e.stopPropagation();
         setPaletteOpen(true);
         return;
       }
-      // `?` (Shift+/) → open the demo shortcuts overlay. Skipped while
-      // the demo palette is open (let the palette's own Esc close it
-      // first) and while the global ShortcutsHelp is open.
       if (
         document.body.dataset.demoPaletteOpen === "true" ||
         document.body.dataset.shortcutsHelpOpen === "true" ||
@@ -200,20 +156,10 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     return () => window.removeEventListener("keydown", onKey, true);
   }, []);
 
-  /* ----------------------------------------------------------------
-     Touch swipe — horizontal swipe on the demo content area advances
-     to the next/previous page in the main navigation chain:
-       dashboard → trades → analytics → journal
-     (mismas cuatro pestañas que muestra el TopNav).
-     The TradeDetailPage ("detail") is a drill-down from trades; a
-     swipe-right there pops back to trades (matching the back button),
-     a swipe-left jumps forward to analytics (the next main page).
-     Threshold: 50px horizontal, dominant axis (|dx| > |dy|) so
-     vertical scroll never triggers a page change. The gesture is
-     ignored when it starts on an interactive control (button, input,
-     select, textarea, contentEditable) so taps and form interactions
-     are never hijacked.
-     ---------------------------------------------------------------- */
+  // Gesto horizontal: avanza o retrocede por las cuatro pestañas del TopNav. Desde el
+  // detalle (que cuelga de operaciones), derecha vuelve a la lista e izquierda va a
+  // análisis. Umbral de 50 px con eje dominante horizontal, para no pisar el scroll
+  // vertical; se ignora si empieza en un control interactivo.
   const PAGES_ORDER: readonly DemoPage[] = [
     "dashboard",
     "trades",
@@ -252,13 +198,11 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     const dx = touch.clientX - start.x;
     const dy = touch.clientY - start.y;
     if (Math.abs(dx) < SWIPE_THRESHOLD) return;
-    // Vertical-dominant gestures are scroll, not swipe.
     if (Math.abs(dy) > Math.abs(dx)) return;
 
     if (dx < 0) {
-      // Swipe left → next page
       if (page === "detail") {
-        setPage(PAGES_ORDER[2]); // analytics (the page after trades)
+        setPage(PAGES_ORDER[2]);
       } else {
         const i = PAGES_ORDER.indexOf(page);
         if (i >= 0 && i < PAGES_ORDER.length - 1) {
@@ -266,9 +210,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
         }
       }
     } else {
-      // Swipe right → previous page
       if (page === "detail") {
-        goBack(); // pop back to the trades list
+        goBack();
       } else {
         const i = PAGES_ORDER.indexOf(page);
         if (i > 0) {
@@ -280,8 +223,6 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
 
   return (
     <div className="max-w-page mx-auto px-5 md:px-8">
-      {/* Cabecera de sección — se omite cuando quien incrusta el demo ya
-          pone la suya (ver la nota de `hideHeader` arriba). */}
       {!hideHeader && (
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="eyebrow inline-flex items-center gap-2 justify-center mb-3">
@@ -300,13 +241,8 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
         </div>
       )}
 
-      {/* La ventana de la app. Una ventana de Windows 11 no es una tarjeta
-          de cristal: es una superficie OPACA con una hairline finísima y
-          una sombra proyectada que la despega del fondo. Por eso aquí se
-          usa `.demo-window` (el lienzo de la app, ver globals.css) y no
-          `.liquid-glass`, que pintaba un contorno blanco al 30 % arriba y
-          abajo — el brillo que hacía que esto pareciera un mockup web.
-          Radio 2 px, el canto del sistema. */}
+      {/* Ventana opaca con filete y sombra, no tarjeta de cristal: `.demo-window`
+          (ver globals.css) y no `.liquid-glass`. Radio de 2 px, el del sistema. */}
       <div
         ref={demoRootRef}
         data-demo-raiz=""
@@ -314,58 +250,34 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
           fullscreen ? "fixed inset-3 z-[100] rounded-[2px]" : "rounded-[2px]"
         }`}
       >
-        {/* ── `overflow-clip` Y NO `overflow-hidden` ──────────────────
-            Las dos recortan igual. La diferencia es que `hidden` crea un
-            contenedor de desplazamiento, y `animation-timeline: view()`
-            ancla su línea de tiempo al contenedor más cercano: como esta
-            ventana no se desplaza nunca, el progreso se quedaba clavado
-            en cero y CUARENTA piezas de la demo —«P&L total», «El parte
-            de hoy», la fila de métricas entera— se quedaban a opacidad 0
-            para siempre. No es que no entraran con gracia: es que no se
-            veían. Medido en el navegador antes y después. */}
-        {/* Filete y la sombra corta de todo lo que flota en el sitio. Era
-            una sombra difusa de 50 px, la única del sitio: la ventana ya
-            sobresale de la retícula, no necesita además levantarse. */}
+        {/* `overflow-clip` y no `overflow-hidden`: `hidden` crea un contenedor de
+            desplazamiento y `animation-timeline: view()` ancla su línea de tiempo
+            a él; esta ventana nunca se desplaza, así que cuarenta piezas de la
+            demo se quedaban a opacidad 0. Sombra corta, como todo lo que flota. */}
         <div className="rounded-[2px] overflow-clip border border-[rgb(var(--divider)/0.10)] shadow-[var(--cristal-sombra-flota)]">
         <div className="demo-window rounded-[2px] overflow-clip">
           <WindowChrome />
           <TopNav />
 
-          {/* Page content.
-              El panel tiene alto fijo y desplazamiento propio, como la
-              ventana de una app de escritorio. El problema era que el
-              corte se producía a media tarjeta —el campo "Nota" quedaba
-              seccionado justo contra la barra de estado— sin ningún
-              indicio de que allí hubiera más contenido: a primera vista
-              parecía un fallo de dibujado. El degradado de abajo es esa
-              señal, y desaparece al llegar al final del desplazamiento
-              (`scroll-timeline` no tiene soporte suficiente todavía, así
-              que se mantiene constante y muy sutil: 40 px). */}
+          {/* Panel de alto fijo con scroll propio. El degradado inferior indica que
+              hay más contenido; es constante porque `scroll-timeline` aún no
+              tiene soporte suficiente. */}
           <div className="relative">
             <div
               role="tabpanel"
               id="demo-tabpanel"
               aria-label={t(panelLabelKey)}
               tabIndex={0}
-              /* Alto del panel: 560 en móvil (era 480) / 640 en md+. Los 80px
-                 que se ganan en el teléfono son los que meten el formulario
-                 dentro de la primera vista en vez de dejarlo bajo el corte.
-                 Si se toca este valor hay que tocarlo TAMBIÉN en el esqueleto
-                 sin hidratar (AppDemoClient) y en la altura reservada del
-                 contenedor, o la página da un salto al hidratar. */
+              /* Alto del panel: 560 en móvil, 640 en md+. Si cambia, hay que
+                 cambiarlo también en el esqueleto (AppDemoClient) y en la altura
+                 reservada del contenedor, o la página salta al hidratar. */
               className="relative h-[560px] md:h-[640px] overflow-y-auto custom-scroll focus:outline-none"
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
-              {/* Los gestos de la app de verdad (Fluent): una sección entra
-                  desde abajo con la curva de deceleración de WinUI; abrir una
-                  operación es un «drill-in», llega desde el fondo.
-
-                  En CSS y no con AnimatePresence: medido fotograma a fotograma,
-                  framer dejaba el panel a opacidad 0 un fotograma justo al
-                  terminar cada entrada (10 de 10 cambios, a los ≈640 ms), un
-                  parpadeo en blanco. Y sin salida animada no hay espera: la
-                  página nueva empieza a entrar al pulsar. */}
+              {/* Como en la app (Fluent): una sección entra desde abajo con la curva de
+                  deceleración de WinUI y abrir una operación es un «drill-in».
+                  Sin salida animada, la página nueva empieza a entrar al pulsar. */}
               <div key={page} className={`min-h-full ${!haCambiado ? "" : page === "detail" ? "tj-demo-fondo" : "tj-demo-entra"}`}>
                 {page === "dashboard" && <DashboardPage />}
                 {page === "trades" && <TradesPage />}
@@ -384,40 +296,20 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
             />
           </div>
 
-          {/* Status bar — restructured in R25-1a to match the real app's
-              status bar (MainWindow.xaml L286-331): left = discipline LED +
-              "Disciplina: NN %", center = "Guardado automático en este navegador",
-              right = "v0.1.0". The pre-R25-1a metrics ticker + clock +
-              keyboard / fullscreen / share / reset icon buttons are gone
-              (the real app doesn't have them in the status bar —
-              fullscreen is via the title bar's Maximize button,
-              keyboard shortcuts via the `?` key, no share/reset in the
-              native chrome). */}
           <StatusBar />
 
-          {/* In-demo command palette (Feature 2) — Cmd+K when the demo is
-              active. Rendered here so it sits inside the demo window's
-              positioning context (absolute inset-0 covers only the demo,
-              not the whole page). The capture-phase keydown listener above
-              opens it; the palette manages its own Esc / arrows / enter. */}
+          {/* Dentro del contexto de posición de la demo, para que cubra solo la ventana. */}
           <DemoCommandPalette
             open={paletteOpen}
             onClose={() => setPaletteOpen(false)}
           />
 
-          {/* In-demo keyboard-shortcuts overlay (Feature 3) — `?` when the
-              demo is active, or click the keyboard icon in the status bar.
-              Anchored bottom-right, just above the status bar. */}
           <DemoShortcutsHint
             open={shortcutsOpen}
             onClose={() => setShortcutsOpen(false)}
           />
 
-          {/* Filo de luz superior — la hairline donde una ventana real de
-              Windows 11 recoge la luz del borde de arriba. Al 8 %: al 15 %
-              leía como reflejo de cristal, no como canto de ventana. El
-              filo inferior se ha retirado — la app no lo tiene y le daba a
-              la ventana un aspecto de tarjeta flotante. */}
+          {/* Filo de luz superior al 8 %: a más leía como reflejo de cristal. */}
           <div
             aria-hidden="true"
             className="absolute top-0 left-0 right-0 h-px bg-[rgb(var(--divider)/0.08)] pointer-events-none z-10"
@@ -425,13 +317,10 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
         </div>
         </div>
       </div>
-      {/* Solo la demo lanza avisos, y la librería viaja con ella: este
-          módulo se descarga al montarse la demo. Montado en el layout, lo
-          cargaban las 175 páginas con una región «Notifications (F8)» vacía
-          y en inglés; montado en la página /demo, lo arrastraba la precarga
-          de /demo desde la barra de todas. Al `body` por portal: un
-          ancestro con `contain` o `transform` encerraría su `position:
-          fixed`. */}
+      {/* Solo la demo lanza avisos y la librería viaja con ella (en el layout la
+          cargarían todas las páginas, con una región «Notifications» vacía). Va al
+          `body` por portal: un ancestro con `contain` o `transform` encerraría su
+          `position: fixed`. */}
       {createPortal(<Toaster />, document.body)}
     </div>
   );

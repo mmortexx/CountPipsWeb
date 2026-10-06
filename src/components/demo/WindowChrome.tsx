@@ -6,15 +6,9 @@ import { useDemo } from "./DemoContext";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { PLAZAS, avance, estaAbierta, horaLocal } from "@/lib/sesiones";
 
-/* ------------------------------------------------------------------ */
-/* Reloj de mercado                                                    */
-/* ------------------------------------------------------------------ */
-
 function pad2(n: number): string {
   return n < 10 ? `0${n}` : String(n);
 }
-
-/* --- Fuente de tiempo para useSyncExternalStore --------------------- */
 
 /** Avisa a React una vez por segundo (pausado cuando la pestaña está en segundo plano). */
 function subscribeToSecond(onChange: () => void): () => void {
@@ -43,10 +37,9 @@ function subscribeToSecond(onChange: () => void): () => void {
 }
 
 /**
- * Segundos enteros desde época. Se redondea a segundo a propósito: React
- * llama a esta función en cada render y debe devolver el MISMO valor
- * mientras no haya cambiado de verdad; con milisegundos cambiaría en cada
- * llamada y provocaría un bucle de renders.
+ * Segundos enteros desde época. Se redondea a propósito: React llama a esta
+ * función en cada render y exige el mismo valor mientras no cambie; con
+ * milisegundos habría un bucle de renders.
  */
 function getSecondSnapshot(): number {
   return Math.floor(Date.now() / 1000);
@@ -58,28 +51,17 @@ function getServerSecondSnapshot(): number {
 }
 
 /**
- * MarketClock — el reloj de la barra de título, réplica del control
- * `controls:MarketClock` de la app (Controls/MarketClock.xaml).
- *
- * La versión anterior de la demo reducía esto a cuatro puntitos de
- * colores sin nombre ni hora: se perdía justo lo que hace reconocible
- * la barra de título de la app. Aquí está lo que enseña de verdad:
- * la hora UTC con SEGUNDOS y, tras una hairline vertical, las cuatro
- * plazas con su punto abierto/cerrado, su nombre, su hora local y una
- * barra de 2 px con el avance de su ventana de mercado.
- *
- * Al estrechar la ventana la app deja solo el bloque UTC
- * (AdjustTitleBarDensity); aquí lo hace el breakpoint `lg`.
+ * Reloj de la barra de título, réplica de `controls:MarketClock`
+ * (Controls/MarketClock.xaml): hora UTC con segundos y, tras un filete, las
+ * cuatro plazas con su punto abierto/cerrado, hora local y barra de avance de
+ * su ventana de mercado. Al estrechar la ventana la app deja solo el bloque
+ * UTC (AdjustTitleBarDensity); aquí lo hacen los breakpoints.
  */
 function MarketClock() {
   const { lang } = useLang();
   const es = lang === "es";
-  // El reloj es una fuente externa a React (el tiempo), así que se lee con
-  // `useSyncExternalStore`, que es la herramienta prevista para eso y
-  // distingue servidor de cliente sin efectos: la hora del visitante y la
-  // del servidor no coinciden nunca y renderizarla en SSR rompería la
-  // hidratación. La versión anterior usaba useState + useEffect, lo que
-  // provocaba un render en cascada al montar (react-hooks/set-state-in-effect).
+  // `useSyncExternalStore` distingue servidor de cliente sin efectos: la hora del
+  // visitante y la del servidor no coinciden y romperían la hidratación.
   const epochSeconds = useSyncExternalStore(
     subscribeToSecond,
     getSecondSnapshot,
@@ -96,8 +78,7 @@ function MarketClock() {
 
   return (
     <div className="hidden md:flex items-center gap-3">
-      {/* Bloque UTC — nunca desaparece: es la referencia con la que se
-          anota una operación. */}
+      {/* El bloque UTC no desaparece: es la referencia con la que se anota una operación. */}
       <div className="flex items-center gap-1.5">
         <span className="text-[11px] text-tertiary">UTC</span>
         <span
@@ -110,13 +91,8 @@ function MarketClock() {
         </span>
       </div>
 
-      {/* ── LAS SESIONES ENTRAN EN `xl`, NO EN `lg` ──────────────────
-          Las cuatro plazas piden unos 330 px y en `lg` —1024— la barra
-          de titulo no los tiene: se salian 119 px por la derecha, en las
-          cuatro pestanas. A 1280 caben con holgura, que es donde el
-          barrido de anchos deja de marcarlo. El bloque UTC sigue
-          entrando en `md`: es la referencia con la que se anota una
-          operacion y ese si cabe. */}
+      {/* Las sesiones entran en `xl`, no en `lg`: las cuatro plazas piden ~330 px y a
+          1024 la barra de título se salía 119 px. El bloque UTC sí cabe en `md`. */}
       <span
         aria-hidden="true"
         className="hidden xl:block w-px h-[18px] bg-[rgb(var(--divider)/0.12)]"
@@ -146,10 +122,8 @@ function MarketClock() {
                   {localTime}
                 </span>
               </div>
-              {/* Avance de la ventana de mercado (el ProgressBar de 2 px
-                  del XAML). Solo se pinta cuando la plaza está abierta —
-                  una barra a medias en una plaza cerrada se lee como un
-                  dato, y no lo es. */}
+              {/* Avance de la ventana de mercado (ProgressBar de 2 px del XAML):
+                  a cero con la plaza cerrada, para que no se lea como dato. */}
               <div className="mt-[3px] h-[2px] bg-[rgb(var(--divider)/0.10)] overflow-hidden">
                 <div
                   className="h-full"
@@ -169,27 +143,14 @@ function MarketClock() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Barra de título                                                     */
-/* ------------------------------------------------------------------ */
-
 /**
- * Barra de título de la app, réplica de MainWindow.xaml L76-168.
+ * Barra de título de la app, réplica de MainWindow.xaml L76-168. Asimétrica
+ * como la real: identidad y cuenta a la izquierda, reloj empujado a la
+ * derecha y estado local-first antes de los botones de ventana.
  *
- * Es asimétrica a propósito, igual que la real: identidad a la
- * izquierda, cuenta pegada a ella como chip de terminal, reloj de
- * mercado empujado a la derecha, y el estado local-first justo antes de
- * los botones de ventana.
- *
- *   ┌──────────────────────────────────────────────────────────────────┐
- *   │ ▣ CountPips  ▭ DEMO · 10.000 $   UTC 15:25:47 │ ●Sídney…  │
- *   │                                          ● Local-first  ─ □ ✕   │
- *   └──────────────────────────────────────────────────────────────────┘
- *
- * Los botones de ventana siguen el estilo de Windows 11: 46 px de ancho
- * por el alto completo, para que el lavado del hover llegue a los bordes;
- * el de cerrar vira al rojo #C42B1C. Maximizar alterna el modo pantalla
- * completa de la demo; minimizar es decorativo (no hay analogía web).
+ * Los botones son de Windows 11 (46 px de ancho por el alto completo, el de
+ * cerrar vira a rojo). Maximizar alterna la pantalla completa de la demo;
+ * minimizar es decorativo.
  */
 export function WindowChrome() {
   const { t } = useLang();
@@ -197,20 +158,12 @@ export function WindowChrome() {
 
   return (
     <div className="tj-paper-dense demo-chrome demo-hairline border-b flex items-center h-11 sm:h-10 text-xs shrink-0 relative cursor-default select-none">
-      {/* Identidad + cuenta. `min-w-0` + `truncate` en el nombre evita que
-          el chip de cuenta empuje el reloj fuera del panel en viewports
-          estrechos. En móvil la barra sube a h-11 (44 px) para que los
-          botones de ventana cumplan el mínimo de tamaño de toque sin tener
-          que ensancharlos visualmente — el lavado del hover ya llega a los
-          cantos. */}
+      {/* `min-w-0` y `truncate` en el nombre evitan que el chip de cuenta empuje el
+          reloj fuera en viewports estrechos. En móvil la barra sube a h-11 (44 px)
+          para cumplir el tamaño mínimo de toque. */}
       <div className="flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 min-w-0 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <AppIcon />
-          {/* App name — visible on mobile too (was `hidden sm:inline`).
-              Without it the mobile title bar showed just an 18px icon + 3
-              caption buttons with 130px of dead space between them — the
-              window read as untitled. "CountPips" at 13px is ~70px wide,
-              fills the dead space without crowding the caption buttons. */}
           <span
             className="text-[13px] font-semibold text-primary truncate min-w-0"
             style={{
@@ -223,17 +176,12 @@ export function WindowChrome() {
         <AccountChip />
       </div>
 
-      {/* Reloj — empujado contra el estado local-first, como en la app. */}
       <div className="flex-1 min-w-0 flex justify-end pr-2 sm:pr-3">
         <MarketClock />
       </div>
 
-      {/* Estado local-first + botones de ventana. En móvil cada botón de
-          .caption ocupa 44 px de ancho (de 46 px en escritorio) para cumplir
-          el mínimo de toque sin que el alto de la barra tenga que crecer
-          más allá de los 44 px que ya tiene — la regla h-full hereda esa
-          altura y el área clicable queda en 44×44. En sm+ recuperan sus
-          46 px nativos. */}
+      {/* En móvil cada botón mide 44 px de ancho (46 en sm+) y hereda el alto de
+          la barra: área de toque de 44×44. */}
       <div className="flex items-stretch h-full shrink-0">
         <LocalFirstLED />
         <button
@@ -281,14 +229,7 @@ export function WindowChrome() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-
-/**
- * LED local-first — punto verde + etiqueta, réplica del LocalFirstPanel
- * (XAML L159-167). La app usa un Ellipse fijo, sin pulso: es un
- * indicador de estado (siempre "encendido" en una app local-first), no
- * un latido. Aquí igual: sin animación.
- */
+/** LED local-first, réplica del LocalFirstPanel (XAML L159-167): fijo y sin pulso, es un estado, no un latido. */
 function LocalFirstLED() {
   const { t } = useLang();
   return (
@@ -303,12 +244,7 @@ function LocalFirstLED() {
   );
 }
 
-/**
- * Chip de cuenta — la píldora de terminal con hairline y texto
- * monoespaciado de la barra de título (XAML L119-130). No es
- * interactivo: en la app lleva IsHitTestVisible="False" para que el
- * arrastre de la ventana pase a través de él.
- */
+/** Chip de cuenta de la barra de título (XAML L119-130). No es interactivo: en la app lleva IsHitTestVisible="False". */
 function AccountChip() {
   const { t } = useLang();
   return (
@@ -339,12 +275,7 @@ function AccountChip() {
   );
 }
 
-/**
- * Icono de la app en la barra de título de la ventana simulada.
- *
- * Va suelto, sin placa, como en la barra de título de la app real. El
- * ancho de la fila no cambia.
- */
+/** Icono de la app, suelto y sin placa como en la barra de título real. */
 function AppIcon() {
   return <BrandGlyph size={18} className="shrink-0" />;
 }

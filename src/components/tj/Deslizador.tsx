@@ -22,9 +22,7 @@ export function Deslizador({
   paso: number;
   onValor: (n: number) => void;
 }) {
-  /* La fila de la etiqueta crece y la barra baja al fondo de la celda: si
-     una etiqueta parte en dos líneas, la barra de al lado no se queda más
-     arriba que la suya. */
+  // La fila de la etiqueta crece y la barra baja al fondo: las barras vecinas quedan alineadas.
   return (
     <div className="flex flex-col">
       <div className="mb-2 flex flex-1 items-start justify-between gap-4">

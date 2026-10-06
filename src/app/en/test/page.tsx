@@ -23,10 +23,7 @@ const quizSchema = {
   inLanguage: "en",
   url: `${SITE_URL}/en/test/`,
   publisher: { "@type": "Organization", name: "CountPips" },
-  /* Misma corrección que en la versión española: `acceptedAnswer` es, en
-     schema.org, LA RESPUESTA CORRECTA, y las opciones van de peor a mejor
-     conducta. Marcaba la primera — la menos disciplinada — como correcta.
-     Ver el comentario largo en `src/app/test/page.tsx`. */
+  // `acceptedAnswer` es la última opción (la más disciplinada), como en `src/app/test/page.tsx`.
   hasPart: QUESTIONS.map((q) => ({
     "@type": "Question",
     text: q.qEn,

@@ -1,38 +1,20 @@
 /**
- * Retoques sobre el sitio ya exportado. Dos trabajos, los dos con la
- * misma regla: si algo no sale bien, ROMPER la compilación en vez de
- * publicar el fallo.
- *
- *   1. El atributo `lang` de las páginas en inglés.
- *   2. Los ficheros de precarga que el navegador pide y el export no
- *      deja donde los busca.
- *
- * Se ejecuta desde el script `build` del package.json.
+ * Retoques sobre el sitio ya exportado (`out/`), ejecutados desde el script
+ * `build`: el `lang` de las páginas inglesas, los ficheros de precarga con el
+ * nombre que pide el navegador y las tarjetas sociales. Si algo no sale bien
+ * rompe la compilación en vez de publicar el fallo.
  */
 import { readdir, readFile, writeFile, copyFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 
 const OUT = "out";
 
-/* ════════════════════════════════════════════════════════════════════
-   1 · EL IDIOMA DE LAS PÁGINAS EN INGLÉS
-   ════════════════════════════════════════════════════════════════════
-   Las 154 páginas se servían con `<html lang="es">`, incluidas las 76
-   escritas en inglés. Lo corregía un script que corre en el navegador,
-   así que el HTML que sale del servidor seguía diciendo "esto está en
-   español" mientras el `hreflang` del mismo documento decía lo
-   contrario. Importa a los rastreadores que no ejecutan JavaScript, a
-   las previsualizaciones de enlaces, a los traductores y a un lector de
-   pantalla que procese el documento antes de que corra el script — que
-   lo pronuncia con fonética española.
-
-   Se arregla aquí y no en el layout porque en el App Router de Next
-   SÓLO el layout raíz renderiza `<html>`, y no sabe qué ruta sirve: no
-   recibe la ruta y, con `output: "export"`, tampoco hay cabeceras que
-   consultar. La vía del framework serían dos layouts raíz con grupos de
-   rutas, lo que obliga a mover 42 ficheros de página y partir en dos un
-   layout de 390 líneas. Mucho riesgo sobre 154 rutas indexadas para
-   cambiar dos letras. */
+/* 1 · El idioma de las páginas en inglés.
+   El layout raíz es el único que renderiza `<html>` y no sabe qué ruta sirve
+   (con `output: "export"` tampoco hay cabeceras), así que el HTML saldría con
+   `lang="es"` en las páginas inglesas aunque un script del navegador lo
+   corrija luego. Importa a rastreadores sin JavaScript, previsualizaciones,
+   traductores y lectores de pantalla. */
 const EN_DIR = join(OUT, "en");
 
 async function ficheros(dir, filtro) {
@@ -83,35 +65,13 @@ console.log(
   `[postbuild] lang="en" aplicado a ${idiomaCorregido} de ${paginasEn.length} páginas inglesas.`
 );
 
-/* ════════════════════════════════════════════════════════════════════
-   2 · LOS FICHEROS DE PRECARGA, DONDE EL NAVEGADOR LOS BUSCA
-   ════════════════════════════════════════════════════════════════════
-   Next precarga la ruta de cada enlace al pasar el ratón por encima,
-   pidiendo su carga útil como un `.txt`. En este export las deja en
-   CARPETAS anidadas:
-
-       out/pricing/__next.pricing/__PAGE__.txt
-
-   y el navegador las pide con el nombre APLANADO, con puntos en vez de
-   barras:
-
-       /pricing/__next.pricing.__PAGE__.txt
-
-   En un alojamiento estático —que es exactamente lo que son Cloudflare
-   Pages y GitHub Pages— ese fichero no existe, así que CADA enlace que
-   se sobrevuela lanza un 404. No rompe la navegación (Next se cae con
-   elegancia a la carga completa), pero significa que la precarga no ha
-   funcionado nunca en producción: se paga la petición y no se cobra el
-   beneficio, y la consola de cualquier visitante se llena de errores.
-
-   Lo detectó `scripts/humo.mjs` al pasar la comprobación contra el
-   sitio construido en vez de contra el servidor de desarrollo — hasta
-   entonces era invisible.
-
-   Aquí se escribe, junto a cada carpeta `__next.*`, una copia con el
-   nombre aplanado que el cliente pide de verdad. Es aditivo: si algún
-   día Next cambia de convención, sobran unos ficheros de texto de un
-   par de kilobytes y no se rompe nada. */
+/* 2 · Ficheros de precarga.
+   Next precarga la carga útil de cada enlace sobrevolado como un `.txt` y el
+   export la deja en carpetas anidadas (`out/pricing/__next.pricing/__PAGE__.txt`),
+   pero el navegador la pide con el nombre aplanado
+   (`/pricing/__next.pricing.__PAGE__.txt`), que en un alojamiento estático da
+   404. Se escribe junto a cada carpeta `__next.*` una copia con el nombre
+   aplanado. Es aditiva: si Next cambia de convención, solo sobran ficheros pequeños. */
 async function aplanarPrecargas(dir) {
   let entradas;
   try {
@@ -124,8 +84,7 @@ async function aplanarPrecargas(dir) {
     const p = join(dir, e.name);
     if (!e.isDirectory()) continue;
     if (e.name.startsWith("__next.")) {
-      // Todo lo que cuelgue de esta carpeta se copia al nivel de arriba
-      // con las barras convertidas en puntos.
+      // Lo que cuelga de la carpeta se copia un nivel arriba, con puntos en vez de barras.
       const dentro = await ficheros(p, () => true);
       for (const f of dentro) {
         const relativo = f.slice(p.length + 1).split(/[\\/]/).join(".");
@@ -146,54 +105,20 @@ async function aplanarPrecargas(dir) {
 const copias = await aplanarPrecargas(OUT);
 console.log(`[postbuild] ${copias} fichero(s) de precarga copiados con el nombre que pide el navegador.`);
 
-/* ══════════════════════════════════════════════════════════════════════
-   3. LAS TARJETAS PARA COMPARTIR — que existan, y que se sirvan como PNG
-   ══════════════════════════════════════════════════════════════════════
-   Dos fallos distintos que se sumaban hasta dejar el sitio sin UNA sola
-   tarjeta social funcionando. Los dos se arreglan aquí, sobre el export,
-   y hay que explicar por qué aquí y no en el origen.
+/* 3 · Tarjetas para compartir: que existan y se sirvan como PNG.
+   - Tipo de contenido: Next genera `opengraph-image` sin extensión y un
+     alojamiento estático lo serviría como `application/octet-stream`, que
+     las redes descartan. GitHub Pages ignora `public/_headers`, así que la
+     única defensa es el nombre: se copia cada imagen a `<nombre>.png` y se
+     reescriben las referencias del HTML y de los datos estructurados.
+   - Imagen ausente: `opengraph-image.tsx` solo existe en algunos segmentos
+     españoles y una página con su propio `openGraph` sin `images` no hereda
+     nada. Se barren todas las páginas construidas y la que no lleve imagen
+     recibe la del sitio. */
 
-   ── EL TIPO DE CONTENIDO ──────────────────────────────────────────────
-   Next genera estas imágenes sin extensión: el fichero se llama
-   `opengraph-image`, no `opengraph-image.png`. Un alojamiento estático
-   deduce el tipo por la extensión, así que sin ella lo sirve como
-   `application/octet-stream`, y Facebook, WhatsApp, LinkedIn y X
-   descartan la miniatura.
-
-   `public/_headers` ya lo corregía con un `Content-Type: image/png`… para
-   Cloudflare Pages o Netlify. El despliegue real es GitHub Pages, que
-   IGNORA ese fichero por completo. Comprobado contra el sitio publicado:
-   la portada devuelve `content-type: application/octet-stream` sobre un
-   PNG de 1200×630 perfectamente generado. Existía el mecanismo de
-   control y no lo invocaba nadie.
-
-   Como no hay cabeceras que dar, la única defensa es el nombre: se copia
-   cada imagen a `<nombre>.png` y se reescriben las referencias del HTML
-   —y de los datos estructurados, que llevan la misma URL—.
-
-   ── LA IMAGEN QUE NO ESTABA ───────────────────────────────────────────
-   De las 152 páginas de contenido, 142 no emitían `og:image` y las 76
-   inglesas no emitían ninguna de las dos, mientras las 155 declaraban
-   `twitter:card="summary_large_image"`: una tarjeta grande, sin imagen.
-   La convención de fichero `opengraph-image.tsx` solo existe en diez
-   segmentos españoles, y una página que declara su propio bloque
-   `openGraph` sin `images` no hereda nada.
-
-   Se podría arreglar ruta por ruta en más de veinte ficheros de
-   metadatos. Se hace aquí porque aquí es el único sitio donde se puede
-   afirmar TODAS: se barren las 155 páginas construidas y la que no lleve
-   imagen recibe la del sitio. Mismo criterio que el `lang` de las
-   páginas inglesas, unas líneas más arriba.
-   ══════════════════════════════════════════════════════════════════════ */
-
-/* La raíz se saca del canonical de la propia página y no de una
-   constante: Open Graph exige URL ABSOLUTA —las redes no resuelven rutas
-   relativas, simplemente descartan la imagen—, y el canonical ya es
-   absoluto y ya es correcto en todas las páginas. La raíz es el canonical
-   menos la ruta de la página, no solo su dominio: antes se pegaba el
-   prefijo del entorno al dominio, y compilado sin prefijo el canonical
-   decía «github.io/CountPipsWeb/aviso-legal/» y la tarjeta
-   «github.io/opengraph-image.png», un 404 en 302 páginas. */
+/* La raíz sale del canonical de la propia página: Open Graph exige URL
+   absoluta y el canonical ya lo es. Es el canonical menos la ruta de la
+   página, no solo el dominio, para no perder el prefijo del entorno. */
 const raizDe = (html, relativa) => {
   const canonico = html.match(/<link rel="canonical" href="(https?:\/\/[^"]+)"/)?.[1];
   if (!canonico || !relativa.endsWith("index.html")) return null;
@@ -220,19 +145,13 @@ async function renombrarTarjetas(dir) {
 
 const tarjetas = await renombrarTarjetas(OUT);
 
-/* LA IMAGEN QUE HEREDA QUIEN NO TIENE LA SUYA, Y HAY UNA POR IDIOMA.
-   Antes era una sola —la española— y se la llevaban también las páginas
-   inglesas: 74 de ellas anunciaban al compartirse una tarjeta que dice
-   «Opera como una mesa institucional» y «tus datos en tu equipo». La
-   versión inglesa existía desde siempre y no la usaba nadie. */
+// La imagen que hereda quien no tiene la suya, una por idioma.
 const IMAGEN_POR_IDIOMA = {
   es: "/opengraph-image.png",
   en: "/en/opengraph-image.png",
 };
 
-/* Si una de las dos no está compilada, el reparto de abajo repartiría un
-   404 a decenas de páginas y solo se vería al pegar un enlace en un
-   chat. Se para aquí. */
+// Si falta una de las dos, el reparto de abajo daría un 404 a decenas de páginas.
 for (const [idioma, rutaImagen] of Object.entries(IMAGEN_POR_IDIOMA)) {
   const enDisco = join(OUT, rutaImagen.replace(/^\//, ""));
   try {
@@ -252,19 +171,14 @@ for (const ruta of htmls) {
   let html = await readFile(ruta, "utf8");
   const antes = html;
 
-  /* 1. Las referencias existentes, a `.png`. El `(?!\.png)` evita
-        volver a añadir la extensión si esto se ejecuta dos veces. */
+  // 1. Referencias existentes a `.png`; `(?!\.png)` evita duplicar la extensión si se ejecuta dos veces.
   html = html.replace(/(opengraph-image|twitter-image)(?!\.png)/g, "$1.png");
 
-  /* 2. La página que no declare imagen recibe la del sitio. Se inserta
-        justo antes de `</head>`, que es donde viven las demás. */
+  // 2. La página sin imagen recibe la del sitio, justo antes de `</head>`.
   const faltaOg = !/property="og:image"/.test(html);
   const faltaTw = !/name="twitter:image"/.test(html);
   if (faltaOg || faltaTw) {
-    /* El idioma sale de la RUTA del fichero, no del `<html lang>`: el
-       `lang` de las páginas inglesas lo arregla este mismo script más
-       arriba, y depender de él ataría dos pasos que no tienen por qué ir
-       en ese orden. */
+    // El idioma sale de la ruta del fichero, no del `<html lang>`, para no atar los dos pasos.
     const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
     const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");
     const raiz = raizDe(html, relativa);
@@ -287,9 +201,7 @@ for (const ruta of htmls) {
   }
 }
 
-/* El guardián: si después de todo esto queda una sola página sin imagen
-   social, o una referencia sin extensión, el despliegue se para. Es la
-   diferencia entre arreglarlo hoy y que siga arreglado. */
+// Guarda: una sola página sin imagen social, o una referencia sin extensión, para el despliegue.
 const sinImagen = [];
 for (const ruta of htmls) {
   const html = await readFile(ruta, "utf8");
@@ -298,25 +210,17 @@ for (const ruta of htmls) {
   } else if (!/property="og:image"/.test(html) || !/name="twitter:image"/.test(html)) {
     sinImagen.push(`${ruta} — sin og:image o sin twitter:image`);
   } else if (/(og:image|twitter:image)" content="\//.test(html)) {
-    /* Relativa: las redes no la resuelven, la descartan. */
+    // Relativa: las redes la descartan.
     sinImagen.push(`${ruta} — imagen social con URL relativa`);
   } else {
-    /* LA TARJETA TIENE QUE HABLAR EL IDIOMA DE SU PÁGINA.
-       Este es el fallo que se arregló el 2026-09-20 y que nadie habría
-       visto abriendo el sitio: se ve al pegar el enlace en un chat, y
-       solo si eres el que lo pega. Una página inglesa no puede anunciar
-       la tarjeta de raíz, que está en español. */
+    // La tarjeta debe estar en el idioma de su página: la de raíz es española.
     const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
     const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");
     const m = html.match(/property="og:image" content="([^"]+)"/);
     if (m) {
       const camino = m[1].split("?")[0].replace(/^https?:\/\/[^/]+/, "");
-      /* Se busca el segmento `/en/` en cualquier posición y NO
-         detrás del prefijo del entorno: ese prefijo está vacío en la
-         compilación local mientras las URLs ya lo llevan puesto desde
-         `SITE_URL`, así que compararlos daba por equivocadas las diez
-         tarjetas inglesas que estaban bien. Ninguna ruta española lleva
-         ese segmento, de modo que basta. */
+      // Se busca `/en/` en cualquier posición y no tras el prefijo del entorno,
+      // que está vacío en local mientras las URLs ya lo llevan desde `SITE_URL`.
       const bajoEn = /\/en\//.test(camino);
       if (esIngles !== bajoEn) {
         sinImagen.push(

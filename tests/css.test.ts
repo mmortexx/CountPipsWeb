@@ -4,45 +4,12 @@ import { join } from "node:path";
 import { transform } from "lightningcss";
 
 /**
- * LA HOJA DE ESTILOS SE ANALIZA COMO LA ANALIZA EL NAVEGADOR.
- *
- * `globals.css` son ~5.200 líneas y la mitad son comentarios largos que
- * explican por qué está cada decisión. Ese estilo es deliberado y no se
- * toca, pero trae un riesgo concreto: CSS no tiene comentarios anidados
- * ni forma de escapar nada. La primera secuencia de cierre que aparece
- * dentro de un comentario lo CIERRA, sin importar si iba entre acentos
- * graves, entre comillas o en mitad de una frase.
- *
- * Cuando eso pasa, el resto de la prosa queda suelta en la hoja. El
- * analizador la descarta y en la recuperación se lleva por delante
- * reglas reales — le pasó al bloque `.tj-paper` entero, que desapareció
- * del tema oscuro sin un solo aviso: `bun run build` compilaba en verde
- * y solo `bun run dev` daba «Invalid empty selector». El síntoma que
- * llegaba era «la web se ve un poco sosa».
- *
- * Y volvió a pasar con el comentario escrito para documentarlo, que
- * citaba la secuencia literalmente. Por eso esto no es una prueba de
- * estilo: es la barrera contra un fallo que ya ha ocurrido dos veces,
- * que compila en verde y que nadie ve hasta que abre el navegador.
- *
- * ── POR QUÉ SE ANALIZA DE VERDAD Y NO SE BUSCAN INDICIOS ──────────────
- * La primera versión de esta prueba buscaba PROSA fuera de comentario:
- * tildes, eñes, guiones largos, filetes de arte ASCII. Cazaba el defecto
- * histórico —señalaba la línea 4103 exacta— y aun así tenía un agujero
- * comprobado: un cierre de comentario al FINAL de una línea, con una
- * frase en ASCII puro detrás, pasaba las tres heurísticas en verde
- * mientras el analizador real fallaba con «Expected identifier in class
- * selector». Una barrera que solo detecta los fallos que llevan tilde no
- * es una barrera.
- *
- * Y además daba falsos positivos: `.a{}` seguido de un comentario y de
- * `.b{}` EN LA MISMA LÍNEA es CSS legítimo, y la heurística lo marcaba.
- * Habría roto el despliegue por el motivo equivocado.
- *
- * `lightningcss` es el analizador que ya usa Tailwind 4 en este
- * proyecto, así que no añade dependencia. Con `errorRecovery: false`
- * lanza ante CUALQUIER error de análisis, no ante el subconjunto que a
- * uno se le ocurrió enumerar.
+ * CSS no anida comentarios: la primera secuencia de cierre dentro de uno lo
+ * cierra, aunque vaya entre acentos graves o comillas, y al recuperarse el
+ * analizador se lleva reglas reales (pasó con `.tj-paper`) con el build en
+ * verde. Se analiza con `lightningcss` y `errorRecovery: false` en vez de
+ * buscar prosa suelta: esa heurística dejaba pasar casos y daba falsos
+ * positivos con `.a{}` y `.b{}` en la misma línea.
  */
 
 const RUTA = join(process.cwd(), "src", "app", "globals.css");
@@ -80,49 +47,16 @@ function analizar(css: string): string | null {
 }
 
 describe("globals.css se analiza como CSS, no como prosa", () => {
-  /**
-   * Comprobada contra el fallo en las dos formas que ya han ocurrido:
-   *
-   *  · el defecto histórico — devolver la secuencia de cierre al titular
-   *    «UN … DE MÁS DEJÓ AL PAPEL SIN MATERIAL» (línea 4103);
-   *  · el agujero de la versión heurística — un cierre al final de línea
-   *    con prosa ASCII detrás.
-   *
-   * Las dos lanzan aquí. Ninguna de las dos lanzaba en la versión que
-   * buscaba tildes.
-   */
   it("se analiza sin un solo error", () => {
     expect(analizar(CSS), `El analizador rechaza src/app/globals.css`).toBeNull();
   });
 
   /**
-   * La prueba de arriba solo vale si PUEDE fallar. Aquí se rompe la hoja
-   * a propósito, con el defecto exacto que ya ocurrió dos veces, y se
-   * exige que el resultado no sea el mismo. Si alguien rompe la ruta del
-   * fichero o retira el comentario que se usa de conejillo, esto se pone
-   * rojo en vez de dejar la barrera desarmada en silencio.
-   *
-   * ── POR QUÉ YA NO EXIGE UN ERROR DE ANÁLISIS ────────────────────────
-   * Exigía que `analizar(roto)` devolviera error, y durante un tiempo lo
-   * devolvió: «Invalid empty selector». Pero ese error NO lo producía el
-   * comentario cerrado en falso — lo producía el desfase que la prosa
-   * suelta provocaba en las reglas de MÁS ABAJO, hasta topar por
-   * casualidad con una llave donde tocaba un selector. O sea que la
-   * garantía dependía de cuántas reglas hubiera detrás y de en qué orden,
-   * no del defecto. Al retirar de la hoja unas reglas que no usaba nadie,
-   * el desfase pasó a cuadrar y el analizador dejó de protestar: la
-   * barrera se desarmó sola sin que cambiara nada de lo que vigila.
-   *
-   * Lo que SÍ es siempre cierto del defecto —y es exactamente el daño
-   * que causó— es que la hoja que llega al navegador YA NO ES LA MISMA.
-   * Así que se comprueba eso, que no depende de la suerte: se analiza
-   * con recuperación de errores —el modo del compilador de producción,
-   * que es quien pasaba en verde— y se exige que lo emitido cambie.
-   *
-   * Se compara el texto y no su longitud: medido, la hoja rota sale MÁS
-   * LARGA (68.643 frente a 66.932), porque la prosa suelta no se pierde
-   * sino que se emite como un selector enorme. Un "pesa menos" habría
-   * sido una corazonada bonita y falsa.
+   * Prueba que la de arriba puede fallar: rompe la hoja a propósito con un
+   * cierre de comentario en falso y exige que algo cambie; si se pierde el
+   * texto conejillo, se pone roja. No exige un error concreto (según las reglas
+   * de más abajo la prosa suelta puede analizarse sin error) y compara el texto
+   * emitido, no su longitud.
    */
   it("una hoja con un comentario cerrado en falso no es la misma hoja", () => {
     const roto = CSS.replace(
@@ -139,28 +73,12 @@ describe("globals.css se analiza como CSS, no como prosa", () => {
       transform({
         filename: "globals.css",
         code: Buffer.from(css),
-        // Con recuperación: es el modo del compilador de producción, el
-        // que dejaba pasar el defecto en verde.
+        // Con recuperación: es el modo del compilador de producción.
         errorRecovery: true,
       }).code.toString();
 
-    /* ── SE EXIGEN LOS DOS SÍNTOMAS, NO UNO ─────────────────────────────
-     * Tercera vuelta a la misma tuerca. La versión que solo exigía ERROR
-     * DE ANÁLISIS se desarmó cuando el desfase dejó de topar con una
-     * llave; se cambió por «lo emitido tiene que cambiar», y esa se
-     * desarmó al mover `position: relative` de `.tj-paper` a su capa: con
-     * la recuperación de errores, el analizador pasó a descartar la prosa
-     * suelta SIN llevarse el bloque por delante, así que las dos hojas
-     * emiten byte a byte lo mismo (72.643 en las dos, medido).
-     *
-     * Los dos síntomas dependen de por dónde caiga el desfase, y eso
-     * cambia cada vez que se toca la hoja. Lo que NO depende de la suerte
-     * es que ocurra alguno de los dos: o el analizador estricto protesta
-     * —que es justo lo que vigila la prueba de arriba— o el compilador de
-     * producción emite otra cosa. Se exige eso. Si algún día no pasara
-     * ninguno de los dos, el conejillo habría dejado de serlo de verdad y
-     * esto se pone rojo, que es lo que se quiere.
-     */
+    // Se exige uno de los dos síntomas (error estricto o emisión distinta):
+    // cuál aparece depende de dónde caiga el desfase y cambia al tocar la hoja.
     const protesta = analizar(roto);
     const emiteDistinto = emitir(roto) !== emitir(CSS);
 
@@ -175,9 +93,8 @@ describe("globals.css se analiza como CSS, no como prosa", () => {
 });
 
 describe("la contención de scroll no vuelve a tragarse la rueda", () => {
-  /* Sin comentarios: la prosa de esta hoja CITA los selectores que
-     vigila, y con comentarios dentro un regex casaría con la
-     explicación en vez de con la regla. */
+  // Sin comentarios: la prosa de la hoja cita estos selectores y el regex
+  // casaría con la explicación en vez de con la regla.
   const hoja = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
 
   it("las capas flotantes contienen el scroll (diálogos, menús, cajón, paletas)", () => {
@@ -193,13 +110,8 @@ describe("la contención de scroll no vuelve a tragarse la rueda", () => {
   });
 
   it("ninguna caja con overflow general vuelve a contener ambos ejes", () => {
-    /* La regla que esto prohíbe es la que atrapaba la rueda: toda caja
-       con scroll propio «contenía», y en Chromium una tabla con
-       overflow-x recibía la rueda vertical, no podía desplazarse en
-       ese eje y el gesto moría ahí — medido: 0 px de página por cada
-       600 px de rueda sobre la tabla de /pricing. La contención
-       pertenece a las capas FLOTANTES; los paneles incorporados a la
-       página encadenan el gesto al llegar a su límite. */
+    // Contener ambos ejes atrapaba la rueda vertical sobre una tabla con
+    // overflow-x. La contención es solo de las capas flotantes.
     expect(hoja).not.toMatch(
       /\[class\*="overflow-(?:y-auto|auto)"\][^{}]*\{[^}]*overscroll-behavior:\s*contain/
     );
@@ -207,16 +119,10 @@ describe("la contención de scroll no vuelve a tragarse la rueda", () => {
 });
 
 /**
- * Un `:has()` colgado de la raíz que luego baja a los descendientes.
- *
- * `html[lang="en"]:has([data-tj-404="es"]) body` existía solo para la 404,
- * pero estaba en la hoja de TODAS las páginas y en las inglesas casaba su
- * primera mitad. Con eso Chrome, a cada nodo insertado —cada trozo de
- * JavaScript que llega al desplazarse—, daba por sucio el estilo del
- * documento entero: 1.028 elementos recalculados de golpe. Medido en
- * `/en/`, 12 invalidaciones de todo el árbol por recorrido, 15 fotogramas
- * de más de 8 ms frente a 3–5 sin ella. `html:has(x)` a secas no cuesta
- * eso: solo recalcula `<html>`.
+ * Un `:has()` colgado de la raíz que baja a los descendientes (por ejemplo
+ * `html[lang="en"]:has(...) body`) hace que Chrome invalide el estilo del
+ * documento entero a cada nodo insertado. `html:has(x)` a secas solo
+ * recalcula `<html>`.
  */
 const COMPUESTO_RAIZ = /^(?:html|:root)(?:\[[^\]]*\]|\.[\w-]+|:[\w-]+(?:\((?:[^()]|\([^()]*\))*\))?)*/;
 
@@ -259,25 +165,14 @@ describe("ningún :has() de la raíz obliga a recalcular la página entera", () 
 });
 
 /**
- * `:last-of-type` no es «el último hijo».
- *
- * Es «el último de CADA tipo de etiqueta», así que en un contenedor con
- * hijos de tipos distintos casa una vez por tipo. La cinta de acceso a
- * las herramientas —un <span> de etiqueta y ocho <a>— reservaba con esa
- * pseudoclase el hueco del desvanecido del canto derecho, y se lo
- * colgaba también al <span>: 48 px de margen detrás de «Herramientas:»
- * en las ocho páginas, con un hueco de 56 px donde el normal es 8.
- *
- * En esta hoja no hay ningún caso legítimo de `-of-type`: los
- * contenedores del sistema de diseño mezclan tipos de etiqueta a
- * propósito. Si algún día lo hay, esta prueba es el sitio donde
- * justificarlo por escrito antes de añadir la excepción.
+ * `:last-of-type` es «el último de cada tipo de etiqueta», no «el último
+ * hijo»: en contenedores con tipos mezclados casa una vez por tipo (daba 48 px
+ * de margen de más tras «Herramientas:»). No hay ningún caso legítimo de
+ * `-of-type` en la hoja; si lo hubiera, se justifica aquí.
  */
 describe("nada de :last-of-type donde se quiere decir :last-child", () => {
   it("globals.css no usa pseudoclases -of-type", () => {
-    /* Sin los comentarios: el que documenta este mismo arreglo nombra la
-       pseudoclase, y una prueba que se dispara con la explicación del
-       arreglo en vez de con el arreglo es un falso positivo permanente. */
+    // Sin comentarios: el que documenta el arreglo nombra la pseudoclase.
     const sinComentarios = CSS.replace(/\/\*[\s\S]*?\*\//g, "");
     const usos = [
       ...sinComentarios.matchAll(/:(?:first|last|only|nth)[\w-]*-of-type\b/g),
@@ -289,21 +184,9 @@ describe("nada de :last-of-type donde se quiere decir :last-child", () => {
 });
 
 /**
- * Una clase declarada que no lleva nadie es peso muerto — y, peor, es
- * documentación que miente por omisión.
- *
- * `globals.css` acumuló 24 clases así, 567 líneas entre reglas y sus
- * bloques de comentario normativo. Dos de ellas —`.glass`/`.glass-thin`
- * y toda la familia `.depth-*`— tenían cabecera propia y explicaban con
- * detalle un comportamiento que ninguna página producía. Peor todavía:
- * una prueba de `tests/e2e` exigía que `.depth-1 {` existiera, así que
- * el código muerto estaba PROTEGIDO por una comprobación que decía estar
- * vigilando la elevación del sistema de diseño.
- *
- * Se comprueba contra el CÓDIGO FUENTE y no contra `out/`, porque en la
- * integración continua las pruebas corren antes del build y esa carpeta
- * todavía no existe. Basta: las clases se escriben literalmente en los
- * `className` de los componentes.
+ * Una clase declarada que no lleva nadie es peso muerto y documentación que
+ * miente. Se comprueba contra el código fuente y no contra `out/`, porque en
+ * integración continua las pruebas corren antes del build.
  */
 describe("no se acumulan clases que no lleva nadie", () => {
   /** Clases declaradas a propósito sin usar todavía, con su motivo. */
@@ -316,23 +199,14 @@ describe("no se acumulan clases que no lleva nadie", () => {
   };
 
   it("toda clase de globals.css aparece en algún componente", () => {
-    /* Fuera comentarios, cadenas y `url(...)` ANTES de extraer nombres:
-       dentro de un SVG embebido en `url("data:image/svg+xml,…")` hay un
-       `www.w3.org` del que un extractor ingenuo saca las clases `.w3` y
-       `.org`, y las daría por muertas para siempre. */
+    // Fuera comentarios, cadenas y `url(...)` antes de extraer nombres: un
+    // SVG embebido contiene `www.w3.org` y daría las clases `.w3` y `.org`.
     const hoja = CSS.replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/url\([^)]*\)/g, "")
       .replace(/"[^"]*"/g, '""')
       .replace(/'[^']*'/g, "''");
-    /* Dos formas de declarar una clase, y la segunda no lleva punto.
-       Tailwind v4 define utilidades con `@utility nombre { … }`, y de ahí
-       sale una `.nombre` en el CSS que recibe el navegador. Buscando solo
-       `.nombre`, esta prueba daba por retiradas las cuatro `depth-*`
-       mientras la hoja PUBLICADA las seguía sirviendo: se habían quitado
-       sus reglas normales y se habían dejado las declaraciones
-       `@utility`. Se descubrió comprobando el CSS de la web desplegada,
-       no el del repositorio — que es la diferencia entre creer que algo
-       está hecho y saberlo. */
+    // Dos formas de declarar una clase: `.nombre` y `@utility nombre` (Tailwind
+    // v4), que también emite `.nombre` en el CSS publicado.
     const declaradas = [
       ...new Set([
         ...[...hoja.matchAll(/\.([a-zA-Z][\w-]*)/g)].map((m) => m[1]),
@@ -348,11 +222,7 @@ describe("no se acumulan clases que no lleva nadie", () => {
 
     const muertas = declaradas.filter((c) => {
       if (GANCHOS[c]) return false;
-      /* Las barras van DOBLES: dentro de una plantilla, `\w` se evalúa
-         como la letra `w`, así que el regex habría quedado
-         `(?<![w-])`, que solo excluye esa letra y el guion. Pasaba en
-         verde por casualidad — ningún nombre de clase del fichero va
-         precedido de una `w` en el código. */
+      // Barras dobles: en una plantilla, `\w` simple se evalúa como la letra `w`.
       return !new RegExp(`(?<![\\w-])${c}(?![\\w-])`).test(fuente);
     });
 

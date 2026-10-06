@@ -41,7 +41,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
   const [showSma, setShowSma] = useState(true);
   const [showVwap, setShowVwap] = useState(true);
 
-  // Generate deterministic realistic candlestick path tailored to this exact trade
+  // Velas sintéticas y deterministas (semilla por operación y marco) que pasan por su entrada, salida y stop.
   const candles = useMemo(() => {
     const rnd = seededRnd(trade.id * 17 + (timeframe === "1m" ? 1 : timeframe === "5m" ? 5 : 15));
     const totalBars = 35;
@@ -61,13 +61,12 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
     for (let i = 0; i < totalBars; i++) {
       let targetPrice = current;
       if (i < entryIdx) {
-        // Pre-entry consolidation leading to breakout
+        // Consolidación previa a la entrada.
         targetPrice = base + (rnd() - 0.5) * (base * 0.003);
       } else if (i === entryIdx) {
-        // Entry bar
         targetPrice = trade.entry;
       } else if (i <= exitIdx) {
-        // Active trade progress
+        // Operación abierta: avanza hacia la salida (o hacia el stop si pierde).
         const progress = (i - entryIdx) / (exitIdx - entryIdx);
         if (isWin) {
           const trendDelta = isLong ? (trade.exit - trade.entry) : (trade.entry - trade.exit);
@@ -78,7 +77,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
         }
         targetPrice += (rnd() - 0.5) * (base * 0.002);
       } else {
-        // Post-exit continuation/pullback
+        // Tras la salida.
         targetPrice = trade.exit + (rnd() - 0.48) * (base * 0.003);
       }
 
@@ -107,7 +106,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
     return list;
   }, [trade, timeframe]);
 
-  // Replay animation effect
+  // Avance del replay, una vela cada 350 ms.
   useEffect(() => {
     if (!isPlaying) return;
     const interval = setInterval(() => {
@@ -124,7 +123,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
   const visibleCandles = useMemo(() => candles.slice(0, replayIdx), [candles, replayIdx]);
 
-  // Canvas dimensions and coordinate scaling
   const allHighs = candles.map((c) => c.high);
   const allLows = candles.map((c) => c.low);
   const minPrice = Math.min(...allLows, trade.initialStop, trade.target) * 0.999;
@@ -142,7 +140,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
-  // Volume Profile (8 horizontal volume distribution zones)
+  // Perfil de volumen: 8 franjas horizontales de precio.
   const volumeProfile = useMemo(() => {
     const buckets = 8;
     const counts = new Array(buckets).fill(0);
@@ -169,7 +167,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
   return (
     <div className="demo-card p-4 sm:p-5 overflow-hidden">
-      {/* Chart Header Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-[rgb(var(--divider)/0.1)]">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-1">
@@ -177,7 +174,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             <span className="text-xs text-tertiary font-mono">· {trade.direction.toUpperCase()}</span>
           </div>
 
-          {/* Timeframe selector */}
           <div
             className="flex items-center rounded-[4px] bg-[rgb(var(--divider)/0.06)] p-0.5 border border-[rgb(var(--divider)/0.1)]"
             role="group"
@@ -203,7 +199,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             ))}
           </div>
 
-          {/* Indicators toggles */}
           <div className="flex items-center gap-1 text-[10.5px] font-mono" role="group" aria-label={es ? "Indicadores" : "Indicators"}>
             <button
               type="button"
@@ -232,7 +227,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           </div>
         </div>
 
-        {/* Replay Controls */}
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -260,7 +254,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
         </div>
       </div>
 
-      {/* SVG Interactive Candlestick Display */}
       <div className="relative w-full aspect-[2/1] min-h-[240px] max-h-[340px] bg-[rgb(var(--divider)/0.02)] rounded-[4px] border border-[rgb(var(--divider)/0.08)]">
         <svg
           viewBox={`0 0 ${W} ${H}`}
@@ -274,7 +267,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             </linearGradient>
           </defs>
 
-          {/* Volume Profile (POC / Value Area bars on right margin) */}
+          {/* Perfil de volumen en el margen derecho; la franja de mayor volumen (POC) va resaltada. */}
           {volumeProfile.map((vp, i) => (
             <rect
               key={`vp-${i}`}
@@ -288,13 +281,9 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             />
           ))}
 
-          {/* Grid lines. Su etiqueta de precio se omite cuando cae encima
-              de la de SL, TP o entrada: las tres viven en la misma franja
-              del margen derecho, y cuando una operación tiene el stop o el
-              objetivo cerca de una división de la rejilla, los dos textos
-              caían en el mismo Y y salían superpuestos e ilegibles. La
-              línea de puntos se mantiene — solo se retira el número que
-              ya dice la etiqueta con recuadro. */}
+          {/* Rejilla. Su etiqueta de precio se omite si cae sobre la de SL, TP o
+              entrada (misma franja del margen derecho): se solaparían. La línea
+              se mantiene. */}
           {[0.2, 0.4, 0.6, 0.8].map((ratio) => {
             const y = padT + ratio * chartH;
             const priceVal = maxPrice - ratio * priceRange;
@@ -311,7 +300,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             );
           })}
 
-          {/* Stop Loss Level (Red line) */}
           <g>
             <line x1={padL} y1={stopY} x2={W - padR} y2={stopY} stroke="rgb(var(--pnl-neg))" strokeWidth="1.2" strokeDasharray="4 2" />
             <rect x={W - padR + 2} y={stopY - 7} width={padR - 4} height={14} fill="rgb(var(--pnl-neg))" rx="2" />
@@ -320,7 +308,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             </text>
           </g>
 
-          {/* Take Profit Target Level (Green line) */}
           <g>
             <line x1={padL} y1={targetY} x2={W - padR} y2={targetY} stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" strokeDasharray="4 2" />
             <rect x={W - padR + 2} y={targetY - 7} width={padR - 4} height={14} fill="rgb(var(--pnl-pos))" rx="2" />
@@ -329,7 +316,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             </text>
           </g>
 
-          {/* Entry Level (Accent line) */}
           <g>
             <line x1={padL} y1={entryY} x2={W - padR} y2={entryY} stroke="rgb(var(--accent-base))" strokeWidth="1" strokeDasharray="2 2" />
             <rect x={W - padR + 2} y={entryY - 7} width={padR - 4} height={14} fill="color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)" stroke="rgb(var(--accent-base))" rx="2" />
@@ -338,7 +324,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             </text>
           </g>
 
-          {/* Volume bars */}
           {visibleCandles.map((c, i) => {
             const x = getX(i);
             const vH = (c.volume / maxVol) * 38;
@@ -355,7 +340,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             );
           })}
 
-          {/* Moving Average Curve (SMA 7) */}
           {showSma && (
             <path
               d={visibleCandles.map((c, i) => `${i === 0 ? "M" : "L"} ${getX(i)} ${getY(c.ma)}`).join(" ")}
@@ -366,7 +350,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             />
           )}
 
-          {/* VWAP Curve */}
           {showVwap && (
             <path
               d={visibleCandles.map((c, i) => `${i === 0 ? "M" : "L"} ${getX(i)} ${getY(c.vwap)}`).join(" ")}
@@ -378,7 +361,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
             />
           )}
 
-          {/* Candlesticks */}
           {visibleCandles.map((c, i) => {
             const x = getX(i);
             const isUp = c.close >= c.open;
@@ -399,9 +381,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                 onMouseEnter={() => setHoveredCandle(c)}
                 onMouseLeave={() => setHoveredCandle(null)}
               >
-                {/* Wick */}
                 <line x1={x} y1={highY} x2={x} y2={lowY} stroke={stroke} strokeWidth="1" />
-                {/* Body */}
                 <rect
                   x={x - 3.5}
                   y={topY}
@@ -411,7 +391,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                   rx="0.5"
                 />
 
-                {/* Entry marker */}
                 {isEntryBar && (
                   <g>
                     <polygon
@@ -424,7 +403,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                   </g>
                 )}
 
-                {/* Exit marker */}
                 {isExitBar && (
                   <g>
                     <polygon
@@ -441,7 +419,6 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           })}
         </svg>
 
-        {/* Live Hover HUD / Crosshair Readout */}
         {hoveredCandle && (
           <div className="absolute top-2 left-2 bg-[var(--paper-dense)] border border-[rgb(var(--divider)/0.2)] rounded-[4px] p-2 text-[10.5px] font-mono text-secondary flex items-center gap-3">
             <span>T: <b className="text-primary">{hoveredCandle.time}</b></span>
@@ -454,10 +431,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
         )}
       </div>
 
-      {/* Pie con datos de ESTA operación. Antes decía «Motor gráfico
-          vectorial nativo», una «SMA (7)» que era el precio de entrada y
-          un deslizamiento y una conformidad fijos («0.00 pts», «100% OK»)
-          en todas las operaciones, también en las que rompían el plan. */}
+      {/* Pie con datos de esta operación, no valores fijos. */}
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-tertiary">
         <span>
           {es ? "Comisiones" : "Fees"}: <b className="text-primary">{fmtMoney(trade.fees, lang)}</b>

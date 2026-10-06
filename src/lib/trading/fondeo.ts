@@ -4,10 +4,9 @@ import { mulberry32 } from "./azar.ts";
  * Simulación de una prueba de fondeo: se aprueba al tocar el objetivo y se
  * suspende al tocar el suelo del drawdown, lo que llegue antes.
  *
- * El riesgo es una fracción FIJA del saldo inicial, como lo cuenta quien
- * hace una prueba («arriesgo 500 $ de una cuenta de 50.000»), y todo va en
- * tanto por uno del saldo inicial. No modela el límite de pérdida diaria ni
- * las reglas de consistencia: cada firma los define a su manera.
+ * El riesgo es una fracción fija del saldo inicial y todo va en tanto por uno
+ * de ese saldo. No modela el límite de pérdida diaria ni las reglas de
+ * consistencia: cada firma las define a su manera.
  */
 
 export type TipoDrawdown = "estatico" | "dinamico";

@@ -25,8 +25,6 @@ export const metadata: Metadata = {
 export default function ManualTradersPage() {
   return (
     <>
-      {/* Esta página no emitía NINGÚN dato estructurado, ni siquiera un
-          `WebPage`, mientras enseñaba sus migas en la cabecera. */}
       {esquemasTrader("es", "manual").map((s, i) => (
         <script
           key={i}

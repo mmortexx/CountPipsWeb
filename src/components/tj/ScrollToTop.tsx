@@ -3,46 +3,19 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-/**
- * Cuántas veces se recoloca el ancla tras cargar, y cada cuánto.
- *
- * Seis intentos cada 220 ms cubren algo más de un segundo: el tiempo que
- * tardan en asentarse las tipografías web, los trozos de JavaScript que
- * se cargan bajo demanda y las secciones que solo se dibujan al
- * acercarse. Es una corrección barata (leer una posición y, casi
- * siempre, no hacer nada) y se interrumpe en cuanto el visitante mueve
- * la página por su cuenta.
- */
+/** Ventana (ms) durante la que se recoloca el ancla, hasta que la página se asienta. */
 const SETTLE_WINDOW_MS = 2500;
 
 /** Desvío que se tolera antes de recolocar, en píxeles. */
 const TOLERANCE_PX = 4;
 
 /**
- * Gestor de posición de scroll en cada navegación.
- *
- * Hace dos cosas distintas según haya ancla o no:
- *
- *  · SIN ancla — sube arriba del todo. Next.js restaura el scroll en
- *    atrás/adelante, pero en una navegación nueva conserva la posición
- *    anterior; en un sitio de varias páginas eso se vive como un fallo.
- *
- *  · CON ancla (`/pricing#waitlist`) — lleva a la sección y VUELVE A
- *    COMPROBARLO durante el segundo siguiente. Este es el arreglo de
- *    verdad: el navegador salta al ancla con la altura que la página
- *    tiene en ese instante, pero la página sigue creciendo después
- *    (fuentes, trozos cargados bajo demanda, secciones que se dibujan
- *    al entrar en pantalla). El resultado medido en `/pricing#waitlist`
- *    era aterrizar a 1.583 px por encima de la sección: el visitante
- *    caía en una franja vacía y tenía que buscar a mano lo que acababa
- *    de pedir. Antes, además, esta misma función mandaba la página
- *    arriba del todo ignorando el ancla por completo.
- *
- * Usa `scrollIntoView` en vez de `scrollTo` a propósito: respeta el
- * `scroll-margin-top` de cada sección, que es lo que evita que la barra
- * de navegación fija tape el titular al llegar.
- *
- * No pinta nada: es solo efecto.
+ * Posición de scroll en cada navegación. Sin ancla sube arriba del todo (Next
+ * conserva la posición anterior en navegaciones nuevas). Con ancla
+ * (`/pricing#waitlist`) lleva a la sección y la vuelve a comprobar durante
+ * `SETTLE_WINDOW_MS`: la página sigue creciendo tras el salto (fuentes, trozos
+ * bajo demanda, secciones diferidas) y el ancla se desplazaría. Respeta el
+ * `scroll-margin-top` de cada sección. No pinta nada.
  */
 export function ScrollToTop() {
   const pathname = usePathname();
@@ -51,29 +24,16 @@ export function ScrollToTop() {
     const hash = decodeURIComponent(window.location.hash.replace("#", ""));
 
     if (!hash) {
-      // `auto` evita pelearse con la restauración nativa del navegador,
-      // que si no anima desde la posición antigua.
+      // `auto` evita pelear con la restauración nativa del navegador.
       window.scrollTo({ top: 0, left: 0, behavior: "auto" });
       return;
     }
 
     let cancelled = false;
 
-    /**
-     * Recoloca si la sección se ha desviado más de `TOLERANCE_PX`.
-     *
-     * Se calcula a mano en vez de llamar a `scrollIntoView` en bucle
-     * porque hace falta SABER si hace falta moverse: reposicionar cada
-     * fotograma cancelaría cualquier scroll suave y pelearía con el
-     * navegador. `scrollMarginTop` se lee del propio elemento, así que
-     * cada sección sigue decidiendo cuánto aire deja bajo la barra fija.
-     */
-    /* El margen de la sección se lee UNA vez y se recuerda. Esto corre en
-       cada fotograma durante dos segundos y medio, justo encima de la
-       hidratación, y `getComputedStyle` es de las llamadas que obligan al
-       navegador a resolver el estilo en ese instante. El valor no cambia
-       entre fotogramas: es una regla CSS de la sección, no algo que se
-       mueva con el scroll. */
+    // Recoloca solo si la sección se desvió más de `TOLERANCE_PX`: reposicionar
+    // en cada fotograma pelearía con el navegador. El margen se lee una vez
+    // porque `getComputedStyle` fuerza resolver el estilo y esto corre cada fotograma.
     let margenCache: number | null = null;
     let margenDe: string | null = null;
 
@@ -95,8 +55,7 @@ export function ScrollToTop() {
       }
     };
 
-    // En cuanto el visitante toma el control, dejamos de recolocar: nada
-    // molesta más que una página que te devuelve donde ella quiere.
+    // En cuanto el visitante toma el control, se deja de recolocar.
     const surrender = () => {
       cancelled = true;
       cleanup();
@@ -106,13 +65,9 @@ export function ScrollToTop() {
     window.addEventListener("touchstart", surrender, opts);
     window.addEventListener("keydown", surrender, { once: true });
 
-    // Se vigila la POSICIÓN de la sección, fotograma a fotograma, no el
-    // alto del documento. Medido en `/pricing#waitlist`: mientras una
-    // sección de arriba crecía 80 px otra de abajo encogía otros tantos,
-    // el documento conservaba su altura total y un `ResizeObserver` no se
-    // enteraba — pero el ancla ya se había desplazado. Vigilar el objetivo
-    // en sí no se puede engañar. Son ~2,5 s de una comparación por
-    // fotograma: nada, y se corta al primer gesto del visitante.
+    // Se vigila la posición de la sección, no el alto del documento: una
+    // sección puede crecer y otra encoger sin cambiar el total, y un
+    // `ResizeObserver` no lo vería.
     let raf = 0;
     const start = performance.now();
     const watch = (now: number) => {

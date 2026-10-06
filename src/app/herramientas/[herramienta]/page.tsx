@@ -64,10 +64,8 @@ export default async function HerramientaPage({ params }: Props) {
     ],
   };
 
-  /* `WebApplication` y no `SoftwareApplication`: esto es una herramienta
-     que se usa DENTRO del navegador, sin instalar nada. El precio a cero
-     no es adorno — es lo que permite que se muestre como gratuita, y es
-     cierto: no pide correo ni registro. */
+  // `WebApplication` y no `SoftwareApplication`: se usa en el navegador sin
+  // instalar. El precio cero es cierto (sin correo ni registro) y la marca como gratuita.
   const appSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",

@@ -46,10 +46,8 @@ MARCA_APP = Path(
     )
 )
 
-# Apple recorta el icono con su propia máscara y pinta de negro lo
-# transparente: va a sangre, sin esquinas propias, y con la marca algo más
-# pequeña que en los iconos con placa redondeada para que el recorte no la
-# toque.
+# Apple recorta el icono con su máscara y pinta de negro lo transparente: va a
+# sangre y con la marca algo más pequeña para que el recorte no la toque.
 APPLE_ESCALA = 0.62
 
 

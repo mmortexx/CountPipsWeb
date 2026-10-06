@@ -13,9 +13,7 @@ function fuentes(dir: string, out: string[] = []): string[] {
   return out;
 }
 
-/* Los textos ponían la cifra y «operaciones» a mano, y con una sola
-   operación (un filtro, una selección, un resultado) se leía
-   «1 operaciones» o «1 trades». El recuento sale de `fmtOperaciones`. */
+// El recuento sale de `fmtOperaciones`: escrito a mano daría «1 operaciones».
 describe("ningún recuento de operaciones se escribe a mano", () => {
   it("«${n} operaciones» y «${n} trades» pasan por fmtOperaciones", () => {
     const patron = /\$\{(?:fmtInt\([^}]*\)|[\w.!]+)\} (?:operaciones|trades)\b|"operaciones"\s*:\s*"trades"/g;

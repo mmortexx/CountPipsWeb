@@ -36,11 +36,6 @@ import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
 
-/* ============================================================
- * Tablas estáticas — la clase de activo ya no se codifica por color (ver
- * AssetMark), solo queda su etiqueta y la de plaza y decimales.
- * ============================================================ */
-
 const DECIMALS: Record<string, number> = Object.fromEntries(
   INSTRUMENTS.map((i) => [i.symbol, i.decimals])
 );
@@ -62,21 +57,11 @@ type FilterGroup =
   | "outcome"
   | "setup";
 
-/** Sortable column keys — mirrors the five GhostButtonStyle sort headers
- *  in TradesPage.xaml (symbol / duration / date / pnl / r). */
+/** Columnas ordenables: las cinco cabeceras de TradesPage.xaml. */
 type SortKey = "symbol" | "duration" | "date" | "pnl" | "r";
 type SortDir = "asc" | "desc";
 
-/* `SortKey` sigue vivo (lo usan el estado y `handleSort`); la tabla
-   `SORT_KEYS` con los rótulos y alineaciones de las cinco cabeceras, no:
-   las cabeceras se escriben en el JSX. Tenerla aquí era una segunda fuente
-   de la verdad esperando a discrepar de la primera. */
-
-/* ============================================================
- * R chip — pill background tinted by sign, mirrors the XAML
- * PnlPositiveSoftBrush / PnlNegativeSoftBrush chips for the R
- * column (TradesPage.xaml lines 652-673).
- * ============================================================ */
+/** Chip de R teñido por el signo (TradesPage.xaml L652-673). */
 function RChip({ value, lang }: { value: number; lang: "es" | "en" }) {
   const tone = value > 0 ? "pos" : value < 0 ? "neg" : "neutral";
   if (tone === "neutral") {
@@ -95,11 +80,7 @@ function RChip({ value, lang }: { value: number; lang: "es" | "en" }) {
   );
 }
 
-/* ============================================================
- * Sort header button — ghost-style header cell that mirrors
- * TradesPage.xaml's GhostButtonStyle sort columns. Shows the
- * column caption + an ▲/▼ glyph when active.
- * ============================================================ */
+/** Cabecera ordenable: rótulo y flecha ▲/▼ si está activa. */
 function SortHeader({
   active,
   dir,
@@ -128,8 +109,6 @@ function SortHeader({
       >
         {children}
       </span>
-      {/* Sort arrow — animate the swap between ascending / descending
-          with a rotate so the user feels the column toggle. */}
       <span
         key={active ? `${dir}` : "idle"}
         style={{ "--dm-s": 0.6, "--dm-r": active && dir === "asc" ? "-90deg" : "0deg", "--dm-dur": "0.18s" } as CSSProperties}
@@ -144,14 +123,8 @@ function SortHeader({
   );
 }
 
-/* ============================================================
- * Trade row — memoized. Mirrors TradesPage.xaml's ItemTemplate
- * (lines 544-700): checkbox + direction chip in col 0, asset
- * dot + mono symbol + behaviour badges in col 1, setup, session,
- * entry→exit, duration, closed date, P&L (MoneyText), R chip,
- * compliance chip. Preserves the demo's custom-trade delete
- * affordance (sample trades are immutable).
- * ============================================================ */
+/** Fila memoizada (ItemTemplate de TradesPage.xaml L544-700). Las operaciones
+ *  de la muestra son inmutables: solo las propias se pueden borrar. */
 const TradeRow = memo(function TradeRow({
   trade,
   isCustom,
@@ -190,12 +163,7 @@ const TradeRow = memo(function TradeRow({
         isConfirming ? "bg-pnl-neg/10" : ""
       }`}
     >
-      {/* Col 0 — checkbox + direction chip (mirrors TradesPage.xaml col 0).
-          Sticky left-0 on mobile so the direction chip + selection
-          checkbox stay anchored while scrolling the wide table. The
-          explicit bg-[rgb(var(--bg))] is opaque so scrolled cells don't
-          bleed through; the row's alternating/hover bg is layered on top
-          via the inner div so the striping still reads. */}
+      {/* Fija a la izquierda en móvil; el fondo opaco tapa las celdas que se desplazan. */}
       <td className="pl-5 pr-3 py-2.5 whitespace-nowrap sticky left-0 z-10 bg-[rgb(var(--bg))]">
         <div className="flex items-center gap-2">
           <input
@@ -212,7 +180,6 @@ const TradeRow = memo(function TradeRow({
         </div>
       </td>
 
-      {/* Col 1 — marca de clase de activo + símbolo (mono) + distintivo. */}
       <td className="px-3 py-2.5 whitespace-nowrap">
         <div className="flex items-center gap-2">
           <AssetMark assetClass={inst?.assetClass} title={assetLabel} />
@@ -230,46 +197,38 @@ const TradeRow = memo(function TradeRow({
         </div>
       </td>
 
-      {/* Col 2 — setup. */}
       <td className="px-3 py-2.5 whitespace-nowrap text-secondary text-sm max-w-[220px] truncate">
         {nombreSetup(trade.setup, lang)}
       </td>
 
-      {/* Col 3 — session. */}
       <td className="px-3 py-2.5 whitespace-nowrap text-tertiary text-xs">
         {NOMBRE_SESION[trade.session]?.[lang] ?? trade.session}
       </td>
 
-      {/* Col 4 — entry → exit. */}
       <td className="px-3 py-2.5 whitespace-nowrap tnum text-secondary text-xs">
         {fmtPrice(trade.entry, decimals, lang)}
         <span className="text-tertiary mx-1.5" aria-hidden="true">→</span>
         {fmtPrice(trade.exit, decimals, lang)}
       </td>
 
-      {/* Col 5 — duration. */}
       <td className="px-3 py-2.5 whitespace-nowrap tnum text-secondary text-xs">
         {trade.durationMin > 0
           ? fmtDuration(trade.durationMin, lang)
           : "—"}
       </td>
 
-      {/* Col 6 — closed date. */}
       <td className="px-3 py-2.5 whitespace-nowrap text-tertiary tnum text-xs">
         {fmtDate(trade.closedAt, lang)}
       </td>
 
-      {/* Col 7 — P&L (MoneyText). */}
       <td className="px-3 py-2.5 whitespace-nowrap text-right">
         <PnlCell value={trade.netPnl} filterSig={filterSig} />
       </td>
 
-      {/* Col 8 — R chip (pill). */}
       <td className="px-3 py-2.5 whitespace-nowrap text-right">
         <RChip value={trade.rMultiple} lang={lang} />
       </td>
 
-      {/* Col 9 — compliance chip + delete affordance for custom trades. */}
       <td className="pl-3 pr-4 py-2.5 whitespace-nowrap">
         <div className="flex items-center justify-end gap-1.5">
           {trade.compliance === "yes" && (
@@ -347,9 +306,8 @@ const TradeRow = memo(function TradeRow({
   );
 });
 
-/** P&L cell — keyed to the current filter signature so it re-mounts (and
- *  plays a brief color-flash animation) every time the user applies or
- *  clears a filter. */
+/** Celda de P&L: su clave incluye la firma del filtro, así que se remonta y
+ *  repite un destello de color cada vez que cambia el filtro. */
 const PnlCell = memo(function PnlCell({
   value,
   filterSig,
@@ -388,17 +346,9 @@ const PnlCell = memo(function PnlCell({
   );
 });
 
-/* ============================================================
- * Chip de filtro — réplica de FilterChipStyle (Styles.xaml
- * L380-430), que es un RadioButton re-plantillado:
- *   · En reposo: velo tenue, texto secundario, SIN borde,
- *     esquinas de píldora (CornerRadius 15) y padding 13,5.
- *   · Seleccionado: fondo BrandAccentSoftBrush (el acento al
- *     16 %) y texto AccentTextFillColorPrimaryBrush.
- * La demo pintaba el seleccionado con una píldora BLANCA con
- * borde — el chip activo quedaba gris en una app cuyo estado
- * activo es siempre del color de la paleta.
- * ============================================================ */
+/** Chip de filtro: réplica de FilterChipStyle (Styles.xaml L380-430). En
+ *  reposo, velo tenue y sin borde; seleccionado, el acento al 16 % con texto
+ *  de acento. */
 function FilterChip({
   active,
   onClick,
@@ -421,9 +371,7 @@ function FilterChip({
       style={{ "--dm-pulsa": 0.96 } as CSSProperties}
       className="tj-dm-pulsa relative inline-flex items-center"
     >
-      {/* El fondo del activo se desliza entre chips del mismo grupo
-          (`Viajero`) — el equivalente animado del cambio de VisualState
-          del RadioButton. */}
+      {/* El fondo del activo se desliza entre chips del grupo (`Viajero`). */}
       {active && (
         <Viajero
           clave={`trade-filter-${group}`}
@@ -443,11 +391,7 @@ function FilterChip({
   );
 }
 
-/* ============================================================
- * KPI strip cell — loose on canvas, no box. Mirrors the XAML
- * `VerticalHairlineStyle` separators between the four summary
- * tiles (TradesPage.xaml lines 233-271).
- * ============================================================ */
+/** Celda de la franja de KPI, sin caja (TradesPage.xaml L233-271). */
 function KpiStripCell({
   label,
   filterSig,
@@ -462,9 +406,8 @@ function KpiStripCell({
   return (
     <div className="flex items-stretch flex-none md:flex-1 md:min-w-0 md:shrink">
       <div className="flex-1 md:min-w-0 flex flex-col gap-1.5 px-2 sm:px-3">
-        {/* En móvil cada celda mide lo que su cifra y la franja se
-            desliza: con un mínimo fijo de 88 px «+6.739,19 $» invadía la
-            celda vecina y «Operaciones» se partía a media palabra. */}
+        {/* En móvil cada celda mide lo que su cifra y la franja se desliza: con
+            88 px mínimos «+6.739,19 $» invadía a la vecina. */}
         <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-tertiary whitespace-nowrap md:whitespace-normal">
           {label}
         </div>
@@ -482,8 +425,8 @@ function KpiStripCell({
   );
 }
 
-/* «Esta selección frente al resto» (TradesPage.xaml, 21/07/2026): solo con
-   filtro activo, porque sin filtro no hay «resto». Textos de la app. */
+/* «Esta selección frente al resto» (TradesPage.xaml): solo con filtro
+   activo, porque sin filtro no hay «resto». Textos de la app. */
 function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: "es" | "en" }) {
   const es = lang === "es";
   const r = (v: number | null) => (v === null ? "—" : fmtR(v, lang, 2));
@@ -556,12 +499,8 @@ function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: "es" | "en"
   );
 }
 
-/* ============================================================
- * Bulk action bar — mirrors TradesPage.xaml lines 474-536.
- * Appears only when at least one row is selected. Shows a
- * count pill + a tag-input + add/remove tag buttons + a clear
- * button. Tag add shows a toast (demo: not actually persisted).
- * ============================================================ */
+/** Barra de acciones en lote (TradesPage.xaml L474-536), solo con filas
+ *  seleccionadas. Añadir o quitar etiqueta solo muestra un aviso: no se guarda. */
 function BulkActionBar({
   count,
   onClear,
@@ -648,12 +587,10 @@ function BulkActionBar({
   );
 }
 
-/* Las filas se recolocan sin saltos al filtrar, ordenar o cargar más (lo
-   que hacían `layout` y `AnimatePresence`): la que sigue y cambia de sitio
-   se desliza desde donde estaba, y la que llega entra 8 px más abajo, en
-   cascada. Las del primer pintado no, porque ya entra la página entera; y
-   la que se va desaparece sin más. Se mide con `offsetTop`, que no cambia
-   al desplazar la ventana de la demo. */
+/* Recoloca las filas sin saltos al filtrar, ordenar o cargar más: la que
+   cambia de sitio se desliza desde su posición anterior y la nueva entra 8 px
+   más abajo, en cascada. Las del primer pintado no se animan. Se mide con
+   `offsetTop`, que no cambia al desplazar la ventana de la demo. */
 const CURVA = "cubic-bezier(0.22, 1, 0.36, 1)";
 function useRecolocar(cuerpo: RefObject<HTMLTableSectionElement | null>, firma: string) {
   const previas = useRef<Map<string, number> | null>(null);
@@ -693,10 +630,7 @@ export function TradesPage() {
   const cuerpoTabla = useRef<HTMLTableSectionElement>(null);
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-  // Tercera fila de filtros de la app (TradesPage.xaml L107-213):
-  // Resultado y Setup. Viven en estado local y no en el contexto de la
-  // demo porque, a diferencia de instrumento/dirección/cumplimiento, no
-  // los comparte ninguna otra página.
+  // Resultado y Setup (TradesPage.xaml L107-213): estado local porque ninguna otra página los comparte.
   const [outcome, setOutcome] = useState<"all" | "win" | "loss" | "be">("all");
   const [setupSel, setSetupSel] = useState<string>("all");
 
@@ -815,9 +749,7 @@ export function TradesPage() {
       if (outcome === "be" && tr.netPnl !== 0) return false;
       if (setupSel !== "all" && tr.setup !== setupSel) return false;
       if (q) {
-        /* El buscador mira la clave del setup Y su rótulo visible: quien
-           escribe «Ruptura» busca lo que está leyendo en la tabla, no el
-           identificador interno «Breakout» —y al revés en inglés—. */
+        /* El buscador mira la clave del setup y su rótulo visible («Ruptura», no solo «Breakout»). */
         const hay =
           `${tr.instrument} ${tr.setup} ${nombreSetup(tr.setup, lang)} ${tr.entryNote} ${tr.closeNote}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -835,7 +767,6 @@ export function TradesPage() {
     lang,
   ]);
 
-  // Sort the filtered list by the active column.
   const sorted = useMemo(() => {
     const arr = [...filtered];
     const dirMul = sortDir === "asc" ? 1 : -1;
@@ -884,10 +815,7 @@ export function TradesPage() {
     () => (filterActive ? compararSeleccion(allTrades, filtered) : null),
     [filterActive, allTrades, filtered]
   );
-  // Suma de R, no media: la fila de totales la etiqueta "Suma"/"Sum" (más
-  // abajo) y la media por operación ya tiene su propio KPI (Expectancy R).
-  // Antes dividía entre filtered.length, así que bajo la etiqueta "Suma"
-  // se mostraba la misma media que Expectancy R con un número distinto.
+  // Suma de R, no media: la fila de totales dice «Suma» y la media ya tiene su KPI (Expectancy R).
   const totalR = filtered.reduce((s, tr) => s + tr.rMultiple, 0);
 
   const resetAll = () => {
@@ -963,8 +891,7 @@ export function TradesPage() {
   const allVisibleSelected = shown.length > 0 && shown.every((tr) => selectedIds.has(tr.id));
   const someVisibleSelected = shown.some((tr) => selectedIds.has(tr.id)) && !allVisibleSelected;
 
-  /* Una sola fuente para «qué vista está puesta»: la usan el color del
-     botón y su aria-pressed. */
+  /* Una sola fuente para «qué vista está puesta» (color del botón y aria-pressed). */
   const vista = {
     todas: filters.instrument === "all" && filters.direction === "all" && filters.compliance === "all" && outcome === "all" && setupSel === "all",
     ganadoras: outcome === "win",
@@ -977,7 +904,6 @@ export function TradesPage() {
 
   return (
     <div className="p-5 md:p-6 space-y-5">
-      {/* ===== Header (eyebrow + title + count + search) ===== */}
       <Reveal>
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
           <div className="space-y-2">
@@ -993,7 +919,6 @@ export function TradesPage() {
           </div>
 
           <div className="flex items-center gap-2 w-full md:w-auto">
-            {/* Export buttons */}
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -1019,7 +944,6 @@ export function TradesPage() {
               </button>
             </div>
 
-            {/* Search — AutoSuggestBox-style on the right. */}
             <div className="relative flex-1 md:w-80">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary pointer-events-none"
@@ -1049,7 +973,6 @@ export function TradesPage() {
         </div>
       </Reveal>
 
-      {/* Quick Filter Presets Bar */}
       <div
         className="tj-fila-sigue flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs"
         role="group"
@@ -1176,12 +1099,9 @@ export function TradesPage() {
         </button>
       </div>
 
-      {/* ===== Filter chips — TWO ROWS, caption-prefixed groups
-           (mirrors TradesPage.xaml lines 42-226). Loose on canvas,
-           no enclosing card. ===== */}
+      {/* Grupos de chips sin tarjeta (TradesPage.xaml L42-226). En móvil el
+          rótulo baja a 64 px para dar sitio a los chips. */}
       <div className="space-y-2.5">
-        {/* Row 1 — Instrument. Mobile: the caption column shrinks to 64px
-             so the chips get more breathing room at 320–390px. */}
         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
           <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
             {t("colInstrument")}
@@ -1209,7 +1129,6 @@ export function TradesPage() {
           </div>
         </div>
 
-        {/* Row 2 — Direction + Compliance + Clear. */}
         <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
             <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
@@ -1266,9 +1185,6 @@ export function TradesPage() {
               >
                 {t("complied")}
               </FilterChip>
-              {/* "Parcial" existe en la app (el tipo Compliance es
-                  yes/partial/no) y la demo se lo saltaba, así que un
-                  tercio de las operaciones no era filtrable. */}
               <FilterChip
                 active={filters.compliance === "partial"}
                 onClick={() => handleSetFilters({ compliance: "partial" })}
@@ -1289,9 +1205,7 @@ export function TradesPage() {
           </div>
         </div>
 
-        {/* Fila 3 — Resultado + Setup (TradesPage.xaml L107-213). Sin
-            ella no se podía revisar "mis perdedoras de este setup", que
-            es justo para lo que se abre esta pantalla. */}
+        {/* Resultado + Setup (TradesPage.xaml L107-213). */}
         <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
           <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
             <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary min-w-[64px] sm:min-w-[92px]">
@@ -1373,22 +1287,12 @@ export function TradesPage() {
         </div>
       </div>
 
-      {/* ===== KPI strip — loose on canvas, vertical hairlines
-           (mirrors TradesPage.xaml lines 228-271). ===== */}
       <div className="space-y-2">
         <Eyebrow>{t("summary")}</Eyebrow>
-        {/* Sin caja: en Operaciones la ÚNICA superficie encajonada es la
-            tabla. Los filtros y los KPIs viven sobre el lienzo desnudo
-            (TradesPage.xaml L15-16, "full-bleed: menos superficies
-            encajonadas"). Meterlos en una tarjeta, como hacía la demo,
-            rompía esa jerarquía y llenaba la pantalla de recuadros. */}
+        {/* Sin caja: en Operaciones la única superficie encajonada es la tabla
+            (TradesPage.xaml L15-16, «full-bleed»); filtros y KPI van sobre el lienzo. */}
         <div className="tj-fila-sigue flex items-stretch py-2 overflow-x-auto custom-scroll -mx-1 px-1">
-          {/* El símbolo va DETRÁS de la cifra ("+5.732,24 US$"), como en
-              toda la app y como en la propia columna P&L de la tabla de
-              abajo. Con el prefijo "$" delante, este KPI era el único
-              sitio de la demo que escribía el dinero al modo anglosajón
-              — y estaba a tres centímetros de una columna que lo escribe
-              al modo europeo. */}
+          {/* En español el símbolo va detrás de la cifra («+5.732,24 US$»), como en la columna P&L. */}
           <KpiStripCell label={t("pnlTotal")} filterSig={filterSig} showHairline>
             <CountUp
               to={Math.abs(totalPnl)}
@@ -1404,9 +1308,7 @@ export function TradesPage() {
           <KpiStripCell label={t("operations")} filterSig={filterSig} showHairline>
             <CountUp to={metrics.closedCount} decimals={0} />
           </KpiStripCell>
-          {/* «+0,23 R», como la columna R de la tabla: el signo delante y
-              la unidad detrás. Con `prefix="R "` era el único sitio de la
-              demo que escribía «R 0,23». */}
+          {/* «+0,23 R», como la columna R de la tabla: signo delante y unidad detrás. */}
           <KpiStripCell label={t("expectancyR")} filterSig={filterSig} showHairline={false}>
             <CountUp
               to={Math.abs(metrics.expectancyR)}
@@ -1421,25 +1323,15 @@ export function TradesPage() {
 
       {comparacion && <SeleccionFrenteAlResto c={comparacion} lang={lang} />}
 
-      {/* ===== Trades table card (the only boxed surface) =====
-           Mobile: the table is wider than the card (min-w-[1080px]) so it
-           scrolls horizontally INSIDE the card via overflow-x-auto. A
-           left-edge fade gradient mirrors the right one to hint at scroll
-           affordance on both sides. min-w-0 on the wrappers prevents the
-           table from inflating the card width on narrow viewports. */}
+      {/* La tabla (min-w-[1080px]) hace scroll horizontal dentro de la tarjeta;
+          `min-w-0` en los envoltorios evita que ensanche la tarjeta en móvil. */}
       <div className="demo-card overflow-hidden min-w-0">
         <div className="relative min-w-0">
           <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll min-w-0">
             <table className="w-full text-sm border-collapse min-w-[1080px]">
               <thead className="demo-chrome border-b border-[rgb(var(--divider)/0.10)]">
                 <tr className="text-left">
-                  {/* Col 0 — select-all checkbox + direction caption.
-                      Sticky on mobile so the checkbox + direction chip
-                      stay visible while scrolling horizontally through
-                      the wide table. Uses --bg (opaque page surface) so
-                      scrolled cells underneath don't bleed through; on
-                      desktop (md:) the sticky positioning is removed
-                      because the table fits the card. */}
+                  {/* Fija a la izquierda; `--bg` opaco para que no se transparente lo que se desplaza. */}
                   <th scope="col" className="pl-5 pr-3 py-3 whitespace-nowrap w-[88px] sticky left-0 z-20 bg-[rgb(var(--bg))] demo-chrome">
                     <div className="flex items-center gap-2">
                       <input
@@ -1458,7 +1350,6 @@ export function TradesPage() {
                     </div>
                   </th>
 
-                  {/* Col 1 — Symbol (sortable). */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[140px]">
                     <SortHeader
                       active={sortKey === "symbol"}
@@ -1470,28 +1361,24 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  {/* Col 2 — Setup (non-sortable caption). */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap">
                     <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
                       {t("colSetup")}
                     </span>
                   </th>
 
-                  {/* Col 3 — Session. */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[80px]">
                     <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
                       {lang === "es" ? "Sesión" : "Session"}
                     </span>
                   </th>
 
-                  {/* Col 4 — Entry → Exit. */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[180px]">
                     <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
                       {t("entry")} → {t("exit")}
                     </span>
                   </th>
 
-                  {/* Col 5 — Duration (sortable). */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[90px]">
                     <SortHeader
                       active={sortKey === "duration"}
@@ -1503,7 +1390,6 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  {/* Col 6 — Date (sortable). */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[120px]">
                     <SortHeader
                       active={sortKey === "date"}
@@ -1515,7 +1401,6 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  {/* Col 7 — P&L (sortable, right). */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[120px] text-right">
                     <SortHeader
                       active={sortKey === "pnl"}
@@ -1527,7 +1412,6 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  {/* Col 8 — R (sortable, right). */}
                   <th scope="col" className="px-3 py-3 whitespace-nowrap w-[90px] text-right">
                     <SortHeader
                       active={sortKey === "r"}
@@ -1539,7 +1423,6 @@ export function TradesPage() {
                     </SortHeader>
                   </th>
 
-                  {/* Col 9 — Compliance. */}
                   <th scope="col" className="pl-3 pr-4 py-3 whitespace-nowrap w-[120px] text-right">
                     <span className="text-[10px] uppercase tracking-[0.15em] text-tertiary">
                       {t("compliance")}
@@ -1563,7 +1446,6 @@ export function TradesPage() {
                     />
                   ))}
 
-                {/* Empty state — no trades match the filters. */}
                 {filtered.length === 0 && (
                   <tr>
                     <td colSpan={10} className="py-16 text-center">
@@ -1600,7 +1482,6 @@ export function TradesPage() {
                   </tr>
                 )}
 
-                {/* Footer totals row. */}
                 {filtered.length > 0 && (
                   <tr className="bg-[rgb(var(--divider)/0.03)] border-t-2 border-[rgb(var(--divider)/0.1)]">
                     <td colSpan={6} className="pl-5 pr-3 py-3 text-xs uppercase tracking-[0.15em] text-tertiary">
@@ -1632,21 +1513,13 @@ export function TradesPage() {
               </tbody>
             </table>
           </div>
-          {/* Right-edge fade — hints that the table scrolls horizontally
-              beyond the card's right edge. No left fade: the sticky first
-              column (checkbox + direction chip) already signals "this is
-              pinned, scroll right for more". */}
+          {/* Degradado a la derecha: indica que la tabla se desplaza. */}
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-transparent to-[rgb(var(--sombra)/0.18)]" aria-hidden />
-          {/* Subtle shadow on the right edge of the sticky first column —
-              only visible while the table is scrolled horizontally, gives
-              the pinned column a visual separation from the scrolling
-              cells underneath. */}
+          {/* Sombra en el canto de la primera columna fija, que la separa de lo que se desplaza. */}
           <div className="pointer-events-none absolute left-[88px] top-0 bottom-0 w-4 bg-gradient-to-r from-[rgb(var(--sombra)/0.14)] to-transparent md:hidden" aria-hidden />
         </div>
 
-        {/* Bulk action bar — only when rows are selected. It unfolds
-            from the top and folds back when the selection empties; while
-            it folds it keeps the last count instead of reading «0». */}
+        {/* Al plegarse conserva el último recuento en vez de mostrar «0». */}
         {barra.montado && (
           <div className={barra.saliendo ? "tj-dm-pliega" : "tj-dm-despliega"} inert={barra.saliendo}>
             <div>
@@ -1661,8 +1534,6 @@ export function TradesPage() {
           </div>
         )}
 
-        {/* Load more — mirrors TradesPage.xaml's GhostButtonStyle
-            "Load more" footer (lines 704-713). */}
         {hasMore && (
           <div className="border-t border-[rgb(var(--divider)/0.1)] p-4 flex justify-center">
             <button

@@ -12,13 +12,8 @@ const breadcrumbSchema = {
   ],
 };
 
-/* Debe coincidir palabra por palabra con las 4 preguntas EN visibles en
-   `PricingFAQ.tsx` — están copiadas de ahí, no traducidas de nuevo, por
-   el mismo motivo que avisa el fichero español: Google penaliza cuando
-   el dato estructurado no coincide con lo que se ve en pantalla. */
-/* Generado desde la misma lista que pinta el acordeon, para que no se
-   pueda publicar a los buscadores una respuesta que la pagina no da.
-   Ver src/lib/faq.ts. */
+// Generado desde la misma lista que pinta el acordeón, para no publicar una
+// respuesta que la página no da (src/lib/faq.ts).
 const faqSchema = jsonLdFaq(PRICING_FAQ_EN);
 
 const productSchema = {

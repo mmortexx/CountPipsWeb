@@ -4,9 +4,9 @@ import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 
 /**
- * Story — narrative section explaining why the app exists. Editorial
- * layout: large pull-quote on the left, vertical timeline of a trader's
- * journey (before journal → with journal) on the right.
+ * Sección narrativa de por qué existe la app: cita destacada a la izquierda y
+ * línea de tiempo del recorrido del trader (antes del diario y con él) a la
+ * derecha.
  */
 
 interface Phase {
@@ -41,12 +41,7 @@ export function Story() {
       tag: es ? "Mes 3" : "Month 3",
       title: es ? "Descubres lo que no sabías" : "You discover what you didn’t know",
       desc: es
-        /* Las comillas rectas son de máquina de escribir, y el sitio no
-           las usa en ninguna otra parte: el español entrecomilla con
-           «…» —así lo hacen las otras cinco del primer nivel— y el
-           inglés con “…”, como el aviso de cookies y la cita del diario
-           de `/features`. Esta frase era la única que se salía, en los
-           dos idiomas a la vez. */
+        /* Comillas «…» en español y “…” en inglés; el sitio no usa las rectas. */
         ? "Tu setup «estrella» apenas tiene expectancy positiva. Tu mejor hora no es la que creías. Tu sesión perdedora es siempre la misma."
         : "Your “star” setup barely has positive expectancy. Your best hour isn’t the one you thought. Your losing session is always the same one.",
       tone: "neutral",
@@ -69,9 +64,8 @@ export function Story() {
     },
   ];
 
-  // La progresión se cuenta en tinta, no en un arcoíris de cinco colores:
-  // las etapas tempranas en terciario y la última, a la que se llega, en
-  // tinta plena.
+  // La progresión se cuenta en tinta: etapas tempranas en terciario y la
+  // última en tinta plena.
   const toneDot: Record<Phase["tone"], string> = {
     neg: "bg-[var(--ink-3)]",
     warn: "bg-[var(--ink-3)]",
@@ -94,14 +88,9 @@ export function Story() {
   return (
     <section id="story" className="section relative scroll-mt-24 overflow-clip">
       <div className="relative z-10 tj-container tj-split grid gap-10 items-start">
-        {/* LEFT — editorial pull quote (sticky + subtle parallax) */}
-        {/* Sin `data-entra`, y no por casualidad: esta columna es
-            `sticky`, y una entrada atada a `view()` mide la posición del
-            elemento en la ventana para calcular su progreso — mientras
-            que un `sticky` cambia esa posición al desplazarse. Las dos
-            cosas juntas se realimentan. Además era un `motion.div` sin
-            props de animación: no había nada que conservar. Sus tres
-            bloques ya entran con sus `Reveal`. */}
+        {/* Sin `data-entra`: la columna es `sticky` y una entrada atada a `view()`
+            mide la posición del elemento, que `sticky` cambia al desplazarse
+            (se realimentan). Sus bloques entran con `Reveal`. */}
         <div className="lg:sticky lg:top-24" >
           <Reveal>
             <h2 className="t-h2 text-primary">
@@ -129,11 +118,6 @@ export function Story() {
           </Reveal>
 
           <Reveal delay={0.18}>
-            {/* T2h: long-form narrative paragraph — leading-relaxed (1.625)
-                → leading-[1.7] per the about-page brief for comfortable
-                editorial measure. Added max-w-[44em] so the paragraph keeps
-                its rhythm on wide desktop where the left grid column would
-                otherwise stretch it too wide. */}
             <p className="mt-8 text-secondary leading-[1.7] max-w-[44em]">
               {es
                 ? "Cada app de trading que probamos era o una hoja de cálculo con otro nombre o una suscripción mensual que se quedaba con tus datos si dejabas de pagar. Ninguna te enseñaba lo que tu propio comportamiento te costaba en dinero. Así que construimos una que sí lo hace, y que vive en tu ordenador."
@@ -142,13 +126,8 @@ export function Story() {
           </Reveal>
         </div>
 
-        {/* RIGHT — timeline */}
         <div className="relative">
-          {/* Vertical track line — symmetric neutral hairline that fades in at
-              the top and out at the bottom so it reads as a floating rule
-              connecting the dots, not a hard strip clipped to the section.
-              Opacity peaks at 0.45 mid-rail; both edges dissolve into the
-              backdrop so the first/last dots don't sit on a hard line end. */}
+          {/* Raíl vertical que se desvanece en ambos extremos. */}
           <span
             className="absolute left-[7px] top-2 bottom-2 w-px bg-gradient-to-b from-transparent via-[rgb(var(--divider)/0.45)] to-transparent"
             aria-hidden="true"

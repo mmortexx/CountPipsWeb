@@ -21,10 +21,7 @@ import { CountUp } from "@/components/tj/CountUp";
 import { Reveal } from "@/components/tj/Reveal";
 import { moverConFlechas } from "@/lib/flechas";
 
-/* ============================================================
-   Static bilingual content (no i18n keys for these)
-   ============================================================ */
-
+// Contenido bilingüe estático, sin claves de i18n.
 interface ChecklistItem {
   id: string;
   es: string;
@@ -58,10 +55,7 @@ const COST_COPY = {
   en: { cost: "What your indiscipline cost you", saver: "Your indiscipline paid off this time" },
 };
 
-/* ============================================================
-   Reparto del cumplimiento: la fila «Sí · a medias · no» de la app.
-   ============================================================ */
-
+// Reparto del cumplimiento: la fila «Sí · a medias · no» de la app.
 const NIVELES_CUMPLIMIENTO: { key: Trade["compliance"]; es: string; en: string; tono: string }[] = [
   { key: "yes", es: "Cumplí el plan", en: "Followed the plan", tono: "bg-pnl-pos" },
   { key: "partial", es: "Lo cumplí a medias", en: "Followed it partly", tono: "bg-pnl-warn" },
@@ -74,10 +68,6 @@ function repartoCumplimiento(trades: Trade[]) {
     count: trades.filter((t) => t.compliance === nivel.key).length,
   }));
 }
-
-/* ============================================================
-   Animated checkbox — SVG path draws in when toggled on
-   ============================================================ */
 
 function CheckMark({ checked }: { checked: boolean }) {
   return (
@@ -149,10 +139,7 @@ function ChecklistRow({
   );
 }
 
-/* ============================================================
-   Day-score dots (0-5)
-   ============================================================ */
-
+/** Nota del día, de 0 a 5 puntos. */
 function DayScoreDots({
   value,
   onChange,
@@ -209,10 +196,7 @@ function DayScoreDots({
   );
 }
 
-/* ============================================================
-   Ritual column (Pre-market / Post-market)
-   ============================================================ */
-
+/** Columna del ritual, antes o después del mercado. */
 function RitualColumn({
   title,
   items,
@@ -293,10 +277,7 @@ function RitualColumn({
   );
 }
 
-/* ============================================================
-   Compliance ring — SVG circular progress with animated stroke.
-   ============================================================ */
-
+/** Anillo de cumplimiento con el trazo animado. */
 function ComplianceRing({ pct, label }: { pct: number; label: string }) {
   const { lang } = useLang();
   const alVer = useAlVer<HTMLDivElement>();
@@ -364,10 +345,7 @@ function ComplianceRing({ pct, label }: { pct: number; label: string }) {
   );
 }
 
-/* ============================================================
-   Traffic light — green / amber / red.
-   ============================================================ */
-
+/** Semáforo de disciplina: verde, ámbar o rojo. */
 function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
   const { lang } = useLang();
   const label =
@@ -393,10 +371,8 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
       role="status"
       aria-label={label}
     >
-      {/* El alojamiento del semáforo es un HUECO: un rebaje en el material,
-          no una pieza negra pegada encima. Atado al tinte del sistema y a
-          la sombra tonal, se lee como rebaje en los dos temas; en negro
-          fijo era una mancha sobre el papel claro. */}
+      {/* El alojamiento es un rebaje atado al tinte del sistema, legible en los
+          dos temas; en negro fijo era una mancha sobre el papel claro. */}
       <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[2px] bg-[rgb(var(--divider)/0.10)] border border-[rgb(var(--divider)/0.1)]">
         {lights.map((l) => {
           const active = l.key === level;
@@ -426,10 +402,7 @@ function TrafficLight({ level }: { level: "green" | "amber" | "red" }) {
   );
 }
 
-/* ============================================================
-   Diverging bar — in-plan vs out-of-plan expectancy
-   ============================================================ */
-
+/** Barra divergente: expectativa dentro del plan a la izquierda, fuera a la derecha. */
 function DivergingBar({
   inPlan,
   outPlan,
@@ -456,10 +429,7 @@ function DivergingBar({
   );
 }
 
-/* ============================================================
-   P&L bar chart (weekly / monthly)
-   ============================================================ */
-
+/** Barras de P&L semanal o mensual. */
 function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
   const { lang } = useLang();
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
@@ -512,10 +482,7 @@ function PnlBarChart({ data }: { data: { label: string; pnl: number }[] }) {
   );
 }
 
-/* ============================================================
-   History timeline — derived from TRADES grouped by day
-   ============================================================ */
-
+// Historial: las operaciones agrupadas por día.
 interface HistoryEntry {
   key: string;
   date: Date;
@@ -563,12 +530,7 @@ function buildHistory(trades: Trade[]): HistoryEntry[] {
     });
 }
 
-/* ============================================================
-   Daily check-in — sleep stepper + segmented mental/physical
-   meters + plan toggle (mirrors the real JournalPage.xaml
-   CHECK-IN DEL DÍA card, M10-A4).
-   ============================================================ */
-
+// Check-in del día (tarjeta CHECK-IN DEL DÍA de JournalPage.xaml): sueño, estado mental y físico y plan.
 function SegmentedMeter({
   value,
   onChange,
@@ -735,11 +697,8 @@ function PlanToggle({
             className={`absolute top-0.5 motion-safe:transition-[left] motion-safe:duration-300 motion-safe:ease-[cubic-bezier(0.22,1,0.36,1)] ${
               on ? "left-[1.375rem]" : "left-0.5"
             } w-5 h-5 rounded-[2px] ${
-              // La manecilla se define por CONTRASTE con su propia pista, no
-              // por un blanco fijo: sobre el acento va la tinta que el
-              // sistema reserva para escribir encima del acento, y sobre la
-              // pista de aviso va la tinta normal. Así se ve en los dos
-              // temas — el blanco fijo desaparecía en el claro.
+              // Contraste con su pista, no blanco fijo (desaparecía en el tema
+              // claro): tinta de acento sobre el acento, tinta normal sobre el aviso.
               on ? "bg-[rgb(var(--accent-ink))]" : "bg-[rgb(var(--txt-primary))]"
             }`}
           />
@@ -809,21 +768,16 @@ function CrossCell({
   );
 }
 
-/* ============================================================
-   Main JournalPage
-   ============================================================ */
-
 export function JournalPage() {
   const { t, lang } = useLang();
   const alVer = useAlVer<HTMLElement>();
 
-  // Check-in state — mirrors the real app's JournalViewModel.
+  // Estado del check-in, como el JournalViewModel de la app.
   const [sleepHours, setSleepHours] = useState(7.0);
   const [mental, setMental] = useState(4);
   const [physical, setPhysical] = useState(3);
   const [hasPlan, setHasPlan] = useState(true);
 
-  // Ritual state
   const [preState, setPreState] = useState<Record<string, boolean>>({
     plan: true,
     limits: true,
@@ -840,7 +794,6 @@ export function JournalPage() {
   const [preNote, setPreNote] = useState("");
   const [postNote, setPostNote] = useState("");
 
-  // Review tab
   const [tab, setTab] = useState<"weekly" | "monthly">("weekly");
 
   const weekly = useMemo(
@@ -875,11 +828,9 @@ export function JournalPage() {
 
   const trafficLevel = ({ alta: "green", media: "amber", baja: "red" } as const)[nivelDisciplina(compliancePct)];
 
-  // Deterministic cross-comparison values for the check-in card.
-  // These mirror the real app's Sleep×Result / Mental×Result / Physical×Result
-  // / Plan×Result breakdowns, computed deterministically from the dataset.
+  // Cruces sueño, mental, físico y plan × resultado, deterministas sobre la muestra.
   const cross = useMemo(() => {
-    // Sueño y estado físico se derivan de la nota del día con un desvío fijo por
+    // Sueño y estado físico salen de la nota del día con un desvío fijo por
     // operación, para que cada cruce agrupe operaciones distintas.
     const avg = (arr: Trade[]) =>
       arr.length ? arr.reduce((s, t) => s + t.netPnl, 0) / arr.length : 0;
@@ -910,9 +861,8 @@ export function JournalPage() {
     };
   }, [lang]);
 
-  // 30-day check-in streak strip (deterministic). The LCG state is
-  // kept INSIDE the memo closure so it's never reassigned across the
-  // component render (satisfies react-hooks/immutability).
+  // Tira de racha de check-in de 30 días, determinista. El estado del LCG va
+  // dentro del memo para no reasignarse entre renders (react-hooks/immutability).
   const streakStrip = useMemo(() => {
     const state = { s: 20260716 };
     const rnd = () => {
@@ -944,9 +894,7 @@ export function JournalPage() {
     return best;
   }, [streakStrip]);
 
-  // Monthly compliance trend (last 6 months, deterministic).
-  /* Antes: cinco fracciones escritas a mano y, bajo «Jul», el cumplimiento
-     de los 180 días enteros. */
+  // Tendencia mensual de cumplimiento, calculada sobre la muestra.
   const complianceTrend = useMemo(() => {
     const mes = new Intl.DateTimeFormat(LOCALE_FECHA[lang], { month: "short", timeZone: "UTC" });
     return cumplimientoMensual(TRADES).map((m) => {
@@ -964,15 +912,12 @@ export function JournalPage() {
 
   return (
     <div className="relative p-5 md:p-6 space-y-5">
-      {/* Header */}
       <Reveal>
         <header className="space-y-3 relative">
           <div className="relative">
             <Eyebrow>{t("journalEyebrow")}</Eyebrow>
-            {/* h2 y no h1: esta es una pantalla SIMULADA dentro de la página de
-                la demo. El h1 del documento es el titular de esa página, y dos
-                h1 rompen el esquema de encabezados —lectores de pantalla y
-                buscadores lo usan para entender la jerarquía—. */}
+            {/* h2 y no h1: es una pantalla simulada dentro de la página de la
+                demo, cuyo h1 es el del documento; dos h1 rompen la jerarquía. */}
             <h2 className="font-medium tracking-[-0.02em] text-primary text-2xl md:text-3xl">
               {t("journalTitle")}
             </h2>
@@ -986,13 +931,6 @@ export function JournalPage() {
         </header>
       </Reveal>
 
-      {/* ===========================================================
-          DAILY CHECK-IN — mirrors the real app's CHECK-IN DEL DÍA card.
-          Sleep (stepper ±0.5h) | Mental state (5-seg) | Physical state
-          (5-seg) | Plan toggle, then cross-comparison strip showing
-          sleep×result / mental×result / physical×result / plan×result
-          with low/high averages and the 30-day streak strip.
-          =========================================================== */}
       <Reveal delay={0.05}>
         <div className="demo-card p-5 md:p-6">
           <div className="space-y-5">
@@ -1029,9 +967,6 @@ export function JournalPage() {
               <PlanToggle on={hasPlan} onToggle={() => setHasPlan((p) => !p)} />
             </div>
 
-            {/* Cross-comparison grid — mirrors the real app's
-                Sleep×Expectancy + Mental×Result + Physical×Result +
-                Plan×Result cross row. */}
             <div className="pt-4 border-t border-[rgb(var(--divider)/0.1)]">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <CrossCell
@@ -1069,23 +1004,15 @@ export function JournalPage() {
               </div>
             </div>
 
-            {/* 30-day streak strip — mirrors the real app's
-                CheckinStrip with current/best streak counts. */}
             <div className="pt-4 border-t border-[rgb(var(--divider)/0.1)]">
               <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
                 <span className="text-[10px] uppercase tracking-[0.14em] text-tertiary">
                   {L("Constancia del check-in · 30 días", "Check-in consistency · 30 days")}
                 </span>
-                {/* `flex-wrap`: las dos pastillas juntas piden 5 px mas de
-                    los que hay a 320 px y la segunda se salia. Bajar de
-                    linea no cuesta nada; recortar una racha, si. */}
+                {/* `flex-wrap`: las dos pastillas piden 5 px más de los que hay a 320 px. */}
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Current streak — accent-tinted pill so the count reads
-                      as the strip's focal point. */}
-                  {/* Etiquetas en `text-secondary`, no `text-tertiary`: la
-                      terciaria se calibra para el fondo plano de la página,
-                      y aquí se apoya en el tinte del acento — un paso más
-                      de tinta es lo que le devuelve el margen. */}
+                  {/* Etiquetas en `text-secondary`: la terciaria se calibra para el
+                      fondo plano y aquí se apoya en el tinte del acento. */}
                   <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-[2px] bg-[rgb(var(--accent-base)/0.12)] border border-[rgb(var(--accent-base)/0.3)]">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-secondary">
                       {L("Actual", "Current")}
@@ -1097,7 +1024,6 @@ export function JournalPage() {
                       {L("días", "days")}
                     </span>
                   </span>
-                  {/* Best streak — neutral pill. */}
                   <span className="inline-flex items-center gap-1.5 px-2.5 h-7 rounded-[2px] bg-[rgb(var(--divider)/0.04)] border border-[rgb(var(--divider)/0.1)]">
                     <span className="text-[10px] uppercase tracking-[0.12em] text-tertiary">
                       {L("Mejor", "Best")}
@@ -1133,17 +1059,13 @@ export function JournalPage() {
         </div>
       </Reveal>
 
-      {/* Daily ritual card */}
       <Reveal delay={0.05}>
         <div className="demo-card p-5 md:p-6">
           <div className="flex items-center justify-between gap-3 mb-5">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
-              {/* `sm:truncate` y no `truncate` a secas: a 320 px estos
-                  titulares perdian hasta 173 px de texto y no quedaba
-                  nada legible. Por debajo de `sm` se parten en dos
-                  lineas; de ahi para arriba caben y el recorte no llega
-                  a actuar. */}
+              {/* `sm:truncate` y no `truncate`: a 320 px los titulares perdían hasta
+                  173 px de texto; bajo `sm` se parten en dos líneas. */}
               <h2 className="font-medium text-primary text-base md:text-lg sm:truncate">
                 {t("ritualTitle")}
               </h2>
@@ -1201,18 +1123,12 @@ export function JournalPage() {
         </div>
       </Reveal>
 
-      {/* Discipline report — HERO + INVOICE */}
       <Reveal delay={0.1}>
         <div className="demo-card relative overflow-hidden p-5 md:p-6">
           <div className="relative space-y-6">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div className="flex items-center gap-2 min-w-0">
                 <span className="w-1 h-5 bg-pnl-warn rounded-[1px] shrink-0" />
-                {/* `sm:truncate` y no `truncate` a secas: a 320 px estos
-                  titulares perdian hasta 173 px de texto y no quedaba
-                  nada legible. Por debajo de `sm` se parten en dos
-                  lineas; de ahi para arriba caben y el recorte no llega
-                  a actuar. */}
               <h2 className="font-medium text-primary text-base md:text-lg sm:truncate">
                   {t("disciplineReport")}
                 </h2>
@@ -1220,7 +1136,6 @@ export function JournalPage() {
               <TrafficLight level={trafficLevel} />
             </div>
 
-            {/* Top row: compliance ring + streak + cost of indiscipline */}
             <div className="grid md:grid-cols-3 gap-6 md:gap-8 items-center">
               <div className="flex flex-col items-center">
                 <ComplianceRing
@@ -1279,12 +1194,10 @@ export function JournalPage() {
                 </div>
               </div>
 
-              {/* Expectancy in-plan vs out-of-plan */}
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
-                  {/* `text-secondary`, no `text-tertiary`: aquí la etiqueta
-                      va sobre el tinte de ganancia/pérdida, no sobre la
-                      página, y la terciaria se queda corta en ese fondo. */}
+                  {/* `text-secondary`: la etiqueta va sobre el tinte de ganancia o
+                      pérdida y la terciaria se queda corta de contraste. */}
                   <div className="rounded-[2px] p-3 bg-pnl-pos/10 border border-pnl-pos/20">
                     <div className="text-[10px] uppercase leading-[1.25] tracking-[0.12em] text-secondary [overflow-wrap:anywhere]">
                       {t("expInPlan")}
@@ -1364,9 +1277,6 @@ export function JournalPage() {
               </p>
             </div>
 
-            {/* ============ COMPLIANCE TREND (monthly) — mirrors the
-                real app's "evolution mensual del cumplimiento" with a
-                labeled progress-bar per month. */}
             <div className="pt-5 border-t border-[rgb(var(--divider)/0.1)]">
               <div className="flex items-center gap-2 mb-4">
                 <span className="w-1 h-4 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
@@ -1412,17 +1322,12 @@ export function JournalPage() {
         </div>
       </Reveal>
 
-      {/* Review tabs */}
       <Reveal delay={0.15}>
         <div className="demo-card p-5 md:p-6">
           <div className="flex items-center justify-between gap-3 flex-wrap mb-5">
             <div className="flex items-center gap-2 min-w-0">
               <span className="w-1 h-5 bg-[rgb(var(--accent-base))] rounded-[1px] shrink-0" />
-              {/* `sm:truncate` y no `truncate` a secas: a 320 px estos
-                  titulares perdian hasta 173 px de texto y no quedaba
-                  nada legible. Por debajo de `sm` se parten en dos
-                  lineas; de ahi para arriba caben y el recorte no llega
-                  a actuar. */}
+              {/* `sm:truncate`, por lo mismo que en el titular del ritual. */}
               <h2 className="font-medium text-primary text-base md:text-lg sm:truncate">
                 {t("review2")}
               </h2>
@@ -1465,8 +1370,6 @@ export function JournalPage() {
             </div>
           </div>
 
-          {/* Al cambiar de pestaña el panel nuevo entra; el viejo no se
-              despide (antes esperaba 0,28 s a que se fuera). */}
           <div
             key={tab}
             role="tabpanel"
@@ -1495,7 +1398,6 @@ export function JournalPage() {
         </div>
       </Reveal>
 
-      {/* History timeline */}
       <Reveal delay={0.2}>
         <div className="demo-card p-5 md:p-6">
           <div className="flex items-center gap-2 mb-5">
@@ -1542,10 +1444,8 @@ export function JournalPage() {
                     <div className="flex items-start gap-3 min-w-0 flex-1">
                       <div className="flex flex-col items-center justify-center w-11 h-11 rounded-[2px] bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] shrink-0">
                         <div className="text-[9.5px] uppercase tracking-[0.14em] text-tertiary leading-none">
-                          {/* En UTC, como el resto de fechas de la
-                              muestra (ver `format.ts`): sin fijarlo, el
-                              taco de calendario y la fecha que lleva al
-                              lado podían decir días distintos. */}
+                          {/* En UTC, como el resto de fechas de la muestra (ver `format.ts`):
+                              si no, el taco y la fecha de al lado podían diferir. */}
                           {entry.date
                             .toLocaleDateString(
                               LOCALE_FECHA[lang],
@@ -1584,14 +1484,9 @@ export function JournalPage() {
                         </p>
                       </div>
                     </div>
-                    {/* `w-full` por debajo de `sm`. La fila son dos grupos: el
-                        de la fecha y la nota, que encoge (`min-w-0 flex-1`), y
-                        este, que no (`shrink-0`). A 390 px, dentro del panel de
-                        la demo, este se llevaba lo suyo y al otro le quedaban
-                        sesenta pixeles: sus rotulos caian a VEINTISEIS px de
-                        ancho y «16 jul 2026» salia en tres renglones, uno por
-                        palabra. Bajando a su propia linea, el grupo de la fecha
-                        recupera el ancho entero. */}
+                    {/* `w-full` bajo `sm`: este grupo es `shrink-0` y a 390 px dejaba 60 px
+                        al de la fecha y la nota, que partía «16 jul 2026» en tres líneas.
+                        En su propia línea, el otro grupo recupera el ancho. */}
                     <div className="flex items-center gap-2 w-full justify-between sm:w-auto sm:justify-start shrink-0">
                       <Chip variant={complianceVariant}>{complianceLabel}</Chip>
                       <div

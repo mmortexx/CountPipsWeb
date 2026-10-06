@@ -1,33 +1,12 @@
 /**
- * PESOS — ¿alguien le pide a una fuente un grosor que no tiene?
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Las dos serif del sitio llevan el eje de grosor RECORTADO a lo que se
- * usa: la redonda a 400–500, la cursiva fija en 400. Eso quitó 42,8 kB y
- * 81,2 kB de fichero sin cambiar un píxel, porque una fuente variable
- * paga por cada tramo del eje aunque nadie lo pise.
- *
- * El precio de ese recorte es un fallo silencioso: si alguien escribe
- * `font-serif font-bold` sobre un titular, la fuente ya no tiene el 700 y
- * el navegador NO avisa — lo finge, engordando los trazos por su cuenta.
- * Queda una negrita falsa, sucia y desigual, que no rompe ninguna prueba
- * y que nadie mira porque «la letra está en negrita, ¿no?».
- *
- * Así que esta guarda recorre el sitio compuesto, mira qué grosor pide de
- * verdad cada elemento que usa una de esas familias, y lo contrasta con el
- * rango que `src/app/layout.tsx` declara para ella. Los dos números salen
- * de ahí: no hay ninguno escrito a mano en este fichero, de modo que si
- * mañana se vuelve a ampliar el eje, basta con cambiar el `weight` de
- * `layout.tsx` y esta guarda se adapta sola.
- *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * Nada: se escribió a la vez que el recorte, y sirvió para justificarlo.
- * Medidos 104 elementos a 500, 2 a 400 y 2 en cursiva a 400, en trece
- * rutas. Se vio en rojo pidiendo un 700 a mano antes de darla por buena.
- *
- * ── Lo que NO mira ────────────────────────────────────────────────────
- * Las familias sin recortar (Instrument Sans, Geist Mono): ahí el eje
- * está entero y no hay nada que se pueda pedir de más.
+ * PESOS: comprueba que ningún elemento pida a la serif (Newsreader) un grosor
+ * que la fuente no trae. La redonda va recortada a 400–500 y la cursiva fija
+ * en 400; si alguien escribe `font-serif font-bold`, el navegador no avisa y
+ * finge una negrita falsa. La guarda mide el grosor real de cada elemento
+ * compuesto y lo contrasta con el rango que declara `src/app/layout.tsx`, la
+ * única fuente de esos números: si se amplía el eje, basta cambiar el `weight`
+ * de `layout.tsx`.
+ * No mira las familias sin recortar (Instrument Sans, Geist Mono).
  *
  * Uso:  node scripts/pesos.mjs --serve out
  */
@@ -40,9 +19,7 @@ const args = process.argv.slice(2);
 const dir = args.includes("--serve") ? args[args.indexOf("--serve") + 1] : "out";
 const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
-/* Rutas con serif de sobra: portadas de los dos idiomas, las páginas con
-   titular grande, el glosario, la demo y el 404, que compone su cifra con
-   la serif y es la que más fácil se olvida. */
+// Rutas con serif de sobra: portadas de los dos idiomas, páginas con titular grande, glosario y demo.
 const RUTAS = [
   "/", "/pricing", "/features", "/features/metricas", "/about", "/beta",
   "/glosario", "/glosario/expectancy", "/herramientas",
@@ -98,8 +75,7 @@ async function rangosDeclarados() {
 }
 
 const declarados = await rangosDeclarados();
-/* Solo las familias con el eje recortado. Si una declara el rango completo
-   de su fichero, no hay nada que pedirle de más. */
+// Solo las familias con el eje recortado.
 const VIGILADAS = declarados.filter((d) => /Newsreader/i.test(d.familia));
 if (!VIGILADAS.length) {
   console.log("[pesos] no se encontró ninguna declaración de Newsreader en src/app/layout.tsx");
@@ -176,8 +152,7 @@ for (const [regla, casos] of Object.entries(porRegla)) {
 }
 
 console.log(`\n[pesos] ${rutasVistas} de ${RUTAS.length} rutas · ${elementos} elementos compuestos con la serif`);
-/* Si no encuentra elementos, algo se rompió: la serif está en todos los
-   titulares del sitio. Una guarda que no mide nada pasa siempre. */
+// La serif está en todos los titulares: sin elementos, algo se rompió; una guarda que no mide pasa siempre.
 if (elementos < 50) {
   console.log(`[pesos] solo ${elementos} elementos con la serif: se esperaban decenas. ¿Cambió la familia o falló la carga?`);
   process.exit(1);

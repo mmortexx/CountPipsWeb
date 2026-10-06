@@ -1,36 +1,17 @@
 /**
- * ANUNCIOS — lo que cambia en pantalla, ¿lo oye quien no la ve?
+ * ANUNCIOS: comprueba que lo que cambia en pantalla lo oye quien usa un lector
+ * (WCAG 4.1.3). Las herramientas recalculan mientras se teclea; el resultado
+ * debe acabar dicho en una región viva. Tres comprobaciones:
+ *  1. Al tocar una entrada, el resultado se anuncia en una región viva.
+ *  2. Al cargar la página la región está vacía: un `role="status"` con texto
+ *     inicial se lee encima del titular.
+ *  3. El anuncio usa la convención numérica de su idioma. Se genera en el
+ *     navegador y `cifras.mjs`, que lee el HTML compilado, no lo ve.
+ * Además cubre el test de disciplina y los buscadores del glosario y la FAQ.
  *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Las herramientas del sitio recalculan mientras se teclea. Quien
- * usa un lector de pantalla no ve ese cambio: si no está dentro de una
- * región que el lector anuncie, teclea sus datos y no se entera de que
- * el resultado ya está ahí. Es el criterio 4.1.3 de WCAG, y no lo caza
- * ninguna revisión visual porque en pantalla todo se ve bien.
- *
- * ── Qué encontró el día que se escribió (2026-09-20) ──────────────────
- * Las cinco calladas. Al tocar una entrada cambiaban entre 6 y 19 líneas
- * de texto, y ninguna estaba dentro de una región viva. La calculadora
- * de riesgo anunciaba el error de validación —`role="alert"`— pero no el
- * número, que es a lo que se va.
- *
- * ── Las tres cosas que comprueba, y por qué las tres ──────────────────
- *  1. Que al tocar una entrada el resultado acabe dicho en una región
- *     viva. Es el fallo original.
- *  2. Que al CARGAR la página esa región esté vacía. Un `role="status"`
- *     que nace con texto dentro lo leen algunos lectores nada más
- *     entrar, por encima del titular, sin que nadie haya hecho nada.
- *  3. Que el anuncio use la convención numérica de SU idioma. Es texto
- *     que se genera en el navegador, así que `cifras.mjs` —que lee el
- *     HTML compilado— no lo ve: aquí se escribiría «$1,234.50» en la
- *     página española sin que nada lo denunciara.
- *
- * ── Por qué el retardo, y por qué hay que esperarlo ───────────────────
- * El anuncio se publica ~700 ms después del último cambio, a propósito:
- * React repinta en cada tecla y un `aria-live` directo dispararía una
- * lectura por pulsación. Esta guarda espera más que ese retardo; si
- * alguien lo sube en `ResultadoAnunciado`, hay que subirlo también aquí
- * o esto empezará a fallar sin que nada esté roto.
+ * El anuncio se publica ~700 ms después del último cambio para no leer cada
+ * tecla. Si se sube ese retardo en `ResultadoAnunciado`, hay que subir `ESPERA`
+ * o la guarda fallará sin que nada esté roto.
  *
  * Uso:  node scripts/anuncios.mjs --serve out
  */
@@ -50,10 +31,8 @@ const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 /** Más que el retardo de `ResultadoAnunciado`, con margen. */
 const ESPERA = 1400;
 
-/* Las herramientas salen de la propia compilación, no de una lista a mano:
-   la lista escrita se quedó en siete cuando ya había nueve que calculan, y
-   las dos nuevas pasaron sin que nadie comprobara si anunciaban algo. El
-   reloj de sesiones no recibe datos ni calcula: no tiene resultado que decir. */
+// Las herramientas salen de la compilación, no de una lista a mano. El reloj de
+// sesiones no recibe datos ni calcula: no tiene resultado que anunciar.
 const SIN_RESULTADO = new Set(["reloj-de-sesiones"]);
 const HERRAMIENTAS = readdirSync(join(dir, "herramientas"), { withFileTypes: true })
   .filter((e) => e.isDirectory() && !e.name.startsWith("__") && !SIN_RESULTADO.has(e.name))
@@ -113,7 +92,7 @@ for (const herramienta of HERRAMIENTAS) {
     }
     await p.waitForTimeout(ESPERA);
 
-    /* (2) Recién cargada, la región no puede estar diciendo nada. */
+    // (2) Recién cargada, la región no puede estar diciendo nada.
     const alCargar = await p.evaluate(() =>
       [...document.querySelectorAll('[role="status"], [aria-live="polite"]')]
         .map((e) => (e.textContent || "").trim())
@@ -146,9 +125,7 @@ for (const herramienta of HERRAMIENTAS) {
       texto: document.body.innerText,
     }));
 
-    /* El control de esta guarda: si tocar una entrada no cambia NADA en
-       pantalla, no está midiendo lo que cree — y su respuesta sobre el
-       anuncio no vale. */
+    // Control: si tocar una entrada no cambia nada en pantalla, la guarda no mide lo que cree.
     if (r.texto === antes) {
       sinCambios++;
       fallos.push({ ruta, detalle: "tocar una entrada no cambió nada en pantalla: la guarda no está midiendo lo que cree" });
@@ -160,8 +137,7 @@ for (const herramienta of HERRAMIENTAS) {
       fallos.push({ ruta, detalle: "el resultado cambia y nada lo anuncia" });
     } else {
       conAnuncio++;
-      /* (3) La convención numérica del anuncio, que no viaja en el HTML
-         y por tanto `cifras.mjs` no puede ver. */
+      // (3) La convención numérica del anuncio, que `cifras.mjs` no puede ver.
       const dicho = r.vivos.join(" · ");
       if (idioma === "en") {
         if (/\d[ \u00a0]%/.test(dicho)) fallos.push({ ruta, detalle: `anuncia el % con espacio, a la española: «${dicho.slice(0, 60)}»` });
@@ -176,9 +152,7 @@ for (const herramienta of HERRAMIENTAS) {
   }
 }
 
-/* El test de disciplina no tiene deslizadores: se contesta pregunta a
-   pregunta, y su resultado —la puntuación y el punto flaco— era mudo. Se
-   responde entero y se exige que lo diga, y que no diga nada al cargar. */
+// El test de disciplina se contesta pregunta a pregunta: se responde entero y se exige que anuncie el resultado.
 for (const ruta of ["/test/", "/en/test/"]) {
   const ctx = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
   const p = await ctx.newPage();
@@ -215,10 +189,8 @@ for (const ruta of ["/test/", "/en/test/"]) {
   await ctx.close();
 }
 
-/* Los buscadores del glosario y de la FAQ cambian la lista con cada letra.
-   Hasta el 2026-10-04 no decían cuántos resultados quedaban ni que no
-   quedaba ninguno: había que recorrer la lista para saberlo. Se busca algo
-   que no existe y algo que sí, y se exige oír las dos cosas. */
+// Los buscadores del glosario y la FAQ cambian la lista con cada letra: se busca
+// algo que no existe y algo que sí, y se exige oír ambos resultados.
 const BUSCADORES = [
   { ruta: "/glosario/", campo: "#glos-q", existe: "drawdown", nada: /Ningún término/ },
   { ruta: "/en/glosario/", campo: "#glos-q", existe: "drawdown", nada: /No terms/ },

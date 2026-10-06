@@ -3,11 +3,7 @@ import { sinRuido } from "./estadistica";
 /** Racha máxima de pérdidas al nivel de confianza fijado en el motor. */
 export const CONFIANZA_RACHA = 0.99;
 
-/**
- * Techo de lo que un balance proyectado puede enseñar como cifra creíble.
- * Por encima de esto (o si deja de ser finito) la herramienta no lo enseña
- * como número: un capital así ya no es una proyección, es un desbordamiento.
- */
+/** Techo de un balance proyectado que se enseña como cifra: por encima (o si deja de ser finito) es un desbordamiento, no una proyección. */
 export const LIMITE_PROYECCION_USD = 1e12;
 
 export type ModoReinversion = "compound" | "linear";
@@ -67,19 +63,15 @@ export interface ResultadoProyeccion {
   expectancyUsdInitial: number;
   yearlyUsdInitial: number;
   yearlyBreakdown: FilaAnual[];
-  /** true si en algún mes el balance dejó de ser finito o superó
-   *  `LIMITE_PROYECCION_USD`. El crecimiento NO se recorta cuando esto
-   *  pasa —seguiría creciendo igual sin el límite—, solo se marca para
-   *  que la herramienta deje de enseñar cifras que ya no dicen nada. */
+  /** true si en algún mes el balance dejó de ser finito o superó `LIMITE_PROYECCION_USD`.
+   *  El crecimiento no se recorta: solo se marca para dejar de enseñar la cifra. */
   fueraDeEscala: boolean;
 }
 
 /**
- * Motor cuantitativo de EquityProjector, extraído a función pura.
- *
- * Con expectancy y riesgo por operación altos, un horizonte largo y muchas
- * operaciones al año, el interés compuesto mensual desborda el balance a
- * Infinity antes de terminar la simulación (ver `fueraDeEscala`).
+ * Motor cuantitativo de EquityProjector, como función pura. Con expectancy y
+ * riesgo altos y un horizonte largo el balance puede desbordar a Infinity
+ * (ver `fueraDeEscala`).
  */
 export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   const {
@@ -182,11 +174,8 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
     fueraDeEscala = true;
   }
 
-  /* Tasa anual ponderada por tiempo: se encadena la rentabilidad de cada
-     mes descontando lo que entró como aporte, que es como se mide una
-     estrategia. Dividir el saldo final entre el inicial contaba los
-     aportes como rentabilidad: 130.000 $ ingresados con expectancy
-     negativa daban un CAGR del +20,5 %. */
+  // Tasa anual ponderada por tiempo: se encadena la rentabilidad de cada mes
+  // descontando los aportes, que no son rentabilidad.
   let factorAcumulado = 1;
   for (let m = 1; m < monthlyPoints.length && factorAcumulado > 0; m++) {
     const antes = monthlyPoints[m - 1].balance;
@@ -206,9 +195,7 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
       ? (1 - Math.pow(1 - perdidaPorOp, maxConsecLosses)) * 100
       : Math.min(100, maxConsecLosses * perdidaPorOp * 100);
 
-  /* Lo que tarda el resultado de la estrategia, sin aportes, en igualar el
-     balance inicial, con la misma regla que dibuja la curva: compuesto
-     multiplica cada mes, riesgo fijo suma cada mes lo mismo. */
+  // Meses que tarda la estrategia, sin aportes, en duplicar el balance inicial, con la regla de la curva: compuesto multiplica, riesgo fijo suma.
   let monthsToDouble: number | null = null;
   if (hasEdge && growthPerTrade > 0 && tradesPerMonth > 0) {
     const meses =
@@ -242,8 +229,7 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
       estDrawdownPct: estMaxDDpct,
     });
   }
-  /* El «primer año» que se anuncia arriba es el año 1 de la tabla: antes
-     se sumaba en lineal aunque la curva compusiera (4.750 $ frente a 6.073 $). */
+  // El «primer año» anunciado es el año 1 de la tabla, no una suma lineal.
   const yearlyUsdInitial = yearlyBreakdown[0]?.yearProfit ?? expectancyUsdInitial * tradesPerYear;
 
   return {

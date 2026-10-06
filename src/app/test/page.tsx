@@ -6,16 +6,8 @@ import { QUESTIONS } from "@/lib/trading/disciplineQuestions";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /test — el diagnóstico de disciplina, con página propia.
- *
- * Vivía enterrado al final de `/features/disciplina`, donde solo lo
- * encontraba quien ya había leído la página entera. Es la pieza que más
- * engancha del sitio —el visitante sale con una cifra suya y un siguiente
- * paso concreto—, así que tiene entrada en la navegación principal y
- * dirección propia que compartir.
- *
- * La página es deliberadamente corta: el diagnóstico y poco más. Meterle
- * secciones alrededor competiría con lo único que se ha venido a hacer.
+ * /test: el diagnóstico de disciplina, con página propia y deliberadamente
+ * corta (más secciones competirían con lo único que se viene a hacer).
  */
 
 const DisciplineScore = dynamic(
@@ -31,12 +23,8 @@ const breadcrumbSchema = {
   ],
 };
 
-/* Datos estructurados de cuestionario. Google entiende `Quiz` y puede
-   mostrarlo como resultado enriquecido; describe lo que la página HACE,
-   no lo que dice, que es la diferencia entre un test y un artículo.
-   `educationalLevel` con texto libre («beginner to advanced») no es un
-   valor que el vocabulario reconozca — se retira en vez de dejar un
-   campo que no aporta nada a cambio de parecer más completo. */
+// Datos estructurados `Quiz` (resultado enriquecido). No lleva
+// `educationalLevel`: el vocabulario no reconoce texto libre.
 const quizSchema = {
   "@context": "https://schema.org",
   "@type": "Quiz",
@@ -48,30 +36,14 @@ const quizSchema = {
   inLanguage: "es",
   url: `${SITE_URL}/test/`,
   publisher: { "@type": "Organization", name: "CountPips" },
-  /* `hasPart` con las quince preguntas es lo que exige el vocabulario de
-     `Quiz` para el resultado enriquecido — sin él, el bloque entero es
-     válido pero no genera nada visible en el buscador. Las preguntas se
-     importan de `DisciplineScore`, que es donde viven de verdad: si un
-     día cambia una pregunta ahí, este bloque cambia solo. */
+  // `hasPart` con las preguntas (de `DisciplineScore`) es lo que da el
+  // resultado enriquecido.
   hasPart: QUESTIONS.map((q) => ({
     "@type": "Question",
     text: q.qEs,
-    /* ── LA RESPUESTA MARCADA ES LA ÚLTIMA, NO LA PRIMERA ──────────────
-       Aquí iba `q.options[0]`, razonando que al ser una autoevaluación
-       no hay respuesta correcta y que cualquiera valía para dar por
-       válido el marcado. El razonamiento tiene un fallo: en el
-       vocabulario de schema.org `acceptedAnswer` significa exactamente
-       "la respuesta correcta", y las opciones van declaradas de peor a
-       mejor conducta (ver el tipo `Q` en disciplineQuestions.ts). Así
-       que se estaba publicando "No lo calculo" como la respuesta
-       correcta a "¿sabes cuánto dinero pierdes si sale mal?", en un
-       test de disciplina de una web de trading. Si el buscador llegara
-       a mostrarlo, diría justo lo contrario de lo que enseña la página.
-
-       La última opción es la conducta disciplinada, y ésa sí es la
-       respuesta que el producto defiende. Las demás pasan a
-       `suggestedAnswer`, que es donde el vocabulario espera las
-       alternativas: el marcado queda más completo y deja de mentir. */
+    // `acceptedAnswer` es «la respuesta correcta» en schema.org y las opciones
+    // van de peor a mejor conducta (tipo `Q` en disciplineQuestions.ts): se
+    // marca la última, y las demás van en `suggestedAnswer`.
     acceptedAnswer: {
       "@type": "Answer",
       text: q.options[q.options.length - 1].es,

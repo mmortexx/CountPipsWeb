@@ -12,12 +12,8 @@ declare global {
 
 export function trackEvent(event: string, properties: EventProps = {}) {
   if (typeof window === "undefined") return;
-  // Segunda puerta, además de la de `PostHog.tsx`: aunque el script ya
-  // estuviera cargado de una visita anterior, sin consentimiento vigente
-  // no se envía nada. La clave la define `src/lib/consent.ts` — estaba
-  // repetida a mano aquí, y una tercera copia del literal era la forma
-  // más fácil de que la retirada del consentimiento no llegara a este
-  // camino.
+  // Segunda puerta, además de la de `PostHog.tsx`: sin consentimiento vigente
+  // no se envía nada, aunque el script siga cargado de una visita anterior.
   if (!analyticsAllowed()) return;
   window.posthog?.capture(event, {
     ...properties,

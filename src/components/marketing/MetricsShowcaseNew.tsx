@@ -26,7 +26,7 @@ function preparar(c: CifrasMuestra) {
   const TECHOS = c.techos;
   const FECHAS = c.fechas.map((t) => (t === null ? null : new Date(t)));
   const N = SALDOS.length;
-  /* El eje X es de fechas, como en la app: el punto inicial toma la fecha de la primera operación. */
+  /* Eje X de fechas, como en la app: el punto inicial toma la de la primera operación. */
   const T = c.fechas.map((t, i) => t ?? c.fechas.find((x, j) => j > i && x !== null) ?? 0);
   const REND = SALDOS.map((v) => v - INICIAL);
   const TECHO_REND = TECHOS.map((v) => v - INICIAL);
@@ -239,11 +239,8 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
             style={{ left: xPct(CIMA), width: `${((geo.px(VALLE) - geo.px(CIMA)) / W) * 100}%` }}
           >
             <span className="tnum">
-              {/* «Max drawdown» en los dos idiomas: es como lo titula su
-                  ficha del glosario, y es la etiqueta que usa la rejilla de
-                  métricas de esta misma pantalla. Decía «Drawdown máx.»
-                  aquí y «Max drawdown» treinta píxeles más abajo, para la
-                  misma cifra. */}
+              {/* «Max drawdown» en los dos idiomas, como la ficha del glosario y la
+                  rejilla de métricas de esta pantalla. */}
               Max drawdown −{fmtPct(METRICS.maxDrawdownPct, lang, 1)}
             </span>
           </div>
@@ -379,9 +376,8 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
   const [todas, setTodas] = useState(false);
   const id = useId();
   /* En móvil, fuera de la página de métricas, el panel enseña las cuatro
-     cifras que definen el riesgo y deja el resto a un toque: ocho cifras
-     en cuatro filas eran una pantalla entera de panel antes de llegar a la
-     primera sección. En la página de métricas se ven todas siempre. */
+     cifras de riesgo y deja el resto a un toque. En la página de métricas se
+     ven todas siempre. */
   const secundarias = new Set(["sortino", "omega", "calmar", "payoff"]);
   const recoge = !enPagina;
 
@@ -397,11 +393,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst drawdown." },
     {
       id: "expectancy",
-      /* «Expectancy» también en español: es como la nombran las otras
-         dieciséis páginas del sitio y como se titula su ficha del
-         glosario. Decía «Esperanza», y era el único sitio que lo hacía:
-         quien la leía aquí y luego la buscaba en el glosario no la
-         encontraba con ese nombre. */
+      /* «Expectancy» también en español, como en el resto del sitio y el glosario. */
       l: "Expectancy",
       v: fmtR(METRICS.expectancyR, lang, 2),
       f: "WR·W̄ − (1−WR)·L̄",
@@ -418,20 +410,16 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
       c: "rgb(var(--pnl-neg))",
       enlaza: "maxDd",
     },
-    /* «Win rate» también en español, por lo mismo que «Expectancy» de
-       arriba: así se titula su ficha del glosario y así la nombran otras
-       quince páginas. Decía «Ganadoras», solo aquí.
-       La FÓRMULA sí se traduce («G / N»), igual que «Σ ganancias / Σ
-       pérdidas» en Omega: eso son letras, no el nombre de la métrica. */
+    /* «Win rate» también en español, como «Expectancy». La fórmula sí se
+       traduce («G / N»): son letras, no el nombre de la métrica. */
     { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed at a profit.", enlaza: "winRate" },
     { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: es ? "Ganancia media frente a pérdida media." : "Average win against average loss." },
   ];
 
   const pista: Record<Exclude<Enfoque, null>, Vista> = { maxDd: "curva", expectancy: "dist", winRate: "dist" };
 
-  /* `t-h3` y no `t-h2` (48): esto titula un panel dentro de la portada, no una
-     sección, y al tamaño de sección competiría con el titular del hero. Va
-     al peldaño `t-h3`, el mismo que los paneles de /beta. */
+  /* `t-h3` y no `t-h2`: titula un panel de la portada y, a tamaño de sección,
+     competiría con el titular del hero (mismo peldaño que los paneles de /beta). */
   const titulo = (
     <h2
       className={enPagina ? "sr-only" : "m-0 t-h3 text-primary"}

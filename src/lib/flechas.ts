@@ -26,11 +26,9 @@ export function destinoConFlechas(tecla: string, actual: number, total: number, 
   }
 }
 
-/** Mueve la elección y el foco a la vez, como un grupo nativo: la
- *  selección sigue al foco. Un lector anuncia «1 de 4» al entrar en el
- *  grupo, así que sin esto se prometía un teclado que no existía.
- *  El grupo es el `radiogroup` o `tablist` más cercano, y cada opción debe
- *  llevar `tabIndex` 0 si es la elegida y −1 si no: una parada por grupo. */
+/** Mueve la elección y el foco a la vez, como un grupo nativo (la selección
+ *  sigue al foco). El grupo es el `radiogroup` o `tablist` más cercano y cada
+ *  opción lleva `tabIndex` 0 si es la elegida y −1 si no: una parada por grupo. */
 export function moverConFlechas(e: KeyboardEvent<HTMLElement>, actual: number, elegir: (i: number) => void): void {
   const grupo = e.currentTarget.closest('[role="radiogroup"],[role="tablist"]');
   if (!grupo) return;

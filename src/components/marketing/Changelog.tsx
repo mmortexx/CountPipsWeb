@@ -117,9 +117,8 @@ export function Changelog() {
             : "Separated into delivered, early access and future. No invented testimonials or dates: we update this page when there is evidence."}
         />
 
-        {/* `clip` y no `hidden` — misma razón que en `DemoCapabilities`:
-            `hidden` abre contenedor de desplazamiento y deja sin entrada
-            a los hitos de dentro (cuatro, medidos en /about). */}
+        {/* `clip` y no `hidden` (como en `DemoCapabilities`): `hidden` abre un
+            contenedor de desplazamiento y los hitos de dentro pierden la entrada. */}
         <ol className="relative mt-14 m-0 border-t border-[var(--line)] p-0">
           {entries.map((entry) => {
             const isPast = entry.stage === "delivered";
@@ -146,8 +145,7 @@ export function Changelog() {
                 >
                   {entry.description}
                 </p>
-                {/* El estado, en la misma columna para las cinco filas: iba
-                    debajo del título en tres y a la derecha en dos. */}
+                {/* El estado va en la misma columna en todas las filas. */}
                 <span className="sm:justify-self-end">
                   {!isPast && !isPilot ? (
                     <SelloPrevisto es="Previsto" en="Planned" />

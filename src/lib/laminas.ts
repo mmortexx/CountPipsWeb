@@ -1,38 +1,14 @@
 import type { LaminaProducto } from "@/components/tj/ProductPlate";
 
 /**
- * Las láminas del producto: qué captura se enseña, con qué número, qué dice
- * su pie y qué detalle se enseña en su lugar cuando la pantalla es estrecha.
+ * Láminas del producto: qué captura se enseña, con qué número, qué dice su
+ * pie y qué detalle se enseña cuando la pantalla es estrecha.
  *
- * ── REGLA: SOLO SE DESCRIBE LO QUE SE HA MIRADO ───────────────────────
- * Cada entrada de aquí la escribió alguien después de abrir el `.png`
- * original y leer lo que había dentro. No se deduce del nombre del fichero.
- * Un pie que describe una pantalla que no es la que se ve es peor que no
- * poner pie, porque el visitante SÍ ve la captura y detecta el desajuste.
- *
- * Las siete están abiertas y miradas, una por una, sobre las capturas de
- * septiembre de 2026. Las de agosto enseñaban otra maqueta —tres bandas de
- * aviso, fichas de playbook de colores, el parte del día arriba del
- * resumen— y sus pies ya no describían lo que se ve.
- *
- * ── LAS CIFRAS DE LA APP NO SON LAS DE LA WEB ─────────────────────────
- * La aplicación de las capturas trabaja sobre su propio juego de datos de
- * muestra (200 operaciones, profit factor 1,45) y el motor de la web sobre
- * el suyo. Son muestras distintas, no una contradicción — pero por eso los
- * pies NO repiten cifras: dentro de la captura un número es «lo que este
- * programa calcula», y sacarlo fuera lo convertiría en dos verdades que no
- * cuadran.
- *
- * ── LO QUE ESTAS SIETE PANTALLAS TIENEN EN COMÚN ──────────────────────
- * Al mirarlas seguidas aparece un patrón que es, con diferencia, lo mejor
- * que tiene el producto: la aplicación DICE CUÁNDO NO SABE y OBJETA ANTES
- * DE QUE PULSES. «No concluyente» en dos fichas del playbook —una de ellas
- * con dinero ganado—, «Aún no hay suficientes check-ins», «Todavía no hay
- * días suficientes en los dos lados para comparar», y dos avisos cuando el
- * tamaño de la operación se sale de lo que tú sueles hacer. Un diario que en vez de
- * rellenar el hueco con una cifra te dice que aún no la tiene. Los pies
- * están escritos para que eso se note, porque es lo que separa a este
- * producto de los que prometen una ventaja el primer día.
+ * Cada pie y cada `alt` describe solo lo que se ve en el `.png` original, no
+ * lo que sugiere el nombre del fichero: un pie que no casa con la captura
+ * es peor que no tenerlo. Hay que revisarlos al regenerar las capturas.
+ * Los pies no repiten cifras: la app de las capturas usa su propio juego de
+ * datos de muestra y el motor de la web otro, y dos cifras darían dos verdades.
  */
 export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
   resumen: {

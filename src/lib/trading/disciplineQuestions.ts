@@ -1,29 +1,15 @@
 /**
- * Las quince preguntas del test de disciplina.
- *
- * ── Por qué viven en un fichero aparte, y no dentro de DisciplineScore.tsx ──
- * Estaban ahí, y funcionaba mientras solo las consumía ese componente.
- * Dejó de funcionar el día que `/test` necesitó las mismas preguntas para
- * construir el dato estructurado `Quiz` de Google: `DisciplineScore.tsx`
- * lleva `"use client"`, y un componente de servidor no puede importar un
- * valor plano — un array, un tipo— desde un módulo de cliente. En el
- * servidor, ese módulo se sustituye por un sustituto que solo sabe hacer
- * de componente; `QUESTIONS.map` deja de ser una función y la
- * compilación entera falla.
- *
- * La solución no es evitar que el servidor importe los datos: es que los
- * datos no vivan en un módulo de cliente. Aquí no hay `"use client"`, así
- * que tanto `DisciplineScore` (que los pinta) como `app/test/page.tsx`
- * (que construye el `Quiz` a partir de ellos) los importan sin problema.
- * Es el mismo patrón que ya usan el glosario y las herramientas: los
- * datos en `src/lib/`, la presentación en `src/components/`.
+ * Las quince preguntas del test de disciplina. Viven sin `"use client"` a
+ * propósito: `DisciplineScore` las pinta y `app/test/page.tsx` (servidor) las
+ * usa para el dato estructurado `Quiz`, y un componente de servidor no puede
+ * importar valores planos de un módulo de cliente.
  */
 
 export type DimId = "riesgo" | "plan" | "registro" | "temple" | "constancia";
 
 export type Q = {
   dim: DimId;
-  /* 1 a 3. Cuánto revela esta pregunta sobre el eje. */
+  /* De 1 a 3: cuánto revela la pregunta sobre su eje. */
   weight: number;
   qEs: string;
   qEn: string;
@@ -32,7 +18,6 @@ export type Q = {
 };
 
 export const QUESTIONS: Q[] = [
-  /* ── RIESGO ──────────────────────────────────────────────────────── */
   {
     dim: "riesgo",
     weight: 3,
@@ -70,7 +55,6 @@ export const QUESTIONS: Q[] = [
     ],
   },
 
-  /* ── PLAN ────────────────────────────────────────────────────────── */
   {
     dim: "plan",
     weight: 3,
@@ -108,7 +92,6 @@ export const QUESTIONS: Q[] = [
     ],
   },
 
-  /* ── REGISTRO ────────────────────────────────────────────────────── */
   {
     dim: "registro",
     weight: 2,
@@ -146,7 +129,6 @@ export const QUESTIONS: Q[] = [
     ],
   },
 
-  /* ── TEMPLE ──────────────────────────────────────────────────────── */
   {
     dim: "temple",
     weight: 3,
@@ -184,7 +166,6 @@ export const QUESTIONS: Q[] = [
     ],
   },
 
-  /* ── CONSTANCIA ──────────────────────────────────────────────────── */
   {
     dim: "constancia",
     weight: 2,

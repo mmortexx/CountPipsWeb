@@ -5,17 +5,7 @@ import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { HERRAMIENTAS, herramientasEnLetra } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
-/**
- * /herramientas — las calculadoras, cada una con su dirección.
- *
- * Estaban todas metidas dentro de otras páginas: la de riesgo a media
- * página de métricas, el Monte Carlo al final de disciplina, la de ahorro
- * dentro de precios. Funcionaban, calculaban de verdad, y no había forma
- * de enlazarlas. Son justo el tipo de página que la gente comparte.
- *
- * Siguen apareciendo donde ya aparecían: esto no las mueve, les da además
- * una puerta propia.
- */
+/** /herramientas: las calculadoras, cada una con su dirección propia para poder enlazarlas. */
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -26,9 +16,7 @@ const breadcrumbSchema = {
   ],
 };
 
-/* `ItemList` con las herramientas en orden. Le dice al buscador que esto
-   es un listado y cuáles son sus miembros, en vez de una página suelta con
-   enlaces sueltos. */
+// `ItemList` con las herramientas en orden.
 const listaSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
@@ -74,8 +62,7 @@ export const metadata: Metadata = {
 };
 
 /** Exportado con nombre para que `app/en/herramientas/page.tsx` lo
- *  reutilice. Sin los `<script>` de datos estructurados: cada idioma
- *  lleva los suyos. */
+ *  reutilice. Sin los `<script>` de datos estructurados. */
 export function HerramientasBody() {
   return (
     <>

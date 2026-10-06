@@ -16,23 +16,20 @@ const WEEKDAY_HEADERS_EN = ["M", "T", "W", "T", "F", "S", "S"];
 const MONTHS_ES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 const MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-/** P&L calendar for the most recent active month. */
+/** Calendario de P&L del último mes con operaciones. */
 export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" }: MiniCalendarProps) {
   const { lang } = useLang();
   const [offset, setOffset] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  // Hovered day: day-of-month + anchor point (px, relative to container).
+  // Día señalado: día del mes y punto de anclaje (px, relativo al contenedor).
   const [hovered, setHovered] = useState<{ day: number; x: number; y: number } | null>(null);
 
   const { year, month, days, dailyPnl, maxAbs } = useMemo(() => {
-    // Find the most recent month with trades
     if (!trades.length) return { year: 2026, month: 6, days: 30, dailyPnl: new Map(), maxAbs: 1 };
     const sorted = [...trades].sort((a, b) => b.closedAt.getTime() - a.closedAt.getTime());
     const latest = sorted[0].closedAt;
-    /* Todo el calendario se calcula en UTC, que es el huso en el que
-       `data.ts` fecha las operaciones. Mezclarlo con la hora local movía
-       el mes de arranque —y con él la rejilla entera— según desde dónde
-       se mirara la página. */
+    /* Todo en UTC, el huso en que `data.ts` fecha las operaciones: con hora local
+       el mes de arranque cambiaría según desde dónde se mire. */
     const targetMonth = new Date(
       Date.UTC(latest.getUTCFullYear(), latest.getUTCMonth() + offset, 1)
     );
@@ -46,7 +43,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
   }, [trades, offset]);
 
   const firstWeekday = new Date(Date.UTC(year, month, 1)).getUTCDay(); // 0 Dom .. 6 Sáb
-  // Convert Sunday=0 to Monday=0 based
+  // Pasa de domingo=0 a lunes=0.
   const leadingBlanks = (firstWeekday + 6) % 7;
   const monthName = lang === "es" ? MONTHS_ES[month] : MONTHS_EN[month];
   const weekdayHeaders = lang === "es" ? WEEKDAY_HEADERS_ES : WEEKDAY_HEADERS_EN;
@@ -128,16 +125,10 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
             >
               <span className={pnl !== undefined ? "cal-day-num" : "text-tertiary"}>{day}</span>
               {pnl !== undefined && intensity > 0.25 && (
-                /* El importe va con la clase `cal-day-pnl`, no con el token
-                   de P&L directamente. Motivo: en una celda TINTADA del
-                   color del resultado, escribir el importe en ese MISMO
-                   color es contraste imposible por construcción — verde
-                   sobre verde. En oscuro funciona porque el verde del texto
-                   es neón (#00F5A0) y el tinte es casi negro; en claro los
-                   dos son el mismo #1E7A4C y el número caía a 2,2:1. La
-                   clase deja el color del token en oscuro y pasa a texto
-                   primario en claro, donde el signo lo sigue dando el fondo
-                   de la celda (y el + / − escrito). */
+                /* `cal-day-pnl` y no el token de P&L directo: escrito en el mismo
+                   color que el tinte de la celda el contraste es imposible (en
+                   claro caía a 2,2:1). La clase mantiene el token en oscuro y usa
+                   texto primario en claro; el signo lo dan el fondo y el +/− escrito. */
                 <span className="text-[9.5px] leading-none cal-day-pnl" data-neg={!pos}>
                   {fmtCifraCorta(pnl, lang)}
                 </span>
@@ -147,7 +138,7 @@ export const MiniCalendar = memo(function MiniCalendar({ trades, className = "" 
         })}
       </div>
 
-      {/* Tooltip flotante sobre papel denso above the day cell */}
+      {/* Tooltip sobre la celda del día. */}
       {hovered && (
         <div
           className="absolute pointer-events-none tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] px-3 py-2 text-xs whitespace-nowrap z-10"

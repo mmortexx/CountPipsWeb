@@ -16,15 +16,8 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: TITULO, description: DESCRIPCION },
 };
 
-/* El `WebPage` estaba fijo en la versión española y la inglesa reutiliza
-   este mismo componente, así que `/en/beta/` le declaraba a Google el
-   nombre, la descripción y la URL de la página en español. Ahora el
-   esquema se construye por idioma.
-
-   Y le acompaña el `BreadcrumbList` que faltaba: esta página SÍ enseña sus
-   migas en la cabecera —«Inicio / Acceso anticipado»—, así que ocultarle
-   esa jerarquía al buscador era enseñar dos cosas distintas al visitante y
-   al rastreador. */
+// El esquema se construye por idioma: la versión inglesa reutiliza este
+// componente y no debe declarar nombre, descripción y URL en español.
 function esquemasDe(lang: "es" | "en") {
   const ruta = "/beta/";
   return [

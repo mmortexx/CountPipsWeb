@@ -6,16 +6,9 @@ import { TERMINOS } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /glosario — los términos del registro, cada uno con su dirección.
- *
- * Llevaban escritos desde hace tiempo, en los dos idiomas y con
- * definiciones buenas, encerrados en una ventana emergente que se abre
- * desde el pie. Ni una dirección propia: nadie podía llegar buscando «qué
- * es el drawdown», que es exactamente lo que busca quien empieza.
- *
- * La ventana emergente se queda donde estaba — sirve para consultar sin
- * abandonar la página que estás leyendo. Esto es otra cosa: la puerta por
- * la que entra quien viene de fuera.
+ * /glosario: los términos con dirección propia, para quien llega desde un
+ * buscador. La ventana emergente (`GlossaryModal`) sirve para consultar sin
+ * salir de la página.
  */
 
 const breadcrumbSchema = {
@@ -27,9 +20,7 @@ const breadcrumbSchema = {
   ],
 };
 
-/* `DefinedTermSet` es el tipo que describe un glosario entero. Enumera sus
-   términos para que el buscador entienda que las páginas de dentro son
-   partes de una misma obra y no artículos sueltos. */
+// `DefinedTermSet` describe un glosario entero y enumera sus términos.
 const glosarioSchema = {
   "@context": "https://schema.org",
   "@type": "DefinedTermSet",
@@ -48,8 +39,7 @@ const glosarioSchema = {
 
 export const metadata: Metadata = {
   title: "Glosario de trading",
-  /* La cifra sale de la lista. Escrita a mano decía 51 con 57 términos
-     publicados, y eso es lo que leía el buscador en las tres cabeceras. */
+  // La cifra sale de la lista, no se escribe a mano.
   description: `${TERMINOS.length} términos de trading explicados sin rodeos: riesgo, métricas, ejecución y psicología. Qué significa cada uno y por qué importa al medir tu operativa.`,
   alternates: { canonical: `${SITE_URL}/glosario/`, languages: hreflangDe("/glosario") },
   openGraph: {
@@ -77,8 +67,6 @@ export function GlosarioBody() {
         tono="registro"
         titleEs="Glosario de trading."
         titleEn="Trading glossary."
-        /* La cifra sale de la lista: escrita a mano llegó a contradecir
-           al contador de la caja de búsqueda. */
         subtitleEs={`${TERMINOS.length} términos, definidos como los usa alguien que opera y no como los define un diccionario. El nombre se queda en inglés a propósito: es como aparecen en tu plataforma y en cualquier comunidad.`}
         subtitleEn={`${TERMINOS.length} terms, defined the way someone who trades uses them rather than the way a dictionary does. Grouped into five families, each one written to be read in under a minute.`}
         breadcrumbEs="Glosario"

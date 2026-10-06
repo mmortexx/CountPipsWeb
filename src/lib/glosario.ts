@@ -2,22 +2,9 @@ import { GLOSSARY, type GlossaryCategory, type GlossaryTerm } from "@/lib/tradin
 import { herramientaPorSlug } from "@/lib/herramientas";
 
 /**
- * El glosario, convertido en secciones del sitio.
- *
- * ── Por qué existe este archivo ───────────────────────────────────────
- * Los términos llevaban tiempo escritos, en los dos idiomas y con
- * definiciones de calidad, y solo se veían dentro de una ventana emergente
- * que se abre desde un enlace del pie. Cero direcciones propias, cero
- * posibilidad de que alguien llegue buscando «qué es el drawdown». Era el
- * activo más desaprovechado del proyecto.
- *
- * Aquí no se escribe contenido nuevo: se le da dirección al que ya había.
- *
- * ── Sobre el término en inglés ────────────────────────────────────────
- * El nombre del término NO se traduce, y la dirección tampoco. Es la
- * decisión que ya tomó el glosario original y es la correcta: nadie busca
- * «pérdida de parada», se busca «stop loss» aunque se escriba el resto en
- * español. Lo que cambia con el idioma es la definición.
+ * El glosario como secciones del sitio: cada término tiene su dirección.
+ * El nombre del término y su dirección no se traducen (se busca «stop loss»,
+ * no «pérdida de parada»); lo que cambia con el idioma es la definición.
  */
 
 export type TerminoGlosario = GlossaryTerm & { slug: string };
@@ -43,30 +30,10 @@ export function terminoPorSlug(slug: string): TerminoGlosario | undefined {
 }
 
 /**
- * El `<title>` de una voz del glosario, sin pasarse de largo.
- *
- * ── El problema ───────────────────────────────────────────────────────
- * El patrón «{término}: qué es y por qué importa — CountPips» cuesta 41
- * caracteres fijos, así que cualquier término de más de 19 se sale del
- * ancho que los buscadores muestran (unos 60). De las 155 páginas del
- * sitio, exactamente cuatro se pasaban, y las cuatro por el mismo motivo:
- * MAE y MFE llevan su expansión dentro del nombre —«MAE (Maximum Adverse
- * Excursion)»— y en inglés la cola es aún más larga. El resultado son
- * títulos de 69 a 76 caracteres que Google corta a mitad de frase, justo
- * donde está la promesa de la página.
- *
- * ── Por qué se calcula y no se escribe a mano ─────────────────────────
- * Un campo `tituloCorto` en los datos es una decisión por término que hay que
- * recordar tomar cada vez que se añade una voz, y nadie las va a tomar.
- * Esto se ajusta solo y en el orden que menos duele:
- *
- *   1. El título entero, si cabe.
- *   2. Sin la expansión entre paréntesis: la sigla es lo que se teclea al
- *      buscar, y la expansión ya está en la descripción y en el h1.
- *   3. Con la cola recortada a «qué es», si aún no cabe.
- *
- * El «qué es» se conserva mientras se pueda porque es literalmente como
- * se busca esto: nadie teclea «Drawdown», se teclea «qué es el drawdown».
+ * El `<title>` de una voz del glosario, sin pasar del ancho que muestran los
+ * buscadores. Se calcula para no depender de recordar un campo por término.
+ * Orden: título entero; sin la expansión entre paréntesis (la sigla es lo que
+ * se teclea); con la cola recortada a «qué es».
  */
 export const LARGO_MAXIMO_TITULO = 60;
 
@@ -86,16 +53,11 @@ export function tituloDeTermino(term: string, lang: "es" | "en"): string {
 }
 
 /**
- * La descripción de la ficha de un término (meta description, og y
- * twitter). Se cortaba a 152 caracteres a ciegas y 90 de las 114 fichas
- * acababan a media palabra («what you suffer at the w…»).
- *
- * Ahora es la definición recortada por frases enteras, entre 70 y 155
- * caracteres. Cuando ninguna frase cierra dentro de ese tramo, un recorte
- * automático solo puede dejar media idea o un paréntesis abierto: esos
- * términos llevan su descripción escrita en `DESCRIPCION_A_MANO`, y
- * `tests/glosario-descripciones.test.ts` falla si a un término nuevo le
- * hace falta y no la tiene.
+ * Descripción de la ficha de un término (meta description, og y twitter): la
+ * definición recortada por frases enteras, entre 70 y 155 caracteres. Si
+ * ninguna frase cierra en ese tramo, el término lleva su descripción en
+ * `DESCRIPCION_A_MANO`; `tests/glosario-descripciones.test.ts` falla si un
+ * término nuevo la necesita y no la tiene.
  */
 export const LARGO_MINIMO_DESCRIPCION = 70;
 export const LARGO_MAXIMO_DESCRIPCION = 155;
@@ -103,9 +65,8 @@ export const LARGO_MAXIMO_DESCRIPCION = 155;
 export function cortePorFrases(definicion: string): string | null {
   const texto = definicion.trim();
   if (texto.length <= LARGO_MAXIMO_DESCRIPCION) return texto;
-  /* Fin de frase: punto seguido de mayúscula (o signo) o del final, o un
-     punto y coma, que se cierra con punto. Así «p. ej.» o «0.4» no
-     cuentan como cierre. */
+  // Fin de frase: punto seguido de mayúscula o signo, o del final; o punto y
+  // coma, que se cierra con punto. «p. ej.» o «0.4» no cuentan.
   let corte = -1;
   for (const m of texto.matchAll(/[.!?](?=\s+[A-ZÁÉÍÓÚÑ¿¡«+−]|$)|;(?=\s)/g)) {
     const fin = (m.index ?? 0) + 1;
@@ -229,22 +190,15 @@ export function terminosPorCategoria(cat: GlossaryCategory): TerminoGlosario[] {
   return TERMINOS.filter((t) => t.category === cat);
 }
 
-/**
- * Términos vecinos, para que ninguna página sea un callejón sin salida.
- *
- * Son los de su misma familia, que es la relación que de verdad existe en
- * los datos. No invento parentescos que nadie ha declarado: si un término
- * es de riesgo, sus vecinos son los de riesgo.
- */
+/** Términos vecinos de su misma familia, para que ninguna página sea un callejón sin salida. */
 export function relacionados(slug: string, cuantos = 4): TerminoGlosario[] {
   const t = terminoPorSlug(slug);
   if (!t) return [];
   const mismos = terminosPorCategoria(t.category).filter((x) => x.slug !== slug);
   const i = mismos.findIndex((x) => x.slug > slug);
   const desde = i < 0 ? 0 : i;
-  /* Se empieza por el siguiente alfabético y se da la vuelta al llegar al
-     final: así cada término enseña vecinos distintos y no salen siempre
-     los cuatro primeros de la familia en las trece páginas. */
+  // Se empieza por el siguiente alfabético y se da la vuelta, para que cada
+  // término enseñe vecinos distintos.
   return [...mismos.slice(desde), ...mismos.slice(0, desde)].slice(0, cuantos);
 }
 
@@ -261,13 +215,7 @@ export function vecinos(slug: string): {
   };
 }
 
-/**
- * Dónde continúa cada familia dentro del producto.
- *
- * Un glosario que solo define palabras es una enciclopedia. Este además
- * lleva a la parte del programa que mide ese concepto, que es lo que hace
- * que la visita sirva para algo.
- */
+/** Dónde continúa cada familia dentro del producto. */
 export const SEGUIR_LEYENDO: Record<
   GlossaryCategory,
   { href: string; es: string; en: string }
@@ -300,10 +248,8 @@ export const SEGUIR_LEYENDO: Record<
 };
 
 /**
- * Términos que además tienen una herramienta que los calcula.
- *
- * Solo los que existen de verdad — se comprueban contra las direcciones
- * de `/herramientas`. Un enlace de más aquí sería un 404 en el glosario.
+ * Términos que además tienen una herramienta que los calcula. Solo
+ * direcciones que existen en `/herramientas`: una de más sería un 404.
  */
 export const HERRAMIENTA_DE: Record<string, string> = {
   /* Riesgo y dimensionamiento */
@@ -312,16 +258,11 @@ export const HERRAMIENTA_DE: Record<string, string> = {
   "risk-reward-ratio": "/herramientas/calculadora-de-riesgo",
   "kelly-criterion": "/herramientas/calculadora-de-riesgo",
 
-  /* Varianza y supervivencia. `risk-of-ruin` apuntaba a una herramienta
-     propia que NO existe: no hay tal componente, y el enlace habría sido
-     un 404 servido desde el glosario. El Monte Carlo es donde ese
-     concepto se ve de verdad, porque el riesgo de ruina sale justamente
-     de simular muchos caminos. */
+  /* Varianza y supervivencia: el riesgo de ruina se ve en el Monte Carlo. */
   "risk-of-ruin": "/herramientas/monte-carlo",
   "monte-carlo": "/herramientas/monte-carlo",
   "r-multiple": "/herramientas/monte-carlo",
-  /* El drawdown lleva a lo que cuesta salir de él; el máximo, al Monte
-     Carlo, que es donde se ve cuánto puede llegar a caer. */
+  /* El drawdown lleva a lo que cuesta salir de él; el máximo, al Monte Carlo. */
   drawdown: "/herramientas/recuperacion-de-drawdown",
   "max-drawdown": "/herramientas/monte-carlo",
 
@@ -338,10 +279,7 @@ export const HERRAMIENTA_DE: Record<string, string> = {
 
   /* Horarios */
   "london-session": "/herramientas/reloj-de-sesiones",
-  /* El término se llama «NY session», no «New York session». Escrito a
-     ojo daba una clave que no casaba con ningún término y el enlace
-     simplemente no habría aparecido — un fallo silencioso, de los que no
-     rompen nada y solo restan. */
+  /* La clave sale del término «NY session»; una que no case no da error y el enlace no aparece. */
   "ny-session": "/herramientas/reloj-de-sesiones",
   "asia-session": "/herramientas/reloj-de-sesiones",
   "kill-zone": "/herramientas/reloj-de-sesiones",
@@ -357,24 +295,9 @@ export const HERRAMIENTA_DE: Record<string, string> = {
 };
 
 /**
- * Fórmulas matemáticas institucionales para los términos cuantitativos.
+ * Fórmulas de los términos cuantitativos, en notación Unicode (no LaTeX, que
+ * no tiene renderizador) y una por idioma.
  */
-/* Notacion Unicode, no LaTeX.
- *
- * El valor era una cadena de LaTeX que se volcaba TAL CUAL en la pagina:
- * dieciocho fichas ensenaban \max, \frac y \tau en crudo, dentro de una
- * caja rotulada "LATEX", sin ningun renderizador detras.
- *
- * Y siete de esas formulas llevaban palabras CASTELLANAS dentro del propio
- * LaTeX (Ganancias Brutas, Riesgo Inicial, Tamano, Objetivo), asi que la
- * pagina inglesa tambien las ensenaba en espanol. Por eso ahora hay una
- * formula por idioma.
- *
- * Se escriben con los simbolos de verdad —sigma, raiz, sumatorio, integral,
- * subindices— en la monoespaciada que la caja ya usaba. La alternativa era
- * cargar KaTeX y sus fuentes para dieciocho fichas de las 155 paginas del
- * sitio, que no compensa: aqui no hay matrices ni integrales anidadas, y la
- * casa no mete dependencias nuevas sin un motivo que no sea la comodidad. */
 export const FORMULAS_GLOSARIO: Record<
   string,
   { formulaEs: string; formulaEn: string; variablesEs: string; variablesEn: string }
@@ -397,14 +320,10 @@ export const FORMULAS_GLOSARIO: Record<
     variablesEs: "CAGR: tasa de crecimiento anual compuesta, MaxDD: máximo drawdown histórico pico a valle",
     variablesEn: "CAGR: compound annual growth rate, MaxDD: historical peak-to-trough max drawdown",
   },
-  /* No hay ningun termino "Omega" en el glosario todavia, asi que esta
-     formula no la ve nadie. Se conserva porque el motor SI calcula el
-     ratio (`calcOmega` en trading/data.ts) y el dia que entre la ficha
-     ya esta escrita. */
+  /* Aún no hay término «Omega» en el glosario: la fórmula espera su ficha
+     (el motor ya calcula el ratio con `calcOmega`). */
   "omega-ratio": {
-    /* Solo la forma discreta, que es la que calcula el motor. La razon de
-       integrales entera ocupaba ochenta caracteres y a 390 px se partia en
-       tres renglones por mitad de la expresion; vive en las variables. */
+    /* Solo la forma discreta: la razón de integrales no cabe a 390 px y vive en las variables. */
     formulaEs: "Ω(L) = Σ máx(rᵢ − L, 0) / Σ máx(L − rᵢ, 0)",
     formulaEn: "Ω(L) = Σ max(rᵢ − L, 0) / Σ max(L − rᵢ, 0)",
     variablesEs: "Forma discreta de ∫(L,∞)(1−F(r))dr / ∫(−∞,L)F(r)dr. L: umbral objetivo (para L=0 equivale al Profit Factor; para L>0 evalúa asimetría sobre benchmark), rᵢ: retorno de cada operación, F(r): distribución acumulada",
@@ -423,9 +342,8 @@ export const FORMULAS_GLOSARIO: Record<
     variablesEn: "Gross closed profits divided by gross closed losses",
   },
   drawdown: {
-    /* El indice mudo iba en tau, y la tau de la monoespaciada se lee como
-       una T mayuscula al lado de la t del tiempo. Se nombra el pico como
-       HWM, que ademas es como lo llama el resto del producto. */
+    /* El pico se llama HWM, como en el resto del producto; el índice en tau
+       se confunde con una T al lado de la t. */
     formulaEs: "DDₜ = (HWMₜ − Xₜ) / HWMₜ",
     formulaEn: "DDₜ = (HWMₜ − Xₜ) / HWMₜ",
     variablesEs: "Xₜ: valor de la cuenta en el momento t, HWMₜ: pico histórico más alto alcanzado hasta t (high-water mark)",
@@ -485,9 +403,8 @@ export const FORMULAS_GLOSARIO: Record<
     variablesEs: "Ratio de asimetría entre la ganancia media y la pérdida media",
     variablesEn: "Asymmetry ratio between average winning trade and average losing trade",
   },
-  /* Las cuatro siguientes escriben lo que calcula el motor (computeSqn,
-     computeUlcerIndex, computeGainToPain y computeWilsonCI en
-     trading/data.ts): la ficha no promete una variante que la demo no usa. */
+  /* Las cuatro siguientes reflejan lo que calcula el motor (computeSqn,
+     computeUlcerIndex, computeGainToPain y computeWilsonCI en trading/data.ts). */
   "sqn-system-quality-number": {
     formulaEs: "SQN = √N × R̄ / σR",
     formulaEn: "SQN = √N × R̄ / σR",
@@ -515,10 +432,9 @@ export const FORMULAS_GLOSARIO: Record<
 };
 
 /**
- * Lo que enseña la ficha de un término, resuelto en el servidor. La vista es
- * de cliente (cambia con el idioma), y si llamara ella a `relacionados` o a
- * `vecinos` se llevaría al navegador los 57 términos en dos idiomas —unos
- * 24 KB por copia— para pintar seis enlaces.
+ * Lo que enseña la ficha de un término, resuelto en el servidor: si la vista
+ * (de cliente) llamara a `relacionados` o `vecinos`, llevaría al navegador
+ * todos los términos para pintar seis enlaces.
  */
 export type FichaTermino = {
   termino: TerminoGlosario;

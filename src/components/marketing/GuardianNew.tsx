@@ -6,36 +6,16 @@ import { Reveal } from "@/components/tj/Reveal";
 import { fmtInt, fmtNum, pctSep } from "@/lib/trading/format";
 
 /**
- * GuardianNew — sección `#guardian`. Disciplina que actúa: comprobación
- * previa de una operación + 3 características de cómo frena antes del
- * error.
+ * Sección `#guardian`: comprobación previa de una operación y tres
+ * características de cómo frena antes del error.
  *
- * ── DOS COSAS QUE ESTABAN MAL ─────────────────────────────────────────
+ * El riesgo sale del tamaño (0,5 % por contrato) y el veredicto, de
+ * compararlo con el límite: las cifras no se descuadran.
  *
- * 1. LOS BOTONES NO HACÍAN NADA. «Ajustar a 2 contratos» y «Anular» eran
- *    dos `<button>` sin `onClick`, con cursor de mano, elevación al pasar
- *    por encima y anillo de foco — y dentro del orden de tabulación. Un
- *    lector de pantalla los anunciaba como botones. Es la peor clase de
- *    decorado: el que promete una interacción que no existe. Y estaba en
- *    la sección que vende, precisamente, que el producto ACTÚA.
- *
- * 2. LAS CIFRAS NO CUADRABAN. 4 contratos daban «2,4 % de riesgo» con un
- *    límite del 1 %, y el aviso recomendaba «reduce a 2 contratos». Dos
- *    contratos son 1,2 %: seguiría fuera del límite. El consejo de un
- *    producto de control de riesgo no puede fallar una regla de tres.
- *
- * Ahora el riesgo se CALCULA a partir del tamaño (0,5 % por contrato) y
- * el veredicto sale de compararlo con el límite, así que la aritmética no
- * puede volver a descuadrarse.
- *
- * ── FIEL AL PROGRAMA (cotejado con su código el 2026-09-26) ───────────
- * Las filas son reglas que el semáforo de la app evalúa de verdad
- * (`RiskFindingKind`: pérdida diaria y semanal, drawdown, operaciones del
- * día, correlación y riesgo por operación). Antes enseñaba «setup apto» y
- * «R:R ≥ 1,5», que la app no comprueba. El aviso rojo es la frase de la
- * app, sin proponer un tamaño —eso lo hace aparte su calculadora—, y el
- * semáforo AVISA pero no impide guardar: lo único que bloquea es el freno
- * duro, si se activa.
+ * Fiel al programa: las filas son reglas que el semáforo de la app evalúa de
+ * verdad (`RiskFindingKind`). El aviso rojo es la frase de la app, sin
+ * proponer un tamaño. El semáforo avisa pero no impide guardar: solo bloquea
+ * el freno duro, si se activa.
  */
 
 /** Riesgo que aporta cada contrato, en % de la cuenta. */
@@ -53,10 +33,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   const es = lang === "es";
 
   const [estado, setEstado] = useState<EstadoGuardian>("bloqueado");
-  // Anotado como `number` a propósito: sin la anotación, TypeScript lo
-  // estrecha al literal `4 | 2` y marca como imposible la rama singular
-  // del plural de abajo. Los dos valores son constantes HOY; el texto no
-  // debe romperse el día que uno de ellos sea 1.
+  // `number` a propósito: sin la anotación TypeScript lo estrecha a `4 | 2` y
+  // marca imposible la rama singular del plural de abajo.
   const contratos: number = estado === "ajustado" ? CONTRATOS_AJUSTADOS : CONTRATOS_INICIALES;
   const riesgo = contratos * RIESGO_POR_CONTRATO;
   const dentroDelLimite = riesgo <= LIMITE_RIESGO;
@@ -67,20 +45,10 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
       id="guardian"
       className={`section relative overflow-clip scroll-mt-24 ${enPagina ? "" : "tj-banda"}`}
     >
-      {/* P1 — contenedor unificado a `tj-container`: hereda los gutters
-          fluidos (clamp(1.25rem, 4vw, 2.25rem)) y el page-w (1080px) de
-          globals.css, sustituyendo al `max-w-[1240px] mx-auto px-5 md:px-8`
-          hardcodeado. Paridad con StatsBandNew, MetricsShowcaseNew y Values. */}
       <div className="relative tj-container tj-split grid grid-cols-1 gap-10 items-start">
-        {/* Columna de texto: primero en el documento para que en móvil y en
-            un lector de pantalla el titular llegue antes que la ficha; en
-            escritorio la ficha pasa a la izquierda con `lg:order-first`.
-            Copy + 3 features
-            P1 — envoltorios Reveal con stagger (0, 0.06, 0.12, 0.18) para
-            que la columna derecha entre en escena coordinada con la
-            tarjeta mockup de la izquierda (que tiene su propio motion.div).
-            Antes la columna aparecía estática mientras la tarjeta izquierda
-            no animaba; ahora las dos mitades se asientan a la par. */}
+        {/* Columna de texto: primero en el documento para que en móvil y para el
+            lector el titular llegue antes que la ficha; en escritorio la ficha
+            pasa a la izquierda con `lg:order-first`. */}
         <div>
           <Reveal delay={0.06}>
             <h2
@@ -116,13 +84,6 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             </p>
           </Reveal>
           )}
-          {/* T2d — `space-y-5` (20px) entre features (era `space-y-4` 16px):
-              el incremento refuerza la legibilidad móvil sin abrir un
-              hueco tipográfico; a desktop el Δ es apenas perceptible.
-              + `leading-[1.6]` en la descripción para parity con Values
-              y con el spec de legibilidad de la home.
-              P1 — envoltorio Reveal delay 0.18 para que las 3 features
-              entren como bloque coordinado tras el titular. */}
           <Reveal delay={0.18}>
           <ul className="m-0 p-0 list-none border-b border-[var(--line)]">
             {[
@@ -138,17 +99,13 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
           </ul>
           </Reveal>
         </div>
-        {/* La comprobación previa como ficha de auditoría: barra con el
-            rótulo, la línea de la operación, las reglas en filas con su
-            estado en texto, y el veredicto. Divisiones con filetes, sin
-            cajas rellenas dentro de la tarjeta ni sellos de color: el
-            color queda para lo que lo necesita —la regla que falla y el
-            veredicto—. */}
+        {/* Ficha de auditoría: rótulo, línea de la operación, reglas en filas
+            con su estado en texto y veredicto. El color queda para la regla
+            que falla y el veredicto. */}
         <div data-entra className="tj-ficha lg:order-first">
           <p className="tj-ficha-barra">
             <span>{es ? "Semáforo de riesgo" : "Risk light"}</span>
-            {/* Era «En vivo» con un punto verde: es un ejemplo que se puede
-                tocar, no un dato en directo, y el verde es el del dinero. */}
+            {/* Es un ejemplo que se puede tocar, no un dato en directo. */}
             <span>{es ? "Ejemplo" : "Example"}</span>
           </p>
           <div className="tj-ficha-cuerpo" data-dibuja>
@@ -167,9 +124,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 { ok: true, l: es ? `Pérdida del día ${pct(0.6)} · límite ${pct(3)}` : `Daily loss ${pct(0.6)} · limit ${pct(3)}` },
                 { ok: true, l: es ? `Operaciones hoy ${fmtInt(2, lang)} · máximo ${fmtInt(5, lang)}` : `Trades today ${fmtInt(2, lang)} · max ${fmtInt(5, lang)}` },
                 {
-                  // El texto y el estado salen del cálculo, no de una
-                  // constante: el riesgo es el tamaño por el riesgo
-                  // unitario, y el veredicto, compararlo con el límite.
+                  // Texto y estado salen del cálculo, no de una constante.
                   ok: dentroDelLimite,
                   l: es
                     ? `Riesgo ${pct(riesgo)} · límite ${pct(LIMITE_RIESGO)}`
@@ -190,11 +145,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               ))}
             </ul>
             {(() => {
-              /* El veredicto cambia con el estado, y se anuncia. `aria-live`
-                 es imprescindible: al pulsar «Ajustar», lo que cambia está
-                 en OTRA parte de la tarjeta, y sin anuncio un lector de
-                 pantalla no se entera de que la operación ha pasado de
-                 bloqueada a permitida. */
+              /* El veredicto se anuncia (`aria-live`): al pulsar «Probar con…»
+                 lo que cambia está en otra parte de la tarjeta. */
               const tono = estado === "anulado" ? "neutro" : dentroDelLimite ? "ok" : "mal";
               const color =
                 tono === "ok" ? "rgb(var(--pnl-pos))" : tono === "mal" ? "rgb(var(--pnl-neg))" : "var(--ink-3)";
@@ -225,9 +177,6 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 </div>
               );
             })()}
-            {/* Los botones cambian con el estado y HACEN lo que dicen. Son
-                los del resto del sitio: la acción principal rellena y la
-                otra en texto con flecha, sin caja que compita. */}
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
               {estado === "bloqueado" ? (
                 <>

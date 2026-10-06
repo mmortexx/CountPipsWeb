@@ -1,10 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { destinoConFlechas } from "@/lib/flechas";
 
-/* Los grupos de opción (test de disciplina, nota del día, dirección) y las
-   pestañas (analítica, revisión) se mueven con esta función. Un lector
-   anuncia «1 de 4» al entrar en el grupo: si las flechas no mueven, se
-   prometió un teclado que no existe. */
+// Los grupos de opción y las pestañas se mueven con esta función: un lector
+// de pantalla anuncia «1 de 4» y las flechas deben cumplirlo.
 describe("destinoConFlechas", () => {
   it("avanza y retrocede, y da la vuelta en los extremos", () => {
     expect(destinoConFlechas("ArrowRight", 0, 4)).toBe(1);

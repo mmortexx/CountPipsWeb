@@ -1,13 +1,7 @@
 import { INSTRUMENT_SPECS } from "./fugaComisiones";
 import { excedeApalancamiento, validaPlan, type MercadoPlan, type MotivoPlanInvalido } from "./validaPlan";
 
-/**
- * El tamaño de una operación a partir del riesgo, en los tres mercados de
- * la calculadora de riesgo. Función pura para poder probarla: dentro del
- * componente tomaba la distancia al stop como dólares por unidad en todos
- * los pares (USD/JPY salía a 0,0033 lotes en vez de 0,50), devolvía
- * fracciones de contrato y prometía un tick de deslizamiento que no sumaba.
- */
+/** El tamaño de una operación a partir del riesgo, en los tres mercados de la calculadora de riesgo. Función pura. */
 
 export interface ContratoFuturo {
   id: string;
@@ -22,8 +16,7 @@ export interface ContratoFuturo {
   micro: string | null;
 }
 
-/* Las especificaciones salen del mismo registro que la calculadora de
-   comisiones: había dos listas con los mismos contratos. */
+// Las especificaciones salen del mismo registro que la calculadora de comisiones.
 const sinRuidoDecimal = (x: number) => Math.round(x * 1e6) / 1e6;
 export const FUTURES_CONTRACTS: ContratoFuturo[] = INSTRUMENT_SPECS.filter((s) => s.category !== "forex").map((s) => ({
   id: s.id.toLowerCase(),
@@ -135,8 +128,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
   const distObjetivo = Math.abs(e.objetivo - e.entrada);
   const direccion = e.stop > e.entrada ? "short" : "long";
 
-  /* Dólares por unidad de precio y por unidad de tamaño, el escalón
-     mínimo, y el coste de ida y vuelta y de un tick por unidad. */
+  // Dólares por unidad de precio, escalón mínimo, y coste de ida y vuelta y de un tick por unidad.
   let dolaresPorUnidad = 1;
   let escalon = 0;
   let comisionPorUnidad = COMISION_ACCION;
@@ -182,8 +174,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
   if (!valido || !(riesgoPorUnidad > 0) || !(riesgoNominal > 0)) return vacio;
 
   const exactas = riesgoNominal / riesgoPorUnidad;
-  /* Hacia abajo y con una tolerancia de coma flotante: 100 $ entre 100 $
-     por contrato es un contrato, no 0,9999999. */
+  // Hacia abajo y con tolerancia de coma flotante: 100 $ entre 100 $ por contrato es uno, no 0,9999999.
   const unidades = escalon > 0 ? Math.floor(exactas / escalon + 1e-9) * escalon : exactas;
   const riesgoReal = unidades * riesgoPorUnidad;
   const friccion = e.friccion ? unidades * (comisionPorUnidad + tick * dolaresPorUnidad) : 0;
@@ -209,12 +200,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
   };
 }
 
-/**
- * Kelly completo, medio y cuarto, en %: f* = (p·b − q) / b, sin topes. El
- * tope de la calculadora es cosa del control de riesgo, no de Kelly: antes
- * se topaban las fracciones y «Medio Kelly» y «Cuarto de Kelly» salían
- * los dos a 3 % con un Kelly completo del 40 %.
- */
+/** Kelly completo, medio y cuarto, en %: f* = (p·b − q) / b, sin topes (el tope es cosa del control de riesgo). */
 export function fraccionesKelly(aciertoPct: number, rr: number): { completo: number; medio: number; cuarto: number } {
   if (!(rr > 0)) return { completo: 0, medio: 0, cuarto: 0 };
   const p = aciertoPct / 100;

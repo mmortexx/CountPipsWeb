@@ -1,8 +1,6 @@
 /**
- * Marcas de eje en cifras redondas: 1 · 2 · 2,5 · 5 por su potencia de
- * diez, como las pone quien dibuja un gráfico a mano. Repartir el eje en
- * fracciones fijas del rango daba «801 k · 1,8 M · 2,88 M · 3,93 M», que
- * obliga a leer cada cifra en vez de la escala.
+ * Marcas de eje en cifras redondas: 1 · 2 · 2,5 · 5 por su potencia de diez,
+ * en vez de fracciones fijas del rango, que dan cifras ilegibles como «2,88 M».
  */
 export function pasoRedondo(rango: number, marcas = 4): number {
   if (!(rango > 0) || !Number.isFinite(rango)) return 1;

@@ -7,10 +7,6 @@ import { useTheme, type PaletteName } from "@/lib/theme";
 import { useDemo } from "./DemoContext";
 import { TRADES } from "@/lib/trading/data";
 
-/* ------------------------------------------------------------------ */
-/* DemoCommandPalette — Cmd+K palette scoped to the demo window        */
-/* ------------------------------------------------------------------ */
-
 interface DemoCommandPaletteProps {
   open: boolean;
   onClose: () => void;
@@ -20,17 +16,14 @@ interface Command {
   id: string;
   labelEs: string;
   labelEn: string;
-  /** Optional kbd hint shown at the right of the row (e.g. "1", "T"). */
+  /** Atajo que se muestra a la derecha de la fila (p. ej. «1», «T»). */
   hint?: string;
   icon: ReactNode;
   section: "nav" | "actions";
   run: () => void;
 }
 
-/* ------------------------------------------------------------------ */
-/* Trampa de Tab — mismo patrón que ShortcutsHelp.tsx                 */
-/* ------------------------------------------------------------------ */
-
+// Trampa de Tab, mismo patrón que ShortcutsHelp.tsx.
 const FOCUSABLE_SELECTOR = [
   "a[href]",
   "button:not([disabled])",
@@ -51,9 +44,8 @@ function getFocusables(container: HTMLElement): HTMLElement[] {
   });
 }
 
-/** A qué extremo saltar al pulsar Tab dentro de la trampa de foco, o
- *  `null` si el Tab puede seguir su curso normal dentro del panel.
- *  Función pura — sin DOM — para poder probarla sin renderizar React. */
+/** A qué extremo saltar al pulsar Tab dentro de la trampa de foco, o `null`
+ *  si el Tab sigue su curso. Función pura, para probarla sin renderizar. */
 export type DestinoTrampaTab = "primero" | "ultimo" | null;
 
 export function destinoTrampaTab(opts: {
@@ -68,31 +60,16 @@ export function destinoTrampaTab(opts: {
 }
 
 /**
- * DemoCommandPalette — a Cmd+K (or Ctrl+K) command palette that works
- * INSIDE the demo window, separate from the global site-wide CommandPalette.
- * Lets users quickly navigate demo tabs + run demo actions:
+ * Paleta Cmd/Ctrl+K propia de la demo, separada de la global del sitio:
+ * navega por las pestañas, filtra operaciones y cambia idioma, tema o paleta.
  *
- *   NAV     — 7 destinations (Resumen, Operaciones, Detalle, Analítica,
- *             Diario, Playbook, Ajustes).
- *   ACTIONS — Cambiar idioma / Cambiar tema / Cambiar paleta / Reiniciar demo.
+ * El listener de captura de AppDemo la abre y evita que salte la global.
+ * Abierta, marca su raíz con `cmdk-root` (que respetan GlobalShortcuts y la
+ * tecla F de AppDemo) y pone `body[data-demo-palette-open]` para que el
+ * interceptor de `?` también se aparte.
  *
- * Triggered by Cmd+K when the demo is "active" (hovered or focused within)
- * — the AppDemo component owns a capture-phase keydown listener that
- * intercepts Cmd+K and opens this palette (calling `setPaletteOpen(true)`),
- * preventing the global CommandPalette from also opening.
- *
- * While open, marks the modal root with the `cmdk-root` attribute (so the
- * existing GlobalShortcuts + AppDemo F-key listeners — which check
- * `[cmdk-root]` — skip their keys) and sets `body[data-demo-palette-open]`
- * so the AppDemo `?` interceptor skips too.
- *
- * Refined styling: `.tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)]` modal with a
- * search input (magnifier icon + Esc kbd) + a list of commands. Each row
- * has an icon + label + optional kbd hint. Active row highlighted with
- * `bg-[rgb(var(--divider)/0.1)]` + an accent-color left border (`inset 2px 0 0 ...`).
- *
- * Keyboard: ArrowUp/Down to navigate, Enter to execute, Esc to close.
- * Filtering: case-insensitive substring match on label or id.
+ * Teclado: flechas para moverse, Enter ejecuta, Esc cierra. El filtro
+ * ignora mayúsculas y busca en el rótulo o el id.
  */
 export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const { lang, toggle: toggleLang } = useLang();
@@ -106,14 +83,10 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const rootRef = useRef<HTMLDivElement>(null);
   const { montado, saliendo } = usePresencia(open, 180);
   /* Patrón de combobox, como el glosario: el foco no sale del campo y
-     `aria-activedescendant` dice qué opción está resaltada. Antes cada
-     opción era un botón enfocable y Enter, capturado en `window`, ejecutaba
-     la resaltada aunque el foco estuviera en otra; con lector, ↓ no
-     anunciaba nada. */
+     `aria-activedescendant` indica la opción resaltada. */
   const idLista = useId();
   const idOpcion = (i: number) => `${idLista}-${i}`;
 
-  /* ---- "Open" markers (cmdk-root + body dataset) ---- */
   useEffect(() => {
     if (!open) return;
     const root = rootRef.current;
@@ -140,9 +113,8 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     return () => cancelAnimationFrame(id);
   }, [open]);
 
-  /* Guarda el foco que había al abrir y lo devuelve al cerrar (por Esc,
-     clic fuera o al ejecutar un comando — las tres vías pasan por
-     `onClose`/desmontaje). Mismo patrón que ShortcutsHelp.tsx. */
+  /* Devuelve el foco previo al cerrar, sea por Esc, clic fuera o comando.
+     Mismo patrón que ShortcutsHelp.tsx. */
   useEffect(() => {
     if (!open) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
@@ -153,7 +125,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
 
   const paletteOrder: PaletteName[] = useMemo(() => ["clasico"], []);
 
-  /* ---- Command list ---- */
   const commands = useMemo<Command[]>(() => {
     const nav: Command[] = [
       {
@@ -304,7 +275,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     return [...nav, ...filters, ...actions];
   }, [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme]);
 
-  /* ---- Filter ---- */
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return commands;
@@ -315,11 +285,9 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     });
   }, [commands, query]);
 
-  /* ---- Clamp active index when filter changes — handled at read time
-     via `safeActive` (below) instead of a setState-in-effect, so the
-     lint rule `react-hooks/set-state-in-effect` doesn't fire. The
-     underlying `active` state can lag the filtered list by one render;
-     the displayed + Enter-targeted index is always valid. */
+  /* El índice se acota al leer, no con un efecto (react-hooks/set-state-in-effect):
+     `active` puede ir un render por detrás del filtro, pero el mostrado y el de
+     Enter siempre son válidos. */
   const safeActive =
     filtered.length === 0 ? 0 : Math.min(active, filtered.length - 1);
 
@@ -327,8 +295,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
     if (open) document.getElementById(idOpcion(safeActive))?.scrollIntoView({ block: "nearest" });
   });
 
-  /* ---- Keyboard navigation (capture phase so we beat any bubble
-          listeners, including the global Cmd+K toggler). ---- */
+  // Teclado en fase de captura, para adelantarse al Cmd+K global.
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -397,7 +364,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
           aria-label={es ? "Paleta de comandos" : "Command palette"}
           inert={saliendo}
         >
-          {/* Backdrop. Click anywhere to close. */}
           <div
             className="absolute inset-0 bg-black/50"
             onClick={onClose}
@@ -410,9 +376,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
             style={{ contain: "layout paint" }}
             className={`relative w-full max-w-lg tj-paper tj-paper-dense rounded-[2px] border border-[rgb(var(--divider)/0.16)] shadow-[var(--ficha-sombra)] overflow-hidden ${saliendo ? "tj-panel-sale" : "tj-panel-entra"}`}
           >
-            {/* Search input row — h-12 (48 px) para que el input tenga un
-                área de toque cómoda en móvil (≥44 px) y el kbd de Esc no
-                quede pegado al borde superior en pantallas pequeñas. */}
+            {/* h-12: área de toque de 44 px o más en móvil. */}
             <div className="tj-paleta-cabecera flex items-center gap-2.5 px-3 h-12 border-b border-[rgb(var(--divider)/0.1)]">
               <SearchIcon />
               <input
@@ -439,7 +403,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
               </kbd>
             </div>
 
-            {/* Command list */}
             <p className="sr-only" role="status">
               {filtered.length === 0
                 ? es ? "Sin resultados." : "No results."
@@ -469,8 +432,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
                       role="option"
                       aria-selected={isActive}
                       onMouseEnter={() => setActive(i)}
-                      /* El foco se queda en el campo: sin esto, el clic
-                         se lo llevaba al `<li>`. */
+                      /* El foco se queda en el campo; sin esto, el clic se lo llevaba al `<li>`. */
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
                         cmd.run();
@@ -507,7 +469,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
               )}
             </ul>
 
-            {/* Footer hint */}
             <div className="flex items-center justify-between gap-2 px-3 py-2 border-t border-[rgb(var(--divider)/0.1)] text-[10px] text-tertiary">
               <span className="flex items-center gap-1.5">
                 <Kbd>↑</Kbd>
@@ -528,10 +489,6 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Small kbd chip (footer hints)                                      */
-/* ------------------------------------------------------------------ */
-
 function Kbd({ children }: { children: ReactNode }) {
   return (
     <kbd className="inline-flex items-center justify-center min-w-[18px] h-5 px-1.5 rounded bg-[rgb(var(--divider)/0.06)] border border-[rgb(var(--divider)/0.15)] text-[10px] font-mono tnum text-secondary">
@@ -540,10 +497,7 @@ function Kbd({ children }: { children: ReactNode }) {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/* Inline icon set (no indigo/blue; accent + P&L vars only)            */
-/* ------------------------------------------------------------------ */
-
+// Iconos en línea, solo con las variables de acento y P&L.
 function svgBase(children: ReactNode) {
   return (
     <svg

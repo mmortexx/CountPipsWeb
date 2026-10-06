@@ -1,27 +1,14 @@
 /**
- * DESLIZADORES — que la barra diga lo que vale
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Tres cosas de los `input[type=range]` de las herramientas que solo se
- * ven mirando, y que ninguna otra guarda mira:
- *
- *  1. Que el tramo recorrido acabe en la bolita. En WebKit el relleno lo
- *     pinta un fondo de la pista, y la bolita no recorre el ancho entero:
- *     su centro va de 22 px a ancho − 22 px. Con el relleno hasta el
- *     porcentaje a secas, cerca del máximo la barra negra asomaba por
- *     delante de la bolita y cerca del mínimo quedaba un hueco gris por
- *     detrás. Se mide en píxeles de una captura, a la izquierda y a la
- *     derecha del disco, con el control llevado al 5 % y al 95 %.
- *  2. Que las marcas de debajo («0,25 % · 1 % · 2 % · 3 %») estén bajo su
- *     valor. Repartidas a partes iguales, la bolita en «1,00 %» quedaba a
- *     un tercio de la marca «1 %».
- *  3. Que dos deslizadores de la misma fila tengan la pista a la misma
- *     altura. Una etiqueta que parte en dos líneas bajaba la de su lado.
- *
- * ── Qué encontró el día que se escribió (2026-10-04) ──────────────────
- * Los tres fallos, en la revisión visual página a página: el relleno en
- * todas las herramientas, las marcas en la calculadora de riesgo y la
- * fila descuadrada en la prueba de fondeo.
+ * DESLIZADORES: comprueba tres cosas de los `input[type=range]` de las
+ * herramientas que solo se ven mirando:
+ *  1. El tramo recorrido acaba en la bolita. El centro de la bolita va de
+ *     22 px a ancho − 22 px, así que un relleno hasta el porcentaje a secas
+ *     asoma por delante cerca del máximo y deja hueco cerca del mínimo. Se
+ *     mide en píxeles de una captura, a ambos lados del disco, con el control
+ *     al 5 % y al 95 %.
+ *  2. Las marcas de debajo («0,25 % · 1 % · 2 % · 3 %») están bajo su valor,
+ *     no repartidas a partes iguales.
+ *  3. Dos deslizadores de la misma fila tienen la pista a la misma altura.
  *
  * Uso:  node scripts/deslizadores.mjs --serve out
  */
@@ -138,7 +125,7 @@ for (const v of VARIANTES) {
     await p.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}[data-tj-ap]{opacity:1!important;transform:none!important}" });
     await p.waitForTimeout(300);
 
-    // ── 3. pistas de una misma fila a la misma altura ──
+    // 3. Pistas de una misma fila a la misma altura.
     const filas = await p.evaluate(() => {
       const r = [...document.querySelectorAll("input.tj-range")]
         .filter((e) => e.offsetParent)
@@ -155,7 +142,7 @@ for (const v of VARIANTES) {
     });
     for (const m of filas) fallos.push(`${ruta} (${v.ancho}): ${m}`);
 
-    // ── 2. marcas bajo su valor ──
+    // 2. Marcas bajo su valor.
     const marcas = await p.evaluate(() => {
       const num = (t) => Number(t.replace(/[^\d,.\-−]/g, "").replace("−", "-").replace(",", "."));
       const mal = [];
@@ -180,7 +167,7 @@ for (const v of VARIANTES) {
     });
     for (const m of marcas) fallos.push(`${ruta} (${v.ancho}): ${m}`);
 
-    // ── 1. el relleno acaba en la bolita ──
+    // 1. El relleno acaba en la bolita.
     if (v.pixeles) {
       const total = await p.evaluate(() => [...document.querySelectorAll("input.tj-range")].filter((e) => e.offsetParent).length);
       for (let i = 0; i < total; i++) {

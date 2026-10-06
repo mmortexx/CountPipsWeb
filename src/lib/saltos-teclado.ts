@@ -1,13 +1,7 @@
 /**
- * Los saltos `g` + letra, en un solo sitio.
- *
- * Antes estaban dos veces: el mapa tecla → ruta en `GlobalShortcuts`, que
- * es quien navega, y la lista tecla → nombre en `ShortcutsHelp`, que es
- * quien la enseña. Añadir un destino en uno y olvidarlo en el otro no
- * rompía nada: dejaba un atajo que funciona y no está documentado, o uno
- * documentado que no hace nada. Con una sola tabla eso no puede pasar.
- *
- * El orden es el que se lee en la ayuda.
+ * Los saltos `g` + letra: tabla única para `GlobalShortcuts` (navega) y
+ * `ShortcutsHelp` (los enseña), para que no haya atajos sin documentar ni
+ * documentados que no hacen nada. El orden es el que se lee en la ayuda.
  */
 export type SaltoTeclado = {
   /** Segunda tecla de la secuencia. Siempre minúscula. */

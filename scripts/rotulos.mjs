@@ -1,32 +1,17 @@
 /**
- * RÓTULOS — lo que oye quien no ve la pantalla
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * En el HTML compilado de TODAS las páginas, seis cosas que con la vista
- * no se notan y con un lector de pantalla dejan la herramienta muda:
- *
- *  1. Grupos de opciones sin nombre. El lector entra en «grupo» y anuncia
- *     «Forex, activado» sin decir a qué pregunta responde.
- *  2. Nombres que apuntan a nada: `aria-labelledby` o `aria-describedby`
- *     con un id que no existe en la página.
- *  3. Botones sin nombre: un icono suelto se oye como «botón» y nada más.
- *  4. Elecciones sin estado: dentro de un grupo de opciones, un botón que
- *     no dice si está elegido. La opción vigente solo se distinguía por
- *     un fondo gris.
- *  5. Deslizadores que leen el número crudo («10000») mientras la
- *     pantalla dice «10.000 $».
+ * RÓTULOS: comprueba, en el HTML compilado de todas las páginas, seis cosas
+ * que con la vista no se notan y con un lector de pantalla dejan la
+ * herramienta muda:
+ *  1. Grupos de opciones sin nombre.
+ *  2. `aria-labelledby` o `aria-describedby` con un id que no existe.
+ *  3. Botones sin nombre.
+ *  4. Botones dentro de un grupo que no dicen si están elegidos.
+ *  5. Deslizadores sin `aria-valuetext` (leen el número crudo).
  *  6. Rótulos en inglés en una página española («Close», «Notifications»).
  *
- * ── Qué encontró el día que se escribió (2026-10-04) ──────────────────
- * 23 grupos sin nombre en las páginas españolas, 26 deslizadores sin
- * valor legible, el selector compuesto/riesgo fijo del proyector sin
- * estado y la región «Notifications (F8)» en inglés en todas las páginas.
- *
- * ── Por qué sin navegador ─────────────────────────────────────────────
- * Es el HTML que llega antes de que corra ningún script, que es también
- * lo primero que lee un lector. React lo escribe bien formado, así que
- * basta seguir la pila de etiquetas; los diálogos y avisos que solo
- * existen tras un clic los cubre teclado.mjs.
+ * Va sin navegador: es el HTML que llega antes de cualquier script, que es lo
+ * primero que lee un lector, y React lo escribe bien formado. Los diálogos y
+ * avisos que solo existen tras un clic los cubre `teclado.mjs`.
  *
  * Uso:  node scripts/rotulos.mjs out   (--todo para la lista entera)
  */

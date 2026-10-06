@@ -53,27 +53,11 @@ function AccordionContent({
   ...props
 }: React.ComponentProps<typeof AccordionPrimitive.Content>) {
   return (
-    /* ── `forceMount`: LA RESPUESTA TIENE QUE ESTAR EN LA PÁGINA ─────
-       Radix desmonta el contenido plegado, así que de las trece preguntas
-       de `/faq` solo la abierta existía en el DOM. Las otras doce estaban
-       declaradas en el `FAQPage` de datos estructurados y no aparecían por
-       ninguna parte del documento — comprobado en el HTML construido:
-       «BitLocker» salía en el JSON-LD y cero veces en el cuerpo.
-
-       Eso es exactamente lo que Google llama dato estructurado que no
-       coincide con lo que se ve, y el propio código lo advertía por
-       escrito en `pricing/page.tsx` mientras lo incumplía por el lado del
-       componente. De paso, `/faq` era de las páginas con menos texto
-       indexable del sitio: su contenido no estaba.
-
-       Con `forceMount` el contenido siempre está montado y lo que cambia
-       es su visibilidad — `visibility: hidden` mientras está plegado, que
-       Google acepta y los lectores de pantalla saben interpretar.
-
-       El pliegue lo hace `.tj-pliegue` (globals.css), no la animación de
-       Radix: con `forceMount` Radix mide la altura después de pintar y no
-       vuelve a pintar, así que abría y cerraba de golpe, sin un solo
-       fotograma intermedio. */
+    /* `forceMount`: Radix desmonta el contenido plegado y el `FAQPage` de datos
+       estructurados declararía respuestas ausentes del DOM (Google lo trata
+       como dato que no coincide con lo visible). Siempre montado, se oculta
+       con `visibility: hidden`. El pliegue lo hace `.tj-pliegue` (globals.css):
+       con `forceMount` la animación de Radix mide tras pintar y abriría de golpe. */
     <AccordionPrimitive.Content
       forceMount
       data-slot="accordion-content"

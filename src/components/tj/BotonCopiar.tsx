@@ -6,11 +6,9 @@ import { useLang } from "@/lib/i18n";
 type Estado = "listo" | "copiado" | "fallo";
 
 /**
- * El botón «Copiar» de las herramientas. Cada una tenía el suyo, con tres
- * tamaños de letra, dos juegos de iconos y, en cuatro, ningún aviso si el
- * navegador negaba el portapapeles: el botón no hacía nada y no decía nada.
- * Aquí el fallo se dice en el propio botón, y una región viva aparte lo
- * repite para que un lector de pantalla lo oiga.
+ * El botón «Copiar» de las herramientas. Si el navegador niega el portapapeles
+ * lo dice en el propio botón, y una región viva aparte lo repite para los
+ * lectores de pantalla.
  */
 export function BotonCopiar({
   texto,
@@ -65,8 +63,7 @@ export function BotonCopiar({
         )}
       </svg>
       <span>{estado === "copiado" ? hecho : estado === "fallo" ? fallo : rotulo}</span>
-      {/* La región viva nace vacía: con el rótulo dentro, el lector de
-          pantalla leía «Copiar resumen» al cargar la página. */}
+      {/* La región viva nace vacía: con el rótulo dentro, se leería al cargar. */}
       <span role="status" className="sr-only">
         {estado === "copiado" ? hecho : estado === "fallo" ? fallo : ""}
       </span>

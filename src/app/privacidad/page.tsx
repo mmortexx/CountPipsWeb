@@ -5,16 +5,8 @@ import { documentoPorSlug } from "@/lib/legal/documentos";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /privacidad — qué datos recoge la web.
- *
- * El pie del sitio llevaba meses enlazando «Privacidad» a `#`, en las diez
- * páginas, mientras dos formularios recogían correos. Esta página existe
- * para cerrar eso.
- *
- * `robots: index` a propósito, aunque una legal no atraiga visitas: que
- * exista y sea accesible es una señal de confianza que los buscadores
- * valoran, y las pasarelas de pago la piden localizable antes de aprobar
- * una cuenta.
+ * /privacidad: qué datos recoge la web. Se indexa a propósito: que sea
+ * localizable es señal de confianza y las pasarelas de pago la piden.
  */
 
 const doc = documentoPorSlug("privacidad")!;

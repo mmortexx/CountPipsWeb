@@ -8,43 +8,19 @@ import { titularIncompleto } from "@/lib/legal/titular";
 import { LOCALE_FECHA } from "@/lib/trading/format";
 
 /**
- * LegalDoc — el cuerpo de las cuatro páginas legales.
- *
- * Un solo componente para los cuatro documentos: son la misma estructura
- * —secciones numeradas con párrafos, listas y alguna tabla— y mantener
- * cuatro maquetaciones paralelas sería garantizar que se separen.
- *
- * ── Decisiones de lectura ─────────────────────────────────────────────
- * · Ancho de línea limitado por la clase `.medida`, en cada bloque de
- *   texto. Un texto legal a todo lo ancho de una pantalla de escritorio no
- *   se lee: el ojo pierde el renglón al volver. Aquí llegó a componer 115
- *   caracteres por línea, medidos, con un `max-w-[68ch]` puesto en el
- *   contenedor que no medía lo que su nombre decía — ver la nota de abajo
- *   y la larga de `globals.css`.
- * · Cada sección lleva su ancla propia, para poder enlazar una cláusula
- *   concreta desde un correo o desde el aviso de cookies.
- * · El índice va a un raíl lateral SÓLO desde `lg`. En móvil una columna
- *   lateral se convierte en un bloque enorme antes del contenido, y estos
- *   documentos ya son largos de por sí, así que ahí sigue arriba; en
- *   escritorio, donde sobraba media pantalla a la derecha, acompaña al
- *   desplazamiento y sirve para saltar de cláusula a cláusula.
- *
- * ── El aviso de borrador ──────────────────────────────────────────────
- * Sale mientras falten los datos fiscales del titular. No es decorativo:
- * mientras esté ahí, estos textos sirven para una web informativa pero no
- * para vender. Desaparece solo en cuanto se rellenen los campos de
- * `src/lib/legal/titular.ts` — nadie tiene que acordarse de quitarlo.
+ * Cuerpo de las cuatro páginas legales: secciones numeradas con párrafos,
+ * listas y tablas, cada una con su ancla. La medida de línea la pone `.medida`
+ * en cada bloque de texto. El índice va a un raíl lateral desde `lg`; en móvil
+ * queda arriba. El aviso de borrador sale mientras falten los datos fiscales de
+ * `src/lib/legal/titular.ts` y desaparece solo al rellenarlos.
  */
 export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  /* `timeZone: "UTC"` no es un detalle: `LEGAL_ACTUALIZADO` es una fecha
-     sin hora, y el navegador la interpreta como medianoche UTC. Sin
-     fijarlo, cualquier visitante al oeste de Greenwich —toda América—
-     leía el día ANTERIOR en la fecha de un documento legal. Y como el
-     servidor que compila sí está en UTC, el texto servido y el pintado no
-     coincidían: un desajuste de hidratación además de una fecha falsa. */
+  // `timeZone: "UTC"`: `LEGAL_ACTUALIZADO` es una fecha sin hora (medianoche
+  // UTC). Sin fijarlo, al oeste de Greenwich se lee el día anterior y la
+  // hidratación no coincide con el HTML compilado.
   const fecha = new Date(LEGAL_ACTUALIZADO).toLocaleDateString(
     LOCALE_FECHA[es ? "es" : "en"],
     { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" },
@@ -55,27 +31,12 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
       className="section-tight"
     >
       <div className="tj-container">
-        {/* A 1.440 px el documento entero quedaba pegado al margen izquierdo
-            y la mitad derecha de la página en blanco. Desde `lg` el índice
-            se va a un raíl que acompaña al desplazamiento —así sirve para
-            lo que existe, saltar de cláusula a cláusula en un texto largo—
-            y el cuerpo conserva su medida. Por debajo de `lg` no cambia
-            nada: el índice sigue arriba, entre la entradilla y la primera
-            sección.
-
-            ⚠ AQUÍ HABÍA UN `68ch` Y NO MEDÍA 68 CARACTERES. `ch` se
-            resuelve con la tipografía del elemento que lo escribe, y el
-            elemento era este `div`, que hereda el tamaño base del sitio: 68
-            de sus caracteres daban 110 de los del párrafo de 15 px que
-            lleva dentro. La medida de verdad la pone ahora `.medida` en
-            cada bloque de texto; estas columnas solo reparten el ancho
-            entre cuerpo e índice, y por eso van en `rem`, que no depende de
-            la tipografía. `justify-between` las separa a los dos extremos:
-            con el cuerpo ya en su medida, sin esto quedaba un vacío grande
-            entre el texto y el índice en lugar de márgenes. */}
+        {/* Desde `lg` el índice va a un raíl lateral que acompaña al scroll.
+            Las columnas van en `rem` y no en `ch`: `ch` se resuelve con la
+            tipografía de quien lo escribe y aquí no medía lo que decía. La
+            medida real la pone `.medida`; `justify-between` reparte el hueco. */}
         <div className="lg:grid lg:grid-cols-[minmax(0,44rem)_minmax(0,15rem)] lg:items-start lg:justify-between lg:gap-x-14">
         <div className="w-full max-w-[44rem] lg:col-start-1 lg:row-start-1">
-          {/* Entradilla — lo que hay que saber sin leer el documento. */}
           <Reveal>
             <p className="medida m-0 t-entradilla text-secondary">
               {es ? doc.entradaEs : doc.entradaEn}
@@ -88,8 +49,7 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
 
           {titularIncompleto && (
             <Reveal delay={0.05}>
-              {/* La medida va en la caja y no en el párrafo: los filetes
-                  tienen que acabar donde acaba el texto. */}
+              {/* La medida va en la caja para que los filetes acaben con el texto. */}
               <div className="medida mt-6 border-y border-[var(--line-2)] py-4 text-[14px]">
                 <p className="m-0 leading-[1.6] text-secondary">
                   <strong className="text-primary">
@@ -105,7 +65,6 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
 
         </div>
 
-          {/* Índice */}
           <Reveal
             delay={0.1}
             className="lg:sticky lg:top-28 lg:col-start-2 lg:row-start-1 lg:row-span-2"
@@ -117,16 +76,11 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
               <p className="eyebrow m-0">{es ? "Contenido" : "Contents"}</p>
               <ol className="mt-1 m-0 flex list-none flex-col p-0">
                 {doc.secciones.map((s, i) => (
-                  /* `min-h-[44px]` en el enlace, no en el `<li>`: son doce
-                     entradas en la más larga de las cuatro páginas, y
-                     medían 21 px de alto. */
+                  /* `min-h-[44px]` en el enlace, no en el `<li>`. */
                   <li key={s.id}>
                     <a
                       href={`#${s.id}`}
-                      /* `items-baseline`, no `items-center`: con un
-                         título de dos líneas el número se quedaba
-                         flotando entre las dos en vez de junto a la
-                         primera. */
+                      /* `items-baseline`: el número queda junto a la primera línea del título. */
                       className="link-underline-host flex min-h-[44px] items-baseline gap-2.5 py-2 text-[14px] text-secondary transition-colors hover:text-primary"
                     >
                       <span
@@ -145,13 +99,10 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
             </nav>
           </Reveal>
 
-          {/* Secciones */}
           <div className="mt-12 flex w-full max-w-[44rem] flex-col gap-11 lg:col-start-1 lg:row-start-2">
             {doc.secciones.map((s, i) => (
               <section key={s.id} id={s.id} className="scroll-mt-28">
-                {/* `t-h3` (24/20 px): todo h2 sale en la serif (regla de marca), y a los
-                    15 px de antes la serif quedaba más débil que el cuerpo
-                    en sans que la sigue. */}
+                {/* `t-h3`: todo h2 sale en serif y a 15 px quedaría más débil que el cuerpo. */}
                 <h2 className="m-0 flex items-baseline gap-3 t-h3 text-primary">
                   <span
                     className="tnum font-sans text-[13px] font-semibold"
@@ -191,9 +142,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
       <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
         {items.map((t, i) => (
           <li key={i} className="medida flex gap-3 text-[15px] leading-[1.7] text-secondary">
-            {/* El punto va como elemento propio y no como viñeta del
-                navegador: así se alinea con la primera línea del texto y
-                no se descuelga cuando el elemento ocupa varias líneas. */}
+            {/* Punto propio, no viñeta del navegador: se alinea con la primera línea. */}
             <span
               aria-hidden
               className="mt-[0.62em] h-1 w-1 shrink-0 rounded-[1px]"
@@ -209,9 +158,7 @@ function BloqueLegal({ bloque, es }: { bloque: Bloque; es: boolean }) {
   const cabeceras = es ? bloque.cabecerasEs : bloque.cabecerasEn;
   return (
     <>
-    {/* En móvil, una ficha por fila: tres columnas con frases dentro no
-        caben en 358 px, y desplazar la tabla de lado dejaba la tercera
-        cortada contra el canto. La primera celda nombra la fila. */}
+    {/* En móvil, una ficha por fila: la tabla de tres columnas no cabe. */}
     <div className="border-t border-[var(--line-2)] sm:hidden">
       {bloque.filas.map((f, i) => {
         const [nombre, ...resto] = es ? f.es : f.en;

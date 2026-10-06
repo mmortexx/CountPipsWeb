@@ -24,14 +24,8 @@ export function PostHog() {
         stop();
         return;
       }
-      /* Volver a aceptar en la MISMA sesión tiene que volver a medir.
-         Antes esta guarda salía en cuanto encontraba el script ya
-         cargado, así que la secuencia aceptar → "Solo necesarias" →
-         aceptar de nuevo dejaba la medición apagada hasta recargar la
-         página: el `opt_out_capturing()` de la retirada seguía en pie y
-         nadie lo deshacía. Falla del lado seguro —mide de menos— pero es
-         la misma clase de desajuste entre lo que el visitante elige y lo
-         que el código hace que este módulo viene a cerrar. */
+      // Volver a aceptar en la misma sesión debe volver a medir: con el script
+      // ya cargado hay que deshacer el `opt_out_capturing()` de la retirada.
       if (window.posthog) {
         api()?.opt_in_capturing?.();
         return;
@@ -44,32 +38,11 @@ export function PostHog() {
       script.src = "https://eu-assets.i.posthog.com/static/array.js";
       script.onload = () => {
         const posthog = (window as Window & { posthog?: { init?: (key: string, options: Record<string, unknown>) => void } }).posthog;
-        /* ── LA CONFIGURACIÓN TIENE QUE CABER EN LO QUE PROMETE LA WEB ──
-           Dos ajustes contradecían por escrito a la política de
-           privacidad, y en un producto cuyo argumento entero es "tus
-           datos no salen de tu equipo" eso vale más que la métrica que
-           se pierde:
-
-             · `disable_session_recording: false` encendía la GRABACIÓN
-               DE SESIÓN: PostHog reproduce el DOM y la interacción
-               completas. La política ofrece "eventos de embudo",
-               "eventos técnicos" y "uso agregado", y el botón del aviso
-               dice "Aceptar analítica". Nada de eso describe una
-               grabación. Se apaga.
-
-             · `persistence: "localStorage+cookie"` plantaba la cookie
-               `ph_<clave>_posthog`. La política afirma, con una tabla
-               titulada "Todo lo que se guarda, sin excepción", que de
-               las siete claves guardadas NINGUNA es una cookie, y hay
-               un comentario en `CookieConsent.tsx` explicando que decir
-               "cookies técnicas" era "cómodo pero falso". Pasa a
-               `localStorage` a secas y la afirmación vuelve a ser cierta.
-
-           Se ajusta el CÓDIGO a la promesa y no al revés, a propósito:
-           `autocapture: false` ya demostraba que la intención era
-           medición mínima. Lo que se mide —páginas vistas y salidas—
-           sigue igual. Si algún día se quiere grabación de sesión, hay
-           que declararla antes en la política, no después. */
+        // La configuración debe caber en lo que promete la política de privacidad:
+        // sin grabación de sesión (solo eventos de embudo, técnicos y uso
+        // agregado) y con `localStorage` a secas, porque la política afirma que
+        // no se guarda ninguna cookie. Antes de activar cualquiera de las dos,
+        // hay que declararla en la política.
         posthog?.init?.(POSTHOG_KEY, {
           api_host: "https://eu.i.posthog.com",
           autocapture: false,
@@ -86,8 +59,7 @@ export function PostHog() {
 
     load();
     window.addEventListener(CONSENT_CHANGE_EVENT, load);
-    // Cualquier valor que no sea "accepted" —incluida la retirada, que
-    // emite `null`— corta la captura en el acto.
+    // Cualquier valor que no sea "accepted" (incluida la retirada, `null`) corta la captura.
     const onConsentChange = (event: Event) => {
       if ((event as CustomEvent<string | null>).detail !== "accepted") stop();
     };

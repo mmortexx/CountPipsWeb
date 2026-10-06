@@ -6,12 +6,7 @@ import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
-/**
- * /en/glosario/[termino] — English counterpart of /glosario/[termino].
- * Same static params as the Spanish route: the term data (`t.en`)
- * already exists, this
- * route only needed its own address and its own English metadata/schema.
- */
+/** /en/glosario/[termino]: versión inglesa de /glosario/[termino], con los mismos parámetros estáticos. */
 
 export function generateStaticParams() {
   return TERMINOS.map((t) => ({ termino: t.slug }));

@@ -7,35 +7,10 @@ import { ProductPlate } from "@/components/tj/ProductPlate";
 import { LAMINAS_PRODUCTO, ORDEN_LAMINAS } from "@/lib/laminas";
 
 /**
- * GaleriaPantallas — las siete pantallas del programa, una cada vez.
- *
- * ── Por qué existe ────────────────────────────────────────────────────
- * `/features` lleva desde el principio prometiendo en sus datos
- * estructurados una «galería de la app», y no enseñaba ni una captura:
- * cuarenta características descritas con palabras, en una página cuyo
- * argumento entero es que el programa hace cosas que los demás no hacen.
- * Al mismo tiempo, cinco de las siete capturas de `public/img/` no las
- * montaba ningún componente del sitio — existían, pesaban y no las veía
- * nadie.
- *
- * ── Por qué pestañas y no una tira de siete láminas ───────────────────
- * Siete capturas apiladas son siete pantallas de scroll, y en la práctica
- * se ven las dos primeras. Con pestañas, la sección ocupa lo que ocupa
- * UNA y el visitante decide qué mira — que además es la forma en que se
- * usa el programa: una barra de secciones arriba y una pantalla debajo.
- * La galería imita esa barra a propósito.
- *
- * La portada monta las mismas láminas por su cuenta (`ProductShowcase`,
- * § 02) pero solo cuatro: allí la sección tiene que caber en una portada
- * que ya mide diez mil píxeles. Aquí van las siete, que es lo que esta
- * página promete. Aquí ya ha entrado a leer las
- * características, así que elegir es una mejora y no un peaje.
- *
- * ── Lo que NO hace ────────────────────────────────────────────────────
- * No monta las siete láminas y esconde seis: eso descarga siete capturas
- * para enseñar una. Monta solo la activa; el resto llega cuando se pide.
- * Con `loading="lazy"` en las imágenes, cambiar de pestaña cuesta una
- * petición de unos 60 KB.
+ * Las siete pantallas del programa, una cada vez, en pestañas que imitan la
+ * barra de secciones de la app. Solo monta la lámina activa: montar las siete
+ * y esconder seis descargaría siete capturas para enseñar una. La portada
+ * monta solo cuatro (`ProductShowcase`); aquí van las siete.
  */
 export function GaleriaPantallas() {
   const { lang } = useLang();
@@ -46,10 +21,8 @@ export function GaleriaPantallas() {
 
   const lamina = LAMINAS_PRODUCTO[activa];
 
-  /* Flechas para moverse entre pestañas, como pide el patrón de pestañas
-     de la WAI: con `role="tab"` el lector de pantalla anuncia «pestaña 3
-     de 7» y quien navega con teclado espera que las flechas funcionen.
-     Sin esto, el tabulador se para en las siete, una por una. */
+  /* Flechas, Inicio y Fin entre pestañas (patrón de pestañas de la WAI); sin
+     ellas el tabulador se pararía en las siete. */
   const enTeclado = (e: React.KeyboardEvent, i: number) => {
     const salto = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : e.key === "Home" ? -i : e.key === "End" ? ORDEN_LAMINAS.length - 1 - i : 0;
     if (!salto) return;
@@ -112,12 +85,9 @@ export function GaleriaPantallas() {
         </div>
 
         <div role="tabpanel" id={`${idBase}-panel`} aria-labelledby={`${idBase}-tab-${activa}`}>
-          {/* `key` hace DOS cosas, y las dos hacen falta. Fuerza a React a
-              reemplazar la lámina en vez de reutilizarla —sin él, el `<img>`
-              conserva la imagen anterior mientras descarga la nueva y la
-              pestaña parece no responder— y, al remontar el nodo, reinicia
-              la animación de `tj-lamina-cambia`, que es lo que convierte el
-              cambio en un gesto en vez de un corte. */}
+          {/* `key` fuerza a reemplazar la lámina (si no, el `<img>` conserva la
+              anterior mientras descarga) y reinicia la animación
+              `tj-lamina-cambia`. */}
           <div key={activa} className="tj-lamina-cambia">
             <ProductPlate lamina={lamina} />
           </div>

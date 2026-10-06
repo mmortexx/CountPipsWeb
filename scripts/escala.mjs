@@ -1,35 +1,20 @@
 /**
- * ESCALA — ¿cada titular y cada párrafo mide lo que dice la escala?
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * La escala vive en `globals.css`: `t-display`, `t-h1` … `t-h5` para los
- * titulares y `t-lede` / `t-entradilla` para lo que va debajo. Esta guarda
- * no copia sus valores: en cada página crea una sonda con cada clase, lee
- * el tamaño que el navegador le da a ESE ancho y exige que
- *
- *  · todo h1–h4 visible mida lo mismo que algún peldaño de titular;
- *  · todo bloque de texto visible (p, li, dd, blockquote con 40 caracteres
- *    o más) mida un peldaño de texto (11–16 px enteros) o uno de la escala;
- *  · ningún tramo de un titular pinte otro color que el titular (la regla
- *    de un solo tono; se quitó `.text-gradient`, y esto mira el color
- *    calculado, no la clase, para cazar cualquier otra vía);
- *  · en cada página de herramienta, ningún texto fuera de los gráficos baje
- *    de 12 px y la tarjeta de resultado abra con `.tj-ficha-barra` (tanda
- *    47: había cifras a 11,2 px y siete cabeceras distintas).
- *
- * Lo que atrapa es el tamaño escrito a mano: un `clamp()` suelto da
- * 17,28 o 18,72 px, y un `text-[17px]` en un h3 da un peldaño que no
- * existe. Se miran todas las páginas de `out/`, a 1440 y a 390.
- *
- * ── Qué encontró el día que se escribió (2026-09-28, tanda 44) ────────
- * Nueve tamaños distintos de h3 (14, 15, 16, 17, 18, 20, 22, 24 y 28 px),
- * h2 de panel a 20, 22 y 32 px, y entradillas a 17, 17,28, 17,6, 18,72,
- * 19 y 21 px para el mismo papel. Vista en rojo con esa compilación.
- *
- * ── Lo que NO mira ────────────────────────────────────────────────────
- * El interior de la demo (`[data-demo-raiz]`), que imita la app y tiene
- * su propia escala; el texto oculto a lectores (`.sr-only`, 1 px); y los
- * rótulos cortos, cifras y botones, que no son bloques de texto.
+ * ESCALA: comprueba, en todas las páginas de `out/` a 1440 y 390 px, que cada
+ * titular y cada párrafo miden lo que dice la escala de `globals.css`
+ * (`t-display`, `t-h1`…`t-h5`, `t-lede`, `t-entradilla`). No copia sus valores:
+ * crea una sonda por clase y lee el tamaño que el navegador le da a ese ancho.
+ * Un fallo es:
+ *  - un h1–h4 visible que no mide lo de ningún peldaño de titular;
+ *  - un bloque de texto (p, li, dd, blockquote de 40+ caracteres) que no mide
+ *    un peldaño de texto (11–16 px enteros) ni uno de la escala;
+ *  - un tramo de titular con otro color que el titular (se mira el color
+ *    calculado, no la clase);
+ *  - interlineado de lectura distinto de 1,6 (13 y 14 px) o 1,7 (15 y 16 px);
+ *  - negrita distinta de 600, texto de herramienta bajo 12 px fuera de los
+ *    gráficos, o tarjeta de resultado sin `.tj-ficha-barra`.
+ * Atrapa el tamaño escrito a mano (un `clamp()` suelto, un `text-[17px]`).
+ * No mira la demo (`[data-demo-raiz]`, con su propia escala), el texto
+ * `.sr-only` ni rótulos cortos, cifras y botones.
  *
  * Uso:  node scripts/escala.mjs --serve out
  */
@@ -136,8 +121,7 @@ for (const ancho of ANCHOS) {
           nt++;
           const px = parseFloat(getComputedStyle(el).fontSize);
           if (!vale(px, deTitular)) malos.push({ tipo: el.tagName.toLowerCase(), px, texto: el.textContent.trim().slice(0, 50) });
-          /* Un solo tono: ningún tramo del titular pinta otro color que el
-             titular entero, lo haga con la clase que lo haga. */
+          // Un solo tono: ningún tramo del titular pinta otro color que el titular, sea con la clase que sea.
           const tinta = (x) => { const s = getComputedStyle(x); return `${s.color}|${s.webkitTextFillColor}|${s.backgroundClip}`; };
           const suya = tinta(el);
           for (const d of el.querySelectorAll("*")) {
@@ -156,9 +140,7 @@ for (const ancho of ANCHOS) {
           const px = parseFloat(getComputedStyle(el).fontSize);
           if (!vale(px, deTexto)) malos.push({ tipo: el.tagName.toLowerCase(), px, texto: propio.slice(0, 50) });
         }
-        /* Interlineado de lectura: un párrafo de dos líneas o más se compone
-           a 1,6 (13 y 14 px) o a 1,7 (15 y 16 px), lo escriba quien lo
-           escriba. Había nueve proporciones para el mismo papel. */
+        // Interlineado de lectura: un párrafo de dos líneas o más va a 1,6 (13 y 14 px) o a 1,7 (15 y 16 px).
         let ni = 0;
         const INTERLINEADO = { 13: 1.6, 14: 1.6, 15: 1.7, 16: 1.7 };
         for (const el of document.querySelectorAll("main p, main li, main dd, main blockquote, main .medida")) {
@@ -167,7 +149,7 @@ for (const ancho of ANCHOS) {
           const propio = [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent).join("").trim();
           if (propio.length < 40) continue;
           const s = getComputedStyle(el);
-          /* Las fórmulas del glosario van en monoespaciada: son código, no prosa. */
+          // Las fórmulas del glosario van en monoespaciada: son código, no prosa.
           if (/mono/i.test(s.fontFamily)) continue;
           const px = parseFloat(s.fontSize);
           const esperado = INTERLINEADO[Math.round(px)];
@@ -177,8 +159,7 @@ for (const ancho of ANCHOS) {
           ni++;
           if (Math.abs(lh / px - esperado) > 0.012) malos.push({ tipo: `interlineado ${(lh / px).toFixed(3)} (pide ${esperado})`, px, texto: propio.slice(0, 50) });
         }
-        /* Herramientas: nada por debajo de 12 px fuera de los gráficos, y la
-           tarjeta de resultado abre con la barra común (rótulo | dato). */
+        // Herramientas: nada bajo 12 px fuera de los gráficos y la tarjeta de resultado abre con la barra común.
         let nh = 0;
         if (/\/herramientas\/[^/]+\/$/.test(location.pathname)) {
           nh = 1;
@@ -192,8 +173,7 @@ for (const ancho of ANCHOS) {
             if (px < 11.95) malos.push({ tipo: "texto de herramienta bajo 12", px, texto: el.textContent.trim().slice(0, 50) });
           }
         }
-        /* El negrito de la casa es 600: el del navegador (700) pesa más que
-           cualquier titular del sitio. */
+        // La negrita de la casa es 600; la del navegador (700) pesa más que cualquier titular.
         let nn = 0;
         for (const el of document.querySelectorAll("strong, b")) {
           if (!fuera(el) || !visible(el)) continue;

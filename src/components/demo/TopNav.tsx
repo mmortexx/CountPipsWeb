@@ -8,25 +8,15 @@ import { useTheme } from "@/lib/theme";
 import { destinoConFlechas } from "@/lib/flechas";
 
 /*
- * Menú superior — réplica del NavigationView en modo Top de la app real
- * (MainWindow.xaml L175-317).
+ * Menú superior, réplica del NavigationView en modo Top de la app
+ * (MainWindow.xaml L175-317): items de texto plano con el activo en color de
+ * acento y una barrita corta debajo; menú centrado ópticamente (aquí con una
+ * rejilla de 3 columnas, en la app con un clon invisible del pie del panel) y
+ * a la derecha tres botones fantasma: streamer, tema e idioma.
  *
- * Lo que hace la app real y esta demo NO hacía:
- *   · Los items NO llevan píldora de fondo ni halo. Son texto plano; el
- *     activo se marca con el TEXTO en color de acento y una BARRITA corta
- *     de acento debajo, centrada bajo el item (el indicador nativo del
- *     NavigationView de WinUI). La demo pintaba un rectángulo blanco al
- *     10 % con una sombra dorada difusa alrededor — nada que ver.
- *   · El menú va ÓPTICAMENTE CENTRADO, no pegado a la izquierda. En la app
- *     lo consigue un clon invisible del pie del panel (ver el comentario
- *     largo del XAML); aquí basta una rejilla de 3 columnas.
- *   · A la derecha viven TRES botones fantasma — modo streamer (ojo), tema
- *     (sol/luna) e idioma (ES/EN) — no un botón "+ Nueva operación", que la
- *     app real no tiene en esta barra.
- *
- * Solo salen las CUATRO primeras secciones de la app (ver DemoPage). Los
- * iconos son trazos equivalentes a los glifos Segoe Fluent que usa la app
- * (E80F, E8AB, E9D2, E70B): Segoe Fluent Icons no existe fuera de Windows.
+ * Solo salen las cuatro primeras secciones de la app (ver DemoPage). Los
+ * iconos son trazos equivalentes a los glifos Segoe Fluent (E80F, E8AB, E9D2,
+ * E70B), que no existen fuera de Windows.
  */
 const NAV_ITEMS: {
   key: DemoPage;
@@ -59,8 +49,7 @@ const NAV_ITEMS: {
   },
 ];
 
-/** Cuántas pestañas se alcanzan con las teclas 1…n: la ayuda de atajos lo
- *  cita de aquí (prometía «1–7» con cuatro pestañas). */
+/** Cuántas pestañas se alcanzan con las teclas 1…n; la ayuda de atajos lo cita de aquí. */
 export const PESTANAS_NUMERADAS = NAV_ITEMS.length;
 
 export function TopNav() {
@@ -68,7 +57,7 @@ export function TopNav() {
   const { t, lang, setLang } = useLang();
   const { theme, toggleTheme } = useTheme();
 
-  /** Map current `page` back to the nav item that owns it ("detail" → "trades"). */
+  // El detalle cuelga de la pestaña de operaciones.
   const activeNavKey = page === "detail" ? "trades" : page;
   const activeIndex = NAV_ITEMS.findIndex((item) => item.key === activeNavKey);
 
@@ -80,8 +69,7 @@ export function TopNav() {
     setPage(NAV_ITEMS[index].key);
   };
 
-  /* Las mismas teclas que el resto de pestañas y grupos del sitio: dan la
-     vuelta en los extremos, como pide el patrón. Antes se topaban. */
+  // Mismas teclas que el resto de pestañas del sitio; dan la vuelta en los extremos.
   const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const destino = destinoConFlechas(e.key, activeIndex, NAV_ITEMS.length, true);
     if (destino === null) return;
@@ -89,9 +77,7 @@ export function TopNav() {
     focusTab(destino);
   };
 
-  // Atajos 1–4, el equivalente web del Ctrl+1..4 de la app (los
-  // KeyboardAccelerator de MainWindow.xaml L19-32). Se ignoran mientras el
-  // foco está dentro de un campo para no secuestrar la escritura.
+  // Atajos 1–4, equivalente web del Ctrl+1..4 de la app (MainWindow.xaml L19-32).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
@@ -106,10 +92,8 @@ export function TopNav() {
           return;
         }
       }
-      /* Ctrl/Cmd/Alt + cifra es el cambio de pestaña del navegador y no se
-         toca. Y una tecla sola solo actúa con el foco dentro de la demo
-         (WCAG 2.1.4): pulsar «2» en otra parte de la página no cambia
-         nada, ni con la paleta o la ayuda de atajos abiertas. */
+      /* Ctrl/Cmd/Alt + cifra es del navegador. Una tecla sola solo actúa con el
+         foco dentro de la demo (WCAG 2.1.4) y sin paleta ni ayuda abiertas. */
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (!target?.closest("[data-demo-raiz]")) return;
       const capas = document.body.dataset;
@@ -127,24 +111,11 @@ export function TopNav() {
   const es = lang === "es";
 
   return (
-    /* Rejilla 1fr / auto / 1fr: la columna central queda centrada en la
-       ventana pase lo que pase con el ancho de los botones de la derecha —
-       el mismo resultado que la app consigue con su clon invisible. La
-       columna izquierda está vacía a propósito y es la que hace de
-       contrapeso. `min-w-0` en ambas columnas 1fr evita que los botones
-       fantasma (≥44px en móvil) empujen el ancho del panel y rompan la
-       página en viewports estrechos. `chrome-fill` es el velo de marco
-       (ChromeFillBrush), el mismo que llevan la barra de título y la de
-       estado. */
-    /* Rejilla de tres columnas para el centreado óptico de las pestañas
-        (ver comentario grande más abajo). En móvil se cambia a
-        `auto / 1fr / auto`: la columna izquierda vacía colapsa a 0 y la
-        derecha se dimensiona por su contenido (botones fantasma + ES),
-        de modo que los botones de la derecha NO se comprimen por debajo
-        de sus 44 px de toque y las pestañas se reparten el ancho restante
-        con scroll horizontal limpio si hace falta. En sm+ se vuelve al
-        `1fr / auto / 1fr` simétrico, que centra ópticamente las pestañas
-        como en la app real. */
+    /* En sm+ rejilla 1fr / auto / 1fr: la columna izquierda, vacía, hace de
+       contrapeso y centra las pestañas sea cual sea el ancho de los botones de
+       la derecha. En móvil, auto / 1fr / auto: la derecha no baja de sus 44 px
+       de toque y las pestañas reparten el resto con scroll horizontal. `min-w-0`
+       evita que los botones empujen el ancho del panel. */
     <div className="demo-chrome demo-hairline border-b grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch h-[46px] shrink-0">
       <div aria-hidden="true" />
 
@@ -168,17 +139,9 @@ export function TopNav() {
               aria-controls="demo-tabpanel"
               tabIndex={active ? 0 : -1}
               onClick={() => setPage(item.key)}
-              // `min-w-[44px]` en móvil garantiza el tamaño de toque mínimo
-              // incluso cuando la etiqueta está oculta (solo icono). En sm+,
-              // el texto le da al botón ancho de sobra y la restricción es
-              // inofensiva. `justify-center` centra el icono en móvil.
-              //
-              // Active state on mobile: icon-only tabs need a clearer active
-              // signal than the 3px gold bar alone (which reads at ~20px on a
-              // 44px button). A subtle accent-tinted background pill (mobile
-              // only, `sm:bg-transparent` resets it) + the gold bar reads as
-              // "selected" the way iOS/Material tab bars do. The bar also
-              // bumps from w-5 → w-6 on mobile for visibility.
+              // `min-w-[44px]` garantiza el tamaño de toque con solo icono. En móvil
+              // el activo lleva además un fondo teñido (`sm:bg-transparent` lo
+              // quita) y la barrita sube de w-5 a w-6.
               className={`relative h-full min-w-[44px] sm:min-w-0 px-3 sm:px-4 flex items-center justify-center sm:justify-start gap-2 text-[13px] transition-[background-color,color,transform] duration-150 ease-[var(--ease-menu-in)] whitespace-nowrap outline-none focus-visible:ring-1 focus-visible:ring-[rgb(var(--accent-base)/0.6)] focus-visible:-ring-offset-1 rounded-[2px] sm:rounded-none ${
                 active
                   ? "text-primary bg-[rgb(var(--accent-base)/0.10)] sm:bg-transparent"
@@ -200,13 +163,8 @@ export function TopNav() {
                 {item.icon}
               </svg>
               <span className="hidden sm:inline">{label}</span>
-              {/* Indicador nativo del NavigationView: barrita de acento
-                  corta y centrada bajo el item, no un subrayado de borde a
-                  borde. `left-1/2 -translate-x-1/2 w-6 sm:w-5` reproduce el
-                  ancho fijo del indicador de WinUI (24 px en móvil para
-                  mejor visibilidad sobre iconos sin etiqueta, 20 px en sm+). */}
-              {/* Y como en WinUI, la barrita no se apaga en un item y se
-                  enciende en otro: viaja al nuevo (`Viajero`). */}
+              {/* Indicador del NavigationView: barrita corta centrada bajo el item
+                  (24 px en móvil, 20 en sm+) que viaja al nuevo item (`Viajero`). */}
               {active && (
                 <Viajero
                   clave="demo-indicador-pestana"
@@ -221,14 +179,9 @@ export function TopNav() {
         })}
       </div>
 
-      {/* Pie del panel: modo streamer · tema · idioma. Son los tres botones
-          fantasma que la app lleva en NavigationView.PaneFooter (XAML
-          L289-313). El de streamer es decorativo aquí (oculta cifras en la
-          app real, algo que la demo no necesita); tema e idioma sí actúan.
-          El de streamer se oculta por debajo de `lg` para garantizar que los
-          botones de tema/idioma mantengan sus 32 px de ancho nativo (y 44 px
-          de toque en móvil) sin que la columna 1fr de la rejilla los comprima
-          en viewports intermedios (768–1023 px). */}
+      {/* Pie del panel (NavigationView.PaneFooter, XAML L289-313). El botón de
+          streamer es decorativo y se oculta bajo `lg` para que tema e idioma no se
+          compriman en anchos intermedios (768–1023 px). */}
       <div className="flex items-center justify-end gap-0.5 pr-2 sm:pr-2 min-w-0">
         <div className="hidden lg:block">
           <GhostButton
@@ -278,10 +231,8 @@ export function TopNav() {
   );
 }
 
-/** Botón fantasma del pie del menú — mismo tamaño y peso que el
- *  GhostButtonStyle de la app (icono de 16 px en una caja de 32).
- *  En móvil la caja crece a 44×44 px (h-11 w-11) para cumplir el mínimo
- *  de tamaño de toque; en sm+ vuelve a 32×32 como en la app real. */
+/** Botón fantasma del pie del menú (GhostButtonStyle de la app): caja de
+ *  32 px, que en móvil crece a 44×44 para cumplir el tamaño de toque. */
 function GhostButton({
   label,
   onClick,

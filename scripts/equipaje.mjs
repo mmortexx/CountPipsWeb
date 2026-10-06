@@ -1,32 +1,16 @@
 /**
- * EQUIPAJE — el JavaScript que cada página carga sin que nadie lo pida
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Lee los `<script src>` de TODAS las páginas compiladas y busca dentro de
+ * EQUIPAJE: lee los `<script src>` de todas las páginas compiladas y busca en
  * esos ficheros dos módulos que solo deben viajar adonde se usan:
- *
- *  1. La librería de avisos emergentes (Radix Toast). Solo la demo lanza
- *     avisos, y la librería va dentro del módulo de la demo, que se baja
- *     al montarse: no puede estar en el arranque de ninguna página. Montada
- *     en el layout, la cargaban las 175 páginas, con una región
- *     «Notifications (F8)» vacía y en inglés.
- *  2. El diccionario completo del glosario (57 términos en dos idiomas,
- *     unos 24 KB por copia). Solo lo necesita el índice de /glosario, que
- *     filtra en el navegador. La FAQ lo cargaba entero para un botón de
- *     «sin resultados», y cada ficha de término para pintar seis enlaces.
- *
- * Los dos se reconocen por una cadena que solo existe dentro de ellos y
- * que la minificación no toca: la etiqueta por defecto de Radix
- * («({hotkey})») y un término del diccionario («Wald-Wolfowitz»).
- *
- * ── Qué encontró el día que se escribió (2026-10-04) ──────────────────
- * Los avisos en las 175 páginas; el diccionario en la FAQ y en las 114
- * fichas de término. Se vio en rojo así, sobre la compilación de antes
- * del arreglo.
- *
- * ── Lo que NO mira ────────────────────────────────────────────────────
- * Lo que se descarga después, al abrir una ventana: eso ya no es equipaje,
- * es lo que alguien ha pedido.
+ *  1. La librería de avisos emergentes (Radix Toast): solo la demo lanza
+ *     avisos y va dentro de su módulo, que se baja al montarse; no puede estar
+ *     en el arranque de ninguna página.
+ *  2. El diccionario completo del glosario: solo lo necesita el índice de
+ *     /glosario, que filtra en el navegador.
+ * Cada módulo se reconoce por una cadena que la minificación no toca: la
+ * etiqueta por defecto de Radix («({hotkey})») y un término del diccionario
+ * («Wald-Wolfowitz»). Si una marca deja de existir en el sitio, la guarda
+ * falla y hay que buscar otra. No mira lo que se descarga después, al abrir
+ * una ventana.
  *
  * Uso:  node scripts/equipaje.mjs out
  */
@@ -42,9 +26,7 @@ const PREFIJO = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 const MODULOS = [
   {
-    /* Ni siquiera en /demo: viaja con el módulo de la demo, que se
-       descarga al montarse. En el arranque de la página /demo la traía
-       también la precarga que Next hace de /demo desde la barra de todas. */
+    // Ni siquiera en /demo: viaja con su módulo, que se descarga al montarse (la precarga de Next desde la barra lo traería).
     nombre: "la librería de avisos emergentes",
     marca: "({hotkey})",
     permitida: () => false,
@@ -110,10 +92,7 @@ for (const [m, rutas] of fallos) {
   for (const r of lista.slice(0, 8)) console.log(`     ${r}`);
   if (lista.length > 8) console.log(`     … y ${lista.length - 8} más`);
 }
-/* Una guarda que vigila ausencias aprueba sola si deja de leer: sin
-   ficheros de script resueltos no ha mirado nada, y si la marca ya no está
-   en ningún fichero del sitio, no sabría reconocer el módulo aunque
-   volviera a todas las páginas. */
+// Una guarda de ausencias aprueba sola si deja de leer: sin scripts resueltos no ha mirado nada, y sin la marca no reconocería el módulo.
 const todos = globSync(`${dir}/_next/static/chunks/**/*.js`).map((f) => readFileSync(f, "utf8"));
 for (const m of MODULOS) {
   if (!todos.some((t) => t.includes(m.marca))) {

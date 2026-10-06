@@ -1,13 +1,9 @@
 /**
- * Imprime un resumen estable de la muestra de demo, para compararlo entre
- * husos horarios. Lo usa `tests/husos.test.ts`, que lo ejecuta una vez
- * por huso en su propio proceso — `TZ` la lee el motor al arrancar y no
- * se puede cambiar a mitad de una prueba.
- *
- * Con `--local` recalcula el mapa de calor, el reparto por día y el
- * calendario con los métodos de HORA LOCAL, que es la versión
- * defectuosa. Sirve para demostrar que la comprobación puede fallar: si
- * ni siquiera así divergen los husos, es que la prueba no mide nada.
+ * Imprime un resumen estable de la muestra de demo para compararlo entre
+ * husos. Lo ejecuta `tests/husos.test.ts` una vez por huso, en su propio
+ * proceso. Con `--local` recalcula mapa de calor, reparto por día y
+ * calendario con métodos de hora local (la versión defectuosa), para
+ * demostrar que la comprobación puede fallar.
  */
 import {
   METRICS,
@@ -53,11 +49,11 @@ const anio = local ? ultima.getFullYear() : ultima.getUTCFullYear();
 const mes = local ? ultima.getMonth() : ultima.getUTCMonth();
 
 const salida = {
-  // Las métricas agregadas: son lo que la portada publica como cifras.
+  // Las métricas agregadas que la portada publica.
   metricas: Object.fromEntries(
     Object.entries(METRICS).map(([k, v]) => [k, redondo(v)]),
   ),
-  // Y las tres agregaciones que sí miran el calendario.
+  // Las tres agregaciones que sí dependen del calendario.
   mapaCalor: (local ? mapaCalorLocal(TRADES) : heatmap(TRADES)).map((f) =>
     f.map(redondo),
   ),

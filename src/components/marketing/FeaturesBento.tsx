@@ -6,26 +6,17 @@ import { nombreSetup } from "@/lib/trading/setups";
 import { fmtInt, fmtMoney, fmtPct, fmtR } from "@/lib/trading/format";
 
 /**
- * FeaturesBento — sección `#features`. Cinco fichas: calendario de P&L
- * (span 7), rendimiento por hora (span 5), playbooks, diario narrativo y
- * multi-cuenta.
- *
- * Cada una es una `.tj-ficha`: barra con el rótulo y su dato, cuerpo, y
- * por dentro filetes en vez de cajas. Antes llevaban un icono en un
- * cuadradito gris, filas en cajas rellenas, estados en chapa de color y
- * se levantaban al pasar el ratón: el vocabulario de una plantilla.
+ * Sección `#features`: cinco fichas (`.tj-ficha`): calendario de P&L (span 7),
+ * rendimiento por hora (span 5), playbooks, diario narrativo y multi-cuenta.
  */
-/* R media por hora de la ficha «Rendimiento por hora» (null: sin
-   operaciones). Una sola serie para las barras y para el texto: antes las
-   barras eran alturas sueltas, resaltaban las 9:00 con la mejor ventana en
-   las 10:00 y su barra más alta caía en las 14:00, una hora «a evitar». */
+/* R media por hora de la ficha «Rendimiento por hora» (null: sin operaciones).
+   Una sola serie alimenta las barras y el texto para que no se contradigan. */
 const HORAS_R: (number | null)[] = [
   null, null, null, null, null, null, 0.05, 0.12, 0.2, 0.3, 0.62, 0.48,
   0.1, 0.05, -0.8, 0.22, 0.15, -1.2, 0.08, 0.1, 0.02, -0.4, null, null,
 ];
 const MEJOR_VENTANA = [10, 11];
-/* El rótulo y la cifra salen de la serie: decían «10:00 – 11:30» y
-   «+27 % sobre media», que no casaban con las barras resaltadas. */
+/* El rótulo y la cifra salen de la serie, no se escriben a mano. */
 const hora = (h: number) => `${String(h).padStart(2, "0")}:00`;
 const VENTANA_ROTULO = `${hora(MEJOR_VENTANA[0])} – ${hora(MEJOR_VENTANA[MEJOR_VENTANA.length - 1] + 1)}`;
 const VENTANA_R = MEJOR_VENTANA.reduce((s, h) => s + (HORAS_R[h] ?? 0), 0) / MEJOR_VENTANA.length;
@@ -50,12 +41,11 @@ export function FeaturesBento({
   const rotulo = "text-[12px] font-medium text-tertiary tnum";
   const titulo = "m-0 t-h3 text-primary";
   const division = "border-[var(--ficha-division)]";
-  /* La cifra de total al pie de ficha: el del mes y el de las cuentas. */
+  /* Cifra de total al pie de ficha (mes y cuentas). */
   const cifraTotal = "tnum m-0 mt-1 text-[22px] font-medium leading-none tracking-[-0.02em]";
 
-  /* El resultado se calcula del saldo y el capital inicial para que no
-     puedan contradecirse: la Topstep «aprobada» tiene que pasar el +6 % de
-     su plantilla. */
+  /* El resultado se calcula del saldo y el capital inicial para que no se
+     contradigan: la Topstep «aprobada» tiene que pasar el +6 % de su plantilla. */
   const cuentas = [
     { name: "Apex 150k (#1)", inicial: 150000, saldo: 154820, status: es ? "En curso" : "In progress" },
     { name: "Topstep 50k (#2)", inicial: 50000, saldo: 53240, status: es ? "Aprobada" : "Passed" },
@@ -82,16 +72,14 @@ export function FeaturesBento({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          {/* Calendario (span 7) */}
           <article data-entra className="tj-ficha lg:col-span-7 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>{es ? "Calendario de P&L" : "P&L calendar"}</span>
               <span>{cal.label[lang]}</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1 flex flex-col">
-              {/* Las dos fichas de arriba van a la par: con el alto de dos
-                  líneas reservado en el titular, lo de debajo empieza a la
-                  misma altura en las dos. */}
+              {/* Alto de dos líneas reservado en el titular: lo de debajo empieza a
+                  la misma altura que en la ficha vecina. */}
               <h3 className={`${titulo} md:min-h-[2.5em]`}>{es ? "Cada día, en un vistazo" : "Every day, at a glance"}</h3>
               <div className="mt-4 grid grid-cols-7 gap-1.5 tnum text-[11px] tracking-[0.06em] text-tertiary" aria-hidden>
                 {(es ? ["L", "M", "X", "J", "V", "S", "D"] : ["M", "T", "W", "T", "F", "S", "S"]).map((d, i) => (
@@ -106,9 +94,8 @@ export function FeaturesBento({
                   const cellStyle = c.style ? { ...parseInlineStyle(c.style), padding: "4px", ...diagonal } : { padding: "4px", ...diagonal };
                   return (
                     <div key={i} className="tj-d-celda" style={cellStyle}>
-                      {/* Tinta explícita, no opacidad: atenuado, el día bajaba
-                          de 4,5:1 sobre la celda teñida. La jerarquía entre día
-                          e importe la llevan el cuerpo y el peso. */}
+                      {/* Tinta explícita, no opacidad: atenuado, el día baja de 4,5:1
+                          sobre la celda teñida. */}
                       <span className="tnum" style={{ fontSize: 11, color: "var(--ink)" }}>{c.day}</span>
                       <span className="tnum" style={{ fontSize: 11, fontWeight: 600, lineHeight: 1, color: "var(--ink)" }}>{c.val}</span>
                     </div>
@@ -141,7 +128,6 @@ export function FeaturesBento({
             </div>
           </article>
 
-          {/* Rendimiento por hora (span 5) */}
           <article data-entra="2" className="tj-ficha lg:col-span-5 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>{es ? "Rendimiento por hora" : "Hourly performance"}</span>
@@ -151,9 +137,8 @@ export function FeaturesBento({
               <h3 className={`${titulo} md:min-h-[2.5em]`}>
                 {es ? "Cuándo rindes y cuándo conviene parar" : "When you perform, and when to stop"}
               </h3>
-              {/* El gráfico crece con la ficha: en escritorio el calendario
-                  de al lado fija el alto de la fila, y con 100 px fijos
-                  sobraban unos 170 vacíos al pie. */}
+              {/* El gráfico crece con la ficha: en escritorio el calendario fija el
+                  alto de la fila. */}
               <div className="relative mt-5 flex min-h-[100px] flex-1 gap-[3px]" aria-hidden data-dibuja>
                 <span className="absolute inset-x-0 h-px bg-[var(--ficha-division)]" style={{ top: `${ZONA_POS}%` }} />
                 {HORAS_R.map((v, i) => (
@@ -181,7 +166,7 @@ export function FeaturesBento({
                   </div>
                 ))}
               </div>
-              {/* Eje de horas: sin él, 24 barras no dicen a qué hora cae el pico. */}
+              {/* Eje de horas. */}
               <div className="flex items-center justify-between pt-1.5 tnum text-[11px] tracking-[0.06em] text-tertiary" aria-hidden>
                 {["00", "06", "12", "18", "23"].map((h) => (
                   <span key={h}>{h}</span>
@@ -197,8 +182,8 @@ export function FeaturesBento({
                 </div>
                 <span className="tnum text-[12px] text-tertiary">{`${fmtR(VENTANA_R, lang, 2)} ${es ? "de media" : "on average"}`}</span>
               </div>
-              {/* La otra cara del dato —cuándo NO operar— es la que promete
-                  el titular, y equilibra el alto con el calendario. */}
+              {/* La otra cara del dato (cuándo no operar) y el equilibrio de alto con
+                  el calendario. */}
               <p className={`${rotulo} m-0 mt-6`}>{es ? "Ventanas a evitar" : "Windows to avoid"}</p>
               <ul className="m-0 mt-1 p-0 list-none">
                 {[
@@ -216,7 +201,6 @@ export function FeaturesBento({
             </div>
           </article>
 
-          {/* Playbooks (span 4) */}
           <article data-entra="2" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>Playbooks</span>
@@ -224,9 +208,8 @@ export function FeaturesBento({
             </p>
             <div className="tj-ficha-cuerpo flex-1">
               <h3 className={titulo}>{es ? "Qué setups te dan ventaja y cuáles no" : "Which setups pay and which don’t"}</h3>
-              {/* De la misma muestra que el calendario, de mejor a peor R
-                  media. Era una maqueta con +2,1R por operación, una cifra
-                  que ningún trader se cree. La barra es el acierto. */}
+              {/* De la misma muestra que el calendario, de mejor a peor R media. La
+                  barra es el acierto. */}
               <ul className="m-0 mt-3 p-0 list-none" data-dibuja>
                 {setups.map((s, k) => {
                   const c = s.expectativaR > 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))";
@@ -257,7 +240,6 @@ export function FeaturesBento({
             </div>
           </article>
 
-          {/* Diario narrativo (span 4) */}
           <article data-entra="3" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>{es ? "Diario narrativo" : "Narrative journal"}</span>
@@ -265,10 +247,8 @@ export function FeaturesBento({
             </p>
             <div className="tj-ficha-cuerpo flex-1 flex flex-col">
               <h3 className={titulo}>{es ? "Lo que pasó, lo que sentiste" : "What happened, what you felt"}</h3>
-              {/* Una nota del diario se compone como una cita impresa: en la
-                  cursiva de la serif, sin franja de color al lado. `font-cursiva`
-                  —y no `font-serif italic`— porque la cursiva es un fichero
-                  aparte que solo se descarga aquí; ver la nota en globals.css. */}
+              {/* `font-cursiva` y no `font-serif italic`: la cursiva es un fichero
+                  aparte que solo se descarga aquí (ver globals.css). */}
               <blockquote className="m-0 mt-4 font-cursiva text-base leading-[1.7] text-secondary">
                 {es
                   ? "«Entré en NQ por ruptura del rango NY, pero moví el stop a +1R para “asegurar”. Error: el plan era aguantar a 2R. Terminé saliendo en BE después de que el precio llegó al objetivo sin mí.»"
@@ -282,7 +262,6 @@ export function FeaturesBento({
             </div>
           </article>
 
-          {/* Multi-cuenta (span 4) */}
           <article data-entra="4" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>{es ? "Multi-cuenta" : "Multi-account"}</span>
@@ -306,8 +285,8 @@ export function FeaturesBento({
                   </li>
                 ))}
               </ul>
-              {/* El total va al pie, como el del calendario: la fila la mide
-                  la ficha más alta y aquí sobraban unos 160 px vacíos. */}
+              {/* El total va al pie, como el del calendario: la fila la mide la
+                  ficha más alta. */}
               <div className={`mt-auto border-t ${division} pt-4`}>
                 <p className={`${rotulo} m-0`}>{es ? "Resultado conjunto" : "Combined result"}</p>
                 <p className={`${cifraTotal} text-[rgb(var(--pnl-pos))]`}>
@@ -326,10 +305,8 @@ export function FeaturesBento({
 }
 
 /**
- * Parsea un string estilo CSS inline (formato `"prop:val;prop:val"`) a un
- * objeto JS compatible con el `style` prop de React. Solo se usa para
- * los strings generados por `fixtures.ts` (background/borderRadius/
- * aspectRatio/display/etc.). Suficiente para los casos del calendario.
+ * Convierte un string CSS inline (`"prop:val;prop:val"`) en el objeto `style`
+ * de React. Solo para los strings de `fixtures.ts` del calendario.
  */
 function parseInlineStyle(s: string): React.CSSProperties {
   const out: Record<string, string> = {};

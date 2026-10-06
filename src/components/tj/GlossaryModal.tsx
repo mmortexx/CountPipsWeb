@@ -24,45 +24,21 @@ import {
 } from "@/lib/trading/glossary";
 
 /**
- * GlossaryModal — bilingual trading glossary dialog.
- *
- * Reinforces the FROZEN GLOSSARY philosophy: the `term` is always rendered in
- * English (the lingua franca of the markets) even when the UI language is
- * Spanish. Only the *definition* and the surrounding UI chrome switch language.
- *
- * Features:
- *  - Search input (filters by term name + definition, case-insensitive).
- *  - One row of family filter buttons (`.tj-filtro`).
- *  - Live count of terms matching the current filter.
- *  - Collapsed rows by default; expandable via click or keyboard.
- *  - Keyboard navigation: ArrowUp/ArrowDown moves focus, Enter toggles
- *    expand, Home/End jump to first/last. Roving-tabindex style.
- *  - "Recently viewed" section at the top: the last 3 expanded terms,
- *    persisted in `localStorage` under `tj-glossary-recent`.
- *
- * Controlled mode (optional): pass `open` + `onOpenChange` to drive the dialog
- * from a parent (e.g. FAQ's "no results" link).
- *
- * Usage:
- *   <GlossaryModal />                                            // uncontrolled
- *   <GlossaryModal trigger={<button>...</button>} />             // custom trigger
- *   <GlossaryModal open={o} onOpenChange={setO} />               // controlled
+ * Diálogo del glosario. El término va siempre en inglés (glosario congelado);
+ * solo cambian la definición y el resto del texto. Búsqueda, filtro por familia,
+ * navegación con flechas/Home/End y los 3 últimos términos abiertos en
+ * `localStorage` (`tj-glossary-recent`). Admite modo controlado (`open` +
+ * `onOpenChange`) y disparador propio (`trigger`).
  */
 
 const RECENT_KEY = "tj-glossary-recent";
 const RECENT_MAX = 3;
 
 /** `id` estable de cada opción del listbox, para `aria-activedescendant`.
- *  Función pura — sin DOM — para poder probarla contra todo `GLOSSARY`
- *  sin renderizar React. */
+ *  Función pura, para probarla contra todo `GLOSSARY` sin renderizar. */
 export function idOpcionGlosario(term: string): string {
-  // Se descompone a NFD ("é" -> "e" + marca de acento) y luego se filtran
-  // las marcas combinantes por su código de punto, no por un escape
-  // `\uXXXX` en una regex: ese escape se ha degradado antes a caracteres
-  // literales al pasar por herramientas de edición basadas en shell (ver
-  // la nota de memoria "heredoc-se-come-barras"), y un id que depende de
-  // caracteres pegados en el fichero fuente es frágil de un modo que no
-  // se ve leyendo el código con normalidad.
+  // NFD y filtro de marcas combinantes por código de punto, no por un escape
+  // `\uXXXX` en una regex: ese escape se degrada a literales al editar por shell.
   const sinAcentos = Array.from(term.toLowerCase().normalize("NFD"))
     .filter((ch) => {
       const code = ch.codePointAt(0) ?? 0;
@@ -94,7 +70,7 @@ function writeRecent(terms: string[]) {
       JSON.stringify(terms.slice(0, RECENT_MAX))
     );
   } catch {
-    /* localStorage unavailable — keep in-memory only */
+    /* sin localStorage: solo en memoria */
   }
 }
 
@@ -111,8 +87,6 @@ export function GlossaryModal({
   const { lang } = useLang();
   const es = lang === "es";
 
-  // Controlled vs uncontrolled open state — lets a parent (e.g. FAQ search
-  // "no results" link) drive the dialog.
   const [internalOpen, setInternalOpen] = React.useState(false);
   const isControlled = openProp !== undefined;
   const open = isControlled ? openProp : internalOpen;
@@ -132,12 +106,12 @@ export function GlossaryModal({
   const [expanded, setExpanded] = React.useState<Set<string>>(new Set());
   const [recent, setRecent] = React.useState<string[]>([]);
 
-  // Load recent terms once on client mount (SSR-safe).
+  // Se leen al montar en el cliente, para no desajustar la hidratación.
   React.useEffect(() => {
     setRecent(readRecent());
   }, []);
 
-  // Reset filters each time the dialog opens (clean slate, no stale state).
+  // Cada apertura parte de cero.
   React.useEffect(() => {
     if (open) {
       setQuery("");
@@ -147,7 +121,6 @@ export function GlossaryModal({
     }
   }, [open]);
 
-  // Filter by search (term + definition, case-insensitive) + active category.
   const filtered = React.useMemo(() => {
     const q = paraBuscar(query.trim());
     return GLOSSARY.filter((g) => {
@@ -160,14 +133,12 @@ export function GlossaryModal({
     });
   }, [query, activeCat, es]);
 
-  // Clamp activeIndex whenever the filtered list shrinks.
   React.useEffect(() => {
     if (activeIndex >= filtered.length) {
       setActiveIndex(Math.max(0, filtered.length - 1));
     }
   }, [filtered, activeIndex]);
 
-  // Resolve recent terms to full GlossaryTerm objects (preserve recency order).
   const recentTerms = React.useMemo(() => {
     return recent
       .map((term) => GLOSSARY.find((g) => g.term === term))
@@ -216,7 +187,6 @@ export function GlossaryModal({
     }
   }
 
-  // Keep the active card scrolled into view as the user arrows around.
   const listRef = React.useRef<HTMLUListElement>(null);
   React.useEffect(() => {
     if (!open) return;
@@ -230,12 +200,8 @@ export function GlossaryModal({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {/* `trigger={false}` = el disparador lo pone el llamante y vive
-          FUERA de este componente. Lo usa `OverlayHost`, el único que
-          monta el glosario: los disparadores (pie, FAQ, Ctrl+G) solo
-          piden abrirlo con `openGlossary`, sin cargar este módulo. Sin
-          este caso habría que renderizar un disparador de mentira y
-          esconderlo. */}
+      {/* `trigger={false}`: el disparador vive fuera. `OverlayHost` es el único
+          que monta el glosario; los demás piden abrirlo con `openGlossary`. */}
       {trigger !== false && (
         <DialogTrigger asChild>
           {trigger ?? (
@@ -250,15 +216,9 @@ export function GlossaryModal({
         </DialogTrigger>
       )}
 
-      {/* `flex flex-col` en vez de la rejilla del primitivo, y un tope de
-          ventana: la ficha crecía con sus 57 términos y a 390×844 medía
-          900 px dentro de 844, con 28 px cortados por arriba —la ceja y el
-          titular— y otros 28 por abajo. Como el único que se desplazaba
-          era el listado de dentro, esos 56 px no había forma de verlos.
-          Ahora manda el alto de la ventana y el listado se queda con lo
-          que sobra. */}
+      {/* `flex flex-col` con tope de ventana en vez de la rejilla del primitivo:
+          sin él la ficha desbordaba en móvil y se cortaban cabecera y pie. */}
       <DialogContent className="sm:max-w-2xl p-0 gap-0 overflow-hidden flex flex-col max-h-[calc(100svh-2rem)]">
-        {/* Header — accent eyebrow + bilingual title + subtitle */}
         <DialogHeader className="px-6 pt-6 pb-4 text-left">
           <div className="flex justify-start">
             <Eyebrow>{es ? "Glosario" : "Glossary"}</Eyebrow>
@@ -275,7 +235,6 @@ export function GlossaryModal({
           </DialogDescription>
         </DialogHeader>
 
-        {/* Search input */}
         <div className="px-6 pb-3">
           <div className="relative">
             <Search
@@ -293,8 +252,6 @@ export function GlossaryModal({
           </div>
         </div>
 
-        {/* Familias: un solo control. Convivía con un desplegable que hacía
-            lo mismo; los botones ya se recorren con Tab. */}
         <div className="px-6 pb-4">
           <div
             className="flex flex-wrap gap-1.5"
@@ -340,7 +297,6 @@ export function GlossaryModal({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto custom-scroll border-t border-[var(--ficha-division)] px-6 py-4">
-          {/* Recently viewed — last 3 expanded terms, persisted in localStorage */}
           {recentTerms.length > 0 && (
             <div className="mb-4">
               <p className="m-0 mb-2 text-[13px] text-tertiary">
@@ -352,13 +308,13 @@ export function GlossaryModal({
                     key={`recent-${g.term}`}
                     type="button"
                     onClick={() => {
-                      // Reset filters so the term is visible, then expand it.
+                      // Quita los filtros para que el término sea visible.
                       setQuery("");
                       setActiveCat("all");
                       const idx = GLOSSARY.findIndex((x) => x.term === g.term);
                       if (idx >= 0) {
                         setActiveIndex(idx);
-                        // Ensure visible next tick after filter settles.
+                        // Espera a que el filtro se asiente.
                         requestAnimationFrame(() => {
                           const list = listRef.current;
                           if (!list) return;
@@ -418,9 +374,7 @@ export function GlossaryModal({
                     aria-selected={isActive}
                     data-glossary-index={i}
                     data-glossary-term={g.term}
-                    /* Filas con filete, no fichas: 57 cajas iguales una
-                       debajo de otra eran más marco que contenido. `min-w-0`
-                       para que la definición recortada no ensanche la lista. */
+                    /* `min-w-0` para que la definición recortada no ensanche la lista. */
                     className={[
                       "min-w-0 border-b border-[var(--ficha-division)] px-2 py-3.5 transition-colors cursor-pointer",
                       isActive
@@ -431,7 +385,6 @@ export function GlossaryModal({
                   >
                     <div className="flex items-baseline justify-between gap-3">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        {/* Expansion chevron — rotates when expanded */}
                         <ChevronDown
                           className={[
                             "size-3.5 text-tertiary shrink-0 transition-transform duration-200",
@@ -439,7 +392,6 @@ export function GlossaryModal({
                           ].join(" ")}
                           aria-hidden="true"
                         />
-                        {/* Term name — always English, accent, bold (frozen glossary) */}
                         <h3
                           className="t-h5 m-0 text-primary truncate"
                           lang="en"
@@ -454,8 +406,6 @@ export function GlossaryModal({
                         </span>
                       )}
                     </div>
-                    {/* Definition — in the active UI language.
-                        Collapsed shows a single-line preview; expanded shows full text. */}
                     <p
                       className={[
                         "m-0 mt-1.5 text-sm leading-[1.6]",
@@ -470,7 +420,6 @@ export function GlossaryModal({
             </ul>
           )}
 
-          {/* Keyboard hint footer */}
           <p className="mt-4 text-[12px] text-tertiary text-center">
             {es
               ? "Usa ↑ ↓ para navegar y Enter para expandir."

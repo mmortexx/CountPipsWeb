@@ -16,21 +16,12 @@ import { HERRAMIENTAS } from "@/lib/herramientas";
 import { DOCUMENTOS_LEGALES } from "@/lib/legal/documentos";
 
 /**
- * Dimension D9 & D10: Security, Privacy & Editorial Tone Test Suite
- *
- * Requirements tested:
- * - Tier 1: Feature Coverage (>= 5 tests)
- *   1. Zero external network requests from calculators (100% client-side computation)
- *   2. PostHog strict consent gating (EU host, session recording disabled, localStorage only)
- *   3. `dangerouslySetInnerHTML` restricted exclusively to sanitized JSON-LD & static pre-paint scripts
- *   4. Institutional editorial tone & non-promise compliance (no fraudulent get-rich promises)
- *   5. Pricing honesty & no phantom payment gateway promises
- * - Tier 2: Boundary & Corner Cases (>= 5 tests)
- *   1. Malicious injection payloads in calculator input fields
- *   2. Cookie consent state machine transitions (accepted -> declined -> accepted cycle)
- *   3. Mandatory financial compliance disclaimer on all quantitative calculator views
- *   4. Zero hardcoded secrets, private keys, or sensitive credentials in source code
- *   5. Anti-bot honeypot contract integrity (`botcheck` matching client & worker)
+ * Dimensiones D9 y D10: seguridad, privacidad y tono editorial. Tier 1:
+ * calculadoras sin red, PostHog con consentimiento (host de la UE, sin
+ * grabación), `dangerouslySetInnerHTML` solo para JSON-LD y scripts estáticos,
+ * sin promesas de rentabilidad ni pasarelas de pago inexistentes. Tier 2:
+ * entradas maliciosas, estados del consentimiento, descargo financiero, sin
+ * secretos en el código y campo trampa `botcheck` igual en cliente y Worker.
  */
 
 const RAIZ = join(import.meta.dirname, "..", "..");
@@ -58,10 +49,6 @@ function todasLasFuentes(dir: string, acc: string[] = []): string[] {
 }
 
 describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
-  // =========================================================================
-  // TIER 1: FEATURE COVERAGE
-  // =========================================================================
-
   describe("Tier 1: Feature Coverage", () => {
     it("D9-T1-1: Zero external network requests from calculators (100% client-side computation)", () => {
       const calculatorFiles = [
@@ -97,7 +84,6 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
     it("D9-T1-2: PostHog strict consent gating (EU host, session recording disabled, localStorage only)", () => {
       const posthogCode = leer("src/components/analytics/PostHog.tsx");
 
-      // Verify privacy settings in PostHog initialization
       expect(posthogCode).toContain("disable_session_recording: true");
       expect(posthogCode).toContain('persistence: "localStorage"');
       expect(posthogCode).toContain("mask_all_text: true");
@@ -105,7 +91,7 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
       expect(posthogCode).toContain('api_host: "https://eu.i.posthog.com"');
       expect(posthogCode).toContain("autocapture: false");
 
-      // Verify consent check is evaluated before loading script
+      // El consentimiento se evalúa antes de cargar el script.
       expect(posthogCode).toContain("if (!analyticsAllowed())");
     });
 
@@ -117,7 +103,7 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         const code = leer(rel);
         if (!code.includes("dangerouslySetInnerHTML")) continue;
 
-        // Check if usage is in layout (static scripts) or pages (JSON.stringify schema)
+        // Se admite en el layout (scripts estáticos) o con JSON.stringify (esquemas).
         const lines = code.split("\n");
         lines.forEach((line, i) => {
           if (line.includes("dangerouslySetInnerHTML")) {
@@ -154,7 +140,6 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
 
       const violations: string[] = [];
 
-      // Check STR
       for (const [key, val] of Object.entries(STR)) {
         const item = val as Record<string, unknown>;
         const text = `${item.es ?? ""} ${item.en ?? ""}`;
@@ -165,7 +150,6 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         }
       }
 
-      // Check FAQs
       for (let i = 0; i < FAQ_ES.length; i++) {
         const text = `${FAQ_ES[i].q} ${FAQ_ES[i].a} ${FAQ_EN[i].q} ${FAQ_EN[i].a}`;
         for (const { pattern, desc } of forbiddenClaims) {
@@ -175,7 +159,6 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         }
       }
 
-      // Check Tools
       for (const h of HERRAMIENTAS) {
         const text = `${h.tituloEs} ${h.descripcionEs} ${h.subtituloEs} ${h.tituloEn} ${h.descripcionEn} ${h.subtituloEn}`;
         for (const { pattern, desc } of forbiddenClaims) {
@@ -211,10 +194,6 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
     });
   });
 
-  // =========================================================================
-  // TIER 2: BOUNDARY & CORNER CASES
-  // =========================================================================
-
   describe("Tier 2: Boundary & Corner Cases", () => {
     it("D9-T2-1: Malicious injection payloads in tool input fields are handled without crashes", () => {
       const maliciousInputs = [
@@ -229,10 +208,9 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         "Infinity",
       ];
 
-      // Test numerical parser resilience
+      // Una entrada mala da NaN o un número, nunca una excepción sin controlar.
       for (const payload of maliciousInputs) {
         const num = parseFloat(payload);
-        // Validating that parsing bad inputs results in NaN or clamped numbers, not unhandled runtime exceptions
         if (Number.isNaN(num)) {
           expect(Number.isNaN(num)).toBe(true);
         } else {
@@ -268,12 +246,11 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         },
       } as unknown as Window & typeof globalThis;
 
-      // 1. Initial state (null / unselected)
+      // Sin elección previa.
       storageData = {};
       expect(readConsent()).toBeNull();
       expect(analyticsAllowed()).toBe(false);
 
-      // 2. Opt-in transition (accepted)
       writeConsent("accepted");
       expect(readConsent()).toBe("accepted");
       expect(analyticsAllowed()).toBe(true);
@@ -282,7 +259,6 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         detail: "accepted",
       });
 
-      // 3. Opt-out transition (declined)
       writeConsent("declined");
       expect(readConsent()).toBe("declined");
       expect(analyticsAllowed()).toBe(false);
@@ -291,21 +267,17 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         detail: "declined",
       });
 
-      // 4. Reopen consent dialog
       reopenConsent();
       expect(emittedEvents[emittedEvents.length - 1].type).toBe(CONSENT_REOPEN_EVENT);
 
-      // Restore window
       global.window = originalWindow;
     });
 
     it("D9-T2-3: Mandatory financial compliance disclaimer on all quantitative calculator views", () => {
       const vistaCode = leer("src/components/herramientas/HerramientaVista.tsx");
 
-      // Verify explicit disclaimer in HerramientaVista
-      // Se comprueba la parte que obliga la ley, no la redacción entera: el
-      // texto de alrededor puede reescribirse y esta prueba solo debe caer si
-      // desaparece el descargo.
+      // Se comprueba la parte que exige la ley, no la redacción entera: la
+      // prueba solo debe caer si desaparece el descargo.
       expect(vistaCode).toContain("No es asesoramiento financiero");
       expect(vistaCode).toContain("It is not financial advice");
       expect(vistaCode).toContain("/terminos#no-advice");
@@ -314,9 +286,9 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
     it("D9-T2-4: Zero hardcoded secrets, private keys, or sensitive credentials in source code", () => {
       const secretPatterns = [
         /-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----/,
-        /AKIA[0-9A-Z]{16}/, // AWS Access Key
-        /ghp_[0-9a-zA-Z]{36}/, // GitHub Personal Access Token
-        /sk_live_[0-9a-zA-Z]{24}/, // Stripe Live Key
+        /AKIA[0-9A-Z]{16}/, // clave de acceso de AWS
+        /ghp_[0-9a-zA-Z]{36}/, // token personal de GitHub
+        /sk_live_[0-9a-zA-Z]{24}/, // clave en producción de Stripe
       ];
 
       const files = todasLasFuentes("src");
@@ -339,11 +311,10 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
       const betaFormCode = sinComentarios(leer("src/components/beta/BetaApplication.tsx"));
       const workerCode = sinComentarios(leer("services/beta-api/src/worker.js"));
 
-      // Client forms must use 'botcheck' field
       expect(formsCode).toContain("botcheck");
       expect(betaFormCode).toContain("botcheck");
 
-      // Backend worker must read 'payload.botcheck' and NOT 'payload.honeypot'
+      // El Worker lee `payload.botcheck` y no `payload.honeypot`.
       expect(workerCode).toContain("payload.botcheck");
       expect(workerCode).not.toContain("payload.honeypot");
     });

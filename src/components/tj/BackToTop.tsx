@@ -6,65 +6,12 @@ import { irArriba } from "@/lib/scroll";
 import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
 
 /**
- * BackToTop — botón flotante cuadrado (4 px, como el resto de controles).
- *
- * - En pantallas donde no cabe en el margen (< 1280 px) tapaba el final de
- *   las líneas mientras se leía. Ahí solo aparece al desplazarse HACIA
- *   ARRIBA —que es cuando alguien quiere volver— o cerca del final.
- *
- * - Hidden until the user scrolls more than 400 px down. (Lowered from the
- *   original 600 px threshold so the affordance appears earlier on the
- *   common ~8 vh hero-scroll case on mobile, where 600 px is already
- *   mid-MetricsShowcase.)
- * - Cuando la barra final del pie (`[data-pie-final]`) entra en pantalla,
- *   el botón sube hasta quedar 8 px por encima de ella. Antes subía una
- *   cantidad fija (104 px) calculada para una barra de una línea; con
- *   tres, en un móvil caía sobre «Todos los derechos reservados.». Medir
- *   la barra no se queda corto si vuelve a crecer; `humo.mjs` lo vigila.
- * - COOKIE-BANNER AVOIDANCE — additionally lifts above the CookieConsent
- *   banner (`[data-cookie-consent="visible"]`) when both are mounted. The
- *   banner is anchored bottom-left and the button bottom-right; they
- *   don't horizontally overlap (cookie right edge < button left edge by
- *   28 px), but they DO share a vertical band on narrow viewports and
- *   visually crowd each other. Lifting the button above the banner's top
- *   edge (with an 8 px gap) gives the two their own vertical zone — the
- *   VLM read the previous "crowded but not overlapping" state as overlap.
- *   The lift is `vh - cookieTop - 8` so the button's bottom edge sits
- *   exactly 8 px above the banner's top edge. The final transform takes
- *   `max(footerShift, cookieShift)` so whichever constraint is binding
- *   wins; if neither applies the button sits at its natural position
- *   (env + 1.5 rem from the bottom).
- * - Al pulsarlo sube a la cabecera con `irArriba()` (src/lib/scroll.ts):
- *   salta hasta un palmo del destino y anima solo ese tramo, en vez de
- *   recorrer las diez pantallas que puede haber de por medio.
- * - Al pasar por encima se levanta 2 px y gana un halo del acento. Todo
- *   en CSS (`.tj-subir`), y anulado bajo `prefers-reduced-motion`.
- * - rAF-throttled scroll listener for smooth ring updates without jank.
- *   A resize listener is also attached so the cookie-avoidance lift
- *   recomputes when the banner reflows (e.g. orientation change).
- *
- * POSITION — `right-[calc(env(safe-area-inset-right)+1.5rem)]` and the
- * equivalent for `bottom`. Adds the iOS notch / home-indicator inset on
- * top of the 1.5 rem (24 px) base offset, so the button clears the home
- * indicator in landscape on iPhones with notches. El contenedor exterior
- * lleva el anclaje `fixed` y el levantamiento; el botón, su propia
- * entrada. Van separados porque son dos transformaciones sobre el mismo
- * eje y, en un solo elemento, la última escrita pisa a la anterior.
- * `pointer-events-none` en el contenedor evita que sus 44 px intercepten
- * clics cuando el botón está oculto; el botón los reactiva con
- * `pointer-events-auto`.
- *
- * ── Sin framer-motion ─────────────────────────────────────────────────
- * Este componente usaba `AnimatePresence`, `motion.button` y
- * `MotionConfig`, y con ellos arrastraba la biblioteca entera al paquete
- * común de las 155 páginas. Ahora se monta la primera vez que hace falta
- * y ya se queda, y su visibilidad es un atributo (`.tj-emerge`, en
- * globals.css): entrar y salir es una transición CSS que resuelve el
- * compositor. La biblioteca costaba 344 KB.
- *
- * `visible`, `pieLift` y `cookieLift` se actualizan desde el scroll, en un
- * rAF. Los levantamientos miden dónde está el botón (su `bottom`, con la
- * muesca incluida) en vez de suponer los 24 px de la esquina.
+ * Botón flotante de volver arriba. Aparece tras 400 px de scroll. Por debajo de
+ * 1280 px no cabe en el margen y taparía texto, así que ahí solo se ve al subir
+ * o cerca del final. Se levanta para esquivar la barra final del pie
+ * (`[data-pie-final]`) y el aviso de cookies; se mide el `bottom` real (con la
+ * muesca de iOS) en vez de suponer 24 px. Al pulsarlo usa `irArriba()`
+ * (src/lib/scroll.ts).
  */
 const SHOW_AFTER = 400;
 /** Hueco (px) entre el borde inferior del botón levantado y lo que
@@ -81,22 +28,12 @@ export function BackToTop() {
   const { lang } = useLang();
   const es = lang === "es";
 
-  /* LOS DOS ARRANCAN EN `false`, SIN MIRAR `window`.
-     Aquí ponía `typeof window !== "undefined" ? window.scrollY > SHOW_AFTER
-     : false`, y ese inicializador NO se ejecuta solo «en el cliente»: se
-     ejecuta durante la hidratación. Al recargar con la página ya desplazada
-     —o al volver con la posición restaurada, que es lo normal— el servidor
-     había mandado el árbol sin botón y el cliente lo montaba con botón:
-     «Hydration failed because the server rendered HTML didn't match». React
-     tira ese subárbol y lo rehace.
-     El efecto de abajo llama a `update()` nada más montar, así que el botón
-     aparece igual de rápido; lo que ya no hace es contradecir al HTML. */
+  // `visible` arranca en false sin mirar `window`: el inicializador también
+  // corre al hidratar, y con la página ya desplazada el cliente montaría un
+  // botón que el servidor no mandó (error de hidratación). `update()` lo
+  // corrige al montar.
   const [visible, setVisible] = useState(false);
-  /* El botón no entra en el árbol hasta que el visitante baja lo
-     suficiente para que tenga sentido, y entonces se queda. Montado
-     desde el principio, su anillo de progreso en SVG viajaba en el HTML
-     de las 155 páginas para alguien que a lo mejor no baja nunca —
-     mismo patrón, y mismo motivo, que el cajón de navegación. */
+  // No entra en el árbol hasta que el visitante baja; entonces se queda.
   const [montado, setMontado] = useState(false);
   const [pieLift, setPieLift] = useState(0);
   const [cookieLift, setCookieLift] = useState(0);
@@ -119,36 +56,24 @@ export function BackToTop() {
       const debeVerse = scrollTop > SHOW_AFTER && libre;
       if (debeVerse) setMontado(true);
       setVisible(debeVerse);
-      /* Borde inferior del botón sin levantar: el `bottom` del ancla lleva
-         ya el margen de la muesca. Sin ancla todavía, los 24 px de base. */
+      // Borde inferior del botón sin levantar: el `bottom` del ancla ya lleva
+      // la muesca; sin ancla, 24 px.
       const ancla = anclaRef.current;
       const baseBoton = window.innerHeight - (ancla ? parseFloat(getComputedStyle(ancla).bottom) || 24 : 24);
       const pie = document.querySelector<HTMLElement>("[data-pie-final]");
       const pieTop = pie ? pie.getBoundingClientRect().top : Infinity;
       setPieLift(pieTop < window.innerHeight ? Math.max(0, Math.round(baseBoton - (pieTop - COOKIE_GAP_PX))) : 0);
-      // CookieConsent-avoidance lift. The banner is anchored bottom-left and
-      // the button bottom-right; they don't horizontally overlap, but they
-      // share a vertical band on narrow viewports. Lifting the button above
-      // the banner's top edge (with COOKIE_GAP_PX gap) gives them separate
-      // vertical zones. The banner carries `data-cookie-consent="visible"`
-      // and is removed from the DOM when dismissed (AnimatePresence), so the
-      // selector cleanly reflects "banner currently mounted".
+      // Levantamiento por el aviso de cookies: comparten banda vertical en
+      // pantallas estrechas. El aviso solo existe en el DOM mientras se ve.
       let cLift = 0;
       const cookieEl = document.querySelector<HTMLElement>("[data-cookie-consent='visible']");
       if (cookieEl) {
         const rect = cookieEl.getBoundingClientRect();
-        // Banner is considered on-screen only if any part of it is in the
-        // viewport (rect.bottom > 0 && rect.top < vh). When the banner is
-        // animating out (opacity 0) it's still in the DOM for ~240 ms — we
-        // don't want to keep lifting during that window, so we also check
-        // that rect.top is within a sane band (≥0 means banner fully in
-        // view at the bottom of the screen).
         if (rect.bottom > 0 && rect.top < window.innerHeight && rect.top >= 0) {
           // El borde inferior del botón, COOKIE_GAP_PX por encima del aviso.
           cLift = Math.max(0, baseBoton - (rect.top - COOKIE_GAP_PX));
         }
       }
-      /* Mismo motivo que el porcentaje: al píxel, no a la fracción. */
       setCookieLift(Math.round(cLift));
       ticking = false;
     };
@@ -158,9 +83,7 @@ export function BackToTop() {
         ticking = true;
       }
     };
-    // Resize also recomputes — the cookie banner's height changes when the
-    // viewport reflows (e.g. orientation change, browser-chrome show/hide
-    // on mobile), and the lift should track that.
+    // El alto del aviso cambia al reflujo (giro, barra del navegador en móvil).
     const onResize = () => {
       if (!ticking) {
         requestAnimationFrame(update);
@@ -169,19 +92,8 @@ export function BackToTop() {
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
-    /* El aviso de cookies aparece por su cuenta —al primer scroll o a los
-       5 s— y desaparece al elegir, y ninguno de esos momentos dispara un
-       scroll ni un resize. Este botón tiene que enterarse para apartarse y
-       no quedar debajo.
-
-       Aquí eso se resolvía con un `MutationObserver` sobre `document.body`
-       con `subtree: true`, o sea vigilando el documento ENTERO en las 155
-       páginas del sitio: cualquier cambio del DOM —cualquiera— programaba
-       una comprobación que lee el alto del documento, busca un selector y
-       mide un rectángulo. Medido en una página sin figura: 245 lecturas de
-       `scrollHeight` y 243 rectángulos en cinco segundos de scroll.
-
-       Ahora el aviso avisa. Un evento, cero vigilancia. */
+    // El aviso de cookies entra y sale sin scroll ni resize; avisa con un
+    // evento, sin `MutationObserver` sobre el documento entero.
     window.addEventListener(CONSENT_VISIBILITY_EVENT, onResize);
     update();
     return () => {
@@ -191,12 +103,8 @@ export function BackToTop() {
     };
   }, []);
 
-  /* Este botón solo aparece a partir de 400 px, así que su salto es
-     LARGO por definición — es el caso que peor se veía con el scroll
-     suave del navegador: desde el pie de la portada recorría el sitio
-     entero hacia atrás. `irArriba` salta y anima nada más el último
-     tramo; el `prefers-reduced-motion` que aquí se miraba a mano lo
-     mira ella. */
+  // El salto es largo por definición: `irArriba` anima solo el último tramo y
+  // respeta `prefers-reduced-motion`.
   const scrollToTop = () => irArriba();
 
   // Lo que más obligue de los dos; sin ninguno, el botón en su sitio.
@@ -206,25 +114,17 @@ export function BackToTop() {
 
   return (
     <>
-      {/* Anclaje y desplazamiento. El contenedor exterior lleva el
-          `fixed` y el levantamiento; el botón, su propia entrada. Van
-          separados porque son dos transformaciones distintas sobre el
-          mismo eje: mezclarlas en un elemento hace que la última escrita
-          pise a la anterior. */}
+      {/* El contenedor lleva el `fixed` y el levantamiento; el botón, su
+          entrada: son dos transformaciones sobre el mismo eje y en un solo
+          elemento la última pisa a la anterior. `pointer-events-none`
+          evita que el contenedor intercepte clics con el botón oculto. */}
       <div
         ref={anclaRef}
         className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform duration-200 ease-[var(--ease-suave)] motion-reduce:transition-none"
         style={{ transform: `translateY(-${totalLift}px)` }}
       >
-        {/* Montado siempre y visible por atributo, en vez de montado y
-            desmontado por `AnimatePresence`. Un botón de 44 px en el
-            árbol no cuesta nada; la biblioteca que lo animaba costaba
-            344 KB en las 155 páginas del sitio. `.tj-emerge` está en
-            globals.css.
-
-            `tabIndex={-1}` mientras está oculto: a opacidad cero seguía
-            siendo alcanzable con el tabulador, y quien navega con
-            teclado se paraba en un botón invisible. */}
+        {/* Visible por atributo (`.tj-emerge`, globals.css). `tabIndex={-1}`
+            oculto: a opacidad cero seguiría siendo alcanzable con Tab. */}
         <button
           type="button"
           onClick={scrollToTop}

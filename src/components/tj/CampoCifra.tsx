@@ -14,13 +14,10 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | 
 };
 
 /**
- * Campo de cifra que escribe como el idioma de la página.
- *
- * `type="number"` pinta y lee el decimal según el idioma del NAVEGADOR, no
- * el de la página: en la web española salía «1.24» junto a «43.200 $», y
- * según el navegador una coma escrita a mano se rechazaba. Aquí el texto
- * es libre, se acepta coma o punto, y mientras se escribe no se reformatea
- * nada: el valor se limpia al salir del campo.
+ * Campo de cifra que escribe como el idioma de la página. No usa
+ * `type="number"`, que formatea según el idioma del navegador y puede rechazar
+ * la coma. El texto es libre (coma o punto), no se reformatea al escribir y se
+ * limpia al salir del campo.
  */
 export function CampoCifra({ valor, onValor, min, max, paso, onFocus, onBlur, onKeyDown, ...resto }: Props) {
   const { lang } = useLang();
@@ -64,11 +61,10 @@ export function CampoCifra({ valor, onValor, min, max, paso, onFocus, onBlur, on
 }
 
 /**
- * Campo de cifra con su unidad dentro: el de las calculadoras, del mismo
- * alto y cuerpo que los de la calculadora de riesgo (44 px y 16 px, que
- * Safari de iOS no amplía al enfocar). La unidad va centrada en vertical
- * y del lado que pide el idioma: «1,24 $» en español, «$1.24» en inglés
- * (`antes`); las que no son divisa («ticks») van siempre detrás.
+ * Campo de cifra con su unidad dentro, el de las calculadoras (44 px y 16 px:
+ * Safari de iOS no amplía al enfocar). La unidad va del lado que pide el
+ * idioma (`antes`: «$1.24» en inglés, «1,24 $» en español); las que no son
+ * divisa («ticks») van siempre detrás.
  */
 export function CampoUnidad({
   unidad,

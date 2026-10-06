@@ -7,14 +7,7 @@ import { TableOfContents } from "@/components/tj/TableOfContents";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { BetaStatus } from "@/components/beta/BetaStatus";
 
-// PNG (not SVG) — Twitter/X, Facebook, LinkedIn, Slack and Discord all
-// silently fail to render SVG OG images. See layout.tsx for the full note.
-
-/**
- * Breadcrumb structured data — page-specific. Lists just [Home, Pricing]
- * so Google renders a correct breadcrumb rich result for the actual
- * page hierarchy.
- */
+/** Migas de pan de esta página: Inicio y Precios. */
 const breadcrumbSchema = {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
@@ -34,28 +27,11 @@ const breadcrumbSchema = {
   ],
 };
 
-/**
- * FAQPage structured data — mirrors the 4 visible Q&A items rendered by
- * the PricingFAQ component (ES-default since the site is ES-default).
- * Per Google's FAQ rich-result guidelines, FAQPage schema must appear on
- * the page where the Q&A is visible — that requirement is met on /pricing
- * (the PricingFAQ component renders here). Unlocks FAQ rich results on
- * the pricing SERP entry. See worklog Task R20-1d (E5) + R20-2d.
- *
- * IMPORTANT: keep this in sync with src/components/marketing/PricingFAQ.tsx
- * if the visible ES Q&A copy changes — Google penalizes schema/visible-text
- * mismatches. The 4 Q&A texts below are the ES version verbatim from
- * PricingFAQ.tsx.
- */
-/* Generado desde la misma lista que pinta el acordeon, para que no se
-   pueda publicar a los buscadores una respuesta que la pagina no da.
-   Ver src/lib/faq.ts. */
+// Generado desde la misma lista que pinta el acordeón, para no publicar a los
+// buscadores una respuesta que la página no da (src/lib/faq.ts).
 const faqSchema = jsonLdFaq(PRICING_FAQ_ES);
 
-/**
- * Product structured data describes the product without an Offer. The prices
- * are future references during the private pilot, not a purchasable offer.
- */
+/** `Product` sin `Offer`: durante el piloto privado los precios son una referencia futura, no una oferta comprable. */
 const productSchema = {
   "@context": "https://schema.org",
   "@type": "Product",
@@ -90,24 +66,10 @@ export const metadata: Metadata = {
   },
 };
 
-// LAS SECCIONES PESADAS SIGUEN EN SU PROPIO TROZO DE JAVASCRIPT, PERO YA
-// NO LLEVAN `loading`.
-//
-// Un `loading` en `next/dynamic` abre un límite de Suspense, y React
-// resuelve un límite de Suspense durante el prerenderizado escribiendo el
-// hueco en su sitio y el contenido REAL al final del <body>, dentro de un
-// <div hidden> que solo un script sabe devolver a su lugar. Sin
-// JavaScript ese script no corre: medido en el HTML compilado, la portada
-// servía 37.921 de sus 118.707 caracteres —el 32 %— dentro de bloques
-// ocultos, y /features 61.865 de 128.953, el 48 %.
-//
-// Sin `loading` no hay límite, el contenido se escribe donde va y el
-// reparto en trozos se conserva intacto: medido tras el cambio, la
-// portada pide los mismos 17 scripts y los mismos 948 KB. El salto de
-// maquetación que el hueco venía a evitar tampoco ocurre — no hay hueco,
-// porque la sección ya viene escrita.
-//
-// Lo vigila `scripts/humo.mjs` (guardián «contenido en bloques ocultos»).
+// Sin `loading` en `next/dynamic`: un `loading` abre un límite de Suspense y el
+// prerenderizado escribe el contenido real en un `<div hidden>` al final del
+// body, que sin JavaScript no vuelve a su sitio. Lo vigila `scripts/humo.mjs`
+// («contenido en bloques ocultos»).
 
 const Comparison = dynamic(
   () => import("@/components/marketing/Comparison").then((m) => m.Comparison)
@@ -115,8 +77,6 @@ const Comparison = dynamic(
 const PricingFAQ = dynamic(
   () => import("@/components/marketing/PricingFAQ").then((m) => m.PricingFAQ)
 );
-// ValueTestimonials retirado: sus tres testimonios eran personas
-// inventadas. Vuelve cuando haya reseñas reales de usuarios.
 const FinalCTANew = dynamic(
   () => import("@/components/marketing/FinalCTANew").then((m) => m.FinalCTANew)
 );
@@ -126,23 +86,8 @@ const FinalCTANew = dynamic(
 export function PricingBody() {
   return (
     <>
-      {/* ── EL TITULAR NO PUEDE DECIR «COMPRAR» ───────────────────────
-          Decía «Compara antes de comprar.», con «antes de comprar.»
-          resaltado en acento y a cuerpo de titular: la frase más grande
-          de la página, contradiciendo a las cuatro que hay debajo —la
-          barra de términos, el aviso de precios previstos, el esquema
-          Product SIN Offer y el subtítulo que dice que esto no es una
-          preventa—. Aquí no hay nada que comprar, ni hoy ni con este
-          botón: los dos CTA llevan al piloto privado.
-
-          Un visitante que llega desde la demo y lee «antes de comprar»
-          espera encontrar un carrito. Cuando no lo encuentra, lo que
-          revisa no es esta página: es si lo demás también era mentira.
-
-          «El precio, por escrito» dice lo que la página SÍ hace —enseñar
-          las dos cifras y lo que incluye cada una— y de paso pone el
-          acento donde está el valor real: que la cifra esté escrita y no
-          haya que pedirla. */}
+      {/* El titular no puede decir «comprar»: no hay nada que comprar, los dos
+          CTA llevan al piloto privado y el esquema Product va sin Offer. */}
       <PageHeader
         tono="tarifa"
         titleEs="El precio, por escrito."
@@ -154,8 +99,6 @@ export function PricingBody() {
       />
       <Pricing standalone />
       <Comparison />
-      {/* Pricing-specific FAQ — 4 bilingual Q&A focused on trial, payment,
-          multi-computer and lost license. */}
       <PricingFAQ />
       <BetaStatus />
 

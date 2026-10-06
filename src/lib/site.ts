@@ -1,54 +1,18 @@
 /**
- * La identidad pública del sitio: una sola declaración para todo.
+ * Identidad pública del sitio: una sola declaración de `SITE_URL`, para que
+ * canónico, sitemap, robots y tarjeta social no se contradigan.
  *
- * ── Por qué existe ────────────────────────────────────────────────────
- * `SITE_URL` estaba escrito a mano en diez archivos (el layout, las nueve
- * páginas, el sitemap y el robots). Diez copias de una cadena que tiene
- * que ser idéntica en todas o el buscador recibe señales contradictorias:
- * el canónico diciendo una dirección, el mapa del sitio otra y la tarjeta
- * social una tercera. Al mudarnos de dominio eso deja de ser hipotético —
- * basta olvidar UN archivo para publicar media web apuntando al sitio
- * viejo, y no hay error de compilación que lo delate.
- *
- * ── Por qué el canónico NO depende de dónde se publique ───────────────
- * Durante la mudanza el mismo contenido vive en dos sitios: el dominio
- * nuevo y el GitHub Pages antiguo, que se deja encendido a propósito
- * hasta comprobar que todo funciona. Para un buscador, dos direcciones
- * con el mismo contenido son contenido duplicado, y reparte entre ambas
- * lo que debería ir a una.
- *
- * Por eso `SITE_URL` es FIJO y apunta siempre al dominio definitivo, se
- * publique donde se publique. Así la copia de GitHub Pages declara como
- * canónica la dirección buena: sigue accesible para quien tenga el
- * enlace, y a la vez le dice al buscador cuál es la que cuenta. Lo que sí
- * cambia según el destino es el PREFIJO de rutas — ver `asset()` y
- * `next.config.ts`—, porque eso es dónde están los ficheros, no cómo se
- * llama el sitio.
+ * Es fija y no depende de dónde se publique: la copia en GitHub Pages declara
+ * como canónica la dirección buena en vez de competir con ella. Lo que sí
+ * cambia según el destino es el prefijo de rutas (ver `asset()` y
+ * `next.config.ts`).
  */
-/* ── El valor por defecto es DONDE ESTÁ PUBLICADO HOY, no dónde queremos
-      estar mañana ────────────────────────────────────────────────────
-   Esto apuntó un rato a `countpips.com` con el dominio todavía sin
-   comprar, y era un error con consecuencias: la copia de GitHub Pages
-   —que sigue online— declaraba como canónica una dirección que no
-   resuelve. Un buscador que sigue ese canónico no encuentra nada, y la
-   respuesta razonable por su parte es dejar de indexar unas páginas que
-   dicen "la buena es esta otra" señalando al vacío. Sin canónico habría
-   estado mejor que con uno roto.
-
-   Así que el valor por defecto es la dirección real y viva. El dominio
-   propio se activa por entorno, y solo cuando exista de verdad:
-
-     NEXT_PUBLIC_SITE_URL=https://countpips.com
-
-   Se define en Cloudflare Pages (Settings → Environment variables) el día
-   que el dominio esté comprado y apuntando. Hasta entonces todo sigue
-   coherente solo, sin fecha límite ni nada que recordar.
-
-   `||` y no `??`, y la diferencia importa: `next.config.ts` declara esta
-   variable como cadena VACÍA cuando nadie la define, y `??` solo cae al
-   valor por defecto con `null`/`undefined`. Con `??`, el caso normal
-   —nadie ha configurado nada— habría dejado `SITE_URL` en blanco y
-   publicado canónicos como `href="/pricing/"`, sin dominio delante. */
+/* El valor por defecto es donde está publicado hoy. El dominio propio se
+   activa con NEXT_PUBLIC_SITE_URL=https://countpips.com en Cloudflare Pages,
+   y solo cuando exista y resuelva: un canónico que apunta al vacío es peor
+   que no tenerlo.
+   `||` y no `??`: `next.config.ts` declara la variable como cadena vacía
+   cuando nadie la define, y con `??` el canónico saldría sin dominio. */
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://mmortexx.github.io/CountPipsWeb";
 
@@ -56,19 +20,11 @@ export const SITE_URL =
 export const SITE_NAME = "CountPips";
 
 /**
- * El logotipo de la marca —el «Corte» sobre su placa, el mismo icono que
- * la aplicación de escritorio— rasterizado desde la misma geometría del
- * glifo vectorial. Va en el dato estructurado de `Organization`, que
- * es de donde Google saca el logotipo del sitio.
- *
- * Se regenera con `python scripts/generate-brand.py`, que produce además
- * el apple-icon y el favicon.ico; si se toca el glifo de `BrandGlyph.tsx`
- * hay que volver a lanzarlo o la marca se parte entre la web y lo que ven
- * el buscador y el sistema operativo.
- *
- * Absoluta, y no una ruta con barra inicial: una ruta relativa se vuelve
- * a resolver contra `metadataBase` y el prefijo de GitHub Pages sale
- * duplicado.
+ * Logotipo de la marca para el dato estructurado `Organization`. Se regenera
+ * con `python scripts/generate-brand.py` (también apple-icon y favicon.ico);
+ * hay que relanzarlo si cambia el glifo de `BrandGlyph.tsx`.
+ * Absoluta: una ruta relativa se resuelve de nuevo contra `metadataBase` y
+ * duplica el prefijo de GitHub Pages.
  */
 export const LOGO_URL = `${SITE_URL}/logo.png`;
 
@@ -78,23 +34,9 @@ export function siteUrl(path = "/"): string {
 }
 
 /**
- * Las etiquetas `hreflang` recíprocas de una ruta que existe en los dos
- * idiomas.
- *
- * ── Por qué existe ────────────────────────────────────────────────────
- * Cada una de las veinte páginas —diez en español, diez en inglés— tiene
- * que declarar TRES direcciones: la suya, la de su pareja en el otro
- * idioma, y cuál de las dos es la que Google debe ofrecer por defecto a
- * quien no encaja en ninguna de las dos. Son las mismas tres direcciones
- * mirando desde dos sitios distintos, y escribir ese objeto a mano veinte
- * veces es exactamente la clase de repetición donde un día una de las
- * copias se queda desincronizada sin que nada avise.
- *
- * `path` va sin el prefijo `/en` — es la ruta española, la que existe en
- * `LOCALIZED_PATHS` — y esta función construye las dos direcciones a
- * partir de ella. `x-default` apunta siempre a la española: es el
- * mercado principal, y es la versión que corresponde a quien llega sin
- * que el idioma se pueda determinar.
+ * Etiquetas `hreflang` recíprocas de una ruta que existe en los dos idiomas.
+ * `path` es la ruta española, sin el prefijo `/en` (la de `LOCALIZED_PATHS`).
+ * `x-default` apunta siempre a la española, el mercado principal.
  */
 export function hreflangDe(path: string): {
   es: string;
@@ -107,28 +49,13 @@ export function hreflangDe(path: string): {
 }
 
 /**
- * Los tres datos estructurados que describen el SITIO —no una página—:
- * la aplicación, quién la publica y el sitio web en sí.
+ * Los tres datos estructurados que describen el sitio (aplicación,
+ * organización y web). Solo los emiten las dos portadas, cada una en su
+ * idioma: en el layout viajarían en todas las páginas y con el idioma
+ * equivocado en las inglesas.
  *
- * ── Por qué ya no viven en el layout ──────────────────────────────────
- * Estaban escritos en `layout.tsx`, que es único y raíz, así que los tres
- * viajaban en las 155 páginas del sitio. Dos consecuencias:
- *
- *  · **Decían el idioma equivocado.** El texto era español fijo, y 76 de
- *    esas 155 páginas están en inglés. Un buscador leía «Diario narrativo
- *    con anotaciones por operación» bajo una página cuyo `lang` es `en`,
- *    que es exactamente la señal contradictoria que el `hreflang` de este
- *    mismo módulo existe para evitar.
- *  · **Pesaban 155 veces.** Son ~2 KB de JSON por página; describir el
- *    sitio entero una vez por página es repetir la misma declaración en
- *    cada hoja del libro.
- *
- * Ahora los emiten solo las dos portadas, cada una en su idioma, que es
- * donde Google espera encontrar `WebSite` y `Organization`.
- *
- * `soporte` se pasa desde fuera en vez de importarse: este módulo
- * describe la identidad del sitio y no debe depender del módulo de
- * formularios, que arrastra consigo el cliente del formulario de espera.
+ * `soporte` se pasa desde fuera para no depender del módulo de formularios,
+ * que arrastra el cliente del formulario de espera.
  */
 export function esquemasGlobales(
   lang: "es" | "en",
@@ -175,34 +102,16 @@ export function esquemasGlobales(
       url: inicio,
       description: descripcionApp,
       inLanguage: ["es", "en"],
-      /* Capturas reales de la aplicación, que Google admite en
-         `SoftwareApplication`.
-
-         Durante un tiempo esto fue el único sitio del proyecto que las
-         enseñaba, y las enseñaba MAL: la página tapaba por CSS la barra
-         de título —con el nombre anterior al renombrado— y la de estado
-         —con el sello «Compilación de desarrollo»—, pero aquí viajaban
-         los ficheros enteros, sin recortar, desde las 155 páginas. Un
-         recorte que solo existe en la hoja de estilos no protege nada de
-         lo que se sirve.
-
-         Ya no hay recorte que se pueda olvidar: los ficheros de
-         `public/img/` están recortados en disco (`scripts/capturas.py`),
-         así que lo que se declara aquí y lo que se ve en la página son la
-         misma imagen. */
+      /* Los ficheros de `public/img/` ya van recortados en disco
+         (`scripts/capturas.py`): lo declarado aquí es lo que se ve. */
       screenshot: [
         `${SITE_URL}/img/app-resumen.webp`,
         `${SITE_URL}/img/app-operaciones.webp`,
         `${SITE_URL}/img/app-analitica.webp`,
       ],
       featureList: funciones,
-      // Sin `aggregateRating` a propósito: no hay reseñas reales todavía.
-      // Aquí se emitía 4,8/47 inventado. Las directrices de datos
-      // estructurados de Google exigen que la valoración proceda de
-      // usuarios reales, así que publicarla era arriesgar una acción
-      // manual además de engañar a quien la viera en el buscador. Se
-      // vuelve a poner cuando haya reseñas verificables (G2/Capterra/
-      // Trustpilot), tomando el valor de esa plataforma.
+      // Sin `aggregateRating` a propósito: Google exige valoraciones de
+      // usuarios reales y aún no hay reseñas verificables.
       publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
     },
     {
@@ -210,22 +119,15 @@ export function esquemasGlobales(
       "@type": "Organization",
       name: SITE_NAME,
       url: SITE_URL,
-      /* `ImageObject` en vez de la dirección suelta: Google prefiere el
-         objeto porque así puede validar las dimensiones sin descargar la
-         imagen. */
+      // `ImageObject` y no la URL suelta: Google valida las dimensiones sin descargar.
       logo: { "@type": "ImageObject", url: LOGO_URL, width: 512, height: 512 },
       description: es
         ? "El diario de trading profesional, nativo de Windows. Explora el producto antes de instalarlo: métricas institucionales, disciplina y datos locales."
         : "The professional trading journal, native to Windows. Explore the product before installing it: institutional metrics, discipline and local data.",
       foundingDate: "2024",
-      /* Solo el repositorio, que es el único perfil que existe de verdad.
-         Los iconos de X, YouTube y Discord se retiraron del pie por
-         apuntar a ninguna parte; añadirlos aquí sería el mismo error en
-         otro sitio. */
+      // Solo el repositorio: es el único perfil que existe.
       sameAs: ["https://github.com/mmortexx/CountPipsWeb"],
-      /* Faltaba, y es lo que permite que un buscador sepa a dónde
-         escribir. La dirección sale de la misma constante que usan el
-         formulario y las cinco pantallas donde aparece. */
+      // La dirección sale de la misma constante que usan el formulario y las pantallas.
       ...(soporte && {
         contactPoint: {
           "@type": "ContactPoint",
@@ -245,10 +147,7 @@ export function esquemasGlobales(
       url: inicio,
       inLanguage: lang,
       publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
-      /* El buscador que se declara aquí EXISTE y funciona: la FAQ lee el
-         parámetro `q` de la dirección y filtra en vivo — es el mismo
-         mecanismo que usa la página de error 404 para rescatar a quien se
-         pierde. No se anuncia nada que no esté construido. */
+      // El buscador existe: la FAQ lee `q` de la dirección y filtra en vivo.
       potentialAction: {
         "@type": "SearchAction",
         target: {
@@ -264,20 +163,8 @@ export function esquemasGlobales(
 }
 
 /**
- * El `BreadcrumbList` de una página, a partir de sus escalones.
- *
- * ── Por qué existe ────────────────────────────────────────────────────
- * El objeto se escribía a mano en cada página: veinte copias de la misma
- * forma con el mismo `"@context"`, el mismo `"@type"` y la misma cuenta de
- * posiciones. Y donde hay veinte copias escritas a mano hay huecos: `/beta`
- * emitía solo un `WebPage` sin migas, y las dos páginas de `/traders` no
- * emitían NINGÚN dato estructurado — las cuatro llevan migas visibles en su
- * cabecera, así que le estábamos enseñando al visitante una jerarquía que
- * al buscador le ocultábamos.
- *
- * `escalones` va sin la raíz: se añade sola, con el nombre y la dirección
- * que corresponden al idioma. Las rutas se dan como el sitio las escribe
- * (con su barra final) y sin el prefijo `/en`, que lo pone esta función.
+ * El `BreadcrumbList` de una página. `escalones` va sin la raíz, que se añade
+ * sola según el idioma; las rutas llevan su barra final y no llevan `/en`.
  */
 export function migasSchema(
   lang: "es" | "en",
@@ -308,19 +195,13 @@ export function migasSchema(
 }
 
 /**
- * Los datos estructurados de las dos páginas de perfil de trader.
- *
- * Las cuatro (dos perfiles × dos idiomas) no emitían ninguno: ni `WebPage`
- * ni migas, aunque las cuatro enseñan «Inicio / Operativa manual» en su
- * cabecera. Vive aquí y no junto al componente porque `TraderProfilePage`
- * es de cliente —usa el idioma en vivo— y esto tiene que renderizarse en
- * el servidor para que el rastreador lo encuentre en el HTML.
+ * Datos estructurados de las páginas de perfil de trader. Vive aquí y no junto
+ * al componente porque `TraderProfilePage` es de cliente y esto debe
+ * renderizarse en el servidor para que el rastreador lo vea en el HTML.
  */
 export function esquemasTrader(
   lang: "es" | "en",
-  /* El mismo identificador que usa `TraderProfileBody`, no uno paralelo:
-     el segmento de la URL se deriva de él. Dos nombres para el mismo
-     perfil es cómo se acaban desincronizando la página y su esquema. */
+  // El mismo identificador que `TraderProfileBody`: el segmento de la URL se deriva de él.
   perfil: "manual" | "prop",
 ): Record<string, unknown>[] {
   const ruta = `/traders/${perfil === "prop" ? "prop-firms" : "manual"}/`;

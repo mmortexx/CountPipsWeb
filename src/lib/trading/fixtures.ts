@@ -1,30 +1,13 @@
 /**
- * Marketing fixtures — los datos que alimentan las dos piezas de la home
- * que enseñan números: la tira de KPIs de `OverviewApp` y el calendario
- * de `FeaturesBento`.
+ * Fixtures de marketing: los datos de las dos piezas de la home que enseñan
+ * números, la tira de KPI de `OverviewApp` y el calendario de `FeaturesBento`.
  *
- * ── Qué se fue de aquí, y por qué ─────────────────────────────────────
- * Este módulo nació como el puerto del HTML de referencia y exportaba
- * nueve funciones: KPIs, curva, calendario, tira de siete métricas, diez
- * filas de operaciones, cinco fichas de playbook y una operación de
- * detalle. De esas nueve, SEIS no las leía ningún componente — eran el
- * sedimento de secciones que el rediseño ya había sustituido por
- * capturas reales de la aplicación.
- *
- * Se borran, y no es limpieza cosmética: ahí vivían los literales
- * «Ruptura», «Reversión», «Tendencia», «P&L total», «Operaciones»,
- * «peor racha» y «Edge confirmado», en español fijo. El sitio tiene 76
- * páginas en inglés; cualquiera que hubiera vuelto a enchufar una de
- * esas funciones habría servido español en `/en` sin enterarse, y no hay
- * prueba que cace el texto de un módulo que nadie llama.
- *
- * ── Lo que queda, y sus dos garantías ─────────────────────────────────
- * · Los números salen de `METRICS`/`TRADES` (`data.ts`), no escritos a
- *   mano: el KPI de la home y el panel de `/demo` son el mismo cálculo,
- *   así que no pueden discrepar.
- * · El texto que acompaña a los números viaja en los dos idiomas. Nada
- *   de aquí decide cuál se pinta: eso lo hace el componente, que sí sabe
- *   en qué idioma está la página.
+ * Garantías:
+ * · Los números salen de `METRICS` y `TRADES` (`data.ts`), no escritos a mano,
+ *   así que la home y el panel de `/demo` no pueden discrepar.
+ * · El texto que acompaña viaja en los dos idiomas; elige el componente, que
+ *   sabe el idioma de la página. Un literal en español fijo serviría español
+ *   en `/en`, y ninguna prueba cazaría el texto de un módulo sin uso.
  */
 
 import { fmtMoney, fmtNum, fmtPct } from "./format";
@@ -37,31 +20,22 @@ export interface Bilingue {
   en: string;
 }
 
-/* El mes de muestra. El desfase del día 1 y la longitud salen del
-   calendario: escritos a mano, el 1 de julio caía en sábado y el mes
-   acababa en el 30. */
+// El mes de muestra: el desfase del día 1 y la longitud salen del calendario, no de cifras a mano.
 const ANIO = 2026;
 const MES = 6; // julio
 const MONTH_DAYS = new Date(Date.UTC(ANIO, MES + 1, 0)).getUTCDate();
 const DESFASE = (new Date(Date.UTC(ANIO, MES, 1)).getUTCDay() + 6) % 7; // lunes = 0
 const CELDAS = Math.ceil((DESFASE + MONTH_DAYS) / 7) * 7;
 
-/* ---------- Cache ---------- */
-
 let cache: ReturnType<typeof build> | null = null;
-
-/* ---------- Builder principal ---------- */
 
 function build() {
   return {
-    /** Métricas "live" que el HTML mostraba flotando sobre el hero. */
     kpis: buildKpis(),
     /** Calendario de julio 2026, semanas completas de lunes a domingo, con P&L diario. */
     cal: buildCal(),
   };
 }
-
-/* ---------- Builders por sección ---------- */
 
 function buildKpis() {
   return {
@@ -75,11 +49,7 @@ function buildKpis() {
 }
 
 function buildCal() {
-  // Pull actual July 2026 daily P&L from TRADES — keeps the marketing
-  // calendar's "Total mes" perfectly aligned with what the demo's
-  // monthlyBreakdown would show for July. Days without trades (early
-  // weekdays with no fills, or the not-yet-reached second half of the
-  // month) render as transparent cells with just the day number.
+  // El P&L diario sale de TRADES: el «Total mes» coincide con el monthlyBreakdown de julio.
   const dailyPnl = dailyPnlForMonth(TRADES, ANIO, MES);
   const cells = Array.from({ length: CELDAS }, (_, i) => {
     const dayNum = i - DESFASE + 1;
@@ -88,23 +58,13 @@ function buildCal() {
     }
     const pnl = dailyPnl.get(String(dayNum)) ?? 0;
     const isPos = pnl >= 0;
-    // Intensity scaled to a $200 typical 1R win at the demo's risk
-    // profile (0.5–1.5 % of $10–15 k balance ≈ $75–225 per R).
+    // Intensidad escalada a unos 200 $, una ganancia típica de 1 R con el riesgo de la muestra.
     const intensity = Math.min(1, Math.abs(pnl) / 200);
-    // El tinte se expresa como FRACCIÓN de `--cal-tint-max`, no como un
-    // número suelto. Antes iba de 0,18 a 0,60 por su cuenta, y al 0,60 la
-    // celda quedaba tan teñida que su texto —8 px, en tinta oscura— caía a
-    // 2,72:1 sobre ella: muy por debajo del mínimo. El tope existe justo
-    // para esto y estaba escrito en la paleta (0,22 en claro, 0,30 en
-    // oscuro) sin que nadie lo usara; atarse a él mantiene la escala de
-    // intensidad y deja el peor caso en 7:1.
+    // El tinte es una fracción de `--cal-tint-max`, no un número suelto: con
+    // más tinte el texto de 8 px caía a 2,72:1; atado al tope el peor caso es 7:1.
     const factor = (0.3 + intensity * 0.7).toFixed(2);
-    // Un día del mes sin operaciones es un dato, no un agujero. Antes se
-    // pintaba con opacidad 0: dieciocho de los treinta días de julio
-    // desaparecían y las dos últimas filas del calendario quedaban en
-    // blanco, de modo que el desfase del primer día no significaba nada.
-    // Ahora la celda existe siempre, en gris neutro, y solo el color
-    // distingue ganancia de pérdida.
+    // Un día sin operaciones es un dato, no un agujero: la celda existe siempre,
+    // en gris neutro, y solo el color distingue ganancia de pérdida.
     const bg =
       pnl === 0
         ? "rgb(var(--divider) / 0.045)"
@@ -118,15 +78,10 @@ function buildCal() {
       style,
     };
   });
-  // Total del mes: suma real del P&L de julio extraída de TRADES.
   let total = 0;
   for (const v of dailyPnl.values()) total += v;
   return {
-    /* Los dos rótulos del encabezado viajaban en español fijo y se
-       pintaban tal cual en `/en/features`: «julio 2026 · Mes en curso»
-       bajo un titular inglés. La fixture no puede elegir —se evalúa una
-       sola vez, y el idioma lo decide la ruta—, así que entrega los dos
-       y elige quien pinta. */
+    // Los rótulos van en los dos idiomas: la fixture se evalúa una vez y el idioma lo decide la ruta.
     label: { es: "julio 2026", en: "July 2026" } satisfies Bilingue,
     chip: { es: "Mes en curso", en: "Current month" } satisfies Bilingue,
     pnl: {
@@ -138,22 +93,12 @@ function buildCal() {
   };
 }
 
-/* ---------- API pública ---------- */
-
-/**
- * El bundle de fixtures. Idempotente: la primera llamada genera, las
- * siguientes devuelven la misma referencia.
- *
- * Interno a propósito. Cuando era público, cada `getX()` de abajo tenía
- * además una puerta trasera por la que se colaba el bundle entero, y con
- * él las secciones que ya nadie pintaba.
- */
+/** El bundle de fixtures, idempotente. Interno a propósito: público, daba una puerta trasera a secciones sin uso. */
 function buildMarketingFixture() {
   if (!cache) cache = build();
   return cache;
 }
 
-/** Acceso tipado por sección (azúcar sobre el bundle). */
 export function getCal() {
   return buildMarketingFixture().cal;
 }
@@ -181,8 +126,6 @@ export function getSetups(): SetupResumen[] {
     .sort((a, b) => b.expectativaR - a.expectativaR);
 }
 
-/* ---------- Distribución de R-múltiplo ---------- */
-
 /** Anchura de cada cubo del histograma, en R. */
 const R_BIN = 0.5;
 
@@ -200,38 +143,19 @@ export interface RBin {
 let rDist: RBin[] | null = null;
 
 /**
- * Distribución de R-múltiplo de las operaciones de muestra, en cubos de
- * 0,5R con bordes limpios.
+ * Distribución de R de las operaciones de muestra, en cubos de 0,5 R con
+ * bordes limpios y el rango recortado a lo que hay.
  *
- * ── POR QUÉ EXISTE ────────────────────────────────────────────────────
- * Para que la home no vuelva a dibujar un histograma a mano. El que
- * había llevaba las nueve alturas escritas una a una, y de ahí salieron
- * tres contradicciones dentro de la MISMA tarjeta:
+ * Sale toda de `TRADES`, así que el gráfico, su pie y los ratios de al lado no
+ * pueden discrepar; con alturas escritas a mano llegaron a contradecirse y a
+ * colorear por el índice de la barra y no por el signo de R.
  *
- *   · pintaba un 63 % de ganadoras bajo un pie que declaraba «50 %»
- *     (el pie tenía razón: el motor da 50,5 %),
- *   · implicaba una esperanza de +1,16R junto a una ficha que decía
- *     +0,32R (y el motor da +0,23R),
- *   · y coloreaba por el ÍNDICE de la barra en la lista, no por el signo
- *     de la R, así que las pérdidas salían verdes y las ganancias rojas.
+ * No es `rHistogram` (`data.ts`): ese reparte un rango fijo de −1,5 a 3,5 en 9
+ * cubos, con bordes (0,2 / 0,7 / 1,3…) que no se rotulan bien y cubos vacíos por
+ * arriba. Aquel se queda porque lo usa la analítica de la demo.
  *
- * Saliendo todo de `TRADES`, el gráfico, su pie y los ratios de al lado
- * no pueden discrepar: son el mismo cálculo. Si un día cambian las
- * operaciones de muestra, cambian los tres a la vez.
- *
- * ── POR QUÉ NO `rHistogram` ───────────────────────────────────────────
- * El de `data.ts` reparte un rango FIJO (−1,5 a 3,5) entre 9 cubos, así
- * que sus bordes caen en 0,2 / 0,7 / 1,3…: números que no se pueden
- * rotular en un eje sin que parezca ruido. Además deja cubos vacíos por
- * arriba, porque el rango no se ajusta a los datos. Aquí los bordes son
- * múltiplos de 0,5 y el rango se recorta a lo que hay. Aquel se queda
- * como está porque lo consume la analítica de la demo.
- *
- * ── EL HUECO DEL CENTRO ES REAL ───────────────────────────────────────
- * No habrá barras entre −0,5R y +0,5R: la operativa de muestra o se come
- * el stop entero o deja correr. Ese vacío es información sobre el
- * sistema, no un fallo de dibujo — el consumidor debe representarlo,
- * no esconderlo.
+ * El hueco entre −0,5 R y +0,5 R es real (la muestra o se come el stop o deja
+ * correr): el consumidor debe representarlo, no esconderlo.
  */
 export function getRDistribution(): RBin[] {
   if (rDist) return rDist;

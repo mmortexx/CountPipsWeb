@@ -19,36 +19,19 @@ import sitemap from "@/app/sitemap";
 import robots from "@/app/robots";
 
 /**
- * Dimension D5: SEO Technical & Metadata Test Suite
- *
- * Requirements tested:
- * - Tier 1: Feature Coverage (>= 5 tests)
- *   1. Unique page titles across all routes (static, glossary, tools, legal)
- *   2. Meta description length <= 160 characters on all routes
- *   3. Single canonical URL definition & absolute HTTPS prefix matching SITE_URL
- *   4. Bidirectional `hreflang` tags (ES / EN / x-default) symmetry
- *   5. JSON-LD Schemas validity (Organization, WebSite, SoftwareApplication, FAQPage, BreadcrumbList)
- *   6. Sitemap & robots.txt coherence and path completeness
- * - Tier 2: Boundary & Corner Cases (>= 5 tests)
- *   1. Glossary title length <= 60 chars cutoff & search-intent preservation
- *   2. Trailing slash canonical normalization consistency
- *   3. Special characters & quotes handling in OpenGraph/metadata strings
- *   4. Alternate language URL resolution across dynamic routes
- *   5. BreadcrumbList schema position monotonicity and hierarchy
+ * Dimensión D5: SEO técnico y metadatos. Títulos únicos, descripciones de
+ * hasta 160 caracteres, canónicas absolutas en HTTPS, hreflang simétrico,
+ * JSON-LD válido, sitemap y robots coherentes, y los bordes de títulos del
+ * glosario, barras finales, escapes y migas de pan.
  */
 
 describe("Dimension D5: SEO Technical & Metadata", () => {
-  // =========================================================================
-  // TIER 1: FEATURE COVERAGE
-  // =========================================================================
-
   describe("Tier 1: Feature Coverage", () => {
     it("D5-T1-1: Unique page titles across all routes in both ES and EN", () => {
       const titlesEs = new Set<string>();
       const titlesEn = new Set<string>();
       const duplicateTitles: string[] = [];
 
-      // 1. Glossary titles
       for (const t of TERMINOS) {
         const titleEs = `${tituloDeTermino(t.term, "es")} — ${SITE_NAME}`;
         const titleEn = `${tituloDeTermino(t.term, "en")} — ${SITE_NAME}`;
@@ -60,7 +43,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         titlesEn.add(titleEn);
       }
 
-      // 2. Tools titles
       for (const h of HERRAMIENTAS) {
         const titleEs = `${h.tituloEs} — ${SITE_NAME}`;
         const titleEn = `${h.tituloEn} — ${SITE_NAME}`;
@@ -72,7 +54,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         titlesEn.add(titleEn);
       }
 
-      // 3. Legal doc titles
       for (const doc of DOCUMENTOS_LEGALES) {
         const titleEs = `${doc.tituloEs} — ${SITE_NAME}`;
         const titleEn = `${doc.tituloEn} — ${SITE_NAME}`;
@@ -92,7 +73,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
     it("D5-T1-2: Meta description length <= 160 characters on all pages and >= 30 characters", () => {
       const violations: string[] = [];
 
-      // Check Tools descriptions
       for (const h of HERRAMIENTAS) {
         if (h.descripcionEs.length > 160 || h.descripcionEs.length < 30) {
           violations.push(`Tool ${h.slug} ES description length (${h.descripcionEs.length}): "${h.descripcionEs}"`);
@@ -102,7 +82,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         }
       }
 
-      // Check Legal docs descriptions
       for (const doc of DOCUMENTOS_LEGALES) {
         if (doc.descripcionEs.length > 160 || doc.descripcionEs.length < 30) {
           violations.push(`Legal doc ${doc.slug} ES description length (${doc.descripcionEs.length}): "${doc.descripcionEs}"`);
@@ -119,12 +98,10 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       expect(SITE_URL.startsWith("https://")).toBe(true);
       expect(SITE_URL.endsWith("/")).toBe(false);
 
-      // siteUrl formatting checks
       expect(siteUrl("/")).toBe(`${SITE_URL}/`);
       expect(siteUrl("pricing")).toBe(`${SITE_URL}/pricing`);
       expect(siteUrl("/pricing/")).toBe(`${SITE_URL}/pricing/`);
 
-      // Verify all LOCALIZED_PATHS produce valid absolute canonical URLs
       for (const path of LOCALIZED_PATHS) {
         const urlEs = siteUrl(path === "/" ? "/" : `${path}/`);
         const urlEn = siteUrl(path === "/" ? "/en/" : `/en${path}/`);
@@ -144,10 +121,9 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         expect(hl.en, `Missing 'en' in hreflang for ${path}`).toBeDefined();
         expect(hl["x-default"], `Missing 'x-default' in hreflang for ${path}`).toBeDefined();
 
-        // x-default must match ES url
+        // `x-default` apunta a la versión española.
         expect(hl["x-default"]).toBe(hl.es);
 
-        // ES URL must NOT contain '/en/'
         if (path === "/") {
           expect(hl.es).toBe(`${SITE_URL}/`);
           expect(hl.en).toBe(`${SITE_URL}/en/`);
@@ -156,13 +132,11 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
           expect(hl.en).toBe(`${SITE_URL}/en${path}/`);
         }
 
-        // EN URL must include '/en/'
         expect(hl.en).toContain("/en");
       }
     });
 
     it("D5-T1-5: JSON-LD Schemas validity (Organization, WebSite, SoftwareApplication, FAQPage)", () => {
-      // 1. Global schemas (ES and EN)
       const schemasEs = esquemasGlobales("es", { soporte: "soporte@countpips.com" });
       const schemasEn = esquemasGlobales("en", { soporte: "soporte@countpips.com" });
 
@@ -174,7 +148,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       expect(typesEs).toContain("Organization");
       expect(typesEs).toContain("WebSite");
 
-      // Verify SoftwareApplication schema
       const appSchema = schemasEs.find((s) => s["@type"] === "SoftwareApplication") as Record<string, unknown>;
       expect(appSchema["@context"]).toBe("https://schema.org");
       expect(appSchema.name).toBe(SITE_NAME);
@@ -183,14 +156,12 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       expect(Array.isArray(appSchema.featureList)).toBe(true);
       expect((appSchema.featureList as string[]).length).toBeGreaterThanOrEqual(5);
 
-      // Verify Organization schema
       const orgSchema = schemasEs.find((s) => s["@type"] === "Organization") as Record<string, unknown>;
       expect(orgSchema.url).toBe(SITE_URL);
       expect(orgSchema.logo).toBeDefined();
       expect((orgSchema.logo as { url: string }).url).toBe(LOGO_URL);
       expect(orgSchema.contactPoint).toBeDefined();
 
-      // Verify FAQPage JSON-LD
       const faqLdEs = jsonLdFaq(FAQ_ES);
       const faqLdEn = jsonLdFaq(FAQ_EN);
 
@@ -207,19 +178,16 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
     });
 
     it("D5-T1-6: Sitemap & robots.txt coherence and completeness", () => {
-      // 1. Sitemap verification
       const sm = sitemap();
       expect(sm.length).toBeGreaterThan(60);
 
       const sitemapUrls = new Set(sm.map((entry) => entry.url));
 
-      // All LOCALIZED_PATHS must be present in sitemap in ES
       for (const path of LOCALIZED_PATHS) {
         const expectedUrl = `${SITE_URL}${path === "/" ? "/" : `${path}/`}`;
         expect(sitemapUrls.has(expectedUrl), `Sitemap missing path: ${expectedUrl}`).toBe(true);
       }
 
-      // Check changeFrequency and priority ranges
       for (const entry of sm) {
         expect(entry.priority).toBeGreaterThanOrEqual(0.0);
         expect(entry.priority).toBeLessThanOrEqual(1.0);
@@ -229,16 +197,11 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         expect(entry.lastModified).toBeInstanceOf(Date);
       }
 
-      // 2. Robots.txt verification
       const rb = robots();
       expect(rb.rules).toBeDefined();
       expect(rb.sitemap).toBe(`${SITE_URL}/sitemap.xml`);
     });
   });
-
-  // =========================================================================
-  // TIER 2: BOUNDARY & CORNER CASES
-  // =========================================================================
 
   describe("Tier 2: Boundary & Corner Cases", () => {
     it("D5-T2-1: Glossary title length <= 60 chars cutoff & search-intent preservation", () => {
@@ -247,20 +210,19 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
           const title = tituloDeTermino(t.term, lang);
           const fullTitle = `${title} — ${SITE_NAME}`;
 
-          // Must never exceed LARGO_MAXIMO_TITULO (60 chars)
           expect(
             fullTitle.length,
             `Title for '${t.term}' (${lang}) exceeds max length: "${fullTitle}" (${fullTitle.length} chars)`,
           ).toBeLessThanOrEqual(LARGO_MAXIMO_TITULO);
 
-          // For ES, should preserve "qué es" intent whenever possible
+          // En español se conserva «qué es», salvo en MAE y MFE.
           if (lang === "es" && !t.term.includes("MAE") && !t.term.includes("MFE")) {
             expect(title).toContain("qué es");
           }
         }
       }
 
-      // Edge case: test acronym expansion cutoff for long term
+      // Con un término largo se conserva la sigla y se recorta la expansión.
       const longTerm = "MAE (Maximum Adverse Excursion)";
       const titleEn = tituloDeTermino(longTerm, "en");
       expect(titleEn.startsWith("MAE")).toBe(true);
@@ -269,14 +231,12 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
     });
 
     it("D5-T2-2: Trailing slash canonical normalization consistency across all path permutations", () => {
-      // Normalizes slashes cleanly
       expect(siteUrl("/")).toBe(`${SITE_URL}/`);
       expect(siteUrl("")).toBe(`${SITE_URL}/`);
       expect(siteUrl("/demo")).toBe(`${SITE_URL}/demo`);
       expect(siteUrl("demo")).toBe(`${SITE_URL}/demo`);
       expect(siteUrl("/features/metricas/")).toBe(`${SITE_URL}/features/metricas/`);
 
-      // Verify hreflangDe handles root and subroutes with trailing slash
       const rootHl = hreflangDe("/");
       expect(rootHl.es).toBe(`${SITE_URL}/`);
       expect(rootHl.en).toBe(`${SITE_URL}/en/`);
@@ -287,12 +247,10 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
     });
 
     it("D5-T2-3: Special characters, quotes, and punctuation escaping in metadata", () => {
-      // Schemas containing quotes or special characters must serialize cleanly to JSON
       const schemas = esquemasGlobales("es", { soporte: "soporte@countpips.com" });
       const jsonString = JSON.stringify(schemas);
       expect(() => JSON.parse(jsonString)).not.toThrow();
 
-      // Check FAQPage with quotes in question/answer
       const customFaq = [
         { q: '¿Qué significa "Drawdown" y "Risk of Ruin"?', a: 'Representan la "pérdida máxima" acumulada & probabilidad.' },
       ];
@@ -303,7 +261,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
     });
 
     it("D5-T2-4: Alternate language URL resolution across dynamic routes", () => {
-      // Verify bidirectional mapping for dynamic glossary routes
       for (const t of TERMINOS) {
         const esPath = `/glosario/${t.slug}`;
         const enPath = `/en/glosario/${t.slug}`;
@@ -312,7 +269,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         expect(sinPrefijoEn(enPath)).toBe(esPath);
       }
 
-      // Verify bidirectional mapping for dynamic tool routes
       for (const h of HERRAMIENTAS) {
         const esPath = `/herramientas/${h.slug}`;
         const enPath = `/en/herramientas/${h.slug}`;
@@ -337,16 +293,14 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         item: string;
       }>;
 
-      expect(items.length).toBe(3); // Root (1) + Step 1 (2) + Step 2 (3)
+      expect(items.length).toBe(3); // inicio + dos pasos
 
-      // Strict monotonicity: 1, 2, 3...
       items.forEach((item, index) => {
         expect(item.position).toBe(index + 1);
         expect(item.item.startsWith(SITE_URL)).toBe(true);
         expect(item.name.length).toBeGreaterThan(0);
       });
 
-      // EN breadcrumbs
       const breadcrumbsEn = migasSchema("en", steps);
       const itemsEn = breadcrumbsEn.itemListElement as Array<{
         position: number;
@@ -359,7 +313,6 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       expect(itemsEn[1].item).toBe(`${SITE_URL}/en/features`);
       expect(itemsEn[2].item).toBe(`${SITE_URL}/en/features/metricas`);
 
-      // Trader profile schema
       const traderSchemas = esquemasTrader("es", "manual");
       expect(traderSchemas.length).toBe(2);
       expect(traderSchemas[0]["@type"]).toBe("WebPage");

@@ -1,23 +1,8 @@
 /**
- * Las preguntas frecuentes, en un solo sitio.
- *
- * ── POR QUÉ ESTE FICHERO EXISTE ──────────────────────────────────────
- * Estas trece preguntas estaban escritas DOS veces: una en el acordeón
- * que ve el visitante y otra, a mano, en el `FAQPage` de datos
- * estructurados que lee el buscador. Y habían divergido. A la pregunta
- * «¿Qué métodos de pago aceptáis?» la página respondía lo cierto —que
- * la compra se abrirá más adelante y que el acceso anticipado no es una
- * preventa— mientras el dato estructurado le decía a Google «Tarjeta de
- * crédito/débito y PayPal. Emitimos factura con IVA si procede.».
- *
- * Es la peor forma de este fallo: la mentira no está en la página, así
- * que mirándola no se ve, y va dirigida justo al canal que la publica
- * en los resultados de búsqueda. Doce de las trece respuestas
- * declaradas no existían en la página.
- *
- * Con una sola fuente no pueden volver a divergir: el JSON-LD se genera
- * de aquí con `jsonLdFaq()`. Hay una prueba que falla si alguien vuelve
- * a escribir un `acceptedAnswer` a mano bajo `src/app/`.
+ * Las preguntas frecuentes, en una sola fuente: el acordeón y el `FAQPage`
+ * de datos estructurados salen de aquí (`jsonLdFaq()`) para que el buscador
+ * no publique respuestas que la página no da. Una prueba falla si alguien
+ * escribe un `acceptedAnswer` a mano bajo `src/app/`.
  */
 
 import { LO_QUE_VA_SOLO } from "./conexiones";
@@ -134,11 +119,7 @@ export const FAQ_EN: QA[] = [
   },
 ];
 
-/**
- * Las cuatro preguntas de la pagina de precios. Mismo motivo que las de
- * arriba: estaban escritas en el acordeon y otra vez, aparte, en el dato
- * estructurado. Aqui los dos textos SI coincidian, pero nada lo impedia.
- */
+/** Las preguntas de la página de precios, con la misma fuente única que las de arriba. */
 export const PRICING_FAQ_ES: QA[] = [
   {
     q: "¿Qué recibo al solicitar acceso anticipado?",
@@ -177,11 +158,7 @@ export const PRICING_FAQ_EN: QA[] = [
   },
 ];
 
-/**
- * El `FAQPage` de schema.org a partir de las MISMAS preguntas que se
- * pintan. Recibe la lista ya elegida por idioma para que no haya forma
- * de publicar una respuesta que la página no da.
- */
+/** `FAQPage` de schema.org a partir de las mismas preguntas que se pintan, ya elegidas por idioma. */
 export function jsonLdFaq(items: QA[]) {
   return {
     "@context": "https://schema.org",

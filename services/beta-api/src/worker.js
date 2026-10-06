@@ -186,48 +186,22 @@ async function verifyTurnstile(request, payload, env) {
   }
 }
 
-/* ── LÍMITE DE PETICIONES ──────────────────────────────────────────────
-   Dos ventanas por IP, no una:
+/* Límite de peticiones: dos ventanas por IP. La corta (60 s por defecto) frena
+   el envío repetido; la diaria frena lo que la corta no ve (peticiones
+   espaciadas más de 60 s).
 
-     · la CORTA (60 s por defecto) frena el envío repetido;
-     · la DIARIA frena lo que la corta no puede — mil peticiones espaciadas
-       61 segundos son mil peticiones, y con la ventana sola cada una
-       parecía la primera.
-
-   `RATE_LIMIT` es el almacén de claves de Cloudflare. Si no está
-   configurado —y hoy no lo está: `wrangler.jsonc` sigue con el
-   marcador `REPLACE_WITH_KV_NAMESPACE_ID`— esto devolvía `true`, es
-   decir, ABRÍA la puerta del todo y sin dejar rastro. Un control que
-   desaparece en silencio justo cuando falta su dependencia es el que
-   nunca vas a echar en falta hasta que te ha costado dinero.
-
-   Ahora falla CERRADO en producción y sólo se salta cuando el propio
-   despliegue lo declara a propósito (`RATE_LIMIT_OPTIONAL: "1"`, útil en
-   local con `wrangler dev` sin KV). El caso de "no configurado por
-   descuido" ya no pasa desapercibido: se registra y se rechaza. */
+   `RATE_LIMIT` es el almacén KV de Cloudflare. Sin él se falla cerrado: se
+   registra y se rechaza, salvo que el despliegue declare a propósito
+   `RATE_LIMIT_OPTIONAL: "1"` (local con `wrangler dev` sin KV). Un control
+   que se abre en silencio cuando falta su dependencia no se echa en falta
+   hasta que cuesta dinero. */
 const RATE_LIMIT_DAILY_MAX = 20;
 
-/* ── CONSULTAR NO ES CONSUMIR ──────────────────────────────────────────
-   Esto era una sola función que miraba la cuota Y la gastaba, y se movió
-   delante de Turnstile para no malgastar una llamada de red en quien ya
-   había superado su límite. El efecto secundario era peor que el
-   problema: toda solicitud que después fallara la verificación anti-bot
-   ya había quemado los 60 segundos de la ventana y una de las 20
-   diarias. Y como el widget de Turnstile no se reinicia solo tras un
-   error, el segundo intento se encontraba «demasiadas peticiones» — un
-   mensaje que señala al sitio equivocado y deja fuera a alguien que sólo
-   tenía el token caducado.
-
-   Se parte en dos: `rateLimitDisponible` sólo LEE (y va delante, que era
-   el objetivo), y `consumirCuota` escribe, después de que la
-   verificación haya pasado.
-
-   (Aquí había una SEGUNDA declaración de `RATE_LIMIT_DAILY_MAX`, idéntica a
-   la de arriba. Dos `const` con el mismo nombre en el mismo módulo no son
-   una redundancia inofensiva: son un SyntaxError, y el worker no llegaba a
-   cargar — `node --check` lo rechaza. El envío del acceso anticipado estaba
-   caído y nada lo decía, porque el lint tenía `no-redeclare` apagado y
-   ninguna prueba carga este fichero.) */
+/* Consultar no es consumir: `rateLimitDisponible` solo lee y va antes de
+   Turnstile; `consumirCuota` escribe después de que la verificación pase. Si
+   se consumiera antes, una solicitud con el token anti-bot caducado quemaría
+   su cuota y el reintento daría «demasiadas peticiones», que señala al sitio
+   equivocado. */
 
 /** Estado de cuota de una IP, sin tocar nada. */
 async function estadoCuota(request, env) {
@@ -236,8 +210,7 @@ async function estadoCuota(request, env) {
   const dia = new Date().toISOString().slice(0, 10);
   return {
     cortaKey: `beta-application:${huella}`,
-    // La fecha va en la clave, así que el contador se renueva solo al
-    // cambiar el día y no hace falta purgarlo.
+    // La fecha va en la clave: el contador se renueva solo cada día.
     diaKey: `beta-application-dia:${dia}:${huella}`,
     segundos: Math.max(10, Math.min(3600, Number(env.RATE_LIMIT_SECONDS) || 60)),
     tope: Math.max(1, Number(env.RATE_LIMIT_DAILY) || RATE_LIMIT_DAILY_MAX),
@@ -245,11 +218,8 @@ async function estadoCuota(request, env) {
 }
 
 /**
- * ¿Puede pasar esta IP? Devuelve `"ok"`, `"limitado"` o `"sin-almacen"`.
- *
- * El tercero es un fallo de CONFIGURACIÓN, no de uso, y por eso tiene su
- * propio valor: devolverlo como «demasiadas peticiones» mandaba a quien
- * depura a mirar el tráfico cuando lo que falta es crear el namespace.
+ * ¿Puede pasar esta IP? Devuelve `"ok"`, `"limitado"` o `"sin-almacen"`; este
+ * último es un fallo de configuración (falta el namespace KV), no de uso.
  */
 async function rateLimitDisponible(request, env) {
   if (!env.RATE_LIMIT) {
@@ -267,13 +237,13 @@ async function rateLimitDisponible(request, env) {
   return "ok";
 }
 
-/** Descuenta una petición. Se llama sólo cuando ya va a atenderse. */
+/** Descuenta una petición; se llama solo cuando ya va a atenderse. */
 async function consumirCuota(request, env) {
   if (!env.RATE_LIMIT) return;
   const { cortaKey, diaKey, segundos } = await estadoCuota(request, env);
   const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
   await env.RATE_LIMIT.put(cortaKey, "1", { expirationTtl: segundos });
-  // 48 h de vida: cubre el día en curso con holgura para cualquier huso.
+  // 48 h de vida: cubre el día en curso en cualquier huso.
   await env.RATE_LIMIT.put(diaKey, String(usadas + 1), { expirationTtl: 172800 });
 }
 
@@ -281,26 +251,19 @@ async function createApplication(request, env) {
   if (!requestHasAllowedOrigin(request, env)) return errorResponse("origin_not_allowed", 403, request, env);
   const payload = await readJson(request);
   if (!payload) return errorResponse("invalid_request", 400, request, env);
-  // El campo trampa se llama `botcheck` EN TODAS PARTES: lo declara
-  // `src/lib/forms.ts`, lo renderiza `BetaApplication.tsx` con
-  // `id="beta-botcheck"` y lo lee el Apps Script de respaldo
-  // (`docs/waitlist-apps-script.js`). Aquí se leía `payload.honeypot`,
-  // que nadie envía nunca: la comprobación no se disparó jamás. Un
-  // anzuelo que no cuelga de la caña es peor que ninguno, porque figura
-  // en la política de privacidad como una medida que existe.
+  // El campo trampa se llama `botcheck` en todas partes (`src/lib/forms.ts`,
+  // `BetaApplication.tsx`, `docs/waitlist-apps-script.js`); un nombre distinto
+  // aquí lo dejaría sin efecto.
   if (boundedString(payload.botcheck, 120)) return json({ ok: true, duplicate: false }, 200, request, env);
 
   const validation = validateApplication(payload);
   if (validation.error) return errorResponse(validation.error, 422, request, env);
 
-  /* La CONSULTA de cuota va antes de Turnstile —verificar el token
-     cuesta una llamada de red y no tiene sentido gastarla en quien ya ha
-     superado su límite—, pero el DESCUENTO va después, para que un fallo
-     anti-bot no queme el intento. Ver la nota de `rateLimitDisponible`. */
+  // La consulta de cuota va antes de Turnstile (evita una llamada de red a
+  // quien ya superó su límite); el descuento, después.
   const cuota = await rateLimitDisponible(request, env);
   if (cuota === "sin-almacen") {
-    // Configuración incompleta, no abuso: 503 y un código propio para que
-    // el error apunte al sitio correcto.
+    // Configuración incompleta, no abuso: 503 con código propio.
     return errorResponse("service_misconfigured", 503, request, env);
   }
   if (cuota === "limitado") return errorResponse("rate_limited", 429, request, env);
@@ -408,17 +371,8 @@ async function updateApplication(request, env, id) {
   const status = boundedString(payload.status, 20);
   if (!APPLICATION_STATUSES.has(status)) return errorResponse("invalid_status", 422, request, env, { private: true });
 
-  /* ── ACTUALIZACIÓN PARCIAL ────────────────────────────────────────────
-     Antes esto escribía `cohort` SIEMPRE, viniera o no en la petición:
-     un `PATCH {"status":"invitado"}` ejecutaba `SET cohort = NULL` y
-     borraba la cohorte asignada sin decir nada. El panel manda los dos
-     campos, así que no se veía; cualquier script de operaciones que
-     tocara sólo el estado destruía el dato.
-
-     Ahora se distingue "no lo mandes" (la clave no viene: no se toca) de
-     "vacíalo" (viene como cadena vacía o null: se pone a NULL). Es la
-     diferencia entre omitir y borrar, y en una tabla de personas
-     invitadas no es una sutileza. */
+  // Actualización parcial: si `cohort` no viene no se toca; si viene vacío o
+  // null se pone a NULL. Un PATCH solo de estado no debe borrar la cohorte.
   const tocaCohorte = Object.prototype.hasOwnProperty.call(payload, "cohort");
   const cohort = tocaCohorte ? boundedString(payload.cohort, 80) : null;
 

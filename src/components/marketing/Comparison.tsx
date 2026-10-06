@@ -86,8 +86,7 @@ export function Comparison() {
           }
         />
 
-        {/* En móvil, una ficha por fila: la tabla de cuatro columnas no
-            cabía y cortaba la de CountPips a mitad de palabra. */}
+        {/* En móvil, una ficha por fila: la tabla de cuatro columnas no cabe. */}
         <Reveal delay={0.08} className="mt-8 md:hidden">
           <div className="border-t border-[var(--line-2)]">
             {ROWS.map((row) => (

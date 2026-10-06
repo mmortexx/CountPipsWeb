@@ -1,26 +1,11 @@
 /**
- * ARRANQUE — cuánto tarda la portada en ser legible, con la CPU frenada.
- *
- * ── Por qué existe ────────────────────────────────────────────────────
- * `humo.mjs` ya vigila un presupuesto para el titular (`PRESUPUESTO_H1_MS`),
- * y lo mide con la CPU a toda velocidad: en un portátil de desarrollo o en
- * un CI siempre pasa. Medido con el freno a ×4 —un móvil de gama media—,
- * la primera visita llegó a tardar 2.613 ms en enseñar el titular, contra
- * un presupuesto declarado de 2.500. Retirando la pantalla de carga en el
- * rediseño institucional, la cifra se desplomó.
- *
- * Medido el 2026-09-20 sobre el sitio compilado, cinco pasadas seguidas:
- * el titular llega entre 747 y 755 ms, con el total desde la navegación
- * entre 1.058 y 1.082 ms. Queda a un tercio del presupuesto. Esa cifra
- * vale para ESTA máquina: lo que se compara entre ejecuciones no es el
- * número, es si sigue cabiendo en el presupuesto.
- *
- * Ese hueco entre «pasa en CI» y «tarda dos segundos y medio en el móvil
- * de un visitante» es justo lo que este guion mide. No sustituye a
- * `humo.mjs`: mide otra cosa, en otras condiciones.
- *
- * ── Cómo se lee ───────────────────────────────────────────────────────
- *  · h1 legible      — cuándo el titular llega a opacidad plena.
+ * ARRANQUE: mide cuánto tarda la portada en enseñar el titular (opacidad
+ * plena) con la CPU frenada a ×4 (un móvil de gama media), contra un
+ * presupuesto de 2.500 ms. `humo.mjs` vigila el presupuesto del titular con la
+ * CPU a toda velocidad, donde siempre pasa; esto mide el hueco entre «pasa en
+ * CI» y lo que vive un visitante en un móvil. Falla si el peor de tres pasadas
+ * lo supera. Las cifras valen para la máquina que mide: lo que importa es si
+ * sigue cabiendo en el presupuesto.
  *
  * Uso:  node scripts/arranque.mjs --serve out [--cpu 4]
  */
@@ -73,13 +58,9 @@ async function servir(raiz) {
 const { server, base } = await servir(dir || "out");
 const navegador = await chromium.launch();
 
-/* TRES PASADAS, Y SE DA EL RANGO.
-   Una sola cifra de tiempo no es una medición: es una tirada. Este guion
-   devolvía una y quien la leyera la citaría como si fuera «el» número.
-   Con tres —contexto nuevo cada vez, para que la caché no regale la
-   segunda— sale un rango, y si el rango es ancho eso mismo es la
-   respuesta: así no se puede medir. El veredicto se da sobre el PEOR de
-   los tres, que es el que se lleva un visitante con mala suerte. */
+/* Tres pasadas y se da el rango: una sola cifra es una tirada. Contexto nuevo
+   en cada una para que la caché no regale la segunda; si el rango es ancho,
+   la respuesta es que así no se puede medir. El veredicto va sobre la peor. */
 const PASADAS = 3;
 const medidas = [];
 const totales = [];

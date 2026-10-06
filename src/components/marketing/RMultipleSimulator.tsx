@@ -13,33 +13,12 @@ import { CAMINOS_MONTE_CARLO } from "@/lib/herramientas";
 const SIM_RUNS = CAMINOS_MONTE_CARLO;
 
 /**
- * RMultipleSimulator — simulador Monte Carlo de distribución de R.
+ * Simulador Monte Carlo de distribución de R: corre `SIM_RUNS` caminos
+ * (Bernoulli(winRate) con pagos avgWinR / -avgLossR) y muestra la media, las
+ * bandas P5–P95 y P25–P75, la mediana y la probabilidad de ruina.
  *
- * El EquityProjector (en /features/metricas) muestra la curva
- * DETERMINISTA: expectancy repetida. Pero la operativa real tiene
- * VARIANZA: una secuencia de operaciones puede tener una racha mala
- * temprana que te saque del juego antes de que el edge se materialice.
- *
- * Este componente corre N simulaciones de M operaciones cada una,
- * muestreando de una distribución Bernoulli(winRate) con payouts
- * avgWinR / -avgLossR, y muestra:
- *   · la curva de equity MEDIA (centro del abanico)
- *   · las bandas P5–P95 y P25–P75, y la mediana (incertidumbre)
- *   · la probabilidad de ruina (perder la mitad) y de superar 2×
- *
- * ── Por qué Monte Carlo aquí ──────────────────────────────────────────
- * Un solo camino no enseña nada: el mismo edge puede llevarte a
- * multiplicar por 4 o a quebrar, dependiendo del ORDEN. Correr cientos
- * de caminos y mostrar el abanico es la forma honesta de visualizar el
- * riesgo — y refuerza el mensaje de disciplina: el edge existe, pero
- * necesitas sobrevivir a la varianza para cobrarlo.
- *
- * ── Aleatoriedad determinista ──────────────────────────────────────────
- * Cada simulación usa un PRNG seedado (mulberry32) con la semilla del
- * slider, así el resultado es REPRODUCIBLE: mismo seed → mismo abanico.
- * Esto evita que el gráfico baile en cada render y permite comparar
- * escenarios. "Re-tirar" cambia la semilla y da otra realización.
- *
+ * La semilla del deslizador fija el PRNG: mismo seed, mismo abanico, así el
+ * gráfico no baila en cada render. «Otra tirada» cambia la semilla.
  */
 export function RMultipleSimulator() {
   const idPerfiles = useId();
@@ -75,14 +54,12 @@ export function RMultipleSimulator() {
 
   const fmtUsd = (n: number) => fmtMoney(n, lang, { decimals: 0 });
 
-  /* Importe corto para las cinco celdas de percentil, que a 320 px miden
-     poco mas de 70 px. A mano y no con `notation: "compact"` de Intl:
-     en espanol eso devuelve «18,9 mil», que ocupa MAS que «18.906». */
+  /* Importe corto para las cinco celdas de percentil (~70 px a 320 px). A mano:
+     `notation: "compact"` da «18,9 mil» en español, más largo que «18.906». */
   const fmtUsdCorto = (n: number) => {
     const a = Math.abs(n);
     const signo = n < 0 ? "−" : "";
-    /* Por encima del billón ya no es una cifra: con los deslizadores al
-       máximo salía «296.700.000.000.000,00 M $». */
+    /* Por encima del billón ya no se muestra cifra. */
     if (!Number.isFinite(a) || a > LIMITE_PROYECCION_USD) return "—";
     if (a >= 1_000_000_000) return es ? `${signo}${fmtNum(a / 1_000_000_000, 1)}\u00a0mil\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000_000, 1)}B`;
     if (a >= 1_000_000) return es ? `${signo}${fmtNum(a / 1_000_000, 2)}\u00a0M $` : `${signo}$${fmtNum(a / 1_000_000, 2)}M`;
@@ -96,10 +73,7 @@ export function RMultipleSimulator() {
 
   const fmtPct = (n: number, dec = 1) => `${fmtNum(n, dec)}${pctSep(lang)}`;
 
-  // ── Abanico P5-P95, P25-P75, media y mediana ─────────────────────────────
-  /* Al ancho real de la caja y con escala: antes era un lienzo fijo de 540
-     escalado, con el eje en 0 —la curva vivía apretada en la mitad de
-     arriba— y sin una sola cifra que dijera cuánto marcaba cada banda. */
+  // Abanico P5-P95, P25-P75, media y mediana, al ancho real de la caja.
   const svgW = anchoGrafico;
   const svgH = Math.round(Math.max(160, Math.min(220, svgW * 0.36)));
   const padL = 4;
@@ -131,10 +105,8 @@ export function RMultipleSimulator() {
   const outerBandPath = banda("p95", "p5");
   const innerBandPath = banda("p75", "p25");
 
-  // Reusable slider
-  /* El dólar cambia de sitio con el idioma: «10.000 $» en español,
-     «$10,000» en inglés; lo resuelve `fmtUsd`. Las demás unidades —%, R,
-     operaciones— van siempre detrás. El lector oye el mismo texto. */
+  /* El dólar cambia de sitio con el idioma (lo resuelve `fmtUsd`); las demás
+     unidades van detrás. El lector oye el mismo texto. */
   const textoDeslizador = (value: number, step: number, suffix: string) =>
     suffix === " $" ? fmtUsd(value) : `${fmtNum(value, Number.isInteger(step) ? 0 : 2)}${suffix}`;
 
@@ -176,9 +148,7 @@ export function RMultipleSimulator() {
 
   return (
     <section className="section-tight">
-      {/* Las tres cifras por las que se viene a una simulación, para quien
-          no ve la pantalla: dónde acaba la mitad de las veces, cómo es el
-          mal escenario, y qué probabilidad hay de quedarse sin cuenta. */}
+      {/* Resumen para el lector de pantalla: mediana, mal escenario y ruina. */}
       <ResultadoAnunciado
         texto={
           es
@@ -187,7 +157,6 @@ export function RMultipleSimulator() {
         }
       />
       <div className="tj-container grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-        {/* Left: intro + inputs */}
         <div>
           <div className="inline-flex items-center gap-3 mb-5">
             <span className="eyebrow" data-titular-herramienta>
@@ -211,18 +180,8 @@ export function RMultipleSimulator() {
               : `${SIM_RUNS} simulations of your next trades. Each path is different: the fan shows full percentiles (P5 to P95). The same edge can multiply your account or ruin you depending on order. Discipline is what lets you survive long enough to collect it.`}
           </p>
 
-          {/* ── ARQUETIPOS ────────────────────────────────────────────
-              Eran cuatro fichas sueltas en `flex-wrap` con etiquetas de
-              largos muy distintos: se repartian en tres filas desiguales
-              y el bloque se leia como un monton de botones, no como una
-              eleccion entre cuatro cosas del mismo rango.
-
-              Ahora es el control segmentado del sitio, el mismo que usan
-              las otras calculadoras: apilado en estrecho y en fila desde
-              `sm`, con todas las opciones del MISMO ancho. El parametro
-              que las distingue baja a una segunda linea atenuada en vez
-              de alargar el nombre entre parentesis — es el patron que ya
-              usan los presets del proyector. */}
+          {/* Arquetipos: control segmentado con opciones del mismo ancho; el
+              parámetro que las distingue va en una segunda línea atenuada. */}
           <div className="mb-6">
             <span id={idPerfiles} className="mb-2 block tnum text-[12px] text-tertiary">
               {es ? "Perfiles de ejemplo" : "Example profiles"}
@@ -235,8 +194,7 @@ export function RMultipleSimulator() {
                 { label: es ? "Apalancamiento excesivo" : "Over-leveraged", muestra: "riesgo", peligro: true, wr: 50, winR: 1.5, lossR: 1.0, risk: 3.5 },
               ].map((p) => ({
                 ...p,
-                /* La nota se compone de los campos del perfil: escrita a mano,
-                   repetía cada cifra y podía quedarse atrás al retocar una. */
+                /* La nota se compone de los campos del perfil para no desfasarse. */
                 nota:
                   p.muestra === "riesgo"
                     ? `${fmtPct(p.risk, Number.isInteger(p.risk * 10) ? 1 : 2)} ${es ? "riesgo" : "risk"}${p.peligro ? (es ? " · peligro" : " · danger") : ""}`
@@ -260,11 +218,8 @@ export function RMultipleSimulator() {
                       setSeed(siguienteSemilla);
                     }}
                   >
-                    {/* El nombre reserva DOS lineas aunque ocupe una:
-                        «Prueba de fondeo» cabe en una y los otros tres no,
-                        y sin el suelo las cuatro notas quedaban a alturas
-                        distintas — que es lo que hacia que cuatro
-                        opciones del mismo rango se leyeran desiguales. */}
+                    {/* El nombre reserva dos líneas aunque ocupe una, para que las
+                        cuatro notas queden a la misma altura. */}
                     <span className="grid min-w-0 text-center leading-[1.25]">
                       <span className="flex min-h-[2.5em] items-center justify-center">
                         {preset.label}
@@ -301,7 +256,6 @@ export function RMultipleSimulator() {
           </button>
         </div>
 
-        {/* Right: results card */}
         <div className="tj-ficha relative">
           <p className="tj-ficha-barra">
             <span>{es ? "Simulación" : "Simulation"}</span>
@@ -318,7 +272,6 @@ export function RMultipleSimulator() {
             </div>
           </div>
 
-          {/* Fan chart SVG */}
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
               <span className="tnum" style={{ fontSize: 12, color: "var(--ink-3)" }}>
@@ -376,24 +329,11 @@ export function RMultipleSimulator() {
             </div>
           </div>
 
-          {/* ── LA DISTRIBUCION, EN UNA SOLA TIRA ─────────────────────
-              Eran cinco cajas con borde y fondo propios, y cada rotulo
-              arrastraba un parentesis («P5 (Cola 5%)») que a dos columnas
-              partia en dos lineas y empujaba la cifra fuera.
-
-              Cinco percentiles son UNA distribucion, no cinco datos
-              sueltos: se dibujan como una tira reglada con filetes entre
-              columnas y una sola caja alrededor. La mediana no se marca
-              con otro fondo sino con un filete de acento arriba, que es
-              como se senala una referencia en una tabla y no compite con
-              los otros cuatro valores.
-
-              Cada columna es su propio contenedor de medida (`caja-cifra`)
-              y el importe va abreviado: «18,9 k $» en vez de «18.906 US$»,
-              que no cabe en 70 px. */}
-          {/* El rojo dice «por debajo del capital inicial», no «el peor
-              percentil»: con una ventaja sana el P5 también gana, y
-              pintarlo de pérdida contradecía la cifra que lleva debajo. */}
+          {/* Los cinco percentiles en una tira con filetes entre columnas; la
+              mediana se marca con un filete de acento arriba. Cada columna
+              es su contenedor de medida (`caja-cifra`) y el importe va
+              abreviado. El rojo significa «por debajo del capital inicial»,
+              no «peor percentil»: con ventaja sana el P5 también gana. */}
           <div className="tj-matriz grid-cols-5 text-center tnum">
             {[
               { k: "P5", n: es ? "Cola 5\u00a0%" : "Bottom 5%", v: c.finalP5, col: "var(--ink-2)", ref: false },
@@ -438,21 +378,9 @@ export function RMultipleSimulator() {
             </p>
           )}
 
-          {/* ── RUINA Y RACHAS ────────────────────────────────────────
-              Cuatro rotulos en versalitas con 0,12em de espaciado
-              —«RUINA (MONTE CARLO)», «RACHA TEORICA (E[L])»— sobre
-              columnas de 90 px: partian en dos y tres lineas de largos
-              distintos y las cuatro cifras quedaban a alturas distintas,
-              que es lo que hacia que el bloque se leyera desordenado.
-
-              Se separan las dos cosas que el rotulo mezclaba: arriba el
-              CONCEPTO en una sola linea, debajo la PRECISION (de donde
-              sale el numero) en redonda y atenuada. Con `grid-rows` de
-              tres filas las cuatro cifras caen en la misma linea de base
-              pase lo que pase con el texto de encima.
-
-              Filetes entre columnas en vez de separacion: son cuatro
-              lecturas de la misma simulacion, no cuatro tarjetas. */}
+          {/* Ruina y rachas: concepto arriba, precisión (de dónde sale la cifra)
+              debajo en atenuado. Con `grid-rows` de tres filas las cuatro
+              cifras caen en la misma línea de base. */}
           <div className="tj-matriz mb-4 grid-cols-2 border-b border-[var(--ficha-division)] text-center tnum sm:grid-cols-4">
             {[
               {
@@ -463,8 +391,8 @@ export function RMultipleSimulator() {
               },
               {
                 t: es ? `Ruina (−${UMBRAL_RUINA_PCT}\u00a0%)` : `Ruin (−${UMBRAL_RUINA_PCT}%)`,
-                /* La fórmula no sabe de retiros: con ellos, las dos cifras
-                   miden cosas distintas y se dice. */
+                /* La fórmula no sabe de retiros: con ellos las dos cifras miden
+                   cosas distintas y se dice. */
                 sub: monthlyWithdrawal > 0 ? (es ? "por fórmula, sin retiros" : "by formula, no withdrawals") : es ? "por fórmula" : "by formula",
                 v: fmtPct(c.analyticalRuinProb, 1),
                 col: c.analyticalRuinProb > 5 ? "rgb(var(--pnl-neg))" : "var(--ink)",

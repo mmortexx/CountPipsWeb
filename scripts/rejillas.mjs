@@ -1,65 +1,22 @@
 /**
- * REJILLAS — ¿alguna ficha despega su texto para igualar la fila?
- *
- * ── Qué mide ──────────────────────────────────────────────────────────
- * Una rejilla CSS de varias filas, metida en otra rejilla que la estira
- * para igualar la altura de sus vecinas, reparte el alto sobrante entre
- * sus propias filas (`align-content: normal` se comporta como `stretch`).
- * El título se queda arriba y la descripción baja sola: el hueco entre
- * los dos cambia de una ficha a otra según lo que mida la de al lado.
- * No rompe nada ni desborda, así que ninguna otra guarda lo ve.
- *
- * La prueba es directa: a cada rejilla de dos filas o más se le pone
- * `align-content: start` un instante; si algún hijo se mueve, la rejilla
- * estaba repartiendo hueco. Las de una sola fila no cuentan: ahí estirar
- * la fila es lo que centra el contenido en vertical, y es a propósito.
- *
- * ── Qué encontró el día que se escribió (2026-09-23) ──────────────────
- * El índice de /features, en los dos idiomas: «Playbooks» y «Riesgo de
- * ruina» separaban 11 px su descripción del título. Se vio en rojo con
- * esa compilación antes del arreglo (`content-start` en la ficha).
- *
- * ── Y el compás de las columnas (2026-09-26) ──────────────────────────
- * En una rejilla de tres pistas iguales o más, el texto de cada columna
- * tiene que empezar a la misma distancia del de la anterior. «Tus
- * hábitos, en cifras» (/features/metricas) quitaba el relleno izquierdo
- * solo a la primera celda: columnas a 400 y 376 px. Visto en rojo con esa
- * compilación. Las rejillas con filete vertical entre celdas no cuentan:
- * ahí el texto se mide desde el filete y la primera columna no lo tiene.
- *
- * ── Y el doble filete (2026-09-30) ────────────────────────────────────
- * Dos líneas horizontales de sección a 40-260 px sin nada entre ellas:
- * el filete del cierre caía bajo el borde inferior de la lista de encima
- * en 15 páginas (portada, acerca de, características, glosario, manual y
- * las diez calculadoras). Visto en rojo con esa compilación.
- *
- * ── Y el tono del filete y las rayas juntas (2026-10-01) ──────────────
- * Ningún filete gris con una opacidad escrita a mano: el tono sale de
- * `--line`, `--line-2`, `--ficha-division`, `--chip-line` o `--border`.
- * Había once: 0,06, 0,09, 0,12, 0,14, 0,16, 0,18, 0,2 y 0,3 además de
- * los tokens. Y el doble filete baja de 40 a 8 px: el índice lateral de
- * /faq cerraba con dos rayas a 24 px, la tabla de recuperación con dos a
- * 16 px. Las cajas (campos, segmentados) no cuentan como filete. Vista
- * en rojo con la compilación anterior (18 tonos y 9 pares).
- *
- * ── Y las cifras de una fila, y los segmentados vecinos (2026-10-03) ──
- * En una fila de celdas «rótulo + cifra», la cifra cae a la misma altura
- * aunque un rótulo ocupe dos líneas: «Riesgo de ruina (−50 %)» bajaba su
- * cifra 16 px respecto a las otras tres en la calculadora de riesgo (y en
- * /features/metricas), y «Statistical power (1 − β)» a 390 px. Y dos
- * controles segmentados en la misma fila miden lo mismo: firma (41 px,
- * dos líneas) y tamaño (36) en /traders/prop-firms. Vista en rojo con la
- * compilación anterior (3 cifras y 2 pares).
- *
- * ── Y la ficha del glosario contra su raíl (2026-10-03) ───────────────
- * A 1.440 px la definición y «De la misma familia» van en dos columnas.
- * En los 38 términos sin fórmula, el primer rótulo de la izquierda
- * arrancaba 38 px por debajo de la ceja del raíl. Tolerancia 16 px: con
- * fórmula, el rótulo «Fórmula» va dentro de su caja, unos 10 px abajo.
- * Vista en rojo con la compilación anterior: 76 páginas, las dos lenguas.
- *
- * ── Lo que NO mira ────────────────────────────────────────────────────
- * Flexbox, donde el mismo reparto solo ocurre si alguien lo pide.
+ * REJILLAS: comprueba, sobre todas las páginas compiladas a 1440 y 390 px, la
+ * alineación dentro de rejillas CSS. Un fallo es uno de estos descuadres:
+ *   - Una rejilla de varias filas reparte el alto sobrante entre sus filas
+ *     (`align-content: normal` actúa como `stretch`) y despega título y
+ *     descripción. Se prueba poniéndole `align-content: start`: si un hijo se
+ *     mueve, estaba repartiendo. Las de una fila no cuentan.
+ *   - Compás: en rejillas de tres o más pistas iguales, el texto de cada
+ *     columna empieza a la misma distancia de la anterior (salvo con filete
+ *     vertical entre celdas).
+ *   - Dos filetes horizontales de sección, de 8 a 260 px, sin nada entre ellos
+ *     (a menos de 40 px solo cuenta lo que cae bajo los dos).
+ *   - Filete gris con opacidad escrita a mano en vez de un token (`--line`,
+ *     `--line-2`, `--ficha-division`, `--chip-line`, `--border`).
+ *   - Cifra que cae más abajo que sus vecinas de fila, y controles segmentados
+ *     vecinos de distinto alto.
+ *   - Ficha del glosario a 1440 px cuyo primer texto no arranca a la altura
+ *     de la ceja del raíl (tolerancia 16 px: la caja «Fórmula» baja ~10 px).
+ * No mira flexbox, donde el reparto solo ocurre si alguien lo pide.
  *
  * Uso:  node scripts/rejillas.mjs --serve out
  */
@@ -104,8 +61,7 @@ async function servir(raiz) {
   return { server, base: `http://127.0.0.1:${server.address().port}${PREFIJO}` };
 }
 
-/* Todas las páginas compiladas, no una lista a mano: una página nueva
-   entra sola en la guarda. */
+// Todas las páginas compiladas, no una lista a mano: una nueva entra sola.
 async function paginas(carpeta) {
   const rutas = [];
   for (const e of await readdir(carpeta, { withFileTypes: true })) {
@@ -152,14 +108,11 @@ async function medir(pag, ruta, ancho) {
     for (const el of document.querySelectorAll("body *")) {
       const cs = getComputedStyle(el);
       if (!cs.display.includes("grid") || el.children.length < 2) continue;
-      /* Compás de columnas: en una rejilla de pistas iguales, el texto de
-         cada columna empieza a la misma distancia del de la anterior. */
+      // Compás de columnas en rejillas de pistas iguales.
       const pistas = cs.gridTemplateColumns.trim().split(/\s+/).map(parseFloat);
       if (pistas.length >= 3 && pistas.every((p) => Math.abs(p - pistas[0]) <= 1) && el.getBoundingClientRect().height > 0) {
         const fila = [...el.children].filter((c) => Math.abs(c.getBoundingClientRect().top - el.children[0].getBoundingClientRect().top) < 2);
-        /* Con filete vertical entre celdas (`.tj-matriz`, TechSpecs) el texto
-           se mide desde el filete, y la primera columna no tiene: ahí la
-           diferencia de compás es la correcta. */
+        // Con filete vertical entre celdas (`.tj-matriz`, TechSpecs) el texto se mide desde el filete: la diferencia es correcta.
         const conFilete = fila.slice(1).some((c) => {
           const s = getComputedStyle(c);
           return parseFloat(s.borderLeftWidth) > 0 || /-1px 0px 0px/.test(s.boxShadow);
@@ -199,16 +152,13 @@ async function medir(pag, ruta, ancho) {
         });
       }
     }
-    /* Doble filete: dos líneas horizontales de sección a 40-260 px una de
-       otra sin nada pintado entre ellas, en todo el ancho que cubren. */
+    // Doble filete: dos líneas horizontales de sección sin nada pintado entre ellas.
     const main = document.querySelector("main");
     const filetes = [];
     const cosas = [];
-    /* Tono del filete: el gris de un filete sale de un token (`--line`,
-       `--line-2`, `--ficha-division`, `--chip-line`, `--border`), no de
-       una opacidad escrita a mano. Se leen del propio CSS con una sonda
-       nueva por token: si se reutiliza una, la transición de color del
-       sitio devuelve el valor anterior y todos los tonos salen iguales. */
+    /* Tono del filete: los tonos válidos se leen del CSS con una sonda nueva
+       por token; reutilizar una devuelve el valor anterior por la transición
+       de color y todos los tonos salen iguales. */
     const tonos = new Set();
     const lee = (css, prop) => {
       const sonda = document.createElement("div");
@@ -240,8 +190,7 @@ async function medir(pag, ruta, ancho) {
             sueltos.push({ clase: `<${el.tagName.toLowerCase()} class="${String(el.className).slice(0, 60)}">`, tono: m[2] });
           }
         }
-        /* Una caja (campo, control segmentado) no es un filete: su borde
-           inferior no se suma a la línea que venga debajo. */
+        // Una caja (campo, segmentado) no es un filete.
         if (b.width < 200 || (tiene(s, "Left") && tiene(s, "Right"))) continue;
         if (tiene(s, "Top")) filetes.push({ y: b.top + sy, x1: b.left, x2: b.right });
         if (tiene(s, "Bottom")) filetes.push({ y: b.bottom + sy, x1: b.left, x2: b.right });
@@ -259,8 +208,7 @@ async function medir(pag, ruta, ancho) {
         if (q.width > 0 && q.height > 0) cosas.push({ t: q.top + sy, b: q.bottom + sy, x1: q.left, x2: q.right });
       }
     }
-    /* Cifras a compás: en una fila de celdas «rótulo + cifra», las cifras
-       caen a la misma altura aunque un rótulo ocupe dos líneas. */
+    // Cifras a compás: en una fila de celdas «rótulo + cifra» caen a la misma altura.
     const descolgadas = [];
     let filasCifra = 0;
     const esCelda = (c) => c.children.length === 2 && /\d/.test(c.children[1].textContent || "") && c.children[1].getBoundingClientRect().height > 0;
@@ -282,7 +230,7 @@ async function medir(pag, ruta, ancho) {
         }
       }
     }
-    /* Controles segmentados uno al lado del otro: el mismo alto. */
+    // Controles segmentados vecinos: el mismo alto.
     const desiguales = [];
     for (const g of document.querySelectorAll("main .tj-segmentado")) {
       const h = g.nextElementSibling;
@@ -303,11 +251,10 @@ async function medir(pag, ruta, ancho) {
         if (hueco < 8) continue;
         if (hueco > 260) break;
         if (Math.min(a.x2, c.x2) - Math.max(a.x1, c.x1) < 200) continue;
-        /* Cuenta lo que haya en cualquier columna, y un titular que arranca
-           a la altura del segundo filete: ahí empieza sección, no hay banda
-           vacía. A menos de 40 px, en cambio, solo cuenta lo que cae bajo
-           los dos filetes: dos rayas tan juntas se leen dobles aunque la
-           columna de al lado tenga texto (el índice lateral de /faq). */
+        /* Cuenta lo que haya en cualquier columna y un titular que arranca a la
+           altura del segundo filete (ahí empieza sección). A menos de 40 px solo
+           cuenta lo que cae bajo los dos: se leen dobles aunque la columna de
+           al lado tenga texto. */
         const lo = Math.max(a.x1, c.x1);
         const hi = Math.min(a.x2, c.x2);
         if (!cosas.some((k) => k.b > a.y + 1 && k.t < c.y + 8 && (hueco >= 40 || (k.x2 > lo && k.x1 < hi)))) {
@@ -320,8 +267,7 @@ async function medir(pag, ruta, ancho) {
   }, TOLERANCIA_PX);
   filetesTotal += r.nf;
   filasCifraTotal += r.filasCifra;
-  /* Ficha del glosario a dos columnas: el primer texto de la columna de
-     la definición arranca a la altura de la ceja del raíl. */
+  // Ficha del glosario a dos columnas: el primer texto arranca a la altura de la ceja del raíl.
   const desfase = ancho >= 1024 ? await pag.evaluate(() => {
     const ceja = [...document.querySelectorAll("p.eyebrow")].find((p) => /^(De la misma familia|Same family)$/.test(p.textContent.trim()));
     const columna = document.querySelector('nav[aria-label="Recorrer el glosario"], nav[aria-label="Browse the glossary"]')?.closest(".lg\\:grid")?.firstElementChild;
@@ -412,7 +358,7 @@ if (columnadasTotal < 20) {
   console.log(`[rejillas] solo ${columnadasTotal} rejillas de tres columnas: el compás no está mirando`);
   process.exit(1);
 }
-/* Una guarda que no mide nada pasa siempre: el sitio tiene cientos. */
+// Una guarda que no mide nada pasa siempre: el sitio tiene cientos.
 if (rejillas < 200) {
   console.log(`[rejillas] solo ${rejillas} rejillas: se esperaban cientos. ¿Falló la carga?`);
   process.exit(1);

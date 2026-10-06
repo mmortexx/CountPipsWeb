@@ -7,26 +7,11 @@ import { useTeclaMando } from "@/hooks/use-tecla-mando";
 import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
 
 /**
- * ShortcutsHelp — keyboard shortcuts overlay.
- *
- * Opens via the `tj:open-shortcuts-help` window CustomEvent (dispatched by
- * `GlobalShortcuts` when `?` is pressed, or by the Navbar `?` button). Closes
- * on Escape, backdrop click, or the X button. Entrada y salida son un soft
- * scale + fade entrance/exit con CSS (ver `.tj-panel-*` en globals.css).
- * Copy is bilingual ES/EN via `useLang()`.
- *
- * While open, sets `body[data-shortcuts-help-open="true"]` so other global
- * listeners (GlobalShortcuts) can suppress their own keys.
- *
- * The `?` keyboard trigger itself lives in `GlobalShortcuts`, which performs
- * the input/textarea/select/contentEditable + CommandPalette-open guards
- * before dispatching the open event.
- *
- * ── Componente CONTROLADO ─────────────────────────────────────────────
- * Igual que el glosario: el `open` y la escucha del evento de apertura
- * viven en `OverlayHost`, que sabe abrir esta ventana sin haber cargado
- * antes su código. Este overlay solo se ve cuando alguien pulsa `?`, así
- * que no tiene por qué viajar en el arranque de todas las páginas.
+ * Ventana de atajos de teclado. Componente controlado: `open` y la escucha del
+ * evento de apertura viven en `OverlayHost`, para no cargar este código en el
+ * arranque. Se cierra con Escape, clic en el velo o la X. Mientras está abierta
+ * pone `body[data-shortcuts-help-open="true"]` para que `GlobalShortcuts`
+ * suspenda sus teclas.
  */
 export function ShortcutsHelp({
   open,
@@ -41,12 +26,10 @@ export function ShortcutsHelp({
   const setOpen = onOpenChange;
 
   const panelRef = useRef<HTMLDivElement>(null);
-  /* Mantiene la ventana en el árbol los 180 ms de su despedida. */
+  // Mantiene la ventana en el árbol los 180 ms de su despedida.
   const { montado, saliendo } = usePresencia(open, 180);
 
-  // While open: mark body so GlobalShortcuts can skip T/L, and capture Escape
-  // on the way down (capture phase) so cmdk's or any other Escape handlers
-  // can't swallow it.
+  // Escape se captura en fase de captura para que ningún otro manejador lo trague.
   useEffect(() => {
     if (!open) return;
     document.body.dataset.shortcutsHelpOpen = "true";
@@ -62,25 +45,15 @@ export function ShortcutsHelp({
       delete document.body.dataset.shortcutsHelpOpen;
       window.removeEventListener("keydown", onEsc, true);
     };
-    /* `setOpen` es la prop `onOpenChange`, no un setter estable de
-       `useState`. `OverlayHost` la memoiza con dependencias vacías, así que
-       incluirla no vuelve a suscribir el listener. */
+    // `setOpen` es la prop `onOpenChange`; `OverlayHost` la memoiza, así que no resuscribe.
   }, [open, setOpen]);
 
-  // Focus trap + focus restore (mirrors the Navbar mobile-drawer pattern,
-  // Navbar.tsx ~L82-128, and the CommandPalette trap). While the overlay
-  // is open, Tab / Shift+Tab cycle within the panel — the body backdrop
-  // and underlying page can't be reached. On close, focus is returned to
-  // whatever element opened the overlay so keyboard users keep their
-  // place on the page. Escape is handled by the capture-phase effect
-  // above (which also stops propagation so this handler never sees it).
+  // Atrapa el foco dentro del panel y lo devuelve a quien abrió la ventana al cerrar.
   useEffect(() => {
     if (!open) return;
     const previouslyFocused = document.activeElement as HTMLElement | null;
 
-    // Move initial focus into the panel (first focusable — the close X
-    // button — so the user can immediately read the dialog with their
-    // AT and dismiss it with one Tab + Enter if they wish).
+    // Foco inicial en el primer enfocable (la X de cerrar).
     const raf = requestAnimationFrame(() => {
       const panel = panelRef.current;
       if (!panel) return;
@@ -123,11 +96,7 @@ export function ShortcutsHelp({
     };
   }, [open]);
 
-  /* Los atajos van AGRUPADOS y no en una lista seguida: son veintidós, y
-     quince de ellos son saltos de navegación. En plano el lector leía
-     «Ir a» quince veces y tenía que recorrer veintidós renglones iguales
-     para encontrar el suyo. El prefijo vive ahora en el título del grupo
-     y cada renglón dice solo su destino. */
+  // Agrupados: el prefijo «Ir a» vive en el título del grupo y cada fila dice solo su destino.
   const grupos: {
     titulo: string;
     filas: { keys: ReactNode; label: string }[];
@@ -138,9 +107,7 @@ export function ShortcutsHelp({
         {
           keys: (
             <>
-              {/* La tecla real de este teclado, no «⌘/Ctrl» para los dos: la
-                  ayuda de atajos es justo donde peor sienta hacer elegir al
-                  lector. Ver `useTeclaMando`. */}
+              {/* La tecla real de este teclado (ver `useTeclaMando`). */}
               <Kbd>{mando}</Kbd>
               <Kbd>G</Kbd>
             </>
@@ -195,22 +162,16 @@ export function ShortcutsHelp({
   return (
     <>
       {montado && (
-        /* Mismo cambio que en `CommandPalette`: el desmontaje diferido lo
-           lleva `usePresencia` y las dos capas se despiden con las clases
-           `tj-velo-sale` / `tj-panel-sale`. El plazo del hook y la
-           duración de esas clases tienen que seguir coincidiendo. */
+        /* El desmontaje diferido lo lleva `usePresencia`; su plazo y la
+           duración de `tj-velo-sale` / `tj-panel-sale` deben coincidir. */
         <div
           className="tj-hoja-atajos fixed inset-0 z-[100] flex items-start justify-center p-4 pt-[15vh]"
           role="dialog"
           aria-modal="true"
-          /* El nombre accesible SALE DEL TITULO VISIBLE, no de un
-             `aria-label` paralelo: así no pueden divergir cuando uno de
-             los dos se retoque, y quien usa lector oye exactamente lo
-             que los demas leen. El subtitulo va de descripcion. */
+          /* El nombre accesible sale del título visible, no de un `aria-label` paralelo. */
           aria-labelledby="tj-atajos-titulo"
           aria-describedby="tj-atajos-sub"
         >
-          {/* Backdrop — subtle blur + fade-in */}
           <div
             className={`tj-no-print absolute inset-0 bg-black/50 ${
               saliendo ? "tj-velo-sale" : "tj-velo-entra"
@@ -219,23 +180,16 @@ export function ShortcutsHelp({
             aria-hidden="true"
           />
 
-          {/* Panel — institutional mica card with GPU acceleration */}
           <div
             ref={panelRef}
             tabIndex={-1}
             style={{ contain: "layout paint", willChange: "transform, opacity" }}
-            /* El panel crece con su lista —veinte atajos— y no tenía tope:
-               medido a 390×844, 911 px de panel dentro de 844 de ventana,
-               empezando 127 px por debajo del borde (el `pt-[15vh]`), o
-               sea 194 px por debajo del pliegue y ningún elemento con
-               desplazamiento. Los diez últimos atajos no se podían leer.
-               Con tope y la lista en su propio desplazamiento, el panel
-               nunca pasa de lo que queda de ventana bajo ese `pt`. */
+            /* Con tope de alto y la lista con su propio scroll: sin él el panel
+               desbordaba la ventana en móvil y los últimos atajos no se leían. */
             className={`tj-hoja-atajos-hoja relative flex max-h-[calc(85svh-2rem)] w-full max-w-md flex-col tj-cristal tj-cristal--denso overflow-hidden ${
               saliendo ? "tj-panel-sale" : "tj-panel-entra"
             }`}
           >
-            {/* Header */}
             <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-4 border-b border-[var(--ficha-division)]">
               <div className="min-w-0">
                 <h2
@@ -249,9 +203,7 @@ export function ShortcutsHelp({
                     ? "Muévete más rápido por la app."
                     : "Move faster through the app."}
                 </p>
-                {/* En pantalla sobra —la marca está en la barra de arriba—,
-                    pero una hoja impresa que solo dice «Atajos de teclado»
-                    no dice de qué. */}
+                {/* Solo en papel: la hoja impresa necesita decir de qué marca es. */}
                 <p className="tj-solo-papel hidden mt-1 text-[11px] text-tertiary">
                   CountPips
                 </p>
@@ -279,13 +231,10 @@ export function ShortcutsHelp({
               </button>
             </div>
 
-            {/* List */}
             <div className="min-h-0 flex-1 overflow-y-auto custom-scroll px-2 py-2">
               {grupos.map((g, n) => (
                 <section key={g.titulo} className="mt-4 first:mt-0">
-                  {/* Un `<p>` que nombra la lista, no un `<h3>`: la paleta
-                      clásica fuerza en todo `h3` minúsculas y tracking
-                      cerrado con `!important`, y esto es un antetítulo. */}
+                  {/* `<p>` y no `<h3>`: el estilo global de `h3` fuerza minúsculas con `!important`. */}
                   <p
                     id={`tj-atajos-g${n}`}
                     className="eyebrow px-2 pb-1.5"
@@ -309,7 +258,6 @@ export function ShortcutsHelp({
               ))}
             </div>
 
-            {/* Footer hint */}
             <div
               className="tj-no-print flex items-center justify-between gap-2 px-3 py-2 border-t  text-[12px] text-tertiary"
               aria-hidden="true"
@@ -329,7 +277,7 @@ export function ShortcutsHelp({
   );
 }
 
-/** Small inline keyboard key chip — mirrors the CommandPalette styling. */
+/** Tecla en línea. */
 function Kbd({ children }: { children: ReactNode }) {
   return (
     <kbd className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded border  bg-[rgb(var(--divider)/0.03)] text-[12px] font-mono text-secondary tnum">
@@ -337,10 +285,6 @@ function Kbd({ children }: { children: ReactNode }) {
     </kbd>
   );
 }
-
-/* ------------------------------------------------------------------ */
-/* Focus-trap helper (mirrors Navbar.tsx getFocusables)               */
-/* ------------------------------------------------------------------ */
 
 const FOCUSABLE_SELECTOR = [
   "a[href]",
@@ -364,8 +308,3 @@ function getFocusables(container: HTMLElement): HTMLElement[] {
     return width > 0 && height > 0;
   });
 }
-
-/* `openShortcutsHelp` se mudó a `@/lib/overlays`. Importarlo desde aquí
-   obligaba a `GlobalShortcuts` —presente en todas las páginas— a cargar
-   esta ventana entera solo para poder pedir su apertura. Ver el
-   encabezado de ese módulo. */

@@ -6,26 +6,11 @@ import { Skeleton } from "@/components/tj/Skeleton";
 import { trackEvent } from "@/lib/analytics";
 
 /**
- * Client-side entry point for the demo. We can't call
- * `next/dynamic({ ssr: false })` directly from a Server Component (Next.js
- * 15+ disallows it), so this thin client wrapper hosts the dynamic import.
- * The demo bundle never ships in the initial SSR payload — it hydrates on
- * the client when the demo section is reached. The skeleton reserves the
- * full window height (chrome + nav + 640px panel + status bar) to avoid CLS.
- *
- * R25-1a (revert): loads the interactive `AppDemo` recreation again. R24-1a
- * swapped this for `RealScreenshotDemo` (real app screenshots inside the
- * demo window chrome) after the owner said the recreation "didn't look
- * like the real app". The owner has now (R25-1a) rejected that change —
- * "la demo en vivo es una puta mierda solo has puesto las fotos" — because
- * the screenshot demo removed all interactivity (no clickable tabs that
- * actually swap pages, no filters, no drill-downs, no command palette).
- * We restore the interactive `AppDemo` and fix its top nav / title bar /
- * status bar to match the real app's structure (R25-1a fixes 2/3/4), so
- * the live demo both IS interactive AND reads as the real product.
- *
- * The `RealScreenshotDemo` component file is preserved (not deleted) for
- * future use; only the import below is swapped back.
+ * Punto de entrada de la demo en el cliente. `next/dynamic({ ssr: false })` no
+ * puede llamarse desde un Server Component, así que este envoltorio aloja el
+ * import dinámico: el bundle de la demo no viaja en el HTML inicial y se
+ * hidrata al llegar a la sección. El esqueleto reserva la altura completa de
+ * la ventana para evitar saltos de maquetación.
  */
 const AppDemo = dynamic(
   () => import("@/components/demo/AppDemo").then((m) => ({ default: m.AppDemo })),
@@ -36,61 +21,33 @@ const AppDemo = dynamic(
 );
 
 /**
- * Dashboard-style skeleton that mirrors the live demo window's height and
- * approximate layout while the interactive bundle hydrates. Renders a
- * skeleton window chrome, the 9-tab nav strip (8 main tabs + Settings —
- * matches TopNav after R25-1a), and a dashboard-style panel: 4 KPI cards
- * in a row, a wide chart block, then a table block — the same shapes the
- * real DashboardPage paints on mount. This makes the load feel
- * intentional (the user sees the dashboard's silhouette form, then it
- * fills in) rather than empty.
+ * Esqueleto con la silueta de la ventana de la demo mientras se hidrata: barra
+ * de título, pestañas, y un panel con 4 tarjetas de KPI, un gráfico y una tabla.
  *
- * Reserved height matches the live demo exactly per breakpoint. La cuenta,
- * con los valores que están HOY en el código (el comentario anterior daba
- * 588/668/748 con un chrome de h-9 y una tira de h-11 que ya no son los que
- * se pintan, así que cuadraba sobre el papel y no sobre la página):
- *   WindowChrome h-11 (44px) móvil / h-10 (40px) sm+
- *   + tira de pestañas h-[46px]
- *   + panel h-[560px] (móvil y sm) / h-[640px] (md+)
- *   + barra de estado h-7 (28px)
- *   = 678px móvil, 674px sm, 754px md+. Con clases por breakpoint (no una
- *   altura fija en línea) no hay salto de maquetación al hidratar, porque
- *   el demo real monta su propio panel `h-[560px] md:h-[640px]`.
- *   LAS TRES ALTURAS VAN JUNTAS: si cambia el panel, cambia esta reserva.
- *
- * The outer container uses the same two-layer material as the live
- * demo window: canto de 2 px, filete y sombra neutra. Inner carries
- * `tj-paper tj-paper-dense rounded-[2px] overflow-hidden` so hydration
- * is visually seamless.
+ * La altura reservada debe coincidir con la real en cada breakpoint:
+ *   barra de título h-11 (44) móvil / h-10 (40) sm+ + pestañas h-[46px]
+ *   + panel h-[560px] (hasta md) / h-[640px] (md+) + barra de estado h-7 (28)
+ *   = 678 móvil, 674 sm, 754 md+.
+ * Si cambia el panel o cualquiera de las barras, cambia esta reserva.
  */
 function DemoSkeleton() {
   return (
     <div
-      // La misma sombra que la ventana real (AppDemo.tsx), para que el
-      // esqueleto no se vea distinto de lo que sustituye.
+      // La misma sombra que la ventana real (AppDemo.tsx).
       className="rounded-[2px] overflow-hidden border border-[rgb(var(--divider)/0.1)] shadow-[var(--cristal-sombra-flota)] h-[678px] sm:h-[674px] md:h-[754px]"
       aria-hidden="true"
     >
       <div className="tj-paper tj-paper-dense rounded-[2px] overflow-hidden h-full flex flex-col">
-        {/* ---- Window chrome (h-11 mobile / h-10 sm+) — Windows 11 layout:
-            app icon + name on the left, account chip + market-clock
-            skeleton in the center, Local-first LED skeleton on the right,
-            Min/Max/Close caption buttons at the far right. Matches the
-            live WindowChrome (post R25-1a + T2f mobile pass) so hydration
-            is visually seamless. */}
+        {/* Barra de título: sigue la distribución de WindowChrome. */}
         <div className="tj-paper tj-paper-dense border-b border-[rgb(var(--divider)/0.1)] flex items-center justify-between h-11 sm:h-10 shrink-0">
           <div className="flex items-center px-3 min-w-0">
-            {/* App icon placeholder — same 16×16 rounded square as the real
-                AppIcon, kept grey so it doesn't read as a brand mark yet. */}
             <span className="w-4 h-4 rounded-[2px] bg-[rgb(var(--divider)/0.1)] shrink-0" />
             <Skeleton className="h-3 w-28 ml-2 hidden sm:block" />
           </div>
-          {/* Center — account chip + market clock skeletons. */}
           <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-2">
             <Skeleton className="h-5 w-24 rounded-[2px]" />
             <Skeleton className="h-3 w-20" />
           </div>
-          {/* Right — Local-first LED + caption buttons. */}
           <div className="flex items-stretch h-full">
             <div className="hidden sm:flex items-center gap-1.5 px-3">
               <Skeleton className="h-2 w-2 rounded-[1px]" />
@@ -108,9 +65,7 @@ function DemoSkeleton() {
           </div>
         </div>
 
-        {/* ---- Top nav (h-11) — 4 skeleton tabs (Dashboard / Trades /
-            Analytics / Journal, matches the live TopNav which shows only
-            the 4 demo-able pages — not the full 8 of the real app). ---- */}
+        {/* Pestañas: las cuatro páginas que muestra el TopNav. */}
         <div className="tj-paper tj-paper-dense border-b border-[rgb(var(--divider)/0.1)] grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch h-[46px] shrink-0">
           <div aria-hidden="true" />
           <div className="flex items-center gap-0.5 sm:gap-1 px-1.5">
@@ -133,14 +88,7 @@ function DemoSkeleton() {
           </div>
         </div>
 
-        {/* ---- Dashboard-style panel — mirrors the DashboardPage's general
-            composition: 4 KPI cards in a row, a wide chart block, then a
-            table block. Same dark surface tokens the live demo uses
-            (panel inherits its background from the liquid-glass wrapper)
-            so the swap from greyed-out skeleton to the real interactive
-            dashboard is visually seamless. ---- */}
         <div className="relative overflow-hidden h-[560px] md:h-[640px] p-5 md:p-6 space-y-4">
-          {/* KPI row — 4 cards. */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <div
@@ -153,18 +101,15 @@ function DemoSkeleton() {
               </div>
             ))}
           </div>
-          {/* Chart block — wide + tall. */}
           <div className="rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)] p-4 h-[180px] md:h-[220px] flex items-end gap-2">
             {Array.from({ length: 12 }).map((_, i) => (
               <Skeleton
                 key={i}
                 className="flex-1 rounded-[2px]"
-                // Varying heights so the bar-chart silhouette reads.
                 style={{ height: `${30 + ((i * 37) % 60)}%` }}
               />
             ))}
           </div>
-          {/* Table block — rows + columns. */}
           <div className="rounded-[2px] border border-[rgb(var(--divider)/0.1)] bg-[rgb(var(--divider)/0.03)] p-4 space-y-2">
             <div className="flex gap-4 pb-2 border-b border-[rgb(var(--divider)/0.05)]">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -181,19 +126,13 @@ function DemoSkeleton() {
           </div>
         </div>
 
-        {/* ---- Status bar (h-7) ---- */}
         <div className="tj-paper tj-paper-dense border-t border-[rgb(var(--divider)/0.1)] flex items-center justify-between px-3 sm:px-4 h-7 shrink-0 mt-auto">
           <Skeleton className="h-2.5 w-32" />
           <Skeleton className="h-2.5 w-40 hidden sm:block" />
           <Skeleton className="h-2.5 w-16" />
         </div>
 
-        {/* Top + bottom window reflections — mirror the live AppDemo's
-            key-light hairlines (1px white-to-transparent at the top edge,
-            even softer 1px at the bottom) so hydration is visually
-            seamless: the machined-edge highlight is already present when
-            the real demo mounts, no flash. pointer-events-none so the
-            skeleton never accidentally intercepts the cursor. */}
+        {/* Filos de luz superior e inferior, para que la hidratación no parpadee. */}
         <div
           aria-hidden="true"
           className="absolute top-0 left-0 right-0 h-px bg-gradient-to-b from-[rgb(var(--divider)/0.18)] to-transparent pointer-events-none z-10"

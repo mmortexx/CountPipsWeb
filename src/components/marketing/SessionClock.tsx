@@ -9,12 +9,9 @@ import { PLAZAS, cuentaAtras, estaAbierta, horaLocal, proximaApertura, ventanaUt
  * Reloj de sesiones con los horarios locales de la app de escritorio: cada plaza
  * se evalúa en su zona, con cambio de hora, y cierra en fin de semana.
  */
-/* Cuatro plazas NO son cuatro categorías que haga falta colorear: el morado,
-   el ámbar y el verde que había aquí eran los únicos de su color en todo el
-   sitio, y dos de ellos ya significan otra cosa —el ámbar avisa y el verde es
-   dinero ganado—. Lo único que el lector necesita distinguir es abierta de
-   cerrada, y eso se dice con la intensidad de la tinta. Las bandas siguen
-   siendo separables porque cada una va en su fila y lleva su nombre dentro. */
+/* Las plazas no se colorean (el ámbar avisa y el verde es dinero ganado): abierta
+   y cerrada se distinguen por la intensidad de la tinta; cada banda va en su
+   fila con su nombre. */
 const TINTA_CERRADA: Record<Plaza["id"], number> = {
   sydney: 14,
   tokyo: 18,
@@ -109,19 +106,15 @@ export function SessionClock() {
     return `${String(Math.floor(t / 60) % 24).padStart(2, "0")}:${String(t % 60).padStart(2, "0")}`;
   };
   const enRef = (h: number) => hora(h + desfaseRef);
-  /* Hasta que el navegador da la hora, ninguna franja ni ningún estado: el
-     HTML compilado los calculaba con el 1 de enero de 1970 (Nueva York en
-     horario de invierno, las cuatro plazas «Cerrada») y contradecía al
-     párrafo de horarios, que sí es fijo. Quien lee sin JavaScript, o un
-     buscador, se queda con ese párrafo. */
+  /* Hasta que el navegador da la hora no hay franja ni estado: el HTML compilado
+     los calcularía con 1970 y contradiría al párrafo de horarios, que es fijo. */
   const franja = (desde: number, hasta: number) => (listo ? `${enRef(desde)}–${enRef(hasta)}` : "—");
-  /* Las zonas de media o cuarto de hora (India, Nepal…) se escriben
-     «UTC+5:30», no «UTC+5.5», que es como salían. */
+  /* Zonas de media o cuarto de hora (India, Nepal…) como «UTC+5:30». */
   const desfaseMin = Math.round(Math.abs(desfaseRef) * 60);
   const desfaseH = Math.floor(desfaseMin / 60);
   const desfaseM = desfaseMin % 60;
   const etiquetaDesfase = `UTC${desfaseRef >= 0 ? "+" : "−"}${desfaseH}${desfaseM ? `:${String(desfaseM).padStart(2, "0")}` : ""}`;
-  // El párrafo de horarios sale de PLAZAS: antes repetía a mano sus ocho horas.
+  // El párrafo de horarios sale de PLAZAS.
   const hhmm = (min: number) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, "0")}`;
   const horarios = new Intl.ListFormat(es ? "es" : "en-GB", { type: "conjunction" }).format(
     PLAZAS.map((p) => `${hhmm(p.abre)}–${hhmm(p.cierra)} ${es ? "en" : "in"} ${es ? p.es : p.en}`),

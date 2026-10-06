@@ -38,11 +38,9 @@ export function simulaMonteCarlo({
   const wr = winRate / 100;
   const expectancyR = wr * avgWinR - (1 - wr) * avgLossR;
 
-  /* Ruina = perder UMBRAL_RUINA_PCT del balance inicial en algún momento,
-     por pérdidas o por retiros. Con riesgo compuesto el saldo tiende a 0
-     sin tocarlo, así que «saldo a 0» daba 0 % de ruina con la cuenta en
-     céntimos. La fórmula es la de la calculadora de riesgo, con la pérdida
-     media como unidad: payoff = ganancia / pérdida y riesgo = riesgo × pérdida. */
+  // Ruina = perder UMBRAL_RUINA_PCT del balance inicial en algún momento, por pérdidas o retiros
+  // (con riesgo compuesto el saldo nunca llega a 0). Fórmula de la calculadora de riesgo con la
+  // pérdida media como unidad: payoff = ganancia / pérdida y riesgo = riesgo × pérdida.
   const analyticalRuinProb = computeRiskOfRuin(winRate, avgWinR / avgLossR, riskPct * avgLossR, UMBRAL_RUINA_PCT);
   const sueloRuina = startBalance * (1 - UMBRAL_RUINA_PCT / 100);
 
@@ -128,8 +126,7 @@ export function simulaMonteCarlo({
     theoreticalMaxLossStreak: computeExpectedMaxLossStreak(winRate, trades),
     analyticalRuinProb,
     probRuin, probDouble,
-    /* El mismo techo que el proyector de capital: por encima ya no es una
-       cifra, es un desbordamiento, y no se enseña como número. */
+    // El mismo techo que el proyector de capital.
     fueraDeEscala: !Number.isFinite(finalP95) || finalP95 > LIMITE_PROYECCION_USD,
   };
 }

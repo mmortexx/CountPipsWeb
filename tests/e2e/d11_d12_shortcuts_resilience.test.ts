@@ -21,21 +21,12 @@ const calculaPlanSinStop = calculaPlan({
 });
 
 /**
- * Dimension D11 & D12: Shortcuts, Error Handling & Resilience
- *
- * Tier 1: Feature Coverage (>= 5 tests)
- *  1. Keybindings matching logic (Ctrl+K / Cmd+K, Ctrl+G / Cmd+G, ? / Shift+/)
- *  2. Global single-key & sequence shortcuts (T, L, ?, g prefix sequence)
- *  3. Form field typing protection (INPUT, TEXTAREA, SELECT, contentEditable)
- *  4. LocalStorage try-catch safety in private browsing mode
- *  5. Interactive tool input bounds checking and validation flags
- *
- * Tier 2: Boundary & Corner Cases (>= 5 tests)
- *  6. NaN, Infinity, negative values, and zero division handling in calculators
- *  7. Simulated DOMException (SecurityError / QuotaExceededError) resilience
- *  8. Rapid concurrent shortcut triggers & state race resilience
- *  9. Out-of-bounds keyboard navigation & roving tabindex clamping
- *  10. Corrupted JSON payload recovery in localStorage
+ * Dimensiones D11 y D12: atajos, manejo de errores y resiliencia. Tier 1 lee
+ * el código de los atajos (Ctrl+G, `?`, T, L, prefijo `g`), la protección al
+ * escribir en campos, el try-catch de localStorage y las validaciones de las
+ * herramientas. Tier 2 ejercita copias locales de la lógica con NaN, división
+ * por cero, errores de almacenamiento, ráfagas de atajos, navegación fuera de
+ * rango y JSON corrupto.
  */
 
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -46,13 +37,11 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
     const overlayHost = readSrc("src/components/tj/OverlayHost.tsx");
     const globalShortcuts = readSrc("src/components/tj/GlobalShortcuts.tsx");
 
-    // El glosario es el unico atajo con modificador que queda: la paleta
-    // de comandos se retiro (ver el commit que la quita).
+    // El glosario es el único atajo con modificador que queda.
     expect(overlayHost).toContain('(e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "g"');
     expect(overlayHost).toContain("e.preventDefault()");
     expect(overlayHost).not.toContain("CommandPalette");
 
-    // ShortcutsHelp listener in GlobalShortcuts
     expect(globalShortcuts).toContain('key === "?"');
     expect(globalShortcuts).toContain('e.shiftKey && (key === "/" || e.code === "Slash")');
     expect(globalShortcuts).toContain("openShortcutsHelp()");
@@ -61,13 +50,11 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
   it("T1.2: GlobalShortcuts supports T (Theme), L (Language), and 'g' navigation sequences", () => {
     const globalShortcuts = readSrc("src/components/tj/GlobalShortcuts.tsx");
 
-    // Toggling theme and language
     expect(globalShortcuts).toContain('lower === "t"');
     expect(globalShortcuts).toContain("toggleTheme()");
     expect(globalShortcuts).toContain('lower === "l"');
     expect(globalShortcuts).toContain("toggleLang()");
 
-    // 'g' prefix activation & sequence navigation
     expect(globalShortcuts).toContain('lower === "g"');
     expect(globalShortcuts).toContain("armPrefix()");
     expect(globalShortcuts).toContain("G_PREFIX_TIMEOUT = 1000");
@@ -78,7 +65,6 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
   it("T1.3: Form field typing protection skips shortcut handling during text input", () => {
     const globalShortcuts = readSrc("src/components/tj/GlobalShortcuts.tsx");
 
-    // Must ignore typing in INPUT, TEXTAREA, SELECT, or contentEditable
     expect(globalShortcuts).toContain('tag === "INPUT"');
     expect(globalShortcuts).toContain('tag === "TEXTAREA"');
     expect(globalShortcuts).toContain('tag === "SELECT"');
@@ -88,7 +74,6 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
   it("T1.4: LocalStorage calls are protected with try-catch for private browsing compatibility", () => {
     const glossaryModal = readSrc("src/components/tj/GlossaryModal.tsx");
 
-    // readRecent and writeRecent in GlossaryModal wrap localStorage in try-catch
     expect(glossaryModal).toMatch(/function readRecent\(\)[^{]*\{[\s\S]*?try\s*\{[\s\S]*?window\.localStorage\.getItem/);
     expect(glossaryModal).toMatch(/function writeRecent\([^)]*\)[^{]*\{[\s\S]*?try\s*\{[\s\S]*?window\.localStorage\.setItem/);
   });
@@ -118,7 +103,7 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
     expect(validaPlan(100, NaN, 115).valido).toBe(false);
     expect(validaPlan(100, 95, NaN).valido).toBe(false);
 
-    // EquityProjector warns on negative expectancy
+    // EquityProjector avisa con esperanza negativa.
     expect(equityProj).toContain("!c.hasEdge &&");
     expect(equityProj).toContain('role="alert"');
 
@@ -131,7 +116,7 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
 
 describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner Cases)", () => {
   it("T2.1: Mathematical calculators handle NaN, Infinity, negative values, and zero division gracefully", () => {
-    // 1. EquityProjector CAGR & compounding math
+    // Copia local de la matemática de CAGR y capitalización del proyector.
     function calcEquityProjector(startBalance: number, tradesPerYear: number, winRate: number, avgWinR: number, avgLossR: number, riskPct: number, years: number) {
       const wr = winRate / 100;
       const lr = 1 - wr;
@@ -151,21 +136,21 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner 
       return { expectancyPerTradeR, yearlyFactor, finalBalance, cagr };
     }
 
-    // Zero balance edge case
+    // Balance cero.
     const resZeroBalance = calcEquityProjector(0, 200, 55, 2.0, 1.0, 1.0, 5);
     expect(Number.isFinite(resZeroBalance.cagr)).toBe(true);
     expect(resZeroBalance.cagr).toBe(-1);
 
-    // Zero years edge case
+    // Cero años.
     const resZeroYears = calcEquityProjector(10000, 200, 55, 2.0, 1.0, 1.0, 0);
     expect(Number.isFinite(resZeroYears.cagr)).toBe(true);
 
-    // Negative expectancy edge case (loss rate 100%)
+    // Esperanza negativa (100 % de pérdidas).
     const resNegativeExp = calcEquityProjector(10000, 100, 0, 2.0, 1.0, 2.0, 5);
     expect(Number.isFinite(resNegativeExp.cagr)).toBe(true);
     expect(resNegativeExp.expectancyPerTradeR).toBe(-1.0);
 
-    // 2. RiskCalculator zero distance edge case (entry === stop)
+    // Copia local del cálculo de riesgo con distancia cero (entrada igual al stop).
     function calcRisk(entry: number, stop: number, target: number, balance: number, riskPct: number) {
       const riskPerShare = Math.abs(entry - stop);
       const rewardPerShare = Math.abs(target - entry);
@@ -181,11 +166,11 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner 
     expect(resZeroDist.rr).toBe(0);
     expect(resZeroDist.size).toBe(0);
 
-    // 3. EdgeSignificanceChecker normalCdf with extreme z-scores
+    // `normalCdf` con puntuaciones z extremas.
     expect(normalCdf(0)).toBe(0.5);
     expect(normalCdf(100)).toBeCloseTo(1.0, 5);
     expect(normalCdf(-100)).toBeCloseTo(0.0, 5);
-    expect(Number.isFinite(normalCdf(NaN))).toBe(false); // NaN propagation is predictable
+    expect(Number.isFinite(normalCdf(NaN))).toBe(false); // NaN se propaga de forma predecible
   });
 
   it("T2.2: LocalStorage SecurityError and QuotaExceededError simulations recover safely", () => {
@@ -232,16 +217,15 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner 
       }
     }
 
-    // Nominal execution
     expect(safeWriteRecent(["Sharpe", "Sortino"])).toBe(true);
     expect(safeReadRecent()).toEqual(["Sharpe", "Sortino"]);
 
-    // Security error simulation
+    // SecurityError.
     shouldThrowSecurityError = true;
     expect(safeReadRecent()).toEqual([]);
     expect(safeWriteRecent(["Drawdown"])).toBe(false);
 
-    // Quota error simulation
+    // QuotaExceededError.
     shouldThrowSecurityError = false;
     shouldThrowQuotaError = true;
     expect(safeWriteRecent(["Drawdown"])).toBe(false);
@@ -269,13 +253,12 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner 
       }
     }
 
-    // Rapid arming
+    // Armado en ráfaga y desarmado inmediato (como la tecla Escape).
     arm();
     arm();
     arm();
     expect(active).toBe(true);
 
-    // Immediate disarm (Escape key behavior)
     disarm();
     expect(active).toBe(false);
     expect(timerId).toBeNull();
@@ -292,8 +275,8 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner 
     }
 
     expect(navigateList(0, 0, "ArrowDown")).toBe(0);
-    expect(navigateList(4, 5, "ArrowDown")).toBe(0); // wrap to top
-    expect(navigateList(0, 5, "ArrowUp")).toBe(4); // wrap to bottom
+    expect(navigateList(4, 5, "ArrowDown")).toBe(0); // vuelve al principio
+    expect(navigateList(0, 5, "ArrowUp")).toBe(4); // vuelve al final
     expect(navigateList(2, 10, "Home")).toBe(0);
     expect(navigateList(2, 10, "End")).toBe(9);
   });
