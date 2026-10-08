@@ -3714,9 +3714,10 @@ svg [data-entra="sello"] {
    ============================================================
    La API del navegador anima una instantánea de la vista que sale y otra de
    la que entra. Solo participa el contenido (ver el `ViewTransition` del
-   layout): barra y pie no se funden consigo mismos. Desplazamiento corto y
-   en sentidos opuestos, como pasar de página; 200 ms de salida y 260 ms de
-   entrada, solapados, porque se ve en cada navegación. */
+   layout): barra y pie no se funden consigo mismos. Primero sale la página
+   vieja y después entra la nueva, sin solaparse: solapadas se leían dos
+   titulares a la vez. La nueva solo se enciende, sin desplazarse, porque su
+   cabecera ya entra por su cuenta (bloque «LA PRIMERA PANTALLA»). */
 
 /* La entrada lleva `--ease-suave` por su nombre, no copiada: las propiedades
    personalizadas heredan al árbol de la transición de vista desde la raíz.
@@ -3727,22 +3728,21 @@ svg [data-entra="sello"] {
 }
 ::view-transition-old(pagina) {
   animation:
-    tj-vt-sale 200ms cubic-bezier(0.4, 0, 1, 1) both;
+    tj-vt-sale 170ms cubic-bezier(0.4, 0, 1, 1) both;
 }
 ::view-transition-new(pagina) {
   animation:
-    tj-vt-entra 260ms var(--ease-suave) 60ms both;
+    tj-vt-entra 200ms var(--ease-suave) 150ms both;
 }
 @keyframes tj-vt-sale {
   to {
     opacity: 0;
-    transform: translate3d(0, -12px, 0);
+    transform: translate3d(0, -8px, 0);
   }
 }
 @keyframes tj-vt-entra {
   from {
     opacity: 0;
-    transform: translate3d(0, 8px, 0);
   }
 }
 
@@ -4283,25 +4283,24 @@ svg [data-entra="sello"] {
     animation: none;
   }
   /* Lo que la página enseña justo debajo de su cabecera sale en la primera
-     pantalla, sin scroll que lo anime: espera a que las primeras palabras del
-     titular hayan subido (0,3 s) para que la ventana de la demo no asome
-     hasta el segundo. Sin opacidad donde hay cristal. */
+     pantalla, sin scroll que lo anime: llega detrás de la entradilla. Orden de
+     lectura: titular, entradilla, contenido. */
   #main-content .tj-cabecera + section:not(#top):not(section section) {
-    animation: tj-carga 0.9s var(--ease-salida) 0.3s both;
+    animation: tj-carga 0.9s var(--ease-salida) 0.55s both;
     animation-timeline: auto;
     animation-range: normal;
   }
-  #main-content .tj-cabecera + section:not(#top):not(section section):has(.tj-cristal) {
-    animation-name: tj-asienta;
-  }
   .tj-cabecera .tj-container > :nth-child(2) { animation-delay: 0.06s; }
+  /* Por su sitio tras el titular y no por índice: sin ceja, la entradilla
+     es la tercera hija y salía antes que el titular. */
   .tj-hero > .tj-container:first-child > :nth-child(3),
-  .tj-cabecera .tj-container > :nth-child(4) { animation-delay: 0.42s; }
+  .tj-cabecera .tj-container > h1 ~ * { animation-delay: 0.42s; }
   .tj-hero > .tj-container:first-child > :nth-child(4) { animation-delay: 0.52s; }
   .tj-hero > .tj-container:first-child > :nth-child(n + 5) { animation-delay: 0.62s; }
-  /* El panel sube 12 px, como todo lo demás. */
+  /* El panel llega después del titular: visible desde el primer fotograma
+     se leía antes que la promesa. */
   .tj-hero > .tj-container:nth-child(2) {
-    animation: tj-carga-panel 0.9s var(--ease-salida) 0.5s both;
+    animation: tj-carga 0.9s var(--ease-salida) 0.62s both;
   }
 
   /* Los enlaces del desplegable llegan uno detrás de otro. */
@@ -4327,14 +4326,6 @@ svg [data-entra="sello"] {
   }
   to {
     opacity: 1;
-    transform: none;
-  }
-}
-@keyframes tj-carga-panel {
-  from {
-    transform: translate3d(0, 12px, 0);
-  }
-  to {
     transform: none;
   }
 }
@@ -4477,7 +4468,7 @@ html.tj-mov [data-tj-ap="1"] .tj-cifra-cuenta {
   from {
     /* 112 % dejaba asomar los puntos de las íes por el margen de los
        descendentes: la palabra tiene que bajar más que su propia caja. */
-    transform: translate3d(0, 140%, 0) rotate(2.5deg);
+    transform: translate3d(0, 140%, 0);
   }
   to {
     transform: none;
