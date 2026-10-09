@@ -1397,6 +1397,9 @@ textarea:focus-visible,
 .link-underline-host:focus-visible .link-underline::after {
   background-color: currentColor;
 }
+.link-underline-host:disabled .link-underline--al-pasar::after {
+  background-color: transparent;
+}
 @media (prefers-reduced-motion: reduce) {
   .link-underline::after { transition: none; }
 }

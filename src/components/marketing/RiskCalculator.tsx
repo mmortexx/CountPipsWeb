@@ -762,7 +762,7 @@ export function RiskCalculator() {
                   type="button"
                   disabled={kellyAplicable <= 0}
                   onClick={() => kellyAplicable > 0 && setRiskPct(kellyAplicable)}
-                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium tj-campo text-primary hover:text-[rgb(var(--accent-base))] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="toque-comodo w-full py-2 text-[13px] tnum font-medium tj-campo text-primary cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {kellyAplicable <= 0
                     ? (es ? `Sin ventaja (Kelly = 0${PCT} · No operar)` : "No edge (Kelly = 0% · Do not trade)")
