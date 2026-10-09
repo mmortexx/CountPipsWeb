@@ -123,6 +123,11 @@ for (const [sistema, esperado] of [["light", "light"], ["dark", "dark"]]) {
 async function luces(sistema, ruta) {
   const ctx = await navegador.newContext({ colorScheme: sistema, viewport: { width: 1280, height: 800 } });
   const p = await ctx.newPage();
+  /* La pestaña nace en blanco y el navegador sigue enseñando la página anterior
+     hasta que la nueva pinta: se parte de una oscura para que un fotograma
+     claro solo pueda ser del sitio. */
+  await p.goto("data:text/html,<html style='background:%23000'></html>");
+  await p.waitForTimeout(200);
   const cdp = await ctx.newCDPSession(p);
   const fotogramas = [];
   cdp.on("Page.screencastFrame", async (ev) => {
