@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useLang } from "@/lib/i18n";
 import { type Trade } from "@/lib/trading/data";
-import { fmtMoney, fmtPrice } from "@/lib/trading/format";
+import { fmtMoney, fmtPrice, fmtR } from "@/lib/trading/format";
 import { Play, Pause, RotateCcw } from "lucide-react";
 
 interface Candle {
@@ -40,6 +40,22 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
   const [hoveredCandle, setHoveredCandle] = useState<Candle | null>(null);
   const [showSma, setShowSma] = useState(true);
   const [showVwap, setShowVwap] = useState(true);
+
+  // El lienzo se dibuja a su tamaño real: estirado con `preserveAspectRatio="none"`
+  // las etiquetas y las velas salían ensanchadas en una ficha ancha.
+  const lienzo = useRef<HTMLDivElement>(null);
+  const [medida, setMedida] = useState({ w: 640, h: 300 });
+  useEffect(() => {
+    const el = lienzo.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(([e]) => {
+      const w = Math.round(e.contentRect.width);
+      const h = Math.round(e.contentRect.height);
+      if (w > 0 && h > 0) setMedida((m) => (m.w === w && m.h === h ? m : { w, h }));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   // Velas sintéticas y deterministas (semilla por operación y marco) que pasan por su entrada, salida y stop.
   const candles = useMemo(() => {
@@ -131,14 +147,16 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
   const maxVol = Math.max(...candles.map((c) => c.volume), 1);
 
-  const W = 640;
-  const H = 300;
-  const padL = 10;
-  const padR = 60;
-  const padT = 20;
+  const W = medida.w;
+  const H = medida.h;
+  const padL = 12;
+  const padR = 84;
+  const padT = 34;
   const padB = 40;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
+  // Cuerpo de vela proporcional al hueco entre velas, sin pasar de 9 px.
+  const cuerpo = Math.min(9, Math.max(3, (chartW / (candles.length - 1)) * 0.55));
 
   // Perfil de volumen: 8 franjas horizontales de precio.
   const volumeProfile = useMemo(() => {
@@ -254,11 +272,10 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
         </div>
       </div>
 
-      <div className="relative w-full aspect-[2/1] min-h-[240px] max-h-[340px] bg-[rgb(var(--divider)/0.02)] rounded-[4px] border border-[rgb(var(--divider)/0.08)]">
+      <div ref={lienzo} className="relative w-full aspect-[2/1] min-h-[240px] max-h-[340px] bg-[rgb(var(--divider)/0.02)] rounded-[4px] border border-[rgb(var(--divider)/0.08)]">
         <svg
           viewBox={`0 0 ${W} ${H}`}
-          className="w-full h-full select-none"
-          preserveAspectRatio="none"
+          className="block w-full h-full select-none"
         >
           <defs>
             <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
@@ -276,7 +293,7 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               width={vp.w}
               height={vp.h}
               fill={vp.isPoc ? "rgb(var(--accent-base))" : "rgb(var(--divider))"}
-              fillOpacity={vp.isPoc ? 0.25 : 0.08}
+              fillOpacity={vp.isPoc ? 0.12 : 0.05}
               rx="1"
             />
           ))}
@@ -287,12 +304,12 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
           {[0.2, 0.4, 0.6, 0.8].map((ratio) => {
             const y = padT + ratio * chartH;
             const priceVal = maxPrice - ratio * priceRange;
-            const chocaConNivel = [entryY, stopY, targetY].some((ny) => Math.abs(ny - y) < 9);
+            const chocaConNivel = [entryY, stopY, targetY].some((ny) => Math.abs(ny - y) < 16);
             return (
               <g key={ratio}>
                 <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="rgb(var(--divider)/0.08)" strokeDasharray="3 3" />
                 {!chocaConNivel && (
-                  <text x={W - padR + 6} y={y + 3} fill="var(--ink-3)" fontSize="9" fontFamily="monospace" textAnchor="start">
+                  <text x={W - padR + 6} y={y + 3} fill="var(--ink-3)" fontSize="10" fontFamily="monospace" textAnchor="start">
                     {fmtPrice(priceVal, decimals, lang)}
                   </text>
                 )}
@@ -302,37 +319,37 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
           <g>
             <line x1={padL} y1={stopY} x2={W - padR} y2={stopY} stroke="rgb(var(--pnl-neg))" strokeWidth="1.2" strokeDasharray="4 2" />
-            <rect x={W - padR + 2} y={stopY - 7} width={padR - 4} height={14} fill="rgb(var(--pnl-neg))" rx="2" />
-            <text x={W - padR + 5} y={stopY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+            <rect x={W - padR + 2} y={stopY - 8} width={padR - 4} height={16} fill="rgb(var(--pnl-neg))" rx="2" />
+            <text x={W - padR + 5} y={stopY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="10" fontWeight="bold" fontFamily="monospace">
               SL {fmtPrice(trade.initialStop, decimals, lang)}
             </text>
           </g>
 
           <g>
             <line x1={padL} y1={targetY} x2={W - padR} y2={targetY} stroke="rgb(var(--pnl-pos))" strokeWidth="1.2" strokeDasharray="4 2" />
-            <rect x={W - padR + 2} y={targetY - 7} width={padR - 4} height={14} fill="rgb(var(--pnl-pos))" rx="2" />
-            <text x={W - padR + 5} y={targetY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+            <rect x={W - padR + 2} y={targetY - 8} width={padR - 4} height={16} fill="rgb(var(--pnl-pos))" rx="2" />
+            <text x={W - padR + 5} y={targetY + 3.5} fill="rgb(var(--pnl-ink))" fontSize="10" fontWeight="bold" fontFamily="monospace">
               TP {fmtPrice(trade.target, decimals, lang)}
             </text>
           </g>
 
           <g>
             <line x1={padL} y1={entryY} x2={W - padR} y2={entryY} stroke="rgb(var(--accent-base))" strokeWidth="1" strokeDasharray="2 2" />
-            <rect x={W - padR + 2} y={entryY - 7} width={padR - 4} height={14} fill="color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)" stroke="rgb(var(--accent-base))" rx="2" />
-            <text x={W - padR + 5} y={entryY + 3.5} fill="var(--ink)" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+            <rect x={W - padR + 2} y={entryY - 8} width={padR - 4} height={16} fill="color-mix(in oklab, rgb(var(--accent-base)) 30%, transparent)" stroke="rgb(var(--accent-base))" rx="2" />
+            <text x={W - padR + 5} y={entryY + 3.5} fill="var(--ink)" fontSize="10" fontWeight="bold" fontFamily="monospace">
               IN {fmtPrice(trade.entry, decimals, lang)}
             </text>
           </g>
 
           {visibleCandles.map((c, i) => {
             const x = getX(i);
-            const vH = (c.volume / maxVol) * 38;
+            const vH = (c.volume / maxVol) * chartH * 0.14;
             return (
               <rect
                 key={`vol-${i}`}
-                x={x - 2}
+                x={x - cuerpo * 0.3}
                 y={H - padB - vH}
-                width={4}
+                width={cuerpo * 0.6}
                 height={vH}
                 fill="url(#volGrad)"
                 rx="0.5"
@@ -373,6 +390,9 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
 
             const isEntryBar = i === 8;
             const isExitBar = i === 26;
+            // Cerca del margen derecho el rótulo se alinea a la derecha: centrado
+            // se metía bajo las etiquetas de precio.
+            const anclaSalida = x + 48 > W - padR ? "end" : "middle";
 
             return (
               <g
@@ -383,9 +403,9 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
               >
                 <line x1={x} y1={highY} x2={x} y2={lowY} stroke={stroke} strokeWidth="1" />
                 <rect
-                  x={x - 3.5}
+                  x={x - cuerpo / 2}
                   y={topY}
-                  width={7}
+                  width={cuerpo}
                   height={bH}
                   fill={stroke}
                   rx="0.5"
@@ -397,8 +417,8 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                       points={`${x},${highY - 14} ${x - 5},${highY - 22} ${x + 5},${highY - 22}`}
                       fill="rgb(var(--accent-base))"
                     />
-                    <text x={x} y={highY - 25} fill="rgb(var(--accent-base))" fontSize="9" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
-                      ENTRY
+                    <text x={x} y={highY - 25} fill="rgb(var(--accent-base))" fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
+                      {es ? "Entrada" : "Entry"}
                     </text>
                   </g>
                 )}
@@ -409,8 +429,8 @@ export function TradeCandleChart({ trade, decimals = 2 }: TradeCandleChartProps)
                       points={`${x},${lowY + 14} ${x - 5},${lowY + 22} ${x + 5},${lowY + 22}`}
                       fill={trade.netPnl >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"}
                     />
-                    <text x={x} y={lowY + 32} fill={trade.netPnl >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} fontSize="9" fontWeight="bold" fontFamily="monospace" textAnchor="middle">
-                      EXIT ({trade.rMultiple >= 0 ? "+" : ""}{trade.rMultiple}R)
+                    <text x={anclaSalida === "end" ? x + 5 : x} y={lowY + 32} fill={trade.netPnl >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))"} fontSize="10" fontWeight="bold" fontFamily="monospace" textAnchor={anclaSalida}>
+                      {es ? "Salida" : "Exit"} {fmtR(trade.rMultiple, lang)}
                     </text>
                   </g>
                 )}

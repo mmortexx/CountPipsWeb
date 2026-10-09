@@ -337,7 +337,9 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
   const W = rows.length * barW + (rows.length - 1) * gap;
 
   return (
-    <div className="tj-fila-sigue tj-fila-sigue--sin-reserva overflow-x-auto custom-scroll -mx-1 px-1">
+    <div className="tj-fila-sigue tj-fila-sigue--sin-reserva relative overflow-x-auto custom-scroll -mx-1 px-1">
+      {/* Las barras se estiran al ancho; los meses van fuera del SVG, en HTML,
+          porque estirados con el dibujo salían ensanchados. */}
       <svg
         viewBox={`0 0 ${W} ${H}`}
         width="100%"
@@ -379,19 +381,21 @@ function MonthlyBars({ trades }: { trades: Trade[] }) {
               >
                 <title>{`${r.month}: ${fmtMoney(r.pnl, lang, { sign: true })}`}</title>
               </rect>
-              <text
-                x={x + barW / 2}
-                y={H - 4}
-                textAnchor="middle"
-                className="fill-[rgb(var(--txt-tertiary))]"
-                style={{ fontSize: 10 }}
-              >
-                {r.month}
-              </text>
             </g>
           );
         })}
       </svg>
+      <div aria-hidden className="pointer-events-none absolute inset-x-1 bottom-0 h-[18px]">
+        {rows.map((r, i) => (
+          <span
+            key={`${r.month}-${i}`}
+            className="absolute bottom-[3px] -translate-x-1/2 text-[10px] leading-none text-tertiary"
+            style={{ left: `${((i * (barW + gap) + barW / 2) / W) * 100}%` }}
+          >
+            {r.month}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1196,7 +1200,7 @@ export function AnalyticsPage() {
                         <Money value={row.netPnl} sign colorizeSign decimals={0} className="text-sm font-semibold" />
                       </td>
                       <td className="px-2 py-2.5 tnum text-secondary text-xs text-right">
-                        {fmtPct(row.winRate, lang, 0)}
+                        {fmtPct(row.winRate, lang, 1)}
                       </td>
                       <td className="px-2 py-2.5 tnum text-secondary text-xs text-right">
                         {fmtNum(row.profitFactor, lang, 2)}
@@ -1433,7 +1437,7 @@ export function AnalyticsPage() {
                     {t("winRate")}
                   </span>
                   <span className="font-semibold tnum text-primary text-lg">
-                    {fmtPct(edge.winRate, lang, 0)}
+                    {fmtPct(edge.winRate, lang, 1)}
                   </span>
                   <span className="text-[10px] text-tertiary tnum">
                     {edge.winRateCi}
