@@ -38,6 +38,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const q = params.get("q");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- la URL solo existe en el cliente: leerla antes de hidratar desajustaría el HTML exportado.
     if (q && q.trim() !== "") setQuery(q);
   }, []);
 

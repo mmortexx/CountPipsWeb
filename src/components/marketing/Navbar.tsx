@@ -385,6 +385,7 @@ export function Navbar() {
   // Cierra cajón y megamenú al cambiar de ruta; `hovered` también se limpia
   // para que el realce no quede encallado bajo el elemento pulsado.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- la ruta llega de fuera y el mismo efecto quita el foco; es un render extra por navegación.
     setMobileOpen(false);
     setMegaOpen(false);
     setHovered(null);
