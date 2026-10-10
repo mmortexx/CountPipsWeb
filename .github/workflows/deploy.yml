@@ -183,8 +183,8 @@ jobs:
       #    misma página; se mira el HTML español y no el código porque en
       #    el código la rama inglesa de un ternario es indistinguible de
       #    la española salvo por el orden.
-      - name: Comprobar el HTML compilado (prefijo y vocabulario)
-        run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
+      - name: Comprobar el HTML compilado (prefijo, vocabulario y titular)
+        run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts tests/titular-legal.test.ts
 
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium
