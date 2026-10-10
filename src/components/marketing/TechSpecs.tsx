@@ -112,7 +112,7 @@ export function TechSpecs() {
                 <dt className="text-tertiary text-[12px]">
                   {es ? r.labelEs : r.labelEn}
                 </dt>
-                <dd className={`m-0 text-primary font-medium leading-snug [overflow-wrap:anywhere] ${r.mono ? "font-mono text-[13px]" : "text-sm tnum tracking-[-0.005em]"}`}>
+                <dd className={`m-0 text-primary font-medium leading-[1.6] [overflow-wrap:anywhere] ${r.mono ? "font-mono text-[13px]" : "text-sm tnum tracking-[-0.005em]"}`}>
                   {es ? r.valueEs : r.valueEn}
                 </dd>
               </dl>
