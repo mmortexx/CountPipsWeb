@@ -104,3 +104,9 @@ jobs:
 
       - name: Comprobación de humo en navegador
         run: node scripts/humo.mjs --serve out
+
+      # Las cabeceras de `public/_headers` solo las aplica Cloudflare: aquí se
+      # recorre el sitio con ellas puestas para que la política de contenido no
+      # bloquee nada por primera vez el día del lanzamiento.
+      - name: Cabeceras de seguridad del dominio
+        run: node scripts/cabeceras.mjs --serve out

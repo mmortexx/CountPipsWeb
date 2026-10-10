@@ -135,7 +135,9 @@ sitio usa de verdad: Turnstile, PostHog, Web3Forms, Apps Script). Lo lee
 Cloudflare; GitHub Pages lo ignora porque no permite configurarlas — así que
 la copia de GitHub Pages **no lleva CSP ni el resto de estas cabeceras**, y
 ese fichero no puede romper la publicación antigua. Es una de las cosas que se
-ganan con este cambio.
+ganan con este cambio. Como solo se aplica en el dominio, cada PR recorre el
+sitio con esas cabeceras puestas (`scripts/cabeceras.mjs`): un servicio externo
+nuevo que falte en la CSP se ve ahí y no el día del lanzamiento.
 
 ---
 

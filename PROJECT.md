@@ -53,7 +53,8 @@ Windows (WinUI 3, en otro repositorio).
 
 Nada está terminado sin estas cuatro en verde. El CI las corre, con la prueba de humo, en
 cada PR (`comprobar.yml`) y otra vez antes de publicar (`deploy.yml`). En cada PR, además,
-compila el sitio como se servirá en `countpips.com` (raíz, sin prefijo) y lo recorre:
+compila el sitio como se servirá en `countpips.com` (raíz, sin prefijo) y lo recorre, también
+con las cabeceras de seguridad de `public/_headers` puestas (`cabeceras.mjs`):
 
 ```bash
 bun run typecheck
@@ -89,6 +90,7 @@ node scripts/anuncios.mjs --serve out      # resultados anunciados a lectores de
 node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón
+node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` (dominio propio)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
 ```
 
