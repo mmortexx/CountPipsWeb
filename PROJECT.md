@@ -50,7 +50,8 @@ Windows (WinUI 3, en otro repositorio).
 
 ## Puertas
 
-Nada está terminado sin estas cuatro en verde (son las que corre el CI):
+Nada está terminado sin estas cuatro en verde. El CI las corre, con la prueba de humo, en
+cada PR (`comprobar.yml`) y otra vez antes de publicar (`deploy.yml`):
 
 ```bash
 bun run typecheck
