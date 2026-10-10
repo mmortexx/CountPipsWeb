@@ -121,6 +121,10 @@ await Promise.all(
       pagina.on("pageerror", (e) => errores.push(`error de JavaScript: ${e.message.slice(0, 120)}`));
       await pagina.goto(BASE + ruta, { waitUntil: "networkidle" });
       if (/\/demo\/$/.test(ruta)) {
+        // La demo monta sus pestañas al hidratar; sin ellas no se ha recorrido nada.
+        await pagina
+          .waitForSelector('[role="tab"]', { timeout: 15000 })
+          .catch(() => errores.push("la demo no llegó a montar sus pestañas"));
         for (const pestana of await pagina.$$('[role="tab"]')) {
           await pestana.click({ timeout: 1000 }).catch(() => {});
           demoRecorrida++;
