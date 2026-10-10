@@ -52,7 +52,8 @@ Windows (WinUI 3, en otro repositorio).
 ## Puertas
 
 Nada está terminado sin estas cuatro en verde. El CI las corre, con la prueba de humo, en
-cada PR (`comprobar.yml`) y otra vez antes de publicar (`deploy.yml`):
+cada PR (`comprobar.yml`) y otra vez antes de publicar (`deploy.yml`). En cada PR, además,
+compila el sitio como se servirá en `countpips.com` (raíz, sin prefijo) y lo recorre:
 
 ```bash
 bun run typecheck

@@ -136,3 +136,13 @@
 # (La política de caché del HTML vive arriba, dentro del bloque `/*`.
 #  Ver la nota que hay allí sobre por qué la regla `/*.html` que había
 #  aquí no llegaba a aplicarse nunca.)
+
+# ── Las direcciones de Cloudflare, fuera del buscador ─────────────────
+# Cloudflare Pages sirve el mismo sitio también en `<proyecto>.pages.dev`
+# y en una dirección por cada versión de prueba. El canónico ya señala el
+# dominio propio, pero esto lo deja claro: el buscador no indexa esas
+# copias. Solo se aplica a esos nombres; el dominio propio no lo lleva.
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
