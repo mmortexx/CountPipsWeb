@@ -40,15 +40,17 @@
  *
  *       · En tu ordenador, para probar en local: pégala en el archivo
  *         `.env.local` de la web, en la línea
- *         NEXT_PUBLIC_BETA_API_URL=
+ *         NEXT_PUBLIC_WAITLIST_URL=
  *
  *       · Para la web publicada: GitHub → el repositorio →
  *         Settings → Secrets and variables → Actions →
- *         "New repository secret" → Name: BETA_API_URL,
+ *         "New repository secret" → Name: WAITLIST_URL,
  *         Secret: la URL. El siguiente despliegue ya la usa.
+ *         (BETA_API_URL es para el Worker; si existe, gana él y
+ *         la hoja no recibe nada.)
  *
  *  7. COMPROBACIÓN: abre la URL en el navegador tal cual. Debe
- *     responder algo como {"ok":true,"duplicate":false}. Si responde eso, está
+ *     responder algo como {"ok":true,"count":0}. Si responde eso, está
  *     bien puesto.
  *
  *  Si algún día cambias este script, hay que volver a "Implementar" →

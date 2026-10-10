@@ -26,10 +26,15 @@ export const formsConfigured = ACCESS_KEY.length > 0;
  */
 const WAITLIST_URL = (process.env.NEXT_PUBLIC_WAITLIST_URL ?? "").trim();
 
-/** Endpoint opcional de la solicitud de beta; sin configurar, reutiliza el Apps Script de la lista. */
-const BETA_API_URL = (process.env.NEXT_PUBLIC_BETA_API_URL ?? WAITLIST_URL).trim();
+/**
+ * Worker opcional de la solicitud de beta; sin él, el Apps Script; sin
+ * ninguno, Web3Forms (ver `joinBetaApplication`). `||` y no `??`: la variable
+ * que falta llega como "" (next.config.ts la incrusta así y GitHub pasa vacío
+ * un secreto sin definir).
+ */
+const BETA_API_URL = (process.env.NEXT_PUBLIC_BETA_API_URL ?? "").trim() || WAITLIST_URL;
 
-export const betaConfigured = BETA_API_URL.length > 0;
+export const betaConfigured = BETA_API_URL.length > 0 || formsConfigured;
 
 /**
  * Buzón de soporte: único sitio donde se escribe (contacto, FAQ y formularios
@@ -157,26 +162,57 @@ export type BetaApplicationResult =
   | { ok: true; duplicate: boolean }
   | { ok: false; reason: SubmitFailure };
 
+/** De qué página y campaña llega la solicitud. */
+function procedencia() {
+  const enNavegador = typeof window !== "undefined";
+  const params = new URLSearchParams(enNavegador ? window.location.search : "");
+  return {
+    source: enNavegador ? window.location.pathname : "",
+    utmSource: params.get("utm_source") ?? "",
+    utmMedium: params.get("utm_medium") ?? "",
+    utmCampaign: params.get("utm_campaign") ?? "",
+    origin: enNavegador ? window.location.origin : "",
+  };
+}
+
+/**
+ * Sin Worker ni hoja, la solicitud llega al correo del titular como un mensaje
+ * de Web3Forms, con un dato por línea. No hay deduplicación ni Turnstile; el
+ * filtro antibot es el campo trampa.
+ */
+async function solicitudPorCorreo(application: BetaApplicationData): Promise<BetaApplicationResult> {
+  const { source, utmSource, utmMedium, utmCampaign } = procedencia();
+  const lineas = [
+    ["Perfil", application.profile],
+    ["Experiencia", application.experience],
+    ["Mercados", application.markets],
+    ["Cómo lleva hoy su diario", application.workflow],
+    ["Objetivo", application.goal],
+    ["Comentario", application.notes ?? ""],
+    ["Idioma", application.lang ?? ""],
+    ["Acepta comunicaciones", application.marketingConsent ? "sí" : "no"],
+    ["Página", source],
+    ["UTM", [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / ")],
+  ];
+  const result = await submitForm({
+    subject: `Solicitud de acceso anticipado · ${application.profile}`,
+    email: application.email,
+    message: lineas.map(([etiqueta, valor]) => `${etiqueta}: ${valor || "—"}`).join("\n"),
+    botcheck: application.botcheck,
+  });
+  return result.ok ? { ok: true, duplicate: false } : result;
+}
+
 /** Envía una solicitud de beta, sin datos financieros ni valores de calculadoras. */
 export async function joinBetaApplication(
   application: BetaApplicationData,
 ): Promise<BetaApplicationResult> {
-  if (!betaConfigured) return { ok: false, reason: "unconfigured" };
+  if (!BETA_API_URL) return solicitudPorCorreo(application);
 
   const { botcheck = "", ...rest } = application;
-  const params = typeof window === "undefined" ? new URLSearchParams() : new URLSearchParams(window.location.search);
   const res = await postJson(
     BETA_API_URL,
-    {
-      ...rest,
-      email: application.email.trim(),
-      botcheck,
-      source: typeof window === "undefined" ? "" : window.location.pathname,
-      utmSource: params.get("utm_source") ?? "",
-      utmMedium: params.get("utm_medium") ?? "",
-      utmCampaign: params.get("utm_campaign") ?? "",
-      origin: typeof window === "undefined" ? "" : window.location.origin,
-    },
+    { ...rest, email: application.email.trim(), botcheck, ...procedencia() },
     "text/plain;charset=utf-8",
   );
 

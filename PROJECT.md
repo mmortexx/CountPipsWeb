@@ -21,8 +21,9 @@ Windows (WinUI 3, en otro repositorio).
   (`useSyncExternalStore`).
 - **Analítica**: PostHog UE, sólo tras consentimiento explícito.
 - **Formularios**: contacto por Web3Forms; acceso anticipado por el Worker de
-  `services/beta-api/` (D1, KV, Turnstile) o, sin él, por el Apps Script de
-  `docs/waitlist-apps-script.js`.
+  `services/beta-api/` (D1, KV, Turnstile), el Apps Script de
+  `docs/waitlist-apps-script.js` o, sin ninguno, por Web3Forms al correo
+  (`DESPLIEGUE.md`).
 
 ## Sistema de diseño
 

@@ -59,12 +59,8 @@ subdirectorio que no existe y **todos los enlaces y recursos darán 404**.
 Las que sí hay que añadir, en *Settings → Environment variables*:
 
 - `NEXT_PUBLIC_WEB3FORMS_KEY` — destino de los formularios de contacto.
-- `NEXT_PUBLIC_WAITLIST_URL` — Apps Script de respaldo para `/beta`
-  (`docs/waitlist-apps-script.js`).
-- `NEXT_PUBLIC_BETA_API_URL` — URL de `POST /v1/applications` del Worker
-  `services/beta-api`. Sin ella, el formulario de `/beta` cae al mismo
-  Apps Script que la lista de espera (mismo contrato, sin panel interno
-  ni deduplicación por base de datos).
+- `NEXT_PUBLIC_WAITLIST_URL` y `NEXT_PUBLIC_BETA_API_URL` — destinos
+  opcionales del formulario de `/beta` (ver abajo).
 - `NEXT_PUBLIC_POSTHOG_KEY` — clave de proyecto de PostHog (host EU). Sin
   ella no se carga analítica; el sitio funciona igual.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — site key pública de Turnstile. Sin
@@ -75,6 +71,38 @@ Las que sí hay que añadir, en *Settings → Environment variables*:
 
 Si faltan, el sitio se publica igual pero los formularios avisan del fallo en
 vez de fingir que han enviado.
+
+## A dónde van las solicitudes de acceso anticipado
+
+El formulario de `/beta` envía cada solicitud a **un** destino. Sin configurar
+nada más, es **Web3Forms con la misma clave que el formulario de contacto**: la
+solicitud llega al correo del titular como un mensaje con un dato por línea. Dos
+variables opcionales la desvían a un sitio con más control:
+
+| Variable | Secreto en GitHub | Qué es |
+|---|---|---|
+| `NEXT_PUBLIC_WAITLIST_URL` | `WAITLIST_URL` | El Apps Script que guarda las solicitudes en una hoja de Google (`docs/waitlist-apps-script.js`; la dirección acaba en `/exec`) |
+| `NEXT_PUBLIC_BETA_API_URL` | `BETA_API_URL` | El Worker `services/beta-api` (`POST /v1/applications`), con base de datos y panel propio |
+
+- Con **ninguna**, va al correo por Web3Forms. Es lo que hay publicado ahora.
+  Sin deduplicación ni Turnstile (el filtro antibot es el campo trampa), y el
+  plan gratuito de Web3Forms admite 250 envíos al mes entre los dos formularios;
+  pasado el límite, el formulario avisa del fallo en vez de fingir el envío.
+- Con **la hoja** (`WAITLIST_URL`), va a la hoja y ya no al correo.
+- Con **el Worker** (`BETA_API_URL`), va al Worker, aunque esté la hoja: no es
+  una copia de seguridad que salte si el Worker falla.
+- Sin ninguna de las dos y sin la clave de Web3Forms, el formulario dice que no
+  ha podido enviar; no finge que ha guardado nada.
+
+Una variable vacía o en blanco cuenta como si no existiera. Importa porque
+GitHub entrega vacío un secreto que no está creado, y así el flujo de
+publicación siempre pasa las dos (`tests/destino-beta.test.ts`).
+
+En GitHub Pages los valores se ponen como secretos del repositorio
+(*Settings → Secrets and variables → Actions → New repository secret*) y entran
+en el siguiente despliegue. En Cloudflare Pages, como variables de entorno con el
+nombre `NEXT_PUBLIC_…`. Las dos direcciones son públicas por diseño: viajan en el
+JavaScript de la página y solo permiten añadir solicitudes, no leerlas.
 
 ## Apuntar el dominio
 
