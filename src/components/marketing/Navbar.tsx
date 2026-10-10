@@ -385,6 +385,7 @@ export function Navbar() {
   // Cierra cajón y megamenú al cambiar de ruta; `hovered` también se limpia
   // para que el realce no quede encallado bajo el elemento pulsado.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- la ruta llega de fuera y el mismo efecto quita el foco; es un render extra por navegación.
     setMobileOpen(false);
     setMegaOpen(false);
     setHovered(null);
@@ -683,13 +684,7 @@ export function Navbar() {
 
             <Link
               href="/demo"
-              className="hidden flex-none items-center gap-[7px] whitespace-nowrap rounded-[4px] text-sm font-semibold outline-none transition-colors duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] sm:inline-flex"
-              style={{
-                height: 38,
-                padding: "0 18px",
-                background: "rgb(var(--accent-base))",
-                color: "rgb(var(--accent-ink))",
-              }}
+              className="hidden h-[38px] flex-none items-center gap-[7px] whitespace-nowrap rounded-[4px] bg-[rgb(var(--accent-base))] px-[18px] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98] sm:inline-flex"
             >
               {es ? "Ver la demo" : "See the demo"}
             </Link>
@@ -868,11 +863,7 @@ export function Navbar() {
                   <Link
                     href="/demo"
                     onClick={() => setMobileOpen(false)}
-                    className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] text-sm font-semibold outline-none transition-colors duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)]"
-                    style={{
-                      background: "rgb(var(--accent-base))",
-                      color: "rgb(var(--accent-ink))",
-                    }}
+                    className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] bg-[rgb(var(--accent-base))] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98]"
                   >
                     {lang === "es" ? "Ver la demo" : "See the demo"}
                   </Link>

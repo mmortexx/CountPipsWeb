@@ -61,7 +61,7 @@ export function GaleriaPantallas() {
           ref={tablist}
           role="tablist"
           aria-label={es ? "Pantallas del programa" : "Application screens"}
-          className="tj-pestanas -m-1 mt-9 mb-5 p-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="tj-pestanas -m-2 mt-8 mb-4 p-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {ORDEN_LAMINAS.map((clave, i) => {
             const l = LAMINAS_PRODUCTO[clave];
