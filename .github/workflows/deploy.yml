@@ -173,7 +173,7 @@ jobs:
       # es la única condición en la que esas comprobaciones significan
       # algo: en local se compila sin prefijo y no hay nada que exigir.
       #
-      # Son dos:
+      # Son tres:
       #  · El prefijo. Caza que una ruta interna se escriba desde la raíz
       #    del dominio —el botón «Solicitar acceso anticipado» de la
       #    página de precios daba 404 en producción por eso— o que
@@ -183,6 +183,8 @@ jobs:
       #    misma página; se mira el HTML español y no el código porque en
       #    el código la rama inglesa de un ternario es indistinguible de
       #    la española salvo por el orden.
+      #  · El titular. Privacidad y aviso legal, en los dos idiomas, tienen
+      #    que mostrar nombre, NIF, domicilio y correo de `titular.ts`.
       - name: Comprobar el HTML compilado (prefijo, vocabulario y titular)
         run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts tests/titular-legal.test.ts
 
