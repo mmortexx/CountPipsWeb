@@ -3,6 +3,7 @@
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
+import { PROGRAMA, enumerar } from "@/lib/producto";
 
 /**
  * Estado del producto: lista de hitos entregados, en piloto y previstos.
@@ -57,7 +58,7 @@ export function Changelog() {
           version: "05",
           title: "Más prop firms",
           description:
-            "Más plantillas además de las cinco de hoy: FTMO, Topstep, The5ers, FundedNext y Apex, cada una con su fecha de revisión.",
+            `Más plantillas además de las de hoy (${enumerar(PROGRAMA.plantillasProp, "es")}), cada una con su fecha de revisión.`,
           stage: "future",
         },
       ]
@@ -96,7 +97,7 @@ export function Changelog() {
           version: "05",
           title: "More prop firms",
           description:
-            "More templates beyond today’s five: FTMO, Topstep, The5ers, FundedNext and Apex, each with its review date.",
+            `More templates beyond today’s (${enumerar(PROGRAMA.plantillasProp, "en")}), each with its review date.`,
           stage: "future",
         },
       ];

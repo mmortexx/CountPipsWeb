@@ -5,7 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { fmtInt } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
-import { arranqueMedido } from "@/lib/producto";
+import { PROGRAMA, arranqueMedido, enumerar } from "@/lib/producto";
 
 /** Índice de funciones de /features: se filtra por ejes y marca lo que es exclusivo de Pro. */
 
@@ -77,14 +77,14 @@ const FEATURES: Feature[] = [
     id: "local",
     titleEs: "En tu equipo",
     titleEn: "On your machine",
-    descEs: "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips. Cifrado EFS de Windows opcional.",
-    descEn: "Your trades live on your disk. No account, no telemetry and no CountPips servers. Optional Windows EFS encryption.",
+    descEs: "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips. Cifrado EFS de Windows opcional, salvo en Windows Home.",
+    descEn: "Your trades live on your disk. No account, no telemetry and no CountPips servers. Optional Windows EFS encryption, except on Windows Home.",
     tags: ["security", "local", "speed"],
   },
   {
     id: "sqlite",
-    titleEs: "Un archivo .sqlite",
-    titleEn: "One .sqlite file",
+    titleEs: "Un archivo SQLite",
+    titleEn: "One SQLite file",
     descEs: "Una base de datos SQLite en un único archivo, con copias automáticas verificadas y restauración a la vista.",
     descEn: "A SQLite database in a single file, with verified automatic backups and visible restore.",
     tags: ["local", "export", "speed"],
@@ -93,8 +93,8 @@ const FEATURES: Feature[] = [
     id: "multi",
     titleEs: "Multi-cuenta y multi-activo",
     titleEn: "Multi-account, multi-asset",
-    descEs: "Acciones, futuros, forex y cripto. Varias cuentas, cada una con sus métricas: dos en Core e ilimitadas en Pro.",
-    descEn: "Stocks, futures, forex and crypto. Several accounts, each with its own metrics: two in Core, unlimited in Pro.",
+    descEs: `Acciones, futuros, forex y cripto. Varias cuentas, cada una con sus métricas: ${PROGRAMA.cuentasCore} en Core e ilimitadas en Pro.`,
+    descEn: `Stocks, futures, forex and crypto. Several accounts, each with its own metrics: ${PROGRAMA.cuentasCore} in Core, unlimited in Pro.`,
     tags: ["multi", "metrics"],
   },
   {
@@ -143,8 +143,8 @@ const FEATURES: Feature[] = [
     id: "prop",
     titleEs: "Modo prop firm",
     titleEn: "Prop firm mode",
-    descEs: "Plantillas de FTMO, Topstep, The5ers, FundedNext y Apex, panel de evaluación e informe en PDF.",
-    descEn: "FTMO, Topstep, The5ers, FundedNext and Apex templates, an evaluation panel and a PDF report.",
+    descEs: `Plantillas de ${enumerar(PROGRAMA.plantillasProp, "es")}, panel de evaluación e informe en PDF.`,
+    descEn: `${enumerar(PROGRAMA.plantillasProp, "en")} templates, an evaluation panel and a PDF report.`,
     tags: ["multi", "discipline"],
     pro: true,
   },
@@ -160,8 +160,8 @@ const FEATURES: Feature[] = [
     id: "fiscal",
     titleEs: "Módulo fiscal",
     titleEn: "Tax module",
-    descEs: "Lotes, resumen del año e informe para tu asesor (España). No calcula la cuota a pagar.",
-    descEn: "Lots, yearly summary and a report for your tax adviser (Spain). It never computes the tax due.",
+    descEs: "Lotes, resumen del año e informe para tu asesor (España). Te dice cuánto apartar, de forma orientativa; nunca calcula la cuota a pagar.",
+    descEn: "Lots, yearly summary and a report for your tax adviser (Spain). It tells you roughly how much to set aside; it never computes the tax due.",
     tags: ["export"],
     pro: true,
   },

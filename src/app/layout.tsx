@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     template: "%s — CountPips",
   },
   description:
-    "El diario de trading profesional, nativo de Windows. Explora la demo con métricas institucionales, disciplina y tus datos siempre en tu máquina.",
+    "El diario de trading profesional, nativo de Windows. Explora la demo con métricas institucionales, disciplina y tus datos en tu equipo.",
   authors: [{ name: "CountPips" }],
   creator: "CountPips",
   alternates: {
