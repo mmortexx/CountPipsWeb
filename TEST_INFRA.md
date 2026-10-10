@@ -53,6 +53,7 @@
 | `barra-riesgo.test.ts` | La barra riesgo/beneficio de la calculadora: los dos tramos crecen desde el centro, ninguno pasa del 50 %, los dos se ven si valen algo y su proporción es la del R:R |
 | `saltos-teclado.test.ts` | Cada atajo «g + letra» lleva a una página que existe, sin teclas repetidas, y el teclado global lee la misma tabla que la ayuda |
 | `sesiones.test.ts` | Las plazas del reloj de sesiones abren y cierran en su hora local: cambio de hora de Londres, las 09:30 de Nueva York, fin de semana según el día local, ventana del día en UTC |
+| `titular-legal.test.ts` | La privacidad y el aviso legal identifican al titular en los dos idiomas: nombre, NIF (DNI, NIE o CIF con su control correcto), domicilio y correo (no de ejemplo) rellenos en `titular.ts`, presentes en el texto y en el HTML compilado, y ninguna página legal conserva el texto provisional («más adelante»). Corre también tras compilar en los dos flujos |
 | `test-infra.test.ts` | Este índice nombra todos los ficheros de `tests/` y `tests/e2e/`: una prueba sin fila es una guarda que nadie sabe que existe |
 | `variables.test.ts` | Toda `var(--nombre)` que se lee sin valor de reserva está declarada en alguna hoja o estilo: una sin declarar deja el fondo transparente sin que nada falle |
 | `almacenamiento-declarado.test.ts` | La tabla de la política de cookies tiene una fila por clave que el código escribe en `localStorage`/`sessionStorage` (más PostHog), y las de «hasta que cierres la pestaña» existen como almacenamiento de sesión |
