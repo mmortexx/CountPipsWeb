@@ -424,16 +424,17 @@ export function DisciplineScore({ enPagina = false }: { enPagina?: boolean } = {
                             tabIndex={enfocable ? 0 : -1}
                             onClick={() => setAnswer(qi, oi)}
                             onKeyDown={(e) => moverConFlechas(e, oi, (d) => setAnswer(qi, d))}
-                            className="text-left rounded-[4px] transition-[background-color,color] duration-200 hover:text-[var(--ink)]"
+                            className={`text-left rounded-[4px] transition-[background-color,color,box-shadow] duration-200 ${
+                              activa
+                                ? "bg-[var(--ink)] text-[var(--bg)]"
+                                : "text-[var(--ink-2)] shadow-[inset_0_0_0_1px_var(--ficha-filo)] hover:bg-[color-mix(in_srgb,var(--ink)_3.5%,transparent)] hover:text-[var(--ink)] hover:shadow-[inset_0_0_0_1px_var(--line-2)]"
+                            }`}
                             style={{
                               minHeight: 48,
                               padding: "12px 14px",
                               fontSize: 15,
                               lineHeight: 1.35,
                               cursor: "pointer",
-                              color: activa ? "var(--bg)" : "var(--ink-2)",
-                              background: activa ? "var(--ink)" : "transparent",
-                              boxShadow: activa ? "none" : "inset 0 0 0 1px var(--ficha-filo)",
                             }}
                           >
                             {es ? o.es : o.en}

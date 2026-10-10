@@ -246,13 +246,13 @@ export function RMultipleSimulator() {
           <button
             type="button"
             onClick={() => setSeed(siguienteSemilla)}
-            className="mt-5 -ml-1 inline-flex items-center gap-2 min-h-[44px] px-1 text-[14px] font-medium text-primary transition-colors duration-150 hover:text-[rgb(var(--accent-base))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
+            className="link-underline-host mt-5 -ml-1 inline-flex items-center gap-2 min-h-[44px] px-1 text-[14px] font-medium text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
             aria-label={es ? "Volver a simular con otra semilla aleatoria" : "Re-simulate with a different random seed"}
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M2.5 8a5.5 5.5 0 019.4-3.9M13.5 8a5.5 5.5 0 01-9.4 3.9M13 2.5v3h-3M3 13.5v-3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            {es ? "Otra tirada" : "Re-roll"}
+            <span className="link-underline link-underline--al-pasar">{es ? "Otra tirada" : "Re-roll"}</span>
           </button>
         </div>
 

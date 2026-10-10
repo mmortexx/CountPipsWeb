@@ -363,7 +363,7 @@ export function BetaApplication() {
           <div>
             <label className="toque-comodo flex items-start gap-2.5 text-xs text-secondary">
               <input ref={privacyRef} type="checkbox" checked={privacy} onChange={(e) => setPrivacy(e.target.checked)} className="mt-0.5 accent-[rgb(var(--accent-base))]" required aria-invalid={privacyInvalid} aria-describedby={privacyInvalid ? "privacy-error" : undefined} />
-              <span>{es ? <>He leído la <Link href="/privacidad" className="text-primary underline underline-offset-2">política de privacidad</Link> y acepto que se gestione esta solicitud.</> : <>I have read the <Link href="/privacidad" className="text-primary underline underline-offset-2">privacy policy</Link> and agree to this application being processed.</>}</span>
+              <span>{es ? <>He leído la <Link href="/privacidad" className="text-primary underline underline-offset-2 decoration-[color-mix(in_srgb,currentColor_40%,transparent)] transition-[text-decoration-color] hover:decoration-current">política de privacidad</Link> y acepto que se gestione esta solicitud.</> : <>I have read the <Link href="/privacidad" className="text-primary underline underline-offset-2 decoration-[color-mix(in_srgb,currentColor_40%,transparent)] transition-[text-decoration-color] hover:decoration-current">privacy policy</Link> and agree to this application being processed.</>}</span>
             </label>
             <FieldError id="privacy-error" show={privacyInvalid} message={es ? "Debes aceptar la política de privacidad para continuar." : "You must accept the privacy policy to continue."} />
           </div>
