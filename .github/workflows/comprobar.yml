@@ -1,0 +1,65 @@
+name: Comprobar PR
+
+# Las mismas barreras que `deploy.yml` corre antes de publicar, pero en cada PR:
+# un fallo se ve aquí, antes de fusionar, y no en `main` con la web sin
+# actualizar. No publica nada. `tests/comprobacion-pr.test.ts` falla si este
+# fichero y `deploy.yml` dejan de correr las mismas comprobaciones.
+on:
+  pull_request:
+  workflow_dispatch:
+
+# Un push nuevo al mismo PR cancela la comprobación anterior, que ya no cuenta.
+concurrency:
+  group: comprobar-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Solo lectura y sin secretos: el código de un PR no ha pasado ninguna revisión
+# todavía. Sin las claves de los formularios el sitio se compila igual; esos
+# formularios avisan del fallo en vez de enviar.
+permissions:
+  contents: read
+
+jobs:
+  comprobar:
+    name: Puertas y humo
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Mismo prefijo y misma dirección que la copia de GitHub Pages, para
+    # compilar y recorrer el sitio tal como se publica.
+    env:
+      NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+      NEXT_PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Comprobar tipos
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Pruebas
+        run: bun run test
+
+      - name: Build
+        run: bun run build
+
+      - name: Comprobar el HTML compilado (prefijo y vocabulario)
+        run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
+
+      - name: Instalar navegador de pruebas
+        run: bunx playwright install --with-deps chromium
+
+      - name: Comprobación de humo en navegador
+        run: node scripts/humo.mjs --serve out
