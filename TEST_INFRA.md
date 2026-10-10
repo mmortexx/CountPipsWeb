@@ -67,6 +67,7 @@
 | `glosario-descripciones.test.ts` | La descripción de cada ficha del glosario (buscador y tarjeta al compartir) es una frase entera de 70 a 155 caracteres, sin «…» ni paréntesis abiertos; el recorte por frases no confunde «p. ej.» ni un decimal con un final; las descripciones a mano solo existen donde el recorte no basta |
 | `recuperacion.test.ts` | Recuperación de drawdown: la asimetría, la operación exacta en que se vuelve al máximo, sin ventaja no vuelve, nunca NaN ni Infinity |
 | `prefijo-despliegue.test.ts` | `basePath` de GitHub Pages, probado con y sin valor |
+| `hover-anulado.test.ts` | Ningún botón o enlace se queda mudo al pasar el ratón: ni un `style={{ background }}` en línea que gane a su propio `hover:bg-…` (así estaba «Ver la demo» de la barra), ni un `hover:text-[rgb(var(--accent-base))]` sobre `text-primary`, que con la paleta en blanco y negro es la misma tinta. El detector se prueba primero contra el caso real |
 | `sin-framer.test.ts` | Ningún fichero de `src/` importa `framer-motion` y la dependencia no está en `package.json`: volver a traerla devolvería unos 40 KB comprimidos a /demo sin que nada se viera distinto |
 | `radios.test.ts` | Que el comentario que documenta la escala de radios diga los radios que hay |
 | `tipografias.test.ts` | El build no depende de que Google Fonts responda |

@@ -1397,6 +1397,9 @@ textarea:focus-visible,
 .link-underline-host:focus-visible .link-underline::after {
   background-color: currentColor;
 }
+.link-underline-host:disabled .link-underline--al-pasar::after {
+  background-color: transparent;
+}
 @media (prefers-reduced-motion: reduce) {
   .link-underline::after { transition: none; }
 }
@@ -2171,9 +2174,12 @@ button.icon-btn:hover > svg,
   color: var(--ink);
   box-shadow: inset 0 -1.5px 0 var(--ink);
 }
+/* El aro se separa del texto: la pestaña no tiene relleno propio, y las listas
+   que desplazan dejan 8px de margen para que no lo recorten. */
 .tj-pestanas > [role="tab"]:focus-visible {
-  outline: 2px solid rgb(var(--accent-base) / 0.6);
-  outline-offset: 1px;
+  outline: 2px solid rgb(var(--accent-base) / 0.7);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 @media (pointer: coarse) {
   .tj-pestanas > [role="tab"] {
@@ -3239,6 +3245,7 @@ select.tj-campo:invalid {
 }
 /* Foco por dentro: la matriz recorta lo que sale de ella. */
 .tj-metricas-ratio:focus-visible {
+  outline: none;
   box-shadow:
     -1px 0 0 var(--ficha-division),
     0 -1px 0 var(--ficha-division),
@@ -3330,10 +3337,17 @@ select.tj-campo:invalid {
     color: rgb(var(--txt-primary)) !important;
   }
   /* El aro del foco, más grueso y sin transparencia. */
-  *:focus-visible {
+  *:focus-visible,
+  .tj-pestanas > [role="tab"]:focus-visible {
     outline: 3px solid rgb(var(--accent-base));
     outline-offset: 2px;
     box-shadow: none;
+  }
+  .tj-metricas-ratio:focus-visible {
+    box-shadow:
+      -1px 0 0 var(--ficha-division),
+      0 -1px 0 var(--ficha-division),
+      inset 0 0 0 3px rgb(var(--accent-base));
   }
   .tj-segmentado > *:focus-visible,
   .tj-segmentado > [aria-pressed="true"]:focus-visible,
