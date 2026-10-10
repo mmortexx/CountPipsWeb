@@ -43,6 +43,7 @@
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
 | `marcas-eje.test.ts` | Marcas de eje en cifras redondas (1 · 2 · 2,5 · 5), dentro del rango y sin reventar con rangos imposibles |
 | `metricas.test.ts` | El motor de métricas y la distribución de R de la portada; el coste de indisciplina y el semáforo de disciplina con el criterio y los cortes de la app |
+| `comprobacion-pr.test.ts` | `.github/workflows/comprobar.yml` corre en cada PR los mismos comandos de comprobación, la misma versión de Bun y el mismo prefijo que `deploy.yml` antes de publicar, sin secretos ni permiso de escritura: una barrera nueva solo en el despliegue volvería a dejar ver el fallo al publicar y no antes de fusionar |
 | `comparacion.test.ts` | «Esta selección frente al resto» de la demo: gana solo quien tiene intervalos disjuntos, solaparse no es empatar, por debajo de 20 operaciones no hay veredicto, y el resto es el complemento exacto |
 | `fondeo.test.ts` | Prueba de fondeo: coincide con la ruina del jugador, el dinámico nunca aprueba más que el estático, escenario leído de la dirección acotado y ajustado al paso |
 | `formulario-declarado.test.ts` | Lo que la FAQ y la política de privacidad dicen que pide el formulario de acceso es lo que pide: cuenta los campos del HTML compilado (se salta sin `out/`) |
