@@ -59,8 +59,8 @@ subdirectorio que no existe y **todos los enlaces y recursos darán 404**.
 Las que sí hay que añadir, en *Settings → Environment variables*:
 
 - `NEXT_PUBLIC_WEB3FORMS_KEY` — destino de los formularios de contacto.
-- `NEXT_PUBLIC_WAITLIST_URL` y `NEXT_PUBLIC_BETA_API_URL` — destino del
-  formulario de `/beta`; basta con una (ver abajo).
+- `NEXT_PUBLIC_WAITLIST_URL` y `NEXT_PUBLIC_BETA_API_URL` — destinos
+  opcionales del formulario de `/beta` (ver abajo).
 - `NEXT_PUBLIC_POSTHOG_KEY` — clave de proyecto de PostHog (host EU). Sin
   ella no se carga analítica; el sitio funciona igual.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — site key pública de Turnstile. Sin
@@ -74,19 +74,25 @@ vez de fingir que han enviado.
 
 ## A dónde van las solicitudes de acceso anticipado
 
-El formulario de `/beta` envía cada solicitud a **una** dirección, que sale de
-dos variables:
+El formulario de `/beta` envía cada solicitud a **un** destino. Sin configurar
+nada más, es **Web3Forms con la misma clave que el formulario de contacto**: la
+solicitud llega al correo del titular como un mensaje con un dato por línea. Dos
+variables opcionales la desvían a un sitio con más control:
 
 | Variable | Secreto en GitHub | Qué es |
 |---|---|---|
 | `NEXT_PUBLIC_WAITLIST_URL` | `WAITLIST_URL` | El Apps Script que guarda las solicitudes en una hoja de Google (`docs/waitlist-apps-script.js`; la dirección acaba en `/exec`) |
 | `NEXT_PUBLIC_BETA_API_URL` | `BETA_API_URL` | El Worker `services/beta-api` (`POST /v1/applications`), con base de datos y panel propio |
 
-- Con **solo la hoja**, basta `WAITLIST_URL`. Es lo previsto para empezar.
-- Con **las dos**, gana el Worker y la hoja no recibe nada: no es una copia de
-  seguridad que salte si el Worker falla.
-- Con **ninguna**, el sitio se publica igual y el formulario dice que no ha
-  podido enviar; no finge que ha guardado nada.
+- Con **ninguna**, va al correo por Web3Forms. Es lo que hay publicado ahora.
+  Sin deduplicación ni Turnstile (el filtro antibot es el campo trampa), y el
+  plan gratuito de Web3Forms admite 250 envíos al mes entre los dos formularios;
+  pasado el límite, el formulario avisa del fallo en vez de fingir el envío.
+- Con **la hoja** (`WAITLIST_URL`), va a la hoja y ya no al correo.
+- Con **el Worker** (`BETA_API_URL`), va al Worker, aunque esté la hoja: no es
+  una copia de seguridad que salte si el Worker falla.
+- Sin ninguna de las dos y sin la clave de Web3Forms, el formulario dice que no
+  ha podido enviar; no finge que ha guardado nada.
 
 Una variable vacía o en blanco cuenta como si no existiera. Importa porque
 GitHub entrega vacío un secreto que no está creado, y así el flujo de
