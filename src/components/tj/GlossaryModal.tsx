@@ -108,12 +108,14 @@ export function GlossaryModal({
 
   // Se leen al montar en el cliente, para no desajustar la hidratación.
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage solo existe en el cliente: leerlo antes de hidratar desajustaría el HTML exportado.
     setRecent(readRecent());
   }, []);
 
   // Cada apertura parte de cero.
   React.useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- `open` puede venir del padre, así que el reinicio se ata al cambio y no al manejador.
       setQuery("");
       setActiveCat("all");
       setActiveIndex(0);
@@ -135,6 +137,7 @@ export function GlossaryModal({
 
   React.useEffect(() => {
     if (activeIndex >= filtered.length) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- recortar el índice en el estado, no al leerlo, para que no reaparezca la selección vieja si la lista vuelve a crecer.
       setActiveIndex(Math.max(0, filtered.length - 1));
     }
   }, [filtered, activeIndex]);

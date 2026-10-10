@@ -163,7 +163,7 @@ export function CookieConsent() {
                   : "We keep your preferences in this browser; analytics only if you accept it. "}
                 <Link
                   href="/cookies"
-                  className="link-underline-host whitespace-nowrap text-primary transition-colors hover:text-[rgb(var(--accent-base))]"
+                  className="link-underline-host whitespace-nowrap text-primary"
                 >
                   <span className="link-underline">
                     {es ? "Ver qué guarda" : "See what it stores"}

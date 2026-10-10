@@ -243,7 +243,7 @@ export function ContactForm() {
                                 {" "}
                                 <a
                                   href={`mailto:${SUPPORT_EMAIL}`}
-                                  className="underline underline-offset-2 hover:text-[rgb(var(--accent-base))] transition-colors"
+                                  className="underline underline-offset-2 decoration-[color-mix(in_srgb,currentColor_40%,transparent)] transition-[text-decoration-color] hover:decoration-current"
                                 >
                                   {SUPPORT_EMAIL}
                                 </a>

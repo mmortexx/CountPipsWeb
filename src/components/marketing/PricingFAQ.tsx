@@ -58,7 +58,7 @@ export function PricingFAQ() {
                   value={`item-${i}`}
                   className="border-b border-[var(--line)]"
                 >
-                  <AccordionTrigger className="text-left text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-transform [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
+                  <AccordionTrigger className="text-left text-primary hover:text-primary hover:no-underline py-5 transition-colors [&>svg]:!text-tertiary hover:[&>svg]:!text-primary [&[data-state=open]>svg]:rotate-180 [&>svg]:transition-[transform,color] [&>svg]:duration-300 [&>svg]:ease-[var(--ease-suave)]">
                     {/* `min-w-0` para que preguntas largas se partan en móvil sin
                         empujar el chevrón. */}
                     <span className="min-w-0 break-words">{item.q}</span>
