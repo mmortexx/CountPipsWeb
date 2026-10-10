@@ -8,6 +8,8 @@
  * la red caída o con un rechazo, el llamante recibe el fallo y debe decirlo.
  */
 
+import { DIARIOS, EXPERIENCIAS, OBJETIVOS, PERFILES, etiquetaEs } from "@/lib/beta-opciones";
+
 const ENDPOINT = "https://api.web3forms.com/submit";
 
 /** Cortamos a los 15 s: más allá, el usuario ya ha asumido que no va. */
@@ -183,11 +185,11 @@ function procedencia() {
 async function solicitudPorCorreo(application: BetaApplicationData): Promise<BetaApplicationResult> {
   const { source, utmSource, utmMedium, utmCampaign } = procedencia();
   const lineas = [
-    ["Perfil", application.profile],
-    ["Experiencia", application.experience],
+    ["Perfil", etiquetaEs(PERFILES, application.profile)],
+    ["Experiencia", etiquetaEs(EXPERIENCIAS, application.experience)],
     ["Mercados", application.markets],
-    ["Cómo lleva hoy su diario", application.workflow],
-    ["Objetivo", application.goal],
+    ["Cómo lleva hoy su diario", etiquetaEs(DIARIOS, application.workflow)],
+    ["Objetivo", etiquetaEs(OBJETIVOS, application.goal)],
     ["Comentario", application.notes ?? ""],
     ["Idioma", application.lang ?? ""],
     ["Acepta comunicaciones", application.marketingConsent ? "sí" : "no"],
@@ -195,7 +197,7 @@ async function solicitudPorCorreo(application: BetaApplicationData): Promise<Bet
     ["UTM", [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / ")],
   ];
   const result = await submitForm({
-    subject: `Solicitud de acceso anticipado · ${application.profile}`,
+    subject: `Solicitud de acceso anticipado · ${etiquetaEs(PERFILES, application.profile)}`,
     email: application.email,
     message: lineas.map(([etiqueta, valor]) => `${etiqueta}: ${valor || "—"}`).join("\n"),
     botcheck: application.botcheck,

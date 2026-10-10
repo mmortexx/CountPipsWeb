@@ -7,8 +7,9 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { joinBetaApplication, SUPPORT_EMAIL, type BetaApplicationData, type SubmitFailure } from "@/lib/forms";
 import { trackEvent } from "@/lib/analytics";
+import { DIARIOS, EXPERIENCIAS, OBJETIVOS, PERFILES } from "@/lib/beta-opciones";
 
-type Profile = "manual" | "prop";
+type Profile = (typeof PERFILES)[number]["value"];
 type Status = "idle" | "sending" | "error" | "success";
 
 declare global {
@@ -278,12 +279,12 @@ export function BetaApplication() {
           <fieldset aria-describedby={profileInvalid ? "profile-error" : undefined}>
             <legend className="text-sm font-medium text-primary">{es ? "¿Qué tipo de trader eres?" : "What kind of trader are you?"}</legend>
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {(["manual", "prop"] as const).map((value) => {
+              {PERFILES.map(({ value, es: textoEs, en: textoEn }) => {
                 const active = profile === value;
                 return (
                   <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[4px] border px-3.5 text-sm transition-colors ${active ? "border-[var(--ink-3)] bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-[var(--ficha-filo)] text-secondary hover:border-[var(--line-2)] hover:text-primary"}`}>
                     <input ref={value === "manual" ? profileRef : undefined} type="radio" name="profile" value={value} checked={active} onChange={() => { setProfile(value); trackEvent("beta_profile_selected", { profile: value }); }} className="accent-[rgb(var(--accent-base))]" />
-                    {value === "manual" ? es ? "Operativa manual" : "Manual trading" : es ? "Prop firm / evaluación" : "Prop firm / evaluation"}
+                    {es ? textoEs : textoEn}
                   </label>
                 );
               })}
@@ -303,9 +304,7 @@ export function BetaApplication() {
               <span className="relative mt-2 block">
                 <select ref={experienceRef} className={selectClass} value={experience} onChange={(e) => setExperience(e.target.value)} required aria-invalid={experienceInvalid} aria-describedby={experienceInvalid ? "experience-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
-                <option value="under-1">{es ? "Menos de 1 año" : "Under 1 year"}</option>
-                <option value="1-3">1–3 {es ? "años" : "years"}</option>
-                <option value="3-plus">3+ {es ? "años" : "years"}</option>
+                {EXPERIENCIAS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
               </select>
                 {galonSelect}
               </span>
@@ -324,10 +323,7 @@ export function BetaApplication() {
               <span className="relative mt-2 block">
                 <select ref={workflowRef} className={selectClass} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
-                <option value="spreadsheet">{es ? "Excel / Sheets" : "Excel / Sheets"}</option>
-                <option value="journal">{es ? "Otro diario" : "Another journal"}</option>
-                <option value="notes">{es ? "Notas sueltas" : "Loose notes"}</option>
-                <option value="nothing">{es ? "Todavía no" : "Not yet"}</option>
+                {DIARIOS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
               </select>
                 {galonSelect}
               </span>
@@ -338,10 +334,7 @@ export function BetaApplication() {
               <span className="relative mt-2 block">
                 <select ref={goalRef} className={selectClass} value={goal} onChange={(e) => setGoal(e.target.value)} required aria-invalid={goalInvalid} aria-describedby={goalInvalid ? "goal-error" : undefined}>
                 <option value="">{es ? "Selecciona" : "Select"}</option>
-                <option value="metrics">{es ? "Métricas y edge" : "Metrics and edge"}</option>
-                <option value="discipline">{es ? "Disciplina" : "Discipline"}</option>
-                <option value="risk">{es ? "Riesgo y reglas" : "Risk and rules"}</option>
-                <option value="review">{es ? "Revisión de operaciones" : "Trade review"}</option>
+                {OBJETIVOS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
               </select>
                 {galonSelect}
               </span>

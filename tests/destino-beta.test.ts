@@ -16,10 +16,10 @@ const CLAVE = "clave-de-prueba";
 const SOLICITUD = {
   email: "persona@ejemplo.com",
   profile: "manual",
-  experience: "1-3",
+  experience: "3-plus",
   markets: "Forex",
-  workflow: "excel",
-  goal: "disciplina",
+  workflow: "notes",
+  goal: "risk",
   privacyConsent: true,
 } as const;
 
@@ -99,10 +99,19 @@ describe("a dónde va la solicitud de acceso anticipado", () => {
     expect(url).toBe(WEB3FORMS);
     expect(resultado).toEqual({ ok: true, duplicate: false });
     expect(cuerpo).toMatchObject({ access_key: CLAVE, email: SOLICITUD.email, botcheck: "" });
-    const texto = JSON.stringify(cuerpo);
-    for (const dato of [SOLICITUD.profile, SOLICITUD.experience, SOLICITUD.markets, SOLICITUD.workflow, SOLICITUD.goal, "Probando"]) {
-      expect(texto).toContain(dato);
+    const mensaje = String(cuerpo?.message);
+    // El titular lee lo mismo que eligió quien rellena, no el código interno.
+    for (const linea of [
+      "Perfil: Operativa manual",
+      "Experiencia: 3+ años",
+      "Mercados: Forex",
+      "Cómo lleva hoy su diario: Notas sueltas",
+      "Objetivo: Riesgo y reglas",
+      "Comentario: Probando",
+    ]) {
+      expect(mensaje).toContain(linea);
     }
+    expect(String(cuerpo?.subject)).toContain("Operativa manual");
   });
 
   it("si Web3Forms rechaza la solicitud, no se da por enviada", async () => {

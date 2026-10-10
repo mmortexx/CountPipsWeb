@@ -38,7 +38,7 @@
 | `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts`; PostHog sin grabación de sesión y guardando en `localStorage`, no en cookies |
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
 | `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
-| `destino-beta.test.ts` | A dónde va la solicitud de acceso anticipado según el entorno de compilación (pasando por `next.config.ts`): solo con el Apps Script va a él aunque la variable del Worker llegue vacía; con los dos, al Worker; sin ninguno, a Web3Forms con todos los datos; sin clave tampoco, no sale y se avisa |
+| `destino-beta.test.ts` | A dónde va la solicitud de acceso anticipado según el entorno de compilación (pasando por `next.config.ts`): solo con el Apps Script va a él aunque la variable del Worker llegue vacía; con los dos, al Worker; sin ninguno, a Web3Forms con todos los datos y con los textos que vio quien rellena («3+ años», no «3-plus»); sin clave tampoco, no sale y se avisa |
 | `grabado.test.ts` | Reglas visuales comprobables por máquina: sin degradados decorativos, fondo limpio, sello de «previsto» |
 | `hero-calcs.test.ts` | Las micro-calculadoras del hero (sin deslizadores) |
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
