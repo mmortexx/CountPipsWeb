@@ -3,9 +3,10 @@ import { TITULAR, LEGAL_ACTUALIZADO } from "@/lib/legal/titular";
 /**
  * Texto de las cuatro páginas legales, en los dos idiomas. Cada afirmación
  * debe describir algo que el sitio hace de verdad: formularios (`forms.ts`:
- * contacto a Web3Forms, acceso anticipado al endpoint de admisión), PostHog
- * solo tras consentimiento y en la UE, tipografías propias y el
- * almacenamiento local listado en la tabla de cookies.
+ * contacto y acceso anticipado a Web3Forms, que los reenvía al correo del
+ * titular), PostHog solo tras consentimiento y en la UE, tipografías propias
+ * y el almacenamiento local listado en la tabla de cookies. Los datos del
+ * titular salen de `titular.ts`.
  *
  * Es un borrador del autor del sitio, no de un abogado: debe revisarlo un
  * profesional antes de cobrar nada, sobre todo términos de venta y licencia.
@@ -41,10 +42,8 @@ export type DocumentoLegal = {
   secciones: Seccion[];
 };
 
-const CONTACTO_ES =
-  "Puedes ejercerlos escribiendo desde el formulario de contacto de la página de preguntas frecuentes. Te responderemos en el plazo que marca la ley.";
-const CONTACTO_EN =
-  "You can exercise them by writing through the contact form on the FAQ page. We will reply within the period the law allows.";
+const CONTACTO_ES = `Puedes ejercerlos escribiendo a ${TITULAR.correo} o desde el formulario de contacto de la página de preguntas frecuentes. Te responderemos en el plazo que marca la ley.`;
+const CONTACTO_EN = `You can exercise them by writing to ${TITULAR.correo} or through the contact form on the FAQ page. We will reply within the period the law allows.`;
 
 /* ---- Privacidad ---- */
 
@@ -68,9 +67,8 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          // No remite al aviso legal: nombre fiscal, NIF y domicilio siguen vacíos (ver `titular.ts`).
-          es: `El responsable del tratamiento es el titular de ${TITULAR.nombreComercial}. Los datos identificativos completos se publicarán en el aviso legal cuando se abra la entrega comercial; mientras tanto, el contacto es el formulario de contacto de la página de preguntas frecuentes.`,
-          en: `The data controller is the owner of ${TITULAR.nombreComercial}. Full identifying details will be published in the legal notice when commercial delivery opens; until then, the contact is the contact form on the FAQ page.`,
+          es: `El responsable del tratamiento es ${TITULAR.nombreFiscal}, con NIF ${TITULAR.nif} y domicilio en ${TITULAR.domicilio}, titular de ${TITULAR.nombreComercial}. Para cualquier cuestión sobre tus datos puedes escribir a ${TITULAR.correo}.`,
+          en: `The data controller is ${TITULAR.nombreFiscal}, tax ID (NIF) ${TITULAR.nif}, with address at ${TITULAR.domicilio}, owner of ${TITULAR.nombreComercial}. For any question about your data you can write to ${TITULAR.correo}.`,
         },
       ],
     },
@@ -93,12 +91,12 @@ const privacidad: DocumentoLegal = {
               es: [
                 "Solicitud de acceso anticipado",
                 "Email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo, comentario opcional, idioma y origen/UTM",
-                "El endpoint de admisión, con acceso restringido",
+                "Web3Forms, que la reenvía al correo del titular",
               ],
               en: [
                 "Early-access application",
                 "Email, profile, experience, markets, journaling method, goal, optional note, language and source/UTM",
-                "The admission endpoint, with restricted access",
+                "Web3Forms, which forwards it to the owner’s email",
               ],
             },
             {
@@ -181,22 +179,20 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Los proveedores que pueden intervenir son el endpoint de admisión, Turnstile para el control anti-bot, PostHog en la UE si aceptas analítica, Web3Forms para contacto y el alojamiento estático:",
-          en: "Providers that may be involved are the admission endpoint, Turnstile for anti-bot protection, EU-hosted PostHog if you accept analytics, Web3Forms for contact and static hosting:",
+          es: "Los proveedores que pueden intervenir son Web3Forms para los dos formularios, Turnstile para el control anti-bot, PostHog en la UE si aceptas analítica y el alojamiento estático:",
+          en: "Providers that may be involved are Web3Forms for both forms, Turnstile for anti-bot protection, EU-hosted PostHog if you accept analytics, and static hosting:",
         },
         {
           tipo: "lista",
           es: [
-            "Endpoint de admisión: recibe y deduplica solicitudes para el equipo de selección.",
+            "Web3Forms: recibe la solicitud de acceso anticipado y el formulario de contacto, y los reenvía al correo del titular.",
             "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado.",
             "PostHog EU: recibe eventos técnicos solo tras consentimiento analítico.",
-            "Web3Forms: recibe el formulario de contacto y lo reenvía al correo del titular.",
           ],
           en: [
-            "Admission endpoint — receives and deduplicates applications for the selection team.",
+            "Web3Forms — receives the early-access application and the contact form, and forwards them to the owner’s email.",
             "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
             "EU PostHog — receives technical events only after analytics consent.",
-            "Web3Forms — receives the contact form and forwards it to the owner’s email.",
           ],
         },
         {
@@ -367,8 +363,8 @@ const cookies: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Pulsa «Preferencias de privacidad» al final de cualquier página y elige «Solo necesarias»: eso retira el permiso y detiene la medición. Para borrar además lo ya guardado en tu equipo, vacía los datos de este sitio desde los ajustes de tu navegador. Y si quieres suprimir una solicitud de acceso anticipado, escríbenos.",
-          en: "Use “Privacy preferences” at the bottom of any page and choose “Necessary only”: that withdraws the permission and stops measurement. To also erase what is already stored on your device, clear this site’s data from your browser settings. And to delete an early-access application, write to us.",
+          es: `Pulsa «Preferencias de privacidad» al final de cualquier página y elige «Solo necesarias»: eso retira el permiso y detiene la medición. Para borrar además lo ya guardado en tu equipo, vacía los datos de este sitio desde los ajustes de tu navegador. Y si quieres suprimir una solicitud de acceso anticipado, escribe a ${TITULAR.correo}.`,
+          en: `Use “Privacy preferences” at the bottom of any page and choose “Necessary only”: that withdraws the permission and stops measurement. To also erase what is already stored on your device, clear this site’s data from your browser settings. And to delete an early-access application, write to ${TITULAR.correo}.`,
         },
       ],
     },
@@ -541,8 +537,23 @@ const avisoLegal: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: `Este sitio presenta ${TITULAR.nombreComercial}, un programa de escritorio para llevar un diario de operaciones de trading.`,
-          en: `This site presents ${TITULAR.nombreComercial}, a desktop application for keeping a trading journal.`,
+          es: `Este sitio presenta ${TITULAR.nombreComercial}, un programa de escritorio para llevar un diario de operaciones de trading. Su titular es:`,
+          en: `This site presents ${TITULAR.nombreComercial}, a desktop application for keeping a trading journal. Its owner is:`,
+        },
+        {
+          tipo: "lista",
+          es: [
+            `Titular: ${TITULAR.nombreFiscal}`,
+            `NIF: ${TITULAR.nif}`,
+            `Domicilio: ${TITULAR.domicilio}`,
+            `Correo electrónico: ${TITULAR.correo}`,
+          ],
+          en: [
+            `Owner: ${TITULAR.nombreFiscal}`,
+            `Tax ID (NIF): ${TITULAR.nif}`,
+            `Address: ${TITULAR.domicilio}`,
+            `Email: ${TITULAR.correo}`,
+          ],
         },
       ],
     },
