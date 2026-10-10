@@ -26,8 +26,12 @@ export const formsConfigured = ACCESS_KEY.length > 0;
  */
 const WAITLIST_URL = (process.env.NEXT_PUBLIC_WAITLIST_URL ?? "").trim();
 
-/** Endpoint opcional de la solicitud de beta; sin configurar, reutiliza el Apps Script de la lista. */
-const BETA_API_URL = (process.env.NEXT_PUBLIC_BETA_API_URL ?? WAITLIST_URL).trim();
+/**
+ * Worker opcional de la solicitud de beta; sin él, el Apps Script. `||` y no
+ * `??`: la variable que falta llega como "" (next.config.ts la incrusta así y
+ * GitHub pasa vacío un secreto sin definir).
+ */
+const BETA_API_URL = (process.env.NEXT_PUBLIC_BETA_API_URL ?? "").trim() || WAITLIST_URL;
 
 export const betaConfigured = BETA_API_URL.length > 0;
 

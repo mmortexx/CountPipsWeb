@@ -59,12 +59,8 @@ subdirectorio que no existe y **todos los enlaces y recursos darán 404**.
 Las que sí hay que añadir, en *Settings → Environment variables*:
 
 - `NEXT_PUBLIC_WEB3FORMS_KEY` — destino de los formularios de contacto.
-- `NEXT_PUBLIC_WAITLIST_URL` — Apps Script de respaldo para `/beta`
-  (`docs/waitlist-apps-script.js`).
-- `NEXT_PUBLIC_BETA_API_URL` — URL de `POST /v1/applications` del Worker
-  `services/beta-api`. Sin ella, el formulario de `/beta` cae al mismo
-  Apps Script que la lista de espera (mismo contrato, sin panel interno
-  ni deduplicación por base de datos).
+- `NEXT_PUBLIC_WAITLIST_URL` y `NEXT_PUBLIC_BETA_API_URL` — destino del
+  formulario de `/beta`; basta con una (ver abajo).
 - `NEXT_PUBLIC_POSTHOG_KEY` — clave de proyecto de PostHog (host EU). Sin
   ella no se carga analítica; el sitio funciona igual.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — site key pública de Turnstile. Sin
@@ -75,6 +71,32 @@ Las que sí hay que añadir, en *Settings → Environment variables*:
 
 Si faltan, el sitio se publica igual pero los formularios avisan del fallo en
 vez de fingir que han enviado.
+
+## A dónde van las solicitudes de acceso anticipado
+
+El formulario de `/beta` envía cada solicitud a **una** dirección, que sale de
+dos variables:
+
+| Variable | Secreto en GitHub | Qué es |
+|---|---|---|
+| `NEXT_PUBLIC_WAITLIST_URL` | `WAITLIST_URL` | El Apps Script que guarda las solicitudes en una hoja de Google (`docs/waitlist-apps-script.js`; la dirección acaba en `/exec`) |
+| `NEXT_PUBLIC_BETA_API_URL` | `BETA_API_URL` | El Worker `services/beta-api` (`POST /v1/applications`), con base de datos y panel propio |
+
+- Con **solo la hoja**, basta `WAITLIST_URL`. Es lo previsto para empezar.
+- Con **las dos**, gana el Worker y la hoja no recibe nada: no es una copia de
+  seguridad que salte si el Worker falla.
+- Con **ninguna**, el sitio se publica igual y el formulario dice que no ha
+  podido enviar; no finge que ha guardado nada.
+
+Una variable vacía o en blanco cuenta como si no existiera. Importa porque
+GitHub entrega vacío un secreto que no está creado, y así el flujo de
+publicación siempre pasa las dos (`tests/destino-beta.test.ts`).
+
+En GitHub Pages los valores se ponen como secretos del repositorio
+(*Settings → Secrets and variables → Actions → New repository secret*) y entran
+en el siguiente despliegue. En Cloudflare Pages, como variables de entorno con el
+nombre `NEXT_PUBLIC_…`. Las dos direcciones son públicas por diseño: viajan en el
+JavaScript de la página y solo permiten añadir solicitudes, no leerlas.
 
 ## Apuntar el dominio
 
