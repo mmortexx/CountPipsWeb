@@ -50,7 +50,7 @@ export function BotonCopiar({
       type="button"
       onClick={copiar}
       disabled={disabled}
-      className="toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary outline-none transition-colors hover:text-[rgb(var(--accent-base))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] disabled:cursor-not-allowed disabled:opacity-40"
+      className="link-underline-host toque-comodo inline-flex items-center gap-1.5 whitespace-nowrap text-xs font-semibold text-primary outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] disabled:cursor-not-allowed disabled:opacity-40"
     >
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         {estado === "copiado" ? (
@@ -62,7 +62,7 @@ export function BotonCopiar({
           </>
         )}
       </svg>
-      <span>{estado === "copiado" ? hecho : estado === "fallo" ? fallo : rotulo}</span>
+      <span className="link-underline link-underline--al-pasar">{estado === "copiado" ? hecho : estado === "fallo" ? fallo : rotulo}</span>
       {/* La región viva nace vacía: con el rótulo dentro, se leería al cargar. */}
       <span role="status" className="sr-only">
         {estado === "copiado" ? hecho : estado === "fallo" ? fallo : ""}

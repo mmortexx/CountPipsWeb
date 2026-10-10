@@ -98,10 +98,10 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                     <li key={h.slug} className="border-b border-[var(--line)]">
                       <Link
                         href={`/herramientas/${h.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 gap-1 py-3.5 transition-colors sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5 lg:grid-cols-1 lg:gap-1"
+                        className="link-underline-host grid min-h-[52px] grid-cols-1 gap-1 py-3.5 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5 lg:grid-cols-1 lg:gap-1"
                       >
-                        <span className="text-[14px] font-semibold text-primary transition-colors group-hover:text-[rgb(var(--accent-base))]">
-                          {es ? h.tituloEs : h.tituloEn}
+                        <span className="text-[14px] font-semibold text-primary">
+                          <span className="link-underline link-underline--al-pasar">{es ? h.tituloEs : h.tituloEn}</span>
                         </span>
                         <span className="text-[13px] leading-[1.5] text-secondary">
                           {es ? h.resumenEs : h.resumenEn}
