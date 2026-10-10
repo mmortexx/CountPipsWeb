@@ -3,7 +3,8 @@
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
-import { arranqueMedido } from "@/lib/producto";
+import { PROGRAMA, arranqueMedido } from "@/lib/producto";
+import { fmtInt } from "@/lib/trading/format";
 
 interface SpecRow {
   /** Rótulo y valor bilingües. */
@@ -28,8 +29,8 @@ export function TechSpecs() {
     {
       labelEs: "Plataforma",
       labelEn: "Platform",
-      valueEs: "Windows 10/11 (64 bits), nativa: WinUI 3",
-      valueEn: "Windows 10/11 (64-bit), native: WinUI 3",
+      valueEs: "Windows 10/11 de 64 bits (x64), nativa: WinUI 3",
+      valueEn: "64-bit Windows 10/11 (x64), native: WinUI 3",
     },
     {
       labelEs: "Arranque",
@@ -40,27 +41,27 @@ export function TechSpecs() {
     {
       labelEs: "Carpeta de datos",
       labelEn: "Data folder",
-      valueEs: "%LOCALAPPDATA%\\CountPips",
-      valueEn: "%LOCALAPPDATA%\\CountPips",
+      valueEs: PROGRAMA.carpetaDatos,
+      valueEn: PROGRAMA.carpetaDatos,
       mono: true,
     },
     {
       labelEs: "Base de datos",
       labelEn: "Database",
-      valueEs: "SQLite en modo WAL, un único archivo",
-      valueEn: "SQLite in WAL mode, a single file",
+      valueEs: "SQLite en modo WAL, un único archivo de base de datos",
+      valueEn: "SQLite in WAL mode, a single database file",
     },
     {
       labelEs: "Cifrado en reposo",
       labelEn: "Encryption at rest",
-      valueEs: "EFS de Windows, opcional",
-      valueEn: "Windows EFS, optional",
+      valueEs: "EFS de Windows, opcional; no en Windows Home",
+      valueEn: "Windows EFS, optional; not on Windows Home",
     },
     {
-      labelEs: "Copia en la nube",
-      labelEn: "Cloud copy",
-      valueEs: "AES-256-GCM · PBKDF2 600.000, opcional",
-      valueEn: "AES-256-GCM · PBKDF2 600,000, optional",
+      labelEs: "Copias cifradas",
+      labelEn: "Encrypted copies",
+      valueEs: `AES-256-GCM · PBKDF2 ${fmtInt(PROGRAMA.pbkdf2Iteraciones, "es")}, opcionales`,
+      valueEn: `AES-256-GCM · PBKDF2 ${fmtInt(PROGRAMA.pbkdf2Iteraciones, "en")}, optional`,
       mono: true,
     },
     {
@@ -123,8 +124,8 @@ export function TechSpecs() {
           <p className="medida text-xs text-tertiary leading-[1.6]">
             <span>
               {es
-                ? "Funciona sin conexión. La licencia se revalida como mucho una vez al día y aguanta 30 días sin red; si caduca, la app pasa a solo lectura y tus datos siguen siendo tuyos."
-                : "Works offline. The licence is revalidated at most once a day and lasts 30 days without a connection; if it lapses, the app switches to read-only and your data stays yours."}
+                ? `Activar la licencia pide conexión una vez; después funciona sin ella. Se revalida como mucho una vez al día y aguanta ${PROGRAMA.graciaSinRedDias} días sin red; si caduca, la app pasa a solo lectura y puedes seguir consultando, exportando y copiando tus datos.`
+                : `Activating the licence needs a connection once; after that it works offline. It is revalidated at most once a day and lasts ${PROGRAMA.graciaSinRedDias} days without a connection; if it lapses, the app switches to read-only and you can still view, export and back up your data.`}
             </span>
           </p>
         </Reveal>

@@ -14,7 +14,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
   const es = lang === "es";
   const cards = [
     { t: es ? "En tu equipo" : "On your machine", d: es ? "Tus operaciones viven en tu disco. Sin cuenta, sin telemetría y sin servidores de CountPips." : "Your trades live on your disk. No account, no telemetry and no CountPips servers." },
-    { t: es ? "Copias verificadas" : "Verified backups", d: es ? "Una base de datos SQLite con copias automáticas verificadas y restauración a la vista." : "One SQLite database with verified automatic backups and visible restore." },
+    { t: es ? "Copias verificadas" : "Verified backups", d: es ? "Una base de datos SQLite con copias automáticas verificadas, restauración a la vista y, si quieres, copias con contraseña propia." : "One SQLite database with verified automatic backups, visible restore and, if you want, backups with their own password." },
     { t: es ? "Exportar e importar" : "Export & import", d: es ? "Exporta a CSV, JSON completo y PDF, e importa cualquier CSV con mapeo de columnas." : "Export to CSV, full JSON and PDF, and import any CSV with column mapping." },
   ];
   const compare: { l: string; tj: string | boolean; cloud: string | boolean }[] = [
@@ -92,7 +92,7 @@ export function SecuritySection({ enPagina = false }: { enPagina?: boolean } = {
               ))}
             </dl>
             <p className="medida mt-3 text-[13px] leading-[1.6] text-tertiary">
-              {es ? "Nada más. Las copias locales cifradas y Windows Hello están construidos pero apagados hasta tener su flujo completo." : "Nothing else. Encrypted local backups and Windows Hello are built but switched off until their flow is complete."}
+              {es ? "Nada más. Windows Hello todavía no está disponible: hoy protege el programa el bloqueo de tu sesión de Windows." : "Nothing else. Windows Hello is not available yet: today the app is protected by your Windows sign-in lock."}
             </p>
           </div>
         </div>

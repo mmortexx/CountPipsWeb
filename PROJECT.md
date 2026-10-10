@@ -39,14 +39,14 @@ Windows (WinUI 3, en otro repositorio).
 - **Cifras que caben**: `.caja-cifra` + `.cifra-xl/-lg/-sm` (consultas de contenedor),
   nunca `clamp()` contra el ancho de la ventana.
 - **Toque**: 44 px en puntero grueso (`.toque-comodo`); campos a 16 px en móvil.
-- **Afirmaciones técnicas**: sólo lo comprobado en el código del programa.
+- **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y
+  listas que cita la web viven en `PROGRAMA` (`src/lib/producto.ts`) y las conexiones en
+  `src/lib/conexiones.ts`; `tests/programa.test.ts` las compara con el código del programa
+  si `COUNTPIPS_REPO` apunta a una copia (sin ella, se salta).
 
 ## Pendiente de decidir por el dueño
 
 - Las capturas del programa sólo existen en español.
-- «Sin servidores», «0 bytes enviados a la nube» y «cifrado en reposo» chocan con lo
-  que hace el programa: descarga datos de mercado, valida licencias y tiene
-  sincronización opcional, y no se encontró cifrado de la base viva.
 
 ## Puertas
 
