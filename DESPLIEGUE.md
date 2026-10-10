@@ -24,7 +24,10 @@ nada, y lo razonable por su parte es dejar de indexar unas páginas que declaran
 "la buena es esta otra" señalando al vacío.
 
 El día que el dominio esté comprado y apuntando a Cloudflare, se activa con una
-variable de entorno y **no hay que tocar código**:
+variable de entorno y **no hay que tocar código**. Cada PR ya compila el sitio
+así, en la raíz y con esta dirección (trabajo «Dominio propio» de
+`comprobar.yml`), y `tests/dominio-propio.test.ts` comprueba que canónico, mapa
+del sitio, `robots.txt` y tarjetas sociales no dejan atrás ninguna dirección vieja:
 
 ```
 NEXT_PUBLIC_SITE_URL = https://countpips.com
@@ -48,9 +51,14 @@ con el repositorio de GitHub. Cuando pida la configuración de compilación:
 | Campo | Valor |
 |---|---|
 | Framework preset | *None* |
-| Build command | `bun run build` |
+| Build command | `bun install --frozen-lockfile && bun run build` |
 | Build output directory | `out` |
 | Root directory | *(vacío)* |
+
+La instalación va en el propio comando, con `SKIP_DEPENDENCY_INSTALL=1`, porque
+la de Cloudflare por su cuenta no garantiza usar Bun ni respetar `bun.lock`, y
+su Bun por defecto (1.2) no es el del proyecto: `BUN_VERSION` lo fija al mismo
+que `package.json` y los flujos de GitHub.
 
 **No** definas `NEXT_PUBLIC_BASE_PATH` aquí. Esa variable es exclusiva de
 GitHub Pages; si la añades, Cloudflare compilará el sitio esperando un
@@ -58,6 +66,7 @@ subdirectorio que no existe y **todos los enlaces y recursos darán 404**.
 
 Las que sí hay que añadir, en *Settings → Environment variables*:
 
+- `BUN_VERSION` = `1.3.14` y `SKIP_DEPENDENCY_INSTALL` = `1` (ver arriba).
 - `NEXT_PUBLIC_WEB3FORMS_KEY` — destino de los formularios de contacto.
 - `NEXT_PUBLIC_WAITLIST_URL` y `NEXT_PUBLIC_BETA_API_URL` — destinos
   opcionales del formulario de `/beta` (ver abajo).
@@ -65,9 +74,10 @@ Las que sí hay que añadir, en *Settings → Environment variables*:
   ella no se carga analítica; el sitio funciona igual.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — site key pública de Turnstile. Sin
   ella no se renderiza el widget anti-bot en `/beta`.
-- `NEXT_PUBLIC_SITE_URL` — **solo cuando el dominio esté comprado y
-  apuntando**. Antes de eso, déjala sin definir: el sitio usará la dirección
-  donde está publicado y todo seguirá siendo coherente.
+- `NEXT_PUBLIC_SITE_URL` = `https://countpips.com` — **solo con el dominio
+  ya comprado**. Se puede poner al crear el proyecto, antes de conectar el
+  dominio: mientras tanto el sitio solo está en `*.pages.dev`, que
+  `public/_headers` deja fuera del buscador (`X-Robots-Tag: noindex`).
 
 Si faltan, el sitio se publica igual pero los formularios avisan del fallo en
 vez de fingir que han enviado.
@@ -110,7 +120,12 @@ Con `countpips.com` ya comprado: Cloudflare Pages → el proyecto → *Custom
 domains* → añadir `countpips.com`. Si el dominio está registrado fuera de
 Cloudflare, hay que cambiar sus servidores de nombres a los que Cloudflare
 indique; tarda unas horas en propagarse. El certificado HTTPS lo emite
-Cloudflare solo, no hay que hacer nada.
+Cloudflare solo, no hay que hacer nada. Comprado en Cloudflare, ese cambio no
+hace falta.
+
+Conviene añadir también `www.countpips.com` como segundo dominio del mismo
+proyecto, para que quien lo teclee con `www` llegue. El canónico sigue siendo
+el de sin `www`.
 
 ## Cabeceras
 

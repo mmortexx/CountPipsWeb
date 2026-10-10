@@ -186,6 +186,11 @@ jobs:
       - name: Comprobar el HTML compilado (prefijo y vocabulario)
         run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
 
+      # La dirección oficial: canónico, mapa del sitio, robots y tarjetas
+      # sociales en la dirección que pide el entorno, sin restos de otra.
+      - name: Comprobar la dirección oficial
+        run: COMPROBAR_OUT=1 bunx vitest run tests/dominio-propio.test.ts
+
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium
 
