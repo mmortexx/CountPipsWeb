@@ -13,7 +13,8 @@ escritorio y un detalle para móvil.
 - A 390 px una captura entera se ve al 0,22 de su tamaño y no se lee. El
   detalle móvil es un fragmento que se entiende sin leer cifras; cada
   región de abajo dice qué enseña y está medida sobre los originales
-  actuales (1576 × 884). Si cambian las capturas, hay que volver a medirlas.
+  actuales (1576 × 884; el playbook, 1576 × 972, para que quepan las dos
+  filas de fichas). Si cambian las capturas, hay que volver a medirlas.
 """
 
 import sys
@@ -41,22 +42,24 @@ REGIONES_MOVIL = {
     "app-resumen": (818, 428, 706, 432,
         "El calendario del mes. Es la única pieza del producto que se "
         "entiende entera sin leer una sola cifra: una rejilla de días, los "
-        "de pérdida en rojo, los de ganancia en gris oscuro y los que aún "
-        "no han llegado en blanco, con el total de cada semana al margen."),
+        "de pérdida en rojo, los de ganancia en gris oscuro y los que no se "
+        "operó en blanco, con el total de cada semana al margen. Es el mes "
+        "anterior al de la captura, que está entero."),
     "app-registro": (798, 180, 720, 255,
         "El formulario: instrumento, Long/Short, entrada, stop, objetivo y "
         "salida, y debajo el riesgo en dinero y en porcentaje de la cuenta "
         "con su regla stop–entrada–1 R. Las cajas y la regla se leen como "
         "formulario aunque las etiquetas queden pequeñas."),
-    "app-operaciones": (48, 330, 830, 340,
+    "app-operaciones": (48, 255, 830, 345,
         "La fila «Lo que hay en pantalla» —el P&L total a 28 px, que "
         "sobrevive a la reducción— y debajo la cabecera del registro con "
         "sus dos primeras filas: dirección, instrumento, setup, sesión, el "
         "recorrido de la operación y su duración."),
-    "app-analitica": (818, 560, 706, 324,
-        "«Ganadoras vs perdedoras» con sus seis cifras grandes y, debajo, "
-        "el veredicto «Ventaja confirmada» con su valor p. Las dos piezas "
-        "que contestan la única pregunta que importa en esa pantalla."),
+    "app-analitica": (818, 616, 706, 268,
+        "«¿Ventaja real o suerte?»: el veredicto «Ventaja confirmada» con "
+        "su valor p, la frase que dice qué significa y las cuatro cifras "
+        "con su intervalo de confianza. La pieza que contesta la única "
+        "pregunta que importa en esa pantalla."),
     "app-diario": (60, 268, 880, 372,
         "El check-in del día —horas de sueño y estado mental como barras "
         "de cinco pasos— y debajo las dos veces que el programa reconoce "
@@ -65,14 +68,14 @@ REGIONES_MOVIL = {
         "alto que la tira del check-in sola, que a 350 px medía 72 de alto "
         "y no se leía como nada. La frase larga del centro queda cortada "
         "por el borde: el pie dice que es un detalle."),
-    "app-playbook": (48, 505, 483, 398,
-        "Una sola ficha de setup, entera y con su marco: la de reversión. "
+    "app-playbook": (546, 160, 483, 398,
+        "Una sola ficha de setup, entera y con su marco: la de pullback. "
         "Enseñar cinco a la vez a este tamaño no enseña ninguna; una sola "
         "conserva su curva, su muestra, su expectancy, su sello de «no "
         "concluyente» y su reparto de R."),
-    "app-guardian": (798, 332, 720, 262,
+    "app-guardian": (798, 326, 720, 232,
         "El riesgo de la operación en dinero y en porcentaje de la cuenta, "
-        "y debajo los dos avisos. Los triángulos naranjas apilados se leen "
+        "y debajo los tres avisos. Los triángulos naranjas apilados se leen "
         "como «el programa está objetando» sin leer una letra."),
 }
 
