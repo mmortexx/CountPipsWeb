@@ -2126,25 +2126,19 @@ button.icon-btn:hover > svg,
 .cta--primario:hover {
   background: rgb(var(--accent-hover));
 }
-/* La secundaria no compite: texto subrayado, sin caja ni flecha. El
-   filete tenue dice «enlace» sin adorno y se entinta al pasar. */
+/* La secundaria no compite pero se ve que es un botón: misma caja que la
+   primaria, con filete en vez de tinta. El filete se entinta al pasar. */
 .cta--secundario {
-  padding: 0;
-  border: 0;
+  border-color: var(--line-2);
   color: var(--ink);
   background: transparent;
-  font-weight: 500;
-  text-decoration-line: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.3em;
-  text-decoration-color: color-mix(in srgb, currentColor 32%, transparent);
-  transition: text-decoration-color 0.2s var(--ease-suave);
 }
 .cta--secundario:hover {
-  text-decoration-color: currentColor;
+  border-color: var(--ink);
 }
 @media (max-width: 480px) {
-  .cta--primario {
+  .cta--primario,
+  .cta--secundario {
     width: 100%;
   }
 }
