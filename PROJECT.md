@@ -92,6 +92,7 @@ node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón
 node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` (dominio propio)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
+node scripts/barrido-rueda.mjs --base <url>    # ningún recuadro atrapa la rueda del ratón; mismo servidor
 ```
 
 Trampas de medida conocidas: `npx serve -s` devuelve la portada en todas las rutas;

@@ -112,6 +112,10 @@ function auditar(tope) {
     sonda.selectNodeContents(n);
     if (sonda.getClientRects().length === 0) continue;
 
+    // Un párrafo en columnas tiene varias líneas a la misma altura: cada columna cuenta aparte.
+    const columnas = c.columnCount === "auto" ? 1 : Number(c.columnCount);
+    const caja = columnas > 1 ? el.getBoundingClientRect() : null;
+    const paso = caja ? (caja.width + (parseFloat(c.columnGap) || 0)) / columnas : 0;
     const porLinea = new Map();
     const r = document.createRange();
     for (let i = 0; i < t.length; i++) {
@@ -120,7 +124,8 @@ function auditar(tope) {
       const rect = r.getBoundingClientRect();
       if (!rect.height) continue;
       // 2 px de tolerancia: acentos y mayúsculas mueven el `top` dentro de la misma línea.
-      const clave = Math.round(rect.top / 2) * 2;
+      const columna = caja ? Math.floor((rect.left - caja.left) / paso) : 0;
+      const clave = `${columna}|${Math.round(rect.top / 2) * 2}`;
       porLinea.set(clave, (porLinea.get(clave) || 0) + 1);
     }
     if (porLinea.size < 2) continue; // una sola línea: no aplica
