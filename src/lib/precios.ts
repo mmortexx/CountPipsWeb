@@ -5,10 +5,10 @@
  * catálogo real.
  */
 
-/** Dólares al año, plan Core. */
+/** Dólares, pago único del plan Core. */
 export const PRECIO_CORE = 149;
 
-/** Dólares al año, plan Pro. */
+/** Dólares, pago único del plan Pro. */
 export const PRECIO_PRO = 249;
 
 /**

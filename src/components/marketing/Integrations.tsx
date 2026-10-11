@@ -3,6 +3,7 @@
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
+import { PROGRAMA } from "@/lib/producto";
 
 interface Broker {
   name: string;
@@ -15,13 +16,11 @@ interface Broker {
  * plantillas de mejor esfuerzo: el asistente corrige cualquier columna y
  * guarda la receta. Cualquier otro CSV entra con mapeo manual.
  */
-const BROKERS: Broker[] = [
-  { name: "Interactive Brokers", via: "CSV, Flex Query" },
-  { name: "MetaTrader 4/5", via: "CSV" },
-  { name: "TradingView", via: "CSV" },
-  { name: "Binance", via: "CSV, API" },
-  { name: "Bybit", via: "CSV" },
-];
+const VIA: Partial<Record<(typeof PROGRAMA.plantillasCsv)[number], string>> = {
+  "Interactive Brokers": "CSV, Flex Query",
+  Binance: "CSV, API",
+};
+const BROKERS: Broker[] = PROGRAMA.plantillasCsv.map((name) => ({ name, via: VIA[name] ?? "CSV" }));
 
 /** Plantillas de importación por plataforma, en español e inglés. */
 export function Integrations() {

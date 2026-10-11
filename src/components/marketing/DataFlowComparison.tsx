@@ -70,7 +70,7 @@ export function DataFlowComparison() {
             color="rgb(var(--accent-base))"
             steps={[
               { label: es ? "Tu operación" : "Your trade", icon: "form" },
-              { label: es ? "Archivo .sqlite" : ".sqlite file", icon: "file", sub: es ? "En tu disco" : "On your disk" },
+              { label: es ? "Archivo SQLite" : "SQLite file", icon: "file", sub: es ? "En tu disco" : "On your disk" },
             ]}
             pulseKey={pulses}
             pulseId="local"

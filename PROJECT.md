@@ -21,8 +21,9 @@ Windows (WinUI 3, en otro repositorio).
   (`useSyncExternalStore`).
 - **Analítica**: PostHog UE, sólo tras consentimiento explícito.
 - **Formularios**: contacto por Web3Forms; acceso anticipado por el Worker de
-  `services/beta-api/` (D1, KV, Turnstile) o, sin él, por el Apps Script de
-  `docs/waitlist-apps-script.js`.
+  `services/beta-api/` (D1, KV, Turnstile), el Apps Script de
+  `docs/waitlist-apps-script.js` o, sin ninguno, por Web3Forms al correo
+  (`DESPLIEGUE.md`).
 
 ## Sistema de diseño
 
@@ -39,19 +40,21 @@ Windows (WinUI 3, en otro repositorio).
 - **Cifras que caben**: `.caja-cifra` + `.cifra-xl/-lg/-sm` (consultas de contenedor),
   nunca `clamp()` contra el ancho de la ventana.
 - **Toque**: 44 px en puntero grueso (`.toque-comodo`); campos a 16 px en móvil.
-- **Afirmaciones técnicas**: sólo lo comprobado en el código del programa.
+- **Afirmaciones técnicas**: sólo lo comprobado en el código del programa. Las cifras y
+  listas que cita la web viven en `PROGRAMA` (`src/lib/producto.ts`) y las conexiones en
+  `src/lib/conexiones.ts`; `tests/programa.test.ts` las compara con el código del programa
+  si `COUNTPIPS_REPO` apunta a una copia (sin ella, se salta).
 
 ## Pendiente de decidir por el dueño
 
 - Las capturas del programa sólo existen en español.
-- «Sin servidores», «0 bytes enviados a la nube» y «cifrado en reposo» chocan con lo
-  que hace el programa: descarga datos de mercado, valida licencias y tiene
-  sincronización opcional, y no se encontró cifrado de la base viva.
 
 ## Puertas
 
 Nada está terminado sin estas cuatro en verde. El CI las corre, con la prueba de humo, en
-cada PR (`comprobar.yml`) y otra vez antes de publicar (`deploy.yml`):
+cada PR (`comprobar.yml`) y otra vez antes de publicar (`deploy.yml`). En cada PR, además,
+compila el sitio como se servirá en `countpips.com` (raíz, sin prefijo) y lo recorre, también
+con las cabeceras de seguridad de `public/_headers` puestas (`cabeceras.mjs`):
 
 ```bash
 bun run typecheck
@@ -87,6 +90,7 @@ node scripts/anuncios.mjs --serve out      # resultados anunciados a lectores de
 node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón
+node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` (dominio propio)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
 ```
 

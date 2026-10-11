@@ -6,6 +6,7 @@
  */
 
 import { LO_QUE_VA_SOLO } from "./conexiones";
+import { PROGRAMA, enumerar } from "./producto";
 
 export type QA = { q: string; a: string };
 
@@ -16,7 +17,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Mis datos están seguros?",
-    a: `Tus operaciones viven en una base de datos SQLite dentro de tu equipo. No hay cuenta ni telemetría, y CountPips no tiene servidores donde guardarlas. Puedes activar el cifrado EFS de Windows sobre la carpeta de datos. Solo salen del equipo si activas una función que lo necesita, como la copia cifrada en tu propia carpeta de nube. ${LO_QUE_VA_SOLO.es}; la lista completa está en la página de seguridad.`,
+    a: `Tus operaciones viven en una base de datos SQLite dentro de tu equipo. No hay cuenta ni telemetría, y CountPips no tiene servidores donde guardarlas. Puedes activar el cifrado EFS de Windows sobre la carpeta de datos, salvo en Windows Home. Solo salen del equipo si activas una función que lo necesita, como la copia cifrada en una carpeta que ya sincroniza tu nube. ${LO_QUE_VA_SOLO.es}. La lista completa está en la página de seguridad.`,
   },
   {
     q: "¿Puedo exportar mis datos?",
@@ -28,7 +29,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Puedo importar de otro diario?",
-    a: "Sí, si exporta a CSV: el asistente de importación mapea las columnas y guarda la receta para la próxima vez. Trae plantillas para Interactive Brokers, MetaTrader 4 y 5, TradingView, Binance y Bybit, y Binance puede sincronizarse en solo lectura. Los importadores dedicados de TradeZella, Tradervue y Edgewonk todavía no existen.",
+    a: `Sí, si exporta a CSV: el asistente de importación mapea las columnas y guarda la receta para la próxima vez. Trae plantillas para ${enumerar(PROGRAMA.plantillasCsv, "es")}, y Binance puede sincronizarse en solo lectura. Los importadores dedicados de TradeZella, Tradervue y Edgewonk todavía no existen.`,
   },
   {
     q: "¿Cómo se selecciona el acceso anticipado?",
@@ -48,7 +49,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
-    a: "Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y 2 cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.",
+    a: `Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y ${PROGRAMA.cuentasCore} cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.`,
   },
   {
     q: "¿Qué datos pide esta web?",
@@ -71,7 +72,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "Is my data safe?",
-    a: `Your trades live in a SQLite database on your machine. There is no account and no telemetry, and CountPips has no servers to store them. You can turn on Windows EFS encryption for the data folder. They only leave your machine if you turn on a feature that needs them, such as the encrypted copy in your own cloud folder. ${LO_QUE_VA_SOLO.en}; the full list is on the security page.`,
+    a: `Your trades live in a SQLite database on your machine. There is no account and no telemetry, and CountPips has no servers to store them. You can turn on Windows EFS encryption for the data folder, except on Windows Home. They only leave your machine if you turn on a feature that needs them, such as the encrypted copy in a folder your cloud already syncs. ${LO_QUE_VA_SOLO.en}. The full list is on the security page.`,
   },
   {
     q: "Can I export my data?",
@@ -83,7 +84,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "Can I import from another journal?",
-    a: "Yes, if it exports to CSV: the import wizard maps the columns and saves the recipe for next time. It ships templates for Interactive Brokers, MetaTrader 4 and 5, TradingView, Binance and Bybit, and Binance can sync in read-only mode. Dedicated importers for TradeZella, Tradervue and Edgewonk do not exist yet.",
+    a: `Yes, if it exports to CSV: the import wizard maps the columns and saves the recipe for next time. It ships templates for ${enumerar(PROGRAMA.plantillasCsv, "en")}, and Binance can sync in read-only mode. Dedicated importers for TradeZella, Tradervue and Edgewonk do not exist yet.`,
   },
   {
     q: "How is early access selected?",
@@ -103,7 +104,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What’s the difference between Core and Pro?",
-    a: "Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and 2 trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.",
+    a: `Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and ${PROGRAMA.cuentasCore} trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.`,
   },
   {
     q: "What data does this website ask for?",

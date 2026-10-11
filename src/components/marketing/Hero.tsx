@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Palabras } from "@/components/tj/Palabras";
+import { PROGRAMA } from "@/lib/producto";
 
 /**
  * Hero — sección `#top`. Titular centrado, dos llamadas y, debajo, lo que
@@ -17,10 +18,8 @@ export function Hero({ producto }: { producto?: ReactNode }) {
   /* Las tres diferencias frente a otros diarios, juntas y en voz baja.
      «Previsto» porque la venta no está abierta. */
   const datos = es
-    ? "Pago único previsto, sin suscripción. Sin servidores: tus datos, en tu equipo. Demo sin registro."
-    : "Planned one-time payment, no subscription. No servers: your data, on your machine. Demo without sign-up.";
-
-  const compatibles = ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"];
+    ? "Pago único previsto, sin suscripción. Sin servidores de CountPips: tus operaciones, en tu equipo. Demo sin registro."
+    : "Planned one-time payment, no subscription. No CountPips servers: your trades, on your machine. Demo without sign-up.";
 
   return (
     <section id="top" className="tj-hero relative">
@@ -62,7 +61,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
           {/* Con cinco nombres en dos columnas, el último ocupa las dos para
               centrarse de verdad. */}
           <ul className="m-0 grid grid-cols-2 gap-x-8 gap-y-2 p-0 text-[15px] font-semibold tracking-[-0.01em] text-secondary [&>li:last-child:nth-child(odd)]:col-span-2 sm:flex sm:flex-wrap sm:items-center sm:justify-center">
-            {compatibles.map((c) => (
+            {PROGRAMA.plantillasCsv.map((c) => (
               <li key={c}>{c}</li>
             ))}
           </ul>
