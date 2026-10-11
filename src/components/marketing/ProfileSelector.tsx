@@ -41,14 +41,14 @@ export function ProfileSelector() {
 
   return (
     <section className="section-tight" aria-labelledby="profile-selector-title">
-      {/* En escritorio, cabecera a la izquierda y los dos recorridos apilados a
-          la derecha. */}
-      <div className="tj-container tj-split lg:grid lg:items-start">
-        <div className="max-w-2xl">
+      {/* Cabecera partida y, debajo, los dos recorridos lado a lado: apilados a
+          la derecha dejaban media columna vacía bajo el titular. */}
+      <div className="tj-container">
+        <div className="tj-split grid gap-y-6 lg:items-end">
           <h2 id="profile-selector-title" className="t-h2 text-primary text-balance">
             {es ? <>Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span></>}
           </h2>
-          <p className="mt-4 t-entradilla text-secondary">
+          <p className="medida t-entradilla text-secondary lg:pb-1">
             {/* Promete lo que hay tras el enlace: los recorridos son páginas
                 propias, no tocan la demo. */}
             {es
@@ -57,7 +57,7 @@ export function ProfileSelector() {
           </p>
         </div>
 
-        <div className="mt-12 grid md:grid-cols-2 lg:mt-0 lg:grid-cols-1 lg:border-b lg:border-[var(--line)]">
+        <div className="mt-10 grid border-[var(--line)] md:grid-cols-2 md:border-y">
           {profiles.map((profile, i) => {
             return (
               <Link
@@ -67,8 +67,8 @@ export function ProfileSelector() {
                 onClick={() => trackEvent("profile_selected", { profile: profile.id })}
                 className={`group relative flex flex-col py-8 outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] ${
                   i === 0
-                    ? "md:pr-12 lg:pr-0 lg:border-t lg:border-[var(--line)]"
-                    : "border-t border-[var(--line)] md:border-t-0 md:border-l md:pl-12 lg:border-l-0 lg:border-t lg:pl-0"
+                    ? "md:pr-12"
+                    : "border-t border-[var(--line)] md:border-t-0 md:border-l md:pl-12"
                 }`}
               >
                 <p className="eyebrow">
