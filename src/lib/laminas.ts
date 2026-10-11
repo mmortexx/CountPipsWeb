@@ -26,26 +26,27 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "Debajo del formulario de registro, la pantalla de resumen abre en dos: la curva de " +
       "rendimiento con las zonas de caída sombreadas y el balance en trazo discontinuo, y el " +
       "calendario del mes con el resultado de cada día y el total de cada semana. Encima, " +
-      "cómo van tus diez últimas operaciones y una pregunta del 1 al 5 sobre cómo te has " +
-      "sentido operando hoy, que se apunta en las operaciones del día.",
+      "el parte de hoy —\u2060lo que tu histórico dice del día antes de operar\u2060—, los avisos " +
+      "de conducta y una pregunta sobre cómo te has sentido operando hoy, que se apunta en " +
+      "las operaciones del día.",
     notaEn:
       "Below the logging form, the overview screen splits in two: the performance curve with " +
       "its drawdown areas shaded and the balance as a dashed line, and the month calendar " +
-      "with each day’s result and each week’s total. Above them, how your last ten trades " +
-      "are going and a 1-to-5 question about how trading felt today, which is recorded " +
-      "against the day’s trades.",
+      "with each day’s result and each week’s total. Above them, today’s briefing (what " +
+      "your history says about the day before you trade), the behaviour notices and a " +
+      "question about how trading felt today, which is recorded against the day’s trades.",
     altEs:
-      "Pantalla de resumen: arriba, el rendimiento rodante de las diez últimas operaciones " +
-      "con su win rate, su expectancy y su P&L; debajo, una pregunta para puntuar del 1 al 5 " +
-      "cómo te has sentido operando hoy, la curva de rendimiento con las casillas de " +
-      "rendimiento y balance, y un calendario mensual con la ganancia o pérdida de cada día, " +
-      "el acumulado semanal en el margen y el mejor y el peor día al pie.",
+      "Pantalla de resumen: arriba, el final del parte de hoy, con lo que el histórico dice " +
+      "del día y una pregunta para puntuar de «muy mal» a «muy bien» cómo te has sentido " +
+      "operando hoy, junto a los avisos de conducta; debajo, la curva de rendimiento con las " +
+      "casillas de rendimiento y balance, y un calendario mensual con la ganancia o pérdida " +
+      "de cada día, el acumulado semanal en el margen y el mejor y el peor día al pie.",
     altEn:
-      "Overview screen: at the top, the rolling performance of the last ten trades with " +
-      "their win rate, expectancy and P&L; below, a question to rate from 1 to 5 how trading " +
-      "felt today, the performance curve with its performance and balance checkboxes, and a " +
-      "monthly calendar with each day’s profit or loss, the weekly total in the margin and " +
-      "the best and worst day at the foot.",
+      "Overview screen: at the top, the end of today’s briefing, with what the history says " +
+      "about the day and a question to rate from “very bad” to “very good” how trading felt " +
+      "today, beside the behaviour notices; below, the performance curve with its performance " +
+      "and balance checkboxes, and a monthly calendar with each day’s profit or loss, the " +
+      "weekly total in the margin and the best and worst day at the foot.",
     detalleEs: "el calendario del mes",
     detalleEn: "the month calendar",
   },
@@ -98,7 +99,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     ancho: 1576,
     alto: 836,
     anchoMovil: 720,
-    altoMovil: 262,
+    altoMovil: 232,
     roman: "III",
     pestanaEs: "Guardián",
     pestanaEn: "Guardian",
@@ -106,28 +107,33 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     tituloEn: "When the size isn’t yours, it says so first",
     notaEs:
       "La misma operación con más cantidad y el stop más lejos: el riesgo se dispara y " +
-      "aparecen dos avisos. Uno compara lo que estás arriesgando con lo que arriesgas de " +
-      "costumbre sobre doscientas operaciones; el otro sitúa el tamaño frente al Kelly " +
-      "completo y recuerda que, por encima de él, más riesgo da menos crecimiento esperado. " +
+      "aparecen tres avisos. El primero recuerda que vienes de una racha de pérdidas y que " +
+      "este riesgo multiplica el de tus últimas operaciones; el segundo lo compara con lo " +
+      "que arriesgas de costumbre sobre doscientas operaciones; el tercero sitúa el tamaño " +
+      "frente al Kelly completo y recuerda que, por encima de él, más riesgo da menos " +
+      "crecimiento esperado. " +
       "No bloquea el botón: te obliga a pulsarlo habiéndolo leído.",
     notaEn:
-      "The same trade with more size and a wider stop: risk shoots up and two notices " +
-      "appear. One compares what you’re risking with what you usually risk across two " +
-      "hundred trades; the other places the size against full Kelly and points out that " +
-      "beyond it, more risk means less expected growth. It doesn’t disable the button: it " +
-      "makes you press it having read them.",
+      "The same trade with more size and a wider stop: risk shoots up and three notices " +
+      "appear. The first points out that you’re coming off a losing streak and that this " +
+      "risk is a multiple of your recent trades’; the second compares it with what you " +
+      "usually risk across two hundred trades; the third places the size against full Kelly " +
+      "and points out that beyond it, more risk means less expected growth. It doesn’t " +
+      "disable the button: it makes you press it having read them.",
     altEs:
       "El mismo formulario con más cantidad y el stop más lejos: el riesgo en dólares y en " +
-      "porcentaje de la cuenta crece y, debajo, se apilan dos avisos con un triángulo " +
-      "—\u2060«Esto no es como tú operas», que compara el riesgo con el habitual, y «Tu tamaño " +
-      "frente a Kelly»\u2060— antes de los botones de guardar borrador y registrar la operación.",
+      "porcentaje de la cuenta crece y, debajo, se apilan tres avisos con un triángulo " +
+      "—\u2060«Aviso de tilt», por la racha de pérdidas; «Esto no es como tú operas», que compara " +
+      "el riesgo con el habitual, y «Tu tamaño frente a Kelly»\u2060— antes de la cantidad y de " +
+      "los botones de guardar borrador y registrar la operación.",
     altEn:
       "The same form with more size and a wider stop: the risk in dollars and as a share of " +
-      "the account grows and two notices with a warning triangle stack below —“This isn’t " +
-      "how you usually trade”, which compares the risk with the usual one, and “Your size " +
-      "against Kelly”— before the save-draft and log-trade buttons.",
-    detalleEs: "el riesgo y sus dos avisos",
-    detalleEn: "the risk and its two notices",
+      "the account grows and three notices with a warning triangle stack below —“Tilt " +
+      "warning”, for the losing streak; “This isn’t how you usually trade”, which compares " +
+      "the risk with the usual one, and “Your size against Kelly”— before the quantity and " +
+      "the save-draft and log-trade buttons.",
+    detalleEs: "el riesgo y sus tres avisos",
+    detalleEn: "the risk and its three notices",
   },
 
   operaciones: {
@@ -135,7 +141,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     ancho: 1576,
     alto: 836,
     anchoMovil: 830,
-    altoMovil: 340,
+    altoMovil: 345,
     roman: "IV",
     pestanaEs: "Operaciones",
     pestanaEn: "Trades",
@@ -143,12 +149,12 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     tituloEn: "The whole log, and the metrics of whatever you filter",
     notaEs:
       "Filtros por instrumento, dirección, resultado, cumplimiento, setup, conducta, " +
-      "deslizamiento y sesión. Lo que importa no es la tabla: es la fila de encima, rotulada " +
+      "comisión y sesión. Lo que importa no es la tabla: es la fila de encima, rotulada " +
       "«lo que hay en pantalla», que se recalcula sobre lo que queda tras filtrar. Preguntar " +
       "«¿y si quito los días que no cumplí mi plan?» deja de ser una hipótesis y pasa a ser " +
       "dos clics.",
     notaEn:
-      "Filters by instrument, direction, outcome, rule compliance, setup, behaviour, slippage " +
+      "Filters by instrument, direction, outcome, rule compliance, setup, behaviour, fees " +
       "and session. The table isn’t the point: the row above it is —\u2060labelled “what’s on " +
       "screen”\u2060— and it recalculates over whatever survives the filter. Asking “what if I drop " +
       "the days I broke my plan?” stops being a hypothesis and becomes two clicks.",
@@ -173,7 +179,7 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     ancho: 1576,
     alto: 836,
     anchoMovil: 706,
-    altoMovil: 324,
+    altoMovil: 268,
     roman: "V",
     pestanaEs: "Analítica",
     pestanaEn: "Analytics",
@@ -193,18 +199,18 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
       "doesn’t look like chance.",
     altEs:
       "Pantalla de analítica: el neto de todo el histórico en grande y una tabla por periodo " +
-      "con operaciones, neto, win rate, profit factor y drawdown máximo; el resumen del " +
-      "periodo filtrado; el bloque de ganadoras frente a perdedoras con medias, extremos, " +
-      "payoff y expectancy en R; un bloque de riesgo y calidad con drawdown, Sharpe, Sortino, " +
-      "Calmar, SQN y otros ratios; y el veredicto «Ventaja confirmada» con su valor p.",
+      "con operaciones, neto, win rate, profit factor y peor caída; el resumen del periodo " +
+      "filtrado; un bloque de riesgo y calidad con la mayor caída, Sharpe, Sortino, Calmar, " +
+      "SQN y otros ratios; y el veredicto «Ventaja confirmada» con su valor p y el intervalo " +
+      "de confianza de cada cifra.",
     altEn:
       "Analytics screen: the all-time net in large type and a per-period table with trades, " +
-      "net, win rate, profit factor and maximum drawdown; the filtered-period summary; the " +
-      "winners-versus-losers block with averages, extremes, payoff and expectancy in R; a " +
-      "risk-and-quality block with drawdown, Sharpe, Sortino, Calmar, SQN and other ratios; " +
-      "and the “confirmed edge” verdict with its p-value.",
-    detalleEs: "ganadoras frente a perdedoras y su veredicto",
-    detalleEn: "winners versus losers and their verdict",
+      "net, win rate, profit factor and worst drawdown; the filtered-period summary; a " +
+      "risk-and-quality block with the largest drawdown, Sharpe, Sortino, Calmar, SQN and " +
+      "other ratios; and the “confirmed edge” verdict with its p-value and the confidence " +
+      "interval of each figure.",
+    detalleEs: "el veredicto y su valor p",
+    detalleEn: "the verdict and its p-value",
   },
 
   diario: {
@@ -262,26 +268,26 @@ export const LAMINAS_PRODUCTO: Record<string, LaminaProducto> = {
     notaEs:
       "Cinco estrategias con su curva, su muestra, su expectancy, su win rate, su porcentaje " +
       "de cumplimiento y el reparto de R con la mediana y el 50\u00a0% central. En esta muestra " +
-      "tres salen con «ventaja sugerente» y dos «no concluyente», aunque una de esas dos gana " +
+      "una sale con «ventaja confirmada» y cuatro «no concluyente», aunque las cuatro ganan " +
       "dinero: el sello no premia el resultado, mide si la muestra basta para afirmar algo. " +
       "Un playbook donde todo funciona el primer mes no está midiendo, está halagando.",
     notaEn:
       "Five strategies with their curve, sample, expectancy, win rate, compliance rate and R " +
-      "spread with its median and central 50%. In this sample three come out “edge " +
-      "suggestive” and two “inconclusive”, even though one of those two makes money: the " +
+      "spread with its median and central 50%. In this sample one comes out “edge " +
+      "confirmed” and four “inconclusive”, even though all four make money: the " +
       "stamp doesn’t reward the result, it measures whether the sample is enough to claim " +
       "anything. A playbook where everything works in the first month isn’t measuring, it’s " +
       "flattering.",
     altEs:
-      "Pantalla de playbook con cinco fichas —\u2060rango, tendencia, ruptura, reversión y " +
-      "pullback\u2060—, cada una con su curva en miniatura, P&L total, tamaño de muestra, " +
-      "expectancy, win rate, un sello de «ventaja sugerente» o «no concluyente», la mejor " +
+      "Pantalla de playbook con cinco fichas —\u2060ruptura, pullback, reversión, rango y " +
+      "tendencia\u2060—, cada una con su curva en miniatura, P&L total, tamaño de muestra, " +
+      "expectancy, win rate, un sello de «ventaja confirmada» o «no concluyente», la mejor " +
       "sesión, el cumplimiento, el reparto de R con su mediana y una barra de ganadoras " +
       "frente a perdedoras.",
     altEn:
-      "Playbook screen with five cards —\u2060range, trend, breakout, reversal and pullback\u2060—, each " +
+      "Playbook screen with five cards —\u2060breakout, pullback, reversal, range and trend\u2060—, each " +
       "with a miniature curve, total P&L, sample size, expectancy, win rate, an “edge " +
-      "suggestive” or “inconclusive” stamp, best session, compliance, the R spread with its " +
+      "confirmed” or “inconclusive” stamp, best session, compliance, the R spread with its " +
       "median and a winners-versus-losers bar.",
     detalleEs: "una de las cinco fichas",
     detalleEn: "one of the five cards",
