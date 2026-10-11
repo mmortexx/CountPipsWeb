@@ -1,12 +1,13 @@
+import { destinoBeta } from "@/lib/forms";
 import { TITULAR, LEGAL_ACTUALIZADO } from "@/lib/legal/titular";
 
 /**
  * Texto de las cuatro páginas legales, en los dos idiomas. Cada afirmación
  * debe describir algo que el sitio hace de verdad: formularios (`forms.ts`:
- * contacto y acceso anticipado a Web3Forms, que los reenvía al correo del
- * titular), PostHog solo tras consentimiento y en la UE, tipografías propias
- * y el almacenamiento local listado en la tabla de cookies. Los datos del
- * titular salen de `titular.ts`.
+ * contacto a Web3Forms y acceso anticipado a donde diga `destinoBeta`),
+ * PostHog solo tras consentimiento y en la UE, tipografías propias y el
+ * almacenamiento local listado en la tabla de cookies. Los datos del titular
+ * salen de `titular.ts`.
  *
  * Es un borrador del autor del sitio, no de un abogado: debe revisarlo un
  * profesional antes de cobrar nada, sobre todo términos de venta y licencia.
@@ -46,6 +47,39 @@ const CONTACTO_ES = `Puedes ejercerlos escribiendo a ${TITULAR.correo} o desde e
 const CONTACTO_EN = `You can exercise them by writing to ${TITULAR.correo} or through the contact form on the FAQ page. We will reply within the period the law allows.`;
 
 /* ---- Privacidad ---- */
+
+/** Destino de la solicitud de acceso anticipado, tal como lo decide la compilación. */
+const BETA = {
+  correo: {
+    es: "Web3Forms, que la reenvía al correo del titular",
+    en: "Web3Forms, which forwards it to the owner’s email",
+    proveedorEs: "Web3Forms: recibe la solicitud de acceso anticipado y el formulario de contacto, y los reenvía al correo del titular.",
+    proveedorEn: "Web3Forms — receives the early-access application and the contact form, and forwards them to the owner’s email.",
+    resumenEs: "Web3Forms para los dos formularios",
+    resumenEn: "Web3Forms for both forms",
+  },
+  hoja: {
+    es: "Una hoja de cálculo de Google del titular, a través de Google Apps Script",
+    en: "A Google spreadsheet belonging to the owner, through Google Apps Script",
+    proveedorEs: "Google (Apps Script y Hojas de cálculo): guarda la solicitud de acceso anticipado en una hoja del titular.",
+    proveedorEn: "Google (Apps Script and Sheets) — stores the early-access application in a spreadsheet belonging to the owner.",
+    resumenEs: "Google para la solicitud de acceso anticipado, Web3Forms para el contacto",
+    resumenEn: "Google for the early-access application, Web3Forms for contact",
+  },
+  worker: {
+    es: "El servicio de admisión del titular en Cloudflare, con acceso restringido",
+    en: "The owner’s admission service on Cloudflare, with restricted access",
+    proveedorEs: "Cloudflare Workers: recibe y deduplica las solicitudes de acceso anticipado para el equipo de selección.",
+    proveedorEn: "Cloudflare Workers — receives and deduplicates early-access applications for the selection team.",
+    resumenEs: "Cloudflare para la solicitud de acceso anticipado, Web3Forms para el contacto",
+    resumenEn: "Cloudflare for the early-access application, Web3Forms for contact",
+  },
+}[destinoBeta];
+
+const WEB3FORMS_CONTACTO = {
+  es: "Web3Forms: recibe el formulario de contacto y lo reenvía al correo del titular.",
+  en: "Web3Forms — receives the contact form and forwards it to the owner’s email.",
+};
 
 const privacidad: DocumentoLegal = {
   slug: "privacidad",
@@ -91,12 +125,12 @@ const privacidad: DocumentoLegal = {
               es: [
                 "Solicitud de acceso anticipado",
                 "Email, perfil, experiencia, mercados, cómo llevas hoy tu diario, objetivo, comentario opcional, idioma y origen/UTM",
-                "Web3Forms, que la reenvía al correo del titular",
+                BETA.es,
               ],
               en: [
                 "Early-access application",
                 "Email, profile, experience, markets, journaling method, goal, optional note, language and source/UTM",
-                "Web3Forms, which forwards it to the owner’s email",
+                BETA.en,
               ],
             },
             {
@@ -179,18 +213,20 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Los proveedores que pueden intervenir son Web3Forms para los dos formularios, Turnstile para el control anti-bot, PostHog en la UE si aceptas analítica y el alojamiento estático:",
-          en: "Providers that may be involved are Web3Forms for both forms, Turnstile for anti-bot protection, EU-hosted PostHog if you accept analytics, and static hosting:",
+          es: `Los proveedores que pueden intervenir son ${BETA.resumenEs}, Turnstile para el control anti-bot, PostHog en la UE si aceptas analítica y el alojamiento estático:`,
+          en: `Providers that may be involved are ${BETA.resumenEn}, Turnstile for anti-bot protection, EU-hosted PostHog if you accept analytics, and static hosting:`,
         },
         {
           tipo: "lista",
           es: [
-            "Web3Forms: recibe la solicitud de acceso anticipado y el formulario de contacto, y los reenvía al correo del titular.",
+            BETA.proveedorEs,
+            ...(destinoBeta === "correo" ? [] : [WEB3FORMS_CONTACTO.es]),
             "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado.",
             "PostHog EU: recibe eventos técnicos solo tras consentimiento analítico.",
           ],
           en: [
-            "Web3Forms — receives the early-access application and the contact form, and forwards them to the owner’s email.",
+            BETA.proveedorEn,
+            ...(destinoBeta === "correo" ? [] : [WEB3FORMS_CONTACTO.en]),
             "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
             "EU PostHog — receives technical events only after analytics consent.",
           ],
