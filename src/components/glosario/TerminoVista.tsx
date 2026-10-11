@@ -43,9 +43,11 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
       className="section-tight"
     >
       <div className="tj-container">
-        {/* Desde `lg` los términos vecinos van a un raíl a la derecha y se conserva la medida. */}
-        <div className="lg:grid lg:grid-cols-[minmax(0,62ch)_minmax(0,17rem)] lg:items-start lg:gap-x-14">
-        <div className="w-full max-w-[62ch]">
+        {/* Desde `lg`, las dos columnas de `.tj-split`. La columna izquierda lleva lo
+            que más pesa: la fórmula y, si el término no tiene, los vecinos con su
+            definición; las salidas pasan entonces a la derecha. */}
+        <div className="tj-split lg:grid lg:items-start">
+        <div className={`w-full max-w-[62ch] ${formula ? "" : "lg:col-start-2 lg:row-start-1"}`}>
           {/* La definición es la entradilla de la cabecera (PageHeader). */}
           {formula && (
             <Reveal delay={0.08}>
@@ -88,7 +90,7 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
         </div>
 
           {cercanos.length > 0 && (
-            <Reveal delay={0.18} className="lg:col-start-2 lg:row-start-1">
+            <Reveal delay={0.18} className={formula ? "lg:col-start-2 lg:row-start-1" : "lg:col-start-1 lg:row-start-1"}>
               <div className="mt-12 lg:mt-0">
                 <p className="eyebrow m-0">
                   {es ? "De la misma familia" : "Same family"}
@@ -98,7 +100,7 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
                     <li key={t.slug}>
                       <Link
                         href={`/glosario/${t.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:min-h-0 lg:grid-cols-1 lg:gap-1 lg:py-2"
+                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:grid-cols-1 lg:gap-1"
                       >
                         <span
                           lang="en"
@@ -106,7 +108,7 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
                         >
                           {t.term}
                         </span>
-                        <span className="medida block text-[14px] leading-[1.6] text-secondary lg:hidden">
+                        <span className="medida block text-[14px] leading-[1.6] text-secondary">
                           {es ? t.es : t.en}
                         </span>
                       </Link>
@@ -123,7 +125,7 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
             </Reveal>
           )}
 
-          <Reveal delay={0.22} className="lg:col-start-1 lg:row-start-2 lg:max-w-[62ch]">
+          <Reveal delay={0.22} className="lg:col-span-2 lg:row-start-2">
             <nav
               aria-label={es ? "Recorrer el glosario" : "Browse the glossary"}
               className="mt-12 flex items-stretch justify-between gap-3 border-t border-[var(--line)] pt-6"
