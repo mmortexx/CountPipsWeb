@@ -100,13 +100,13 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
                     <li key={t.slug}>
                       <Link
                         href={`/glosario/${t.slug}`}
-                        className="group grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:grid-cols-1 lg:gap-1"
+                        className="group link-underline-host grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:grid-cols-1 lg:gap-1"
                       >
                         <span
                           lang="en"
                           className="text-[14px] font-medium text-primary"
                         >
-                          {t.term}
+                          <span className="link-underline">{t.term}</span>
                         </span>
                         <span className="medida block text-[14px] leading-[1.6] text-secondary">
                           {es ? t.es : t.en}
