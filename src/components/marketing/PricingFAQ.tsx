@@ -1,7 +1,7 @@
 "use client";
 
 import { PRICING_FAQ_ES, PRICING_FAQ_EN, type QA } from "@/lib/faq";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Reveal } from "@/components/tj/Reveal";
 import { asset } from "@/lib/asset";
@@ -26,7 +26,14 @@ export function PricingFAQ() {
   return (
     <section
       id="pricing-faq"
-      aria-label={es ? "Preguntas frecuentes sobre precios" : "Pricing FAQ"}
+      aria-label={tx(lang, {
+        es: "Preguntas frecuentes sobre precios",
+        en: "Pricing FAQ",
+        pt: "Perguntas frequentes sobre preços",
+        fr: "Foire aux questions sur les tarifs",
+        de: "Häufige Fragen zu Preisen",
+        it: "Domande frequenti sui prezzi",
+      })}
       className="section-tight relative overflow-clip scroll-mt-24"
     >
 
@@ -34,14 +41,22 @@ export function PricingFAQ() {
           del resto de la página. */}
       <div className="relative z-10 tj-container tj-split grid gap-y-8 lg:items-start">
         <SectionHeader
-          titulo={es ? (
-            <>Lo que casi todos quieren saber.</>
-          ) : (
-            <>What almost everyone wants to know.</>
-          )}
-          entradilla={es
-            ? "Cuatro respuestas rápidas sobre la demo, el alcance y el acceso anticipado."
-            : "Four quick answers about the demo, scope and early access."}
+          titulo={tx(lang, {
+            es: <>Lo que casi todos quieren saber.</>,
+            en: <>What almost everyone wants to know.</>,
+            pt: <>O que quase todos querem saber.</>,
+            fr: <>Ce que presque tout le monde veut savoir.</>,
+            de: <>Was fast jeder wissen möchte.</>,
+            it: <>Cosa quasi tutti vogliono sapere.</>,
+          })}
+          entradilla={tx(lang, {
+            es: "Cuatro respuestas rápidas sobre la demo, el alcance y el acceso anticipado.",
+            en: "Four quick answers about the demo, scope and early access.",
+            pt: "Quatro respostas rápidas sobre a demo, o escopo e o acesso antecipado.",
+            fr: "Quatre réponses rapides sur la démo, la portée et l’accès anticipé.",
+            de: "Vier schnelle Antworten zur Demo, zum Umfang und zum Vorabzugang.",
+            it: "Quattro risposte rapide su demo, ambito e accesso anticipato.",
+          })}
         />
 
         <Reveal delay={0.1} y={28}>
@@ -75,14 +90,30 @@ export function PricingFAQ() {
             data-entra="4"
             className="mt-5 text-sm text-tertiary"
           >
-            {es ? "¿Más dudas?" : "More questions?"}{" "}
+            {tx(lang, {
+              es: "¿Más dudas?",
+              en: "More questions?",
+              pt: "Mais dúvidas?",
+              fr: "D’autres questions ?",
+              de: "Weitere Fragen?",
+              it: "Altre domande?",
+            })}{" "}
             <a
               /* Con barra final: sin ella GitHub Pages responde 301 hacia `/faq/`. */
               href={asset(withLocale("/faq/", lang))}
               /* `-my-3 py-3` amplía la zona táctil sin desplazar la línea. */
               className="link-underline-host inline-flex -my-3 py-3 text-primary font-medium"
             >
-              <span className="link-underline">{es ? "Ver FAQ completa" : "See full FAQ"}</span>
+              <span className="link-underline">
+                {tx(lang, {
+                  es: "Ver FAQ completa",
+                  en: "See full FAQ",
+                  pt: "Ver FAQ completa",
+                  fr: "Voir toute la FAQ",
+                  de: "Vollständige FAQ ansehen",
+                  it: "Vedi tutta la FAQ",
+                })}
+              </span>
             </a>
           </p>
         </Reveal>

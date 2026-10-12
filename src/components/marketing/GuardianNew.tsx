@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useLang } from "@/lib/i18n";
+import { useState, type ReactNode } from "react";
+import { useLang, tx } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { fmtInt, fmtNum, pctSep } from "@/lib/trading/format";
 
@@ -30,7 +30,6 @@ type EstadoGuardian = "bloqueado" | "ajustado" | "anulado";
 /** `enPagina`: bajo un PageHeader que ya titula, la cabecera propia solo queda para lectores de pantalla. */
 export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
   const { lang } = useLang();
-  const es = lang === "es";
 
   const [estado, setEstado] = useState<EstadoGuardian>("bloqueado");
   // `number` a propósito: sin la anotación TypeScript lo estrecha a `4 | 2` y
@@ -54,19 +53,22 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             <h2
               className={enPagina ? "sr-only" : "t-h2 m-0 text-primary"}
             >
-              {es ? (
-                <>
-                  Disciplina que actúa,
-                  <br className="hidden sm:block" />
-                  {" "}no que sermonea.
-                </>
-              ) : (
-                <>
-                  Discipline that acts,
-                  <br className="hidden sm:block" />
-                  {" "}not lectures.
-                </>
-              )}
+              {tx<ReactNode>(lang, {
+                es: (
+                  <>
+                    Disciplina que actúa,
+                    <br className="hidden sm:block" />
+                    {" "}no que sermonea.
+                  </>
+                ),
+                en: (
+                  <>
+                    Discipline that acts,
+                    <br className="hidden sm:block" />
+                    {" "}not lectures.
+                  </>
+                ),
+              })}
             </h2>
           </Reveal>
           {!enPagina && (
@@ -78,18 +80,37 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 maxWidth: "36em",
               }}
             >
-              {es
-                ? "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes."
-                : "The Guardian doesn’t tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them."}
+              {tx(lang, {
+                es: "El Guardián no te dice qué hacer: mide cada operación contra las reglas que tú fijaste y, si lo activas, te frena cuando las rompes.",
+                en: "The Guardian doesn’t tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them.",
+              })}
             </p>
           </Reveal>
           )}
           <Reveal delay={0.18}>
           <ul className="m-0 p-0 list-none border-b border-[var(--line)]">
             {[
-              { t: es ? "Semáforo antes de registrar" : "A light before you log", d: es ? "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo." : "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red." },
-              { t: es ? "Freno duro, si tú lo activas" : "A hard brake, if you turn it on", d: es ? "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas." : "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose." },
-              { t: es ? "Saltárselo cuesta un motivo" : "Skipping it costs a reason", d: es ? "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío." : "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head." },
+              {
+                t: tx(lang, { es: "Semáforo antes de registrar", en: "A light before you log" }),
+                d: tx(lang, {
+                  es: "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo.",
+                  en: "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red.",
+                }),
+              },
+              {
+                t: tx(lang, { es: "Freno duro, si tú lo activas", en: "A hard brake, if you turn it on" }),
+                d: tx(lang, {
+                  es: "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas.",
+                  en: "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose.",
+                }),
+              },
+              {
+                t: tx(lang, { es: "Saltárselo cuesta un motivo", en: "Skipping it costs a reason" }),
+                d: tx(lang, {
+                  es: "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío.",
+                  en: "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head.",
+                }),
+              },
             ].map((f) => (
               <li key={f.t} className="border-t border-[var(--line)] py-5">
                 <h3 className="m-0 t-h5" style={{ color: "var(--ink)" }}>{f.t}</h3>
@@ -104,9 +125,9 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             que falla y el veredicto. */}
         <div data-entra className="tj-ficha lg:order-first">
           <p className="tj-ficha-barra">
-            <span>{es ? "Semáforo de riesgo" : "Risk light"}</span>
+            <span>{tx(lang, { es: "Semáforo de riesgo", en: "Risk light" })}</span>
             {/* Es un ejemplo que se puede tocar, no un dato en directo. */}
-            <span>{es ? "Ejemplo" : "Example"}</span>
+            <span>{tx(lang, { es: "Ejemplo", en: "Example" })}</span>
           </p>
           <div className="tj-ficha-cuerpo" data-dibuja>
             <div className="tnum flex items-baseline gap-x-3 pb-4 border-b border-[var(--ficha-division)]">
@@ -115,20 +136,36 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 Long
               </span>
               <span className="text-[13px] text-secondary">
-                {fmtInt(contratos, lang)} {es ? (contratos === 1 ? "contrato" : "contratos") : contratos === 1 ? "contract" : "contracts"}
+                {fmtInt(contratos, lang)}{" "}
+                {contratos === 1
+                  ? tx(lang, { es: "contrato", en: "contract" })
+                  : tx(lang, { es: "contratos", en: "contracts" })}
               </span>
               <span className="ml-auto text-[13px] text-secondary">28 pts</span>
             </div>
             <ul className="m-0 p-0 list-none">
               {[
-                { ok: true, l: es ? `Pérdida del día ${pct(0.6)} · límite ${pct(3)}` : `Daily loss ${pct(0.6)} · limit ${pct(3)}` },
-                { ok: true, l: es ? `Operaciones hoy ${fmtInt(2, lang)} · máximo ${fmtInt(5, lang)}` : `Trades today ${fmtInt(2, lang)} · max ${fmtInt(5, lang)}` },
+                {
+                  ok: true,
+                  l: tx(lang, {
+                    es: `Pérdida del día ${pct(0.6)} · límite ${pct(3)}`,
+                    en: `Daily loss ${pct(0.6)} · limit ${pct(3)}`,
+                  }),
+                },
+                {
+                  ok: true,
+                  l: tx(lang, {
+                    es: `Operaciones hoy ${fmtInt(2, lang)} · máximo ${fmtInt(5, lang)}`,
+                    en: `Trades today ${fmtInt(2, lang)} · max ${fmtInt(5, lang)}`,
+                  }),
+                },
                 {
                   // Texto y estado salen del cálculo, no de una constante.
                   ok: dentroDelLimite,
-                  l: es
-                    ? `Riesgo ${pct(riesgo)} · límite ${pct(LIMITE_RIESGO)}`
-                    : `Risk ${pct(riesgo)} · limit ${pct(LIMITE_RIESGO)}`,
+                  l: tx(lang, {
+                    es: `Riesgo ${pct(riesgo)} · límite ${pct(LIMITE_RIESGO)}`,
+                    en: `Risk ${pct(riesgo)} · limit ${pct(LIMITE_RIESGO)}`,
+                  }),
                 },
               ].map((c, i) => (
                 /* Clave por posición: al ajustar, la fila cambia de texto y de
@@ -139,7 +176,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     className="tj-ficha-estado tj-d-marca"
                     style={{ ["--i" as string]: i, ...(c.ok ? {} : { color: "rgb(var(--pnl-neg))" }) }}
                   >
-                    {c.ok ? (es ? "Cumple" : "Pass") : es ? "Excede" : "Over"}
+                    {c.ok ? tx(lang, { es: "Cumple", en: "Pass" }) : tx(lang, { es: "Excede", en: "Over" })}
                   </span>
                 </li>
               ))}
@@ -152,22 +189,25 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 tono === "ok" ? "rgb(var(--pnl-pos))" : tono === "mal" ? "rgb(var(--pnl-neg))" : "var(--ink-3)";
               const titulo =
                 tono === "neutro"
-                  ? es ? "Registrada con el semáforo en rojo" : "Logged on a red light"
+                  ? tx(lang, { es: "Registrada con el semáforo en rojo", en: "Logged on a red light" })
                   : tono === "ok"
-                    ? es ? "Semáforo en verde" : "Green light"
-                    : es ? "Semáforo en rojo" : "Red light";
+                    ? tx(lang, { es: "Semáforo en verde", en: "Green light" })
+                    : tx(lang, { es: "Semáforo en rojo", en: "Red light" });
               const cuerpo =
                 tono === "neutro"
-                  ? es
-                    ? "El semáforo avisa, no bloquea: la operación se guarda. Lo que bloquea es el freno duro, si lo activas, al tocar tu pérdida diaria, una racha o tu caída máxima."
-                    : "The light warns, it doesn’t block: the trade is saved. What blocks is the hard brake, if you turn it on, when you hit your daily loss, a losing streak or your max drawdown."
+                  ? tx(lang, {
+                      es: "El semáforo avisa, no bloquea: la operación se guarda. Lo que bloquea es el freno duro, si lo activas, al tocar tu pérdida diaria, una racha o tu caída máxima.",
+                      en: "The light warns, it doesn’t block: the trade is saved. What blocks is the hard brake, if you turn it on, when you hit your daily loss, a losing streak or your max drawdown.",
+                    })
                   : tono === "ok"
-                    ? es
-                      ? `Esta operación arriesga ${pct(riesgo)} de tu cuenta, dentro de tu límite por operación.`
-                      : `This trade risks ${pct(riesgo)} of your account, within your per-trade limit.`
-                    : es
-                      ? `Esta operación arriesga ${pct(riesgo)} de tu cuenta; tu límite por operación es ${pct(LIMITE_RIESGO)}.`
-                      : `This trade risks ${pct(riesgo)} of your account; your per-trade limit is ${pct(LIMITE_RIESGO)}.`;
+                    ? tx(lang, {
+                        es: `Esta operación arriesga ${pct(riesgo)} de tu cuenta, dentro de tu límite por operación.`,
+                        en: `This trade risks ${pct(riesgo)} of your account, within your per-trade limit.`,
+                      })
+                    : tx(lang, {
+                        es: `Esta operación arriesga ${pct(riesgo)} de tu cuenta; tu límite por operación es ${pct(LIMITE_RIESGO)}.`,
+                        en: `This trade risks ${pct(riesgo)} of your account; your per-trade limit is ${pct(LIMITE_RIESGO)}.`,
+                      });
               return (
                 <div role="status" aria-live="polite" className="tj-d-veredicto mt-1 pt-5 border-t border-[var(--ficha-division)]">
                   <p className="m-0 text-[12px] font-semibold" style={{ color }}>
@@ -181,15 +221,18 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               {estado === "bloqueado" ? (
                 <>
                   <button type="button" onClick={() => setEstado("ajustado")} className="cta cta--primario tnum">
-                    {es ? `Probar con ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos` : `Try ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts`}
+                    {tx(lang, {
+                      es: `Probar con ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos`,
+                      en: `Try ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts`,
+                    })}
                   </button>
                   <button type="button" onClick={() => setEstado("anulado")} className="cta cta--secundario">
-                    {es ? "Registrar igualmente" : "Log anyway"}
+                    {tx(lang, { es: "Registrar igualmente", en: "Log anyway" })}
                   </button>
                 </>
               ) : (
                 <button type="button" onClick={() => setEstado("bloqueado")} className="cta cta--secundario">
-                  {es ? "Volver al estado inicial" : "Back to the initial state"}
+                  {tx(lang, { es: "Volver al estado inicial", en: "Back to the initial state" })}
                 </button>
               )}
             </div>

@@ -1,8 +1,7 @@
 "use client";
 
 import { useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
-import type { Lang } from "@/lib/i18n";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx, type Lang } from "@/lib/i18n";
 import type { CifrasMuestra } from "@/lib/trading/cifras-muestra";
 import { fmtDate, fmtDiaMes, fmtMoney, fmtNum, fmtOperaciones, fmtPct, fmtR } from "@/lib/trading/format";
 
@@ -114,7 +113,7 @@ type Series = { rend: boolean; balance: boolean };
  * punto final, balance en azul discontinuo, la caída sombreada en rojo, ejes
  * en «L» con dinero y fechas, rejilla solo horizontal y una casilla por serie.
  */
-function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; enfoque: Enfoque }) {
+function Curva({ g, lang, enfoque }: { g: Grafico; lang: Lang; enfoque: Enfoque }) {
   const { INICIAL, SALDOS, TECHOS, FECHAS, N, T, REND, TECHO_REND, VALLE, CIMA, METRICS } = g;
   const [i, setI] = useState<number | null>(null);
   const [series, setSeries] = useState<Series>({ rend: true, balance: true });
@@ -157,22 +156,27 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
 
   const rotulo =
     i === null
-      ? es
-        ? `Balance tras ${N - 1} operaciones`
-        : `Balance after ${N - 1} trades`
+      ? tx(lang, {
+          es: `Balance tras ${N - 1} operaciones`,
+          en: `Balance after ${N - 1} trades`,
+        })
       : k === 0
-        ? es
-          ? "Balance inicial"
-          : "Starting balance"
-        : `${es ? "Operación" : "Trade"} ${k} ${es ? "de" : "of"} ${N - 1}${fecha ? ` · ${fmtDate(fecha, lang)}` : ""}`;
+        ? tx(lang, {
+            es: "Balance inicial",
+            en: "Starting balance",
+          })
+        : `${tx(lang, { es: "Operación", en: "Trade" })} ${k} ${tx(lang, { es: "de", en: "of" })} ${N - 1}${fecha ? ` · ${fmtDate(fecha, lang)}` : ""}`;
 
   const detalle =
     k === 0
-      ? es
-        ? "Punto de partida"
-        : "Starting point"
-      : `${es ? "Rendimiento" : "Performance"} ${fmtMoney(pnl, lang, { sign: true, compact: true })} · ${pnl >= 0 ? "+" : ""}${fmtPct(pnl / INICIAL, lang, 1)}${
-          dd > 0.0005 ? ` · DD −${fmtPct(dd, lang, 1)}` : es ? " · en máximos" : " · at highs"
+      ? tx(lang, {
+          es: "Punto de partida",
+          en: "Starting point",
+        })
+      : `${tx(lang, { es: "Rendimiento", en: "Performance" })} ${fmtMoney(pnl, lang, { sign: true, compact: true })} · ${pnl >= 0 ? "+" : ""}${fmtPct(pnl / INICIAL, lang, 1)}${
+          dd > 0.0005
+            ? ` · DD −${fmtPct(dd, lang, 1)}`
+            : tx(lang, { es: " · en máximos", en: " · at highs" })
         }`;
 
   const mover = (e: PointerEvent<HTMLDivElement>) => {
@@ -187,7 +191,7 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
   const xPct = (j: number) => `${(geo.px(j) / W) * 100}%`;
   const yPct = (v: number) => `${(geo.py(v) / H) * 100}%`;
   const leyenda: { clave: keyof Series; l: string }[] = [
-    { clave: "rend", l: es ? "Rendimiento" : "Performance" },
+    { clave: "rend", l: tx(lang, { es: "Rendimiento", en: "Performance" }) },
     { clave: "balance", l: "Balance" },
   ];
 
@@ -195,7 +199,7 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
     <>
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
         <Lectura rotulo={rotulo} cifra={fmtMoney(saldo, lang, { compact: true })} detalle={detalle} tono={pnl < 0 ? "rgb(var(--pnl-neg))" : undefined} />
-        <div className="tj-curva-leyenda" role="group" aria-label={es ? "Series del gráfico" : "Chart series"}>
+        <div className="tj-curva-leyenda" role="group" aria-label={tx(lang, { es: "Series del gráfico", en: "Chart series" })}>
           {leyenda.map(({ clave, l }) => (
             <label key={clave} data-serie={clave}>
               <input type="checkbox" checked={series[clave]} onChange={() => alternar(clave)} />
@@ -217,11 +221,14 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
           className="tj-metricas-lienzo tj-curva-lienzo"
           tabIndex={0}
           role="group"
-          aria-label={
-            es
-              ? `Curva de rendimiento y balance de ${N - 1} operaciones de muestra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa las flechas para recorrerla.`
-              : `Performance and balance curve of ${N - 1} sample trades: from ${fmtMoney(INICIAL, lang, { compact: true })} to ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, max drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use the arrow keys to explore.`
-          }
+          aria-label={tx(lang, {
+            es: `Curva de rendimiento y balance de ${N - 1} operaciones de muestra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa las flechas para recorrerla.`,
+            en: `Performance and balance curve of ${N - 1} sample trades: from ${fmtMoney(INICIAL, lang, { compact: true })} to ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, max drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use the arrow keys to explore.`,
+            pt: `Curva de desempenho e saldo de ${N - 1} operações de amostra: de ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown máximo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Use as setas para navegar.`,
+            fr: `Courbe de performance et solde de ${N - 1} opérations d’exemple : de ${fmtMoney(INICIAL, lang, { compact: true })} à ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown maximal −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Utilisez les flèches pour naviguer.`,
+            de: `Performance- und Saldenkurve von ${N - 1} Beispiel-Trades: von ${fmtMoney(INICIAL, lang, { compact: true })} bis ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, maximaler Drawdown −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Nutzen Sie die Pfeiltasten zum Erkunden.`,
+            it: `Curva di rendimento e saldo di ${N - 1} operazioni di esempio: da ${fmtMoney(INICIAL, lang, { compact: true })} a ${fmtMoney(SALDOS[N - 1], lang, { compact: true })}, drawdown massimo −${fmtPct(METRICS.maxDrawdownPct, lang, 1)}. Usa i tasti freccia per esplorarla.`,
+          })}
           data-activo={i !== null ? "true" : undefined}
           onPointerMove={mover}
           onPointerDown={mover}
@@ -272,25 +279,25 @@ function Curva({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; 
   );
 }
 
-function Distribucion({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: boolean; enfoque: Enfoque }) {
+function Distribucion({ g, lang, enfoque }: { g: Grafico; lang: Lang; enfoque: Enfoque }) {
   const { BINS, TOTAL_BINS, MAX_BIN, MODA, R_LO, enR, METRICS } = g;
   const [i, setI] = useState<number | null>(null);
   const b = i === null ? null : BINS[i];
   const acumulado = i === null ? 0 : BINS.slice(0, i + 1).reduce((s, x) => s + x.count, 0);
-  const rango = (x: (typeof BINS)[number], y = es ? "a" : "to") => `${fmtR(x.from, lang, 1)} ${y} ${fmtR(x.to, lang, 1)}`;
+  const rango = (x: (typeof BINS)[number], y = tx(lang, { es: "a", en: "to" })) => `${fmtR(x.from, lang, 1)} ${y} ${fmtR(x.to, lang, 1)}`;
   const ops = (n: number) => fmtOperaciones(n, lang);
 
   const lectura = b
     ? {
-        rotulo: `${es ? "Resultado entre" : "Result between"} ${rango(b, es ? "y" : "and")}`,
+        rotulo: `${tx(lang, { es: "Resultado entre", en: "Result between" })} ${rango(b, tx(lang, { es: "y", en: "and" }))}`,
         cifra: ops(b.count),
-        detalle: `${fmtPct(b.count / TOTAL_BINS, lang, 1)} ${es ? "de la muestra" : "of the sample"} · ${fmtPct(acumulado / TOTAL_BINS, lang, 0)} ${es ? "acumulado" : "cumulative"}`,
+        detalle: `${fmtPct(b.count / TOTAL_BINS, lang, 1)} ${tx(lang, { es: "de la muestra", en: "of the sample" })} · ${fmtPct(acumulado / TOTAL_BINS, lang, 0)} ${tx(lang, { es: "acumulado", en: "cumulative" })}`,
         tono: undefined,
       }
     : {
-        rotulo: es ? "Expectancy por operación" : "Expectancy per trade",
+        rotulo: tx(lang, { es: "Expectancy por operación", en: "Expectancy per trade" }),
         cifra: fmtR(METRICS.expectancyR, lang, 2),
-        detalle: `${es ? "Moda de" : "Mode"} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
+        detalle: `${tx(lang, { es: "Moda de", en: "Mode" })} ${MODA >= 0 ? rango(BINS[MODA]) : "—"} · ${ops(TOTAL_BINS)}`,
         tono: undefined,
       };
 
@@ -304,11 +311,15 @@ function Distribucion({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: bo
         tabIndex={0}
         role="group"
         aria-label={
-          (es
-            ? `Distribución de R-múltiplo de ${fmtOperaciones(TOTAL_BINS, lang)} de muestra: `
-            : `R-multiple distribution of ${TOTAL_BINS} sample trades: `) +
+          tx(lang, {
+            es: `Distribución de R-múltiplo de ${fmtOperaciones(TOTAL_BINS, lang)} de muestra: `,
+            en: `R-multiple distribution of ${TOTAL_BINS} sample trades: `,
+          }) +
           BINS.map((x) => `${rango(x)}, ${ops(x.count)}`).join("; ") +
-          (es ? ". Usa las flechas para recorrerla." : ". Use the arrow keys to explore.")
+          tx(lang, {
+            es: ". Usa las flechas para recorrerla.",
+            en: ". Use the arrow keys to explore.",
+          })
         }
         data-activo={i !== null ? "true" : undefined}
         onPointerLeave={() => setI(null)}
@@ -338,7 +349,7 @@ function Distribucion({ g, lang, es, enfoque }: { g: Grafico; lang: Lang; es: bo
                   style={{ height: x.count ? `${Math.max(2, (x.count / MAX_BIN) * 88)}%` : "2px", ["--j" as string]: j }}
                 >
                   <span className="tj-metricas-cuenta tnum" data-visible={i === j || (i === null && j === MODA) ? "true" : undefined}>
-                    {i === j ? x.count : es ? "Moda" : "Mode"}
+                    {i === j ? x.count : tx(lang, { es: "Moda", en: "Mode" })}
                   </span>
                 </span>
               </div>
@@ -370,7 +381,6 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
   const g = useMemo(() => preparar(cifras), [cifras]);
   const { METRICS } = g;
   const { lang } = useLang();
-  const es = lang === "es";
   const [vista, setVista] = useState<Vista>("curva");
   const [enfoque, setEnfoque] = useState<Enfoque>(null);
   const [todas, setTodas] = useState(false);
@@ -382,22 +392,22 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
   const recoge = !enPagina;
 
   const vistas: { id: Vista; l: string }[] = [
-    { id: "curva", l: es ? "Curva de capital" : "Equity curve" },
-    { id: "dist", l: es ? "Distribución de R" : "R distribution" },
+    { id: "curva", l: tx(lang, { es: "Curva de capital", en: "Equity curve" }) },
+    { id: "dist", l: tx(lang, { es: "Distribución de R", en: "R distribution" }) },
   ];
 
   const ratios: { id: string; l: string; v: string; f: string; d: string; c?: string; enlaza?: Enfoque }[] = [
-    { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), f: "μ / σ", d: es ? "Retorno por unidad de volatilidad." : "Return per unit of volatility." },
-    { id: "sortino", l: "Sortino", v: fmtNum(METRICS.sortino, lang, 2), f: "μ / σ↓", d: es ? "Solo penaliza la volatilidad bajista." : "Penalises downside volatility only." },
-    { id: "omega", l: "Omega", v: fmtNum(METRICS.omega, lang, 2), f: es ? "Σ ganancias / Σ pérdidas" : "Σ gains / Σ losses", d: es ? "Pondera la distribución entera." : "Weighs the whole distribution." },
-    { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: es ? "Rendimiento anual frente a la peor caída." : "Annual return against the worst drawdown." },
+    { id: "sharpe", l: "Sharpe", v: fmtNum(METRICS.sharpe, lang, 2), f: "μ / σ", d: tx(lang, { es: "Retorno por unidad de volatilidad.", en: "Return per unit of volatility." }) },
+    { id: "sortino", l: "Sortino", v: fmtNum(METRICS.sortino, lang, 2), f: "μ / σ↓", d: tx(lang, { es: "Solo penaliza la volatilidad bajista.", en: "Penalises downside volatility only." }) },
+    { id: "omega", l: "Omega", v: fmtNum(METRICS.omega, lang, 2), f: tx(lang, { es: "Σ ganancias / Σ pérdidas", en: "Σ gains / Σ losses" }), d: tx(lang, { es: "Pondera la distribución entera.", en: "Weighs the whole distribution." }) },
+    { id: "calmar", l: "Calmar", v: fmtNum(METRICS.calmar, lang, 2), f: "CAGR / MaxDD", d: tx(lang, { es: "Rendimiento anual frente a la peor caída.", en: "Annual return against the worst drawdown." }) },
     {
       id: "expectancy",
       /* «Expectancy» también en español, como en el resto del sitio y el glosario. */
       l: "Expectancy",
       v: fmtR(METRICS.expectancyR, lang, 2),
       f: "WR·W̄ − (1−WR)·L̄",
-      d: es ? "Lo que deja cada operación, en R." : "Average result per trade, in R.",
+      d: tx(lang, { es: "Lo que deja cada operación, en R.", en: "Average result per trade, in R." }),
       c: METRICS.expectancyR >= 0 ? "rgb(var(--pnl-pos))" : "rgb(var(--pnl-neg))",
       enlaza: "expectancy",
     },
@@ -405,15 +415,15 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
       id: "maxDd",
       l: "Max drawdown",
       v: `−${fmtPct(METRICS.maxDrawdownPct, lang, 1)}`,
-      f: es ? "(pico − valle) / pico" : "(peak − trough) / peak",
-      d: es ? "La peor caída de pico a valle." : "The largest peak-to-trough decline.",
+      f: tx(lang, { es: "(pico − valle) / pico", en: "(peak − trough) / peak" }),
+      d: tx(lang, { es: "La peor caída de pico a valle.", en: "The largest peak-to-trough decline." }),
       c: "rgb(var(--pnl-neg))",
       enlaza: "maxDd",
     },
     /* «Win rate» también en español, como «Expectancy». La fórmula sí se
        traduce («G / N»): son letras, no el nombre de la métrica. */
-    { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: es ? "G / N" : "W / N", d: es ? "Operaciones cerradas en beneficio." : "Trades closed at a profit.", enlaza: "winRate" },
-    { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: es ? "Ganancia media frente a pérdida media." : "Average win against average loss." },
+    { id: "winRate", l: "Win rate", v: fmtPct(METRICS.winRate, lang, 1), f: tx(lang, { es: "G / N", en: "W / N" }), d: tx(lang, { es: "Operaciones cerradas en beneficio.", en: "Trades closed at a profit." }), enlaza: "winRate" },
+    { id: "payoff", l: "Payoff", v: fmtNum(METRICS.payoff, lang, 2), f: "W̄ / L̄", d: tx(lang, { es: "Ganancia media frente a pérdida media.", en: "Average win against average loss." }) },
   ];
 
   const pista: Record<Exclude<Enfoque, null>, Vista> = { maxDd: "curva", expectancy: "dist", winRate: "dist" };
@@ -424,7 +434,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     <h2
       className={enPagina ? "sr-only" : "m-0 t-h3 text-primary"}
     >
-      {es ? "Las cifras que usan los que viven de esto." : "The numbers used by people who trade for a living."}
+      {tx(lang, { es: "Las cifras que usan los que viven de esto.", en: "The numbers used by people who trade for a living." })}
     </h2>
   );
 
@@ -432,9 +442,9 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
     <div className="relative">
       <div className="tj-cristal tj-metricas relative">
         <p className="tj-ficha-barra">
-          <span>{es ? "Operativa de muestra" : "Sample track record"}</span>
+          <span>{tx(lang, { es: "Operativa de muestra", en: "Sample track record" })}</span>
           <span className="tnum">
-            {es ? `${fmtOperaciones(METRICS.closedCount, lang)} · USD` : `${fmtOperaciones(METRICS.closedCount, lang)} · USD`}
+            {`${fmtOperaciones(METRICS.closedCount, lang)} · USD`}
           </span>
         </p>
         <div className="tj-ficha-cuerpo">
@@ -443,22 +453,22 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
             {titulo}
             {enPagina && (
               <p className="m-0 text-[13px] font-medium text-tertiary">
-                {es ? "Curva, reparto de R y ratios de la muestra" : "Curve, R distribution and ratios for the sample"}
+                {tx(lang, { es: "Curva, reparto de R y ratios de la muestra", en: "Curve, R distribution and ratios for the sample" })}
               </p>
             )}
             {!enPagina && (
               <p className="m-0 mt-2 text-[14px] leading-[1.6] text-secondary">
-                {es ? "Ratios con su muestra, no gráficos bonitos. " : "Ratios with the sample size behind them, not pretty charts. "}
+                {tx(lang, { es: "Ratios con su muestra, no gráficos bonitos. ", en: "Ratios with the sample size behind them, not pretty charts. " })}
                 <span className="[@media(hover:none)]:hidden">
-                  {es ? "Toca o pasa el puntero por la curva, las barras o las cifras." : "Tap or hover the curve, the bars or the figures."}
+                  {tx(lang, { es: "Toca o pasa el puntero por la curva, las barras o las cifras.", en: "Tap or hover the curve, the bars or the figures." })}
                 </span>
                 <span className="hidden [@media(hover:none)]:inline">
-                  {es ? "Desliza el dedo por la curva o toca las barras." : "Slide a finger along the curve or tap the bars."}
+                  {tx(lang, { es: "Desliza el dedo por la curva o toca las barras.", en: "Slide a finger along the curve or tap the bars." })}
                 </span>
               </p>
             )}
           </div>
-          <div role="tablist" aria-label={es ? "Vista del gráfico" : "Chart view"} className="tj-pestanas flex-none">
+          <div role="tablist" aria-label={tx(lang, { es: "Vista del gráfico", en: "Chart view" })} className="tj-pestanas flex-none">
             {vistas.map((v) => (
               <button
                 key={v.id}
@@ -485,7 +495,7 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
         </div>
 
         <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${vista}`} className="tj-metricas-vista" key={vista} data-dibuja>
-          {vista === "curva" ? <Curva g={g} lang={lang} es={es} enfoque={enfoque} /> : <Distribucion g={g} lang={lang} es={es} enfoque={enfoque} />}
+          {vista === "curva" ? <Curva g={g} lang={lang} enfoque={enfoque} /> : <Distribucion g={g} lang={lang} enfoque={enfoque} />}
         </div>
         </div>
 
@@ -526,13 +536,19 @@ export function MetricsShowcaseNew({ cifras, enPagina = false, enPortada = false
             aria-controls={`${id}-ratios`}
             onClick={() => setTodas((t) => !t)}
           >
-            {todas ? (es ? "Ver solo las cuatro principales" : "Show only the main four") : es ? "Ver las ocho cifras" : "Show all eight figures"}
+            {todas
+              ? tx(lang, {
+                  es: "Ver solo las cuatro principales",
+                  en: "Show only the main four",
+                })
+              : tx(lang, { es: "Ver las ocho cifras", en: "Show all eight figures" })}
           </button>
         )}
         <p className="tj-ficha-barra tj-ficha-barra--pie">
-          {es
-            ? `Calculado sobre las ${fmtOperaciones(METRICS.closedCount, lang)} de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`
-            : `Computed over the demo’s ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualised.`}
+          {tx(lang, {
+            es: `Calculado sobre las ${fmtOperaciones(METRICS.closedCount, lang)} de muestra de la demo, no sobre cuentas reales. Sharpe anualizado.`,
+            en: `Computed over the demo’s ${METRICS.closedCount} sample trades, not live accounts. Sharpe is annualised.`,
+          })}
         </p>
       </div>
     </div>

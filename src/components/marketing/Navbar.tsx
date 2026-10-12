@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { usePathname } from "next/navigation";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { sinPrefijoEn, TABLA_IDIOMAS, idiomasDeRuta } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
@@ -181,7 +181,6 @@ const DRAWER_LINKS: {
 
 export function Navbar() {
   const { t, lang } = useLang();
-  const es = lang === "es";
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -449,7 +448,7 @@ export function Navbar() {
     <>
       <header data-navbar-root className="fixed inset-x-0 top-0 z-50">
       <nav
-        aria-label={es ? "Principal" : "Main"}
+        aria-label={tx(lang, { es: "Principal", en: "Main" })}
         className="tj-barra relative flex w-full items-center"
         data-cristal={scrolled ? "true" : "false"}
         style={{ height: ALTURA_BARRA }}
@@ -531,7 +530,7 @@ export function Navbar() {
                   fontFamily: "inherit",
                 }}
               >
-                {es ? "Producto" : "Product"}
+                {tx(lang, { es: "Producto", en: "Product" })}
                 <svg
                   width="9"
                   height="9"
@@ -603,13 +602,13 @@ export function Navbar() {
                         >
                           <span>
                             <span className="block text-[14px] font-semibold">
-                              {es ? item.labelEs : item.labelEn}
+                              {tx(lang, { es: item.labelEs, en: item.labelEn })}
                             </span>
                             <span
                               className="mt-0.5 block text-[13px] leading-[1.4]"
                               style={{ color: "var(--ink-2)" }}
                             >
-                              {es ? item.descEs : item.descEn}
+                              {tx(lang, { es: item.descEs, en: item.descEn })}
                             </span>
                           </span>
                         </Link>
@@ -619,22 +618,23 @@ export function Navbar() {
                           <div className="relative grid grid-cols-2 divide-x divide-[var(--line)] p-2">
                             <div className="pr-2">
                               <p className="eyebrow m-0 px-2.5 pb-1.5 pt-1">
-                                {es ? "Producto" : "Product"}
+                                {tx(lang, { es: "Producto", en: "Product" })}
                               </p>
                               {productItems.filter((i) => i.grupo === "producto").map(fila)}
                             </div>
                             <div className="pl-2">
                               <p className="eyebrow m-0 px-2.5 pb-1.5 pt-1">
-                                {es ? "Recursos" : "Resources"}
+                                {tx(lang, { es: "Recursos", en: "Resources" })}
                               </p>
                               {productItems.filter((i) => i.grupo === "recursos").map(fila)}
                             </div>
                           </div>
                           <div className="flex items-center justify-between border-t border-[var(--line)] px-4 py-2.5">
                             <span className="tnum text-[12px] text-tertiary">
-                              {es
-                                ? "Todo el producto, en una vista"
-                                : "The whole product, in one view"}
+                              {tx(lang, {
+                                es: "Todo el producto, en una vista",
+                                en: "The whole product, in one view",
+                              })}
                             </span>
                             <Link
                               href="/demo"
@@ -642,7 +642,7 @@ export function Navbar() {
                               className="group inline-flex items-center gap-1.5 text-[13px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                               style={{ color: "rgb(var(--accent-base))" }}
                             >
-                              {es ? "Abrir la demo" : "Open the demo"}
+                              {tx(lang, { es: "Abrir la demo", en: "Open the demo" })}
                             </Link>
                           </div>
                         </>
@@ -654,10 +654,10 @@ export function Navbar() {
 
             {/* Sin «Demo» (es el botón de la derecha) ni «Recursos» (vive en
                 el menú Producto). */}
-            {navLink("/pricing", es ? "Precios" : "Pricing")}
-            {navLink("/traders/manual", es ? "Manual" : "Manual")}
+            {navLink("/pricing", tx(lang, { es: "Precios", en: "Pricing" }))}
+            {navLink("/traders/manual", tx(lang, { es: "Manual", en: "Manual" }))}
             {navLink("/traders/prop-firms", "Prop firms")}
-            {navLink("/beta", es ? "Acceso anticipado" : "Early access")}
+            {navLink("/beta", tx(lang, { es: "Acceso anticipado", en: "Early access" }))}
           </div>
 
           {/* Utilidades: tema, idioma, CTA y hamburguesa. En móvil tema, idioma
@@ -666,7 +666,7 @@ export function Navbar() {
             <div className="hidden min-[1120px]:flex min-[1120px]:items-center min-[1120px]:gap-2">
             <IconButton
               onClick={toggleTheme}
-              label={es ? "Cambiar tema" : "Toggle theme"}
+              label={tx(lang, { es: "Cambiar tema", en: "Toggle theme" })}
               extraProps={{ "data-theme-toggle": true }}
             >
               {/* `key={theme}` reemplaza el nodo al cambiar de tema y el nuevo
@@ -686,7 +686,7 @@ export function Navbar() {
               href="/demo"
               className="hidden h-[38px] flex-none items-center gap-[7px] whitespace-nowrap rounded-[4px] bg-[rgb(var(--accent-base))] px-[18px] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98] sm:inline-flex"
             >
-              {es ? "Ver la demo" : "See the demo"}
+              {tx(lang, { es: "Ver la demo", en: "See the demo" })}
             </Link>
             </div>{/* /hidden min-[1120px]:flex — utilidades de escritorio */}
 
@@ -704,7 +704,11 @@ export function Navbar() {
                 setMobileOpen((o) => !o);
               }}
               className="grid h-11 w-11 place-items-center rounded-[4px] text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
-              aria-label={mobileOpen ? (es ? "Cerrar menú" : "Close menu") : (es ? "Abrir menú" : "Open menu")}
+              aria-label={
+                mobileOpen
+                  ? tx(lang, { es: "Cerrar menú", en: "Close menu" })
+                  : tx(lang, { es: "Abrir menú", en: "Open menu" })
+              }
               aria-expanded={mobileOpen}
               aria-haspopup="dialog"
               aria-controls="mobile-nav-drawer"
@@ -737,7 +741,7 @@ export function Navbar() {
               id="mobile-nav-drawer"
               role="dialog"
               aria-modal="true"
-              aria-label={es ? "Menú de navegación" : "Navigation menu"}
+              aria-label={tx(lang, { es: "Menú de navegación", en: "Navigation menu" })}
               tabIndex={-1}
               data-visible={mobileOpen ? "true" : "false"}
               inert={!mobileOpen}
@@ -764,7 +768,7 @@ export function Navbar() {
                   type="button"
                   onClick={() => setMobileOpen(false)}
                   className="grid h-11 w-11 place-items-center rounded-[4px] text-[var(--ink-2)] outline-none transition-colors hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-                  aria-label={es ? "Cerrar menú" : "Close menu"}
+                  aria-label={tx(lang, { es: "Cerrar menú", en: "Close menu" })}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -774,7 +778,7 @@ export function Navbar() {
 
               {/* `tj-cajon-lista` insinúa que hay más contenido bajo la botonera
                   fija cuando la lista no cabe. */}
-              <nav className="tj-cajon-lista flex flex-1 flex-col overflow-y-auto px-3 py-4" aria-label={es ? "Secciones" : "Sections"}>
+              <nav className="tj-cajon-lista flex flex-1 flex-col overflow-y-auto px-3 py-4" aria-label={tx(lang, { es: "Secciones", en: "Sections" })}>
                 {DRAWER_GRUPOS.map((grupo, gi) => (
                   <div key={grupo.id}>
                     {gi > 0 && (
@@ -788,7 +792,7 @@ export function Navbar() {
                       className={`block px-3 pb-1.5 text-[12px] font-semibold ${gi === 0 ? "" : "pt-2.5"}`}
                       style={{ color: "var(--ink-3)" }}
                     >
-                      {es ? grupo.es : grupo.en}
+                      {tx(lang, { es: grupo.es, en: grupo.en })}
                     </span>
                     {drawerLinks
                       .filter((l) => l.grupo === grupo.id)
@@ -813,7 +817,7 @@ export function Navbar() {
                                 style={{ background: "rgb(var(--accent-base))" }}
                               />
                             )}
-                            <span className="flex-1">{es ? l.labelEs : l.labelEn}</span>
+                            <span className="flex-1">{tx(lang, { es: l.labelEs, en: l.labelEn })}</span>
                           </Link>
                         );
                       })}
@@ -832,15 +836,15 @@ export function Navbar() {
                   className="px-3 pb-2 pt-4 text-[12px] font-semibold"
                   style={{ color: "var(--ink-3)" }}
                 >
-                  {es ? "Preferencias" : "Preferences"}
+                  {tx(lang, { es: "Preferencias", en: "Preferences" })}
                 </span>
                 <div className="flex items-center gap-2 px-3 pb-1">
                   <LanguagePicker size="md" />
                   <button
                     type="button"
                     onClick={toggleTheme}
-                    aria-label={es ? "Cambiar tema" : "Toggle theme"}
-                    title={es ? "Cambiar tema" : "Toggle theme"}
+                    aria-label={tx(lang, { es: "Cambiar tema", en: "Toggle theme" })}
+                    title={tx(lang, { es: "Cambiar tema", en: "Toggle theme" })}
                     data-theme-toggle
                     className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   >
@@ -851,7 +855,11 @@ export function Navbar() {
                     >
                       {theme === "dark" ? <SunIcon /> : <MoonIcon />}
                     </span>
-                    <span>{theme === "dark" ? (es ? "Claro" : "Light") : (es ? "Oscuro" : "Dark")}</span>
+                    <span>
+                      {theme === "dark"
+                        ? tx(lang, { es: "Claro", en: "Light" })
+                        : tx(lang, { es: "Oscuro", en: "Dark" })}
+                    </span>
                   </button>
                 </div>
               </nav>
@@ -918,7 +926,6 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
   const { lang, setLang } = useLang();
   const pathname = usePathname();
   const disponibles = useMemo(() => idiomasDeRuta(pathname), [pathname]);
-  const es = lang === "es";
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
@@ -957,8 +964,8 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        aria-label={es ? "Cambiar idioma" : "Change language"}
-        title={es ? "Cambiar idioma" : "Change language"}
+        aria-label={tx(lang, { es: "Cambiar idioma", en: "Change language" })}
+        title={tx(lang, { es: "Cambiar idioma", en: "Change language" })}
         className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
       >
         <GlobeIcon />
@@ -984,7 +991,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
             id={panelId}
             data-panel-idiomas=""
             role="group"
-            aria-label={es ? "Idiomas" : "Languages"}
+            aria-label={tx(lang, { es: "Idiomas", en: "Languages" })}
             // Mismo material que el menú «Producto».
             className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute right-0 z-50 min-w-[168px] rounded-[6px] p-1"
             style={{ position: "absolute", top: "calc(100% + 8px)" }}

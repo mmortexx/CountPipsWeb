@@ -65,7 +65,6 @@ export function FinalCTANew({
   sinFilete?: boolean;
 } = {}) {
   const { lang } = useLang();
-  const es = lang === "es";
   const texto = variante ?? (enDemo ? "demo" : enPrecios ? "precios" : "general");
   const [titular, tenue, entradillaCruda] = tx(
     lang,
@@ -92,7 +91,9 @@ export function FinalCTANew({
                 onClick={enDemo ? () => trackEvent("demo_early_access_clicked") : undefined}
                 className="cta cta--primario"
               >
-                {enDemo ? (es ? "Solicitar acceso" : "Request access") : es ? "Ver la demo" : "See the demo"}
+                {enDemo
+                  ? tx(lang, { es: "Solicitar acceso", en: "Request access" })
+                  : tx(lang, { es: "Ver la demo", en: "See the demo" })}
               </Link>
               <Link
                 href={enPrecios ? "/beta" : "/pricing"}
@@ -100,8 +101,8 @@ export function FinalCTANew({
                 className="cta cta--secundario"
               >
                 {enPrecios
-                  ? es ? "Solicitar acceso anticipado" : "Request early access"
-                  : es ? "Ver precios" : "See pricing"}
+                  ? tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access" })
+                  : tx(lang, { es: "Ver precios", en: "See pricing" })}
               </Link>
             </div>
           </div>

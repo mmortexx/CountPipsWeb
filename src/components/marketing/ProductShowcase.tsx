@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { ProductPlate } from "@/components/tj/ProductPlate";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
@@ -20,7 +20,6 @@ const PANTALLAS_PORTADA = ["resumen", "registro", "operaciones", "analitica"] as
 
 export function ProductShowcase() {
   const { lang } = useLang();
-  const es = lang === "es";
   const idBase = useId();
   const tablist = useRef<HTMLDivElement>(null);
   const [activa, setActiva] = useState<string>(PANTALLAS_PORTADA[0]);
@@ -47,20 +46,21 @@ export function ProductShowcase() {
       <div className="tj-container">
         <div className="mb-10 grid gap-y-6 lg:grid-cols-2 lg:items-end lg:gap-x-16 xl:gap-x-24">
           <div>
-            <p className="eyebrow">{es ? "El programa" : "The application"}</p>
+            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application" })}</p>
             <h2 id="producto-titulo" className="t-h2 mt-5 max-w-[16ch] text-primary">
-              {es ? "Esto es lo que abres cada mañana." : "This is what you open every morning."}
+              {tx(lang, { es: "Esto es lo que abres cada mañana.", en: "This is what you open every morning." })}
             </h2>
           </div>
           <div className="lg:pb-1">
             <p className="max-w-[46ch] t-entradilla text-secondary">
-              {es
-                ? "Capturas reales del programa con datos de muestra. Elige una pantalla."
-                : "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen."}
+              {tx(lang, {
+                es: "Capturas reales del programa con datos de muestra. Elige una pantalla.",
+                en: "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen.",
+              })}
             </p>
             <div className="mt-5">
               <Link href="/demo" className="cta cta--secundario">
-                {es ? "Recorrer la demo sin registro" : "Explore the demo, no sign-up"}
+                {tx(lang, { es: "Recorrer la demo sin registro", en: "Explore the demo, no sign-up" })}
               </Link>
             </div>
           </div>
@@ -69,7 +69,7 @@ export function ProductShowcase() {
         <div
           ref={tablist}
           role="tablist"
-          aria-label={es ? "Pantallas del programa" : "Application screens"}
+          aria-label={tx(lang, { es: "Pantallas del programa", en: "Application screens" })}
           className="tj-pestanas -m-2 mb-4 p-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {PANTALLAS_PORTADA.map((clave, i) => {
@@ -87,7 +87,7 @@ export function ProductShowcase() {
                 onClick={() => setActiva(clave)}
                 onKeyDown={(e) => enTeclado(e, i)}
               >
-                {es ? l.pestanaEs : l.pestanaEn}
+                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn })}
               </button>
             );
           })}

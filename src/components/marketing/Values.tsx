@@ -1,6 +1,6 @@
 "use client";
 
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { Reveal } from "@/components/tj/Reveal";
 import { SectionHeader } from "@/components/layout/SectionHeader";
@@ -71,7 +71,6 @@ const VALUES: Value[] = [
 
 export function Values() {
   const { lang } = useLang();
-  const es = lang === "es";
 
   return (
     <section id="values" className="section relative overflow-clip scroll-mt-24">
@@ -79,22 +78,14 @@ export function Values() {
       <div className="relative z-10 tj-container">
         <SectionHeader
           composicion="partida"
-          titulo={
-            es ? (
-              <>
-                Lo que creemos.
-              </>
-            ) : (
-              <>
-                What we believe.
-              </>
-            )
-          }
-          entradilla={
-            es
-              ? "Cuatro ideas que no son negociables. Si algún día dejamos de cumplirlas, la app deja de tener sentido."
-              : "Four ideas that aren’t negotiable. If we ever stop delivering on them, the app stops making sense."
-          }
+          titulo={tx(lang, {
+            es: <>Lo que creemos.</>,
+            en: <>What we believe.</>,
+          })}
+          entradilla={tx(lang, {
+            es: "Cuatro ideas que no son negociables. Si algún día dejamos de cumplirlas, la app deja de tener sentido.",
+            en: "Four ideas that aren’t negotiable. If we ever stop delivering on them, the app stops making sense.",
+          })}
         />
 
         <div className="mt-10 grid md:grid-cols-2 border-t border-[var(--line)]">
@@ -106,10 +97,10 @@ export function Values() {
                 }`}
               >
                 <h3 className="t-h3 text-primary">
-                  {es ? v.titleEs : v.titleEn}
+                  {tx(lang, { es: v.titleEs, en: v.titleEn })}
                 </h3>
                 <p className="mt-2.5 text-[15px] text-secondary leading-[1.7] max-w-[42em]">
-                  {es ? v.descEs : v.descEn}
+                  {tx(lang, { es: v.descEs, en: v.descEn })}
                 </p>
 
                 {/* `mt-auto`: los enlaces de una fila quedan a la misma altura aunque
@@ -118,7 +109,7 @@ export function Values() {
                   href={v.href}
                   className="link-underline-host mt-auto pt-2 inline-flex min-h-[44px] items-center text-sm font-medium text-primary outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                 >
-                  <span className="link-underline">{es ? v.pruebaEs : v.pruebaEn}</span>
+                  <span className="link-underline">{tx(lang, { es: v.pruebaEs, en: v.pruebaEn })}</span>
                 </Link>
               </article>
             </Reveal>

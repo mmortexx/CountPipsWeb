@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { irArriba } from "@/lib/scroll";
 import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
 
@@ -26,7 +26,6 @@ const CERCA_DEL_FINAL = 640;
 
 export function BackToTop() {
   const { lang } = useLang();
-  const es = lang === "es";
 
   // `visible` arranca en false sin mirar `window`: el inicializador también
   // corre al hidratar, y con la página ya desplazada el cliente montaría un
@@ -128,7 +127,14 @@ export function BackToTop() {
         <button
           type="button"
           onClick={scrollToTop}
-          aria-label={es ? "Volver arriba" : "Back to top"}
+          aria-label={tx(lang, {
+            es: "Volver arriba",
+            en: "Back to top",
+            pt: "Voltar ao topo",
+            fr: "Retour en haut",
+            de: "Nach oben",
+            it: "Torna su",
+          })}
           data-visible={visible ? "true" : "false"}
           tabIndex={visible ? 0 : -1}
           className="tj-emerge tj-subir pointer-events-auto relative w-10 h-10 rounded-[4px] tj-cristal tj-cristal--denso flex items-center justify-center text-primary"

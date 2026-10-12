@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { FECHA_PUBLICACION } from "@/lib/publicacion";
 import { LOCALE_FECHA } from "@/lib/trading/format";
@@ -14,17 +14,29 @@ import { LOCALE_FECHA } from "@/lib/trading/format";
  */
 export function StatsBandNew({ herramientas }: { herramientas: number }) {
   const { lang } = useLang();
-  const es = lang === "es";
   const stats = [
-    { v: "40+", l: es ? "métricas institucionales calculadas con cada operación" : "institutional metrics computed with every trade" },
-    { v: "0", l: es ? "servidores de CountPips con tus operaciones: viven en tu equipo" : "CountPips servers holding your trades: they live on your machine" },
+    {
+      v: "40+",
+      l: tx(lang, {
+        es: "métricas institucionales calculadas con cada operación",
+        en: "institutional metrics computed with every trade",
+      }),
+    },
+    {
+      v: "0",
+      l: tx(lang, {
+        es: "servidores de CountPips con tus operaciones: viven en tu equipo",
+        en: "CountPips servers holding your trades: they live on your machine",
+      }),
+    },
     /* La tercera cifra es real y comprobable: las herramientas abiertas hoy.
        La pasa la página al construir (`HERRAMIENTAS`), así que cambia sola. */
     {
       v: String(herramientas),
-      l: es
-        ? "herramientas gratis en la web: sin registro ni instalación"
-        : "free tools on the site: no sign-up, no install",
+      l: tx(lang, {
+        es: "herramientas gratis en la web: sin registro ni instalación",
+        en: "free tools on the site: no sign-up, no install",
+      }),
     },
   ];
   /* Fuente y fecha de corte: una cifra con su llamada y su fecha se lee como
@@ -34,19 +46,22 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       {texto}
     </Link>
   );
-  const notas: ReactNode[] = es
-    ? [
-        <>Por operación y por periodo, en la versión en pruebas del programa.</>,
-        <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
-        <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
-      ]
-    : [
-        <>Per trade and per period, in the pre-release version of the application.</>,
-        <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
-        <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
-      ];
+  const notas: ReactNode[] = [
+    tx<ReactNode>(lang, {
+      es: <>Por operación y por periodo, en la versión en pruebas del programa.</>,
+      en: <>Per trade and per period, in the pre-release version of the application.</>,
+    }),
+    tx<ReactNode>(lang, {
+      es: <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
+      en: <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
+    }),
+    tx<ReactNode>(lang, {
+      es: <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
+      en: <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
+    }),
+  ];
   const corte = FECHA_PUBLICACION
-    ? new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[es ? "es" : "en"], { year: "numeric", month: "long", timeZone: "UTC" })
+    ? new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[lang], { year: "numeric", month: "long", timeZone: "UTC" })
     : "";
 
   return (
@@ -87,7 +102,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
               </li>
             ))}
           </ol>
-          {corte && <p>{es ? `Cifras a ${corte}.` : `Figures as of ${corte}.`}</p>}
+          {corte && <p>{tx(lang, { es: `Cifras a ${corte}.`, en: `Figures as of ${corte}.` })}</p>}
         </div>
       </div>
     </section>

@@ -1,7 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
 
 /**
@@ -10,7 +11,6 @@ import { trackEvent } from "@/lib/analytics";
  */
 export function ProfileSelector() {
   const { lang } = useLang();
-  const es = lang === "es";
 
   /* Antetítulos en caja normal, nunca en mayúsculas literales: algunos lectores
      las deletrean letra a letra. */
@@ -18,12 +18,13 @@ export function ProfileSelector() {
     {
       id: "manual",
       href: "/traders/manual",
-      eyebrow: es ? "Operativa manual" : "Manual trading",
-      title: es ? "Para leer tu proceso con claridad" : "To read your process clearly",
-      body: es
-        ? "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo."
-        : "Review context, execution and discipline without turning every session into a spreadsheet.",
-      action: es ? "Explorar recorrido manual" : "Explore the manual path",
+      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading" }),
+      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly" }),
+      body: tx(lang, {
+        es: "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo.",
+        en: "Review context, execution and discipline without turning every session into a spreadsheet.",
+      }),
+      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path" }),
     },
     {
       id: "prop",
@@ -31,11 +32,12 @@ export function ProfileSelector() {
       eyebrow: "Prop firms",
       /* En inglés de mercados el verbo es «trade», no «operate»; y «To + verbo»
          mantiene el paralelismo con la tarjeta hermana. */
-      title: es ? "Para operar con reglas que importan" : "To trade under rules that matter",
-      body: es
-        ? "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar."
-        : "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
-      action: es ? "Explorar recorrido prop" : "Explore the prop path",
+      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter" }),
+      body: tx(lang, {
+        es: "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar.",
+        en: "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
+      }),
+      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path" }),
     },
   ] as const;
 
@@ -46,14 +48,26 @@ export function ProfileSelector() {
       <div className="tj-container">
         <div className="tj-split grid gap-y-6 lg:items-end">
           <h2 id="profile-selector-title" className="t-h2 text-primary text-balance">
-            {es ? <>Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span></>}
+            {tx<ReactNode>(lang, {
+              es: (
+                <>
+                  Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span>
+                </>
+              ),
+              en: (
+                <>
+                  Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span>
+                </>
+              ),
+            })}
           </h2>
           <p className="medida t-entradilla text-secondary lg:pb-1">
             {/* Promete lo que hay tras el enlace: los recorridos son páginas
                 propias, no tocan la demo. */}
-            {es
-              ? "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan."
-              : "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated."}
+            {tx(lang, {
+              es: "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan.",
+              en: "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated.",
+            })}
           </p>
         </div>
 
