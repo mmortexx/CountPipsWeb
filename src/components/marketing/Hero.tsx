@@ -22,6 +22,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
     pt: "Pagamento único previsto, sem assinatura. Sem servidores do CountPips: suas operações, na sua máquina. Demo sem cadastro.",
     fr: "Paiement unique prévu, sans abonnement. Aucun serveur CountPips : vos opérations, sur votre machine. Démo sans inscription.",
     de: "Geplante Einmalzahlung, kein Abo. Keine CountPips-Server: Ihre Trades bleiben auf Ihrem Rechner. Demo ohne Registrierung.",
+    it: "Pagamento unico previsto, nessun abbonamento. Nessun server CountPips: le tue operazioni restano sul tuo computer. Demo senza registrazione.",
   });
 
   return (
@@ -34,6 +35,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
             pt: "Diário de trading para Windows",
             fr: "Journal de trading pour Windows",
             de: "Trading-Journal für Windows",
+            it: "Trading journal per Windows",
           })}
         </p>
 
@@ -46,6 +48,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
               pt: "Opere como uma mesa institucional.",
               fr: "Tradez comme un desk institutionnel.",
               de: "Traden wie ein institutioneller Desk.",
+              it: "Fai trading come un desk istituzionale.",
             })}
           />
         </h1>
@@ -57,6 +60,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
             pt: "40+ métricas de risco e desempenho, um guardião que avisa antes de quebrar suas regras e seus dados na sua máquina.",
             fr: "40+ métriques de risque et performance, un gardien qui vous alerte avant d’enfreindre vos règles et vos données sur votre machine.",
             de: "40+ Kennzahlen für Risiko und Performance, ein Guard, der vor Regelverstößen warnt, und Ihre Daten auf Ihrem Rechner.",
+            it: "40+ metriche di rischio e rendimento, un guardiano che ti avvisa prima di infrangere le tue regole e i tuoi dati sul tuo computer.",
           })}
         </p>
 
@@ -68,10 +72,11 @@ export function Hero({ producto }: { producto?: ReactNode }) {
               pt: "Ver a demo interativa",
               fr: "Voir la démo interactive",
               de: "Interaktive Demo ansehen",
+              it: "Guarda la demo interattiva",
             })}
           </Link>
           <Link href="/pricing" className="cta cta--secundario">
-            {tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços", fr: "Voir les tarifs", de: "Preise ansehen" })}
+            {tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços", fr: "Voir les tarifs", de: "Preise ansehen", it: "Vedi i prezzi" })}
           </Link>
         </div>
 
@@ -90,6 +95,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
               pt: "Modelos de importação CSV para",
               fr: "Modèles d’import CSV pour",
               de: "CSV-Importvorlagen für",
+              it: "Modelli di importazione CSV per",
             })}
           </p>
           {/* Con cinco nombres en dos columnas, el último ocupa las dos para

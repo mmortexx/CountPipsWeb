@@ -45,6 +45,11 @@ const LAMINAS_EXTRA: Record<string, {
       nota: "Unter dem Erfassungsformular teilt sich die Übersicht in zwei Bereiche: die Performance-Kurve mit schattierten Drawdown-Zonen und gepunktetem Saldo sowie der Monatskalender mit Tagesergebnissen und Wochensummen.",
       detalle: "der Monatskalender",
     },
+    it: {
+      titulo: "La curva e il mese, fianco a fianco",
+      nota: "Sotto il modulo di inserimento, la schermata di riepilogo si divide in due: la curva di rendimento con le aree di drawdown evidenziate e il saldo tratteggiato, insieme al calendario mensile con i risultati giornalieri e i totali settimanali.",
+      detalle: "il calendario del mese",
+    },
   },
   registro: {
     pt: {
@@ -61,6 +66,11 @@ const LAMINAS_EXTRA: Record<string, {
       titulo: "Die Trade-Erfassung steht sofort im Mittelpunkt",
       nota: "Das Formular füllt bewusst den Bildschirm: Asset, Richtung, Einstieg, Stop, Ziel und Ausstieg, ergänzt durch einen Bereich für Chart-Screenshots. Das Risiko wird bei der Eingabe live berechnet.",
       detalle: "das Erfassungsformular",
+    },
+    it: {
+      titulo: "Registrare l’operazione è la prima cosa che vedi",
+      nota: "Il modulo occupa l’intero schermo di proposito: asset, direzione, ingresso, stop, target e uscita, con un’ampia area per trascinare gli screenshot dei grafici. Il rischio viene ricalcolato mentre scrivi.",
+      detalle: "il modulo di inserimento",
     },
   },
   operaciones: {
@@ -79,6 +89,11 @@ const LAMINAS_EXTRA: Record<string, {
       nota: "Die Trade-Tabelle bündelt jede geschlossene oder offene Position mit Datum, Dauer, Asset, Richtung, Positionsgröße, Nettoergebnis und R-Multiplikatoren sowie den zugehörigen Setups.",
       detalle: "die Trade-Tabelle",
     },
+    it: {
+      titulo: "Lo storico con filtri operativi",
+      nota: "La tabella delle operazioni raccoglie ogni trade chiuso o aperto con data, durata, asset, direzione, dimensione, risultato netto e multipli di R, oltre ai setup associati.",
+      detalle: "la tabella delle operazioni",
+    },
   },
   analitica: {
     pt: {
@@ -95,6 +110,11 @@ const LAMINAS_EXTRA: Record<string, {
       titulo: "Die R-Verteilung und Auswertung nach Setups",
       nota: "Der Analysebereich schlüsselt die Performance auf: das Histogramm der R-Multiplikatoren mit hervorgehobenem Modus, Kennzahlen wie Sharpe und Profit Factor sowie die zeitliche Konstanz.",
       detalle: "das R-Histogramm",
+    },
+    it: {
+      titulo: "La distribuzione di R e l’analisi per setup",
+      nota: "La schermata di analisi scompone il rendimento: l’istogramma dei multipli di R con la moda in evidenza, gli indici istituzionali come Sharpe e Profit Factor, e la costanza nel tempo.",
+      detalle: "l’istogramma di R",
     },
   },
 };
@@ -225,7 +245,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
           type="button"
           className="tj-visor-cerrar tj-cristal tj-cristal--denso"
           onClick={cerrar}
-          aria-label={tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar", fr: "Fermer" })}
+          aria-label={tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar", fr: "Fermer", de: "Schließen", it: "Chiudi" })}
         >
           <X size={18} aria-hidden />
         </button>
@@ -234,7 +254,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
         <h3 className="tj-lamina-titulo t-h3">{titulo}</h3>
         <p className="tj-lamina-nota">{nota}</p>
         <p className="tj-lamina-detalle">
-          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: ", fr: "Détail : " })}{detalleTexto}.
+          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: ", fr: "Détail : ", de: "Detail: ", it: "Dettaglio: " })}{detalleTexto}.
         </p>
       </figcaption>
     </figure>

@@ -18,16 +18,17 @@ export function ProfileSelector() {
     {
       id: "manual",
       href: "/traders/manual",
-      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading" }),
-      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly", pt: "Para ler seu processo com clareza", fr: "Pour analyser votre processus avec clarté", de: "Ihren Prozess klar erfassen" }),
+      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading", it: "Trading manuale" }),
+      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly", pt: "Para ler seu processo com clareza", fr: "Pour analyser votre processus avec clarté", de: "Ihren Prozess klar erfassen", it: "Per analizzare il tuo processo con chiarezza" }),
       body: tx(lang, {
         es: "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo.",
         en: "Review context, execution and discipline without turning every session into a spreadsheet.",
         pt: "Revise contexto, execução e disciplina sem transformar cada sessão em uma planilha.",
         fr: "Passez en revue le contexte, l’exécution et la discipline sans transformer chaque session en tableur.",
         de: "Überprüfen Sie Kontext, Ausführung und Disziplin, ohne jede Session in eine Tabellenkalkulation zu verwandeln.",
+        it: "Rivedi contesto, esecuzione e disciplina senza trasformare ogni sessione in un foglio di calcolo.",
       }),
-      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path", pt: "Explorar jornada manual", fr: "Découvrir le parcours manuel", de: "Manuellen Pfad erkunden" }),
+      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path", pt: "Explorar jornada manual", fr: "Découvrir le parcours manuel", de: "Manuellen Pfad erkunden", it: "Esplora il percorso manuale" }),
     },
     {
       id: "prop",
@@ -35,15 +36,16 @@ export function ProfileSelector() {
       eyebrow: "Prop firms",
       /* En inglés de mercados el verbo es «trade», no «operate»; y «To + verbo»
          mantiene el paralelismo con la tarjeta hermana. */
-      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter", pt: "Para operar com regras que importam", fr: "Pour trader selon des règles strictes", de: "Unter verbindlichen Regeln traden" }),
+      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter", pt: "Para operar com regras que importam", fr: "Pour trader selon des règles strictes", de: "Unter verbindlichen Regeln traden", it: "Per operare con regole che contano" }),
       body: tx(lang, {
         es: "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar.",
         en: "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
         pt: "Controle limites, consistência e risco por conta quando a avaliação não deixa margem para improviso.",
         fr: "Contrôlez les limites, la régularité et le risque par compte quand l’évaluation n’admet aucune improvisation.",
         de: "Kontrollieren Sie Limits, Konstanz und Risiko pro Konto, wenn die Evaluierung keinen Spielraum für Improvisation lässt.",
+        it: "Controlla limiti, costanza e rischio per conto quando la valutazione non lascia spazio all’improvvisazione.",
       }),
-      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path", pt: "Explorar jornada prop", fr: "Découvrir le parcours prop", de: "Prop-Pfad erkunden" }),
+      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path", pt: "Explorar jornada prop", fr: "Découvrir le parcours prop", de: "Prop-Pfad erkunden", it: "Esplora il percorso prop" }),
     },
   ] as const;
 
@@ -80,6 +82,11 @@ export function ProfileSelector() {
                   Zwei Trading-Wege. <span className="tj-frase-nueva">Ein klarerer Blick.</span>
                 </>
               ),
+              it: (
+                <>
+                  Due modi di fare trading. <span className="tj-frase-nueva">Una lettura più chiara.</span>
+                </>
+              ),
             })}
           </h2>
           <p className="medida t-entradilla text-secondary lg:pb-1">
@@ -91,6 +98,7 @@ export function ProfileSelector() {
               pt: "Escolha o contexto mais parecido com o seu e veja o que o app mede nele: seu processo se você opera por conta própria, ou as regras da mesa se você estiver em avaliação.",
               fr: "Choisissez le contexte le plus proche du vôtre et découvrez ce que l’application mesure : votre méthode en compte propre, ou le cadre imposé en évaluation.",
               de: "Wählen Sie das Umfeld, das Ihrem entspricht, und sehen Sie, was die App misst: Ihren eigenen Prozess oder die Vorgaben der Firma.",
+              it: "Scegli il contesto più simile al tuo e scopri cosa misura l’app: il tuo processo se operi in proprio, o le regole della prop firm se sei sotto valutazione.",
             })}
           </p>
         </div>

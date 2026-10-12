@@ -39,6 +39,13 @@ const PESTANAS_DE: Record<string, string> = {
   analitica: "Analyse",
 };
 
+const PESTANAS_IT: Record<string, string> = {
+  resumen: "Riepilogo",
+  registro: "Inserimento",
+  operaciones: "Storico",
+  analitica: "Analisi",
+};
+
 export function ProductShowcase() {
   const { lang } = useLang();
   const idBase = useId();
@@ -67,7 +74,7 @@ export function ProductShowcase() {
       <div className="tj-container">
         <div className="mb-10 grid gap-y-6 lg:grid-cols-2 lg:items-end lg:gap-x-16 xl:gap-x-24">
           <div>
-            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application", pt: "O programa", fr: "L’application", de: "Die Anwendung" })}</p>
+            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application", pt: "O programa", fr: "L’application", de: "Die Anwendung", it: "Il programma" })}</p>
             <h2 id="producto-titulo" className="t-h2 mt-5 max-w-[16ch] text-primary">
               {tx(lang, {
                 es: "Esto es lo que abres cada mañana.",
@@ -75,6 +82,7 @@ export function ProductShowcase() {
                 pt: "Isto é o que você abre toda manhã.",
                 fr: "Voici ce que vous ouvrez chaque matin.",
                 de: "Das öffnen Sie jeden Morgen.",
+                it: "Questo è ciò che apri ogni mattina.",
               })}
             </h2>
           </div>
@@ -86,6 +94,7 @@ export function ProductShowcase() {
                 pt: "Capturas reais do programa com dados de amostra, na interface em espanhol; ele também opera em inglês. Escolha uma tela.",
                 fr: "Captures réelles de l’application avec données d’exemple, prises dans son interface espagnole ; elle fonctionne aussi en anglais. Choisissez un écran.",
                 de: "Echte Screenshots der Anwendung mit Beispieldaten aus der spanischen Oberfläche; sie läuft auch auf Englisch. Wählen Sie eine Ansicht.",
+                it: "Screenshot reali dell’applicazione con dati di esempio, acquisiti dall’interfaccia spagnola; funziona anche in inglese. Scegli una schermata.",
               })}
             </p>
             <div className="mt-5">
@@ -96,6 +105,7 @@ export function ProductShowcase() {
                   pt: "Explorar a demo sem cadastro",
                   fr: "Parcourir la démo sans inscription",
                   de: "Demo ohne Registrierung ansehen",
+                  it: "Esplora la demo senza registrazione",
                 })}
               </Link>
             </div>
@@ -111,6 +121,7 @@ export function ProductShowcase() {
             pt: "Telas do programa",
             fr: "Écrans de l’application",
             de: "Masken der Anwendung",
+            it: "Schermate dell’applicazione",
           })}
           className="tj-pestanas -m-2 mb-4 p-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
@@ -129,7 +140,7 @@ export function ProductShowcase() {
                 onClick={() => setActiva(clave)}
                 onKeyDown={(e) => enTeclado(e, i)}
               >
-                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn, pt: PESTANAS_PT[clave], fr: PESTANAS_FR[clave], de: PESTANAS_DE[clave] })}
+                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn, pt: PESTANAS_PT[clave], fr: PESTANAS_FR[clave], de: PESTANAS_DE[clave], it: PESTANAS_IT[clave] })}
               </button>
             );
           })}
