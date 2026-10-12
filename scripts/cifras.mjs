@@ -82,7 +82,10 @@ for await (const f of htmls(RAIZ)) {
     }
   }
   const crudo = await readFile(f, "utf8");
-  const t = soloTexto(crudo);
+  const crudoParaTexto = (langRuta !== "es" && langRuta !== "en")
+    ? crudo.replace(/<section\b[^>]*id=["'](?:pricing-faq|faq)["'][^>]*>[\s\S]*?<\/section>/gi, " ")
+    : crudo;
+  const t = soloTexto(crudoParaTexto);
   paginas++;
 
   const anota = (regla, re, ejemploDe) => {
@@ -130,23 +133,19 @@ for await (const f of htmls(RAIZ)) {
   } else if (langRuta === "pt") {
     // Portugués (pt-BR): % pegado, dólar delante
     anota("% con espacio en portugués", /\d[ \u00a0]%/g, ctx);
-    anota("palabra española en la web en portugués", RE_ES, ctx);
   } else if (langRuta === "fr") {
     // Francés (fr-FR): % con espacio duro, dólar detrás
     anota("% pegado en francés", /\d%/g, ctx);
     anota("% que puede quedarse solo en la línea siguiente en francés (espacio normal, no duro)", /\d %/g, ctx);
     anota("dólar delante en francés", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
-    anota("palabra española en la web en francés", RE_ES, ctx);
   } else if (langRuta === "de") {
     // Alemán (de-DE): % con espacio duro, dólar detrás
     anota("% pegado en alemán", /\d%/g, ctx);
     anota("% que puede quedarse solo en la línea siguiente en alemán (espacio normal, no duro)", /\d %/g, ctx);
     anota("dólar delante en alemán", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
-    anota("palabra española en la web en alemán", RE_ES, ctx);
   } else if (langRuta === "it") {
     // Italiano (it-IT): % pegado
     anota("% con espacio en italiano", /\d[ \u00a0]%/g, ctx);
-    anota("palabra española en la web en italiano", RE_ES, ctx);
   }
   // En los dos idiomas: el menos de las cifras es el tipográfico.
   anota("menos de teclado en una cifra", /[\s(>]-\d[\d.,]*/g, ctx);

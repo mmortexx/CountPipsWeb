@@ -127,7 +127,7 @@ const PRODUCT_ITEMS: {
     labelIt: "Strumenti",
     descEs: "Diez calculadoras, gratis y sin registro",
     descEn: "Ten calculators, free and with no sign-up",
-    descPt: "Dez calculadoras, gratuitas e sem cadastro",
+    descPt: "Dez ferramentas, gratuitas e sem cadastro",
     descFr: "Dix calculateurs gratuits et sans inscription",
     descDe: "Zehn Rechner, kostenlos und ohne Registrierung",
     descIt: "Dieci calcolatori gratuiti e senza registrazione",

@@ -48,7 +48,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
               pt: "Opere como uma mesa institucional.",
               fr: "Tradez comme un desk institutionnel.",
               de: "Traden wie ein institutioneller Desk.",
-              it: "Fai trading come un desk istituzionale.",
+              it: "Fai trading come un desk\u00a0istituzionale.",
             })}
           />
         </h1>
