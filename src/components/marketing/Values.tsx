@@ -14,14 +14,17 @@ interface Value {
   titleEs: string;
   titleEn: string;
   titlePt?: string;
+  titleFr?: string;
   descEs: string;
   descEn: string;
   descPt?: string;
+  descFr?: string;
   /** Dónde se puede ir a comprobar este principio. */
   href: string;
   pruebaEs: string;
   pruebaEn: string;
   pruebaPt?: string;
+  pruebaFr?: string;
 }
 
 const VALUES: Value[] = [
@@ -29,62 +32,78 @@ const VALUES: Value[] = [
     titleEs: "Local siempre",
     titleEn: "Local always",
     titlePt: "Sempre local",
+    titleFr: "Toujours en local",
     descEs:
       "Tus operaciones son tuyas. Viven en tu equipo y solo salen si activas una función que lo necesita; la analítica de esta web solo se activa con tu consentimiento.",
     descEn:
       "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it; this site’s analytics only activates with your consent.",
     descPt:
       "Suas operações pertencem a você. Elas ficam na sua máquina e só saem se você ativar uma função necessária; a análise deste site só é ativada com seu consentimento.",
+    descFr:
+      "Vos données de trading vous appartiennent. Elles restent sur votre machine et ne la quittent que si vous activez une option dédiée ; les analyses de ce site n’opèrent qu’avec votre consentement.",
     href: "/features/seguridad",
     pruebaEs: "Qué se guarda y dónde",
     pruebaEn: "What is stored, and where",
     pruebaPt: "O que é salvo e onde",
+    pruebaFr: "Ce qui est stocké et où",
   },
   {
     titleEs: "Demo honesta, sin atajos",
     titleEn: "An honest demo, no shortcuts",
     titlePt: "Demo honesta, sem atalhos",
+    titleFr: "Une démo honnête, sans artifice",
     descEs:
       "Datos de muestra, sin tarjeta ni instalación. El piloto privado valida el producto con usuarios reales antes de abrir la venta.",
     descEn:
       "Sample data, no card and no installation. The private pilot validates the product with real users before sales open.",
     descPt:
       "Dados de exemplo, sem cartão e sem instalação. O piloto privado valida o produto com usuários reais antes de abrir as vendas.",
+    descFr:
+      "Des données d’exemple, sans carte bancaire ni installation. Le pilote privé valide le produit auprès d’utilisateurs réels avant l’ouverture des ventes.",
     href: "/demo",
     pruebaEs: "Recorrer la demo entera",
     pruebaEn: "Walk the whole demo",
     pruebaPt: "Percorrer a demo inteira",
+    pruebaFr: "Parcourir toute la démo",
   },
   {
     titleEs: "Disciplina antes que métricas",
     titleEn: "Discipline before metrics",
     titlePt: "Disciplina antes das métricas",
+    titleFr: "La discipline avant les métriques",
     descEs:
       "Las métricas sin disciplina son ruido. El Guardián te avisa antes de romper tus reglas y, si lo activas, te frena.",
     descEn:
       "Metrics without discipline are noise. The Guardian warns you before you break your rules and, if you turn it on, stops you.",
     descPt:
       "Métricas sem disciplina são ruído. O Guardião avisa antes de quebrar suas regras e, se ativado, interrompe você.",
+    descFr:
+      "Les métriques sans discipline ne sont que du bruit. Le Gardien vous avertit avant d’enfreindre vos règles et, si vous l’activez, vous bloque.",
     href: "/features/disciplina",
     pruebaEs: "Cómo frena el Guardián",
     pruebaEn: "How the brake works",
     pruebaPt: "Como o Guardião freia",
+    pruebaFr: "Comment agit le frein",
   },
   {
     /* Un principio tiene que poder comprobarse: este se comprueba en la ficha técnica. */
     titleEs: "Hecha para tenerla abierta mientras operas",
     titleEn: "Built to stay open while you trade",
     titlePt: "Feito para ficar aberto enquanto você opera",
+    titleFr: "Conçu pour rester ouvert pendant vos sessions",
     descEs:
       "Una app de escritorio que arranca en menos de un segundo, funciona sin conexión y no te pide cuenta.",
     descEn:
       "A desktop app that starts in under a second, works offline and asks for no account.",
     descPt:
       "Um app desktop que inicia em menos de um segundo, funciona offline e não pede conta.",
+    descFr:
+      "Une application de bureau qui démarre en moins d’une seconde, fonctionne hors ligne et ne réclame aucun compte.",
     href: "/features/seguridad#ficha-tecnica",
     pruebaEs: "Ver la ficha técnica",
     pruebaEn: "See the spec sheet",
     pruebaPt: "Ver a ficha técnica",
+    pruebaFr: "Consulter la fiche technique",
   },
 ];
 
@@ -101,11 +120,13 @@ export function Values() {
             es: <>Lo que creemos.</>,
             en: <>What we believe.</>,
             pt: <>No que acreditamos.</>,
+            fr: <>Ce que nous croyons.</>,
           })}
           entradilla={tx(lang, {
             es: "Cuatro ideas que no son negociables. Si algún día dejamos de cumplirlas, la app deja de tener sentido.",
             en: "Four ideas that aren’t negotiable. If we ever stop delivering on them, the app stops making sense.",
             pt: "Quatro ideias não negociáveis. Se um dia deixarmos de cumpri-las, o app perde o sentido.",
+            fr: "Quatre principes non négociables. Si nous cessions de les respecter, l’application perdrait tout son sens.",
           })}
         />
 
@@ -118,10 +139,10 @@ export function Values() {
                 }`}
               >
                 <h3 className="t-h3 text-primary">
-                  {tx(lang, { es: v.titleEs, en: v.titleEn, pt: v.titlePt })}
+                  {tx(lang, { es: v.titleEs, en: v.titleEn, pt: v.titlePt, fr: v.titleFr })}
                 </h3>
                 <p className="mt-2.5 text-[15px] text-secondary leading-[1.7] max-w-[42em]">
-                  {tx(lang, { es: v.descEs, en: v.descEn, pt: v.descPt })}
+                  {tx(lang, { es: v.descEs, en: v.descEn, pt: v.descPt, fr: v.descFr })}
                 </p>
 
                 {/* `mt-auto`: los enlaces de una fila quedan a la misma altura aunque
@@ -130,7 +151,7 @@ export function Values() {
                   href={v.href}
                   className="link-underline-host mt-auto pt-2 inline-flex min-h-[44px] items-center text-sm font-medium text-primary outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                 >
-                  <span className="link-underline">{tx(lang, { es: v.pruebaEs, en: v.pruebaEn, pt: v.pruebaPt })}</span>
+                  <span className="link-underline">{tx(lang, { es: v.pruebaEs, en: v.pruebaEn, pt: v.pruebaPt, fr: v.pruebaFr })}</span>
                 </Link>
               </article>
             </Reveal>

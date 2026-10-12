@@ -35,12 +35,22 @@ const LAMINAS_EXTRA: Record<string, {
       nota: "Abaixo do formulário de registro, a tela de resumo divide-se em duas: a curva de desempenho com as áreas de drawdown sombreadas e o saldo em linha pontilhada, e o calendário do mês com o resultado de cada dia e o total de cada semana.",
       detalle: "o calendário do mês",
     },
+    fr: {
+      titulo: "La courbe et le mois, côte à côte",
+      nota: "Sous le formulaire de saisie, l’écran de synthèse se divise en deux : la courbe de performance avec les zones de drawdown ombrées et le solde en pointillés, et le calendrier mensuel avec le résultat de chaque jour et le cumul hebdomadaire.",
+      detalle: "le calendrier du mois",
+    },
   },
   registro: {
     pt: {
       titulo: "Registrar a operação é a primeira coisa que você vê",
       nota: "O formulário ocupa a tela inteira de propósito: ativo, direção, entrada, stop, alvo e saída, junto com uma área ampla para arrastar capturas do gráfico. Enquanto você digita, o risco é recalculado.",
       detalle: "o formulário de registro",
+    },
+    fr: {
+      titulo: "Enregistrer l’opération est la première chose que vous voyez",
+      nota: "Le formulaire occupe tout l’écran à dessein : actif, sens, entrée, stop, objectif et sortie, avec un espace dédié pour glisser des captures graphiques. Le risque est recalculé en temps réel.",
+      detalle: "le formulaire de saisie",
     },
   },
   operaciones: {
@@ -49,12 +59,22 @@ const LAMINAS_EXTRA: Record<string, {
       nota: "A tabela de operações reúne cada trade fechado ou aberto com data, duração, ativo, direção, lote, resultado em dinheiro e em múltiplos de R, além dos setups de cada estratégia.",
       detalle: "a tabela de operações",
     },
+    fr: {
+      titulo: "L’historique avec des filtres exploitables",
+      nota: "Le tableau d’opérations regroupe chaque position clôturée ou en cours avec date, durée, actif, direction, taille, résultat net et multiple de R, ainsi que les configurations associées.",
+      detalle: "le tableau des opérations",
+    },
   },
   analitica: {
     pt: {
       titulo: "A distribuição de R e a quebra por setup",
       nota: "A tela de analítica desdobra a performance: o histograma de múltiplos de R com a moda destacada, os índices institucionais como Sharpe e Profit Factor, e a consistência ao longo do tempo.",
       detalle: "o histograma de R",
+    },
+    fr: {
+      titulo: "La répartition de R et la ventilation par configuration",
+      nota: "L’écran d’analyse détaille la performance : l’histogramme des multiples de R avec le mode mis en avant, les ratios institutionnels comme le Sharpe et le Profit Factor, et la régularité dans le temps.",
+      detalle: "l’histogramme de R",
     },
   },
 };
@@ -185,7 +205,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
           type="button"
           className="tj-visor-cerrar tj-cristal tj-cristal--denso"
           onClick={cerrar}
-          aria-label={tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar" })}
+          aria-label={tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar", fr: "Fermer" })}
         >
           <X size={18} aria-hidden />
         </button>
@@ -194,7 +214,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
         <h3 className="tj-lamina-titulo t-h3">{titulo}</h3>
         <p className="tj-lamina-nota">{nota}</p>
         <p className="tj-lamina-detalle">
-          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: " })}{detalleTexto}.
+          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: ", fr: "Détail : " })}{detalleTexto}.
         </p>
       </figcaption>
     </figure>

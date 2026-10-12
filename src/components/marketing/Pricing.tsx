@@ -29,26 +29,26 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
 
   /* Los mismos niveles que `LicenseGate` y `PLAN.md` §10 del programa. */
   const coreFeatures = [
-    tx(lang, { es: "Diario, 40+ métricas y calendario", en: "Journal, 40+ metrics and calendar", pt: "Diário, 40+ métricas e calendário" }),
-    tx(lang, { es: "Curva de capital y drawdown", en: "Equity curve and drawdown", pt: "Curva de capital e drawdown" }),
-    tx(lang, { es: "Gestión de riesgo y freno duro opcional", en: "Risk management and optional hard brake", pt: "Gestão de risco e freio rígido opcional" }),
-    tx(lang, { es: "Psicología y disciplina", en: "Psychology and discipline", pt: "Psicologia e disciplina" }),
-    tx(lang, { es: "Playbook con estadísticas en vivo", en: "Playbook with live statistics", pt: "Playbook com estatísticas ao vivo" }),
-    tx(lang, { es: "Importación CSV y exportación completa", en: "CSV import and full export", pt: "Importação CSV e exportação completa" }),
-    tx(lang, { es: "Copias de seguridad automáticas", en: "Automatic backups", pt: "Backups automáticos" }),
-    tx(lang, { es: "Informe mensual en PDF", en: "Monthly PDF report", pt: "Relatório mensal em PDF" }),
-    tx(lang, { es: "2 cuentas de trading", en: "2 trading accounts", pt: "2 contas de trading" }),
+    tx(lang, { es: "Diario, 40+ métricas y calendario", en: "Journal, 40+ metrics and calendar", pt: "Diário, 40+ métricas e calendário", fr: "Journal, 40+ métriques et calendrier" }),
+    tx(lang, { es: "Curva de capital y drawdown", en: "Equity curve and drawdown", pt: "Curva de capital e drawdown", fr: "Courbe de capital et drawdown" }),
+    tx(lang, { es: "Gestión de riesgo y freno duro opcional", en: "Risk management and optional hard brake", pt: "Gestão de risco e freio rígido opcional", fr: "Gestion du risque et arrêt forcé optionnel" }),
+    tx(lang, { es: "Psicología y disciplina", en: "Psychology and discipline", pt: "Psicologia e disciplina", fr: "Psychologie et discipline" }),
+    tx(lang, { es: "Playbook con estadísticas en vivo", en: "Playbook with live statistics", pt: "Playbook com estatísticas ao vivo", fr: "Playbook avec statistiques en direct" }),
+    tx(lang, { es: "Importación CSV y exportación completa", en: "CSV import and full export", pt: "Importação CSV e exportação completa", fr: "Import CSV et export complet" }),
+    tx(lang, { es: "Copias de seguridad automáticas", en: "Automatic backups", pt: "Backups automáticos", fr: "Sauvegardes automatiques" }),
+    tx(lang, { es: "Informe mensual en PDF", en: "Monthly PDF report", pt: "Relatório mensal em PDF", fr: "Rapport mensuel en PDF" }),
+    tx(lang, { es: "2 cuentas de trading", en: "2 trading accounts", pt: "2 contas de trading", fr: "2 comptes de trading" }),
   ];
 
   const proFeatures = [
-    tx(lang, { es: "Todo lo de Core", en: "Everything in Core", pt: "Tudo do Core" }),
-    tx(lang, { es: "Cuentas ilimitadas", en: "Unlimited accounts", pt: "Contas ilimitadas" }),
-    tx(lang, { es: "Modo prop firm e informe de evaluación en PDF", en: "Prop firm mode and PDF evaluation report", pt: "Modo prop firm e relatório de avaliação em PDF" }),
-    tx(lang, { es: "Simulador Monte Carlo y riesgo de ruina", en: "Monte Carlo simulator and risk of ruin", pt: "Simulador de Monte Carlo e risco de ruína" }),
-    tx(lang, { es: "Experimentos con validación estadística", en: "Experiments with statistical validation", pt: "Experimentos com validação estatística" }),
-    tx(lang, { es: "Módulo fiscal y página Negocio", en: "Tax module and Business page", pt: "Módulo fiscal e página Negócio" }),
-    tx(lang, { es: "API local", en: "Local API", pt: "API local" }),
-    tx(lang, { es: "Alertas de mercado, curva de tipos y fortaleza de divisas", en: "Market alerts, yield curve and currency strength", pt: "Alertas de mercado, curva de juros e força de moedas" }),
+    tx(lang, { es: "Todo lo de Core", en: "Everything in Core", pt: "Tudo do Core", fr: "Tout ce qui est inclus dans Core" }),
+    tx(lang, { es: "Cuentas ilimitadas", en: "Unlimited accounts", pt: "Contas ilimitadas", fr: "Comptes illimités" }),
+    tx(lang, { es: "Modo prop firm e informe de evaluación en PDF", en: "Prop firm mode and PDF evaluation report", pt: "Modo prop firm e relatório de avaliação em PDF", fr: "Mode prop firm et rapport d’évaluation en PDF" }),
+    tx(lang, { es: "Simulador Monte Carlo y riesgo de ruina", en: "Monte Carlo simulator and risk of ruin", pt: "Simulador de Monte Carlo e risco de ruína", fr: "Simulateur Monte Carlo et risque de ruine" }),
+    tx(lang, { es: "Experimentos con validación estadística", en: "Experiments with statistical validation", pt: "Experimentos com validação estatística", fr: "Expériences avec validation statistique" }),
+    tx(lang, { es: "Módulo fiscal y página Negocio", en: "Tax module and Business page", pt: "Módulo fiscal e página Negócio", fr: "Module fiscal et page Activité" }),
+    tx(lang, { es: "API local", en: "Local API", pt: "API local", fr: "API locale" }),
+    tx(lang, { es: "Alertas de mercado, curva de tipos y fortaleza de divisas", en: "Market alerts, yield curve and currency strength", pt: "Alertas de mercado, curva de juros e força de moedas", fr: "Alertes de marché, courbe des taux et force relative des devises" }),
   ];
 
   const plans: Plan[] = [
@@ -60,9 +60,10 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         es: "El núcleo del diario para construir una operativa medible.",
         en: "The journal core for building a measurable trading process.",
         pt: "O núcleo do diário para construir uma operação mensurável.",
+        fr: "Le socle du journal pour bâtir un processus de trading rigoureux.",
       }),
       features: coreFeatures,
-      cta: tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access", pt: "Solicitar acesso antecipado" }),
+      cta: tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access", pt: "Solicitar acesso antecipado", fr: "Demander l’accès anticipé" }),
     },
     {
       id: "pro",
@@ -73,9 +74,10 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         es: "Para prop firms, varias cuentas, fiscalidad y análisis avanzado.",
         en: "For prop firms, multiple accounts, tax and advanced analysis.",
         pt: "Para prop firms, várias contas, fiscalidade e análise avançada.",
+        fr: "Pour les prop firms, les comptes multiples, la fiscalité et l’analyse avancée.",
       }),
       features: proFeatures,
-      cta: tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access", pt: "Solicitar acesso antecipado" }),
+      cta: tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access", pt: "Solicitar acesso antecipado", fr: "Demander l’accès anticipé" }),
     },
   ];
 
@@ -95,6 +97,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
                 es: "Precios de lanzamiento",
                 en: "Launch pricing",
                 pt: "Preços de lançamento",
+                fr: "Tarifs de lancement",
               })}
             </Eyebrow>
           )}
@@ -124,6 +127,12 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
                   informada.
                 </>
               ),
+              fr: (
+                <>
+                  Deux formules. Un choix{" "}
+                  éclairé.
+                </>
+              ),
             })}
           </h2>
           {!standalone && (
@@ -132,6 +141,7 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
                 es: "Dos niveles claros para dos formas de operar. Prueba la demo, compara el alcance y solicita acceso anticipado si quieres entrar antes de la apertura comercial.",
                 en: "Two clear tiers for two ways of trading. Try the demo, compare the scope and request early access if you want in before commercial launch.",
                 pt: "Dois planos claros para duas formas de operar. Experimente a demo, compare o escopo e solicite acesso antecipado se quiser entrar antes do lançamento comercial.",
+                fr: "Deux offres claires pour deux approches de marché. Testez la démo, comparez le périmètre et demandez votre accès anticipé avant l’ouverture commerciale.",
               })}
             </p>
           )}
@@ -156,13 +166,14 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
               es: "La demo es pública; la compra se abrirá con el lanzamiento. ",
               en: "The demo is public; purchase opens at launch. ",
               pt: "A demo é pública; as compras serão abertas no lançamento. ",
+              fr: "La démo est publique ; l’achat sera ouvert au lancement. ",
             })}
             <Link
               href="/beta"
               className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
             >
               <span className="link-underline">
-                {tx(lang, { es: "Cómo funciona el acceso anticipado", en: "How early access works", pt: "Como funciona o acesso antecipado" })}
+                {tx(lang, { es: "Cómo funciona el acceso anticipado", en: "How early access works", pt: "Como funciona o acesso antecipado", fr: "Comment fonctionne l’accès anticipé" })}
               </span>
             </Link>
           </p>
@@ -232,9 +243,11 @@ function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
         es="Precio previsto"
         en="Planned price"
         pt="Preço previsto"
+        fr="Prix prévisionnel"
         detalleEs="se fija con la entrega comercial"
         detalleEn="set at commercial launch"
         detallePt="definido no lançamento comercial"
+        detalleFr="défini au lancement commercial"
       />
 
       <div
@@ -258,8 +271,8 @@ function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
       <div className="flex-1 border-t border-[var(--ficha-division)] px-7 pt-6 pb-7 sm:px-9 sm:pb-9">
       <p className="m-0 text-[13px] font-medium text-tertiary">
         {isPro
-          ? tx(lang, { es: "Todo lo de Core, y además", en: "Everything in Core, plus", pt: "Tudo do Core, e além disso" })
-          : tx(lang, { es: "Incluye", en: "Includes", pt: "Inclui" })}
+          ? tx(lang, { es: "Todo lo de Core, y además", en: "Everything in Core, plus", pt: "Tudo do Core, e além disso", fr: "Tout ce qui est inclus dans Core, plus" })
+          : tx(lang, { es: "Incluye", en: "Includes", pt: "Inclui", fr: "Comprend" })}
       </p>
       <ul className="mt-4 space-y-3">
         {(isPro ? plan.features.slice(1) : plan.features).map((f) => (

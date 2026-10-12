@@ -25,6 +25,13 @@ const PESTANAS_PT: Record<string, string> = {
   analitica: "Analítica",
 };
 
+const PESTANAS_FR: Record<string, string> = {
+  resumen: "Tableau de bord",
+  registro: "Capture",
+  operaciones: "Historique",
+  analitica: "Analytique",
+};
+
 export function ProductShowcase() {
   const { lang } = useLang();
   const idBase = useId();
@@ -53,12 +60,13 @@ export function ProductShowcase() {
       <div className="tj-container">
         <div className="mb-10 grid gap-y-6 lg:grid-cols-2 lg:items-end lg:gap-x-16 xl:gap-x-24">
           <div>
-            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application", pt: "O programa" })}</p>
+            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application", pt: "O programa", fr: "L’application" })}</p>
             <h2 id="producto-titulo" className="t-h2 mt-5 max-w-[16ch] text-primary">
               {tx(lang, {
                 es: "Esto es lo que abres cada mañana.",
                 en: "This is what you open every morning.",
                 pt: "Isto é o que você abre toda manhã.",
+                fr: "Voici ce que vous ouvrez chaque matin.",
               })}
             </h2>
           </div>
@@ -68,6 +76,7 @@ export function ProductShowcase() {
                 es: "Capturas reales del programa con datos de muestra. Elige una pantalla.",
                 en: "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen.",
                 pt: "Capturas reais do programa com dados de amostra, na interface em espanhol; ele também opera em inglês. Escolha uma tela.",
+                fr: "Captures réelles de l’application avec données d’exemple, prises dans son interface espagnole ; elle fonctionne aussi en anglais. Choisissez un écran.",
               })}
             </p>
             <div className="mt-5">
@@ -76,6 +85,7 @@ export function ProductShowcase() {
                   es: "Recorrer la demo sin registro",
                   en: "Explore the demo, no sign-up",
                   pt: "Explorar a demo sem cadastro",
+                  fr: "Parcourir la démo sans inscription",
                 })}
               </Link>
             </div>
@@ -89,6 +99,7 @@ export function ProductShowcase() {
             es: "Pantallas del programa",
             en: "Application screens",
             pt: "Telas do programa",
+            fr: "Écrans de l’application",
           })}
           className="tj-pestanas -m-2 mb-4 p-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
@@ -107,7 +118,7 @@ export function ProductShowcase() {
                 onClick={() => setActiva(clave)}
                 onKeyDown={(e) => enTeclado(e, i)}
               >
-                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn, pt: PESTANAS_PT[clave] })}
+                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn, pt: PESTANAS_PT[clave], fr: PESTANAS_FR[clave] })}
               </button>
             );
           })}

@@ -21,6 +21,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
         es: "métricas institucionales calculadas con cada operación",
         en: "institutional metrics computed with every trade",
         pt: "métricas institucionais calculadas a cada operação",
+        fr: "métriques institutionnelles calculées à chaque trade",
       }),
     },
     {
@@ -29,6 +30,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
         es: "servidores de CountPips con tus operaciones: viven en tu equipo",
         en: "CountPips servers holding your trades: they live on your machine",
         pt: "servidores do CountPips com suas operações: ficam na sua máquina",
+        fr: "serveur CountPips hébergeant vos opérations : elles restent sur votre machine",
       }),
     },
     /* La tercera cifra es real y comprobable: las herramientas abiertas hoy.
@@ -39,6 +41,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
         es: "herramientas gratis en la web: sin registro ni instalación",
         en: "free tools on the site: no sign-up, no install",
         pt: "ferramentas gratuitas no site: sem cadastro nem instalação",
+        fr: "outils gratuits sur le site : sans inscription ni installation",
       }),
     },
   ];
@@ -54,16 +57,19 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       es: <>Por operación y por periodo, en la versión en pruebas del programa.</>,
       en: <>Per trade and per period, in the pre-release version of the application.</>,
       pt: <>Por operação e por período, na versão de testes do programa.</>,
+      fr: <>Par opération et par période, dans la version préliminaire de l’application.</>,
     }),
     tx<ReactNode>(lang, {
       es: <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
       en: <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
       pt: <>As operações são salvas em um arquivo no seu disco; o que sai para a internet está listado em {enlace("/features/seguridad", "Segurança")}.</>,
+      fr: <>Les opérations sont stockées dans un fichier local ; tout ce qui transite en ligne est listé dans {enlace("/features/seguridad", "Sécurité")}.</>,
     }),
     tx<ReactNode>(lang, {
       es: <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
       en: <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
       pt: <>As calculadoras disponíveis hoje em {enlace("/herramientas", "Ferramentas")}; o teste de disciplina não entra na contagem.</>,
+      fr: <>Les calculateurs disponibles aujourd’hui dans {enlace("/herramientas", "Outils")} ; le test de discipline n’est pas compté.</>,
     }),
   ];
   const corte = FECHA_PUBLICACION

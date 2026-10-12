@@ -145,7 +145,7 @@ export function CookieConsent() {
           role="dialog"
           aria-modal="false"
           aria-live="polite"
-          aria-label={tx(lang, { es: "Consentimiento de cookies", en: "Cookie consent", pt: "Consentimento de cookies" })}
+          aria-label={tx(lang, { es: "Consentimiento de cookies", en: "Cookie consent", pt: "Consentimento de cookies", fr: "Consentement aux cookies" })}
           data-cookie-consent="visible"
           style={{ position: "fixed" }}
             // Móvil: hoja a sangre abajo. Desktop (≥768px): tarjeta abajo a la
@@ -161,13 +161,14 @@ export function CookieConsent() {
                   es: "Guardamos tus preferencias en este navegador; la analítica, solo si la aceptas. ",
                   en: "We keep your preferences in this browser; analytics only if you accept it. ",
                   pt: "Guardamos suas preferências neste navegador; a análise, apenas se você aceitar. ",
+                  fr: "Nous conservons vos préférences dans ce navigateur ; les analyses uniquement si vous les acceptez. ",
                 })}
                 <Link
                   href="/cookies"
                   className="link-underline-host whitespace-nowrap text-primary"
                 >
                   <span className="link-underline">
-                    {tx(lang, { es: "Ver qué guarda", en: "See what it stores", pt: "Ver o que é salvo" })}
+                    {tx(lang, { es: "Ver qué guarda", en: "See what it stores", pt: "Ver o que é salvo", fr: "Voir ce qui est stocké" })}
                   </span>
                 </Link>
               </p>
@@ -181,14 +182,14 @@ export function CookieConsent() {
                 onClick={() => choose("declined")}
                 className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium text-secondary bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:bg-[color-mix(in_srgb,var(--ink)_10%,transparent)] hover:text-primary transition-[background,color,transform] duration-150"
               >
-                {tx(lang, { es: "Solo necesarias", en: "Necessary only", pt: "Apenas necessárias" })}
+                {tx(lang, { es: "Solo necesarias", en: "Necessary only", pt: "Apenas necessárias", fr: "Nécessaires seules" })}
               </button>
               <button
                 type="button"
                 onClick={() => choose("accepted")}
                 className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 transition-[filter,transform] duration-150"
               >
-                {tx(lang, { es: "Aceptar analítica", en: "Accept analytics", pt: "Aceitar análises" })}
+                {tx(lang, { es: "Aceptar analítica", en: "Accept analytics", pt: "Aceitar análises", fr: "Accepter les analyses" })}
               </button>
             </div>
         </div>
