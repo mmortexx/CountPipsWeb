@@ -20,6 +20,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       l: tx(lang, {
         es: "métricas institucionales calculadas con cada operación",
         en: "institutional metrics computed with every trade",
+        pt: "métricas institucionais calculadas a cada operação",
       }),
     },
     {
@@ -27,6 +28,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       l: tx(lang, {
         es: "servidores de CountPips con tus operaciones: viven en tu equipo",
         en: "CountPips servers holding your trades: they live on your machine",
+        pt: "servidores do CountPips com suas operações: ficam na sua máquina",
       }),
     },
     /* La tercera cifra es real y comprobable: las herramientas abiertas hoy.
@@ -36,6 +38,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       l: tx(lang, {
         es: "herramientas gratis en la web: sin registro ni instalación",
         en: "free tools on the site: no sign-up, no install",
+        pt: "ferramentas gratuitas no site: sem cadastro nem instalação",
       }),
     },
   ];
@@ -50,14 +53,17 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
     tx<ReactNode>(lang, {
       es: <>Por operación y por periodo, en la versión en pruebas del programa.</>,
       en: <>Per trade and per period, in the pre-release version of the application.</>,
+      pt: <>Por operação e por período, na versão de testes do programa.</>,
     }),
     tx<ReactNode>(lang, {
       es: <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
       en: <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
+      pt: <>As operações são salvas em um arquivo no seu disco; o que sai para a internet está listado em {enlace("/features/seguridad", "Segurança")}.</>,
     }),
     tx<ReactNode>(lang, {
       es: <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
       en: <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
+      pt: <>As calculadoras disponíveis hoje em {enlace("/herramientas", "Ferramentas")}; o teste de disciplina não entra na contagem.</>,
     }),
   ];
   const corte = FECHA_PUBLICACION
@@ -102,7 +108,15 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
               </li>
             ))}
           </ol>
-          {corte && <p>{tx(lang, { es: `Cifras a ${corte}.`, en: `Figures as of ${corte}.` })}</p>}
+          {corte && (
+            <p>
+              {tx(lang, {
+                es: `Cifras a ${corte}.`,
+                en: `Figures as of ${corte}.`,
+                pt: `Números em ${corte}.`,
+              })}
+            </p>
+          )}
         </div>
       </div>
     </section>

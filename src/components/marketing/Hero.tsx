@@ -19,13 +19,18 @@ export function Hero({ producto }: { producto?: ReactNode }) {
   const datos = tx(lang, {
     es: "Pago único previsto, sin suscripción. Sin servidores de CountPips: tus operaciones, en tu equipo. Demo sin registro.",
     en: "Planned one-time payment, no subscription. No CountPips servers: your trades, on your machine. Demo without sign-up.",
+    pt: "Pagamento único previsto, sem assinatura. Sem servidores do CountPips: suas operações, na sua máquina. Demo sem cadastro.",
   });
 
   return (
     <section id="top" className="tj-hero relative">
       <div className="tj-container pt-[clamp(6.5rem,13vh,8.75rem)] text-center">
         <p className="eyebrow">
-          {tx(lang, { es: "Diario de trading para Windows", en: "Trading journal for Windows" })}
+          {tx(lang, {
+            es: "Diario de trading para Windows",
+            en: "Trading journal for Windows",
+            pt: "Diário de trading para Windows",
+          })}
         </p>
 
         <h1 className="t-display mx-auto mt-6 max-w-[15ch] text-balance text-primary">
@@ -34,6 +39,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
             texto={tx(lang, {
               es: "Opera como una mesa institucional.",
               en: "Trade like an institutional desk.",
+              pt: "Opere como uma mesa institucional.",
             })}
           />
         </h1>
@@ -42,15 +48,20 @@ export function Hero({ producto }: { producto?: ReactNode }) {
           {tx(lang, {
             es: "40+ métricas de riesgo y rendimiento, un guardián que te avisa antes de romper tus reglas y tus datos en tu equipo.",
             en: "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine.",
+            pt: "40+ métricas de risco e desempenho, um guardião que avisa antes de quebrar suas regras e seus dados na sua máquina.",
           })}
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
           <Link href="/demo" className="cta cta--primario">
-            {tx(lang, { es: "Ver la demo interactiva", en: "See the interactive demo" })}
+            {tx(lang, {
+              es: "Ver la demo interactiva",
+              en: "See the interactive demo",
+              pt: "Ver a demo interativa",
+            })}
           </Link>
           <Link href="/pricing" className="cta cta--secundario">
-            {tx(lang, { es: "Ver precios", en: "See pricing" })}
+            {tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços" })}
           </Link>
         </div>
 
@@ -63,7 +74,11 @@ export function Hero({ producto }: { producto?: ReactNode }) {
         {/* En fila desde `lg`: a 820 px, rótulo y nombres no caben en una línea. */}
         <div className="flex flex-col items-center gap-4 py-[clamp(2.5rem,5vw,3.5rem)] text-center lg:flex-row lg:justify-between lg:text-left">
           <p className="m-0 text-[13px] text-tertiary">
-            {tx(lang, { es: "Plantillas de importación CSV para", en: "CSV import templates for" })}
+            {tx(lang, {
+              es: "Plantillas de importación CSV para",
+              en: "CSV import templates for",
+              pt: "Modelos de importação CSV para",
+            })}
           </p>
           {/* Con cinco nombres en dos columnas, el último ocupa las dos para
               centrarse de verdad. */}

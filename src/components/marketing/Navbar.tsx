@@ -25,72 +25,90 @@ const PRODUCT_ITEMS: {
   href: string;
   labelEs: string;
   labelEn: string;
+  labelPt?: string;
   descEs: string;
   descEn: string;
+  descPt?: string;
   grupo: "producto" | "recursos";
 }[] = [
   {
     href: "/features",
     labelEs: "Características",
     labelEn: "Features",
+    labelPt: "Recursos",
     descEs: "Vista general del producto",
     descEn: "Product overview",
+    descPt: "Visão geral do produto",
     grupo: "producto",
   },
   {
     href: "/features/metricas",
     labelEs: "Métricas",
     labelEn: "Metrics",
+    labelPt: "Métricas",
     descEs: "Sharpe, profit factor, expectancy",
     descEn: "Sharpe, profit factor, expectancy",
+    descPt: "Sharpe, profit factor, expectancy",
     grupo: "producto",
   },
   {
     href: "/features/disciplina",
     labelEs: "Disciplina",
     labelEn: "Discipline",
+    labelPt: "Disciplina",
     descEs: "Semáforo de riesgo y freno duro",
     descEn: "Risk light and hard brake",
+    descPt: "Semáforo de risco e freio rígido",
     grupo: "producto",
   },
   {
     href: "/features/seguridad",
     labelEs: "Seguridad",
     labelEn: "Security",
+    labelPt: "Segurança",
     descEs: "Tus datos en tu equipo, sin cuenta",
     descEn: "Your data on your machine, no account",
+    descPt: "Seus dados na sua máquina, sem conta",
     grupo: "producto",
   },
   {
     href: "/test",
     labelEs: "Test de disciplina",
     labelEn: "Discipline test",
+    labelPt: "Teste de disciplina",
     descEs: "Mídete en cinco ejes, sin email",
     descEn: "Measure yourself across five axes, no email",
+    descPt: "Avalie-se em cinco eixos, sem e-mail",
     grupo: "recursos",
   },
   {
     href: "/herramientas",
     labelEs: "Herramientas",
     labelEn: "Tools",
+    labelPt: "Ferramentas",
     descEs: "Diez calculadoras, gratis y sin registro",
     descEn: "Ten calculators, free and with no sign-up",
+    descPt: "Dez calculadoras, gratuitas e sem cadastro",
     grupo: "recursos",
   },
   {
     href: "/glosario",
     labelEs: "Glosario",
     labelEn: "Glossary",
+    labelPt: "Glossário",
     descEs: "57 términos explicados sin rodeos",
     descEn: "57 terms explained without waffle",
+    descPt: "57 termos explicados de forma direta",
     grupo: "recursos",
   },
   {
     href: "/faq",
     labelEs: "Preguntas frecuentes",
     labelEn: "FAQ",
+    labelPt: "Perguntas frequentes",
     descEs: "La demo, el alcance y el acceso",
     descEn: "The demo, scope and access",
+    descPt: "A demo, o escopo e o acesso",
     grupo: "recursos",
   },
 ];
@@ -99,82 +117,95 @@ const DRAWER_GRUPOS: {
   id: "producto" | "recursos" | "empresa";
   es: string;
   en: string;
+  pt?: string;
 }[] = [
-  { id: "producto", es: "Producto", en: "Product" },
-  { id: "recursos", es: "Recursos", en: "Resources" },
-  { id: "empresa", es: "Empresa", en: "Company" },
+  { id: "producto", es: "Producto", en: "Product", pt: "Produto" },
+  { id: "recursos", es: "Recursos", en: "Resources", pt: "Recursos" },
+  { id: "empresa", es: "Empresa", en: "Company", pt: "Empresa" },
 ];
 
 const DRAWER_LINKS: {
   href: string;
   labelEs: string;
   labelEn: string;
+  labelPt?: string;
   grupo: (typeof DRAWER_GRUPOS)[number]["id"];
 }[] = [
   {
     href: "/features",
     labelEs: "Características",
     labelEn: "Features",
+    labelPt: "Recursos",
     grupo: "producto",
   },
   {
     href: "/demo",
     labelEs: "Demo",
     labelEn: "Demo",
+    labelPt: "Demo",
     grupo: "producto",
   },
   {
     href: "/pricing",
     labelEs: "Precios",
     labelEn: "Pricing",
+    labelPt: "Preços",
     grupo: "producto",
   },
   {
     href: "/traders/manual",
     labelEs: "Operativa manual",
     labelEn: "Manual trading",
+    labelPt: "Trading manual",
     grupo: "producto",
   },
   {
     href: "/traders/prop-firms",
     labelEs: "Prop firms",
     labelEn: "Prop firms",
+    labelPt: "Prop firms",
     grupo: "producto",
   },
   {
     href: "/beta",
     labelEs: "Acceso anticipado",
     labelEn: "Early access",
+    labelPt: "Acesso antecipado",
     grupo: "producto",
   },
   {
     href: "/about",
     labelEs: "Acerca de",
     labelEn: "About",
+    labelPt: "Sobre",
     grupo: "empresa",
   },
   {
     href: "/test",
     labelEs: "Test de disciplina",
     labelEn: "Discipline test",
+    labelPt: "Teste de disciplina",
     grupo: "recursos",
   },
   {
     href: "/herramientas",
     labelEs: "Herramientas",
     labelEn: "Tools",
+    labelPt: "Ferramentas",
     grupo: "recursos",
   },
   {
     href: "/glosario",
     labelEs: "Glosario",
     labelEn: "Glossary",
+    labelPt: "Glossário",
     grupo: "recursos",
   },
   {
     href: "/faq",
     labelEs: "FAQ",
     labelEn: "FAQ",
+    labelPt: "FAQ",
     grupo: "recursos",
   },
 ];
@@ -448,7 +479,7 @@ export function Navbar() {
     <>
       <header data-navbar-root className="fixed inset-x-0 top-0 z-50">
       <nav
-        aria-label={tx(lang, { es: "Principal", en: "Main" })}
+        aria-label={tx(lang, { es: "Principal", en: "Main", pt: "Principal" })}
         className="tj-barra relative flex w-full items-center"
         data-cristal={scrolled ? "true" : "false"}
         style={{ height: ALTURA_BARRA }}
@@ -530,7 +561,7 @@ export function Navbar() {
                   fontFamily: "inherit",
                 }}
               >
-                {tx(lang, { es: "Producto", en: "Product" })}
+                {tx(lang, { es: "Producto", en: "Product", pt: "Produto" })}
                 <svg
                   width="9"
                   height="9"
@@ -575,7 +606,7 @@ export function Navbar() {
                         siguiente = actual < 0 ? 0 : (actual + 1) % opciones.length;
                       else
                         siguiente =
-                          actual <= 0 ? opciones.length - 1 : actual - 1;
+                           actual <= 0 ? opciones.length - 1 : actual - 1;
                       opciones[siguiente]?.focus();
                     }}
                     // Cristal: la página se ve difuminada detrás. `position` en línea porque
@@ -602,13 +633,13 @@ export function Navbar() {
                         >
                           <span>
                             <span className="block text-[14px] font-semibold">
-                              {tx(lang, { es: item.labelEs, en: item.labelEn })}
+                              {tx(lang, { es: item.labelEs, en: item.labelEn, pt: item.labelPt })}
                             </span>
                             <span
                               className="mt-0.5 block text-[13px] leading-[1.4]"
                               style={{ color: "var(--ink-2)" }}
                             >
-                              {tx(lang, { es: item.descEs, en: item.descEn })}
+                              {tx(lang, { es: item.descEs, en: item.descEn, pt: item.descPt })}
                             </span>
                           </span>
                         </Link>
@@ -618,13 +649,13 @@ export function Navbar() {
                           <div className="relative grid grid-cols-2 divide-x divide-[var(--line)] p-2">
                             <div className="pr-2">
                               <p className="eyebrow m-0 px-2.5 pb-1.5 pt-1">
-                                {tx(lang, { es: "Producto", en: "Product" })}
+                                {tx(lang, { es: "Producto", en: "Product", pt: "Produto" })}
                               </p>
                               {productItems.filter((i) => i.grupo === "producto").map(fila)}
                             </div>
                             <div className="pl-2">
                               <p className="eyebrow m-0 px-2.5 pb-1.5 pt-1">
-                                {tx(lang, { es: "Recursos", en: "Resources" })}
+                                {tx(lang, { es: "Recursos", en: "Resources", pt: "Recursos" })}
                               </p>
                               {productItems.filter((i) => i.grupo === "recursos").map(fila)}
                             </div>
@@ -634,6 +665,7 @@ export function Navbar() {
                               {tx(lang, {
                                 es: "Todo el producto, en una vista",
                                 en: "The whole product, in one view",
+                                pt: "Todo o produto em uma visão",
                               })}
                             </span>
                             <Link
@@ -642,7 +674,7 @@ export function Navbar() {
                               className="group inline-flex items-center gap-1.5 text-[13px] font-semibold outline-none hover:underline focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                               style={{ color: "rgb(var(--accent-base))" }}
                             >
-                              {tx(lang, { es: "Abrir la demo", en: "Open the demo" })}
+                              {tx(lang, { es: "Abrir la demo", en: "Open the demo", pt: "Abrir a demo" })}
                             </Link>
                           </div>
                         </>
@@ -654,10 +686,10 @@ export function Navbar() {
 
             {/* Sin «Demo» (es el botón de la derecha) ni «Recursos» (vive en
                 el menú Producto). */}
-            {navLink("/pricing", tx(lang, { es: "Precios", en: "Pricing" }))}
-            {navLink("/traders/manual", tx(lang, { es: "Manual", en: "Manual" }))}
+            {navLink("/pricing", tx(lang, { es: "Precios", en: "Pricing", pt: "Preços" }))}
+            {navLink("/traders/manual", tx(lang, { es: "Manual", en: "Manual", pt: "Manual" }))}
             {navLink("/traders/prop-firms", "Prop firms")}
-            {navLink("/beta", tx(lang, { es: "Acceso anticipado", en: "Early access" }))}
+            {navLink("/beta", tx(lang, { es: "Acceso anticipado", en: "Early access", pt: "Acesso antecipado" }))}
           </div>
 
           {/* Utilidades: tema, idioma, CTA y hamburguesa. En móvil tema, idioma
@@ -666,7 +698,7 @@ export function Navbar() {
             <div className="hidden min-[1120px]:flex min-[1120px]:items-center min-[1120px]:gap-2">
             <IconButton
               onClick={toggleTheme}
-              label={tx(lang, { es: "Cambiar tema", en: "Toggle theme" })}
+              label={tx(lang, { es: "Cambiar tema", en: "Toggle theme", pt: "Alternar tema" })}
               extraProps={{ "data-theme-toggle": true }}
             >
               {/* `key={theme}` reemplaza el nodo al cambiar de tema y el nuevo
@@ -686,7 +718,7 @@ export function Navbar() {
               href="/demo"
               className="hidden h-[38px] flex-none items-center gap-[7px] whitespace-nowrap rounded-[4px] bg-[rgb(var(--accent-base))] px-[18px] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98] sm:inline-flex"
             >
-              {tx(lang, { es: "Ver la demo", en: "See the demo" })}
+              {tx(lang, { es: "Ver la demo", en: "See the demo", pt: "Ver a demo" })}
             </Link>
             </div>{/* /hidden min-[1120px]:flex — utilidades de escritorio */}
 
@@ -706,8 +738,8 @@ export function Navbar() {
               className="grid h-11 w-11 place-items-center rounded-[4px] text-[var(--ink-2)] outline-none transition-colors duration-200 hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] min-[1120px]:hidden"
               aria-label={
                 mobileOpen
-                  ? tx(lang, { es: "Cerrar menú", en: "Close menu" })
-                  : tx(lang, { es: "Abrir menú", en: "Open menu" })
+                  ? tx(lang, { es: "Cerrar menú", en: "Close menu", pt: "Fechar menu" })
+                  : tx(lang, { es: "Abrir menú", en: "Open menu", pt: "Abrir menu" })
               }
               aria-expanded={mobileOpen}
               aria-haspopup="dialog"
@@ -741,7 +773,7 @@ export function Navbar() {
               id="mobile-nav-drawer"
               role="dialog"
               aria-modal="true"
-              aria-label={tx(lang, { es: "Menú de navegación", en: "Navigation menu" })}
+              aria-label={tx(lang, { es: "Menú de navegación", en: "Navigation menu", pt: "Menu de navegação" })}
               tabIndex={-1}
               data-visible={mobileOpen ? "true" : "false"}
               inert={!mobileOpen}
@@ -768,7 +800,7 @@ export function Navbar() {
                   type="button"
                   onClick={() => setMobileOpen(false)}
                   className="grid h-11 w-11 place-items-center rounded-[4px] text-[var(--ink-2)] outline-none transition-colors hover:bg-[rgb(var(--divider)/0.05)] hover:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
-                  aria-label={tx(lang, { es: "Cerrar menú", en: "Close menu" })}
+                  aria-label={tx(lang, { es: "Cerrar menú", en: "Close menu", pt: "Fechar menu" })}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                     <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -778,7 +810,7 @@ export function Navbar() {
 
               {/* `tj-cajon-lista` insinúa que hay más contenido bajo la botonera
                   fija cuando la lista no cabe. */}
-              <nav className="tj-cajon-lista flex flex-1 flex-col overflow-y-auto px-3 py-4" aria-label={tx(lang, { es: "Secciones", en: "Sections" })}>
+              <nav className="tj-cajon-lista flex flex-1 flex-col overflow-y-auto px-3 py-4" aria-label={tx(lang, { es: "Secciones", en: "Sections", pt: "Seções" })}>
                 {DRAWER_GRUPOS.map((grupo, gi) => (
                   <div key={grupo.id}>
                     {gi > 0 && (
@@ -792,7 +824,7 @@ export function Navbar() {
                       className={`block px-3 pb-1.5 text-[12px] font-semibold ${gi === 0 ? "" : "pt-2.5"}`}
                       style={{ color: "var(--ink-3)" }}
                     >
-                      {tx(lang, { es: grupo.es, en: grupo.en })}
+                      {tx(lang, { es: grupo.es, en: grupo.en, pt: grupo.pt })}
                     </span>
                     {drawerLinks
                       .filter((l) => l.grupo === grupo.id)
@@ -817,7 +849,7 @@ export function Navbar() {
                                 style={{ background: "rgb(var(--accent-base))" }}
                               />
                             )}
-                            <span className="flex-1">{tx(lang, { es: l.labelEs, en: l.labelEn })}</span>
+                            <span className="flex-1">{tx(lang, { es: l.labelEs, en: l.labelEn, pt: l.labelPt })}</span>
                           </Link>
                         );
                       })}
@@ -836,15 +868,15 @@ export function Navbar() {
                   className="px-3 pb-2 pt-4 text-[12px] font-semibold"
                   style={{ color: "var(--ink-3)" }}
                 >
-                  {tx(lang, { es: "Preferencias", en: "Preferences" })}
+                  {tx(lang, { es: "Preferencias", en: "Preferences", pt: "Preferências" })}
                 </span>
                 <div className="flex items-center gap-2 px-3 pb-1">
                   <LanguagePicker size="md" />
                   <button
                     type="button"
                     onClick={toggleTheme}
-                    aria-label={tx(lang, { es: "Cambiar tema", en: "Toggle theme" })}
-                    title={tx(lang, { es: "Cambiar tema", en: "Toggle theme" })}
+                    aria-label={tx(lang, { es: "Cambiar tema", en: "Toggle theme", pt: "Alternar tema" })}
+                    title={tx(lang, { es: "Cambiar tema", en: "Toggle theme", pt: "Alternar tema" })}
                     data-theme-toggle
                     className="inline-flex h-11 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]"
                   >
@@ -857,8 +889,8 @@ export function Navbar() {
                     </span>
                     <span>
                       {theme === "dark"
-                        ? tx(lang, { es: "Claro", en: "Light" })
-                        : tx(lang, { es: "Oscuro", en: "Dark" })}
+                        ? tx(lang, { es: "Claro", en: "Light", pt: "Claro" })
+                        : tx(lang, { es: "Oscuro", en: "Dark", pt: "Escuro" })}
                     </span>
                   </button>
                 </div>
@@ -873,7 +905,7 @@ export function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] bg-[rgb(var(--accent-base))] text-sm font-semibold text-[rgb(var(--accent-ink))] outline-none transition-[background-color,transform] duration-150 hover:bg-[rgb(var(--accent-hover))] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface)] motion-safe:active:scale-[0.98]"
                   >
-                    {lang === "es" ? "Ver la demo" : "See the demo"}
+                    {tx(lang, { es: "Ver la demo", en: "See the demo", pt: "Ver a demo" })}
                   </Link>
                 </div>
               </div>
@@ -964,8 +996,8 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
-        aria-label={tx(lang, { es: "Cambiar idioma", en: "Change language" })}
-        title={tx(lang, { es: "Cambiar idioma", en: "Change language" })}
+        aria-label={tx(lang, { es: "Cambiar idioma", en: "Change language", pt: "Mudar idioma" })}
+        title={tx(lang, { es: "Cambiar idioma", en: "Change language", pt: "Mudar idioma" })}
         className={`inline-flex ${sizeCls} cursor-pointer items-center gap-1.5 rounded-[4px] border-0 bg-transparent px-2.5 text-[12px] font-semibold tracking-wide text-[var(--ink-2)] outline-none transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:text-[var(--ink)] focus-visible:border-[rgb(var(--divider)/0.24)] focus-visible:bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] focus-visible:text-[var(--ink)] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)]`}
       >
         <GlobeIcon />
@@ -991,7 +1023,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
             id={panelId}
             data-panel-idiomas=""
             role="group"
-            aria-label={tx(lang, { es: "Idiomas", en: "Languages" })}
+            aria-label={tx(lang, { es: "Idiomas", en: "Languages", pt: "Idiomas" })}
             // Mismo material que el menú «Producto».
             className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute right-0 z-50 min-w-[168px] rounded-[6px] p-1"
             style={{ position: "absolute", top: "calc(100% + 8px)" }}

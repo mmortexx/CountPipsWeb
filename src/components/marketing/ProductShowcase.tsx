@@ -18,6 +18,13 @@ import { LAMINAS_PRODUCTO } from "@/lib/laminas";
     analítica. El guardián tiene sección propia. */
 const PANTALLAS_PORTADA = ["resumen", "registro", "operaciones", "analitica"] as const;
 
+const PESTANAS_PT: Record<string, string> = {
+  resumen: "Resumo",
+  registro: "Registro",
+  operaciones: "Histórico",
+  analitica: "Analítica",
+};
+
 export function ProductShowcase() {
   const { lang } = useLang();
   const idBase = useId();
@@ -46,9 +53,13 @@ export function ProductShowcase() {
       <div className="tj-container">
         <div className="mb-10 grid gap-y-6 lg:grid-cols-2 lg:items-end lg:gap-x-16 xl:gap-x-24">
           <div>
-            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application" })}</p>
+            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application", pt: "O programa" })}</p>
             <h2 id="producto-titulo" className="t-h2 mt-5 max-w-[16ch] text-primary">
-              {tx(lang, { es: "Esto es lo que abres cada mañana.", en: "This is what you open every morning." })}
+              {tx(lang, {
+                es: "Esto es lo que abres cada mañana.",
+                en: "This is what you open every morning.",
+                pt: "Isto é o que você abre toda manhã.",
+              })}
             </h2>
           </div>
           <div className="lg:pb-1">
@@ -56,11 +67,16 @@ export function ProductShowcase() {
               {tx(lang, {
                 es: "Capturas reales del programa con datos de muestra. Elige una pantalla.",
                 en: "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen.",
+                pt: "Capturas reais do programa com dados de amostra, na interface em espanhol; ele também opera em inglês. Escolha uma tela.",
               })}
             </p>
             <div className="mt-5">
               <Link href="/demo" className="cta cta--secundario">
-                {tx(lang, { es: "Recorrer la demo sin registro", en: "Explore the demo, no sign-up" })}
+                {tx(lang, {
+                  es: "Recorrer la demo sin registro",
+                  en: "Explore the demo, no sign-up",
+                  pt: "Explorar a demo sem cadastro",
+                })}
               </Link>
             </div>
           </div>
@@ -69,7 +85,11 @@ export function ProductShowcase() {
         <div
           ref={tablist}
           role="tablist"
-          aria-label={tx(lang, { es: "Pantallas del programa", en: "Application screens" })}
+          aria-label={tx(lang, {
+            es: "Pantallas del programa",
+            en: "Application screens",
+            pt: "Telas do programa",
+          })}
           className="tj-pestanas -m-2 mb-4 p-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {PANTALLAS_PORTADA.map((clave, i) => {
@@ -87,7 +107,7 @@ export function ProductShowcase() {
                 onClick={() => setActiva(clave)}
                 onKeyDown={(e) => enTeclado(e, i)}
               >
-                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn })}
+                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn, pt: PESTANAS_PT[clave] })}
               </button>
             );
           })}

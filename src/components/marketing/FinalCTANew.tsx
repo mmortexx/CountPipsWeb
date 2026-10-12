@@ -20,6 +20,7 @@ const TEXTOS = {
     es: ["Deja de operar a ciegas.", "Mira cómo se mide.", "40+ métricas, un guardián de disciplina y tus datos en tu equipo. Explora la demo, sin registro, y decide con criterio."],
     /* Con contracción («it’s»): sin ella suena a manual junto a «Stop trading blind». */
     en: ["Stop trading blind.", "See how it’s measured.", "40+ metrics, a discipline guardian and your data on your machine. Explore the demo, no sign-up, and decide with clarity."],
+    pt: ["Pare de operar às cegas.", "Veja como isso é medido.", "40+ métricas, um guardião de disciplina e seus dados na sua máquina. Explore a demo, sem cadastro, e decida com clareza."],
   },
   herramienta: {
     es: ["La cuenta ya te sale.", "Hazla con las tuyas.", "Esto mismo, pero sobre tu historial entero y al día con cada operación que registras. La demo lo enseña con datos de muestra."],
@@ -44,6 +45,7 @@ const TEXTOS = {
   precios: {
     es: ["Antes de pagar,", "míralo funcionar.", "La demo enseña el programa con {n} operaciones de muestra. La compra se abrirá con el lanzamiento."],
     en: ["Before you pay,", "watch it work.", "The demo shows the program with {n} sample trades. Purchase opens at launch."],
+    pt: ["Antes de pagar,", "veja o programa funcionar.", "A demo mostra o software com {n} operações de exemplo. As compras serão abertas no lançamento."],
   },
   glosario: {
     // «{n}» es OPERACIONES_MUESTRA.
@@ -68,7 +70,7 @@ export function FinalCTANew({
   const texto = variante ?? (enDemo ? "demo" : enPrecios ? "precios" : "general");
   const [titular, tenue, entradillaCruda] = tx(
     lang,
-    TEXTOS[texto] as { es: readonly [string, string, string]; en: readonly [string, string, string] },
+    TEXTOS[texto] as { es: readonly [string, string, string]; en: readonly [string, string, string]; pt?: readonly [string, string, string] },
   );
   const entradilla = entradillaCruda.replace("{n}", fmtInt(OPERACIONES_MUESTRA, lang));
   return (
@@ -92,8 +94,8 @@ export function FinalCTANew({
                 className="cta cta--primario"
               >
                 {enDemo
-                  ? tx(lang, { es: "Solicitar acceso", en: "Request access" })
-                  : tx(lang, { es: "Ver la demo", en: "See the demo" })}
+                  ? tx(lang, { es: "Solicitar acceso", en: "Request access", pt: "Solicitar acesso" })
+                  : tx(lang, { es: "Ver la demo", en: "See the demo", pt: "Ver a demo" })}
               </Link>
               <Link
                 href={enPrecios ? "/beta" : "/pricing"}
@@ -101,8 +103,8 @@ export function FinalCTANew({
                 className="cta cta--secundario"
               >
                 {enPrecios
-                  ? tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access" })
-                  : tx(lang, { es: "Ver precios", en: "See pricing" })}
+                  ? tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access", pt: "Solicitar acesso antecipado" })
+                  : tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços" })}
               </Link>
             </div>
           </div>

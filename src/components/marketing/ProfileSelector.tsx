@@ -18,13 +18,14 @@ export function ProfileSelector() {
     {
       id: "manual",
       href: "/traders/manual",
-      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading" }),
-      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly" }),
+      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual" }),
+      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly", pt: "Para ler seu processo com clareza" }),
       body: tx(lang, {
         es: "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo.",
         en: "Review context, execution and discipline without turning every session into a spreadsheet.",
+        pt: "Revise contexto, execução e disciplina sem transformar cada sessão em uma planilha.",
       }),
-      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path" }),
+      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path", pt: "Explorar jornada manual" }),
     },
     {
       id: "prop",
@@ -32,12 +33,13 @@ export function ProfileSelector() {
       eyebrow: "Prop firms",
       /* En inglés de mercados el verbo es «trade», no «operate»; y «To + verbo»
          mantiene el paralelismo con la tarjeta hermana. */
-      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter" }),
+      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter", pt: "Para operar com regras que importam" }),
       body: tx(lang, {
         es: "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar.",
         en: "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
+        pt: "Controle limites, consistência e risco por conta quando a avaliação não deixa margem para improviso.",
       }),
-      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path" }),
+      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path", pt: "Explorar jornada prop" }),
     },
   ] as const;
 
@@ -59,6 +61,11 @@ export function ProfileSelector() {
                   Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span>
                 </>
               ),
+              pt: (
+                <>
+                  Duas formas de operar. <span className="tj-frase-nueva">Uma leitura melhor.</span>
+                </>
+              ),
             })}
           </h2>
           <p className="medida t-entradilla text-secondary lg:pb-1">
@@ -67,6 +74,7 @@ export function ProfileSelector() {
             {tx(lang, {
               es: "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan.",
               en: "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated.",
+              pt: "Escolha o contexto mais parecido com o seu e veja o que o app mede nele: seu processo se você opera por conta própria, ou as regras da mesa se você estiver em avaliação.",
             })}
           </p>
         </div>

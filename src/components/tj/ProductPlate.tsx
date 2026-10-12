@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Maximize2, X } from "lucide-react";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { asset } from "@/lib/asset";
 
 /**
@@ -22,6 +22,42 @@ import { asset } from "@/lib/asset";
 
 /** Por debajo de aquí se sirve el detalle en lugar de la pantalla entera. */
 const CORTE_MOVIL_PX = 767;
+
+const LAMINAS_EXTRA: Record<string, {
+  pt?: { titulo: string; nota: string; detalle: string };
+  fr?: { titulo: string; nota: string; detalle: string };
+  de?: { titulo: string; nota: string; detalle: string };
+  it?: { titulo: string; nota: string; detalle: string };
+}> = {
+  resumen: {
+    pt: {
+      titulo: "A curva e o mês, lado a lado",
+      nota: "Abaixo do formulário de registro, a tela de resumo divide-se em duas: a curva de desempenho com as áreas de drawdown sombreadas e o saldo em linha pontilhada, e o calendário do mês com o resultado de cada dia e o total de cada semana.",
+      detalle: "o calendário do mês",
+    },
+  },
+  registro: {
+    pt: {
+      titulo: "Registrar a operação é a primeira coisa que você vê",
+      nota: "O formulário ocupa a tela inteira de propósito: ativo, direção, entrada, stop, alvo e saída, junto com uma área ampla para arrastar capturas do gráfico. Enquanto você digita, o risco é recalculado.",
+      detalle: "o formulário de registro",
+    },
+  },
+  operaciones: {
+    pt: {
+      titulo: "O histórico com filtros úteis",
+      nota: "A tabela de operações reúne cada trade fechado ou aberto com data, duração, ativo, direção, lote, resultado em dinheiro e em múltiplos de R, além dos setups de cada estratégia.",
+      detalle: "a tabela de operações",
+    },
+  },
+  analitica: {
+    pt: {
+      titulo: "A distribuição de R e a quebra por setup",
+      nota: "A tela de analítica desdobra a performance: o histograma de múltiplos de R com a moda destacada, os índices institucionais como Sharpe e Profit Factor, e a consistência ao longo do tempo.",
+      detalle: "o histograma de R",
+    },
+  },
+};
 
 export type LaminaProducto = {
   /** Nombre del fichero en `public/img/`, sin ruta. */
@@ -63,6 +99,11 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
   const { lang } = useLang();
   const es = lang === "es";
   const { archivo, ancho, alto, anchoMovil, altoMovil, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
+  const clave = archivo.replace(/^app-/, "").replace(/\.webp$/, "");
+  const extra = LAMINAS_EXTRA[clave]?.[lang as "pt" | "fr" | "de" | "it"];
+  const titulo = extra?.titulo ?? (es ? tituloEs : tituloEn);
+  const nota = extra?.nota ?? (es ? notaEs : notaEn);
+  const detalleTexto = extra?.detalle ?? (es ? lamina.detalleEs : lamina.detalleEn);
   const alt = es ? altEs : altEn;
 
   // Los nombres de los cuatro ficheros los fija `scripts/capturas.py` y los
@@ -144,16 +185,16 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
           type="button"
           className="tj-visor-cerrar tj-cristal tj-cristal--denso"
           onClick={cerrar}
-          aria-label={es ? "Cerrar" : "Close"}
+          aria-label={tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar" })}
         >
           <X size={18} aria-hidden />
         </button>
       </dialog>
       <figcaption className="tj-lamina-pie">
-        <h3 className="tj-lamina-titulo t-h3">{es ? tituloEs : tituloEn}</h3>
-        <p className="tj-lamina-nota">{es ? notaEs : notaEn}</p>
+        <h3 className="tj-lamina-titulo t-h3">{titulo}</h3>
+        <p className="tj-lamina-nota">{nota}</p>
         <p className="tj-lamina-detalle">
-          {es ? `Detalle: ${lamina.detalleEs}.` : `Detail: ${lamina.detalleEn}.`}
+          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: " })}{detalleTexto}.
         </p>
       </figcaption>
     </figure>
