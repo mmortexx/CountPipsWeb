@@ -15,6 +15,7 @@ import { SectionReveal } from "@/components/tj/SectionReveal";
 import { Aparecer } from "@/components/tj/Aparecer";
 import { SubrayadoPestanas } from "@/components/tj/SubrayadoPestanas";
 import { SITE_URL } from "@/lib/site";
+import { TABLA_IDIOMAS } from "@/lib/locale";
 
 /** Mismo valor que usa `asset()`; vacío en Cloudflare, `/CountPipsWeb` en
  *  GitHub Pages. Lo necesita el script de `lang` de más abajo. */
@@ -146,14 +147,16 @@ export default function RootLayout({
           }}
         />
         <script
-          // Corrige `lang` antes de pintar en las páginas bajo `/en`.
+          // Corrige `lang` antes de pintar en las páginas con prefijo de idioma.
           // `location.pathname` lleva el prefijo de GitHub Pages
           // (`/CountPipsWeb/en/...`) y `usePathname()` no, así que hay que
           // descontar `BASE_PATH` a mano; en Cloudflare sale vacío.
           // suppressHydrationWarning: mismo motivo que el script de arriba.
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var p=location.pathname;var b='${BASE_PATH}';if(b&&p.indexOf(b)===0)p=p.slice(b.length)||'/';document.documentElement.lang=(p==='/en'||p.indexOf('/en/')===0)?'en':'es';}catch(e){}})();`,
+            __html: `(function(){try{var p=location.pathname;var b='${BASE_PATH}';if(b&&p.indexOf(b)===0)p=p.slice(b.length)||'/';var L=${JSON.stringify(
+              TABLA_IDIOMAS.filter((i) => i.prefijo).map((i) => ({ p: i.prefijo, l: i.htmlLang })),
+            )};var f='es';for(var i=0;i<L.length;i++){if(p===L[i].p||p.indexOf(L[i].p+'/')===0){f=L[i].l;break;}}document.documentElement.lang=f;}catch(e){}})();`,
           }}
         />
         {/* Red de seguridad sin JavaScript: un `opacity:0` en línea solo lo sube

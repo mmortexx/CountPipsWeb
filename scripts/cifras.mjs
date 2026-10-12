@@ -17,6 +17,7 @@
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
+import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
 
 // Otras guardas se invocan `--serve out`; esta lee ficheros. Acepta las dos formas.
 const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -72,7 +73,14 @@ let elementosLista = 0;
 for await (const f of htmls(RAIZ)) {
   const ruta = "/" + relative(RAIZ, f).split(sep).join("/").replace(/index\.html$/, "");
   if (ruta.startsWith("/404") || ruta.startsWith("/_not-found")) continue;
-  const en = ruta === "/en/" || ruta.startsWith("/en/");
+  let langRuta = "es";
+  for (const idioma of TABLA_IDIOMAS) {
+    if (!idioma.prefijo) continue;
+    if (ruta === `${idioma.prefijo}/` || ruta.startsWith(`${idioma.prefijo}/`) || ruta === idioma.prefijo) {
+      langRuta = idioma.codigo;
+      break;
+    }
+  }
   const crudo = await readFile(f, "utf8");
   const t = soloTexto(crudo);
   paginas++;
@@ -87,7 +95,7 @@ for await (const f of htmls(RAIZ)) {
   };
   const ctx = (texto, x) => texto.slice(Math.max(0, x.index - 26), x.index + x[0].length + 4).trim();
 
-  if (en) {
+  if (langRuta === "en") {
     // Inglés: sin espacio antes del %, sin dólar detrás.
     anota("% con espacio en inglés", /\d[ \u00a0]%/g, ctx);
     anota("dólar detrás en inglés", /\d[\d.,]*[ \u00a0]\$(?!\d)/g, ctx);
@@ -113,12 +121,32 @@ for await (const f of htmls(RAIZ)) {
       /\b(?:trader|traders|you|we|they)\s+operates?\b|\boperating\s+(?:under|with|in)\b/gi,
       ctx,
     );
-  } else {
+  } else if (langRuta === "es") {
     anota("% pegado en español", /\d%/g, ctx);
     anota("% que puede quedarse solo en la línea siguiente (espacio normal, no duro)", /\d %/g, ctx);
     // El lookbehind evita acusar una fila de importes («0 $ 5.000 $»): solo se
     // acusa un «$» no precedido de una cifra o su abreviatura de escala.
     anota("dólar delante en español", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
+  } else if (langRuta === "pt") {
+    // Portugués (pt-BR): % pegado, dólar delante
+    anota("% con espacio en portugués", /\d[ \u00a0]%/g, ctx);
+    anota("palabra española en la web en portugués", RE_ES, ctx);
+  } else if (langRuta === "fr") {
+    // Francés (fr-FR): % con espacio duro, dólar detrás
+    anota("% pegado en francés", /\d%/g, ctx);
+    anota("% que puede quedarse solo en la línea siguiente en francés (espacio normal, no duro)", /\d %/g, ctx);
+    anota("dólar delante en francés", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
+    anota("palabra española en la web en francés", RE_ES, ctx);
+  } else if (langRuta === "de") {
+    // Alemán (de-DE): % con espacio duro, dólar detrás
+    anota("% pegado en alemán", /\d%/g, ctx);
+    anota("% que puede quedarse solo en la línea siguiente en alemán (espacio normal, no duro)", /\d %/g, ctx);
+    anota("dólar delante en alemán", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
+    anota("palabra española en la web en alemán", RE_ES, ctx);
+  } else if (langRuta === "it") {
+    // Italiano (it-IT): % pegado
+    anota("% con espacio en italiano", /\d[ \u00a0]%/g, ctx);
+    anota("palabra española en la web en italiano", RE_ES, ctx);
   }
   // En los dos idiomas: el menos de las cifras es el tipográfico.
   anota("menos de teclado en una cifra", /[\s(>]-\d[\d.,]*/g, ctx);

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { usePathname } from "next/navigation";
-import { useLang, type Lang } from "@/lib/i18n";
-import { sinPrefijoEn } from "@/lib/locale";
+import { useLang } from "@/lib/i18n";
+import { sinPrefijoEn, TABLA_IDIOMAS, idiomasDeRuta } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 
@@ -914,13 +914,10 @@ function IconButton({
  * botones con `aria-pressed` y el `lang` de cada idioma. No es un `listbox`
  * porque no tiene navegación con flechas. Escape o clic fuera cierran.
  */
-const LANGUAGES: { code: Lang; code2: string; native: string }[] = [
-  { code: "es", code2: "ES", native: "Español" },
-  { code: "en", code2: "EN", native: "English" },
-];
-
 function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
   const { lang, setLang } = useLang();
+  const pathname = usePathname();
+  const disponibles = useMemo(() => idiomasDeRuta(pathname), [pathname]);
   const es = lang === "es";
   const [open, setOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -950,7 +947,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
     };
   }, [open]);
 
-  const actual = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
+  const actual = TABLA_IDIOMAS.find((l) => l.codigo === lang) ?? TABLA_IDIOMAS[0];
 
   return (
     <div className="relative flex-none">
@@ -992,16 +989,16 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
             className="tj-cae tj-cristal tj-cristal--denso tj-cristal--menu absolute right-0 z-50 min-w-[168px] rounded-[6px] p-1"
             style={{ position: "absolute", top: "calc(100% + 8px)" }}
           >
-            {LANGUAGES.map((l) => {
-              const activo = l.code === lang;
+            {disponibles.map((l) => {
+              const activo = l.codigo === lang;
               return (
                 <button
-                  key={l.code}
+                  key={l.codigo}
                   type="button"
-                  lang={l.code}
+                  lang={l.codigo}
                   aria-pressed={activo}
                   onClick={() => {
-                    setLang(l.code);
+                    setLang(l.codigo);
                     setOpen(false);
                     btnRef.current?.focus();
                   }}
@@ -1018,7 +1015,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
                     className="flex-1 text-[14px]"
                     style={{ color: activo ? "var(--ink)" : "var(--ink-2)" }}
                   >
-                    {l.native}
+                    {l.nombre}
                   </span>
                   {/* Un check y no un fondo: el fondo ya lo usa el hover. */}
                   {activo && (

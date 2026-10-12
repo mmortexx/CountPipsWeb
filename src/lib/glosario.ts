@@ -1,5 +1,6 @@
 import { GLOSSARY, type GlossaryCategory, type GlossaryTerm } from "@/lib/trading/glossary";
 import { herramientaPorSlug } from "@/lib/herramientas";
+import type { Lang } from "@/lib/locale";
 
 /**
  * El glosario como secciones del sitio: cada término tiene su dirección.
@@ -37,10 +38,11 @@ export function terminoPorSlug(slug: string): TerminoGlosario | undefined {
  */
 export const LARGO_MAXIMO_TITULO = 60;
 
-export function tituloDeTermino(term: string, lang: "es" | "en"): string {
+export function tituloDeTermino(term: string, lang: Lang): string {
+  const l = lang === "es" ? "es" : "en";
   const marca = " — CountPips";
-  const cola = lang === "es" ? ": qué es y por qué importa" : ": what it is and why it matters";
-  const colaCorta = lang === "es" ? ": qué es" : ": what it is";
+  const cola = l === "es" ? ": qué es y por qué importa" : ": what it is and why it matters";
+  const colaCorta = l === "es" ? ": qué es" : ": what it is";
   const cabe = (s: string) => (s + marca).length <= LARGO_MAXIMO_TITULO;
 
   const completo = term + cola;
@@ -131,10 +133,11 @@ export const DESCRIPCION_A_MANO: Record<string, { es?: string; en?: string }> = 
   },
 };
 
-export function descripcionDeTermino(t: TerminoGlosario, lang: "es" | "en"): string {
-  const definicion = lang === "es" ? t.es : t.en;
+export function descripcionDeTermino(t: TerminoGlosario, lang: Lang): string {
+  const l = lang === "es" ? "es" : "en";
+  const definicion = l === "es" ? t.es : t.en;
   return (
-    DESCRIPCION_A_MANO[t.slug]?.[lang] ??
+    DESCRIPCION_A_MANO[t.slug]?.[l] ??
     cortePorFrases(definicion) ??
     `${definicion.slice(0, LARGO_MAXIMO_DESCRIPCION - 1).replace(/\s+\S*$/, "")}…`
   );

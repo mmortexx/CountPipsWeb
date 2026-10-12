@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
 import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 import { fmtInt } from "@/lib/trading/format";
@@ -67,7 +67,10 @@ export function FinalCTANew({
   const { lang } = useLang();
   const es = lang === "es";
   const texto = variante ?? (enDemo ? "demo" : enPrecios ? "precios" : "general");
-  const [titular, tenue, entradillaCruda] = TEXTOS[texto][lang];
+  const [titular, tenue, entradillaCruda] = tx(
+    lang,
+    TEXTOS[texto] as { es: readonly [string, string, string]; en: readonly [string, string, string] },
+  );
   const entradilla = entradillaCruda.replace("{n}", fmtInt(OPERACIONES_MUESTRA, lang));
   return (
     <section className="section relative">

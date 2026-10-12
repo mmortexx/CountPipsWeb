@@ -10,11 +10,40 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { sinPrefijoEn } from "@/lib/locale";
+import { sinPrefijoEn, TABLA_IDIOMAS, prefijoDeIdioma, type Lang } from "@/lib/locale";
 import { fmtInt, fmtMoney, fmtOperaciones } from "@/lib/trading/format";
 import { SALDO_INICIAL_MUESTRA } from "@/lib/trading/muestra";
 
-export type Lang = "es" | "en";
+export type { Lang };
+
+export type TextosIdioma<T = string | ReactNode> = {
+  es: T;
+  en: T;
+  pt?: T;
+  fr?: T;
+  de?: T;
+  it?: T;
+};
+
+/**
+ * Devuelve el texto del idioma pedido y, si falta, el inglés.
+ * Sirve para cadenas y para fragmentos JSX.
+ */
+export function tx<T = string | ReactNode, E = T>(
+  lang: Lang,
+  textos: {
+    es: T;
+    en: E;
+    pt?: unknown;
+    fr?: unknown;
+    de?: unknown;
+    it?: unknown;
+  },
+): T | E {
+  if (lang === "es") return textos.es;
+  const val = (textos as Record<string, unknown>)[lang];
+  return (val !== undefined ? val : textos.en) as T | E;
+}
 
 export const STR = {
   // ---- Brand / global ----
@@ -354,16 +383,14 @@ export const STR = {
 export type StrKey = keyof typeof STR;
 
 export function t(key: StrKey, lang: Lang): string {
-  const v = STR[key] as { es: string; en: string };
-  return v[lang];
+  const v = STR[key] as unknown as Record<string, string>;
+  return v[lang] ?? v.en;
 }
 
 export function tf(key: StrKey, lang: Lang, n: number): string {
-  const v = STR[key] as unknown as {
-    es: (n: number) => string;
-    en: (n: number) => string;
-  };
-  return v[lang](n);
+  const v = STR[key] as unknown as Record<string, (n: number) => string>;
+  const fn = v[lang] ?? v.en;
+  return fn(n);
 }
 
 interface LangCtx {
@@ -376,9 +403,15 @@ interface LangCtx {
 
 const Ctx = createContext<LangCtx | null>(null);
 
-/** `/en` o `/en/lo-que-sea` → inglés. Cualquier otra cosa → español. */
+/** Deduce el idioma a partir de los prefijos conocidos. Cualquier otra cosa → español. */
 function langDeRuta(pathname: string): Lang {
-  return pathname === "/en" || pathname.startsWith("/en/") ? "en" : "es";
+  for (const idioma of TABLA_IDIOMAS) {
+    if (!idioma.prefijo) continue;
+    if (pathname === idioma.prefijo || pathname.startsWith(`${idioma.prefijo}/`)) {
+      return idioma.codigo;
+    }
+  }
+  return "es";
 }
 
 const sinSuscripcion = () => () => {};
@@ -390,7 +423,10 @@ const sinSuscripcion = () => () => {};
 function langHidratacion(deRuta: Lang): Lang {
   if (typeof document === "undefined") return deRuta;
   const marca = document.querySelector<HTMLMetaElement>('meta[name="tj-idioma-compilado"]')?.content;
-  return marca === "es" || marca === "en" ? marca : deRuta;
+  if (marca && TABLA_IDIOMAS.some((i) => i.codigo === marca)) {
+    return marca as Lang;
+  }
+  return deRuta;
 }
 
 /**
@@ -418,7 +454,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       const base = sinPrefijoEn(pathname);
       const sufijo =
         typeof window !== "undefined" ? window.location.search + window.location.hash : "";
-      const ruta = destino === "en" ? (base === "/" ? "/en" : `/en${base}`) : base;
+      const prefijo = prefijoDeIdioma(destino);
+      const ruta = prefijo ? (base === "/" ? prefijo : `${prefijo}${base}`) : base;
       router.push(`${ruta}${sufijo}`);
     },
     [lang, pathname, router]

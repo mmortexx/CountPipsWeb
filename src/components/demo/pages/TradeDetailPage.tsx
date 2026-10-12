@@ -317,7 +317,7 @@ function RiskRewardBar({
   lang,
 }: {
   plannedRr: number;
-  lang: "es" | "en";
+  lang: Lang;
 }) {
   const riskFraction = 1 / (1 + plannedRr);
   const rewardFraction = plannedRr / (1 + plannedRr);
@@ -873,11 +873,11 @@ export function TradeDetailPage() {
                 </Detail>
                 <Detail label={lang === "es" ? "Sesión" : "Session"}>
                   <span className="text-primary">
-                    {NOMBRE_SESION[trade.session][lang]}
+                    {NOMBRE_SESION[trade.session][lang === "es" ? "es" : "en"]}
                   </span>
                 </Detail>
                 <Detail label={lang === "es" ? "Mercado" : "Market"}>
-                  <span className="text-primary">{mercado.regimen[lang]}</span>
+                  <span className="text-primary">{mercado.regimen[lang === "es" ? "es" : "en"]}</span>
                 </Detail>
                 <Detail label={lang === "es" ? "Puntuación del día" : "Day score"}>
                   <span className="text-primary tnum">{fmtInt(trade.dayScore, lang)}/5</span>

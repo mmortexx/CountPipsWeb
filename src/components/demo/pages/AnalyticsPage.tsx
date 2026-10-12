@@ -3,7 +3,7 @@
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { useAlVer } from "@/hooks/use-al-ver";
 import { Viajero } from "../Viajero";
-import { useLang } from "@/lib/i18n";
+import { useLang, type Lang } from "@/lib/i18n";
 import {
   TRADES,
   computeMetrics,
@@ -678,7 +678,7 @@ const MUESTRA_MINIMA = 30;
 /** Veredicto de ventaja con IC del 95 % de la R media (aproximación normal):
  *  inconcluso bajo `MUESTRA_MINIMA`; límite inferior > 0, confirmada; > -0,1,
  *  sugerente; si no, sin ventaja. */
-function computeEdge(trades: Trade[], lang: "es" | "en") {
+function computeEdge(trades: Trade[], lang: Lang) {
   const n = trades.length;
   if (n < 5) {
     return {
@@ -855,7 +855,7 @@ function SectionBar({
 }: {
   active: string;
   onChange: (id: string) => void;
-  lang: "es" | "en";
+  lang: Lang;
 }) {
   return (
     <div className="space-y-2">

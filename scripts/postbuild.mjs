@@ -6,17 +6,16 @@
  */
 import { readdir, readFile, writeFile, copyFile, stat } from "node:fs/promises";
 import { join } from "node:path";
+import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
 
 const OUT = "out";
 
-/* 1 · El idioma de las páginas en inglés.
+/* 1 · El idioma de las páginas en otros idiomas.
    El layout raíz es el único que renderiza `<html>` y no sabe qué ruta sirve
    (con `output: "export"` tampoco hay cabeceras), así que el HTML saldría con
-   `lang="es"` en las páginas inglesas aunque un script del navegador lo
+   `lang="es"` en las páginas traducidas aunque un script del navegador lo
    corrija luego. Importa a rastreadores sin JavaScript, previsualizaciones,
    traductores y lectores de pantalla. */
-const EN_DIR = join(OUT, "en");
-
 async function ficheros(dir, filtro) {
   let entradas;
   try {
@@ -33,37 +32,38 @@ async function ficheros(dir, filtro) {
   return out;
 }
 
-const paginasEn = await ficheros(EN_DIR, (n) => n.endsWith(".html"));
+for (const idioma of TABLA_IDIOMAS) {
+  if (idioma.codigo === "es") continue;
+  const dirIdioma = join(OUT, idioma.codigo);
+  const paginas = await ficheros(dirIdioma, (n) => n.endsWith(".html"));
+  if (paginas.length === 0) continue;
 
-if (paginasEn.length === 0) {
-  console.error(
-    `[postbuild] No hay ni un HTML bajo ${EN_DIR}. O el export no se ha generado, o las rutas en inglés han cambiado de sitio.`
-  );
-  process.exit(1);
-}
+  let idiomaCorregido = 0;
+  const idiomaSinTocar = [];
+  const reLang = new RegExp(`<html\\b[^>]*?\\blang="${idioma.htmlLang}"`, "i");
 
-let idiomaCorregido = 0;
-const idiomaSinTocar = [];
-for (const f of paginasEn) {
-  const html = await readFile(f, "utf8");
-  const nuevo = html.replace(/(<html\b[^>]*?)\blang="es"/i, '$1lang="en"');
-  if (nuevo !== html) {
-    await writeFile(f, nuevo, "utf8");
-    idiomaCorregido += 1;
-  } else if (!/<html\b[^>]*?\blang="en"/i.test(html)) {
-    idiomaSinTocar.push(f);
+  for (const f of paginas) {
+    const html = await readFile(f, "utf8");
+    const nuevo = html.replace(/(<html\b[^>]*?)\blang="es"/i, `$1lang="${idioma.htmlLang}"`);
+    if (nuevo !== html) {
+      await writeFile(f, nuevo, "utf8");
+      idiomaCorregido += 1;
+    } else if (!reLang.test(html)) {
+      idiomaSinTocar.push(f);
+    }
   }
-}
-if (idiomaSinTocar.length > 0) {
-  console.error(
-    `[postbuild] ${idiomaSinTocar.length} página(s) en inglés sin un lang reconocible:\n  ` +
-      idiomaSinTocar.join("\n  ")
+
+  if (idiomaSinTocar.length > 0) {
+    console.error(
+      `[postbuild] ${idiomaSinTocar.length} página(s) en ${idioma.codigo} sin un lang reconocible:\n  ` +
+        idiomaSinTocar.join("\n  ")
+    );
+    process.exit(1);
+  }
+  console.log(
+    `[postbuild] lang="${idioma.htmlLang}" aplicado a ${idiomaCorregido} de ${paginas.length} páginas en ${idioma.codigo}.`
   );
-  process.exit(1);
 }
-console.log(
-  `[postbuild] lang="en" aplicado a ${idiomaCorregido} de ${paginasEn.length} páginas inglesas.`
-);
 
 /* 2 · Ficheros de precarga.
    Next precarga la carga útil de cada enlace sobrevolado como un `.txt` y el
@@ -180,13 +180,15 @@ for (const ruta of htmls) {
   if (faltaOg || faltaTw) {
     // El idioma sale de la ruta del fichero, no del `<html lang>`, para no atar los dos pasos.
     const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
-    const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");
+    const esInternacional = TABLA_IDIOMAS.some(
+      (i) => i.codigo !== "es" && (relativa === `${i.codigo}/index.html` || relativa.startsWith(`${i.codigo}/`)),
+    );
     const raiz = raizDe(html, relativa);
     if (!raiz) {
       console.error(`[postbuild] ${relativa} no trae imagen social ni un canonical del que sacar la raíz del sitio`);
       process.exit(1);
     }
-    const imagen = `${raiz}${IMAGEN_POR_IDIOMA[esIngles ? "en" : "es"]}`;
+    const imagen = `${raiz}${IMAGEN_POR_IDIOMA[esInternacional ? "en" : "es"]}`;
     const etiquetas =
       (faltaOg
         ? `<meta property="og:image" content="${imagen}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/>`
@@ -213,18 +215,20 @@ for (const ruta of htmls) {
     // Relativa: las redes la descartan.
     sinImagen.push(`${ruta} — imagen social con URL relativa`);
   } else {
-    // La tarjeta debe estar en el idioma de su página: la de raíz es española.
+    // La tarjeta debe estar en el idioma de su página: la de raíz es española, el resto internacionales.
     const relativa = ruta.replace(/\\/g, "/").replace(new RegExp(`^${OUT}/`), "");
-    const esIngles = relativa === "en/index.html" || relativa.startsWith("en/");
+    const esInternacional = TABLA_IDIOMAS.some(
+      (i) => i.codigo !== "es" && (relativa === `${i.codigo}/index.html` || relativa.startsWith(`${i.codigo}/`)),
+    );
     const m = html.match(/property="og:image" content="([^"]+)"/);
     if (m) {
       const camino = m[1].split("?")[0].replace(/^https?:\/\/[^/]+/, "");
       // Se busca `/en/` en cualquier posición y no tras el prefijo del entorno,
       // que está vacío en local mientras las URLs ya lo llevan desde `SITE_URL`.
       const bajoEn = /\/en\//.test(camino);
-      if (esIngles !== bajoEn) {
+      if (esInternacional !== bajoEn) {
         sinImagen.push(
-          `${ruta} — tarjeta en el idioma equivocado: la página es ${esIngles ? "inglesa" : "española"} y anuncia ${camino}`,
+          `${ruta} — tarjeta en el idioma equivocado: la página es ${esInternacional ? "internacional" : "española"} y anuncia ${camino}`,
         );
       }
     }
