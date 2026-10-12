@@ -82,6 +82,13 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     {" "}pas qui sermonne.
                   </>
                 ),
+                de: (
+                  <>
+                    Disziplin, die handelt,
+                    <br className="hidden sm:block" />
+                    {" "}nicht belehrt.
+                  </>
+                ),
               })}
             </h2>
           </Reveal>
@@ -99,6 +106,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 en: "The Guardian doesn’t tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them.",
                 pt: "O Guardião não diz o que fazer: mede cada operação contra as regras que você definiu e, se ativado, freia quando você as quebra.",
                 fr: "Le Gardien ne vous dicte pas quoi faire : il compare chaque trade aux règles que vous avez fixées et, si activé, vous freine lorsque vous les enfreignez.",
+                de: "Der Guard schreibt Ihnen nichts vor: Er misst jeden Trade an Ihren festgelegten Regeln und bremst Sie bei Verstößen, wenn Sie ihn aktivieren.",
               })}
             </p>
           </Reveal>
@@ -112,12 +120,14 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   en: "A light before you log",
                   pt: "Semáforo antes de registrar",
                   fr: "Un feu avant d’enregistrer",
+                  de: "Ampel vor der Erfassung",
                 }),
                 d: tx(lang, {
                   es: "Riesgo por operación, pérdida diaria y semanal, drawdown y operaciones del día, con el dato que lo pone en rojo.",
                   en: "Risk per trade, daily and weekly loss, drawdown and trades per day, with the figure that turns it red.",
                   pt: "Risco por operação, perda diária e semanal, drawdown e operações do dia, com o dado que fica em vermelho.",
                   fr: "Risque par opération, perte quotidienne et hebdomadaire, drawdown et trades du jour, avec le chiffre qui passe au rouge.",
+                  de: "Risiko pro Trade, Tages- und Wochenverlust, Drawdown und Trades pro Tag – mit der Zahl, die sie auf Rot schaltet.",
                 }),
               },
               {
@@ -126,12 +136,14 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   en: "A hard brake, if you turn it on",
                   pt: "Freio rígido, se você ativar",
                   fr: "Frein strict, si vous l’activez",
+                  de: "Harte Bremse, falls aktiviert",
                 }),
                 d: tx(lang, {
                   es: "Al tocar tu pérdida diaria, una racha o tu caída máxima, deja de admitir operaciones nuevas durante las horas que elijas.",
                   en: "When you hit your daily loss, a losing streak or your max drawdown, it stops accepting new trades for the hours you choose.",
                   pt: "Ao atingir sua perda diária, sequência de perdas ou drawdown máximo, para de aceitar novas operações pelas horas que escolher.",
                   fr: "Lorsque vous touchez votre perte max, une série noire ou votre drawdown, il refuse les nouveaux trades pendant la durée choisie.",
+                  de: "Beim Erreichen des Tagesverlusts, einer Verlustserie oder des maximalen Drawdowns stoppt er neue Trades für die gewählte Zeit.",
                 }),
               },
               {
@@ -140,12 +152,14 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                   en: "Skipping it costs a reason",
                   pt: "Pular a regra exige um motivo",
                   fr: "Passer outre exige une raison",
+                  de: "Überstimmen erfordert Begründung",
                 }),
                 d: tx(lang, {
                   es: "Levantar el freno exige escribir por qué, y queda en un registro que puedes leer en frío.",
                   en: "Lifting the brake requires writing why, and it stays in a log you can read later with a cool head.",
                   pt: "Desativar o freio exige justificar por escrito, ficando registrado para você ler com a cabeça fria.",
                   fr: "Lever le frein impose de rédiger un motif, consigné dans un journal consultable à tête reposée.",
+                  de: "Das Aufheben der Bremse erfordert eine schriftliche Begründung im Protokoll, die Sie später nüchtern auswerten können.",
                 }),
               },
             ].map((f) => (
@@ -162,9 +176,9 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
             que falla y el veredicto. */}
         <div data-entra className="tj-ficha lg:order-first">
           <p className="tj-ficha-barra">
-            <span>{tx(lang, { es: "Semáforo de riesgo", en: "Risk light", pt: "Semáforo de risco", fr: "Feu de risque" })}</span>
+            <span>{tx(lang, { es: "Semáforo de riesgo", en: "Risk light", pt: "Semáforo de risco", fr: "Feu de risque", de: "Risikoampel" })}</span>
             {/* Es un ejemplo que se puede tocar, no un dato en directo. */}
-            <span>{tx(lang, { es: "Ejemplo", en: "Example", pt: "Exemplo", fr: "Exemple" })}</span>
+            <span>{tx(lang, { es: "Ejemplo", en: "Example", pt: "Exemplo", fr: "Exemple", de: "Beispiel" })}</span>
           </p>
           <div className="tj-ficha-cuerpo" data-dibuja>
             <div className="tnum flex items-baseline gap-x-3 pb-4 border-b border-[var(--ficha-division)]">
@@ -175,8 +189,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
               <span className="text-[13px] text-secondary">
                 {fmtInt(contratos, lang)}{" "}
                 {contratos === 1
-                  ? tx(lang, { es: "contrato", en: "contract", pt: "contrato", fr: "contrat" })
-                  : tx(lang, { es: "contratos", en: "contracts", pt: "contratos", fr: "contrats" })}
+                  ? tx(lang, { es: "contrato", en: "contract", pt: "contrato", fr: "contrat", de: "Kontrakt" })
+                  : tx(lang, { es: "contratos", en: "contracts", pt: "contratos", fr: "contrats", de: "Kontrakte" })}
               </span>
               <span className="ml-auto text-[13px] text-secondary">28 pts</span>
             </div>
@@ -189,6 +203,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     en: `Daily loss ${pct(0.6)} · limit ${pct(3)}`,
                     pt: `Perda do dia ${pct(0.6)} · limite ${pct(3)}`,
                     fr: `Perte du jour ${pct(0.6)} · limite ${pct(3)}`,
+                    de: `Tagesverlust ${pct(0.6)} · Limit ${pct(3)}`,
                   }),
                 },
                 {
@@ -198,6 +213,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     en: `Trades today ${fmtInt(2, lang)} · max ${fmtInt(5, lang)}`,
                     pt: `Operações hoje ${fmtInt(2, lang)} · máximo ${fmtInt(5, lang)}`,
                     fr: `Trades aujourd’hui ${fmtInt(2, lang)} · max ${fmtInt(5, lang)}`,
+                    de: `Trades heute ${fmtInt(2, lang)} · Max. ${fmtInt(5, lang)}`,
                   }),
                 },
                 {
@@ -208,6 +224,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     en: `Risk ${pct(riesgo)} · limit ${pct(LIMITE_RIESGO)}`,
                     pt: `Risco ${pct(riesgo)} · limite ${pct(LIMITE_RIESGO)}`,
                     fr: `Risque ${pct(riesgo)} · limite ${pct(LIMITE_RIESGO)}`,
+                    de: `Risiko ${pct(riesgo)} · Limit ${pct(LIMITE_RIESGO)}`,
                   }),
                 },
               ].map((c, i) => (
@@ -220,8 +237,8 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     style={{ ["--i" as string]: i, ...(c.ok ? {} : { color: "rgb(var(--pnl-neg))" }) }}
                   >
                     {c.ok
-                      ? tx(lang, { es: "Cumple", en: "Pass", pt: "Cumpre", fr: "Valide" })
-                      : tx(lang, { es: "Excede", en: "Over", pt: "Excede", fr: "Dépasse" })}
+                      ? tx(lang, { es: "Cumple", en: "Pass", pt: "Cumpre", fr: "Valide", de: "Erfüllt" })
+                      : tx(lang, { es: "Excede", en: "Over", pt: "Excede", fr: "Dépasse", de: "Überschritten" })}
                   </span>
                 </li>
               ))}
@@ -239,10 +256,11 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                       en: "Logged on a red light",
                       pt: "Registrada com semáforo em vermelho",
                       fr: "Enregistré avec feu rouge",
+                      de: "Mit roter Ampel erfasst",
                     })
                   : tono === "ok"
-                    ? tx(lang, { es: "Semáforo en verde", en: "Green light", pt: "Semáforo em verde", fr: "Feu vert" })
-                    : tx(lang, { es: "Semáforo en rojo", en: "Red light", pt: "Semáforo em vermelho", fr: "Feu rouge" });
+                    ? tx(lang, { es: "Semáforo en verde", en: "Green light", pt: "Semáforo em verde", fr: "Feu vert", de: "Grüne Ampel" })
+                    : tx(lang, { es: "Semáforo en rojo", en: "Red light", pt: "Semáforo em vermelho", fr: "Feu rouge", de: "Rote Ampel" });
               const cuerpo =
                 tono === "neutro"
                   ? tx(lang, {
@@ -250,6 +268,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                       en: "The light warns, it doesn’t block: the trade is saved. What blocks is the hard brake, if you turn it on, when you hit your daily loss, a losing streak or your max drawdown.",
                       pt: "O semáforo avisa, não bloqueia: a operação é salva. O que bloqueia é o freio rígido, se você ativar, ao bater sua perda diária, sequência ou drawdown máximo.",
                       fr: "Le feu avertit sans bloquer : le trade est enregistré. Ce qui bloque est le frein strict, si vous l’activez, dès la perte quotidienne, la série ou le drawdown max atteint.",
+                      de: "Die Ampel warnt, blockiert aber nicht: Der Trade wird gespeichert. Was blockiert, ist die harte Bremse (sofern aktiviert) bei Tagesverlust, Verlustserie oder maximalem Drawdown.",
                     })
                   : tono === "ok"
                     ? tx(lang, {
@@ -257,12 +276,14 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                         en: `This trade risks ${pct(riesgo)} of your account, within your per-trade limit.`,
                         pt: `Esta operação arrisca ${pct(riesgo)} da sua conta, dentro do seu limite por operação.`,
                         fr: `Ce trade risque ${pct(riesgo)} de votre compte, dans votre limite par opération.`,
+                        de: `Dieser Trade riskiert ${pct(riesgo)} Ihres Kontos und liegt innerhalb Ihres Limits pro Trade.`,
                       })
                     : tx(lang, {
                         es: `Esta operación arriesga ${pct(riesgo)} de tu cuenta; tu límite por operación es ${pct(LIMITE_RIESGO)}.`,
                         en: `This trade risks ${pct(riesgo)} of your account; your per-trade limit is ${pct(LIMITE_RIESGO)}.`,
                         pt: `Esta operação arrisca ${pct(riesgo)} da sua conta; seu limite por operação é ${pct(LIMITE_RIESGO)}.`,
                         fr: `Ce trade risque ${pct(riesgo)} de votre compte ; votre limite par opération est ${pct(LIMITE_RIESGO)}.`,
+                        de: `Dieser Trade riskiert ${pct(riesgo)} Ihres Kontos; Ihr Limit pro Trade beträgt ${pct(LIMITE_RIESGO)}.`,
                       });
               return (
                 <div role="status" aria-live="polite" className="tj-d-veredicto mt-1 pt-5 border-t border-[var(--ficha-division)]">
@@ -282,10 +303,11 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                       en: `Try ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contracts`,
                       pt: `Testar com ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contratos`,
                       fr: `Essayer avec ${fmtInt(CONTRATOS_AJUSTADOS, lang)} contrats`,
+                      de: `Mit ${fmtInt(CONTRATOS_AJUSTADOS, lang)} Kontrakten testen`,
                     })}
                   </button>
                   <button type="button" onClick={() => setEstado("anulado")} className="cta cta--secundario">
-                    {tx(lang, { es: "Registrar igualmente", en: "Log anyway", pt: "Registrar mesmo assim", fr: "Enregistrer quand même" })}
+                    {tx(lang, { es: "Registrar igualmente", en: "Log anyway", pt: "Registrar mesmo assim", fr: "Enregistrer quand même", de: "Trotzdem erfassen" })}
                   </button>
                 </>
               ) : (
@@ -295,6 +317,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     en: "Back to the initial state",
                     pt: "Voltar ao estado inicial",
                     fr: "Revenir à l’état initial",
+                    de: "Zurück zum Ausgangszustand",
                   })}
                 </button>
               )}

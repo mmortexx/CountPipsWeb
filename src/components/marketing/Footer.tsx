@@ -33,41 +33,41 @@ export function Footer() {
 
   const cols: { title: string; links: FooterLink[] }[] = [
     {
-      title: tx(lang, { es: "Producto", en: "Product", pt: "Produto", fr: "Produit" }),
+      title: tx(lang, { es: "Producto", en: "Product", pt: "Produto", fr: "Produit", de: "Produkt" }),
       links: [
-        { label: tx(lang, { es: "Características", en: "Features", pt: "Recursos", fr: "Fonctionnalités" }), href: "/features" },
-        { label: tx(lang, { es: "Demo", en: "Demo", pt: "Demo", fr: "Démo" }), href: "/demo" },
-        { label: tx(lang, { es: "Precios", en: "Pricing", pt: "Preços", fr: "Tarifs" }), href: "/pricing" },
-        { label: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel" }), href: "/traders/manual" },
-        { label: tx(lang, { es: "Prop firms", en: "Prop firms", pt: "Prop firms", fr: "Prop firms" }), href: "/traders/prop-firms" },
-        { label: tx(lang, { es: "Acceso anticipado", en: "Early access", pt: "Acesso antecipado", fr: "Accès anticipé" }), href: "/beta" },
-        { label: tx(lang, { es: "Novedades", en: "Changelog", pt: "Novidades", fr: "Nouveautés" }), href: "/about#changelog" },
+        { label: tx(lang, { es: "Características", en: "Features", pt: "Recursos", fr: "Fonctionnalités", de: "Funktionen" }), href: "/features" },
+        { label: tx(lang, { es: "Demo", en: "Demo", pt: "Demo", fr: "Démo", de: "Demo" }), href: "/demo" },
+        { label: tx(lang, { es: "Precios", en: "Pricing", pt: "Preços", fr: "Tarifs", de: "Preise" }), href: "/pricing" },
+        { label: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading" }), href: "/traders/manual" },
+        { label: tx(lang, { es: "Prop firms", en: "Prop firms", pt: "Prop firms", fr: "Prop firms", de: "Prop-Firms" }), href: "/traders/prop-firms" },
+        { label: tx(lang, { es: "Acceso anticipado", en: "Early access", pt: "Acesso antecipado", fr: "Accès anticipé", de: "Vorabzugang" }), href: "/beta" },
+        { label: tx(lang, { es: "Novedades", en: "Changelog", pt: "Novidades", fr: "Nouveautés", de: "Changelog" }), href: "/about#changelog" },
       ],
     },
     {
-      title: tx(lang, { es: "Recursos", en: "Resources", pt: "Recursos", fr: "Ressources" }),
+      title: tx(lang, { es: "Recursos", en: "Resources", pt: "Recursos", fr: "Ressources", de: "Ressourcen" }),
       links: [
         { label: "FAQ", href: "/faq" },
-        { label: tx(lang, { es: "Glosario", en: "Glossary", pt: "Glossário", fr: "Glossaire" }), href: "/glosario" },
-        { label: tx(lang, { es: "Herramientas", en: "Tools", pt: "Ferramentas", fr: "Outils" }), href: "/herramientas" },
-        { label: tx(lang, { es: "Test de disciplina", en: "Discipline test", pt: "Teste de disciplina", fr: "Test de discipline" }), href: "/test" },
+        { label: tx(lang, { es: "Glosario", en: "Glossary", pt: "Glossário", fr: "Glossaire", de: "Glossar" }), href: "/glosario" },
+        { label: tx(lang, { es: "Herramientas", en: "Tools", pt: "Ferramentas", fr: "Outils", de: "Tools" }), href: "/herramientas" },
+        { label: tx(lang, { es: "Test de disciplina", en: "Discipline test", pt: "Teste de disciplina", fr: "Test de discipline", de: "Disziplintest" }), href: "/test" },
       ],
     },
     {
-      title: tx(lang, { es: "Empresa", en: "Company", pt: "Empresa", fr: "Entreprise" }),
+      title: tx(lang, { es: "Empresa", en: "Company", pt: "Empresa", fr: "Entreprise", de: "Unternehmen" }),
       links: [
-        { label: tx(lang, { es: "Acerca de", en: "About", pt: "Sobre", fr: "À propos" }), href: "/about" },
+        { label: tx(lang, { es: "Acerca de", en: "About", pt: "Sobre", fr: "À propos", de: "Über uns" }), href: "/about" },
         /* El único formulario de contacto vive en /faq, no en /about. */
-        { label: tx(lang, { es: "Contacto", en: "Contact", pt: "Contato", fr: "Contact" }), href: "/faq#contacto" },
+        { label: tx(lang, { es: "Contacto", en: "Contact", pt: "Contato", fr: "Contact", de: "Kontakt" }), href: "/faq#contacto" },
       ],
     },
     {
-      title: tx(lang, { es: "Legal", en: "Legal", pt: "Legal", fr: "Légal" }),
+      title: tx(lang, { es: "Legal", en: "Legal", pt: "Legal", fr: "Légal", de: "Rechtliches" }),
       links: [
-        { label: tx(lang, { es: "Privacidad", en: "Privacy", pt: "Privacidade", fr: "Confidentialité" }), href: "/privacidad" },
-        { label: tx(lang, { es: "Términos", en: "Terms", pt: "Termos", fr: "Conditions" }), href: "/terminos" },
+        { label: tx(lang, { es: "Privacidad", en: "Privacy", pt: "Privacidade", fr: "Confidentialité", de: "Datenschutz" }), href: "/privacidad" },
+        { label: tx(lang, { es: "Términos", en: "Terms", pt: "Termos", fr: "Conditions", de: "AGB" }), href: "/terminos" },
         { label: "Cookies", href: "/cookies" },
-        { label: tx(lang, { es: "Aviso legal", en: "Legal notice", pt: "Aviso legal", fr: "Mentions légales" }), href: "/aviso-legal" },
+        { label: tx(lang, { es: "Aviso legal", en: "Legal notice", pt: "Aviso legal", fr: "Mentions légales", de: "Impressum" }), href: "/aviso-legal" },
       ],
     },
   ];
@@ -96,7 +96,7 @@ export function Footer() {
               {t("tagline")}
             </p>
             <p className="mt-2 text-[13px] text-tertiary max-w-xs leading-relaxed">
-              {tx(lang, { es: "Diario de trading para Windows 10 y 11.", en: "Trading journal for Windows 10 and 11.", pt: "Diário de trading para Windows 10 e 11.", fr: "Journal de trading pour Windows 10 et 11." })}
+              {tx(lang, { es: "Diario de trading para Windows 10 y 11.", en: "Trading journal for Windows 10 and 11.", pt: "Diário de trading para Windows 10 e 11.", fr: "Journal de trading pour Windows 10 et 11.", de: "Trading-Journal für Windows 10 und 11." })}
             </p>
           </div>
 
@@ -153,7 +153,7 @@ export function Footer() {
             </span>
             {FECHA_PUBLICACION && (
               <span>
-                {tx(lang, { es: "Sitio actualizado el ", en: "Site updated ", pt: "Site atualizado em ", fr: "Site mis à jour le " })}
+                {tx(lang, { es: "Sitio actualizado el ", en: "Site updated ", pt: "Site atualizado em ", fr: "Site mis à jour le ", de: "Website aktualisiert am " })}
                 <time dateTime={FECHA_PUBLICACION}>
                   {new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[lang], {
                     year: "numeric",
@@ -172,7 +172,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="link-underline-host inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
             >
-              <span className="link-underline link-underline--al-pasar">{tx(lang, { es: "Código de la web", en: "Website source", pt: "Código do site", fr: "Code source du site" })}</span>
+              <span className="link-underline link-underline--al-pasar">{tx(lang, { es: "Código de la web", en: "Website source", pt: "Código do site", fr: "Code source du site", de: "Quellcode der Website" })}</span>
             </a>
             {/* Retirar el consentimiento tiene que ser tan fácil como darlo
                 (RGPD), y el pie está en todas las páginas. */}
@@ -197,7 +197,7 @@ function ConsentPreferencesButton() {
       className="link-underline-host inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
     >
       <span className="link-underline link-underline--al-pasar">
-        {tx(lang, { es: "Preferencias de privacidad", en: "Privacy preferences", pt: "Preferências de privacidade", fr: "Préférences de confidentialité" })}
+        {tx(lang, { es: "Preferencias de privacidad", en: "Privacy preferences", pt: "Preferências de privacidade", fr: "Préférences de confidentialité", de: "Datenschutzeinstellungen" })}
       </span>
     </button>
   );

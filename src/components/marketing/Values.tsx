@@ -15,16 +15,19 @@ interface Value {
   titleEn: string;
   titlePt?: string;
   titleFr?: string;
+  titleDe?: string;
   descEs: string;
   descEn: string;
   descPt?: string;
   descFr?: string;
+  descDe?: string;
   /** Dónde se puede ir a comprobar este principio. */
   href: string;
   pruebaEs: string;
   pruebaEn: string;
   pruebaPt?: string;
   pruebaFr?: string;
+  pruebaDe?: string;
 }
 
 const VALUES: Value[] = [
@@ -33,6 +36,7 @@ const VALUES: Value[] = [
     titleEn: "Local always",
     titlePt: "Sempre local",
     titleFr: "Toujours en local",
+    titleDe: "Immer lokal",
     descEs:
       "Tus operaciones son tuyas. Viven en tu equipo y solo salen si activas una función que lo necesita; la analítica de esta web solo se activa con tu consentimiento.",
     descEn:
@@ -41,17 +45,21 @@ const VALUES: Value[] = [
       "Suas operações pertencem a você. Elas ficam na sua máquina e só saem se você ativar uma função necessária; a análise deste site só é ativada com seu consentimento.",
     descFr:
       "Vos données de trading vous appartiennent. Elles restent sur votre machine et ne la quittent que si vous activez une option dédiée ; les analyses de ce site n’opèrent qu’avec votre consentement.",
+    descDe:
+      "Ihre Trading-Daten gehören Ihnen. Sie bleiben auf Ihrem Rechner und verlassen ihn nur, wenn Sie eine entsprechende Funktion aktivieren; Web-Analysen laufen nur mit Ihrer Einwilligung.",
     href: "/features/seguridad",
     pruebaEs: "Qué se guarda y dónde",
     pruebaEn: "What is stored, and where",
     pruebaPt: "O que é salvo e onde",
     pruebaFr: "Ce qui est stocké et où",
+    pruebaDe: "Was gespeichert wird und wo",
   },
   {
     titleEs: "Demo honesta, sin atajos",
     titleEn: "An honest demo, no shortcuts",
     titlePt: "Demo honesta, sem atalhos",
     titleFr: "Une démo honnête, sans artifice",
+    titleDe: "Ehrliche Demo, ohne Umwege",
     descEs:
       "Datos de muestra, sin tarjeta ni instalación. El piloto privado valida el producto con usuarios reales antes de abrir la venta.",
     descEn:
@@ -60,17 +68,21 @@ const VALUES: Value[] = [
       "Dados de exemplo, sem cartão e sem instalação. O piloto privado valida o produto com usuários reais antes de abrir as vendas.",
     descFr:
       "Des données d’exemple, sans carte bancaire ni installation. Le pilote privé valide le produit auprès d’utilisateurs réels avant l’ouverture des ventes.",
+    descDe:
+      "Beispieldaten, ohne Kreditkarte und ohne Installation. Das private Pilotprojekt prüft das Produkt mit echten Nutzern vor dem Verkaufsstart.",
     href: "/demo",
     pruebaEs: "Recorrer la demo entera",
     pruebaEn: "Walk the whole demo",
     pruebaPt: "Percorrer a demo inteira",
     pruebaFr: "Parcourir toute la démo",
+    pruebaDe: "Gesamte Demo ansehen",
   },
   {
     titleEs: "Disciplina antes que métricas",
     titleEn: "Discipline before metrics",
     titlePt: "Disciplina antes das métricas",
     titleFr: "La discipline avant les métriques",
+    titleDe: "Disziplin vor Kennzahlen",
     descEs:
       "Las métricas sin disciplina son ruido. El Guardián te avisa antes de romper tus reglas y, si lo activas, te frena.",
     descEn:
@@ -79,11 +91,14 @@ const VALUES: Value[] = [
       "Métricas sem disciplina são ruído. O Guardião avisa antes de quebrar suas regras e, se ativado, interrompe você.",
     descFr:
       "Les métriques sans discipline ne sont que du bruit. Le Gardien vous avertit avant d’enfreindre vos règles et, si vous l’activez, vous bloque.",
+    descDe:
+      "Kennzahlen ohne Disziplin sind Rauschen. Der Guard warnt Sie vor Regelverstößen und bremst Sie bei Bedarf.",
     href: "/features/disciplina",
     pruebaEs: "Cómo frena el Guardián",
     pruebaEn: "How the brake works",
     pruebaPt: "Como o Guardião freia",
     pruebaFr: "Comment agit le frein",
+    pruebaDe: "Wie die Bremse wirkt",
   },
   {
     /* Un principio tiene que poder comprobarse: este se comprueba en la ficha técnica. */
@@ -91,6 +106,7 @@ const VALUES: Value[] = [
     titleEn: "Built to stay open while you trade",
     titlePt: "Feito para ficar aberto enquanto você opera",
     titleFr: "Conçu pour rester ouvert pendant vos sessions",
+    titleDe: "Gebaut, um beim Trading offen zu bleiben",
     descEs:
       "Una app de escritorio que arranca en menos de un segundo, funciona sin conexión y no te pide cuenta.",
     descEn:
@@ -99,11 +115,14 @@ const VALUES: Value[] = [
       "Um app desktop que inicia em menos de um segundo, funciona offline e não pede conta.",
     descFr:
       "Une application de bureau qui démarre en moins d’une seconde, fonctionne hors ligne et ne réclame aucun compte.",
+    descDe:
+      "Eine Desktop-App, die in unter einer Sekunde startet, offline funktioniert und kein Konto verlangt.",
     href: "/features/seguridad#ficha-tecnica",
     pruebaEs: "Ver la ficha técnica",
     pruebaEn: "See the spec sheet",
     pruebaPt: "Ver a ficha técnica",
     pruebaFr: "Consulter la fiche technique",
+    pruebaDe: "Datenblatt ansehen",
   },
 ];
 
@@ -121,12 +140,14 @@ export function Values() {
             en: <>What we believe.</>,
             pt: <>No que acreditamos.</>,
             fr: <>Ce que nous croyons.</>,
+            de: <>Woran wir glauben.</>,
           })}
           entradilla={tx(lang, {
             es: "Cuatro ideas que no son negociables. Si algún día dejamos de cumplirlas, la app deja de tener sentido.",
             en: "Four ideas that aren’t negotiable. If we ever stop delivering on them, the app stops making sense.",
             pt: "Quatro ideias não negociáveis. Se um dia deixarmos de cumpri-las, o app perde o sentido.",
             fr: "Quatre principes non négociables. Si nous cessions de les respecter, l’application perdrait tout son sens.",
+            de: "Vier nicht verhandelbare Grundsätze. Sollten wir sie je aufgeben, verliert die App ihren Sinn.",
           })}
         />
 
@@ -139,10 +160,10 @@ export function Values() {
                 }`}
               >
                 <h3 className="t-h3 text-primary">
-                  {tx(lang, { es: v.titleEs, en: v.titleEn, pt: v.titlePt, fr: v.titleFr })}
+                  {tx(lang, { es: v.titleEs, en: v.titleEn, pt: v.titlePt, fr: v.titleFr, de: v.titleDe })}
                 </h3>
                 <p className="mt-2.5 text-[15px] text-secondary leading-[1.7] max-w-[42em]">
-                  {tx(lang, { es: v.descEs, en: v.descEn, pt: v.descPt, fr: v.descFr })}
+                  {tx(lang, { es: v.descEs, en: v.descEn, pt: v.descPt, fr: v.descFr, de: v.descDe })}
                 </p>
 
                 {/* `mt-auto`: los enlaces de una fila quedan a la misma altura aunque
@@ -151,7 +172,7 @@ export function Values() {
                   href={v.href}
                   className="link-underline-host mt-auto pt-2 inline-flex min-h-[44px] items-center text-sm font-medium text-primary outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
                 >
-                  <span className="link-underline">{tx(lang, { es: v.pruebaEs, en: v.pruebaEn, pt: v.pruebaPt, fr: v.pruebaFr })}</span>
+                  <span className="link-underline">{tx(lang, { es: v.pruebaEs, en: v.pruebaEn, pt: v.pruebaPt, fr: v.pruebaFr, de: v.pruebaDe })}</span>
                 </Link>
               </article>
             </Reveal>

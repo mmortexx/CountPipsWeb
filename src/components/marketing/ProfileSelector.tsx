@@ -18,15 +18,16 @@ export function ProfileSelector() {
     {
       id: "manual",
       href: "/traders/manual",
-      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel" }),
-      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly", pt: "Para ler seu processo com clareza", fr: "Pour analyser votre processus avec clarté" }),
+      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading" }),
+      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly", pt: "Para ler seu processo com clareza", fr: "Pour analyser votre processus avec clarté", de: "Ihren Prozess klar erfassen" }),
       body: tx(lang, {
         es: "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo.",
         en: "Review context, execution and discipline without turning every session into a spreadsheet.",
         pt: "Revise contexto, execução e disciplina sem transformar cada sessão em uma planilha.",
         fr: "Passez en revue le contexte, l’exécution et la discipline sans transformer chaque session en tableur.",
+        de: "Überprüfen Sie Kontext, Ausführung und Disziplin, ohne jede Session in eine Tabellenkalkulation zu verwandeln.",
       }),
-      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path", pt: "Explorar jornada manual", fr: "Découvrir le parcours manuel" }),
+      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path", pt: "Explorar jornada manual", fr: "Découvrir le parcours manuel", de: "Manuellen Pfad erkunden" }),
     },
     {
       id: "prop",
@@ -34,14 +35,15 @@ export function ProfileSelector() {
       eyebrow: "Prop firms",
       /* En inglés de mercados el verbo es «trade», no «operate»; y «To + verbo»
          mantiene el paralelismo con la tarjeta hermana. */
-      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter", pt: "Para operar com regras que importam", fr: "Pour trader selon des règles strictes" }),
+      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter", pt: "Para operar com regras que importam", fr: "Pour trader selon des règles strictes", de: "Unter verbindlichen Regeln traden" }),
       body: tx(lang, {
         es: "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar.",
         en: "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
         pt: "Controle limites, consistência e risco por conta quando a avaliação não deixa margem para improviso.",
         fr: "Contrôlez les limites, la régularité et le risque par compte quand l’évaluation n’admet aucune improvisation.",
+        de: "Kontrollieren Sie Limits, Konstanz und Risiko pro Konto, wenn die Evaluierung keinen Spielraum für Improvisation lässt.",
       }),
-      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path", pt: "Explorar jornada prop", fr: "Découvrir le parcours prop" }),
+      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path", pt: "Explorar jornada prop", fr: "Découvrir le parcours prop", de: "Prop-Pfad erkunden" }),
     },
   ] as const;
 
@@ -73,6 +75,11 @@ export function ProfileSelector() {
                   Deux façons de trader. <span className="tj-frase-nueva">Une lecture plus claire.</span>
                 </>
               ),
+              de: (
+                <>
+                  Zwei Trading-Wege. <span className="tj-frase-nueva">Ein klarerer Blick.</span>
+                </>
+              ),
             })}
           </h2>
           <p className="medida t-entradilla text-secondary lg:pb-1">
@@ -83,6 +90,7 @@ export function ProfileSelector() {
               en: "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated.",
               pt: "Escolha o contexto mais parecido com o seu e veja o que o app mede nele: seu processo se você opera por conta própria, ou as regras da mesa se você estiver em avaliação.",
               fr: "Choisissez le contexte le plus proche du vôtre et découvrez ce que l’application mesure : votre méthode en compte propre, ou le cadre imposé en évaluation.",
+              de: "Wählen Sie das Umfeld, das Ihrem entspricht, und sehen Sie, was die App misst: Ihren eigenen Prozess oder die Vorgaben der Firma.",
             })}
           </p>
         </div>

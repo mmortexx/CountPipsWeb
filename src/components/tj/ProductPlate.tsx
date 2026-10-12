@@ -40,6 +40,11 @@ const LAMINAS_EXTRA: Record<string, {
       nota: "Sous le formulaire de saisie, l’écran de synthèse se divise en deux : la courbe de performance avec les zones de drawdown ombrées et le solde en pointillés, et le calendrier mensuel avec le résultat de chaque jour et le cumul hebdomadaire.",
       detalle: "le calendrier du mois",
     },
+    de: {
+      titulo: "Die Kurve und der Monat, Seite an Seite",
+      nota: "Unter dem Erfassungsformular teilt sich die Übersicht in zwei Bereiche: die Performance-Kurve mit schattierten Drawdown-Zonen und gepunktetem Saldo sowie der Monatskalender mit Tagesergebnissen und Wochensummen.",
+      detalle: "der Monatskalender",
+    },
   },
   registro: {
     pt: {
@@ -51,6 +56,11 @@ const LAMINAS_EXTRA: Record<string, {
       titulo: "Enregistrer l’opération est la première chose que vous voyez",
       nota: "Le formulaire occupe tout l’écran à dessein : actif, sens, entrée, stop, objectif et sortie, avec un espace dédié pour glisser des captures graphiques. Le risque est recalculé en temps réel.",
       detalle: "le formulaire de saisie",
+    },
+    de: {
+      titulo: "Die Trade-Erfassung steht sofort im Mittelpunkt",
+      nota: "Das Formular füllt bewusst den Bildschirm: Asset, Richtung, Einstieg, Stop, Ziel und Ausstieg, ergänzt durch einen Bereich für Chart-Screenshots. Das Risiko wird bei der Eingabe live berechnet.",
+      detalle: "das Erfassungsformular",
     },
   },
   operaciones: {
@@ -64,6 +74,11 @@ const LAMINAS_EXTRA: Record<string, {
       nota: "Le tableau d’opérations regroupe chaque position clôturée ou en cours avec date, durée, actif, direction, taille, résultat net et multiple de R, ainsi que les configurations associées.",
       detalle: "le tableau des opérations",
     },
+    de: {
+      titulo: "Die Historie mit gezielten Filtern",
+      nota: "Die Trade-Tabelle bündelt jede geschlossene oder offene Position mit Datum, Dauer, Asset, Richtung, Positionsgröße, Nettoergebnis und R-Multiplikatoren sowie den zugehörigen Setups.",
+      detalle: "die Trade-Tabelle",
+    },
   },
   analitica: {
     pt: {
@@ -75,6 +90,11 @@ const LAMINAS_EXTRA: Record<string, {
       titulo: "La répartition de R et la ventilation par configuration",
       nota: "L’écran d’analyse détaille la performance : l’histogramme des multiples de R avec le mode mis en avant, les ratios institutionnels comme le Sharpe et le Profit Factor, et la régularité dans le temps.",
       detalle: "l’histogramme de R",
+    },
+    de: {
+      titulo: "Die R-Verteilung und Auswertung nach Setups",
+      nota: "Der Analysebereich schlüsselt die Performance auf: das Histogramm der R-Multiplikatoren mit hervorgehobenem Modus, Kennzahlen wie Sharpe und Profit Factor sowie die zeitliche Konstanz.",
+      detalle: "das R-Histogramm",
     },
   },
 };

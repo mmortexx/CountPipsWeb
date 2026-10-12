@@ -22,6 +22,7 @@ const TEXTOS = {
     en: ["Stop trading blind.", "See how it’s measured.", "40+ metrics, a discipline guardian and your data on your machine. Explore the demo, no sign-up, and decide with clarity."],
     pt: ["Pare de operar às cegas.", "Veja como isso é medido.", "40+ métricas, um guardião de disciplina e seus dados na sua máquina. Explore a demo, sem cadastro, e decida com clareza."],
     fr: ["Cessez de trader à l’aveugle.", "Voyez comment tout est mesuré.", "40+ métriques, un gardien de discipline et vos données sur votre machine. Explorez la démo sans inscription et décidez avec clarté."],
+    de: ["Hören Sie auf, blind zu handeln.", "Sehen Sie, wie gemessen wird.", "40+ Kennzahlen, ein Disziplin-Wächter und Ihre Daten auf Ihrem Rechner. Testen Sie die Demo ohne Anmeldung und entscheiden Sie mit Klarheit."],
   },
   herramienta: {
     es: ["La cuenta ya te sale.", "Hazla con las tuyas.", "Esto mismo, pero sobre tu historial entero y al día con cada operación que registras. La demo lo enseña con datos de muestra."],
@@ -48,6 +49,7 @@ const TEXTOS = {
     en: ["Before you pay,", "watch it work.", "The demo shows the program with {n} sample trades. Purchase opens at launch."],
     pt: ["Antes de pagar,", "veja o programa funcionar.", "A demo mostra o software com {n} operações de exemplo. As compras serão abertas no lançamento."],
     fr: ["Avant de payer,", "voyez-le fonctionner.", "La démo présente le logiciel avec {n} opérations d’exemple. L’achat sera ouvert au lancement."],
+    de: ["Bevor Sie zahlen,", "sehen Sie es im Einsatz.", "Die Demo zeigt das Programm mit {n} Beispiel-Trades. Der Kauf öffnet beim Launch."],
   },
   glosario: {
     // «{n}» es OPERACIONES_MUESTRA.
@@ -72,7 +74,7 @@ export function FinalCTANew({
   const texto = variante ?? (enDemo ? "demo" : enPrecios ? "precios" : "general");
   const [titular, tenue, entradillaCruda] = tx(
     lang,
-    TEXTOS[texto] as { es: readonly [string, string, string]; en: readonly [string, string, string]; pt?: readonly [string, string, string]; fr?: readonly [string, string, string] },
+    TEXTOS[texto] as { es: readonly [string, string, string]; en: readonly [string, string, string]; pt?: readonly [string, string, string]; fr?: readonly [string, string, string]; de?: readonly [string, string, string]; it?: readonly [string, string, string] },
   );
   const entradilla = entradillaCruda.replace("{n}", fmtInt(OPERACIONES_MUESTRA, lang));
   return (
@@ -96,8 +98,8 @@ export function FinalCTANew({
                 className="cta cta--primario"
               >
                 {enDemo
-                  ? tx(lang, { es: "Solicitar acceso", en: "Request access", pt: "Solicitar acesso", fr: "Demander l’accès" })
-                  : tx(lang, { es: "Ver la demo", en: "See the demo", pt: "Ver a demo", fr: "Voir la démo" })}
+                  ? tx(lang, { es: "Solicitar acceso", en: "Request access", pt: "Solicitar acesso", fr: "Demander l’accès", de: "Zugang anfordern" })
+                  : tx(lang, { es: "Ver la demo", en: "See the demo", pt: "Ver a demo", fr: "Voir la démo", de: "Demo ansehen" })}
               </Link>
               <Link
                 href={enPrecios ? "/beta" : "/pricing"}
@@ -105,8 +107,8 @@ export function FinalCTANew({
                 className="cta cta--secundario"
               >
                 {enPrecios
-                  ? tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access", pt: "Solicitar acesso antecipado", fr: "Demander l’accès anticipé" })
-                  : tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços", fr: "Voir les tarifs" })}
+                  ? tx(lang, { es: "Solicitar acceso anticipado", en: "Request early access", pt: "Solicitar acesso antecipado", fr: "Demander l’accès anticipé", de: "Vorabzugang anfordern" })
+                  : tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços", fr: "Voir les tarifs", de: "Preise ansehen" })}
               </Link>
             </div>
           </div>
