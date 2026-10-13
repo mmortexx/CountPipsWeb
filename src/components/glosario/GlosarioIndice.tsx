@@ -124,7 +124,7 @@ export function GlosarioIndice() {
                 </button>
               </div>
             ) : (
-              <ul className="m-0 grid border-t border-[var(--line)] p-0 lg:grid-cols-2 lg:gap-x-14">
+              <ul className="tj-lista-filetes">
                 {filtrados.map((t) => (
                   <TarjetaTermino key={t.slug} termino={t} es={es} />
                 ))}
@@ -152,7 +152,7 @@ export function GlosarioIndice() {
                     <p className="mt-2 max-w-[52ch] text-[15px] leading-[1.7] text-secondary">
                       {es ? meta.descEs : meta.descEn}
                     </p>
-                    <ul className="mt-6 grid border-t border-[var(--line)] p-0 lg:grid-cols-2 lg:gap-x-14">
+                    <ul className="tj-lista-filetes mt-6">
                       {lista.map((t) => (
                         <TarjetaTermino key={t.slug} termino={t} es={es} />
                       ))}
@@ -176,7 +176,7 @@ function TarjetaTermino({
   es: boolean;
 }) {
   return (
-    <li className="border-b border-[var(--line)]">
+    <li>
       <Link
         href={`/glosario/${termino.slug}`}
         /* Las columnas solo reparten ancho: `ch` se mediría con la tipografía de

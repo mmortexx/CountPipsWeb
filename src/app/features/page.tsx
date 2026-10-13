@@ -111,7 +111,7 @@ export function FeaturesBody() {
 
       <FeatureExplorer />
 
-      <FinalCTANew variante="producto" sinFilete />
+      <FinalCTANew variante="producto" />
       <TableOfContents />
     </>
   );
