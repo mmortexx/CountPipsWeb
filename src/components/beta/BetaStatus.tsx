@@ -91,8 +91,8 @@ export function ProductStatus() {
                 es: (
                   <>
                     Lo que está listo.{" "}
-                    {/* Espacio duro: evita la viuda «comprobando.» (`scripts/viudas.mjs`). */}
-                    <span className="tj-frase-nueva">Y lo que aún estamos{"\u00a0"}comprobando.</span>
+                    {/* Bloque que no se parte mientras quepa: evita la viuda «comprobando.» (`scripts/viudas.mjs`) sin salirse a 320 px. */}
+                    <span className="tj-frase-nueva">Y lo que aún <span className="inline-block">estamos comprobando.</span></span>
                   </>
                 ),
                 en: (
