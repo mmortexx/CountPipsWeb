@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { SITE_URL, hreflangDe } from "@/lib/site";
+import { fmtMoney } from "@/lib/trading/format";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 
 interface MetaIdioma {
   homeTitle: string;
@@ -23,9 +25,9 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       "Diário de trading profissional nativo para Windows. Métricas institucionais, disciplina e dados locais.",
     pricingTitle: "Preços",
     pricingDescription:
-      "Demo interativa sem cadastro. Preços previstos de lançamento: Core $149 · Pro $249.",
+      `Demo interativa sem cadastro. Preços previstos de lançamento: Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })}.`,
     pricingTwitterDesc:
-      "Demo interativa sem cadastro. Core $149 · Pro $249 como preços previstos de lançamento.",
+      `Demo interativa sem cadastro. Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })} como preços previstos de lançamento.`,
     breadcrumbHome: "Início",
     breadcrumbPricing: "Preços",
     productDescription:
@@ -40,9 +42,9 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       "Journal de trading professionnel natif pour Windows. Métriques institutionnelles, discipline et données locales.",
     pricingTitle: "Tarifs",
     pricingDescription:
-      "Démo interactive sans inscription. Tarifs de lancement prévus : Core 149\u00a0$ · Pro 249\u00a0$.",
+      `Démo interactive sans inscription. Tarifs de lancement prévus : Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })}.`,
     pricingTwitterDesc:
-      "Démo interactive sans inscription. Core 149\u00a0$ · Pro 249\u00a0$ comme tarifs de lancement prévus.",
+      `Démo interactive sans inscription. Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })} comme tarifs de lancement prévus.`,
     breadcrumbHome: "Accueil",
     breadcrumbPricing: "Tarifs",
     productDescription:
@@ -52,18 +54,18 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
   de: {
     homeTitle: "CountPips — Traden wie ein institutioneller Desk.",
     homeDescription:
-      "Trading-Tagebuch, nativ für Windows. Interaktive Demo mit institutionellen Kennzahlen, Disziplin und lokalen Daten.",
+      "Trading-Journal, nativ für Windows. Interaktive Demo mit institutionellen Kennzahlen, Disziplin und lokalen Daten.",
     homeTwitterDesc:
-      "Professionelles Trading-Tagebuch für Windows. Institutionelle Kennzahlen, Disziplin und lokale Daten.",
+      "Professionelles Trading-Journal für Windows. Institutionelle Kennzahlen, Disziplin und lokale Daten.",
     pricingTitle: "Preise",
     pricingDescription:
-      "Interaktive Demo ohne Registrierung. Geplante Einführungspreise: Core 149\u00a0$ · Pro 249\u00a0$.",
+      `Interaktive Demo ohne Registrierung. Geplante Einführungspreise: Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })}.`,
     pricingTwitterDesc:
-      "Interaktive Demo ohne Registrierung. Core 149\u00a0$ · Pro 249\u00a0$ als geplante Einführungspreise.",
+      `Interaktive Demo ohne Registrierung. Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })} als geplante Einführungspreise.`,
     breadcrumbHome: "Startseite",
     breadcrumbPricing: "Preise",
     productDescription:
-      "Trading-Tagebuch, nativ für Windows. Interaktive Demo, institutionelle Kennzahlen, aktive Disziplin und lokale Daten.",
+      "Trading-Journal, nativ für Windows. Interaktive Demo, institutionelle Kennzahlen, aktive Disziplin und lokale Daten.",
     ogLocale: "de_DE",
   },
   it: {
@@ -74,9 +76,9 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       "Diario di trading professionale nativo per Windows. Metriche istituzionali, disciplina e dati locali.",
     pricingTitle: "Prezzi",
     pricingDescription:
-      "Demo interattiva senza registrazione. Prezzi di lancio previsti: Core $149 · Pro $249.",
+      `Demo interattiva senza registrazione. Prezzi di lancio previsti: Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })}.`,
     pricingTwitterDesc:
-      "Demo interattiva senza registrazione. Core $149 · Pro $249 come prezzi di lancio previsti.",
+      `Demo interattiva senza registrazione. Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })} come prezzi di lancio previsti.`,
     breadcrumbHome: "Home",
     breadcrumbPricing: "Prezzi",
     productDescription:

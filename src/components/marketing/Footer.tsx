@@ -62,7 +62,7 @@ export function Footer() {
       ],
     },
     {
-      title: tx(lang, { es: "Legal", en: "Legal", pt: "Legal", fr: "Légal", de: "Rechtliches", it: "Legale" }),
+      title: tx(lang, { es: "Legal", en: "Legal", pt: "Jurídico", fr: "Légal", de: "Rechtliches", it: "Legale" }),
       links: [
         { label: tx(lang, { es: "Privacidad", en: "Privacy", pt: "Privacidade", fr: "Confidentialité", de: "Datenschutz", it: "Privacy" }), href: "/privacidad" },
         { label: tx(lang, { es: "Términos", en: "Terms", pt: "Termos", fr: "Conditions", de: "AGB", it: "Termini" }), href: "/terminos" },

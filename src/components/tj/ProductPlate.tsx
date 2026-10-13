@@ -23,102 +23,6 @@ import { asset } from "@/lib/asset";
 /** Por debajo de aquí se sirve el detalle en lugar de la pantalla entera. */
 const CORTE_MOVIL_PX = 767;
 
-const LAMINAS_EXTRA: Record<string, {
-  pt?: { titulo: string; nota: string; detalle: string };
-  fr?: { titulo: string; nota: string; detalle: string };
-  de?: { titulo: string; nota: string; detalle: string };
-  it?: { titulo: string; nota: string; detalle: string };
-}> = {
-  resumen: {
-    pt: {
-      titulo: "A curva e o mês, lado a lado",
-      nota: "Abaixo do formulário de registro, a tela de resumo divide-se em duas: a curva de desempenho com as áreas de drawdown sombreadas e o saldo em linha pontilhada, e o calendário do mês com o resultado de cada dia e o total de cada semana.",
-      detalle: "o calendário do mês",
-    },
-    fr: {
-      titulo: "La courbe et le mois, côte à côte",
-      nota: "Sous le formulaire de saisie, l’écran de synthèse se divise en deux : la courbe de performance avec les zones de drawdown ombrées et le solde en pointillés, et le calendrier mensuel avec le résultat de chaque jour et le cumul hebdomadaire.",
-      detalle: "le calendrier du mois",
-    },
-    de: {
-      titulo: "Die Kurve und der Monat, Seite an Seite",
-      nota: "Unter dem Erfassungsformular teilt sich die Übersicht in zwei Bereiche: die Performance-Kurve mit schattierten Drawdown-Zonen und gepunktetem Saldo sowie der Monatskalender mit Tagesergebnissen und Wochensummen.",
-      detalle: "der Monatskalender",
-    },
-    it: {
-      titulo: "La curva e il mese, fianco a fianco",
-      nota: "Sotto il modulo di inserimento, la schermata di riepilogo si divide in due: la curva di rendimento con le aree di drawdown evidenziate e il saldo tratteggiato, insieme al calendario mensile con i risultati giornalieri e i totali settimanali.",
-      detalle: "il calendario del mese",
-    },
-  },
-  registro: {
-    pt: {
-      titulo: "Registrar a operação é a primeira coisa que você vê",
-      nota: "O formulário ocupa a tela inteira de propósito: ativo, direção, entrada, stop, alvo e saída, junto com uma área ampla para arrastar capturas do gráfico. Enquanto você digita, o risco é recalculado.",
-      detalle: "o formulário de registro",
-    },
-    fr: {
-      titulo: "Enregistrer l’opération est la première chose que vous voyez",
-      nota: "Le formulaire occupe tout l’écran à dessein : actif, sens, entrée, stop, objectif et sortie, avec un espace dédié pour glisser des captures graphiques. Le risque est recalculé en temps réel.",
-      detalle: "le formulaire de saisie",
-    },
-    de: {
-      titulo: "Die Trade-Erfassung steht sofort im Mittelpunkt",
-      nota: "Das Formular füllt bewusst den Bildschirm: Asset, Richtung, Einstieg, Stop, Ziel und Ausstieg, ergänzt durch einen Bereich für Chart-Screenshots. Das Risiko wird bei der Eingabe live berechnet.",
-      detalle: "das Erfassungsformular",
-    },
-    it: {
-      titulo: "Registrare l’operazione è la prima cosa che vedi",
-      nota: "Il modulo occupa l’intero schermo di proposito: asset, direzione, ingresso, stop, target e uscita, con un’ampia area per trascinare gli screenshot dei grafici. Il rischio viene ricalcolato mentre scrivi.",
-      detalle: "il modulo di inserimento",
-    },
-  },
-  operaciones: {
-    pt: {
-      titulo: "O histórico com filtros úteis",
-      nota: "A tabela de operações reúne cada trade fechado ou aberto com data, duração, ativo, direção, lote, resultado em dinheiro e em múltiplos de R, além dos setups de cada estratégia.",
-      detalle: "a tabela de operações",
-    },
-    fr: {
-      titulo: "L’historique avec des filtres exploitables",
-      nota: "Le tableau d’opérations regroupe chaque position clôturée ou en cours avec date, durée, actif, direction, taille, résultat net et multiple de R, ainsi que les configurations associées.",
-      detalle: "le tableau des opérations",
-    },
-    de: {
-      titulo: "Die Historie mit gezielten Filtern",
-      nota: "Die Trade-Tabelle bündelt jede geschlossene oder offene Position mit Datum, Dauer, Asset, Richtung, Positionsgröße, Nettoergebnis und R-Multiplikatoren sowie den zugehörigen Setups.",
-      detalle: "die Trade-Tabelle",
-    },
-    it: {
-      titulo: "Lo storico con filtri operativi",
-      nota: "La tabella delle operazioni raccoglie ogni trade chiuso o aperto con data, durata, asset, direzione, dimensione, risultato netto e multipli di R, oltre ai setup associati.",
-      detalle: "la tabella delle operazioni",
-    },
-  },
-  analitica: {
-    pt: {
-      titulo: "A distribuição de R e a quebra por setup",
-      nota: "A tela de analítica desdobra a performance: o histograma de múltiplos de R com a moda destacada, os índices institucionais como Sharpe e Profit Factor, e a consistência ao longo do tempo.",
-      detalle: "o histograma de R",
-    },
-    fr: {
-      titulo: "La répartition de R et la ventilation par configuration",
-      nota: "L’écran d’analyse détaille la performance : l’histogramme des multiples de R avec le mode mis en avant, les ratios institutionnels comme le Sharpe et le Profit Factor, et la régularité dans le temps.",
-      detalle: "l’histogramme de R",
-    },
-    de: {
-      titulo: "Die R-Verteilung und Auswertung nach Setups",
-      nota: "Der Analysebereich schlüsselt die Performance auf: das Histogramm der R-Multiplikatoren mit hervorgehobenem Modus, Kennzahlen wie Sharpe und Profit Factor sowie die zeitliche Konstanz.",
-      detalle: "das R-Histogramm",
-    },
-    it: {
-      titulo: "La distribuzione di R e l’analisi per setup",
-      nota: "La schermata di analisi scompone il rendimento: l’istogramma dei multipli di R con la moda in evidenza, gli indici istituzionali come Sharpe e Profit Factor, e la costanza nel tempo.",
-      detalle: "l’istogramma di R",
-    },
-  },
-};
-
 export type LaminaProducto = {
   /** Nombre del fichero en `public/img/`, sin ruta. */
   archivo: string;
@@ -135,15 +39,31 @@ export type LaminaProducto = {
   pestanaEn: string;
   tituloEs: string;
   tituloEn: string;
+  tituloPt?: string;
+  tituloFr?: string;
+  tituloDe?: string;
+  tituloIt?: string;
   /** Qué se está viendo y por qué importa. Una frase. */
   notaEs: string;
   notaEn: string;
+  notaPt?: string;
+  notaFr?: string;
+  notaDe?: string;
+  notaIt?: string;
   /** Texto alternativo: describe el CONTENIDO, no el continente. */
   altEs: string;
   altEn: string;
+  altPt?: string;
+  altFr?: string;
+  altDe?: string;
+  altIt?: string;
   /** Nombre del fragmento que se enseña en pantalla estrecha, para el pie. */
   detalleEs: string;
   detalleEn: string;
+  detallePt?: string;
+  detalleFr?: string;
+  detalleDe?: string;
+  detalleIt?: string;
 };
 
 // Cada tema, su captura. Las dos van en el HTML y el CSS oculta la que no toca
@@ -157,14 +77,39 @@ const TEMAS = [
 
 export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
   const { lang } = useLang();
-  const es = lang === "es";
-  const { archivo, ancho, alto, anchoMovil, altoMovil, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
-  const clave = archivo.replace(/^app-/, "").replace(/\.webp$/, "");
-  const extra = LAMINAS_EXTRA[clave]?.[lang as "pt" | "fr" | "de" | "it"];
-  const titulo = extra?.titulo ?? (es ? tituloEs : tituloEn);
-  const nota = extra?.nota ?? (es ? notaEs : notaEn);
-  const detalleTexto = extra?.detalle ?? (es ? lamina.detalleEs : lamina.detalleEn);
-  const alt = es ? altEs : altEn;
+  const { archivo, ancho, alto, anchoMovil, altoMovil } = lamina;
+  const titulo = tx(lang, {
+    es: lamina.tituloEs,
+    en: lamina.tituloEn,
+    pt: lamina.tituloPt,
+    fr: lamina.tituloFr,
+    de: lamina.tituloDe,
+    it: lamina.tituloIt,
+  });
+  const nota = tx(lang, {
+    es: lamina.notaEs,
+    en: lamina.notaEn,
+    pt: lamina.notaPt,
+    fr: lamina.notaFr,
+    de: lamina.notaDe,
+    it: lamina.notaIt,
+  });
+  const alt = tx(lang, {
+    es: lamina.altEs,
+    en: lamina.altEn,
+    pt: lamina.altPt,
+    fr: lamina.altFr,
+    de: lamina.altDe,
+    it: lamina.altIt,
+  });
+  const detalleTexto = tx(lang, {
+    es: lamina.detalleEs,
+    en: lamina.detalleEn,
+    pt: lamina.detallePt,
+    fr: lamina.detalleFr,
+    de: lamina.detalleDe,
+    it: lamina.detalleIt,
+  });
 
   // Los nombres de los cuatro ficheros los fija `scripts/capturas.py` y los
   // comprueba `tests/capturas.test.ts`; aquí solo se derivan.
@@ -188,7 +133,14 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
           type="button"
           className="tj-lamina-ventana tj-lamina-ampliable"
           onClick={abrir}
-          aria-label={es ? `Ampliar captura: ${tituloEs}` : `Enlarge screenshot: ${tituloEn}`}
+          aria-label={tx(lang, {
+            es: `Ampliar captura: ${titulo}`,
+            en: `Enlarge screenshot: ${titulo}`,
+            pt: `Ampliar captura: ${titulo}`,
+            fr: `Agrandir la capture : ${titulo}`,
+            de: `Screenshot vergrößern: ${titulo}`,
+            it: `Ingrandisci screenshot: ${titulo}`,
+          })}
         >
           {/* `img` y no `next/image`: con `output: "export"` e
               `images.unoptimized` no optimizaría nada. Sin carga
@@ -219,7 +171,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
       <dialog
         ref={visor}
         className="tj-visor"
-        aria-label={es ? tituloEs : tituloEn}
+        aria-label={titulo}
         onClose={() => setAbierto(false)}
         onClick={(e) => {
           if (e.target === e.currentTarget) cerrar();

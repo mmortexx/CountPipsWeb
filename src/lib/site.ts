@@ -79,7 +79,7 @@ export function esquemasGlobales(
     en: "The professional trading journal, native to Windows. Explore an interactive demo with institutional metrics, discipline and your data on your machine.",
     pt: "O diário de trading profissional, nativo para Windows. Explore uma demonstração interativa com métricas institucionais, disciplina e dados no seu computador.",
     fr: "Le journal de trading professionnel, natif Windows. Explorez une démo interactive avec métriques institutionnelles, discipline et données sur votre machine.",
-    de: "Das professionelle Trading-Tagebuch, nativ für Windows. Entdecken Sie eine interaktive Demo mit institutionellen Metriken, Disziplin und lokalen Daten.",
+    de: "Das professionelle Trading-Journal, nativ für Windows. Entdecken Sie eine interaktive Demo mit institutionellen Kennzahlen, Disziplin und lokalen Daten.",
     it: "Il diario di trading professionale, nativo per Windows. Esplora una demo interattiva con metriche istituzionali, disciplina e dati sul tuo computer.",
   };
 
@@ -129,13 +129,13 @@ export function esquemasGlobales(
       "Exportation CSV/JSON et sauvegardes locales",
     ],
     de: [
-      "Institutionelle Metriken (Sharpe, Profit Factor, Expectancy, R-Multiple)",
+      "Institutionelle Kennzahlen (Sharpe, Profit Factor, Expectancy, R-Multiple)",
       "Kapitalkurve und Drawdown",
       "Disziplin-Wächter: Risiko-Ampel und optionale Notbremse",
       "Daten auf Ihrem Rechner, kein Konto und keine Telemetrie",
       "Playbooks und Trading-Vorlagen",
       "P&L-Kalender und Heatmap nach Wochentag/Uhrzeit",
-      "Narratives Tagebuch mit Trade-Notizen",
+      "Narratives Journal mit Trade-Notizen",
       "Multi-Konto und Multi-Asset (Aktien, Futures, Forex, Krypto)",
       "CSV/JSON-Export und lokale Backups",
     ],
@@ -157,7 +157,7 @@ export function esquemasGlobales(
     en: "The professional trading journal, native to Windows. Explore the product before installing it: institutional metrics, discipline and local data.",
     pt: "O diário de trading profissional, nativo para Windows. Conheça o produto antes de instalar: métricas institucionais, disciplina e dados locais.",
     fr: "Le journal de trading professionnel, natif Windows. Découvrez le produit avant de l'installer : métriques institutionnelles, discipline et données locales.",
-    de: "Das professionelle Trading-Tagebuch, nativ für Windows. Testen Sie das Produkt vor der Installation: institutionelle Metriken, Disziplin und lokale Daten.",
+    de: "Das professionelle Trading-Journal, nativ für Windows. Testen Sie das Produkt vor der Installation: institutionelle Kennzahlen, Disziplin und lokale Daten.",
     it: "Il diario di trading professionale, nativo per Windows. Esplora il prodotto prima di installarlo: metriche istituzionali, disciplina e dati locali.",
   };
 
@@ -166,7 +166,7 @@ export function esquemasGlobales(
     en: `${SITE_NAME} — Trading journal`,
     pt: `${SITE_NAME} — Diário de trading`,
     fr: `${SITE_NAME} — Journal de trading`,
-    de: `${SITE_NAME} — Trading-Tagebuch`,
+    de: `${SITE_NAME} — Trading-Journal`,
     it: `${SITE_NAME} — Diario di trading`,
   };
 

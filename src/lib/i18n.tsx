@@ -48,7 +48,14 @@ export function tx<T = string | ReactNode, E = T>(
 export const STR = {
   // ---- Brand / global ----
   appName: { es: "CountPips", en: "CountPips" },
-  tagline: { es: "Tu operativa, medida.", en: "Your trading, measured." },
+  tagline: {
+    es: "Tu operativa, medida.",
+    en: "Your trading, measured.",
+    pt: "Sua operação, medida.",
+    fr: "Votre trading, mesuré.",
+    de: "Ihr Trading, gemessen.",
+    it: "Il tuo trading, misurato.",
+  },
   heroLead: {
     es: "El diario de trading profesional, nativo de Windows. Métricas institucionales, un guardián de disciplina y tus datos en tu equipo.",
     en: "The professional trading journal, native to Windows. Institutional metrics, a discipline guardian and your data on your machine.",
@@ -369,15 +376,33 @@ export const STR = {
   faqTitle: { es: "Preguntas frecuentes", en: "Frequently asked questions" },
 
   // ---- Footer / misc ----
-  rights: { es: "Todos los derechos reservados.", en: "All rights reserved." },
+  rights: {
+    es: "Todos los derechos reservados.",
+    en: "All rights reserved.",
+    pt: "Todos os direitos reservados.",
+    fr: "Tous droits réservés.",
+    de: "Alle Rechte vorbehalten.",
+    it: "Tutti i diritti riservati.",
+  },
   madeFor: {
     es: "Hecho para el trader manual serio.",
     en: "Made for the serious manual trader.",
+    pt: "Feito para o trader manual sério.",
+    fr: "Conçu pour le trader manuel exigeant.",
+    de: "Für den anspruchsvollen manuellen Trader entwickelt.",
+    it: "Creato per il trader manuale esigente.",
   },
 
   // ---- Accessibility ----
   // Enlace de salto al contenido: primer elemento enfocable, visible solo al enfocarlo.
-  skipToContent: { es: "Saltar al contenido", en: "Skip to content" },
+  skipToContent: {
+    es: "Saltar al contenido",
+    en: "Skip to content",
+    pt: "Pular para o conteúdo",
+    fr: "Aller au contenu",
+    de: "Zum Inhalt springen",
+    it: "Salta al contenuto",
+  },
 } as const;
 
 export type StrKey = keyof typeof STR;
@@ -445,7 +470,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   // lo mantiene al día si el idioma cambia sin recargar.
   useEffect(() => {
     if (typeof document === "undefined") return;
-    document.documentElement.lang = lang;
+    const info = TABLA_IDIOMAS.find((i) => i.codigo === lang);
+    document.documentElement.lang = info?.htmlLang ?? lang;
   }, [lang]);
 
   const irA = useCallback(

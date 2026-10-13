@@ -104,7 +104,7 @@ const VALUES: Value[] = [
     descFr:
       "Les métriques sans discipline ne sont que du bruit. Le Gardien vous avertit avant d’enfreindre vos règles et, si vous l’activez, vous bloque.",
     descDe:
-      "Kennzahlen ohne Disziplin sind Rauschen. Der Guard warnt Sie vor Regelverstößen und bremst Sie bei Bedarf.",
+      "Kennzahlen ohne Disziplin sind Rauschen. Der Disziplin-Wächter warnt Sie vor Regelverstößen und bremst Sie bei Bedarf.",
     descIt:
       "Le metriche senza disciplina sono solo rumore. Il Guardiano ti avvisa prima di infrangere le tue regole e, se lo attivi, ti ferma.",
     href: "/features/disciplina",

@@ -6,6 +6,8 @@ import { Pricing } from "@/components/marketing/Pricing";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { BetaStatus } from "@/components/beta/BetaStatus";
+import { fmtMoney } from "@/lib/trading/format";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 
 /** Migas de pan de esta página: Inicio y Precios. */
 const breadcrumbSchema = {
@@ -98,10 +100,10 @@ export function PricingBody() {
         titleIt="Il prezzo, nero su bianco."
         subtitleEs={"Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."}
         subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
-        subtitlePt="Core $149 e Pro $249 são preços de lançamento previstos. Experimente primeiro a demo; o acesso antecipado privado não é uma pré-venda."
+        subtitlePt={`Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} e Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })} são preços de lançamento previstos. Experimente primeiro a demo; o acesso antecipado privado não é uma pré-venda.`}
         subtitleFr={"Core 149\u00a0$ et Pro 249\u00a0$ sont des prix de lancement prévus. Essayez d’abord la démo ; l’accès anticipé privé n’est pas une précommande."}
         subtitleDe={"Core 149\u00a0$ und Pro 249\u00a0$ sind geplante Einführungspreise. Testen Sie zuerst die Demo; der private Vorabzugang ist kein Vorverkauf."}
-        subtitleIt="Core $149 e Pro $249 sono prezzi di lancio previsti. Prova prima la demo; l’accesso anticipato privato non è un preordine."
+        subtitleIt={`Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} e Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })} sono prezzi di lancio previsti. Prova prima la demo; l’accesso anticipato privato non è un preordine.`}
         breadcrumbEs="Precios"
         breadcrumbEn="Pricing"
         breadcrumbPt="Preços"

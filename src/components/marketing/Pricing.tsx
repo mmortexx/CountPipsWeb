@@ -213,7 +213,7 @@ const fechaTipo = new Date(FECHA_TIPO_EUR).toLocaleDateString(LOCALE_FECHA.es, {
 
 function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
   const isPro = plan.popular;
-  const dolarDetras = lang === "es" || lang === "fr" || lang === "de";
+  const dolarDetras = lang === "es" || lang === "fr" || lang === "de" || lang === "it";
 
   return (
     <div

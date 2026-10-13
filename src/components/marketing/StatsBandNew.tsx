@@ -134,6 +134,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
                 pt: `Números em ${corte}.`,
                 fr: `Chiffres au ${corte}.`,
                 de: `Stand der Zahlen: ${corte}.`,
+                it: `Dati a ${corte}.`,
               })}
             </p>
           )}
