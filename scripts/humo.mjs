@@ -1799,7 +1799,9 @@ if (SERVIR) {
 // A 320 px, el móvil más estrecho en uso, nada se sale de la ventana. Con
 // `--serve` se miran todas las páginas compiladas: el desborde depende del
 // texto de cada una, no de la plantilla. Las secciones `.cv-auto` no se
-// maquetan hasta asomar, así que se fuerzan a pintarse antes de medir.
+// maquetan hasta asomar, así que se fuerzan a pintarse antes de medir. Un
+// contenedor con `overflow: clip` esconde el desborde al documento pero no al
+// lector: los titulares que el borde corta se miran aparte.
 const ANCHO_ESTRECHO = 320;
 let estrechasMedidas = 0;
 {
@@ -1828,18 +1830,47 @@ let estrechasMedidas = 0;
             await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
             const ancho = document.documentElement.clientWidth;
             const sobra = document.documentElement.scrollWidth - ancho;
-            if (sobra <= 1) return null;
             let peor = null;
-            for (const e of document.querySelectorAll("body *")) {
-              if (e.children.length) continue;
-              const caja = e.getBoundingClientRect();
-              if (caja.width > 0 && caja.right > ancho + 1 && (!peor || caja.right > peor.derecha))
-                peor = { derecha: caja.right, texto: (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 50) };
+            if (sobra > 1) {
+              for (const e of document.querySelectorAll("body *")) {
+                if (e.children.length) continue;
+                const caja = e.getBoundingClientRect();
+                if (caja.width > 0 && caja.right > ancho + 1 && (!peor || caja.right > peor.derecha))
+                  peor = { derecha: caja.right, texto: (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 50) };
+              }
             }
-            return { sobra, texto: peor ? peor.texto : "" };
+            const cortados = [];
+            for (const h of document.querySelectorAll("main h1, main h2, main h3")) {
+              if (!h.getClientRects().length) continue;
+              let desliza = false;
+              for (let p = h.parentElement; p && p !== document.body; p = p.parentElement) {
+                const o = getComputedStyle(p).overflowX;
+                if (o === "auto" || o === "scroll") desliza = true;
+              }
+              if (desliza) continue;
+              const textos = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
+              for (let n = textos.nextNode(); n; n = textos.nextNode()) {
+                if (!n.textContent.trim()) continue;
+                // Lo que solo oyen los lectores de pantalla mide 1 px y no se ve.
+                let soloLectores = false;
+                for (let p = n.parentElement; p && p !== h.parentElement; p = p.parentElement) {
+                  if (p.getBoundingClientRect().width <= 1) soloLectores = true;
+                }
+                if (soloLectores) continue;
+                const rango = document.createRange();
+                rango.selectNodeContents(n);
+                const fuera = [...rango.getClientRects()].find((q) => q.width > 0 && (q.right > ancho + 1 || q.left < -1));
+                if (fuera) {
+                  cortados.push(`«${h.textContent.replace(/\s+/g, " ").trim().slice(0, 50)}» (${Math.round(Math.max(fuera.right - ancho, -fuera.left))} px)`);
+                  break;
+                }
+              }
+            }
+            return { sobra, texto: peor ? peor.texto : "", cortados };
           });
           estrechasMedidas++;
-          if (r) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
+          if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
+          else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
         } catch (e) {
           fallos.push(`estrecho ${ruta}: ${String(e).split("\n")[0]}`);
         }
