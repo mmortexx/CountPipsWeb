@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { Palabras } from "@/components/tj/Palabras";
 import { PROGRAMA } from "@/lib/producto";
 
@@ -13,37 +13,70 @@ import { PROGRAMA } from "@/lib/producto";
  */
 export function Hero({ producto }: { producto?: ReactNode }) {
   const { lang } = useLang();
-  const es = lang === "es";
 
   /* Las tres diferencias frente a otros diarios, juntas y en voz baja.
      «Previsto» porque la venta no está abierta. */
-  const datos = es
-    ? "Pago único previsto, sin suscripción. Sin servidores de CountPips: tus operaciones, en tu equipo. Demo sin registro."
-    : "Planned one-time payment, no subscription. No CountPips servers: your trades, on your machine. Demo without sign-up.";
+  const datos = tx(lang, {
+    es: "Pago único previsto, sin suscripción. Sin servidores de CountPips: tus operaciones, en tu equipo. Demo sin registro.",
+    en: "Planned one-time payment, no subscription. No CountPips servers: your trades, on your machine. Demo without sign-up.",
+    pt: "Pagamento único previsto, sem assinatura. Sem servidores do CountPips: suas operações, na sua máquina. Demo sem cadastro.",
+    fr: "Paiement unique prévu, sans abonnement. Aucun serveur CountPips : vos opérations, sur votre machine. Démo sans inscription.",
+    de: "Geplante Einmalzahlung, kein Abo. Keine CountPips-Server: Ihre Trades bleiben auf Ihrem Rechner. Demo ohne Registrierung.",
+    it: "Pagamento unico previsto, nessun abbonamento. Nessun server CountPips: le tue operazioni restano sul tuo computer. Demo senza registrazione.",
+  });
 
   return (
     <section id="top" className="tj-hero relative">
       <div className="tj-container pt-[clamp(6.5rem,13vh,8.75rem)] text-center">
         <p className="eyebrow">
-          {es ? "Diario de trading para Windows" : "Trading journal for Windows"}
+          {tx(lang, {
+            es: "Diario de trading para Windows",
+            en: "Trading journal for Windows",
+            pt: "Diário de trading para Windows",
+            fr: "Journal de trading pour Windows",
+            de: "Trading-Journal für Windows",
+            it: "Trading journal per Windows",
+          })}
         </p>
 
         <h1 className="t-display mx-auto mt-6 max-w-[15ch] text-balance text-primary">
-          <Palabras lang={lang} texto={es ? "Opera como una mesa institucional." : "Trade like an institutional desk."} />
+          <Palabras
+            lang={lang}
+            texto={tx(lang, {
+              es: "Opera como una mesa institucional.",
+              en: "Trade like an institutional desk.",
+              pt: "Opere como uma mesa institucional.",
+              fr: "Tradez comme un desk institutionnel.",
+              de: "Traden wie ein institutioneller Desk.",
+              it: "Fai trading come un desk\u00a0istituzionale.",
+            })}
+          />
         </h1>
 
         <p className="mx-auto mt-7 max-w-[40rem] t-lede text-secondary">
-          {es
-            ? "40+ métricas de riesgo y rendimiento, un guardián que te avisa antes de romper tus reglas y tus datos en tu equipo."
-            : "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine."}
+          {tx(lang, {
+            es: "40+ métricas de riesgo y rendimiento, un guardián que te avisa antes de romper tus reglas y tus datos en tu equipo.",
+            en: "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine.",
+            pt: "40+ métricas de risco e desempenho, um guardião que avisa antes de quebrar suas regras e seus dados na sua máquina.",
+            fr: "40+ métriques de risque et performance, un gardien qui vous alerte avant d’enfreindre vos règles et vos données sur votre machine.",
+            de: "40+ Kennzahlen für Risiko und Performance, ein Guard, der vor Regelverstößen warnt, und Ihre Daten auf Ihrem Rechner.",
+            it: "40+ metriche di rischio e rendimento, un guardiano che ti avvisa prima di infrangere le tue regole e i tuoi dati sul tuo computer.",
+          })}
         </p>
 
         <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-3">
           <Link href="/demo" className="cta cta--primario">
-            {es ? "Ver la demo interactiva" : "See the interactive demo"}
+            {tx(lang, {
+              es: "Ver la demo interactiva",
+              en: "See the interactive demo",
+              pt: "Ver a demo interativa",
+              fr: "Voir la démo interactive",
+              de: "Interaktive Demo ansehen",
+              it: "Guarda la demo interattiva",
+            })}
           </Link>
           <Link href="/pricing" className="cta cta--secundario">
-            {es ? "Ver precios" : "See pricing"}
+            {tx(lang, { es: "Ver precios", en: "See pricing", pt: "Ver preços", fr: "Voir les tarifs", de: "Preise ansehen", it: "Vedi i prezzi" })}
           </Link>
         </div>
 
@@ -56,7 +89,14 @@ export function Hero({ producto }: { producto?: ReactNode }) {
         {/* En fila desde `lg`: a 820 px, rótulo y nombres no caben en una línea. */}
         <div className="flex flex-col items-center gap-4 py-[clamp(2.5rem,5vw,3.5rem)] text-center lg:flex-row lg:justify-between lg:text-left">
           <p className="m-0 text-[13px] text-tertiary">
-            {es ? "Plantillas de importación CSV para" : "CSV import templates for"}
+            {tx(lang, {
+              es: "Plantillas de importación CSV para",
+              en: "CSV import templates for",
+              pt: "Modelos de importação CSV para",
+              fr: "Modèles d’import CSV pour",
+              de: "CSV-Importvorlagen für",
+              it: "Modelli di importazione CSV per",
+            })}
           </p>
           {/* Con cinco nombres en dos columnas, el último ocupa las dos para
               centrarse de verdad. */}

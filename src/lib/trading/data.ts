@@ -20,6 +20,7 @@
 import { SETUP_NAMES, type SetupName } from "./setups.ts";
 import { mulberry32 } from "./azar.ts";
 import { OPERACIONES_MUESTRA, SALDO_INICIAL_MUESTRA } from "./muestra.ts";
+import type { Lang } from "@/lib/locale";
 
 export interface Instrument {
   symbol: string;
@@ -855,8 +856,8 @@ const DAYS_EN = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const MONTHS_ES = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const MONTHS_EN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-export function weekdayBreakdown(trades: Trade[], lang: "es" | "en" = "es"): { day: string; pnl: number }[] {
-  const days = lang === "en" ? DAYS_EN : DAYS_ES;
+export function weekdayBreakdown(trades: Trade[], lang: Lang = "es"): { day: string; pnl: number }[] {
+  const days = lang === "es" ? DAYS_ES : DAYS_EN;
   return days.map((day, i) => ({
     day,
     pnl: trades
@@ -867,8 +868,8 @@ export function weekdayBreakdown(trades: Trade[], lang: "es" | "en" = "es"): { d
   }));
 }
 
-export function monthlyBreakdown(trades: Trade[], lang: "es" | "en" = "es"): { month: string; pnl: number }[] {
-  const months = lang === "en" ? MONTHS_EN : MONTHS_ES;
+export function monthlyBreakdown(trades: Trade[], lang: Lang = "es"): { month: string; pnl: number }[] {
+  const months = lang === "es" ? MONTHS_ES : MONTHS_EN;
   const byMonth = new Map<number, number>();
   for (const t of trades) {
     const m = t.closedAt.getUTCMonth();

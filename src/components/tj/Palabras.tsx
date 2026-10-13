@@ -1,4 +1,5 @@
 import { Fragment, type CSSProperties } from "react";
+import type { Lang } from "@/lib/locale";
 
 // Una palabra de una o dos letras no cierra renglón en un titular: se pega a la
 // siguiente con un espacio duro (norma del español). En inglés no se aplica:
@@ -13,7 +14,7 @@ export const pegaCortas = (s: string) =>
  * palabra: en su propia máscara el renglón podría partirse antes del punto.
  * Sin tramo realzado: los titulares son de un solo tono.
  */
-export function Palabras({ texto, lang = "es" }: { texto: string; lang?: "es" | "en" }) {
+export function Palabras({ texto, lang = "es" }: { texto: string; lang?: Lang }) {
   const palabras = (lang === "es" ? pegaCortas(texto) : texto).split(" ");
   return (
     <>

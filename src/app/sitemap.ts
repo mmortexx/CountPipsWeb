@@ -3,7 +3,6 @@ import { SITE_URL, hreflangDe } from "@/lib/site";
 import { TERMINOS } from "@/lib/glosario";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { ULTIMA_ACTUALIZACION } from "@/lib/fechas";
-import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 
 export const dynamic = "force-static";
 
@@ -56,28 +55,36 @@ const PAGES: PageMeta[] = [
 
 // La fecha sale del último commit (`src/lib/fechas.ts`): estable entre compilaciones sin cambios.
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const paginasEs = PAGES.map(({ path, priority, changeFrequency }) => ({
-    url: `${SITE_URL}${path === "/" ? "/" : `${path}/`}`,
-    lastModified: ULTIMA_ACTUALIZACION,
-    changeFrequency,
-    priority,
-    // hreflang recíproco solo en las rutas de `LOCALIZED_PATHS`.
-    ...(LOCALIZED_PATHS.includes(path) ? { alternates: { languages: hreflangDe(path) } } : {}),
-  }));
+import { TABLA_IDIOMAS, tieneVersion } from "@/lib/locale";
 
-  // Rutas `/en/...`: las mismas páginas base con las mismas prioridades.
-  // `LOCALIZED_PATHS` deriva de `TERMINOS`/`HERRAMIENTAS`, así que glosario y
-  // herramientas entran solo con que exista su página bajo `app/en`.
-  const paginasEn = PAGES.filter((p) => LOCALIZED_PATHS.includes(p.path)).map(
-    ({ path, priority, changeFrequency }) => ({
-      url: path === "/" ? `${SITE_URL}/en/` : `${SITE_URL}/en${path}/`,
+export default function sitemap(): MetadataRoute.Sitemap {
+  const paginasEs = PAGES.map(({ path, priority, changeFrequency }) => {
+    const tieneAlt = TABLA_IDIOMAS.some((i) => i.codigo !== "es" && tieneVersion(path, i.codigo));
+    return {
+      url: `${SITE_URL}${path === "/" ? "/" : `${path}/`}`,
       lastModified: ULTIMA_ACTUALIZACION,
       changeFrequency,
       priority,
-      alternates: { languages: hreflangDe(path) },
-    }),
+      ...(tieneAlt ? { alternates: { languages: hreflangDe(path) } } : {}),
+    };
+  });
+
+  // Rutas de otros idiomas (`/en/...`, `/pt/...`, etc.): se generan a partir
+  // de la tabla canónica de idiomas declarando cada idioma solo en las rutas que lo tienen.
+  const paginasOtras = TABLA_IDIOMAS.filter((i) => i.codigo !== "es").flatMap((idioma) =>
+    PAGES.filter((p) => tieneVersion(p.path, idioma.codigo)).map(
+      ({ path, priority, changeFrequency }) => ({
+        url:
+          path === "/"
+            ? `${SITE_URL}${idioma.prefijo}/`
+            : `${SITE_URL}${idioma.prefijo}${path}/`,
+        lastModified: ULTIMA_ACTUALIZACION,
+        changeFrequency,
+        priority,
+        alternates: { languages: hreflangDe(path) },
+      }),
+    ),
   );
 
-  return [...paginasEs, ...paginasEn];
+  return [...paginasEs, ...paginasOtras];
 }

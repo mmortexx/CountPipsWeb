@@ -1,7 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { trackEvent } from "@/lib/analytics";
 
 /**
@@ -10,7 +11,6 @@ import { trackEvent } from "@/lib/analytics";
  */
 export function ProfileSelector() {
   const { lang } = useLang();
-  const es = lang === "es";
 
   /* Antetítulos en caja normal, nunca en mayúsculas literales: algunos lectores
      las deletrean letra a letra. */
@@ -18,12 +18,17 @@ export function ProfileSelector() {
     {
       id: "manual",
       href: "/traders/manual",
-      eyebrow: es ? "Operativa manual" : "Manual trading",
-      title: es ? "Para leer tu proceso con claridad" : "To read your process clearly",
-      body: es
-        ? "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo."
-        : "Review context, execution and discipline without turning every session into a spreadsheet.",
-      action: es ? "Explorar recorrido manual" : "Explore the manual path",
+      eyebrow: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading", it: "Trading manuale" }),
+      title: tx(lang, { es: "Para leer tu proceso con claridad", en: "To read your process clearly", pt: "Para ler seu processo com clareza", fr: "Pour analyser votre processus avec clarté", de: "Ihren Prozess klar erfassen", it: "Per analizzare il tuo processo con chiarezza" }),
+      body: tx(lang, {
+        es: "Revisa contexto, ejecución y disciplina sin convertir cada sesión en una hoja de cálculo.",
+        en: "Review context, execution and discipline without turning every session into a spreadsheet.",
+        pt: "Revise contexto, execução e disciplina sem transformar cada sessão em uma planilha.",
+        fr: "Passez en revue le contexte, l’exécution et la discipline sans transformer chaque session en tableur.",
+        de: "Überprüfen Sie Kontext, Ausführung und Disziplin, ohne jede Session in eine Tabellenkalkulation zu verwandeln.",
+        it: "Rivedi contesto, esecuzione e disciplina senza trasformare ogni sessione in un foglio di calcolo.",
+      }),
+      action: tx(lang, { es: "Explorar recorrido manual", en: "Explore the manual path", pt: "Explorar jornada manual", fr: "Découvrir le parcours manuel", de: "Manuellen Pfad erkunden", it: "Esplora il percorso manuale" }),
     },
     {
       id: "prop",
@@ -31,11 +36,16 @@ export function ProfileSelector() {
       eyebrow: "Prop firms",
       /* En inglés de mercados el verbo es «trade», no «operate»; y «To + verbo»
          mantiene el paralelismo con la tarjeta hermana. */
-      title: es ? "Para operar con reglas que importan" : "To trade under rules that matter",
-      body: es
-        ? "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar."
-        : "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
-      action: es ? "Explorar recorrido prop" : "Explore the prop path",
+      title: tx(lang, { es: "Para operar con reglas que importan", en: "To trade under rules that matter", pt: "Para operar com regras que importam", fr: "Pour trader selon des règles strictes", de: "Unter verbindlichen Regeln traden", it: "Per operare con regole che contano" }),
+      body: tx(lang, {
+        es: "Controla límites, consistencia y riesgo por cuenta cuando la evaluación no deja margen para improvisar.",
+        en: "Control limits, consistency and risk per account when an evaluation leaves no room for improvisation.",
+        pt: "Controle limites, consistência e risco por conta quando a avaliação não deixa margem para improviso.",
+        fr: "Contrôlez les limites, la régularité et le risque par compte quand l’évaluation n’admet aucune improvisation.",
+        de: "Kontrollieren Sie Limits, Konstanz und Risiko pro Konto, wenn die Evaluierung keinen Spielraum für Improvisation lässt.",
+        it: "Controlla limiti, costanza e rischio per conto quando la valutazione non lascia spazio all’improvvisazione.",
+      }),
+      action: tx(lang, { es: "Explorar recorrido prop", en: "Explore the prop path", pt: "Explorar jornada prop", fr: "Découvrir le parcours prop", de: "Prop-Pfad erkunden", it: "Esplora il percorso prop" }),
     },
   ] as const;
 
@@ -46,14 +56,50 @@ export function ProfileSelector() {
       <div className="tj-container">
         <div className="tj-split grid gap-y-6 lg:items-end">
           <h2 id="profile-selector-title" className="t-h2 text-primary text-balance">
-            {es ? <>Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span></> : <>Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span></>}
+            {tx<ReactNode>(lang, {
+              es: (
+                <>
+                  Dos formas de operar. <span className="tj-frase-nueva">Una lectura mejor.</span>
+                </>
+              ),
+              en: (
+                <>
+                  Two ways to trade. <span className="tj-frase-nueva">One clearer read.</span>
+                </>
+              ),
+              pt: (
+                <>
+                  Duas formas de operar. <span className="tj-frase-nueva">Uma leitura melhor.</span>
+                </>
+              ),
+              fr: (
+                <>
+                  Deux façons de trader. <span className="tj-frase-nueva">Une lecture plus claire.</span>
+                </>
+              ),
+              de: (
+                <>
+                  Zwei Trading-Wege. <span className="tj-frase-nueva">Ein klarerer Blick.</span>
+                </>
+              ),
+              it: (
+                <>
+                  Due modi di fare trading. <span className="tj-frase-nueva">Una lettura più chiara.</span>
+                </>
+              ),
+            })}
           </h2>
           <p className="medida t-entradilla text-secondary lg:pb-1">
             {/* Promete lo que hay tras el enlace: los recorridos son páginas
                 propias, no tocan la demo. */}
-            {es
-              ? "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan."
-              : "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated."}
+            {tx(lang, {
+              es: "Elige el contexto que más se parece al tuyo y mira qué mide la app en él: tu proceso si operas por tu cuenta, o las reglas de la firma si te evalúan.",
+              en: "Pick the context closest to yours and see what the app measures there: your process if you trade on your own, or the firm’s rules if you’re being evaluated.",
+              pt: "Escolha o contexto mais parecido com o seu e veja o que o app mede nele: seu processo se você opera por conta própria, ou as regras da mesa se você estiver em avaliação.",
+              fr: "Choisissez le contexte le plus proche du vôtre et découvrez ce que l’application mesure : votre méthode en compte propre, ou le cadre imposé en évaluation.",
+              de: "Wählen Sie das Umfeld, das Ihrem entspricht, und sehen Sie, was die App misst: Ihren eigenen Prozess oder die Vorgaben der Firma.",
+              it: "Scegli il contesto più simile al tuo e scopri cosa misura l’app: il tuo processo se operi in proprio, o le regole della prop firm se sei sotto valutazione.",
+            })}
           </p>
         </div>
 

@@ -2,7 +2,7 @@
 
 import type { CSSProperties, ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import { FECHA_PUBLICACION } from "@/lib/publicacion";
 import { LOCALE_FECHA } from "@/lib/trading/format";
@@ -14,17 +14,41 @@ import { LOCALE_FECHA } from "@/lib/trading/format";
  */
 export function StatsBandNew({ herramientas }: { herramientas: number }) {
   const { lang } = useLang();
-  const es = lang === "es";
   const stats = [
-    { v: "40+", l: es ? "métricas institucionales calculadas con cada operación" : "institutional metrics computed with every trade" },
-    { v: "0", l: es ? "servidores de CountPips con tus operaciones: viven en tu equipo" : "CountPips servers holding your trades: they live on your machine" },
+    {
+      v: "40+",
+      l: tx(lang, {
+        es: "métricas institucionales calculadas con cada operación",
+        en: "institutional metrics computed with every trade",
+        pt: "métricas institucionais calculadas a cada operação",
+        fr: "métriques institutionnelles calculées à chaque trade",
+        de: "institutionelle Kennzahlen, bei jedem Trade berechnet",
+        it: "metriche istituzionali calcolate per ogni operazione",
+      }),
+    },
+    {
+      v: "0",
+      l: tx(lang, {
+        es: "servidores de CountPips con tus operaciones: viven en tu equipo",
+        en: "CountPips servers holding your trades: they live on your machine",
+        pt: "servidores do CountPips com suas operações: ficam na sua máquina",
+        fr: "serveur CountPips hébergeant vos opérations : elles restent sur votre machine",
+        de: "CountPips-Server mit Ihren Trades: sie bleiben auf Ihrem Rechner",
+        it: "server CountPips con le tue operazioni: risiedono sul tuo computer",
+      }),
+    },
     /* La tercera cifra es real y comprobable: las herramientas abiertas hoy.
        La pasa la página al construir (`HERRAMIENTAS`), así que cambia sola. */
     {
       v: String(herramientas),
-      l: es
-        ? "herramientas gratis en la web: sin registro ni instalación"
-        : "free tools on the site: no sign-up, no install",
+      l: tx(lang, {
+        es: "herramientas gratis en la web: sin registro ni instalación",
+        en: "free tools on the site: no sign-up, no install",
+        pt: "ferramentas gratuitas no site: sem cadastro nem instalação",
+        fr: "outils gratuits sur le site : sans inscription ni installation",
+        de: "kostenlose Online-Tools: ohne Registrierung oder Installation",
+        it: "strumenti gratuiti sul sito: senza registrazione né installazione",
+      }),
     },
   ];
   /* Fuente y fecha de corte: una cifra con su llamada y su fecha se lee como
@@ -34,19 +58,34 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       {texto}
     </Link>
   );
-  const notas: ReactNode[] = es
-    ? [
-        <>Por operación y por periodo, en la versión en pruebas del programa.</>,
-        <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
-        <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
-      ]
-    : [
-        <>Per trade and per period, in the pre-release version of the application.</>,
-        <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
-        <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
-      ];
+  const notas: ReactNode[] = [
+    tx<ReactNode>(lang, {
+      es: <>Por operación y por periodo, en la versión en pruebas del programa.</>,
+      en: <>Per trade and per period, in the pre-release version of the application.</>,
+      pt: <>Por operação e por período, na versão de testes do programa.</>,
+      fr: <>Par opération et par période, dans la version préliminaire de l’application.</>,
+      de: <>Pro Trade und pro Zeitraum, in der Testversion der Anwendung.</>,
+      it: <>Per operazione e per periodo, nella versione di prova dell’applicazione.</>,
+    }),
+    tx<ReactNode>(lang, {
+      es: <>Las operaciones se guardan en un archivo de tu disco; lo que sale a internet está listado en {enlace("/features/seguridad", "Seguridad")}.</>,
+      en: <>Trades are stored in a file on your disk; everything that goes online is listed under {enlace("/features/seguridad", "Security")}.</>,
+      pt: <>As operações são salvas em um arquivo no seu disco; o que sai para a internet está listado em {enlace("/features/seguridad", "Segurança")}.</>,
+      fr: <>Les opérations sont stockées dans un fichier local ; tout ce qui transite en ligne est listé dans {enlace("/features/seguridad", "Sécurité")}.</>,
+      de: <>Trades werden in einer Datei auf Ihrer Festplatte gespeichert; alle Netzwerkverbindungen sind unter {enlace("/features/seguridad", "Sicherheit")} gelistet.</>,
+      it: <>Le operazioni vengono salvate in un file sul tuo disco; ciò che esce su internet è indicato in {enlace("/features/seguridad", "Sicurezza")}.</>,
+    }),
+    tx<ReactNode>(lang, {
+      es: <>Las calculadoras abiertas hoy en {enlace("/herramientas", "Herramientas")}; el test de disciplina no entra en la cuenta.</>,
+      en: <>The calculators open today under {enlace("/herramientas", "Tools")}; the discipline test is not counted.</>,
+      pt: <>As calculadoras disponíveis hoje em {enlace("/herramientas", "Ferramentas")}; o teste de disciplina não entra na contagem.</>,
+      fr: <>Les calculateurs disponibles aujourd’hui dans {enlace("/herramientas", "Outils")} ; le test de discipline n’est pas compté.</>,
+      de: <>Verfügbare Rechner unter {enlace("/herramientas", "Tools")}; der Disziplintest zählt nicht dazu.</>,
+      it: <>I calcolatori disponibili oggi su {enlace("/herramientas", "Strumenti")}; il test di disciplina non è conteggiato.</>,
+    }),
+  ];
   const corte = FECHA_PUBLICACION
-    ? new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[es ? "es" : "en"], { year: "numeric", month: "long", timeZone: "UTC" })
+    ? new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[lang], { year: "numeric", month: "long", timeZone: "UTC" })
     : "";
 
   return (
@@ -87,7 +126,18 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
               </li>
             ))}
           </ol>
-          {corte && <p>{es ? `Cifras a ${corte}.` : `Figures as of ${corte}.`}</p>}
+          {corte && (
+            <p>
+              {tx(lang, {
+                es: `Cifras a ${corte}.`,
+                en: `Figures as of ${corte}.`,
+                pt: `Números em ${corte}.`,
+                fr: `Chiffres au ${corte}.`,
+                de: `Stand der Zahlen: ${corte}.`,
+                it: `Dati a ${corte}.`,
+              })}
+            </p>
+          )}
         </div>
       </div>
     </section>

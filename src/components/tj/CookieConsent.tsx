@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import {
   CONSENT_REOPEN_EVENT,
   CONSENT_VISIBILITY_EVENT,
@@ -22,7 +22,6 @@ import {
  */
 export function CookieConsent() {
   const { lang } = useLang();
-  const es = lang === "es";
 
   // Inicializador perezoso: en el servidor devuelve true (nada que pintar, sin
   // desajuste de hidratación); la visibilidad real la decide el temporizador.
@@ -146,7 +145,7 @@ export function CookieConsent() {
           role="dialog"
           aria-modal="false"
           aria-live="polite"
-          aria-label={es ? "Consentimiento de cookies" : "Cookie consent"}
+          aria-label={tx(lang, { es: "Consentimiento de cookies", en: "Cookie consent", pt: "Consentimento de cookies", fr: "Consentement aux cookies", de: "Cookie-Einwilligung", it: "Consenso ai cookie" })}
           data-cookie-consent="visible"
           style={{ position: "fixed" }}
             // Móvil: hoja a sangre abajo. Desktop (≥768px): tarjeta abajo a la
@@ -158,15 +157,20 @@ export function CookieConsent() {
                   consentimiento sin dónde informarse); va en línea para no
                   añadir otra fila. */}
               <p className="text-[13px] leading-[1.5] text-secondary flex-1 md:text-[14px] md:leading-relaxed">
-                {es
-                  ? "Guardamos tus preferencias en este navegador; la analítica, solo si la aceptas. "
-                  : "We keep your preferences in this browser; analytics only if you accept it. "}
+                {tx(lang, {
+                  es: "Guardamos tus preferencias en este navegador; la analítica, solo si la aceptas. ",
+                  en: "We keep your preferences in this browser; analytics only if you accept it. ",
+                  pt: "Guardamos suas preferências neste navegador; a análise, apenas se você aceitar. ",
+                  fr: "Nous conservons vos préférences dans ce navigateur ; les analyses uniquement si vous les acceptez. ",
+                  de: "Wir speichern Ihre Einstellungen in diesem Browser; Analysen nur mit Ihrer Zustimmung. ",
+                  it: "Conserviamo le tue preferenze in questo browser; le analisi solo se le accetti. ",
+                })}
                 <Link
                   href="/cookies"
                   className="link-underline-host whitespace-nowrap text-primary"
                 >
                   <span className="link-underline">
-                    {es ? "Ver qué guarda" : "See what it stores"}
+                    {tx(lang, { es: "Ver qué guarda", en: "See what it stores", pt: "Ver o que é salvo", fr: "Voir ce qui est stocké", de: "Details anzeigen", it: "Vedi cosa viene salvato" })}
                   </span>
                 </Link>
               </p>
@@ -180,14 +184,14 @@ export function CookieConsent() {
                 onClick={() => choose("declined")}
                 className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium text-secondary bg-[color-mix(in_srgb,var(--ink)_6%,transparent)] hover:bg-[color-mix(in_srgb,var(--ink)_10%,transparent)] hover:text-primary transition-[background,color,transform] duration-150"
               >
-                {es ? "Solo necesarias" : "Necessary only"}
+                {tx(lang, { es: "Solo necesarias", en: "Necessary only", pt: "Apenas necessárias", fr: "Nécessaires seules", de: "Nur notwendige", it: "Solo necessari" })}
               </button>
               <button
                 type="button"
                 onClick={() => choose("accepted")}
                 className="min-h-[44px] w-full px-3 py-2 rounded-[4px] text-[14px] font-medium bg-[rgb(var(--accent-base))] text-[rgb(var(--accent-ink))] hover:brightness-110 transition-[filter,transform] duration-150"
               >
-                {es ? "Aceptar analítica" : "Accept analytics"}
+                {tx(lang, { es: "Aceptar analítica", en: "Accept analytics", pt: "Aceitar análises", fr: "Accepter les analyses", de: "Analytik akzeptieren", it: "Accetta analisi" })}
               </button>
             </div>
         </div>

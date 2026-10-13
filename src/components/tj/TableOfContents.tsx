@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { irASeccion } from "@/lib/scroll";
 
 /**
@@ -17,7 +17,6 @@ interface TocItem {
 
 export function TableOfContents() {
   const { lang } = useLang();
-  const es = lang === "es";
   const [items, setItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string>("");
 
@@ -92,12 +91,26 @@ export function TableOfContents() {
 
   return (
     <nav
-      aria-label={es ? "Índice de la página" : "On this page"}
+      aria-label={tx(lang, {
+        es: "Índice de la página",
+        en: "On this page",
+        pt: "Nesta página",
+        fr: "Sur cette page",
+        de: "Auf dieser Seite",
+        it: "In questa pagina",
+      })}
       className="fixed right-[22px] top-1/2 z-30 hidden -translate-y-1/2 2xl:block"
     >
       <div className="tj-paper tj-paper-dense rounded-[4px] border border-[rgb(var(--divider)/0.16)] p-3.5 max-w-[200px]">
         <span className="eyebrow block mb-2.5 px-1">
-          {es ? "En esta página" : "On this page"}
+          {tx(lang, {
+            es: "En esta página",
+            en: "On this page",
+            pt: "Nesta página",
+            fr: "Sur cette page",
+            de: "Auf dieser Seite",
+            it: "In questa pagina",
+          })}
         </span>
         <ul className="flex flex-col gap-0.5">
           {items.map((item) => {

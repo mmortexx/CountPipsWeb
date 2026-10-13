@@ -3,7 +3,7 @@
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { usePresencia } from "@/hooks/use-presencia";
 import { Viajero } from "../Viajero";
-import { useLang } from "@/lib/i18n";
+import { useLang, type Lang } from "@/lib/i18n";
 import {
   TRADES,
   computeMetrics,
@@ -62,7 +62,7 @@ type SortKey = "symbol" | "duration" | "date" | "pnl" | "r";
 type SortDir = "asc" | "desc";
 
 /** Chip de R teñido por el signo (TradesPage.xaml L652-673). */
-function RChip({ value, lang }: { value: number; lang: "es" | "en" }) {
+function RChip({ value, lang }: { value: number; lang: Lang }) {
   const tone = value > 0 ? "pos" : value < 0 ? "neg" : "neutral";
   if (tone === "neutral") {
     return (
@@ -150,7 +150,7 @@ const TradeRow = memo(function TradeRow({
   const decimals = DECIMALS[trade.instrument] ?? 2;
   const inst = INSTRUMENTS.find((x) => x.symbol === trade.instrument);
   const assetLabel =
-    ASSET_LABEL[inst?.assetClass ?? "stock"]?.[lang] ?? "";
+    ASSET_LABEL[inst?.assetClass ?? "stock"]?.[lang === "es" ? "es" : "en"] ?? "";
   const isConfirming = confirmingId === trade.id;
 
   return (
@@ -202,7 +202,7 @@ const TradeRow = memo(function TradeRow({
       </td>
 
       <td className="px-3 py-2.5 whitespace-nowrap text-tertiary text-xs">
-        {NOMBRE_SESION[trade.session]?.[lang] ?? trade.session}
+        {NOMBRE_SESION[trade.session]?.[lang === "es" ? "es" : "en"] ?? trade.session}
       </td>
 
       <td className="px-3 py-2.5 whitespace-nowrap tnum text-secondary text-xs">
@@ -427,7 +427,7 @@ function KpiStripCell({
 
 /* «Esta selección frente al resto» (TradesPage.xaml): solo con filtro
    activo, porque sin filtro no hay «resto». Textos de la app. */
-function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: "es" | "en" }) {
+function SeleccionFrenteAlResto({ c, lang }: { c: Comparacion; lang: Lang }) {
   const es = lang === "es";
   const r = (v: number | null) => (v === null ? "—" : fmtR(v, lang, 2));
   const wr = (v: number | null) => (v === null ? "—" : fmtPct(v, lang, 0));
@@ -512,7 +512,7 @@ function BulkActionBar({
   onClear: () => void;
   onTagAdd: (tag: string) => void;
   onTagRemove: (tag: string) => void;
-  lang: "es" | "en";
+  lang: Lang;
 }) {
   const [tag, setTag] = useState("");
   return (

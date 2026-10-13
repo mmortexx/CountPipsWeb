@@ -1,4 +1,31 @@
-import type { Lang } from "@/lib/i18n";
+export type Lang = "es" | "en" | "pt" | "fr" | "de" | "it";
+
+export interface IdiomaInfo {
+  readonly codigo: Lang;
+  readonly prefijo: string;
+  readonly htmlLang: string;
+  readonly intlLocale: string;
+  readonly nombre: string;
+  readonly code2: string;
+}
+
+/**
+ * Tabla canónica de idiomas del sitio: una sola declaración para que rutas,
+ * `hreflang`, sitemap, selector, `postbuild` y pruebas la lean.
+ */
+export const TABLA_IDIOMAS: readonly IdiomaInfo[] = [
+  { codigo: "es", prefijo: "", htmlLang: "es", intlLocale: "es-ES", nombre: "Español", code2: "ES" },
+  { codigo: "en", prefijo: "/en", htmlLang: "en", intlLocale: "en-US", nombre: "English", code2: "EN" },
+  { codigo: "pt", prefijo: "/pt", htmlLang: "pt-BR", intlLocale: "pt-BR", nombre: "Português", code2: "PT" },
+  { codigo: "fr", prefijo: "/fr", htmlLang: "fr-FR", intlLocale: "fr-FR", nombre: "Français", code2: "FR" },
+  { codigo: "de", prefijo: "/de", htmlLang: "de-DE", intlLocale: "de-DE", nombre: "Deutsch", code2: "DE" },
+  { codigo: "it", prefijo: "/it", htmlLang: "it-IT", intlLocale: "it-IT", nombre: "Italiano", code2: "IT" },
+] as const;
+
+export const IDIOMAS_NUEVOS: readonly Lang[] = ["pt", "fr", "de", "it"] as const;
+
+/** Rutas con versión en los idiomas nuevos (solo `/` y `/pricing`). */
+export const RUTAS_NUEVOS_IDIOMAS: readonly string[] = ["/", "/pricing"] as const;
 
 /**
  * Rutas fijas que existen en inglés: de esta lista dependen los enlaces que
@@ -49,24 +76,57 @@ export function tieneVersionEn(pathnameLimpio: string): boolean {
 }
 
 /**
- * `/en/pricing` → `/pricing`, `/en` → `/`; el resto, sin tocar. La usan
- * `LanguageProvider` (destino al cambiar de idioma) y `Navbar` (ruta activa).
+ * ¿Existe versión de esta ruta para el idioma especificado?
  */
-export function sinPrefijoEn(pathname: string): string {
-  if (pathname === "/en") return "/";
-  if (pathname.startsWith("/en/")) return pathname.slice(3) || "/";
-  return pathname;
+export function tieneVersion(pathnameLimpio: string, lang: Lang): boolean {
+  if (lang === "es") return true;
+  if (lang === "en") return tieneVersionEn(pathnameLimpio);
+  const ruta = pathnameLimpio.length > 1 ? pathnameLimpio.replace(/\/+$/, "") || "/" : pathnameLimpio;
+  return RUTAS_NUEVOS_IDIOMAS.includes(ruta);
+}
+
+export function prefijoDeIdioma(lang: Lang): string {
+  const item = TABLA_IDIOMAS.find((i) => i.codigo === lang);
+  return item ? item.prefijo : "";
 }
 
 /**
- * Antepone `/en` a una dirección interna si el idioma es inglés y la ruta
- * tiene versión inglesa; en cualquier otro caso la devuelve tal cual.
- * Separa `hash` y `query` antes de decidir y los reconstruye después.
+ * Quita el prefijo de idioma a cualquier ruta prefijada (`/en/pricing` → `/pricing`,
+ * `/pt/pricing` → `/pricing`, `/en` → `/`).
+ */
+export function sinPrefijo(pathname: string): string {
+  for (const idioma of TABLA_IDIOMAS) {
+    if (!idioma.prefijo) continue;
+    if (pathname === idioma.prefijo) return "/";
+    if (pathname.startsWith(`${idioma.prefijo}/`)) {
+      return pathname.slice(idioma.prefijo.length) || "/";
+    }
+  }
+  return pathname;
+}
+
+/** Alias retrocompatible con la API anterior. */
+export function sinPrefijoEn(pathname: string): string {
+  return sinPrefijo(pathname);
+}
+
+/**
+ * Devuelve la lista de idiomas disponibles para una ruta dada (los idiomas
+ * que esa página tiene).
+ */
+export function idiomasDeRuta(pathname: string): readonly IdiomaInfo[] {
+  const base = sinPrefijo(pathname);
+  return TABLA_IDIOMAS.filter((i) => tieneVersion(base, i.codigo));
+}
+
+/**
+ * Antepone el prefijo de idioma correspondiente a una dirección interna.
+ * Si el idioma es nuevo y la página no tiene versión en ese idioma, enlaza
+ * a la versión inglesa si existe (regla 7).
  */
 export function withLocale(href: string, lang: Lang): string {
-  if (lang !== "en") return href;
+  if (lang === "es") return href;
   if (!href.startsWith("/") || href.startsWith("//")) return href; // externa o relativa al protocolo
-  if (href.startsWith("/en") ) return href; // ya está en inglés (cubre "/en" y "/en/…")
   if (href.startsWith("#")) return href; // ancla pura de la misma página
 
   const hashIdx = href.indexOf("#");
@@ -76,8 +136,31 @@ export function withLocale(href: string, lang: Lang): string {
   const query = qIdx >= 0 ? sinHash.slice(qIdx) : "";
   const path = qIdx >= 0 ? sinHash.slice(0, qIdx) : sinHash;
 
-  if (!tieneVersionEn(path)) return href;
+  for (const idioma of TABLA_IDIOMAS) {
+    if (idioma.prefijo && (path === idioma.prefijo || path.startsWith(`${idioma.prefijo}/`))) {
+      return href;
+    }
+  }
 
-  const prefijada = path === "/" ? "/en" : `/en${path}`;
-  return `${prefijada}${query}${hash}`;
+  const prefijo = prefijoDeIdioma(lang);
+
+  if (lang === "en") {
+    if (!tieneVersionEn(path)) return href;
+    const prefijada = path === "/" ? "/en" : `/en${path}`;
+    return `${prefijada}${query}${hash}`;
+  }
+
+  // Idioma nuevo (pt, fr, de, it):
+  if (tieneVersion(path, lang)) {
+    const prefijada = path === "/" ? prefijo : `${prefijo}${path}`;
+    return `${prefijada}${query}${hash}`;
+  }
+
+  // Desde un idioma nuevo, lo que no tenga versión en ese idioma enlaza a la inglesa (regla 7):
+  if (tieneVersionEn(path)) {
+    const prefijada = path === "/" ? "/en" : `/en${path}`;
+    return `${prefijada}${query}${hash}`;
+  }
+
+  return href;
 }

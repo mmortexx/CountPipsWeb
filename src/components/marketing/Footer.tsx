@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/components/tj/LocaleLink";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { openGlossary } from "@/lib/overlays";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { reopenConsent } from "@/lib/consent";
@@ -20,7 +20,6 @@ const REPOSITORIO = "https://github.com/mmortexx/CountPipsWeb";
  */
 export function Footer() {
   const { t, lang } = useLang();
-  const es = lang === "es";
   // Año de publicación fijado al compilar, nunca `new Date()` (ver
   // `anioDePublicacion()` en `next.config.ts`).
   const year = ANIO_PUBLICACION;
@@ -34,41 +33,41 @@ export function Footer() {
 
   const cols: { title: string; links: FooterLink[] }[] = [
     {
-      title: es ? "Producto" : "Product",
+      title: tx(lang, { es: "Producto", en: "Product", pt: "Produto", fr: "Produit", de: "Produkt", it: "Prodotto" }),
       links: [
-        { label: es ? "Características" : "Features", href: "/features" },
-        { label: es ? "Demo" : "Demo", href: "/demo" },
-        { label: es ? "Precios" : "Pricing", href: "/pricing" },
-        { label: es ? "Operativa manual" : "Manual trading", href: "/traders/manual" },
-        { label: es ? "Prop firms" : "Prop firms", href: "/traders/prop-firms" },
-        { label: es ? "Acceso anticipado" : "Early access", href: "/beta" },
-        { label: es ? "Novedades" : "Changelog", href: "/about#changelog" },
+        { label: tx(lang, { es: "Características", en: "Features", pt: "Recursos", fr: "Fonctionnalités", de: "Funktionen", it: "Funzionalità" }), href: "/features" },
+        { label: tx(lang, { es: "Demo", en: "Demo", pt: "Demo", fr: "Démo", de: "Demo", it: "Demo" }), href: "/demo" },
+        { label: tx(lang, { es: "Precios", en: "Pricing", pt: "Preços", fr: "Tarifs", de: "Preise", it: "Prezzi" }), href: "/pricing" },
+        { label: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading", it: "Trading manuale" }), href: "/traders/manual" },
+        { label: tx(lang, { es: "Prop firms", en: "Prop firms", pt: "Prop firms", fr: "Prop firms", de: "Prop-Firms", it: "Prop firms" }), href: "/traders/prop-firms" },
+        { label: tx(lang, { es: "Acceso anticipado", en: "Early access", pt: "Acesso antecipado", fr: "Accès anticipé", de: "Vorabzugang", it: "Accesso anticipato" }), href: "/beta" },
+        { label: tx(lang, { es: "Novedades", en: "Changelog", pt: "Novidades", fr: "Nouveautés", de: "Changelog", it: "Novità" }), href: "/about#changelog" },
       ],
     },
     {
-      title: es ? "Recursos" : "Resources",
+      title: tx(lang, { es: "Recursos", en: "Resources", pt: "Recursos", fr: "Ressources", de: "Ressourcen", it: "Risorse" }),
       links: [
         { label: "FAQ", href: "/faq" },
-        { label: es ? "Glosario" : "Glossary", href: "/glosario" },
-        { label: es ? "Herramientas" : "Tools", href: "/herramientas" },
-        { label: es ? "Test de disciplina" : "Discipline test", href: "/test" },
+        { label: tx(lang, { es: "Glosario", en: "Glossary", pt: "Glossário", fr: "Glossaire", de: "Glossar", it: "Glossario" }), href: "/glosario" },
+        { label: tx(lang, { es: "Herramientas", en: "Tools", pt: "Ferramentas", fr: "Outils", de: "Tools", it: "Strumenti" }), href: "/herramientas" },
+        { label: tx(lang, { es: "Test de disciplina", en: "Discipline test", pt: "Teste de disciplina", fr: "Test de discipline", de: "Disziplintest", it: "Test di disciplina" }), href: "/test" },
       ],
     },
     {
-      title: es ? "Empresa" : "Company",
+      title: tx(lang, { es: "Empresa", en: "Company", pt: "Empresa", fr: "Entreprise", de: "Unternehmen", it: "Azienda" }),
       links: [
-        { label: es ? "Acerca de" : "About", href: "/about" },
+        { label: tx(lang, { es: "Acerca de", en: "About", pt: "Sobre", fr: "À propos", de: "Über uns", it: "Chi siamo" }), href: "/about" },
         /* El único formulario de contacto vive en /faq, no en /about. */
-        { label: es ? "Contacto" : "Contact", href: "/faq#contacto" },
+        { label: tx(lang, { es: "Contacto", en: "Contact", pt: "Contato", fr: "Contact", de: "Kontakt", it: "Contatti" }), href: "/faq#contacto" },
       ],
     },
     {
-      title: es ? "Legal" : "Legal",
+      title: tx(lang, { es: "Legal", en: "Legal", pt: "Jurídico", fr: "Légal", de: "Rechtliches", it: "Legale" }),
       links: [
-        { label: es ? "Privacidad" : "Privacy", href: "/privacidad" },
-        { label: es ? "Términos" : "Terms", href: "/terminos" },
+        { label: tx(lang, { es: "Privacidad", en: "Privacy", pt: "Privacidade", fr: "Confidentialité", de: "Datenschutz", it: "Privacy" }), href: "/privacidad" },
+        { label: tx(lang, { es: "Términos", en: "Terms", pt: "Termos", fr: "Conditions", de: "AGB", it: "Termini" }), href: "/terminos" },
         { label: "Cookies", href: "/cookies" },
-        { label: es ? "Aviso legal" : "Legal notice", href: "/aviso-legal" },
+        { label: tx(lang, { es: "Aviso legal", en: "Legal notice", pt: "Aviso legal", fr: "Mentions légales", de: "Impressum", it: "Note legali" }), href: "/aviso-legal" },
       ],
     },
   ];
@@ -97,7 +96,7 @@ export function Footer() {
               {t("tagline")}
             </p>
             <p className="mt-2 text-[13px] text-tertiary max-w-xs leading-relaxed">
-              {lang === "es" ? "Diario de trading para Windows 10 y 11." : "Trading journal for Windows 10 and 11."}
+              {tx(lang, { es: "Diario de trading para Windows 10 y 11.", en: "Trading journal for Windows 10 and 11.", pt: "Diário de trading para Windows 10 e 11.", fr: "Journal de trading pour Windows 10 et 11.", de: "Trading-Journal für Windows 10 und 11.", it: "Diario di trading per Windows 10 e 11." })}
             </p>
           </div>
 
@@ -154,9 +153,9 @@ export function Footer() {
             </span>
             {FECHA_PUBLICACION && (
               <span>
-                {es ? "Sitio actualizado el " : "Site updated "}
+                {tx(lang, { es: "Sitio actualizado el ", en: "Site updated ", pt: "Site atualizado em ", fr: "Site mis à jour le ", de: "Website aktualisiert am ", it: "Sito aggiornato il " })}
                 <time dateTime={FECHA_PUBLICACION}>
-                  {new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[es ? "es" : "en"], {
+                  {new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[lang], {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
@@ -173,7 +172,7 @@ export function Footer() {
               rel="noopener noreferrer"
               className="link-underline-host inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
             >
-              <span className="link-underline link-underline--al-pasar">{es ? "Código de la web" : "Website source"}</span>
+              <span className="link-underline link-underline--al-pasar">{tx(lang, { es: "Código de la web", en: "Website source", pt: "Código do site", fr: "Code source du site", de: "Quellcode der Website", it: "Codice del sito" })}</span>
             </a>
             {/* Retirar el consentimiento tiene que ser tan fácil como darlo
                 (RGPD), y el pie está en todas las páginas. */}
@@ -191,7 +190,6 @@ export function Footer() {
  */
 function ConsentPreferencesButton() {
   const { lang } = useLang();
-  const es = lang === "es";
   return (
     <button
       type="button"
@@ -199,7 +197,7 @@ function ConsentPreferencesButton() {
       className="link-underline-host inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
     >
       <span className="link-underline link-underline--al-pasar">
-        {es ? "Preferencias de privacidad" : "Privacy preferences"}
+        {tx(lang, { es: "Preferencias de privacidad", en: "Privacy preferences", pt: "Preferências de privacidade", fr: "Préférences de confidentialité", de: "Datenschutzeinstellungen", it: "Preferenze di privacy" })}
       </span>
     </button>
   );

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { TABLA_IDIOMAS } from "@/lib/locale";
 
 /**
  * El sitio se llama a sí mismo de una sola manera en cada idioma. Mira el HTML
@@ -109,12 +110,17 @@ const PROHIBIDAS: { palabra: RegExp; motivo: string; nombre?: string; porNodo?: 
 // No se prohíbe «Drawdown máx.»: la calculadora de capital lo usa para el
 // drawdown estimado a 99 %, que es otra métrica.
 
+const PREFIJOS_NO_ES = new Set<string>(
+  TABLA_IDIOMAS.filter((i) => i.codigo !== "es").map((i) => i.codigo)
+);
+
 function paginasEspanolas(dir: string, acc: string[] = []): string[] {
   for (const n of readdirSync(dir)) {
     const p = join(dir, n);
     if (statSync(p).isDirectory()) {
       const rel = relative(SALIDA, p).replace(/\\/g, "/");
-      if (rel === "_next" || rel === "en") continue;
+      const primerSegmento = rel.split("/")[0];
+      if (rel === "_next" || PREFIJOS_NO_ES.has(primerSegmento)) continue;
       paginasEspanolas(p, acc);
     } else if (n.endsWith(".html")) acc.push(p);
   }
