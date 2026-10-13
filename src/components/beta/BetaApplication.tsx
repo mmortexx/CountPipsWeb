@@ -258,7 +258,9 @@ export function BetaApplication() {
       className="tj-ficha p-5 sm:p-9"
     >
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div>
+        {/* La nota de garantías va al pie de la columna, a la altura del botón:
+            la columna mide lo que el formulario y, suelta, dejaba el hueco debajo. */}
+        <div className="flex flex-col">
           <h2 className="t-h3 text-primary">{es ? "Cuéntanos cómo operas." : "Tell us how you trade."}</h2>
           <p className="mt-3 max-w-md text-secondary leading-[1.7]">
             {es
@@ -270,7 +272,7 @@ export function BetaApplication() {
               <li key={item} className="list-none">{item}</li>
             ))}
           </ul>
-          <div className="mt-7 border-t border-[var(--line)] pt-5 text-xs text-tertiary">
+          <div className="mt-7 border-t border-[var(--line)] pt-5 text-xs text-tertiary lg:mt-auto">
             <span>{es ? "No pedimos credenciales, saldos ni acceso a tu bróker." : "We never ask for credentials, balances or broker access."}</span>
           </div>
         </div>
