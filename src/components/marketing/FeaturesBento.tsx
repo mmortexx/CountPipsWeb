@@ -49,6 +49,7 @@ export function FeaturesBento({
   const cuentas = [
     { name: "Apex 150k (#1)", inicial: 150000, saldo: 154820, status: es ? "En curso" : "In progress" },
     { name: "Topstep 50k (#2)", inicial: 50000, saldo: 53240, status: es ? "Aprobada" : "Passed" },
+    { name: "FundedNext 100k (#3)", inicial: 100000, saldo: 101960, status: es ? "En curso" : "In progress" },
     { name: "IBKR Futures Core", inicial: 80000, saldo: 84190, status: es ? "Personal" : "Personal" },
   ];
   const conjunto = cuentas.reduce((s, c) => s + c.saldo - c.inicial, 0);
@@ -254,18 +255,32 @@ export function FeaturesBento({
                   ? "«Entré en NQ por ruptura del rango NY, pero moví el stop a +1R para “asegurar”. Error: el plan era aguantar a 2R. Terminé saliendo en BE después de que el precio llegó al objetivo sin mí.»"
                   : "“Entered NQ on NY range break, but moved stop to +1R to ‘be safe’. Mistake: the plan was to hold to 2R. I ended up exiting at BE after price hit the target without me.”"}
               </blockquote>
-              <p className={`mt-auto mb-0 pt-5 flex items-center gap-2 border-t ${division} text-[12px] text-tertiary`}>
+              <p className="mt-3 mb-5 flex items-center gap-2 text-[12px] text-tertiary">
                 <span className="tnum">14:42</span>
                 <span aria-hidden>·</span>
                 <span>{es ? "Nota post-trade" : "Post-trade note"}</span>
               </p>
+              {/* Segunda nota del día, al pie: la fila la mide la ficha de setups
+                  y con una sola nota el cuerpo quedaba medio vacío. */}
+              <div className={`mt-auto border-t ${division} pt-5`}>
+                <blockquote className="m-0 font-cursiva t-entradilla text-secondary">
+                  {es
+                    ? "«Segunda entrada en el retesteo, tamaño normal y el stop en su sitio. Cerrada en el objetivo: +2R.»"
+                    : "“Second entry on the retest, normal size, stop left where it was. Closed at target: +2R.”"}
+                </blockquote>
+                <p className="mt-3 mb-0 flex items-center gap-2 text-[12px] text-tertiary">
+                  <span className="tnum">16:05</span>
+                  <span aria-hidden>·</span>
+                  <span>{es ? "Nota post-trade" : "Post-trade note"}</span>
+                </p>
+              </div>
             </div>
           </article>
 
           <article data-entra="4" className="tj-ficha lg:col-span-4 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>{es ? "Multi-cuenta" : "Multi-account"}</span>
-              <span>{es ? "3 cuentas" : "3 accounts"}</span>
+              <span>{fmtInt(cuentas.length, lang)} {es ? "cuentas" : "accounts"}</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1 flex flex-col">
               <h3 className={titulo}>{es ? "Todas tus cuentas, en la misma vista" : "All your accounts, in the same view"}</h3>
