@@ -237,7 +237,7 @@ export function Comparison() {
             {ROWS.map((row) => (
               <div key={row.label.es} className="border-b border-[var(--line)] py-4">
                 <h3 className="t-h5 m-0 text-primary">{tx(lang, row.label)}</h3>
-                <dl className="m-0 mt-2.5 grid grid-cols-[minmax(0,8.5rem)_minmax(0,1fr)] gap-x-4 gap-y-1.5">
+                <dl className="m-0 mt-2.5 grid grid-cols-[minmax(0,8.5rem)_minmax(0,1fr)] items-baseline gap-x-4 gap-y-1.5">
                   {cols.map((c, j) => (
                     <div key={c.key} className="contents">
                       <dt className={`text-sm ${j === 0 ? "font-medium text-primary" : "text-tertiary"}`}>{c.label}</dt>
