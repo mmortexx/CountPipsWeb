@@ -19,6 +19,8 @@
  *   - Lista a dos columnas con filete por entrada que cierra distinto en cada
  *     columna (con número impar, medio filete colgando), o cuyo filete propio
  *     cruza el hueco entre columnas mientras los de las entradas no.
+ *   - Rótulo y valor (`dt`/`dd`) lado a lado y del mismo cuerpo de letra que
+ *     no comparten línea base.
  * No mira flexbox, donde el reparto solo ocurre si alguien lo pide.
  *
  * Uso:  node scripts/rejillas.mjs --serve out
@@ -93,6 +95,7 @@ let filetesTotal = 0;
 let filasCifraTotal = 0;
 let fichasGlosario = 0;
 let listasDoblesTotal = 0;
+let paresRotuloTotal = 0;
 
 async function medir(pag, ruta, ancho) {
   try {
@@ -270,6 +273,35 @@ async function medir(pag, ruta, ancho) {
         if (cierran.size < columnas.size) colgados.push({ texto, que: "medio filete colgando en la última fila" });
       }
     }
+    // Rótulo y valor lado a lado en una lista de definición: a la misma línea base.
+    const desnivelados = [];
+    let paresRotulo = 0;
+    const primerTexto = (el) => {
+      const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      while (w.nextNode()) {
+        if (!w.currentNode.textContent.trim()) continue;
+        const rg = document.createRange();
+        rg.selectNodeContents(w.currentNode);
+        const q = rg.getClientRects()[0];
+        if (q && q.height > 0) return { pie: q.bottom, cuerpo: getComputedStyle(w.currentNode.parentElement).fontSize };
+      }
+      return null;
+    };
+    for (const dt of document.querySelectorAll("main dl dt")) {
+      const dd = dt.nextElementSibling;
+      if (dd?.tagName !== "DD" || dt.closest("[data-demo-raiz]")) continue;
+      const a = dt.getBoundingClientRect();
+      const b = dd.getBoundingClientRect();
+      if (a.height === 0 || b.height === 0 || b.left < a.right - 1 || b.top > a.bottom) continue;
+      const ta = primerTexto(dt);
+      const tb = primerTexto(dd);
+      // Con cuerpos distintos el pie del texto difiere aunque compartan línea base.
+      if (!ta || !tb || ta.cuerpo !== tb.cuerpo) continue;
+      paresRotulo++;
+      if (Math.abs(ta.pie - tb.pie) > 1.5) {
+        desnivelados.push({ texto: `${dt.textContent.trim().slice(0, 24)} / ${dd.textContent.trim().slice(0, 24)}`, salto: Math.round((tb.pie - ta.pie) * 10) / 10 });
+      }
+    }
     filetes.sort((a, b) => a.y - b.y);
     const dobles = [];
     for (let i = 0; i < filetes.length; i++) {
@@ -292,10 +324,16 @@ async function medir(pag, ruta, ancho) {
         }
       }
     }
-    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales, colgados, listasDobles };
+    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales, colgados, listasDobles, desnivelados, paresRotulo };
   }, TOLERANCIA_PX);
   filetesTotal += r.nf;
   listasDoblesTotal += r.listasDobles;
+  paresRotuloTotal += r.paresRotulo;
+  for (const d of r.desnivelados) {
+    const k = "rótulo y valor a distinta línea base";
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}  «${d.texto}» a ${d.salto} px`);
+  }
   for (const c of r.colgados) {
     const k = `lista a dos columnas: ${c.que}`;
     if (!fallos.has(k)) fallos.set(k, []);
@@ -389,6 +427,10 @@ if (listasDoblesTotal < 8) {
   console.log(`[rejillas] solo ${listasDoblesTotal} listas a dos columnas con filetes: su cierre no se está mirando`);
   process.exit(1);
 }
+if (paresRotuloTotal < 100) {
+  console.log(`[rejillas] solo ${paresRotuloTotal} pares de rótulo y valor: su línea base no se está mirando`);
+  process.exit(1);
+}
 if (filetesTotal < 1000) {
   console.log(`[rejillas] solo ${filetesTotal} filetes: el doble filete no está mirando`);
   process.exit(1);
@@ -424,11 +466,15 @@ if (fallos.size) {
     console.log(`[rejillas] ${tono} filete(s) con una opacidad escrita a mano: usa --line, --line-2 o --ficha-division`);
   }
   const lista = [...fallos.keys()].filter((k) => k.startsWith("lista a dos columnas")).length;
+  const rotulo = fallos.has("rótulo y valor a distinta línea base") ? 1 : 0;
+  if (rotulo) {
+    console.log("[rejillas] un rótulo y su valor, lado a lado y del mismo cuerpo, no comparten línea base: `items-baseline` en la rejilla del `dl`");
+  }
   if (lista) {
     console.log("[rejillas] una lista a dos columnas no cierra igual en las dos: usa `.tj-lista-filetes` (filete sobre cada entrada, sin filete propio)");
   }
-  if (fallos.size - compas - doble - tono - cifra - segmento - lista) {
-    console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento - lista} rejilla(s) reparten el alto sobrante entre sus filas`);
+  if (fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo) {
+    console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo} rejilla(s) reparten el alto sobrante entre sus filas`);
     console.log("[rejillas] si la ficha debe ir arriba, `content-start` (align-content: start) en ella");
   }
   if (compas) {
