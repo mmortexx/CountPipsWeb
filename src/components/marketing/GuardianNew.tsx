@@ -113,7 +113,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                 en: "The Guardian doesn’t tell you what to do: it measures every trade against the rules you set and, if you turn it on, stops you when you break them.",
                 pt: "O Guardião não diz o que fazer: mede cada operação contra as regras que você definiu e, se ativado, freia quando você as quebra.",
                 fr: "Le Gardien ne vous dicte pas quoi faire : il compare chaque trade aux règles que vous avez fixées et, si activé, vous freine lorsque vous les enfreignez.",
-                de: "Der Guard schreibt Ihnen nichts vor: Er misst jeden Trade an Ihren festgelegten Regeln und bremst Sie bei Verstößen, wenn Sie ihn aktivieren.",
+                de: "Der Disziplin-Wächter schreibt Ihnen nichts vor: Er misst jeden Trade an Ihren festgelegten Regeln und bremst Sie bei Verstößen, wenn Sie ihn aktivieren.",
                 it: "Il Guardiano non ti dice cosa fare: misura ogni operazione rispetto alle regole che hai impostato e, se lo attivi, ti ferma quando le infrangi.",
               })}
             </p>

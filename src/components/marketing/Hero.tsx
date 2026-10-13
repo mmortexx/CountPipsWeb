@@ -48,7 +48,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
               pt: "Opere como uma mesa institucional.",
               fr: "Tradez comme un desk institutionnel.",
               de: "Traden wie ein institutioneller Desk.",
-              it: "Fai trading come un desk\u00a0istituzionale.",
+              it: "Fai trading come un desk istituzionale.",
             })}
           />
         </h1>
@@ -59,7 +59,7 @@ export function Hero({ producto }: { producto?: ReactNode }) {
             en: "40+ risk and performance metrics, a guardian that warns you before you break your rules, and your data on your machine.",
             pt: "40+ métricas de risco e desempenho, um guardião que avisa antes de quebrar suas regras e seus dados na sua máquina.",
             fr: "40+ métriques de risque et performance, un gardien qui vous alerte avant d’enfreindre vos règles et vos données sur votre machine.",
-            de: "40+ Kennzahlen für Risiko und Performance, ein Guard, der vor Regelverstößen warnt, und Ihre Daten auf Ihrem Rechner.",
+            de: "40+ Kennzahlen für Risiko und Performance, ein Disziplin-Wächter, der vor Regelverstößen warnt, und Ihre Daten auf Ihrem Rechner.",
             it: "40+ metriche di rischio e rendimento, un guardiano che ti avvisa prima di infrangere le tue regole e i tuoi dati sul tuo computer.",
           })}
         </p>
