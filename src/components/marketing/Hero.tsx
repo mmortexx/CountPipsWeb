@@ -48,7 +48,9 @@ export function Hero({ producto }: { producto?: ReactNode }) {
               pt: "Opere como uma mesa institucional.",
               fr: "Tradez comme un desk institutionnel.",
               de: "Traden wie ein institutioneller Desk.",
-              it: "Fai trading come un desk istituzionale.",
+              /* «Opera» y no «Fai trading»: con dos palabras más, a 390 px el
+                 titular acababa en «istituzionale.» sola (`scripts/viudas.mjs`). */
+              it: "Opera come un desk istituzionale.",
             })}
           />
         </h1>

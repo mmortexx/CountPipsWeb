@@ -69,7 +69,7 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     ogLocale: "de_DE",
   },
   it: {
-    homeTitle: "CountPips — Fai trading come un desk istituzionale.",
+    homeTitle: "CountPips — Opera come un desk istituzionale.",
     homeDescription:
       "Diario di trading nativo per Windows. Esplora la demo interattiva con metriche istituzionali, disciplina e dati sul tuo PC.",
     homeTwitterDesc:
