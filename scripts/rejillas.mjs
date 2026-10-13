@@ -16,6 +16,9 @@
  *     vecinos de distinto alto.
  *   - Ficha del glosario a 1440 px cuyo primer texto no arranca a la altura
  *     de la ceja del raíl (tolerancia 16 px: la caja «Fórmula» baja ~10 px).
+ *   - Lista a dos columnas con filete por entrada que cierra distinto en cada
+ *     columna (con número impar, medio filete colgando), o cuyo filete propio
+ *     cruza el hueco entre columnas mientras los de las entradas no.
  * No mira flexbox, donde el reparto solo ocurre si alguien lo pide.
  *
  * Uso:  node scripts/rejillas.mjs --serve out
@@ -89,6 +92,7 @@ let columnadasTotal = 0;
 let filetesTotal = 0;
 let filasCifraTotal = 0;
 let fichasGlosario = 0;
+let listasDoblesTotal = 0;
 
 async function medir(pag, ruta, ancho) {
   try {
@@ -241,6 +245,31 @@ async function medir(pag, ruta, ancho) {
         desiguales.push({ texto: (g.textContent || "").trim().slice(0, 30), altos: `${Math.round(a.height)}/${Math.round(b.height)}` });
       }
     }
+    // Listas a dos columnas con filete por entrada: las dos columnas cierran igual.
+    const colgados = [];
+    let listasDobles = 0;
+    const filo = (c, lado) => {
+      const s = getComputedStyle(c);
+      return parseFloat(s[`border${lado}Width`]) > 0 && s[`border${lado}Style`] !== "none";
+    };
+    for (const el of document.querySelectorAll("main ul, main ol, main dl")) {
+      const cs = getComputedStyle(el);
+      if (!cs.display.includes("grid") || cs.gridTemplateColumns.trim().split(/\s+/).length !== 2) continue;
+      const hijos = [...el.children].filter((c) => c.getBoundingClientRect().height > 0);
+      if (hijos.length < 3 || !hijos.some((c) => filo(c, "Top") || filo(c, "Bottom"))) continue;
+      listasDobles++;
+      const texto = (el.textContent || "").trim().slice(0, 36);
+      if (parseFloat(cs.columnGap) > 0 && (filo(el, "Top") || filo(el, "Bottom"))) {
+        colgados.push({ texto, que: "filete de la lista corrido sobre el hueco entre columnas" });
+      }
+      const pies = hijos.filter((c) => filo(c, "Bottom")).map((c) => c.getBoundingClientRect());
+      if (pies.length) {
+        const fondo = Math.max(...pies.map((p) => p.bottom));
+        const columnas = new Set(hijos.map((c) => Math.round(c.getBoundingClientRect().left)));
+        const cierran = new Set(pies.filter((p) => fondo - p.bottom <= 2).map((p) => Math.round(p.left)));
+        if (cierran.size < columnas.size) colgados.push({ texto, que: "medio filete colgando en la última fila" });
+      }
+    }
     filetes.sort((a, b) => a.y - b.y);
     const dobles = [];
     for (let i = 0; i < filetes.length; i++) {
@@ -263,9 +292,15 @@ async function medir(pag, ruta, ancho) {
         }
       }
     }
-    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales };
+    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales, colgados, listasDobles };
   }, TOLERANCIA_PX);
   filetesTotal += r.nf;
+  listasDoblesTotal += r.listasDobles;
+  for (const c of r.colgados) {
+    const k = `lista a dos columnas: ${c.que}`;
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}  «${c.texto}»`);
+  }
   filasCifraTotal += r.filasCifra;
   // Ficha del glosario a dos columnas: el primer texto arranca a la altura de la ceja del raíl.
   const desfase = ancho >= 1024 ? await pag.evaluate(() => {
@@ -350,6 +385,10 @@ if (fichasGlosario < 100) {
   console.log(`[rejillas] solo ${fichasGlosario} fichas del glosario medidas: la alineación con el raíl no está mirando`);
   process.exit(1);
 }
+if (listasDoblesTotal < 8) {
+  console.log(`[rejillas] solo ${listasDoblesTotal} listas a dos columnas con filetes: su cierre no se está mirando`);
+  process.exit(1);
+}
 if (filetesTotal < 1000) {
   console.log(`[rejillas] solo ${filetesTotal} filetes: el doble filete no está mirando`);
   process.exit(1);
@@ -384,8 +423,12 @@ if (fallos.size) {
   if (tono) {
     console.log(`[rejillas] ${tono} filete(s) con una opacidad escrita a mano: usa --line, --line-2 o --ficha-division`);
   }
-  if (fallos.size - compas - doble - tono - cifra - segmento) {
-    console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento} rejilla(s) reparten el alto sobrante entre sus filas`);
+  const lista = [...fallos.keys()].filter((k) => k.startsWith("lista a dos columnas")).length;
+  if (lista) {
+    console.log("[rejillas] una lista a dos columnas no cierra igual en las dos: usa `.tj-lista-filetes` (filete sobre cada entrada, sin filete propio)");
+  }
+  if (fallos.size - compas - doble - tono - cifra - segmento - lista) {
+    console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento - lista} rejilla(s) reparten el alto sobrante entre sus filas`);
     console.log("[rejillas] si la ficha debe ir arriba, `content-start` (align-content: start) en ella");
   }
   if (compas) {

@@ -93,9 +93,9 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                 <p className="eyebrow m-0">
                   {es ? "Otras herramientas" : "Other tools"}
                 </p>
-                <ul className="mt-4 grid list-none border-t border-[var(--line)] p-0 lg:grid-cols-2 lg:gap-x-14">
+                <ul className="tj-lista-filetes mt-4">
                   {otras.map((h) => (
-                    <li key={h.slug} className="border-b border-[var(--line)]">
+                    <li key={h.slug}>
                       <Link
                         href={`/herramientas/${h.slug}`}
                         className="link-underline-host grid min-h-[52px] grid-cols-1 gap-1 py-3.5 sm:grid-cols-[minmax(0,1.1fr)_minmax(0,1.6fr)] sm:items-baseline sm:gap-5 lg:grid-cols-1 lg:gap-1"

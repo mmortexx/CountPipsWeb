@@ -2772,6 +2772,27 @@ select.tj-campo:invalid {
     box-shadow: -1px 0 0 var(--ficha-division), 0 -1px 0 var(--ficha-division);
   }
 }
+/* LISTA CON FILETES: una columna y, en escritorio, dos. El filete va sobre cada
+   entrada y la lista no lleva el suyo: así las dos columnas abren igual y, con
+   número impar, no queda medio filete colgando al final
+   (`scripts/rejillas.mjs`). Lo que venga después pone su propio filete. */
+@layer components {
+  .tj-lista-filetes {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tj-lista-filetes > li {
+    border-top: 1px solid var(--line);
+  }
+  @media (min-width: 1024px) {
+    .tj-lista-filetes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 3.5rem;
+    }
+  }
+}
 /* En una tabla comparativa, la columna propia se distingue con un tono apenas
    más denso, como la columna resaltada de una hoja de datos. */
 .tj-columna-propia {

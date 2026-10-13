@@ -295,14 +295,14 @@ export function FeatureExplorer() {
 function ListaFunciones({ items, es }: { items: Feature[]; es: boolean }) {
   return (
     /* En escritorio, dos columnas: en una sola la lista sería muy larga. */
-    <ul className="m-0 grid border-t border-[var(--line)] p-0 lg:grid-cols-2 lg:gap-x-14">
+    <ul className="tj-lista-filetes">
       {items.map((f) => (
         <li
           key={f.id}
           /* La medida de la descripción la pone `.medida` en el propio párrafo:
              `ch` en la celda se mediría con la tipografía de la celda, no la
              del párrafo. */
-          className="grid content-start gap-1 border-b border-[var(--line)] py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10 lg:grid-cols-1 lg:gap-1.5"
+          className="grid content-start gap-1 py-4 sm:grid-cols-[minmax(0,17rem)_minmax(0,1fr)] sm:items-baseline sm:gap-10 lg:grid-cols-1 lg:gap-1.5"
         >
           {/* La insignia va junto al titular, no dentro: dentro, el lector leería
               «Monte CarloPro». */}
