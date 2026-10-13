@@ -1,9 +1,23 @@
-import type { Lang } from "@/lib/i18n";
+import type { Lang } from "@/lib/locale";
 
-const LOCALE: Record<Lang, string> = { es: "es-ES", en: "en-US" };
+const LOCALE: Record<Lang, string> = {
+  es: "es-ES",
+  en: "en-US",
+  pt: "pt-BR",
+  fr: "fr-FR",
+  de: "de-DE",
+  it: "it-IT",
+};
 // Las cifras en inglés usan en-US porque en-GB escribe «US$» delante del dólar;
 // las fechas van en británico, como la app (Strings/en-GB) y el resto del inglés del sitio.
-export const LOCALE_FECHA: Record<Lang, string> = { es: "es-ES", en: "en-GB" };
+export const LOCALE_FECHA: Record<Lang, string> = {
+  es: "es-ES",
+  en: "en-GB",
+  pt: "pt-BR",
+  fr: "fr-FR",
+  de: "de-DE",
+  it: "it-IT",
+};
 
 /** Importe en dólares. es-ES da «1.234,56 $» (`Intl` escribe «US$» y se cambia
  *  por «$», como MoneyFormat.cs en la app de escritorio); en-US, «$1,234.56».
@@ -28,7 +42,10 @@ export function fmtMoney(
     maximumFractionDigits: compact && abs >= 1000 ? 0 : decimals,
     notation: compact && abs >= 1_000_000 ? "compact" : "standard",
     useGrouping: "always",
-  }).format(abs).replace("US$", "$");
+  })
+    .format(abs)
+    .replace(/US\$|\$US|USD/g, "$")
+    .trim();
   if (value < 0) return `−${formatted}`;
   if (sign && value > 0) return `+${formatted}`;
   return formatted;
@@ -80,9 +97,16 @@ export function leeCifra(texto: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-// Separador entre la cifra y el %: en español, espacio duro (U+00A0) para que
-// el signo no quede solo al empezar línea; en inglés, pegado.
-const PCT_SEP: Record<Lang, string> = { es: " %", en: "%" };
+// Separador entre la cifra y el % según convención de idioma:
+// español, francés y alemán con espacio duro (U+00A0); inglés, portugués e italiano pegado.
+const PCT_SEP: Record<Lang, string> = {
+  es: " %",
+  en: "%",
+  pt: "%",
+  fr: " %",
+  de: " %",
+  it: "%",
+};
 
 /** El separador anterior, para componer el porcentaje a mano cuando la cifra ya
  *  va en escala 0–100 y `fmtPct` la multiplicaría. Evita escribir `{cifra} %`
@@ -127,7 +151,15 @@ export function fmtInt(value: number, lang: Lang = "es"): string {
 /** «1 operación», «2 operaciones» / «1 trade», «2 trades». */
 export function fmtOperaciones(n: number, lang: Lang = "es"): string {
   const uno = Math.abs(n) === 1;
-  return `${fmtInt(n, lang)} ${lang === "es" ? (uno ? "operación" : "operaciones") : uno ? "trade" : "trades"}`;
+  const palabra = {
+    es: uno ? "operación" : "operaciones",
+    en: uno ? "trade" : "trades",
+    pt: uno ? "operação" : "operações",
+    fr: uno ? "trade" : "trades",
+    de: uno ? "Trade" : "Trades",
+    it: uno ? "trade" : "trades",
+  }[lang];
+  return `${fmtInt(n, lang)} ${palabra}`;
 }
 
 /** Cifra con signo para celdas diminutas (calendario, mapa de calor): «+845» o «−1,2k». */

@@ -15,6 +15,7 @@
  * Uso:  node scripts/metadatos.mjs out
  */
 import { readFileSync, globSync, existsSync } from "node:fs";
+import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
 
 // Acepta `out` y `--serve out`, la forma de otras guardas.
 const dir = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -75,7 +76,14 @@ const anota = (regla, ruta, detalle) => fallos.push({ regla, ruta, detalle });
 const indexables = paginas.filter((p) => !p.noindex);
 
 for (const p of paginas) {
-  const esperado = p.ruta === "/en/" || p.ruta.startsWith("/en/") ? "en" : "es";
+  let esperado = "es";
+  for (const idioma of TABLA_IDIOMAS) {
+    if (!idioma.prefijo) continue;
+    if (p.ruta === `${idioma.prefijo}/` || p.ruta.startsWith(`${idioma.prefijo}/`)) {
+      esperado = idioma.htmlLang;
+      break;
+    }
+  }
   if (p.lang !== esperado) anota("idioma que no cuadra con la carpeta", p.ruta, `lang="${p.lang}", se esperaba "${esperado}"`);
 }
 

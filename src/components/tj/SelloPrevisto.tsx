@@ -1,6 +1,6 @@
 "use client";
 
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 
 /**
  * Rótulo único para «esto todavía no existe» (precios previstos, acceso
@@ -12,21 +12,49 @@ import { useLang } from "@/lib/i18n";
 export function SelloPrevisto({
   es: textoEs,
   en: textoEn,
-  /** Una segunda línea, más pequeña, para cuando el «cuándo» importa. */
+  pt: textoPt,
+  fr: textoFr,
+  de: textoDe,
+  it: textoIt,
   detalleEs,
   detalleEn,
+  detallePt,
+  detalleFr,
+  detalleDe,
+  detalleIt,
   className = "",
 }: {
   es?: string;
   en?: string;
+  pt?: string;
+  fr?: string;
+  de?: string;
+  it?: string;
   detalleEs?: string;
   detalleEn?: string;
+  detallePt?: string;
+  detalleFr?: string;
+  detalleDe?: string;
+  detalleIt?: string;
   className?: string;
 }) {
   const { lang } = useLang();
-  const es = lang === "es";
-  const texto = es ? (textoEs ?? "Previsto") : (textoEn ?? "Planned");
-  const detalle = es ? detalleEs : detalleEn;
+  const texto = tx(lang, {
+    es: textoEs ?? "Previsto",
+    en: textoEn ?? "Planned",
+    pt: textoPt ?? "Previsto",
+    fr: textoFr ?? "Prévu",
+    de: textoDe ?? "Geplant",
+    it: textoIt ?? "Previsto",
+  });
+  const detalle = tx(lang, {
+    es: detalleEs,
+    en: detalleEn,
+    pt: detallePt,
+    fr: detalleFr,
+    de: detalleDe,
+    it: detalleIt,
+  });
 
   return (
     <span className={`sello-previsto ${className}`}>

@@ -246,10 +246,13 @@ const EN_LETRA: Record<"es" | "en", string[]> = {
   en: ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"],
 };
 
+import type { Lang } from "@/lib/locale";
+
 /** Cuántas herramientas hay, en letra y con mayúscula inicial; los textos que lo dicen salen de aquí. */
-export function herramientasEnLetra(lang: "es" | "en"): string {
+export function herramientasEnLetra(lang: Lang): string {
   const n = HERRAMIENTAS.length;
-  const p = EN_LETRA[lang][n] ?? String(n);
+  const lista = (EN_LETRA as Record<string, string[]>)[lang] ?? EN_LETRA.en;
+  const p = lista[n] ?? String(n);
   return p.charAt(0).toUpperCase() + p.slice(1);
 }
 

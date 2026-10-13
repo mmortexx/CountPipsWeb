@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Maximize2, X } from "lucide-react";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { asset } from "@/lib/asset";
 
 /**
@@ -39,15 +39,31 @@ export type LaminaProducto = {
   pestanaEn: string;
   tituloEs: string;
   tituloEn: string;
+  tituloPt?: string;
+  tituloFr?: string;
+  tituloDe?: string;
+  tituloIt?: string;
   /** Qué se está viendo y por qué importa. Una frase. */
   notaEs: string;
   notaEn: string;
+  notaPt?: string;
+  notaFr?: string;
+  notaDe?: string;
+  notaIt?: string;
   /** Texto alternativo: describe el CONTENIDO, no el continente. */
   altEs: string;
   altEn: string;
+  altPt?: string;
+  altFr?: string;
+  altDe?: string;
+  altIt?: string;
   /** Nombre del fragmento que se enseña en pantalla estrecha, para el pie. */
   detalleEs: string;
   detalleEn: string;
+  detallePt?: string;
+  detalleFr?: string;
+  detalleDe?: string;
+  detalleIt?: string;
 };
 
 // Cada tema, su captura. Las dos van en el HTML y el CSS oculta la que no toca
@@ -61,9 +77,39 @@ const TEMAS = [
 
 export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
   const { lang } = useLang();
-  const es = lang === "es";
-  const { archivo, ancho, alto, anchoMovil, altoMovil, tituloEs, tituloEn, notaEs, notaEn, altEs, altEn } = lamina;
-  const alt = es ? altEs : altEn;
+  const { archivo, ancho, alto, anchoMovil, altoMovil } = lamina;
+  const titulo = tx(lang, {
+    es: lamina.tituloEs,
+    en: lamina.tituloEn,
+    pt: lamina.tituloPt,
+    fr: lamina.tituloFr,
+    de: lamina.tituloDe,
+    it: lamina.tituloIt,
+  });
+  const nota = tx(lang, {
+    es: lamina.notaEs,
+    en: lamina.notaEn,
+    pt: lamina.notaPt,
+    fr: lamina.notaFr,
+    de: lamina.notaDe,
+    it: lamina.notaIt,
+  });
+  const alt = tx(lang, {
+    es: lamina.altEs,
+    en: lamina.altEn,
+    pt: lamina.altPt,
+    fr: lamina.altFr,
+    de: lamina.altDe,
+    it: lamina.altIt,
+  });
+  const detalleTexto = tx(lang, {
+    es: lamina.detalleEs,
+    en: lamina.detalleEn,
+    pt: lamina.detallePt,
+    fr: lamina.detalleFr,
+    de: lamina.detalleDe,
+    it: lamina.detalleIt,
+  });
 
   // Los nombres de los cuatro ficheros los fija `scripts/capturas.py` y los
   // comprueba `tests/capturas.test.ts`; aquí solo se derivan.
@@ -87,7 +133,14 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
           type="button"
           className="tj-lamina-ventana tj-lamina-ampliable"
           onClick={abrir}
-          aria-label={es ? `Ampliar captura: ${tituloEs}` : `Enlarge screenshot: ${tituloEn}`}
+          aria-label={tx(lang, {
+            es: `Ampliar captura: ${titulo}`,
+            en: `Enlarge screenshot: ${titulo}`,
+            pt: `Ampliar captura: ${titulo}`,
+            fr: `Agrandir la capture : ${titulo}`,
+            de: `Screenshot vergrößern: ${titulo}`,
+            it: `Ingrandisci screenshot: ${titulo}`,
+          })}
         >
           {/* `img` y no `next/image`: con `output: "export"` e
               `images.unoptimized` no optimizaría nada. Sin carga
@@ -118,7 +171,7 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
       <dialog
         ref={visor}
         className="tj-visor"
-        aria-label={es ? tituloEs : tituloEn}
+        aria-label={titulo}
         onClose={() => setAbierto(false)}
         onClick={(e) => {
           if (e.target === e.currentTarget) cerrar();
@@ -144,16 +197,16 @@ export function ProductPlate({ lamina }: { lamina: LaminaProducto }) {
           type="button"
           className="tj-visor-cerrar tj-cristal tj-cristal--denso"
           onClick={cerrar}
-          aria-label={es ? "Cerrar" : "Close"}
+          aria-label={tx(lang, { es: "Cerrar", en: "Close", pt: "Fechar", fr: "Fermer", de: "Schließen", it: "Chiudi" })}
         >
           <X size={18} aria-hidden />
         </button>
       </dialog>
       <figcaption className="tj-lamina-pie">
-        <h3 className="tj-lamina-titulo t-h3">{es ? tituloEs : tituloEn}</h3>
-        <p className="tj-lamina-nota">{es ? notaEs : notaEn}</p>
+        <h3 className="tj-lamina-titulo t-h3">{titulo}</h3>
+        <p className="tj-lamina-nota">{nota}</p>
         <p className="tj-lamina-detalle">
-          {es ? `Detalle: ${lamina.detalleEs}.` : `Detail: ${lamina.detalleEn}.`}
+          {tx(lang, { es: "Detalle: ", en: "Detail: ", pt: "Detalhe: ", fr: "Détail : ", de: "Detail: ", it: "Dettaglio: " })}{detalleTexto}.
         </p>
       </figcaption>
     </figure>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { useLang } from "@/lib/i18n";
+import { useLang, tx } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { ProductPlate } from "@/components/tj/ProductPlate";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
@@ -18,9 +18,36 @@ import { LAMINAS_PRODUCTO } from "@/lib/laminas";
     analítica. El guardián tiene sección propia. */
 const PANTALLAS_PORTADA = ["resumen", "registro", "operaciones", "analitica"] as const;
 
+const PESTANAS_PT: Record<string, string> = {
+  resumen: "Resumo",
+  registro: "Registro",
+  operaciones: "Histórico",
+  analitica: "Analítica",
+};
+
+const PESTANAS_FR: Record<string, string> = {
+  resumen: "Tableau de bord",
+  registro: "Capture",
+  operaciones: "Historique",
+  analitica: "Analytique",
+};
+
+const PESTANAS_DE: Record<string, string> = {
+  resumen: "Übersicht",
+  registro: "Erfassung",
+  operaciones: "Historie",
+  analitica: "Analyse",
+};
+
+const PESTANAS_IT: Record<string, string> = {
+  resumen: "Riepilogo",
+  registro: "Inserimento",
+  operaciones: "Storico",
+  analitica: "Analisi",
+};
+
 export function ProductShowcase() {
   const { lang } = useLang();
-  const es = lang === "es";
   const idBase = useId();
   const tablist = useRef<HTMLDivElement>(null);
   const [activa, setActiva] = useState<string>(PANTALLAS_PORTADA[0]);
@@ -47,20 +74,39 @@ export function ProductShowcase() {
       <div className="tj-container">
         <div className="mb-10 grid gap-y-6 lg:grid-cols-2 lg:items-end lg:gap-x-16 xl:gap-x-24">
           <div>
-            <p className="eyebrow">{es ? "El programa" : "The application"}</p>
+            <p className="eyebrow">{tx(lang, { es: "El programa", en: "The application", pt: "O programa", fr: "L’application", de: "Die Anwendung", it: "Il programma" })}</p>
             <h2 id="producto-titulo" className="t-h2 mt-5 max-w-[16ch] text-primary">
-              {es ? "Esto es lo que abres cada mañana." : "This is what you open every morning."}
+              {tx(lang, {
+                es: "Esto es lo que abres cada mañana.",
+                en: "This is what you open every morning.",
+                pt: "Isto é o que você abre toda manhã.",
+                fr: "Voici ce que vous ouvrez chaque matin.",
+                de: "Das öffnen Sie jeden Morgen.",
+                it: "Questo è ciò che apri ogni mattina.",
+              })}
             </h2>
           </div>
           <div className="lg:pb-1">
             <p className="max-w-[46ch] t-entradilla text-secondary">
-              {es
-                ? "Capturas reales del programa con datos de muestra. Elige una pantalla."
-                : "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen."}
+              {tx(lang, {
+                es: "Capturas reales del programa con datos de muestra. Elige una pantalla.",
+                en: "Real screenshots of the application with sample data, taken in its Spanish interface; it also runs in English. Pick a screen.",
+                pt: "Capturas reais do programa com dados de amostra, na interface em espanhol; ele também opera em inglês. Escolha uma tela.",
+                fr: "Captures réelles de l’application avec données d’exemple, prises dans son interface espagnole ; elle fonctionne aussi en anglais. Choisissez un écran.",
+                de: "Echte Screenshots der Anwendung mit Beispieldaten aus der spanischen Oberfläche; sie läuft auch auf Englisch. Wählen Sie eine Ansicht.",
+                it: "Screenshot reali dell’applicazione con dati di esempio, acquisiti dall’interfaccia spagnola; funziona anche in inglese. Scegli una schermata.",
+              })}
             </p>
             <div className="mt-5">
               <Link href="/demo" className="cta cta--secundario">
-                {es ? "Recorrer la demo sin registro" : "Explore the demo, no sign-up"}
+                {tx(lang, {
+                  es: "Recorrer la demo sin registro",
+                  en: "Explore the demo, no sign-up",
+                  pt: "Explorar a demo sem cadastro",
+                  fr: "Parcourir la démo sans inscription",
+                  de: "Demo ohne Registrierung ansehen",
+                  it: "Esplora la demo senza registrazione",
+                })}
               </Link>
             </div>
           </div>
@@ -69,7 +115,14 @@ export function ProductShowcase() {
         <div
           ref={tablist}
           role="tablist"
-          aria-label={es ? "Pantallas del programa" : "Application screens"}
+          aria-label={tx(lang, {
+            es: "Pantallas del programa",
+            en: "Application screens",
+            pt: "Telas do programa",
+            fr: "Écrans de l’application",
+            de: "Masken der Anwendung",
+            it: "Schermate dell’applicazione",
+          })}
           className="tj-pestanas -m-2 mb-4 p-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {PANTALLAS_PORTADA.map((clave, i) => {
@@ -87,7 +140,7 @@ export function ProductShowcase() {
                 onClick={() => setActiva(clave)}
                 onKeyDown={(e) => enTeclado(e, i)}
               >
-                {es ? l.pestanaEs : l.pestanaEn}
+                {tx(lang, { es: l.pestanaEs, en: l.pestanaEn, pt: PESTANAS_PT[clave], fr: PESTANAS_FR[clave], de: PESTANAS_DE[clave], it: PESTANAS_IT[clave] })}
               </button>
             );
           })}

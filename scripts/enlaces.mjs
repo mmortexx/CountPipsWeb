@@ -17,6 +17,7 @@
 import { existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
+import { TABLA_IDIOMAS, sinPrefijo } from "../src/lib/locale.ts";
 
 // Acepta `out` y `--serve out`, la forma de otras guardas.
 const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -91,7 +92,15 @@ let enlaces = 0;
 for await (const f of htmls(RAIZ)) {
   const ruta = "/" + relative(RAIZ, f).split(sep).join("/").replace(/index\.html$/, "");
   if (ruta.startsWith("/404") || ruta.startsWith("/_not-found")) continue;
-  const en = ruta === "/en/" || ruta.startsWith("/en/");
+  // Deducción del idioma de la página auditada:
+  let langRuta = "es";
+  for (const idioma of TABLA_IDIOMAS) {
+    if (!idioma.prefijo) continue;
+    if (ruta === `${idioma.prefijo}/` || ruta.startsWith(`${idioma.prefijo}/`) || ruta === idioma.prefijo) {
+      langRuta = idioma.codigo;
+      break;
+    }
+  }
   const html = await readFile(f, "utf8");
   paginas++;
 
@@ -106,15 +115,71 @@ for await (const f of htmls(RAIZ)) {
       fallos.push({ ruta, regla: "enlace que no lleva a ninguna parte", detalle: `${h} — no hay página compilada ahí` });
       continue;
     }
-    if (en) {
-      if (h === "/en" || h.startsWith("/en/")) continue; // ya está en inglés
-      // Solo es fallo si la versión inglesa existe; sin traducir, volver al español es deliberado.
-      const hermana = h === "/" ? "/en" : `/en${h}`;
-      if (await existe(hermana)) {
-        fallos.push({ ruta, regla: "página inglesa que enlaza al español", detalle: `${h} → existe ${hermana}` });
+
+    // Deducción del idioma del enlace destino `h`:
+    let langDestino = "es";
+    for (const idioma of TABLA_IDIOMAS) {
+      if (!idioma.prefijo) continue;
+      if (h === idioma.prefijo || h.startsWith(`${idioma.prefijo}/`)) {
+        langDestino = idioma.codigo;
+        break;
       }
-    } else if (h === "/en" || h.startsWith("/en/")) {
-      fallos.push({ ruta, regla: "página española que enlaza al inglés", detalle: h });
+    }
+
+    if (langRuta === "es") {
+      if (langDestino !== "es") {
+        fallos.push({ ruta, regla: "página española que enlaza a otro idioma", detalle: h });
+      }
+    } else if (langRuta === "en") {
+      if (langDestino === "en") continue;
+      if (langDestino !== "es") {
+        fallos.push({ ruta, regla: "página inglesa que enlaza a otro idioma nuevo", detalle: h });
+      } else {
+        const hermana = h === "/" ? "/en" : `/en${h}`;
+        if (await existe(hermana)) {
+          fallos.push({ ruta, regla: "página inglesa que enlaza al español", detalle: `${h} → existe ${hermana}` });
+        }
+      }
+    } else {
+      // Idioma nuevo (pt, fr, de, it):
+      const prefijoActual = `/${langRuta}`;
+      if (langDestino === langRuta) {
+        // Enlaza a su propio idioma: correcto.
+        continue;
+      }
+
+      const base = sinPrefijo(h);
+      const hermanaPropia = base === "/" ? prefijoActual : `${prefijoActual}${base}`;
+      const existeEnPropio = await existe(hermanaPropia);
+
+      if (existeEnPropio) {
+        fallos.push({
+          ruta,
+          regla: `página en ${langRuta} que no enlaza a su propia versión`,
+          detalle: `${h} → existe ${hermanaPropia} en ${langRuta}`,
+        });
+      } else if (langDestino === "en") {
+        // Salto permitido: si falta en el idioma nuevo, enlaza a la inglesa (regla 7).
+        continue;
+      } else if (langDestino !== "es") {
+        // Enlaza a un tercer idioma que no es inglés ni el propio: prohibido.
+        fallos.push({
+          ruta,
+          regla: `página en ${langRuta} que enlaza a otro idioma nuevo`,
+          detalle: `${h}`,
+        });
+      } else {
+        // Enlaza al español cuando falta en el idioma nuevo:
+        // Solo permitido si TAMPOCO existe versión inglesa.
+        const hermanaEn = base === "/" ? "/en" : `/en${base}`;
+        if (await existe(hermanaEn)) {
+          fallos.push({
+            ruta,
+            regla: `página en ${langRuta} que enlaza al español en vez de al inglés`,
+            detalle: `${h} → existe versión inglesa ${hermanaEn}`,
+          });
+        }
+      }
     }
   }
 }

@@ -75,7 +75,7 @@ export function FeaturesBento({
           <article data-entra className="tj-ficha lg:col-span-7 min-w-0 flex flex-col">
             <p className="tj-ficha-barra">
               <span>{es ? "Calendario de P&L" : "P&L calendar"}</span>
-              <span>{cal.label[lang]}</span>
+              <span>{cal.label[es ? "es" : "en"]}</span>
             </p>
             <div className="tj-ficha-cuerpo flex-1 flex flex-col">
               {/* Alto de dos líneas reservado en el titular: lo de debajo empieza a
@@ -107,7 +107,7 @@ export function FeaturesBento({
                 <div>
                   <p className={`${rotulo} m-0`}>{es ? "Total del mes" : "Month total"}</p>
                   <p className={cifraTotal} style={{ color: cal.pnlColor }}>
-                    {cal.pnl[lang]}
+                    {cal.pnl[es ? "es" : "en"]}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">

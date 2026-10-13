@@ -87,6 +87,7 @@
 | `resultado-anunciado-cobertura.test.ts` | Las nueve calculadoras de marketing/ envuelven su resultado principal con `ResultadoAnunciado` |
 | `glosario-familias.test.ts` | La ventana del glosario (`GLOSSARY_CATEGORIES`) y la página del glosario (`ORDEN_CATEGORIAS`) enseñan las mismas familias en el mismo orden |
 | `rayas-catalogos.test.ts` | En el texto español de `STR`, el glosario, las dos FAQ y las láminas del producto, la raya de inciso va pegada a su palabra con unión invisible (`⁠`): ni « — » con espacios ni una raya por la que el navegador pueda partir la línea |
+| `idiomas-nuevos.test.ts` | Verifica en `out/` que las páginas de nuevos idiomas (pt, fr, de, it) no sean copias del inglés ni idénticas entre sí, y que tengan el `lang` de HTML correcto |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 

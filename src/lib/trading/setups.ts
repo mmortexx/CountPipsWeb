@@ -26,11 +26,14 @@ const SETUP_LABELS: Record<SetupName, { es: string; en: string }> = {
   Range: { es: "Rango", en: "Range" },
 };
 
+import type { Lang } from "@/lib/locale";
+
 /**
  * El nombre de un setup como debe leerse en la página. Acepta `string` porque
  * el diario del visitante vive en su navegador y puede traer una clave que ya
  * no está en el catálogo: se pinta tal cual en vez de romper la vista.
  */
-export function nombreSetup(setup: string, lang: "es" | "en"): string {
-  return SETUP_LABELS[setup as SetupName]?.[lang] ?? setup;
+export function nombreSetup(setup: string, lang: Lang): string {
+  const labels = SETUP_LABELS[setup as SetupName] as unknown as Record<string, string> | undefined;
+  return labels?.[lang] ?? labels?.en ?? setup;
 }
