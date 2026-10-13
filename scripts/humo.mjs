@@ -16,7 +16,7 @@
 import { chromium } from "playwright";
 import { createServer } from "node:http";
 import { createReadStream } from "node:fs";
-import { mkdir, stat } from "node:fs/promises";
+import { mkdir, readdir, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 
 const args = process.argv.slice(2);
@@ -1796,6 +1796,60 @@ if (SERVIR) {
   }
 }
 
+// A 320 px, el móvil más estrecho en uso, nada se sale de la ventana. Con
+// `--serve` se miran todas las páginas compiladas: el desborde depende del
+// texto de cada una, no de la plantilla. Las secciones `.cv-auto` no se
+// maquetan hasta asomar, así que se fuerzan a pintarse antes de medir.
+const ANCHO_ESTRECHO = 320;
+let estrechasMedidas = 0;
+{
+  const compiladas = async (carpeta, rel = "") => {
+    const rutas = [];
+    for (const e of await readdir(join(carpeta, rel), { withFileTypes: true })) {
+      if (e.isDirectory()) {
+        if (!rel && (e.name === "_next" || e.name === "404" || e.name === "_not-found")) continue;
+        rutas.push(...(await compiladas(carpeta, `${rel}${e.name}/`)));
+      } else if (e.name === "index.html") rutas.push(`/${rel}`);
+    }
+    return rutas;
+  };
+  const cola = SERVIR ? await compiladas(SERVIR) : RUTAS.map((r) => r.ruta);
+  await Promise.all(
+    Array.from({ length: 4 }, async () => {
+      const ctxEstrecho = await navegador.newContext({ viewport: { width: ANCHO_ESTRECHO, height: 640 }, reducedMotion: "reduce" });
+      const pagina = await ctxEstrecho.newPage();
+      while (cola.length) {
+        const ruta = cola.pop();
+        try {
+          await pagina.goto(`${BASE}${ruta}`, { waitUntil: "load", timeout: 30000 });
+          await pagina.addStyleTag({ content: ".cv-auto{content-visibility:visible!important}" });
+          const r = await pagina.evaluate(async () => {
+            await document.fonts.ready;
+            await new Promise((ok) => requestAnimationFrame(() => requestAnimationFrame(ok)));
+            const ancho = document.documentElement.clientWidth;
+            const sobra = document.documentElement.scrollWidth - ancho;
+            if (sobra <= 1) return null;
+            let peor = null;
+            for (const e of document.querySelectorAll("body *")) {
+              if (e.children.length) continue;
+              const caja = e.getBoundingClientRect();
+              if (caja.width > 0 && caja.right > ancho + 1 && (!peor || caja.right > peor.derecha))
+                peor = { derecha: caja.right, texto: (e.textContent || "").replace(/\s+/g, " ").trim().slice(0, 50) };
+            }
+            return { sobra, texto: peor ? peor.texto : "" };
+          });
+          estrechasMedidas++;
+          if (r) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
+        } catch (e) {
+          fallos.push(`estrecho ${ruta}: ${String(e).split("\n")[0]}`);
+        }
+      }
+      await ctxEstrecho.close();
+    }),
+  );
+  if (!estrechasMedidas) fallos.push("estrecho: no se midió ninguna página");
+}
+
 await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
@@ -1845,6 +1899,7 @@ if (temasLaminaVistos.length) {
 if (subirMedidos) {
   console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
+console.log(`[humo] estrecho — ${estrechasMedidas} páginas medidas a ${ANCHO_ESTRECHO} px`);
 if (elementosMirados && !desenfoquesVistos) {
   console.log(`[humo] desenfoque — ${elementosMirados} elementos recorridos en 5 rutas, ninguno desenfoca su fondo`);
 }

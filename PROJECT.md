@@ -67,7 +67,7 @@ Si el cambio se ve, además las auditorías sobre el sitio compilado (`out/`). C
 script explica en su cabecera qué mide:
 
 ```bash
-node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript
+node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde a 320 px
 node scripts/legible.mjs --serve out       # contraste de todo el texto sobre fondo plano
 node scripts/tinta.mjs --serve out         # texto sobre fondos de color, en los dos temas
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible
