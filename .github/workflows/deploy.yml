@@ -186,6 +186,13 @@ jobs:
       - name: Comprobar el HTML compilado (prefijo y vocabulario)
         run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
 
+      # Las auditorías de PROJECT.md que leen `out/` sin navegador (segundos):
+      # ficha de cada página, enlaces rotos o que cambian de idioma, cifras y
+      # palabras de cada idioma, lo que oye un lector de pantalla y el
+      # JavaScript que carga cada página. Las de navegador siguen en local.
+      - name: Auditorías del HTML compilado
+        run: node scripts/metadatos.mjs out && node scripts/enlaces.mjs out && node scripts/cifras.mjs out && node scripts/rotulos.mjs out && node scripts/equipaje.mjs out
+
       # La dirección oficial: canónico, mapa del sitio, robots y tarjetas
       # sociales en la dirección que pide el entorno, sin restos de otra.
       - name: Comprobar la dirección oficial

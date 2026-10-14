@@ -64,7 +64,9 @@ bun run build
 ```
 
 Si el cambio se ve, además las auditorías sobre el sitio compilado (`out/`). Cada
-script explica en su cabecera qué mide:
+script explica en su cabecera qué mide. El CI corre en cada PR y antes de publicar las
+cinco que no abren navegador (`metadatos`, `enlaces`, `cifras`, `rotulos`, `equipaje`) y
+`humo`; las demás se pasan en local:
 
 ```bash
 node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde a 320 px
