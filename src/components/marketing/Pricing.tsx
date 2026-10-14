@@ -6,8 +6,8 @@ import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { MagneticButton } from "@/components/tj/MagneticButton";
 import { SelloPrevisto } from "@/components/tj/SelloPrevisto";
-import { PRECIO_CORE, PRECIO_PRO, FECHA_TIPO_EUR, aproxEur } from "@/lib/precios";
-import { fmtInt, LOCALE_FECHA } from "@/lib/trading/format";
+import { PRECIO_CORE, PRECIO_PRO, equivalenciaEur } from "@/lib/precios";
+import { fmtInt } from "@/lib/trading/format";
 
 type Plan = {
   id: "core" | "pro";
@@ -168,9 +168,9 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
         </Reveal>
 
         <div className={`relative ${standalone ? "" : "mt-10"}`}>
-          <div className="relative grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 items-stretch">
+          <div className="relative grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-x-6 md:gap-y-0">
           {plans.map((plan) => (
-            <div key={plan.id} className="h-full">
+            <div key={plan.id} className="h-full md:row-span-7 md:grid md:grid-rows-subgrid">
               <PlanCard plan={plan} lang={lang} />
             </div>
           ))}
@@ -205,33 +205,28 @@ export function Pricing({ standalone = false }: { standalone?: boolean } = {}) {
   );
 }
 
-const fechaTipo = new Date(FECHA_TIPO_EUR).toLocaleDateString(LOCALE_FECHA.es, {
-  month: "long",
-  year: "numeric",
-  timeZone: "UTC",
-});
-
 function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
   const isPro = plan.popular;
+  const equivalencia = equivalenciaEur(plan.price, lang);
   const dolarDetras = lang === "es" || lang === "fr" || lang === "de" || lang === "it";
 
   return (
     <div
       data-entra
-      className="tj-cristal relative flex h-full flex-col"
+      className="tj-cristal relative flex h-full flex-col md:row-span-7 md:grid md:grid-rows-subgrid"
     >
       {/* Dos zonas: arriba nivel, precio y acción; debajo, tras un filete, lo
-          que incluye. */}
-      <div className="p-7 sm:p-9">
+          que incluye. Lado a lado, las dos tarjetas comparten filas (`subgrid`):
+          cada fila mide lo que la más alta y los precios caen a la misma altura
+          aunque una descripción ocupe más renglones (`scripts/rejillas.mjs`). */}
+      <div className="p-7 sm:p-9 md:row-span-6 md:grid md:grid-rows-subgrid">
       <div className="flex items-center justify-between gap-3">
         <h3 className="t-h3 text-primary min-w-0 break-words">
           {plan.name}
         </h3>
       </div>
 
-      {/* Reserva dos renglones solo entre 768 y 1279 px, donde la descripción de
-          Pro parte en dos, para alinear los precios. */}
-      <p className="mt-2 text-[15px] text-secondary leading-[1.7] md:min-h-[3.4em] xl:min-h-0">
+      <p className="mt-2 text-[15px] text-secondary leading-[1.7]">
         {plan.tagline}
       </p>
 
@@ -240,7 +235,7 @@ function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
       <div className="mt-8 flex items-baseline min-w-0 gap-1">
         {dolarDetras ? (
           <>
-            <span className="text-5xl md:text-6xl font-normal tracking-[-0.035em] text-primary tnum leading-[0.95]">
+            <span data-precio className="text-5xl md:text-6xl font-normal tracking-[-0.035em] text-primary tnum leading-[0.95]">
               {fmtInt(plan.price, lang)}
             </span>
             <span className="text-2xl md:text-3xl font-normal text-tertiary tnum">$</span>
@@ -248,20 +243,18 @@ function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
         ) : (
           <>
             <span className="text-2xl md:text-3xl font-normal text-tertiary tnum">$</span>
-            <span className="text-5xl md:text-6xl font-normal tracking-[-0.035em] text-primary tnum leading-[0.95]">
+            <span data-precio className="text-5xl md:text-6xl font-normal tracking-[-0.035em] text-primary tnum leading-[0.95]">
               {fmtInt(plan.price, lang)}
             </span>
           </>
         )}
       </div>
-      {lang === "es" && (
-        <p className="mt-3 mb-0 text-[14px] text-tertiary tnum">
-          <span className="whitespace-nowrap">{`≈\u00a0${fmtInt(aproxEur(plan.price), lang)}\u00a0€`}</span> al cambio de {fechaTipo}
-        </p>
+      {equivalencia && (
+        <p className="mt-3 mb-0 text-[14px] text-tertiary tnum">{equivalencia}</p>
       )}
 
       <SelloPrevisto
-        className="mt-4 self-start"
+        className="mt-4 self-start justify-self-start"
         es="Precio previsto"
         en="Planned price"
         pt="Preço previsto"

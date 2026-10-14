@@ -21,6 +21,7 @@
  *     cruza el hueco entre columnas mientras los de las entradas no.
  *   - Rótulo y valor (`dt`/`dd`) lado a lado y del mismo cuerpo de letra que
  *     no comparten línea base.
+ *   - Precios (`data-precio`) de tarjetas vecinas a distinta altura.
  * No mira flexbox, donde el reparto solo ocurre si alguien lo pide.
  *
  * Uso:  node scripts/rejillas.mjs --serve out
@@ -96,6 +97,7 @@ let filasCifraTotal = 0;
 let fichasGlosario = 0;
 let listasDoblesTotal = 0;
 let paresRotuloTotal = 0;
+let paresPrecioTotal = 0;
 
 async function medir(pag, ruta, ancho) {
   try {
@@ -302,6 +304,17 @@ async function medir(pag, ruta, ancho) {
         desnivelados.push({ texto: `${dt.textContent.trim().slice(0, 24)} / ${dd.textContent.trim().slice(0, 24)}`, salto: Math.round((tb.pie - ta.pie) * 10) / 10 });
       }
     }
+    // Precios de tarjetas vecinas (`data-precio`): a la misma altura, sea cual sea el largo de la descripción.
+    const precios = [...document.querySelectorAll("main [data-precio]")].map((e) => e.getBoundingClientRect()).filter((q) => q.height > 0);
+    const preciosDesparejos = [];
+    let paresPrecio = 0;
+    for (let i = 0; i < precios.length; i++) {
+      for (let j = i + 1; j < precios.length; j++) {
+        if (Math.abs(precios[i].left - precios[j].left) < 40) continue;
+        paresPrecio++;
+        if (Math.abs(precios[i].top - precios[j].top) > 1.5) preciosDesparejos.push(Math.round(precios[j].top - precios[i].top));
+      }
+    }
     filetes.sort((a, b) => a.y - b.y);
     const dobles = [];
     for (let i = 0; i < filetes.length; i++) {
@@ -324,8 +337,14 @@ async function medir(pag, ruta, ancho) {
         }
       }
     }
-    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales, colgados, listasDobles, desnivelados, paresRotulo };
+    return { vistos, n, descompases, columnadas, dobles, nf: filetes.length, sueltos, nt: tonos.size, descolgadas, filasCifra, desiguales, colgados, listasDobles, desnivelados, paresRotulo, preciosDesparejos, paresPrecio };
   }, TOLERANCIA_PX);
+  paresPrecioTotal += r.paresPrecio;
+  for (const d of r.preciosDesparejos) {
+    const k = "precios de tarjetas vecinas a distinta altura";
+    if (!fallos.has(k)) fallos.set(k, []);
+    fallos.get(k).push(`${ancho} ${ruta}  a ${d} px`);
+  }
   filetesTotal += r.nf;
   listasDoblesTotal += r.listasDobles;
   paresRotuloTotal += r.paresRotulo;
@@ -405,6 +424,25 @@ for (const ancho of ANCHOS) {
   await ctx.close();
 }
 
+/* Las tarjetas de precio van lado a lado desde 768 px; entre 768 y 1023 es
+   donde más renglones ocupa la descripción. Ahí solo se mira su precio. */
+{
+  const ctx = await navegador.newContext({ viewport: { width: 820, height: 900 }, reducedMotion: "reduce" });
+  const pag = await ctx.newPage();
+  for (const ruta of RUTAS.filter((r) => r.endsWith("/pricing/"))) {
+    await pag.goto(`${base}${ruta}`, { waitUntil: "networkidle", timeout: 30000 });
+    const tops = await pag.evaluate(() => [...document.querySelectorAll("main [data-precio]")].map((e) => e.getBoundingClientRect().top));
+    if (tops.length >= 2) paresPrecioTotal++;
+    const salto = tops.length >= 2 ? Math.round(Math.max(...tops) - Math.min(...tops)) : 0;
+    if (salto > 1) {
+      const k = "precios de tarjetas vecinas a distinta altura";
+      if (!fallos.has(k)) fallos.set(k, []);
+      fallos.get(k).push(`820 ${ruta}  a ${salto} px`);
+    }
+  }
+  await ctx.close();
+}
+
 await navegador.close();
 server.close();
 
@@ -425,6 +463,10 @@ if (fichasGlosario < 100) {
 }
 if (listasDoblesTotal < 8) {
   console.log(`[rejillas] solo ${listasDoblesTotal} listas a dos columnas con filetes: su cierre no se está mirando`);
+  process.exit(1);
+}
+if (paresPrecioTotal < 6) {
+  console.log(`[rejillas] solo ${paresPrecioTotal} pares de precios vecinos: su alineación no se está mirando`);
   process.exit(1);
 }
 if (paresRotuloTotal < 100) {
@@ -467,13 +509,17 @@ if (fallos.size) {
   }
   const lista = [...fallos.keys()].filter((k) => k.startsWith("lista a dos columnas")).length;
   const rotulo = fallos.has("rótulo y valor a distinta línea base") ? 1 : 0;
+  const precio = fallos.has("precios de tarjetas vecinas a distinta altura") ? 1 : 0;
+  if (precio) {
+    console.log("[rejillas] dos tarjetas de precio vecinas no ponen la cifra a la misma altura: lo de encima del precio debe reservar el mismo alto en las dos");
+  }
   if (rotulo) {
     console.log("[rejillas] un rótulo y su valor, lado a lado y del mismo cuerpo, no comparten línea base: `items-baseline` en la rejilla del `dl`");
   }
   if (lista) {
     console.log("[rejillas] una lista a dos columnas no cierra igual en las dos: usa `.tj-lista-filetes` (filete sobre cada entrada, sin filete propio)");
   }
-  if (fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo) {
+  if (fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo - precio) {
     console.log(`[rejillas] ${fallos.size - compas - doble - tono - cifra - segmento - lista - rotulo} rejilla(s) reparten el alto sobrante entre sus filas`);
     console.log("[rejillas] si la ficha debe ir arriba, `content-start` (align-content: start) en ella");
   }
