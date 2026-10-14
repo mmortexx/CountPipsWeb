@@ -295,6 +295,7 @@ export function DisciplineCost() {
                     unidad="$"
                     antes={!es}
                     paso={1}
+                    decimales={2}
                     valor={inPlanExp}
                     onValor={aMano(setInPlanExp)}
                     className="text-primary"
@@ -310,6 +311,7 @@ export function DisciplineCost() {
                     unidad="$"
                     antes={!es}
                     paso={1}
+                    decimales={2}
                     valor={offPlanExp}
                     onValor={aMano(setOffPlanExp)}
                     className={offPlanExp < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-primary"}

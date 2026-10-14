@@ -211,6 +211,7 @@ export function CommissionDragCalculator() {
                     unidad="$"
                     antes={!es}
                     paso={0.05}
+                    decimales={2}
                     min={0}
                     valor={customCommission}
                     onValor={setCustomCommission}
@@ -227,6 +228,7 @@ export function CommissionDragCalculator() {
                     id="com-deslizamiento"
                     unidad="ticks"
                     paso={0.5}
+                    decimales={1}
                     min={0}
                     max={10}
                     valor={slippageTicks}

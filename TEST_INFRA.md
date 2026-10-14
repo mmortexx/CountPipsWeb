@@ -33,7 +33,7 @@
 | Fichero | Qué vigila |
 |---|---|
 | `adversarial_stress.test.ts` | Casos límite adversariales del motor de métricas y contratos de futuros |
-| `campo-cifra.test.ts` | Las cifras de los campos editables: coma o punto según idioma, sin millares, ida y vuelta exacta |
+| `campo-cifra.test.ts` | Las cifras de los campos editables: coma o punto según idioma, ida y vuelta exacta, y millares: «10.000» es diez mil donde el campo admite menos de tres decimales y sigue siendo decimal en un precio de tres o más («151.234») |
 | `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida, y que el recorte móvil declare las suyas: tiene otra proporción, y sin ellas la página saltaba al llegar la imagen |
 | `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts`; PostHog sin grabación de sesión y guardando en `localStorage`, no en cookies |
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |

@@ -101,7 +101,7 @@ export function DashboardPage() {
   /* Los precios se escriben y leen en el idioma de la página («21500,00»).
      Con `toFixed`/`parseFloat` salía el punto inglés y «1,08» se leía como 1. */
   const precio = (n: number, dec: number) => cifraEditable(n, lang, dec, dec);
-  const num = (s: string) => leeCifra(s) ?? Number.NaN;
+  const num = (s: string, decimales: number) => leeCifra(s, lang, decimales) ?? Number.NaN;
   const [entry, setEntry] = useState<string>(
     precio(INSTRUMENTS[0].basePrice, INSTRUMENTS[0].decimals)
   );
@@ -121,10 +121,14 @@ export function DashboardPage() {
   const inst =
     INSTRUMENTS.find((i) => i.symbol === instrumentSymbol) ?? INSTRUMENTS[0];
 
-  const entryNum = num(entry) || 0;
-  const stopNum = num(stop) || 0;
-  const targetNum = num(target) || 0;
-  const qtyNum = num(quantity) || 0;
+  const decCantidad = inst.assetClass === "forex" ? 2 : 3;
+  /* Al leer, acciones y futuros van en unidades enteras: «1.000» son mil, no
+     una. Se sigue aceptando «1,5»; solo cambia el caso ambiguo. */
+  const decLecturaCantidad = inst.assetClass === "stock" || inst.assetClass === "futures" ? 0 : decCantidad;
+  const entryNum = num(entry, inst.decimals) || 0;
+  const stopNum = num(stop, inst.decimals) || 0;
+  const targetNum = num(target, inst.decimals) || 0;
+  const qtyNum = num(quantity, decLecturaCantidad) || 0;
 
   const stopDist = Math.abs(entryNum - stopNum);
   // R:R planificado = |objetivo − entrada| / |entrada − stop|.
@@ -143,12 +147,12 @@ export function DashboardPage() {
   const riskPct = INITIAL_BALANCE_CONST > 0 ? riskUsdLive / INITIAL_BALANCE_CONST : 0;
 
   function handleRegister() {
-    const entryN = num(entry);
-    const stopN = num(stop);
-    const exitParsed = num(exitPrice);
+    const entryN = num(entry, inst.decimals);
+    const stopN = num(stop, inst.decimals);
+    const exitParsed = num(exitPrice, inst.decimals);
     // Sin salida se usa la entrada: queda una operación en tablas (P&L = 0, R = 0), no NaN.
     const exitN = Number.isFinite(exitParsed) ? exitParsed : entryN;
-    const qtyN = num(quantity);
+    const qtyN = num(quantity, decLecturaCantidad);
 
     if (
       !Number.isFinite(entryN) ||
@@ -182,7 +186,7 @@ export function DashboardPage() {
       direction,
       entry: +entryN.toFixed(inst.decimals),
       exit: +exitN.toFixed(inst.decimals),
-      qty: +safeQty.toFixed(inst.assetClass === "forex" ? 2 : 3),
+      qty: +safeQty.toFixed(decCantidad),
       netPnl,
       rMultiple,
       // Con stop definido se da por seguido el plan.

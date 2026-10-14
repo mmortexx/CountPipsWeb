@@ -11,6 +11,8 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | 
   max?: number;
   /** Lo que suben o bajan las flechas del teclado. Sin él, las flechas no tocan la cifra. */
   paso?: number;
+  /** Decimales que admite el campo: deciden si un «10.000» es 10 o 10000. */
+  decimales: number;
 };
 
 /**
@@ -19,7 +21,7 @@ type Props = Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | 
  * la coma. El texto es libre (coma o punto), no se reformatea al escribir y se
  * limpia al salir del campo.
  */
-export function CampoCifra({ valor, onValor, min, max, paso, onFocus, onBlur, onKeyDown, ...resto }: Props) {
+export function CampoCifra({ valor, onValor, min, max, paso, decimales, onFocus, onBlur, onKeyDown, ...resto }: Props) {
   const { lang } = useLang();
   const [borrador, setBorrador] = useState<string | null>(null);
 
@@ -40,7 +42,7 @@ export function CampoCifra({ valor, onValor, min, max, paso, onFocus, onBlur, on
       }}
       onChange={(e) => {
         setBorrador(e.target.value);
-        const n = leeCifra(e.target.value);
+        const n = leeCifra(e.target.value, lang, decimales);
         if (n !== null) onValor(acota(n));
       }}
       onBlur={(e) => {

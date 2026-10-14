@@ -29,6 +29,8 @@ const RISK_MAX = 3;
 const RISK_STEP = 0.05;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
+const decimalesDe = (escalon: number) => (String(escalon).split(".")[1] ?? "").length;
+
 type AssetMode = MercadoPlan;
 
 /* Una sola lista para el conmutador y para el plan copiado. */
@@ -83,6 +85,10 @@ export function RiskCalculator() {
   );
 
   const parForex = useMemo(() => PARES_FOREX.find((p) => p.id === parForexId) ?? PARES_FOREX[0], [parForexId]);
+  /* Decimales del precio del mercado elegido: acciones en céntimos, futuros
+     según su escalón y forex con un decimal más que el pip (el pipette). */
+  const decimalesPrecio =
+    assetMode === "futures" ? decimalesDe(selectedFutures.tickSize) : assetMode === "forex" ? decimalesDe(parForex.pip) + 1 : 2;
 
   const c = useMemo(() => {
     const plan = calculaPlan({
@@ -215,6 +221,7 @@ export function RiskCalculator() {
       <CampoCifra
         min={0}
         valor={value}
+        decimales={decimalesPrecio}
         onValor={onChange}
         aria-label={ariaLabel}
         className="tj-campo tnum w-full min-h-[44px] px-3 text-base font-medium text-primary"
@@ -375,6 +382,7 @@ export function RiskCalculator() {
                   <CampoCifra
                     min={0.0001}
                     valor={tipoReferencia ?? parForex.referencia.defecto}
+                    decimales={4}
                     onValor={setTipoReferencia}
                     className="tj-campo tnum w-28 min-h-[44px] px-3 text-base font-medium text-primary"
                   />
@@ -462,6 +470,7 @@ export function RiskCalculator() {
               <CampoCifra
                 min={100}
                 valor={balance}
+                decimales={2}
                 onValor={setBalance}
                 className="tj-campo tnum w-36 min-h-[44px] px-3 text-base font-medium text-primary text-right"
               />
