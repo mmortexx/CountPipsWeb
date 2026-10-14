@@ -256,6 +256,11 @@ export function fmtDateTime(date: Date, lang: Lang = "es"): string {
   }).format(date);
 }
 
+/** «de» delante de un mes en francés: «d’octobre» si empieza por vocal o h, «de janvier» si no. */
+export function deFr(texto: string): string {
+  return /^[aeiouyhàâäéèêëîïôöùûüÿœ]/i.test(texto) ? `d’${texto}` : `de ${texto}`;
+}
+
 /** Tono semántico según el signo del P&L. */
 export function pnlTone(value: number): "pos" | "neg" | "neutral" {
   if (value > 0) return "pos";

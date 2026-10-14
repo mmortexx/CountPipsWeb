@@ -84,6 +84,7 @@
 | `montecarlo.test.ts` | Ruina del simulador de Monte Carlo = perder `UMBRAL_RUINA_PCT` del balance: la peor combinación es 100 % en simulación y por fórmula; todo camino que acaba bajo el umbral cuenta; la fórmula es la de la calculadora de riesgo. La semilla da la vuelta de 50 a 1; con los deslizadores al máximo favorable el resultado se marca `fueraDeEscala` |
 | `amortizacion.test.ts` | El escenario de coste no habla de un mes de amortización fuera del horizonte elegido como si cayera dentro |
 | `equivalencia-eur.test.ts` | La tarjeta de precios da la equivalencia en euros con la frase y el mes de cada idioma de la zona euro, y en inglés y portugués no la da |
+| `elision-francesa.test.ts` | En francés «de» se elide delante de vocal o h («d’octobre», «de janvier») en la nota de corte de la portada; cada idioma da su nota de corte exacta |
 | `conexiones.test.ts` | Cada texto que resume lo que se conecta a internet (FAQ, entradilla de seguridad) nombra lo que va solo —la licencia—; cada fila de la lista dice en su redacción si depende de ti |
 | `resultado-anunciado-cobertura.test.ts` | Las nueve calculadoras de marketing/ envuelven su resultado principal con `ResultadoAnunciado` |
 | `glosario-familias.test.ts` | La ventana del glosario (`GLOSSARY_CATEGORIES`) y la página del glosario (`ORDEN_CATEGORIAS`) enseñan las mismas familias en el mismo orden |
