@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { sinPrefijoEn, TABLA_IDIOMAS, prefijoDeIdioma, type Lang } from "@/lib/locale";
+import { rutaEnIdioma, TABLA_IDIOMAS, type Lang } from "@/lib/locale";
 import { fmtInt, fmtMoney, fmtOperaciones } from "@/lib/trading/format";
 import { SALDO_INICIAL_MUESTRA } from "@/lib/trading/muestra";
 
@@ -477,12 +477,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const irA = useCallback(
     (destino: Lang) => {
       if (destino === lang) return;
-      const base = sinPrefijoEn(pathname);
       const sufijo =
         typeof window !== "undefined" ? window.location.search + window.location.hash : "";
-      const prefijo = prefijoDeIdioma(destino);
-      const ruta = prefijo ? (base === "/" ? prefijo : `${prefijo}${base}`) : base;
-      router.push(`${ruta}${sufijo}`);
+      router.push(`${rutaEnIdioma(pathname, destino)}${sufijo}`);
     },
     [lang, pathname, router]
   );

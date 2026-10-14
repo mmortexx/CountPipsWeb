@@ -89,6 +89,8 @@
 | `glosario-familias.test.ts` | La ventana del glosario (`GLOSSARY_CATEGORIES`) y la página del glosario (`ORDEN_CATEGORIAS`) enseñan las mismas familias en el mismo orden |
 | `rayas-catalogos.test.ts` | En el texto español de `STR`, el glosario, las dos FAQ y las láminas del producto, la raya de inciso va pegada a su palabra con unión invisible (`⁠`): ni « — » con espacios ni una raya por la que el navegador pueda partir la línea |
 | `idiomas-nuevos.test.ts` | Verifica en `out/` que las páginas de nuevos idiomas (pt, fr, de, it) no sean copias del inglés ni idénticas entre sí, y que tengan el `lang` de HTML correcto |
+| `analitica-idioma.test.ts` | La analítica etiqueta cada evento con el idioma de `<html lang>` (`en`, `pt`, `de`…) y no con la ruta del despliegue; un idioma que no está en la tabla se envía tal cual |
+| `ruta-en-idioma.test.ts` | `rutaEnIdioma`, la dirección de la página en otro idioma que usan el selector y el cambio de idioma: sin prefijo para el español, con el prefijo de cada idioma y sin `search` ni `hash` |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 

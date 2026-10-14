@@ -90,6 +90,11 @@ export function prefijoDeIdioma(lang: Lang): string {
   return item ? item.prefijo : "";
 }
 
+/** El `codigo` del idioma cuyo `htmlLang` es este (`pt-BR` → `pt`); `null` si no está en la tabla. */
+export function idiomaDeHtmlLang(htmlLang: string): Lang | null {
+  return TABLA_IDIOMAS.find((i) => i.htmlLang === htmlLang)?.codigo ?? null;
+}
+
 /**
  * Quita el prefijo de idioma a cualquier ruta prefijada (`/en/pricing` → `/pricing`,
  * `/pt/pricing` → `/pricing`, `/en` → `/`).
@@ -108,6 +113,14 @@ export function sinPrefijo(pathname: string): string {
 /** Alias retrocompatible con la API anterior. */
 export function sinPrefijoEn(pathname: string): string {
   return sinPrefijo(pathname);
+}
+
+/** La dirección de esta página en otro idioma, sin `search` ni `hash`. */
+export function rutaEnIdioma(pathname: string, destino: Lang): string {
+  const base = sinPrefijo(pathname);
+  const prefijo = prefijoDeIdioma(destino);
+  if (!prefijo) return base;
+  return base === "/" ? prefijo : `${prefijo}${base}`;
 }
 
 /**
