@@ -78,8 +78,8 @@ describe("Cromo de mesa", () => {
   it("el pie y el atajo global no usan radio de consumo", () => {
     const pie = sinComentarios(leer("src/components/marketing/Footer.tsx"));
     const atajos = sinComentarios(leer("src/components/tj/GlobalShortcuts.tsx"));
-    expect(pie).toMatch(/group rounded-\[4px\] -my-2 py-2/);
-    expect(pie).not.toMatch(/group rounded-md -my-2 py-2/);
+    expect(pie).toMatch(/group rounded-\[4px\]/);
+    expect(pie).not.toMatch(/group rounded-md/);
     expect(atajos).toMatch(/rounded-\[4px\] pl-3 pr-3\.5/);
     expect(atajos).not.toMatch(/rounded-full pl-3 pr-3\.5/);
   });
