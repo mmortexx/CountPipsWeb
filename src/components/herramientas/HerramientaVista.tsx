@@ -79,7 +79,7 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                   : "What this tool computes is indicative. It is not financial advice or a recommendation to trade: "}
                 <Link
                   href="/terminos#no-advice"
-                  className="link-underline-host -my-2 inline-flex py-2 text-secondary transition-colors hover:text-primary"
+                  className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
                 >
                   <span className="link-underline">
                     {es ? "condiciones de uso" : "terms of use"}

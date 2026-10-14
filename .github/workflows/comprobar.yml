@@ -73,6 +73,9 @@ jobs:
       - name: Comprobación de humo en navegador
         run: node scripts/humo.mjs --serve out
 
+      - name: Zona táctil medida en móvil
+        run: node scripts/toque.mjs --serve out
+
   # El sitio tal como se servirá en el dominio propio (Cloudflare Pages): en la
   # raíz, sin prefijo, y con la dirección oficial nueva. Nadie lo compila así
   # hasta el día del lanzamiento; aquí se compila en cada PR para que ese día
@@ -108,6 +111,9 @@ jobs:
 
       - name: Comprobación de humo en navegador
         run: node scripts/humo.mjs --serve out
+
+      - name: Zona táctil medida en móvil
+        run: node scripts/toque.mjs --serve out
 
       # Las cabeceras de `public/_headers` solo las aplica Cloudflare: aquí se
       # recorre el sitio con ellas puestas para que la política de contenido no

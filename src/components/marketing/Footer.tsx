@@ -35,11 +35,11 @@ export function Footer() {
             en dos renglones. En móvil, dos de dos. */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr] gap-8 md:gap-10">
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            {/* `-my-2 py-2` lleva la zona táctil de 28 a 44 px sin mover nada: el
-                margen negativo devuelve los 8 px de relleno. */}
+            {/* `-my-2.5 py-2.5` lleva la zona táctil de 24 a 44 px sin mover nada:
+                el margen negativo devuelve los 10 px de relleno. */}
             <Link
               href="/"
-              className="flex items-center gap-2.5 group rounded-[4px] -my-2 py-2"
+              className="flex items-center gap-2.5 group rounded-[4px] -my-2.5 py-2.5"
               aria-label={t("appName")}
             >
               <BrandMark />

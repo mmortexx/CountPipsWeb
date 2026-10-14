@@ -66,7 +66,7 @@ bun run build
 Si el cambio se ve, además las auditorías sobre el sitio compilado (`out/`). Cada
 script explica en su cabecera qué mide. El CI corre en cada PR y antes de publicar las
 cinco que no abren navegador (`metadatos`, `enlaces`, `cifras`, `rotulos`, `equipaje`) y
-`humo`; las demás se pasan en local:
+`humo` y `toque`; las demás se pasan en local:
 
 ```bash
 node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde a 320 px
@@ -92,6 +92,7 @@ node scripts/anuncios.mjs --serve out      # resultados anunciados a lectores de
 node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
 node scripts/teclado.mjs --serve out       # todo el sitio sin ratón
+node scripts/toque.mjs --serve out         # zona que recoge el dedo, medida en móvil táctil: 44 px de alto
 node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` (dominio propio)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
 node scripts/barrido-rueda.mjs --base <url>    # ningún recuadro atrapa la rueda del ratón; mismo servidor
