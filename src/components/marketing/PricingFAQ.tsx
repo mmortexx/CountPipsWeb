@@ -1,6 +1,6 @@
 "use client";
 
-import { PRICING_FAQ_ES, PRICING_FAQ_EN, type QA } from "@/lib/faq";
+import { pricingFaq } from "@/lib/faq";
 import { useLang, tx } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Reveal } from "@/components/tj/Reveal";
@@ -17,11 +17,10 @@ import {
 
 export function PricingFAQ() {
   const { lang } = useLang();
-  const es = lang === "es";
 
   /* Las preguntas viven en `src/lib/faq.ts`, compartidas con el dato
      estructurado de la página para que no diverjan. */
-  const items: QA[] = es ? PRICING_FAQ_ES : PRICING_FAQ_EN;
+  const items = pricingFaq(lang);
 
   return (
     <section

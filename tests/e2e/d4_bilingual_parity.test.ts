@@ -3,9 +3,9 @@ import { STR, t, tf, type StrKey, type Lang } from "@/lib/i18n";
 import { GLOSSARY, type GlossaryTerm, type GlossaryCategory } from "@/lib/trading/glossary";
 import { TERMINOS, CATEGORIAS, slugTermino } from "@/lib/glosario";
 import { HERRAMIENTAS, type Herramienta } from "@/lib/herramientas";
-import { FAQ_ES, FAQ_EN, PRICING_FAQ_ES, PRICING_FAQ_EN, type QA } from "@/lib/faq";
+import { FAQ_ES, FAQ_EN, PRICING_FAQ_ES, PRICING_FAQ_EN, pricingFaq, type QA } from "@/lib/faq";
 import { DOCUMENTOS_LEGALES, documentoPorSlug, type DocumentoLegal, type Seccion, type Bloque } from "@/lib/legal/documentos";
-import { sinPrefijoEn, tieneVersionEn, withLocale } from "@/lib/locale";
+import { IDIOMAS_NUEVOS, sinPrefijoEn, tieneVersionEn, withLocale } from "@/lib/locale";
 import { LOCALIZED_PATHS } from "@/lib/rutas-en";
 
 /**
@@ -152,6 +152,17 @@ describe("Dimension D4: Bilingual Parity (ES / EN)", () => {
 
         expect(es.q).not.toEqual(en.q);
         expect(es.a).not.toEqual(en.a);
+      }
+    });
+
+    it("D4-T1-4b: la FAQ de precios de pt, fr, de e it está en su idioma, no en inglés", () => {
+      for (const lang of IDIOMAS_NUEVOS) {
+        const faq = pricingFaq(lang);
+        expect(faq.length, lang).toBe(PRICING_FAQ_EN.length);
+        faq.forEach((qa, i) => {
+          expect(qa.q, `${lang} pregunta ${i}`).not.toEqual(PRICING_FAQ_EN[i].q);
+          expect(qa.a, `${lang} respuesta ${i}`).not.toEqual(PRICING_FAQ_EN[i].a);
+        });
       }
     });
 

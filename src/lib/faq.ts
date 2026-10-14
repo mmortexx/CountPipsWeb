@@ -7,6 +7,9 @@
 
 import { LO_QUE_VA_SOLO } from "./conexiones";
 import { PROGRAMA, enumerar } from "./producto";
+import type { Lang } from "./locale";
+import { PRECIO_CORE, PRECIO_PRO } from "./precios";
+import { fmtMoney } from "./trading/format";
 
 export type QA = { q: string; a: string };
 
@@ -158,6 +161,100 @@ export const PRICING_FAQ_EN: QA[] = [
     a: "We never ask for credentials, capital, statements or financial data. We only ask what is needed to select the pilot and understand your journaling context.",
   },
 ];
+
+/* Portada y precios también se publican en portugués, francés, alemán e
+   italiano: sus cuatro dudas, en el mismo orden que las de arriba. */
+const core = (lang: Lang) => fmtMoney(PRECIO_CORE, lang, { decimals: 0 });
+const pro = (lang: Lang) => fmtMoney(PRECIO_PRO, lang, { decimals: 0 });
+
+const PRICING_FAQ_PT: QA[] = [
+  {
+    q: "O que recebo ao solicitar acesso antecipado?",
+    a: "Analisamos cada solicitação por perfil e fase do produto. Se ela se encaixar no piloto privado, você receberá um convite com os próximos passos. Não mostramos posição em fila.",
+  },
+  {
+    q: "A demo tem algum custo?",
+    a: "Não. A demo é pública, funciona com dados de exemplo e não pede cartão, cadastro nem instalação.",
+  },
+  {
+    q: "O que incluem os preços de lançamento?",
+    a: `O Core está previsto em ${core("pt")} e o Pro em ${pro("pt")}. São referências de lançamento até que a entrega comercial, a licença e o suporte estejam disponíveis.`,
+  },
+  {
+    q: "Quais dados não são solicitados?",
+    a: "Nunca pedimos credenciais, capital, extratos nem dados financeiros. Perguntamos apenas o necessário para selecionar o piloto e entender como você mantém seu diário.",
+  },
+];
+
+const PRICING_FAQ_FR: QA[] = [
+  {
+    q: "Que se passe-t-il quand je demande l’accès anticipé ?",
+    a: "Nous examinons chaque demande selon le profil et la phase du produit. Si elle correspond au pilote privé, vous recevez une invitation avec les prochaines étapes. Nous n’affichons aucune position dans une file d’attente.",
+  },
+  {
+    q: "La démo est-elle payante ?",
+    a: "Non. La démo est publique, fonctionne avec des données d’exemple et ne demande ni carte, ni inscription, ni installation.",
+  },
+  {
+    q: "Que comprennent les tarifs de lancement ?",
+    a: `Core est prévu à ${core("fr")} et Pro à ${pro("fr")}. Ce sont des tarifs de lancement indicatifs jusqu’à l’ouverture de la livraison commerciale, de la licence et du support.`,
+  },
+  {
+    q: "Quelles données ne sont pas demandées ?",
+    a: "Nous ne demandons jamais d’identifiants, de capital, de relevés ni de données financières. Seulement ce qu’il faut pour sélectionner le pilote et comprendre comment vous tenez votre journal.",
+  },
+];
+
+const PRICING_FAQ_DE: QA[] = [
+  {
+    q: "Was erhalte ich, wenn ich Vorabzugang anfordere?",
+    a: "Wir prüfen jede Anfrage nach Profil und Produktphase. Passt sie zum privaten Pilotprojekt, erhalten Sie eine Einladung mit den nächsten Schritten. Eine Position in einer Warteschlange zeigen wir nicht an.",
+  },
+  {
+    q: "Kostet die Demo etwas?",
+    a: "Nein. Die Demo ist öffentlich, arbeitet mit Beispieldaten und verlangt weder Karte noch Registrierung oder Installation.",
+  },
+  {
+    q: "Was beinhalten die Einführungspreise?",
+    a: `Core ist mit ${core("de")} und Pro mit ${pro("de")} geplant. Beides sind Richtwerte zum Start, bis Auslieferung, Lizenzierung und Support offiziell beginnen.`,
+  },
+  {
+    q: "Welche Daten werden nicht abgefragt?",
+    a: "Wir fragen nie nach Zugangsdaten, Kapital, Kontoauszügen oder Finanzdaten. Wir erfragen nur, was nötig ist, um das Pilotprojekt auszuwählen und zu verstehen, wie Sie Ihr Journal führen.",
+  },
+];
+
+const PRICING_FAQ_IT: QA[] = [
+  {
+    q: "Cosa ricevo quando richiedo l’accesso anticipato?",
+    a: "Esaminiamo ogni richiesta in base al profilo e alla fase del prodotto. Se è adatta al pilota privato, riceverai un invito con i passi successivi. Non mostriamo una posizione in coda.",
+  },
+  {
+    q: "La demo ha un costo?",
+    a: "No. La demo è pubblica, funziona con dati di esempio e non richiede carta, registrazione né installazione.",
+  },
+  {
+    q: "Cosa includono i prezzi di lancio?",
+    a: `Core è previsto a ${core("it")} e Pro a ${pro("it")}. Sono prezzi di lancio indicativi finché distribuzione commerciale, licenza e supporto non saranno attivi.`,
+  },
+  {
+    q: "Quali dati non vengono richiesti?",
+    a: "Non chiediamo mai credenziali, capitale, estratti conto né dati finanziari. Chiediamo solo ciò che serve per selezionare il pilota e capire come tieni il tuo journal.",
+  },
+];
+
+/** Las cuatro dudas de precios en el idioma de la página: el acordeón y su `FAQPage` salen de aquí. */
+export function pricingFaq(lang: Lang): QA[] {
+  const porIdioma: Record<Lang, QA[]> = {
+    es: PRICING_FAQ_ES,
+    en: PRICING_FAQ_EN,
+    pt: PRICING_FAQ_PT,
+    fr: PRICING_FAQ_FR,
+    de: PRICING_FAQ_DE,
+    it: PRICING_FAQ_IT,
+  };
+  return porIdioma[lang];
+}
 
 /** `FAQPage` de schema.org a partir de las mismas preguntas que se pintan, ya elegidas por idioma. */
 export function jsonLdFaq(items: QA[]) {
