@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PRICING_FAQ_EN, jsonLdFaq } from "@/lib/faq";
+import { pricingFaq, jsonLdFaq } from "@/lib/faq";
 import { PricingBody } from "../../pricing/page";
 import {
   metadataPricing,
@@ -11,7 +11,7 @@ export const metadata: Metadata = metadataPricing("fr");
 
 const breadcrumbSchema = breadcrumbPricingSchema("fr");
 const productSchema = productPricingSchema("fr");
-const faqSchema = jsonLdFaq(PRICING_FAQ_EN);
+const faqSchema = jsonLdFaq(pricingFaq("fr"));
 
 export default function PricingFrPage() {
   return (
