@@ -919,7 +919,8 @@ export function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setPage("trades")}
-                className="text-xs text-tertiary hover:text-primary transition-colors flex items-center gap-1"
+                // `-my-3.5 py-3.5`: de 16 a 44 px de zona táctil sin mover la fila.
+                className="-my-3.5 py-3.5 text-xs text-tertiary hover:text-primary transition-colors flex items-center gap-1"
               >
                 {es ? "Ver todas" : "See all"}
                 <svg width="10" height="10" viewBox="0 0 16 16" fill="none" aria-hidden="true">
