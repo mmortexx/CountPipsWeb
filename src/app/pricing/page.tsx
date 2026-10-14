@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PRICING_FAQ_ES, jsonLdFaq } from "@/lib/faq";
+import { pricingFaq, jsonLdFaq } from "@/lib/faq";
 import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Pricing } from "@/components/marketing/Pricing";
@@ -31,7 +31,7 @@ const breadcrumbSchema = {
 
 // Generado desde la misma lista que pinta el acordeón, para no publicar a los
 // buscadores una respuesta que la página no da (src/lib/faq.ts).
-const faqSchema = jsonLdFaq(PRICING_FAQ_ES);
+const faqSchema = jsonLdFaq(pricingFaq("es"));
 
 /** `Product` sin `Offer`: durante el piloto privado los precios son una referencia futura, no una oferta comprable. */
 const productSchema = {
