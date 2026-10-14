@@ -39,6 +39,18 @@ export function analyticsAllowed(): boolean {
   return readConsent() === "accepted";
 }
 
+/**
+ * Escape rechaza el aviso solo si el foco está dentro de él. Quien lo pulsa
+ * para cerrar otra cosa (glosario, menú, idioma) no registra un rechazo.
+ */
+export function escapeRechazaAviso(
+  tecla: string,
+  origen: unknown,
+  aviso: { contains(n: unknown): boolean } | null
+): boolean {
+  return tecla === "Escape" && aviso !== null && aviso.contains(origen);
+}
+
 /** Guarda la elección y avisa a quien escuche. */
 export function writeConsent(choice: Exclude<Consent, null>): void {
   if (typeof window === "undefined") return;

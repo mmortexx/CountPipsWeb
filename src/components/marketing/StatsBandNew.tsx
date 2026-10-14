@@ -4,8 +4,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
-import { FECHA_PUBLICACION } from "@/lib/publicacion";
-import { LOCALE_FECHA } from "@/lib/trading/format";
+import { FECHA_PUBLICACION, notaCorte } from "@/lib/publicacion";
 
 /**
  * Banda de credenciales de la home: tres cifras que definen el producto
@@ -84,9 +83,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
       it: <>I calcolatori disponibili oggi su {enlace("/herramientas", "Strumenti")}; il test di disciplina non è conteggiato.</>,
     }),
   ];
-  const corte = FECHA_PUBLICACION
-    ? new Date(FECHA_PUBLICACION).toLocaleDateString(LOCALE_FECHA[lang], { year: "numeric", month: "long", timeZone: "UTC" })
-    : "";
+  const nota = notaCorte(lang, FECHA_PUBLICACION);
 
   return (
     <section className="section-tight relative">
@@ -126,18 +123,7 @@ export function StatsBandNew({ herramientas }: { herramientas: number }) {
               </li>
             ))}
           </ol>
-          {corte && (
-            <p>
-              {tx(lang, {
-                es: `Cifras a ${corte}.`,
-                en: `Figures as of ${corte}.`,
-                pt: `Números em ${corte}.`,
-                fr: `Chiffres au ${corte}.`,
-                de: `Stand der Zahlen: ${corte}.`,
-                it: `Dati a ${corte}.`,
-              })}
-            </p>
-          )}
+          {nota && <p>{nota}</p>}
         </div>
       </div>
     </section>

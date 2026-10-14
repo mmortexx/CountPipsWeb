@@ -6,7 +6,7 @@
  */
 
 import type { Lang } from "./locale";
-import { LOCALE_FECHA, fmtInt } from "./trading/format";
+import { deFr, LOCALE_FECHA, fmtInt } from "./trading/format";
 
 /** Dólares, pago único del plan Core. */
 export const PRECIO_CORE = 149;
@@ -27,7 +27,7 @@ export const aproxEur = (usd: number) => Math.round(usd / USD_POR_EUR);
    de la web es el de Brasil. */
 const AL_CAMBIO: Partial<Record<Lang, (mes: string) => string>> = {
   es: (mes) => `al cambio de ${mes}`,
-  fr: (mes) => `au taux de change de ${mes}`,
+  fr: (mes) => `au taux de change ${deFr(mes)}`,
   de: (mes) => `zum Wechselkurs vom ${mes}`,
   it: (mes) => `al cambio di ${mes}`,
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { analyticsAllowed } from "@/lib/consent";
+import { idiomaDeHtmlLang } from "@/lib/locale";
 
 type EventProps = Record<string, string | number | boolean | null | undefined>;
 
@@ -15,8 +16,9 @@ export function trackEvent(event: string, properties: EventProps = {}) {
   // Segunda puerta, además de la de `PostHog.tsx`: sin consentimiento vigente
   // no se envía nada, aunque el script siga cargado de una visita anterior.
   if (!analyticsAllowed()) return;
+  const htmlLang = document.documentElement.lang;
   window.posthog?.capture(event, {
     ...properties,
-    locale: window.location.pathname.startsWith("/en") ? "en" : "es",
+    locale: idiomaDeHtmlLang(htmlLang) ?? htmlLang,
   });
 }

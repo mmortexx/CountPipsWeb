@@ -2,9 +2,10 @@
 
 import { useEffect, useId, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { Link } from "@/components/tj/LocaleLink";
+import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { useLang, tx } from "@/lib/i18n";
-import { sinPrefijoEn, TABLA_IDIOMAS, idiomasDeRuta } from "@/lib/locale";
+import { rutaEnIdioma, sinPrefijoEn, TABLA_IDIOMAS, idiomasDeRuta } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 
@@ -41,7 +42,7 @@ const PRODUCT_ITEMS: {
     href: "/features",
     labelEs: "Características",
     labelEn: "Features",
-    labelPt: "Recursos",
+    labelPt: "Funcionalidades",
     labelFr: "Fonctionnalités",
     labelDe: "Funktionen",
     labelIt: "Funzionalità",
@@ -195,7 +196,7 @@ const DRAWER_LINKS: {
     href: "/features",
     labelEs: "Características",
     labelEn: "Features",
-    labelPt: "Recursos",
+    labelPt: "Funcionalidades",
     labelFr: "Fonctionnalités",
     labelDe: "Funktionen",
     labelIt: "Funzionalità",
@@ -1047,8 +1048,11 @@ function IconButton({
  * una línea) y cada entrada se muestra en su propia lengua.
  *
  * Accesibilidad: desplegable con `aria-expanded`/`aria-controls` y un grupo de
- * botones con `aria-pressed` y el `lang` de cada idioma. No es un `listbox`
- * porque no tiene navegación con flechas. Escape o clic fuera cierran.
+ * enlaces con `hrefLang`, `lang` de cada idioma y `aria-current` en el activo.
+ * Cada enlace es la dirección de esa versión: se puede abrir en otra pestaña.
+ * Es `NextLink` y no el `Link` de LocaleLink, que reescribiría la ruta según el
+ * idioma activo. No es un `listbox` porque no tiene navegación con flechas.
+ * Escape o clic fuera cierran.
  */
 function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
   const { lang, setLang } = useLang();
@@ -1127,12 +1131,16 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
             {disponibles.map((l) => {
               const activo = l.codigo === lang;
               return (
-                <button
+                <NextLink
                   key={l.codigo}
-                  type="button"
+                  href={rutaEnIdioma(pathname, l.codigo)}
+                  hrefLang={l.htmlLang}
                   lang={l.codigo}
-                  aria-pressed={activo}
-                  onClick={() => {
+                  aria-current={activo ? "true" : undefined}
+                  onClick={(e) => {
+                    // Con modificador o clic central, el navegador abre la pestaña.
+                    if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+                    e.preventDefault();
                     setLang(l.codigo);
                     setOpen(false);
                     btnRef.current?.focus();
@@ -1164,7 +1172,7 @@ function LanguagePicker({ size = "sm" }: { size?: "sm" | "md" }) {
                       />
                     </svg>
                   )}
-                </button>
+                </NextLink>
               );
             })}
           </div>

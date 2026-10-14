@@ -301,7 +301,7 @@ export function GuardianNew({ enPagina = false }: { enPagina?: boolean } = {}) {
                     : tx(lang, {
                         es: `Esta operación arriesga ${pct(riesgo)} de tu cuenta; tu límite por operación es ${pct(LIMITE_RIESGO)}.`,
                         en: `This trade risks ${pct(riesgo)} of your account; your per-trade limit is ${pct(LIMITE_RIESGO)}.`,
-                        pt: `Esta operação arrisca ${pct(riesgo)} da sua conta; seu limite por operação es ${pct(LIMITE_RIESGO)}.`,
+                        pt: `Esta operação arrisca ${pct(riesgo)} da sua conta; seu limite por operação é ${pct(LIMITE_RIESGO)}.`,
                         fr: `Ce trade risque ${pct(riesgo)} de votre compte ; votre limite par opération est ${pct(LIMITE_RIESGO)}.`,
                         de: `Dieser Trade riskiert ${pct(riesgo)} Ihres Kontos; Ihr Limit pro Trade beträgt ${pct(LIMITE_RIESGO)}.`,
                         it: `Questa operazione rischia il ${pct(riesgo)} del tuo conto; il tuo limite per operazione è ${pct(LIMITE_RIESGO)}.`,

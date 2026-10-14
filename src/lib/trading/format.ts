@@ -87,14 +87,44 @@ export function cifraEditable(value: number, lang: Lang = "es", maxDecimales = 6
     .replace("\u2212", "-");
 }
 
-/** Lee una cifra escrita en un campo, en cualquiera de los dos idiomas: coma o
- *  punto decimal, «−» tipográfico o «-». Sin millares, un único separador es
- *  el decimal. Devuelve `null` si no es una cifra (vacío, «1.2.3», «abc»). */
-export function leeCifra(texto: string): number | null {
-  const limpio = texto.trim().replace(/\u2212/g, "-").replace(/\s/g, "").replace(",", ".");
-  if (!/^-?(\d+\.?\d*|\.\d+)$/.test(limpio)) return null;
-  const n = Number(limpio);
-  return Number.isFinite(n) ? n : null;
+/** Separador decimal de cada idioma. El francés no escribe millares con punto. */
+const DECIMAL: Record<Lang, string> = { es: ",", en: ".", pt: ",", fr: ",", de: ",", it: "," };
+const GRUPOS_PUNTO = /^[1-9]\d{0,2}(\.\d{3})+$/;
+const GRUPOS_COMA = /^[1-9]\d{0,2}(,\d{3})+$/;
+
+/** Lee lo escrito en un campo según el idioma y los decimales que admite.
+ *  «10.000» es 10000 si el campo admite menos de tres decimales, y 10 si admite
+ *  tres o más, donde un precio como «151.234» sigue siendo decimal. Devuelve
+ *  `null` si no es una cifra (vacío, «1.2.3», «1e5»). */
+export function leeCifra(texto: string, lang: Lang, decimales: number): number | null {
+  const limpio = texto.replace(/\u2212/g, "-").replace(/\s/g, "");
+  const negativo = limpio.startsWith("-");
+  const cuerpo = negativo ? limpio.slice(1) : limpio;
+  if (!/^[\d.,]+$/.test(cuerpo) || !/\d/.test(cuerpo)) return null;
+  const valor = cifraSinSigno(cuerpo, lang, decimales);
+  if (valor === null || !Number.isFinite(valor)) return null;
+  return negativo && valor !== 0 ? -valor : valor;
+}
+
+function cifraSinSigno(cuerpo: string, lang: Lang, decimales: number): number | null {
+  const separadores = cuerpo.replace(/\d/g, "");
+  if (separadores === "") return Number(cuerpo);
+  if (new Set(separadores).size === 2) {
+    const decimal = separadores.slice(-1);
+    const corte = cuerpo.lastIndexOf(decimal);
+    const grupos = decimal === "," ? GRUPOS_PUNTO : GRUPOS_COMA;
+    const entera = cuerpo.slice(0, corte);
+    if (!grupos.test(entera)) return null;
+    return Number(`${entera.replace(/[.,]/g, "")}.${cuerpo.slice(corte + 1) || "0"}`);
+  }
+  if (separadores.length > 1) {
+    const grupos = separadores[0] === "." ? GRUPOS_PUNTO : GRUPOS_COMA;
+    return grupos.test(cuerpo) ? Number(cuerpo.replace(/[.,]/g, "")) : null;
+  }
+  const [entera, fraccion] = cuerpo.split(separadores);
+  const tresDetras = fraccion.length === 3 && entera.length > 0 && entera.length <= 3 && !entera.startsWith("0");
+  const millares = tresDetras && separadores !== DECIMAL[lang] && lang !== "fr" && decimales < 3;
+  return Number(millares ? entera + fraccion : `${entera || "0"}.${fraccion || "0"}`);
 }
 
 // Separador entre la cifra y el % según convención de idioma:
@@ -209,10 +239,13 @@ export function fmtDate(date: Date, lang: Lang = "es"): string {
   }).format(date);
 }
 
-/** Rótulo corto de eje de fechas, como el de la app: «15 feb» / «15 Feb». */
+/** Rótulo corto de eje de fechas, como el de la app: «15 feb» / «15 Feb». En pt-BR,
+ *  `Intl` mete « de » entre día y mes («15 de set»): ese literal se cambia por un espacio. */
 export function fmtDiaMes(date: Date, lang: Lang = "es"): string {
   return new Intl.DateTimeFormat(LOCALE_FECHA[lang], { day: "numeric", month: "short", timeZone: "UTC" })
-    .format(date)
+    .formatToParts(date)
+    .map((parte) => (parte.type === "literal" && parte.value.trim() === "de" ? " " : parte.value))
+    .join("")
     .replace(".", "");
 }
 
@@ -224,6 +257,11 @@ export function fmtDateTime(date: Date, lang: Lang = "es"): string {
     minute: "2-digit",
     timeZone: "UTC",
   }).format(date);
+}
+
+/** «de» delante de un mes en francés: «d’octobre» si empieza por vocal o h, «de janvier» si no. */
+export function deFr(texto: string): string {
+  return /^[aeiouyhàâäéèêëîïôöùûüÿœ]/i.test(texto) ? `d’${texto}` : `de ${texto}`;
 }
 
 /** Tono semántico según el signo del P&L. */
