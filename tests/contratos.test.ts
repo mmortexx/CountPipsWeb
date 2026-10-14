@@ -316,19 +316,25 @@ describe("lo que se le dice al buscador es lo que dice la página", () => {
     const acordeonPrecios = leerCodigo(
       "src/components/marketing/PricingFAQ.tsx",
     );
+    // Precios elige sus preguntas por idioma con `pricingFaq`: la página la
+    // llama con el suyo y el acordeón con el de la ruta.
     const pares: [string, string, string][] = [
       ["src/app/faq/page.tsx", "FAQ_ES", acordeon],
       ["src/app/en/faq/page.tsx", "FAQ_EN", acordeon],
-      ["src/app/pricing/page.tsx", "PRICING_FAQ_ES", acordeonPrecios],
-      ["src/app/en/pricing/page.tsx", "PRICING_FAQ_EN", acordeonPrecios],
+      ...(["es", "en", "pt", "fr", "de", "it"] as const).map(
+        (l): [string, string, string] => [
+          l === "es" ? "src/app/pricing/page.tsx" : `src/app/${l}/pricing/page.tsx`,
+          `pricingFaq("${l}")`,
+          acordeonPrecios,
+        ],
+      ),
     ];
     for (const [rel, constante, componente] of pares) {
       expect(leerCodigo(rel), `${rel} publica otra lista`).toContain(
         `jsonLdFaq(${constante})`,
       );
-      expect(componente, `el acordeón ya no pinta ${constante}`).toContain(
-        constante,
-      );
+      const pinta = constante.startsWith("pricingFaq(") ? "pricingFaq(lang)" : constante;
+      expect(componente, `el acordeón ya no pinta ${pinta}`).toContain(pinta);
     }
   });
 

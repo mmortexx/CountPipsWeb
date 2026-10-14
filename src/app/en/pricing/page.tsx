@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PRICING_FAQ_EN, jsonLdFaq } from "@/lib/faq";
+import { pricingFaq, jsonLdFaq } from "@/lib/faq";
 import { PricingBody } from "../../pricing/page";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
@@ -14,7 +14,7 @@ const breadcrumbSchema = {
 
 // Generado desde la misma lista que pinta el acordeón, para no publicar una
 // respuesta que la página no da (src/lib/faq.ts).
-const faqSchema = jsonLdFaq(PRICING_FAQ_EN);
+const faqSchema = jsonLdFaq(pricingFaq("en"));
 
 const productSchema = {
   "@context": "https://schema.org",
