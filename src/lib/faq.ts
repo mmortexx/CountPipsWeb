@@ -44,7 +44,7 @@ export const FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué métodos de pago aceptáis?",
-    a: "La demo no tiene coste. La compra se abrirá cuando la entrega comercial, la licencia y el soporte estén listos; el acceso anticipado no es una preventa.",
+    a: "Todavía ninguno: la compra no está abierta y nada en esta web cobra. Los métodos de pago se publicarán aquí cuando se abra la venta, junto con la licencia y el soporte. El acceso anticipado no es una preventa y no pide tarjeta.",
   },
   {
     q: "¿Puedo ver el producto antes de solicitar acceso?",
@@ -99,7 +99,7 @@ export const FAQ_EN: QA[] = [
   },
   {
     q: "What payment methods do you accept?",
-    a: "The demo is free. Purchase opens when commercial delivery, licensing and support are ready; early access is not a pre-order.",
+    a: "None yet: purchases are not open and nothing on this site takes payment. Payment methods will be listed here when sales open, together with licensing and support. Early access is not a pre-order and asks for no card.",
   },
   {
     q: "Can I see the product before requesting access?",
