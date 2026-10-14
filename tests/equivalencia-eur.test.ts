@@ -16,7 +16,7 @@ describe("equivalencia en euros", () => {
   it.each(casos)("%s la enseña con su frase", (lang, frase) => {
     for (const precio of [PRECIO_CORE, PRECIO_PRO]) {
       const texto = equivalenciaEur(precio, lang);
-      expect(texto, lang).toMatch(/^≈ \d+ € /);
+      expect(texto, lang).toMatch(/^≈\u00a0\d+\u00a0€ /);
       expect(texto, lang).toContain(frase);
     }
   });
