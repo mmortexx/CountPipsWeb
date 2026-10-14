@@ -92,6 +92,7 @@
 | `idiomas-nuevos.test.ts` | Verifica en `out/` que las páginas de nuevos idiomas (pt, fr, de, it) no sean copias del inglés ni idénticas entre sí, y que tengan el `lang` de HTML correcto |
 | `analitica-idioma.test.ts` | La analítica etiqueta cada evento con el idioma de `<html lang>` (`en`, `pt`, `de`…) y no con la ruta del despliegue; un idioma que no está en la tabla se envía tal cual |
 | `ruta-en-idioma.test.ts` | `rutaEnIdioma`, la dirección de la página en otro idioma que usan el selector y el cambio de idioma: sin prefijo para el español, con el prefijo de cada idioma y sin `search` ni `hash` |
+| `restos-de-espanol.test.ts` | Ninguna cadena `pt:` de `src/` lleva una marca de español («es», «y», «el», «los», «una», «pero», «con», «también» o una terminación «-ción»): lee cada cita y cada bloque JSX de su valor, y exige ver al menos el 90 % de los 297 fragmentos medidos para que el detector no se quede ciego |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 
