@@ -5,6 +5,9 @@
  * catálogo real.
  */
 
+import type { Lang } from "./locale";
+import { LOCALE_FECHA, fmtInt } from "./trading/format";
+
 /** Dólares, pago único del plan Core. */
 export const PRECIO_CORE = 149;
 
@@ -13,12 +16,29 @@ export const PRECIO_PRO = 249;
 
 /**
  * Dólares por euro del tipo de referencia del BCE, para la equivalencia
- * aproximada que se enseña en español. Es orientativa: se revisa a mano.
+ * aproximada de la tarjeta de precios. Es orientativa: se revisa a mano.
  */
 export const USD_POR_EUR = 1.1551;
 export const FECHA_TIPO_EUR = "2026-09-14";
 
 export const aproxEur = (usd: number) => Math.round(usd / USD_POR_EUR);
+
+/* Solo en los idiomas de la zona euro: el inglés lee dólares y el portugués
+   de la web es el de Brasil. */
+const AL_CAMBIO: Partial<Record<Lang, (mes: string) => string>> = {
+  es: (mes) => `al cambio de ${mes}`,
+  fr: (mes) => `au taux de change de ${mes}`,
+  de: (mes) => `zum Wechselkurs vom ${mes}`,
+  it: (mes) => `al cambio di ${mes}`,
+};
+
+/** «≈ 129 € al cambio de septiembre de 2026», o `null` donde no se enseña. */
+export function equivalenciaEur(usd: number, lang: Lang): string | null {
+  const frase = AL_CAMBIO[lang];
+  if (!frase) return null;
+  const mes = new Date(FECHA_TIPO_EUR).toLocaleDateString(LOCALE_FECHA[lang], { month: "long", year: "numeric", timeZone: "UTC" });
+  return `≈ ${fmtInt(aproxEur(usd), lang)} € ${frase(mes)}`;
+}
 
 /** Meses de suscripción que cuestan lo mismo que el pago único, y si caben en el horizonte elegido. */
 export function amortizacion(precio: number, mensual: number, anios: number) {
