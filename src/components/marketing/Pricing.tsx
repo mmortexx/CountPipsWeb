@@ -250,7 +250,7 @@ function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
         )}
       </div>
       {equivalencia && (
-        <p className="mt-3 mb-0 text-[14px] text-tertiary tnum">{equivalencia}</p>
+        <p className="mt-3 mb-0 text-[14px] leading-[1.6] text-tertiary tnum">{equivalencia}</p>
       )}
 
       <SelloPrevisto

@@ -37,7 +37,7 @@ export function equivalenciaEur(usd: number, lang: Lang): string | null {
   const frase = AL_CAMBIO[lang];
   if (!frase) return null;
   const mes = new Date(FECHA_TIPO_EUR).toLocaleDateString(LOCALE_FECHA[lang], { month: "long", year: "numeric", timeZone: "UTC" });
-  return `≈ ${fmtInt(aproxEur(usd), lang)} € ${frase(mes)}`;
+  return `≈\u00a0${fmtInt(aproxEur(usd), lang)}\u00a0€ ${frase(mes)}`;
 }
 
 /** Meses de suscripción que cuestan lo mismo que el pago único, y si caben en el horizonte elegido. */
