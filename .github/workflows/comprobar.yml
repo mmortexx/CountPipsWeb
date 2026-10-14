@@ -58,6 +58,10 @@ jobs:
       - name: Comprobar el HTML compilado (prefijo y vocabulario)
         run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
 
+      # Las auditorías que leen `out/` sin navegador, como en `deploy.yml`.
+      - name: Auditorías del HTML compilado
+        run: node scripts/metadatos.mjs out && node scripts/enlaces.mjs out && node scripts/cifras.mjs out && node scripts/rotulos.mjs out && node scripts/equipaje.mjs out
+
       # La dirección oficial: canónico, mapa del sitio, robots y tarjetas
       # sociales en la dirección que pide el entorno, sin restos de otra.
       - name: Comprobar la dirección oficial
@@ -68,6 +72,9 @@ jobs:
 
       - name: Comprobación de humo en navegador
         run: node scripts/humo.mjs --serve out
+
+      - name: Zona táctil medida en móvil
+        run: node scripts/toque.mjs --serve out
 
   # El sitio tal como se servirá en el dominio propio (Cloudflare Pages): en la
   # raíz, sin prefijo, y con la dirección oficial nueva. Nadie lo compila así
@@ -104,6 +111,9 @@ jobs:
 
       - name: Comprobación de humo en navegador
         run: node scripts/humo.mjs --serve out
+
+      - name: Zona táctil medida en móvil
+        run: node scripts/toque.mjs --serve out
 
       # Las cabeceras de `public/_headers` solo las aplica Cloudflare: aquí se
       # recorre el sitio con ellas puestas para que la política de contenido no

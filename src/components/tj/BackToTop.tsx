@@ -137,7 +137,7 @@ export function BackToTop() {
           })}
           data-visible={visible ? "true" : "false"}
           tabIndex={visible ? 0 : -1}
-          className="tj-emerge tj-subir pointer-events-auto relative w-10 h-10 rounded-[4px] tj-cristal tj-cristal--denso flex items-center justify-center text-primary"
+          className="tj-emerge tj-subir pointer-events-auto relative w-10 h-10 [@media(pointer:coarse)]:w-11 [@media(pointer:coarse)]:h-11 rounded-[4px] tj-cristal tj-cristal--denso flex items-center justify-center text-primary"
         >
               <svg
                 className="relative"

@@ -1,4 +1,6 @@
 import { tarjetaSocial } from "@/lib/tarjeta-social";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { fmtMoney } from "@/lib/trading/format";
 
 // Literales en cada fichero: Next las lee del texto y no sigue reexportaciones.
 export const runtime = "nodejs";
@@ -11,6 +13,6 @@ export default function Image() {
   return tarjetaSocial({
     antetitulo: "Precios",
     titulo: "Dos planes: Core y Pro.",
-    subtitulo: "Precios de lanzamiento previstos: Core 149\u00a0$ · Pro 249\u00a0$.",
+    subtitulo: `Precios de lanzamiento previstos: Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })}.`,
   });
 }

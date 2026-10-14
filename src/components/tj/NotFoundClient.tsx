@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { fmtMoney } from "@/lib/trading/format";
 
 /**
  * Cuerpo de la 404. Vive aparte porque `src/app/not-found.tsx` es de servidor
@@ -37,8 +39,8 @@ export function NotFoundClient() {
       href: "/pricing",
       label: es ? "Precios" : "Pricing",
       desc: es
-        ? "Core 149\u00a0$ y Pro 249\u00a0$, precios de lanzamiento previstos."
-        : "Core $149 and Pro $249, planned launch prices.",
+        ? `Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} y Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })}, precios de lanzamiento previstos.`
+        : `Core ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} and Pro ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })}, planned launch prices.`,
     },
   ];
 

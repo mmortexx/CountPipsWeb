@@ -4,7 +4,7 @@ import * as React from "react";
 import { Search } from "lucide-react";
 
 import { useLang } from "@/lib/i18n";
-import { FAQ_ES, FAQ_EN, type QA } from "@/lib/faq";
+import { FAQ_ES, FAQ_EN, type CategoriaFaq, type QAFaq } from "@/lib/faq";
 import { paraBuscar } from "@/lib/busqueda";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
@@ -31,7 +31,7 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
   const es = lang === "es";
 
   const [query, setQuery] = React.useState("");
-  const [activeCategory, setActiveCategory] = React.useState<"all" | "security" | "access" | "product">("all");
+  const [activeCategory, setActiveCategory] = React.useState<"all" | CategoriaFaq>("all");
 
   // Rellena la búsqueda desde `?q=` (p. ej. la caja de la página 404).
   React.useEffect(() => {
@@ -42,19 +42,13 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
     if (q && q.trim() !== "") setQuery(q);
   }, []);
 
-  const items: QA[] = es ? FAQ_ES : FAQ_EN;
+  const items: QAFaq[] = es ? FAQ_ES : FAQ_EN;
 
-  // Filtro por texto y categoría; las categorías son índices en la lista.
+  // Filtro por texto y categoría; la categoría va escrita en cada pregunta.
   const filtered = React.useMemo(() => {
     const q = paraBuscar(query.trim());
-    return items.filter((it, idx) => {
-      if (activeCategory === "security") {
-        if (![1, 2, 10, 12].includes(idx)) return false;
-      } else if (activeCategory === "access") {
-        if (![0, 5, 6, 7, 8].includes(idx)) return false;
-      } else if (activeCategory === "product") {
-        if (![3, 4, 9, 11].includes(idx)) return false;
-      }
+    return items.filter((it) => {
+      if (activeCategory !== "all" && it.categoria !== activeCategory) return false;
 
       if (q === "") return true;
       return (

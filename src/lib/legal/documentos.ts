@@ -1,4 +1,6 @@
 import { TITULAR, LEGAL_ACTUALIZADO } from "@/lib/legal/titular";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { fmtMoney } from "@/lib/trading/format";
 
 /**
  * Texto de las cuatro páginas legales, en los dos idiomas. Cada afirmación
@@ -441,8 +443,8 @@ const terminos: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "La demo es pública y funciona con datos de muestra. El acceso anticipado se asigna por perfil y no es una compra ni una preventa. Los precios Core 149\u00a0$ y Pro 249\u00a0$ son referencias de lanzamiento y pueden cambiar antes de abrir la venta.",
-          en: "The demo is public and uses sample data. Early access is assigned by profile and is not a purchase or pre-order. Core at $149 and Pro at $249 are indicative launch prices and may change before sales open.",
+          es: `La demo es pública y funciona con datos de muestra. El acceso anticipado se asigna por perfil y no es una compra ni una preventa. Los precios Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} y Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })} son referencias de lanzamiento y pueden cambiar antes de abrir la venta.`,
+          en: `The demo is public and uses sample data. Early access is assigned by profile and is not a purchase or pre-order. Core at ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} and Pro at ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })} are indicative launch prices and may change before sales open.`,
         },
         {
           tipo: "parrafo",

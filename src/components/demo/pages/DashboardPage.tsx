@@ -65,7 +65,7 @@ const inputCls =
   /* `min-w-0` aquí vale para todos los campos: un `<input>` trae ancho
      intrínseco y, como hijo de rejilla, su `min-width:auto` impide
      encoger la celda (a 320 px se salía 14 px). */
-  "w-full min-w-0 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
+  "w-full min-w-0 bg-[rgb(var(--divider)/0.05)] border border-[rgb(var(--divider)/0.1)] rounded-[2px] h-9 toque-comodo px-3 text-sm text-primary tnum placeholder:text-tertiary focus:border-[rgb(var(--divider)/0.2)] focus:bg-[rgb(var(--divider)/0.08)] transition-colors appearance-none";
 const labelCls =
   "block text-[11px] uppercase tracking-[0.15em] text-tertiary mb-1.5";
 
@@ -530,7 +530,7 @@ export function DashboardPage() {
                             setQuantity(q < 1 ? precio(q, 3) : precio(q, 2));
                           }
                         }}
-                        className="h-9 px-3 inline-flex items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-[12px] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.06)] transition-colors whitespace-nowrap"
+                        className="h-9 toque-comodo px-3 inline-flex items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-[12px] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.06)] transition-colors whitespace-nowrap"
                       >
                         <svg
                           width="12"
@@ -875,7 +875,7 @@ export function DashboardPage() {
                           type="button"
                           onClick={() => setTfSel(mode)}
                           aria-pressed={active}
-                          className={`relative px-2.5 h-6 rounded text-[11px] font-medium tnum transition-colors ${
+                          className={`relative toque-halo px-2.5 h-6 rounded text-[11px] font-medium tnum transition-colors ${
                             active
                               ? "text-primary"
                               : "text-tertiary hover:text-secondary"

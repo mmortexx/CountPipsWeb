@@ -11,114 +11,146 @@ import type { Lang } from "./locale";
 import { PRECIO_CORE, PRECIO_PRO } from "./precios";
 import { fmtMoney } from "./trading/format";
 
-export type QA = { q: string; a: string };
+/** Core y Pro con su símbolo, en el idioma del texto que los cita. */
+const core = (lang: Lang) => fmtMoney(PRECIO_CORE, lang, { decimals: 0 });
+const pro = (lang: Lang) => fmtMoney(PRECIO_PRO, lang, { decimals: 0 });
 
-export const FAQ_ES: QA[] = [
+export type QA = { q: string; a: string };
+export type CategoriaFaq = "security" | "access" | "product";
+export type QAFaq = QA & { categoria: CategoriaFaq };
+
+export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Ya se puede comprar?",
-    a: "Todavía no. La compra se abrirá con el lanzamiento; hasta entonces, la demo es pública y no pide registro ni tarjeta. Core 149\u00a0$ y Pro 249\u00a0$ son los precios de lanzamiento previstos.",
+    categoria: "access",
+    a: `Todavía no. La compra se abrirá con el lanzamiento; hasta entonces, la demo es pública y no pide registro ni tarjeta. Core ${core("es")} y Pro ${pro("es")} son los precios de lanzamiento previstos.`,
   },
   {
     q: "¿Mis datos están seguros?",
+    categoria: "security",
     a: `Tus operaciones viven en una base de datos SQLite dentro de tu equipo. No hay cuenta ni telemetría, y CountPips no tiene servidores donde guardarlas. Puedes activar el cifrado EFS de Windows sobre la carpeta de datos, salvo en Windows Home. Solo salen del equipo si activas una función que lo necesita, como la copia cifrada en una carpeta que ya sincroniza tu nube. ${LO_QUE_VA_SOLO.es}. La lista completa está en la página de seguridad.`,
   },
   {
     q: "¿Puedo exportar mis datos?",
+    categoria: "security",
     a: "Sí. Puedes exportar tus posiciones a CSV (para Excel o Google Sheets), la cuenta completa a JSON e informes a PDF. Leer y exportar tus datos nunca depende de la licencia: si caduca, la app pasa a solo lectura y todo sigue siendo tuyo.",
   },
   {
     q: "¿Funciona en Mac o Linux?",
+    categoria: "product",
     a: "No. CountPips es una app nativa de Windows (WinUI 3) para Windows 10 y 11 de 64 bits. Una versión para macOS está planificada como app hermana solo después de validar las ventas en Windows; Linux no está en el plan.",
   },
   {
     q: "¿Puedo importar de otro diario?",
+    categoria: "product",
     a: `Sí, si exporta a CSV: el asistente de importación mapea las columnas y guarda la receta para la próxima vez. Trae plantillas para ${enumerar(PROGRAMA.plantillasCsv, "es")}, y Binance puede sincronizarse en solo lectura. Los importadores dedicados de TradeZella, Tradervue y Edgewonk todavía no existen.`,
   },
   {
     q: "¿Cómo se selecciona el acceso anticipado?",
+    categoria: "access",
     a: "Revisamos las solicitudes por perfil y fase del producto, no por orden de llegada. Si encaja con el piloto privado, escribiremos con los pasos de invitación.",
   },
   {
     q: "¿Qué está listo y qué se está validando?",
+    categoria: "access",
     a: "La demo, el diario, las métricas y los recorridos de riesgo están listos para explorar. El piloto privado valida la instalación y el flujo con usuarios reales; en Acerca de, «Qué está listo, qué validamos y qué sigue» detalla lo que todavía no prometemos.",
   },
   {
     q: "¿Qué métodos de pago aceptáis?",
+    categoria: "access",
     a: "Todavía ninguno: la compra no está abierta y nada en esta web cobra. Los métodos de pago se publicarán aquí cuando se abra la venta, junto con la licencia y el soporte. El acceso anticipado no es una preventa y no pide tarjeta.",
   },
   {
     q: "¿Puedo ver el producto antes de solicitar acceso?",
+    categoria: "access",
     a: "Sí. Puedes explorar la demo en vivo con datos deterministas, sin registro y sin descargar nada. La aplicación instalada se entrega solo a participantes del piloto privado invitados.",
   },
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
+    categoria: "product",
     a: `Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y ${PROGRAMA.cuentasCore} cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.`,
   },
   {
     q: "¿Qué datos pide esta web?",
+    categoria: "security",
     a: "Ninguno financiero: ni credenciales, ni capital, ni extractos. Las calculadoras hacen sus cuentas en tu navegador. Los formularios piden lo que ves en ellos —\u2060el de contacto, nombre, email y mensaje; el de acceso anticipado, email, perfil, experiencia, mercados, cómo llevas hoy tu diario, qué quieres mejorar primero y una nota opcional\u2060—, y el de acceso añade el idioma, la página desde la que lo envías y, si el enlace la trae, la campaña por la que llegaste. La analítica de visitas solo se activa si la aceptas en el aviso de cookies.",
   },
   {
     q: "¿Podré usarlo en varios ordenadores?",
+    categoria: "product",
     a: "La política de dispositivos se concretará antes de la venta. Durante el piloto privado recibirás instrucciones de instalación solo si eres invitado.",
   },
   {
     q: "¿Qué ocurre si cambio de ordenador durante el piloto?",
+    categoria: "security",
     a: "Crea una copia de seguridad desde el programa —\u2060un solo archivo con tus operaciones y tus capturas\u2060— y restáurala en el ordenador nuevo. No pediremos credenciales ni datos financieros para hacerlo.",
   },
 ];
 
-export const FAQ_EN: QA[] = [
+export const FAQ_EN: QAFaq[] = [
   {
     q: "Can I buy it yet?",
-    a: "Not yet. Purchases open at launch; until then, the demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 as launch prices.",
+    categoria: "access",
+    a: `Not yet. Purchases open at launch; until then, the demo is public and requires no sign-up or card. Core is planned at ${core("en")} and Pro at ${pro("en")} as launch prices.`,
   },
   {
     q: "Is my data safe?",
+    categoria: "security",
     a: `Your trades live in a SQLite database on your machine. There is no account and no telemetry, and CountPips has no servers to store them. You can turn on Windows EFS encryption for the data folder, except on Windows Home. They only leave your machine if you turn on a feature that needs them, such as the encrypted copy in a folder your cloud already syncs. ${LO_QUE_VA_SOLO.en}. The full list is on the security page.`,
   },
   {
     q: "Can I export my data?",
+    categoria: "security",
     a: "Yes. You can export your positions to CSV (for Excel or Google Sheets), the full account to JSON and reports to PDF. Reading and exporting your data never depends on the licence: if it lapses, the app switches to read-only and everything stays yours.",
   },
   {
     q: "Does it work on Mac or Linux?",
+    categoria: "product",
     a: "No. CountPips is a native Windows app (WinUI 3) for 64-bit Windows 10 and 11. A macOS version is planned as a sister app only after sales are validated on Windows; Linux is not on the plan.",
   },
   {
     q: "Can I import from another journal?",
+    categoria: "product",
     a: `Yes, if it exports to CSV: the import wizard maps the columns and saves the recipe for next time. It ships templates for ${enumerar(PROGRAMA.plantillasCsv, "en")}, and Binance can sync in read-only mode. Dedicated importers for TradeZella, Tradervue and Edgewonk do not exist yet.`,
   },
   {
     q: "How is early access selected?",
+    categoria: "access",
     a: "We review applications by profile and product phase, not by order of arrival. If it fits the private pilot, we will write with invitation steps.",
   },
   {
     q: "What is ready and what is being validated?",
+    categoria: "access",
     a: "The demo, journal, metrics and risk journeys are ready to explore. The private pilot validates installation and workflow with real users; on the About page, “What’s ready, what we’re testing and what comes next” sets out what is not promised yet.",
   },
   {
     q: "What payment methods do you accept?",
+    categoria: "access",
     a: "None yet: purchases are not open and nothing on this site takes payment. Payment methods will be listed here when sales open, together with licensing and support. Early access is not a pre-order and asks for no card.",
   },
   {
     q: "Can I see the product before requesting access?",
+    categoria: "access",
     a: "Yes. Explore the live demo with deterministic data, no sign-up and nothing to download. The desktop installer is delivered only to invited private-pilot participants.",
   },
   {
     q: "What’s the difference between Core and Pro?",
+    categoria: "product",
     a: `Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and ${PROGRAMA.cuentasCore} trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.`,
   },
   {
     q: "What data does this website ask for?",
+    categoria: "security",
     a: "Nothing financial: no credentials, no capital, no statements. The calculators do their maths in your browser. The forms ask for what you see in them — the contact form, name, email and message; the early-access form, email, profile, experience, markets, how you keep your journal today, what you want to improve first and an optional note — and the early-access form also sends the language, the page you send it from and, if the link carries one, the campaign that brought you. Visit analytics only switch on if you accept them in the cookie notice.",
   },
   {
     q: "Will I be able to use it on multiple computers?",
+    categoria: "product",
     a: "The device policy will be defined before sales open. During the private pilot, invited participants receive installation instructions.",
   },
   {
     q: "What if I change computers during the pilot?",
+    categoria: "security",
     a: "Create a backup from the app —\u2060a single file with your trades and your screenshots\u2060— and restore it on the new computer. We will not ask for credentials or financial data to do it.",
   },
 ];
@@ -135,7 +167,7 @@ export const PRICING_FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué incluyen los precios de lanzamiento?",
-    a: "Core está previsto en 149\u00a0$ y Pro en 249\u00a0$. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
+    a: `Core está previsto en ${core("es")} y Pro en ${pro("es")}. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.`,
   },
   {
     q: "¿Qué datos no se solicitan?",
@@ -154,7 +186,7 @@ export const PRICING_FAQ_EN: QA[] = [
   },
   {
     q: "What do the launch prices include?",
-    a: "Core is planned at $149 and Pro at $249. Both are indicative launch prices until commercial delivery, licensing and support go live.",
+    a: `Core is planned at ${core("en")} and Pro at ${pro("en")}. Both are indicative launch prices until commercial delivery, licensing and support go live.`,
   },
   {
     q: "What data do you not request?",
@@ -164,9 +196,6 @@ export const PRICING_FAQ_EN: QA[] = [
 
 /* Portada y precios también se publican en portugués, francés, alemán e
    italiano: sus cuatro dudas, en el mismo orden que las de arriba. */
-const core = (lang: Lang) => fmtMoney(PRECIO_CORE, lang, { decimals: 0 });
-const pro = (lang: Lang) => fmtMoney(PRECIO_PRO, lang, { decimals: 0 });
-
 const PRICING_FAQ_PT: QA[] = [
   {
     q: "O que recebo ao solicitar acesso antecipado?",

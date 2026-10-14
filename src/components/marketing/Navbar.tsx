@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useLang, tx } from "@/lib/i18n";
 import { rutaEnIdioma, sinPrefijoEn, TABLA_IDIOMAS, idiomasDeRuta } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
+import { TERMINOS_GLOSARIO } from "@/lib/producto";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 
 /**
@@ -142,12 +143,12 @@ const PRODUCT_ITEMS: {
     labelFr: "Glossaire",
     labelDe: "Glossar",
     labelIt: "Glossario",
-    descEs: "57 términos explicados sin rodeos",
-    descEn: "57 terms explained without waffle",
-    descPt: "57 termos explicados de forma direta",
-    descFr: "57 termes expliqués sans détour",
-    descDe: "57 Begriffe präzise erklärt",
-    descIt: "57 termini spiegati senza giri di parole",
+    descEs: `${TERMINOS_GLOSARIO} términos explicados sin rodeos`,
+    descEn: `${TERMINOS_GLOSARIO} terms explained without waffle`,
+    descPt: `${TERMINOS_GLOSARIO} termos explicados de forma direta`,
+    descFr: `${TERMINOS_GLOSARIO} termes expliqués sans détour`,
+    descDe: `${TERMINOS_GLOSARIO} Begriffe präzise erklärt`,
+    descIt: `${TERMINOS_GLOSARIO} termini spiegati senza giri di parole`,
     grupo: "recursos",
   },
   {

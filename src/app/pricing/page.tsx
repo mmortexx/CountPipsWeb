@@ -47,14 +47,14 @@ const productSchema = {
 export const metadata: Metadata = {
   title: "Precios",
   description:
-    "Demo interactiva sin registro. Precios de lanzamiento previstos: Core 149\u00a0$ · Pro 249\u00a0$.",
+    `Demo interactiva sin registro. Precios de lanzamiento previstos: Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })}.`,
   alternates: {
     canonical: `${SITE_URL}/pricing/`,
     languages: hreflangDe("/pricing"),
   },
   openGraph: {
     title: "Precios — CountPips",
-    description: "Demo interactiva sin registro. Precios de lanzamiento previstos: Core 149\u00a0$ · Pro 249\u00a0$.",
+    description: `Demo interactiva sin registro. Precios de lanzamiento previstos: Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })}.`,
     url: `${SITE_URL}/pricing/`,
     type: "website",
     siteName: "CountPips",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Precios — CountPips",
-    description: "Demo interactiva sin registro. Core 149\u00a0$ · Pro 249\u00a0$ como precios de lanzamiento previstos.",
+    description: `Demo interactiva sin registro. Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })} como precios de lanzamiento previstos.`,
   },
 };
 
@@ -98,11 +98,11 @@ export function PricingBody() {
         titleFr="Le prix, par écrit."
         titleDe="Der Preis, schwarz auf weiß."
         titleIt="Il prezzo, nero su bianco."
-        subtitleEs={"Core 149\u00a0$ y Pro 249\u00a0$ son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa."}
-        subtitleEn="Core $149 and Pro $249 are planned launch prices. Try the demo first; private early access is not a pre-order."
+        subtitleEs={`Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} y Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })} son precios de lanzamiento previstos. Prueba primero la demo; el acceso anticipado privado no es una preventa.`}
+        subtitleEn={`Core ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} and Pro ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })} are planned launch prices. Try the demo first; private early access is not a pre-order.`}
         subtitlePt={`Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} e Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })} são preços de lançamento previstos. Experimente primeiro a demo; o acesso antecipado privado não é uma pré-venda.`}
-        subtitleFr={"Core 149\u00a0$ et Pro 249\u00a0$ sont des prix de lancement prévus. Essayez d’abord la démo ; l’accès anticipé privé n’est pas une précommande."}
-        subtitleDe={"Core 149\u00a0$ und Pro 249\u00a0$ sind geplante Einführungspreise. Testen Sie zuerst die Demo; der private Vorabzugang ist kein Vorverkauf."}
+        subtitleFr={`Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} et Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })} sont des prix de lancement prévus. Essayez d’abord la démo ; l’accès anticipé privé n’est pas une précommande.`}
+        subtitleDe={`Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} und Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })} sind geplante Einführungspreise. Testen Sie zuerst die Demo; der private Vorabzugang ist kein Vorverkauf.`}
         subtitleIt={`Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} e Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })} sono prezzi di lancio previsti. Prova prima la demo; l’accesso anticipato privato non è un preordine.`}
         breadcrumbEs="Precios"
         breadcrumbEn="Pricing"
