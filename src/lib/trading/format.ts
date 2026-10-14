@@ -239,10 +239,13 @@ export function fmtDate(date: Date, lang: Lang = "es"): string {
   }).format(date);
 }
 
-/** Rótulo corto de eje de fechas, como el de la app: «15 feb» / «15 Feb». */
+/** Rótulo corto de eje de fechas, como el de la app: «15 feb» / «15 Feb». En pt-BR,
+ *  `Intl` mete « de » entre día y mes («15 de set»): ese literal se cambia por un espacio. */
 export function fmtDiaMes(date: Date, lang: Lang = "es"): string {
   return new Intl.DateTimeFormat(LOCALE_FECHA[lang], { day: "numeric", month: "short", timeZone: "UTC" })
-    .format(date)
+    .formatToParts(date)
+    .map((parte) => (parte.type === "literal" && parte.value.trim() === "de" ? " " : parte.value))
+    .join("")
     .replace(".", "");
 }
 
