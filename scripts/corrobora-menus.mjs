@@ -96,7 +96,13 @@ if (!(await subir.count())) {
 // 9. Cambio de idioma ES → EN con el selector de la barra («Cambiar idioma»).
 await page.locator('header button[aria-label="Cambiar idioma"]:visible').first().click();
 await page.waitForTimeout(500);
-await page.locator("[data-panel-idiomas] button").filter({ hasText: /English/ }).first().click();
+// Cada idioma es un enlace con su dirección: se puede abrir en otra pestaña.
+const enlaceEn = page.locator("[data-panel-idiomas] a").filter({ hasText: /English/ }).first();
+const hrefEn = (await enlaceEn.getAttribute("href")) ?? "";
+const rutaEs = new URL(page.url()).pathname;
+const esperadoEn = rutaEs === "/" ? "/en/" : `/en${rutaEs}`;
+ok("el idioma inglés es un enlace a esta página en inglés", hrefEn.replace(/\/?$/, "/") === esperadoEn.replace(/\/?$/, "/"), `${hrefEn} (esperado ${esperadoEn})`);
+await enlaceEn.click();
 await page.waitForURL("**/en/**", { timeout: 9000 }).catch(() => {});
 const enUrl = /\/en/.test(page.url());
 ok("selector de idioma lleva a /en", enUrl, page.url());
