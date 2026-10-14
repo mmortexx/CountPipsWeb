@@ -6,6 +6,7 @@ import { useLang, tx } from "@/lib/i18n";
 import {
   CONSENT_REOPEN_EVENT,
   CONSENT_VISIBILITY_EVENT,
+  escapeRechazaAviso,
   readConsent,
   writeConsent,
 } from "@/lib/consent";
@@ -121,11 +122,11 @@ export function CookieConsent() {
     volver?.focus?.();
   }, []);
 
-  // Escape rechaza (WCAG 2.1.1).
+  // Escape rechaza (WCAG 2.1.1) solo con el foco dentro del aviso.
   useEffect(() => {
     if (!visible) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (escapeRechazaAviso(e.key, e.target, hoja.current)) {
         choose("declined");
       }
     };

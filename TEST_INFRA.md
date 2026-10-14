@@ -96,6 +96,7 @@
 | `ruta-en-idioma.test.ts` | `rutaEnIdioma`, la dirección de la página en otro idioma que usan el selector y el cambio de idioma: sin prefijo para el español, con el prefijo de cada idioma y sin `search` ni `hash` |
 | `restos-de-espanol.test.ts` | Ninguna cadena `pt:` de `src/` lleva una marca de español («es», «y», «el», «los», «una», «pero», «con», «también» o una terminación «-ción»): lee cada cita y cada bloque JSX de su valor, y exige ver al menos el 90 % de los 297 fragmentos medidos para que el detector no se quede ciego |
 | `pie.test.ts` | Las columnas del pie en los seis idiomas (`columnasPie`): ningún texto se repite entre títulos y enlaces, y cada columna tiene título y enlaces |
+| `escape-aviso.test.ts` | Escape rechaza el aviso de cookies solo con el foco dentro de él: pulsado para cerrar el glosario, un menú o el idioma, no registra un «rechazar» que nadie eligió |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 
