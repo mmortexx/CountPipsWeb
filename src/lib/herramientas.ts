@@ -207,9 +207,9 @@ export const HERRAMIENTAS: Herramienta[] = [
     h1Es: "Una referencia, no una oferta.",
     h1En: "A reference, not an offer.",
     subtituloEs:
-      "Core 149\u00a0$ y Pro 249\u00a0$ son precios previstos de lanzamiento. Introduce una alternativa mensual para comparar escenarios, sin que el resultado sea una oferta de compra.",
+      `Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} y Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })} son precios previstos de lanzamiento. Introduce una alternativa mensual para comparar escenarios, sin que el resultado sea una oferta de compra.`,
     subtituloEn:
-      "Core $149 and Pro $249 are planned launch prices. Enter a monthly alternative to compare scenarios; the result is not a purchase offer.",
+      `Core ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} and Pro ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })} are planned launch prices. Enter a monthly alternative to compare scenarios; the result is not a purchase offer.`,
     resumenEs: "Cómo se compara un coste mensual con los precios previstos de lanzamiento.",
     resumenEn: "How a monthly cost compares with the planned launch prices.",
     entregaEs: "Escenario de coste",
@@ -247,6 +247,8 @@ const EN_LETRA: Record<"es" | "en", string[]> = {
 };
 
 import type { Lang } from "@/lib/locale";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { fmtMoney } from "@/lib/trading/format";
 
 /** Cuántas herramientas hay, en letra y con mayúscula inicial; los textos que lo dicen salen de aquí. */
 export function herramientasEnLetra(lang: Lang): string {

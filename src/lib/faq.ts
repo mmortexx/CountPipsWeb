@@ -11,12 +11,16 @@ import type { Lang } from "./locale";
 import { PRECIO_CORE, PRECIO_PRO } from "./precios";
 import { fmtMoney } from "./trading/format";
 
+/** Core y Pro con su símbolo, en el idioma del texto que los cita. */
+const core = (lang: Lang) => fmtMoney(PRECIO_CORE, lang, { decimals: 0 });
+const pro = (lang: Lang) => fmtMoney(PRECIO_PRO, lang, { decimals: 0 });
+
 export type QA = { q: string; a: string };
 
 export const FAQ_ES: QA[] = [
   {
     q: "¿Ya se puede comprar?",
-    a: "Todavía no. La compra se abrirá con el lanzamiento; hasta entonces, la demo es pública y no pide registro ni tarjeta. Core 149\u00a0$ y Pro 249\u00a0$ son los precios de lanzamiento previstos.",
+    a: `Todavía no. La compra se abrirá con el lanzamiento; hasta entonces, la demo es pública y no pide registro ni tarjeta. Core ${core("es")} y Pro ${pro("es")} son los precios de lanzamiento previstos.`,
   },
   {
     q: "¿Mis datos están seguros?",
@@ -71,7 +75,7 @@ export const FAQ_ES: QA[] = [
 export const FAQ_EN: QA[] = [
   {
     q: "Can I buy it yet?",
-    a: "Not yet. Purchases open at launch; until then, the demo is public and requires no sign-up or card. Core is planned at $149 and Pro at $249 as launch prices.",
+    a: `Not yet. Purchases open at launch; until then, the demo is public and requires no sign-up or card. Core is planned at ${core("en")} and Pro at ${pro("en")} as launch prices.`,
   },
   {
     q: "Is my data safe?",
@@ -135,7 +139,7 @@ export const PRICING_FAQ_ES: QA[] = [
   },
   {
     q: "¿Qué incluyen los precios de lanzamiento?",
-    a: "Core está previsto en 149\u00a0$ y Pro en 249\u00a0$. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.",
+    a: `Core está previsto en ${core("es")} y Pro en ${pro("es")}. Son referencias de lanzamiento hasta que la entrega comercial, la licencia y el soporte estén abiertos.`,
   },
   {
     q: "¿Qué datos no se solicitan?",
@@ -154,7 +158,7 @@ export const PRICING_FAQ_EN: QA[] = [
   },
   {
     q: "What do the launch prices include?",
-    a: "Core is planned at $149 and Pro at $249. Both are indicative launch prices until commercial delivery, licensing and support go live.",
+    a: `Core is planned at ${core("en")} and Pro at ${pro("en")}. Both are indicative launch prices until commercial delivery, licensing and support go live.`,
   },
   {
     q: "What data do you not request?",
@@ -164,9 +168,6 @@ export const PRICING_FAQ_EN: QA[] = [
 
 /* Portada y precios también se publican en portugués, francés, alemán e
    italiano: sus cuatro dudas, en el mismo orden que las de arriba. */
-const core = (lang: Lang) => fmtMoney(PRECIO_CORE, lang, { decimals: 0 });
-const pro = (lang: Lang) => fmtMoney(PRECIO_PRO, lang, { decimals: 0 });
-
 const PRICING_FAQ_PT: QA[] = [
   {
     q: "O que recebo ao solicitar acesso antecipado?",

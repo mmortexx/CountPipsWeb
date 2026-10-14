@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { pricingFaq, jsonLdFaq } from "@/lib/faq";
 import { PricingBody } from "../../pricing/page";
 import { SITE_URL, hreflangDe } from "@/lib/site";
+import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { fmtMoney } from "@/lib/trading/format";
 
 const breadcrumbSchema = {
   "@context": "https://schema.org",
@@ -29,14 +31,14 @@ const productSchema = {
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "No-sign-up interactive demo. Planned launch prices: Core $149 · Pro $249.",
+    `No-sign-up interactive demo. Planned launch prices: Core ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })}.`,
   alternates: {
     canonical: `${SITE_URL}/en/pricing/`,
     languages: hreflangDe("/pricing"),
   },
   openGraph: {
     title: "Pricing — CountPips",
-    description: "No-sign-up interactive demo. Planned launch prices: Core $149 · Pro $249.",
+    description: `No-sign-up interactive demo. Planned launch prices: Core ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })}.`,
     url: `${SITE_URL}/en/pricing/`,
     type: "website",
     siteName: "CountPips",
@@ -46,7 +48,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Pricing — CountPips",
-    description: "No-sign-up interactive demo. Core $149 · Pro $249 as planned launch prices.",
+    description: `No-sign-up interactive demo. Core ${fmtMoney(PRECIO_CORE, "en", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "en", { decimals: 0 })} as planned launch prices.`,
   },
 };
 

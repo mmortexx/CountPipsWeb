@@ -442,9 +442,10 @@ describe("el menú cuenta lo que hay", () => {
 
   it("términos del glosario", async () => {
     const { TERMINOS } = await import("@/lib/glosario");
-    const vistas = cifra(/"(\d+) (?:términos|terms)\b/g);
+    const { TERMINOS_GLOSARIO } = await import("@/lib/producto");
+    expect(TERMINOS_GLOSARIO).toBe(TERMINOS.length);
+    const vistas = [...navbar.matchAll(/\$\{TERMINOS_GLOSARIO\} (?:términos|terms)\b/g)];
     expect(vistas.length).toBe(2);
-    for (const n of vistas) expect(n).toBe(TERMINOS.length);
   });
 });
 

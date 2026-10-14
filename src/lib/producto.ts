@@ -32,6 +32,9 @@ export const PROGRAMA = {
   plantillasCsv: ["Interactive Brokers", "MetaTrader 4/5", "TradingView", "Binance", "Bybit"],
 } as const;
 
+/** Términos del glosario que enseña la web; `cifras-a-mano.test.ts` los cuenta contra `GLOSSARY`. */
+export const TERMINOS_GLOSARIO = 57;
+
 /** «A, B y C» o «A, B and C». */
 export function enumerar(nombres: readonly string[], lang: Lang): string {
   return new Intl.ListFormat(lang === "es" ? "es" : "en-GB", { type: "conjunction" }).format(nombres);
