@@ -6,6 +6,7 @@ import { openGlossary } from "@/lib/overlays";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { reopenConsent } from "@/lib/consent";
 import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
+import { columnasPie } from "@/lib/pie";
 import { LOCALE_FECHA } from "@/lib/trading/format";
 
 /** El único perfil externo que existe: el código de esta web. */
@@ -24,53 +25,7 @@ export function Footer() {
   // `anioDePublicacion()` en `next.config.ts`).
   const year = ANIO_PUBLICACION;
 
-  type FooterLink = {
-    label: string;
-    href: string;
-    /** Si es true, se pinta como disparador del glosario en vez de enlace. */
-    glossary?: boolean;
-  };
-
-  const cols: { title: string; links: FooterLink[] }[] = [
-    {
-      title: tx(lang, { es: "Producto", en: "Product", pt: "Produto", fr: "Produit", de: "Produkt", it: "Prodotto" }),
-      links: [
-        { label: tx(lang, { es: "Características", en: "Features", pt: "Recursos", fr: "Fonctionnalités", de: "Funktionen", it: "Funzionalità" }), href: "/features" },
-        { label: tx(lang, { es: "Demo", en: "Demo", pt: "Demo", fr: "Démo", de: "Demo", it: "Demo" }), href: "/demo" },
-        { label: tx(lang, { es: "Precios", en: "Pricing", pt: "Preços", fr: "Tarifs", de: "Preise", it: "Prezzi" }), href: "/pricing" },
-        { label: tx(lang, { es: "Operativa manual", en: "Manual trading", pt: "Trading manual", fr: "Trading manuel", de: "Manuelles Trading", it: "Trading manuale" }), href: "/traders/manual" },
-        { label: tx(lang, { es: "Prop firms", en: "Prop firms", pt: "Prop firms", fr: "Prop firms", de: "Prop-Firms", it: "Prop firms" }), href: "/traders/prop-firms" },
-        { label: tx(lang, { es: "Acceso anticipado", en: "Early access", pt: "Acesso antecipado", fr: "Accès anticipé", de: "Vorabzugang", it: "Accesso anticipato" }), href: "/beta" },
-        { label: tx(lang, { es: "Novedades", en: "Changelog", pt: "Novidades", fr: "Nouveautés", de: "Changelog", it: "Novità" }), href: "/about#changelog" },
-      ],
-    },
-    {
-      title: tx(lang, { es: "Recursos", en: "Resources", pt: "Recursos", fr: "Ressources", de: "Ressourcen", it: "Risorse" }),
-      links: [
-        { label: "FAQ", href: "/faq" },
-        { label: tx(lang, { es: "Glosario", en: "Glossary", pt: "Glossário", fr: "Glossaire", de: "Glossar", it: "Glossario" }), href: "/glosario" },
-        { label: tx(lang, { es: "Herramientas", en: "Tools", pt: "Ferramentas", fr: "Outils", de: "Tools", it: "Strumenti" }), href: "/herramientas" },
-        { label: tx(lang, { es: "Test de disciplina", en: "Discipline test", pt: "Teste de disciplina", fr: "Test de discipline", de: "Disziplintest", it: "Test di disciplina" }), href: "/test" },
-      ],
-    },
-    {
-      title: tx(lang, { es: "Empresa", en: "Company", pt: "Empresa", fr: "Entreprise", de: "Unternehmen", it: "Azienda" }),
-      links: [
-        { label: tx(lang, { es: "Acerca de", en: "About", pt: "Sobre", fr: "À propos", de: "Über uns", it: "Chi siamo" }), href: "/about" },
-        /* El único formulario de contacto vive en /faq, no en /about. */
-        { label: tx(lang, { es: "Contacto", en: "Contact", pt: "Contato", fr: "Contact", de: "Kontakt", it: "Contatti" }), href: "/faq#contacto" },
-      ],
-    },
-    {
-      title: tx(lang, { es: "Legal", en: "Legal", pt: "Jurídico", fr: "Légal", de: "Rechtliches", it: "Legale" }),
-      links: [
-        { label: tx(lang, { es: "Privacidad", en: "Privacy", pt: "Privacidade", fr: "Confidentialité", de: "Datenschutz", it: "Privacy" }), href: "/privacidad" },
-        { label: tx(lang, { es: "Términos", en: "Terms", pt: "Termos", fr: "Conditions", de: "AGB", it: "Termini" }), href: "/terminos" },
-        { label: "Cookies", href: "/cookies" },
-        { label: tx(lang, { es: "Aviso legal", en: "Legal notice", pt: "Aviso legal", fr: "Mentions légales", de: "Impressum", it: "Note legali" }), href: "/aviso-legal" },
-      ],
-    },
-  ];
+  const cols = columnasPie(lang);
 
   return (
     <footer className="tj-pie relative mt-auto safe-bottom">

@@ -28,7 +28,7 @@ describe("Cromo de mesa", () => {
   // Las mismas familias que el pie: un grupo no cambia de nombre entre sitios.
   it("el cajón móvil agrupa Producto, Recursos y Empresa, como el pie", () => {
     const nav = leer("src/components/marketing/Navbar.tsx");
-    const pie = leer("src/components/marketing/Footer.tsx");
+    const pie = leer("src/lib/pie.ts");
     expect(nav).toMatch(/id: "producto", es: "Producto"/);
     expect(nav).toMatch(/id: "recursos", es: "Recursos"/);
     expect(nav).toMatch(/id: "empresa", es: "Empresa"/);
