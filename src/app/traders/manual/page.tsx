@@ -3,11 +3,11 @@ import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
 import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Operativa manual",
+  title: "Diario de trading para operativa manual",
   description: "Métricas, playbooks y revisión de operaciones para quien opera a mano: mide tu ventaja real y detecta el patrón que te está costando dinero.",
   alternates: { canonical: `${SITE_URL}/traders/manual/`, languages: hreflangDe("/traders/manual") },
   openGraph: {
-    title: "Operativa manual — CountPips",
+    title: "Diario de trading para operativa manual — CountPips",
     description: "Métricas, playbooks y revisión de operaciones para quien opera a mano: mide tu ventaja real y detecta el patrón que te está costando dinero.",
     url: `${SITE_URL}/traders/manual/`,
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Operativa manual — CountPips",
+    title: "Diario de trading para operativa manual — CountPips",
     description: "Métricas, playbooks y revisión de operaciones para quien opera a mano: mide tu ventaja real y detecta el patrón que te está costando dinero.",
   },
 };

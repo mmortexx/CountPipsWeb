@@ -9,7 +9,7 @@ import {
   migasSchema,
   esquemasTrader,
 } from "@/lib/site";
-import { TERMINOS, tituloDeTermino, LARGO_MAXIMO_TITULO } from "@/lib/glosario";
+import { TERMINOS, nombreTermino, tituloDeTermino, LARGO_MAXIMO_TITULO } from "@/lib/glosario";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { DOCUMENTOS_LEGALES } from "@/lib/legal/documentos";
 import { FAQ_ES, FAQ_EN, PRICING_FAQ_ES, PRICING_FAQ_EN, jsonLdFaq } from "@/lib/faq";
@@ -33,7 +33,7 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
       const duplicateTitles: string[] = [];
 
       for (const t of TERMINOS) {
-        const titleEs = `${tituloDeTermino(t.term, "es")} — ${SITE_NAME}`;
+        const titleEs = `${tituloDeTermino(nombreTermino(t, "es"), "es")} — ${SITE_NAME}`;
         const titleEn = `${tituloDeTermino(t.term, "en")} — ${SITE_NAME}`;
 
         if (titlesEs.has(titleEs)) duplicateTitles.push(`Duplicate ES glossary title: ${titleEs}`);
@@ -121,8 +121,8 @@ describe("Dimension D5: SEO Technical & Metadata", () => {
         expect(hl.en, `Missing 'en' in hreflang for ${path}`).toBeDefined();
         expect(hl["x-default"], `Missing 'x-default' in hreflang for ${path}`).toBeDefined();
 
-        // `x-default` apunta a la versión española.
-        expect(hl["x-default"]).toBe(hl.es);
+        // `x-default` es para quien no habla ninguno de los idiomas declarados: el inglés le sirve más que el español.
+        expect(hl["x-default"]).toBe(hl.en);
 
         if (path === "/") {
           expect(hl.es).toBe(`${SITE_URL}/`);

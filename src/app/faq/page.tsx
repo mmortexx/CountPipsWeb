@@ -32,7 +32,7 @@ const breadcrumbSchema = {
 const faqSchema = jsonLdFaq(FAQ_ES);
 
 export const metadata: Metadata = {
-  title: "FAQ",
+  title: "Preguntas frecuentes antes de instalar",
   description:
     "Preguntas frecuentes sobre CountPips: precio, privacidad, compatibilidad, importación, actualizaciones y más.",
   alternates: {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/faq"),
   },
   openGraph: {
-    title: "FAQ — CountPips",
+    title: "Preguntas frecuentes antes de instalar — CountPips",
     description: "Preguntas frecuentes sobre CountPips: precio, privacidad, compatibilidad y más.",
     url: `${SITE_URL}/faq/`,
     type: "website",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FAQ — CountPips",
+    title: "Preguntas frecuentes antes de instalar — CountPips",
     description:
       "Preguntas frecuentes sobre CountPips: precio, privacidad, compatibilidad, importación, actualizaciones y más.",
   },

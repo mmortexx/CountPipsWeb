@@ -127,6 +127,29 @@ Conviene añadir también `www.countpips.com` como segundo dominio del mismo
 proyecto, para que quien lo teclee con `www` llegue. El canónico sigue siendo
 el de sin `www`.
 
+## El día del dominio: buscadores
+
+Hasta entonces el buscador apenas encuentra el sitio: solo lee `robots.txt` en
+la raíz del servidor, y en GitHub Pages el nuestro cuelga de `/CountPipsWeb/`,
+así que el mapa del sitio no lo anuncia nadie. Con el dominio, en este orden:
+
+1. `NEXT_PUBLIC_SITE_URL` en Cloudflare Pages y en GitHub Actions (ver arriba),
+   y comprobar en el código fuente de una página publicada que el canónico ya
+   dice `countpips.com`.
+2. Abrir `https://countpips.com/robots.txt` y `/sitemap.xml`: deben responder y
+   nombrar el dominio.
+3. Dar de alta el dominio en Google Search Console (propiedad de dominio,
+   verificada por DNS en Cloudflare) y en Bing Webmaster Tools, que puede
+   importarla de Search Console.
+4. Enviar `https://countpips.com/sitemap.xml` en los dos.
+5. Pedir la indexación de la portada en las dos lenguas y, pasados unos días,
+   mirar en el informe de páginas cuáles quedan fuera y por qué.
+6. El `noindex` de `*.pages.dev` en `public/_headers` **se queda**: solo cubre
+   las copias de Cloudflare, nunca el dominio.
+7. Conseguir enlaces desde otras webs: el perfil del repositorio, directorios de
+   herramientas de trading y foros donde la calculadora o el glosario respondan
+   una pregunta de verdad. Ninguno comprado.
+
 ## Cabeceras
 
 `public/_headers` lleva las cabeceras de seguridad y de caché, incluida la

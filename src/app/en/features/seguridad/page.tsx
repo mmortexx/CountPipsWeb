@@ -41,7 +41,7 @@ const articleSchema = {
 };
 
 export const metadata: Metadata = {
-  title: { absolute: "Security — CountPips" },
+  title: { absolute: "Local trading journal, no account — CountPips" },
   description:
     "Local-first: your trades on your machine, no account and no telemetry. Technical specs, the complete list of connections and how your data is imported.",
   alternates: {
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/features/seguridad"),
   },
   openGraph: {
-    title: "Security — CountPips",
+    title: "Local trading journal, no account — CountPips",
     description: "No account, no telemetry and no CountPips servers. Your data, on your machine.",
     url: `${SITE_URL}/en/features/seguridad/`,
     type: "website",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Security — CountPips",
+    title: "Local trading journal, no account — CountPips",
     description: "No account, no telemetry and no CountPips servers. Your data, on your machine.",
   },
 };

@@ -5,6 +5,7 @@ import { HerramientaVista } from "@/components/herramientas/HerramientaVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { HERRAMIENTAS, herramientaPorSlug } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe } from "@/lib/site";
+import { terminosDeHerramienta } from "@/lib/glosario";
 
 /** Una página por herramienta, todas generadas en la compilación. */
 export function generateStaticParams() {
@@ -74,12 +75,12 @@ export default async function HerramientaPage({ params }: Props) {
     url: `${SITE_URL}/herramientas/${h.slug}/`,
     applicationCategory: "FinanceApplication",
     browserRequirements: "Requiere JavaScript",
-    inLanguage: ["es", "en"],
+    inLanguage: "es",
     isAccessibleForFree: true,
     offers: {
       "@type": "Offer",
       price: "0",
-      priceCurrency: "EUR",
+      priceCurrency: "USD",
     },
     publisher: { "@type": "Organization", name: "CountPips" },
   };
@@ -105,7 +106,7 @@ export default async function HerramientaPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema) }}
       />
-      <HerramientaVista herramienta={h} />
+      <HerramientaVista herramienta={h} terminos={terminosDeHerramienta(h.slug)} />
       <FinalCTANew variante="herramienta" />
     </>
   );

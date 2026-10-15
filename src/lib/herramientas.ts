@@ -42,8 +42,8 @@ export const HERRAMIENTAS: Herramienta[] = [
   {
     slug: "calculadora-de-riesgo",
     componente: "RiskCalculator",
-    tituloEs: "Calculadora de tamaño de posición",
-    tituloEn: "Position size calculator",
+    tituloEs: "Calculadora de lotaje y tamaño de posición",
+    tituloEn: "Position size and lot size calculator",
     h1Es: "Cuánto puedes arriesgar.",
     h1En: "How much you can risk.",
     subtituloEs:
@@ -82,8 +82,8 @@ export const HERRAMIENTAS: Herramienta[] = [
   {
     slug: "monte-carlo",
     componente: "RMultipleSimulator",
-    tituloEs: "Simulador de Monte Carlo",
-    tituloEn: "Monte Carlo simulator",
+    tituloEs: "Simulador de Monte Carlo y riesgo de ruina",
+    tituloEn: "Monte Carlo and risk of ruin simulator",
     h1Es: "Tu ventaja, trescientas veces.",
     h1En: "Your edge, three hundred times.",
     subtituloEs:
@@ -182,8 +182,8 @@ export const HERRAMIENTAS: Herramienta[] = [
   {
     slug: "reloj-de-sesiones",
     componente: "SessionClock",
-    tituloEs: "Reloj de sesiones de mercado",
-    tituloEn: "Market session clock",
+    tituloEs: "Horario de sesiones: Londres, Nueva York y Asia",
+    tituloEn: "Market sessions clock: London, New York, Asia",
     h1Es: "Qué mercado está abierto.",
     h1En: "Which market is open.",
     subtituloEs:

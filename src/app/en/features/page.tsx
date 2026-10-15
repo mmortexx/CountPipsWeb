@@ -39,7 +39,7 @@ const articleSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Features",
+  title: "Trading journal features",
   description:
     "CountPips features, real screenshots of the app and how it is used. Metrics, discipline and security each have their own page.",
   alternates: {
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/features"),
   },
   openGraph: {
-    title: "Features — CountPips",
+    title: "Trading journal features — CountPips",
     description: "Explore every CountPips feature in depth.",
     url: `${SITE_URL}/en/features/`,
     type: "website",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Features — CountPips",
+    title: "Trading journal features — CountPips",
     description: "40+ institutional metrics, discipline measured in money, a live playbook and your data on your machine.",
   },
 };

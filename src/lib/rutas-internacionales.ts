@@ -12,7 +12,6 @@ interface MetaIdioma {
   pricingTwitterDesc: string;
   breadcrumbHome: string;
   breadcrumbPricing: string;
-  productDescription: string;
   ogLocale: string;
 }
 
@@ -30,8 +29,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Demo interativa sem cadastro. Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })} como preços previstos de lançamento.`,
     breadcrumbHome: "Início",
     breadcrumbPricing: "Preços",
-    productDescription:
-      "Diário de trading nativo para Windows. Demo interativa, métricas institucionais, disciplina ativa e dados no seu computador.",
     ogLocale: "pt_BR",
   },
   fr: {
@@ -47,8 +44,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Démo interactive sans inscription. Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })} comme tarifs de lancement prévus.`,
     breadcrumbHome: "Accueil",
     breadcrumbPricing: "Tarifs",
-    productDescription:
-      "Journal de trading natif pour Windows. Démo interactive, métriques institutionnelles, discipline active et données locales.",
     ogLocale: "fr_FR",
   },
   de: {
@@ -64,8 +59,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Interaktive Demo ohne Registrierung. Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })} als geplante Einführungspreise.`,
     breadcrumbHome: "Startseite",
     breadcrumbPricing: "Preise",
-    productDescription:
-      "Trading-Journal, nativ für Windows. Interaktive Demo, institutionelle Kennzahlen, aktive Disziplin und lokale Daten.",
     ogLocale: "de_DE",
   },
   it: {
@@ -81,8 +74,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Demo interattiva senza registrazione. Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })} come prezzi di lancio previsti.`,
     breadcrumbHome: "Home",
     breadcrumbPricing: "Prezzi",
-    productDescription:
-      "Diario di trading nativo per Windows. Demo interattiva, metriche istituzionali, disciplina attiva e dati sul tuo PC.",
     ogLocale: "it_IT",
   },
 };
@@ -151,14 +142,3 @@ export function breadcrumbPricingSchema(lang: "pt" | "fr" | "de" | "it") {
   };
 }
 
-export function productPricingSchema(lang: "pt" | "fr" | "de" | "it") {
-  const meta = META_POR_IDIOMA[lang];
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: "CountPips",
-    description: meta.productDescription,
-    brand: { "@type": "Brand", name: "CountPips" },
-    category: "Software",
-  };
-}

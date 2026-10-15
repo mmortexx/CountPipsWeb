@@ -1,24 +1,18 @@
 import { GLOSSARY, type GlossaryCategory, type GlossaryTerm } from "@/lib/trading/glossary";
+import { nombreTermino, slugTermino } from "@/lib/trading/nombre-termino";
+
+export { nombreTermino, slugTermino };
 import { herramientaPorSlug } from "@/lib/herramientas";
 import type { Lang } from "@/lib/locale";
 
 /**
  * El glosario como secciones del sitio: cada término tiene su dirección.
- * El nombre del término y su dirección no se traducen (se busca «stop loss»,
- * no «pérdida de parada»); lo que cambia con el idioma es la definición.
+ * La dirección no se traduce; el nombre, solo donde se busca en español con
+ * otra palabra (`nombreEs`, en `trading/glossary.ts`). Se busca «stop loss»,
+ * no «pérdida de parada», pero sí «apalancamiento».
  */
 
 export type TerminoGlosario = GlossaryTerm & { slug: string };
-
-/** «Risk-reward ratio» → «risk-reward-ratio». */
-export function slugTermino(term: string): string {
-  return term
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 /** Los términos con su dirección ya calculada. */
 export const TERMINOS: TerminoGlosario[] = GLOSSARY.map((t) => ({
@@ -290,6 +284,9 @@ export const HERRAMIENTA_DE: Record<string, string> = {
   /* Pruebas de fondeo */
   "prop-firm": "/herramientas/prueba-de-fondeo",
 
+  /* Costes de ejecución */
+  slippage: "/herramientas/impacto-de-comisiones",
+
   /* Conducta */
   discipline: "/test",
   tilt: "/test",
@@ -449,6 +446,15 @@ export type FichaTermino = {
   anterior?: TerminoGlosario;
   siguiente?: TerminoGlosario;
 };
+
+/** Las voces que mandan a una herramienta, para que la herramienta les devuelva el enlace. */
+export function terminosDeHerramienta(slug: string): { slug: string; nombreEs: string; nombreEn: string }[] {
+  return TERMINOS.filter((t) => HERRAMIENTA_DE[t.slug] === `/herramientas/${slug}`).map((t) => ({
+    slug: t.slug,
+    nombreEs: nombreTermino(t, "es"),
+    nombreEn: t.term,
+  }));
+}
 
 export function fichaDeTermino(t: TerminoGlosario): FichaTermino {
   const href = HERRAMIENTA_DE[t.slug];

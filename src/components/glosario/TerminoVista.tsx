@@ -4,6 +4,7 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import type { FichaTermino } from "@/lib/glosario";
+import { nombreTermino } from "@/lib/trading/nombre-termino";
 
 
 /** Una salida de la ficha: rótulo pequeño encima y el destino subrayado. */
@@ -103,10 +104,10 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
                         className="group link-underline-host grid min-h-[52px] grid-cols-1 items-baseline gap-1 rounded-[4px] px-4 py-3 transition-colors hover:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] sm:grid-cols-[10rem_minmax(0,1fr)] sm:gap-5 lg:grid-cols-1 lg:gap-1"
                       >
                         <span
-                          lang="en"
+                          lang={es && t.nombreEs ? undefined : "en"}
                           className="text-[14px] font-medium text-primary"
                         >
-                          <span className="link-underline">{t.term}</span>
+                          <span className="link-underline">{nombreTermino(t, lang)}</span>
                         </span>
                         <span className="medida block text-[14px] leading-[1.6] text-secondary">
                           {es ? t.es : t.en}
@@ -139,10 +140,10 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
                     ← {es ? "Anterior" : "Previous"}
                   </span>
                   <span
-                    lang="en"
+                    lang={es && anterior.nombreEs ? undefined : "en"}
                     className="text-balance text-[14px] font-medium text-secondary transition-colors group-hover:text-primary"
                   >
-                    {anterior.term}
+                    {nombreTermino(anterior, lang)}
                   </span>
                 </Link>
               ) : (
@@ -157,10 +158,10 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
                     {es ? "Siguiente" : "Next"} →
                   </span>
                   <span
-                    lang="en"
+                    lang={es && siguiente.nombreEs ? undefined : "en"}
                     className="text-balance text-[14px] font-medium text-secondary transition-colors group-hover:text-primary"
                   >
-                    {siguiente.term}
+                    {nombreTermino(siguiente, lang)}
                   </span>
                 </Link>
               )}

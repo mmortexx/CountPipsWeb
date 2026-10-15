@@ -33,28 +33,19 @@ const breadcrumbSchema = {
 // buscadores una respuesta que la página no da (src/lib/faq.ts).
 const faqSchema = jsonLdFaq(pricingFaq("es"));
 
-/** `Product` sin `Offer`: durante el piloto privado los precios son una referencia futura, no una oferta comprable. */
-const productSchema = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  name: "CountPips",
-  description:
-    "Diario de trading nativo de Windows. Demo interactiva, métricas institucionales, disciplina que actúa y datos locales.",
-  brand: { "@type": "Brand", name: "CountPips" },
-  category: "Software",
-};
+/** Una sola descripción para el buscador, las redes y X. */
+const DESCRIPCION = `Precios del diario de trading CountPips para Windows: Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} y Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })}, previstos de lanzamiento. Antes, prueba la demo sin registro.`;
 
 export const metadata: Metadata = {
-  title: "Precios",
-  description:
-    `Demo interactiva sin registro. Precios de lanzamiento previstos: Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })}.`,
+  title: "Precios del diario de trading",
+  description: DESCRIPCION,
   alternates: {
     canonical: `${SITE_URL}/pricing/`,
     languages: hreflangDe("/pricing"),
   },
   openGraph: {
-    title: "Precios — CountPips",
-    description: `Demo interactiva sin registro. Precios de lanzamiento previstos: Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })}.`,
+    title: "Precios del diario de trading — CountPips",
+    description: DESCRIPCION,
     url: `${SITE_URL}/pricing/`,
     type: "website",
     siteName: "CountPips",
@@ -63,8 +54,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Precios — CountPips",
-    description: `Demo interactiva sin registro. Core ${fmtMoney(PRECIO_CORE, "es", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "es", { decimals: 0 })} como precios de lanzamiento previstos.`,
+    title: "Precios del diario de trading — CountPips",
+    description: DESCRIPCION,
   },
 };
 
@@ -89,7 +80,8 @@ export function PricingBody() {
   return (
     <>
       {/* El titular no puede decir «comprar»: no hay nada que comprar, los dos
-          CTA llevan al piloto privado y el esquema Product va sin Offer. */}
+          CTA llevan al piloto privado y no hay esquema Product: sin precio
+          de venta, Google lo daría por inválido. */}
       <PageHeader
         tono="tarifa"
         titleEs="El precio, por escrito."
@@ -128,10 +120,6 @@ export default function PricingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
       <script
         type="application/ld+json"

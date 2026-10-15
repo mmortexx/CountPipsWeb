@@ -56,7 +56,7 @@ const quizSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Test de disciplina",
+  title: "Test de disciplina para traders",
   description:
     "Quince preguntas sobre riesgo, plan, registro, temple y constancia. Tu perfil por ejes, una cifra global ponderada y qué arreglar primero. Sin email.",
   alternates: {
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/test"),
   },
   openGraph: {
-    title: "Test de disciplina — CountPips",
+    title: "Test de disciplina para traders — CountPips",
     description:
       "Mídete en cinco ejes: riesgo, plan, registro, temple y constancia. Perfil completo y por dónde empezar.",
     url: `${SITE_URL}/test/`,
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Test de disciplina — CountPips",
+    title: "Test de disciplina para traders — CountPips",
     description:
       "Quince preguntas, cinco ejes, una cifra ponderada y qué arreglar primero. Sin email.",
   },

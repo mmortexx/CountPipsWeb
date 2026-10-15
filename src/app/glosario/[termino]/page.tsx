@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
+import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, nombreTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // El título lleva «qué es» porque así se busca; se recorta solo en las voces
   // con la expansión dentro (MAE, MFE) para no pasar de 60 caracteres.
-  const titulo = `${tituloDeTermino(t.term, "es")} — CountPips`;
+  const titulo = `${tituloDeTermino(nombreTermino(t, "es"), "es")} — CountPips`;
   const desc = descripcionDeTermino(t, "es");
 
   return {
@@ -63,6 +63,7 @@ export default async function TerminoPage({ params }: Props) {
   if (!t) notFound();
 
   const familia = CATEGORIAS[t.category];
+  const nombre = nombreTermino(t, "es");
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -73,7 +74,7 @@ export default async function TerminoPage({ params }: Props) {
       {
         "@type": "ListItem",
         position: 3,
-        name: t.term,
+        name: nombre,
         item: `${SITE_URL}/glosario/${t.slug}/`,
       },
     ],
@@ -83,7 +84,8 @@ export default async function TerminoPage({ params }: Props) {
   const terminoSchema = {
     "@context": "https://schema.org",
     "@type": "DefinedTerm",
-    name: t.term,
+    name: nombre,
+    ...(nombre !== t.term && { alternateName: t.term }),
     description: t.es,
     inLanguage: "es",
     url: `${SITE_URL}/glosario/${t.slug}/`,
@@ -100,12 +102,12 @@ export default async function TerminoPage({ params }: Props) {
       <PageHeader
         eyebrowEs={familia.es}
         eyebrowEn={familia.en}
-        titleEs={t.term}
+        titleEs={nombre}
         titleEn={t.term}
         subtitleEs={t.es}
         subtitleEn={t.en}
         padre={{ href: "/glosario", es: "Glosario", en: "Glossary" }}
-        breadcrumbEs={t.term}
+        breadcrumbEs={nombre}
         breadcrumbEn={t.term}
       />
       <script

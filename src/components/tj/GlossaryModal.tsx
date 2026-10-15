@@ -22,6 +22,7 @@ import {
   type GlossaryCategory,
   type GlossaryTerm,
 } from "@/lib/trading/glossary";
+import { nombreTermino } from "@/lib/trading/nombre-termino";
 
 /**
  * Diálogo del glosario. El término va siempre en inglés (glosario congelado);
@@ -130,10 +131,11 @@ export function GlossaryModal({
       const matchesQuery =
         q === "" ||
         paraBuscar(g.term).includes(q) ||
+        paraBuscar(nombreTermino(g, lang)).includes(q) ||
         paraBuscar(es ? g.es : g.en).includes(q);
       return matchesCat && matchesQuery;
     });
-  }, [query, activeCat, es]);
+  }, [query, activeCat, es, lang]);
 
   React.useEffect(() => {
     if (activeIndex >= filtered.length) {
@@ -330,11 +332,11 @@ export function GlossaryModal({
                       trackRecent(g.term);
                       setExpanded((prev) => new Set(prev).add(g.term));
                     }}
-                    aria-label={es ? `Abrir ${g.term}` : `Open ${g.term}`}
+                    aria-label={es ? `Abrir ${nombreTermino(g, lang)}` : `Open ${g.term}`}
                     className="tj-filtro"
-                    lang="en"
+                    lang={es && g.nombreEs ? undefined : "en"}
                   >
-                    {g.term}
+                    {nombreTermino(g, lang)}
                   </button>
                 ))}
               </div>
@@ -397,9 +399,9 @@ export function GlossaryModal({
                         />
                         <h3
                           className="t-h5 m-0 text-primary truncate"
-                          lang="en"
+                          lang={es && g.nombreEs ? undefined : "en"}
                         >
-                          {g.term}
+                          {nombreTermino(g, lang)}
                         </h3>
                       </div>
                       {/* La familia solo dice algo cuando se ven todas. */}

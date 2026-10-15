@@ -12,7 +12,7 @@ const breadcrumbSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Live demo",
+  title: "Trading journal demo, no sign-up",
   description:
     "The app recreated in your browser. 4 clickable sections with realistic sample data. Not a video: the app itself.",
   alternates: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/demo"),
   },
   openGraph: {
-    title: "Live demo — CountPips",
+    title: "Trading journal demo, no sign-up — CountPips",
     description: "The app recreated in your browser. 4 clickable sections with sample data.",
     url: `${SITE_URL}/en/demo/`,
     type: "website",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Live demo — CountPips",
+    title: "Trading journal demo, no sign-up — CountPips",
     description: "The app recreated in your browser. 4 clickable sections with realistic sample data.",
   },
 };

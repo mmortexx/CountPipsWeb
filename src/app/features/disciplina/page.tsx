@@ -48,12 +48,12 @@ const articleSchema = {
 
 export const metadata: Metadata = {
   // `absolute` evita la plantilla `%s — CountPips` del layout (saldría duplicada).
-  title: { absolute: "Disciplina — CountPips" },
+  title: { absolute: "Disciplina de trading con límite de riesgo — CountPips" },
   description:
     "El Guardián mide cada operación contra tus reglas: semáforo de riesgo y, si lo activas, un freno duro al tocar tu límite. Indisciplina medida en dinero.",
   alternates: { canonical: `${SITE_URL}/features/disciplina/`, languages: hreflangDe("/features/disciplina") },
   openGraph: {
-    title: "Disciplina — CountPips",
+    title: "Disciplina de trading con límite de riesgo — CountPips",
     description: "Semáforo de riesgo y freno duro opcional. Disciplina que actúa, no que sermonea.",
     url: `${SITE_URL}/features/disciplina/`,
     type: "website",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Disciplina — CountPips",
+    title: "Disciplina de trading con límite de riesgo — CountPips",
     description: "Semáforo de riesgo y freno duro opcional. Disciplina que actúa, no que sermonea.",
   },
 };

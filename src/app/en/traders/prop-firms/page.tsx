@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
 import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
+import { PROGRAMA, enumerar } from "@/lib/producto";
+
+/** The firms come from PROGRAMA: the ones the app really ships. */
+const DESCRIPCION = `${enumerar(PROGRAMA.plantillasProp, "en")} templates: your firm’s rules with every trade, a warning before you break them and an evaluation report.`;
 
 export const metadata: Metadata = {
   title: "Prop firms: evaluations and funded accounts",
-  description: "Your firm’s rules measured with every trade you log, a warning before you break them and an evaluation report in PDF. Built for funded-account traders.",
+  description: DESCRIPCION,
   alternates: { canonical: `${SITE_URL}/en/traders/prop-firms/`, languages: hreflangDe("/traders/prop-firms") },
   openGraph: {
     title: "Prop firms — CountPips",
-    description: "Your firm’s rules measured with every trade you log, a warning before you break them and an evaluation report in PDF. Built for funded-account traders.",
+    description: DESCRIPCION,
     url: `${SITE_URL}/en/traders/prop-firms/`,
     type: "website",
     siteName: "CountPips",
@@ -18,7 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Prop firms — CountPips",
-    description: "Your firm’s rules measured with every trade you log, a warning before you break them and an evaluation report in PDF. Built for funded-account traders.",
+    description: DESCRIPCION,
   },
 };
 

@@ -49,12 +49,12 @@ const articleSchema = {
 
 export const metadata: Metadata = {
   // `absolute` evita la plantilla `%s — CountPips` del layout (saldría duplicada).
-  title: { absolute: "Seguridad — CountPips" },
+  title: { absolute: "Diario de trading local, sin cuenta — CountPips" },
   description:
     "Local-first: tus operaciones en tu equipo, sin cuenta ni telemetría. Ficha técnica, la lista completa de conexiones y cómo se importan tus datos.",
   alternates: { canonical: `${SITE_URL}/features/seguridad/`, languages: hreflangDe("/features/seguridad") },
   openGraph: {
-    title: "Seguridad — CountPips",
+    title: "Diario de trading local, sin cuenta — CountPips",
     description: "Sin cuenta, sin telemetría y sin servidores de CountPips. Tus datos, en tu equipo.",
     url: `${SITE_URL}/features/seguridad/`,
     type: "website",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Seguridad — CountPips",
+    title: "Diario de trading local, sin cuenta — CountPips",
     description: "Sin cuenta, sin telemetría y sin servidores de CountPips. Tus datos, en tu equipo.",
   },
 };
