@@ -39,7 +39,7 @@ const quizSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Discipline test",
+  title: "Trading discipline test",
   description:
     "Fifteen questions on risk, plan, record, composure and consistency. Your profile across each axis, a weighted overall score, and what to fix first. No email.",
   alternates: {
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/test"),
   },
   openGraph: {
-    title: "Discipline test — CountPips",
+    title: "Trading discipline test — CountPips",
     description:
       "Measure yourself across five axes: risk, plan, record, composure and consistency. Full profile and where to start.",
     url: `${SITE_URL}/en/test/`,
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Discipline test — CountPips",
+    title: "Trading discipline test — CountPips",
     description: "Fifteen questions, five axes, a weighted score and what to fix first. No email.",
   },
 };

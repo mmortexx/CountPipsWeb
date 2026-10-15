@@ -8,7 +8,9 @@ import { useLang } from "@/lib/i18n";
 /**
  * Navegación cruzada de las subpáginas de /features, entre el contenido y
  * `FinalCTANew`: un índice «Sigue explorando» con los tres ejes (Métricas,
- * Disciplina, Seguridad), marcado el actual, y atajos Alt + flechas.
+ * Disciplina, Seguridad), marcado el actual, y atajos Alt + flechas. En /features
+ * va sin `current`: es el único sitio del HTML que enlaza a los tres ejes (el
+ * menú solo se pinta al abrirlo), y sin eje actual no hay atajos.
  */
 
 type Axis = "metricas" | "disciplina" | "seguridad";
@@ -43,16 +45,16 @@ const AXES: Record<
 const ORDER: Axis[] = ["metricas", "disciplina", "seguridad"];
 
 interface FeaturePageNavProps {
-  current: Axis;
+  current?: Axis;
 }
 
 export function FeaturePageNav({ current }: FeaturePageNavProps) {
   const { lang } = useLang();
   const es = lang === "es";
 
-  const currentIdx = ORDER.indexOf(current);
+  const currentIdx = current ? ORDER.indexOf(current) : -1;
   const prev = currentIdx > 0 ? ORDER[currentIdx - 1] : null;
-  const next = currentIdx < ORDER.length - 1 ? ORDER[currentIdx + 1] : null;
+  const next = currentIdx >= 0 && currentIdx < ORDER.length - 1 ? ORDER[currentIdx + 1] : null;
   const router = useRouter();
 
   // Alt + flecha izquierda/derecha cambia de subpágina; no actúa mientras se

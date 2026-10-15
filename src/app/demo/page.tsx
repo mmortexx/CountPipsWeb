@@ -26,7 +26,7 @@ const breadcrumbSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Demo en vivo",
+  title: "Demo del diario de trading, sin registro",
   description:
     "Explora el recorrido esencial de CountPips en tu navegador con datos de muestra, sin registro ni instalación.",
   alternates: {
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/demo"),
   },
   openGraph: {
-    title: "Demo en vivo — CountPips",
+    title: "Demo del diario de trading, sin registro — CountPips",
     description: "Explora el recorrido esencial de CountPips con datos de muestra, sin registro ni instalación.",
     url: `${SITE_URL}/demo/`,
     type: "website",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Demo en vivo — CountPips",
+    title: "Demo del diario de trading, sin registro — CountPips",
     description:
       "Explora el recorrido esencial de CountPips con datos de muestra, sin registro ni instalación.",
   },

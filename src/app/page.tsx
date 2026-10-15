@@ -13,7 +13,7 @@ const PAGE_DESCRIPTION =
   "Diario de trading nativo de Windows. Explora una demo interactiva con métricas institucionales, disciplina y tus datos en tu equipo.";
 
 export const metadata: Metadata = {
-  title: { absolute: "CountPips — Opera como una mesa institucional." },
+  title: { absolute: "App de diario de trading para Windows — CountPips" },
   description: PAGE_DESCRIPTION,
   alternates: {
     canonical: `${SITE_URL}/`,

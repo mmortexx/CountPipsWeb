@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
+import { FeaturePageNav } from "@/components/marketing/FeaturePageNav";
 import { getCal, getSetups } from "@/lib/trading/fixtures";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { PUBLICACION_ISO, ULTIMA_ACTUALIZACION_ISO } from "@/lib/fechas";
@@ -48,12 +49,12 @@ const articleSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Características",
+  title: "Funciones del diario de trading",
   description:
     "Las funciones de CountPips, capturas reales del programa y cómo se usa. Métricas, disciplina y seguridad tienen su propia página.",
   alternates: { canonical: `${SITE_URL}/features/`, languages: hreflangDe("/features") },
   openGraph: {
-    title: "Características — CountPips",
+    title: "Funciones del diario de trading — CountPips",
     description: "Explora cada característica de CountPips en profundidad.",
     url: `${SITE_URL}/features/`,
     type: "website",
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Características — CountPips",
+    title: "Funciones del diario de trading — CountPips",
     description: "40+ métricas institucionales, disciplina medida en dinero, playbook en vivo y tus datos en tu equipo.",
   },
 };
@@ -110,6 +111,8 @@ export function FeaturesBody() {
       <HowItWorks />
 
       <FeatureExplorer />
+
+      <FeaturePageNav />
 
       <FinalCTANew variante="producto" />
       <TableOfContents />

@@ -73,8 +73,8 @@ node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin Jav
 node scripts/legible.mjs --serve out       # contraste de todo el texto sobre fondo plano
 node scripts/tinta.mjs --serve out         # texto sobre fondos de color, en los dos temas
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible
-node scripts/metadatos.mjs out             # título, descripción, canónico, hreflang, lang, ld+json
-node scripts/enlaces.mjs out               # enlaces rotos o que cambian de idioma
+node scripts/metadatos.mjs out             # título (con su búsqueda), descripción, canónico, hreflang, lang, ld+json
+node scripts/enlaces.mjs out               # enlaces rotos, que cambian de idioma o que faltan (madre → hija, herramienta → glosario)
 node scripts/cifras.mjs out                # convenciones de idioma y restos de plantilla
 node scripts/rotulos.mjs out               # lo que oye un lector de pantalla
 node scripts/equipaje.mjs out              # JS que cada página carga sin pedirlo

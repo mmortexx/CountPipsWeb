@@ -4,13 +4,11 @@ import { PricingBody } from "../../pricing/page";
 import {
   metadataPricing,
   breadcrumbPricingSchema,
-  productPricingSchema,
 } from "@/lib/rutas-internacionales";
 
 export const metadata: Metadata = metadataPricing("it");
 
 const breadcrumbSchema = breadcrumbPricingSchema("it");
-const productSchema = productPricingSchema("it");
 const faqSchema = jsonLdFaq(pricingFaq("it"));
 
 export default function PricingItPage() {
@@ -19,10 +17,6 @@ export default function PricingItPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
       <script
         type="application/ld+json"

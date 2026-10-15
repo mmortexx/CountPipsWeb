@@ -12,10 +12,16 @@
  * El 404 queda fuera de casi todas las reglas solo porque se declara
  * `noindex`; si alguien se lo quita, se le empieza a exigir la ficha.
  *
+ * También vigila lo que se busca: que cada página principal lleve en el título
+ * su búsqueda (`BUSQUEDA_DEL_TITULO`) y que las voces del glosario con nombre
+ * español se titulen con él en `/glosario/` y con el inglés en `/en/glosario/`.
+ *
  * Uso:  node scripts/metadatos.mjs out
  */
 import { readFileSync, globSync, existsSync } from "node:fs";
 import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
+import { GLOSSARY } from "../src/lib/trading/glossary.ts";
+import { slugTermino } from "../src/lib/trading/nombre-termino.ts";
 
 // Acepta `out` y `--serve out`, la forma de otras guardas.
 const dir = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -38,6 +44,9 @@ const entidades = (s) =>
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .trim();
+
+// Texto visible de un encabezado: sin etiquetas ni espacios de más, y sin el punto final de estilo.
+const texto = (s) => entidades(s.replace(/<[^>]+>/g, "").replace(/\s+/g, " ")).replace(/\.$/, "");
 
 const saca = (html, re) => {
   const m = html.match(re);
@@ -64,6 +73,8 @@ const paginas = ficheros.map((f) => {
     imagenesLd: [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].flatMap((m) =>
       [...m[1].matchAll(/"image":"([^"]*)"/g)].map((x) => x[1]),
     ),
+    bloquesLd: [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1])),
+    h1: [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => texto(m[1])),
   };
 });
 
@@ -136,6 +147,71 @@ for (const p of indexables) {
   for (const img of p.imagenesLd) {
     if (img.split("?")[0] !== tarjeta) anota("datos estructurados con otra imagen que la tarjeta", p.ruta, `${img} frente a ${tarjeta ?? "(sin og:image)"}`);
   }
+
+  // Google no acepta un `Product` sin precio, reseñas ni valoración, y ponerle precio diría que ya se vende.
+  for (const b of p.bloquesLd) {
+    if (b["@type"] === "Product" && !b.offers && !b.review && !b.aggregateRating)
+      anota("Product sin offers, review ni aggregateRating", p.ruta, `«${b.name}»: Google lo da por inválido`);
+  }
+
+  // Una voz del glosario se titula con el nombre que declara su `DefinedTerm`: el que se busca en ese idioma.
+  const termino = p.bloquesLd.find((b) => b["@type"] === "DefinedTerm");
+  if (termino) {
+    const sinParentesis = termino.name.replace(/\s*\([^)]*\)/g, "").trim();
+    if (p.h1[0] !== termino.name) anota("voz del glosario con otro H1 que su nombre", p.ruta, `H1 «${p.h1[0]}» frente a «${termino.name}»`);
+    if (p.titulo && !p.titulo.startsWith(termino.name) && !p.titulo.startsWith(sinParentesis))
+      anota("voz del glosario con otro título que su nombre", p.ruta, `«${p.titulo}» frente a «${termino.name}»`);
+  }
+}
+
+// Cada página principal se titula con la búsqueda que quiere ganar. Si la ruta desaparece, falla: una regla
+// que no encuentra a quién mirar no debe aprobar.
+const BUSQUEDA_DEL_TITULO = {
+  "/": /diario de trading/i,
+  "/en/": /trading journal/i,
+  "/features/": /diario de trading/i,
+  "/en/features/": /trading journal/i,
+  "/features/metricas/": /métricas de trading/i,
+  "/en/features/metricas/": /trading metrics/i,
+  "/features/disciplina/": /disciplina de trading/i,
+  "/en/features/disciplina/": /trading discipline/i,
+  "/features/seguridad/": /diario de trading/i,
+  "/en/features/seguridad/": /trading journal/i,
+  "/pricing/": /diario de trading/i,
+  "/en/pricing/": /trading journal/i,
+  "/demo/": /diario de trading/i,
+  "/en/demo/": /trading journal/i,
+  "/test/": /disciplina para traders/i,
+  "/en/test/": /trading discipline/i,
+  "/faq/": /preguntas frecuentes/i,
+  "/en/faq/": /questions/i,
+  "/herramientas/": /calculadoras de trading/i,
+  "/en/herramientas/": /trading calculators/i,
+  "/herramientas/calculadora-de-riesgo/": /lotaje/i,
+  "/en/herramientas/calculadora-de-riesgo/": /lot size/i,
+  "/herramientas/monte-carlo/": /riesgo de ruina/i,
+  "/en/herramientas/monte-carlo/": /risk of ruin/i,
+  "/herramientas/reloj-de-sesiones/": /horario de sesiones/i,
+  "/en/herramientas/reloj-de-sesiones/": /sessions clock/i,
+  "/traders/manual/": /diario de trading/i,
+  "/en/traders/manual/": /trading journal/i,
+};
+// Las voces con nombre español se titulan con él en `/glosario/` y con el inglés en `/en/glosario/`.
+const conNombreEs = GLOSSARY.filter((t) => t.nombreEs);
+if (conNombreEs.length === 0) anota("glosario sin nombres en español que mirar", "/glosario/", "ninguna voz declara `nombreEs`");
+for (const t of conNombreEs) {
+  for (const [ruta, nombre] of [[`/glosario/${slugTermino(t.term)}/`, t.nombreEs], [`/en/glosario/${slugTermino(t.term)}/`, t.term]]) {
+    const p = indexables.find((x) => x.ruta === ruta);
+    if (!p) anota("voz del glosario que no está", ruta, `«${t.term}» no tiene página indexable`);
+    else if (p.h1[0] !== nombre || !p.titulo?.startsWith(nombre))
+      anota("voz del glosario que no se titula con su nombre en ese idioma", ruta, `H1 «${p.h1[0]}», título «${p.titulo}»; se esperaba «${nombre}»`);
+  }
+}
+
+for (const [ruta, busqueda] of Object.entries(BUSQUEDA_DEL_TITULO)) {
+  const p = indexables.find((x) => x.ruta === ruta);
+  if (!p) anota("título sin página que mirar", ruta, "la ruta ya no existe o es noindex: actualiza BUSQUEDA_DEL_TITULO");
+  else if (!busqueda.test(p.titulo ?? "")) anota("título sin la búsqueda que persigue", ruta, `«${p.titulo}» no contiene ${busqueda}`);
 }
 
 // Dos páginas indexables con el mismo título o descripción compiten por la misma consulta; las no indexables pueden repetirse.

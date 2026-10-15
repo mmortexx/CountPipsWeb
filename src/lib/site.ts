@@ -39,13 +39,14 @@ import { TABLA_IDIOMAS, tieneVersion, type Lang } from "@/lib/locale";
  * Etiquetas `hreflang` recíprocas de una ruta que existe en los idiomas correspondientes.
  * Declara cada idioma solo en las rutas que lo tienen.
  * `path` es la ruta española, sin el prefijo `/en` (la de `LOCALIZED_PATHS`).
- * `x-default` apunta siempre a la española, el mercado principal.
+ * `x-default` es para quien no habla ninguno de los idiomas declarados: el
+ * inglés le sirve más que el español, aunque el mercado principal sea España.
  */
 export function hreflangDe(path: string): Record<string, string> {
   const limpia = path.length > 1 ? path.replace(/\/+$/, "") || "/" : path;
   const es = siteUrl(limpia === "/" ? "/" : `${limpia}/`);
   const en = siteUrl(limpia === "/" ? "/en/" : `/en${limpia}/`);
-  const resultado: Record<string, string> = { es, en, "x-default": es };
+  const resultado: Record<string, string> = { es, en, "x-default": en };
 
   for (const idioma of TABLA_IDIOMAS) {
     if (idioma.codigo === "es" || idioma.codigo === "en") continue;

@@ -50,7 +50,14 @@ const COMPONENTES = {
   ),
 } as const;
 
-export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) {
+export function HerramientaVista({
+  herramienta,
+  terminos,
+}: {
+  herramienta: Herramienta;
+  /** Voces del glosario que mandan aquí; se calculan en el servidor para no traer el glosario al navegador. */
+  terminos: { slug: string; nombreEs: string; nombreEn: string }[];
+}) {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -86,6 +93,26 @@ export function HerramientaVista({ herramienta }: { herramienta: Herramienta }) 
                   </span>
                 </Link>
               </p>
+              {terminos.length > 0 && (
+                /* Cada enlace crece 12 px arriba y abajo para el dedo (`-my-3 py-3`):
+                   24 px entre renglones, y con el aviso de arriba, para que no se
+                   pisen. Cada coma va pegada a su enlace: suelta, podía abrir renglón. */
+                <p className="medida m-0 mt-6 flex flex-wrap items-baseline gap-x-1 gap-y-6 text-[14px] leading-[1.6] text-tertiary">
+                  <span>{es ? "En el glosario:" : "In the glossary:"}</span>
+                  {terminos.map((t, i) => (
+                    <span key={t.slug} className="whitespace-nowrap">
+                      <Link
+                        href={`/glosario/${t.slug}`}
+                        lang={es && t.nombreEs === t.nombreEn ? "en" : undefined}
+                        className="link-underline-host -my-3 inline-flex py-3 text-secondary transition-colors hover:text-primary"
+                      >
+                        <span className="link-underline">{es ? t.nombreEs : t.nombreEn}</span>
+                      </Link>
+                      {i < terminos.length - 1 && ","}
+                    </span>
+                  ))}
+                </p>
+              )}
             </Reveal>
 
             <Reveal delay={0.08}>

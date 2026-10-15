@@ -3,6 +3,8 @@
  * enlaza al español cuando existe la versión inglesa, que ninguna española
  * enlaza a `/en/…`, que todo enlace interno lleva a una página que existe y
  * que ningún botón de acción (`.cta`) lleva a la página en la que está.
+ * Además, que cada página hija se enlaza desde su madre y que cada herramienta
+ * devuelve el enlace a las voces del glosario que mandan a ella.
  *
  * Se comprueba contra los ficheros de `out/`, no contra la lista de rutas del
  * código. No cuentan los recursos (`/_next/…`, imágenes, fuentes), las
@@ -88,6 +90,8 @@ function llamadasASiMisma(html, ruta) {
 const fallos = [];
 let paginas = 0;
 let enlaces = 0;
+/** Ruta → destinos internos, con barra final. */
+const enlacesDe = new Map();
 
 for await (const f of htmls(RAIZ)) {
   const ruta = "/" + relative(RAIZ, f).split(sep).join("/").replace(/index\.html$/, "");
@@ -103,6 +107,7 @@ for await (const f of htmls(RAIZ)) {
   }
   const html = await readFile(f, "utf8");
   paginas++;
+  enlacesDe.set(ruta, new Set(enlacesInternos(html).map((h) => h.replace(/\/?$/, "/"))));
 
   for (const h of llamadasASiMisma(html, ruta)) {
     fallos.push({ ruta, regla: "botón de acción que lleva a la misma página", detalle: h });
@@ -181,6 +186,26 @@ for await (const f of htmls(RAIZ)) {
         }
       }
     }
+  }
+}
+
+// Una página hija se enlaza desde su madre (`/features/` → `/features/metricas/`): si solo la
+// enlaza un menú que se abre con JavaScript, el buscador no ve el camino. Las de primer nivel
+// cuelgan de la portada y del menú, y la portada no puede enlazarlo todo.
+for (const ruta of enlacesDe.keys()) {
+  const partes = sinPrefijo(ruta).split("/").filter(Boolean);
+  if (partes.length < 2) continue;
+  const madre = ruta.replace(/[^/]+\/$/, "");
+  if (!enlacesDe.has(madre)) continue;
+  if (!enlacesDe.get(madre).has(ruta)) fallos.push({ ruta: madre, regla: "página madre que no enlaza a su hija", detalle: ruta });
+}
+
+// Si una voz del glosario manda a una herramienta, la herramienta devuelve el enlace a esa voz.
+for (const [ruta, destinos] of enlacesDe) {
+  if (!/^(?:\/[a-z]{2})?\/glosario\/[^/]+\/$/.test(ruta)) continue;
+  for (const d of destinos) {
+    if (!/\/herramientas\/[^/]+\/$/.test(d) || !enlacesDe.has(d)) continue;
+    if (!enlacesDe.get(d).has(ruta)) fallos.push({ ruta: d, regla: "herramienta que no devuelve el enlace a su voz del glosario", detalle: ruta });
   }
 }
 

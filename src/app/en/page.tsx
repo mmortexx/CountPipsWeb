@@ -12,7 +12,7 @@ const PAGE_DESCRIPTION =
   "Windows-native trading journal. Explore an interactive demo with institutional metrics, discipline and your data on your machine.";
 
 export const metadata: Metadata = {
-  title: { absolute: "CountPips — Trade like an institutional desk." },
+  title: { absolute: "Trading journal app for Windows — CountPips" },
   description: PAGE_DESCRIPTION,
   alternates: {
     canonical: `${SITE_URL}/en/`,

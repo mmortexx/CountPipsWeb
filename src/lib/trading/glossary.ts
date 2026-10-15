@@ -1,8 +1,9 @@
 /**
- * Glosario de trading con definiciones en español e inglés. El `term` va
- * siempre en inglés, también en la interfaz en español: es la lengua franca de
- * los mercados y traducirlo solo confunde. Lo único que cambia con el idioma
- * es la definición.
+ * Glosario de trading con definiciones en español e inglés. El `term` va en
+ * inglés, que es como se busca casi todo («stop loss», «drawdown», «profit
+ * factor»). `nombreEs` solo existe donde quien busca en español usa su propia
+ * palabra («apalancamiento», «riesgo de ruina»): el autocompletado de Google
+ * lo confirmó término a término. La dirección no cambia: sale siempre de `term`.
  */
 
 export type GlossaryCategory =
@@ -13,8 +14,10 @@ export type GlossaryCategory =
   | "execution";
 
 export interface GlossaryTerm {
-  /** Siempre en inglés. */
+  /** En inglés; de él sale la dirección. */
   term: string;
+  /** Nombre en la interfaz española, si se busca en español con otra palabra. */
+  nombreEs?: string;
   /** Definición en español (una o dos frases). */
   es: string;
   /** Definición en inglés (una o dos frases). */
@@ -25,12 +28,14 @@ export interface GlossaryTerm {
 export const GLOSSARY: GlossaryTerm[] = [
   {
     term: "Long",
+    nombreEs: "Posición larga",
     es: "Posición comprada: ganas si el precio sube. Se abre comprando el activo con la expectativa de venderlo más caro.",
     en: "A bought position: you profit when price rises. Opened by buying the asset with the expectation of selling it higher.",
     category: "basics",
   },
   {
     term: "Short",
+    nombreEs: "Venta en corto",
     es: "Posición vendida: ganas si el precio baja. Se abre vendiendo un activo prestado con la expectativa de recomprarlo más barato.",
     en: "A sold position: you profit when price falls. Opened by selling a borrowed asset with the expectation of buying it back cheaper.",
     category: "basics",
@@ -61,12 +66,14 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Liquidity",
+    nombreEs: "Liquidez",
     es: "Facilidad con la que un activo puede comprarse o venderse sin mover significativamente su precio. Los mercados líquidos tienen spreads estrechos y permiten entrar y salir con tamaño sin deslizamiento relevante.",
     en: "The ease with which an asset can be bought or sold without significantly moving its price. Liquid markets have tight spreads and let you enter and exit with size without meaningful slippage.",
     category: "basics",
   },
   {
     term: "Volatility",
+    nombreEs: "Volatilidad",
     es: "Magnitud de las variaciones de precio de un activo durante un periodo. Alta volatilidad implica rangos amplios y más riesgo por operación; baja volatilidad, movimientos más contenidos y operaciones menores.",
     en: "The magnitude of an asset’s price fluctuations over a period. High volatility means wide ranges and more risk per trade; low volatility means smaller moves and smaller trades.",
     category: "basics",
@@ -85,6 +92,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Trend",
+    nombreEs: "Tendencia",
     es: "Dirección dominante del precio en un periodo: alcista (máximos y mínimos crecientes), bajista (decrecientes) o lateral. Muchas estrategias operan a su favor; si eso mejora tus resultados es algo que se comprueba en tu propio historial, no se da por hecho.",
     en: "The dominant price direction over a period: up (rising highs and lows), down (falling highs and lows), or sideways. Many strategies trade in its direction; whether that improves your results is something to check in your own history, not to assume.",
     category: "basics",
@@ -116,36 +124,42 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Risk of ruin",
+    nombreEs: "Riesgo de ruina",
     es: "Probabilidad de que las pérdidas lleven la cuenta hasta el nivel que das por quiebra —\u2060todo el capital o, como en las calculadoras de esta web, la mitad\u2060— con un riesgo fijo por operación. Crece exponencialmente con el riesgo por operación.",
     en: "The probability that losses take the account down to the level you count as ruin (the whole balance or, as in this site’s calculators, half of it) with a fixed risk per trade. It grows exponentially with risk per trade.",
     category: "risk",
   },
   {
     term: "Position sizing",
+    nombreEs: "Tamaño de posición",
     es: "Regla que determina cuántas unidades o cuánto capital arriesgar en cada operación. Es el motor del control de riesgo: limita lo que puede costar cada operación y hace mucho menos probable que una racha de pérdidas hunda la cuenta.",
     en: "The rule that determines how many units or how much capital to risk on each trade. It is the engine of risk control: it caps what each trade can cost and makes it far less likely that a losing streak sinks the account.",
     category: "risk",
   },
   {
     term: "Risk-reward ratio",
+    nombreEs: "Relación riesgo-beneficio",
     es: "Relación entre el beneficio objetivo de una operación y la pérdida máxima aceptada (el riesgo). Un ratio 1:3 significa arriesgar 1 para ganar 3; permite ser rentable incluso con un win rate bajo.",
     en: "The relationship between a trade’s target profit and the maximum accepted loss (the risk). A 1:3 ratio means risking 1 to make 3; it lets you stay profitable even with a low win rate.",
     category: "risk",
   },
   {
     term: "Kelly criterion",
+    nombreEs: "Criterio de Kelly",
     es: "Fórmula matemática que calcula la fracción óptima del capital a arriesgar por operación a partir del win rate y el payoff. En la práctica se usa una fracción (medio Kelly o cuarto de Kelly) para reducir la varianza.",
     en: "A mathematical formula that calculates the optimal fraction of capital to risk per trade based on win rate and payoff. In practice a fraction (half Kelly or quarter Kelly) is used to reduce variance.",
     category: "risk",
   },
   {
     term: "Margin",
+    nombreEs: "Margen",
     es: "Colateral que el broker retiene para cubrir la posición apalancada. Si el capital cae por debajo del margen de mantenimiento, el broker emite un margin call o cierra posiciones automáticamente.",
     en: "Collateral the broker holds to cover a leveraged position. If equity falls below the maintenance margin, the broker issues a margin call or auto-liquidates positions.",
     category: "risk",
   },
   {
     term: "Max drawdown",
+    nombreEs: "Drawdown máximo",
     es: "Mayor caída porcentual del capital desde un máximo histórico hasta el mínimo siguiente dentro de un periodo. Es de las métricas que mejor reflejan lo que cuesta aguantar una estrategia, en dinero y en temple.",
     en: "The largest percentage drop in equity from a historical peak to the subsequent trough within a period. It is among the metrics that best reflect what it takes to stick with a strategy, in money and in nerve.",
     category: "risk",
@@ -171,6 +185,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Discipline",
+    nombreEs: "Disciplina",
     es: "Capacidad de seguir el plan de trading de forma consistente: entrar solo en setups definidos, respetar el stop y el objetivo, y no operar fuera del horario planificado. Sin ella, las métricas miden impulsos y no la estrategia.",
     en: "The ability to follow the trading plan consistently: entering only defined setups, respecting the stop and target, and not trading outside the planned hours. Without it, the metrics measure impulses, not the strategy.",
     category: "psychology",
@@ -178,6 +193,7 @@ export const GLOSSARY: GlossaryTerm[] = [
 
   {
     term: "Expectancy",
+    nombreEs: "Esperanza matemática",
     es: "Beneficio o pérdida promedio esperado por operación, considerando win rate y payoff. Indica cuánto ganas (o pierdes) por cada dólar arriesgado a largo plazo.",
     en: "The average profit or loss expected per trade, factoring in win rate and payoff. It indicates how much you gain (or lose) per dollar risked over the long run.",
     category: "metrics",
@@ -190,18 +206,21 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Sharpe ratio",
+    nombreEs: "Ratio de Sharpe",
     es: "Mide el rendimiento ajustado al riesgo: el exceso de rentabilidad sobre el activo libre de riesgo dividido por la volatilidad de los retornos. Penaliza la variabilidad, no la dirección.",
     en: "Measures risk-adjusted return: the excess return over the risk-free asset divided by the volatility of returns. It penalises variability, not direction.",
     category: "metrics",
   },
   {
     term: "Sortino ratio",
+    nombreEs: "Ratio de Sortino",
     es: "Variante del Sharpe que solo penaliza la volatilidad a la baja (pérdidas). Refleja mejor cómo un trader gestiona el riesgo real, ignorando las subidas positivas.",
     en: "A Sharpe variant that only penalises downside volatility (losses). It better reflects how a trader manages real risk, ignoring positive upside.",
     category: "metrics",
   },
   {
     term: "Calmar ratio",
+    nombreEs: "Ratio de Calmar",
     es: "Cociente entre la rentabilidad anualizada y el drawdown máximo. Resume en un solo número la relación entre lo que ganas y lo que sufres en el peor momento.",
     en: "The ratio of annualised return to maximum drawdown. It summarises in a single number the relationship between what you earn and what you suffer at the worst moment.",
     category: "metrics",
@@ -214,6 +233,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Win rate",
+    nombreEs: "Tasa de acierto",
     es: "Porcentaje de operaciones ganadoras sobre el total. Es engañoso por sí solo: un 70\u00a0% de aciertos con payoff 0,4 pierde dinero; un 35\u00a0% con payoff 3 gana.",
     en: "The percentage of winning trades out of the total. Misleading on its own: a 70% hit rate with a 0.4 payoff loses money; 35% with a 3 payoff wins.",
     category: "metrics",
@@ -281,24 +301,28 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "Slippage",
+    nombreEs: "Deslizamiento",
     es: "Diferencia entre el precio esperado de una orden y el precio al que realmente se ejecuta. Ocurre en mercados volátiles o ilíquidos y aumenta el coste real de operar más allá del spread.",
     en: "The difference between the expected price of an order and the price at which it actually fills. It occurs in volatile or illiquid markets and raises the real cost of trading beyond the spread.",
     category: "execution",
   },
   {
     term: "Limit order",
+    nombreEs: "Orden limitada",
     es: "Orden que especifica el precio exacto al que estás dispuesto a comprar o vender. Garantiza el precio pero no la ejecución: si el mercado no llega a tu nivel, la orden queda abierta.",
     en: "An order specifying the exact price at which you’re willing to buy or sell. Guarantees the price but not the fill: if the market never reaches your level, the order stays open.",
     category: "execution",
   },
   {
     term: "Market order",
+    nombreEs: "Orden a mercado",
     es: "Orden que se ejecuta inmediatamente al mejor precio disponible. Garantiza la ejecución pero no el precio: en mercados poco líquidos puede sufrir slippage significativo.",
     en: "An order that fills immediately at the best available price. Guarantees the fill but not the price: in illiquid markets it can suffer significant slippage.",
     category: "execution",
   },
   {
     term: "Leverage",
+    nombreEs: "Apalancamiento",
     es: "Relación entre el tamaño de la posición y el capital depositado. Un apalancamiento 10:1 mueve 10 $ por cada 1 $ de margen: multiplica ganancias y pérdidas por igual y amplifica el riesgo de ruina.",
     en: "The ratio between position size and deposited capital. 10:1 leverage moves $10 for every $1 of margin: it multiplies gains and losses equally and amplifies the risk of ruin.",
     category: "execution",
@@ -311,18 +335,21 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "London session",
+    nombreEs: "Sesión de Londres",
     es: "Sesión europea: de 08:00 a 16:30, hora de Londres. Junto con Nueva York concentra buena parte del volumen de divisas, y es especialmente activa en índices europeos (DAX, FTSE).",
     en: "European session: 08:00 to 16:30, London time. Together with New York it carries much of the FX volume, and it is especially active in European indices (DAX, FTSE).",
     category: "execution",
   },
   {
     term: "NY session",
+    nombreEs: "Sesión de Nueva York",
     es: "Sesión americana: de 09:30 a 16:00, hora de Nueva York. Coincide con Londres hasta las 11:30 de Nueva York, una ventana que suele concentrar mucho del movimiento del día en ES, NQ y EURUSD.",
     en: "American session: 09:30 to 16:00, New York time. It overlaps with London until 11:30 New York time, a window that often carries much of the day’s movement in ES, NQ and EURUSD.",
     category: "execution",
   },
   {
     term: "Asia session",
+    nombreEs: "Sesión asiática",
     es: "Sesión asiática: de 08:00 a 17:00, hora de Tokio. Menos volatilidad y volumen que Londres o Nueva York; a menudo marca el rango nocturno que se pone a prueba en la apertura de Londres.",
     en: "Asian session: 08:00 to 17:00, Tokyo time. Less volatility and volume than London or New York; it often sets the overnight range that gets tested at the London open.",
     category: "execution",

@@ -40,12 +40,12 @@ const listaSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Herramientas de trading",
+  title: "Calculadoras de trading gratis",
   description:
     `${herramientasEnLetra("es")} calculadoras de trading: riesgo por operación, Monte Carlo, significancia estadística y coste de comisiones. Gratis, sin registro y sin enviar datos.`,
   alternates: { canonical: `${SITE_URL}/herramientas/`, languages: hreflangDe("/herramientas") },
   openGraph: {
-    title: "Herramientas de trading — CountPips",
+    title: "Calculadoras de trading gratis — CountPips",
     description:
       `${herramientasEnLetra("es")} herramientas que funcionan en tu navegador. Sin registro y sin enviar datos.`,
     url: `${SITE_URL}/herramientas/`,
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Herramientas de trading — CountPips",
+    title: "Calculadoras de trading gratis — CountPips",
     description: `${herramientasEnLetra("es")} herramientas gratis, sin registro y sin enviar datos.`,
   },
 };

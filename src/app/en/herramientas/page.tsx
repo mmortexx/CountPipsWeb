@@ -35,7 +35,7 @@ const listaSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Trading tools",
+  title: "Free trading calculators",
   description:
     `${herramientasEnLetra("en")} trading calculators: risk per trade, Monte Carlo, edge significance and commission drag. Free, no sign-up and nothing sent anywhere.`,
   alternates: {
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/herramientas"),
   },
   openGraph: {
-    title: "Trading tools — CountPips",
+    title: "Free trading calculators — CountPips",
     description: `${herramientasEnLetra("en")} tools that run in your browser. No sign-up and nothing sent anywhere.`,
     url: `${SITE_URL}/en/herramientas/`,
     type: "website",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Trading tools — CountPips",
+    title: "Free trading calculators — CountPips",
     description: `${herramientasEnLetra("en")} free tools, no sign-up and nothing sent anywhere.`,
   },
 };

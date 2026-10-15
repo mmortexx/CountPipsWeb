@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { GlosarioIndice } from "@/components/glosario/GlosarioIndice";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
-import { TERMINOS } from "@/lib/glosario";
+import { TERMINOS, nombreTermino } from "@/lib/glosario";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
@@ -31,7 +31,7 @@ const glosarioSchema = {
   inLanguage: "es",
   hasDefinedTerm: TERMINOS.map((t) => ({
     "@type": "DefinedTerm",
-    name: t.term,
+    name: nombreTermino(t, "es"),
     description: t.es,
     url: `${SITE_URL}/glosario/${t.slug}/`,
   })),

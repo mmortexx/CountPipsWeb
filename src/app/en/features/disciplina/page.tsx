@@ -40,7 +40,7 @@ const articleSchema = {
 };
 
 export const metadata: Metadata = {
-  title: { absolute: "Discipline — CountPips" },
+  title: { absolute: "Trading discipline with a risk limit — CountPips" },
   description:
     "The Guardian measures every trade against your rules: a risk light and, if you turn it on, a hard brake at your limit. Indiscipline measured in money.",
   alternates: {
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     languages: hreflangDe("/features/disciplina"),
   },
   openGraph: {
-    title: "Discipline — CountPips",
+    title: "Trading discipline with a risk limit — CountPips",
     description: "A risk light and an optional hard brake. Discipline that acts, not lectures.",
     url: `${SITE_URL}/en/features/disciplina/`,
     type: "website",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Discipline — CountPips",
+    title: "Trading discipline with a risk limit — CountPips",
     description: "A risk light and an optional hard brake. Discipline that acts, not lectures.",
   },
 };

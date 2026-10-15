@@ -10,6 +10,7 @@ import {
   CATEGORIAS,
   ORDEN_CATEGORIAS,
   TERMINOS,
+  nombreTermino,
   terminosPorCategoria,
 } from "@/lib/glosario";
 
@@ -38,6 +39,7 @@ export function GlosarioIndice() {
     return base.filter(
       (x) =>
         paraBuscar(x.term).includes(t) ||
+        paraBuscar(nombreTermino(x, es ? "es" : "en")).includes(t) ||
         paraBuscar(es ? x.es : x.en).includes(t),
     );
   }, [q, activeCategory, es]);
@@ -184,10 +186,10 @@ function TarjetaTermino({
         className="group link-underline-host grid min-h-[56px] grid-cols-1 items-baseline gap-1 py-4 transition-colors duration-150 focus-visible:bg-[color-mix(in_srgb,var(--ink)_4%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[rgb(var(--accent-base)/0.55)] sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6 lg:grid-cols-1 lg:gap-1.5"
       >
         <span
-          lang="en"
+          lang={es && termino.nombreEs ? undefined : "en"}
           className="t-h5 text-primary"
         >
-          <span className="link-underline">{termino.term}</span>
+          <span className="link-underline">{nombreTermino(termino, es ? "es" : "en")}</span>
         </span>
         <span className="medida block text-[14px] leading-[1.6] text-secondary transition-colors group-hover:text-primary">
           {es ? termino.es : termino.en}
