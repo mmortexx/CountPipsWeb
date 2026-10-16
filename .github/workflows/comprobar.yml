@@ -55,8 +55,8 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Comprobar el HTML compilado (prefijo y vocabulario)
-        run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
+      - name: Comprobar el HTML compilado (prefijo, vocabulario y titular)
+        run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts tests/titular-legal.test.ts
 
       # Las auditorías que leen `out/` sin navegador, como en `deploy.yml`.
       - name: Auditorías del HTML compilado

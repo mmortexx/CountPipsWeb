@@ -38,6 +38,13 @@ const BETA_API_URL = (process.env.NEXT_PUBLIC_BETA_API_URL ?? "").trim() || WAIT
 
 export const betaConfigured = BETA_API_URL.length > 0 || formsConfigured;
 
+/** Adónde va hoy la solicitud de beta; la política de privacidad lo cuenta igual. */
+export const destinoBeta: "worker" | "hoja" | "correo" = !BETA_API_URL
+  ? "correo"
+  : BETA_API_URL === WAITLIST_URL
+    ? "hoja"
+    : "worker";
+
 /**
  * Buzón de soporte: único sitio donde se escribe (contacto, FAQ y formularios
  * lo importan). Mientras sea `null` no hay buzón: el único canal es el

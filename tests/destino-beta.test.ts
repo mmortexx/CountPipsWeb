@@ -128,3 +128,32 @@ describe("a dónde va la solicitud de acceso anticipado", () => {
     expect(resultado).toEqual({ ok: false, reason: "unconfigured" });
   });
 });
+
+// La política de privacidad nombra a quien recibe la solicitud. Se compara con
+// la dirección a la que sale de verdad en cada compilación, no con una constante.
+describe("la política de privacidad dice a dónde va la solicitud", () => {
+  const QUIEN: [RegExp, RegExp][] = [
+    [/script\.google\.com/, /Google/],
+    [/workers\.dev/, /Cloudflare/],
+    [/web3forms\.com/, /Web3Forms/],
+  ];
+
+  it.each([
+    ["solo la hoja", { waitlist: APPS_SCRIPT, clave: CLAVE }],
+    ["el Worker", { beta: WORKER, waitlist: APPS_SCRIPT, clave: CLAVE }],
+    ["solo la clave de Web3Forms", { beta: "", waitlist: "", clave: CLAVE }],
+  ])("con %s", async (_caso, entorno) => {
+    const forms = await compilarCon(entorno);
+    const { url } = await destinoDelEnvio(forms);
+    const { documentoPorSlug } = await import("@/lib/legal/documentos");
+    const privacidad = documentoPorSlug("privacidad")!;
+    const tabla = privacidad.secciones.flatMap((s) => s.bloques).find((b) => b.tipo === "tabla")!;
+    const fila = tabla.tipo === "tabla" ? tabla.filas[0] : null;
+    const [, quien] = QUIEN.find(([dominio]) => dominio.test(url ?? ""))!;
+    expect(fila?.es[0]).toMatch(/acceso anticipado/);
+    expect(fila?.es[2]).toMatch(quien);
+    expect(fila?.en[2]).toMatch(quien);
+    const proveedores = JSON.stringify(privacidad.secciones.find((s) => s.id === "processors"));
+    expect(proveedores).toMatch(quien);
+  });
+});

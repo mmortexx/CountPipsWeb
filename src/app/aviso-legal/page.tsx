@@ -5,9 +5,8 @@ import { documentoPorSlug } from "@/lib/legal/documentos";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /aviso-legal: quién está detrás del sitio. Sin los datos fiscales del
- * titular lo avisa en pantalla; con venta la ley exige identificar al
- * prestador (ver `src/lib/legal/titular.ts`).
+ * /aviso-legal: quién está detrás del sitio. Los datos del titular salen de
+ * `src/lib/legal/titular.ts`.
  */
 
 const doc = documentoPorSlug("aviso-legal")!;

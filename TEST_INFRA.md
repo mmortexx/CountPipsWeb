@@ -38,7 +38,7 @@
 | `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts`; PostHog sin grabación de sesión y guardando en `localStorage`, no en cookies |
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
 | `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
-| `destino-beta.test.ts` | A dónde va la solicitud de acceso anticipado según el entorno de compilación (pasando por `next.config.ts`): solo con el Apps Script va a él aunque la variable del Worker llegue vacía; con los dos, al Worker; sin ninguno, a Web3Forms con todos los datos y con los textos que vio quien rellena («3+ años», no «3-plus»); sin clave tampoco, no sale y se avisa |
+| `destino-beta.test.ts` | A dónde va la solicitud de acceso anticipado según el entorno de compilación (pasando por `next.config.ts`): solo con el Apps Script va a él aunque la variable del Worker llegue vacía; con los dos, al Worker; sin ninguno, a Web3Forms con todos los datos y con los textos que vio quien rellena («3+ años», no «3-plus»); sin clave tampoco, no sale y se avisa. Y la política de privacidad nombra a quien la recibe de verdad en cada caso (Google, Cloudflare o Web3Forms) |
 | `grabado.test.ts` | Reglas visuales comprobables por máquina: sin degradados decorativos, fondo limpio, sello de «previsto» |
 | `hero-calcs.test.ts` | Las micro-calculadoras del hero (sin deslizadores) |
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |
@@ -57,6 +57,7 @@
 | `barra-riesgo.test.ts` | La barra riesgo/beneficio de la calculadora: los dos tramos crecen desde el centro, ninguno pasa del 50 %, los dos se ven si valen algo y su proporción es la del R:R |
 | `saltos-teclado.test.ts` | Cada atajo «g + letra» lleva a una página que existe, sin teclas repetidas, y el teclado global lee la misma tabla que la ayuda |
 | `sesiones.test.ts` | Las plazas del reloj de sesiones abren y cierran en su hora local: cambio de hora de Londres, las 09:30 de Nueva York, fin de semana según el día local, ventana del día en UTC |
+| `titular-legal.test.ts` | La privacidad y el aviso legal identifican al titular en los dos idiomas: nombre, NIF (DNI, NIE o CIF con su control correcto), domicilio y correo (no de ejemplo) rellenos en `titular.ts`, presentes en el texto y en el HTML compilado, y ninguna página legal conserva el texto provisional («más adelante»). Corre también tras compilar en los dos flujos |
 | `test-infra.test.ts` | Este índice nombra todos los ficheros de `tests/` y `tests/e2e/`: una prueba sin fila es una guarda que nadie sabe que existe |
 | `variables.test.ts` | Toda `var(--nombre)` que se lee sin valor de reserva está declarada en alguna hoja o estilo: una sin declarar deja el fondo transparente sin que nada falle |
 | `almacenamiento-declarado.test.ts` | La tabla de la política de cookies tiene una fila por clave que el código escribe en `localStorage`/`sessionStorage` (más PostHog), y las de «hasta que cierres la pestaña» existen como almacenamiento de sesión |

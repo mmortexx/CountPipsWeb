@@ -2,20 +2,23 @@
  * Datos del responsable del sitio, en un solo lugar: las cuatro páginas
  * legales los leen de aquí para no contradecirse.
  *
- * `nombreFiscal`, `nif` y `domicilio` están vacíos a propósito: un dato fiscal
- * falso es peor que su ausencia. Mientras la web solo informa, las páginas lo
- * dicen en pantalla (detectan solas el campo vacío). Rellenarlos es requisito
- * de la ley de servicios de la sociedad de la información para abrir la
- * venta, no para publicar el sitio.
+ * Los cuatro primeros son los que la ley pide publicar: el RGPD (art. 13) en
+ * la política de privacidad, porque la web ya recoge correos, y la LSSI
+ * (art. 10) en el aviso legal. Vacíos a propósito hasta que el titular los
+ * dé: un dato fiscal inventado es peor que su ausencia.
+ * `tests/titular-legal.test.ts` no deja publicar con alguno vacío o mal
+ * formado.
  */
 
 export type DatosTitular = {
-  /** Nombre o razón social de quien presta el servicio. */
+  /** Nombre y apellidos, o razón social si es una empresa. */
   nombreFiscal: string;
-  /** NIF / CIF. */
+  /** NIF, NIE o CIF. */
   nif: string;
-  /** Domicilio a efectos de notificaciones. */
+  /** Domicilio a efectos de notificaciones (vale uno profesional). */
   domicilio: string;
+  /** Correo público para consultas y para ejercer los derechos de privacidad. */
+  correo: string;
   /** Nombre comercial del producto. */
   nombreComercial: string;
   /** Jurisdicción cuyos tribunales conocen de los conflictos. */
@@ -28,14 +31,14 @@ export const TITULAR: DatosTitular = {
   nombreFiscal: "",
   nif: "",
   domicilio: "",
+  correo: "",
   nombreComercial: "CountPips",
   jurisdiccion: "España",
   jurisdiccionEn: "Spain",
 };
 
-/** `true` cuando faltan datos obligatorios para poder vender. */
-export const titularIncompleto =
-  !TITULAR.nombreFiscal.trim() || !TITULAR.nif.trim() || !TITULAR.domicilio.trim();
+/** Campos que la ley obliga a publicar; ninguno puede quedar vacío. */
+export const CAMPOS_OBLIGATORIOS = ["nombreFiscal", "nif", "domicilio", "correo"] as const;
 
 /** Fecha de la última revisión de los textos legales; va a mano y se actualiza al revisarlos. */
-export const LEGAL_ACTUALIZADO = "2026-09-26";
+export const LEGAL_ACTUALIZADO = "2026-10-10";

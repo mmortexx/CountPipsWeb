@@ -4,15 +4,13 @@ import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import type { Bloque, DocumentoLegal } from "@/lib/legal/documentos";
 import { LEGAL_ACTUALIZADO } from "@/lib/legal/documentos";
-import { titularIncompleto } from "@/lib/legal/titular";
 import { LOCALE_FECHA } from "@/lib/trading/format";
 
 /**
  * Cuerpo de las cuatro páginas legales: secciones numeradas con párrafos,
  * listas y tablas, cada una con su ancla. La medida de línea la pone `.medida`
  * en cada bloque de texto. El índice va a un raíl lateral desde `lg`; en móvil
- * queda arriba. El aviso de borrador sale mientras falten los datos fiscales de
- * `src/lib/legal/titular.ts` y desaparece solo al rellenarlos.
+ * queda arriba.
  */
 export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
   const { lang } = useLang();
@@ -46,23 +44,6 @@ export function LegalDoc({ doc }: { doc: DocumentoLegal }) {
               <time dateTime={LEGAL_ACTUALIZADO}>{fecha}</time>
             </p>
           </Reveal>
-
-          {titularIncompleto && (
-            <Reveal delay={0.05}>
-              {/* La medida va en la caja para que los filetes acaben con el texto. */}
-              <div className="medida mt-6 border-y border-[var(--line-2)] py-4 text-[14px]">
-                <p className="m-0 leading-[1.6] text-secondary">
-                  <strong className="text-primary">
-                    {es ? "Documento en preparación. " : "Draft document. "}
-                  </strong>
-                  {es
-                    ? "Faltan los datos fiscales del titular, que la ley exige en cuanto haya venta. Hasta entonces este texto describe con exactitud cómo funciona la web, pero no sustituye a la revisión de un profesional."
-                    : "The owner’s tax details are missing; the law requires them as soon as sales begin. Until then this text describes accurately how the site works, but it does not replace review by a professional."}
-                </p>
-              </div>
-            </Reveal>
-          )}
-
         </div>
 
           <Reveal
