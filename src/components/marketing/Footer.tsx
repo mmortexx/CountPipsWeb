@@ -4,7 +4,6 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
 import { openGlossary } from "@/lib/overlays";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
-import { reopenConsent } from "@/lib/consent";
 import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
 import { columnasPie } from "@/lib/pie";
 import { LOCALE_FECHA } from "@/lib/trading/format";
@@ -129,32 +128,10 @@ export function Footer() {
             >
               <span className="link-underline link-underline--al-pasar">{tx(lang, { es: "Código de la web", en: "Website source", pt: "Código do site", fr: "Code source du site", de: "Quellcode der Website", it: "Codice del sito" })}</span>
             </a>
-            {/* Retirar el consentimiento tiene que ser tan fácil como darlo
-                (RGPD), y el pie está en todas las páginas. */}
-            <ConsentPreferencesButton />
           </div>
         </div>
       </div>
     </footer>
-  );
-}
-
-/**
- * Vuelve a abrir el aviso de consentimiento. No borra nada al pulsarlo: la
- * retirada la ejecuta el propio aviso al elegir «Solo necesarias».
- */
-function ConsentPreferencesButton() {
-  const { lang } = useLang();
-  return (
-    <button
-      type="button"
-      onClick={reopenConsent}
-      className="link-underline-host inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
-    >
-      <span className="link-underline link-underline--al-pasar">
-        {tx(lang, { es: "Preferencias de privacidad", en: "Privacy preferences", pt: "Preferências de privacidade", fr: "Préférences de confidentialité", de: "Datenschutzeinstellungen", it: "Preferenze di privacy" })}
-      </span>
-    </button>
   );
 }
 

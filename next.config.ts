@@ -116,7 +116,6 @@ const nextConfig: NextConfig = {
     // declararlo aquí que la clave de arriba.
     NEXT_PUBLIC_WAITLIST_URL: process.env.NEXT_PUBLIC_WAITLIST_URL ?? "",
     NEXT_PUBLIC_BETA_API_URL: process.env.NEXT_PUBLIC_BETA_API_URL ?? "",
-    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY ?? "",
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "",
   },
   images: {

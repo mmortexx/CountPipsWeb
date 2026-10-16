@@ -2187,14 +2187,6 @@ button.icon-btn:hover > svg,
   }
 }
 
-/* Mientras el aviso de consentimiento está abierto en móvil, la página
-   gana por abajo lo que él ocupa (lo mide CookieConsent). */
-@media (max-width: 767px) {
-  body {
-    padding-bottom: var(--alto-aviso, 0px);
-  }
-}
-
 /* ---- Llamadas y notas de una cifra ----------------------------------
    La cifra lleva su número volado y, debajo del cuadro, la nota con la
    fuente y la fecha de corte, en el cuerpo más pequeño de la escala. */
@@ -2567,7 +2559,7 @@ html:has(.tj-visor[open]) {
 }
 
 /* ---- Las superficies flotantes ---------------------------------------
-   Modales, cajón móvil, aviso de cookies y paleta de la demo no viven en el
+   Modales, cajón móvil y paleta de la demo no viven en el
    flujo de la página y arrastraban tres cosas del estilo anterior, que se
    resuelven aquí y no en ocho componentes:
 
@@ -3434,27 +3426,9 @@ select.tj-campo:invalid {
   }
 }
 
-/* El foco no puede quedar debajo del aviso (WCAG 2.2, 2.4.11): en móvil el
-   navegador llevaba el elemento enfocado al borde inferior, bajo la hoja de
-   cookies (112 px a 390 px, 145 px a 1440). Medido en `/demo` a 390 px, nueve
-   paradas de tabulación quedaban tapadas. La reserva de 11rem lo cubre de
-   sobra. Va atada al atributo que publica el propio aviso, así que al
-   descartarlo el hueco desaparece. */
-/* En `:root` y no en `body`: el `scroll-padding` que consulta el navegador es
-   el del elemento raíz, contenedor de desplazamiento del documento. */
-:root:has([data-cookie-consent="visible"]) {
-  scroll-padding-bottom: 11rem;
-}
-@media (min-width: 640px) {
-  :root:has([data-cookie-consent="visible"]) {
-    scroll-padding-bottom: 8rem;
-  }
-}
-
 /* Con el cajón móvil abierto (`data-drawer-open` en <body>, lo marca el
-   Navbar) se ocultan el aviso de cookies y el botón de subir: tras el velo
-   translúcido seguían viéndose y competían con el menú. */
-body[data-drawer-open="true"] [data-cookie-consent="visible"],
+   Navbar) se oculta el botón de subir: tras el velo translúcido seguía
+   viéndose y competía con el menú. */
 body[data-drawer-open="true"] [aria-label="Volver arriba"],
 body[data-drawer-open="true"] [aria-label="Back to top"] {
   opacity: 0 !important;
@@ -3874,7 +3848,7 @@ svg [data-entra="sello"] {
 /* ============================================================
    EMERGER — aparecer y desaparecer sin biblioteca
    ============================================================
-   Las piezas flotantes del layout (volver arriba, aviso de cookies, pista
+   Las piezas flotantes del layout (volver arriba, pista
    del atajo `g`) no necesitan desmontarse para animar su salida: se dejan
    en el árbol con opacidad cero y entrar y salir es una transición CSS
    corriente.
@@ -3951,27 +3925,6 @@ svg [data-entra="sello"] {
   .tj-subir:hover,
   .tj-subir:active {
     transform: none;
-  }
-}
-
-/* La entrada del aviso de cookies: sube desde abajo una sola vez, al
-   montarse. */
-.tj-entra-abajo {
-  animation: tj-sube-aviso 0.28s var(--ease-suave, ease) both;
-}
-@keyframes tj-sube-aviso {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tj-entra-abajo {
-    animation: none;
   }
 }
 

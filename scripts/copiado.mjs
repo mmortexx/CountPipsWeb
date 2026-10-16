@@ -144,9 +144,6 @@ for (const h of HERRAMIENTAS) {
     const ruta = (idioma === "en" ? "/en" : "") + h.ruta;
     const pag = await ctx.newPage();
     await pag.goto(`${base}${ruta}/`, { waitUntil: "networkidle" });
-    // El aviso de cookies puede tapar el botón: se contesta lo más conservador.
-    const cookies = pag.locator("button", { hasText: /^(?:solo necesarias|necessary only)/i }).first();
-    if (await cookies.count()) await cookies.click({ timeout: 3000 }).catch(() => {});
     if (h.preparar) await h.preparar(pag);
 
     const boton = pag.locator("button", { hasText: /copiar|copy/i }).first();

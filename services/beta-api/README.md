@@ -41,7 +41,7 @@ Servicio aislado para recibir solicitudes de beta y operar el portal interno. La
 - `GET /admin`: interfaz privada de operaciones. No se enlaza desde CountPips. El HTML exige HTTP Basic Auth (usuario cualquiera, contraseña = `ADMIN_TOKEN`) antes de servirse; las llamadas que hace ese panel a `GET`/`PATCH /v1/applications` siguen exigiendo el mismo token como `Bearer`.
 - `GET /health`: comprobación técnica sin datos de solicitudes.
 
-Los estados válidos son `nuevo`, `revisando`, `invitado`, `aceptado`, `espera` y `descartado`. El correo se conserva sólo en D1 para operar invitaciones; PostHog no recibe correos, respuestas de formulario, calculadoras ni datos financieros.
+Los estados válidos son `nuevo`, `revisando`, `invitado`, `aceptado`, `espera` y `descartado`. El correo se conserva sólo en D1 para operar invitaciones.
 
 ## Recomendación de seguridad adicional para `/admin`
 

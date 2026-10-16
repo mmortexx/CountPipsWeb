@@ -1,15 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import {
-  CONSENT_KEY,
-  CONSENT_CHANGE_EVENT,
-  CONSENT_REOPEN_EVENT,
-  readConsent,
-  writeConsent,
-  reopenConsent,
-  analyticsAllowed,
-} from "@/lib/consent";
 import { STR } from "@/lib/i18n";
 import { FAQ_ES, FAQ_EN } from "@/lib/faq";
 import { HERRAMIENTAS } from "@/lib/herramientas";
@@ -17,12 +8,26 @@ import { DOCUMENTOS_LEGALES } from "@/lib/legal/documentos";
 
 /**
  * Dimensiones D9 y D10: seguridad, privacidad y tono editorial. Tier 1:
- * calculadoras sin red, PostHog con consentimiento (host de la UE, sin
- * grabación), `dangerouslySetInnerHTML` solo para JSON-LD y scripts estáticos,
- * sin promesas de rentabilidad ni pasarelas de pago inexistentes. Tier 2:
- * entradas maliciosas, estados del consentimiento, descargo financiero, sin
- * secretos en el código y campo trampa `botcheck` igual en cliente y Worker.
+ * calculadoras sin red, ni analítica ni cookies (la privacidad lo promete),
+ * `dangerouslySetInnerHTML` solo para JSON-LD y scripts estáticos, sin
+ * promesas de rentabilidad ni pasarelas de pago inexistentes. Tier 2:
+ * entradas maliciosas, descargo financiero, sin secretos en el código y campo
+ * trampa `botcheck` igual en cliente y Worker.
  */
+
+/** Huellas de analítica, píxeles y cookies escritas a mano, en código sin comentarios. */
+const RASTREADORES = [
+  /posthog/i,
+  /googletagmanager\.com|google-analytics\.com|\bgtag\s*\(/i,
+  /connect\.facebook\.net|\bfbq\s*\(/i,
+  /hotjar|clarity\.ms|plausible\.io|umami|cdn\.segment\.com|mixpanel/i,
+  /document\.cookie\s*=/,
+];
+
+function rastreadoresEn(codigo: string): string[] {
+  const limpio = sinComentarios(codigo);
+  return RASTREADORES.filter((r) => r.test(limpio)).map((r) => r.source);
+}
 
 const RAIZ = join(import.meta.dirname, "..", "..");
 const leer = (rel: string) => readFileSync(join(RAIZ, rel), "utf8");
@@ -81,18 +86,17 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
       }
     });
 
-    it("D9-T1-2: PostHog strict consent gating (EU host, session recording disabled, localStorage only)", () => {
-      const posthogCode = leer("src/components/analytics/PostHog.tsx");
+    it("D9-T1-2: no analytics, tracking pixels or cookies anywhere in the site code", () => {
+      // El detector caza lo que había antes; si deja de cazarlo, la búsqueda de abajo no prueba nada.
+      expect(rastreadoresEn('script.src = "https://eu-assets.i.posthog.com/static/array.js";')).not.toEqual([]);
+      expect(rastreadoresEn("gtag('config', 'G-XXXX');")).not.toEqual([]);
+      expect(rastreadoresEn('document.cookie = "a=1";')).not.toEqual([]);
+      expect(rastreadoresEn("// posthog\nconst a = 1;")).toEqual([]);
 
-      expect(posthogCode).toContain("disable_session_recording: true");
-      expect(posthogCode).toContain('persistence: "localStorage"');
-      expect(posthogCode).toContain("mask_all_text: true");
-      expect(posthogCode).toContain("mask_all_element_attributes: true");
-      expect(posthogCode).toContain('api_host: "https://eu.i.posthog.com"');
-      expect(posthogCode).toContain("autocapture: false");
-
-      // El consentimiento se evalúa antes de cargar el script.
-      expect(posthogCode).toContain("if (!analyticsAllowed())");
+      const hallados = todasLasFuentes("src").flatMap((rel) =>
+        rastreadoresEn(leer(rel)).map((patron) => `${rel}: ${patron}`),
+      );
+      expect(hallados, "La privacidad y la política de cookies prometen que no hay analítica ni cookies").toEqual([]);
     });
 
     it("D9-T1-3: dangerouslySetInnerHTML is strictly restricted to sanitized JSON-LD & static scripts", () => {
@@ -217,60 +221,6 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
           expect(typeof num).toBe("number");
         }
       }
-    });
-
-    it("D9-T2-2: Cookie consent state machine transitions (accepted -> declined -> accepted cycle)", () => {
-      const originalWindow = global.window;
-      let storageData: Record<string, string> = {};
-      const emittedEvents: Array<{ type: string; detail: unknown }> = [];
-
-      global.window = {
-        localStorage: {
-          getItem: (k: string) => storageData[k] ?? null,
-          setItem: (k: string, v: string) => {
-            storageData[k] = v;
-          },
-          removeItem: (k: string) => {
-            delete storageData[k];
-          },
-          length: 0,
-          clear: () => {
-            storageData = {};
-          },
-          key: () => null,
-        } as Storage,
-        dispatchEvent: (event: Event) => {
-          const ce = event as CustomEvent;
-          emittedEvents.push({ type: ce.type, detail: ce.detail });
-          return true;
-        },
-      } as unknown as Window & typeof globalThis;
-
-      // Sin elección previa.
-      storageData = {};
-      expect(readConsent()).toBeNull();
-      expect(analyticsAllowed()).toBe(false);
-
-      writeConsent("accepted");
-      expect(readConsent()).toBe("accepted");
-      expect(analyticsAllowed()).toBe(true);
-      expect(emittedEvents[emittedEvents.length - 1]).toEqual({
-        type: CONSENT_CHANGE_EVENT,
-        detail: "accepted",
-      });
-
-      writeConsent("declined");
-      expect(readConsent()).toBe("declined");
-      expect(analyticsAllowed()).toBe(false);
-      expect(emittedEvents[emittedEvents.length - 1]).toEqual({
-        type: CONSENT_CHANGE_EVENT,
-        detail: "declined",
-      });
-
-      reopenConsent();
-      expect(emittedEvents[emittedEvents.length - 1].type).toBe(CONSENT_REOPEN_EVENT);
-
-      global.window = originalWindow;
     });
 
     it("D9-T2-3: Mandatory financial compliance disclaimer on all quantitative calculator views", () => {

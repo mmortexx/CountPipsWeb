@@ -411,9 +411,6 @@ async function medir(pag, ruta, ancho) {
 
 for (const ancho of ANCHOS) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
-  await ctx.addInitScript(() => {
-    try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {}
-  });
   const cola = [...RUTAS];
   const trabajador = async () => {
     const pag = await ctx.newPage();

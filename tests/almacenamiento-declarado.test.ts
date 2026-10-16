@@ -31,11 +31,8 @@ describe("la política de cookies declara lo que la web guarda", () => {
     expect(escrituras.length).toBeGreaterThan(0);
   });
 
-  it("una fila por clave propia, más la de PostHog", () => {
-    const propias = new Set(escrituras);
-    const posthog = filas.filter((f) => f.es[0].includes("PostHog"));
-    expect(posthog).toHaveLength(1);
-    expect(filas.length - posthog.length).toBe(propias.size);
+  it("una fila por clave propia, y nada de terceros", () => {
+    expect(filas.length).toBe(new Set(escrituras).size);
   });
 
   it("lo que dura hasta cerrar la pestaña existe como almacenamiento de sesión", () => {

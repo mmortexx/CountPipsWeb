@@ -878,7 +878,7 @@ export function Navbar() {
               // Opaco (`tj-paper-dense`) para que no compitan textos con la
               // página. `position: fixed` en línea porque `.tj-paper` declara
               // `position: relative` más tarde en la cascada y pisaría la
-              // utilidad `fixed` (igual que en CookieConsent.tsx).
+              // utilidad `fixed`.
               className="tj-cajon tj-paper tj-paper-dense safe-top fixed top-0 right-0 bottom-0 z-[60] flex w-[300px] max-w-[84vw] flex-col border-l border-[rgb(var(--divider)/0.1)] outline-none min-[1120px]:hidden"
               style={{ position: "fixed" }}
             >

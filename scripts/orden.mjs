@@ -78,7 +78,6 @@ if (RUTAS.length < 30) {
 const { server, base } = await servir(dir);
 const navegador = await chromium.launch();
 const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "no-preference" });
-await ctx.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
 const fallos = [];
 let cabeceras = 0;
 

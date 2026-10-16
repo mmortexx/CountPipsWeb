@@ -3,20 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useLang, tx } from "@/lib/i18n";
 import { irArriba } from "@/lib/scroll";
-import { CONSENT_VISIBILITY_EVENT } from "@/lib/consent";
 
 /**
  * Botón flotante de volver arriba. Aparece tras 400 px de scroll. Por debajo de
  * 1280 px no cabe en el margen y taparía texto, así que ahí solo se ve al subir
  * o cerca del final. Se levanta para esquivar la barra final del pie
- * (`[data-pie-final]`) y el aviso de cookies; se mide el `bottom` real (con la
+ * (`[data-pie-final]`); se mide el `bottom` real (con la
  * muesca de iOS) en vez de suponer 24 px. Al pulsarlo usa `irArriba()`
  * (src/lib/scroll.ts).
  */
 const SHOW_AFTER = 400;
-/** Hueco (px) entre el borde inferior del botón levantado y lo que
- *  esquiva: la barra final del pie o el aviso de cookies. */
-const COOKIE_GAP_PX = 8;
+/** Hueco (px) entre el borde inferior del botón levantado y la barra final del pie. */
+const HUECO_PIE_PX = 8;
 /** Desde este ancho el botón cae en el margen, fuera del texto. */
 const ANCHO_CON_MARGEN = 1280;
 /** Píxeles de subida seguidos que cuentan como «quiere volver arriba». */
@@ -35,7 +33,6 @@ export function BackToTop() {
   // No entra en el árbol hasta que el visitante baja; entonces se queda.
   const [montado, setMontado] = useState(false);
   const [pieLift, setPieLift] = useState(0);
-  const [cookieLift, setCookieLift] = useState(0);
   const anclaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -61,19 +58,7 @@ export function BackToTop() {
       const baseBoton = window.innerHeight - (ancla ? parseFloat(getComputedStyle(ancla).bottom) || 24 : 24);
       const pie = document.querySelector<HTMLElement>("[data-pie-final]");
       const pieTop = pie ? pie.getBoundingClientRect().top : Infinity;
-      setPieLift(pieTop < window.innerHeight ? Math.max(0, Math.round(baseBoton - (pieTop - COOKIE_GAP_PX))) : 0);
-      // Levantamiento por el aviso de cookies: comparten banda vertical en
-      // pantallas estrechas. El aviso solo existe en el DOM mientras se ve.
-      let cLift = 0;
-      const cookieEl = document.querySelector<HTMLElement>("[data-cookie-consent='visible']");
-      if (cookieEl) {
-        const rect = cookieEl.getBoundingClientRect();
-        if (rect.bottom > 0 && rect.top < window.innerHeight && rect.top >= 0) {
-          // El borde inferior del botón, COOKIE_GAP_PX por encima del aviso.
-          cLift = Math.max(0, baseBoton - (rect.top - COOKIE_GAP_PX));
-        }
-      }
-      setCookieLift(Math.round(cLift));
+      setPieLift(pieTop < window.innerHeight ? Math.max(0, Math.round(baseBoton - (pieTop - HUECO_PIE_PX))) : 0);
       ticking = false;
     };
     const onScroll = () => {
@@ -82,7 +67,7 @@ export function BackToTop() {
         ticking = true;
       }
     };
-    // El alto del aviso cambia al reflujo (giro, barra del navegador en móvil).
+    // El pie cambia de sitio al reflujo (giro, barra del navegador en móvil).
     const onResize = () => {
       if (!ticking) {
         requestAnimationFrame(update);
@@ -91,23 +76,16 @@ export function BackToTop() {
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
-    // El aviso de cookies entra y sale sin scroll ni resize; avisa con un
-    // evento, sin `MutationObserver` sobre el documento entero.
-    window.addEventListener(CONSENT_VISIBILITY_EVENT, onResize);
     update();
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
-      window.removeEventListener(CONSENT_VISIBILITY_EVENT, onResize);
     };
   }, []);
 
   // El salto es largo por definición: `irArriba` anima solo el último tramo y
   // respeta `prefers-reduced-motion`.
   const scrollToTop = () => irArriba();
-
-  // Lo que más obligue de los dos; sin ninguno, el botón en su sitio.
-  const totalLift = Math.max(pieLift, cookieLift);
 
   if (!montado) return null;
 
@@ -120,7 +98,7 @@ export function BackToTop() {
       <div
         ref={anclaRef}
         className="fixed right-[calc(env(safe-area-inset-right)+1.5rem)] bottom-[calc(env(safe-area-inset-bottom)+1.5rem)] z-40 pointer-events-none transition-transform duration-200 ease-[var(--ease-suave)] motion-reduce:transition-none"
-        style={{ transform: `translateY(-${totalLift}px)` }}
+        style={{ transform: `translateY(-${pieLift}px)` }}
       >
         {/* Visible por atributo (`.tj-emerge`, globals.css). `tabIndex={-1}`
             oculto: a opacidad cero seguiría siendo alcanzable con Tab. */}

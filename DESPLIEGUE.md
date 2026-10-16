@@ -70,8 +70,6 @@ Las que sí hay que añadir, en *Settings → Environment variables*:
 - `NEXT_PUBLIC_WEB3FORMS_KEY` — destino de los formularios de contacto.
 - `NEXT_PUBLIC_WAITLIST_URL` y `NEXT_PUBLIC_BETA_API_URL` — destinos
   opcionales del formulario de `/beta` (ver abajo).
-- `NEXT_PUBLIC_POSTHOG_KEY` — clave de proyecto de PostHog (host EU). Sin
-  ella no se carga analítica; el sitio funciona igual.
 - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` — site key pública de Turnstile. Sin
   ella no se renderiza el widget anti-bot en `/beta`.
 - `NEXT_PUBLIC_SITE_URL` = `https://countpips.com` — **solo con el dominio
@@ -154,7 +152,7 @@ así que el mapa del sitio no lo anuncia nadie. Con el dominio, en este orden:
 
 `public/_headers` lleva las cabeceras de seguridad y de caché, incluida la
 `Content-Security-Policy` (restringe scripts/conexiones a los dominios que el
-sitio usa de verdad: Turnstile, PostHog, Web3Forms, Apps Script). Lo lee
+sitio usa de verdad: Turnstile, Web3Forms, Apps Script). Lo lee
 Cloudflare; GitHub Pages lo ignora porque no permite configurarlas — así que
 la copia de GitHub Pages **no lleva CSP ni el resto de estas cabeceras**, y
 ese fichero no puede romper la publicación antigua. Es una de las cosas que se

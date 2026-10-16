@@ -111,7 +111,6 @@ for (const v of VARIANTES) {
     isMobile: v.ancho < 768,
     hasTouch: v.ancho < 768,
   });
-  await ctx.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
   const lienzo = await (await navegador.newContext()).newPage();
   for (const ruta of RUTAS) {
     const p = await ctx.newPage();

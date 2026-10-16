@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
-import { trackEvent } from "@/lib/analytics";
 
 /**
  * Primera decisión de la portada. Los dos perfiles pesan lo mismo y llevan a
@@ -110,7 +109,6 @@ export function ProfileSelector() {
                 key={profile.id}
                 href={profile.href}
                 data-entra="ciclo"
-                onClick={() => trackEvent("profile_selected", { profile: profile.id })}
                 className={`group relative flex flex-col py-8 outline-none focus-visible:rounded-[4px] focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.6)] ${
                   i === 0
                     ? "md:pr-12"

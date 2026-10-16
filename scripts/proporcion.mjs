@@ -88,7 +88,6 @@ const anota = (donde, lista, exige = false) => {
 
 for (const [ancho, alto, movil] of [[1440, 900, false], [390, 844, true]]) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: alto }, isMobile: movil, hasTouch: movil, reducedMotion: "reduce" });
-  await ctx.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
   const p = await ctx.newPage();
   for (const ruta of RUTAS) {
     try {

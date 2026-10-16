@@ -2,7 +2,6 @@
 
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
-import { trackEvent } from "@/lib/analytics";
 import { OPERACIONES_MUESTRA } from "@/lib/trading/muestra";
 import { fmtInt } from "@/lib/trading/format";
 
@@ -96,7 +95,6 @@ export function FinalCTANew({
             <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link
                 href={enDemo ? "/beta" : "/demo"}
-                onClick={enDemo ? () => trackEvent("demo_early_access_clicked") : undefined}
                 className="cta cta--primario"
               >
                 {enDemo
@@ -105,7 +103,6 @@ export function FinalCTANew({
               </Link>
               <Link
                 href={enPrecios ? "/beta" : "/pricing"}
-                onClick={enDemo ? () => trackEvent("demo_pricing_clicked") : undefined}
                 className="cta cta--secundario"
               >
                 {enPrecios

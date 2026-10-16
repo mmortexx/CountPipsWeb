@@ -145,11 +145,6 @@ jobs:
           # solo sin panel de operaciones ni deduplicación por D1.
           #   Settings → Secrets and variables → Actions → BETA_API_URL
           NEXT_PUBLIC_BETA_API_URL: ${{ secrets.BETA_API_URL }}
-          # Clave pública de proyecto de PostHog (host EU). Sin ella,
-          # PostHog.tsx no inyecta el script y el sitio se publica igual,
-          # sin analítica.
-          #   Settings → Secrets and variables → Actions → POSTHOG_KEY
-          NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
           # Site key pública de Turnstile. Sin ella, BetaApplication.tsx no
           # renderiza el widget anti-bot; el Worker igualmente rechaza la
           # solicitud si exige Turnstile y no llega turnstileToken.

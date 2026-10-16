@@ -83,9 +83,6 @@ let interlineados = 0;
 
 for (const ancho of ANCHOS) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
-  await ctx.addInitScript(() => {
-    try { localStorage.setItem("tj-cookie-consent", "declined"); } catch { /* sin almacenamiento */ }
-  });
   const cola = [...rutas];
   await Promise.all(Array.from({ length: PESTANAS }, async () => {
     const pag = await ctx.newPage();

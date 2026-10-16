@@ -7,7 +7,7 @@ import {
   PUBLICACION_ISO,
   PRECIO_VALIDO_HASTA,
 } from "@/lib/fechas";
-import { readConsent, writeConsent, CONSENT_KEY } from "@/lib/consent";
+import { addTrade, getCustomTrades, type CustomTrade } from "@/lib/trading/demoStore";
 
 /**
  * Dimensión D6: rendimiento, exportación estática e hidratación. Fechas
@@ -137,11 +137,11 @@ describe("Dimension D6: Performance, SSG & Hydration", () => {
         dispatchEvent: () => true,
       };
 
-      // Sin lanzar y sin dar el consentimiento por aceptado.
-      expect(() => readConsent()).not.toThrow();
-      expect(readConsent()).toBeNull();
+      // La demo se queda vacía y en memoria, sin lanzar.
+      expect(() => getCustomTrades()).not.toThrow();
+      expect(getCustomTrades()).toEqual([]);
 
-      expect(() => writeConsent("accepted")).not.toThrow();
+      expect(() => addTrade({} as Omit<CustomTrade, "id">)).not.toThrow();
 
       global.window = originalWindow;
     });

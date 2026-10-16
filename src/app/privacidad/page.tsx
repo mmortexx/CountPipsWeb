@@ -52,8 +52,8 @@ export function PrivacidadBody() {
         tono="documento"
         titleEs="Política de privacidad."
         titleEn="Privacy policy."
-        subtitleEs="Una solicitud de acceso anticipado, un consentimiento separado para comunicaciones y analítica opcional solo tras aceptarla. Aquí está qué se recoge y cómo pedir que se borre."
-        subtitleEn="An early-access application, separate consent for communications, and optional analytics only after acceptance. Here is what is collected and how to have it deleted."
+        subtitleEs="Lo que escribes en un formulario, un consentimiento separado para comunicaciones y nada más: sin cookies ni analítica. Aquí está qué se recoge y cómo pedir que se borre."
+        subtitleEn="What you type into a form, separate consent for communications and nothing else: no cookies or analytics. Here is what is collected and how to have it deleted."
         breadcrumbEs="Privacidad"
         breadcrumbEn="Privacy"
       />

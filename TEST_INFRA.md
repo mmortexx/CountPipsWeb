@@ -22,7 +22,7 @@
 | `d6_performance_hydration.test.ts` | D6 | Determinismo SSR/SSG, fechas de publicación, sin hidratación no determinista |
 | `d7_d13_demo_engine.test.ts` | D7 + D13 | PRNG `mulberry32` determinista, fechas UTC, sincronía entre vistas |
 | `d8_design_tokens.test.ts` | D8 | Pureza de tokens, sin hex sueltos, mapeo de paletas claro/oscuro |
-| `d9_d10_security_editorial.test.ts` | D9 + D10 | Privacidad cliente, consentimiento de PostHog, tono institucional |
+| `d9_d10_security_editorial.test.ts` | D9 + D10 | Privacidad cliente, ninguna analítica ni cookie en el código (con el detector probado), tono institucional |
 | `d11_d12_shortcuts_resilience.test.ts` | D11 + D12 | Ctrl+K / Ctrl+G, `try/catch` de storage, validación de entradas |
 | `d14_institutional_suite.test.ts` | D14 | Multiplicadores de instrumento, SQN, índice de úlcera, asimetría de drawdown |
 | `tier3_pairwise_combinations.test.ts` | — | Combinaciones de features por pares |
@@ -35,7 +35,7 @@
 | `adversarial_stress.test.ts` | Casos límite adversariales del motor de métricas y contratos de futuros |
 | `campo-cifra.test.ts` | Las cifras de los campos editables: coma o punto según idioma, ida y vuelta exacta, y millares: «10.000» es diez mil donde el campo admite menos de tres decimales y sigue siendo decimal en un precio de tres o más («151.234») |
 | `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida, y que el recorte móvil declare las suyas: tiene otra proporción, y sin ellas la página saltaba al llegar la imagen |
-| `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts`; PostHog sin grabación de sesión y guardando en `localStorage`, no en cookies |
+| `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts` |
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
 | `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
 | `destino-beta.test.ts` | A dónde va la solicitud de acceso anticipado según el entorno de compilación (pasando por `next.config.ts`): solo con el Apps Script va a él aunque la variable del Worker llegue vacía; con los dos, al Worker; sin ninguno, a Web3Forms con todos los datos y con los textos que vio quien rellena («3+ años», no «3-plus»); sin clave tampoco, no sale y se avisa |
@@ -59,7 +59,7 @@
 | `sesiones.test.ts` | Las plazas del reloj de sesiones abren y cierran en su hora local: cambio de hora de Londres, las 09:30 de Nueva York, fin de semana según el día local, ventana del día en UTC |
 | `test-infra.test.ts` | Este índice nombra todos los ficheros de `tests/` y `tests/e2e/`: una prueba sin fila es una guarda que nadie sabe que existe |
 | `variables.test.ts` | Toda `var(--nombre)` que se lee sin valor de reserva está declarada en alguna hoja o estilo: una sin declarar deja el fondo transparente sin que nada falle |
-| `almacenamiento-declarado.test.ts` | La tabla de la política de cookies tiene una fila por clave que el código escribe en `localStorage`/`sessionStorage` (más PostHog), y las de «hasta que cierres la pestaña» existen como almacenamiento de sesión |
+| `almacenamiento-declarado.test.ts` | La tabla de la política de cookies tiene una fila por clave que el código escribe en `localStorage`/`sessionStorage` y ninguna más, y las de «hasta que cierres la pestaña» existen como almacenamiento de sesión |
 | `formulas-glosario.test.ts` | Cada símbolo que explica la leyenda de una fórmula del glosario («σ: desviación…») aparece en la propia fórmula, en los dos idiomas |
 | `programa.test.ts` | Lo que la web cita del programa de escritorio (`PROGRAMA` y las conexiones de `conexiones.ts`) frente a su código: carpeta de datos, gracia y revalidación de la licencia, PBKDF2, cuentas de Core, plantillas de prop firm y de CSV, y que cada salida de red del programa esté en la lista de conexiones y ninguna más. Solo corre con `COUNTPIPS_REPO` apuntando a una copia del repositorio del programa |
 | `ortografia-britanica.test.ts` | Ninguna raíz americana de una lista cerrada (-ize, defense, color, behavior, favor, center, catalog…) aparece en los campos ingleses del glosario, sus fórmulas, la FAQ, las láminas del producto ni `i18n.tsx`, salvo los nombres propios de términos técnicos («Maximum Favorable/Adverse Excursion») |
@@ -95,11 +95,9 @@
 | `glosario-familias.test.ts` | La ventana del glosario (`GLOSSARY_CATEGORIES`) y la página del glosario (`ORDEN_CATEGORIAS`) enseñan las mismas familias en el mismo orden |
 | `rayas-catalogos.test.ts` | En el texto español de `STR`, el glosario, las dos FAQ y las láminas del producto, la raya de inciso va pegada a su palabra con unión invisible (`⁠`): ni « — » con espacios ni una raya por la que el navegador pueda partir la línea |
 | `idiomas-nuevos.test.ts` | Verifica en `out/` que las páginas de nuevos idiomas (pt, fr, de, it) no sean copias del inglés ni idénticas entre sí, y que tengan el `lang` de HTML correcto |
-| `analitica-idioma.test.ts` | La analítica etiqueta cada evento con el idioma de `<html lang>` (`en`, `pt`, `de`…) y no con la ruta del despliegue; un idioma que no está en la tabla se envía tal cual |
 | `ruta-en-idioma.test.ts` | `rutaEnIdioma`, la dirección de la página en otro idioma que usan el selector y el cambio de idioma: sin prefijo para el español, con el prefijo de cada idioma y sin `search` ni `hash` |
 | `restos-de-espanol.test.ts` | Ninguna cadena `pt:` de `src/` lleva una marca de español («es», «y», «el», «los», «una», «pero», «con», «también» o una terminación «-ción»): lee cada cita y cada bloque JSX de su valor, y exige ver al menos el 90 % de los 297 fragmentos medidos para que el detector no se quede ciego |
 | `pie.test.ts` | Las columnas del pie en los seis idiomas (`columnasPie`): ningún texto se repite entre títulos y enlaces, y cada columna tiene título y enlaces |
-| `escape-aviso.test.ts` | Escape rechaza el aviso de cookies solo con el foco dentro de él: pulsado para cerrar el glosario, un menú o el idioma, no registra un «rechazar» que nadie eligió |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 

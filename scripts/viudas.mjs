@@ -74,7 +74,6 @@ let titulares = 0;
 
 for (const ancho of [390, 768, 1440]) {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
-  await ctx.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
   for (const ruta of RUTAS) {
     const p = await ctx.newPage();
     try {

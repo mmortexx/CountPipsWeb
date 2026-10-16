@@ -162,9 +162,6 @@ for (const tema of ["dark", "light"]) {
   await p.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
   await p.waitForTimeout(2500);
   await fijaTema();
-  // El banner de consentimiento tapa el hover del botón: sin retirarlo se mediría el reposo.
-  await p.locator("button").filter({ hasText: "Solo necesarias" }).first().click().catch(() => {});
-  await p.waitForTimeout(500);
   const cerrar = p.locator('button[aria-label="Cerrar"]').first();
   await cerrar.scrollIntoViewIfNeeded().catch(() => {});
   await cerrar.hover().catch(() => {});

@@ -6,7 +6,6 @@ import { useLang } from "@/lib/i18n";
 import { Link } from "@/components/tj/LocaleLink";
 import { useHydrated } from "@/hooks/use-hydrated";
 import { joinBetaApplication, SUPPORT_EMAIL, type BetaApplicationData, type SubmitFailure } from "@/lib/forms";
-import { trackEvent } from "@/lib/analytics";
 import { DIARIOS, EXPERIENCIAS, OBJETIVOS, PERFILES } from "@/lib/beta-opciones";
 
 type Profile = (typeof PERFILES)[number]["value"];
@@ -86,7 +85,6 @@ export function BetaApplication() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const startedRef = useRef(false);
   const profileRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const experienceRef = useRef<HTMLSelectElement>(null);
@@ -223,7 +221,6 @@ export function BetaApplication() {
       return;
     }
 
-    trackEvent("beta_application_submitted", { profile, duplicate: result.duplicate });
     setStatus("success");
   };
 
@@ -248,12 +245,6 @@ export function BetaApplication() {
   return (
     <form
       onSubmit={submit}
-      onFocus={() => {
-        if (!startedRef.current) {
-          startedRef.current = true;
-          trackEvent("beta_application_started", { profile: profile || null });
-        }
-      }}
       noValidate
       className="tj-ficha p-5 sm:p-9"
     >
@@ -285,7 +276,7 @@ export function BetaApplication() {
                 const active = profile === value;
                 return (
                   <label key={value} className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-[4px] border px-3.5 text-sm transition-colors ${active ? "border-[var(--ink-3)] bg-[color-mix(in_srgb,var(--ink)_5%,transparent)] text-primary" : profileInvalid ? "border-[rgb(var(--pnl-neg)/0.55)] text-secondary" : "border-[var(--ficha-filo)] text-secondary hover:border-[var(--line-2)] hover:text-primary"}`}>
-                    <input ref={value === "manual" ? profileRef : undefined} type="radio" name="profile" value={value} checked={active} onChange={() => { setProfile(value); trackEvent("beta_profile_selected", { profile: value }); }} className="accent-[rgb(var(--accent-base))]" />
+                    <input ref={value === "manual" ? profileRef : undefined} type="radio" name="profile" value={value} checked={active} onChange={() => setProfile(value)} className="accent-[rgb(var(--accent-base))]" />
                     {es ? textoEs : textoEn}
                   </label>
                 );

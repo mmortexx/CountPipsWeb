@@ -308,7 +308,7 @@ async function mideContraste(pagina, cand) {
    Para comprobarlo: `find out -name "__next.*.__PAGE__.txt" | wc -l` sobre la
    exportación; cero significa que compiló Windows. */
 const RUIDO =
-  /favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|posthog|challenges\.cloudflare|\[Fast Refresh\]|webpack-hmr|Warning: Extra attributes from the server|__next\.[^"'\s]*\.txt(\?|$)/i;
+  /favicon|ERR_CONNECTION|net::ERR_|Download the React DevTools|challenges\.cloudflare|\[Fast Refresh\]|webpack-hmr|Warning: Extra attributes from the server|__next\.[^"'\s]*\.txt(\?|$)/i;
 
 const navegador = await chromium.launch();
 
@@ -1562,7 +1562,6 @@ if (SERVIR) {
 let calculadorasVistas = 0;
 if (SERVIR) {
   const ctxCalc = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce" });
-  await ctxCalc.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
   const pagina = await ctxCalc.newPage();
   try {
     await pagina.goto(`${BASE}/herramientas/calculadora-de-riesgo/`, { waitUntil: "load", timeout: 30000 });
@@ -1615,7 +1614,6 @@ let desenfoquesVistos = 0;
 let elementosMirados = 0;
 if (SERVIR) {
   const ctxBlur = await navegador.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
-  await ctxBlur.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
   const pagina = await ctxBlur.newPage();
   for (const ruta of ["/", "/pricing/", "/demo/", "/features/", "/features/metricas/"]) {
     try {
@@ -1655,7 +1653,6 @@ if (SERVIR) {
 const acordeones = [];
 {
   const ctxPliegue = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
-  await ctxPliegue.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
   const pagina = await ctxPliegue.newPage();
   for (const ruta of ["/faq/", "/pricing/"]) {
     try {
@@ -1710,7 +1707,6 @@ const acordeones = [];
 let navegacionMirada = false;
 {
   const ctxNav = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
-  await ctxNav.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
   const pagina = await ctxNav.newPage();
   try {
     await pagina.goto(`${BASE}/`, { waitUntil: "networkidle", timeout: 45000 });
@@ -1751,7 +1747,6 @@ let subirMedidos = 0;
 if (SERVIR) {
   for (const [ancho, alto] of [[390, 844], [375, 667], [768, 1024]]) {
     const ctxSubir = await navegador.newContext({ viewport: { width: ancho, height: alto }, reducedMotion: "reduce" });
-    await ctxSubir.addInitScript(() => { try { localStorage.setItem("tj-cookie-consent", "declined"); } catch {} });
     const pagina = await ctxSubir.newPage();
     for (const ruta of ["/faq/", "/demo/", "/glosario/drawdown/"]) {
       try {

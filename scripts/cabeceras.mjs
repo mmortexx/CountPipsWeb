@@ -10,7 +10,7 @@
  * página del export (más la 404), recorre las pestañas de la demo y escucha el
  * evento `securitypolicyviolation` del navegador. Falla si `_headers` no
  * declara una CSP o si alguna página dispara un bloqueo. No mide lo que solo
- * carga con claves de producción (PostHog, Turnstile): el CI compila sin ellas.
+ * carga con claves de producción (Turnstile): el CI compila sin ellas.
  *
  * Uso:  node scripts/cabeceras.mjs --serve out
  */

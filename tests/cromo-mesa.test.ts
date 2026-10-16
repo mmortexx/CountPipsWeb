@@ -143,7 +143,6 @@ describe("Cromo de mesa", () => {
     const chrome = sinComentarios(leer("src/components/demo/WindowChrome.tsx"));
     const status = sinComentarios(leer("src/components/demo/StatusBar.tsx"));
     const marca = sinComentarios(leer("src/components/demo/AssetMark.tsx"));
-    const cookies = sinComentarios(leer("src/components/tj/CookieConsent.tsx"));
     const chip = sinComentarios(leer("src/components/tj/Chip.tsx"));
     const sesiones = sinComentarios(
       leer("src/components/marketing/SessionClock.tsx"),
@@ -154,7 +153,6 @@ describe("Cromo de mesa", () => {
     expect(status).toMatch(/w-2 h-2 rounded-\[1px\]/);
     expect(marca).not.toMatch(/forex: "rounded-full"/);
     expect(marca).toMatch(/clip-path:polygon/);
-    expect(cookies).toMatch(/tj-cristal/);
     expect(chip).not.toMatch(/`pill /);
     expect(chip).toMatch(/rounded-\[4px\]/);
     expect(sesiones).not.toMatch(/MotionPingDot/);

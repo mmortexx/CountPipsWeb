@@ -38,4 +38,4 @@ export const titularIncompleto =
   !TITULAR.nombreFiscal.trim() || !TITULAR.nif.trim() || !TITULAR.domicilio.trim();
 
 /** Fecha de la última revisión de los textos legales; va a mano y se actualiza al revisarlos. */
-export const LEGAL_ACTUALIZADO = "2026-09-26";
+export const LEGAL_ACTUALIZADO = "2026-10-16";

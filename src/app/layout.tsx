@@ -4,7 +4,6 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { Navbar } from "@/components/marketing/Navbar";
 import { Footer } from "@/components/marketing/Footer";
-import { CookieConsent } from "@/components/tj/CookieConsent";
 import { BackToTop } from "@/components/tj/BackToTop";
 import { GlobalShortcuts } from "@/components/tj/GlobalShortcuts";
 import { OverlayHost } from "@/components/tj/OverlayHost";
@@ -182,8 +181,6 @@ export default function RootLayout({
             <Aparecer />
             <SubrayadoPestanas />
             <SkipLink />
-            {/* Justo después del SkipLink para entrar pronto en el orden de tabulación. */}
-            <CookieConsent />
             <GlobalShortcuts />
             {/* Glosario y ayuda de atajos se cargan bajo demanda (ver OverlayHost.tsx). */}
             <OverlayHost />

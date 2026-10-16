@@ -6,8 +6,7 @@ Sitio y demo en el navegador de **CountPips**, el diario de trading nativo para 
   del programa, calculada en el navegador.
 - **Herramientas**: calculadoras de riesgo, fondeo, comisiones, Monte Carlo y un test
   de disciplina, en español e inglés.
-- **Privacidad**: sitio estático; la analítica (PostHog UE) sólo se carga con
-  consentimiento expreso.
+- **Privacidad**: sitio estático, sin cookies ni analítica.
 
 Este repositorio no contiene la aplicación de escritorio.
 

@@ -5,9 +5,8 @@ import { documentoPorSlug } from "@/lib/legal/documentos";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /**
- * /cookies: la lista cerrada de todo lo que la web guarda en el navegador. El
- * aviso de cookies enlaza aquí, y es donde se demuestra que los datos no salen
- * del equipo.
+ * /cookies: la lista cerrada de todo lo que la web guarda en el navegador, y
+ * donde se demuestra que no hay cookies ni analítica y que nada sale del equipo.
  */
 
 const doc = documentoPorSlug("cookies")!;
@@ -53,8 +52,8 @@ export function CookiesBody() {
         tono="documento"
         titleEs="Política de cookies."
         titleEn="Cookie policy."
-        subtitleEs="Las preferencias técnicas se quedan en tu navegador. PostHog solo se carga si aceptas la medición y puedes retirarla cuando quieras."
-        subtitleEn="Technical preferences stay in your browser. PostHog only loads if you accept measurement, and you can withdraw it at any time."
+        subtitleEs="Sin cookies y sin analítica. Las preferencias técnicas se quedan en tu navegador y nunca se envían."
+        subtitleEn="No cookies and no analytics. Technical preferences stay in your browser and are never sent."
         breadcrumbEs="Cookies"
         breadcrumbEn="Cookies"
       />

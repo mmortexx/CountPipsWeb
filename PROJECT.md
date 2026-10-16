@@ -19,7 +19,8 @@ Windows (WinUI 3, en otro repositorio).
 - **Demo**: datos de muestra deterministas (`mulberry32`), cuatro pestañas y el
   detalle de operación; estado en `src/lib/trading/demoStore.ts`
   (`useSyncExternalStore`).
-- **Analítica**: PostHog UE, sólo tras consentimiento explícito.
+- **Analítica**: ninguna, ni cookies ni aviso; la privacidad lo promete y
+  `d9_d10_security_editorial.test.ts` (D9-T1-2) lo vigila.
 - **Formularios**: contacto por Web3Forms; acceso anticipado por el Worker de
   `services/beta-api/` (D1, KV, Turnstile), el Apps Script de
   `docs/waitlist-apps-script.js` o, sin ninguno, por Web3Forms al correo
@@ -116,12 +117,12 @@ a ~60 Hz y no ve tirones a más frecuencia.
 
 - `src/app/`: rutas (español en la raíz, inglés bajo `/en/`).
 - `src/components/ui/`: primitivas sobre Radix (accordion, dialog, input, toast).
-- `src/components/tj/`: maqueta, navegación, capas, consentimiento, capturas reales.
+- `src/components/tj/`: maqueta, navegación, capas, capturas reales.
 - `src/components/marketing/` y `herramientas/`: secciones de producto y calculadoras.
 - `src/components/demo/`: la demo interactiva.
 - `src/components/glosario/`, `legal/`, `beta/`: sus páginas.
 - `src/hooks/`: hooks compartidos (`use-viaje` anima la demo sin librería).
-- `src/lib/`: idioma, tema, consentimiento, glosario, FAQ, formularios, sitio.
+- `src/lib/`: idioma, tema, glosario, FAQ, formularios, sitio.
 - `src/lib/trading/`: motor cuantitativo y datos de la demo.
 - `scripts/`: auditorías, `postbuild.mjs`, marca (`generate-brand.py`) y capturas
   (`capturas.py`, originales en `assets/capturas-originales/`).

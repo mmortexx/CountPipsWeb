@@ -5,9 +5,9 @@ import { fmtMoney } from "@/lib/trading/format";
 /**
  * Texto de las cuatro páginas legales, en los dos idiomas. Cada afirmación
  * debe describir algo que el sitio hace de verdad: formularios (`forms.ts`:
- * contacto a Web3Forms, acceso anticipado al endpoint de admisión), PostHog
- * solo tras consentimiento y en la UE, tipografías propias y el
- * almacenamiento local listado en la tabla de cookies.
+ * contacto a Web3Forms, acceso anticipado al endpoint de admisión), ninguna
+ * analítica ni cookie, tipografías propias y el almacenamiento local listado
+ * en la tabla de cookies.
  *
  * Es un borrador del autor del sitio, no de un abogado: debe revisarlo un
  * profesional antes de cobrar nada, sobre todo términos de venta y licencia.
@@ -55,13 +55,13 @@ const privacidad: DocumentoLegal = {
   tituloEs: "Política de privacidad",
   tituloEn: "Privacy policy",
   entradaEs:
-    "Esta web recoge una solicitud de acceso anticipado cuando la envías y, solo con permiso, medición agregada de uso mediante PostHog en la UE. No pedimos credenciales, capital, extractos ni datos financieros.",
+    "Esta web solo recoge lo que escribes en un formulario cuando lo envías. No usa cookies ni analítica, y no pedimos credenciales, capital, extractos ni datos financieros.",
   entradaEn:
-    "This site collects an early-access application when you submit it and, only with permission, aggregated usage measurement through EU-hosted PostHog. We do not ask for credentials, capital, statements or financial data.",
+    "This site only collects what you type into a form when you submit it. It uses no cookies or analytics, and we do not ask for credentials, capital, statements or financial data.",
   descripcionEs:
-    "Qué datos recoge la web de CountPips, quién los trata, cómo funciona PostHog opcional y cómo pedir que se borren.",
+    "Qué datos recoge la web de CountPips, quién los trata y cómo pedir que se borren. Sin cookies ni analítica.",
   descripcionEn:
-    "What the CountPips site collects, who processes it, how optional PostHog works and how to have it deleted.",
+    "What the CountPips site collects, who processes it and how to have it deleted. No cookies or analytics.",
   secciones: [
     {
       id: "responsable",
@@ -137,15 +137,15 @@ const privacidad: DocumentoLegal = {
         {
           tipo: "lista",
           es: [
-            "No se carga PostHog ni ninguna otra analítica si no aceptas la categoría opcional.",
-            "PostHog funciona en región europea y recibe eventos de embudo sin email, respuestas de formulario, valores de calculadora ni datos financieros.",
+            "No hay cookies ni analítica: no se mide qué páginas visitas, cuánto tiempo estás ni desde dónde llegas.",
+            "Las calculadoras, el test y la demo funcionan en tu navegador; lo que escribes en ellos no sale de tu equipo.",
             "No se elabora ningún perfil tuyo, ni se toman decisiones automatizadas sobre ti.",
             "No se comparte, vende ni cede tu correo a terceros con fines comerciales.",
             "Las tipografías se sirven desde este mismo dominio; no usamos píxeles publicitarios ni vendemos perfiles.",
           ],
           en: [
-            "PostHog and all other analytics remain disabled unless you accept the optional category.",
-            "PostHog runs in the European region and receives funnel events without emails, form answers, calculator values or financial data.",
+            "There are no cookies or analytics: nothing measures which pages you visit, how long you stay or where you came from.",
+            "The calculators, the test and the demo run in your browser; what you type into them never leaves your device.",
             "No profile of you is built, and no automated decisions are made about you.",
             "Your email is never shared, sold or transferred to third parties for commercial purposes.",
             "Fonts are served from this same domain; we use no advertising pixels and do not sell profiles.",
@@ -162,11 +162,11 @@ const privacidad: DocumentoLegal = {
           tipo: "lista",
           es: [
             "Acceso anticipado: evaluar tu solicitud, asignar un piloto y contactar contigo si encaja. La base es tu consentimiento al enviarla.",
-            "Analítica opcional: medir el recorrido de la web y detectar fricciones. La base es tu consentimiento granular, revocable en cualquier momento.",
+            "Contacto: responder a tu consulta. La base es tu consentimiento al escribirnos.",
           ],
           en: [
             "Early access: evaluate your application, assign a pilot and contact you if it fits. The basis is your consent when you submit it.",
-            "Optional analytics: measure the website journey and identify friction. The basis is granular consent, revocable at any time.",
+            "Contact: reply to your query. The basis is your consent when you write to us.",
           ],
         },
         {
@@ -183,21 +183,19 @@ const privacidad: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Los proveedores que pueden intervenir son el endpoint de admisión, Turnstile para el control anti-bot, PostHog en la UE si aceptas analítica, Web3Forms para contacto y el alojamiento estático:",
-          en: "Providers that may be involved are the admission endpoint, Turnstile for anti-bot protection, EU-hosted PostHog if you accept analytics, Web3Forms for contact and static hosting:",
+          es: "Los proveedores que pueden intervenir son el endpoint de admisión, Turnstile para el control anti-bot, Web3Forms para contacto y el alojamiento estático:",
+          en: "Providers that may be involved are the admission endpoint, Turnstile for anti-bot protection, Web3Forms for contact and static hosting:",
         },
         {
           tipo: "lista",
           es: [
             "Endpoint de admisión: recibe y deduplica solicitudes para el equipo de selección.",
             "Cloudflare Turnstile: valida que la solicitud procede de una persona cuando el control está activado.",
-            "PostHog EU: recibe eventos técnicos solo tras consentimiento analítico.",
             "Web3Forms: recibe el formulario de contacto y lo reenvía al correo del titular.",
           ],
           en: [
             "Admission endpoint — receives and deduplicates applications for the selection team.",
             "Cloudflare Turnstile — checks that an application comes from a person when enabled.",
-            "EU PostHog — receives technical events only after analytics consent.",
             "Web3Forms — receives the contact form and forwards it to the owner’s email.",
           ],
         },
@@ -278,28 +276,28 @@ const cookies: DocumentoLegal = {
   tituloEs: "Política de cookies",
   tituloEn: "Cookie policy",
   entradaEs:
-    "Abajo está todo lo que se guarda en tu navegador, por qué sale el aviso aunque casi no haya cookies y cómo borrarlo.",
+    "Esta web no usa cookies ni analítica. Abajo está lo poco que se guarda en tu navegador para que funcione, y cómo borrarlo.",
   entradaEn:
-    "Below: everything stored in your browser, why the notice appears even though there are hardly any cookies, and how to clear it.",
+    "This site uses no cookies or analytics. Below is the little it stores in your browser so it works, and how to clear it.",
   descripcionEs:
-    "Preferencias locales y analítica opcional de CountPips: qué guarda tu navegador y cómo retirar el consentimiento.",
+    "CountPips no usa cookies ni analítica: qué guarda tu navegador para que la web funcione y cómo borrarlo.",
   descripcionEn:
-    "CountPips local preferences and optional analytics: what your browser stores and how to withdraw consent.",
+    "CountPips uses no cookies or analytics: what your browser stores so the site works, and how to clear it.",
   secciones: [
     {
       id: "no-cookies",
-      tituloEs: "Preferencias necesarias y analítica opcional",
-      tituloEn: "Necessary preferences and optional analytics",
+      tituloEs: "Sin cookies y sin analítica",
+      tituloEn: "No cookies and no analytics",
       bloques: [
         {
           tipo: "parrafo",
-          es: "Las preferencias de tema y consentimiento se guardan localmente; el idioma no, porque sale de la dirección de la página (/en para el inglés). Si aceptas analítica, PostHog puede guardar identificadores técnicos para medir el uso agregado; puedes retirar ese permiso desde el aviso de cookies o borrando el almacenamiento del sitio.",
-          en: "Theme and consent preferences are stored locally; the language is not, because it comes from the page address (/en for English). If you accept analytics, PostHog may store technical identifiers for aggregate measurement; you can withdraw permission from the cookie notice or by clearing this site’s storage.",
+          es: "No hay cookies, ni propias ni de terceros, y no se mide tu visita. Por eso no te pedimos permiso con ningún aviso: no hay nada que aceptar.",
+          en: "There are no cookies, first-party or third-party, and your visit is not measured. That is why no notice asks for your permission: there is nothing to accept.",
         },
         {
           tipo: "parrafo",
-          es: "La analítica es opcional y no se carga hasta que la aceptas. No se envían emails, respuestas del formulario, valores de calculadoras ni datos financieros.",
-          en: "Analytics is optional and does not load until you accept it. Emails, form answers, calculator values and financial data are not sent.",
+          es: "Lo que sí se guarda en tu navegador son preferencias y lo que haces en las herramientas, para que no se pierda al recargar. Se queda en tu equipo y nunca se envía. El idioma no se guarda: sale de la dirección de la página (/en para el inglés).",
+          en: "What is stored in your browser are preferences and what you do in the tools, so it is not lost on reload. It stays on your device and is never sent. The language is not stored: it comes from the page address (/en for English).",
         },
       ],
     },
@@ -313,10 +311,6 @@ const cookies: DocumentoLegal = {
           cabecerasEs: ["Qué guarda", "Para qué", "Cuánto dura"],
           cabecerasEn: ["What it stores", "What for", "How long"],
           filas: [
-            {
-              es: ["Tu elección en este aviso", "Recordar consentimiento", "Hasta que borres los datos del navegador"],
-              en: ["Your choice in this notice", "Remember consent", "Until you clear your browser data"],
-            },
             {
               es: ["Tema claro u oscuro", "Abrir la web como la dejaste", "Hasta que borres los datos del navegador"],
               en: ["Light or dark theme", "To open the site as you left it", "Until you clear your browser data"],
@@ -337,28 +331,12 @@ const cookies: DocumentoLegal = {
               es: ["Los términos que consultas en el glosario", "Ofrecerte los últimos al volver a abrirlo", "Hasta que borres los datos del navegador"],
               en: ["Glossary terms you look up", "To offer you the latest ones when you reopen it", "Until you clear your browser data"],
             },
-            {
-              es: ["Identificador PostHog (ph_* en localStorage)", "Medición analítica anónima (únicamente si aceptas analítica)", "Hasta que borres datos o revoques consentimiento"],
-              en: ["PostHog identifier (ph_* in localStorage)", "Anonymous analytics measurement (only if analytics accepted)", "Until browser data cleared or consent revoked"],
-            },
           ],
         },
         {
           tipo: "parrafo",
-          es: "Las preferencias técnicas no se usan para medir audiencias. La medición PostHog es una categoría separada, opcional y revocable.",
-          en: "Technical preferences are not used for audience measurement. PostHog measurement is a separate, optional and revocable category.",
-        },
-      ],
-    },
-    {
-      id: "why-banner",
-      tituloEs: "Entonces, ¿por qué sale el aviso?",
-      tituloEn: "So why does the notice appear?",
-      bloques: [
-        {
-          tipo: "parrafo",
-          es: "Porque la analítica opcional requiere tu permiso. Si rechazas, la web funciona igual y PostHog no se carga. Para cambiar de idea en cualquier momento, pulsa «Preferencias de privacidad» al final de cualquier página: el aviso vuelve a salir y puedes elegir «Solo necesarias». La medición se detiene en ese mismo instante.",
-          en: "Because optional analytics requires your permission. If you decline, the site works the same and PostHog is not loaded. To change your mind at any time, use “Privacy preferences” at the bottom of any page: the notice reappears and you can choose “Necessary only”. Measurement stops that instant.",
+          es: "Nada de esto sirve para medir audiencias ni para identificarte, y por eso la ley no exige pedir permiso para guardarlo.",
+          en: "None of this is used to measure audiences or to identify you, which is why the law does not require asking permission to store it.",
         },
       ],
     },
@@ -369,8 +347,8 @@ const cookies: DocumentoLegal = {
       bloques: [
         {
           tipo: "parrafo",
-          es: "Pulsa «Preferencias de privacidad» al final de cualquier página y elige «Solo necesarias»: eso retira el permiso y detiene la medición. Para borrar además lo ya guardado en tu equipo, vacía los datos de este sitio desde los ajustes de tu navegador. Y si quieres suprimir una solicitud de acceso anticipado, escríbenos.",
-          en: "Use “Privacy preferences” at the bottom of any page and choose “Necessary only”: that withdraws the permission and stops measurement. To also erase what is already stored on your device, clear this site’s data from your browser settings. And to delete an early-access application, write to us.",
+          es: "Vacía los datos de este sitio desde los ajustes de tu navegador: la web volverá a abrirse con el tema de tu sistema y las herramientas en blanco. Y si quieres suprimir una solicitud de acceso anticipado, escríbenos.",
+          en: "Clear this site’s data from your browser settings: the site will open again with your system theme and the tools blank. And to delete an early-access application, write to us.",
         },
       ],
     },

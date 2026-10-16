@@ -97,7 +97,6 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 1 Feature Cov
   it("T1.3: ARIA attributes and semantic landmarks are correctly applied across interactive components", () => {
     const glossaryModal = readSrc("src/components/tj/GlossaryModal.tsx");
     const shortcutsHelp = readSrc("src/components/tj/ShortcutsHelp.tsx");
-    const cookieConsent = readSrc("src/components/tj/CookieConsent.tsx");
 
     expect(shortcutsHelp).toContain('role="dialog"');
     expect(shortcutsHelp).toContain('aria-modal="true"');
@@ -110,9 +109,6 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 1 Feature Cov
     expect(glossaryModal).toContain("aria-selected=");
     expect(glossaryModal).toContain("aria-label=");
     expect(glossaryModal).toContain("aria-pressed=");
-
-    expect(cookieConsent).toContain('role="dialog"');
-    expect(cookieConsent).toContain("aria-label=");
   });
 
   it("T1.4: prefers-reduced-motion is respected across animations and scroll behaviors", () => {

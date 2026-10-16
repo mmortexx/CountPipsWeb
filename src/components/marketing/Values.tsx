@@ -42,17 +42,17 @@ const VALUES: Value[] = [
     titleDe: "Immer lokal",
     titleIt: "Sempre in locale",
     descEs:
-      "Tus operaciones son tuyas. Viven en tu equipo y solo salen si activas una función que lo necesita; la analítica de esta web solo se activa con tu consentimiento.",
+      "Tus operaciones son tuyas. Viven en tu equipo y solo salen si activas una función que lo necesita. Esta web no usa cookies ni analítica.",
     descEn:
-      "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it; this site’s analytics only activates with your consent.",
+      "Your trading data is yours. It lives on your machine and only leaves if you turn on a feature that needs it. This site uses no cookies or analytics.",
     descPt:
-      "Suas operações pertencem a você. Elas ficam na sua máquina e só saem se você ativar uma função necessária; a análise deste site só é ativada com seu consentimento.",
+      "Suas operações pertencem a você. Elas ficam na sua máquina e só saem se você ativar uma função necessária. Este site não usa cookies nem análises.",
     descFr:
-      "Vos données de trading vous appartiennent. Elles restent sur votre machine et ne la quittent que si vous activez une option dédiée ; les analyses de ce site n’opèrent qu’avec votre consentement.",
+      "Vos données de trading vous appartiennent. Elles restent sur votre machine et ne la quittent que si vous activez une option dédiée. Ce site n’utilise ni cookies ni outils d’analyse.",
     descDe:
-      "Ihre Trading-Daten gehören Ihnen. Sie bleiben auf Ihrem Rechner und verlassen ihn nur, wenn Sie eine entsprechende Funktion aktivieren; Web-Analysen laufen nur mit Ihrer Einwilligung.",
+      "Ihre Trading-Daten gehören Ihnen. Sie bleiben auf Ihrem Rechner und verlassen ihn nur, wenn Sie eine entsprechende Funktion aktivieren. Diese Website verwendet weder Cookies noch Web-Analysen.",
     descIt:
-      "I tuoi dati di trading ti appartengono. Restano sulla tua macchina e ne escono solo se attivi una funzione che lo richiede; le analisi di questo sito si attivano solo con il tuo consenso.",
+      "I tuoi dati di trading ti appartengono. Restano sulla tua macchina e ne escono solo se attivi una funzione che lo richiede. Questo sito non usa né cookie né strumenti di analisi.",
     href: "/features/seguridad",
     pruebaEs: "Qué se guarda y dónde",
     pruebaEn: "What is stored, and where",

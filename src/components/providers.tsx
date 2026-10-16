@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/i18n";
-import { PostHog } from "@/components/analytics/PostHog";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -12,7 +11,6 @@ export function Providers({ children }: { children: ReactNode }) {
     <ThemeProvider>
       <LanguageProvider>
         {children}
-        <PostHog />
       </LanguageProvider>
     </ThemeProvider>
   );

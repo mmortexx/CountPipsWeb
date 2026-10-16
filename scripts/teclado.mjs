@@ -245,12 +245,9 @@ for (const d of DIALOGOS) {
   await ctx.close();
 }
 
-// 4. Las capas devuelven el foco y el aviso de cookies no lo roba.
-const nueva = async (ruta, { ancho = 1280, consentimiento = "declined" } = {}) => {
+// 4. Las capas devuelven el foco.
+const nueva = async (ruta, { ancho = 1280 } = {}) => {
   const ctx = await navegador.newContext({ viewport: { width: ancho, height: 900 }, reducedMotion: "reduce" });
-  if (consentimiento) {
-    await ctx.addInitScript((v) => { try { localStorage.setItem("tj-cookie-consent", v); } catch {} }, consentimiento);
-  }
   // Esta guarda nunca debe enviar un mensaje de verdad.
   await ctx.route(/web3forms/i, (r) => r.abort());
   const p = await ctx.newPage();
@@ -432,45 +429,7 @@ for (const idioma of ["es", "en"]) {
   await ctx.close();
 }
 
-// (c) el aviso de cookies: aparece solo sin robar el foco, y reabierto desde el pie sí lo recibe
-{
-  const { ctx, p } = await nueva("/", { consentimiento: null });
-  await p.keyboard.press("Tab");
-  const marcado = await marcaFoco(p);
-  await p.waitForTimeout(5800);
-  const visible = await p.evaluate(() => !!document.querySelector('[data-cookie-consent="visible"]'));
-  if (!marcado || !visible) {
-    fallos.push({ ruta: "/", detalle: `no pude preparar la prueba del aviso de cookies (foco marcado: ${marcado}, aviso visible: ${visible})` });
-  } else {
-    recorridos++;
-    if (!(await focoVuelve(p))) fallos.push({ ruta: "/", detalle: "el aviso de cookies, al aparecer solo, se lleva el foco: quien estaba leyendo pierde su sitio" });
-  }
-  await ctx.close();
-}
-{
-  const { ctx, p } = await nueva("/");
-  const pie = p.locator("footer button").filter({ hasText: "Preferencias de privacidad" }).first();
-  if (!(await pie.count())) {
-    fallos.push({ ruta: "/", detalle: "no encontré «Preferencias de privacidad» en el pie" });
-  } else {
-    await pie.focus();
-    await marcaFoco(p);
-    await p.keyboard.press("Enter");
-    await p.waitForTimeout(700);
-    const aviso = await dialogo(p, "Consentimiento de cookies");
-    if (!aviso?.dentro) {
-      fallos.push({ ruta: "/", detalle: `reabierto desde el pie, el aviso de cookies no recibe el foco (está en «${aviso?.foco ?? "ninguno"}»)` });
-    } else {
-      recorridos++;
-      await p.keyboard.press("Enter");
-      await p.waitForTimeout(500);
-      if (!(await focoVuelve(p))) fallos.push({ ruta: "/", detalle: "tras elegir en el aviso de cookies, el foco no vuelve al enlace del pie" });
-    }
-  }
-  await ctx.close();
-}
-
-// (d) el glosario dice qué opción está activa
+// (c) el glosario dice qué opción está activa
 {
   const { ctx, p } = await nueva("/faq/");
   const b = p.locator("button").filter({ hasText: /glosario|glossary/i }).first();
@@ -501,7 +460,7 @@ for (const idioma of ["es", "en"]) {
   await ctx.close();
 }
 
-// (e) el megamenú se cierra cuando el Tab sale de la navegación, no antes
+// (d) el megamenú se cierra cuando el Tab sale de la navegación, no antes
 {
   const { ctx, p } = await nueva("/");
   const disp = p.locator("#navbar-producto-trigger").first();
@@ -530,7 +489,7 @@ for (const idioma of ["es", "en"]) {
   await ctx.close();
 }
 
-// (f) el formulario señala el error en el campo que falla, no en los tres
+// (e) el formulario señala el error en el campo que falla, no en los tres
 {
   const { ctx, p } = await nueva("/faq/");
   const email = p.locator("#cf-email");
@@ -555,7 +514,7 @@ for (const idioma of ["es", "en"]) {
   }
   await ctx.close();
 }
-// (g) al enviarse, el foco va a la confirmación
+// (f) al enviarse, el foco va a la confirmación
 /* El `<form>` se desmonta al enviarse y el foco debe pasar a la confirmación,
    no caer al `<body>`. El servicio de envío se sustituye por un éxito simulado;
    la ruta que lo aborta en `nueva` queda debajo de esta. */
@@ -589,7 +548,7 @@ for (const idioma of ["es", "en"]) {
   }
   await ctx.close();
 }
-// (h) el glosario abierto con Ctrl+G devuelve el foco al cerrarse
+// (g) el glosario abierto con Ctrl+G devuelve el foco al cerrarse
 // Sin disparador propio, Radix no sabe adónde devolver el foco y lo deja en `<body>`.
 {
   const { ctx, p } = await nueva("/");
@@ -610,7 +569,7 @@ for (const idioma of ["es", "en"]) {
   }
   await ctx.close();
 }
-// (i) el índice lateral lleva el punto de partida del tabulador a la sección
+// (h) el índice lateral lleva el punto de partida del tabulador a la sección
 // El enlace evita el salto nativo; el foco debe acabar en la sección, no en el índice.
 {
   const { ctx, p } = await nueva("/features/", { ancho: 1680 });
@@ -633,9 +592,9 @@ for (const idioma of ["es", "en"]) {
   }
   await ctx.close();
 }
-console.log(`  capas, aviso de cookies, glosario, megamenú, formulario e índice: ${recorridos} de 13 recorridos completos`);
-if (recorridos < 13 && !fallos.length) {
-  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 13 recorridos llegaron a medirse` });
+console.log(`  capas, glosario, megamenú, formulario e índice: ${recorridos} de 11 recorridos completos`);
+if (recorridos < 11 && !fallos.length) {
+  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 11 recorridos llegaron a medirse` });
 }
 
 await navegador.close();

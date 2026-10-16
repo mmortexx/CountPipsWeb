@@ -194,11 +194,6 @@ const ctx = await navegador.newContext({
   deviceScaleFactor: 1,
   reducedMotion: "reduce",
 });
-await ctx.addInitScript(() => {
-  try {
-    localStorage.setItem("tj-cookie-consent", "declined");
-  } catch {}
-});
 const pagina = await ctx.newPage();
 const fallos = [];
 let total = 0;

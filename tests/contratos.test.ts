@@ -173,26 +173,6 @@ describe("contrato del formulario de acceso anticipado", () => {
   });
 });
 
-describe("analítica y consentimiento", () => {
-  const posthog = leerCodigo("src/components/analytics/PostHog.tsx");
-
-  it("no se activa la grabación de sesión, que la política no declara", () => {
-    expect(posthog).toMatch(/disable_session_recording:\s*true/);
-  });
-
-  it("PostHog guarda en localStorage y no en cookies", () => {
-    // Sin `persistence` explícito, PostHog usa "localStorage+cookie" y escribe cookies.
-    expect(posthog).toMatch(/persistence:\s*"(localStorage|memory|sessionStorage)"/);
-  });
-
-  it("la clave de consentimiento no está repetida a mano por ahí", () => {
-    // Con copias, retirar el consentimiento en un sitio dejaba a los otros leyendo el valor viejo.
-    const copias = ["src/components/analytics/PostHog.tsx", "src/lib/analytics.ts"]
-      .filter((f) => leerCodigo(f).includes('"tj-cookie-consent"'));
-    expect(copias).toEqual([]);
-  });
-});
-
 /**
  * El patrón «{término}: qué es y por qué importa — CountPips» ya cuesta 41
  * caracteres; un término con la expansión dentro, como «MAE (Maximum Adverse

@@ -1,9 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect } from "react";
 import { Skeleton } from "@/components/tj/Skeleton";
-import { trackEvent } from "@/lib/analytics";
 
 /**
  * Punto de entrada de la demo en el cliente. `next/dynamic({ ssr: false })` no
@@ -147,8 +145,5 @@ function DemoSkeleton() {
 }
 
 export function AppDemoClient({ hideHeader = false }: { hideHeader?: boolean } = {}) {
-  useEffect(() => {
-    trackEvent("demo_viewed");
-  }, []);
   return <AppDemo hideHeader={hideHeader} />;
 }
