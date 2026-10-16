@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
+import { TERMINOS_DE_PERFIL, terminosPorNombre } from "@/lib/glosario";
 import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 import { PROGRAMA, enumerar } from "@/lib/producto";
 
@@ -36,7 +37,7 @@ export default function PropFirmsPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
         />
       ))}
-      <TraderProfileBody profile="prop" />
+      <TraderProfileBody profile="prop" terminos={terminosPorNombre(TERMINOS_DE_PERFIL.prop)} />
     </>
   );
 }

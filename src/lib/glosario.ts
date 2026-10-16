@@ -1,5 +1,6 @@
 import { GLOSSARY, type GlossaryCategory, type GlossaryTerm } from "@/lib/trading/glossary";
 import { nombreTermino, slugTermino } from "@/lib/trading/nombre-termino";
+import { TERMINOS_DE_PERFIL } from "@/lib/terminos-de-perfil";
 
 export { nombreTermino, slugTermino };
 import { herramientaPorSlug } from "@/lib/herramientas";
@@ -447,13 +448,25 @@ export type FichaTermino = {
   siguiente?: TerminoGlosario;
 };
 
+/** Lo justo para enlazar una voz desde otra página, en los dos idiomas. */
+export type EnlaceTermino = { slug: string; nombreEs: string; nombreEn: string };
+
+const enlaceDe = (t: TerminoGlosario): EnlaceTermino => ({ slug: t.slug, nombreEs: nombreTermino(t, "es"), nombreEn: t.term });
+
 /** Las voces que mandan a una herramienta, para que la herramienta les devuelva el enlace. */
-export function terminosDeHerramienta(slug: string): { slug: string; nombreEs: string; nombreEn: string }[] {
-  return TERMINOS.filter((t) => HERRAMIENTA_DE[t.slug] === `/herramientas/${slug}`).map((t) => ({
-    slug: t.slug,
-    nombreEs: nombreTermino(t, "es"),
-    nombreEn: t.term,
-  }));
+export function terminosDeHerramienta(slug: string): EnlaceTermino[] {
+  return TERMINOS.filter((t) => HERRAMIENTA_DE[t.slug] === `/herramientas/${slug}`).map(enlaceDe);
+}
+
+export { TERMINOS_DE_PERFIL };
+
+/** Enlaces a voces por su `term`; un nombre que no existe rompe la compilación en vez de dar un 404. */
+export function terminosPorNombre(nombres: string[]): EnlaceTermino[] {
+  return nombres.map((n) => {
+    const t = TERMINOS.find((x) => x.term === n);
+    if (!t) throw new Error(`El glosario no tiene la voz «${n}»`);
+    return enlaceDe(t);
+  });
 }
 
 export function fichaDeTermino(t: TerminoGlosario): FichaTermino {

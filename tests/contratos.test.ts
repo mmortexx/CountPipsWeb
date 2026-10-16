@@ -254,6 +254,8 @@ describe("el precio es el mismo en todas partes", () => {
     const sueltas: string[] = [];
     for (const rel of fuentes) {
       if (rel.endsWith("/precios.ts")) continue;
+      // Los ejemplos del glosario calculan con importes de una cuenta, no con el precio del producto.
+      if (rel.endsWith("/glosario-ampliado.ts")) continue;
       // Sin comentarios: las notas pueden citar precios antiguos.
       const lineas = sinComentarios(leer(rel)).split("\n");
       lineas.forEach((linea, i) => {

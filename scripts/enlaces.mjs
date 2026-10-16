@@ -3,8 +3,9 @@
  * enlaza al español cuando existe la versión inglesa, que ninguna española
  * enlaza a `/en/…`, que todo enlace interno lleva a una página que existe y
  * que ningún botón de acción (`.cta`) lleva a la página en la que está.
- * Además, que cada página hija se enlaza desde su madre y que cada herramienta
- * devuelve el enlace a las voces del glosario que mandan a ella.
+ * Además, que cada página hija se enlaza desde su madre, que cada herramienta
+ * devuelve el enlace a las voces del glosario que mandan a ella y que cada
+ * perfil de trader enlaza las voces que cita.
  *
  * Se comprueba contra los ficheros de `out/`, no contra la lista de rutas del
  * código. No cuentan los recursos (`/_next/…`, imágenes, fuentes), las
@@ -20,6 +21,8 @@ import { existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { TABLA_IDIOMAS, sinPrefijo } from "../src/lib/locale.ts";
+import { TERMINOS_DE_PERFIL } from "../src/lib/terminos-de-perfil.ts";
+import { slugTermino } from "../src/lib/trading/nombre-termino.ts";
 
 // Acepta `out` y `--serve out`, la forma de otras guardas.
 const RAIZ = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -206,6 +209,22 @@ for (const [ruta, destinos] of enlacesDe) {
   for (const d of destinos) {
     if (!/\/herramientas\/[^/]+\/$/.test(d) || !enlacesDe.has(d)) continue;
     if (!enlacesDe.get(d).has(ruta)) fallos.push({ ruta: d, regla: "herramienta que no devuelve el enlace a su voz del glosario", detalle: ruta });
+  }
+}
+
+// Cada perfil de trader enlaza las voces que cita su texto (`terminos-de-perfil.ts`).
+for (const [perfil, terminos] of Object.entries(TERMINOS_DE_PERFIL)) {
+  const ruta = perfil === "prop" ? "traders/prop-firms/" : "traders/manual/";
+  for (const prefijo of ["/", "/en/"]) {
+    const pagina = `${prefijo}${ruta}`;
+    if (!enlacesDe.has(pagina)) {
+      fallos.push({ ruta: pagina, regla: "perfil de trader que no está", detalle: "actualiza la ruta en enlaces.mjs" });
+      continue;
+    }
+    for (const t of terminos) {
+      const voz = `${prefijo}glosario/${slugTermino(t)}/`;
+      if (!enlacesDe.get(pagina).has(voz)) fallos.push({ ruta: pagina, regla: "perfil de trader que no enlaza las voces que cita", detalle: voz });
+    }
   }
 }
 

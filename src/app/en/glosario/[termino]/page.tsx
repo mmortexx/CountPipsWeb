@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { TerminoVista } from "@/components/glosario/TerminoVista";
 import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { CATEGORIAS, TERMINOS, descripcionDeTermino, fichaDeTermino, nombreTermino, terminoPorSlug, tituloDeTermino } from "@/lib/glosario";
+import { AMPLIADO } from "@/lib/glosario-ampliado";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 
 /** /en/glosario/[termino]: versión inglesa de /glosario/[termino], con los mismos parámetros estáticos. */
@@ -107,7 +108,7 @@ export default async function TerminoEnPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(terminoSchema) }}
       />
-      <TerminoVista ficha={fichaDeTermino(t)} />
+      <TerminoVista ficha={fichaDeTermino(t)} ampliacion={AMPLIADO[t.term]} />
       <FinalCTANew variante="glosario" />
     </>
   );

@@ -364,7 +364,7 @@ async function medir(pag, ruta, ancho) {
     const ceja = [...document.querySelectorAll("p.eyebrow")].find((p) => /^(De la misma familia|Same family)$/.test(p.textContent.trim()));
     const columna = document.querySelector('nav[aria-label="Recorrer el glosario"], nav[aria-label="Browse the glossary"]')?.closest(".lg\\:grid")?.firstElementChild;
     if (!ceja || !columna) return null;
-    const primero = [...columna.querySelectorAll("p, span")].find((e) => e.children.length === 0 && e.textContent.trim() && e.getBoundingClientRect().height > 0);
+    const primero = [...columna.querySelectorAll("h2, h3, p, span")].find((e) => e.children.length === 0 && e.textContent.trim() && e.getBoundingClientRect().height > 0);
     return primero ? Math.round(primero.getBoundingClientRect().top - ceja.getBoundingClientRect().top) : null;
   }) : null;
   if (desfase !== null) {

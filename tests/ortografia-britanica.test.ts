@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { GLOSSARY, GLOSSARY_CATEGORIES } from "@/lib/trading/glossary";
 import { FORMULAS_GLOSARIO, CATEGORIAS as CATEGORIAS_GLOSARIO, SEGUIR_LEYENDO } from "@/lib/glosario";
+import { AMPLIADO } from "@/lib/glosario-ampliado";
 import { FAQ_EN, PRICING_FAQ_EN } from "@/lib/faq";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
 import { STR } from "@/lib/i18n";
@@ -72,6 +73,10 @@ Object.entries(CATEGORIAS_GLOSARIO).forEach(([cat, c]) => {
 });
 Object.entries(SEGUIR_LEYENDO).forEach(([cat, s]) => {
   agregar(`glosario.ts SEGUIR_LEYENDO["${cat}"].en`, s.en);
+});
+Object.entries(AMPLIADO).forEach(([term, a]) => {
+  agregar(`glosario-ampliado.ts AMPLIADO["${term}"].ejemplo.en`, a.ejemplo.en);
+  agregar(`glosario-ampliado.ts AMPLIADO["${term}"].importa.en`, a.importa.en);
 });
 
 FAQ_EN.forEach((qa, i) => {

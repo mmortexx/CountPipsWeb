@@ -14,7 +14,8 @@
  *
  * También vigila lo que se busca: que cada página principal lleve en el título
  * su búsqueda (`BUSQUEDA_DEL_TITULO`) y que las voces del glosario con nombre
- * español se titulen con él en `/glosario/` y con el inglés en `/en/glosario/`.
+ * español se titulen con él en `/glosario/` y con el inglés en `/en/glosario/`,
+ * y que cada voz publique su ejemplo y por qué importa (`glosario-ampliado.ts`).
  *
  * Uso:  node scripts/metadatos.mjs out
  */
@@ -22,6 +23,7 @@ import { readFileSync, globSync, existsSync } from "node:fs";
 import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
 import { GLOSSARY } from "../src/lib/trading/glossary.ts";
 import { slugTermino } from "../src/lib/trading/nombre-termino.ts";
+import { AMPLIADO } from "../src/lib/glosario-ampliado.ts";
 
 // Acepta `out` y `--serve out`, la forma de otras guardas.
 const dir = process.argv.slice(2).find((a) => !a.startsWith("-")) || "out";
@@ -75,6 +77,8 @@ const paginas = ficheros.map((f) => {
     ),
     bloquesLd: [...html.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1])),
     h1: [...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/g)].map((m) => texto(m[1])),
+    h2: [...html.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/g)].map((m) => texto(m[1])),
+    cuerpo: texto((html.match(/<main\b[\s\S]*?<\/main>/) || [""])[0].replace(/<script\b[\s\S]*?<\/script>/g, " ")),
   };
 });
 
@@ -205,6 +209,23 @@ for (const t of conNombreEs) {
     if (!p) anota("voz del glosario que no está", ruta, `«${t.term}» no tiene página indexable`);
     else if (p.h1[0] !== nombre || !p.titulo?.startsWith(nombre))
       anota("voz del glosario que no se titula con su nombre en ese idioma", ruta, `H1 «${p.h1[0]}», título «${p.titulo}»; se esperaba «${nombre}»`);
+  }
+}
+
+// Cada voz publica, además de la definición, su ejemplo y por qué importa: sin ellos es contenido escaso.
+for (const t of GLOSSARY) {
+  const a = AMPLIADO[t.term];
+  for (const [ruta, encabezados, textos] of [
+    [`/glosario/${slugTermino(t.term)}/`, ["Un ejemplo", "Por qué importa"], a ? [a.ejemplo.es, a.importa.es] : []],
+    [`/en/glosario/${slugTermino(t.term)}/`, ["An example", "Why it matters"], a ? [a.ejemplo.en, a.importa.en] : []],
+  ]) {
+    const p = indexables.find((x) => x.ruta === ruta);
+    if (!p) continue;
+    const faltan = [
+      ...encabezados.filter((h) => !p.h2.includes(h)).map((h) => `encabezado «${h}»`),
+      ...(a ? textos.filter((s) => !p.cuerpo.includes(s.slice(0, 40).replace(/\s+/g, " "))).map((s) => `texto «${s.slice(0, 40)}…»`) : ["entrada en AMPLIADO"]),
+    ];
+    if (faltan.length) anota("voz del glosario sin ejemplo ni por qué importa", ruta, `falta: ${faltan.join(", ")}`);
   }
 }
 

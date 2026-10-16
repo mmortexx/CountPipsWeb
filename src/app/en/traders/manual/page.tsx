@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { TraderProfileBody } from "@/components/beta/TraderProfilePage";
+import { TERMINOS_DE_PERFIL, terminosPorNombre } from "@/lib/glosario";
 import { SITE_URL, hreflangDe, esquemasTrader } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -32,7 +33,7 @@ export default function ManualTradersEnPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(s) }}
         />
       ))}
-      <TraderProfileBody profile="manual" />
+      <TraderProfileBody profile="manual" terminos={terminosPorNombre(TERMINOS_DE_PERFIL.manual)} />
     </>
   );
 }

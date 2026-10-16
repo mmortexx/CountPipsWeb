@@ -4,8 +4,8 @@ import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
 import { Reveal } from "@/components/tj/Reveal";
 import type { FichaTermino } from "@/lib/glosario";
+import type { Ampliacion } from "@/lib/glosario-ampliado";
 import { nombreTermino } from "@/lib/trading/nombre-termino";
-
 
 /** Una salida de la ficha: rótulo pequeño encima y el destino subrayado. */
 function Salida({ href, rotulo, destino }: { href: string; rotulo: string; destino: string }) {
@@ -24,11 +24,11 @@ function Salida({ href, rotulo, destino }: { href: string; rotulo: string; desti
 
 /**
  * La página de un término. Una definición sola es contenido pobre para un
- * buscador, así que cada página añade lo que existe en los datos: familia,
- * términos vecinos, dónde continúa en el producto y la herramienta que lo
- * calcula. Todo son enlaces reales; ninguna página es un callejón sin salida.
+ * buscador, así que cada página añade un ejemplo con cifras, por qué importa,
+ * la fórmula si la tiene, sus vecinos de familia, dónde continúa en el
+ * producto y la herramienta que lo calcula. Ninguna es un callejón sin salida.
  */
-export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
+export function TerminoVista({ ficha, ampliacion }: { ficha: FichaTermino; ampliacion: Ampliacion }) {
   const { lang } = useLang();
   const es = lang === "es";
 
@@ -44,15 +44,25 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
       className="section-tight"
     >
       <div className="tj-container">
-        {/* Desde `lg`, las dos columnas de `.tj-split`. La columna izquierda lleva lo
-            que más pesa: la fórmula y, si el término no tiene, los vecinos con su
-            definición; las salidas pasan entonces a la derecha. */}
+        {/* Desde `lg`, las dos columnas de `.tj-split`: a la izquierda la
+            explicación (la definición es la entradilla del PageHeader), a la
+            derecha los vecinos de familia. */}
         <div className="tj-split lg:grid lg:items-start">
-        <div className={`w-full max-w-[62ch] ${formula ? "" : "lg:col-start-2 lg:row-start-1"}`}>
-          {/* La definición es la entradilla de la cabecera (PageHeader). */}
+        <div className="w-full max-w-[62ch]">
+          <Reveal delay={0.06}>
+            <h2 className="m-0 t-h3 text-primary">{es ? "Un ejemplo" : "An example"}</h2>
+            <p className="mt-3 mb-0 text-[15px] leading-[1.7] text-secondary">
+              {es ? ampliacion.ejemplo.es : ampliacion.ejemplo.en}
+            </p>
+            <h2 className="mt-10 mb-0 t-h3 text-primary">{es ? "Por qué importa" : "Why it matters"}</h2>
+            <p className="mt-3 mb-0 text-[15px] leading-[1.7] text-secondary">
+              {es ? ampliacion.importa.es : ampliacion.importa.en}
+            </p>
+          </Reveal>
+
           {formula && (
             <Reveal delay={0.08}>
-              <figure className="tj-ficha m-0">
+              <figure className="tj-ficha mx-0 mb-0 mt-10">
                 <p className="tj-ficha-barra m-0">{es ? "Fórmula" : "Formula"}</p>
                 <div className="tj-ficha-cuerpo">
                 <p className="m-0 overflow-x-auto font-mono text-[15px] font-medium tracking-[0.01em] text-primary">
@@ -67,8 +77,7 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
           )}
 
           <Reveal delay={0.1}>
-            {/* Sin fórmula encima, el primer rótulo sube a la altura de la ceja del raíl. */}
-            <div className={formula ? "mt-6 grid gap-1" : "-mt-3.5 grid gap-1"}>
+            <div className="mt-6 grid gap-1">
               {herramienta && destinoHerramienta && (
                 <Salida
                   href={herramienta}
@@ -91,7 +100,7 @@ export function TerminoVista({ ficha }: { ficha: FichaTermino }) {
         </div>
 
           {cercanos.length > 0 && (
-            <Reveal delay={0.18} className={formula ? "lg:col-start-2 lg:row-start-1" : "lg:col-start-1 lg:row-start-1"}>
+            <Reveal delay={0.18} className="lg:col-start-2 lg:row-start-1">
               <div className="mt-12 lg:mt-0">
                 <p className="eyebrow m-0">
                   {es ? "De la misma familia" : "Same family"}

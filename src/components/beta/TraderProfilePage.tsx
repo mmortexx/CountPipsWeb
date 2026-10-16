@@ -7,6 +7,8 @@ import { FinalCTANew } from "@/components/marketing/FinalCTANew";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtPct } from "@/lib/trading/format";
 import { Link } from "@/components/tj/LocaleLink";
+import { EnElGlosario } from "@/components/glosario/EnElGlosario";
+import type { EnlaceTermino } from "@/lib/glosario";
 
 export type TraderProfile = "manual" | "prop";
 
@@ -56,7 +58,7 @@ const PROP_FIRMS = [
 
 const PROP_BALANCES = [25000, 50000, 100000, 200000];
 
-export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
+export function TraderProfileBody({ profile, terminos }: { profile: TraderProfile; terminos: EnlaceTermino[] }) {
   const { lang } = useLang();
   const es = lang === "es";
   const data = DATA[profile];
@@ -115,6 +117,7 @@ export function TraderProfileBody({ profile }: { profile: TraderProfile }) {
               </li>
             ))}
           </ul>
+          <EnElGlosario terminos={terminos} className="mt-8" />
         </div>
       </section>
 
