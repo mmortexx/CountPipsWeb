@@ -141,7 +141,7 @@ async function textoSeLee(p, t) {
     }
     return c > a ? { x: a, y: b, width: c - a, height: d - b } : { x: 0, y: 0, width: 0, height: 0 };
   });
-  if (r.width < 4 || r.height < 4) return 1;
+  if (r.width < 4 || r.height < 4) return { parte: 1 };
   const png = await p.screenshot({ clip: r });
   const seleccion = await p.evaluate(() => {
     const i = document.createElement("i");
@@ -163,10 +163,17 @@ async function textoSeLee(p, t) {
     g.drawImage(img, 0, 0);
     const d = g.getImageData(0, 0, c.width, c.height).data;
     let cerca = 0;
+    const cuenta = new Map();
     for (let i = 0; i < d.length; i += 4) {
       if (Math.abs(d[i] - sel[0]) + Math.abs(d[i + 1] - sel[1]) + Math.abs(d[i + 2] - sel[2]) < 60) cerca++;
+      const k = `${d[i]},${d[i + 1]},${d[i + 2]}`;
+      cuenta.set(k, (cuenta.get(k) ?? 0) + 1);
     }
-    return cerca / (d.length / 4);
+    const total = d.length / 4;
+    // Para que un fallo diga qué se pintó en vez de qué faltó.
+    const vistos = [...cuenta].sort((a, b) => b[1] - a[1]).slice(0, 3)
+      .map(([k, n]) => `rgb(${k}) ${Math.round((n / total) * 100)} %`).join(", ");
+    return { parte: cerca / total, vistos, sel: `rgb(${sel.join(",")})` };
   }, { b64: png.toString("base64"), sel: seleccion });
 }
 
@@ -217,9 +224,9 @@ for (const ruta of RUTAS) {
   for (const x of [...e.iguales, ...e.bolas]) fallos.push({ ruta, detalle: x });
   for (const t of e.textos) {
     textosMedidos++;
-    const parte = await textoSeLee(p, t);
+    const { parte, vistos, sel } = await textoSeLee(p, t);
     if (parte < UMBRAL_FONDO_EN_TEXTO) {
-      fallos.push({ ruta, detalle: `el texto de «${t.nombre}» elegido no se lee: solo el ${Math.round(parte * 100)} % de su caja es del color de selección (el navegador le pone una placa del color del fondo; falta \`forced-color-adjust: none\`)` });
+      fallos.push({ ruta, detalle: `el texto de «${t.nombre}» elegido no se lee: solo el ${Math.round(parte * 100)} % de su caja es del color de selección ${sel} (el navegador le pone una placa del color del fondo; falta \`forced-color-adjust: none\`). Se pintó: ${vistos}` });
     }
   }
   console.log(`  ${ruta.padEnd(38)} ${String(paradas).padStart(3)} paradas (${sinContorno.length} sin contorno) · ${e.estados} estados · ${e.interruptores} interruptores`);
