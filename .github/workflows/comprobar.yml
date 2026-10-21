@@ -54,6 +54,11 @@ jobs:
 
       - name: Build
         run: bun run build
+        env:
+          # Clave ficticia, no un secreto: con el formulario sin clave no hay
+          # envío que recorrer y `teclado.mjs` no puede comprobar adónde va el
+          # foco al enviar. Las auditorías interceptan Web3Forms: nada sale.
+          NEXT_PUBLIC_WEB3FORMS_KEY: clave-ficticia-de-comprobacion
 
       - name: Comprobar el HTML compilado (prefijo y vocabulario)
         run: bunx vitest run tests/prefijo-despliegue.test.ts tests/vocabulario.test.ts
