@@ -143,14 +143,24 @@ async function textoSeLee(p, t) {
   });
   if (r.width < 4 || r.height < 4) return { parte: 1 };
   const png = await p.screenshot({ clip: r });
+  // El color de selección tal como se pinta: en Linux Highlight es translúcido
+  // (rgba(5, 0, 73, 0.8)) y lo que sale en la foto es su mezcla con Canvas.
   const seleccion = await p.evaluate(() => {
-    const i = document.createElement("i");
-    i.style.color = "Highlight";
-    document.body.append(i);
-    const c = getComputedStyle(i).color.match(/\d+/g).map(Number);
-    i.remove();
-    return c;
+    const lee = (sistema) => {
+      const i = document.createElement("i");
+      i.style.color = sistema;
+      document.body.append(i);
+      const s = getComputedStyle(i).color;
+      i.remove();
+      const n = /^rgba?\(/.test(s) ? s.match(/[\d.]+/g).map(Number) : [];
+      return { s, n };
+    };
+    const h = lee("Highlight"), c = lee("Canvas");
+    if (![3, 4].includes(h.n.length) || c.n.length !== 3) return { error: `Highlight «${h.s}», Canvas «${c.s}»` };
+    const a = h.n[3] ?? 1;
+    return { rgb: [0, 1, 2].map((k) => Math.round(h.n[k] * a + c.n[k] * (1 - a))) };
   });
+  if (seleccion.error) throw new Error(`[alto-contraste] no sé leer los colores del sistema: ${seleccion.error}`);
   lector ??= await (await navegador.newContext()).newPage();
   return lector.evaluate(async ({ b64, sel }) => {
     const img = new Image();
@@ -174,7 +184,7 @@ async function textoSeLee(p, t) {
     const vistos = [...cuenta].sort((a, b) => b[1] - a[1]).slice(0, 3)
       .map(([k, n]) => `rgb(${k}) ${Math.round((n / total) * 100)} %`).join(", ");
     return { parte: cerca / total, vistos, sel: `rgb(${sel.join(",")})` };
-  }, { b64: png.toString("base64"), sel: seleccion });
+  }, { b64: png.toString("base64"), sel: seleccion.rgb });
 }
 
 for (const ruta of RUTAS) {
