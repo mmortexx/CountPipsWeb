@@ -197,7 +197,14 @@ for (const d of DIALOGOS) {
     if (!dl) return { hay: false };
     // Lo que lee el lector al abrir: nombre, descripción a la que apunta (Radix la declara aunque no exista) y botones.
     const id = dl.getAttribute("aria-describedby");
-    const nombres = [...dl.querySelectorAll("button")].map((b) => (b.getAttribute("aria-label") || b.textContent || b.getAttribute("title") || "").trim());
+    // `aria-labelledby` cuenta solo si cada id existe y el texto al que apunta no está vacío.
+    const porId = (b) =>
+      (b.getAttribute("aria-labelledby") || "")
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((i) => document.getElementById(i)?.textContent || "")
+        .join(" ");
+    const nombres = [...dl.querySelectorAll("button")].map((b) => (porId(b) || b.getAttribute("aria-label") || b.textContent || b.getAttribute("title") || "").trim());
     return {
       hay: true,
       etiquetado: !!(dl.getAttribute("aria-label") || dl.getAttribute("aria-labelledby")),
