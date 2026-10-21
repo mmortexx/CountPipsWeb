@@ -11,6 +11,9 @@
  * («Wald-Wolfowitz»). Si una marca deja de existir en el sitio, la guarda
  * falla y hay que buscar otra. No mira lo que se descarga después, al abrir
  * una ventana.
+ * Y las tipografías precargadas: solo la sans y la serif de los titulares.
+ * Cada precarga compite con ellas por la red del arranque; la mono y la
+ * cursiva se piden cuando algo las pinta.
  *
  * Uso:  node scripts/equipaje.mjs out
  */
@@ -40,6 +43,10 @@ const MODULOS = [
   },
 ];
 
+// Nombre del fichero de origen, que `next/font` conserva como prefijo del servido.
+const FUENTES_PRECARGABLES = ["InstrumentSans-", "Newsreader-s"];
+const FUENTES_DEL_SITIO = ["GeistMono-", "Newsreader_Italic-"];
+
 const cache = new Map();
 const leeChunk = (src) => {
   if (!cache.has(src)) {
@@ -54,9 +61,21 @@ const ficheros = globSync(`${dir}/**/index.html`);
 const fallos = new Map();
 const pesos = [];
 let sinChunk = 0;
+const precargasDeMas = new Map();
+let paginasConPrecarga = 0;
 for (const f of ficheros) {
   const ruta = "/" + f.replace(/\\/g, "/").slice(dir.length + 1).replace(/index\.html$/, "");
   const html = readFileSync(f, "utf8");
+  const fuentes = [...html.matchAll(/<link[^>]*rel="preload"[^>]*>/g)]
+    .map((m) => m[0])
+    .filter((l) => /\sas="font"/.test(l))
+    .map((l) => (l.match(/href="[^"]*\/([^/"]+)"/) || [])[1] || l);
+  if (fuentes.length) paginasConPrecarga++;
+  for (const fuente of fuentes) {
+    if (FUENTES_PRECARGABLES.some((p) => fuente.startsWith(p))) continue;
+    if (!precargasDeMas.has(fuente)) precargasDeMas.set(fuente, []);
+    precargasDeMas.get(fuente).push(ruta);
+  }
   const srcs = [...new Set([...html.matchAll(/<script[^>]*\ssrc="([^"]+\.js)"/g)].map((m) => m[1]))];
   let bytes = 0;
   for (const src of srcs) {
@@ -104,9 +123,26 @@ if (pesos.every((p) => p.bytes === 0)) {
   console.log(`[equipaje] no resolví ningún <script src> en ${dir}: la guarda no está leyendo los ficheros (¿prefijo ${PREFIJO || "vacío"}?)`);
   process.exit(1);
 }
+const medios = globSync(`${dir}/_next/static/media/*.woff2`).map((f) => f.replace(/\\/g, "/").split("/").at(-1));
+for (const prefijo of [...FUENTES_PRECARGABLES, ...FUENTES_DEL_SITIO]) {
+  if (!medios.some((m) => m.startsWith(prefijo))) {
+    console.log(`[equipaje] ninguna tipografía de ${dir}/_next/static/media empieza por «${prefijo}»: la guarda de precargas ya no la reconoce`);
+    process.exit(1);
+  }
+}
+if (!paginasConPrecarga) {
+  console.log(`[equipaje] ninguna página precarga tipografías: la guarda de precargas no está leyendo los <link>`);
+  process.exit(1);
+}
+for (const [fuente, rutas] of precargasDeMas) {
+  problemas += rutas.length;
+  console.log(`\n  la tipografía ${fuente} se precarga en ${rutas.length} página(s); solo la sans y la serif de titulares:`);
+  for (const r of rutas.slice(0, 4)) console.log(`     ${r}`);
+  if (rutas.length > 4) console.log(`     … y ${rutas.length - 4} más`);
+}
 if (sinChunk) console.log(`[equipaje] aviso: ${sinChunk} referencias a scripts que no están en ${dir}`);
 if (problemas) {
   console.log(`\n[equipaje] ${problemas} página(s) cargan lo que no usan`);
   process.exit(1);
 }
-console.log("[equipaje] correcto — ni los avisos ni el diccionario viajan adonde no se usan");
+console.log("[equipaje] correcto — ni los avisos ni el diccionario viajan adonde no se usan, y solo se precargan la sans y la serif");

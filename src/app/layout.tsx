@@ -36,11 +36,14 @@ export const viewport: Viewport = {
 // variables) y se cargan con `next/font/local`: compilar no depende de la red
 // ni de fonts.gstatic. `adjustFontFallback` sigue activo por defecto para que
 // el cambio a la webfont no mueva la maqueta.
+// La mono sin precarga: ninguna primera pantalla la usa (teclas, demo, datos
+// de secciones bajas) y precargarla competía con la sans y la serif del titular.
 const geistMono = localFont({
   src: "./fonts/GeistMono.woff2",
   variable: "--font-geist-mono",
   weight: "100 900",
   display: "swap",
+  preload: false,
 });
 
 // La sans del sitio (`--font-sans`).
