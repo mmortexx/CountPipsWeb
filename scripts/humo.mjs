@@ -125,6 +125,11 @@ const RUTAS = [
   { ruta: "/en/demo", lang: "en" },
   { ruta: "/en/about", lang: "en" },
   { ruta: "/en/faq", lang: "en" },
+  // Alemán y francés: las palabras más largas son las que desbordan una
+  // barra o una tarjeta que en español e inglés caben.
+  { ruta: "/de", lang: "de-DE" },
+  { ruta: "/de/pricing", lang: "de-DE" },
+  { ruta: "/fr/pricing", lang: "fr-FR" },
   // Una de cada familia generada (glosario, herramientas, traders, legales):
   // un defecto de plantilla afecta a decenas de páginas a la vez.
   { ruta: "/glosario/drawdown", lang: "es" },
@@ -602,9 +607,12 @@ for (const pantalla of PANTALLAS) {
         }
       }
 
-      // La tarjeta, opaca en los dos temas: `.tj-paper` debe tapar lo que hay
-      // detrás porque su texto se mide contra su propio fondo. Se fuerzan los
-      // dos temas como el conmutador (`data-theme` más la clase `dark`).
+      // La tarjeta, opaca en los dos temas: debe tapar lo que hay detrás porque
+      // su texto se mide contra su propio fondo. Hay tres superficies de
+      // tarjeta (`.tj-paper` en la demo, `.tj-ficha` en las herramientas y
+      // `.tj-cristal` en la portada y precios); una ruta sin ninguna no es un
+      // fallo, pero al final se exige un mínimo de rutas medidas. Se fuerzan
+      // los dos temas como el conmutador (`data-theme` más la clase `dark`).
       if (pantalla.nombre === "escritorio") {
         const papeles = await pagina.evaluate(async () => {
           const raiz = document.documentElement;
@@ -615,9 +623,12 @@ for (const pantalla of PANTALLAS) {
             raiz.classList.toggle("dark", tema === "dark");
             // Un fotograma: el estilo computado no refleja el cambio hasta recalcular.
             await new Promise((r) => requestAnimationFrame(() => r()));
-            const el = document.querySelector(".tj-paper:not(.tj-paper-dense)");
+            const el = document.querySelector(
+              ".tj-paper:not(.tj-paper-dense), .tj-ficha, .tj-cristal:not(.tj-cristal--denso):not(.tj-cristal--menu)"
+            );
             salida[tema] = el
               ? {
+                  clase: [...el.classList].find((c) => /^tj-(paper|ficha|cristal)$/.test(c)),
                   tinte: getComputedStyle(el).backgroundColor,
                 }
               : null;
@@ -632,11 +643,8 @@ for (const pantalla of PANTALLAS) {
         });
         for (const tema of ["light", "dark"]) {
           const p = papeles[tema];
-          if (!p) {
-            avisos.push(`${etiqueta} (${tema}): ninguna tarjeta que comprobar`);
-            continue;
-          }
-          papelesVistos.push(`${ruta} ${tema} tinte ${p.tinte}`);
+          if (!p) continue;
+          papelesVistos.push(`${ruta} ${tema} .${p.clase} ${p.tinte}`);
           const alfa = /rgba?\([^)]*,\s*([\d.]+)\)$/.exec(p.tinte.replace(/\s*\/\s*/, ", "))?.[1];
           if (p.tinte === "transparent" || (alfa !== undefined && p.tinte.startsWith("rgba") && Number(alfa) < 1)) {
             fallos.push(`${etiqueta} (tema ${tema}): la tarjeta dejó de ser opaca (${p.tinte})`);
@@ -1437,15 +1445,23 @@ for (const { ruta } of RUTAS) {
           pisados.push(`${el.tagName}.${el.className.toString().slice(0, 20)} ${declarada}→${computada}`);
         }
       }
-      // La sonda: hoy las páginas no llevan `opacity:0` en línea y esta mitad
-      // mediría cero elementos, sin poder fallar. En vez de esperar a un caso
-      // real se inserta uno y se comprueba que el `<noscript>` lo sube a 1.
-      const sonda = document.createElement("div");
-      sonda.setAttribute("style", "opacity:0");
-      sonda.textContent = "sonda";
-      document.body.appendChild(sonda);
-      const sondaOpacidad = parseFloat(getComputedStyle(sonda).opacity);
-      sonda.remove();
+      // Las sondas: hoy las páginas no llevan opacidad en línea, ni cero ni
+      // decimal, y las dos mitades medirían cero elementos sin poder fallar.
+      // En vez de esperar a un caso real se inserta uno de cada: el cero debe
+      // acabar en 1 y el decimal conservar su valor.
+      const mide = (estilo) => {
+        const sonda = document.createElement("div");
+        sonda.setAttribute("style", estilo);
+        sonda.textContent = "sonda";
+        document.body.appendChild(sonda);
+        const o = parseFloat(getComputedStyle(sonda).opacity);
+        sonda.remove();
+        return o;
+      };
+      const sondaOpacidad = mide("opacity:0");
+      const sondaDecimal = mide("opacity:0.34");
+      if (Math.abs(sondaDecimal - 0.34) > 0.001) pisados.push(`sonda 0.34→${sondaDecimal}`);
+      else decimales++;
 
       const ceros = [];
       let cerosTotal = 0;
@@ -1880,12 +1896,36 @@ await navegador.close();
 if (servidorLocal) servidorLocal.servidor.close();
 
 for (const a of avisos) console.warn(`  aviso  ${a}`);
-if (!acordeones.length) {
-  fallos.push("acordeón: no se abrió ninguno — esa comprobación no protege nada");
+
+// Una comprobación que no llegó a medir nada sale en verde sin proteger nada:
+// cada una exige un mínimo, y quedarse por debajo es un fallo, no un aviso.
+// El mínimo de tarjetas es la mitad de las rutas con tarjeta el 21/10 (18 de 22).
+const rutasConTarjeta = [...new Set(papelesVistos.map((s) => s.split(" ")[0]))];
+const MINIMOS = [
+  [acordeones, 1, "acordeón: no se abrió ninguno"],
+  [cierresMedidos, 1, "no se midió el botón del cierre en móvil en ninguna ruta"],
+  [contrastesMedidos, 1, "no se midió ningún contraste sobre el fondo grabado"],
+  [laminasVistas, 1, "ninguna lámina de producto en las rutas auditadas"],
+  [temasLaminaVistos, 1, "ninguna lámina comprobada por tema"],
+  [ayudasDemo, 1, "la ayuda de atajos de la demo no se abrió en ninguna pantalla"],
+  [idiomasRevisados, 1, "ninguna página inglesa revisada palabra a palabra"],
+  [pliegues, 1, "no se comprobó dónde cae la llamada a la acción de la portada"],
+  [opacidadesFinales, 1, "no se comprobó la opacidad al final del scroll"],
+  [rutasConTarjeta, 9, "tarjetas opacas medidas en pocas rutas"],
+  [cajonesVistos, 1, "el cajón de navegación no se abrió en ninguna pantalla"],
+  [vueltasArriba, 1, "no se comprobó la vuelta a la cabecera"],
+  [ocultosVistos, 1, "no se buscó contenido en bloques ocultos sin JavaScript"],
+  [velosVistos, 1, "no se comprobó el velo sin JavaScript"],
+  [entradasVistas, 1, "no se comprobó si las entradas atadas al scroll se animan"],
+  [menusVistos, 1, "no se comprobó el menú de Producto con el ratón"],
+  [presupuestosBarra, 1, "no se midió la holgura de la barra superior"],
+];
+for (const [lista, minimo, que] of MINIMOS) {
+  if (lista.length < minimo) {
+    fallos.push(`${que} (${lista.length}, mínimo ${minimo}): esa comprobación no protege nada`);
+  }
 }
-if (!cierresMedidos.length) {
-  fallos.push("no se midió el botón del cierre en móvil en ninguna ruta: esa comprobación no protege nada");
-}
+if (SERVIR && !veloLevanta) fallos.push("404: el velo de /en/ sin JavaScript no se comprobó");
 if (fallos.length) {
   console.error(`\n[humo] ${fallos.length} fallo(s):`);
   for (const f of fallos) console.error(`  ✗ ${f}`);
@@ -1893,35 +1933,22 @@ if (fallos.length) {
 }
 // Se imprime el peor contraste medido: «miró N sitios y el más justo iba por
 // aquí» se puede seguir en el tiempo, un simple «pasó» no.
-if (contrastesMedidos.length) {
-  const peor = contrastesMedidos
-    .map((s) => ({ s, v: parseFloat(s.split(" ").pop()) }))
-    .sort((a, b) => a.v - b.v)[0];
-  console.log(
-    `[humo] contraste — ${contrastesMedidos.length} textos pequeños medidos sobre el fondo grabado; ` +
-      `el más justo: ${peor.s}`
-  );
-} else {
-  console.warn("  aviso  no se midió NINGÚN contraste: la comprobación no está mirando nada");
-}
-
-if (laminasVistas.length) {
-  const enMovil = laminasVistas.filter((s) => s.startsWith("movil"));
-  console.log(
-    `[humo] láminas — ${laminasVistas.length} capturas comprobadas ` +
-      `(${enMovil.length} en móvil, sirviendo su recorte dedicado)`
-  );
-} else {
-  console.warn("  aviso  ninguna lámina de producto en las rutas auditadas: nadie vigila su legibilidad");
-}
-if (temasLaminaVistos.length) {
-  console.log(
-    `[humo] láminas por tema — ${temasLaminaVistos.length} comprobadas en claro y en oscuro: ` +
-      `${temasLaminaVistos.filter((s) => s.includes("-oscuro")).length} con la captura oscura en tema oscuro`
-  );
-} else {
-  console.warn("  aviso  ninguna lámina comprobada por tema: nadie vigila que el oscuro enseñe su captura");
-}
+// Aquí todas las listas de `MINIMOS` tienen algo: si no, ya se salió con fallo.
+const peorContraste = contrastesMedidos
+  .map((s) => ({ s, v: parseFloat(s.split(" ").pop()) }))
+  .sort((a, b) => a.v - b.v)[0];
+console.log(
+  `[humo] contraste — ${contrastesMedidos.length} textos pequeños medidos sobre el fondo grabado; ` +
+    `el más justo: ${peorContraste.s}`
+);
+console.log(
+  `[humo] láminas — ${laminasVistas.length} capturas comprobadas ` +
+    `(${laminasVistas.filter((s) => s.startsWith("movil")).length} en móvil, sirviendo su recorte dedicado)`
+);
+console.log(
+  `[humo] láminas por tema — ${temasLaminaVistos.length} comprobadas en claro y en oscuro: ` +
+    `${temasLaminaVistos.filter((s) => s.includes("-oscuro")).length} con la captura oscura en tema oscuro`
+);
 if (subirMedidos) {
   console.log(`[humo] botón de subir — ${subirMedidos} finales de página medidos en 3 anchos sin tapar el pie`);
 }
@@ -1932,119 +1959,45 @@ if (elementosMirados && !desenfoquesVistos) {
 if (calculadorasVistas) {
   console.log(`[humo] calculadoras — ${calculadorasVistas} de 2 no dan por bueno lo imposible (plan con el objetivo del lado del stop; proyección fuera de escala)`);
 }
-if (ayudasDemo.length) {
-  console.log(`[humo] ayuda de la demo — abierta con «?» en ${ayudasDemo.length} pantallas: ${ayudasDemo.join("; ")}`);
-} else {
-  console.warn("  aviso  la ayuda de atajos de la demo no se abrió en ninguna pantalla: nadie vigila dónde aparece");
-}
-
-if (idiomasRevisados.length) {
-  console.log(
-    `[humo] idioma — ${idiomasRevisados.length} páginas inglesas revisadas palabra a palabra:\n` +
-      idiomasRevisados.map((s) => `         ${s}`).join("\n")
-  );
-} else {
-  console.warn("  aviso  ninguna página inglesa revisada: el detector de español no está mirando nada");
-}
-
-if (pliegues.length) {
-  console.log(`[humo] pliegue — la llamada a la acción acaba en ${pliegues.join("; ")}`);
-} else {
-  console.warn("  aviso  no se comprobó dónde cae la llamada a la acción de la portada");
-}
-
-if (opacidadesFinales.length) {
-  console.log(
-    `[humo] tinta — ${opacidadesFinales.length} rutas revisadas al final del documento, todas a plena opacidad`
-  );
-} else {
-  console.warn("  aviso  no se comprobó la opacidad al final del scroll en ninguna ruta");
-}
-
-if (papelesVistos.length) {
-  // Hay dos entradas por ruta (una por tema): se cuentan por tema, no en total.
-  const claros = papelesVistos.filter((s) => s.includes(" light ")).length;
-  const oscuros = papelesVistos.filter((s) => s.includes(" dark ")).length;
-  console.log(
-    `[humo] papel — grano y canto presentes en ${claros} rutas en tema claro y ` +
-      `${oscuros} en oscuro; ${papelesVistos[0]}`
-  );
-} else {
-  console.warn("  aviso  no se comprobó el material del papel en ninguna ruta");
-}
-
-if (cajonesVistos.length) {
-  console.log(`[humo] cajón — ${cajonesVistos.join("; ")}`);
-} else {
-  console.warn("  aviso  el cajón de navegación no se abrió en ninguna pantalla: nadie vigila cómo se ve");
-}
-
-if (vueltasArriba.length) {
-  console.log(`[humo] vuelta arriba — ${vueltasArriba.join("; ")}`);
-} else {
-  console.warn("  aviso  no se comprobó la vuelta a la cabecera en ninguna página");
-}
-
-if (ocultosVistos.length) {
-  const peor = ocultosVistos
-    .map((s) => ({ s, v: parseInt(s.split(": ")[1], 10) }))
-    .sort((a, b) => b.v - a.v)[0];
-  console.log(
-    `[humo] bloques ocultos — ${ocultosVistos.length} rutas revisadas sin JavaScript; ` +
-      `la que más esconde: ${peor.s}`
-  );
-} else {
-  console.warn("  aviso  nadie comprobó si hay contenido dentro de bloques ocultos sin JavaScript");
-}
-
-if (velosVistos.length) {
-  // `?.[1] ?? 0`: el resumen corre tras las comprobaciones y un `TypeError`
-  // por un cambio de formato se leería como un fallo de la comprobación.
-  const cuenta = (re) => velosVistos.reduce((n, s) => n + Number(re.exec(s)?.[1] ?? 0), 0);
-  const velos = cuenta(/(\d+) velo/);
-  const ceros = cuenta(/(\d+) cero/);
-  const sondas = velosVistos.filter((s) => /sonda 1$/.test(s)).length;
-  console.log(
-    `[humo] velo — sin JavaScript, ${velos} elementos decorativos conservaron su opacidad ` +
-      `en ${velosVistos.length} rutas; la red de seguridad del <noscript> rescató ` +
-      `${ceros} caso(s) real(es) y respondió a la sonda en ${sondas} de ${velosVistos.length}`
-  );
-  if (velos === 0) {
-    console.warn(
-      "  aviso  no se midió NINGÚN elemento decorativo con opacidad decimal: en esa " +
-        "dirección la comprobación no puede fallar, y por tanto no protege"
-    );
-  }
-} else {
-  console.warn("  aviso  no se comprobó el velo del fondo sin JavaScript en ninguna ruta");
-}
-
-if (entradasVistas.length) {
-  console.log(`[humo] entradas — piezas que llegan a encenderse al asomar: ${entradasVistas.join("; ")}`);
-} else {
-  console.warn("  aviso  no se comprobó si las entradas atadas al scroll llegan a animarse");
-}
-
-if (menusVistos.length) {
-  console.log(`[humo] menú Producto — ${menusVistos.join("; ")}`);
-} else {
-  console.warn("  aviso  no se comprobó el menú de Producto con el ratón");
-}
-
+console.log(`[humo] ayuda de la demo — abierta con «?» en ${ayudasDemo.length} pantallas: ${ayudasDemo.join("; ")}`);
+console.log(
+  `[humo] idioma — ${idiomasRevisados.length} páginas inglesas revisadas palabra a palabra:\n` +
+    idiomasRevisados.map((s) => `         ${s}`).join("\n")
+);
+console.log(`[humo] pliegue — la llamada a la acción acaba en ${pliegues.join("; ")}`);
+console.log(
+  `[humo] tinta — ${opacidadesFinales.length} rutas revisadas al final del documento, todas a plena opacidad`
+);
+console.log(
+  `[humo] tarjeta — opaca en claro y en oscuro en ${rutasConTarjeta.length} rutas; ${papelesVistos[0]}`
+);
+console.log(`[humo] cajón — ${cajonesVistos.join("; ")}`);
+console.log(`[humo] vuelta arriba — ${vueltasArriba.join("; ")}`);
+const peorOculto = ocultosVistos
+  .map((s) => ({ s, v: parseInt(s.split(": ")[1], 10) }))
+  .sort((a, b) => b.v - a.v)[0];
+console.log(
+  `[humo] bloques ocultos — ${ocultosVistos.length} rutas revisadas sin JavaScript; ` +
+    `la que más esconde: ${peorOculto.s}`
+);
+// `?.[1] ?? 0`: el resumen corre tras las comprobaciones y un `TypeError`
+// por un cambio de formato se leería como un fallo de la comprobación.
+const cuentaVelos = (re) => velosVistos.reduce((n, s) => n + Number(re.exec(s)?.[1] ?? 0), 0);
+console.log(
+  `[humo] velo — sin JavaScript, ${cuentaVelos(/(\d+) velo/)} elementos decorativos (sondas incluidas) ` +
+    `conservaron su opacidad en ${velosVistos.length} rutas; la red de seguridad del <noscript> rescató ` +
+    `${cuentaVelos(/(\d+) cero/)} caso(s) real(es) y respondió a la sonda en ` +
+    `${velosVistos.filter((s) => /sonda 1$/.test(s)).length} de ${velosVistos.length}`
+);
+console.log(`[humo] entradas — piezas que llegan a encenderse al asomar: ${entradasVistas.join("; ")}`);
+console.log(`[humo] menú Producto — ${menusVistos.join("; ")}`);
 console.log(`[humo] cierre en móvil — ${cierresMedidos.length} rutas, botón principal a todo el ancho`);
 console.log(`[humo] acordeón — ${acordeones.join(", ")}: se despliega y se pliega con fotogramas intermedios`);
 if (navegacionMirada) console.log("[humo] navegación / → /pricing — la página nueva entra una sola vez");
-
-if (presupuestosBarra.length) {
-  console.log(
-    `[humo] barra — contenido frente a rejilla: ${[...new Set(presupuestosBarra)].join("; ")}`
-  );
-} else {
-  console.warn("  aviso  no se midió la holgura de la barra superior");
-}
+console.log(`[humo] barra — contenido frente a rejilla: ${[...new Set(presupuestosBarra)].join("; ")}`);
 
 if (SERVIR) {
-  console.log(`[humo] 404 — ${cuatrocientoscuatro} de ${NO_EXISTE.length} idiomas hidratan sin error; ${veloLevanta ? "bajo /en/ sin JS no enseña el español y aparece sola" : "el velo de /en/ NO se comprobó"}`);
+  console.log(`[humo] 404 — ${cuatrocientoscuatro} de ${NO_EXISTE.length} idiomas hidratan sin error; bajo /en/ sin JS no enseña el español y aparece sola`);
 } else {
   console.warn("  aviso  la 404 solo se comprueba sobre el export (--serve)");
 }

@@ -27,8 +27,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     # 20 y no 10. Este trabajo hace mucho más que compilar: instala,
-    # corre las 303 pruebas, exporta 196 páginas y ejecuta humo.mjs con
-    # un navegador real sobre 19 rutas × 4 pantallas. Eso venía tardando
+    # corre todas las pruebas, exporta el sitio entero y lo recorre con
+    # un navegador real en varias pantallas. Eso venía tardando
     # 9 m 58 s, 10 m 3 s y 10 m 10 s — o sea, rozando el techo en cada
     # despliegue— hasta que uno tardó 10 m 7 s y GitHub lo cortó a
     # mitad, saltándose la publicación. El commit quedó en la rama y
@@ -193,6 +193,11 @@ jobs:
       - name: Comprobar la dirección oficial
         run: COMPROBAR_OUT=1 bunx vitest run tests/dominio-propio.test.ts
 
+      # Las pruebas que leen `out/`: en el paso «Pruebas» se saltan porque aún
+      # no está compilado. Aquí, con `COMPROBAR_OUT=1`, sin `out/` fallan.
+      - name: Pruebas sobre el sitio compilado (idiomas nuevos y formulario)
+        run: COMPROBAR_OUT=1 bunx vitest run tests/idiomas-nuevos.test.ts tests/formulario-declarado.test.ts
+
       - name: Instalar navegador de pruebas
         run: bunx playwright install --with-deps chromium
 
@@ -204,6 +209,14 @@ jobs:
 
       - name: Zona táctil medida en móvil
         run: node scripts/toque.mjs --serve out
+
+      # Foco, lo elegido e interruptores con el alto contraste de Windows, y
+      # los diálogos y avisos recorridos con el teclado.
+      - name: Alto contraste forzado
+        run: node scripts/alto-contraste.mjs --serve out
+
+      - name: Recorrido con teclado
+        run: node scripts/teclado.mjs --serve out
 
       - name: Disable Jekyll + add nojekyll
         # GitHub Pages procesa el contenido con Jekyll por defecto.

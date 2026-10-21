@@ -15,10 +15,10 @@ export function paraBuscar(s: string): string {
 type VozBuscable = { term: string; nombreEs?: string; slug: string };
 
 /**
- * Ad\u00f3nde lleva la caja de la p\u00e1gina 404 (\u00abM\u00e9trica o pregunta\u2026\u00bb): a la voz del
+ * Adónde lleva la caja de la página 404 («Métrica o pregunta…»): a la voz del
  * glosario si la consulta es su nombre en cualquier idioma, su sigla o lo que
- * va entre par\u00e9ntesis (\u00abMAE (Maximum Adverse Excursion)\u00bb); si no, a la FAQ
- * filtrada. Recibe los t\u00e9rminos para que la 404 los cargue solo al buscar.
+ * va entre paréntesis («MAE (Maximum Adverse Excursion)»); si no, a la FAQ
+ * filtrada. Recibe los términos para que la 404 los cargue solo al buscar.
  */
 export function destinoDeBusqueda(consulta: string, terminos: readonly VozBuscable[]): string {
   const limpia = consulta.trim();

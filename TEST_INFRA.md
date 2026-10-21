@@ -103,8 +103,8 @@
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 
 No son parte de `npm test` — se corren aparte, contra `/out`, y cada uno
-explica en su cabecera qué mide. Ver la lista de comandos en
-[PROJECT.md](PROJECT.md#herramientas-de-auditoría-propias).
+explica en su cabecera qué mide. Ver la lista de comandos, y cuáles corre además
+el CI, en [PROJECT.md](PROJECT.md#puertas).
 
 ## Umbral de aceptación
 

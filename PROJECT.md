@@ -15,7 +15,9 @@ Windows (WinUI 3, en otro repositorio).
   `--accent-*`, `--pnl-*`, `--sig-*`). Animación sólo con CSS/WAAPI: sin librería de
   movimiento (`tests/sin-framer.test.ts`).
 - **Idiomas**: español en `/`, inglés en `/en/`, con paridad 1:1 vigilada por
-  `tests/e2e/d4_bilingual_parity.test.ts`.
+  `tests/e2e/d4_bilingual_parity.test.ts`. Portugués, francés, alemán e italiano solo
+  en las rutas de `RUTAS_NUEVOS_IDIOMAS` (`src/lib/locale.ts`), vigiladas por
+  `tests/idiomas-nuevos.test.ts`.
 - **Demo**: datos de muestra deterministas (`mulberry32`), cuatro pestañas y el
   detalle de operación; estado en `src/lib/trading/demoStore.ts`
   (`useSyncExternalStore`).
@@ -66,8 +68,9 @@ bun run build
 
 Si el cambio se ve, además las auditorías sobre el sitio compilado (`out/`). Cada
 script explica en su cabecera qué mide. El CI corre en cada PR y antes de publicar las
-cinco que no abren navegador (`metadatos`, `enlaces`, `cifras`, `rotulos`, `equipaje`) y
-`humo` y `toque`; las demás se pasan en local:
+cinco que no abren navegador (`metadatos`, `enlaces`, `cifras`, `rotulos`, `equipaje`),
+las pruebas que leen `out/` (con `COMPROBAR_OUT=1`, que convierte su ausencia en fallo) y
+`humo`, `toque`, `alto-contraste` y `teclado`; las demás se pasan en local:
 
 ```bash
 node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde a 320 px
@@ -101,8 +104,7 @@ node scripts/barrido-rueda.mjs --base <url>    # ningún recuadro atrapa la rued
 ```
 
 Trampas de medida conocidas: `npx serve -s` devuelve la portada en todas las rutas;
-el banner de cookies tapa media pantalla si no se descarta; Chromium sin ventana va
-a ~60 Hz y no ve tirones a más frecuencia.
+Chromium sin ventana va a ~60 Hz y no ve tirones a más frecuencia.
 
 ## Contratos de interfaz
 
