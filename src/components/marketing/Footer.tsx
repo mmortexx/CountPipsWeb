@@ -2,7 +2,7 @@
 
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang, tx } from "@/lib/i18n";
-import { openGlossary } from "@/lib/overlays";
+import { openGlossary, openShortcutsHelp } from "@/lib/overlays";
 import { BrandGlyph } from "@/components/tj/BrandGlyph";
 import { ANIO_PUBLICACION, FECHA_PUBLICACION } from "@/lib/publicacion";
 import { columnasPie } from "@/lib/pie";
@@ -14,8 +14,8 @@ const REPOSITORIO = "https://github.com/mmortexx/CountPipsWeb";
 /**
  * Pie del sitio: marca con lema y plataforma, cuatro columnas de enlaces
  * (Producto, Recursos, Empresa, Legal) y una línea final con el copyright,
- * la fecha de publicación, los idiomas, el código de la web y las
- * preferencias de privacidad. Solo enlaza lo que existe: ni perfiles
+ * la fecha de publicación, el código de la web y la ayuda de atajos (la
+ * única puerta a ella si se apagan las teclas sueltas). Solo enlaza lo que existe: ni perfiles
  * sociales sin cuenta detrás ni indicadores de estado que no miden nada.
  */
 export function Footer() {
@@ -120,6 +120,14 @@ export function Footer() {
             )}
           </p>
           <div className="flex flex-wrap items-center gap-x-6">
+            {/* Solo con ratón: en pantalla táctil no hay teclado al que aplicar atajos. */}
+            <button
+              type="button"
+              onClick={openShortcutsHelp}
+              className="link-underline-host hidden [@media(pointer:fine)]:inline-flex min-h-[44px] items-center text-xs text-secondary transition-colors hover:text-primary focus-visible:text-primary"
+            >
+              <span className="link-underline link-underline--al-pasar">{tx(lang, { es: "Atajos de teclado", en: "Keyboard shortcuts", pt: "Atalhos de teclado", fr: "Raccourcis clavier", de: "Tastenkürzel", it: "Scorciatoie da tastiera" })}</span>
+            </button>
             <a
               href={REPOSITORIO}
               target="_blank"

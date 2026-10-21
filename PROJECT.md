@@ -92,7 +92,7 @@ node scripts/tema.mjs --serve out          # elección de tema, sin fogonazo bla
 node scripts/anuncios.mjs --serve out      # resultados anunciados a lectores de pantalla
 node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
-node scripts/teclado.mjs --serve out       # todo el sitio sin ratón
+node scripts/teclado.mjs --serve out       # todo el sitio sin ratón; los atajos de una tecla se apagan
 node scripts/toque.mjs --serve out         # zona que recoge el dedo, medida en móvil táctil: 44 px de alto
 node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` (dominio propio)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
@@ -109,6 +109,9 @@ a ~60 Hz y no ve tirones a más frecuencia.
   `localStorage` dé `SecurityError`.
 - `src/components/tj/OverlayHost.tsx`: Ctrl/⌘+G abre el glosario. La web no tiene
   paleta de comandos; sólo la demo (`DemoCommandPalette`).
+- `src/lib/atajos.ts`: los atajos de una sola tecla (`?`, `T`, `L`, `g` + letra) se
+  apagan desde su ayuda (WCAG 2.1.4); entonces la abre el botón del pie. Las teclas
+  de la demo solo actúan con el foco dentro de ella.
 - `src/components/marketing/EquityProjector.tsx`: `cagr` nunca devuelve `NaN`.
 - `src/lib/trading/data.ts`: todas las métricas dan números finitos y deterministas
   con n=0, n=1, 100 % aciertos, 100 % pérdidas y desviación 0.

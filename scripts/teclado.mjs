@@ -2,7 +2,8 @@
  * TECLADO: recorre el sitio compilado sin ratón. Comprueba que cada parada del
  * tabulador se ve (WCAG 2.4.7), que el megamenú se abre con Enter, se cierra
  * con Escape y devuelve el foco, que los diálogos lo atrapan y lo sueltan, y
- * varios recorridos de capas, formulario, glosario e índice lateral. Un fallo
+ * varios recorridos de capas, formulario, glosario, índice lateral y el
+ * interruptor de los atajos de una tecla. Un fallo
  * es un control sin indicador de foco, un foco perdido o una trampa rota.
  *
  * El diálogo del glosario no lleva `aria-modal` a propósito: Radix oculta el
@@ -592,9 +593,61 @@ for (const idioma of ["es", "en"]) {
   }
   await ctx.close();
 }
-console.log(`  capas, glosario, megamenú, formulario e índice: ${recorridos} de 11 recorridos completos`);
-if (recorridos < 11 && !fallos.length) {
-  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 11 recorridos llegaron a medirse` });
+// (i) los atajos de una tecla se apagan desde la ayuda (WCAG 2.1.4), el apagado
+// aguanta la recarga y el pie abre la ayuda sin `?` para volver a encenderlos.
+{
+  const { ctx, p } = await nueva("/");
+  const tema = () => p.evaluate(() => document.documentElement.dataset.theme);
+  const ayudaAbierta = () => p.evaluate(() => document.body.dataset.shortcutsHelpOpen === "true");
+  const pulsaT = async () => {
+    const antes = await tema();
+    await p.keyboard.press("t");
+    await p.waitForTimeout(500);
+    return (await tema()) !== antes;
+  };
+  const interruptor = p.locator('[role="dialog"] [role="switch"]');
+  await p.locator("header a:visible").first().focus();
+  const problemas = [];
+  if (!(await pulsaT())) problemas.push("con los atajos encendidos, T no cambia el tema (la prueba no puede distinguir nada)");
+  await p.keyboard.press("t");
+  await p.keyboard.press("?");
+  await p.waitForTimeout(700);
+  if (!(await interruptor.count())) problemas.push("la ayuda de atajos no tiene un interruptor `role=switch`");
+  else {
+    await interruptor.focus();
+    await p.keyboard.press("Space");
+    if ((await interruptor.getAttribute("aria-checked")) !== "false") problemas.push("Espacio no apaga el interruptor de atajos");
+    await p.keyboard.press("Escape");
+    await p.waitForTimeout(500);
+    if (await pulsaT()) problemas.push("con los atajos apagados, T sigue cambiando el tema");
+    await p.keyboard.press("?");
+    await p.waitForTimeout(500);
+    if (await ayudaAbierta()) problemas.push("con los atajos apagados, ? sigue abriendo la ayuda");
+    await p.reload({ waitUntil: "load" });
+    await p.waitForTimeout(800);
+    await p.locator("header a:visible").first().focus();
+    if (await pulsaT()) problemas.push("el apagado no aguanta la recarga");
+    const pie = p.locator("footer button:visible", { hasText: "Atajos de teclado" });
+    if (!(await pie.count())) problemas.push("el pie no tiene el botón «Atajos de teclado»: sin `?`, nada abre la ayuda");
+    else {
+      await pie.focus();
+      await p.keyboard.press("Enter");
+      await p.waitForTimeout(700);
+      await interruptor.focus();
+      await p.keyboard.press("Space");
+      await p.keyboard.press("Escape");
+      await p.waitForTimeout(500);
+      await p.locator("header a:visible").first().focus();
+      if (!(await pulsaT())) problemas.push("al volver a encender los atajos desde el pie, T no cambia el tema");
+    }
+  }
+  for (const detalle of problemas) fallos.push({ ruta: "/", detalle });
+  if (!problemas.length) recorridos++;
+  await ctx.close();
+}
+console.log(`  capas, glosario, megamenú, formulario, índice y atajos: ${recorridos} de 12 recorridos completos`);
+if (recorridos < 12 && !fallos.length) {
+  fallos.push({ ruta: "—", detalle: `solo ${recorridos} de 12 recorridos llegaron a medirse` });
 }
 
 await navegador.close();
