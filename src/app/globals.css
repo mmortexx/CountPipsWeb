@@ -2669,15 +2669,28 @@ html:has(.tj-visor[open]) {
   [data-destino-salto]:focus-visible {
     outline: none !important;
   }
+  /* Sin `forced-color-adjust: none`, Chromium pinta tras el texto una placa
+     del color del fondo y el texto elegido desaparece sobre ella. Los colores
+     siguen siendo del sistema: no se pierde el tema que eligió la persona. */
   [aria-pressed="true"],
   [aria-selected="true"],
+  [role="radio"][aria-checked="true"],
   [data-activo="true"] {
+    forced-color-adjust: none;
     background-color: Highlight !important;
     color: HighlightText !important;
+  }
+  /* La pieza que viaja entre opciones de la demo es la marca de lo elegido;
+     con su color propio taparía el Highlight de su botón. */
+  [data-viajero] {
+    forced-color-adjust: none;
+    background-color: Highlight !important;
+    border-color: Highlight !important;
   }
   /* Los hijos con tinta propia saldrían en CanvasText, ilegible sobre Highlight. */
   [aria-pressed="true"] *,
   [aria-selected="true"] *,
+  [role="radio"][aria-checked="true"] *,
   [data-activo="true"] * {
     color: HighlightText !important;
   }

@@ -9,8 +9,9 @@
  * Tres comprobaciones:
  *  1. Cada parada del tabulador lleva contorno (`outline`): el anillo de
  *     `ring-*` es una sombra y aquí no se pinta.
- *  2. Lo elegido (`aria-pressed`, `aria-selected`, `data-activo`) se pinta
- *     distinto de sus hermanos sin elegir, sin contar el grosor de letra.
+ *  2. Lo elegido (`aria-pressed`, `aria-selected`, radio marcado, `data-activo`) se pinta
+ *     distinto de sus hermanos sin elegir, sin contar el grosor de letra, y
+ *     su texto se lee (fotografiado: ver `textoSeLee`).
  *  3. La bola de cada interruptor (`role="switch"`) se distingue de su pista.
  *
  * Uso:  node scripts/alto-contraste.mjs --serve out
@@ -81,15 +82,20 @@ const mideEstados = () => {
   };
   const visible = (el) => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== "hidden";
   const elegido = (el) =>
-    el.getAttribute("aria-pressed") === "true" || el.getAttribute("aria-selected") === "true" || el.getAttribute("data-activo") === "true";
-  const out = { estados: 0, iguales: [], interruptores: 0, bolas: [] };
+    el.getAttribute("aria-pressed") === "true" || el.getAttribute("aria-selected") === "true" || el.getAttribute("data-activo") === "true" ||
+    (el.getAttribute("role") === "radio" && el.getAttribute("aria-checked") === "true");
+  const out = { estados: 0, iguales: [], interruptores: 0, bolas: [], textos: [] };
   const vistos = new Set();
-  for (const el of document.querySelectorAll('[aria-pressed="true"], [aria-selected="true"], [data-activo="true"]')) {
+  for (const el of document.querySelectorAll('[aria-pressed="true"], [aria-selected="true"], [role="radio"][aria-checked="true"], [data-activo="true"]')) {
     if (!visible(el) || !el.parentElement || vistos.has(el.parentElement)) continue;
     const otro = [...el.parentElement.children].find((h) => h !== el && h.tagName === el.tagName && !elegido(h) && visible(h));
     if (!otro) continue;
     vistos.add(el.parentElement);
     out.estados++;
+    if ((el.textContent || "").trim()) {
+      el.dataset.contrasteElegido = String(out.textos.length);
+      out.textos.push({ n: out.textos.length, nombre: (el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 24) });
+    }
     if (firma(el) === firma(otro)) {
       out.iguales.push(`«${(el.textContent || "").trim().replace(/\s+/g, " ").slice(0, 24)}» elegido se pinta igual que «${(otro.textContent || "").trim().replace(/\s+/g, " ").slice(0, 24)}»`);
     }
@@ -108,6 +114,61 @@ const mideEstados = () => {
   }
   return out;
 };
+
+/* En este modo Chromium pinta tras cada texto una placa del color del fondo
+   (Canvas). Sobre un elegido pintado de Highlight, la placa tapa el fondo y el
+   texto (HighlightText, del mismo tono que Canvas) desaparece. No se ve en los
+   estilos calculados: se fotografía la caja del texto y se cuenta cuánta es
+   del color de selección. Sin placa, el fondo entre letras pasa de la mitad. */
+const UMBRAL_FONDO_EN_TEXTO = 0.25;
+let textosMedidos = 0;
+let lector = null;
+async function textoSeLee(p, t) {
+  // Foto de la ventana, no de la página entera: esa estira la ventana y la maqueta se mueve.
+  const el = p.locator(`[data-contraste-elegido="${t.n}"]`);
+  await el.scrollIntoViewIfNeeded();
+  // Solo las letras: una pieza decorativa a todo lo ancho agrandaría la caja y la daría por buena.
+  const r = await el.evaluate((x) => {
+    const recorrido = document.createTreeWalker(x, NodeFilter.SHOW_TEXT);
+    let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+    for (let n = recorrido.nextNode(); n; n = recorrido.nextNode()) {
+      if (!n.textContent.trim()) continue;
+      const rango = document.createRange();
+      rango.selectNodeContents(n);
+      for (const q of rango.getClientRects()) {
+        a = Math.min(a, q.left); b = Math.min(b, q.top); c = Math.max(c, q.right); d = Math.max(d, q.bottom);
+      }
+    }
+    return c > a ? { x: a, y: b, width: c - a, height: d - b } : { x: 0, y: 0, width: 0, height: 0 };
+  });
+  if (r.width < 4 || r.height < 4) return 1;
+  const png = await p.screenshot({ clip: r });
+  const seleccion = await p.evaluate(() => {
+    const i = document.createElement("i");
+    i.style.color = "Highlight";
+    document.body.append(i);
+    const c = getComputedStyle(i).color.match(/\d+/g).map(Number);
+    i.remove();
+    return c;
+  });
+  lector ??= await (await navegador.newContext()).newPage();
+  return lector.evaluate(async ({ b64, sel }) => {
+    const img = new Image();
+    img.src = "data:image/png;base64," + b64;
+    await img.decode();
+    const c = document.createElement("canvas");
+    c.width = img.width;
+    c.height = img.height;
+    const g = c.getContext("2d");
+    g.drawImage(img, 0, 0);
+    const d = g.getImageData(0, 0, c.width, c.height).data;
+    let cerca = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      if (Math.abs(d[i] - sel[0]) + Math.abs(d[i + 1] - sel[1]) + Math.abs(d[i + 2] - sel[2]) < 60) cerca++;
+    }
+    return cerca / (d.length / 4);
+  }, { b64: png.toString("base64"), sel: seleccion });
+}
 
 for (const ruta of RUTAS) {
   const ctx = await navegador.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: "reduce", forcedColors: "active" });
@@ -154,6 +215,13 @@ for (const ruta of RUTAS) {
   estadosTotales += e.estados;
   interruptoresTotales += e.interruptores;
   for (const x of [...e.iguales, ...e.bolas]) fallos.push({ ruta, detalle: x });
+  for (const t of e.textos) {
+    textosMedidos++;
+    const parte = await textoSeLee(p, t);
+    if (parte < UMBRAL_FONDO_EN_TEXTO) {
+      fallos.push({ ruta, detalle: `el texto de «${t.nombre}» elegido no se lee: solo el ${Math.round(parte * 100)} % de su caja es del color de selección (el navegador le pone una placa del color del fondo; falta \`forced-color-adjust: none\`)` });
+    }
+  }
   console.log(`  ${ruta.padEnd(38)} ${String(paradas).padStart(3)} paradas (${sinContorno.length} sin contorno) · ${e.estados} estados · ${e.interruptores} interruptores`);
   await ctx.close();
 }
@@ -181,9 +249,9 @@ if (fallos.length) {
   console.log(`\n  problemas — ${fallos.length}`);
   for (const f of fallos) console.log(`     ${f.ruta}  ${f.detalle}`);
 }
-console.log(`\n[alto-contraste] ${paradasTotales} paradas · ${estadosTotales} grupos con un elegido · ${interruptoresTotales} interruptores`);
+console.log(`\n[alto-contraste] ${paradasTotales} paradas · ${estadosTotales} grupos con un elegido (${textosMedidos} textos fotografiados) · ${interruptoresTotales} interruptores`);
 // Vigila ausencias: si deja de encontrar paradas, estados o interruptores, aprobaría sin mirar.
-if (paradasTotales < PARADAS_MINIMAS || estadosTotales < ESTADOS_MINIMOS || interruptoresTotales < INTERRUPTORES_MINIMOS) {
+if (paradasTotales < PARADAS_MINIMAS || estadosTotales < ESTADOS_MINIMOS || textosMedidos < ESTADOS_MINIMOS || interruptoresTotales < INTERRUPTORES_MINIMOS) {
   console.log(`[alto-contraste] midió menos de lo esperado (mínimos: ${PARADAS_MINIMAS} paradas, ${ESTADOS_MINIMOS} estados, ${INTERRUPTORES_MINIMOS} interruptores): su respuesta no vale`);
   process.exit(1);
 }

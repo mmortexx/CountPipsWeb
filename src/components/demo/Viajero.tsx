@@ -18,5 +18,6 @@ export function Viajero({
   curva?: string;
 }) {
   const ref = useViaje<HTMLSpanElement>(clave, ms, curva);
-  return <span ref={ref} aria-hidden="true" className={className} style={style} />;
+  // `data-viajero`: en alto contraste se pinta del color de selección del sistema (globals.css).
+  return <span ref={ref} data-viajero="" aria-hidden="true" className={className} style={style} />;
 }
