@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { COLOR_BARRA } from "@/lib/color-barra";
 
 export const dynamic = "force-static";
 
@@ -18,10 +19,9 @@ export default function manifest(): MetadataRoute.Manifest {
       "El diario de trading profesional, nativo de Windows. Demo interactiva, métricas institucionales, disciplina y tus datos en tu equipo.",
     start_url: `${BASE}/`,
     display: "standalone",
-    // Los dos colores son `--bg` del tema oscuro (globals.css,
-    // [data-palette="clasico"]); `viewport.themeColor` en layout.tsx debe coincidir.
-    background_color: "#0c1116",
-    theme_color: "#0c1116",
+    // El fondo del tema oscuro: la app instalada abre como el programa de escritorio.
+    background_color: COLOR_BARRA.dark,
+    theme_color: COLOR_BARRA.dark,
     lang: "es",
     icons: [
       {

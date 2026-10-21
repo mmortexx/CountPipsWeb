@@ -15,6 +15,7 @@ import { Aparecer } from "@/components/tj/Aparecer";
 import { SubrayadoPestanas } from "@/components/tj/SubrayadoPestanas";
 import { SITE_URL } from "@/lib/site";
 import { TABLA_IDIOMAS } from "@/lib/locale";
+import { COLOR_BARRA } from "@/lib/color-barra";
 
 /** Mismo valor que usa `asset()`; vacío en Cloudflare, `/CountPipsWeb` en
  *  GitHub Pages. Lo necesita el script de `lang` de más abajo. */
@@ -22,14 +23,17 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 /**
  * `viewport-fit=cover` hace que los `env(safe-area-inset-*)` de globals.css
- * valgan algo en iOS. `themeColor` es `--bg` del tema oscuro y debe coincidir
- * con el `theme_color` de `manifest.ts`.
+ * valgan algo en iOS. `themeColor` sigue al sistema en el HTML; si el
+ * visitante elige otro tema, `src/lib/theme.tsx` reescribe las dos etiquetas.
  */
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0c1116",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: COLOR_BARRA.light },
+    { media: "(prefers-color-scheme: dark)", color: COLOR_BARRA.dark },
+  ],
 };
 
 // Las fuentes viven en el repositorio (`src/app/fonts/`, subconjunto latin,

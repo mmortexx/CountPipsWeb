@@ -88,7 +88,7 @@ node scripts/escala.mjs --serve out        # escala tipográfica e interlineado
 node scripts/movimiento.mjs --serve out    # «reducir movimiento» respetado
 node scripts/orden.mjs --serve out         # primera pantalla en orden de lectura; cambio de página sin solape
 node scripts/proporcion.mjs --serve out    # textos de gráficos SVG sin estirar (también dentro de la demo)
-node scripts/tema.mjs --serve out          # elección de tema y sin fogonazo blanco
+node scripts/tema.mjs --serve out          # elección de tema, sin fogonazo blanco y barra del móvil del color del fondo
 node scripts/anuncios.mjs --serve out      # resultados anunciados a lectores de pantalla
 node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
