@@ -2654,6 +2654,46 @@ html:has(.tj-visor[open]) {
     outline-offset: -3px;
   }
 }
+/* Alto contraste de Windows. El navegador cambia fondos, bordes y textos por
+   los colores del sistema y quita las sombras: el anillo de `ring-*`, los
+   filetes de `--seg-filos` y el fondo translúcido de lo elegido desaparecen.
+   Se repintan con colores del sistema, que este modo respeta; `!important`
+   porque las utilidades que quitan el contorno son más específicas. Lo vigila
+   `scripts/alto-contraste.mjs`. */
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 2px !important;
+  }
+  #main-content:focus-visible,
+  [data-destino-salto]:focus-visible {
+    outline: none !important;
+  }
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  [data-activo="true"] {
+    background-color: Highlight !important;
+    color: HighlightText !important;
+  }
+  /* Los hijos con tinta propia saldrían en CanvasText, ilegible sobre Highlight. */
+  [aria-pressed="true"] *,
+  [aria-selected="true"] *,
+  [data-activo="true"] * {
+    color: HighlightText !important;
+  }
+  [role="switch"] {
+    border: 1px solid ButtonText !important;
+  }
+  [role="switch"] > span {
+    background-color: ButtonText !important;
+  }
+  [role="switch"][aria-checked="true"] {
+    background-color: Highlight !important;
+  }
+  [role="switch"][aria-checked="true"] > span {
+    background-color: HighlightText !important;
+  }
+}
 /* Desplegable sin elegir (`required` con valor vacío es `:invalid`):
    «Selecciona» se lee como marcador, igual que en los campos de texto. */
 select.tj-campo:invalid {
