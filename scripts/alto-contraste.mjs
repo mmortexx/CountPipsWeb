@@ -118,8 +118,11 @@ const mideEstados = () => {
 /* En este modo Chromium pinta tras cada texto una placa del color del fondo
    (Canvas). Sobre un elegido pintado de Highlight, la placa tapa el fondo y el
    texto (HighlightText, del mismo tono que Canvas) desaparece. No se ve en los
-   estilos calculados: se fotografía la caja del texto y se cuenta cuánta es
-   del color de selección. Sin placa, el fondo entre letras pasa de la mitad. */
+   estilos calculados: se fotografía el elegido y se compara el fondo entre las
+   letras con el de alrededor (su relleno), que es el color con que se pinta lo
+   elegido de verdad. Se mide, no se calcula: en Linux Highlight es translúcido
+   y dos capas elegidas (botón y pieza viajera de la demo) se oscurecen entre
+   sí. Sin placa, el fondo entre letras pasa de la mitad. */
 const UMBRAL_FONDO_EN_TEXTO = 0.25;
 let textosMedidos = 0;
 let lector = null;
@@ -127,8 +130,9 @@ async function textoSeLee(p, t) {
   // Foto de la ventana, no de la página entera: esa estira la ventana y la maqueta se mueve.
   const el = p.locator(`[data-contraste-elegido="${t.n}"]`);
   await el.scrollIntoViewIfNeeded();
-  // Solo las letras: una pieza decorativa a todo lo ancho agrandaría la caja y la daría por buena.
-  const r = await el.evaluate((x) => {
+  // Las letras y la caja del elegido: una pieza decorativa a todo lo ancho
+  // agrandaría la caja de las letras y la daría por buena.
+  const { letras, caja } = await el.evaluate((x) => {
     const recorrido = document.createTreeWalker(x, NodeFilter.SHOW_TEXT);
     let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
     for (let n = recorrido.nextNode(); n; n = recorrido.nextNode()) {
@@ -139,12 +143,21 @@ async function textoSeLee(p, t) {
         a = Math.min(a, q.left); b = Math.min(b, q.top); c = Math.max(c, q.right); d = Math.max(d, q.bottom);
       }
     }
-    return c > a ? { x: a, y: b, width: c - a, height: d - b } : { x: 0, y: 0, width: 0, height: 0 };
+    const k = x.getBoundingClientRect();
+    const x0 = Math.max(0, Math.floor(k.left)), y0 = Math.max(0, Math.floor(k.top));
+    return {
+      letras: c > a ? { x: a, y: b, width: c - a, height: d - b } : { x: 0, y: 0, width: 0, height: 0 },
+      caja: {
+        x: x0, y: y0,
+        width: Math.min(innerWidth, Math.ceil(k.right)) - x0,
+        height: Math.min(innerHeight, Math.ceil(k.bottom)) - y0,
+      },
+    };
   });
-  if (r.width < 4 || r.height < 4) return { parte: 1 };
-  const png = await p.screenshot({ clip: r });
-  // El color de selección tal como se pinta: en Linux Highlight es translúcido
-  // (rgba(5, 0, 73, 0.8)) y lo que sale en la foto es su mezcla con Canvas.
+  if (letras.width < 4 || letras.height < 4 || caja.width < 4 || caja.height < 4) return { parte: 1, pintado: true };
+  const png = await p.screenshot({ clip: caja });
+  // El color de selección y el de la página, para cuando el elegido no tiene
+  // relleno alrededor de las letras que fotografiar.
   const seleccion = await p.evaluate(() => {
     const lee = (sistema) => {
       const i = document.createElement("i");
@@ -158,11 +171,16 @@ async function textoSeLee(p, t) {
     const h = lee("Highlight"), c = lee("Canvas");
     if (![3, 4].includes(h.n.length) || c.n.length !== 3) return { error: `Highlight «${h.s}», Canvas «${c.s}»` };
     const a = h.n[3] ?? 1;
-    return { rgb: [0, 1, 2].map((k) => Math.round(h.n[k] * a + c.n[k] * (1 - a))) };
+    return { rgb: [0, 1, 2].map((k) => Math.round(h.n[k] * a + c.n[k] * (1 - a))), canvas: c.n };
   });
   if (seleccion.error) throw new Error(`[alto-contraste] no sé leer los colores del sistema: ${seleccion.error}`);
+  // Las letras, en píxeles de la foto de la caja (sin escalar: deviceScaleFactor 1).
+  const t0 = {
+    x: Math.max(0, Math.floor(letras.x - caja.x)), y: Math.max(0, Math.floor(letras.y - caja.y)),
+    x1: Math.ceil(letras.x + letras.width - caja.x), y1: Math.ceil(letras.y + letras.height - caja.y),
+  };
   lector ??= await (await navegador.newContext()).newPage();
-  return lector.evaluate(async ({ b64, sel }) => {
+  return lector.evaluate(async ({ b64, sel, canvas, t0 }) => {
     const img = new Image();
     img.src = "data:image/png;base64," + b64;
     await img.decode();
@@ -172,19 +190,31 @@ async function textoSeLee(p, t) {
     const g = c.getContext("2d");
     g.drawImage(img, 0, 0);
     const d = g.getImageData(0, 0, c.width, c.height).data;
-    let cerca = 0;
-    const cuenta = new Map();
-    for (let i = 0; i < d.length; i += 4) {
-      if (Math.abs(d[i] - sel[0]) + Math.abs(d[i + 1] - sel[1]) + Math.abs(d[i + 2] - sel[2]) < 60) cerca++;
-      const k = `${d[i]},${d[i + 1]},${d[i + 2]}`;
-      cuenta.set(k, (cuenta.get(k) ?? 0) + 1);
+    const dist = (p, q) => Math.abs(p[0] - q[0]) + Math.abs(p[1] - q[1]) + Math.abs(p[2] - q[2]);
+    const masVisto = (m) => [...m].sort((a, b) => b[1] - a[1]);
+    const enLetras = [], alrededor = new Map(), cuenta = new Map();
+    for (let y = 0; y < c.height; y++) {
+      for (let x = 0; x < c.width; x++) {
+        const i = (y * c.width + x) * 4;
+        const px = [d[i], d[i + 1], d[i + 2]];
+        const k = px.join(",");
+        // Un píxel de margen alrededor de las letras: el antialias no es fondo.
+        if (x >= t0.x - 1 && x < t0.x1 + 1 && y >= t0.y - 1 && y < t0.y1 + 1) {
+          if (x >= t0.x && x < t0.x1 && y >= t0.y && y < t0.y1) {
+            enLetras.push(px);
+            cuenta.set(k, (cuenta.get(k) ?? 0) + 1);
+          }
+        } else alrededor.set(k, (alrededor.get(k) ?? 0) + 1);
+      }
     }
-    const total = d.length / 4;
+    const nAlrededor = [...alrededor.values()].reduce((s, n) => s + n, 0);
+    const fondo = nAlrededor >= 20 ? masVisto(alrededor)[0][0].split(",").map(Number) : sel;
+    const parte = enLetras.filter((px) => dist(px, fondo) < 60).length / Math.max(1, enLetras.length);
     // Para que un fallo diga qué se pintó en vez de qué faltó.
-    const vistos = [...cuenta].sort((a, b) => b[1] - a[1]).slice(0, 3)
-      .map(([k, n]) => `rgb(${k}) ${Math.round((n / total) * 100)} %`).join(", ");
-    return { parte: cerca / total, vistos, sel: `rgb(${sel.join(",")})` };
-  }, { b64: png.toString("base64"), sel: seleccion.rgb });
+    const vistos = masVisto(cuenta).slice(0, 3)
+      .map(([k, n]) => `rgb(${k}) ${Math.round((n / Math.max(1, enLetras.length)) * 100)} %`).join(", ");
+    return { parte, pintado: dist(fondo, canvas) >= 60, fondo: `rgb(${fondo.join(",")})`, vistos };
+  }, { b64: png.toString("base64"), sel: seleccion.rgb, canvas: seleccion.canvas, t0 });
 }
 
 for (const ruta of RUTAS) {
@@ -234,9 +264,11 @@ for (const ruta of RUTAS) {
   for (const x of [...e.iguales, ...e.bolas]) fallos.push({ ruta, detalle: x });
   for (const t of e.textos) {
     textosMedidos++;
-    const { parte, vistos, sel } = await textoSeLee(p, t);
-    if (parte < UMBRAL_FONDO_EN_TEXTO) {
-      fallos.push({ ruta, detalle: `el texto de «${t.nombre}» elegido no se lee: solo el ${Math.round(parte * 100)} % de su caja es del color de selección ${sel} (el navegador le pone una placa del color del fondo; falta \`forced-color-adjust: none\`). Se pintó: ${vistos}` });
+    const { parte, pintado, fondo, vistos } = await textoSeLee(p, t);
+    if (!pintado) {
+      fallos.push({ ruta, detalle: `«${t.nombre}» elegido no se pinta de color de selección: alrededor de sus letras se ve ${fondo}, el fondo de la página` });
+    } else if (parte < UMBRAL_FONDO_EN_TEXTO) {
+      fallos.push({ ruta, detalle: `el texto de «${t.nombre}» elegido no se lee: solo el ${Math.round(parte * 100)} % de la caja de sus letras es de su fondo ${fondo} (el navegador le pone una placa del color de la página; falta \`forced-color-adjust: none\`). Se pintó: ${vistos}` });
     }
   }
   console.log(`  ${ruta.padEnd(38)} ${String(paradas).padStart(3)} paradas (${sinContorno.length} sin contorno) · ${e.estados} estados · ${e.interruptores} interruptores`);
