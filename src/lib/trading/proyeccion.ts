@@ -147,12 +147,19 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
 
     const cumulativeTrades = Math.round(m * tradesPerMonth);
     const stdCumulativeReturn = stdPerTradeR * (riskPct / 100) * Math.sqrt(cumulativeTrades);
-    const expectedLogGrowth = cumulativeTrades * Math.log(Math.max(0.001, 1 + growthPerTrade));
-    const upperFactor = Math.exp(expectedLogGrowth + z80 * stdCumulativeReturn);
-    const lowerFactor = Math.exp(Math.max(-5, expectedLogGrowth - z80 * stdCumulativeReturn));
 
-    const upperBalance = Math.max(0, startBalance * upperFactor + (totalDeposited - startBalance));
-    const lowerBalance = Math.max(0, startBalance * lowerFactor + (totalDeposited - startBalance));
+    // La banda se abre alrededor de la propia línea: en compuesto multiplica,
+    // en riesgo fijo suma (cada operación arriesga los mismos dólares).
+    let upperBalance: number;
+    let lowerBalance: number;
+    if (reinvestMode === "compound") {
+      upperBalance = currentBalance * Math.exp(z80 * stdCumulativeReturn);
+      lowerBalance = currentBalance * Math.exp(-z80 * stdCumulativeReturn);
+    } else {
+      const semiancho = startBalance * z80 * stdCumulativeReturn;
+      upperBalance = currentBalance + semiancho;
+      lowerBalance = Math.max(0, currentBalance - semiancho);
+    }
 
     monthlyPoints.push({
       month: m,

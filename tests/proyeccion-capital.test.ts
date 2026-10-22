@@ -110,3 +110,37 @@ describe("proyectaCapital: el tiempo para duplicar cuadra con la curva", () => {
     }
   });
 });
+
+describe("proyectaCapital: la banda del 80 % envuelve su propia línea", () => {
+  // Rejilla sobre los extremos de los deslizadores y los aportes de la ficha.
+  const fuera: string[] = [];
+  let probados = 0;
+  for (const reinvestMode of ["compound", "linear"] as const)
+    for (const startBalance of [1000, 250000])
+      for (const tradesPerYear of [12, 250, 600])
+        for (const winRate of [25, 56, 80])
+          for (const avgWinR of [0.5, 1.5, 6])
+            for (const avgLossR of [0.25, 1, 3])
+              for (const riskPct of [0.1, 3])
+                for (const years of [1, 10])
+                  for (const monthlyContribution of [0, 1000]) {
+                    const r = proyectaCapital({ startBalance, tradesPerYear, winRate, avgWinR, avgLossR, riskPct, years, reinvestMode, monthlyContribution, frictionR: 0.02 });
+                    if (r.fueraDeEscala) continue;
+                    probados++;
+                    const p = r.monthlyPoints.find((q) => q.balance > q.upperBalance * (1 + 1e-12) || q.balance < q.lowerBalance * (1 - 1e-12));
+                    if (p) fuera.push(`${reinvestMode} ${JSON.stringify({ startBalance, tradesPerYear, winRate, avgWinR, avgLossR, riskPct, years, monthlyContribution })} mes ${p.month}`);
+                  }
+
+  it("en interés compuesto y en riesgo fijo, ningún mes deja la línea fuera de su banda", () => {
+    expect(probados).toBeGreaterThan(1000);
+    expect(fuera.slice(0, 5)).toEqual([]);
+  });
+
+  it("en riesgo fijo la banda es simétrica en dólares: cada operación arriesga lo mismo", () => {
+    const r = proyectaCapital({ ...PERFIL, reinvestMode: "linear" });
+    for (const p of r.monthlyPoints.slice(1)) {
+      if (p.lowerBalance === 0) continue;
+      expect(p.upperBalance - p.balance).toBeCloseTo(p.balance - p.lowerBalance, 6);
+    }
+  });
+});
