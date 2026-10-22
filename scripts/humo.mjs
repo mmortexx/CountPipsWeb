@@ -1756,6 +1756,38 @@ let navegacionMirada = false;
   await ctxNav.close();
 }
 
+// Turnstile se carga cuando alguien empieza a rellenar /beta, no al abrirla:
+// abrir la página no avisa a Cloudflare. Con clave (el trabajo «Dominio propio»
+// compila con la de prueba pública de Cloudflare), el primer foco tiene que
+// pedir la API; sin clave, no se pide nunca. Las peticiones se interceptan y no
+// salen a la red.
+const CLAVE_TURNSTILE = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "").trim();
+let turnstileMirado = "";
+{
+  const ctxT = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+  const pedidas = [];
+  await ctxT.route("https://challenges.cloudflare.com/**", (r) => {
+    pedidas.push(r.request().url());
+    return r.fulfill({ status: 200, contentType: "text/javascript", body: "" });
+  });
+  const pagina = await ctxT.newPage();
+  try {
+    await pagina.goto(`${BASE}/beta`, { waitUntil: "networkidle", timeout: 45000 });
+    await pagina.waitForTimeout(1500);
+    const alAbrir = pedidas.length;
+    await pagina.locator('form input[type="email"]').first().focus();
+    await pagina.waitForTimeout(1500);
+    const trasFoco = pedidas.length;
+    if (alAbrir) fallos.push(`turnstile: abrir /beta ya pide ${pedidas[0]} a Cloudflare, antes de que nadie rellene`);
+    else if (CLAVE_TURNSTILE && !trasFoco) fallos.push("turnstile: con clave, el primer foco en /beta no pidió la API de Cloudflare");
+    else if (!CLAVE_TURNSTILE && trasFoco) fallos.push(`turnstile: sin clave, /beta pidió ${pedidas[0]}`);
+    else turnstileMirado = CLAVE_TURNSTILE ? `con clave: nada al abrir /beta, ${trasFoco} petición(es) al primer foco` : "sin clave: ninguna petición, ni al abrir /beta ni al enfocar";
+  } catch (e) {
+    fallos.push(`turnstile: ${String(e).split("\n")[0]}`);
+  }
+  await ctxT.close();
+}
+
 // El botón de subir no tapa el pie: al final de la página se aparta hacia
 // arriba, y una cantidad fija dejaba de bastar cuando la barra final del pie
 // ocupaba más líneas en móvil. Se mide cada trozo de texto del pie contra el botón.
@@ -1994,6 +2026,7 @@ console.log(`[humo] menú Producto — ${menusVistos.join("; ")}`);
 console.log(`[humo] cierre en móvil — ${cierresMedidos.length} rutas, botón principal a todo el ancho`);
 console.log(`[humo] acordeón — ${acordeones.join(", ")}: se despliega y se pliega con fotogramas intermedios`);
 if (navegacionMirada) console.log("[humo] navegación / → /pricing — la página nueva entra una sola vez");
+console.log(`[humo] turnstile — ${turnstileMirado}`);
 console.log(`[humo] barra — contenido frente a rejilla: ${[...new Set(presupuestosBarra)].join("; ")}`);
 
 if (SERVIR) {

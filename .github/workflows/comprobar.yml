@@ -104,6 +104,9 @@ jobs:
     timeout-minutes: 20
     env:
       NEXT_PUBLIC_SITE_URL: https://countpips.com
+      # Clave de prueba pública que Cloudflare publica para Turnstile, no un
+      # secreto: con ella el humo comprueba que /beta solo la carga al primer foco.
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
     steps:
       - name: Checkout
         uses: actions/checkout@v7
