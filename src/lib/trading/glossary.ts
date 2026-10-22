@@ -6,7 +6,7 @@
  * lo confirmó término a término. La dirección no cambia: sale siempre de `term`.
  */
 
-import { fmtNum } from "./format";
+import { fmtNum } from "./format.ts";
 
 /** Desde qué SQN la escala de Van Tharp llama «bueno» a un sistema: lo citan la ficha y su ampliación. */
 export const SQN_BUENO = 2.5;

@@ -6,8 +6,8 @@
  * entrada por término. Cifras en convención de cada idioma (`cifras.mjs`).
  */
 
-import { fmtNum } from "./trading/format";
-import { SQN_BUENO } from "./trading/glossary";
+import { fmtNum } from "./trading/format.ts";
+import { SQN_BUENO } from "./trading/glossary.ts";
 
 type Par = { es: string; en: string };
 export type Ampliacion = { ejemplo: Par; importa: Par };
