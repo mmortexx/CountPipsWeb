@@ -28,19 +28,24 @@ type VozBuscable = { term: string; nombreEs?: string; slug: string };
 /**
  * Adónde lleva la caja de la página 404 («Métrica o pregunta…»): a la voz del
  * glosario si la consulta es su nombre en cualquier idioma, su sigla o lo que
- * va entre paréntesis («MAE (Maximum Adverse Excursion)»); si no, a la FAQ
- * filtrada. Recibe los términos para que la 404 los cargue solo al buscar.
+ * va entre paréntesis («MAE (Maximum Adverse Excursion)»), o si es parte del
+ * nombre de una sola voz («sharpe»); si no, a la FAQ filtrada. Recibe los
+ * términos para que la 404 los cargue solo al buscar.
  */
 export function destinoDeBusqueda(consulta: string, terminos: readonly VozBuscable[]): string {
-  const limpia = consulta.trim();
+  // Un sustituto suelto (U+D800…) haría lanzar a encodeURIComponent.
+  const limpia = consulta.trim().replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, "\uFFFD");
   if (!limpia) return "/faq";
   const buscada = paraBuscar(limpia);
+  const parciales: VozBuscable[] = [];
   for (const t of terminos) {
     const nombres = [t.term, t.nombreEs ?? ""].flatMap((n) => {
       const m = n.match(/^(.+?)\s*\((.+)\)$/);
       return m ? [n, m[1], m[2]] : [n];
     });
     if (nombres.some((n) => n && paraBuscar(n) === buscada)) return `/glosario/${t.slug}`;
+    if (coincide(limpia, ...nombres)) parciales.push(t);
   }
+  if (parciales.length === 1) return `/glosario/${parciales[0].slug}`;
   return `/faq?q=${encodeURIComponent(limpia)}`;
 }
