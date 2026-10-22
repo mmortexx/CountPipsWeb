@@ -154,8 +154,6 @@ export function BetaApplication() {
     script.addEventListener("load", render, { once: true });
     document.head.appendChild(script);
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => alEmpezar(), []);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
