@@ -392,3 +392,18 @@ describe("alta", () => {
     expect(await res.json()).toEqual({ ok: false, error: "storage_unavailable" });
   });
 });
+
+describe("errores no previstos", () => {
+  it("una excepción (D1 que lanza al buscar el correo) da 500 JSON con CORS, no la página de error de Cloudflare", async () => {
+    turnstile("ok");
+    const registro = vi.spyOn(console, "error").mockImplementation(() => {});
+    const env = entorno();
+    env.DB.estado.fallo = new Error("D1_ERROR: Network connection lost.");
+    const res = await worker.fetch(alta(SOLICITUD), env);
+    expect(res.status).toBe(500);
+    conCors(res);
+    expect(res.headers.get("Content-Type")).toContain("application/json");
+    expect(await res.json()).toEqual({ ok: false, error: "internal_error" });
+    expect(registro).toHaveBeenCalled();
+  });
+});

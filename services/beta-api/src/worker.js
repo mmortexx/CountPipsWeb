@@ -405,36 +405,47 @@ async function updateApplication(request, env, id) {
   }
 }
 
+async function route(request, env) {
+  const url = new URL(request.url);
+  if (request.method === "OPTIONS") {
+    return requestHasAllowedOrigin(request, env)
+      ? new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": getAllowedOrigin(request, env), "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Max-Age": "600", Vary: "Origin" } })
+      : errorResponse("origin_not_allowed", 403, request, env);
+  }
+  if (url.pathname === "/health" && request.method === "GET") {
+    return json({ ok: true, service: "countpips-beta-api" }, 200, request, env);
+  }
+  if (url.pathname === "/admin" && request.method === "GET") {
+    if (!(await isAdminPanelAuthorized(request, env))) {
+      return new Response("Authentication required.", {
+        status: 401,
+        headers: {
+          "WWW-Authenticate": 'Basic realm="CountPips admin", charset="UTF-8"',
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store",
+          "X-Robots-Tag": "noindex, nofollow",
+        },
+      });
+    }
+    return text(ADMIN_HTML, 200, { "X-Robots-Tag": "noindex, nofollow" });
+  }
+  if (url.pathname === "/v1/applications" && request.method === "POST") return createApplication(request, env);
+  if (url.pathname === "/v1/applications" && request.method === "GET") return listApplications(request, env);
+  const match = url.pathname.match(/^\/v1\/applications\/([^/]+)$/);
+  if (match && request.method === "PATCH") return updateApplication(request, env, decodeURIComponent(match[1]));
+  return errorResponse("not_found", 404, request, env);
+}
+
 const worker = {
   async fetch(request, env) {
-    const url = new URL(request.url);
-    if (request.method === "OPTIONS") {
-      return requestHasAllowedOrigin(request, env)
-        ? new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": getAllowedOrigin(request, env), "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Max-Age": "600", Vary: "Origin" } })
-        : errorResponse("origin_not_allowed", 403, request, env);
+    // Sin esto, una excepción sale como la página de error de Cloudflare, sin
+    // CORS: el navegador la ve como fallo de red y no como error del servicio.
+    try {
+      return await route(request, env);
+    } catch (error) {
+      console.error("[beta-api] error no previsto:", error);
+      return errorResponse("internal_error", 500, request, env, { private: true });
     }
-    if (url.pathname === "/health" && request.method === "GET") {
-      return json({ ok: true, service: "countpips-beta-api" }, 200, request, env);
-    }
-    if (url.pathname === "/admin" && request.method === "GET") {
-      if (!(await isAdminPanelAuthorized(request, env))) {
-        return new Response("Authentication required.", {
-          status: 401,
-          headers: {
-            "WWW-Authenticate": 'Basic realm="CountPips admin", charset="UTF-8"',
-            "Content-Type": "text/plain; charset=utf-8",
-            "Cache-Control": "no-store",
-            "X-Robots-Tag": "noindex, nofollow",
-          },
-        });
-      }
-      return text(ADMIN_HTML, 200, { "X-Robots-Tag": "noindex, nofollow" });
-    }
-    if (url.pathname === "/v1/applications" && request.method === "POST") return createApplication(request, env);
-    if (url.pathname === "/v1/applications" && request.method === "GET") return listApplications(request, env);
-    const match = url.pathname.match(/^\/v1\/applications\/([^/]+)$/);
-    if (match && request.method === "PATCH") return updateApplication(request, env, decodeURIComponent(match[1]));
-    return errorResponse("not_found", 404, request, env);
   },
 };
 
