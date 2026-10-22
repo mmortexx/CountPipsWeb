@@ -144,6 +144,20 @@ describe("proyectaCapital: la banda del 80 % envuelve su propia línea", () => {
       expect(p.upperBalance - p.balance).toBeCloseTo(p.balance - p.lowerBalance, 6);
     }
   });
+
+  it("la banda mide 1,282 desviaciones a cada lado, las del 80 % bilateral", () => {
+    // Desviación de una operación que gana avgWinR o pierde avgLossR: (W + L) · √(p · (1 − p)).
+    const p = PERFIL.winRate / 100;
+    const sigmaR = (PERFIL.avgWinR + PERFIL.avgLossR) * Math.sqrt(p * (1 - p));
+    for (const reinvestMode of ["compound", "linear"] as const) {
+      const r = proyectaCapital({ ...PERFIL, reinvestMode });
+      for (const q of r.monthlyPoints.slice(1)) {
+        const sigma = sigmaR * (PERFIL.riskPct / 100) * Math.sqrt(q.trades);
+        const z = reinvestMode === "compound" ? Math.log(q.upperBalance / q.balance) / sigma : (q.upperBalance - q.balance) / (PERFIL.startBalance * sigma);
+        expect(z).toBeCloseTo(1.282, 6);
+      }
+    }
+  });
 });
 
 describe("nota del win rate en el proyector", () => {
