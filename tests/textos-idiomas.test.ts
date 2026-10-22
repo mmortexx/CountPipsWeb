@@ -17,6 +17,7 @@ import { Pricing } from "@/components/marketing/Pricing";
 import { GuardianNew } from "@/components/marketing/GuardianNew";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { Hero } from "@/components/marketing/Hero";
+import { PRODUCT_ITEMS } from "@/components/marketing/Navbar";
 import { metadataHome } from "@/lib/rutas-internacionales";
 
 /** Texto visible de un componente pintado en el servidor en un idioma. */
@@ -36,10 +37,21 @@ describe("textos de la portada en pt, fr, de e it", () => {
     expect(texto(lang, createElement(MetricsShowcaseNew, { cifras: cifrasMuestra(), enPortada: true }))).not.toMatch(/\bBalance\b/);
   });
 
+  const SALDO: Partial<Record<Lang, string>> = { pt: "Saldo", fr: "Solde", de: "Kontostand", it: "Saldo" };
+  it.each(NUEVOS)("la leyenda del gráfico de la portada traduce «Balance» (%s)", (lang) => {
+    ruta = `${prefijoDeIdioma(lang)}/`;
+    const html = renderToString(createElement(LanguageProvider, null, createElement(MetricsShowcaseNew, { cifras: cifrasMuestra(), enPortada: true })));
+    const etiqueta = html.match(/<label[^>]*data-serie="balance"[^>]*>([\s\S]*?)<\/label>/)?.[1].replace(/<[^>]+>/g, "").trim();
+    expect(etiqueta).toBe(SALDO[lang]);
+  });
+
   const FRENO: Partial<Record<Lang, RegExp>> = { pt: /freio rígido/i, fr: /frein strict/i, de: /harte Bremse/i, it: /freno rigido/i };
-  it.each(NUEVOS)("el freno duro se llama igual en precios que en la portada (%s)", (lang) => {
+  it.each(NUEVOS)("el freno duro se llama igual en precios, en la portada y en el menú (%s)", (lang) => {
     expect(texto(lang, createElement(GuardianNew))).toMatch(FRENO[lang]!);
     expect(texto(lang, createElement(Pricing))).toMatch(FRENO[lang]!);
+    const disciplina = PRODUCT_ITEMS.find((i) => i.href === "/features/disciplina")!;
+    const clave = `desc${lang[0].toUpperCase()}${lang[1]}` as "descPt" | "descFr" | "descDe" | "descIt";
+    expect(disciplina[clave]).toMatch(FRENO[lang]!);
   });
 
   it("en francés la pestaña del registro es «Saisie»", () => {
@@ -84,6 +96,13 @@ describe("textos de las herramientas", () => {
     const t = texto(lang, createElement(PropChallengeSimulator));
     expect(t).toContain(`${antes} ${fmtInt(CAMINOS_FONDEO, lang)} ${despues}`);
     expect(t).not.toMatch(/dos mil|two thousand/i);
+  });
+
+  it("la ficha de la prueba de fondeo cuenta sus intentos con la constante", () => {
+    const f = HERRAMIENTAS.find((h) => h.slug === "prueba-de-fondeo")!;
+    for (const t of [f.subtituloEs, f.resumenEs]) expect(t).toContain(`${fmtInt(CAMINOS_FONDEO, "es")} intentos`);
+    for (const t of [f.subtituloEn, f.resumenEn]) expect(t).toContain(`${fmtInt(CAMINOS_FONDEO, "en")} attempts`);
+    expect(Object.values(f).filter((v) => typeof v === "string" && /dos mil|two thousand/i.test(v))).toEqual([]);
   });
 });
 

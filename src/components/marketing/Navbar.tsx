@@ -23,7 +23,7 @@ import { BrandGlyph } from "@/components/tj/BrandGlyph";
    `scroll-mt-*` de los anclajes. Al desplazar solo cambian sombra y filo. */
 const ALTURA_BARRA = 68;
 
-const PRODUCT_ITEMS: {
+export const PRODUCT_ITEMS: {
   href: string;
   labelEs: string;
   labelEn: string;
@@ -82,9 +82,9 @@ const PRODUCT_ITEMS: {
     descEs: "Semáforo de riesgo y freno duro",
     descEn: "Risk light and hard brake",
     descPt: "Semáforo de risco e freio rígido",
-    descFr: "Feu de risque et arrêt forcé",
-    descDe: "Risikoampel und Notbremse",
-    descIt: "Semaforo di rischio e blocco forzato",
+    descFr: "Feu de risque et frein strict",
+    descDe: "Risikoampel und harte Bremse",
+    descIt: "Semaforo di rischio e freno rigido",
     grupo: "producto",
   },
   {
