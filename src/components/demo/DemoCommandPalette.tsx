@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { useTheme, type PaletteName } from "@/lib/theme";
 import { useDemo } from "./DemoContext";
 import { TRADES } from "@/lib/trading/data";
+import { resetToSample } from "@/lib/trading/demoStore";
 
 interface DemoCommandPaletteProps {
   open: boolean;
@@ -21,6 +22,186 @@ interface Command {
   icon: ReactNode;
   section: "nav" | "actions";
   run: () => void;
+}
+
+type Demo = ReturnType<typeof useDemo>;
+
+interface AccionesPaleta {
+  setPage: Demo["setPage"];
+  goDetail: Demo["goDetail"];
+  setFilters: Demo["setFilters"];
+  clearFilters: Demo["clearFilters"];
+  toggleLang: () => void;
+  toggleTheme: () => void;
+  setPalette: (p: PaletteName) => void;
+  palette: PaletteName;
+  paletteOrder: PaletteName[];
+  theme: ReturnType<typeof useTheme>["theme"];
+}
+
+export function comandosDemo({
+  setPage,
+  goDetail,
+  setFilters,
+  clearFilters,
+  toggleLang,
+  toggleTheme,
+  setPalette,
+  palette,
+  paletteOrder,
+  theme,
+}: AccionesPaleta): Command[] {
+  const nav: Command[] = [
+    {
+      id: "go-dashboard",
+      labelEs: "Ir a Resumen",
+      labelEn: "Go to Dashboard",
+      hint: "1",
+      section: "nav",
+      icon: <DashboardIcon />,
+      run: () => setPage("dashboard"),
+    },
+    {
+      id: "go-trades",
+      labelEs: "Ir a Operaciones",
+      labelEn: "Go to Trades",
+      hint: "2",
+      section: "nav",
+      icon: <TradesIcon />,
+      run: () => setPage("trades"),
+    },
+    {
+      id: "go-detail",
+      labelEs: "Ir a Detalle",
+      labelEn: "Go to Trade detail",
+      section: "nav",
+      icon: <DetailIcon />,
+      run: () => goDetail(TRADES[0].id),
+    },
+    {
+      id: "go-analytics",
+      labelEs: "Ir a Analítica",
+      labelEn: "Go to Analytics",
+      hint: "3",
+      section: "nav",
+      icon: <AnalyticsIcon />,
+      run: () => setPage("analytics"),
+    },
+    {
+      id: "go-journal",
+      labelEs: "Ir a Diario",
+      labelEn: "Go to Journal",
+      hint: "4",
+      section: "nav",
+      icon: <JournalIcon />,
+      run: () => setPage("journal"),
+    },
+  ];
+
+  const filters: Command[] = [
+    {
+      id: "filter-offplan",
+      labelEs: "Filtrar: Operaciones fuera de plan",
+      labelEn: "Filter: Off-plan trades",
+      section: "actions",
+      icon: <FilterIcon />,
+      run: () => {
+        setFilters({ compliance: "no" });
+        setPage("trades");
+      },
+    },
+    {
+      id: "filter-compliant",
+      labelEs: "Filtrar: Operaciones en plan (100\u00a0% disciplina)",
+      labelEn: "Filter: In-plan trades (100% disciplined)",
+      section: "actions",
+      icon: <FilterIcon />,
+      run: () => {
+        setFilters({ compliance: "yes" });
+        setPage("trades");
+      },
+    },
+    {
+      id: "filter-nq",
+      labelEs: "Filtrar: NQ (E-mini Nasdaq-100)",
+      labelEn: "Filter: NQ (E-mini Nasdaq-100)",
+      section: "actions",
+      icon: <FilterIcon />,
+      run: () => {
+        setFilters({ instrument: "NQ" });
+        setPage("trades");
+      },
+    },
+    {
+      id: "filter-es",
+      labelEs: "Filtrar: ES (E-mini S&P 500)",
+      labelEn: "Filter: ES (E-mini S&P 500)",
+      section: "actions",
+      icon: <FilterIcon />,
+      run: () => {
+        setFilters({ instrument: "ES" });
+        setPage("trades");
+      },
+    },
+    {
+      id: "clear-filters",
+      labelEs: "Limpiar todos los filtros",
+      labelEn: "Clear all filters",
+      section: "actions",
+      icon: <ResetIcon />,
+      run: () => {
+        clearFilters();
+        setPage("trades");
+      },
+    },
+  ];
+
+  const actions: Command[] = [
+    {
+      id: "toggle-lang",
+      labelEs: "Cambiar idioma",
+      labelEn: "Toggle language",
+      hint: "L",
+      section: "actions",
+      icon: <LangIcon />,
+      run: toggleLang,
+    },
+    {
+      id: "toggle-theme",
+      labelEs: "Cambiar tema",
+      labelEn: "Toggle theme",
+      hint: "T",
+      section: "actions",
+      icon: theme === "dark" ? <SunIcon /> : <MoonIcon />,
+      run: toggleTheme,
+    },
+    {
+      id: "cycle-palette",
+      labelEs: "Cambiar paleta",
+      labelEn: "Cycle palette",
+      section: "actions",
+      icon: <PaletteIcon />,
+      run: () => {
+        const i = paletteOrder.indexOf(palette);
+        const next = paletteOrder[(i + 1) % paletteOrder.length];
+        setPalette(next);
+      },
+    },
+    {
+      id: "reset-demo",
+      labelEs: "Reiniciar demo",
+      labelEn: "Reset demo",
+      section: "actions",
+      icon: <ResetIcon />,
+      run: () => {
+        resetToSample();
+        clearFilters();
+        setPage("dashboard");
+      },
+    },
+  ];
+
+  return [...nav, ...filters, ...actions];
 }
 
 // Trampa de Tab, mismo patrón que ShortcutsHelp.tsx.
@@ -125,155 +306,10 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
 
   const paletteOrder: PaletteName[] = useMemo(() => ["clasico"], []);
 
-  const commands = useMemo<Command[]>(() => {
-    const nav: Command[] = [
-      {
-        id: "go-dashboard",
-        labelEs: "Ir a Resumen",
-        labelEn: "Go to Dashboard",
-        hint: "1",
-        section: "nav",
-        icon: <DashboardIcon />,
-        run: () => setPage("dashboard"),
-      },
-      {
-        id: "go-trades",
-        labelEs: "Ir a Operaciones",
-        labelEn: "Go to Trades",
-        hint: "2",
-        section: "nav",
-        icon: <TradesIcon />,
-        run: () => setPage("trades"),
-      },
-      {
-        id: "go-detail",
-        labelEs: "Ir a Detalle",
-        labelEn: "Go to Trade detail",
-        section: "nav",
-        icon: <DetailIcon />,
-        run: () => goDetail(TRADES[0].id),
-      },
-      {
-        id: "go-analytics",
-        labelEs: "Ir a Analítica",
-        labelEn: "Go to Analytics",
-        hint: "3",
-        section: "nav",
-        icon: <AnalyticsIcon />,
-        run: () => setPage("analytics"),
-      },
-      {
-        id: "go-journal",
-        labelEs: "Ir a Diario",
-        labelEn: "Go to Journal",
-        hint: "4",
-        section: "nav",
-        icon: <JournalIcon />,
-        run: () => setPage("journal"),
-      },
-    ];
-
-    const filters: Command[] = [
-      {
-        id: "filter-offplan",
-        labelEs: "Filtrar: Operaciones fuera de plan",
-        labelEn: "Filter: Off-plan trades",
-        section: "actions",
-        icon: <FilterIcon />,
-        run: () => {
-          setFilters({ compliance: "no" });
-          setPage("trades");
-        },
-      },
-      {
-        id: "filter-compliant",
-        labelEs: "Filtrar: Operaciones en plan (100\u00a0% disciplina)",
-        labelEn: "Filter: In-plan trades (100% disciplined)",
-        section: "actions",
-        icon: <FilterIcon />,
-        run: () => {
-          setFilters({ compliance: "yes" });
-          setPage("trades");
-        },
-      },
-      {
-        id: "filter-nq",
-        labelEs: "Filtrar: NQ (E-mini Nasdaq-100)",
-        labelEn: "Filter: NQ (E-mini Nasdaq-100)",
-        section: "actions",
-        icon: <FilterIcon />,
-        run: () => {
-          setFilters({ instrument: "NQ" });
-          setPage("trades");
-        },
-      },
-      {
-        id: "filter-es",
-        labelEs: "Filtrar: ES (E-mini S&P 500)",
-        labelEn: "Filter: ES (E-mini S&P 500)",
-        section: "actions",
-        icon: <FilterIcon />,
-        run: () => {
-          setFilters({ instrument: "ES" });
-          setPage("trades");
-        },
-      },
-      {
-        id: "clear-filters",
-        labelEs: "Limpiar todos los filtros",
-        labelEn: "Clear all filters",
-        section: "actions",
-        icon: <ResetIcon />,
-        run: () => {
-          clearFilters();
-          setPage("trades");
-        },
-      },
-    ];
-
-    const actions: Command[] = [
-      {
-        id: "toggle-lang",
-        labelEs: "Cambiar idioma",
-        labelEn: "Toggle language",
-        hint: "L",
-        section: "actions",
-        icon: <LangIcon />,
-        run: toggleLang,
-      },
-      {
-        id: "toggle-theme",
-        labelEs: "Cambiar tema",
-        labelEn: "Toggle theme",
-        hint: "T",
-        section: "actions",
-        icon: theme === "dark" ? <SunIcon /> : <MoonIcon />,
-        run: toggleTheme,
-      },
-      {
-        id: "cycle-palette",
-        labelEs: "Cambiar paleta",
-        labelEn: "Cycle palette",
-        section: "actions",
-        icon: <PaletteIcon />,
-        run: () => {
-          const i = paletteOrder.indexOf(palette);
-          const next = paletteOrder[(i + 1) % paletteOrder.length];
-          setPalette(next);
-        },
-      },
-      {
-        id: "reset-demo",
-        labelEs: "Reiniciar demo",
-        labelEn: "Reset demo",
-        section: "actions",
-        icon: <ResetIcon />,
-        run: () => setPage("dashboard"),
-      },
-    ];
-
-    return [...nav, ...filters, ...actions];
-  }, [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme]);
+  const commands = useMemo(
+    () => comandosDemo({ setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme }),
+    [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme],
+  );
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
