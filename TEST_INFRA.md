@@ -33,6 +33,7 @@
 | Fichero | Qué vigila |
 |---|---|
 | `adversarial_stress.test.ts` | Casos límite adversariales del motor de métricas y contratos de futuros |
+| `cabeceras-csp.test.ts` | Las cabeceras de `public/_headers` como se publican: sin Worker configurado la CSP no deja conectar con ningún `*.workers.dev` ni con dominios que no existen, y no declara `worker-src`; con `NEXT_PUBLIC_BETA_API_URL`, `cabecerasConWorker` (la usa `postbuild.mjs`) añade su origen exacto a `connect-src` y no cambia nada más; llevan COOP y CORP |
 | `campo-cifra.test.ts` | Las cifras de los campos editables: coma o punto según idioma, ida y vuelta exacta, y millares: «10.000» es diez mil donde el campo admite menos de tres decimales y sigue siendo decimal en un precio de tres o más («151.234») |
 | `capturas.test.ts` | Que las 4 variantes de cada captura real (tema × pantalla/detalle) encajen en medida, y que el recorte móvil declare las suyas: tiene otra proporción, y sin ellas la página saltaba al llegar la imagen |
 | `contratos.test.ts` | Contratos generales de `i18n.tsx` y rutas localizadas; titular del Monte Carlo frente a sus caminos; destinos del glosario; ningún `type="number"`; ninguna cifra de herramientas escrita a mano; ningún enlace a `countpips.com` fuera de `site.ts` |

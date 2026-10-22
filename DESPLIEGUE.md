@@ -152,7 +152,8 @@ así que el mapa del sitio no lo anuncia nadie. Con el dominio, en este orden:
 
 `public/_headers` lleva las cabeceras de seguridad y de caché, incluida la
 `Content-Security-Policy` (restringe scripts/conexiones a los dominios que el
-sitio usa de verdad: Turnstile, Web3Forms, Apps Script). Lo lee
+sitio usa de verdad: Turnstile, Web3Forms, Apps Script; el Worker de acceso
+anticipado solo si la compilación lo usa, que entonces añade su dirección). Lo lee
 Cloudflare; GitHub Pages lo ignora porque no permite configurarlas — así que
 la copia de GitHub Pages **no lleva CSP ni el resto de estas cabeceras**, y
 ese fichero no puede romper la publicación antigua. Es una de las cosas que se
