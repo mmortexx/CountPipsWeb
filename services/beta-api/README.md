@@ -23,6 +23,17 @@ Servicio aislado para recibir solicitudes de beta y operar el portal interno. La
    ```bash
    npx wrangler secret put TURNSTILE_SECRET
    npx wrangler secret put ADMIN_TOKEN
+   npx wrangler secret put IP_HASH_SECRET
+   ```
+
+   `IP_HASH_SECRET` es una cadena larga y aleatoria (por ejemplo, la salida de `openssl rand -hex 32`) que no se usa para nada más. Con ella el Worker guarda de cada IP solo una huella (HMAC-SHA-256) en la columna `ip_hash` y en las claves del límite de peticiones. Sin el secreto, esa huella sería un simple sha256 y bastaría probar todas las IPv4 para saber a quién corresponde.
+
+   Si falta, la IP no se guarda (`ip_hash` queda vacío), pero el límite por IP no puede funcionar y el alta responde `503 service_misconfigured`, igual que si faltara el KV. En local, `RATE_LIMIT_OPTIONAL=1` en `.dev.vars` permite probar sin él. Cambiar el secreto hace que las huellas nuevas no coincidan con las anteriores; no rompe nada más.
+
+   Las filas guardadas antes de este cambio llevan el sha256 sin secreto. Para borrarlo:
+
+   ```bash
+   npx wrangler d1 execute countpips-beta --remote --command "UPDATE applications SET ip_hash = NULL"
    ```
 
 5. Desplegar:
@@ -35,7 +46,7 @@ Servicio aislado para recibir solicitudes de beta y operar el portal interno. La
 
 ## Contrato
 
-- `POST /v1/applications`: solicitud pública. Requiere origen permitido, consentimiento obligatorio, Turnstile válido y campos de perfil. Devuelve respuesta uniforme `{ ok: true }` sin revelar si el correo ya estaba registrado ni exponer datos previos.
+- `POST /v1/applications`: solicitud pública. Requiere origen permitido, consentimiento obligatorio, Turnstile válido y campos de perfil. Devuelve siempre `201 { ok: true }`, sin revelar si el correo ya estaba registrado ni exponer datos previos.
 - `GET /v1/applications`: portal interno. Requiere `Authorization: Bearer <ADMIN_TOKEN>` y permite filtrar por `status` o `cohort`.
 - `PATCH /v1/applications/:id`: cambia `status` y `cohort` desde el portal interno.
 - `GET /admin`: interfaz privada de operaciones. No se enlaza desde CountPips. El HTML exige HTTP Basic Auth (usuario cualquiera, contraseña = `ADMIN_TOKEN`) antes de servirse; las llamadas que hace ese panel a `GET`/`PATCH /v1/applications` siguen exigiendo el mismo token como `Bearer`.

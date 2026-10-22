@@ -5,7 +5,7 @@ import { Search } from "lucide-react";
 
 import { useLang } from "@/lib/i18n";
 import { FAQ_ES, FAQ_EN, type CategoriaFaq, type QAFaq } from "@/lib/faq";
-import { paraBuscar } from "@/lib/busqueda";
+import { coincide } from "@/lib/busqueda";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Reveal } from "@/components/tj/Reveal";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
@@ -46,14 +46,9 @@ export function FAQ({ standalone = false }: { standalone?: boolean } = {}) {
 
   // Filtro por texto y categoría; la categoría va escrita en cada pregunta.
   const filtered = React.useMemo(() => {
-    const q = paraBuscar(query.trim());
     return items.filter((it) => {
       if (activeCategory !== "all" && it.categoria !== activeCategory) return false;
-
-      if (q === "") return true;
-      return (
-        paraBuscar(it.q).includes(q) || paraBuscar(it.a).includes(q)
-      );
+      return coincide(query, it.q, it.a);
     });
   }, [items, query, activeCategory]);
 

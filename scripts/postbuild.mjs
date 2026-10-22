@@ -7,6 +7,7 @@
 import { readdir, readFile, writeFile, copyFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { TABLA_IDIOMAS } from "../src/lib/locale.ts";
+import { cabecerasConWorker } from "../src/lib/csp.ts";
 
 const OUT = "out";
 
@@ -244,3 +245,12 @@ console.log(
   `[postbuild] tarjetas sociales: ${tarjetas} imagen(es) servidas también como .png, ` +
     `${conExtension} página(s) reescritas, ${conImagenAnadida} que no tenían imagen ya la tienen.`
 );
+
+/* 4 · La CSP del dominio propio deja conectar con el Worker de acceso
+   anticipado solo si esta compilación lo usa, y solo con su origen. */
+const urlWorker = (process.env.NEXT_PUBLIC_BETA_API_URL ?? "").trim();
+if (urlWorker) {
+  const rutaCabeceras = join(OUT, "_headers");
+  await writeFile(rutaCabeceras, cabecerasConWorker(await readFile(rutaCabeceras, "utf8"), urlWorker));
+  console.log(`[postbuild] CSP: connect-src admite ${new URL(urlWorker).origin}.`);
+}

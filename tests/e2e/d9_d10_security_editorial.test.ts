@@ -5,13 +5,15 @@ import { STR } from "@/lib/i18n";
 import { FAQ_ES, FAQ_EN } from "@/lib/faq";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { DOCUMENTOS_LEGALES } from "@/lib/legal/documentos";
+import { TABLA_IDIOMAS } from "@/lib/locale";
+import { leeCifra } from "@/lib/trading/format";
 
 /**
  * Dimensiones D9 y D10: seguridad, privacidad y tono editorial. Tier 1:
  * calculadoras sin red, ni analítica ni cookies (la privacidad lo promete),
  * `dangerouslySetInnerHTML` solo para JSON-LD y scripts estáticos, sin
  * promesas de rentabilidad ni pasarelas de pago inexistentes. Tier 2:
- * entradas maliciosas, descargo financiero, sin secretos en el código y campo
+ * entradas maliciosas en `leeCifra` (lo que leen los campos), descargo financiero, sin secretos en el código y campo
  * trampa `botcheck` igual en cliente y Worker.
  */
 
@@ -207,18 +209,27 @@ describe("Dimension D9 & D10: Security, Privacy & Editorial Tone", () => {
         "javascript:void(0)",
         "{{constructor.constructor('alert(1)')()}}",
         "\x00\x08\x0B\x0C\x0E\x1F",
-        "-999999999999999999999999999999999",
         "NaN",
         "Infinity",
+        "-Infinity",
+        "1e400",
+        "0x1F",
+        "12<b>3</b>",
       ];
 
-      // Una entrada mala da NaN o un número, nunca una excepción sin controlar.
-      for (const payload of maliciousInputs) {
-        const num = parseFloat(payload);
-        if (Number.isNaN(num)) {
-          expect(Number.isNaN(num)).toBe(true);
-        } else {
-          expect(typeof num).toBe("number");
+      // Lo que se escribe en los campos de las herramientas pasa por `leeCifra`:
+      // nada de esto es una cifra en ningún idioma ni campo, y no lanza.
+      for (const { codigo } of TABLA_IDIOMAS) {
+        for (const decimales of [0, 2, 6]) {
+          for (const payload of maliciousInputs) {
+            expect(leeCifra(payload, codigo, decimales), `${codigo}/${decimales}: ${JSON.stringify(payload)}`).toBeNull();
+          }
+          // Una cifra absurda pero bien escrita se lee como número finito, no como Infinity.
+          const enorme = leeCifra("-999999999999999999999999999999999", codigo, decimales);
+          expect(Number.isFinite(enorme), codigo).toBe(true);
+          expect(enorme!).toBeLessThan(0);
+          // Con más de 308 cifras ya no es finita: se rechaza en vez de dar Infinity.
+          expect(leeCifra("9".repeat(400), codigo, decimales), codigo).toBeNull();
         }
       }
     });

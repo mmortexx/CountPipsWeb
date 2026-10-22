@@ -46,6 +46,8 @@ export function fmtMoney(
     .format(abs)
     .replace(/US\$|\$US|USD/g, "$")
     .trim();
+  // El signo sale de la cifra escrita: −0,4 $ a cero decimales es «0 $», no «−0 $».
+  if (!/[1-9]/.test(formatted)) return formatted;
   if (value < 0) return `−${formatted}`;
   if (sign && value > 0) return `+${formatted}`;
   return formatted;
@@ -178,16 +180,16 @@ export function fmtInt(value: number, lang: Lang = "es"): string {
   return menosTipografico(new Intl.NumberFormat(LOCALE[lang], { useGrouping: "always" }).format(value));
 }
 
-/** «1 operación», «2 operaciones» / «1 trade», «2 trades». */
+/** «1 operación», «2 operaciones» / «1 trade», «2 trades». En francés e italiano, la palabra del resto del texto: «opérations», «operazioni». */
 export function fmtOperaciones(n: number, lang: Lang = "es"): string {
   const uno = Math.abs(n) === 1;
   const palabra = {
     es: uno ? "operación" : "operaciones",
     en: uno ? "trade" : "trades",
     pt: uno ? "operação" : "operações",
-    fr: uno ? "trade" : "trades",
+    fr: uno ? "opération" : "opérations",
     de: uno ? "Trade" : "Trades",
-    it: uno ? "trade" : "trades",
+    it: uno ? "operazione" : "operazioni",
   }[lang];
   return `${fmtInt(n, lang)} ${palabra}`;
 }

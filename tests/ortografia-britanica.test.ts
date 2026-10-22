@@ -1,15 +1,20 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { createElement, type ComponentType } from "react";
+import { renderToString } from "react-dom/server";
 import { GLOSSARY, GLOSSARY_CATEGORIES } from "@/lib/trading/glossary";
 import { FORMULAS_GLOSARIO, CATEGORIAS as CATEGORIAS_GLOSARIO, SEGUIR_LEYENDO } from "@/lib/glosario";
 import { AMPLIADO } from "@/lib/glosario-ampliado";
 import { FAQ_EN, PRICING_FAQ_EN } from "@/lib/faq";
 import { LAMINAS_PRODUCTO } from "@/lib/laminas";
-import { STR } from "@/lib/i18n";
+import { LanguageProvider, STR } from "@/lib/i18n";
+import { HERRAMIENTAS } from "@/lib/herramientas";
+
+vi.mock("next/navigation", () => ({ usePathname: () => "/en/", useRouter: () => ({ push() {}, replace() {} }) }));
 
 /**
  * El inglés de CountPips es británico (openGraph en_GB): una lista cerrada de
  * raíces americanas no puede aparecer en los campos ingleses del glosario, la
- * FAQ, las láminas ni `i18n.tsx`. «Maximum Favorable / Adverse Excursion» se
+ * FAQ, las láminas, `i18n.tsx` ni las calculadoras pintadas en inglés. «Maximum Favorable / Adverse Excursion» se
  * excluye solo por ese literal. Punto ciego: una palabra americana fuera de
  * la lista ("modeling", "program") pasa.
  */
@@ -34,6 +39,7 @@ const RAICES_AMERICANAS = [
   "favor",
   "center",
   "catalog",
+  "rigor(?!ous)",
 ];
 
 const EXCEPCIONES = ["Maximum Favorable Excursion", "Maximum Adverse Excursion"];
@@ -46,7 +52,7 @@ function limpiarExcepciones(texto: string): string {
 
 function raicesEncontradas(texto: string): string[] {
   const limpio = limpiarExcepciones(texto).toLowerCase();
-  return RAICES_AMERICANAS.filter((raiz) => limpio.includes(raiz));
+  return RAICES_AMERICANAS.filter((raiz) => new RegExp(raiz).test(limpio));
 }
 
 const CAMPOS: Campo[] = [];
@@ -99,6 +105,13 @@ Object.entries(LAMINAS_PRODUCTO).forEach(([slug, l]) => {
 Object.entries(STR).forEach(([clave, valor]) => {
   agregar(`i18n.tsx STR.${clave}.en`, (valor as { en?: unknown }).en);
 });
+
+// Las calculadoras escriben su inglés dentro del componente: se pintan en el servidor.
+for (const h of HERRAMIENTAS) {
+  const modulo = (await import(`@/components/marketing/${h.componente}.tsx`)) as Record<string, ComponentType>;
+  const html = renderToString(createElement(LanguageProvider, null, createElement(modulo[h.componente])));
+  agregar(`${h.componente}.tsx (pintado en inglés)`, html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " "));
+}
 
 describe("ortografía británica del texto inglés visible", () => {
   it("recorre al menos los campos ingleses de los cinco catálogos", () => {

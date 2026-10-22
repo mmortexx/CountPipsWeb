@@ -2,11 +2,22 @@
  *  `costDragPct` va en escala 0–100 (ya multiplicado, no un ratio 0–1). */
 export type NivelFugaComisiones = "alto" | "moderado" | "bajo";
 
+/** Por encima, la fuga es «alta» en la palabra, el color y el texto del diagnóstico. */
+export const UMBRAL_FUGA_ALTA = 30;
+const UMBRAL_FUGA_MODERADA = 15;
+
 /** La palabra que acompaña al color de «Parte de la ganancia», para quien no lo distingue: >30 alto, >15 moderado, el resto bajo. */
 export function clasificaFugaComisiones(costDragPct: number): NivelFugaComisiones {
-  if (costDragPct > 30) return "alto";
-  if (costDragPct > 15) return "moderado";
+  if (costDragPct > UMBRAL_FUGA_ALTA) return "alto";
+  if (costDragPct > UMBRAL_FUGA_MODERADA) return "moderado";
   return "bajo";
+}
+
+/** Qué frase cierra la calculadora: la cuenta pierde, la fuga es alta o hay margen. */
+export function diagnosticoFuga(netoAnual: number, costDragPct: number): "pierde" | "alto" | "holgado" {
+  if (netoAnual < 0) return "pierde";
+  if (clasificaFugaComisiones(costDragPct) === "alto") return "alto";
+  return "holgado";
 }
 
 export interface InstrumentConfig {

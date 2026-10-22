@@ -7,6 +7,7 @@ import { componerInforme } from "@/lib/informe";
 import { useLang } from "@/lib/i18n";
 import { fmtInt, fmtNum, fmtOperaciones, fmtPct, fmtR, pctSep } from "@/lib/trading/format";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
+import { CAMINOS_FONDEO } from "@/lib/herramientas";
 import {
   leerEscenario,
   RANGOS_FONDEO,
@@ -16,11 +17,11 @@ import {
 } from "@/lib/trading/fondeo";
 
 /**
- * Simulador de prueba de fondeo: cuántos de 2.000 intentos con tu forma de
+ * Simulador de prueba de fondeo: cuántos de `CAMINOS_FONDEO` intentos con tu forma de
  * operar tocan el objetivo antes que el drawdown. La semilla es fija para
  * que el resultado no baile al mover un control: lo que cambia es tuyo.
  */
-const CAMINOS = 2000;
+const CAMINOS = CAMINOS_FONDEO;
 /* Ventaja pequeña (+0,04 R), la de la mayoría: con +0,35 R la prueba salía
    aprobada el 96 % de las veces y parecía una promesa. */
 const DEFECTO: EscenarioFondeo = { tipo: "estatico", objetivo: 8, dd: 10, riesgo: 1, acierto: 40, payoff: 1.6, ops: 200 };
@@ -173,8 +174,8 @@ export function PropChallengeSimulator() {
             </h2>
             <p className="medida mt-3 text-sm leading-relaxed text-secondary md:text-base">
               {es
-                ? "Pon las reglas de la prueba y tu forma de operar, y mira qué parte de dos mil intentos llega antes al objetivo que al drawdown."
-                : "Set the challenge rules and how you trade, and see what share of two thousand attempts reaches the target before the drawdown."}
+                ? `Pon las reglas de la prueba y tu forma de operar, y mira qué parte de ${fmtInt(CAMINOS, lang)} intentos llega antes al objetivo que al drawdown.`
+                : `Set the challenge rules and how you trade, and see what share of ${fmtInt(CAMINOS, lang)} attempts reaches the target before the drawdown.`}
             </p>
 
             <div className="mt-6">

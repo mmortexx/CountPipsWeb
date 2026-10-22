@@ -4,7 +4,10 @@ import { fmtMoney } from "@/lib/trading/format";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 
 interface MetaIdioma {
+  /** Título de la pestaña y del buscador: la búsqueda que persigue, como en es y en. */
   homeTitle: string;
+  /** Eslogan para las tarjetas sociales. */
+  homeSlogan: string;
   homeDescription: string;
   homeTwitterDesc: string;
   pricingTitle: string;
@@ -17,7 +20,8 @@ interface MetaIdioma {
 
 export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
   pt: {
-    homeTitle: "CountPips — Opere como uma mesa institucional.",
+    homeTitle: "App de diário de trading para Windows — CountPips",
+    homeSlogan: "CountPips — Opere como uma mesa institucional.",
     homeDescription:
       "Diário de trading nativo para Windows. Explore a demo interativa com métricas institucionais, disciplina e dados no seu computador.",
     homeTwitterDesc:
@@ -32,7 +36,8 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     ogLocale: "pt_BR",
   },
   fr: {
-    homeTitle: "CountPips — Tradez comme un desk institutionnel.",
+    homeTitle: "Application de journal de trading pour Windows — CountPips",
+    homeSlogan: "CountPips — Tradez comme un desk institutionnel.",
     homeDescription:
       "Journal de trading natif pour Windows. Explorez la démo interactive avec métriques institutionnelles, discipline et données locales.",
     homeTwitterDesc:
@@ -47,7 +52,8 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     ogLocale: "fr_FR",
   },
   de: {
-    homeTitle: "CountPips — Traden wie ein institutioneller Desk.",
+    homeTitle: "Trading-Journal-App für Windows — CountPips",
+    homeSlogan: "CountPips — Traden wie ein institutioneller Desk.",
     homeDescription:
       "Trading-Journal, nativ für Windows. Interaktive Demo mit institutionellen Kennzahlen, Disziplin und lokalen Daten.",
     homeTwitterDesc:
@@ -62,7 +68,8 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
     ogLocale: "de_DE",
   },
   it: {
-    homeTitle: "CountPips — Opera come un desk istituzionale.",
+    homeTitle: "App di diario di trading per Windows — CountPips",
+    homeSlogan: "CountPips — Opera come un desk istituzionale.",
     homeDescription:
       "Diario di trading nativo per Windows. Esplora la demo interattiva con metriche istituzionali, disciplina e dati sul tuo PC.",
     homeTwitterDesc:
@@ -88,7 +95,7 @@ export function metadataHome(lang: "pt" | "fr" | "de" | "it"): Metadata {
       languages: hreflangDe("/"),
     },
     openGraph: {
-      title: meta.homeTitle,
+      title: meta.homeSlogan,
       description: meta.homeDescription,
       url: `${SITE_URL}/${lang}/`,
       type: "website",
@@ -98,7 +105,7 @@ export function metadataHome(lang: "pt" | "fr" | "de" | "it"): Metadata {
     },
     twitter: {
       card: "summary_large_image",
-      title: meta.homeTitle,
+      title: meta.homeSlogan,
       description: meta.homeTwitterDesc,
     },
   };

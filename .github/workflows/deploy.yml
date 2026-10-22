@@ -5,18 +5,15 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Permite que el job "pages" suba a GitHub Pages y que otros jobs no
-# queden esperando. El deploy job se ejecuta aunque uno anterior falle
-# porque queremos que cualquier build válido suba; los tests/lint, si
-# los añadimos en el futuro, se ponen en un job separado con `needs`.
 concurrency:
   group: pages
   cancel-in-progress: false
 
+# Por defecto, solo leer. Publicar en Pages (pages, id-token) lo puede solo el
+# trabajo «deploy», que no instala ni ejecuta nada del repositorio: «build»
+# corre dependencias de terceros y no debe llevar esos permisos.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Evita que se dispare un deploy cuando solo cambia el propio workflow.
 # (No es crítico pero reduce builds inútiles.)
@@ -66,15 +63,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.14
-
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v6
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
@@ -241,10 +236,16 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Setup Pages
+        uses: actions/configure-pages@v6
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

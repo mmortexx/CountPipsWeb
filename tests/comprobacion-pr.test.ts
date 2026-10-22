@@ -41,3 +41,32 @@ describe("la comprobación de PR corre lo mismo que el despliegue", () => {
     expect(pr).not.toMatch(/:\s*write\b/);
   });
 });
+
+/** Bloque de un trabajo de `jobs:` (desde su nombre hasta el siguiente trabajo). */
+const trabajo = (yml: string, nombre: string) => {
+  const jobs = yml.slice(yml.search(/^jobs:\s*$/m));
+  const inicio = jobs.search(new RegExp(`^  ${nombre}:\\s*$`, "m"));
+  if (inicio < 0) return "";
+  const resto = jobs.slice(inicio + 1);
+  const fin = resto.search(/^  [A-Za-z_-]+:\s*$/m);
+  return fin < 0 ? jobs.slice(inicio) : jobs.slice(inicio, inicio + 1 + fin);
+};
+const cabecera = (yml: string) => yml.slice(0, yml.search(/^jobs:\s*$/m));
+
+describe("el despliegue da a cada trabajo solo lo que usa", () => {
+  it("lo que se repasa existe", () => {
+    expect(trabajo(despliegue, "build")).toMatch(/bun run build/);
+    expect(trabajo(despliegue, "deploy")).toMatch(/deploy-pages/);
+  });
+
+  it("publicar en Pages (pages: write, id-token: write) solo lo puede el trabajo «deploy»", () => {
+    expect(cabecera(despliegue)).not.toMatch(/pages:\s*write|id-token:\s*write/);
+    expect(trabajo(despliegue, "build")).not.toMatch(/pages:\s*write|id-token:\s*write/);
+    expect(trabajo(despliegue, "deploy")).toMatch(/pages:\s*write/);
+    expect(trabajo(despliegue, "deploy")).toMatch(/id-token:\s*write/);
+  });
+
+  it("el checkout de «build», que instala y ejecuta dependencias, no guarda el token", () => {
+    expect(trabajo(despliegue, "build")).toMatch(/uses:\s*actions\/checkout@\S+\s*\n\s+with:\s*\n\s+persist-credentials:\s*false/);
+  });
+});

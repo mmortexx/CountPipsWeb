@@ -6,6 +6,11 @@
  * lo confirmó término a término. La dirección no cambia: sale siempre de `term`.
  */
 
+import { fmtNum } from "./format.ts";
+
+/** Desde qué SQN la escala de Van Tharp llama «bueno» a un sistema: lo citan la ficha y su ampliación. */
+export const SQN_BUENO = 2.5;
+
 export type GlossaryCategory =
   | "basics"
   | "risk"
@@ -362,8 +367,8 @@ export const GLOSSARY: GlossaryTerm[] = [
   },
   {
     term: "SQN (System Quality Number)",
-    es: "Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (expectancy en R / desviación estándar de R). En su escala, a partir de 2,5 es bueno y de 3 en adelante, excelente.",
-    en: "Van Tharp metric assessing statistical system quality: SQN = √N × (expectancy in R / standard deviation of R). On his scale, 2.5 and up is good and 3 and up is excellent.",
+    es: `Índice de Van Tharp que mide la calidad estadística de un sistema: SQN = √N × (expectancy en R / desviación estándar de R). En su escala, a partir de ${fmtNum(SQN_BUENO, "es", 1)} es bueno y de 3 en adelante, excelente.`,
+    en: `Van Tharp metric assessing statistical system quality: SQN = √N × (expectancy in R / standard deviation of R). On his scale, ${fmtNum(SQN_BUENO, "en", 1)} and up is good and 3 and up is excellent.`,
     category: "metrics",
   },
   {

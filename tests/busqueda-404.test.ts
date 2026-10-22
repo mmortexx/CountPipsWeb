@@ -30,3 +30,19 @@ describe("destinoDeBusqueda", () => {
     }
   });
 });
+
+describe("destinoDeBusqueda: parte del nombre y texto roto", () => {
+  it("una parte del nombre que solo tiene una voz lleva a ella («sharpe», «kelly»)", () => {
+    expect(destinoDeBusqueda("sharpe", TERMINOS)).toBe("/glosario/sharpe-ratio");
+    expect(destinoDeBusqueda("Kelly", TERMINOS)).toBe("/glosario/kelly-criterion");
+  });
+
+  it("si la parte la comparten varias voces, sigue yendo a la FAQ", () => {
+    expect(destinoDeBusqueda("ratio", TERMINOS)).toBe("/faq?q=ratio");
+  });
+
+  it("un carácter Unicode suelto no rompe la búsqueda", () => {
+    expect(() => destinoDeBusqueda("hola\uD800", TERMINOS)).not.toThrow();
+    expect(destinoDeBusqueda("hola\uD800", TERMINOS)).toBe(`/faq?q=${encodeURIComponent("hola�")}`);
+  });
+});

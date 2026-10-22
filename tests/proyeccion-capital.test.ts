@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { proyectaCapital, LIMITE_PROYECCION_USD } from "../src/lib/trading/proyeccion";
+import { notaWinRate } from "../src/components/marketing/EquityProjector";
 
 /**
  * Con acierto del 80 %, ganancia media de 6 R, pérdida media de 0,25 R,
@@ -108,5 +109,81 @@ describe("proyectaCapital: el tiempo para duplicar cuadra con la curva", () => {
       const r = proyectaCapital({ ...PERFIL, reinvestMode, monthlyContribution: 500 });
       expect(r.yearlyUsdInitial).toBeCloseTo(r.yearlyBreakdown[0].yearProfit, 6);
     }
+  });
+});
+
+describe("proyectaCapital: la banda del 80 % envuelve su propia línea", () => {
+  // Rejilla sobre los extremos de los deslizadores y los aportes de la ficha.
+  const fuera: string[] = [];
+  let probados = 0;
+  for (const reinvestMode of ["compound", "linear"] as const)
+    for (const startBalance of [1000, 250000])
+      for (const tradesPerYear of [12, 250, 600])
+        for (const winRate of [25, 56, 80])
+          for (const avgWinR of [0.5, 1.5, 6])
+            for (const avgLossR of [0.25, 1, 3])
+              for (const riskPct of [0.1, 3])
+                for (const years of [1, 10])
+                  for (const monthlyContribution of [0, 1000]) {
+                    const r = proyectaCapital({ startBalance, tradesPerYear, winRate, avgWinR, avgLossR, riskPct, years, reinvestMode, monthlyContribution, frictionR: 0.02 });
+                    if (r.fueraDeEscala) continue;
+                    probados++;
+                    const p = r.monthlyPoints.find((q) => q.balance > q.upperBalance * (1 + 1e-12) || q.balance < q.lowerBalance * (1 - 1e-12));
+                    if (p) fuera.push(`${reinvestMode} ${JSON.stringify({ startBalance, tradesPerYear, winRate, avgWinR, avgLossR, riskPct, years, monthlyContribution })} mes ${p.month}`);
+                  }
+
+  it("en interés compuesto y en riesgo fijo, ningún mes deja la línea fuera de su banda", () => {
+    expect(probados).toBeGreaterThan(1000);
+    expect(fuera.slice(0, 5)).toEqual([]);
+  });
+
+  it("en riesgo fijo la banda es simétrica en dólares: cada operación arriesga lo mismo", () => {
+    const r = proyectaCapital({ ...PERFIL, reinvestMode: "linear" });
+    for (const p of r.monthlyPoints.slice(1)) {
+      if (p.lowerBalance === 0) continue;
+      expect(p.upperBalance - p.balance).toBeCloseTo(p.balance - p.lowerBalance, 6);
+    }
+  });
+});
+
+describe("nota del win rate en el proyector", () => {
+  it("con exactamente 50 % no dice «por encima del 50 %»", () => {
+    expect(notaWinRate(50, true)).not.toMatch(/encima/);
+    expect(notaWinRate(50, false)).not.toMatch(/Above/);
+  });
+
+  it("con 51 % sí", () => {
+    expect(notaWinRate(51, true)).toBe("Por encima del 50 %");
+    expect(notaWinRate(51, false)).toBe("Above 50%");
+  });
+});
+
+describe("proyectaCapital: la tasa anual nunca es NaN (contrato de PROJECT.md)", () => {
+  // Extremos de los deslizadores y más allá: balance 0, sin pérdidas, riesgo 100 %, cero años.
+  const nan: string[] = [];
+  let probados = 0;
+  for (const startBalance of [0, 1000, 1e9])
+    for (const tradesPerYear of [0, 12, 600, 5000])
+      for (const winRate of [0, 25, 80, 100])
+        for (const avgWinR of [0, 6, 50])
+          for (const avgLossR of [0, 0.25, 50])
+            for (const riskPct of [0, 3, 100])
+              for (const years of [0, 1, 10])
+                for (const reinvestMode of ["compound", "linear"] as const)
+                  for (const monthlyContribution of [0, 1000]) {
+                    probados++;
+                    const p = { startBalance, tradesPerYear, winRate, avgWinR, avgLossR, riskPct, years, reinvestMode, monthlyContribution, frictionR: 0.02 };
+                    if (Number.isNaN(proyectaCapital(p).cagr)) nan.push(JSON.stringify(p));
+                  }
+
+  it("en toda la rejilla", () => {
+    expect(probados).toBeGreaterThan(15000);
+    expect(nan.slice(0, 3)).toEqual([]);
+  });
+
+  it("con los extremos de los deslizadores que desbordan, la tasa es infinita, no NaN", () => {
+    const r = proyectaCapital(PARAMS_EXTREMOS);
+    expect(r.fueraDeEscala).toBe(true);
+    expect(r.cagr).toBe(Infinity);
   });
 });

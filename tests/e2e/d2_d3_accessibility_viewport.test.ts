@@ -208,10 +208,8 @@ describe("Dimension D2 & D3: Accessibility & Mobile Viewport (Tier 2 Boundary & 
     expect(shortcutsHelp).toContain("last.focus()");
     expect(shortcutsHelp).toContain("previouslyFocused?.focus?.()");
 
-    expect(glossaryModal).toContain('e.key === "ArrowDown"');
-    expect(glossaryModal).toContain('e.key === "ArrowUp"');
-    expect(glossaryModal).toContain('e.key === "Home"');
-    expect(glossaryModal).toContain('e.key === "End"');
+    // La lista del glosario usa el teclado común (flechas, Inicio, Fin), que prueba flechas.test.ts.
+    expect(glossaryModal).toContain("destinoConFlechas(e.key, activeIndex, filtered.length)");
     expect(glossaryModal).toContain("setActiveIndex(0)");
   });
 

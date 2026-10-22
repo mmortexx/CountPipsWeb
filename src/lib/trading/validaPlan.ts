@@ -49,3 +49,22 @@ export const TOPE_APALANCAMIENTO: Record<MercadoPlan, number> = {
 export function excedeApalancamiento(mercado: MercadoPlan, apalancamiento: number): boolean {
   return Number.isFinite(apalancamiento) && apalancamiento > TOPE_APALANCAMIENTO[mercado];
 }
+
+export interface Registro {
+  entrada: number;
+  stop: number;
+  salida: number;
+  cantidad: number;
+}
+
+/**
+ * Lo que admite el registro rápido de la demo. Sin salida (vacía o ilegible)
+ * se cierra en la entrada, con P&L 0. Precios y cantidad, mayores que cero:
+ * nada se corrige en silencio. Devuelve `null` si hay que avisar.
+ */
+export function validaRegistro({ entrada, stop, salida, cantidad }: Registro): Registro | null {
+  if (!Number.isFinite(entrada) || entrada <= 0 || !Number.isFinite(stop) || stop <= 0 || entrada === stop) return null;
+  if (Number.isFinite(salida) && salida <= 0) return null;
+  if (!Number.isFinite(cantidad) || cantidad <= 0) return null;
+  return { entrada, stop, salida: Number.isFinite(salida) ? salida : entrada, cantidad };
+}

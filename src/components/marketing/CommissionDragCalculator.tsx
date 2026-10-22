@@ -7,13 +7,13 @@ import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
   INSTRUMENT_SPECS,
+  UMBRAL_FUGA_ALTA,
   clasificaFugaComisiones,
+  diagnosticoFuga,
   resultadoBrutoPorOperacion,
   ticksAUnidades,
 } from "@/lib/trading/fugaComisiones";
 
-/** Umbral de fuga alta, común al aviso visual y al texto del diagnóstico. */
-const UMBRAL_DRAG_ALTO = 25;
 /** Ratio objetivo:riesgo usado para el win rate de equilibrio de la ficha. */
 const RATIO_RR_EQUILIBRIO = 1.5;
 
@@ -64,6 +64,7 @@ export function CommissionDragCalculator() {
 
   const costDragPct = grossMonthly > 0 ? (totalCostMonthly / grossMonthly) * 100 : 0;
   const nivelFuga = clasificaFugaComisiones(costDragPct);
+  const diagnostico = diagnosticoFuga(netAnnual, costDragPct);
   const NIVEL_FUGA_LABEL: Record<typeof nivelFuga, { es: string; en: string }> = {
     alto: { es: "alto", en: "high" },
     moderado: { es: "moderado", en: "moderate" },
@@ -284,19 +285,19 @@ export function CommissionDragCalculator() {
               <div className="flex items-center justify-between">
                 <span className="text-secondary">{es ? "Comisiones" : "Fees"}</span>
                 <span className="tnum font-semibold text-[rgb(var(--pnl-neg))]">
-                  −{fmtMoney(totalCommissionsMonthly * 12, lang, { decimals: 0 })}
+                  {fmtMoney(-totalCommissionsMonthly * 12, lang, { decimals: 0 })}
                 </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-secondary">{es ? "Deslizamiento" : "Slippage"}</span>
                 <span className="tnum font-semibold text-[rgb(var(--pnl-neg))]">
-                  −{fmtMoney(totalSlippageMonthly * 12, lang, { decimals: 0 })}
+                  {fmtMoney(-totalSlippageMonthly * 12, lang, { decimals: 0 })}
                 </span>
               </div>
               <div className="flex items-center justify-between pt-2 border-t border-[var(--line)]">
                 <span className="font-semibold text-primary">{es ? "Coste total" : "Total cost"}</span>
                 <span className="tnum font-semibold text-[rgb(var(--pnl-neg))]">
-                  −{fmtMoney(totalCostAnnual, lang, { decimals: 0 })}
+                  {fmtMoney(-totalCostAnnual, lang, { decimals: 0 })}
                 </span>
               </div>
             </div>
@@ -359,14 +360,14 @@ export function CommissionDragCalculator() {
             <div className="mt-5 pt-4 border-t border-[var(--line)]">
               <div>
                 <p className="text-[13px] text-secondary leading-[1.6] m-0">
-                  {netAnnual < 0
+                  {diagnostico === "pierde"
                     ? es
                       ? "Los costes superan la ganancia bruta: con estos números la cuenta pierde aunque cada operación alcance su objetivo."
                       : "Costs exceed the gross profit: with these numbers the account loses even if every trade reaches its target."
-                    : costDragPct > UMBRAL_DRAG_ALTO
+                    : diagnostico === "alto"
                     ? es
-                      ? `Más del ${UMBRAL_DRAG_ALTO}${pctSep(lang)} de tu ganancia bruta se va en costes. Con este objetivo por operación, comisiones y deslizamiento pesan tanto como parte de tu ventaja.`
-                      : `Over ${UMBRAL_DRAG_ALTO}${pctSep(lang)} of your gross profit goes to costs. With this target per trade, fees and slippage weigh as much as part of your edge.`
+                      ? `Más del ${UMBRAL_FUGA_ALTA}${pctSep(lang)} de tu ganancia bruta se va en costes. Con este objetivo por operación, comisiones y deslizamiento pesan tanto como parte de tu ventaja.`
+                      : `Over ${UMBRAL_FUGA_ALTA}${pctSep(lang)} of your gross profit goes to costs. With this target per trade, fees and slippage weigh as much as part of your edge.`
                     : es
                     ? "Con estos números, la ganancia por operación cubre comisiones y deslizamiento con margen."
                     : "With these numbers, the gain per trade covers fees and slippage with room to spare."}

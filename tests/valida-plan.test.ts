@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan } from "../src/lib/trading/validaPlan";
+import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan, validaRegistro } from "../src/lib/trading/validaPlan";
 
 /**
  * `validaPlan` exige, además de tres precios positivos y distintos, que el
@@ -76,5 +76,34 @@ describe("excedeApalancamiento", () => {
   it("sin cifra válida no avisa", () => {
     expect(excedeApalancamiento("equities", Number.NaN)).toBe(false);
     expect(excedeApalancamiento("equities", Number.POSITIVE_INFINITY)).toBe(false);
+  });
+});
+
+describe("validaRegistro (registro rápido de la demo)", () => {
+  const BUENO = { entrada: 1.1, stop: 1.09, salida: 1.12, cantidad: 2 };
+
+  it("acepta un registro correcto tal cual", () => {
+    expect(validaRegistro(BUENO)).toEqual(BUENO);
+  });
+
+  it("sin salida cierra en la entrada", () => {
+    expect(validaRegistro({ ...BUENO, salida: Number.NaN })?.salida).toBe(BUENO.entrada);
+  });
+
+  it.each([0, -1.1])("una salida de %s se rechaza", (salida) => {
+    expect(validaRegistro({ ...BUENO, salida })).toBeNull();
+  });
+
+  it.each([0, -3, Number.NaN])("una cantidad de %s se rechaza en vez de cambiarse por 1", (cantidad) => {
+    expect(validaRegistro({ ...BUENO, cantidad })).toBeNull();
+  });
+
+  it.each([
+    { entrada: 0 },
+    { stop: -1 },
+    { stop: BUENO.entrada },
+    { entrada: Number.NaN },
+  ])("entrada y stop siguen siendo obligatorios: %o", (cambio) => {
+    expect(validaRegistro({ ...BUENO, ...cambio })).toBeNull();
   });
 });

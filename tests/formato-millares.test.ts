@@ -55,4 +55,11 @@ describe("el signo menos es tipográfico y el cero no lo lleva", () => {
     expect(fmtPct(-0.0004, "en")).toBe("0.0%");
     expect(fmtInt(-1234, "es")).toBe("\u22121.234");
   });
+
+  it("fmtMoney: lo que redondea a cero no lleva signo", () => {
+    expect(fmtMoney(-0.4, "es", { decimals: 0 })).toBe("0\u00a0$");
+    expect(fmtMoney(-0.004, "en")).toBe("$0.00");
+    expect(fmtMoney(0.4, "es", { decimals: 0, sign: true })).toBe("0\u00a0$");
+    expect(fmtMoney(-0.6, "es", { decimals: 0 })).toBe("\u22121\u00a0$");
+  });
 });

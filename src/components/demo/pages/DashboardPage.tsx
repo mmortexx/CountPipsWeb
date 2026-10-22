@@ -28,6 +28,7 @@ import { MiniCalendar } from "@/components/charts/MiniCalendar";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { moverConFlechas } from "@/lib/flechas";
+import { validaRegistro } from "@/lib/trading/validaPlan";
 
 // Ventanas de la curva de capital: últimos N días. La muestra cubre ~180, así que «6M» equivale a todo.
 type Timeframe = "1M" | "3M" | "6M";
@@ -147,20 +148,15 @@ export function DashboardPage() {
   const riskPct = INITIAL_BALANCE_CONST > 0 ? riskUsdLive / INITIAL_BALANCE_CONST : 0;
 
   function handleRegister() {
-    const entryN = num(entry, inst.decimals);
-    const stopN = num(stop, inst.decimals);
-    const exitParsed = num(exitPrice, inst.decimals);
     // Sin salida se usa la entrada: queda una operación en tablas (P&L = 0, R = 0), no NaN.
-    const exitN = Number.isFinite(exitParsed) ? exitParsed : entryN;
-    const qtyN = num(quantity, decLecturaCantidad);
+    const registro = validaRegistro({
+      entrada: num(entry, inst.decimals),
+      stop: num(stop, inst.decimals),
+      salida: num(exitPrice, inst.decimals),
+      cantidad: num(quantity, decLecturaCantidad),
+    });
 
-    if (
-      !Number.isFinite(entryN) ||
-      entryN <= 0 ||
-      !Number.isFinite(stopN) ||
-      stopN <= 0 ||
-      entryN === stopN
-    ) {
+    if (!registro) {
       toast({
         title: t("tradeRegisterError"),
         description: t("tradeRegisterErrorDesc"),
@@ -168,6 +164,7 @@ export function DashboardPage() {
       });
       return;
     }
+    const { entrada: entryN, stop: stopN, salida: exitN, cantidad: qtyN } = registro;
 
     // priceDiff lleva signo: positivo si el movimiento gana.
     const stopDistLocal = Math.abs(entryN - stopN);
@@ -177,8 +174,7 @@ export function DashboardPage() {
 
     // Mismo multiplicador por clase de activo que demoStore.ts.
     const multiplier = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
-    const safeQty = Number.isFinite(qtyN) && qtyN > 0 ? qtyN : 1;
-    const netPnl = +(priceDiff * safeQty * multiplier).toFixed(2);
+    const netPnl = +(priceDiff * qtyN * multiplier).toFixed(2);
 
     addTrade({
       instrument: instrumentSymbol,
@@ -186,7 +182,7 @@ export function DashboardPage() {
       direction,
       entry: +entryN.toFixed(inst.decimals),
       exit: +exitN.toFixed(inst.decimals),
-      qty: +safeQty.toFixed(decCantidad),
+      qty: +qtyN.toFixed(decCantidad),
       netPnl,
       rMultiple,
       // Con stop definido se da por seguido el plan.

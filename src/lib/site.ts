@@ -132,7 +132,7 @@ export function esquemasGlobales(
     de: [
       "Institutionelle Kennzahlen (Sharpe, Profit Factor, Expectancy, R-Multiple)",
       "Kapitalkurve und Drawdown",
-      "Disziplin-Wächter: Risiko-Ampel und optionale Notbremse",
+      "Disziplin-Wächter: Risiko-Ampel und optionale harte Bremse",
       "Daten auf Ihrem Rechner, kein Konto und keine Telemetrie",
       "Playbooks und Trading-Vorlagen",
       "P&L-Kalender und Heatmap nach Wochentag/Uhrzeit",

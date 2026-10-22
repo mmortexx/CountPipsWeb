@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   INSTRUMENT_SPECS,
+  UMBRAL_FUGA_ALTA,
   clasificaFugaComisiones,
+  diagnosticoFuga,
   resultadoBrutoPorOperacion,
   ticksAUnidades,
 } from "../src/lib/trading/fugaComisiones";
@@ -79,5 +81,20 @@ describe("el objetivo de cada instrumento cabe en su deslizador", () => {
       expect(ticksMax, i.id).toBeLessThanOrEqual(500);
       expect(ticksMax, i.id).toBeGreaterThanOrEqual(8);
     }
+  });
+});
+
+describe("diagnosticoFuga: el texto dice lo mismo que la palabra", () => {
+  it.each([0, 10, 15.1, 20, 25.5, 27, 30, 30.1, 45, 99])("con una fuga de %s, «alto» en el texto si y solo si en la palabra", (pct) => {
+    expect(diagnosticoFuga(1000, pct) === "alto").toBe(clasificaFugaComisiones(pct) === "alto");
+  });
+
+  it("si los costes superan la ganancia, dice que la cuenta pierde", () => {
+    expect(diagnosticoFuga(-1, 120)).toBe("pierde");
+  });
+
+  it("el umbral que cita el texto es el de la palabra", () => {
+    expect(clasificaFugaComisiones(UMBRAL_FUGA_ALTA)).not.toBe("alto");
+    expect(clasificaFugaComisiones(UMBRAL_FUGA_ALTA + 0.01)).toBe("alto");
   });
 });

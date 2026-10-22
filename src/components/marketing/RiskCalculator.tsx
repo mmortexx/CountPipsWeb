@@ -29,6 +29,11 @@ const RISK_MAX = 3;
 const RISK_STEP = 0.05;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
+/** Medio Kelly ajustado al paso y a los extremos del control de riesgo; 0 sin ventaja. */
+export function riesgoDeKelly(medio: number): number {
+  return medio > 0 ? Math.min(RISK_MAX, Math.max(RISK_MIN, Number((Math.round(medio / RISK_STEP) * RISK_STEP).toFixed(2)))) : 0;
+}
+
 const decimalesDe = (escalon: number) => (String(escalon).split(".")[1] ?? "").length;
 
 type AssetMode = MercadoPlan;
@@ -141,11 +146,11 @@ export function RiskCalculator() {
   /* Sin plan válido no se enseña lo que depende de él. El VaR sí, porque solo
      depende del balance y del %. */
   const siPlan = (s: string) => (c.valid ? s : "—");
+  /* Ruina y medio Kelly salen del win rate de la ficha de Kelly, que va plegada. */
+  const conAciertos = es ? `con un ${fmtNum(kellyWinRate, 0)}${PCT} de aciertos` : `at a ${fmtNum(kellyWinRate, 0)}% win rate`;
   /* El mismo número en la tarjeta, en el anuncio y en el plan copiado. */
   const tamanoTxt = `${fmtNum(c.tamano, c.decimalesTamano)} ${c.sizeLabel}`;
-  /* Medio Kelly ajustado al paso y a los extremos del control de riesgo. */
-  const kellyAplicable =
-    c.kelly.medio > 0 ? Math.min(RISK_MAX, Math.max(RISK_MIN, Number((Math.round(c.kelly.medio / RISK_STEP) * RISK_STEP).toFixed(2)))) : 0;
+  const kellyAplicable = riesgoDeKelly(c.kelly.medio);
   const kellyTopado = c.kelly.medio > 0 && Math.abs(kellyAplicable - c.kelly.medio) > RISK_STEP / 2;
   const friccionTxt = !includeFriction
     ? (es ? "Desactivada" : "Off")
@@ -656,7 +661,7 @@ export function RiskCalculator() {
             </div>
             <div className="caja-cifra flex flex-col">
               <div className="tnum text-[12px] leading-[1.3] text-tertiary [hyphens:auto] break-words">
-                {es ? `Riesgo de ruina (−${UMBRAL_RUINA_PCT}\u00a0%)` : `Risk of ruin (−${UMBRAL_RUINA_PCT}%)`}
+                {es ? `Riesgo de ruina (−${UMBRAL_RUINA_PCT}\u00a0%) ${conAciertos}` : `Risk of ruin (−${UMBRAL_RUINA_PCT}%) ${conAciertos}`}
               </div>
               <div
                 className="tnum text-sm font-semibold mt-auto pt-0.5"
@@ -722,7 +727,7 @@ export function RiskCalculator() {
                 <span>{es ? "Criterio de Kelly" : "Kelly criterion"}</span>
               </button>
               <span className="text-[12px] tnum text-tertiary">
-                {es ? "Medio Kelly: " : "Half-Kelly: "}
+                {es ? `Medio Kelly ${conAciertos}: ` : `Half-Kelly ${conAciertos}: `}
                 <strong className="text-primary font-semibold">{siPlan(`${fmtNum(c.kelly.medio)}${PCT}`)}</strong>
               </span>
             </div>

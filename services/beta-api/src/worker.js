@@ -121,9 +121,23 @@ async function digest(value) {
   return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
 }
 
-async function sha256Hex(value) {
-  const bytes = await digest(value);
+function hex(bytes) {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(value) {
+  return hex(await digest(value));
+}
+
+/* Huella de la IP: HMAC-SHA-256 con `IP_HASH_SECRET`. Un sha256 sin sal se
+   deshace probando todas las IPv4; sin el secreto no hay huella (null) y no
+   se guarda nada de la IP. */
+async function ipFingerprint(ip, env) {
+  const secret = String(env.IP_HASH_SECRET || "");
+  if (!secret) return null;
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return hex(new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(ip))));
 }
 
 async function constantTimeEqual(left, right) {
@@ -190,8 +204,9 @@ async function verifyTurnstile(request, payload, env) {
    el envío repetido; la diaria frena lo que la corta no ve (peticiones
    espaciadas más de 60 s).
 
-   `RATE_LIMIT` es el almacén KV de Cloudflare. Sin él se falla cerrado: se
-   registra y se rechaza, salvo que el despliegue declare a propósito
+   `RATE_LIMIT` es el almacén KV de Cloudflare, y la clave es la huella de la
+   IP, que pide `IP_HASH_SECRET`. Sin cualquiera de los dos se falla cerrado:
+   se registra y se rechaza, salvo que el despliegue declare a propósito
    `RATE_LIMIT_OPTIONAL: "1"` (local con `wrangler dev` sin KV). Un control
    que se abre en silencio cuando falta su dependencia no se echa en falta
    hasta que cuesta dinero. */
@@ -203,10 +218,12 @@ const RATE_LIMIT_DAILY_MAX = 20;
    su cuota y el reintento daría «demasiadas peticiones», que señala al sitio
    equivocado. */
 
-/** Estado de cuota de una IP, sin tocar nada. */
+/** Estado de cuota de una IP, sin tocar nada; null si falta KV o el secreto. */
 async function estadoCuota(request, env) {
+  if (!env.RATE_LIMIT) return null;
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const huella = await sha256Hex(ip);
+  const huella = await ipFingerprint(ip, env);
+  if (!huella) return null;
   const dia = new Date().toISOString().slice(0, 10);
   return {
     cortaKey: `beta-application:${huella}`,
@@ -218,19 +235,24 @@ async function estadoCuota(request, env) {
 }
 
 /**
- * ¿Puede pasar esta IP? Devuelve `"ok"`, `"limitado"` o `"sin-almacen"`; este
- * último es un fallo de configuración (falta el namespace KV), no de uso.
+ * ¿Puede pasar esta IP? Devuelve `"ok"`, `"limitado"` o `"sin-configurar"`;
+ * este último es un fallo de configuración (falta el namespace KV o
+ * `IP_HASH_SECRET`), no de uso.
  */
 async function rateLimitDisponible(request, env) {
-  if (!env.RATE_LIMIT) {
+  const cuota = await estadoCuota(request, env);
+  if (!cuota) {
     if (String(env.RATE_LIMIT_OPTIONAL ?? "") === "1") return "ok";
     console.error(
-      "[beta-api] RATE_LIMIT (KV) no está enlazado: se rechaza la solicitud. " +
-        "Crea el namespace y ponlo en wrangler.jsonc, o declara RATE_LIMIT_OPTIONAL=1 si es un entorno local."
+      env.RATE_LIMIT
+        ? "[beta-api] Falta el secreto IP_HASH_SECRET: sin él no se puede limitar por IP sin guardarla. " +
+            "Se rechaza la solicitud. Ponlo con `npx wrangler secret put IP_HASH_SECRET`."
+        : "[beta-api] RATE_LIMIT (KV) no está enlazado: se rechaza la solicitud. " +
+            "Crea el namespace y ponlo en wrangler.jsonc, o declara RATE_LIMIT_OPTIONAL=1 si es un entorno local."
     );
-    return "sin-almacen";
+    return "sin-configurar";
   }
-  const { cortaKey, diaKey, tope } = await estadoCuota(request, env);
+  const { cortaKey, diaKey, tope } = cuota;
   if (await env.RATE_LIMIT.get(cortaKey)) return "limitado";
   const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
   if (usadas >= tope) return "limitado";
@@ -239,12 +261,19 @@ async function rateLimitDisponible(request, env) {
 
 /** Descuenta una petición; se llama solo cuando ya va a atenderse. */
 async function consumirCuota(request, env) {
-  if (!env.RATE_LIMIT) return;
-  const { cortaKey, diaKey, segundos } = await estadoCuota(request, env);
+  const cuota = await estadoCuota(request, env);
+  if (!cuota) return;
+  const { cortaKey, diaKey, segundos } = cuota;
   const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
   await env.RATE_LIMIT.put(cortaKey, "1", { expirationTtl: segundos });
   // 48 h de vida: cubre el día en curso en cualquier huso.
   await env.RATE_LIMIT.put(diaKey, String(usadas + 1), { expirationTtl: 172800 });
+}
+
+// Alta nueva, correo repetido y campo trampa responden igual: un estado o un
+// cuerpo distinto dejaría averiguar si un correo ya está apuntado.
+function accepted(request, env) {
+  return json({ ok: true }, 201, request, env);
 }
 
 async function createApplication(request, env) {
@@ -254,7 +283,7 @@ async function createApplication(request, env) {
   // El campo trampa se llama `botcheck` en todas partes (`src/lib/forms.ts`,
   // `BetaApplication.tsx`, `docs/waitlist-apps-script.js`); un nombre distinto
   // aquí lo dejaría sin efecto.
-  if (boundedString(payload.botcheck, 120)) return json({ ok: true, duplicate: false }, 200, request, env);
+  if (boundedString(payload.botcheck, 120)) return accepted(request, env);
 
   const validation = validateApplication(payload);
   if (validation.error) return errorResponse(validation.error, 422, request, env);
@@ -262,7 +291,7 @@ async function createApplication(request, env) {
   // La consulta de cuota va antes de Turnstile (evita una llamada de red a
   // quien ya superó su límite); el descuento, después.
   const cuota = await rateLimitDisponible(request, env);
-  if (cuota === "sin-almacen") {
+  if (cuota === "sin-configurar") {
     // Configuración incompleta, no abuso: 503 con código propio.
     return errorResponse("service_misconfigured", 503, request, env);
   }
@@ -276,12 +305,12 @@ async function createApplication(request, env) {
   const existing = await env.DB.prepare("SELECT id FROM applications WHERE email_hash = ?1 LIMIT 1")
     .bind(emailHash)
     .first();
-  if (existing) return json({ ok: true }, 200, request, env);
+  if (existing) return accepted(request, env);
 
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
   const ip = request.headers.get("CF-Connecting-IP") || "";
-  const ipHash = ip ? await sha256Hex(ip) : null;
+  const ipHash = ip ? await ipFingerprint(ip, env) : null;
   const privacyVersion = "2026-08";
   try {
     await env.DB.prepare(
@@ -318,12 +347,12 @@ async function createApplication(request, env) {
       .run();
   } catch (error) {
     if (String(error?.message || "").toLowerCase().includes("unique")) {
-      return json({ ok: true }, 200, request, env);
+      return accepted(request, env);
     }
     return errorResponse("storage_unavailable", 503, request, env);
   }
 
-  return json({ ok: true }, 201, request, env);
+  return accepted(request, env);
 }
 
 function adminQuery(request) {
@@ -405,36 +434,47 @@ async function updateApplication(request, env, id) {
   }
 }
 
+async function route(request, env) {
+  const url = new URL(request.url);
+  if (request.method === "OPTIONS") {
+    return requestHasAllowedOrigin(request, env)
+      ? new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": getAllowedOrigin(request, env), "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Max-Age": "600", Vary: "Origin" } })
+      : errorResponse("origin_not_allowed", 403, request, env);
+  }
+  if (url.pathname === "/health" && request.method === "GET") {
+    return json({ ok: true, service: "countpips-beta-api" }, 200, request, env);
+  }
+  if (url.pathname === "/admin" && request.method === "GET") {
+    if (!(await isAdminPanelAuthorized(request, env))) {
+      return new Response("Authentication required.", {
+        status: 401,
+        headers: {
+          "WWW-Authenticate": 'Basic realm="CountPips admin", charset="UTF-8"',
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store",
+          "X-Robots-Tag": "noindex, nofollow",
+        },
+      });
+    }
+    return text(ADMIN_HTML, 200, { "X-Robots-Tag": "noindex, nofollow" });
+  }
+  if (url.pathname === "/v1/applications" && request.method === "POST") return createApplication(request, env);
+  if (url.pathname === "/v1/applications" && request.method === "GET") return listApplications(request, env);
+  const match = url.pathname.match(/^\/v1\/applications\/([^/]+)$/);
+  if (match && request.method === "PATCH") return updateApplication(request, env, decodeURIComponent(match[1]));
+  return errorResponse("not_found", 404, request, env);
+}
+
 const worker = {
   async fetch(request, env) {
-    const url = new URL(request.url);
-    if (request.method === "OPTIONS") {
-      return requestHasAllowedOrigin(request, env)
-        ? new Response(null, { status: 204, headers: { "Access-Control-Allow-Origin": getAllowedOrigin(request, env), "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS", "Access-Control-Allow-Headers": "Content-Type, Authorization", "Access-Control-Max-Age": "600", Vary: "Origin" } })
-        : errorResponse("origin_not_allowed", 403, request, env);
+    // Sin esto, una excepción sale como la página de error de Cloudflare, sin
+    // CORS: el navegador la ve como fallo de red y no como error del servicio.
+    try {
+      return await route(request, env);
+    } catch (error) {
+      console.error("[beta-api] error no previsto:", error);
+      return errorResponse("internal_error", 500, request, env, { private: true });
     }
-    if (url.pathname === "/health" && request.method === "GET") {
-      return json({ ok: true, service: "countpips-beta-api" }, 200, request, env);
-    }
-    if (url.pathname === "/admin" && request.method === "GET") {
-      if (!(await isAdminPanelAuthorized(request, env))) {
-        return new Response("Authentication required.", {
-          status: 401,
-          headers: {
-            "WWW-Authenticate": 'Basic realm="CountPips admin", charset="UTF-8"',
-            "Content-Type": "text/plain; charset=utf-8",
-            "Cache-Control": "no-store",
-            "X-Robots-Tag": "noindex, nofollow",
-          },
-        });
-      }
-      return text(ADMIN_HTML, 200, { "X-Robots-Tag": "noindex, nofollow" });
-    }
-    if (url.pathname === "/v1/applications" && request.method === "POST") return createApplication(request, env);
-    if (url.pathname === "/v1/applications" && request.method === "GET") return listApplications(request, env);
-    const match = url.pathname.match(/^\/v1\/applications\/([^/]+)$/);
-    if (match && request.method === "PATCH") return updateApplication(request, env, decodeURIComponent(match[1]));
-    return errorResponse("not_found", 404, request, env);
   },
 };
 

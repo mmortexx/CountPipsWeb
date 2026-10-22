@@ -27,7 +27,7 @@ const PESTANAS_PT: Record<string, string> = {
 
 const PESTANAS_FR: Record<string, string> = {
   resumen: "Tableau de bord",
-  registro: "Capture",
+  registro: "Saisie",
   operaciones: "Historique",
   analitica: "Analytique",
 };

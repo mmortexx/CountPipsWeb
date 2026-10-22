@@ -204,7 +204,7 @@ function Curva({ g, lang, enfoque }: { g: Grafico; lang: Lang; enfoque: Enfoque 
   const yPct = (v: number) => `${(geo.py(v) / H) * 100}%`;
   const leyenda: { clave: keyof Series; l: string }[] = [
     { clave: "rend", l: tx(lang, { es: "Rendimiento", en: "Performance", pt: "Desempenho", fr: "Performance", de: "Performance", it: "Rendimento" }) },
-    { clave: "balance", l: "Balance" },
+    { clave: "balance", l: tx(lang, { es: "Balance", en: "Balance", pt: "Saldo", fr: "Solde", de: "Kontostand", it: "Saldo" }) },
   ];
 
   return (

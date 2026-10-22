@@ -64,7 +64,26 @@ function temaElegido(): Theme | null {
   }
 }
 
-function readSavedTheme(): Theme {
+/* Guardar nunca lanza: sin almacenamiento (privado, bloqueado, lleno) la
+   elección vale para esta pestaña y ya. */
+export function guardaTema(t: Theme): void {
+  try {
+    localStorage.setItem(CLAVE_TEMA, t);
+  } catch {
+    /* nada que hacer */
+  }
+}
+
+export function guardaPaleta(p: PaletteName): void {
+  try {
+    localStorage.setItem("tj-palette", p);
+  } catch {
+    /* nada que hacer */
+  }
+}
+
+/** Tema al arrancar: lo elegido, si es un valor válido; si no, el sistema. */
+export function readSavedTheme(): Theme {
   if (typeof window === "undefined") return "light";
   return temaElegido() ?? temaDelSistema();
 }
@@ -157,20 +176,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.dataset.palette = palette;
-    try {
-      localStorage.setItem("tj-palette", palette);
-    } catch {
-      // Almacenamiento no disponible o lleno.
-    }
+    guardaPaleta(palette);
   }, [palette, mounted]);
 
   // Solo el interruptor escribe la preferencia.
   const elegir = useCallback((t: Theme) => {
-    try {
-      localStorage.setItem(CLAVE_TEMA, t);
-    } catch {
-      /* Sin almacenamiento la elección vale para esta pestaña y ya. */
-    }
+    guardaTema(t);
     cambiarTemaConFundido(t, () => setTheme(t));
   }, []);
 
