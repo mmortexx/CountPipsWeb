@@ -182,10 +182,15 @@ export function proyectaCapital(p: ParametrosProyeccion): ResultadoProyeccion {
   }
 
   // Tasa anual ponderada por tiempo: se encadena la rentabilidad de cada mes
-  // descontando los aportes, que no son rentabilidad.
+  // descontando los aportes, que no son rentabilidad. Si el balance desborda,
+  // la tasa es infinita (∞ − ∞ daría NaN).
   let factorAcumulado = 1;
   for (let m = 1; m < monthlyPoints.length && factorAcumulado > 0; m++) {
     const antes = monthlyPoints[m - 1].balance;
+    if (!Number.isFinite(antes) || !Number.isFinite(monthlyPoints[m].balance)) {
+      factorAcumulado = Infinity;
+      break;
+    }
     const resultadoDelMes = monthlyPoints[m].balance - monthlyContribution - antes;
     factorAcumulado *= antes > 0 ? Math.max(0, 1 + resultadoDelMes / antes) : 0;
   }

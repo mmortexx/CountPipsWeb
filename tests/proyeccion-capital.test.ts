@@ -157,3 +157,33 @@ describe("nota del win rate en el proyector", () => {
     expect(notaWinRate(51, false)).toBe("Above 50%");
   });
 });
+
+describe("proyectaCapital: la tasa anual nunca es NaN (contrato de PROJECT.md)", () => {
+  // Extremos de los deslizadores y más allá: balance 0, sin pérdidas, riesgo 100 %, cero años.
+  const nan: string[] = [];
+  let probados = 0;
+  for (const startBalance of [0, 1000, 1e9])
+    for (const tradesPerYear of [0, 12, 600, 5000])
+      for (const winRate of [0, 25, 80, 100])
+        for (const avgWinR of [0, 6, 50])
+          for (const avgLossR of [0, 0.25, 50])
+            for (const riskPct of [0, 3, 100])
+              for (const years of [0, 1, 10])
+                for (const reinvestMode of ["compound", "linear"] as const)
+                  for (const monthlyContribution of [0, 1000]) {
+                    probados++;
+                    const p = { startBalance, tradesPerYear, winRate, avgWinR, avgLossR, riskPct, years, reinvestMode, monthlyContribution, frictionR: 0.02 };
+                    if (Number.isNaN(proyectaCapital(p).cagr)) nan.push(JSON.stringify(p));
+                  }
+
+  it("en toda la rejilla", () => {
+    expect(probados).toBeGreaterThan(15000);
+    expect(nan.slice(0, 3)).toEqual([]);
+  });
+
+  it("con los extremos de los deslizadores que desbordan, la tasa es infinita, no NaN", () => {
+    const r = proyectaCapital(PARAMS_EXTREMOS);
+    expect(r.fueraDeEscala).toBe(true);
+    expect(r.cagr).toBe(Infinity);
+  });
+});

@@ -115,7 +115,8 @@ Chromium sin ventana va a ~60 Hz y no ve tirones a más frecuencia.
 - `src/lib/atajos.ts`: los atajos de una sola tecla (`?`, `T`, `L`, `g` + letra) se
   apagan desde su ayuda (WCAG 2.1.4); entonces la abre el botón del pie. Las teclas
   de la demo solo actúan con el foco dentro de ella.
-- `src/components/marketing/EquityProjector.tsx`: `cagr` nunca devuelve `NaN`.
+- `src/lib/trading/proyeccion.ts`: el `cagr` de `proyectaCapital` nunca es `NaN`; si el
+  balance desborda es `Infinity` y marca `fueraDeEscala` (`tests/proyeccion-capital.test.ts`).
 - `src/lib/trading/data.ts`: todas las métricas dan números finitos y deterministas
   con n=0, n=1, 100 % aciertos, 100 % pérdidas y desviación 0.
 
