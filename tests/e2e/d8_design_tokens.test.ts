@@ -1,12 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { PALETTES, type Theme, type PaletteName } from "@/lib/theme";
+import { PALETTES, readSavedTheme } from "@/lib/theme";
 
 /**
  * Dimensión D8: tokens de diseño y pureza de tema. Lee `globals.css` y
  * `theme.tsx` como texto: propiedades CSS, selectores de tema, paletas,
- * colores crudos en componentes, contraste y sombras.
+ * colores crudos en componentes, contraste (con los tokens que de verdad se
+ * pintan) y sombras. El arranque del tema con valores guardados rotos se
+ * prueba con `readSavedTheme`.
  */
 
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -51,6 +53,63 @@ function contrastRatio(lum1: number, lum2: number): number {
   const lighter = Math.max(lum1, lum2);
   const darker = Math.min(lum1, lum2);
   return (lighter + 0.05) / (darker + 0.05);
+}
+
+/**
+ * Tokens que ve de verdad cada tema: solo reglas sueltas (fuera de `@layer` y
+ * `@media`, que pierden contra ellas), por especificidad y luego por orden.
+ * `data-palette` vale siempre "clasico", así que su bloque pisa a los de base.
+ */
+function tokensEfectivos(css: string, tema: "dark" | "light"): Record<string, string> {
+  const selectores: Record<string, number> =
+    tema === "dark"
+      ? { ":root": 1, ':root[data-palette="clasico"]': 2 }
+      : {
+          ":root": 1,
+          ':root[data-theme="light"]': 2,
+          ':root[data-palette="clasico"]': 2,
+          ':root[data-theme="light"][data-palette="clasico"]': 3,
+        };
+  const limpio = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  const bloques: { esp: number; pos: number; cuerpo: string }[] = [];
+  let nivel = 0;
+  let inicio = 0;
+  let selector = "";
+  for (let i = 0; i < limpio.length; i++) {
+    const c = limpio[i];
+    if (c === "{") {
+      if (nivel === 0) {
+        selector = limpio.slice(inicio, i).trim().split(/[;}]/).pop()!.trim();
+        inicio = i + 1;
+      }
+      nivel++;
+    } else if (c === "}") {
+      nivel--;
+      if (nivel === 0) {
+        if (selector in selectores) {
+          bloques.push({ esp: selectores[selector], pos: i, cuerpo: limpio.slice(inicio, i) });
+        }
+        inicio = i + 1;
+      }
+    }
+  }
+  bloques.sort((a, b) => a.esp - b.esp || a.pos - b.pos);
+  const tokens: Record<string, string> = {};
+  for (const { cuerpo } of bloques) {
+    for (const m of cuerpo.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) tokens[m[1]] = m[2].trim();
+  }
+  return tokens;
+}
+
+/** Luminancia de un token: triplete «R G B», `#rrggbb` o `var(--otro)`. */
+function luminanciaDe(tokens: Record<string, string>, nombre: string): number {
+  const valor = tokens[nombre];
+  expect(valor, `${nombre} sin declarar`).toBeDefined();
+  const alias = valor.match(/^var\((--[\w-]+)\)$/);
+  if (alias) return luminanciaDe(tokens, alias[1]);
+  const hex = valor.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if (hex) return relativeLuminance(...(hex.slice(1).map((h) => parseInt(h, 16)) as [number, number, number]));
+  return relativeLuminance(...parseChannelTriplet(valor));
 }
 
 describe("Dimension D8: Design System Tokens (Tier 1 Feature Coverage)", () => {
@@ -175,51 +234,57 @@ describe("Dimension D8: Design System Tokens (Tier 2 Boundary & Corner Cases)", 
     expect(tripletCount).toBeGreaterThanOrEqual(15);
   });
 
-  it("T2.3: Contrast compliance across custom palettes and theme states", () => {
-    const darkSurfaceLum = relativeLuminance(12, 17, 22); // #0C1116
-    const darkTxtPrimary = relativeLuminance(255, 255, 255);
-    const darkTxtSecondary = relativeLuminance(209, 213, 219);
-    const darkPnlPos = relativeLuminance(0, 245, 160);
-    const darkPnlNeg = relativeLuminance(255, 77, 77);
-
-    const lightSurfaceLum = relativeLuminance(248, 250, 252);
-    const lightTxtPrimary = relativeLuminance(20, 22, 28);
-    const lightTxtSecondary = relativeLuminance(80, 85, 95);
-    const lightPnlPos = relativeLuminance(30, 122, 76);
-    const lightPnlNeg = relativeLuminance(153, 27, 27);
-
-    // WCAG 2.1 AA: 4,5:1 para texto normal, 7:1 para el principal.
-    expect(contrastRatio(darkTxtPrimary, darkSurfaceLum)).toBeGreaterThanOrEqual(7.0);
-    expect(contrastRatio(darkTxtSecondary, darkSurfaceLum)).toBeGreaterThanOrEqual(4.5);
-    expect(contrastRatio(darkPnlPos, darkSurfaceLum)).toBeGreaterThanOrEqual(4.5);
-
-    expect(contrastRatio(lightTxtPrimary, lightSurfaceLum)).toBeGreaterThanOrEqual(7.0);
-    expect(contrastRatio(lightTxtSecondary, lightSurfaceLum)).toBeGreaterThanOrEqual(4.5);
-    expect(contrastRatio(lightPnlPos, lightSurfaceLum)).toBeGreaterThanOrEqual(4.5);
-    expect(contrastRatio(lightPnlNeg, lightSurfaceLum)).toBeGreaterThanOrEqual(4.5);
+  it("T2.3: el texto y los colores de P&L de la paleta que se pinta pasan WCAG AA sobre sus fondos", () => {
+    for (const tema of ["dark", "light"] as const) {
+      const tokens = tokensEfectivos(globalsCss, tema);
+      for (const fondo of ["--bg", "--surface", "--raised"]) {
+        const lumFondo = luminanciaDe(tokens, fondo);
+        // 7:1 para el texto principal, 4,5:1 para el resto de texto normal.
+        const minimos: [string, number][] = [
+          ["--txt-primary", 7],
+          ["--txt-secondary", 4.5],
+          ["--txt-tertiary", 4.5],
+          ["--pnl-pos", 4.5],
+          ["--pnl-neg", 4.5],
+        ];
+        for (const [tinta, minimo] of minimos) {
+          const ratio = contrastRatio(luminanciaDe(tokens, tinta), lumFondo);
+          expect(ratio, `${tema}: ${tinta} sobre ${fondo} = ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(minimo);
+        }
+      }
+    }
   });
 
-  it("T2.4: Malformed and corrupted localStorage theme values degrade to safe defaults", () => {
-    function parseTheme(stored: unknown): Theme {
-      return stored === "dark" || stored === "light" ? stored : "light";
+  describe("T2.4: un valor de tema guardado roto o un almacenamiento bloqueado no rompen el arranque", () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    /** `readSavedTheme` con lo que haya en `localStorage` y lo que pida el sistema. */
+    function arrancaCon(guardado: () => string | null, sistemaOscuro: () => boolean): string {
+      vi.stubGlobal("window", {});
+      vi.stubGlobal("localStorage", { getItem: guardado });
+      vi.stubGlobal("matchMedia", () => ({ matches: sistemaOscuro() }));
+      return readSavedTheme();
     }
+    const falla = () => {
+      throw new Error("SecurityError: The operation is insecure.");
+    };
 
-    function parsePalette(stored: unknown): PaletteName {
-      return "clasico";
-    }
+    it("lo elegido con el interruptor manda sobre el sistema", () => {
+      expect(arrancaCon(() => "dark", () => false)).toBe("dark");
+      expect(arrancaCon(() => "light", () => true)).toBe("light");
+    });
 
-    expect(parseTheme("invalid_theme")).toBe("light");
-    expect(parseTheme(null)).toBe("light");
-    expect(parseTheme(undefined)).toBe("light");
-    expect(parseTheme("")).toBe("light");
-    expect(parseTheme("{bad: json}")).toBe("light");
-    expect(parseTheme("dark")).toBe("dark");
-    expect(parseTheme("light")).toBe("light");
+    it("un valor que no es un tema se ignora y manda el sistema", () => {
+      for (const roto of ["invalid_theme", "", "{bad: json}", "verde", "DARK", null]) {
+        expect(arrancaCon(() => roto, () => true), String(roto)).toBe("dark");
+        expect(arrancaCon(() => roto, () => false), String(roto)).toBe("light");
+      }
+    });
 
-    expect(parsePalette("invalid_palette")).toBe("clasico");
-    expect(parsePalette("verde")).toBe("clasico");
-    expect(parsePalette("grafito")).toBe("clasico");
-    expect(parsePalette(null)).toBe("clasico");
+    it("sin almacenamiento (modo privado) manda el sistema, y sin sistema, el papel", () => {
+      expect(arrancaCon(falla, () => true)).toBe("dark");
+      expect(arrancaCon(falla, falla)).toBe("light");
+    });
   });
 
   /**

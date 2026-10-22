@@ -21,7 +21,7 @@
 | `d5_seo_metadata.test.ts` | D5 | Títulos únicos, descripciones ≤160, canonical, hreflang, JSON-LD |
 | `d6_performance_hydration.test.ts` | D6 | Determinismo SSR/SSG, fechas de publicación, sin hidratación no determinista |
 | `d7_d13_demo_engine.test.ts` | D7 + D13 | PRNG `mulberry32` determinista, fechas UTC, sincronía entre vistas |
-| `d8_design_tokens.test.ts` | D8 | Pureza de tokens, sin hex sueltos, mapeo de paletas claro/oscuro |
+| `d8_design_tokens.test.ts` | D8 | Pureza de tokens, sin hex sueltos, mapeo de paletas claro/oscuro; contraste AA calculado con los tokens que gana la cascada de `globals.css` en cada tema; `readSavedTheme` ignora un tema guardado roto y sobrevive sin almacenamiento |
 | `d9_d10_security_editorial.test.ts` | D9 + D10 | Privacidad cliente, ninguna analítica ni cookie en el código (con el detector probado), tono institucional |
 | `d11_d12_shortcuts_resilience.test.ts` | D11 + D12 | Ctrl+K / Ctrl+G, `try/catch` de storage, validación de entradas |
 | `d14_institutional_suite.test.ts` | D14 | Multiplicadores de instrumento, SQN, índice de úlcera, asimetría de drawdown |

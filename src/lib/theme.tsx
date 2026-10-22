@@ -64,7 +64,8 @@ function temaElegido(): Theme | null {
   }
 }
 
-function readSavedTheme(): Theme {
+/** Tema al arrancar: lo elegido, si es un valor válido; si no, el sistema. */
+export function readSavedTheme(): Theme {
   if (typeof window === "undefined") return "light";
   return temaElegido() ?? temaDelSistema();
 }
