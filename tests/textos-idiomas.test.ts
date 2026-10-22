@@ -17,6 +17,7 @@ import { Pricing } from "@/components/marketing/Pricing";
 import { GuardianNew } from "@/components/marketing/GuardianNew";
 import { ProductShowcase } from "@/components/marketing/ProductShowcase";
 import { Hero } from "@/components/marketing/Hero";
+import { metadataHome } from "@/lib/rutas-internacionales";
 
 /** Texto visible de un componente pintado en el servidor en un idioma. */
 function texto(lang: Lang, el: ReactElement): string {
@@ -83,5 +84,21 @@ describe("textos de las herramientas", () => {
     const t = texto(lang, createElement(PropChallengeSimulator));
     expect(t).toContain(`${antes} ${fmtInt(CAMINOS_FONDEO, lang)} ${despues}`);
     expect(t).not.toMatch(/dos mil|two thousand/i);
+  });
+});
+
+describe("títulos de las portadas pt, fr, de e it", () => {
+  // Como en es («App de diario de trading para Windows») y en: el título lleva la búsqueda, no el eslogan.
+  it.each([
+    ["pt", /^App de diário de trading para Windows/],
+    ["fr", /journal de trading pour Windows/i],
+    ["de", /^Trading-Journal-App für Windows/],
+    ["it", /^App di diario di trading per Windows/],
+  ] as const)("%s", (lang, busqueda) => {
+    const m = metadataHome(lang);
+    const titulo = (m.title as { absolute: string }).absolute;
+    expect(titulo).toMatch(busqueda);
+    expect(titulo).toMatch(/— CountPips$/);
+    expect(m.openGraph?.title).toBe(m.twitter?.title);
   });
 });

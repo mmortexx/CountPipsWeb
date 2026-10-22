@@ -173,6 +173,10 @@ for (const p of indexables) {
 const BUSQUEDA_DEL_TITULO = {
   "/": /diario de trading/i,
   "/en/": /trading journal/i,
+  "/pt/": /diário de trading/i,
+  "/fr/": /journal de trading/i,
+  "/de/": /trading-journal/i,
+  "/it/": /diario di trading/i,
   "/features/": /diario de trading/i,
   "/en/features/": /trading journal/i,
   "/features/metricas/": /métricas de trading/i,
