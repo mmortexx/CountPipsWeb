@@ -8,11 +8,12 @@ import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
 import { fmtMoney } from "@/lib/trading/format";
+import { destinoDeBusqueda } from "@/lib/busqueda";
 
 /**
  * Cuerpo de la 404. Vive aparte porque `src/app/not-found.tsx` es de servidor
- * (para exportar su `metadata`). El buscador lleva a la FAQ con `?q=`, que su
- * buscador recoge al cargar.
+ * (para exportar su `metadata`). El buscador lleva a la voz del glosario si se
+ * escribe su nombre y, si no, a la FAQ con `?q=`, que su buscador recoge al cargar.
  */
 export function NotFoundClient() {
   const { lang } = useLang();
@@ -44,11 +45,19 @@ export function NotFoundClient() {
     },
   ];
 
-  function onSubmitSearch(e: React.FormEvent) {
+  async function onSubmitSearch(e: React.FormEvent) {
     e.preventDefault();
-    const term = q.trim();
+    // El diccionario solo se descarga al buscar: no viaja con la 404 (`scripts/equipaje.mjs`).
+    let destino = "/faq";
+    try {
+      const { TERMINOS } = await import("@/lib/glosario");
+      destino = destinoDeBusqueda(q, TERMINOS);
+    } catch {
+      // Sin red para el trozo del glosario, la FAQ filtrada sigue sirviendo.
+      destino = destinoDeBusqueda(q, []);
+    }
     // `withLocale` a mano: `router.push` no pasa por `LocaleLink`.
-    router.push(withLocale(term ? `/faq?q=${encodeURIComponent(term)}` : "/faq", lang));
+    router.push(withLocale(destino, lang));
   }
 
   return (

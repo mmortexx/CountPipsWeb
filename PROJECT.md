@@ -15,7 +15,9 @@ Windows (WinUI 3, en otro repositorio).
   `--accent-*`, `--pnl-*`, `--sig-*`). Animación sólo con CSS/WAAPI: sin librería de
   movimiento (`tests/sin-framer.test.ts`).
 - **Idiomas**: español en `/`, inglés en `/en/`, con paridad 1:1 vigilada por
-  `tests/e2e/d4_bilingual_parity.test.ts`.
+  `tests/e2e/d4_bilingual_parity.test.ts`. Portugués, francés, alemán e italiano solo
+  en las rutas de `RUTAS_NUEVOS_IDIOMAS` (`src/lib/locale.ts`), vigiladas por
+  `tests/idiomas-nuevos.test.ts`.
 - **Demo**: datos de muestra deterministas (`mulberry32`), cuatro pestañas y el
   detalle de operación; estado en `src/lib/trading/demoStore.ts`
   (`useSyncExternalStore`).
@@ -66,8 +68,9 @@ bun run build
 
 Si el cambio se ve, además las auditorías sobre el sitio compilado (`out/`). Cada
 script explica en su cabecera qué mide. El CI corre en cada PR y antes de publicar las
-cinco que no abren navegador (`metadatos`, `enlaces`, `cifras`, `rotulos`, `equipaje`) y
-`humo` y `toque`; las demás se pasan en local:
+cinco que no abren navegador (`metadatos`, `enlaces`, `cifras`, `rotulos`, `equipaje`),
+las pruebas que leen `out/` (con `COMPROBAR_OUT=1`, que convierte su ausencia en fallo) y
+`humo`, `toque`, `alto-contraste` y `teclado`; las demás se pasan en local:
 
 ```bash
 node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde a 320 px
@@ -78,7 +81,7 @@ node scripts/metadatos.mjs out             # título (con su búsqueda), descrip
 node scripts/enlaces.mjs out               # enlaces rotos, que cambian de idioma o que faltan (madre → hija, herramienta → glosario)
 node scripts/cifras.mjs out                # convenciones de idioma y restos de plantilla
 node scripts/rotulos.mjs out               # lo que oye un lector de pantalla
-node scripts/equipaje.mjs out              # JS que cada página carga sin pedirlo
+node scripts/equipaje.mjs out              # JS que cada página carga sin pedirlo; solo se precargan la sans y la serif
 node scripts/copiado.mjs --serve out       # texto de los botones «Copiar»
 node scripts/medida.mjs --serve out        # caracteres por línea
 node scripts/papel.mjs --serve out         # impresión completa
@@ -88,11 +91,12 @@ node scripts/escala.mjs --serve out        # escala tipográfica e interlineado
 node scripts/movimiento.mjs --serve out    # «reducir movimiento» respetado
 node scripts/orden.mjs --serve out         # primera pantalla en orden de lectura; cambio de página sin solape
 node scripts/proporcion.mjs --serve out    # textos de gráficos SVG sin estirar (también dentro de la demo)
-node scripts/tema.mjs --serve out          # elección de tema y sin fogonazo blanco
+node scripts/tema.mjs --serve out          # elección de tema, sin fogonazo blanco y barra del móvil del color del fondo
+node scripts/alto-contraste.mjs --serve out  # alto contraste de Windows: foco, lo elegido y los interruptores
 node scripts/anuncios.mjs --serve out      # resultados anunciados a lectores de pantalla
 node scripts/deslizadores.mjs --serve out  # relleno, marcas y alturas de los deslizadores
 node scripts/viudas.mjs --serve out        # titulares sin palabra sola al final
-node scripts/teclado.mjs --serve out       # todo el sitio sin ratón
+node scripts/teclado.mjs --serve out       # todo el sitio sin ratón; los atajos de una tecla se apagan
 node scripts/toque.mjs --serve out         # zona que recoge el dedo, medida en móvil táctil: 44 px de alto
 node scripts/cabeceras.mjs --serve out     # nada bloqueado por la CSP de `_headers` (dominio propio)
 node scripts/corrobora-menus.mjs --base <url>  # menús; contra `npx serve out` (sin -s)
@@ -100,8 +104,7 @@ node scripts/barrido-rueda.mjs --base <url>    # ningún recuadro atrapa la rued
 ```
 
 Trampas de medida conocidas: `npx serve -s` devuelve la portada en todas las rutas;
-el banner de cookies tapa media pantalla si no se descarta; Chromium sin ventana va
-a ~60 Hz y no ve tirones a más frecuencia.
+Chromium sin ventana va a ~60 Hz y no ve tirones a más frecuencia.
 
 ## Contratos de interfaz
 
@@ -109,6 +112,9 @@ a ~60 Hz y no ve tirones a más frecuencia.
   `localStorage` dé `SecurityError`.
 - `src/components/tj/OverlayHost.tsx`: Ctrl/⌘+G abre el glosario. La web no tiene
   paleta de comandos; sólo la demo (`DemoCommandPalette`).
+- `src/lib/atajos.ts`: los atajos de una sola tecla (`?`, `T`, `L`, `g` + letra) se
+  apagan desde su ayuda (WCAG 2.1.4); entonces la abre el botón del pie. Las teclas
+  de la demo solo actúan con el foco dentro de ella.
 - `src/components/marketing/EquityProjector.tsx`: `cagr` nunca devuelve `NaN`.
 - `src/lib/trading/data.ts`: todas las métricas dan números finitos y deterministas
   con n=0, n=1, 100 % aciertos, 100 % pérdidas y desviación 0.

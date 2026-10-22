@@ -33,8 +33,9 @@ function elementos(lista: string, y: RegExp): number {
 }
 
 // `skipIf` salta las pruebas pero ejecuta el cuerpo del `describe`: leer `out/`
-// aquí rompe el CI, que pasa las pruebas antes de compilar.
-describe.skipIf(!existsSync(BETA))("lo que se dice que pide el formulario es lo que pide", () => {
+// aquí rompe el CI, que pasa las pruebas antes de compilar. Con
+// `COMPROBAR_OUT=1` (los flujos de GitHub, tras compilar) no se salta nunca.
+describe.skipIf(!existsSync(BETA) && process.env.COMPROBAR_OUT !== "1")("lo que se dice que pide el formulario es lo que pide", () => {
   let n = 0;
   beforeAll(() => {
     n = camposDelFormulario(readFileSync(BETA, "utf8"));

@@ -149,8 +149,8 @@ function MarketClock() {
  * derecha y estado local-first antes de los botones de ventana.
  *
  * Los botones son de Windows 11 (46 px de ancho por el alto completo, el de
- * cerrar vira a rojo). Maximizar alterna la pantalla completa de la demo;
- * minimizar es decorativo.
+ * cerrar vira a rojo). Maximizar alterna la pantalla completa de la demo y
+ * cerrar sale de ella; minimizar, y cerrar fuera de ella, son dibujo.
  */
 export function WindowChrome() {
   const { t } = useLang();
@@ -184,18 +184,18 @@ export function WindowChrome() {
           la barra: área de toque de 44×44. */}
       <div className="flex items-stretch h-full shrink-0">
         <LocalFirstLED />
-        <button
-          type="button"
-          aria-label={t("winMinimize")}
-          tabIndex={-1}
-          className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors duration-150"
+        {/* Dibujo, no botón: minimizar no tiene adónde ir en una página. */}
+        <span
+          aria-hidden="true"
+          className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary"
         >
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             <line x1="0.5" y1="5" x2="9.5" y2="5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
           </svg>
-        </button>
+        </span>
         <button
           type="button"
+          data-demo-maximizar=""
           aria-label={fullscreen ? t("winRestore") : t("winMaximize")}
           onClick={() => setFullscreen(!fullscreen)}
           className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--divider)/0.08)] hover:text-primary transition-colors duration-150"
@@ -211,21 +211,33 @@ export function WindowChrome() {
             </svg>
           )}
         </button>
-        <button
-          type="button"
-          aria-label={t("winClose")}
-          onClick={() => {
-            if (fullscreen) setFullscreen(false);
-          }}
-          className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--pnl-neg))] hover:text-[rgb(var(--pnl-ink))] transition-colors duration-150"
-        >
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-            <line x1="0.5" y1="0.5" x2="9.5" y2="9.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-            <line x1="9.5" y1="0.5" x2="0.5" y2="9.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-          </svg>
-        </button>
+        {/* Cerrar solo es botón a pantalla completa, donde sale de ella; en la
+            página no hay ventana que cerrar y queda como dibujo. */}
+        {fullscreen ? (
+          <button
+            type="button"
+            aria-label={t("winExitFull")}
+            onClick={() => setFullscreen(false)}
+            className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary hover:bg-[rgb(var(--pnl-neg))] hover:text-[rgb(var(--pnl-ink))] transition-colors duration-150"
+          >
+            <CruzCerrar />
+          </button>
+        ) : (
+          <span aria-hidden="true" className="w-11 sm:w-[46px] h-full flex items-center justify-center text-tertiary">
+            <CruzCerrar />
+          </span>
+        )}
       </div>
     </div>
+  );
+}
+
+function CruzCerrar() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+      <line x1="0.5" y1="0.5" x2="9.5" y2="9.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+      <line x1="9.5" y1="0.5" x2="0.5" y2="9.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+    </svg>
   );
 }
 

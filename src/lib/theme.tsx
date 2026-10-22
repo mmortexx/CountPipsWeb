@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
+import { COLOR_BARRA } from "@/lib/color-barra";
 
 export type Theme = "dark" | "light";
 /* Estilo único. `data-palette` es el gancho del que cuelgan los tokens y
@@ -131,6 +132,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (!mounted) return;
     document.documentElement.dataset.theme = theme;
     document.documentElement.classList.toggle("dark", theme === "dark");
+    // Las dos etiquetas (claro y oscuro del sistema) pasan al tema que se ve.
+    document
+      .querySelectorAll('meta[name="theme-color"]')
+      .forEach((m) => m.setAttribute("content", COLOR_BARRA[theme]));
   }, [theme, mounted]);
 
   // Mientras no haya elección, el tema sigue al sistema también en vivo.

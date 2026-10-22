@@ -76,6 +76,30 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [fullscreen, setFullscreen]);
 
+  // A pantalla completa la demo es modal: lo demás queda inerte (ni el tabulador
+  // ni el lector de pantalla llegan detrás). Se respetan las regiones vivas y los
+  // avisos, que deben seguir oyéndose. Al salir, si el foco se quedó fuera (el
+  // botón de cerrar deja de existir), vuelve al de maximizar.
+  useEffect(() => {
+    const root = demoRootRef.current;
+    if (!fullscreen || !root) return;
+    const inertes: Element[] = [];
+    for (let el: Element | null = root; el && el !== document.body; el = el.parentElement) {
+      for (const hermano of Array.from(el.parentElement?.children ?? [])) {
+        if (hermano === el || hermano.hasAttribute("inert")) continue;
+        if (hermano.matches("script, style, template, [aria-live], [role='region'], [role='status'], [role='alert']")) continue;
+        hermano.setAttribute("inert", "");
+        inertes.push(hermano);
+      }
+    }
+    return () => {
+      for (const el of inertes) el.removeAttribute("inert");
+      if (!root.contains(document.activeElement)) {
+        root.querySelector<HTMLElement>("[data-demo-maximizar]")?.focus();
+      }
+    };
+  }, [fullscreen]);
+
   // Tecla F: pantalla completa. No actúa al escribir en un campo, con modificadores
   // (no pisa Ctrl+F del navegador) ni con una paleta o ayuda abierta.
   useEffect(() => {
@@ -246,6 +270,9 @@ function AppDemoInner({ hideHeader = false }: { hideHeader?: boolean }) {
       <div
         ref={demoRootRef}
         data-demo-raiz=""
+        role={fullscreen ? "dialog" : undefined}
+        aria-modal={fullscreen || undefined}
+        aria-label={fullscreen ? t("demoFullDialog") : undefined}
         className={`relative mx-auto transition-[transform,border-radius,box-shadow,opacity] duration-500 ease-[var(--ease-suave)] ${
           fullscreen ? "fixed inset-3 z-[100] rounded-[2px]" : "rounded-[2px]"
         }`}

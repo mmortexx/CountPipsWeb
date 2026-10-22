@@ -218,6 +218,8 @@ export function BetaApplication() {
       setTurnstileToken("");
       setError(failureCopy(result.reason, es));
       setStatus("error");
+      // El botón se desactivó al enviar y el foco cayó a `<body>`: va al aviso.
+      pedirFocoAviso.current = true;
       return;
     }
 
@@ -285,54 +287,66 @@ export function BetaApplication() {
             <FieldError id="profile-error" show={profileInvalid} message={es ? "Selecciona un tipo de trader." : "Select a trader type."} />
           </fieldset>
 
-          <label className="block text-sm font-medium text-primary">
-            {es ? "Email" : "Email"}
-            <input ref={emailRef} className={inputClass} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={es ? "tu@email.com" : "you@email.com"} required aria-invalid={emailInvalid} aria-describedby={emailInvalid ? "email-error" : undefined} />
+          {/* Cada error va fuera de su `<label>`: dentro, el lector lo leía como
+              parte del nombre del campo («Email Escribe un email válido»). */}
+          <div>
+            <label className="block text-sm font-medium text-primary">
+              {es ? "Email" : "Email"}
+              <input ref={emailRef} className={inputClass} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={es ? "tu@email.com" : "you@email.com"} required aria-invalid={emailInvalid} aria-describedby={emailInvalid ? "email-error" : undefined} />
+            </label>
             <FieldError id="email-error" show={emailInvalid} message={es ? "Escribe un email válido." : "Enter a valid email."} />
-          </label>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm font-medium text-primary">
-              {es ? "Experiencia" : "Experience"}
-              <span className="relative mt-2 block">
-                <select ref={experienceRef} className={selectClass} value={experience} onChange={(e) => setExperience(e.target.value)} required aria-invalid={experienceInvalid} aria-describedby={experienceInvalid ? "experience-error" : undefined}>
-                <option value="">{es ? "Selecciona" : "Select"}</option>
-                {EXPERIENCIAS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
-              </select>
-                {galonSelect}
-              </span>
-              <FieldError id="experience-error" show={experienceInvalid} message={es ? "Selecciona tu experiencia." : "Select your experience."} />
-            </label>
-            <label className="block text-sm font-medium text-primary">
-              {es ? "Mercados" : "Markets"}
-              <input ref={marketsRef} className={inputClass} value={markets} onChange={(e) => setMarkets(e.target.value)} placeholder={es ? "Forex, futuros, acciones…" : "Forex, futures, equities…"} required aria-invalid={marketsInvalid} aria-describedby={marketsInvalid ? "markets-error" : undefined} />
-              <FieldError id="markets-error" show={marketsInvalid} message={es ? "Indica qué mercados operas." : "Tell us which markets you trade."} />
-            </label>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block text-sm font-medium text-primary">
-              {es ? "Cómo llevas hoy tu diario" : "How you journal today"}
-              <span className="relative mt-2 block">
-                <select ref={workflowRef} className={selectClass} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
-                <option value="">{es ? "Selecciona" : "Select"}</option>
-                {DIARIOS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
-              </select>
-                {galonSelect}
-              </span>
+            <div>
+              <label className="block text-sm font-medium text-primary">
+                {es ? "Experiencia" : "Experience"}
+                <span className="relative mt-2 block">
+                  <select ref={experienceRef} className={selectClass} value={experience} onChange={(e) => setExperience(e.target.value)} required aria-invalid={experienceInvalid} aria-describedby={experienceInvalid ? "experience-error" : undefined}>
+                  <option value="">{es ? "Selecciona" : "Select"}</option>
+                  {EXPERIENCIAS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
+                </select>
+                  {galonSelect}
+                </span>
+              </label>
+              <FieldError id="experience-error" show={experienceInvalid} message={es ? "Selecciona tu experiencia." : "Select your experience."} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-primary">
+                {es ? "Mercados" : "Markets"}
+                <input ref={marketsRef} className={inputClass} value={markets} onChange={(e) => setMarkets(e.target.value)} placeholder={es ? "Forex, futuros, acciones…" : "Forex, futures, equities…"} required aria-invalid={marketsInvalid} aria-describedby={marketsInvalid ? "markets-error" : undefined} />
+              </label>
+              <FieldError id="markets-error" show={marketsInvalid} message={es ? "Indica qué mercados operas." : "Tell us which markets you trade."} />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-primary">
+                {es ? "Cómo llevas hoy tu diario" : "How you journal today"}
+                <span className="relative mt-2 block">
+                  <select ref={workflowRef} className={selectClass} value={workflow} onChange={(e) => setWorkflow(e.target.value)} required aria-invalid={workflowInvalid} aria-describedby={workflowInvalid ? "workflow-error" : undefined}>
+                  <option value="">{es ? "Selecciona" : "Select"}</option>
+                  {DIARIOS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
+                </select>
+                  {galonSelect}
+                </span>
+              </label>
               <FieldError id="workflow-error" show={workflowInvalid} message={es ? "Selecciona una opción." : "Select an option."} />
-            </label>
-            <label className="block text-sm font-medium text-primary">
-              {es ? "Qué quieres mejorar primero" : "What you want to improve first"}
-              <span className="relative mt-2 block">
-                <select ref={goalRef} className={selectClass} value={goal} onChange={(e) => setGoal(e.target.value)} required aria-invalid={goalInvalid} aria-describedby={goalInvalid ? "goal-error" : undefined}>
-                <option value="">{es ? "Selecciona" : "Select"}</option>
-                {OBJETIVOS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
-              </select>
-                {galonSelect}
-              </span>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-primary">
+                {es ? "Qué quieres mejorar primero" : "What you want to improve first"}
+                <span className="relative mt-2 block">
+                  <select ref={goalRef} className={selectClass} value={goal} onChange={(e) => setGoal(e.target.value)} required aria-invalid={goalInvalid} aria-describedby={goalInvalid ? "goal-error" : undefined}>
+                  <option value="">{es ? "Selecciona" : "Select"}</option>
+                  {OBJETIVOS.map((o) => <option key={o.value} value={o.value}>{es ? o.es : o.en}</option>)}
+                </select>
+                  {galonSelect}
+                </span>
+              </label>
               <FieldError id="goal-error" show={goalInvalid} message={es ? "Selecciona una opción." : "Select an option."} />
-            </label>
+            </div>
           </div>
 
           <label className="block text-sm font-medium text-primary">

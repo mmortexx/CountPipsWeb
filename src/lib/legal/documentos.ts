@@ -331,6 +331,10 @@ const cookies: DocumentoLegal = {
               es: ["Los términos que consultas en el glosario", "Ofrecerte los últimos al volver a abrirlo", "Hasta que borres los datos del navegador"],
               en: ["Glossary terms you look up", "To offer you the latest ones when you reopen it", "Until you clear your browser data"],
             },
+            {
+              es: ["Que apagaste los atajos de una sola tecla", "Que ninguna tecla suelta vuelva a cambiar nada", "Hasta que los enciendas o borres los datos del navegador"],
+              en: ["That you turned off single-key shortcuts", "So no single key changes anything again", "Until you turn them back on or clear your browser data"],
+            },
           ],
         },
         {

@@ -158,11 +158,14 @@ for (const tema of ["dark", "light"]) {
     filas.push({ tema, sitio: `etiqueta ${pref} (velas)`, ...r });
   }
 
-  // El botón de cerrar de la ventana de la demo, en hover.
+  // El botón de cerrar de la ventana de la demo, en hover. Solo es botón a
+  // pantalla completa (donde sale de ella): fuera de ella es un dibujo.
   await p.goto(base + "/demo/", { waitUntil: "domcontentloaded" });
   await p.waitForTimeout(2500);
   await fijaTema();
-  const cerrar = p.locator('button[aria-label="Cerrar"]').first();
+  await p.locator("[data-demo-maximizar]").first().click().catch(() => {});
+  await p.waitForTimeout(400);
+  const cerrar = p.locator('button[aria-label="Salir de pantalla completa"]').first();
   await cerrar.scrollIntoViewIfNeeded().catch(() => {});
   await cerrar.hover().catch(() => {});
   await p.waitForTimeout(400);

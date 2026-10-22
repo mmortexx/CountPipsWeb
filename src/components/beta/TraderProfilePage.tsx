@@ -212,7 +212,7 @@ export function TraderProfileBody({ profile, terminos }: { profile: TraderProfil
 
               <div className="caja-cifra p-5">
                 <div className="mb-2 flex items-start justify-between gap-2 text-xs text-tertiary [&>span]:min-w-0">
-                  <span>{es ? `Drawdown m\u00e1ximo (${firm.maxDDPct}\u00a0%)` : `Max drawdown (${firm.maxDDPct}%)`}</span>
+                  <span>{es ? `Drawdown máximo (${firm.maxDDPct}\u00a0%)` : `Max drawdown (${firm.maxDDPct}%)`}</span>
                 </div>
                 <div className="cifra-xl font-semibold text-[rgb(var(--pnl-neg))] tnum">
                   −{fmtMoney(maxTrailingLoss, lang)}

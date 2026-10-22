@@ -133,4 +133,9 @@ for (const [regla, casos] of Object.entries(porRegla)) {
   if (!TODO && vistos.size > 12) console.log(`    … y ${vistos.size - 12} más`);
 }
 console.log(`\n[rotulos] ${ficheros.length} páginas, ${fallos.length} fallo(s)`);
+// Un puñado de páginas indica un `out/` viejo, vacío o a medio compilar; una guarda que no mira nada aprueba siempre.
+if (ficheros.length < 100) {
+  console.log(`[rotulos] solo ${ficheros.length} páginas: se esperaban más de 150. ¿Está compilado el sitio?`);
+  process.exit(1);
+}
 process.exit(fallos.length ? 1 : 0);

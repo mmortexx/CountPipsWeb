@@ -78,6 +78,20 @@ const lee = (p) =>
         return "?";
       }
     })(),
+    // El `theme-color` que aplica (sin `media` o con el suyo cumplido), pasado a rgb para compararlo.
+    barra: (() => {
+      const m = [...document.querySelectorAll('meta[name="theme-color"]')].find(
+        (x) => !x.media || matchMedia(x.media).matches,
+      );
+      if (!m) return null;
+      const s = document.createElement("i");
+      s.style.color = m.content;
+      document.body.append(s);
+      const c = getComputedStyle(s).color;
+      s.remove();
+      return c;
+    })(),
+    fondo: getComputedStyle(document.body).backgroundColor,
   }));
 
 async function abrir(sistema) {
@@ -95,6 +109,7 @@ for (const [sistema, esperado] of [["light", "light"], ["dark", "dark"]]) {
   comprueba(`sistema ${sistema === "dark" ? "oscuro" : "claro"} y nadie ha elegido → ${esperado}`, r.tema === esperado && r.oscuro === (esperado === "dark"), `tema=${r.tema}`);
   // Si se guardara, el sistema dejaría de contar desde la segunda visita.
   comprueba(`   y no se guarda nada: el sistema sigue mandando mañana`, r.guardado === null, `guardado=${JSON.stringify(r.guardado)}`);
+  comprueba(`   y la barra del navegador móvil es del color del fondo`, r.barra === r.fondo, `barra=${r.barra} fondo=${r.fondo}`);
   await ctx.close();
 }
 
@@ -110,6 +125,7 @@ for (const [sistema, esperado] of [["light", "light"], ["dark", "dark"]]) {
     const r = await lee(p);
     comprueba("con el sistema oscuro, elegir papel → papel", r.tema === "light", `tema=${r.tema}`);
     comprueba("   y ahora SÍ se guarda", r.guardado === "light", `guardado=${JSON.stringify(r.guardado)}`);
+    comprueba("   y la barra del navegador móvil cambia con él", r.barra === r.fondo, `barra=${r.barra} fondo=${r.fondo}`);
     await p.reload({ waitUntil: "load" });
     await p.waitForTimeout(600);
     const r2 = await lee(p);

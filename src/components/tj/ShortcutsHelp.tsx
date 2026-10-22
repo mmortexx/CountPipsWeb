@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLang } from "@/lib/i18n";
+import { atajosEncendidos, fijarAtajos } from "@/lib/atajos";
 import { usePresencia } from "@/hooks/use-presencia";
 import { useTeclaMando } from "@/hooks/use-tecla-mando";
 import { SALTOS_TECLADO } from "@/lib/saltos-teclado";
@@ -24,6 +25,8 @@ export function ShortcutsHelp({
   const es = lang === "es";
   const mando = useTeclaMando();
   const setOpen = onOpenChange;
+  // Solo esta ventana lo cambia, así que el estado no se desfasa del guardado.
+  const [encendidos, setEncendidos] = useState(atajosEncendidos);
 
   const panelRef = useRef<HTMLDivElement>(null);
   // Mantiene la ventana en el árbol los 180 ms de su despedida.
@@ -231,6 +234,42 @@ export function ShortcutsHelp({
               </button>
             </div>
 
+            {/* WCAG 2.1.4: los atajos de una tecla se pueden apagar (`@/lib/atajos`).
+                Ctrl/⌘+G y las teclas de la demo, que solo actúan con su foco, siguen. */}
+            <div className="tj-no-print flex items-center justify-between gap-4 px-5 py-3 border-b border-[var(--ficha-division)]">
+              <div className="min-w-0">
+                <span id="tj-atajos-interruptor" className="block text-sm font-medium text-primary">
+                  {es ? "Atajos de una sola tecla" : "Single-key shortcuts"}
+                </span>
+                <span id="tj-atajos-interruptor-nota" className="block text-[12px] text-tertiary">
+                  {es
+                    ? "?, T, L y g + letra. Apágalos si dictas por voz."
+                    : "?, T, L and g + letter. Turn them off if you use voice control."}
+                </span>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={encendidos}
+                aria-labelledby="tj-atajos-interruptor"
+                aria-describedby="tj-atajos-interruptor-nota"
+                onClick={() => {
+                  fijarAtajos(!encendidos);
+                  setEncendidos(!encendidos);
+                }}
+                className={`toque-halo relative h-6 w-10 shrink-0 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--accent-base)/0.55)] ${
+                  encendidos ? "bg-[var(--ink)]" : "bg-[color-mix(in_srgb,var(--ink)_14%,transparent)]"
+                }`}
+              >
+                <span
+                  aria-hidden
+                  className={`absolute top-[3px] left-[3px] h-[18px] w-[18px] rounded-full bg-[var(--raised)] shadow-sm transition-transform duration-200 ${
+                    encendidos ? "translate-x-4" : ""
+                  }`}
+                />
+              </button>
+            </div>
+
             <div className="min-h-0 flex-1 overflow-y-auto custom-scroll px-2 py-2">
               {grupos.map((g, n) => (
                 <section key={g.titulo} className="mt-4 first:mt-0">
@@ -267,7 +306,9 @@ export function ShortcutsHelp({
                 <span>{es ? "cerrar" : "close"}</span>
               </span>
               <span>
-                {es ? "Pulsa ? cuando quieras" : "Press ? anytime"}
+                {encendidos
+                  ? es ? "Pulsa ? cuando quieras" : "Press ? anytime"
+                  : es ? "Ábrela desde el pie de la página" : "Open it from the page footer"}
               </span>
             </div>
           </div>

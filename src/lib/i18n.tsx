@@ -87,13 +87,12 @@ export const STR = {
     es: "No es un vídeo ni una galería: es el recorrido esencial de CountPips, recreado para que puedas juzgarlo antes de instalar nada.",
     en: "Not a video or a gallery: it is the essential CountPips workflow, recreated so you can judge it before installing anything.",
   },
-  demoOpenFull: { es: "Abrir en pantalla completa", en: "Open full screen" },
-  demoCloseFull: { es: "Cerrar", en: "Close" },
-  // aria-label de los botones de la barra de título (minimizar, maximizar, cerrar).
-  winMinimize: { es: "Minimizar", en: "Minimise" },
+  // aria-label de los botones de la barra de título que hacen algo (maximizar y,
+  // a pantalla completa, cerrar). Minimizar es un dibujo y no se anuncia.
   winMaximize: { es: "Maximizar", en: "Maximise" },
   winRestore: { es: "Restaurar", en: "Restore" },
-  winClose: { es: "Cerrar", en: "Close" },
+  winExitFull: { es: "Salir de pantalla completa", en: "Exit full screen" },
+  demoFullDialog: { es: "Demo de CountPips a pantalla completa", en: "CountPips demo, full screen" },
   localFirst: { es: "Local-first", en: "Local-first" },
   demoAccount: {
     es: `DEMO · ${fmtMoney(SALDO_INICIAL_MUESTRA, "es", { decimals: 0 })}`,

@@ -6,6 +6,7 @@ import { useLang } from "@/lib/i18n";
 import { withLocale } from "@/lib/locale";
 import { useTheme } from "@/lib/theme";
 import { openShortcutsHelp } from "@/lib/overlays";
+import { atajosEncendidos } from "@/lib/atajos";
 import { G_NAV_MAP } from "@/lib/saltos-teclado";
 
 /**
@@ -16,8 +17,9 @@ import { G_NAV_MAP } from "@/lib/saltos-teclado";
  *
  * Se ignoran las teclas al escribir en un campo, con la paleta de /demo
  * abierta (`[cmdk-root]`), con la ayuda abierta
- * (`body[data-shortcuts-help-open]`) o con meta/ctrl/alt (son del navegador);
- * Shift sí vale, para `?`, `T` y `L` en mayúscula.
+ * (`body[data-shortcuts-help-open]`), con meta/ctrl/alt (son del navegador)
+ * o con los atajos apagados en la ayuda (`@/lib/atajos`); Shift sí vale, para
+ * `?`, `T` y `L` en mayúscula.
  */
 
 const G_PREFIX_TIMEOUT = 1000; // ms que dura el prefijo `g`
@@ -73,6 +75,7 @@ export function GlobalShortcuts() {
       if (document.querySelector("[cmdk-root]")) return;
       if (document.body.dataset.shortcutsHelpOpen === "true") return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
+      if (!atajosEncendidos()) return;
 
       const key = e.key;
 

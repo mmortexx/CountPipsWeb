@@ -11,3 +11,25 @@ export function paraBuscar(s: string): string {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[\u2018\u2019]/g, "'");
 }
+
+type VozBuscable = { term: string; nombreEs?: string; slug: string };
+
+/**
+ * Adónde lleva la caja de la página 404 («Métrica o pregunta…»): a la voz del
+ * glosario si la consulta es su nombre en cualquier idioma, su sigla o lo que
+ * va entre paréntesis («MAE (Maximum Adverse Excursion)»); si no, a la FAQ
+ * filtrada. Recibe los términos para que la 404 los cargue solo al buscar.
+ */
+export function destinoDeBusqueda(consulta: string, terminos: readonly VozBuscable[]): string {
+  const limpia = consulta.trim();
+  if (!limpia) return "/faq";
+  const buscada = paraBuscar(limpia);
+  for (const t of terminos) {
+    const nombres = [t.term, t.nombreEs ?? ""].flatMap((n) => {
+      const m = n.match(/^(.+?)\s*\((.+)\)$/);
+      return m ? [n, m[1], m[2]] : [n];
+    });
+    if (nombres.some((n) => n && paraBuscar(n) === buscada)) return `/glosario/${t.slug}`;
+  }
+  return `/faq?q=${encodeURIComponent(limpia)}`;
+}

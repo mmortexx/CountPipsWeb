@@ -209,8 +209,10 @@ describe("Guarda de idiomas nuevos (pt, fr, de, it)", () => {
     (i) => i.codigo !== "es" && i.codigo !== "en"
   );
 
+  // Sin `out/` se salta, salvo con `COMPROBAR_OUT=1` (los flujos de GitHub, tras compilar): ahí falta = fallo.
   it("verifica las 8 páginas nuevas sobre out/", (ctx) => {
     if (!existsSync(SALIDA)) {
+      expect(process.env.COMPROBAR_OUT, "falta compilar: `bun run build`").not.toBe("1");
       ctx.skip();
       return;
     }
