@@ -102,6 +102,7 @@
 | `pie.test.ts` | Las columnas del pie en los seis idiomas (`columnasPie`): ningún texto se repite entre títulos y enlaces, y cada columna tiene título y enlaces |
 | `filtros-demo.test.ts` | El filtro de cumplimiento de la demo es el mismo en Operaciones y en Analítica: «parcial» deja solo las parciales y «no» no las incluye |
 | `paleta-reiniciar.test.ts` | «Reiniciar demo» de la paleta borra de verdad las operaciones propias guardadas, quita los filtros y vuelve al resumen (antes solo navegaba) |
+| `riesgo-supuesto.test.ts` | La calculadora de riesgo, pintada en el servidor con la ficha de Kelly plegada, dice junto a «Riesgo de ruina» y «Medio Kelly» de qué win rate salen, en los dos idiomas |
 
 ## Fuera de Vitest: auditoría manual con el sitio compilado
 
