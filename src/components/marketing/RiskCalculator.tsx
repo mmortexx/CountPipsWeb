@@ -29,6 +29,11 @@ const RISK_MAX = 3;
 const RISK_STEP = 0.05;
 const RISK_MARKS = [0.25, 1, 2, 3];
 
+/** Medio Kelly ajustado al paso y a los extremos del control de riesgo; 0 sin ventaja. */
+export function riesgoDeKelly(medio: number): number {
+  return medio > 0 ? Math.min(RISK_MAX, Math.max(RISK_MIN, Number((Math.round(medio / RISK_STEP) * RISK_STEP).toFixed(2)))) : 0;
+}
+
 const decimalesDe = (escalon: number) => (String(escalon).split(".")[1] ?? "").length;
 
 type AssetMode = MercadoPlan;
@@ -145,9 +150,7 @@ export function RiskCalculator() {
   const conAciertos = es ? `con un ${fmtNum(kellyWinRate, 0)}${PCT} de aciertos` : `at a ${fmtNum(kellyWinRate, 0)}% win rate`;
   /* El mismo número en la tarjeta, en el anuncio y en el plan copiado. */
   const tamanoTxt = `${fmtNum(c.tamano, c.decimalesTamano)} ${c.sizeLabel}`;
-  /* Medio Kelly ajustado al paso y a los extremos del control de riesgo. */
-  const kellyAplicable =
-    c.kelly.medio > 0 ? Math.min(RISK_MAX, Math.max(RISK_MIN, Number((Math.round(c.kelly.medio / RISK_STEP) * RISK_STEP).toFixed(2)))) : 0;
+  const kellyAplicable = riesgoDeKelly(c.kelly.medio);
   const kellyTopado = c.kelly.medio > 0 && Math.abs(kellyAplicable - c.kelly.medio) > RISK_STEP / 2;
   const friccionTxt = !includeFriction
     ? (es ? "Desactivada" : "Off")

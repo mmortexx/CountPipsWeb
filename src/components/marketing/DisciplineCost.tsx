@@ -8,6 +8,7 @@ import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/format";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
+import { costeIndisciplina } from "@/lib/trading/indisciplina";
 
 interface MistakeItem {
   id: string;
@@ -16,7 +17,16 @@ interface MistakeItem {
   pct: number;
 }
 
-const PRESETS = [
+/** Reparto de la fuga mensual por tipo de fallo, en %: suma 100. */
+export const ERRORES_INDISCIPLINA: MistakeItem[] = [
+  { id: "offhours", labelEs: "Operar fuera de horario", labelEn: "Trading off-hours", pct: 32 },
+  { id: "oversize", labelEs: "Tamaño excesivo (oversize)", labelEn: "Oversized position", pct: 27 },
+  { id: "nostop", labelEs: "Sin stop loss / omitido", labelEn: "No stop loss / omitted", pct: 18 },
+  { id: "chasing", labelEs: "Perseguir el precio (FOMO)", labelEn: "Chasing price (FOMO)", pct: 14 },
+  { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
+];
+
+export const PRESETS = [
   {
     id: "prop",
     nameEs: "Trader de prop firm",
@@ -64,28 +74,21 @@ export function DisciplineCost() {
   const [offPlanExp, setOffPlanExp] = useState(-38.47);
   const [activePreset, setActivePreset] = useState<string>("custom");
 
-  // Cálculos reactivos
-  const offPlanTrades = Math.round((totalTrades * breachPct) / 100);
-  const inPlanTrades = Math.max(0, totalTrades - offPlanTrades);
+  // Cálculos reactivos. Lo que escribe el usuario se guarda tal cual; si fuera
+  // de plan rinde igual o más que dentro, no hay fuga que facturar y se dice.
+  const {
+    offPlanTrades,
+    inPlanTrades,
+    gap,
+    sinCoste,
+    planPierde,
+    inPlanTotal,
+    offPlanTotal,
+    totalLeakMonthly,
+    totalLeakAnnual,
+  } = costeIndisciplina(totalTrades, breachPct, inPlanExp, offPlanExp);
 
-  /* Lo que escribe el usuario se guarda tal cual. Si fuera de plan rinde igual
-     o más que dentro, no hay fuga que facturar y se dice. */
-  const gapBruta = inPlanExp - offPlanExp;
-  const gap = Math.max(0, gapBruta);
-  const sinCoste = gapBruta <= 0;
-  const planPierde = inPlanExp < 0;
-  const inPlanTotal = inPlanTrades * inPlanExp;
-  const offPlanTotal = offPlanTrades * offPlanExp;
-  const totalLeakMonthly = offPlanTrades * gap;
-  const totalLeakAnnual = totalLeakMonthly * 12;
-
-  const mistakes: MistakeItem[] = useMemo(() => [
-    { id: "offhours", labelEs: "Operar fuera de horario", labelEn: "Trading off-hours", pct: 32 },
-    { id: "oversize", labelEs: "Tamaño excesivo (oversize)", labelEn: "Oversized position", pct: 27 },
-    { id: "nostop", labelEs: "Sin stop loss / omitido", labelEn: "No stop loss / omitted", pct: 18 },
-    { id: "chasing", labelEs: "Perseguir el precio (FOMO)", labelEn: "Chasing price (FOMO)", pct: 14 },
-    { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
-  ], []);
+  const mistakes = ERRORES_INDISCIPLINA;
 
   /** El error mayor, contra el que se miden las barras. */
   const maxPct = useMemo(() => Math.max(...mistakes.map((m) => m.pct)), [mistakes]);
