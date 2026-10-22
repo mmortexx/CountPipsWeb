@@ -5,7 +5,8 @@ import { describe, expect, it } from "vitest";
 /**
  * El hero no lleva deslizadores: las micro-calculadoras se retiraron. Las
  * fórmulas (esperanza en R y recuperación de drawdown) siguen en las
- * herramientas; aquí se vigila que no vuelvan al hero.
+ * herramientas y las prueba `recuperacion.test.ts`; aquí se vigila que no
+ * vuelvan al hero.
  */
 
 const RAIZ = join(import.meta.dirname, "..");
@@ -32,21 +33,5 @@ describe("Hero sin deslizadores", () => {
   it("conserva los dos CTA", () => {
     expect(hero).toMatch(/\/demo/);
     expect(hero).toMatch(/\/pricing/);
-  });
-});
-
-describe("Esperanza y recuperación (fórmulas de las herramientas)", () => {
-  it("la esperanza en R es WR·W − (1−WR)·L con L = 1 R", () => {
-    const ev = (wr: number, w: number) => (wr / 100) * w - (1 - wr / 100);
-    expect(ev(55, 2)).toBeCloseTo(0.65, 12);
-    expect(ev(30, 3)).toBeCloseTo(0.2, 12);
-    expect(ev(35, 1)).toBeCloseTo(-0.3, 12);
-  });
-
-  it("la recuperación es DD / (1 − DD)", () => {
-    const rec = (dd: number) => dd / 100 / (1 - dd / 100);
-    expect(rec(20)).toBeCloseTo(0.25, 12);
-    expect(rec(40)).toBeCloseTo(2 / 3, 12);
-    expect(rec(50)).toBeCloseTo(1, 12);
   });
 });
