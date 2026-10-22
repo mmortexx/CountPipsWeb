@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { proyectaCapital, LIMITE_PROYECCION_USD } from "../src/lib/trading/proyeccion";
+import { notaWinRate } from "../src/components/marketing/EquityProjector";
 
 /**
  * Con acierto del 80 %, ganancia media de 6 R, pérdida media de 0,25 R,
@@ -142,5 +143,17 @@ describe("proyectaCapital: la banda del 80 % envuelve su propia línea", () => {
       if (p.lowerBalance === 0) continue;
       expect(p.upperBalance - p.balance).toBeCloseTo(p.balance - p.lowerBalance, 6);
     }
+  });
+});
+
+describe("nota del win rate en el proyector", () => {
+  it("con exactamente 50 % no dice «por encima del 50 %»", () => {
+    expect(notaWinRate(50, true)).not.toMatch(/encima/);
+    expect(notaWinRate(50, false)).not.toMatch(/Above/);
+  });
+
+  it("con 51 % sí", () => {
+    expect(notaWinRate(51, true)).toBe("Por encima del 50 %");
+    expect(notaWinRate(51, false)).toBe("Above 50%");
   });
 });

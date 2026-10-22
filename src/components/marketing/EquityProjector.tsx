@@ -111,6 +111,11 @@ const CONO_CONFIANZA_PCT = 80;
 /* Por encima de un siglo, el número de meses ya no dice nada. */
 const MESES_PARA_DUPLICAR_MAX = 1200;
 
+/** Nota bajo el deslizador del win rate. */
+export function notaWinRate(winRate: number, es: boolean): string {
+  return winRate > 50 ? (es ? "Por encima del 50\u00a0%" : "Above 50%") : es ? "Necesita R:R alto" : "Needs a high R:R";
+}
+
 export function EquityProjector() {
   const idAporte = useId();
   const idCostes = useId();
@@ -642,7 +647,7 @@ export function EquityProjector() {
                   1,
                   setWinRate,
                   pctSep(lang),
-                  winRate >= 50 ? (es ? "Por encima del 50\u00a0%" : "Above 50%") : (es ? "Necesita R:R alto" : "Needs a high R:R")
+                  notaWinRate(winRate, es)
                 )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
