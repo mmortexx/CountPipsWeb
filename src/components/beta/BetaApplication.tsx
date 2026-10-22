@@ -88,7 +88,6 @@ export function BetaApplication() {
   const [botcheck, setBotcheck] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<HTMLDivElement>(null);
-  const [empezado, setEmpezado] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
@@ -127,8 +126,13 @@ export function BetaApplication() {
   const goalInvalid = submitted && !goal;
   const privacyInvalid = submitted && !privacy;
 
-  useEffect(() => {
-    const paso = pasoTurnstile({ clave: turnstileSiteKey, empezado, apiCargada: Boolean(window.turnstile) });
+  /* Al primer foco del formulario. Sin estado: un repintado en pleno foco
+     reescribe los botones de opción y Chromium da dos paradas de Tab al grupo. */
+  const empezado = useRef(false);
+  const alEmpezar = () => {
+    if (empezado.current) return;
+    empezado.current = true;
+    const paso = pasoTurnstile({ clave: turnstileSiteKey, empezado: true, apiCargada: Boolean(window.turnstile) });
     if (paso === "nada" || !turnstileRef.current) return;
     const render = () => {
       if (!turnstileRef.current || !window.turnstile) return;
@@ -149,8 +153,7 @@ export function BetaApplication() {
     script.defer = true;
     script.addEventListener("load", render, { once: true });
     document.head.appendChild(script);
-    return () => script.removeEventListener("load", render);
-  }, [turnstileSiteKey, empezado]);
+  };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -257,7 +260,7 @@ export function BetaApplication() {
   return (
     <form
       onSubmit={submit}
-      onFocus={() => setEmpezado(true)}
+      onFocus={alEmpezar}
       noValidate
       className="tj-ficha p-5 sm:p-9"
     >
