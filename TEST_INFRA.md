@@ -39,7 +39,7 @@
 | `cromo-mesa.test.ts` | Que no vuelva el cromo de ventana antiguo tras pasar a índice de mesa |
 | `css.test.ts` | Que `globals.css` compile con `lightningcss` sin reglas huérfanas |
 | `destino-beta.test.ts` | A dónde va la solicitud de acceso anticipado según el entorno de compilación (pasando por `next.config.ts`): solo con el Apps Script va a él aunque la variable del Worker llegue vacía; con los dos, al Worker; sin ninguno, a Web3Forms con todos los datos y con los textos que vio quien rellena («3+ años», no «3-plus»); sin clave tampoco, no sale y se avisa |
-| `beta-api.test.ts` | El Worker de `services/beta-api` ejecutado con `Request` reales y D1 y KV en memoria (solo se simula la red de Turnstile): preflight y CORS, origen, ruta o método no válidos, validación y campo trampa, Turnstile ausente o fallido sin gastar cuota, ventana corta y cuota diaria por IP, KV ausente, alta guardada y correo repetido sin fila nueva |
+| `beta-api.test.ts` | El Worker de `services/beta-api` ejecutado con `Request` reales y D1 y KV en memoria (solo se simula la red de Turnstile): preflight y CORS, origen, ruta o método no válidos, validación y campo trampa, Turnstile ausente o fallido sin gastar cuota, ventana corta y cuota diaria por IP, KV ausente, alta guardada; el correo repetido y el campo trampa responden con el mismo estado y cuerpo que un alta nueva (si no, se sabría quién está apuntado); una excepción da 500 JSON con CORS |
 | `grabado.test.ts` | Reglas visuales comprobables por máquina: sin degradados decorativos, fondo limpio, sello de «previsto» |
 | `hero-calcs.test.ts` | Las micro-calculadoras del hero (sin deslizadores) |
 | `husos.test.ts` | La demo da el mismo resultado en cualquier huso horario |

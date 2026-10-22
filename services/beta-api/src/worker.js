@@ -247,6 +247,12 @@ async function consumirCuota(request, env) {
   await env.RATE_LIMIT.put(diaKey, String(usadas + 1), { expirationTtl: 172800 });
 }
 
+// Alta nueva, correo repetido y campo trampa responden igual: un estado o un
+// cuerpo distinto dejaría averiguar si un correo ya está apuntado.
+function accepted(request, env) {
+  return json({ ok: true }, 201, request, env);
+}
+
 async function createApplication(request, env) {
   if (!requestHasAllowedOrigin(request, env)) return errorResponse("origin_not_allowed", 403, request, env);
   const payload = await readJson(request);
@@ -254,7 +260,7 @@ async function createApplication(request, env) {
   // El campo trampa se llama `botcheck` en todas partes (`src/lib/forms.ts`,
   // `BetaApplication.tsx`, `docs/waitlist-apps-script.js`); un nombre distinto
   // aquí lo dejaría sin efecto.
-  if (boundedString(payload.botcheck, 120)) return json({ ok: true, duplicate: false }, 200, request, env);
+  if (boundedString(payload.botcheck, 120)) return accepted(request, env);
 
   const validation = validateApplication(payload);
   if (validation.error) return errorResponse(validation.error, 422, request, env);
@@ -276,7 +282,7 @@ async function createApplication(request, env) {
   const existing = await env.DB.prepare("SELECT id FROM applications WHERE email_hash = ?1 LIMIT 1")
     .bind(emailHash)
     .first();
-  if (existing) return json({ ok: true }, 200, request, env);
+  if (existing) return accepted(request, env);
 
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
@@ -318,12 +324,12 @@ async function createApplication(request, env) {
       .run();
   } catch (error) {
     if (String(error?.message || "").toLowerCase().includes("unique")) {
-      return json({ ok: true }, 200, request, env);
+      return accepted(request, env);
     }
     return errorResponse("storage_unavailable", 503, request, env);
   }
 
-  return json({ ok: true }, 201, request, env);
+  return accepted(request, env);
 }
 
 function adminQuery(request) {

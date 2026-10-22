@@ -238,11 +238,12 @@ describe("validación", () => {
     expect(env.DB.filas).toHaveLength(0);
   });
 
-  it("el campo trampa `botcheck` lleno no guarda nada ni gasta Turnstile", async () => {
+  it("el campo trampa `botcheck` lleno no guarda nada ni gasta Turnstile, y responde como un alta", async () => {
     const espia = turnstile("ok");
     const env = entorno();
     const res = await worker.fetch(alta({ ...SOLICITUD, botcheck: "soy un bot" }), env);
-    expect((await res.json()).ok).toBe(true);
+    expect(res.status).toBe(201);
+    expect(await res.json()).toEqual({ ok: true });
     expect(espia).not.toHaveBeenCalled();
     expect(env.DB.filas).toHaveLength(0);
   });
@@ -368,14 +369,26 @@ describe("alta", () => {
     expect(fila.email_hash).toMatch(/^[0-9a-f]{64}$/);
   });
 
-  it("un correo repetido no crea otra fila", async () => {
+  it("un correo repetido no crea otra fila y responde igual que uno nuevo: no deja saber quién está apuntado", async () => {
+    turnstile("ok");
+    const env = entorno();
+    const nuevo = await worker.fetch(alta(SOLICITUD), env);
+    const repetido = await worker.fetch(alta({ ...SOLICITUD, email: "ANA@ejemplo.com" }, { ip: "198.51.100.9" }), env);
+    expect(env.DB.filas).toHaveLength(1);
+    conCors(repetido);
+    expect(repetido.status).toBe(nuevo.status);
+    expect(await repetido.text()).toBe(await nuevo.text());
+  });
+
+  it("si otra petición inserta el mismo correo entre la búsqueda y el alta, la respuesta es la misma", async () => {
     turnstile("ok");
     const env = entorno();
     await worker.fetch(alta(SOLICITUD), env);
-    const repetido = await worker.fetch(alta({ ...SOLICITUD, email: "ANA@ejemplo.com" }, { ip: "198.51.100.9" }), env);
-    expect(repetido.ok).toBe(true);
-    conCors(repetido);
+    env.DB.estado.carrera = true;
+    const res = await worker.fetch(alta(SOLICITUD, { ip: "198.51.100.9" }), env);
     expect(env.DB.filas).toHaveLength(1);
+    expect(res.status).toBe(201);
+    expect(await res.json()).toEqual({ ok: true });
   });
 
   it("un fallo de D1 al insertar que no es de unicidad da 503 storage_unavailable", async () => {
