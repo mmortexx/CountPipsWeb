@@ -25,7 +25,7 @@
 | `d9_d10_security_editorial.test.ts` | D9 + D10 | Privacidad cliente, ninguna analítica ni cookie en el código (con el detector probado), tono institucional; `leeCifra` no toma por cifra ninguna entrada maliciosa (HTML, `NaN`, `Infinity`, notación científica) en ningún idioma |
 | `d11_d12_shortcuts_resilience.test.ts` | D11 + D12 | Ctrl+G y los atajos de una tecla, `try/catch` de storage, validación de entradas; `proyectaCapital` y `calculaPlan` con ceros, NaN y negativos sin dar NaN; los vistos del glosario (`readRecent`/`writeRecent`) con `SecurityError`, cuota llena y JSON corrupto |
 | `d14_institutional_suite.test.ts` | D14 | Multiplicadores de instrumento, SQN, índice de úlcera, asimetría de drawdown |
-| `tier3_pairwise_combinations.test.ts` | — | Combinaciones de features por pares |
+| `tier3_pairwise_combinations.test.ts` | — | Combinaciones de features por pares, con el código real: semilla y «otra tirada» de `simulaMonteCarlo`, `proyectaCapital` con balance NaN o negativo, `calculaPlan` en los tres mercados con el mismo Kelly topado por `riesgoDeKelly`, los escenarios de `DisciplineCost` en `costeIndisciplina`, `filtraGlosario` por familia y texto |
 | `tier4_real_world_scenarios.test.ts` | — | Recorridos de usuario completos |
 
 ## `tests/` (raíz) — contratos del sitio
