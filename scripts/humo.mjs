@@ -1756,6 +1756,87 @@ let navegacionMirada = false;
   await ctxNav.close();
 }
 
+// Turnstile se carga cuando alguien empieza a rellenar /beta, no al abrirla:
+// abrir la página no avisa a Cloudflare. Con clave, el primer foco tiene que
+// pedir la API; sin clave, no se pide nunca. Si el sitio se compiló con clave
+// lo dice la propia página (el hueco del widget solo existe con ella), no el
+// entorno de este script. Si el entorno sí la trae (el trabajo «Dominio propio»
+// compila con la de prueba pública de Cloudflare) y la página no tiene el
+// hueco, la mitad con clave no se estaría comprobando. Las peticiones se
+// interceptan y no salen a la red.
+const CLAVE_EN_ENTORNO = Boolean((process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "").trim());
+let turnstileMirado = "";
+{
+  const ctxT = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+  const pedidas = [];
+  await ctxT.route("https://challenges.cloudflare.com/**", (r) => {
+    pedidas.push(r.request().url());
+    return r.fulfill({ status: 200, contentType: "text/javascript", body: "" });
+  });
+  const pagina = await ctxT.newPage();
+  try {
+    await pagina.goto(`${BASE}/beta`, { waitUntil: "networkidle", timeout: 45000 });
+    await pagina.waitForTimeout(1500);
+    const alAbrir = pedidas.length;
+    const conClave = (await pagina.locator('form [aria-label="Verificación anti-bot"]').count()) > 0;
+    await pagina.locator('form input[type="email"]').first().focus();
+    await pagina.waitForTimeout(1500);
+    const trasFoco = pedidas.length;
+    if (CLAVE_EN_ENTORNO && !conClave) fallos.push("turnstile: se compiló con clave y /beta no tiene el hueco del widget: la mitad con clave no se comprueba");
+    else if (alAbrir) fallos.push(`turnstile: abrir /beta ya pide ${pedidas[0]} a Cloudflare, antes de que nadie rellene`);
+    else if (conClave && !trasFoco) fallos.push("turnstile: con clave, el primer foco en /beta no pidió la API de Cloudflare");
+    else if (!conClave && trasFoco) fallos.push(`turnstile: sin clave, /beta pidió ${pedidas[0]}`);
+    else turnstileMirado = conClave ? `con clave: nada al abrir /beta, ${trasFoco} petición(es) al primer foco` : "sin clave: ninguna petición, ni al abrir /beta ni al enfocar";
+  } catch (e) {
+    fallos.push(`turnstile: ${String(e).split("\n")[0]}`);
+  }
+  await ctxT.close();
+}
+
+// «Reiniciar demo» borra las operaciones propias y eso no se deshace: con una
+// guardada, la paleta pregunta; cancelar la conserva y aceptar la borra. Las
+// pruebas unitarias inyectan la pregunta; esto mira la del navegador.
+let reinicioMirado = "";
+{
+  const ctxR = await navegador.newContext({ viewport: { width: 1440, height: 900 } });
+  const pagina = await ctxR.newPage();
+  const CLAVE = "tj-demo-trades";
+  const OPERACION = {
+    id: 1, instrument: "EURUSD", setup: "Breakout", direction: "long", entry: 1.1, exit: 1.2, qty: 1,
+    netPnl: 100, rMultiple: 1, compliance: "yes", closedAt: "2026-07-01T10:00:00Z", note: "",
+  };
+  const reinicia = async (aceptar) => {
+    let aviso = null;
+    pagina.once("dialog", (d) => {
+      aviso = d.message();
+      return aceptar ? d.accept() : d.dismiss();
+    });
+    await pagina.locator(".demo-window [role=tab]").first().click();
+    await pagina.keyboard.press("Control+k");
+    await pagina.locator('[cmdk-root] input').waitFor({ timeout: 5000 });
+    await pagina.keyboard.type("reset-demo");
+    await pagina.keyboard.press("Enter");
+    await pagina.waitForTimeout(800);
+    return { aviso, guardadas: await pagina.evaluate((k) => JSON.parse(localStorage.getItem(k) ?? "[]").length, CLAVE) };
+  };
+  try {
+    await pagina.goto(`${BASE}/demo`, { waitUntil: "networkidle", timeout: 45000 });
+    await pagina.evaluate(([k, op]) => localStorage.setItem(k, JSON.stringify([op])), [CLAVE, OPERACION]);
+    await pagina.reload({ waitUntil: "networkidle", timeout: 45000 });
+    const cancelado = await reinicia(false);
+    if (!cancelado.aviso) fallos.push("reiniciar demo: con una operación propia guardada, no preguntó antes de borrar");
+    else if (cancelado.guardadas !== 1) fallos.push(`reiniciar demo: al cancelar quedan ${cancelado.guardadas} operaciones propias, no 1`);
+    else {
+      const aceptado = await reinicia(true);
+      if (aceptado.guardadas !== 0) fallos.push(`reiniciar demo: al aceptar quedan ${aceptado.guardadas} operaciones propias`);
+      else reinicioMirado = `pregunta «${cancelado.aviso}»; cancelar conserva y aceptar borra`;
+    }
+  } catch (e) {
+    fallos.push(`reiniciar demo: ${String(e).split("\n")[0]}`);
+  }
+  await ctxR.close();
+}
+
 // El botón de subir no tapa el pie: al final de la página se aparta hacia
 // arriba, y una cantidad fija dejaba de bastar cuando la barra final del pie
 // ocupaba más líneas en móvil. Se mide cada trozo de texto del pie contra el botón.
@@ -1994,6 +2075,8 @@ console.log(`[humo] menú Producto — ${menusVistos.join("; ")}`);
 console.log(`[humo] cierre en móvil — ${cierresMedidos.length} rutas, botón principal a todo el ancho`);
 console.log(`[humo] acordeón — ${acordeones.join(", ")}: se despliega y se pliega con fotogramas intermedios`);
 if (navegacionMirada) console.log("[humo] navegación / → /pricing — la página nueva entra una sola vez");
+console.log(`[humo] turnstile — ${turnstileMirado}`);
+console.log(`[humo] reiniciar demo — ${reinicioMirado}`);
 console.log(`[humo] barra — contenido frente a rejilla: ${[...new Set(presupuestosBarra)].join("; ")}`);
 
 if (SERVIR) {

@@ -130,11 +130,11 @@ export const HERRAMIENTAS: Herramienta[] = [
     h1Es: "Cuántas veces la pasarías.",
     h1En: "How often you would pass.",
     subtituloEs:
-      "Una prueba de fondeo se aprueba o se suspende según lo que llegue antes: el objetivo o el drawdown. Pon sus reglas y tu forma de operar, y mira qué parte de dos mil intentos la supera.",
+      `Una prueba de fondeo se aprueba o se suspende según lo que llegue antes: el objetivo o el drawdown. Pon sus reglas y tu forma de operar, y mira qué parte de ${fmtInt(CAMINOS_FONDEO, "es")} intentos la supera.`,
     subtituloEn:
-      "A prop firm challenge is passed or failed by whichever comes first: the target or the drawdown. Set its rules and how you trade, and see what share of two thousand attempts gets through.",
-    resumenEs: "Qué parte de dos mil intentos llega antes al objetivo que al drawdown.",
-    resumenEn: "What share of two thousand attempts hits the target before the drawdown.",
+      `A prop firm challenge is passed or failed by whichever comes first: the target or the drawdown. Set its rules and how you trade, and see what share of ${fmtInt(CAMINOS_FONDEO, "en")} attempts gets through.`,
+    resumenEs: `Qué parte de ${fmtInt(CAMINOS_FONDEO, "es")} intentos llega antes al objetivo que al drawdown.`,
+    resumenEn: `What share of ${fmtInt(CAMINOS_FONDEO, "en")} attempts hits the target before the drawdown.`,
     entregaEs: "Aprueba o suspende",
     entregaEn: "Pass or fail",
     descripcionEs:
@@ -251,7 +251,7 @@ const EN_LETRA: Record<"es" | "en", string[]> = {
 
 import type { Lang } from "@/lib/locale";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
-import { fmtMoney } from "@/lib/trading/format";
+import { fmtInt, fmtMoney } from "@/lib/trading/format";
 
 /** Cuántas herramientas hay, en letra y con mayúscula inicial; los textos que lo dicen salen de aquí. */
 export function herramientasEnLetra(lang: Lang): string {

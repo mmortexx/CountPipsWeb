@@ -5,6 +5,8 @@ import {
   type Trade,
 } from "@/lib/trading/data";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
+import { costeIndisciplina } from "@/lib/trading/indisciplina";
+import { simulaMonteCarlo, type ParametrosMonteCarlo } from "@/lib/trading/montecarlo";
 
 /**
  * Dimensión D1: exactitud de las matemáticas financieras. Tier 1 contrasta
@@ -239,91 +241,40 @@ describe("D1: Quantitative & Financial Math - Tier 1 Feature Coverage", () => {
     expect(minSample).toBe(369);
   });
 
-  it("D1-T1.8: Deterministic Monte Carlo Simulation with Mulberry32 PRNG and quantiles", () => {
-    function mulberry32(s: number) {
-      let a = s >>> 0;
-      return () => {
-        a |= 0;
-        a = (a + 0x6d2b79f5) | 0;
-        let t = Math.imul(a ^ (a >>> 15), 1 | a);
-        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    }
-
-    const runSimulation = (seed: number, tradesCount = 50, runs = 100) => {
-      const rng = mulberry32(seed);
-      const winRate = 0.55;
-      const avgWinR = 2.0;
-      const avgLossR = 1.0;
-      const riskPct = 1.0;
-      const startBalance = 10000;
-
-      const finalBalances: number[] = [];
-      let ruinCount = 0;
-
-      for (let run = 0; run < runs; run++) {
-        let bal = startBalance;
-        for (let t = 0; t < tradesCount; t++) {
-          if (bal <= 0) {
-            bal = 0;
-            break;
-          }
-          const isWin = rng() < winRate;
-          const riskUsd = bal * (riskPct / 100);
-          if (isWin) bal += riskUsd * avgWinR;
-          else bal -= riskUsd * avgLossR;
-        }
-        if (bal <= 0) ruinCount++;
-        finalBalances.push(bal);
-      }
-
-      finalBalances.sort((a, b) => a - b);
-      const p10 = finalBalances[Math.floor(0.10 * runs)];
-      const p50 = finalBalances[Math.floor(0.50 * runs)];
-      const p90 = finalBalances[Math.floor(0.90 * runs)];
-      const mean = finalBalances.reduce((s, v) => s + v, 0) / runs;
-      return { p10, p50, p90, mean, ruinRate: ruinCount / runs };
+  it("D1-T1.8: el Monte Carlo es determinista por semilla y sus cuantiles van en orden", () => {
+    const p: ParametrosMonteCarlo = {
+      caminos: 100,
+      startBalance: 10000,
+      trades: 50,
+      winRate: 55,
+      avgWinR: 2,
+      avgLossR: 1,
+      riskPct: 1,
+      monthlyWithdrawal: 0,
+      seed: 42,
     };
+    const a = simulaMonteCarlo(p);
+    const b = simulaMonteCarlo(p);
+    expect([b.finalP5, b.finalP50, b.finalP95, b.finalMean]).toEqual([a.finalP5, a.finalP50, a.finalP95, a.finalMean]);
+    expect(simulaMonteCarlo({ ...p, seed: 43 }).finalMean).not.toBe(a.finalMean);
 
-    // Misma semilla, mismo resultado.
-    const sim1 = runSimulation(42);
-    const sim2 = runSimulation(42);
-    expect(sim1.p10).toBe(sim2.p10);
-    expect(sim1.p50).toBe(sim2.p50);
-    expect(sim1.p90).toBe(sim2.p90);
-    expect(sim1.mean).toBe(sim2.mean);
-
-    expect(sim1.p10).toBeLessThanOrEqual(sim1.p50);
-    expect(sim1.p50).toBeLessThanOrEqual(sim1.p90);
-    expect(sim1.p50).toBeGreaterThan(10000); // 55% WR with 2:1 R has positive expectancy
+    expect(a.finalP5).toBeLessThanOrEqual(a.finalP25);
+    expect(a.finalP25).toBeLessThanOrEqual(a.finalP50);
+    expect(a.finalP50).toBeLessThanOrEqual(a.finalP75);
+    expect(a.finalP75).toBeLessThanOrEqual(a.finalP95);
+    expect(a.expectancyR).toBeCloseTo(0.65, 10);
+    expect(a.finalP50).toBeGreaterThan(10000); // 55 % de acierto a 2:1: esperanza positiva
   });
 
-  it("D1-T1.9: Guardian Recovery Plan Capital & ROI Projector", () => {
-    // 60 operaciones al mes con 40 % fuera de plan = 24; esperanza en plan +29,73 $, fuera de plan −38,47 $.
-    const totalTrades = 60;
-    const breachPct = 40;
-    const inPlanExp = 29.73;
-    const offPlanExp = -38.47;
-
-    const offPlanTrades = Math.round((totalTrades * breachPct) / 100); // 24
-    const gap = inPlanExp - offPlanExp; // 68.20
-    const totalLeakMonthly = offPlanTrades * gap; // 24 * 68.20 = 1636.80
-    const totalLeakAnnual = totalLeakMonthly * 12; // 19641.60
-
-    expect(offPlanTrades).toBe(24);
-    expect(gap).toBeCloseTo(68.20, 2);
-    expect(totalLeakMonthly).toBeCloseTo(1636.80, 2);
-    expect(totalLeakAnnual).toBeCloseTo(19641.60, 2);
-
-    // Recuperación del 60 % con el Guardián.
-    const monthlyRecovery60 = totalLeakMonthly * 0.6; // 982.08
-    const dailyRecovery = monthlyRecovery60 / 30; // 32.736
-    const licenseCost = 149;
-    const paybackDays = Math.max(1, Math.round(licenseCost / dailyRecovery));
-
-    expect(monthlyRecovery60).toBeCloseTo(982.08, 2);
-    expect(paybackDays).toBe(5); // se amortiza en 5 días de trading
+  it("D1-T1.9: el coste de indisciplina de la calculadora", () => {
+    // 60 operaciones al mes con 40 % fuera de plan; esperanza en plan +29,73 $, fuera de plan −38,47 $.
+    const c = costeIndisciplina(60, 40, 29.73, -38.47);
+    expect(c.offPlanTrades).toBe(24);
+    expect(c.inPlanTrades).toBe(36);
+    expect(c.gap).toBeCloseTo(68.2, 2);
+    expect(c.totalLeakMonthly).toBeCloseTo(1636.8, 2);
+    expect(c.totalLeakAnnual).toBeCloseTo(19641.6, 2);
+    expect(c.sinCoste).toBe(false);
   });
 });
 

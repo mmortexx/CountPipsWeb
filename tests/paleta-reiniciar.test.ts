@@ -21,23 +21,59 @@ describe("paleta de la demo: «Reiniciar demo»", () => {
   beforeEach(() => vi.stubGlobal("window", ventanaFalsa()));
   afterEach(() => vi.unstubAllGlobals());
 
-  it("borra las operaciones propias, quita los filtros y vuelve al resumen", () => {
+  const unaOperacion = () =>
     addTrade({
       instrument: "EURUSD", setup: "Breakout", direction: "long", entry: 1.1, exit: 1.2, qty: 1, netPnl: 100,
       rMultiple: 1, compliance: "yes", closedAt: "2026-07-01T10:00:00Z", note: "",
     });
-    expect(getCustomTrades()).toHaveLength(1);
 
+  function reiniciar(confirmar: (texto: string) => boolean, lang: "es" | "en" = "es") {
     const setPage = vi.fn();
     const clearFilters = vi.fn();
     const comandos = comandosDemo({
       setPage, clearFilters, goDetail: vi.fn(), setFilters: vi.fn(), toggleLang: vi.fn(), toggleTheme: vi.fn(),
-      setPalette: vi.fn(), palette: "clasico", paletteOrder: ["clasico"], theme: "light",
+      setPalette: vi.fn(), palette: "clasico", paletteOrder: ["clasico"], theme: "light", lang, confirmar,
     });
     comandos.find((c) => c.id === "reset-demo")!.run();
+    return { setPage, clearFilters };
+  }
 
+  it("con operaciones propias, si se confirma, las borra, quita los filtros y vuelve al resumen", () => {
+    unaOperacion();
+    const confirmar = vi.fn((_texto: string) => true);
+    const { setPage, clearFilters } = reiniciar(confirmar);
+
+    expect(confirmar).toHaveBeenCalledOnce();
     expect(getCustomTrades()).toEqual([]);
     expect(window.localStorage.getItem(DEMO_TRADES_KEY)).toBeNull();
+    expect(clearFilters).toHaveBeenCalled();
+    expect(setPage).toHaveBeenLastCalledWith("dashboard");
+  });
+
+  it("si no se confirma, no toca nada: borrar no se puede deshacer", () => {
+    unaOperacion();
+    unaOperacion();
+    const confirmar = vi.fn((_texto: string) => false);
+    const { setPage, clearFilters } = reiniciar(confirmar);
+
+    expect(confirmar.mock.calls[0][0]).toMatch(/2 operaciones.*No se puede deshacer/);
+    expect(getCustomTrades()).toHaveLength(2);
+    expect(clearFilters).not.toHaveBeenCalled();
+    expect(setPage).not.toHaveBeenCalled();
+  });
+
+  it("el aviso va en el idioma de la demo", () => {
+    unaOperacion();
+    const confirmar = vi.fn((_texto: string) => false);
+    reiniciar(confirmar, "en");
+    expect(confirmar.mock.calls[0][0]).toMatch(/1 trade.*can.t be undone/);
+  });
+
+  it("sin operaciones propias no hay nada que perder y no pregunta", () => {
+    const confirmar = vi.fn((_texto: string) => false);
+    const { setPage, clearFilters } = reiniciar(confirmar);
+
+    expect(confirmar).not.toHaveBeenCalled();
     expect(clearFilters).toHaveBeenCalled();
     expect(setPage).toHaveBeenLastCalledWith("dashboard");
   });
