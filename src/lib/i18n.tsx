@@ -165,8 +165,8 @@ export const STR = {
     en: "Required fields missing",
   },
   tradeRegisterErrorDesc: {
-    es: "Instrumento, setup, dirección, entrada y stop son obligatorios.",
-    en: "Instrument, setup, direction, entry and stop are required.",
+    es: "Instrumento, setup, dirección, entrada y stop son obligatorios; precios y cantidad, mayores que cero.",
+    en: "Instrument, setup, direction, entry and stop are required; prices and quantity must be above zero.",
   },
   tradeDeleted: { es: "Operación eliminada", en: "Trade deleted" },
   deleteTrade: { es: "Eliminar operación", en: "Delete trade" },
