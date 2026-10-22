@@ -6,6 +6,9 @@
  * entrada por término. Cifras en convención de cada idioma (`cifras.mjs`).
  */
 
+import { fmtNum } from "./trading/format";
+import { SQN_BUENO } from "./trading/glossary";
+
 type Par = { es: string; en: string };
 export type Ampliacion = { ejemplo: Par; importa: Par };
 
@@ -526,8 +529,8 @@ export const AMPLIADO: Record<string, Ampliacion> = {
       en: "With 100 trades, an average of +0.3R and a standard deviation of 1.5R, the SQN is √100 × 0.3 / 1.5 = 2.",
     },
     importa: {
-      es: "Combina ventaja, regularidad y número de operaciones en una sola nota. Por encima de 2 suele considerarse un buen sistema, aunque con pocas operaciones la cifra es poco fiable.",
-      en: "It combines edge, consistency and number of trades into one score. Above 2 is usually considered a good system, though with few trades the figure is unreliable.",
+      es: `Combina ventaja, regularidad y número de operaciones en una sola nota. A partir de ${fmtNum(SQN_BUENO, "es", 1)} suele considerarse un buen sistema, aunque con pocas operaciones la cifra es poco fiable.`,
+      en: `It combines edge, consistency and number of trades into one score. ${fmtNum(SQN_BUENO, "en", 1)} and up is usually considered a good system, though with few trades the figure is unreliable.`,
     },
   },
   "Ulcer index": {
