@@ -361,14 +361,8 @@ export const STR = {
     es: "Compra cuando estés listo.",
     en: "Buy when you are ready.",
   },
-  pricingLead: {
-    es: "Dos niveles claros para dos formas de operar. Prueba la demo, compara el alcance y solicita acceso anticipado si quieres entrar antes de la apertura comercial.",
-    en: "Two clear tiers for two ways of trading. Try the demo, compare the scope and request early access if you want in before commercial launch.",
-  },
   core: { es: "Core", en: "Core" },
   pro: { es: "Pro", en: "Pro" },
-  mostPopular: { es: "Más popular", en: "Most popular" },
-  perOnce: { es: "una vez", en: "once" },
 
   // ---- FAQ ----
   faqEyebrow: { es: "Dudas frecuentes", en: "Common questions" },
