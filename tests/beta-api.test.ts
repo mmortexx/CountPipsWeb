@@ -1,3 +1,4 @@
+import { createHash, createHmac } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import worker from "../services/beta-api/src/worker.js";
 
@@ -9,6 +10,9 @@ import worker from "../services/beta-api/src/worker.js";
 const ORIGEN = "https://countpips.com";
 const IP = "203.0.113.7";
 const SITEVERIFY = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+const SECRETO_IP = "sal-de-prueba";
+const hmac = (secreto: string, valor: string) => createHmac("sha256", secreto).update(valor).digest("hex");
+const sha256 = (valor: string) => createHash("sha256").update(valor).digest("hex");
 
 type Fila = Record<string, unknown>;
 
@@ -90,6 +94,7 @@ function entorno(extra: Record<string, unknown> = {}) {
     ADMIN_TOKEN: "token-admin",
     RATE_LIMIT_SECONDS: "60",
     RATE_LIMIT_DAILY: "20",
+    IP_HASH_SECRET: SECRETO_IP,
     DB: d1Falso(),
     RATE_LIMIT: kvFalso(),
     ...extra,
@@ -403,6 +408,57 @@ describe("alta", () => {
     expect(res.status).toBe(503);
     conCors(res);
     expect(await res.json()).toEqual({ ok: false, error: "storage_unavailable" });
+  });
+});
+
+describe("huella de la IP", () => {
+  // Hay unos 4.300 millones de IPv4: un sha256 sin sal se deshace probándolas todas.
+  it("en D1 se guarda HMAC-SHA-256 con IP_HASH_SECRET, no el sha256 de la IP", async () => {
+    turnstile("ok");
+    const env = entorno();
+    await worker.fetch(alta(SOLICITUD), env);
+    const guardada = env.DB.filas[0].ip_hash;
+    expect(guardada).toBe(hmac(SECRETO_IP, IP));
+    expect(guardada).not.toBe(sha256(IP));
+
+    const otroSecreto = entorno({ IP_HASH_SECRET: "otra-sal" });
+    await worker.fetch(alta(SOLICITUD), otroSecreto);
+    expect(otroSecreto.DB.filas[0].ip_hash).toBe(hmac("otra-sal", IP));
+  });
+
+  it("las claves del límite en KV tampoco llevan la IP ni su sha256", async () => {
+    turnstile("ok");
+    const env = entorno();
+    await worker.fetch(alta(SOLICITUD), env);
+    const claves = [...env.RATE_LIMIT.datos.keys()];
+    expect(claves).toHaveLength(2);
+    for (const clave of claves) {
+      expect(clave).toContain(hmac(SECRETO_IP, IP));
+      expect(clave).not.toContain(sha256(IP));
+      expect(clave).not.toContain(IP);
+    }
+  });
+
+  it("sin IP_HASH_SECRET no se guarda nada de la IP", async () => {
+    turnstile("ok");
+    const env = entorno({ IP_HASH_SECRET: undefined, RATE_LIMIT: undefined, RATE_LIMIT_OPTIONAL: "1" });
+    const res = await worker.fetch(alta(SOLICITUD), env);
+    expect(res.status).toBe(201);
+    expect(env.DB.filas[0].ip_hash).toBeNull();
+  });
+
+  it("sin IP_HASH_SECRET y con KV el límite no puede identificar la IP: falla cerrado con 503", async () => {
+    const espia = turnstile("ok");
+    const registro = vi.spyOn(console, "error").mockImplementation(() => {});
+    const env = entorno({ IP_HASH_SECRET: "" });
+    const res = await worker.fetch(alta(SOLICITUD), env);
+    expect(res.status).toBe(503);
+    conCors(res);
+    expect(await res.json()).toEqual({ ok: false, error: "service_misconfigured" });
+    expect(registro).toHaveBeenCalled();
+    expect(espia).not.toHaveBeenCalled();
+    expect(env.DB.filas).toHaveLength(0);
+    expect(env.RATE_LIMIT.datos.size).toBe(0);
   });
 });
 

@@ -121,9 +121,23 @@ async function digest(value) {
   return new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
 }
 
-async function sha256Hex(value) {
-  const bytes = await digest(value);
+function hex(bytes) {
   return Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha256Hex(value) {
+  return hex(await digest(value));
+}
+
+/* Huella de la IP: HMAC-SHA-256 con `IP_HASH_SECRET`. Un sha256 sin sal se
+   deshace probando todas las IPv4; sin el secreto no hay huella (null) y no
+   se guarda nada de la IP. */
+async function ipFingerprint(ip, env) {
+  const secret = String(env.IP_HASH_SECRET || "");
+  if (!secret) return null;
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey("raw", encoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  return hex(new Uint8Array(await crypto.subtle.sign("HMAC", key, encoder.encode(ip))));
 }
 
 async function constantTimeEqual(left, right) {
@@ -190,8 +204,9 @@ async function verifyTurnstile(request, payload, env) {
    el envío repetido; la diaria frena lo que la corta no ve (peticiones
    espaciadas más de 60 s).
 
-   `RATE_LIMIT` es el almacén KV de Cloudflare. Sin él se falla cerrado: se
-   registra y se rechaza, salvo que el despliegue declare a propósito
+   `RATE_LIMIT` es el almacén KV de Cloudflare, y la clave es la huella de la
+   IP, que pide `IP_HASH_SECRET`. Sin cualquiera de los dos se falla cerrado:
+   se registra y se rechaza, salvo que el despliegue declare a propósito
    `RATE_LIMIT_OPTIONAL: "1"` (local con `wrangler dev` sin KV). Un control
    que se abre en silencio cuando falta su dependencia no se echa en falta
    hasta que cuesta dinero. */
@@ -203,10 +218,12 @@ const RATE_LIMIT_DAILY_MAX = 20;
    su cuota y el reintento daría «demasiadas peticiones», que señala al sitio
    equivocado. */
 
-/** Estado de cuota de una IP, sin tocar nada. */
+/** Estado de cuota de una IP, sin tocar nada; null si falta KV o el secreto. */
 async function estadoCuota(request, env) {
+  if (!env.RATE_LIMIT) return null;
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const huella = await sha256Hex(ip);
+  const huella = await ipFingerprint(ip, env);
+  if (!huella) return null;
   const dia = new Date().toISOString().slice(0, 10);
   return {
     cortaKey: `beta-application:${huella}`,
@@ -218,19 +235,24 @@ async function estadoCuota(request, env) {
 }
 
 /**
- * ¿Puede pasar esta IP? Devuelve `"ok"`, `"limitado"` o `"sin-almacen"`; este
- * último es un fallo de configuración (falta el namespace KV), no de uso.
+ * ¿Puede pasar esta IP? Devuelve `"ok"`, `"limitado"` o `"sin-configurar"`;
+ * este último es un fallo de configuración (falta el namespace KV o
+ * `IP_HASH_SECRET`), no de uso.
  */
 async function rateLimitDisponible(request, env) {
-  if (!env.RATE_LIMIT) {
+  const cuota = await estadoCuota(request, env);
+  if (!cuota) {
     if (String(env.RATE_LIMIT_OPTIONAL ?? "") === "1") return "ok";
     console.error(
-      "[beta-api] RATE_LIMIT (KV) no está enlazado: se rechaza la solicitud. " +
-        "Crea el namespace y ponlo en wrangler.jsonc, o declara RATE_LIMIT_OPTIONAL=1 si es un entorno local."
+      env.RATE_LIMIT
+        ? "[beta-api] Falta el secreto IP_HASH_SECRET: sin él no se puede limitar por IP sin guardarla. " +
+            "Se rechaza la solicitud. Ponlo con `npx wrangler secret put IP_HASH_SECRET`."
+        : "[beta-api] RATE_LIMIT (KV) no está enlazado: se rechaza la solicitud. " +
+            "Crea el namespace y ponlo en wrangler.jsonc, o declara RATE_LIMIT_OPTIONAL=1 si es un entorno local."
     );
-    return "sin-almacen";
+    return "sin-configurar";
   }
-  const { cortaKey, diaKey, tope } = await estadoCuota(request, env);
+  const { cortaKey, diaKey, tope } = cuota;
   if (await env.RATE_LIMIT.get(cortaKey)) return "limitado";
   const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
   if (usadas >= tope) return "limitado";
@@ -239,8 +261,9 @@ async function rateLimitDisponible(request, env) {
 
 /** Descuenta una petición; se llama solo cuando ya va a atenderse. */
 async function consumirCuota(request, env) {
-  if (!env.RATE_LIMIT) return;
-  const { cortaKey, diaKey, segundos } = await estadoCuota(request, env);
+  const cuota = await estadoCuota(request, env);
+  if (!cuota) return;
+  const { cortaKey, diaKey, segundos } = cuota;
   const usadas = Number((await env.RATE_LIMIT.get(diaKey)) || 0);
   await env.RATE_LIMIT.put(cortaKey, "1", { expirationTtl: segundos });
   // 48 h de vida: cubre el día en curso en cualquier huso.
@@ -268,7 +291,7 @@ async function createApplication(request, env) {
   // La consulta de cuota va antes de Turnstile (evita una llamada de red a
   // quien ya superó su límite); el descuento, después.
   const cuota = await rateLimitDisponible(request, env);
-  if (cuota === "sin-almacen") {
+  if (cuota === "sin-configurar") {
     // Configuración incompleta, no abuso: 503 con código propio.
     return errorResponse("service_misconfigured", 503, request, env);
   }
@@ -287,7 +310,7 @@ async function createApplication(request, env) {
   const now = new Date().toISOString();
   const id = crypto.randomUUID();
   const ip = request.headers.get("CF-Connecting-IP") || "";
-  const ipHash = ip ? await sha256Hex(ip) : null;
+  const ipHash = ip ? await ipFingerprint(ip, env) : null;
   const privacyVersion = "2026-08";
   try {
     await env.DB.prepare(
