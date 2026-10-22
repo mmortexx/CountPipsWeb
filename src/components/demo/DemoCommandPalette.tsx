@@ -6,7 +6,8 @@ import { useLang } from "@/lib/i18n";
 import { useTheme, type PaletteName } from "@/lib/theme";
 import { useDemo } from "./DemoContext";
 import { TRADES } from "@/lib/trading/data";
-import { resetToSample } from "@/lib/trading/demoStore";
+import { getCustomTrades, resetToSample } from "@/lib/trading/demoStore";
+import { fmtOperaciones } from "@/lib/trading/format";
 
 interface DemoCommandPaletteProps {
   open: boolean;
@@ -37,6 +38,9 @@ interface AccionesPaleta {
   palette: PaletteName;
   paletteOrder: PaletteName[];
   theme: ReturnType<typeof useTheme>["theme"];
+  lang: "es" | "en";
+  /** Pregunta antes de lo que no se puede deshacer; en el navegador, `window.confirm`. */
+  confirmar: (texto: string) => boolean;
 }
 
 export function comandosDemo({
@@ -50,6 +54,8 @@ export function comandosDemo({
   palette,
   paletteOrder,
   theme,
+  lang,
+  confirmar,
 }: AccionesPaleta): Command[] {
   const nav: Command[] = [
     {
@@ -194,6 +200,15 @@ export function comandosDemo({
       section: "actions",
       icon: <ResetIcon />,
       run: () => {
+        const propias = getCustomTrades().length;
+        if (propias > 0) {
+          const ops = fmtOperaciones(propias, lang);
+          const aviso =
+            lang === "es"
+              ? `Reiniciar la demo borra ${ops} que has añadido. No se puede deshacer.`
+              : `Resetting the demo deletes the ${ops} you added. This can’t be undone.`;
+          if (!confirmar(aviso)) return;
+        }
         resetToSample();
         clearFilters();
         setPage("dashboard");
@@ -307,8 +322,13 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
   const paletteOrder: PaletteName[] = useMemo(() => ["clasico"], []);
 
   const commands = useMemo(
-    () => comandosDemo({ setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme }),
-    [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme],
+    () =>
+      comandosDemo({
+        setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme,
+        lang: es ? "es" : "en",
+        confirmar: (texto) => window.confirm(texto),
+      }),
+    [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme, es],
   );
 
   const filtered = useMemo(() => {
