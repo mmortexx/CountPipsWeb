@@ -9,8 +9,8 @@
  * Aplica las cabeceras del bloque `/*` a todas las respuestas, abre cada
  * página del export (más la 404), recorre las pestañas de la demo y escucha el
  * evento `securitypolicyviolation` del navegador. Falla si `_headers` no
- * declara una CSP o si alguna página dispara un bloqueo. No mide lo que solo
- * carga con claves de producción (Turnstile): el CI compila sin ellas.
+ * declara una CSP o si alguna página dispara un bloqueo. No mide Turnstile:
+ * solo se carga al empezar a rellenar /beta, y aquí no se rellena nada.
  *
  * Uso:  node scripts/cabeceras.mjs --serve out
  */
