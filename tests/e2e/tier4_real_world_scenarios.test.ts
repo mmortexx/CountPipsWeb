@@ -25,13 +25,19 @@ import {
   resetToSample,
   type CustomTrade,
 } from "@/lib/trading/demoStore";
-import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
+import { ERRORES_INDISCIPLINA } from "@/components/marketing/DisciplineCost";
+import { riesgoDeKelly } from "@/components/marketing/RiskCalculator";
+import { contrasteVentaja, UMBRAL_RUINA_PCT } from "@/lib/trading/estadistica";
+import { costeIndisciplina } from "@/lib/trading/indisciplina";
+import { simulaMonteCarlo, type ParametrosMonteCarlo } from "@/lib/trading/montecarlo";
+import { fraccionesKelly } from "@/lib/trading/plan";
 
 /**
- * Nivel 4: ocho escenarios de uso real que cruzan módulos: auditoría de 50
- * operaciones, plan del Guardián tras un 30 % de drawdown, Kelly en tres
- * regímenes, calendario frente a mapa de calor, Monte Carlo, ranking de
- * setups bilingüe, ciclo de operaciones propias y factura de indisciplina.
+ * Nivel 4: escenarios de uso real que cruzan módulos: auditoría de 50
+ * operaciones con el contraste de ventaja, Kelly en varios regímenes con el
+ * tope del control de riesgo, calendario frente a mapa de calor, Monte Carlo,
+ * ranking de setups bilingüe, ciclo de operaciones propias y factura de
+ * indisciplina. Cada cifra sale de la función que usa la herramienta.
  */
 
 // localStorage en memoria para el ejecutor de pruebas en Node.
@@ -134,112 +140,47 @@ describe("Tier 4: Real-World Application Workloads & User Journeys", () => {
     expect(metrics.expectancyR).toBeGreaterThan(0.5);
     expect(metrics.profitFactor).toBeGreaterThan(1.5);
 
-    // Test binomial de la ventaja estadística (H0: p0 = 0,50).
-    const n = metrics.closedCount;
-    const p0 = 0.50;
-    const se = Math.sqrt(n * p0 * (1 - p0)); // sqrt(50 * 0.25) = 3.5355
-    const z = (metrics.wins - n * p0) / se; // (29 - 25) / 3.5355 = 1.13137
-    const pValue = 2 * (1 - normalCdf(Math.abs(z)));
+    // ¿Ventaja o azar?, con el contraste de EdgeSignificanceChecker. Frente a un
+    // 50 % (payoff 1:1), un 58 % de acierto con n = 50 aún no se distingue del azar.
+    const unoAUno = contrasteVentaja(metrics.closedCount, metrics.winRate * 100, 1, 1);
+    expect(unoAUno.z).toBeCloseTo(1.1314, 3); // (0,58 − 0,5)·√50 / 0,5
+    expect(unoAUno.pValor).toBeCloseTo(0.1289, 3); // una cola
+    expect(unoAUno.veredicto).toBe("no-significativo");
 
-    expect(z).toBeCloseTo(1.1314, 3);
-    expect(pValue).toBeCloseTo(0.2579, 3);
-    // Con n = 50, un 58 % de acierto aún no se distingue del azar (alfa 0,05).
-    expect(pValue).toBeGreaterThan(0.05);
-
-    // Intervalo del 95 % del profit factor por el método delta.
-    const nw = metrics.wins;
-    const nl = metrics.losses;
-    const wins = sample50.filter((t) => t.netPnl > 0);
-    const losses = sample50.filter((t) => t.netPnl < 0);
-    const meanW = wins.reduce((s, t) => s + t.netPnl, 0) / nw;
-    const meanL = Math.abs(losses.reduce((s, t) => s + t.netPnl, 0)) / nl;
-    const varW = wins.reduce((s, t) => s + Math.pow(t.netPnl - meanW, 2), 0) / (nw - 1);
-    const varL = losses.reduce((s, t) => s + Math.pow(Math.abs(t.netPnl) - meanL, 2), 0) / (nl - 1);
-    const varLnPf = varW / (nw * meanW * meanW) + varL / (nl * meanL * meanL);
-    const seLnPf = Math.sqrt(varLnPf);
-
-    expect(varW).toBeGreaterThan(0);
-    expect(varL).toBeGreaterThan(0);
-    expect(seLnPf).toBeGreaterThan(0);
-
-    const ciLower = metrics.profitFactor * Math.exp(-1.96 * seLnPf);
-    const ciUpper = metrics.profitFactor * Math.exp(1.96 * seLnPf);
-    expect(ciLower).toBeLessThan(metrics.profitFactor);
-    expect(ciUpper).toBeGreaterThan(metrics.profitFactor);
-    expect(ciLower).toBeGreaterThan(0);
+    // Con el payoff real de la muestra el acierto de equilibrio baja a 1 / (1 + payoff)
+    // (≈ 34 %) y el mismo 58 % ya es ventaja sólida.
+    expect(metrics.payoff).toBeGreaterThan(1.5);
+    const conSuPayoff = contrasteVentaja(metrics.closedCount, metrics.winRate * 100, metrics.payoff, 1);
+    expect(conSuPayoff.equilibrio).toBeCloseTo(1 / (1 + metrics.payoff), 12);
+    expect(conSuPayoff.veredicto).toBe("solida");
   });
 
-  it("Scenario 2: Guardian Recovery Sequence from 30% Drawdown", () => {
-    // Capital inicial 10.000 $, actual 7.000 $ (30 % de drawdown).
-    const initialBalance = 10000;
-    const currentBalance = 7000;
-    const drawdownUsd = initialBalance - currentBalance; // $3,000
-    const drawdownPct = drawdownUsd / initialBalance; // 0.30 (30%)
+  it("Scenario 3: Kelly Position Sizing Dynamic Recalculation across Market Regimes", () => {
+    // Kelly de la calculadora de riesgo y el riesgo que aplica su botón: medio
+    // Kelly al paso de 0,05 y dentro del control (0,25-3 %).
+    // Tendencia alcista (60 % de acierto, payoff 2,2): topado al 3 %.
+    const regimeA = fraccionesKelly(60, 2.2);
+    expect(regimeA.completo).toBeCloseTo((0.92 / 2.2) * 100, 9); // 41,82 %
+    expect(regimeA.medio).toBeCloseTo(regimeA.completo / 2, 12);
+    expect(regimeA.cuarto).toBeCloseTo(regimeA.completo / 4, 12);
+    expect(riesgoDeKelly(regimeA.medio)).toBe(3);
 
-    // 60 operaciones: en plan +29,73 $ de esperanza; fuera de plan (40 %) −38,47 $.
-    const totalTradesMonth = 60;
-    const breachRate = 0.40;
-    const inPlanExp = 29.73;
-    const offPlanExp = -38.47;
+    // Lateral (46 %, payoff 1,5): completo 10 %, medio 5 %, topado al 3 %.
+    const regimeB = fraccionesKelly(46, 1.5);
+    expect(regimeB.completo).toBeCloseTo(10, 9);
+    expect(riesgoDeKelly(regimeB.medio)).toBe(3);
 
-    const offPlanTrades = Math.round(totalTradesMonth * breachRate); // 24
-    const inPlanTrades = totalTradesMonth - offPlanTrades; // 36
-    const gapPerTrade = inPlanExp - offPlanExp; // $68.20
-    const monthlyLeak = offPlanTrades * gapPerTrade; // $1,636.80
+    // Ventaja escasa (51 %, 1:1): medio 1 %, dentro del control.
+    expect(riesgoDeKelly(fraccionesKelly(51, 1).medio)).toBe(1);
+    // Casi sin ventaja (50,2 %, 1:1): medio 0,2 %, sube al mínimo del control.
+    expect(riesgoDeKelly(fraccionesKelly(50.2, 1).medio)).toBe(0.25);
+    // Fuera del paso se redondea al más cercano.
+    expect(riesgoDeKelly(1.23)).toBe(1.25);
 
-    expect(offPlanTrades).toBe(24);
-    expect(monthlyLeak).toBeCloseTo(1636.80, 2);
-
-    // El Guardián evita el 60 % de las operaciones fuera de plan.
-    const recoveredMonthly = monthlyLeak * 0.60; // $982.08 / month
-    const dailyRecovery = recoveredMonthly / 30; // $32.736 / day
-    const licenseCost = 149;
-    const paybackDays = Math.max(1, Math.round(licenseCost / dailyRecovery));
-
-    expect(recoveredMonthly).toBeCloseTo(982.08, 2);
-    expect(paybackDays).toBe(5); // se amortiza en 5 días de trading
-
-    // Resultado mensual con el Guardián = enPlan·esperanzaEnPlan + restoFueraDePlan·esperanzaFueraDePlan.
-    const remainingOffPlanTrades = offPlanTrades * 0.40; // 9.6 trades
-    const projectedNetMonthly = inPlanTrades * inPlanExp + remainingOffPlanTrades * offPlanExp;
-    expect(projectedNetMonthly).toBeGreaterThan(0);
-
-    const monthsToFullRecovery = drawdownUsd / projectedNetMonthly;
-    expect(monthsToFullRecovery).toBeLessThan(5);
-  });
-
-  it("Scenario 3: Kelly Position Sizing Dynamic Recalculation across 3 Market Regimes", () => {
-    const calcKellySizing = (winRatePct: number, payoff: number) => {
-      const p = winRatePct / 100;
-      const q = 1 - p;
-      const b = payoff;
-      const edge = p * b - q;
-      const fullKellyPct = b > 0 && edge > 0 ? (edge / b) * 100 : 0;
-      const halfKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 2)) : 0;
-      const quarterKellyPct = fullKellyPct > 0 ? Math.max(0.25, Math.min(3.0, fullKellyPct / 4)) : 0;
-      return { edge, fullKellyPct, halfKellyPct, quarterKellyPct };
-    };
-
-    // Tendencia alcista (60 % de acierto, payoff 2,2).
-    const regimeA = calcKellySizing(60, 2.2);
-    expect(regimeA.edge).toBeCloseTo(0.60 * 2.2 - 0.40, 4); // 0.92
-    expect(regimeA.fullKellyPct).toBeCloseTo((0.92 / 2.2) * 100, 2); // 41.82%
-    expect(regimeA.halfKellyPct).toBe(3.0); // topado al 3 %
-    expect(regimeA.quarterKellyPct).toBe(3.0);
-
-    // Lateral (46 %, payoff 1,5).
-    const regimeB = calcKellySizing(46, 1.5);
-    expect(regimeB.edge).toBeCloseTo(0.46 * 1.5 - 0.54, 4); // 0.15
-    expect(regimeB.fullKellyPct).toBeCloseTo((0.15 / 1.5) * 100, 2); // 10.0%
-    expect(regimeB.halfKellyPct).toBeCloseTo(3.0, 1); // 5 % topado al 3 %
-    expect(regimeB.quarterKellyPct).toBeCloseTo(2.5, 1);
-
-    // Crisis (35 %, payoff 1,2): ventaja negativa, se queda en 0.
-    const regimeC = calcKellySizing(35, 1.2);
-    expect(regimeC.edge).toBeCloseTo(0.35 * 1.2 - 0.65, 4); // -0.23
-    expect(regimeC.fullKellyPct).toBe(0);
-    expect(regimeC.halfKellyPct).toBe(0);
-    expect(regimeC.quarterKellyPct).toBe(0);
+    // Crisis (35 %, payoff 1,2): ventaja negativa, cero en todo.
+    const regimeC = fraccionesKelly(35, 1.2);
+    expect(regimeC).toEqual({ completo: 0, medio: 0, cuarto: 0 });
+    expect(riesgoDeKelly(regimeC.medio)).toBe(0);
   });
 
   it("Scenario 4: Multi-Month Calendar PnL Rollups and Heatmap Cross-Verification", () => {
@@ -278,70 +219,33 @@ describe("Tier 4: Real-World Application Workloads & User Journeys", () => {
   });
 
   it("Scenario 5: Monte Carlo Risk of Ruin & Tail Risk Stress Testing", () => {
-    function mulberry32(s: number) {
-      let a = s >>> 0;
-      return () => {
-        a |= 0;
-        a = (a + 0x6d2b79f5) | 0;
-        let t = Math.imul(a ^ (a >>> 15), 1 | a);
-        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    }
-
-    const runMonteCarlo = (
-      seed: number,
-      riskPct: number,
-      winRate: number,
-      payoff: number,
-      tradesCount = 100,
-      runs = 300
-    ) => {
-      const rng = mulberry32(seed);
-      let ruinCount = 0;
-      let doubleCount = 0;
-      const finalBalances: number[] = [];
-      const startBalance = 10000;
-      const fixedRiskUsd = startBalance * (riskPct / 100);
-
-      for (let r = 0; r < runs; r++) {
-        let bal = startBalance;
-        for (let t = 0; t < tradesCount; t++) {
-          if (bal <= 0) {
-            bal = 0;
-            break;
-          }
-          const isWin = rng() < winRate;
-          if (isWin) bal += fixedRiskUsd * payoff;
-          else bal -= fixedRiskUsd * 1.0;
-        }
-        if (bal <= 0) ruinCount++;
-        if (bal >= startBalance * 2) doubleCount++;
-        finalBalances.push(bal);
-      }
-
-      finalBalances.sort((a, b) => a - b);
-      const p10 = finalBalances[Math.floor(0.10 * runs)];
-      const p50 = finalBalances[Math.floor(0.50 * runs)];
-      const p90 = finalBalances[Math.floor(0.90 * runs)];
-      const ruinProb = (ruinCount / runs) * 100;
-      const doubleProb = (doubleCount / runs) * 100;
-
-      return { p10, p50, p90, ruinProb, doubleProb };
+    const base: ParametrosMonteCarlo = {
+      caminos: 300,
+      startBalance: 10000,
+      trades: 100,
+      winRate: 55,
+      avgWinR: 1.8,
+      avgLossR: 1,
+      riskPct: 1,
+      monthlyWithdrawal: 0,
+      seed: 45,
     };
 
-    // Disciplinado: 1 % de riesgo (100 $ por operación), 55 % de acierto, payoff 1,8: ventaja positiva.
-    const disciplined = runMonteCarlo(12345, 1.0, 0.55, 1.8);
-    expect(disciplined.ruinProb).toBe(0);
-    expect(disciplined.p10).toBeGreaterThan(10000);
-    expect(disciplined.p50).toBeGreaterThan(disciplined.p10);
-    expect(disciplined.p90).toBeGreaterThan(disciplined.p50);
+    // Disciplinado: 1 % de riesgo, 55 % de acierto, payoff 1,8: ventaja positiva.
+    const disciplined = simulaMonteCarlo(base);
+    expect(disciplined.probRuin).toBe(0);
+    expect(disciplined.analyticalRuinProb).toBeLessThan(0.01);
+    expect(disciplined.finalP5).toBeGreaterThan(base.startBalance);
+    expect(disciplined.finalP50).toBeGreaterThan(disciplined.finalP5);
+    expect(disciplined.finalP95).toBeGreaterThan(disciplined.finalP50);
 
-    // Arriesgado: 5 % (500 $ por operación), 40 %, payoff 1: ventaja negativa y riesgo alto.
-    const highRisk = runMonteCarlo(12345, 5.0, 0.40, 1.0);
-    expect(highRisk.ruinProb).toBeGreaterThan(0);
-    expect(highRisk.p10).toBe(0); // el percentil 10 queda arruinado
-    expect(highRisk.p50).toBeLessThan(10000);
+    // Arriesgado: 5 %, 40 %, payoff 1: ventaja negativa y riesgo alto.
+    const highRisk = simulaMonteCarlo({ ...base, winRate: 40, avgWinR: 1, riskPct: 5 });
+    expect(highRisk.analyticalRuinProb).toBe(100);
+    expect(highRisk.probRuin).toBeGreaterThan(50);
+    // El percentil 5 acaba por debajo del umbral de ruina, y la mediana pierde.
+    expect(highRisk.finalP5).toBeLessThan(base.startBalance * (1 - UMBRAL_RUINA_PCT / 100));
+    expect(highRisk.finalP50).toBeLessThan(base.startBalance);
   });
 
   it("Scenario 6: Bilingual Trade Setup Ranking and Translation Parity", () => {
@@ -467,49 +371,22 @@ describe("Tier 4: Real-World Application Workloads & User Journeys", () => {
   });
 
   it("Scenario 8: Discipline Breakdown Invoice and Cost of Indiscipline Attribution", () => {
-    const totalTrades = 60;
-    const breachPct = 40;
-    const inPlanExp = 29.73;
-    const offPlanExp = -38.47;
+    // Los valores con que arranca la calculadora de indisciplina.
+    const c = costeIndisciplina(60, 40, 29.73, -38.47);
 
-    const offPlanTrades = Math.round((totalTrades * breachPct) / 100); // 24
-    const inPlanTrades = Math.max(0, totalTrades - offPlanTrades); // 36
-    const gap = inPlanExp - offPlanExp; // $68.20
-    const totalLeakMonthly = offPlanTrades * gap; // $1,636.80
-    const totalLeakAnnual = totalLeakMonthly * 12; // $19,641.60
+    expect(c.offPlanTrades).toBe(24);
+    expect(c.inPlanTrades).toBe(36);
+    expect(c.gap).toBeCloseTo(68.2, 9);
+    expect(c.totalLeakMonthly).toBeCloseTo(1636.8, 9);
+    expect(c.totalLeakAnnual).toBeCloseTo(19641.6, 9);
+    expect(c.inPlanTotal).toBeCloseTo(36 * 29.73, 9);
+    expect(c.offPlanTotal).toBeCloseTo(24 * -38.47, 9);
 
-    expect(offPlanTrades).toBe(24);
-    expect(inPlanTrades).toBe(36);
-    expect(totalLeakMonthly).toBeCloseTo(1636.80, 2);
-    expect(totalLeakAnnual).toBeCloseTo(19641.60, 2);
-
-    // Reparto entre las cinco categorías de error.
-    const mistakes = [
-      { id: "offhours", labelEs: "Operar fuera de horario", labelEn: "Trading off-hours", pct: 32 },
-      { id: "oversize", labelEs: "Tamaño excesivo (Oversize)", labelEn: "Oversized position", pct: 27 },
-      { id: "nostop", labelEs: "Sin stop loss / omitido", labelEn: "No stop loss / omitted", pct: 18 },
-      { id: "chasing", labelEs: "Perseguir el precio (FOMO)", labelEn: "Chasing price (FOMO)", pct: 14 },
-      { id: "movingstop", labelEs: "Mover stop loss en contra", labelEn: "Manually moving stop", pct: 9 },
-    ];
-
-    const sumPct = mistakes.reduce((s, m) => s + m.pct, 0);
-    expect(sumPct).toBe(100);
-
-    // Lo atribuido suma la fuga mensual.
-    const attributedLossSum = mistakes.reduce((s, m) => s + (totalLeakMonthly * m.pct) / 100, 0);
-    expect(attributedLossSum).toBeCloseTo(totalLeakMonthly, 2);
-
-    const savings50 = totalLeakMonthly * 0.50; // $818.40 / mo
-    const savings80 = totalLeakMonthly * 0.80; // $1,309.44 / mo
-    expect(savings50).toBeCloseTo(818.40, 2);
-    expect(savings80).toBeCloseTo(1309.44, 2);
-
-    const summaryEs = `Factura de Indisciplina (CountPips):\n• Operaciones/mes: ${totalTrades} (${breachPct}% fuera de plan)\n• Expectancy en plan: +${inPlanExp.toFixed(2)} $\n• Expectancy fuera de plan: ${offPlanExp.toFixed(2)} $\n• Brecha por trade: -${gap.toFixed(2)} $\n• Fuga mensual: -${totalLeakMonthly.toFixed(2)} $\n• Fuga anual proyectada: -${totalLeakAnnual.toFixed(2)} $`;
-    const summaryEn = `Indiscipline Invoice (CountPips):\n• Trades/month: ${totalTrades} (${breachPct}% off-plan)\n• In-plan expectancy: +${inPlanExp.toFixed(2)} $\n• Off-plan expectancy: ${offPlanExp.toFixed(2)} $\n• Gap per trade: -${gap.toFixed(2)} $\n• Monthly leak: -${totalLeakMonthly.toFixed(2)} $\n• Projected annual leak: -${totalLeakAnnual.toFixed(2)} $`;
-
-    expect(summaryEs).toContain("Fuga mensual: -1636.80 $");
-    expect(summaryEn).toContain("Monthly leak: -1636.80 $");
-    expect(summaryEs).toContain("Fuga anual proyectada: -19641.60 $");
-    expect(summaryEn).toContain("Projected annual leak: -19641.60 $");
+    // El reparto entre los cinco tipos de fallo suma el 100 %: la factura
+    // desglosada suma la fuga mensual entera.
+    expect(ERRORES_INDISCIPLINA).toHaveLength(5);
+    expect(ERRORES_INDISCIPLINA.reduce((suma, m) => suma + m.pct, 0)).toBe(100);
+    const atribuido = ERRORES_INDISCIPLINA.reduce((suma, m) => suma + (c.totalLeakMonthly * m.pct) / 100, 0);
+    expect(atribuido).toBeCloseTo(c.totalLeakMonthly, 9);
   });
 });

@@ -26,7 +26,7 @@
 | `d11_d12_shortcuts_resilience.test.ts` | D11 + D12 | Ctrl+G y los atajos de una tecla, `try/catch` de storage, validación de entradas; `proyectaCapital` y `calculaPlan` con ceros, NaN y negativos sin dar NaN; los vistos del glosario (`readRecent`/`writeRecent`) con `SecurityError`, cuota llena y JSON corrupto |
 | `d14_institutional_suite.test.ts` | D14 | Multiplicadores de instrumento, SQN, índice de úlcera, asimetría de drawdown |
 | `tier3_pairwise_combinations.test.ts` | — | Combinaciones de features por pares, con el código real: semilla y «otra tirada» de `simulaMonteCarlo`, `proyectaCapital` con balance NaN o negativo, `calculaPlan` en los tres mercados con el mismo Kelly topado por `riesgoDeKelly`, los escenarios de `DisciplineCost` en `costeIndisciplina`, `filtraGlosario` por familia y texto |
-| `tier4_real_world_scenarios.test.ts` | — | Recorridos de usuario completos |
+| `tier4_real_world_scenarios.test.ts` | — | Recorridos de usuario completos con el código real: auditoría de 50 operaciones con `computeMetrics` y `contrasteVentaja` (frente a 1:1 no es ventaja; con su payoff, sí), Kelly por regímenes con el tope de `riesgoDeKelly`, calendario frente a mapa de calor, `simulaMonteCarlo` disciplinado y arriesgado, ranking de setups, ciclo de operaciones propias y la factura de `costeIndisciplina` con su reparto por fallo |
 
 ## `tests/` (raíz) — contratos del sitio
 
