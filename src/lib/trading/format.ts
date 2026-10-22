@@ -46,6 +46,8 @@ export function fmtMoney(
     .format(abs)
     .replace(/US\$|\$US|USD/g, "$")
     .trim();
+  // El signo sale de la cifra escrita: −0,4 $ a cero decimales es «0 $», no «−0 $».
+  if (!/[1-9]/.test(formatted)) return formatted;
   if (value < 0) return `−${formatted}`;
   if (sign && value > 0) return `+${formatted}`;
   return formatted;
