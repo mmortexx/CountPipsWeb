@@ -62,4 +62,9 @@ describe("el signo menos es tipográfico y el cero no lo lleva", () => {
     expect(fmtMoney(0.4, "es", { decimals: 0, sign: true })).toBe("0\u00a0$");
     expect(fmtMoney(-0.6, "es", { decimals: 0 })).toBe("\u22121\u00a0$");
   });
+
+  it("fmtMoney: el infinito conserva su signo", () => {
+    expect(fmtMoney(-Infinity, "es")).toBe("\u2212\u221e\u00a0$");
+    expect(fmtMoney(Infinity, "es", { sign: true })).toBe("+\u221e\u00a0$");
+  });
 });
