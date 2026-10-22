@@ -9,7 +9,9 @@ import { LanguageProvider } from "@/lib/i18n";
 import type { Lang } from "@/lib/locale";
 import { prefijoDeIdioma } from "@/lib/locale";
 import { cifrasMuestra } from "@/lib/trading/cifras-muestra";
-import { fmtOperaciones } from "@/lib/trading/format";
+import { fmtInt, fmtOperaciones } from "@/lib/trading/format";
+import { CAMINOS_FONDEO, HERRAMIENTAS } from "@/lib/herramientas";
+import { PropChallengeSimulator } from "@/components/marketing/PropChallengeSimulator";
 import { MetricsShowcaseNew } from "@/components/marketing/MetricsShowcaseNew";
 import { Pricing } from "@/components/marketing/Pricing";
 import { GuardianNew } from "@/components/marketing/GuardianNew";
@@ -22,7 +24,7 @@ function texto(lang: Lang, el: ReactElement): string {
   return renderToString(createElement(LanguageProvider, null, el))
     .replace(/<[^>]+>/g, " ")
     .replace(/&#x27;|&#39;/g, "'")
-    .replace(/[  ]/g, " ")
+    .replace(/[\u00a0\u202f]/g, " ")
     .replace(/\s+/g, " ");
 }
 
@@ -61,5 +63,25 @@ describe("el recuento de operaciones habla como el resto del texto", () => {
     expect(fmtOperaciones(1, "fr")).toBe("1 opération");
     expect(fmtOperaciones(200, "it")).toBe("200 operazioni");
     expect(fmtOperaciones(1, "it")).toBe("1 operazione");
+  });
+});
+
+describe("textos de las herramientas", () => {
+  it("ninguna ficha habla en primera persona («dime… te digo», «I will tell you»)", () => {
+    const fallos = HERRAMIENTAS.flatMap((h) =>
+      Object.entries(h)
+        .filter(([, v]) => typeof v === "string" && /\b(dime|te digo|tell me|I will|I'll)\b/i.test(v))
+        .map(([k]) => `${h.slug}.${k}`),
+    );
+    expect(fallos).toEqual([]);
+  });
+
+  it.each([
+    ["es", "qué parte de", "intentos"],
+    ["en", "what share of", "attempts"],
+  ] as const)("la prueba de fondeo cuenta sus intentos con la constante (%s)", (lang, antes, despues) => {
+    const t = texto(lang, createElement(PropChallengeSimulator));
+    expect(t).toContain(`${antes} ${fmtInt(CAMINOS_FONDEO, lang)} ${despues}`);
+    expect(t).not.toMatch(/dos mil|two thousand/i);
   });
 });

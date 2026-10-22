@@ -38,6 +38,9 @@ export type Herramienta = {
 /** Caminos del simulador de Monte Carlo; su titular lo dice en letra y `tests/contratos.test.ts` lo exige. */
 export const CAMINOS_MONTE_CARLO = 300;
 
+/** Intentos que juega el simulador de prueba de fondeo. */
+export const CAMINOS_FONDEO = 2000;
+
 export const HERRAMIENTAS: Herramienta[] = [
   {
     slug: "calculadora-de-riesgo",
@@ -47,9 +50,9 @@ export const HERRAMIENTAS: Herramienta[] = [
     h1Es: "Cuánto puedes arriesgar.",
     h1En: "How much you can risk.",
     subtituloEs:
-      "Dime tu balance, el porcentaje que arriesgas y la distancia a tu stop, y te digo el tamaño exacto de la posición. Sin registro y sin que nada de lo que escribas salga de tu navegador.",
+      "Con tu balance, el porcentaje que arriesgas y la distancia a tu stop sale el tamaño exacto de la posición. Sin registro y sin que nada de lo que escribas salga de tu navegador.",
     subtituloEn:
-      "Tell me your account balance, the percentage you risk and the distance to your stop, and I will tell you the exact position size. No sign-up, and nothing you type leaves your browser.",
+      "Enter your account balance, the percentage you risk and the distance to your stop to get the exact position size. No sign-up, and nothing you type leaves your browser.",
     resumenEs: "El tamaño exacto de la posición a partir de tu riesgo y tu stop.",
     resumenEn: "The exact position size from your risk and your stop.",
     entregaEs: "Lotes y contratos",
