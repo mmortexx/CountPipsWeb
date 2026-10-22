@@ -466,7 +466,7 @@ export function EquityProjector() {
               </>
             ) : (
               <>
-                Your edge, compounded with institutional rigor.
+                Your edge, compounded with institutional rigour.
               </>
             )}
           </h2>
