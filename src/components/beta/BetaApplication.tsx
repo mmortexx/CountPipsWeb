@@ -66,6 +66,14 @@ function failureCopy(reason: SubmitFailure, es: boolean) {
     : `The application could not be saved. ${SUPPORT_EMAIL ? `Email ${SUPPORT_EMAIL}.` : "Please try again in a few minutes."}`;
 }
 
+/** Qué hacer con Turnstile: nada, pintar el widget (la API ya está) o traer la
+ *  API de Cloudflare. Hasta que alguien empieza a rellenar, nada: abrir /beta
+ *  no contacta con Cloudflare. */
+export function pasoTurnstile(o: { clave: string; empezado: boolean; apiCargada: boolean }): "nada" | "pintar" | "cargar" {
+  if (!o.clave || !o.empezado) return "nada";
+  return o.apiCargada ? "pintar" : "cargar";
+}
+
 export function BetaApplication() {
   const { lang } = useLang();
   const es = lang === "es";
@@ -80,6 +88,7 @@ export function BetaApplication() {
   const [botcheck, setBotcheck] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
   const turnstileRef = useRef<HTMLDivElement>(null);
+  const [empezado, setEmpezado] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [marketing, setMarketing] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
@@ -119,7 +128,8 @@ export function BetaApplication() {
   const privacyInvalid = submitted && !privacy;
 
   useEffect(() => {
-    if (!turnstileSiteKey || !turnstileRef.current) return;
+    const paso = pasoTurnstile({ clave: turnstileSiteKey, empezado, apiCargada: Boolean(window.turnstile) });
+    if (paso === "nada" || !turnstileRef.current) return;
     const render = () => {
       if (!turnstileRef.current || !window.turnstile) return;
       window.turnstile.render(turnstileRef.current, {
@@ -129,7 +139,7 @@ export function BetaApplication() {
         "error-callback": () => setTurnstileToken(""),
       });
     };
-    if (window.turnstile) {
+    if (paso === "pintar") {
       render();
       return;
     }
@@ -140,7 +150,7 @@ export function BetaApplication() {
     script.addEventListener("load", render, { once: true });
     document.head.appendChild(script);
     return () => script.removeEventListener("load", render);
-  }, [turnstileSiteKey]);
+  }, [turnstileSiteKey, empezado]);
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -247,6 +257,7 @@ export function BetaApplication() {
   return (
     <form
       onSubmit={submit}
+      onFocus={() => setEmpezado(true)}
       noValidate
       className="tj-ficha p-5 sm:p-9"
     >
