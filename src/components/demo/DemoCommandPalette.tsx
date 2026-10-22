@@ -326,7 +326,7 @@ export function DemoCommandPalette({ open, onClose }: DemoCommandPaletteProps) {
       comandosDemo({
         setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme,
         lang: es ? "es" : "en",
-        confirmar: () => true,
+        confirmar: (texto) => window.confirm(texto),
       }),
     [setPage, goDetail, setFilters, clearFilters, toggleLang, toggleTheme, setPalette, palette, paletteOrder, theme, es],
   );
