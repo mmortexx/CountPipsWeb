@@ -1,12 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { normalCdf } from "@/components/marketing/EdgeSignificanceChecker";
+import { readRecent, writeRecent } from "@/components/tj/GlossaryModal";
 import { validaPlan } from "@/lib/trading/validaPlan";
 import { contrasteVentaja } from "@/lib/trading/estadistica";
-import { FUTURES_CONTRACTS, PARES_FOREX, calculaPlan } from "@/lib/trading/plan";
+import { FUTURES_CONTRACTS, PARES_FOREX, calculaPlan, type EntradaPlan } from "@/lib/trading/plan";
+import { proyectaCapital, type ParametrosProyeccion } from "@/lib/trading/proyeccion";
 
-const calculaPlanSinStop = calculaPlan({
+/** Acciones, entrada igual al stop. */
+const PLAN_BASE: EntradaPlan = {
   mercado: "equities",
   balance: 10000,
   riesgoPct: 1,
@@ -18,15 +21,17 @@ const calculaPlanSinStop = calculaPlan({
   lote: "standard",
   par: PARES_FOREX[0],
   tipoReferencia: null,
-});
+};
+const calculaPlanSinStop = calculaPlan(PLAN_BASE);
 
 /**
  * Dimensiones D11 y D12: atajos, manejo de errores y resiliencia. Tier 1 lee
  * el código de los atajos (Ctrl+G, `?`, T, L, prefijo `g`), la protección al
  * escribir en campos, el try-catch de localStorage y las validaciones de las
- * herramientas. Tier 2 ejercita copias locales de la lógica con NaN, división
- * por cero, errores de almacenamiento, ráfagas de atajos, navegación fuera de
- * rango y JSON corrupto.
+ * herramientas. Tier 2 lleva al límite el código real: `proyectaCapital` y
+ * `calculaPlan` con NaN, ceros y negativos, `normalCdf` con z extremas, y los
+ * vistos hace poco del glosario (`readRecent`/`writeRecent`) con errores de
+ * almacenamiento y JSON corrupto.
  */
 
 const ROOT = join(import.meta.dirname, "..", "..");
@@ -115,56 +120,70 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 1 Feature Coverage)"
 });
 
 describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner Cases)", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  /** Ningún campo numérico del resultado es NaN ni Infinity. */
+  function sinNaN(resultado: Record<string, unknown>, contexto: string) {
+    for (const [campo, valor] of Object.entries(resultado)) {
+      if (typeof valor === "number") expect(Number.isFinite(valor), `${contexto}: ${campo} = ${valor}`).toBe(true);
+    }
+  }
+
   it("T2.1: Mathematical calculators handle NaN, Infinity, negative values, and zero division gracefully", () => {
-    // Copia local de la matemática de CAGR y capitalización del proyector.
-    function calcEquityProjector(startBalance: number, tradesPerYear: number, winRate: number, avgWinR: number, avgLossR: number, riskPct: number, years: number) {
-      const wr = winRate / 100;
-      const lr = 1 - wr;
-      const expectancyPerTradeR = wr * avgWinR - lr * avgLossR;
-      const perTradeGrowth = expectancyPerTradeR * (riskPct / 100);
-      const yearlyFactor = Math.pow(1 + perTradeGrowth, tradesPerYear);
+    const proyeccion: ParametrosProyeccion = {
+      startBalance: 10000,
+      tradesPerYear: 200,
+      winRate: 55,
+      avgWinR: 2,
+      avgLossR: 1,
+      riskPct: 1,
+      years: 5,
+      reinvestMode: "compound",
+      monthlyContribution: 0,
+      frictionR: 0,
+    };
 
-      const curve: number[] = [startBalance];
-      for (let y = 1; y <= years; y++) {
-        curve.push(curve[y - 1] * yearlyFactor);
-      }
-      const finalBalance = curve[curve.length - 1];
-      const cagr = startBalance > 0 && finalBalance > 0 && years > 0 && yearlyFactor >= 0
-        ? Math.pow(finalBalance / startBalance, 1 / years) - 1
-        : -1;
+    // Balance cero: no hay tasa anual que calcular, ni división por cero.
+    const sinBalance = proyectaCapital({ ...proyeccion, startBalance: 0 });
+    sinNaN({ ...sinBalance }, "balance 0");
+    expect(sinBalance.cagr).toBe(-1);
+    expect(sinBalance.finalBalance).toBe(0);
+    expect(sinBalance.totalReturnPct).toBe(0);
 
-      return { expectancyPerTradeR, yearlyFactor, finalBalance, cagr };
+    // Cero años: la curva se queda en el punto de partida.
+    const sinAnios = proyectaCapital({ ...proyeccion, years: 0 });
+    sinNaN({ ...sinAnios }, "0 años");
+    expect(sinAnios.cagr).toBe(-1);
+    expect(sinAnios.finalBalance).toBe(10000);
+    expect(sinAnios.yearlyBreakdown).toEqual([]);
+
+    // Esperanza negativa (100 % de pérdidas): el balance baja sin hacerse negativo.
+    const todoPerdidas = proyectaCapital({ ...proyeccion, winRate: 0, riskPct: 2 });
+    sinNaN({ ...todoPerdidas }, "0 % de acierto");
+    expect(todoPerdidas.grossExpectancyR).toBe(-1);
+    expect(todoPerdidas.hasEdge).toBe(false);
+    expect(todoPerdidas.fullKellyPct).toBe(0);
+    expect(todoPerdidas.monthsToDouble).toBeNull();
+    expect(todoPerdidas.cagr).toBeGreaterThanOrEqual(-1);
+    expect(todoPerdidas.cagr).toBeLessThan(0);
+    expect(todoPerdidas.monthlyPoints.every((p) => p.balance >= 0)).toBe(true);
+
+    // Distancia cero (entrada igual al stop): plan no válido, sin tamaño ni R:R.
+    expect(calculaPlanSinStop.valido).toBe(false);
+    expect(calculaPlanSinStop.rr).toBe(0);
+    expect(calculaPlanSinStop.tamano).toBe(0);
+    sinNaN({ ...calculaPlanSinStop }, "entrada = stop");
+    // Balance cero o una entrada NaN tampoco dan un tamaño.
+    const plan = { ...PLAN_BASE, stop: 95 };
+    for (const [contexto, entrada] of [
+      ["balance 0", { ...plan, balance: 0 }],
+      ["entrada NaN", { ...plan, entrada: NaN }],
+      ["riesgo negativo", { ...plan, riesgoPct: -1 }],
+    ] as const) {
+      const r = calculaPlan(entrada);
+      sinNaN({ ...r }, contexto);
+      expect(r.tamano, contexto).toBe(0);
     }
-
-    // Balance cero.
-    const resZeroBalance = calcEquityProjector(0, 200, 55, 2.0, 1.0, 1.0, 5);
-    expect(Number.isFinite(resZeroBalance.cagr)).toBe(true);
-    expect(resZeroBalance.cagr).toBe(-1);
-
-    // Cero años.
-    const resZeroYears = calcEquityProjector(10000, 200, 55, 2.0, 1.0, 1.0, 0);
-    expect(Number.isFinite(resZeroYears.cagr)).toBe(true);
-
-    // Esperanza negativa (100 % de pérdidas).
-    const resNegativeExp = calcEquityProjector(10000, 100, 0, 2.0, 1.0, 2.0, 5);
-    expect(Number.isFinite(resNegativeExp.cagr)).toBe(true);
-    expect(resNegativeExp.expectancyPerTradeR).toBe(-1.0);
-
-    // Copia local del cálculo de riesgo con distancia cero (entrada igual al stop).
-    function calcRisk(entry: number, stop: number, target: number, balance: number, riskPct: number) {
-      const riskPerShare = Math.abs(entry - stop);
-      const rewardPerShare = Math.abs(target - entry);
-      const valid = riskPerShare > 0 && rewardPerShare > 0 && entry > 0;
-      const rr = valid ? rewardPerShare / riskPerShare : 0;
-      const riskUsd = (balance * riskPct) / 100;
-      const size = valid ? riskUsd / riskPerShare : 0;
-      return { valid, rr, size };
-    }
-
-    const resZeroDist = calcRisk(100, 100, 110, 10000, 1.0);
-    expect(resZeroDist.valid).toBe(false);
-    expect(resZeroDist.rr).toBe(0);
-    expect(resZeroDist.size).toBe(0);
 
     // `normalCdf` con puntuaciones z extremas.
     expect(normalCdf(0)).toBe(0.5);
@@ -173,131 +192,57 @@ describe("Dimension D11 & D12: Shortcuts & Resilience (Tier 2 Boundary & Corner 
     expect(Number.isFinite(normalCdf(NaN))).toBe(false); // NaN se propaga de forma predecible
   });
 
+  /** Los vistos hace poco del glosario, sobre un `localStorage` que puede fallar. */
+  function almacenGlosario() {
+    const datos: Record<string, string> = {};
+    const fallos = { seguridad: false, cuota: false };
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem(clave: string): string | null {
+          if (fallos.seguridad) throw new Error("SecurityError: The operation is insecure.");
+          return datos[clave] ?? null;
+        },
+        setItem(clave: string, valor: string): void {
+          if (fallos.seguridad) throw new Error("SecurityError: The operation is insecure.");
+          if (fallos.cuota) throw new Error("QuotaExceededError: DOMException 22");
+          datos[clave] = valor;
+        },
+      },
+    });
+    return { datos, fallos };
+  }
+
   it("T2.2: LocalStorage SecurityError and QuotaExceededError simulations recover safely", () => {
-    const memoryStore: Record<string, string> = {};
-    let shouldThrowSecurityError = false;
-    let shouldThrowQuotaError = false;
+    const { datos, fallos } = almacenGlosario();
 
-    const mockStorage = {
-      getItem(key: string): string | null {
-        if (shouldThrowSecurityError) {
-          throw new Error("SecurityError: The operation is insecure.");
-        }
-        return memoryStore[key] ?? null;
-      },
-      setItem(key: string, value: string): void {
-        if (shouldThrowSecurityError) {
-          throw new Error("SecurityError: The operation is insecure.");
-        }
-        if (shouldThrowQuotaError) {
-          throw new Error("QuotaExceededError: DOMException 22");
-        }
-        memoryStore[key] = value;
-      },
-    };
+    writeRecent(["Sharpe", "Sortino", "Calmar", "Kelly"]);
+    expect(readRecent()).toEqual(["Sharpe", "Sortino", "Calmar"]);
 
-    function safeReadRecent(): string[] {
-      try {
-        const raw = mockStorage.getItem("tj-glossary-recent");
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter((x) => typeof x === "string").slice(0, 3);
-      } catch {
-        return [];
-      }
-    }
+    // SecurityError (navegación privada): ni leer ni escribir lanzan.
+    fallos.seguridad = true;
+    expect(readRecent()).toEqual([]);
+    expect(() => writeRecent(["Drawdown"])).not.toThrow();
 
-    function safeWriteRecent(terms: string[]): boolean {
-      try {
-        mockStorage.setItem("tj-glossary-recent", JSON.stringify(terms.slice(0, 3)));
-        return true;
-      } catch {
-        return false;
-      }
-    }
-
-    expect(safeWriteRecent(["Sharpe", "Sortino"])).toBe(true);
-    expect(safeReadRecent()).toEqual(["Sharpe", "Sortino"]);
-
-    // SecurityError.
-    shouldThrowSecurityError = true;
-    expect(safeReadRecent()).toEqual([]);
-    expect(safeWriteRecent(["Drawdown"])).toBe(false);
-
-    // QuotaExceededError.
-    shouldThrowSecurityError = false;
-    shouldThrowQuotaError = true;
-    expect(safeWriteRecent(["Drawdown"])).toBe(false);
-  });
-
-  it("T2.3: Rapid shortcut activations and sequence expirations do not leak timers or corrupt state", () => {
-    let active = false;
-    let timerId: NodeJS.Timeout | null = null;
-    const timeoutMs = 50;
-
-    function arm() {
-      active = true;
-      if (timerId) clearTimeout(timerId);
-      timerId = setTimeout(() => {
-        active = false;
-        timerId = null;
-      }, timeoutMs);
-    }
-
-    function disarm() {
-      active = false;
-      if (timerId) {
-        clearTimeout(timerId);
-        timerId = null;
-      }
-    }
-
-    // Armado en ráfaga y desarmado inmediato (como la tecla Escape).
-    arm();
-    arm();
-    arm();
-    expect(active).toBe(true);
-
-    disarm();
-    expect(active).toBe(false);
-    expect(timerId).toBeNull();
-  });
-
-  it("T2.4: Out-of-bounds keyboard listbox navigation clamps correctly", () => {
-    function navigateList(currentIndex: number, totalItems: number, key: string): number {
-      if (totalItems === 0) return 0;
-      if (key === "ArrowDown") return (currentIndex + 1) % totalItems;
-      if (key === "ArrowUp") return (currentIndex - 1 + totalItems) % totalItems;
-      if (key === "Home") return 0;
-      if (key === "End") return totalItems - 1;
-      return currentIndex;
-    }
-
-    expect(navigateList(0, 0, "ArrowDown")).toBe(0);
-    expect(navigateList(4, 5, "ArrowDown")).toBe(0); // vuelve al principio
-    expect(navigateList(0, 5, "ArrowUp")).toBe(4); // vuelve al final
-    expect(navigateList(2, 10, "Home")).toBe(0);
-    expect(navigateList(2, 10, "End")).toBe(9);
+    // QuotaExceededError: la escritura se pierde y lo guardado sigue igual.
+    fallos.seguridad = false;
+    fallos.cuota = true;
+    expect(() => writeRecent(["Drawdown"])).not.toThrow();
+    expect(JSON.parse(datos["tj-glossary-recent"])).toEqual(["Sharpe", "Sortino", "Calmar"]);
   });
 
   it("T2.5: Corrupted JSON in localStorage parses safely with graceful fallback", () => {
-    function parseRecentSafe(rawJson: string | null): string[] {
-      if (!rawJson) return [];
-      try {
-        const parsed = JSON.parse(rawJson);
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter((x) => typeof x === "string").slice(0, 3);
-      } catch {
-        return [];
-      }
-    }
+    const { datos } = almacenGlosario();
+    const leeCon = (guardado: string | null) => {
+      if (guardado === null) delete datos["tj-glossary-recent"];
+      else datos["tj-glossary-recent"] = guardado;
+      return readRecent();
+    };
 
-    expect(parseRecentSafe(null)).toEqual([]);
-    expect(parseRecentSafe("")).toEqual([]);
-    expect(parseRecentSafe("{invalid json")).toEqual([]);
-    expect(parseRecentSafe("12345")).toEqual([]);
-    expect(parseRecentSafe('{"a": 1}')).toEqual([]);
-    expect(parseRecentSafe('["Alpha", 42, null, true, "Beta", "Gamma", "Delta"]')).toEqual(["Alpha", "Beta", "Gamma"]);
+    expect(leeCon(null)).toEqual([]);
+    expect(leeCon("")).toEqual([]);
+    expect(leeCon("{invalid json")).toEqual([]);
+    expect(leeCon("12345")).toEqual([]);
+    expect(leeCon('{"a": 1}')).toEqual([]);
+    expect(leeCon('["Alpha", 42, null, true, "Beta", "Gamma", "Delta"]')).toEqual(["Alpha", "Beta", "Gamma"]);
   });
 });

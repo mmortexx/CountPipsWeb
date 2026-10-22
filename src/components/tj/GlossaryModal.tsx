@@ -16,6 +16,8 @@ import { Eyebrow } from "@/components/tj/Eyebrow";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { useLang } from "@/lib/i18n";
 import { coincide } from "@/lib/busqueda";
+import { destinoConFlechas } from "@/lib/flechas";
+import type { Lang } from "@/lib/locale";
 import {
   GLOSSARY,
   GLOSSARY_CATEGORIES,
@@ -50,7 +52,8 @@ export function idOpcionGlosario(term: string): string {
   return `glosario-opcion-${slug || "x"}`;
 }
 
-function readRecent(): string[] {
+/** Los vistos hace poco; con el almacenamiento roto o bloqueado, ninguno. */
+export function readRecent(): string[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(RECENT_KEY);
@@ -63,7 +66,7 @@ function readRecent(): string[] {
   }
 }
 
-function writeRecent(terms: string[]) {
+export function writeRecent(terms: string[]) {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(
@@ -73,6 +76,19 @@ function writeRecent(terms: string[]) {
   } catch {
     /* sin localStorage: solo en memoria */
   }
+}
+
+/** Términos de la familia elegida que contienen lo buscado en el término, su
+ *  nombre en el idioma o la definición, sin mayúsculas ni tildes. */
+export function filtraGlosario(
+  consulta: string,
+  familia: GlossaryCategory | "all",
+  lang: Lang
+): GlossaryTerm[] {
+  return GLOSSARY.filter((g) => {
+    const matchesCat = familia === "all" || g.category === familia;
+    return matchesCat && coincide(consulta, g.term, nombreTermino(g, lang), lang === "es" ? g.es : g.en);
+  });
 }
 
 export function GlossaryModal({
@@ -124,13 +140,10 @@ export function GlossaryModal({
     }
   }, [open]);
 
-  const filtered = React.useMemo(() => {
-    return GLOSSARY.filter((g) => {
-      const matchesCat = activeCat === "all" || g.category === activeCat;
-      const matchesQuery = coincide(query, g.term, nombreTermino(g, lang), es ? g.es : g.en);
-      return matchesCat && matchesQuery;
-    });
-  }, [query, activeCat, es, lang]);
+  const filtered = React.useMemo(
+    () => filtraGlosario(query, activeCat, lang),
+    [query, activeCat, lang]
+  );
 
   React.useEffect(() => {
     if (activeIndex >= filtered.length) {
@@ -168,23 +181,18 @@ export function GlossaryModal({
 
   function handleListKeyDown(e: React.KeyboardEvent<HTMLUListElement>) {
     if (filtered.length === 0) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveIndex((i) => (i + 1) % filtered.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((i) => (i - 1 + filtered.length) % filtered.length);
-    } else if (e.key === "Enter" || e.key === " ") {
+    if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       const t = filtered[activeIndex];
       if (t) toggleExpanded(t.term);
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      setActiveIndex(0);
-    } else if (e.key === "End") {
-      e.preventDefault();
-      setActiveIndex(filtered.length - 1);
+      return;
     }
+    // Lista vertical: ← y → no mueven la opción.
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") return;
+    const destino = destinoConFlechas(e.key, activeIndex, filtered.length);
+    if (destino === null) return;
+    e.preventDefault();
+    setActiveIndex(destino);
   }
 
   const listRef = React.useRef<HTMLUListElement>(null);
