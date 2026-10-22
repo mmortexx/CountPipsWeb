@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { useLang } from "@/lib/i18n";
-import { paraBuscar } from "@/lib/busqueda";
+import { coincide } from "@/lib/busqueda";
 import {
   GLOSSARY,
   GLOSSARY_CATEGORIES,
@@ -125,14 +125,9 @@ export function GlossaryModal({
   }, [open]);
 
   const filtered = React.useMemo(() => {
-    const q = paraBuscar(query.trim());
     return GLOSSARY.filter((g) => {
       const matchesCat = activeCat === "all" || g.category === activeCat;
-      const matchesQuery =
-        q === "" ||
-        paraBuscar(g.term).includes(q) ||
-        paraBuscar(nombreTermino(g, lang)).includes(q) ||
-        paraBuscar(es ? g.es : g.en).includes(q);
+      const matchesQuery = coincide(query, g.term, nombreTermino(g, lang), es ? g.es : g.en);
       return matchesCat && matchesQuery;
     });
   }, [query, activeCat, es, lang]);

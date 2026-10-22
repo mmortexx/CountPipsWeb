@@ -1,15 +1,26 @@
 /**
  * Forma con la que se comparan la consulta y el texto en los buscadores del
  * sitio (FAQ, glosario, ventana del glosario): sin mayúsculas ni tildes, y
- * con un solo apóstrofo. Quien escribe «calculo» busca «cálculo», y el
- * «what's» del teclado tiene que encontrar el «What’s» tipográfico.
+ * con un solo apóstrofo y con los espacios duros como espacios. Quien escribe
+ * «calculo» busca «cálculo», el «what's» del teclado tiene que encontrar el
+ * «What’s» tipográfico y «10 %» el «10\u00a0%» del texto.
  */
 export function paraBuscar(s: string): string {
   return s
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[\u2018\u2019]/g, "'");
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u200b\u2060]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+/** ¿Está cada palabra de la consulta en alguno de los textos, en cualquier orden? */
+export function coincide(consulta: string, ...textos: string[]): boolean {
+  const palabras = paraBuscar(consulta).split(" ").filter(Boolean);
+  if (palabras.length === 0) return true;
+  const texto = textos.map(paraBuscar).join("\n");
+  return palabras.every((p) => texto.includes(p));
 }
 
 type VozBuscable = { term: string; nombreEs?: string; slug: string };

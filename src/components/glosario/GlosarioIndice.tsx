@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@/components/tj/LocaleLink";
 import { useLang } from "@/lib/i18n";
-import { paraBuscar } from "@/lib/busqueda";
+import { coincide } from "@/lib/busqueda";
 import { Reveal } from "@/components/tj/Reveal";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
@@ -26,7 +26,7 @@ export function GlosarioIndice() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
 
   const filtrados = useMemo(() => {
-    const t = paraBuscar(q.trim());
+    const t = q.trim();
     if (!t && activeCategory === "all") return null;
 
     let base = TERMINOS;
@@ -36,12 +36,7 @@ export function GlosarioIndice() {
 
     if (!t) return base;
 
-    return base.filter(
-      (x) =>
-        paraBuscar(x.term).includes(t) ||
-        paraBuscar(nombreTermino(x, es ? "es" : "en")).includes(t) ||
-        paraBuscar(es ? x.es : x.en).includes(t),
-    );
+    return base.filter((x) => coincide(t, x.term, nombreTermino(x, es ? "es" : "en"), es ? x.es : x.en));
   }, [q, activeCategory, es]);
 
   const recuento = filtrados
