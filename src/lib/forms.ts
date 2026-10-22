@@ -104,6 +104,9 @@ async function postJson(
   }
 }
 
+/** Caracteres que admite el mensaje de contacto; el campo no deja escribir más. */
+export const LIMITE_MENSAJE = 3000;
+
 /**
  * Envía un formulario y responde si salió o no.
  *
@@ -119,7 +122,7 @@ export async function submitForm(fields: FormFields): Promise<SubmitResult> {
   const email = (fields.email ?? "").trim().slice(0, 254);
   const subject = (fields.subject ?? "").trim().slice(0, 160);
   const name = fields.name ? fields.name.trim().slice(0, 100) : undefined;
-  const message = fields.message ? fields.message.trim().slice(0, 3000) : undefined;
+  const message = fields.message ? fields.message.trim().slice(0, LIMITE_MENSAJE) : undefined;
   const botcheck = (fields.botcheck ?? "").slice(0, 100);
 
   if (!email || !email.includes("@")) {

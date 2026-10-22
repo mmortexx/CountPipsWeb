@@ -5,7 +5,10 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "rea
 import { useLang } from "@/lib/i18n";
 import { SectionHeader } from "@/components/layout/SectionHeader";
 import { Reveal } from "@/components/tj/Reveal";
-import { submitForm, SUPPORT_EMAIL, type SubmitFailure } from "@/lib/forms";
+import { LIMITE_MENSAJE, submitForm, SUPPORT_EMAIL, type SubmitFailure } from "@/lib/forms";
+import { Link } from "@/components/tj/LocaleLink";
+import { TITULAR } from "@/lib/legal/titular";
+import { fmtInt } from "@/lib/trading/format";
 import { useHydrated } from "@/hooks/use-hydrated";
 
 /**
@@ -205,11 +208,15 @@ export function ContactForm() {
                           placeholder={es ? "¿En qué podemos ayudarte?" : "How can we help?"}
                           aria-label={es ? "Mensaje" : "Message"}
                           aria-invalid={invalidos.message || undefined}
-                          aria-describedby={invalidos.message ? "cf-msg-error" : undefined}
+                          aria-describedby={invalidos.message ? "cf-msg-error cf-msg-cuenta" : "cf-msg-cuenta"}
+                          maxLength={LIMITE_MENSAJE}
                           required
                           rows={4}
                           className="tj-campo w-full px-3.5 py-3 text-base sm:text-sm text-primary placeholder:text-tertiary outline-none resize-y min-h-[112px]"
                         />
+                        <p id="cf-msg-cuenta" className="m-0 -mt-1 text-right text-[12px] tnum text-tertiary">
+                          {`${fmtInt(message.length, lang)} / ${fmtInt(LIMITE_MENSAJE, lang)}`}
+                        </p>
                       </Field>
 
                       {/* Honeypot: si llega relleno, Web3Forms descarta el envío. Sin
@@ -265,9 +272,17 @@ export function ContactForm() {
                       </button>
 
                       <p className="text-[12px] text-tertiary">
-                        {es
-                          ? "No compartimos tu email. Solo te respondemos."
-                          : "We never share your email. We only reply to you."}
+                        {es ? (
+                          <>
+                            Responsable: el titular de {TITULAR.nombreComercial}. Finalidad: responder a tu mensaje. Lo recibe Web3Forms, que lo reenvía a nuestro correo. Más en la{" "}
+                            <Link href="/privacidad" className="text-primary underline underline-offset-2 decoration-[color-mix(in_srgb,currentColor_40%,transparent)] transition-[text-decoration-color] hover:decoration-current">política de privacidad</Link>.
+                          </>
+                        ) : (
+                          <>
+                            Controller: the owner of {TITULAR.nombreComercial}. Purpose: replying to your message. Web3Forms receives it and forwards it to our email. More in the{" "}
+                            <Link href="/privacidad" className="text-primary underline underline-offset-2 decoration-[color-mix(in_srgb,currentColor_40%,transparent)] transition-[text-decoration-color] hover:decoration-current">privacy policy</Link>.
+                          </>
+                        )}
                       </p>
                     </form>
                   )}
