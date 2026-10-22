@@ -208,7 +208,7 @@ export function ContactForm() {
                           placeholder={es ? "¿En qué podemos ayudarte?" : "How can we help?"}
                           aria-label={es ? "Mensaje" : "Message"}
                           aria-invalid={invalidos.message || undefined}
-                          aria-describedby={invalidos.message ? "cf-msg-error cf-msg-cuenta" : "cf-msg-cuenta"}
+                          aria-describedby={invalidos.message ? "cf-msg-error" : undefined}
                           maxLength={LIMITE_MENSAJE}
                           required
                           rows={4}
