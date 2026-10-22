@@ -26,6 +26,7 @@ import {
   type RankingRow,
 } from "@/lib/trading/data";
 import { fmtMoney, fmtNum, fmtPct, fmtInt, fmtOperaciones, pctSep } from "@/lib/trading/format";
+import { filtraOperaciones } from "@/lib/trading/filtros";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
 import { Money } from "@/components/tj/Money";
@@ -957,23 +958,7 @@ export function AnalyticsPage() {
   const bloquesActivos: readonly Bloque[] = SECTIONS.find((s) => s.id === activeSection)?.bloques ?? SECTIONS[0].bloques;
   const ver = (b: Bloque) => bloquesActivos.includes(b);
 
-  const filteredTrades = useMemo(() => {
-    return TRADES.filter((tr) => {
-      if (filters.instrument !== "all" && tr.instrument !== filters.instrument)
-        return false;
-      if (filters.setup !== "all" && tr.setup !== filters.setup) return false;
-      if (filters.direction !== "all" && tr.direction !== filters.direction)
-        return false;
-      if (filters.compliance === "yes" && tr.compliance !== "yes") return false;
-      if (filters.compliance === "no" && tr.compliance === "yes") return false;
-      return true;
-    });
-  }, [
-    filters.instrument,
-    filters.setup,
-    filters.direction,
-    filters.compliance,
-  ]);
+  const filteredTrades = useMemo(() => filtraOperaciones(TRADES, filters), [filters]);
 
   const m = useMemo(() => computeMetrics(filteredTrades), [filteredTrades]);
 

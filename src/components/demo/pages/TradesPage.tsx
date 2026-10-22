@@ -35,6 +35,7 @@ import { Reveal } from "@/components/tj/Reveal";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { compararSeleccion, type Comparacion } from "@/lib/trading/comparacion";
+import { pasaCumplimiento } from "@/lib/trading/filtros";
 
 const DECIMALS: Record<string, number> = Object.fromEntries(
   INSTRUMENTS.map((i) => [i.symbol, i.decimals])
@@ -741,9 +742,7 @@ export function TradesPage() {
     return allTrades.filter((tr) => {
       if (filters.instrument !== "all" && tr.instrument !== filters.instrument) return false;
       if (filters.direction !== "all" && tr.direction !== filters.direction) return false;
-      if (filters.compliance === "yes" && tr.compliance !== "yes") return false;
-      if (filters.compliance === "partial" && tr.compliance !== "partial") return false;
-      if (filters.compliance === "no" && tr.compliance !== "no") return false;
+      if (!pasaCumplimiento(tr.compliance, filters.compliance)) return false;
       if (outcome === "win" && tr.netPnl <= 0) return false;
       if (outcome === "loss" && tr.netPnl >= 0) return false;
       if (outcome === "be" && tr.netPnl !== 0) return false;

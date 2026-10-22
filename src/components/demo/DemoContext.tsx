@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { Direction, Compliance } from "@/lib/trading/data";
+import type { FiltrosDemo } from "@/lib/trading/filtros";
 
 /**
  * Páginas que expone la demo: las cuatro primeras del NavigationView de la app
@@ -22,12 +22,7 @@ export type DemoPage =
   | "analytics"
   | "journal";
 
-export interface DemoFilters {
-  instrument: string;
-  setup: string;
-  direction: Direction | "all";
-  compliance: Compliance | "all";
-}
+export type DemoFilters = FiltrosDemo;
 
 const DEFAULT_FILTERS: DemoFilters = {
   instrument: "all",
