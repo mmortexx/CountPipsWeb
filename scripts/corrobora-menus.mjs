@@ -40,7 +40,7 @@ ok("megamenú navega a /features/disciplina", acabaEn("/features/disciplina").te
 for (const [ruta, patron] of [
   ["/demo", /^Ver la demo$/],
   ["/pricing", /^Precios$/],
-  ["/traders/manual", /^Manual$/],
+  ["/traders/manual", /^Operativa manual$/],
 ]) {
   await page.locator("header").getByRole("link", { name: patron }).first().click();
   await page.waitForURL(acabaEn(ruta), { timeout: 8000 });
