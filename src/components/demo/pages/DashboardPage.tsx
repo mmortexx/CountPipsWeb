@@ -47,8 +47,10 @@ const RIESGO_POR_DEFECTO = 0.01;
 
 /** Recorta las métricas a los últimos N días manteniendo sincronizados
  *  equityCurve y drawdownCeiling. Devuelve el mismo objeto si el recorte
- *  quedaría vacío o abarcaría todo. */
-function sliceMetricsByDays(m: Metrics, days: number): Metrics {
+ *  quedaría vacío o abarcaría todo. Arranca en el último punto anterior a la
+ *  ventana: una operación registrada hoy, meses después de la muestra, deja
+ *  así una curva de dos puntos y no uno solo. */
+export function sliceMetricsByDays(m: Metrics, days: number): Metrics {
   if (!m.equityCurve.length) return m;
   const last = m.equityCurve[m.equityCurve.length - 1].date.getTime();
   const cutoff = last - days * 86_400_000;
@@ -60,8 +62,8 @@ function sliceMetricsByDays(m: Metrics, days: number): Metrics {
     }
   }
   if (startIdx === 0) return m;
-  const equityCurve = m.equityCurve.slice(startIdx);
-  const drawdownCeiling = m.drawdownCeiling.slice(startIdx);
+  const equityCurve = m.equityCurve.slice(startIdx - 1);
+  const drawdownCeiling = m.drawdownCeiling.slice(startIdx - 1);
   return { ...m, equityCurve, drawdownCeiling };
 }
 
@@ -791,7 +793,7 @@ export function DashboardPage() {
               label={t("currentDd")}
               value={
                 <span className="text-lg font-semibold tnum text-pnl-neg">
-                  {fmtPct(metrics.currentDrawdown, lang, 1)}
+                  {fmtPct(metrics.currentDrawdownPct, lang, 1)}
                 </span>
               }
             />
@@ -1151,8 +1153,8 @@ function RealityCheck({ metrics }: { metrics: Metrics }) {
   if (metrics.currentDrawdown > 0) {
     parts.push(
       es
-        ? `Caída actual ${fmtPct(metrics.currentDrawdown, lang, 1)}: la típica operando así es ${fmtPct(typicalDd, lang, 1)}, y ${fmtPct(rareDd, lang, 1)} sigue estando dentro de lo esperable.`
-        : `Current drawdown ${fmtPct(metrics.currentDrawdown, lang, 1)}: trading like this the typical one is ${fmtPct(typicalDd, lang, 1)}, and ${fmtPct(rareDd, lang, 1)} is still within what to expect.`
+        ? `Caída actual ${fmtPct(metrics.currentDrawdownPct, lang, 1)}: la típica operando así es ${fmtPct(typicalDd, lang, 1)}, y ${fmtPct(rareDd, lang, 1)} sigue estando dentro de lo esperable.`
+        : `Current drawdown ${fmtPct(metrics.currentDrawdownPct, lang, 1)}: trading like this the typical one is ${fmtPct(typicalDd, lang, 1)}, and ${fmtPct(rareDd, lang, 1)} is still within what to expect.`
     );
   }
 

@@ -57,7 +57,8 @@ export const EquityCurve = memo(function EquityCurve({
     const range = maxBal - minBal || 1;
 
     const pts = equityCurve.map((e, i) => {
-      const x = padL + (i / (equityCurve.length - 1)) * (W - padL - padR);
+      // Con un solo punto, `length - 1` es 0 y la división daría NaN (curva en blanco).
+      const x = padL + (i / Math.max(1, equityCurve.length - 1)) * (W - padL - padR);
       const y = padT + (1 - (e.balance - minBal) / range) * (H - padT - padB);
       return { x, y, ...e, ceiling: drawdownCeiling[i] };
     });

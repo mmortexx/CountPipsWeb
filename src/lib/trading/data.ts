@@ -285,7 +285,10 @@ export interface Metrics {
   largestLoss: number;
   maxDrawdown: number;
   maxDrawdownPct: number;
+  /** En dólares. */
   currentDrawdown: number;
+  /** La misma caída sobre el máximo alcanzado, en fracción (0,05 = 5 %). */
+  currentDrawdownPct: number;
   sharpe: number;
   sortino: number;
   calmar: number;
@@ -446,6 +449,7 @@ export function computeMetrics(trades: Trade[]): Metrics {
     maxDrawdown: maxDd,
     maxDrawdownPct: maxDdPct,
     currentDrawdown: currentDd,
+    currentDrawdownPct: peak > 0 ? currentDd / peak : 0,
     sharpe,
     sortino,
     calmar,
