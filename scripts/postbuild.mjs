@@ -115,7 +115,8 @@ console.log(`[postbuild] ${copias} fichero(s) de precarga copiados con el nombre
    - Imagen ausente: `opengraph-image.tsx` solo existe en algunos segmentos
      españoles y una página con su propio `openGraph` sin `images` no hereda
      nada. Se barren todas las páginas construidas y la que no lleve imagen
-     recibe la del sitio. */
+     recibe la de su sección más cercana (`glosario/`, `en/herramientas/`…) o,
+     si no hay, la del sitio en su idioma. */
 
 /* La raíz sale del canonical de la propia página: Open Graph exige URL
    absoluta y el canonical ya lo es. Es el canonical menos la ruta de la
@@ -152,6 +153,21 @@ const IMAGEN_POR_IDIOMA = {
   en: "/en/opengraph-image.png",
 };
 
+/** La tarjeta de la carpeta más cercana que tenga una, subiendo desde la página. */
+async function tarjetaDeSeccion(relativa) {
+  const carpetas = relativa.split("/").slice(0, -1);
+  for (let n = carpetas.length; n >= 1; n--) {
+    const camino = `${carpetas.slice(0, n).join("/")}/opengraph-image.png`;
+    try {
+      await stat(join(OUT, camino));
+      return `/${camino}`;
+    } catch {
+      /* sin tarjeta en esta carpeta: se sube una */
+    }
+  }
+  return null;
+}
+
 // Si falta una de las dos, el reparto de abajo daría un 404 a decenas de páginas.
 for (const [idioma, rutaImagen] of Object.entries(IMAGEN_POR_IDIOMA)) {
   const enDisco = join(OUT, rutaImagen.replace(/^\//, ""));
@@ -175,7 +191,7 @@ for (const ruta of htmls) {
   // 1. Referencias existentes a `.png`; `(?!\.png)` evita duplicar la extensión si se ejecuta dos veces.
   html = html.replace(/(opengraph-image|twitter-image)(?!\.png)/g, "$1.png");
 
-  // 2. La página sin imagen recibe la del sitio, justo antes de `</head>`.
+  // 2. La página sin imagen recibe la de su sección, o la del sitio, justo antes de `</head>`.
   const faltaOg = !/property="og:image"/.test(html);
   const faltaTw = !/name="twitter:image"/.test(html);
   if (faltaOg || faltaTw) {
@@ -189,7 +205,7 @@ for (const ruta of htmls) {
       console.error(`[postbuild] ${relativa} no trae imagen social ni un canonical del que sacar la raíz del sitio`);
       process.exit(1);
     }
-    const imagen = `${raiz}${IMAGEN_POR_IDIOMA[esInternacional ? "en" : "es"]}`;
+    const imagen = `${raiz}${(await tarjetaDeSeccion(relativa)) ?? IMAGEN_POR_IDIOMA[esInternacional ? "en" : "es"]}`;
     const etiquetas =
       (faltaOg
         ? `<meta property="og:image" content="${imagen}"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/>`
