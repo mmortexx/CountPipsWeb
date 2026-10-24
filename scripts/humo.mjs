@@ -1965,11 +1965,19 @@ let estrechasMedidas = 0;
                 }
               }
             }
-            return { sobra, texto: peor ? peor.texto : "", cortados };
+            // La miga de pan, en una línea: el último tramo se recorta con puntos
+            // suspensivos (el título de debajo lo dice entero).
+            const miga = document.querySelector(".tj-cabecera nav [aria-current=page]");
+            const estilo = miga && getComputedStyle(miga);
+            const migaLineas = miga
+              ? Math.round(miga.getBoundingClientRect().height / (parseFloat(estilo.lineHeight) || parseFloat(estilo.fontSize) * 1.5))
+              : 0;
+            return { sobra, texto: peor ? peor.texto : "", cortados, migaLineas };
           });
           estrechasMedidas++;
           if (r.sobra > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el contenido se sale ${r.sobra} px por «${r.texto}»`);
           else for (const c of r.cortados) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px el borde corta el titular ${c}`);
+          if (r.migaLineas > 1) fallos.push(`estrecho ${ruta}: a ${ANCHO_ESTRECHO} px la miga de pan ocupa ${r.migaLineas} líneas`);
         } catch (e) {
           fallos.push(`estrecho ${ruta}: ${String(e).split("\n")[0]}`);
         }

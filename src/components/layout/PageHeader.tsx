@@ -130,7 +130,9 @@ export function PageHeader({
               <span aria-hidden="true">/</span>
             </>
           ) : null}
-          <span className="min-w-0 text-secondary" aria-current="page">
+          {/* Una sola línea: a 320 px un nombre largo partía la miga en tres, y el
+              título de debajo ya lo dice entero. */}
+          <span className="min-w-0 truncate text-secondary" aria-current="page">
             {migaTexto}
           </span>
         </nav>

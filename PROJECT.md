@@ -73,7 +73,7 @@ las pruebas que leen `out/` (con `COMPROBAR_OUT=1`, que convierte su ausencia en
 `humo`, `toque`, `alto-contraste` y `teclado`; las demás se pasan en local:
 
 ```bash
-node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde a 320 px
+node scripts/humo.mjs --serve out          # contraste, entradas, menú, sin JavaScript, desborde y miga a 320 px
 node scripts/legible.mjs --serve out       # contraste de todo el texto sobre fondo plano
 node scripts/tinta.mjs --serve out         # texto sobre fondos de color, en los dos temas
 node scripts/arranque.mjs --serve out --cpu 4  # tiempo hasta titular legible
