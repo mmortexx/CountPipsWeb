@@ -161,6 +161,7 @@ export function DashboardPage() {
       stop: num(stop, inst.decimals),
       salida: num(exitPrice, inst.decimals),
       cantidad: num(quantity, decLecturaCantidad),
+      multiplicador: getInstrumentMultiplier(instrumentSymbol, inst.assetClass),
     });
 
     if (!registro) {

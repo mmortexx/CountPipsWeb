@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { LIMITES } from "../src/lib/trading/limites";
 import { excedeApalancamiento, TOPE_APALANCAMIENTO, validaPlan, validaRegistro } from "../src/lib/trading/validaPlan";
 
 /**
@@ -105,5 +106,35 @@ describe("validaRegistro (registro rápido de la demo)", () => {
     { entrada: Number.NaN },
   ])("entrada y stop siguen siendo obligatorios: %o", (cambio) => {
     expect(validaRegistro({ ...BUENO, ...cambio })).toBeNull();
+  });
+
+  describe("el resultado tampoco pasa del tope, aunque cada cifra esté dentro del suyo", () => {
+    const max = LIMITES.precio.max;
+    const EURUSD = { entrada: 1.1, stop: 1.09, salida: max, cantidad: max, multiplicador: 100_000 };
+
+    it("EURUSD con salida y cantidad en su máximo daría ≈1e19 de P&L: se rechaza", () => {
+      expect(validaRegistro(EURUSD)).toBeNull();
+    });
+
+    it("el riesgo (distancia al stop × cantidad × multiplicador) también cuenta", () => {
+      expect(validaRegistro({ ...EURUSD, stop: 1, salida: 1.1 })).toBeNull();
+    });
+
+    it("la frontera: el P&L en el tope pasa y un céntimo de precio más no", () => {
+      const tope = LIMITES.resultadoRegistro.max;
+      const base = { entrada: 100, stop: 99, cantidad: 1000, multiplicador: 1 };
+      const salidaEnElTope = 100 + tope / (base.cantidad * base.multiplicador);
+      expect(validaRegistro({ ...base, salida: salidaEnElTope })).not.toBeNull();
+      expect(validaRegistro({ ...base, salida: salidaEnElTope + 0.01 })).toBeNull();
+    });
+
+    it("una pérdida enorme se rechaza igual que una ganancia", () => {
+      expect(validaRegistro({ ...EURUSD, salida: 0.0001 + 1e-3, cantidad: max })).toBeNull();
+    });
+
+    it("sin multiplicador cuenta 1 y un registro normal pasa", () => {
+      expect(validaRegistro(BUENO)).toEqual(BUENO);
+      expect(validaRegistro({ ...BUENO, multiplicador: 100_000 })).toEqual(BUENO);
+    });
   });
 });

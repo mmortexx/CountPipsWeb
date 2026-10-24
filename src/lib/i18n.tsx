@@ -166,8 +166,8 @@ export const STR = {
     en: "Required fields missing",
   },
   tradeRegisterErrorDesc: {
-    es: `Instrumento, setup, dirección, entrada y stop son obligatorios; precios y cantidad, mayores que cero y de ${fmtInt(LIMITES.precio.max, "es")} como máximo.`,
-    en: `Instrument, setup, direction, entry and stop are required; prices and quantity must be above zero and at most ${fmtInt(LIMITES.precio.max, "en")}.`,
+    es: `Instrumento, setup, dirección, entrada y stop son obligatorios; precios y cantidad, mayores que cero y de ${fmtInt(LIMITES.precio.max, "es")} como máximo; el resultado y el riesgo, de ${fmtInt(LIMITES.resultadoRegistro.max, "es")} $ como máximo.`,
+    en: `Instrument, setup, direction, entry and stop are required; prices and quantity must be above zero and at most ${fmtInt(LIMITES.precio.max, "en")}; the result and the risk, at most $${fmtInt(LIMITES.resultadoRegistro.max, "en")}.`,
   },
   sizeNoFits: {
     es: "No cabe ni una unidad",
