@@ -121,6 +121,19 @@ export interface ResultadoPlan {
   apalancamientoExcesivo: boolean;
 }
 
+/** Decimales de un tamaño fraccionable (acciones, cripto): dos desde una unidad
+ *  y, por debajo, los justos para que lo escrito no se aparte más de un 0,5 %
+ *  del tamaño real. 0,0025 de un bitcoin no puede salir como «0,00». Hasta
+ *  ocho, el decimal más pequeño de una cripto. */
+const MAX_DECIMALES_TAMANO = 8;
+function decimalesDeTamano(unidades: number): number {
+  if (!(unidades > 0) || unidades >= 1) return 2;
+  for (let d = 2; d < MAX_DECIMALES_TAMANO; d++) {
+    if (Math.abs(Number(unidades.toFixed(d)) - unidades) / unidades < 0.005) return d;
+  }
+  return MAX_DECIMALES_TAMANO;
+}
+
 export function calculaPlan(e: EntradaPlan): ResultadoPlan {
   const { valido, motivo } = validaPlan(e.entrada, e.stop, e.objetivo);
   const riesgoNominal = e.balance > 0 ? (e.balance * e.riesgoPct) / 100 : 0;
@@ -189,6 +202,7 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
     friccion,
     riesgoTotal: riesgoReal + friccion,
     tamano: unidades / unidadesPorTamano,
+    decimalesTamano: e.mercado === "equities" ? decimalesDeTamano(unidades) : decimalesTamano,
     noCabe: escalon > 0 && unidades === 0,
     riesgoDeUno: escalon * riesgoPorUnidad,
     valorPip: unidades * tick * dolaresPorUnidad,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FUTURES_CONTRACTS, PARES_FOREX, calculaPlan, fraccionesKelly, type EntradaPlan } from "@/lib/trading/plan";
-import { fmtPrecio } from "@/lib/trading/format";
+import { fmtNum, fmtPrecio } from "@/lib/trading/format";
 
 const par = (id: string) => PARES_FOREX.find((p) => p.id === id)!;
 const futuro = (id: string) => FUTURES_CONTRACTS.find((f) => f.id === id)!;
@@ -87,6 +87,47 @@ describe("fricción: comisión de ida y vuelta y un tick de deslizamiento", () =
   it("si la fricción se come el objetivo, el beneficio neto sale negativo, no cero", () => {
     const c = calculaPlan({ ...BASE, mercado: "futures", balance: 100000, entrada: 5800, stop: 5790, objetivo: 5800.25, futuro: futuro("es"), friccion: true });
     expect(c.beneficioNeto).toBeLessThan(0);
+  });
+});
+
+describe("acciones y cripto: el tamaño enseña los decimales que hacen falta", () => {
+  const cripto: EntradaPlan = { ...BASE, mercado: "equities", balance: 100, riesgoPct: 2.5, entrada: 60000, stop: 59000, objetivo: 63000 };
+  const enseñado = (c: ReturnType<typeof calculaPlan>) => fmtNum(c.tamano, "es", c.decimalesTamano);
+
+  it("2,50 $ de riesgo a 1.000 $ de stop son 0,0025 unidades, no «0,00»", () => {
+    const c = calculaPlan(cripto);
+    expect(c.riesgoReal).toBeCloseTo(2.5, 10);
+    expect(c.tamano).toBeCloseTo(0.0025, 12);
+    expect(enseñado(c)).toBe("0,0025");
+  });
+
+  it("a partir de una unidad siguen siendo dos decimales", () => {
+    const c = calculaPlan({ ...cripto, balance: 10000, riesgoPct: 1, entrada: 100, stop: 95, objetivo: 115 });
+    expect(c.tamano).toBe(20);
+    expect(enseñado(c)).toBe("20,00");
+    const medio = calculaPlan({ ...cripto, balance: 10000, riesgoPct: 1, entrada: 100, stop: 80, objetivo: 150 });
+    expect(medio.tamano).toBe(5);
+    expect(enseñado(medio)).toBe("5,00");
+  });
+
+  it("lo que se enseña dice el riesgo real con menos de un 0,5 % de error", () => {
+    for (const balance of [100, 1000, 25000])
+      for (const riesgoPct of [0.25, 1, 3])
+        for (const stop of [59000, 50000, 30000, 5000]) {
+          const c = calculaPlan({ ...cripto, balance, riesgoPct, stop });
+          if (c.tamano < 1e-5) continue;
+          const mostrado = Number(enseñado(c).replace(",", "."));
+          const riesgoMostrado = mostrado * Math.abs(cripto.entrada - stop);
+          expect(Math.abs(riesgoMostrado - c.riesgoReal) / c.riesgoReal, `${balance} ${riesgoPct} ${stop}`).toBeLessThan(0.005);
+          expect(c.decimalesTamano).toBeLessThanOrEqual(8);
+        }
+  });
+
+  it("forex y futuros conservan los suyos", () => {
+    expect(calculaPlan(BASE).decimalesTamano).toBe(2);
+    expect(calculaPlan({ ...BASE, lote: "mini" }).decimalesTamano).toBe(1);
+    expect(calculaPlan({ ...BASE, lote: "micro" }).decimalesTamano).toBe(0);
+    expect(calculaPlan({ ...BASE, mercado: "futures" }).decimalesTamano).toBe(0);
   });
 });
 
