@@ -44,6 +44,10 @@ Servicio aislado para recibir solicitudes de beta y operar el portal interno. La
 
 6. Configurar `NEXT_PUBLIC_BETA_API_URL` en la web pública con la URL de `POST /v1/applications`.
 
+7. Comprobar que la dirección desde la que se sirve la web está en `ALLOWED_ORIGINS` (`wrangler.jsonc`). Si se activa mientras el sitio solo vive en `*.pages.dev`, ese origen exacto (`https://<proyecto>.pages.dev`) hay que añadirlo: si no, el Worker rechaza todas las solicitudes con `403 origin_not_allowed`.
+
+Turnstile solo da por buena la verificación si se resolvió en el mismo dominio que la petición. Con las claves de prueba de Turnstile (que dicen `example.com`), `TURNSTILE_HOSTNAME_OPTIONAL=1` en `.dev.vars` se salta esa comparación en local.
+
 ## Contrato
 
 - `POST /v1/applications`: solicitud pública. Requiere origen permitido, consentimiento obligatorio, Turnstile válido y campos de perfil. Devuelve siempre `201 { ok: true }`, sin revelar si el correo ya estaba registrado ni exponer datos previos.

@@ -1,6 +1,7 @@
 import { createHash, createHmac } from "node:crypto";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import worker from "../services/beta-api/src/worker.js";
+import { LEGAL_ACTUALIZADO } from "@/lib/legal/titular";
 
 /**
  * El Worker de `services/beta-api` ejecutado de verdad: `Request` reales y un
@@ -139,15 +140,16 @@ function conCors(res: Response) {
   expect(res.headers.get("Vary")).toContain("Origin");
 }
 
-/** Sustituye `fetch` solo para la verificación de Turnstile. */
-function turnstile(resultado: "ok" | "rechazo" | "caida" | "red") {
+/** Sustituye `fetch` solo para la verificación de Turnstile. `otra-web`: token válido resuelto en otro dominio. */
+function turnstile(resultado: "ok" | "otra-web" | "rechazo" | "caida" | "red") {
   const espia = vi.fn(async (entrada: RequestInfo | URL, init?: RequestInit) => {
     const url = entrada instanceof Request ? entrada.url : String(entrada);
     if (url !== SITEVERIFY) throw new Error(`fetch inesperado: ${url}`);
     expect(init?.method).toBe("POST");
     if (resultado === "red") throw new TypeError("fetch failed");
     if (resultado === "caida") return new Response("", { status: 503 });
-    return Response.json({ success: resultado === "ok" });
+    if (resultado === "rechazo") return Response.json({ success: false });
+    return Response.json({ success: true, hostname: resultado === "ok" ? new URL(ORIGEN).hostname : "otra.example" });
   });
   vi.stubGlobal("fetch", espia);
   return espia;
@@ -280,6 +282,17 @@ describe("Turnstile", () => {
     expect(env.DB.filas).toHaveLength(0);
   });
 
+  it("un token resuelto en otro dominio se rechaza, salvo TURNSTILE_HOSTNAME_OPTIONAL=1", async () => {
+    turnstile("otra-web");
+    const env = entorno();
+    const res = await worker.fetch(alta(SOLICITUD), env);
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ ok: false, error: "bot_check_failed" });
+    expect(env.DB.filas).toHaveLength(0);
+    const local = entorno({ TURNSTILE_HOSTNAME_OPTIONAL: "1" });
+    expect((await worker.fetch(alta(SOLICITUD), local)).status).toBe(201);
+  });
+
   it("envía secreto, token e IP a siteverify", async () => {
     const espia = turnstile("ok");
     await worker.fetch(alta(SOLICITUD), entorno());
@@ -364,6 +377,7 @@ describe("alta", () => {
       language: "es",
       marketing_consent: 1,
       privacy_consent_at: "2026-10-22T10:00:00.000Z",
+      privacy_policy_version: LEGAL_ACTUALIZADO,
       status: "nuevo",
       cohort: null,
       source_path: "/es/beta",
