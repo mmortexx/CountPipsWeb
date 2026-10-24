@@ -168,6 +168,16 @@ export function notaEnIdioma(nota: string, lang: Lang): string {
   return lang === "es" ? nota : (NOTA_EN.get(nota) ?? nota);
 }
 
+/** Las operaciones como las exporta en JSON la demo: fecha en ISO y notas en el idioma en que se leen. */
+export function operacionesExportables(trades: readonly Trade[], lang: Lang) {
+  return trades.map((t) => ({
+    ...t,
+    entryNote: notaEnIdioma(t.entryNote, lang),
+    closeNote: notaEnIdioma(t.closeNote, lang),
+    closedAt: t.closedAt.toISOString(),
+  }));
+}
+
 const INITIAL_BALANCE = SALDO_INICIAL_MUESTRA;
 
 function buildTrades(): Trade[] {

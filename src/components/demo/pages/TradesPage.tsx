@@ -11,6 +11,7 @@ import {
   SETUP_NAMES,
   nombreSetup,
   NOMBRE_SESION,
+  operacionesExportables,
 } from "@/lib/trading/data";
 import {
   deleteTrade,
@@ -687,14 +688,7 @@ export function TradesPage() {
           : `${fmtOperaciones(filtered.length, lang)} downloaded in standard CSV format.`,
       });
     } else {
-      const jsonContent = JSON.stringify(
-        filtered.map((t) => ({
-          ...t,
-          closedAt: t.closedAt.toISOString(),
-        })),
-        null,
-        2
-      );
+      const jsonContent = JSON.stringify(operacionesExportables(filtered, lang), null, 2);
       const blob = new Blob([jsonContent], { type: "application/json;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -742,7 +736,7 @@ export function TradesPage() {
       if (outcome === "loss" && tr.netPnl >= 0) return false;
       if (outcome === "be" && tr.netPnl !== 0) return false;
       if (setupSel !== "all" && tr.setup !== setupSel) return false;
-      return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang));
+      return coincideOperacion(tr, debounced, nombreSetup(tr.setup, lang), lang);
     });
   }, [
     allTrades,
