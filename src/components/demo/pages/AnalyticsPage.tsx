@@ -798,7 +798,7 @@ function normCdf(z: number): number {
 }
 
 /** SQN, índice Ulcer, CAGR, medio Kelly y Omega, calculados aquí porque `Metrics` no los expone. */
-function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: number }) {
+function computeAdvanced(trades: Trade[], mStats: { winRate: number; payoff: number }) {
   const n = trades.length;
   if (n < 2) return { sqn: 0, ulcer: 0, cagr: 0, halfKelly: 0, omega: 1 };
 
@@ -821,13 +821,7 @@ function computeAdvanced(trades: Trade[], mStats?: { winRate: number; payoff: nu
       ? (Math.pow(final / INITIAL_BALANCE_CONST, 1 / yearsSpan) - 1) * 100
       : 0;
 
-  const p = mStats?.winRate ?? (trades.filter((t) => t.netPnl > 0).length / n);
-  const wins = trades.filter((t) => t.netPnl > 0);
-  const losses = trades.filter((t) => t.netPnl < 0);
-  const avgW = wins.length > 0 ? wins.reduce((s, t) => s + t.netPnl, 0) / wins.length : 1;
-  const avgL = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.netPnl, 0) / losses.length) : 1;
-  const b = mStats?.payoff ?? (avgL > 0 ? avgW / avgL : 1);
-  const halfKelly = computeHalfKelly(p, b);
+  const halfKelly = computeHalfKelly(mStats.winRate, mStats.payoff);
 
   // Omega de Keating y Shadwick con umbral L = 0.
   const omega = computeOmega(trades, 0);

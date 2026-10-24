@@ -29,6 +29,16 @@ export function esperanzaEnR(acierto: number, ganancia: number, perdida = 1): nu
   return sinRuido(acierto * ganancia - (1 - acierto) * perdida);
 }
 
+/** Kelly completo en %: f* = (p·b − q) / b, con `acierto` (0–1) y `payoff` b,
+ *  sin topes (el tope es cosa del control de riesgo) y nunca negativo. Sin
+ *  payoff medible (ninguna pérdida o ninguna ganancia: b ≤ 0 o no finito) no
+ *  hay apuesta que proponer: 0. Demo, calculadora y proyector salen de aquí. */
+export function kellyPct(acierto: number, payoff: number): number {
+  if (!(payoff > 0) || !Number.isFinite(payoff) || !Number.isFinite(acierto)) return 0;
+  const p = Math.min(1, Math.max(0, acierto));
+  return Math.max(0, ((p * payoff - (1 - p)) / payoff) * 100);
+}
+
 /** Parte del balance inicial perdida que las calculadoras cuentan como ruina. */
 export const UMBRAL_RUINA_PCT = 50;
 

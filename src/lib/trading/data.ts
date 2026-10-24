@@ -19,6 +19,7 @@
 
 import { SETUP_NAMES, type SetupName } from "./setups.ts";
 import { mulberry32 } from "./azar.ts";
+import { kellyPct } from "./estadistica.ts";
 import { OPERACIONES_MUESTRA, SALDO_INICIAL_MUESTRA } from "./muestra.ts";
 import type { Lang } from "@/lib/locale";
 
@@ -577,13 +578,9 @@ export function computeDrawdownSkewness(trades: Trade[], initialBalance = INITIA
   return +skew.toFixed(4);
 }
 
-/** Medio Kelly en % = max(0, f* / 2) * 100, con f* = (p*b - q) / b. Acepta el acierto como fracción o como porcentaje. */
+/** Medio Kelly en %, a dos decimales (ver `kellyPct`). Acepta el acierto como fracción o como porcentaje. */
 export function computeHalfKelly(winRate: number, payoff: number): number {
-  const p = winRate > 1 ? winRate / 100 : winRate;
-  const q = 1 - p;
-  const b = payoff > 0 ? payoff : 1;
-  const fullKelly = b > 0 ? (p * b - q) / b : 0;
-  return fullKelly > 0 ? +(Math.max(0, fullKelly / 2) * 100).toFixed(2) : 0;
+  return +(kellyPct(winRate > 1 ? winRate / 100 : winRate, payoff) / 2).toFixed(2);
 }
 
 /** Intervalo de Wilson al 95 % (o el `z` dado), en %. Con `total` ≤ 0, todo a 0. */

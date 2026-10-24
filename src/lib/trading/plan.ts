@@ -1,3 +1,4 @@
+import { kellyPct } from "./estadistica";
 import { INSTRUMENT_SPECS } from "./fugaComisiones";
 import { excedeApalancamiento, validaPlan, type MercadoPlan, type MotivoPlanInvalido } from "./validaPlan";
 
@@ -230,10 +231,8 @@ export function tamanoParaRiesgo(riesgoUsd: number, distancia: number, multiplic
   return enteros ? Math.floor(exacto + 1e-9) : exacto;
 }
 
-/** Kelly completo, medio y cuarto, en %: f* = (p·b − q) / b, sin topes (el tope es cosa del control de riesgo). */
+/** Kelly completo, medio y cuarto, en % (ver `kellyPct`). */
 export function fraccionesKelly(aciertoPct: number, rr: number): { completo: number; medio: number; cuarto: number } {
-  if (!(rr > 0)) return { completo: 0, medio: 0, cuarto: 0 };
-  const p = aciertoPct / 100;
-  const completo = Math.max(0, ((p * rr - (1 - p)) / rr) * 100);
+  const completo = kellyPct(aciertoPct / 100, rr);
   return { completo, medio: completo / 2, cuarto: completo / 4 };
 }
