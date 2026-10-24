@@ -224,7 +224,7 @@ export function RMultipleSimulator() {
                       <span className="flex min-h-[2.5em] items-center justify-center">
                         {preset.label}
                       </span>
-                      <span className="mt-0.5 text-[12px] opacity-70">{preset.nota}</span>
+                      <span className="mt-0.5 text-[12px]">{preset.nota}</span>
                     </span>
                   </button>
                 );

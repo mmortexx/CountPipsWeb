@@ -148,6 +148,16 @@ function auditar() {
   let sinFondoPlano = 0;
 
   const CORTE = 0.0001;
+  /* Lo que se está animando no está en su estado final; lo demás se mide con su
+     opacidad real. Saltar todo lo translúcido dejaba sin medir un texto con
+     `opacity-70` permanente (las notas de los perfiles del Monte Carlo, 3,2:1). */
+  const animados = new Set(
+    document
+      .getAnimations()
+      .filter((a) => a.playState === "running" || a.playState === "pending")
+      .map((a) => a.effect?.target)
+      .filter(Boolean)
+  );
   for (const el of document.querySelectorAll("body *")) {
     if (el.closest("svg")) continue;
     // Lo decorativo (`aria-hidden`) no se juzga: si había que leerlo, el problema es el `aria-hidden`, no el contraste.
@@ -162,8 +172,15 @@ function auditar() {
 
     const s = getComputedStyle(el);
     if (s.display === "none" || s.visibility === "hidden") continue;
-    const op = Number(s.opacity);
-    if (op < 0.99) continue; // En plena animación de entrada: no es su estado final.
+    // Un control desactivado está exento del mínimo (WCAG 1.4.3).
+    if (el.closest(":disabled, [aria-disabled='true']")) continue;
+    let op = 1;
+    let enMovimiento = false;
+    for (let n = el; n; n = n.parentElement) {
+      op *= Number(getComputedStyle(n).opacity);
+      if (animados.has(n)) enMovimiento = true;
+    }
+    if (enMovimiento || op < 0.05) continue;
     const r = el.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) continue;
 
@@ -182,8 +199,9 @@ function auditar() {
       continue;
     }
 
-    const tinta = rgba(s.color);
-    if (!tinta || tinta.a < CORTE) continue;
+    const color = rgba(s.color);
+    if (!color || color.a < CORTE) continue;
+    const tinta = { ...color, a: color.a * op };
     const fondo = fondoDe(el);
     if (fondo.imagen) {
       sinFondoPlano++;
