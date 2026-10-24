@@ -68,7 +68,7 @@ export const FAQ_ES: QAFaq[] = [
   {
     q: "¿Cuál es la diferencia entre Core y Pro?",
     categoria: "product",
-    a: `Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y ${PROGRAMA.cuentasCore} cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.`,
+    a: `Core incluye el diario, las métricas, el calendario y la curva de capital, la gestión de riesgo, psicología y disciplina, el playbook, la importación CSV, las copias de seguridad, el informe mensual en PDF y ${PROGRAMA.cuentasCore} cuentas de trading. Pro añade cuentas ilimitadas, el modo prop firm con su informe de evaluación en PDF, el módulo fiscal para España, la página Negocio, los experimentos, el simulador Monte Carlo, el riesgo de ruina, la API local y, en Mercados, las alertas, la curva de tipos y la fortaleza de divisas.`,
   },
   {
     q: "¿Qué datos pide esta web?",
@@ -136,7 +136,7 @@ export const FAQ_EN: QAFaq[] = [
   {
     q: "What’s the difference between Core and Pro?",
     categoria: "product",
-    a: `Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and ${PROGRAMA.cuentasCore} trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.`,
+    a: `Core includes the journal, the metrics, the calendar and equity curve, risk management, psychology and discipline, the playbook, CSV import, backups, the monthly PDF report and ${PROGRAMA.cuentasCore} trading accounts. Pro adds unlimited accounts, prop firm mode with its PDF evaluation report, the Spanish tax module, the Business page, experiments, the Monte Carlo simulator, risk of ruin, the local API and, in Markets, alerts, the yield curve and currency strength.`,
   },
   {
     q: "What data does this website ask for?",
