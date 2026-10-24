@@ -45,7 +45,7 @@ interface PresetConfig {
   frictionR: number;
 }
 
-const PRESETS: PresetConfig[] = [
+export const PRESETS: PresetConfig[] = [
   {
     id: "propfirm",
     labelEs: "Cuenta fondeada",
@@ -586,7 +586,7 @@ export function EquityProjector() {
                   tradesPerYear,
                   12,
                   600,
-                  4,
+                  2,
                   setTradesPerYear,
                   es ? " ops" : " trades",
                   `≈\u00a0${fmtNum(tradesPerYear / 12, 1)} ${es ? "ops/mes" : "trades/mo"}`
