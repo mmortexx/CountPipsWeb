@@ -89,7 +89,10 @@ describe("cada idioma nombra las cosas de una sola forma", () => {
 
   it("alemán: la venta abre al «Verkaufsstart», no al «Launch»", () => {
     expect(texto("de", createElement(Pricing))).not.toMatch(/\bLaunch\b/);
-    expect(texto("de", createElement(FinalCTANew))).not.toMatch(/\bLaunch\b/);
+    // El cierre de /de/pricing es la variante de precios (la general no habla de la venta).
+    const cierre = texto("de", createElement(() => FinalCTANew({ enPrecios: true })));
+    expect(cierre).toMatch(/Verkaufsstart/);
+    expect(cierre).not.toMatch(/\bLaunch\b/);
   });
 
   it("italiano: «diario di trading», no «trading journal», en la portada y la comparativa", () => {
