@@ -126,36 +126,46 @@ export interface Trade {
   closeNote: string;
 }
 
-const ES_NOTES = [
-  "Entrada limpia en rotura del nivel, volumen confirmando.",
-  "Pullback a la media de 50, esperé el cierre.",
-  "Reversión en zona de oferta, P&L ajustado.",
-  "Seguí la tendencia, añadí en el retroceso.",
-  "Rango lateral, falsa rotura — salí rápido.",
-  "Buena gestión, moví el stop a punto muerto.",
-  "Entré tarde, el movimiento ya estaba hecho.",
-  "Plan cumplido, objetivo alcanzado.",
-  "Estructura rota en M15, esperé el retest.",
-  "Confluencia de nivel + Fibonacci + VWAP.",
-  "Vela envolvente alcista en soporte diagonal.",
-  "Falsa ruptura en H1, entré en sentido contrario.",
-  "Esperé el primer cierre fuera del rango antes de entrar.",
-  "Tendencia clara en H4, entrada en M5 con el flujo.",
-  "Doble suelo visible, volumen decreciente en la corrección.",
-  "Imbalance sin rellenar, entré al retest.",
+type Nota = { es: string; en: string };
+
+const NOTAS_ENTRADA: readonly Nota[] = [
+  { es: "Entrada limpia en rotura del nivel, volumen confirmando.", en: "Clean entry on the level breakout, volume confirming." },
+  { es: "Pullback a la media de 50, esperé el cierre.", en: "Pullback to the 50 moving average; waited for the close." },
+  { es: "Reversión en zona de oferta, P&L ajustado.", en: "Reversal at a supply zone, tight P&L." },
+  { es: "Seguí la tendencia, añadí en el retroceso.", en: "Followed the trend, added on the pullback." },
+  { es: "Rango lateral, falsa rotura — salí rápido.", en: "Sideways range, false breakout — got out fast." },
+  { es: "Buena gestión, moví el stop a punto muerto.", en: "Good management, moved the stop to breakeven." },
+  { es: "Entré tarde, el movimiento ya estaba hecho.", en: "Got in late; the move had already happened." },
+  { es: "Plan cumplido, objetivo alcanzado.", en: "Plan followed, target reached." },
+  { es: "Estructura rota en M15, esperé el retest.", en: "Structure broke on M15; waited for the retest." },
+  { es: "Confluencia de nivel + Fibonacci + VWAP.", en: "Confluence of level + Fibonacci + VWAP." },
+  { es: "Vela envolvente alcista en soporte diagonal.", en: "Bullish engulfing candle at diagonal support." },
+  { es: "Falsa ruptura en H1, entré en sentido contrario.", en: "False breakout on H1; traded the other way." },
+  { es: "Esperé el primer cierre fuera del rango antes de entrar.", en: "Waited for the first close outside the range before entering." },
+  { es: "Tendencia clara en H4, entrada en M5 con el flujo.", en: "Clear trend on H4, M5 entry with the flow." },
+  { es: "Doble suelo visible, volumen decreciente en la corrección.", en: "Visible double bottom, falling volume on the pullback." },
+  { es: "Imbalance sin rellenar, entré al retest.", en: "Unfilled imbalance; entered on the retest." },
 ];
-const ES_CLOSE = [
-  "Salí en objetivo por scalping.",
-  "Stop cazado antes de reaccionar.",
-  "Cerré parcial en +1R, resto al objetivo.",
-  "Reversión no funcionó, corté pérdidas.",
-  "Dejé correr hasta resistencia.",
-  "Salí por trailing stop al cerrar sesión NY.",
-  "Cierre manual antes de noticias macro.",
-  "Objetivo tocado, salí en market.",
-  "Stop mental en rotura de estructura menor.",
-  "Cerré en breakeven tras ver falta de seguimiento.",
+const NOTAS_CIERRE: readonly Nota[] = [
+  { es: "Salí en objetivo por scalping.", en: "Scalp: took profit at the target." },
+  { es: "Stop cazado antes de reaccionar.", en: "Stopped out before it could react." },
+  { es: "Cerré parcial en +1R, resto al objetivo.", en: "Took a partial at +1R, rest to target." },
+  { es: "Reversión no funcionó, corté pérdidas.", en: "The reversal didn’t work; cut the loss." },
+  { es: "Dejé correr hasta resistencia.", en: "Let it run to resistance." },
+  { es: "Salí por trailing stop al cerrar sesión NY.", en: "Trailing stop hit at the New York close." },
+  { es: "Cierre manual antes de noticias macro.", en: "Closed by hand before macro news." },
+  { es: "Objetivo tocado, salí en market.", en: "Target touched; exited at market." },
+  { es: "Stop mental en rotura de estructura menor.", en: "Mental stop on a minor structure break." },
+  { es: "Cerré en breakeven tras ver falta de seguimiento.", en: "Closed at breakeven after seeing no follow-through." },
 ];
+
+const NOTA_EN = new Map([...NOTAS_ENTRADA, ...NOTAS_CIERRE].map((n) => [n.es, n.en]));
+
+/** Las notas de la muestra se guardan en español, como el resto del conjunto, y la
+ *  demo inglesa las enseña traducidas. Las que escribe el visitante no se tocan. */
+export function notaEnIdioma(nota: string, lang: Lang): string {
+  return lang === "es" ? nota : (NOTA_EN.get(nota) ?? nota);
+}
 
 const INITIAL_BALANCE = SALDO_INICIAL_MUESTRA;
 
@@ -268,8 +278,8 @@ function buildTrades(): Trade[] {
       closedAt,
       durationMin,
       dayScore,
-      entryNote: ES_NOTES[Math.floor(rnd() * ES_NOTES.length)],
-      closeNote: ES_CLOSE[Math.floor(rnd() * ES_CLOSE.length)],
+      entryNote: NOTAS_ENTRADA[Math.floor(rnd() * NOTAS_ENTRADA.length)].es,
+      closeNote: NOTAS_CIERRE[Math.floor(rnd() * NOTAS_CIERRE.length)].es,
     });
   }
 

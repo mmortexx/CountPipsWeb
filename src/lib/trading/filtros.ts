@@ -1,5 +1,5 @@
 import { coincide } from "@/lib/busqueda";
-import type { Compliance, Direction, Trade } from "./data";
+import { notaEnIdioma, type Compliance, type Direction, type Trade } from "./data";
 
 export interface FiltrosDemo {
   instrument: string;
@@ -16,9 +16,19 @@ export function pasaCumplimiento(c: Compliance, filtro: Compliance | "all"): boo
 /** El buscador de Operaciones: mira instrumento, clave del setup, su rótulo
  *  visible («Ruptura», no solo «Breakout») y las dos notas. Como el resto de
  *  buscadores del sitio (`coincide`): sin tildes ni mayúsculas, y con todas las
- *  palabras en cualquier orden. */
+ *  palabras en cualquier orden. Las notas de la muestra, también en su versión
+ *  inglesa, que es la que se lee en la demo en inglés. */
 export function coincideOperacion(tr: Trade, consulta: string, rotuloSetup: string): boolean {
-  return coincide(consulta, tr.instrument, tr.setup, rotuloSetup, tr.entryNote, tr.closeNote);
+  return coincide(
+    consulta,
+    tr.instrument,
+    tr.setup,
+    rotuloSetup,
+    tr.entryNote,
+    tr.closeNote,
+    notaEnIdioma(tr.entryNote, "en"),
+    notaEnIdioma(tr.closeNote, "en"),
+  );
 }
 
 export function filtraOperaciones(trades: readonly Trade[], f: FiltrosDemo): Trade[] {

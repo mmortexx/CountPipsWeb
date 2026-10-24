@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { TRADES, nombreSetup, type Trade } from "@/lib/trading/data";
+import { TRADES, nombreSetup, notaEnIdioma, type Trade } from "@/lib/trading/data";
 import { coincideOperacion } from "@/lib/trading/filtros";
 import { comandosDemo, filtraComandos } from "@/components/demo/DemoCommandPalette";
 
@@ -24,6 +24,13 @@ describe("búsqueda de Operaciones: sin tildes, sin mayúsculas, cualquier orden
     for (const q of ["es", "breakout", "ruptura", "retroceso", "objetivo"]) {
       expect(coincideOperacion(operacion(), q, rotulo), q).toBe(true);
     }
+  });
+
+  it("una nota de la muestra se encuentra también por su versión inglesa, la que se lee en /en/demo", () => {
+    const muestra = operacion({ entryNote: TRADES[0].entryNote });
+    const inglesa = notaEnIdioma(TRADES[0].entryNote, "en");
+    expect(inglesa).not.toBe(TRADES[0].entryNote);
+    expect(coincideOperacion(muestra, inglesa.split(/\s+/).slice(0, 3).join(" "), rotulo)).toBe(true);
   });
 
   it("varias palabras, en cualquier orden y repartidas entre campos", () => {

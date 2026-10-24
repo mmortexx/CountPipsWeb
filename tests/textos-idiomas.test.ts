@@ -10,6 +10,7 @@ import type { Lang } from "@/lib/locale";
 import { prefijoDeIdioma } from "@/lib/locale";
 import { cifrasMuestra } from "@/lib/trading/cifras-muestra";
 import { fmtInt, fmtOperaciones } from "@/lib/trading/format";
+import { TRADES, notaEnIdioma } from "@/lib/trading/data";
 import { CAMINOS_FONDEO, HERRAMIENTAS } from "@/lib/herramientas";
 import { PropChallengeSimulator } from "@/components/marketing/PropChallengeSimulator";
 import { MetricsShowcaseNew } from "@/components/marketing/MetricsShowcaseNew";
@@ -76,6 +77,23 @@ describe("el recuento de operaciones habla como el resto del texto", () => {
     expect(fmtOperaciones(1, "fr")).toBe("1 opération");
     expect(fmtOperaciones(200, "it")).toBe("200 operazioni");
     expect(fmtOperaciones(1, "it")).toBe("1 operazione");
+  });
+});
+
+describe("notas de la muestra de la demo", () => {
+  /* Marcas que en una nota inglesa solo pueden ser restos del español. */
+  const ESPANOL = /[áéíóúñ¿¡]|\b(el|la|los|las|en|de|del|y|con|salí|entré|esperé)\b/i;
+  const notas = [...new Set(TRADES.flatMap((t) => [t.entryNote, t.closeNote]))];
+
+  it("en inglés ninguna nota de entrada o cierre queda en español", () => {
+    expect(notas.length).toBeGreaterThan(20);
+    const sinTraducir = notas.filter((n) => notaEnIdioma(n, "en") === n || ESPANOL.test(notaEnIdioma(n, "en")));
+    expect(sinTraducir).toEqual([]);
+  });
+
+  it("en español se enseñan tal cual, y lo que escribe el visitante no se toca", () => {
+    for (const n of notas) expect(notaEnIdioma(n, "es")).toBe(n);
+    expect(notaEnIdioma("Mi nota propia", "en")).toBe("Mi nota propia");
   });
 });
 

@@ -14,6 +14,7 @@ import {
   contextoDelDia,
   contextoDeMercado,
   ENFRIAMIENTO_MIN,
+  notaEnIdioma,
 } from "@/lib/trading/data";
 import { useAllTrades } from "@/lib/trading/demoStore";
 import {
@@ -1002,7 +1003,7 @@ export function TradeDetailPage() {
                   {t("entryNote")}
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">
-                  {trade.entryNote}
+                  {notaEnIdioma(trade.entryNote, lang)}
                 </blockquote>
               </div>
               <div>
@@ -1020,7 +1021,7 @@ export function TradeDetailPage() {
                   {t("closeNote")}
                 </div>
                 <blockquote className="border-l-2 border-solid border-[rgb(var(--divider)/0.25)] pl-3 py-1 text-sm text-secondary italic leading-relaxed">
-                  {trade.closeNote}
+                  {notaEnIdioma(trade.closeNote, lang)}
                 </blockquote>
               </div>
             </div>
