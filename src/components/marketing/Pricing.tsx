@@ -243,7 +243,7 @@ function PlanCard({ plan, lang }: { plan: Plan; lang: Lang }) {
           </>
         ) : (
           <>
-            <span className="text-2xl md:text-3xl font-normal text-tertiary tnum">$</span>
+            <span className="text-2xl md:text-3xl font-normal text-tertiary tnum">{lang === "pt" ? "US$" : "$"}</span>
             <span data-precio className="text-5xl md:text-6xl font-normal tracking-[-0.035em] text-primary tnum leading-[0.95]">
               {fmtInt(plan.price, lang)}
             </span>

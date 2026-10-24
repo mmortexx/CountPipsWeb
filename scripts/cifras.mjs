@@ -131,7 +131,8 @@ for await (const f of htmls(RAIZ)) {
     // acusa un «$» no precedido de una cifra o su abreviatura de escala.
     anota("dólar delante en español", /(?<![\dkM][ \u00a0])\$[ \u00a0]?\d/g, ctx);
   } else if (langRuta === "pt") {
-    // Portugués (pt-BR): % pegado, dólar delante
+    // Portugués (pt-BR): % pegado, dólar delante y como «US$» («$» a secas son reales)
+    anota("dólar sin «US$» en portugués", /(?<!US)\$(?=[ \xa0]?[\d−+])/g, ctx);
     anota("% con espacio en portugués", /\d[ \u00a0]%/g, ctx);
   } else if (langRuta === "fr") {
     // Francés (fr-FR): % con espacio duro, dólar detrás
