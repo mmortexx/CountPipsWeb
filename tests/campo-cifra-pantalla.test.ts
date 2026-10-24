@@ -7,6 +7,8 @@ vi.mock("next/navigation", () => ({ usePathname: () => ruta, useRouter: () => ({
 
 import { LanguageProvider } from "@/lib/i18n";
 import { RiskCalculator } from "@/components/marketing/RiskCalculator";
+import { DisciplineCost } from "@/components/marketing/DisciplineCost";
+import { CommissionDragCalculator } from "@/components/marketing/CommissionDragCalculator";
 import { cifraReposo } from "@/lib/trading/format";
 
 /** HTML que sale del servidor para una página de la calculadora de riesgo. */
@@ -19,6 +21,24 @@ function htmlDe(pathname: string): string {
 function valores(html: string): string[] {
   return [...html.matchAll(/<input[^>]*type="text"[^>]*>/g)].map((m) => /value="([^"]*)"/.exec(m[0])?.[1] ?? "");
 }
+
+/** El `inputmode` de cada campo de texto de una herramienta, en orden. */
+function teclados(herramienta: () => ReturnType<typeof createElement>): string[] {
+  ruta = "/";
+  const html = renderToString(createElement(LanguageProvider, null, herramienta()));
+  return [...html.matchAll(/<input[^>]*type="text"[^>]*>/g)].map((m) => /inputMode="([^"]*)"/i.exec(m[0])?.[1] ?? "");
+}
+
+describe("teclado móvil: el signo menos solo se ofrece donde el campo admite negativos", () => {
+  it("el resultado medio en plan y fuera de plan admite negativos: teclado de texto", () => {
+    expect(teclados(() => createElement(DisciplineCost))).toEqual(["text", "text"]);
+  });
+
+  it("balance, precios, comisión y deslizamiento no admiten negativos: teclado decimal", () => {
+    expect(teclados(() => createElement(RiskCalculator))).toEqual(["decimal", "decimal", "decimal", "decimal"]);
+    expect(teclados(() => createElement(CommissionDragCalculator))).toEqual(["decimal", "decimal"]);
+  });
+});
 
 describe("campo de cifra en reposo: los millares se escriben", () => {
   it("el balance de la calculadora de riesgo sale con su separador, como el resto de la página", () => {

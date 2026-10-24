@@ -35,6 +35,10 @@ export function CampoCifra({ valor, onValor, min, max, paso, decimales, unidad, 
   const [borrador, setBorrador] = useState<string | null>(null);
   const [avisado, setAvisado] = useState(false);
 
+  /* El teclado decimal del iPhone no tiene el signo menos: donde el campo admite
+     negativos se ofrece el de texto; en los demás, el decimal. */
+  const admiteNegativos = min === undefined || min < 0;
+
   const acota = (n: number) => Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n));
   const redondea = (n: number) => Math.round(n * 1e6) / 1e6;
 
@@ -55,7 +59,7 @@ export function CampoCifra({ valor, onValor, min, max, paso, decimales, unidad, 
         <input
           {...resto}
           type="text"
-          inputMode="decimal"
+          inputMode={admiteNegativos ? "text" : "decimal"}
           autoComplete="off"
           spellCheck={false}
           aria-invalid={avisa ? true : undefined}
