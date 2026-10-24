@@ -15,7 +15,7 @@ import {
   contextoDeMercado,
   ENFRIAMIENTO_MIN,
 } from "@/lib/trading/data";
-import { useCustomTrades, customTradeToTrade } from "@/lib/trading/demoStore";
+import { useAllTrades } from "@/lib/trading/demoStore";
 import {
   fmtNum,
   fmtInt,
@@ -405,17 +405,9 @@ function TagPill({
 export function TradeDetailPage() {
   const { t, lang } = useLang();
   const { selectedTradeId, goBack, goDetail } = useDemo();
-  const customTrades = useCustomTrades();
-  const allTrades = useMemo(() => {
-    const custom = customTrades.map(customTradeToTrade);
-    return [...custom, ...TRADES];
-  }, [customTrades]);
-  const trade = useMemo(() => {
-    const sample = TRADES.find((x) => x.id === selectedTradeId);
-    if (sample) return sample;
-    const custom = customTrades.find((c) => c.id === selectedTradeId);
-    return custom ? customTradeToTrade(custom) : undefined;
-  }, [selectedTradeId, customTrades]);
+  /* La misma lista, en el mismo orden, que Operaciones: anterior y siguiente la recorren. */
+  const allTrades = useAllTrades(TRADES);
+  const trade = useMemo(() => allTrades.find((x) => x.id === selectedTradeId), [selectedTradeId, allTrades]);
   const currentIndex = allTrades.findIndex((x) => x.id === selectedTradeId);
   const prevTrade = currentIndex > 0 ? allTrades[currentIndex - 1] : undefined;
   const nextTrade = currentIndex >= 0 && currentIndex < allTrades.length - 1 ? allTrades[currentIndex + 1] : undefined;

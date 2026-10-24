@@ -6,13 +6,14 @@ import { Viajero } from "../Viajero";
 import { useLang } from "@/lib/i18n";
 import {
   TRADES,
-  METRICS,
+  computeMetrics,
   weekdayBreakdown,
   monthlyBreakdown,
   cumplimientoMensual,
   nivelDisciplina,
   type Trade,
 } from "@/lib/trading/data";
+import { useAllTrades } from "@/lib/trading/demoStore";
 import { fmtInt, fmtNum, fmtDate, fmtOperaciones, fmtPct, pctSep, LOCALE_FECHA } from "@/lib/trading/format";
 import { Eyebrow } from "@/components/tj/Eyebrow";
 import { Chip } from "@/components/tj/Chip";
@@ -796,25 +797,29 @@ export function JournalPage() {
 
   const [tab, setTab] = useState<"weekly" | "monthly">("weekly");
 
+  /* Muestra y lo que registra el visitante, la misma lista que Resumen, Analítica y Operaciones. */
+  const allTrades = useAllTrades(TRADES);
+  const metrics = useMemo(() => computeMetrics(allTrades), [allTrades]);
+
   const weekly = useMemo(
     () =>
-      weekdayBreakdown(TRADES, lang).map((d) => ({ label: d.day, pnl: d.pnl })),
-    [lang]
+      weekdayBreakdown(allTrades, lang).map((d) => ({ label: d.day, pnl: d.pnl })),
+    [allTrades, lang]
   );
   const monthly = useMemo(
     () =>
-      monthlyBreakdown(TRADES, lang).map((d) => ({ label: d.month, pnl: d.pnl })),
-    [lang]
+      monthlyBreakdown(allTrades, lang).map((d) => ({ label: d.month, pnl: d.pnl })),
+    [allTrades, lang]
   );
-  const history = useMemo(() => buildHistory(TRADES), []);
+  const history = useMemo(() => buildHistory(allTrades), [allTrades]);
 
-  const reparto = useMemo(() => repartoCumplimiento(TRADES), []);
+  const reparto = useMemo(() => repartoCumplimiento(allTrades), [allTrades]);
   const totalReparto = reparto.reduce((s, r) => s + r.count, 0);
 
-  const compliancePct = METRICS.compliancePct;
-  const costOfIndiscipline = METRICS.costOfIndiscipline;
-  const expInPlan = METRICS.expectancyInPlan;
-  const expOutPlan = METRICS.expectancyBrokePlan;
+  const compliancePct = metrics.compliancePct;
+  const costOfIndiscipline = metrics.costOfIndiscipline;
+  const expInPlan = metrics.expectancyInPlan;
+  const expOutPlan = metrics.expectancyBrokePlan;
 
   const isRealCost = costOfIndiscipline > 0;
   const headlineValue = Math.abs(costOfIndiscipline);
@@ -837,8 +842,8 @@ export function JournalPage() {
     const sueno = (t: Trade) => t.dayScore + ((t.id * 7) % 3) - 1;
     const fisico = (t: Trade) => t.dayScore + ((t.id * 5) % 3) - 1;
     const cruce = (f: (t: Trade) => number, bajo: number, alto: number) => {
-      const b = TRADES.filter((t) => f(t) <= bajo);
-      const a = TRADES.filter((t) => f(t) >= alto);
+      const b = allTrades.filter((t) => f(t) <= bajo);
+      const a = allTrades.filter((t) => f(t) >= alto);
       return { low: avg(b), high: avg(a), n: b.length + a.length };
     };
     const ops = (n: number) => fmtOperaciones(n, lang);
@@ -855,11 +860,11 @@ export function JournalPage() {
       physicalLow: f.low,
       physicalHigh: f.high,
       physicalSample: ops(f.n),
-      planWith: avg(TRADES.filter((t) => t.compliance === "yes")),
-      planWithout: avg(TRADES.filter((t) => t.compliance !== "yes")),
-      planSample: ops(TRADES.length),
+      planWith: avg(allTrades.filter((t) => t.compliance === "yes")),
+      planWithout: avg(allTrades.filter((t) => t.compliance !== "yes")),
+      planSample: ops(allTrades.length),
     };
-  }, [lang]);
+  }, [allTrades, lang]);
 
   // Tira de racha de check-in de 30 días, determinista. El estado del LCG va
   // dentro del memo para no reasignarse entre renders (react-hooks/immutability).
@@ -897,11 +902,11 @@ export function JournalPage() {
   // Tendencia mensual de cumplimiento, calculada sobre la muestra.
   const complianceTrend = useMemo(() => {
     const mes = new Intl.DateTimeFormat(LOCALE_FECHA[lang], { month: "short", timeZone: "UTC" });
-    return cumplimientoMensual(TRADES).map((m) => {
+    return cumplimientoMensual(allTrades).map((m) => {
       const nombre = mes.format(m.inicio).replace(".", "");
       return { label: nombre.charAt(0).toUpperCase() + nombre.slice(1), fraction: m.fraccion };
     });
-  }, [lang]);
+  }, [allTrades, lang]);
 
   const togglePre = (id: string) =>
     setPreState((p) => ({ ...p, [id]: !p[id] }));

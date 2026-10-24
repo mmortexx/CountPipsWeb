@@ -1,20 +1,24 @@
 "use client";
 
+import { useMemo } from "react";
 import { useLang } from "@/lib/i18n";
-import { METRICS, nivelDisciplina } from "@/lib/trading/data";
+import { TRADES, computeMetrics, nivelDisciplina } from "@/lib/trading/data";
+import { useAllTrades } from "@/lib/trading/demoStore";
 import { fmtPct } from "@/lib/trading/format";
 
 /**
  * Barra de estado bajo el panel de la demo, como la de la app
  * (MainWindow.xaml L286-331), con tres zonas: pip de disciplina con
- * «Disciplina: NN %» (el cumplimiento de la muestra), nota de guardado
+ * «Disciplina: NN %» (el cumplimiento de la muestra y lo registrado), nota de guardado
  * (recurso Status_DataNote de la app) y la versión.
  */
 export function StatusBar() {
   const { t, lang } = useLang();
 
-  // Cumplimiento de la muestra, acotado a [0, 1].
-  const compliance = Math.max(0, Math.min(1, METRICS.compliancePct));
+  // Cumplimiento de la muestra y de lo que registra el visitante, acotado a [0, 1].
+  const allTrades = useAllTrades(TRADES);
+  const { compliancePct } = useMemo(() => computeMetrics(allTrades), [allTrades]);
+  const compliance = Math.max(0, Math.min(1, compliancePct));
   const nivel = nivelDisciplina(compliance);
   const isHealthy = nivel === "alta";
   const complianceLabel = fmtPct(compliance, lang, 0);
