@@ -169,6 +169,14 @@ export const STR = {
     es: `Instrumento, setup, dirección, entrada y stop son obligatorios; precios y cantidad, mayores que cero y de ${fmtInt(LIMITES.precio.max, "es")} como máximo.`,
     en: `Instrument, setup, direction, entry and stop are required; prices and quantity must be above zero and at most ${fmtInt(LIMITES.precio.max, "en")}.`,
   },
+  sizeNoFits: {
+    es: "No cabe ni una unidad",
+    en: "Not even one unit fits",
+  },
+  sizeNoFitsDesc: {
+    es: "Con el riesgo por defecto y este stop no cabe ni una acción ni un contrato entero. Acerca el stop o cambia de instrumento.",
+    en: "At the default risk and this stop, not even one whole share or contract fits. Tighten the stop or switch instrument.",
+  },
   tradeDeleted: { es: "Operación eliminada", en: "Trade deleted" },
   deleteTrade: { es: "Eliminar operación", en: "Delete trade" },
   deleteConfirm: { es: "¿Eliminar?", en: "Delete?" },

@@ -218,6 +218,18 @@ export function calculaPlan(e: EntradaPlan): ResultadoPlan {
   };
 }
 
+/** Tamaño que arriesga `riesgoUsd` con el stop a `distancia` del precio y
+ *  `multiplicador` dólares por punto y unidad. En acciones y contratos
+ *  (`enteros`) va hacia abajo, con la tolerancia de coma flotante de
+ *  `calculaPlan`, y es 0 si no cabe una unidad: nunca una fracción de contrato
+ *  ni un redondeo hacia arriba que arriesgue más de lo pedido. Con entradas sin
+ *  sentido (stop a cero, riesgo negativo, no finitas), 0. */
+export function tamanoParaRiesgo(riesgoUsd: number, distancia: number, multiplicador: number, enteros: boolean): number {
+  const exacto = riesgoUsd / (distancia * multiplicador);
+  if (!Number.isFinite(exacto) || exacto <= 0) return 0;
+  return enteros ? Math.floor(exacto + 1e-9) : exacto;
+}
+
 /** Kelly completo, medio y cuarto, en %: f* = (p·b − q) / b, sin topes (el tope es cosa del control de riesgo). */
 export function fraccionesKelly(aciertoPct: number, rr: number): { completo: number; medio: number; cuarto: number } {
   if (!(rr > 0)) return { completo: 0, medio: 0, cuarto: 0 };

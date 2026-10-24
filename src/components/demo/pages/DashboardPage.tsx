@@ -28,6 +28,7 @@ import { MiniCalendar } from "@/components/charts/MiniCalendar";
 import { AssetMark } from "@/components/demo/AssetMark";
 import { useDemo } from "@/components/demo/DemoContext";
 import { moverConFlechas } from "@/lib/flechas";
+import { tamanoParaRiesgo } from "@/lib/trading/plan";
 import { validaRegistro } from "@/lib/trading/validaPlan";
 
 // Ventanas de la curva de capital: últimos N días. La muestra cubre ~180, así que «6M» equivale a todo.
@@ -521,9 +522,12 @@ export function DashboardPage() {
                             // 1 % de la cuenta entre la distancia al stop:
                             // el tamaño que arriesga exactamente ese 1 %.
                             const mult = getInstrumentMultiplier(instrumentSymbol, inst.assetClass);
-                            const q =
-                              (INITIAL_BALANCE_CONST * RIESGO_POR_DEFECTO) / (stopDist * mult);
-                            setQuantity(q < 1 ? precio(q, 3) : precio(q, 2));
+                            /* Acciones y futuros van en unidades enteras, hacia abajo: una
+                               fracción de contrato no existe ni arriesga lo que se pidió. */
+                            const enteros = decLecturaCantidad === 0;
+                            const q = tamanoParaRiesgo(INITIAL_BALANCE_CONST * RIESGO_POR_DEFECTO, stopDist, mult, enteros);
+                            if (q > 0) setQuantity(enteros ? precio(q, 0) : q < 1 ? precio(q, 3) : precio(q, 2));
+                            else toast({ title: t("sizeNoFits"), description: t("sizeNoFitsDesc"), variant: "destructive" });
                           }
                         }}
                         className="h-9 toque-comodo px-3 inline-flex items-center gap-1.5 rounded-[2px] border border-[rgb(var(--divider)/0.12)] text-[12px] text-secondary hover:text-primary hover:bg-[rgb(var(--divider)/0.06)] transition-colors whitespace-nowrap"
