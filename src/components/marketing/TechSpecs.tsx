@@ -97,8 +97,8 @@ export function TechSpecs() {
           }
           entradilla={
             es
-              ? "Aplicación nativa de Windows sin cuenta ni telemetría. Solo se conecta para lo que tú activas: la licencia, las actualizaciones que pidas y las funciones opcionales."
-              : "A native Windows app with no account and no telemetry. It only connects for what you turn on: the licence, the updates you ask for and the optional features."
+              ? "Aplicación nativa de Windows sin cuenta ni telemetría. Solo se conecta para lo que tú activas: las actualizaciones que pidas y las funciones opcionales."
+              : "A native Windows app with no account and no telemetry. It only connects for what you turn on: the updates you ask for and the optional features."
           }
         />
         <Reveal delay={0.1} y={28} className="mt-10">
