@@ -14,6 +14,7 @@ import {
   type TipoLote,
 } from "@/lib/trading/plan";
 import { fmtPct, fmtMoney, fmtNum as fmtNumBase, fmtPrecio, pctSep } from "@/lib/trading/format";
+import { LIMITES } from "@/lib/trading/limites";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import { CampoCifra } from "@/components/tj/CampoCifra";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
@@ -224,7 +225,8 @@ export function RiskCalculator() {
         {label}
       </span>
       <CampoCifra
-        min={0}
+        min={LIMITES.precio.min}
+        max={LIMITES.precio.max}
         valor={value}
         decimales={decimalesPrecio}
         onValor={onChange}
@@ -385,7 +387,8 @@ export function RiskCalculator() {
                       : `${parForex.referencia.id} rate to convert to dollars`}
                   </span>
                   <CampoCifra
-                    min={0.0001}
+                    min={LIMITES.tipoCambio.min}
+                    max={LIMITES.tipoCambio.max}
                     valor={tipoReferencia ?? parForex.referencia.defecto}
                     decimales={4}
                     onValor={setTipoReferencia}
@@ -473,7 +476,8 @@ export function RiskCalculator() {
                 {es ? "Balance de cuenta ($)" : "Account balance ($)"}
               </span>
               <CampoCifra
-                min={100}
+                min={LIMITES.balance.min}
+                max={LIMITES.balance.max}
                 valor={balance}
                 decimales={2}
                 onValor={setBalance}

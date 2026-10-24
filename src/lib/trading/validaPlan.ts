@@ -1,3 +1,5 @@
+import { LIMITES } from "@/lib/trading/limites";
+
 /** Por qué un plan de entrada/stop/objetivo no es válido. */
 export type MotivoPlanInvalido = "campos" | "lado";
 
@@ -59,12 +61,14 @@ export interface Registro {
 
 /**
  * Lo que admite el registro rápido de la demo. Sin salida (vacía o ilegible)
- * se cierra en la entrada, con P&L 0. Precios y cantidad, mayores que cero:
- * nada se corrige en silencio. Devuelve `null` si hay que avisar.
+ * se cierra en la entrada, con P&L 0. Precios y cantidad, mayores que cero y
+ * sin pasar de `LIMITES`: nada se corrige en silencio. Devuelve `null` si hay
+ * que avisar.
  */
 export function validaRegistro({ entrada, stop, salida, cantidad }: Registro): Registro | null {
-  if (!Number.isFinite(entrada) || entrada <= 0 || !Number.isFinite(stop) || stop <= 0 || entrada === stop) return null;
-  if (Number.isFinite(salida) && salida <= 0) return null;
-  if (!Number.isFinite(cantidad) || cantidad <= 0) return null;
+  const precioOk = (p: number) => p > 0 && p <= LIMITES.precio.max;
+  if (!Number.isFinite(entrada) || !precioOk(entrada) || !Number.isFinite(stop) || !precioOk(stop) || entrada === stop) return null;
+  if (Number.isFinite(salida) && !precioOk(salida)) return null;
+  if (!Number.isFinite(cantidad) || cantidad <= 0 || cantidad > LIMITES.cantidad.max) return null;
   return { entrada, stop, salida: Number.isFinite(salida) ? salida : entrada, cantidad };
 }

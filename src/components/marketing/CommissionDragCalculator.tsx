@@ -3,6 +3,7 @@
 import { useState, type CSSProperties } from "react";
 import { useLang } from "@/lib/i18n";
 import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/format";
+import { LIMITES } from "@/lib/trading/limites";
 import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { ResultadoAnunciado } from "@/components/tj/ResultadoAnunciado";
 import {
@@ -213,7 +214,8 @@ export function CommissionDragCalculator() {
                     antes={!es}
                     paso={0.05}
                     decimales={2}
-                    min={0}
+                    min={LIMITES.comision.min}
+                    max={LIMITES.comision.max}
                     valor={customCommission}
                     onValor={setCustomCommission}
                     aria-label={es ? "Comisión ida y vuelta, en dólares" : "Round-turn fee, in dollars"}
@@ -230,8 +232,8 @@ export function CommissionDragCalculator() {
                     unidad="ticks"
                     paso={0.5}
                     decimales={1}
-                    min={0}
-                    max={10}
+                    min={LIMITES.deslizamiento.min}
+                    max={LIMITES.deslizamiento.max}
                     valor={slippageTicks}
                     onValor={setSlippageTicks}
                     aria-label={es ? "Deslizamiento medio, en ticks" : "Average slippage, in ticks"}

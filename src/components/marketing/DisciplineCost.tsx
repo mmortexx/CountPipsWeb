@@ -7,6 +7,7 @@ import { CampoUnidad } from "@/components/tj/CampoCifra";
 import { BotonCopiar } from "@/components/tj/BotonCopiar";
 import { componerInforme } from "@/lib/informe";
 import { fmtMoney, fmtNum, fmtOperaciones, fmtPct, pctSep } from "@/lib/trading/format";
+import { LIMITES } from "@/lib/trading/limites";
 import { TASA_REINVERSION_ANUAL } from "@/lib/supuestos";
 import { costeIndisciplina } from "@/lib/trading/indisciplina";
 
@@ -299,6 +300,8 @@ export function DisciplineCost() {
                     antes={!es}
                     paso={1}
                     decimales={2}
+                    min={LIMITES.resultadoPorOperacion.min}
+                    max={LIMITES.resultadoPorOperacion.max}
                     valor={inPlanExp}
                     onValor={aMano(setInPlanExp)}
                     className="text-primary"
@@ -315,6 +318,8 @@ export function DisciplineCost() {
                     antes={!es}
                     paso={1}
                     decimales={2}
+                    min={LIMITES.resultadoPorOperacion.min}
+                    max={LIMITES.resultadoPorOperacion.max}
                     valor={offPlanExp}
                     onValor={aMano(setOffPlanExp)}
                     className={offPlanExp < 0 ? "text-[rgb(var(--pnl-neg))]" : "text-primary"}

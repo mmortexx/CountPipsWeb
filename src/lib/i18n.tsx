@@ -12,6 +12,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { rutaEnIdioma, TABLA_IDIOMAS, type Lang } from "@/lib/locale";
 import { fmtInt, fmtMoney, fmtOperaciones } from "@/lib/trading/format";
+import { LIMITES } from "@/lib/trading/limites";
 import { SALDO_INICIAL_MUESTRA } from "@/lib/trading/muestra";
 
 export type { Lang };
@@ -165,8 +166,8 @@ export const STR = {
     en: "Required fields missing",
   },
   tradeRegisterErrorDesc: {
-    es: "Instrumento, setup, dirección, entrada y stop son obligatorios; precios y cantidad, mayores que cero.",
-    en: "Instrument, setup, direction, entry and stop are required; prices and quantity must be above zero.",
+    es: `Instrumento, setup, dirección, entrada y stop son obligatorios; precios y cantidad, mayores que cero y de ${fmtInt(LIMITES.precio.max, "es")} como máximo.`,
+    en: `Instrument, setup, direction, entry and stop are required; prices and quantity must be above zero and at most ${fmtInt(LIMITES.precio.max, "en")}.`,
   },
   tradeDeleted: { es: "Operación eliminada", en: "Trade deleted" },
   deleteTrade: { es: "Eliminar operación", en: "Delete trade" },
