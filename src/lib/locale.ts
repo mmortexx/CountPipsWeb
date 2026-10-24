@@ -5,6 +5,8 @@ export interface IdiomaInfo {
   readonly prefijo: string;
   readonly htmlLang: string;
   readonly intlLocale: string;
+  /** `og:locale` de Open Graph. */
+  readonly ogLocale: string;
   readonly nombre: string;
   readonly code2: string;
 }
@@ -14,12 +16,12 @@ export interface IdiomaInfo {
  * `hreflang`, sitemap, selector, `postbuild` y pruebas la lean.
  */
 export const TABLA_IDIOMAS: readonly IdiomaInfo[] = [
-  { codigo: "es", prefijo: "", htmlLang: "es", intlLocale: "es-ES", nombre: "Español", code2: "ES" },
-  { codigo: "en", prefijo: "/en", htmlLang: "en", intlLocale: "en-US", nombre: "English", code2: "EN" },
-  { codigo: "pt", prefijo: "/pt", htmlLang: "pt-BR", intlLocale: "pt-BR", nombre: "Português", code2: "PT" },
-  { codigo: "fr", prefijo: "/fr", htmlLang: "fr-FR", intlLocale: "fr-FR", nombre: "Français", code2: "FR" },
-  { codigo: "de", prefijo: "/de", htmlLang: "de-DE", intlLocale: "de-DE", nombre: "Deutsch", code2: "DE" },
-  { codigo: "it", prefijo: "/it", htmlLang: "it-IT", intlLocale: "it-IT", nombre: "Italiano", code2: "IT" },
+  { codigo: "es", prefijo: "", htmlLang: "es", intlLocale: "es-ES", ogLocale: "es_ES", nombre: "Español", code2: "ES" },
+  { codigo: "en", prefijo: "/en", htmlLang: "en", intlLocale: "en-US", ogLocale: "en_GB", nombre: "English", code2: "EN" },
+  { codigo: "pt", prefijo: "/pt", htmlLang: "pt-BR", intlLocale: "pt-BR", ogLocale: "pt_BR", nombre: "Português", code2: "PT" },
+  { codigo: "fr", prefijo: "/fr", htmlLang: "fr-FR", intlLocale: "fr-FR", ogLocale: "fr_FR", nombre: "Français", code2: "FR" },
+  { codigo: "de", prefijo: "/de", htmlLang: "de-DE", intlLocale: "de-DE", ogLocale: "de_DE", nombre: "Deutsch", code2: "DE" },
+  { codigo: "it", prefijo: "/it", htmlLang: "it-IT", intlLocale: "it-IT", ogLocale: "it_IT", nombre: "Italiano", code2: "IT" },
 ] as const;
 
 export const IDIOMAS_NUEVOS: readonly Lang[] = ["pt", "fr", "de", "it"] as const;
@@ -130,6 +132,16 @@ export function rutaEnIdioma(pathname: string, destino: Lang): string {
 export function idiomasDeRuta(pathname: string): readonly IdiomaInfo[] {
   const base = sinPrefijo(pathname);
   return TABLA_IDIOMAS.filter((i) => tieneVersion(base, i.codigo));
+}
+
+/** `og:locale` de un idioma. */
+export function ogLocaleDe(lang: Lang): string {
+  return TABLA_IDIOMAS.find((i) => i.codigo === lang)!.ogLocale;
+}
+
+/** `og:locale:alternate` de una ruta: los demás idiomas en que existe. */
+export function localesAlternos(pathname: string, actual: Lang): string[] {
+  return idiomasDeRuta(pathname).filter((i) => i.codigo !== actual).map((i) => i.ogLocale);
 }
 
 /**

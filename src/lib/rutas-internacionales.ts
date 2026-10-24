@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SITE_URL, hreflangDe } from "@/lib/site";
 import { fmtMoney } from "@/lib/trading/format";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
+import { localesAlternos, ogLocaleDe } from "@/lib/locale";
 
 interface MetaIdioma {
   /** Título de la pestaña y del buscador: la búsqueda que persigue, como en es y en. */
@@ -15,7 +16,6 @@ interface MetaIdioma {
   pricingTwitterDesc: string;
   breadcrumbHome: string;
   breadcrumbPricing: string;
-  ogLocale: string;
 }
 
 export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
@@ -33,7 +33,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Demo interativa sem cadastro. Core ${fmtMoney(PRECIO_CORE, "pt", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "pt", { decimals: 0 })} como preços previstos de lançamento.`,
     breadcrumbHome: "Início",
     breadcrumbPricing: "Preços",
-    ogLocale: "pt_BR",
   },
   fr: {
     homeTitle: "Application de journal de trading pour Windows — CountPips",
@@ -49,7 +48,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Démo interactive sans inscription. Core ${fmtMoney(PRECIO_CORE, "fr", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "fr", { decimals: 0 })} comme tarifs de lancement prévus.`,
     breadcrumbHome: "Accueil",
     breadcrumbPricing: "Tarifs",
-    ogLocale: "fr_FR",
   },
   de: {
     homeTitle: "Trading-Journal-App für Windows — CountPips",
@@ -65,7 +63,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Interaktive Demo ohne Registrierung. Core ${fmtMoney(PRECIO_CORE, "de", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "de", { decimals: 0 })} als geplante Einführungspreise.`,
     breadcrumbHome: "Startseite",
     breadcrumbPricing: "Preise",
-    ogLocale: "de_DE",
   },
   it: {
     homeTitle: "App di diario di trading per Windows — CountPips",
@@ -81,7 +78,6 @@ export const META_POR_IDIOMA: Record<"pt" | "fr" | "de" | "it", MetaIdioma> = {
       `Demo interattiva senza registrazione. Core ${fmtMoney(PRECIO_CORE, "it", { decimals: 0 })} · Pro ${fmtMoney(PRECIO_PRO, "it", { decimals: 0 })} come prezzi di lancio previsti.`,
     breadcrumbHome: "Home",
     breadcrumbPricing: "Prezzi",
-    ogLocale: "it_IT",
   },
 };
 
@@ -100,8 +96,8 @@ export function metadataHome(lang: "pt" | "fr" | "de" | "it"): Metadata {
       url: `${SITE_URL}/${lang}/`,
       type: "website",
       siteName: "CountPips",
-      locale: meta.ogLocale,
-      alternateLocale: ["es_ES", "en_GB"],
+      locale: ogLocaleDe(lang),
+      alternateLocale: localesAlternos("/", lang),
     },
     twitter: {
       card: "summary_large_image",
@@ -126,8 +122,8 @@ export function metadataPricing(lang: "pt" | "fr" | "de" | "it"): Metadata {
       url: `${SITE_URL}/${lang}/pricing/`,
       type: "website",
       siteName: "CountPips",
-      locale: meta.ogLocale,
-      alternateLocale: ["es_ES", "en_GB"],
+      locale: ogLocaleDe(lang),
+      alternateLocale: localesAlternos("/pricing", lang),
     },
     twitter: {
       card: "summary_large_image",

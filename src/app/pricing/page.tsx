@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Pricing } from "@/components/marketing/Pricing";
 import { TableOfContents } from "@/components/tj/TableOfContents";
 import { SITE_URL, hreflangDe } from "@/lib/site";
+import { localesAlternos } from "@/lib/locale";
 import { BetaStatus } from "@/components/beta/BetaStatus";
 import { fmtMoney } from "@/lib/trading/format";
 import { PRECIO_CORE, PRECIO_PRO } from "@/lib/precios";
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "CountPips",
     locale: "es_ES",
-    alternateLocale: ["en_GB"],
+    alternateLocale: localesAlternos("/pricing", "es"),
   },
   twitter: {
     card: "summary_large_image",

@@ -7,6 +7,7 @@ import { MetricsShowcaseNew } from "@/components/marketing/MetricsShowcaseNew";
 import { cifrasMuestra } from "@/lib/trading/cifras-muestra";
 import { HERRAMIENTAS } from "@/lib/herramientas";
 import { SITE_URL, hreflangDe, esquemasGlobales } from "@/lib/site";
+import { localesAlternos } from "@/lib/locale";
 import { SUPPORT_EMAIL } from "@/lib/forms";
 
 const PAGE_DESCRIPTION =
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "CountPips",
     locale: "es_ES",
-    alternateLocale: ["en_GB"],
+    alternateLocale: localesAlternos("/", "es"),
   },
   twitter: {
     card: "summary_large_image",
